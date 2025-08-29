@@ -1,20 +1,17 @@
 import { useRouter } from 'next/router';
 import React, { ReactElement } from 'react';
-import {
-  CircularProgress,
-  DialogActions,
-  DialogContent,
-  FormControl,
-  FormLabel,
-  Grid,
-  TextField,
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { DialogActions, DialogContent, Grid } from '@mui/material';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useCreatePersonMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonModal.generated';
+import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingStyling';
+import {
+  LogFormControl,
+  LogFormLabel,
+  LogTextField,
+} from 'src/components/Shared/styledComponents/LogStyling';
 import {
   CancelButton,
   SubmitButton,
@@ -35,29 +32,6 @@ interface Person {
   firstName: string;
   lastName: string;
 }
-
-const LogFormControl = styled(FormControl)(() => ({
-  width: '100%',
-}));
-
-const LogFormLabel = styled(FormLabel)(({ theme }) => ({
-  margin: theme.spacing(1, 0),
-  fontWeight: 'bold',
-  color: theme.palette.primary.dark,
-  '& span': {
-    color: theme.palette.error.main,
-  },
-}));
-
-const LogTextField = styled(TextField)(({ theme }) => ({
-  '& div': {
-    padding: theme.spacing(1),
-  },
-}));
-
-const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
-  margin: theme.spacing(0, 1, 0, 0),
-}));
 
 const contactSchema: yup.ObjectSchema<Pick<ContactCreateInput, 'name'>> =
   yup.object({
@@ -112,7 +86,7 @@ const CreateContact = ({
         const findFirstName = firstAndSpouseNames.split(/ (.*)/s, 2);
         people.push({
           firstName: findFirstName[0],
-          lastName: lastName ? lastName : findFirstName[1] ?? '',
+          lastName: lastName ? lastName : (findFirstName[1] ?? ''),
         });
       }
 

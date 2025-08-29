@@ -36,10 +36,10 @@ export const TransferModalSelect: React.FC<TransferModalSelectProps> = ({
             {fund.type === StaffSavingFundEnum.StaffAccount
               ? StaffAccount
               : fund.type === StaffSavingFundEnum.StaffSavings
-              ? StaffSavings
-              : fund.type === StaffSavingFundEnum.StaffConferenceSavings
-              ? StaffConferenceSavings
-              : null}
+                ? StaffSavings
+                : fund.type === StaffSavingFundEnum.StaffConferenceSavings
+                  ? StaffConferenceSavings
+                  : null}
             {''}
             <Typography>
               <b>{fund.name}</b>

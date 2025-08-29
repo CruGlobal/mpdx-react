@@ -16,7 +16,7 @@ import {
 } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { PageContentWrapper } from '../settings/styledComponents';
+import { PageContentWrapper } from '../settings/styledComponents/PageContentWrapper';
 
 interface ToolsWrapperProps {
   pageTitle?: string;

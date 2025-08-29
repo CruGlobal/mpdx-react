@@ -7,7 +7,6 @@ import {
   TextField,
   Tooltip,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
@@ -19,14 +18,8 @@ import {
   SettingsOrganizationFragment,
   useOrganizationsQuery,
 } from '../organizations.generated';
+import { HeaderAndDropdown } from '../styledComponents/HeaderAndDropdown';
 import { OrganizationsContextProvider } from './OrganizationsContext';
-
-const HeaderAndDropdown = styled(Box)(() => ({
-  fontSize: '16px',
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-}));
 
 const AccountListsOrganizations = (): ReactElement => {
   const { t } = useTranslation();

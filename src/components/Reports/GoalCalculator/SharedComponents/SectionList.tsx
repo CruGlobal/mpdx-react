@@ -74,6 +74,7 @@ export const SectionList: React.FC<SectionListProps> = ({ sections }) => {
     </List>
   );
 };
+
 export const ReportSectionList: React.FC = () => {
   const { t } = useTranslation();
   const { selectedReport, setSelectedReport } = useGoalCalculator();

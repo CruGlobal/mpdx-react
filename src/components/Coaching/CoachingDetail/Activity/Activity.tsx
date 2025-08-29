@@ -17,6 +17,7 @@ import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import AnimatedCard from 'src/components/AnimatedCard';
+import { StyledHeader } from 'src/components/Shared/styledComponents/StyledHeader';
 import {
   Appeal,
   ContactFilterSetInput,
@@ -36,15 +37,6 @@ import { CoachingLink } from '../CoachingLink';
 import { HelpButton } from '../HelpButton';
 import { useCoachingDetailActivityQuery } from './Activity.generated';
 import { AppealProgress } from './AppealProgress';
-
-const Header = styled(Typography)(({ theme }) => ({
-  display: 'flex',
-  gap: theme.spacing(2),
-  '@media (max-width: 900px)': {
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-}));
 
 const PeriodText = styled('span')({
   textAlign: 'center',
@@ -224,7 +216,7 @@ export const Activity: React.FC<ActivityProps> = ({
     <AnimatedCard>
       <CardHeader
         title={
-          <Header variant="h6">
+          <StyledHeader variant="h6">
             <span>{t('Current Reality')}</span>
             <PeriodText data-testid="ActivityPeriod">
               {formattedDate}
@@ -245,7 +237,7 @@ export const Activity: React.FC<ActivityProps> = ({
               </StyledButton>
             </ButtonGroup>
             <HelpButton articleVar="HELP_URL_COACHING_ACTIVITY" />
-          </Header>
+          </StyledHeader>
         }
       />
       <SectionsContainer>

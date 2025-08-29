@@ -1,11 +1,11 @@
 import React, { ReactElement } from 'react';
-import { Box, DialogActions, FormHelperText, TextField } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { DialogActions, FormHelperText, TextField } from '@mui/material';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
+import { PaddedBox } from 'src/components/Shared/styledComponents/PaddedBox';
 import {
   CancelButton,
   SubmitButton,
@@ -19,10 +19,6 @@ interface OrganizationEditAccountModalProps {
   handleClose: () => void;
   organizationId: string;
 }
-
-const StyledBox = styled(Box)(() => ({
-  padding: '0 10px',
-}));
 
 export const OrganizationEditAccountModal: React.FC<
   OrganizationEditAccountModalProps
@@ -100,7 +96,7 @@ export const OrganizationEditAccountModal: React.FC<
           errors,
         }): ReactElement => (
           <form onSubmit={handleSubmit}>
-            <StyledBox marginTop={4}>
+            <PaddedBox marginTop={4}>
               <FieldWrapper>
                 <TextField
                   required
@@ -118,8 +114,8 @@ export const OrganizationEditAccountModal: React.FC<
                   </FormHelperText>
                 )}
               </FieldWrapper>
-            </StyledBox>
-            <StyledBox marginTop={2}>
+            </PaddedBox>
+            <PaddedBox marginTop={2}>
               <FieldWrapper>
                 <TextField
                   required
@@ -139,7 +135,7 @@ export const OrganizationEditAccountModal: React.FC<
                   </FormHelperText>
                 )}
               </FieldWrapper>
-            </StyledBox>
+            </PaddedBox>
 
             <DialogActions>
               <CancelButton onClick={handleClose} disabled={isSubmitting} />

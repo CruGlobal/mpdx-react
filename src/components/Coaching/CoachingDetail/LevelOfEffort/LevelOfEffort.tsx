@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import {
-  CardContent,
   CardHeader,
   Divider,
   Table,
@@ -9,7 +8,6 @@ import {
   TableContainer,
   TableRow,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { toLower } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import AnimatedCard from 'src/components/AnimatedCard';
@@ -19,14 +17,14 @@ import { usePhaseData } from 'src/hooks/usePhaseData';
 import { snakeToCamel } from 'src/lib/snakeToCamel';
 import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
 import { CoachingPeriodEnum } from '../CoachingDetail';
-import { AlignedTableCell, DividerRow, HeaderRow } from '../StyledComponents';
 import { getMonthOrWeekDateRange } from '../helpers';
+import {
+  AlignedTableCell,
+  ContentContainer,
+  DividerRow,
+  HeaderRow,
+} from '../styledComponents/styledComponents';
 import { useLevelOfEffortQuery } from './LevelOfEffort.generated';
-
-const ContentContainer = styled(CardContent)(({ theme }) => ({
-  padding: theme.spacing(2),
-  overflowX: 'scroll',
-}));
 
 interface LevelOfEffortProps {
   accountListId: string;

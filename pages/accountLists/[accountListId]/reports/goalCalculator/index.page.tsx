@@ -1,7 +1,5 @@
 import Head from 'next/head';
 import React, { useState } from 'react';
-import { Box } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
@@ -16,12 +14,9 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import { ReportPageWrapper } from 'src/components/Shared/styledComponents/ReportPageWrapper';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-
-const GoalCalculatorPageWrapper = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.common.white,
-}));
 
 const GoalCalculatorPage: React.FC = () => {
   const { t } = useTranslation();
@@ -40,7 +35,7 @@ const GoalCalculatorPage: React.FC = () => {
         <title>{`${appName} | ${t('Reports - Goal Calculation')}`}</title>
       </Head>
       {accountListId ? (
-        <GoalCalculatorPageWrapper>
+        <ReportPageWrapper>
           <SidePanelsLayout
             isScrollBox={false}
             leftPanel={
@@ -68,7 +63,7 @@ const GoalCalculatorPage: React.FC = () => {
               </>
             }
           />
-        </GoalCalculatorPageWrapper>
+        </ReportPageWrapper>
       ) : (
         <Loading loading />
       )}

@@ -24,6 +24,16 @@ const mpdxColors = {
   gray: '#DCDCDC',
 };
 
+const chartColors = {
+  blue: '#00C0D8',
+  green: '#88E4B6',
+  pink: '#EA657F',
+  orange: '#F08020',
+  gray: '#565652',
+  blueLight: '#BBDEFB',
+  black: '#000000',
+};
+
 const progressBarColors = {
   yellow: '#F9B625',
   orange: '#DD7D1A',
@@ -46,6 +56,13 @@ declare module '@mui/material/styles/createPalette' {
     statusSuccess: Palette['primary'];
     statusWarning: Palette['primary'];
     statusDanger: Palette['primary'];
+    chartBlue: Palette['primary'];
+    chartGreen: Palette['primary'];
+    chartPink: Palette['primary'];
+    chartOrange: Palette['primary'];
+    chartGray: Palette['primary'];
+    chartBlueLight: Palette['primary'];
+    chartBlack: Palette['primary'];
   }
   interface PaletteOptions {
     cruYellow: PaletteOptions['primary'];
@@ -62,6 +79,13 @@ declare module '@mui/material/styles/createPalette' {
     statusSuccess: PaletteOptions['primary'];
     statusWarning: PaletteOptions['primary'];
     statusDanger: PaletteOptions['primary'];
+    chartBlue: PaletteOptions['primary'];
+    chartGreen: PaletteOptions['primary'];
+    chartPink: PaletteOptions['primary'];
+    chartOrange: PaletteOptions['primary'];
+    chartGray: PaletteOptions['primary'];
+    chartBlueLight: PaletteOptions['primary'];
+    chartBlack: PaletteOptions['primary'];
   }
 }
 
@@ -124,6 +148,27 @@ const theme = createTheme({
     },
     statusDanger: {
       main: statusColors.danger,
+    },
+    chartBlue: {
+      main: chartColors.blue,
+    },
+    chartGreen: {
+      main: chartColors.green,
+    },
+    chartPink: {
+      main: chartColors.pink,
+    },
+    chartOrange: {
+      main: chartColors.orange,
+    },
+    chartGray: {
+      main: chartColors.gray,
+    },
+    chartBlueLight: {
+      main: chartColors.blueLight,
+    },
+    chartBlack: {
+      main: chartColors.black,
     },
   },
   components: {

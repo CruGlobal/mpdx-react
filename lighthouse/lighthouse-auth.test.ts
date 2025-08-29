@@ -170,12 +170,10 @@ describe('Lighthouse Pre-Login Steps', () => {
       successfulTestMock();
 
       const badPerformanceResult = { ...successResult };
-      badPerformanceResult.lhr.audits[
-        'largest-contentful-paint'
-      ].numericValue = 2600;
-      badPerformanceResult.lhr.audits[
-        'cumulative-layout-shift'
-      ].numericValue = 0.3;
+      badPerformanceResult.lhr.audits['largest-contentful-paint'].numericValue =
+        2600;
+      badPerformanceResult.lhr.audits['cumulative-layout-shift'].numericValue =
+        0.3;
 
       mockLighthouse.default.mockImplementation(() => {
         return Promise.resolve(badPerformanceResult);

@@ -45,8 +45,8 @@ export const LocaleAccordion: React.FC<LocaleAccordionProps> = ({
     return thisLocale?.englishName && thisLocale?.nativeName
       ? `${thisLocale?.englishName} (${thisLocale?.nativeName})`
       : thisLocale?.englishName
-      ? thisLocale?.englishName
-      : '';
+        ? thisLocale?.englishName
+        : '';
   };
 
   const selectedLocale = useMemo(

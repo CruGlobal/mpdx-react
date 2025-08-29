@@ -1,24 +1,38 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { ThemeProvider } from '@mui/system';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { DateTime } from 'luxon';
-import { GoalCard, GoalCardProps } from './GoalCard';
+import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import theme from 'src/theme';
+import { ListGoalCalculationFragment } from '../GoalsList/GoalCalculations.generated';
+import { GoalCard } from './GoalCard';
 
-const onStarToggle = jest.fn();
-const onDelete = jest.fn();
-const onView = jest.fn();
-const TestComponent: React.FC<Partial<GoalCardProps>> = (props) => (
-  <GoalCard
-    goalId={1}
-    goalTitle="Test Goal"
-    goalAmount={1000}
-    goalDate={DateTime.fromISO('2024-06-01')}
-    starred={false}
-    onStarToggle={onStarToggle}
-    onDelete={onDelete}
-    onView={onView}
-    {...props}
-  />
+const goal: ListGoalCalculationFragment = {
+  id: 'goal-1',
+  createdAt: '2025-01-01T00:00:00.000Z',
+  primary: false,
+};
+const mutationSpy = jest.fn();
+
+interface TestComponentProps {
+  primary?: boolean;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({ primary = false }) => (
+  <TestRouter
+    router={{
+      query: {
+        accountListId: 'account-list-1',
+      },
+    }}
+  >
+    <ThemeProvider theme={theme}>
+      <GqlMockedProvider onCall={mutationSpy}>
+        <GoalCard goal={{ ...goal, primary }} renderStar />
+      </GqlMockedProvider>
+    </ThemeProvider>
+  </TestRouter>
 );
 
 describe('GoalCard', () => {
@@ -29,38 +43,51 @@ describe('GoalCard', () => {
     expect(getByTestId('date-value')).toBeInTheDocument();
   });
 
-  it('renders Delete and View buttons', () => {
+  it('calls update mutation when star button is clicked', async () => {
     const { getByRole } = render(<TestComponent />);
-    expect(getByRole('button', { name: 'Delete' })).toBeInTheDocument();
-    expect(getByRole('button', { name: 'View' })).toBeInTheDocument();
+
+    userEvent.click(getByRole('button', { name: 'star-button' }));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateGoalCalculation', {
+        accountListId: 'account-list-1',
+        attributes: {
+          id: 'goal-1',
+          primary: true,
+        },
+      }),
+    );
   });
 
-  it('calls onStarToggle when star button is clicked', async () => {
-    const { getByRole } = render(<TestComponent />);
-    const starButton = getByRole('button', { name: 'star-button' });
-    userEvent.click(starButton);
-    expect(onStarToggle).toHaveBeenCalledWith(1);
-  });
-
-  it('shows filled star when starred is true', () => {
-    const { getByTestId } = render(<TestComponent starred={true} />);
+  it('shows filled star when primary', () => {
+    const { getByTestId } = render(<TestComponent primary={true} />);
     expect(getByTestId('StarIcon')).toBeInTheDocument();
   });
 
-  it('shows outlined star when starred is false', () => {
-    const { getByTestId } = render(<TestComponent starred={false} />);
+  it('shows outlined star when not primary', () => {
+    const { getByTestId } = render(<TestComponent primary={false} />);
     expect(getByTestId('StarBorderOutlinedIcon')).toBeInTheDocument();
   });
 
-  it('calls onDelete when Delete button is clicked', async () => {
+  it('opens confirmation dialog and calls delete mutation when delete button is clicked', async () => {
     const { getByRole } = render(<TestComponent />);
+
     userEvent.click(getByRole('button', { name: 'Delete' }));
-    expect(onDelete).toHaveBeenCalledWith(1);
+    userEvent.click(getByRole('button', { name: 'Delete Goal' }));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('DeleteGoalCalculation', {
+        accountListId: 'account-list-1',
+        id: 'goal-1',
+      }),
+    );
   });
 
-  it('calls onView when View button is clicked', async () => {
+  it('renders view link', async () => {
     const { getByRole } = render(<TestComponent />);
-    userEvent.click(getByRole('button', { name: 'View' }));
-    expect(onView).toHaveBeenCalledWith(1);
+    expect(getByRole('link', { name: 'View' })).toHaveAttribute(
+      'href',
+      '/accountLists/account-list-1/reports/goalCalculator/goal-1',
+    );
   });
 });

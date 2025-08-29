@@ -12,12 +12,12 @@ import {
 } from 'src/components/Shared/Header/ListHeader';
 import { StarFilterButton } from 'src/components/Shared/Header/StarFilterButton/StarFilterButton';
 import { TasksMassActionsDropdown } from 'src/components/Shared/MassActions/TasksMassActionsDropdown';
+import { StyledCheckbox } from 'src/components/Shared/styledComponents/StyledCheckbox';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { SearchBox } from 'src/components/common/SearchBox/SearchBox';
 import { useGetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import useTaskModal from 'src/hooks/useTaskModal';
-import { StyledCheckbox } from '../../ContactRow/ContactRow';
 import { ContactTaskRow } from './ContactTaskRow/ContactTaskRow';
 import {
   useContactPhaseQuery,

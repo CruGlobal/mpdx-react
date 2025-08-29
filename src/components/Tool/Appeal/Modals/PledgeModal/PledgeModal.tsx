@@ -18,10 +18,8 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
-import {
-  FormTextField,
-  LogFormLabel,
-} from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/AddDonation/StyledComponents';
+import { FormTextField } from 'src/components/Shared/styledComponents/FormTextField';
+import { LogFormLabel } from 'src/components/Shared/styledComponents/LogStyling';
 import { CurrencyAutocomplete } from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
 import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
 import {

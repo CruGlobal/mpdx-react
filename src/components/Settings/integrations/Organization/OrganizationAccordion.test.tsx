@@ -297,8 +297,7 @@ describe('OrganizationAccordion', () => {
       const mutationSpy = jest.fn();
       mocks.GetUsersOrganizationsAccounts.userOrganizationAccounts[0].organization.apiClass =
         'DataServer';
-      mocks.GetUsersOrganizationsAccounts.userOrganizationAccounts[0].organization.oauth =
-        true;
+      mocks.GetUsersOrganizationsAccounts.userOrganizationAccounts[0].organization.oauth = true;
       const { getByText, queryByTestId } = render(
         <Components>
           <GqlMockedProvider<{

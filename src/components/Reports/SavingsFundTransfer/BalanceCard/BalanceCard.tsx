@@ -12,7 +12,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { TransferModalData } from '../TransferModal/TransferModal';
 import { Fund, StaffSavingFundEnum } from '../mockData';
-import { ScreenOnly } from '../styledComponents';
+import { ScreenOnly } from '../styledComponents/DisplayStyling';
 
 export interface BalanceCardProps {
   fund: Fund;
@@ -39,14 +39,14 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
     fund.type === StaffSavingFundEnum.StaffAccount
       ? Wallet
       : fund.type === StaffSavingFundEnum.StaffConferenceSavings
-      ? Groups
-      : Savings;
+        ? Groups
+        : Savings;
   const iconBgColor =
     fund.type === StaffSavingFundEnum.StaffAccount
       ? staffAccountColor
       : fund.type === StaffSavingFundEnum.StaffConferenceSavings
-      ? staffConferenceSavingsColor
-      : staffSavingsColor;
+        ? staffConferenceSavingsColor
+        : staffSavingsColor;
 
   const handleTransferFrom = () => {
     handleOpenTransferModal({

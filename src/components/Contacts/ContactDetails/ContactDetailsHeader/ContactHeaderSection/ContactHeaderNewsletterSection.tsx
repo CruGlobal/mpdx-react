@@ -1,25 +1,18 @@
 import React, { ReactElement } from 'react';
 import { mdiNewspaperVariantOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Skeleton, Typography } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
 import theme from '../../../../../theme';
 import { ContactHeaderNewsletterFragment } from './ContactHeaderNewsletter.generated';
 import { ContactHeaderSection } from './ContactHeaderSection';
+import { TextSkeleton } from './styledComponents/TextSkeleton';
 
 interface Props {
   loading: boolean;
   contact?: ContactHeaderNewsletterFragment;
 }
-
-const TextSkeleton = styled(Skeleton)(({}) => ({
-  display: 'inline',
-  marginLeft: 18,
-  width: 200,
-  fontSize: 16,
-}));
 
 const NewsletterIcon: React.FC = () => (
   <Icon

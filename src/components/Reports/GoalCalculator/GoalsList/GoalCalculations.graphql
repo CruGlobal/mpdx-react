@@ -1,0 +1,40 @@
+fragment ListGoalCalculation on GoalCalculation {
+  id
+  createdAt
+  primary
+}
+
+query GoalCalculations($accountListId: ID!) {
+  goalCalculations(accountListId: $accountListId) {
+    nodes {
+      ...ListGoalCalculation
+    }
+  }
+}
+
+mutation CreateGoalCalculation($accountListId: ID!) {
+  createGoalCalculation(input: { accountListId: $accountListId }) {
+    goalCalculation {
+      ...ListGoalCalculation
+    }
+  }
+}
+
+mutation UpdateGoalCalculation(
+  $accountListId: ID!
+  $attributes: GoalCalculationUpdateInput!
+) {
+  updateGoalCalculation(
+    input: { accountListId: $accountListId, attributes: $attributes }
+  ) {
+    goalCalculation {
+      ...ListGoalCalculation
+    }
+  }
+}
+
+mutation DeleteGoalCalculation($accountListId: ID!, $id: ID!) {
+  deleteGoalCalculation(input: { accountListId: $accountListId, id: $id }) {
+    id
+  }
+}

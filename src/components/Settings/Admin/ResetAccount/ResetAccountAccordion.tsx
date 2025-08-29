@@ -1,12 +1,10 @@
 import { ReactElement } from 'react';
 import {
-  Box,
   DialogActions,
   FormHelperText,
   TextField,
   Typography,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -15,13 +13,10 @@ import { AdminAccordion } from 'src/components/Shared/Forms/Accordions/Accordion
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
+import { PaddedBox } from 'src/components/Shared/styledComponents/PaddedBox';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { AccordionProps } from '../../accordionHelper';
 import { useResetAccountListMutation } from './ResetAccount.generated';
-
-const StyledBox = styled(Box)(() => ({
-  padding: '0 10px',
-}));
 
 type ImpersonateUserFormType = {
   user: string;
@@ -108,7 +103,7 @@ export const ResetAccountAccordion: React.FC<
           errors,
         }): ReactElement => (
           <form onSubmit={handleSubmit}>
-            <StyledBox marginTop={4}>
+            <PaddedBox marginTop={4}>
               <FieldWrapper>
                 <TextField
                   required
@@ -125,8 +120,8 @@ export const ResetAccountAccordion: React.FC<
                   <FormHelperText error={true}>{errors.user}</FormHelperText>
                 )}
               </FieldWrapper>
-            </StyledBox>
-            <StyledBox marginTop={2}>
+            </PaddedBox>
+            <PaddedBox marginTop={2}>
               <FieldWrapper>
                 <TextField
                   required
@@ -138,9 +133,9 @@ export const ResetAccountAccordion: React.FC<
                   onChange={handleChange('reason')}
                 />
               </FieldWrapper>
-            </StyledBox>
+            </PaddedBox>
 
-            <StyledBox marginTop={2}>
+            <PaddedBox marginTop={2}>
               <FieldWrapper>
                 <TextField
                   required
@@ -152,7 +147,7 @@ export const ResetAccountAccordion: React.FC<
                   onChange={handleChange('account')}
                 />
               </FieldWrapper>
-            </StyledBox>
+            </PaddedBox>
 
             <DialogActions>
               <SubmitButton

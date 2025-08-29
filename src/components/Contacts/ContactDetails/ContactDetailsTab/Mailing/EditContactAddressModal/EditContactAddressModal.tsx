@@ -3,9 +3,7 @@ import { ApolloCache } from '@apollo/client';
 import {
   Alert,
   AlertTitle,
-  Box,
   Checkbox,
-  CircularProgress,
   DialogActions,
   DialogContent,
   FormControl,
@@ -15,11 +13,15 @@ import {
   Link,
   TextField,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { AddressLocationSelect } from 'src/common/Selects/AddressLocationSelect';
+import {
+  ContactEditContainer,
+  ContactInputWrapper,
+} from 'src/components/Shared/styledComponents/ContactStyling';
+import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingStyling';
 import {
   CancelButton,
   DeleteButton,
@@ -42,23 +44,6 @@ import {
   useUpdateContactAddressMutation,
 } from './EditContactAddress.generated';
 import { generateEmailBody } from './helpers';
-
-const ContactEditContainer = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  width: '100%',
-  flexDirection: 'column',
-  margin: theme.spacing(1, 0),
-}));
-
-const ContactInputWrapper = styled(Box)(({ theme }) => ({
-  position: 'relative',
-  padding: theme.spacing(0, 6),
-  margin: theme.spacing(2, 0),
-}));
-
-const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
-  margin: theme.spacing(0, 1, 0, 0),
-}));
 
 interface EditContactAddressModalProps {
   accountListId: string;

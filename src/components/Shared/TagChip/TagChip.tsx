@@ -14,22 +14,22 @@ export const TagChip = styled(Chip, {
     selectType === 'include'
       ? theme.palette.mpdxBlue.main
       : selectType === 'exclude'
-      ? theme.palette.error.main
-      : theme.palette.cruGrayMedium.main,
+        ? theme.palette.error.main
+        : theme.palette.cruGrayMedium.main,
   '&:focus': {
     backgroundColor:
       selectType === 'include'
         ? theme.palette.mpdxBlue.main
         : selectType === 'exclude'
-        ? theme.palette.error.main
-        : theme.palette.cruGrayMedium.main,
+          ? theme.palette.error.main
+          : theme.palette.cruGrayMedium.main,
   },
   '&:hover': {
     backgroundColor:
       selectType === 'include'
         ? theme.palette.mpdxBlue.main
         : selectType === 'exclude'
-        ? theme.palette.error.main
-        : '#777',
+          ? theme.palette.error.main
+          : '#777',
   },
 }));

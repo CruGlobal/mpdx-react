@@ -12,7 +12,7 @@ import {
 import { styled, useTheme } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { StyledCheckbox } from 'src/components/Contacts/ContactRow/ContactRow';
+import { StyledCheckbox } from 'src/components/Shared/styledComponents/StyledCheckbox';
 import { usePhaseData } from 'src/hooks/usePhaseData';
 import useTaskModal from '../../../hooks/useTaskModal';
 import { TaskCommentsButton } from '../../Contacts/ContactDetails/ContactTasksTab/ContactTaskRow/TaskCommentsButton/TaskCommentsButton';

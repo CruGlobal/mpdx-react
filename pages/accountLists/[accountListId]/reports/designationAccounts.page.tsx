@@ -1,7 +1,5 @@
 import Head from 'next/head';
 import React, { useState } from 'react';
-import { Box } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
@@ -11,12 +9,9 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import { ReportPageWrapper } from 'src/components/Shared/styledComponents/ReportPageWrapper';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-
-const DesignationAccountsReportPageWrapper = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.common.white,
-}));
 
 const DesignationAccountsReportPage: React.FC = () => {
   const { t } = useTranslation();
@@ -35,7 +30,7 @@ const DesignationAccountsReportPage: React.FC = () => {
         <title>{`${appName} | ${t('Reports - Designation Accounts')}`}</title>
       </Head>
       {accountListId ? (
-        <DesignationAccountsReportPageWrapper>
+        <ReportPageWrapper>
           <SidePanelsLayout
             isScrollBox={false}
             leftPanel={
@@ -59,7 +54,7 @@ const DesignationAccountsReportPage: React.FC = () => {
               />
             }
           />
-        </DesignationAccountsReportPageWrapper>
+        </ReportPageWrapper>
       ) : (
         <Loading loading />
       )}

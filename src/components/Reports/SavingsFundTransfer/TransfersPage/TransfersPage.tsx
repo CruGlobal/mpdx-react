@@ -26,7 +26,7 @@ import { TransferHistoryTable } from '../Table/TransferHistoryTable';
 import { DynamicTransferModal } from '../TransferModal/DynamicTransferModal';
 import { TransferModalData } from '../TransferModal/TransferModal';
 import { mockData } from '../mockData';
-import { PrintOnly, ScreenOnly } from '../styledComponents';
+import { PrintOnly, ScreenOnly } from '../styledComponents/DisplayStyling';
 
 const StyledPrintButton = styled(Button)({
   border: '1px solid',

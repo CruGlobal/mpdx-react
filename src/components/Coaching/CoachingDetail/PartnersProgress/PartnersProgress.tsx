@@ -1,14 +1,12 @@
 import { useMemo } from 'react';
 import {
   Box,
-  CardContent,
   CardHeader,
   Table,
   TableBody,
   TableContainer,
   TableRow,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import AnimatedCard from 'src/components/AnimatedCard';
 import { useLocale } from 'src/hooks/useLocale';
@@ -16,14 +14,13 @@ import { currencyFormat } from 'src/lib/intlFormat';
 import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
 import { CoachingPeriodEnum } from '../CoachingDetail';
 import { HelpButton } from '../HelpButton';
-import { AlignedTableCell, HeaderRow } from '../StyledComponents';
 import { getMonthOrWeekDateRange } from '../helpers';
+import {
+  AlignedTableCell,
+  ContentContainer,
+  HeaderRow,
+} from '../styledComponents/styledComponents';
 import { usePartnersProgressQuery } from './PartnersProgress.generated';
-
-const ContentContainer = styled(CardContent)(({ theme }) => ({
-  padding: theme.spacing(2),
-  overflowX: 'scroll',
-}));
 
 interface PartnersProgressProps {
   accountListId: string;
