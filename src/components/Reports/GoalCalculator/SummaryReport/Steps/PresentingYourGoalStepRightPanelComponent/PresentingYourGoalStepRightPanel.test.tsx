@@ -1,12 +1,16 @@
 import React from 'react';
 import { render } from '@testing-library/react';
+import { GoalCalculatorTestWrapper } from '../../../GoalCalculatorTestWrapper';
 import { PresentingYourGoalStepRightPanel } from './PresentingYourGoalStepRightPanel';
 
 describe('PresentingYourGoalStepRightPanel', () => {
   it('renders the right panel with title and close button', () => {
-    const { getByRole } = render(<TestComponent />);
-    const closeButton = getByRole('button', { name: 'Close Panel' });
-    expect(closeButton).toBeEnabled();
+    const { getByRole } = render(
+      <GoalCalculatorTestWrapper>
+        <PresentingYourGoalStepRightPanel />
+      </GoalCalculatorTestWrapper>
+    );
+    expect(getByRole('button', { name: 'Close Panel' })).toBeEnabled();
 
     expect(
       getByRole('heading', {

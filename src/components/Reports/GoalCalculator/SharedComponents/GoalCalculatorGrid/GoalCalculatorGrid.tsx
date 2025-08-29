@@ -4,6 +4,7 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DoNotDisturbAltIcon from '@mui/icons-material/DoNotDisturbAlt';
 import FunctionsIcon from '@mui/icons-material/Functions';
+import InfoIcon from '@mui/icons-material/Info';
 import ViewHeadlineIcon from '@mui/icons-material/ViewHeadline';
 import {
   Box,
@@ -136,7 +137,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
 
   const debouncedUpdateMutation = useDebouncedCallback(
     updatePrimaryBudgetCategoryMutation,
-    500,
+    500
   );
 
   const handleDirectInputToggle = (enableDirectInput: boolean) => {
@@ -156,7 +157,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
 
     if (validationResult.hasErrors) {
       setDirectInputError(
-        validationResult.errors['directInput-amount']?.[0] || '',
+        validationResult.errors['directInput-amount']?.[0] || ''
       );
     } else {
       setDirectInputError('');
@@ -409,24 +410,36 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
             {categoryName}
           </Typography>
 
-        <ButtonGroup sx={{ mb: 1 }}>
-          <Button
-            variant={directInput ? 'contained' : 'outlined'}
-            size="small"
-            onClick={() => handleDirectInputToggle(true)}
-            startIcon={<FunctionsIcon />}
+          <ButtonGroup>
+            <Button
+              variant={directInput ? 'contained' : 'outlined'}
+              size="small"
+              onClick={() => handleDirectInputToggle(true)}
+              startIcon={<FunctionsIcon />}
+            >
+              {t('Lump Sum')}
+            </Button>
+            <Button
+              size="small"
+              variant={!directInput ? 'contained' : 'outlined'}
+              onClick={() => handleDirectInputToggle(false)}
+              startIcon={<ViewHeadlineIcon />}
+            >
+              {t('Line Item')}
+            </Button>
+          </ButtonGroup>
+        </Box>
+        {rightPanelContent && (
+          <IconButton
+            className="print-hidden"
+            onClick={() => {
+              rightPanelContent && setRightPanelContent(rightPanelContent);
+            }}
+            aria-label={t('Show additional info')}
           >
-            {t('Lump Sum')}
-          </Button>
-          <Button
-            size="small"
-            variant={!directInput ? 'contained' : 'outlined'}
-            onClick={() => handleDirectInputToggle(false)}
-            startIcon={<ViewHeadlineIcon />}
-          >
-            {t('Line Item')}
-          </Button>
-        </ButtonGroup>
+            <InfoIcon />
+          </IconButton>
+        )}
       </Box>
       <StyledCard>
         {directInput ? (
