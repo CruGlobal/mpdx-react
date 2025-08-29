@@ -9,6 +9,7 @@ import {
 } from '@mui/material';
 import { TFunction } from 'i18next';
 import { DateTime } from 'luxon';
+import { currencyFormat } from 'src/lib/intlFormat';
 import { ScheduleEnum, StatusEnum, TransferHistory } from '../../mockData';
 import { RenderCell } from '../TransferHistoryTable';
 import { chipStyle, iconMap } from './createTableRowHelper';
@@ -49,9 +50,8 @@ export const populateTransferHistoryRows = (
   const amount: RenderCell = ({ row }) => {
     return (
       <Typography variant="body2" noWrap>
-        {row.amount?.toLocaleString(locale, {
-          style: 'currency',
-          currency: 'USD',
+        {currencyFormat(row.amount ?? 0, 'USD', locale, {
+          showTrailingZeros: true,
         })}
       </Typography>
     );
@@ -118,11 +118,9 @@ export const populateTransferHistoryRows = (
 
   const note: RenderCell = ({ row }) => {
     return (
-      <Tooltip title={t(row.note ? row.note : 'N/A') as string}>
-        <Typography variant="body2" noWrap>
-          {row.note}
-        </Typography>
-      </Tooltip>
+      <Typography variant="body2" noWrap>
+        {row.note}
+      </Typography>
     );
   };
 

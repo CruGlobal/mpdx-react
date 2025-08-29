@@ -199,9 +199,12 @@ describe('TransferModal', () => {
       userEvent.click(getByRole('button', { name: /submit/i }));
 
       await waitFor(() => {
-        expect(mockEnqueue).toHaveBeenCalledWith('Transfer successful', {
-          variant: 'success',
-        });
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          'Transfer created successfully',
+          {
+            variant: 'success',
+          },
+        );
       });
     });
 
@@ -225,9 +228,12 @@ describe('TransferModal', () => {
       userEvent.click(submitButton);
 
       await waitFor(() => {
-        expect(mockEnqueue).toHaveBeenCalledWith('Transfer successful', {
-          variant: 'success',
-        });
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          'Transfer created successfully',
+          {
+            variant: 'success',
+          },
+        );
       });
     });
   });

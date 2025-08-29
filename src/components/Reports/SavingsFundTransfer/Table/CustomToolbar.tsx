@@ -35,8 +35,10 @@ export const CustomToolbar: React.FC<CustomToolbarProps> = ({
 
       <Tooltip title="Filters">
         <FilterPanelTrigger
-          render={(_, state) => (
+          render={(props, state) => (
             <ToolbarButton
+              {...props}
+              ref={props.ref as React.Ref<HTMLButtonElement>}
               color="primary"
               style={{
                 gridArea: '1 / 1',

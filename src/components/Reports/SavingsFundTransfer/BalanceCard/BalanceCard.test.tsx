@@ -63,8 +63,10 @@ describe('BalanceCard', () => {
     const { getByText, getByRole } = render(<Components />);
 
     expect(getByText('Staff Account Balance')).toBeInTheDocument();
+    expect(getByText('Current Balance')).toBeInTheDocument();
+    expect(getByText('Pending Balance')).toBeInTheDocument();
     expect(getByText('$15,000.00')).toBeInTheDocument();
-    expect(getByText('$17,500.00 (pending)')).toBeInTheDocument();
+    expect(getByText('$17,500.00')).toBeInTheDocument();
     expect(getByRole('button', { name: /transfer from/i })).toBeInTheDocument();
     expect(getByRole('button', { name: /transfer to/i })).toBeInTheDocument();
   });
@@ -137,11 +139,11 @@ describe('BalanceCard', () => {
       );
 
       expect(getByText('$1,234,567.89')).toBeInTheDocument();
-      expect(getByText('$123.45 (pending)')).toBeInTheDocument();
+      expect(getByText('$123.45')).toBeInTheDocument();
     });
 
     it('should handle zero balance and pending amounts', () => {
-      const { getByText, queryByText } = render(
+      const { getAllByText } = render(
         <Components
           fund={{
             ...defaultFund,
@@ -151,8 +153,7 @@ describe('BalanceCard', () => {
         />,
       );
 
-      expect(getByText('$0.00')).toBeInTheDocument();
-      expect(queryByText(/pending/i)).not.toBeInTheDocument();
+      expect(getAllByText('$0.00')).toHaveLength(2);
     });
 
     it('should handle negative balance amounts', () => {
@@ -166,8 +167,10 @@ describe('BalanceCard', () => {
         />,
       );
 
-      expect(getByText('-$500.00')).toBeInTheDocument();
-      expect(getByText('-$100.00 (pending)')).toBeInTheDocument();
+      expect(getByText('($500.00)')).toBeInTheDocument();
+      expect(getByText('($500.00)')).toHaveStyle('color: rgb(211, 47, 47)');
+      expect(getByText('($100.00)')).toBeInTheDocument();
+      expect(getByText('($100.00)')).not.toHaveStyle('color: rgb(211, 47, 47)');
     });
 
     it('should handle decimal precision correctly', () => {
@@ -182,7 +185,7 @@ describe('BalanceCard', () => {
       );
 
       expect(getByText('$1,234.57')).toBeInTheDocument();
-      expect(getByText('$98.76 (pending)')).toBeInTheDocument();
+      expect(getByText('$98.76')).toBeInTheDocument();
     });
   });
 
@@ -214,5 +217,23 @@ describe('BalanceCard', () => {
         transferTo: expect.any(String),
       },
     });
+  });
+
+  it('should disable transfer from button when pending balance is zero', async () => {
+    const { findByRole } = render(
+      <Components
+        fund={{
+          ...defaultFund,
+          balance: 100,
+          pending: 0,
+        }}
+      />,
+    );
+
+    const transferFromButton = await findByRole('button', {
+      name: /transfer from/i,
+    });
+
+    expect(transferFromButton).toBeDisabled();
   });
 });
