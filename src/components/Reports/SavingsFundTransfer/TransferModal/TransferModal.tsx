@@ -38,6 +38,7 @@ import {
   useCreateTransferMutation,
   useUpdateRecurringTransferMutation,
 } from '../TransferMutations.generated';
+import { useUpdatedAtContext } from '../UpdatedAtContext/UpdateAtContext';
 import { Fund, ScheduleEnum, TransferHistory } from '../mockData';
 import { TransferModalSelect } from './TransferModalSelect/TransferModalSelect';
 
@@ -106,6 +107,8 @@ export const TransferModal: React.FC<TransferModalProps> = ({
   const [createRecurringTransfer] = useCreateRecurringTransferMutation();
   const [updateRecurringTransfer] = useUpdateRecurringTransferMutation();
   const [createTransferMutation] = useCreateTransferMutation();
+
+  const { setUpdatedAt } = useUpdatedAtContext();
 
   const type = data.type || TransferTypeEnum.New;
 
@@ -189,6 +192,8 @@ export const TransferModal: React.FC<TransferModalProps> = ({
           },
         });
       }
+
+      setUpdatedAt();
 
       enqueueSnackbar(successMessage, {
         variant: 'success',

@@ -9,8 +9,11 @@ import {
 import { Box, Button, Card, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
+import { useUpdatedAt } from 'src/hooks/useUpdatedAt';
 import { currencyFormat } from 'src/lib/intlFormat';
+import theme from 'src/theme';
 import { TransferModalData } from '../TransferModal/TransferModal';
+import { useUpdatedAtContext } from '../UpdatedAtContext/UpdateAtContext';
 import { Fund, StaffSavingFundEnum } from '../mockData';
 import { ScreenOnly } from '../styledComponents/DisplayStyling';
 
@@ -28,11 +31,8 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
 
-  // will be taken from theme once mpga is merged
-  const staffAccountColor = '#F08020';
-  const staffConferenceSavingsColor = '#00C0D8';
-  const staffSavingsColor = '#007890';
-  const amountColor = '#00000061';
+  const { updatedAt } = useUpdatedAtContext();
+  const updatedAtLabel = useUpdatedAt(updatedAt);
 
   const title = `${fund.name} Balance`;
   const Icon =
@@ -43,10 +43,10 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
         : Savings;
   const iconBgColor =
     fund.type === StaffSavingFundEnum.StaffAccount
-      ? staffAccountColor
+      ? theme.palette.chartOrange.main
       : fund.type === StaffSavingFundEnum.StaffConferenceSavings
-        ? staffConferenceSavingsColor
-        : staffSavingsColor;
+        ? theme.palette.chartBlue.main
+        : theme.palette.chartBlueDark.main;
 
   const handleTransferFrom = () => {
     handleOpenTransferModal({
@@ -108,7 +108,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
           </Typography>
           <ScreenOnly>
             <Typography variant="body2" mt={0}>
-              {t('Updated 3 min ago')}
+              {updatedAtLabel ?? 'Not updated'}
             </Typography>
           </ScreenOnly>
         </Box>
@@ -116,16 +116,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
       <Box
         sx={{
           mt: 5,
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          rowGap: 0.25,
-          columnGap: 3,
-          alignItems: 'baseline',
-          '@media print': {
-            gridTemplateColumns: '1fr 1fr',
-            mt: 1,
-            fontSize: '12pt',
-          },
+          '@media print': { mt: 2 },
         }}
       >
         <Typography
@@ -134,14 +125,6 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
           sx={{ '@media print': { fontSize: '10pt' } }}
         >
           {t('Current Balance')}
-        </Typography>
-        <Typography
-          variant="body1"
-          color={amountColor}
-          mb={0}
-          sx={{ '@media print': { fontSize: '10pt' } }}
-        >
-          {t('Pending Balance')}
         </Typography>
 
         <Typography
@@ -155,28 +138,16 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
           })}
           {fund.balance < 0 ? ')' : ''}
         </Typography>
-
-        <Typography
-          variant="h5"
-          color={amountColor}
-          sx={{ fontSize: 'inherit' }}
-        >
-          {fund.pending < 0 ? '(' : ''}
-          {currencyFormat(Math.abs(fund.pending), 'USD', locale, {
-            showTrailingZeros: true,
-          })}
-          {fund.pending < 0 ? ')' : ''}
-        </Typography>
       </Box>
 
       <ScreenOnly
         sx={{
           alignItems: 'left',
-          mt: 3,
+          mt: 2,
           ml: 0,
         }}
       >
-        <Button onClick={handleTransferFrom} disabled={fund.pending <= 0}>
+        <Button onClick={handleTransferFrom} disabled={fund.balance <= 0}>
           <Outbox fontSize="small" sx={{ mr: 0.5 }} />
           {t('TRANSFER FROM')}
         </Button>

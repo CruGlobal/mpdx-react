@@ -98,7 +98,7 @@ describe('TransfersPage', () => {
     expect(getByText('Staff Conference Savings Balance')).toBeInTheDocument();
     expect(getByText('Staff Savings Balance')).toBeInTheDocument();
 
-    expect(getAllByText('$15,000.00').length).toBeGreaterThan(0);
+    expect(getAllByText('($316.00)').length).toBeGreaterThan(0);
     expect(getAllByText('$500.00').length).toBeGreaterThan(0);
     expect(getAllByText('$2,500.00').length).toBeGreaterThan(0);
   });
@@ -129,12 +129,12 @@ describe('TransfersPage', () => {
   it('should open transfer modal when balance card transfer button is clicked', async () => {
     const { getByRole, getByText, getAllByRole } = render(<Components />);
 
-    const transferButtons = getAllByRole('button', { name: /transfer/i });
+    const transferButtons = getAllByRole('button', { name: /transfer from/i });
     expect(transferButtons.length).toBeGreaterThan(0);
 
-    const firstTransferButton = transferButtons[0].closest('button');
-    expect(firstTransferButton).toBeTruthy();
-    userEvent.click(firstTransferButton!);
+    const lastTransferButton = transferButtons[transferButtons.length - 1];
+    expect(lastTransferButton).toBeTruthy();
+    userEvent.click(lastTransferButton!);
 
     await waitFor(() => {
       expect(getByRole('dialog')).toBeInTheDocument();
@@ -145,9 +145,9 @@ describe('TransfersPage', () => {
   it('should close transfer modal when close button is clicked', async () => {
     const { getByRole, queryByRole, getAllByRole } = render(<Components />);
 
-    const transferButtons = getAllByRole('button', { name: /transfer/i });
-    const firstTransferButton = transferButtons?.[0].closest('button');
-    userEvent.click(firstTransferButton!);
+    const transferButtons = getAllByRole('button', { name: /transfer from/i });
+    const lastTransferButton = transferButtons?.[transferButtons.length - 1];
+    userEvent.click(lastTransferButton!);
 
     await waitFor(() => {
       expect(getByRole('dialog')).toBeInTheDocument();
@@ -189,9 +189,9 @@ describe('TransfersPage', () => {
   it('should display transfer modal with correct type', async () => {
     const { getByRole, getAllByRole } = render(<Components />);
 
-    const transferButtons = getAllByRole('button', { name: /transfer/i });
-    const firstTransferButton = transferButtons[0].closest('button');
-    userEvent.click(firstTransferButton!);
+    const transferButtons = getAllByRole('button', { name: /transfer from/i });
+    const lastTransferButton = transferButtons[transferButtons.length - 1];
+    userEvent.click(lastTransferButton!);
 
     await waitFor(() => {
       const modal = getByRole('dialog');
@@ -205,7 +205,7 @@ describe('TransfersPage', () => {
     expect(toAccount).toBeInTheDocument();
 
     expect(
-      within(fromAccount).getByText(mockData.funds[0].name, {
+      within(fromAccount).getByText(mockData.funds[2].name, {
         selector: 'b',
       }),
     ).toBeInTheDocument();
