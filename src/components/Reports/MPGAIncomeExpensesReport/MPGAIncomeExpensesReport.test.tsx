@@ -16,14 +16,12 @@ const title = 'MPGA Report';
 
 const mockData = {
   ReportsStaffExpenses: {
-    __typename: 'Query',
     reportsStaffExpenses: {
-      __typename: 'StaffExpenses',
       accountId: '12345',
       name: 'Test Account',
     },
   },
-} as const;
+};
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
@@ -35,7 +33,6 @@ const TestComponent: React.FC = () => (
         onCall={mutationSpy}
       >
         <MPGAIncomeExpensesReport
-          accountId="12345"
           onNavListToggle={onNavListToggle}
           isNavListOpen={true}
           title={title}
