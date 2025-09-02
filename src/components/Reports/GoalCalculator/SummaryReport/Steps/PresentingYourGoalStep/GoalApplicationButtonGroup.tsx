@@ -4,6 +4,8 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useUpdateAccountPreferencesMutation } from 'src/components/Settings/preferences/accordions/UpdateAccountPreferences.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat';
 import { Goal } from '../../MpdGoal/MpdGoalTable';
 import { useGoalLineItems } from '../../MpdGoal/useGoalLineItems';
 
@@ -15,6 +17,7 @@ export const GoalApplicationButtonGroup: React.FC<
   GoalApplicationButtonGroupProps
 > = ({ goal }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
   const { enqueueSnackbar } = useSnackbar();
   const { overallTotal } = useGoalLineItems(goal);
   const [updateAccountPreferences, { loading }] =
@@ -34,9 +37,14 @@ export const GoalApplicationButtonGroup: React.FC<
         },
       },
       onCompleted: () => {
-        enqueueSnackbar(t('Saved successfully.'), {
-          variant: 'success',
-        });
+        enqueueSnackbar(
+          t('Successfully updated your monthly goal to {{formattedTotal}}!', {
+            formattedTotal: currencyFormat(overallTotal, 'USD', locale),
+          }),
+          {
+            variant: 'success',
+          }
+        );
       },
       onError: () => {
         enqueueSnackbar(t('Saving failed.'), {
@@ -55,26 +63,24 @@ export const GoalApplicationButtonGroup: React.FC<
         mb: 2,
       }}
     >
-      {!buttonsHidden && (
-        <>
-          <Button
-            variant="contained"
-            sx={{ mr: 2 }}
-            onClick={() => onSave()}
-            disabled={loading}
-            startIcon={loading ? <CircularProgress size={20} /> : undefined}
-          >
-            {loading ? t('Saving...') : t('Finish & Apply Goal')}
-          </Button>
-          <Button
-            variant="outlined"
-            color="primary"
-            onClick={() => setButtonsHidden(true)}
-          >
-            {t('Save Goal Without Applying')}
-          </Button>
-        </>
-      )}
-    </Box>
+      <Button
+        variant="contained"
+        onClick={() => {
+          onSave();
+          setButtonsHidden(true);
+        }}
+        disabled={loading}
+        startIcon={loading ? <CircularProgress size={20} /> : undefined}
+      >
+        {loading ? t('Saving...') : t('Finish & Apply Goal')}
+      </Button>
+      <Button
+        variant="outlined"
+        color="primary"
+        onClick={() => setButtonsHidden(true)}
+      >
+        {t('Save Goal Without Applying')}
+      </Button>
+    </Stack>
   );
 };

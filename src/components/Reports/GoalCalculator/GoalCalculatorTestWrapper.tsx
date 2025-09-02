@@ -4,7 +4,6 @@ import { SnackbarProvider } from 'notistack';
 import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { UpdateAccountPreferencesMutation } from 'src/components/Settings/preferences/accordions/UpdateAccountPreferences.generated';
 import { PrimaryBudgetCategoryEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { GoalCalculationQuery } from './Shared/GoalCalculation.generated';
@@ -32,18 +31,6 @@ export const goalCalculationMock = {
   },
 } satisfies DeepPartial<GoalCalculationQuery>;
 
-export const updateAccountPreferencesMock = {
-  updateAccountList: {
-    accountList: {
-      id: 'account-list-1',
-      name: 'Test Account List',
-      settings: {
-        monthlyGoal: 12000,
-      },
-    },
-  },
-} satisfies DeepPartial<UpdateAccountPreferencesMutation>;
-
 export const GoalCalculatorTestWrapper: React.FC<GoalCalculatorTestWrapper> = ({
   children,
   onCall,
@@ -60,11 +47,9 @@ export const GoalCalculatorTestWrapper: React.FC<GoalCalculatorTestWrapper> = ({
       <SnackbarProvider>
         <GqlMockedProvider<{ 
           GoalCalculation: GoalCalculationQuery;
-          UpdateAccountPreferences: UpdateAccountPreferencesMutation;
         }>
           mocks={{
             GoalCalculation: goalCalculationMock,
-            UpdateAccountPreferences: updateAccountPreferencesMock,
           }}
           onCall={onCall}
         >
