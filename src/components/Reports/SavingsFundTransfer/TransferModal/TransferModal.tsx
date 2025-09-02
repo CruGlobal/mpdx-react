@@ -39,6 +39,7 @@ import {
   useCreateTransferMutation,
   useUpdateRecurringTransferMutation,
 } from '../TransferMutations.generated';
+import { useUpdatedAtContext } from '../UpdatedAtContext/UpdateAtContext';
 import { ScheduleEnum, TransferHistory } from '../mockData';
 import { TransferModalSelect } from './TransferModalSelect/TransferModalSelect';
 
@@ -108,18 +109,9 @@ export const TransferModal: React.FC<TransferModalProps> = ({
   const [updateRecurringTransfer] = useUpdateRecurringTransferMutation();
   const [createTransferMutation] = useCreateTransferMutation();
 
-  const type = data.type || TransferTypeEnum.New;
+  const { setUpdatedAt } = useUpdatedAtContext();
 
-  const {
-    transferFrom,
-    transferTo,
-    amount,
-    schedule,
-    status,
-    transferDate,
-    endDate,
-    note,
-  } = data.transfer;
+  const type = data.type || TransferTypeEnum.New;
 
   const title =
     type === TransferTypeEnum.New
@@ -129,8 +121,18 @@ export const TransferModal: React.FC<TransferModalProps> = ({
   const handleSubmit = async (_values: TransferFormValues) => {
     setSubmitting(true);
 
-    const convertedTransferDate = _values.transferDate.toISO() ?? '';
-    const convertedEndDate = _values.endDate?.toISO() ?? '';
+    const {
+      transferFrom,
+      transferTo,
+      amount,
+      schedule,
+      transferDate,
+      endDate,
+      note,
+    } = _values;
+
+    const convertedTransferDate = transferDate.toISO() ?? '';
+    const convertedEndDate = endDate?.toISO() ?? '';
 
     const successMessage =
       type === TransferTypeEnum.New
@@ -149,9 +151,9 @@ export const TransferModal: React.FC<TransferModalProps> = ({
       if (isNew && !isOneTime) {
         await createRecurringTransfer({
           variables: {
-            amount: _values.amount,
-            sourceFundTypeName: _values.transferFrom,
-            destinationFundTypeName: _values.transferTo,
+            amount: amount,
+            sourceFundTypeName: transferFrom,
+            destinationFundTypeName: transferTo,
             recurringStart: convertedTransferDate,
             recurringEnd: convertedEndDate,
           },
@@ -161,10 +163,10 @@ export const TransferModal: React.FC<TransferModalProps> = ({
       if (isNew && isOneTime) {
         await createTransferMutation({
           variables: {
-            amount: _values.amount,
-            sourceFundTypeName: _values.transferFrom,
-            destinationFundTypeName: _values.transferTo,
-            description: _values.note,
+            amount: amount,
+            sourceFundTypeName: transferFrom,
+            destinationFundTypeName: transferTo,
+            description: note,
             //transferDate: convertedTransferDate,
           },
         });
@@ -174,7 +176,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
         await updateRecurringTransfer({
           variables: {
             id: data.transfer.id ?? '',
-            amount: _values.amount,
+            amount: amount,
             recurringStart: convertedTransferDate,
             recurringEnd: convertedEndDate,
           },
@@ -185,11 +187,13 @@ export const TransferModal: React.FC<TransferModalProps> = ({
         await updateRecurringTransfer({
           variables: {
             id: data.transfer.id ?? '',
-            amount: _values.amount,
+            amount: amount,
             recurringStart: convertedTransferDate,
           },
         });
       }
+
+      setUpdatedAt();
 
       enqueueSnackbar(successMessage, {
         variant: 'success',
@@ -208,14 +212,14 @@ export const TransferModal: React.FC<TransferModalProps> = ({
     <Modal title={title} isOpen={true} handleClose={handleClose} size="md">
       <Formik
         initialValues={{
-          transferFrom: transferFrom || '',
-          transferTo: transferTo || '',
-          amount: amount || 0,
-          schedule: schedule || ScheduleEnum.OneTime,
-          status: status || '',
-          transferDate: transferDate || getToday(),
-          endDate: endDate || null,
-          note: note || '',
+          transferFrom: data.transfer.transferFrom ?? '',
+          transferTo: data.transfer.transferTo ?? '',
+          amount: data.transfer.amount ?? 0,
+          schedule: data.transfer.schedule ?? ScheduleEnum.OneTime,
+          status: data.transfer.status ?? '',
+          transferDate: data.transfer.transferDate ?? getToday(),
+          endDate: data.transfer.endDate ?? null,
+          note: data.transfer.note ?? '',
         }}
         validationSchema={transferSchema}
         onSubmit={handleSubmit}
@@ -228,6 +232,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
             transferDate,
             endDate,
             amount,
+            note,
           },
           isSubmitting,
           isValid,

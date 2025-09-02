@@ -196,13 +196,13 @@ describe('TransfersPage', () => {
   });
 
   it('should render all balance cards with correct information', async () => {
-    const { findByText } = render(<Components />);
+    const { findByText, getAllByText } = render(<Components />);
 
     expect(await findByText('Primary Account Balance')).toBeInTheDocument();
     expect(await findByText('Savings Account Balance')).toBeInTheDocument();
 
-    expect(await findByText('$15,000.00')).toBeInTheDocument();
-    expect(await findByText('$25,000.00')).toBeInTheDocument();
+    expect(getAllByText('$15,000.00').length).toBeGreaterThan(0);
+    expect(getAllByText('$2,500.00').length).toBeGreaterThan(0);
   });
 
   it('should render cards and transfer history table', async () => {
@@ -255,13 +255,13 @@ describe('TransfersPage', () => {
     const { getByRole, getByText, findAllByRole } = render(<Components />);
 
     const transferButtons = await findAllByRole('button', {
-      name: /transfer/i,
+      name: /transfer from/i,
     });
     expect(transferButtons.length).toBeGreaterThan(0);
 
-    const firstTransferButton = transferButtons[0].closest('button');
-    expect(firstTransferButton).toBeTruthy();
-    userEvent.click(firstTransferButton!);
+    const lastTransferButton = transferButtons[transferButtons.length - 1];
+    expect(lastTransferButton).toBeTruthy();
+    userEvent.click(lastTransferButton!);
 
     await waitFor(() => {
       expect(getByRole('dialog')).toBeInTheDocument();
@@ -273,7 +273,7 @@ describe('TransfersPage', () => {
     const { getByRole, queryByRole, findAllByRole } = render(<Components />);
 
     const transferButtons = await findAllByRole('button', {
-      name: /transfer/i,
+      name: /transfer from/i,
     });
     const firstTransferButton = transferButtons?.[0].closest('button');
     userEvent.click(firstTransferButton!);
@@ -319,7 +319,7 @@ describe('TransfersPage', () => {
     const { getByRole, findAllByRole } = render(<Components />);
 
     const transferButtons = await findAllByRole('button', {
-      name: /transfer/i,
+      name: /transfer from/i,
     });
     const firstTransferButton = transferButtons[0].closest('button');
     userEvent.click(firstTransferButton!);

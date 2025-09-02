@@ -7,6 +7,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
+import { StatusEnum, mockData } from '../mockData';
 import { DeleteTransferModal } from './DeleteTransferModal';
 
 const mutationSpy = jest.fn();
@@ -24,13 +25,21 @@ jest.mock('notistack', () => ({
   },
 }));
 
+const mockTransfer = {
+  ...mockData[0],
+  status: StatusEnum.Ongoing,
+};
+
 const TestComponent: React.FC = () => {
   return (
     <SnackbarProvider>
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <GqlMockedProvider onCall={mutationSpy}>
-            <DeleteTransferModal handleClose={handleClose} />
+            <DeleteTransferModal
+              handleClose={handleClose}
+              transfer={mockTransfer}
+            />
           </GqlMockedProvider>
         </LocalizationProvider>
       </ThemeProvider>

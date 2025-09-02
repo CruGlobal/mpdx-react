@@ -33,6 +33,7 @@ import { PrintTable } from '../Table/PrintTable';
 import { TransferHistoryTable } from '../Table/TransferHistoryTable';
 import { DynamicTransferModal } from '../TransferModal/DynamicTransferModal';
 import { TransferModalData } from '../TransferModal/TransferModal';
+import { UpdatedAtProvider } from '../UpdatedAtContext/UpdateAtContext';
 import {
   FundTypeEnum,
   ScheduleEnum,
@@ -207,14 +208,16 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                 flexDirection: { xs: 'column', sm: 'row' },
               }}
             >
-              {funds.map((fund) => (
-                <BalanceCard
-                  fund={fund}
-                  key={fund.id}
-                  handleOpenTransferModal={handleOpenTransferModal}
-                  loading={fundsLoading}
-                />
-              ))}
+              <UpdatedAtProvider>
+                {funds.map((fund) => (
+                  <BalanceCard
+                    fund={fund}
+                    key={fund.id}
+                    handleOpenTransferModal={handleOpenTransferModal}
+                    loading={fundsLoading}
+                  />
+                ))}
+              </UpdatedAtProvider>
             </Box>
             <ScreenOnly sx={{ mt: 2, mb: 3 }}>
               <TransferHistoryTable
@@ -234,13 +237,15 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
             </PrintOnly>
           </Container>
         </Box>
-        {modalData && (
-          <DynamicTransferModal
-            handleClose={() => setModalData(null)}
-            data={modalData}
-            funds={funds}
-          />
-        )}
+        <UpdatedAtProvider>
+          {modalData && (
+            <DynamicTransferModal
+              handleClose={() => setModalData(null)}
+              data={modalData}
+              funds={funds}
+            />
+          )}
+        </UpdatedAtProvider>
       </Box>
     </>
   );

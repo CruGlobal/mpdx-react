@@ -4,12 +4,19 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { StaffSavingFundProvider } from '../../StaffSavingFund/StaffSavingFundContext';
 import { TransferTypeEnum } from '../Helper/TransferHistoryEnum';
+import {
+  CreateRecurringTransferMutation,
+  CreateTransferMutation,
+  UpdateRecurringTransferMutation,
+} from '../TransferMutations.generated';
+import { UpdatedAtProvider } from '../UpdatedAtContext/UpdateAtContext';
 import { ScheduleEnum, fundsMock } from '../mockData';
 import { TransferModal, TransferModalData } from './TransferModal';
 
@@ -65,16 +72,29 @@ const Components = ({
     <ThemeProvider theme={theme}>
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <TestRouter router={router}>
-          <GqlMockedProvider onCall={mutationSpy}>
+          <GqlMockedProvider<{
+            createRecurringTransfer: CreateRecurringTransferMutation;
+            createTransfer: CreateTransferMutation;
+            updateRecurringTransfer: UpdateRecurringTransferMutation;
+          }>
+            onCall={({ operation }) =>
+              mutationSpy({
+                operationName: operation.operationName,
+                variables: operation.variables,
+              })
+            }
+          >
             <StaffSavingFundProvider>
-              <TransferModal
-                data={{
-                  type,
-                  transfer,
-                }}
-                funds={fundsMock}
-                handleClose={handleClose}
-              />
+              <UpdatedAtProvider>
+                <TransferModal
+                  data={{
+                    type,
+                    transfer,
+                  }}
+                  funds={fundsMock}
+                  handleClose={handleClose}
+                />
+              </UpdatedAtProvider>
             </StaffSavingFundProvider>
           </GqlMockedProvider>
         </TestRouter>
@@ -372,6 +392,155 @@ describe('TransferModal', () => {
       userEvent.click(getByRole('radio', { name: /annually/i }));
       await waitFor(() => {
         expect(getByRole('radio', { name: /annually/i })).toBeChecked();
+      });
+    });
+  });
+
+  describe('Mutations', () => {
+    it('should create a one-time transfer', async () => {
+      const { getByRole } = render(<Components />);
+
+      const fromAccount = getByRole('combobox', { name: /from account/i });
+      const toAccount = getByRole('combobox', { name: /to account/i });
+      const amountField = getByRole('spinbutton', { name: /amount/i });
+      const submitButton = getByRole('button', { name: /submit/i });
+
+      userEvent.click(fromAccount);
+      userEvent.click(getByRole('option', { name: /staff account/i }));
+
+      userEvent.click(toAccount);
+      userEvent.click(getByRole('option', { name: /staff savings/i }));
+
+      userEvent.clear(amountField);
+      userEvent.type(amountField, '100');
+
+      userEvent.click(submitButton);
+
+      await waitFor(() => {
+        expect(mutationSpy).toHaveBeenCalledWith(
+          expect.objectContaining({
+            operationName: 'CreateTransfer',
+            variables: {
+              amount: 100,
+              sourceFundTypeName: '1',
+              destinationFundTypeName: '2',
+              description: '',
+            },
+          }),
+        );
+      });
+    });
+
+    it('should create a recurring transfer', async () => {
+      const { getByRole, getByLabelText } = render(<Components />);
+
+      const fromAccount = getByRole('combobox', { name: /from account/i });
+      const toAccount = getByRole('combobox', { name: /to account/i });
+      const amountField = getByRole('spinbutton', { name: /amount/i });
+      const submitButton = getByRole('button', { name: /submit/i });
+
+      userEvent.click(fromAccount);
+      userEvent.click(getByRole('option', { name: /staff account/i }));
+
+      userEvent.click(toAccount);
+      userEvent.click(getByRole('option', { name: /staff savings/i }));
+
+      userEvent.clear(amountField);
+      userEvent.type(amountField, '100');
+
+      userEvent.click(getByRole('radio', { name: /monthly/i }));
+
+      const transferDate = getByLabelText(/transfer date/i);
+      const endDate = getByLabelText(/end date/i);
+
+      userEvent.clear(transferDate);
+      userEvent.type(transferDate, '12/01/2024');
+      expect(transferDate).toHaveValue('12/01/2024');
+      userEvent.tab();
+
+      userEvent.clear(endDate);
+      userEvent.type(endDate, '12/01/2025');
+      expect(endDate).toHaveValue('12/01/2025');
+
+      userEvent.tab();
+
+      userEvent.click(submitButton);
+
+      await waitFor(() => {
+        expect(mutationSpy).toHaveBeenCalledWith(
+          expect.objectContaining({
+            operationName: 'CreateRecurringTransfer',
+            variables: {
+              amount: 100,
+              sourceFundTypeName: '1',
+              destinationFundTypeName: '2',
+              recurringStart: '2024-12-01T00:00:00.000+00:00',
+              recurringEnd: '2025-12-01T00:00:00.000+00:00',
+            },
+          }),
+        );
+      });
+    });
+
+    it('should update a transfer', async () => {
+      const dataWithValues: TransferModalData['transfer'] = {
+        id: 'transfer-id',
+        transferFrom: 'Primary',
+        transferTo: 'Savings',
+        amount: 500,
+        schedule: ScheduleEnum.Monthly,
+        transferDate: DateTime.fromISO('2024-11-01'),
+        endDate: DateTime.fromISO('2025-11-01'),
+        note: 'Test note',
+      };
+
+      const { getByRole, getByLabelText } = render(
+        <Components transfer={dataWithValues} type={TransferTypeEnum.Edit} />,
+      );
+
+      const amountField = getByRole('spinbutton', { name: /amount/i });
+      const submitButton = getByRole('button', { name: /submit/i });
+
+      userEvent.clear(amountField);
+      userEvent.type(amountField, '600');
+
+      const transferDate = getByLabelText(/transfer date/i);
+      const endDate = getByLabelText(/end date/i);
+
+      userEvent.clear(transferDate);
+      userEvent.type(transferDate, '12/01/2024');
+      expect(transferDate).toHaveValue('12/01/2024');
+      userEvent.tab();
+
+      userEvent.clear(endDate);
+      userEvent.type(endDate, '12/01/2025');
+      expect(endDate).toHaveValue('12/01/2025');
+
+      userEvent.tab();
+
+      userEvent.click(submitButton);
+
+      await waitFor(() => {
+        expect(mutationSpy).toHaveBeenCalledWith(
+          expect.objectContaining({
+            operationName: 'UpdateRecurringTransfer',
+            variables: {
+              id: 'transfer-id',
+              amount: 600,
+              recurringStart: '2024-12-01T00:00:00.000+00:00',
+              recurringEnd: '2025-12-01T00:00:00.000+00:00',
+            },
+          }),
+        );
+      });
+
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          'Transfer updated successfully',
+          {
+            variant: 'success',
+          },
+        );
       });
     });
   });
