@@ -45,7 +45,7 @@ export const GoalCalculatorTestWrapper: React.FC<GoalCalculatorTestWrapper> = ({
       }}
     >
       <SnackbarProvider>
-        <GqlMockedProvider<{ 
+        <GqlMockedProvider<{
           GoalCalculation: GoalCalculationQuery;
         }>
           mocks={{

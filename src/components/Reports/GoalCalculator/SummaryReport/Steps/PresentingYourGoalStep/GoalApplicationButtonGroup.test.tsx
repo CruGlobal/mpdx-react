@@ -30,14 +30,14 @@ describe('GoalApplicationButtonGroup', () => {
     const { getByRole } = render(
       <GoalCalculatorTestWrapper>
         <GoalApplicationButtonGroup goal={mockGoal} />
-      </GoalCalculatorTestWrapper>
+      </GoalCalculatorTestWrapper>,
     );
 
     expect(
-      getByRole('button', { name: /finish & apply goal/i })
+      getByRole('button', { name: /finish & apply goal/i }),
     ).toBeInTheDocument();
     expect(
-      getByRole('button', { name: /save goal without applying/i })
+      getByRole('button', { name: /save goal without applying/i }),
     ).toBeInTheDocument();
   });
 
@@ -45,7 +45,7 @@ describe('GoalApplicationButtonGroup', () => {
     const { queryByRole, getByRole } = render(
       <GoalCalculatorTestWrapper>
         <GoalApplicationButtonGroup goal={mockGoal} />
-      </GoalCalculatorTestWrapper>
+      </GoalCalculatorTestWrapper>,
     );
 
     const saveWithoutApplyingButton = getByRole('button', {
@@ -53,7 +53,7 @@ describe('GoalApplicationButtonGroup', () => {
     });
     userEvent.click(saveWithoutApplyingButton);
     expect(
-      queryByRole('button', { name: /finish & apply goal/i })
+      queryByRole('button', { name: /finish & apply goal/i }),
     ).not.toBeInTheDocument();
     expect(saveWithoutApplyingButton).not.toBeInTheDocument();
   });
@@ -63,7 +63,7 @@ describe('GoalApplicationButtonGroup', () => {
     const { getByRole, findByText, queryByRole } = render(
       <GoalCalculatorTestWrapper onCall={mutationSpy}>
         <GoalApplicationButtonGroup goal={mockGoal} />
-      </GoalCalculatorTestWrapper>
+      </GoalCalculatorTestWrapper>,
     );
 
     const finishButton = getByRole('button', {
@@ -73,7 +73,7 @@ describe('GoalApplicationButtonGroup', () => {
     userEvent.click(finishButton);
 
     expect(
-      queryByRole('button', { name: /finish & apply goal/i })
+      queryByRole('button', { name: /finish & apply goal/i }),
     ).not.toBeInTheDocument();
 
     await waitFor(() => {
@@ -89,7 +89,7 @@ describe('GoalApplicationButtonGroup', () => {
     });
 
     expect(
-      await findByText(/Successfully updated your monthly goal to \$14,575!/i)
+      await findByText(/Successfully updated your monthly goal to \$14,575!/i),
     ).toBeInTheDocument();
   });
 });

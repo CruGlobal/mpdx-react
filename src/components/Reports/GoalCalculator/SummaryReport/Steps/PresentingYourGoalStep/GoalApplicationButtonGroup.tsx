@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, CircularProgress } from '@mui/material';
+import { Button, CircularProgress, Stack } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useUpdateAccountPreferencesMutation } from 'src/components/Settings/preferences/accordions/UpdateAccountPreferences.generated';
@@ -43,22 +43,21 @@ export const GoalApplicationButtonGroup: React.FC<
           }),
           {
             variant: 'success',
-          }
+          },
         );
-      },
-      onError: () => {
-        enqueueSnackbar(t('Saving failed.'), {
-          variant: 'error',
-        });
       },
     });
   };
 
+  if (buttonsHidden) {
+    return null;
+  }
+
   return (
-    <Box
+    <Stack
+      direction="row"
+      spacing={2}
       sx={{
-        display: 'flex',
-        justifyContent: 'flex-start',
         mt: 4,
         mb: 2,
       }}
