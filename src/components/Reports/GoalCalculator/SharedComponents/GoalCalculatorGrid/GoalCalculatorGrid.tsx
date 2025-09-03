@@ -24,6 +24,7 @@ import {
   GridValidRowModel,
 } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
+import * as yup from 'yup';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useDebouncedCallback } from 'src/hooks/useDebounce';
 import { useLocale } from 'src/hooks/useLocale';
@@ -37,7 +38,6 @@ import {
   useUpdateSubBudgetCategoryMutation,
 } from './GoalCalculatorGrid.graphql.generated';
 import { StyledGrid } from './StyledGrid';
-import { validateDirectInput, validateRowData } from './gridErrorHelpers';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
@@ -54,6 +54,27 @@ interface GoalCalculatorGridProps {
   rightPanelContent?: JSX.Element;
   promptText?: string;
 }
+
+// Yup validation schemas
+const directInputSchema = yup.object({
+  amount: yup
+    .number()
+    .min(0, 'Amount must be positive')
+    .required('Amount is required'),
+});
+
+const subBudgetCategorySchema = yup.object({
+  label: yup
+    .string()
+    .trim()
+    .min(1, 'Label is required')
+    .max(100, 'Label must be less than 100 characters')
+    .required('Label is required'),
+  amount: yup
+    .number()
+    .min(0, 'Amount must be positive')
+    .required('Amount is required'),
+});
 
 export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   category,
@@ -175,15 +196,15 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
     const numericValue =
       typeof value === 'string' ? parseFloat(value) || 0 : value;
     setInputValue(stringValue);
-    const validationResult = validateDirectInput(numericValue);
 
-    if (validationResult.hasErrors) {
-      setDirectInputError(
-        validationResult.errors['directInput-amount']?.[0] || ''
-      );
-    } else {
+    try {
+      directInputSchema.validateSync({ amount: numericValue });
       setDirectInputError('');
       debouncedUpdateMutation(numericValue);
+    } catch (error) {
+      if (error instanceof yup.ValidationError) {
+        setDirectInputError(error.message);
+      }
     }
   };
 
@@ -300,64 +321,68 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
     const rowId = newRow.id as string;
     const label = newRow.label as string;
     const amount = newRow.amount as number;
-    const validationResult = validateRowData(rowId, label, amount);
 
-    if (validationResult.hasErrors) {
-      setCellErrors((prev) => ({
-        ...prev,
-        ...validationResult.errors,
-      }));
-      return newRow;
+    try {
+      subBudgetCategorySchema.validateSync({ label, amount });
+
+      // Clear any existing errors for this row
+      setCellErrors((prev) => {
+        const updated = { ...prev };
+        delete updated[`${rowId}-label`];
+        delete updated[`${rowId}-amount`];
+        return updated;
+      });
+
+      updateSubBudgetCategory({
+        variables: {
+          input: {
+            accountListId,
+            attributes: {
+              id: newRow.id as string,
+              label: newRow.label as string,
+              amount: newRow.amount as number,
+            },
+          },
+        },
+        optimisticResponse: {
+          updateSubBudgetCategory: {
+            __typename: 'SubBudgetCategoryUpdateMutationPayload',
+            subBudgetCategory: {
+              __typename: 'SubBudgetCategory',
+              id: newRow.id as string,
+              label: newRow.label as string,
+              amount: newRow.amount as number,
+            },
+          },
+        },
+        update: (cache, { data }) => {
+          const updatedSubCategory =
+            data?.updateSubBudgetCategory?.subBudgetCategory;
+          if (updatedSubCategory) {
+            cache.writeFragment({
+              id: `SubBudgetCategory:${updatedSubCategory.id}`,
+              fragment: gql`
+                fragment UpdateSubBudgetCategory on SubBudgetCategory {
+                  id
+                  label
+                  amount
+                  category
+                }
+              `,
+              data: updatedSubCategory,
+            });
+          }
+        },
+      });
+    } catch (error) {
+      if (error instanceof yup.ValidationError) {
+        // Set validation errors
+        setCellErrors((prev) => ({
+          ...prev,
+          [`${rowId}-${error.path}`]: [error.message],
+        }));
+      }
     }
-
-    setCellErrors((prev) => {
-      const updated = { ...prev };
-      delete updated[`${rowId}-label`];
-      delete updated[`${rowId}-amount`];
-      return updated;
-    });
-
-    updateSubBudgetCategory({
-      variables: {
-        input: {
-          accountListId,
-          attributes: {
-            id: newRow.id as string,
-            label: newRow.label as string,
-            amount: newRow.amount as number,
-          },
-        },
-      },
-      optimisticResponse: {
-        updateSubBudgetCategory: {
-          __typename: 'SubBudgetCategoryUpdateMutationPayload',
-          subBudgetCategory: {
-            __typename: 'SubBudgetCategory',
-            id: newRow.id as string,
-            label: newRow.label as string,
-            amount: newRow.amount as number,
-          },
-        },
-      },
-      update: (cache, { data }) => {
-        const updatedSubCategory =
-          data?.updateSubBudgetCategory?.subBudgetCategory;
-        if (updatedSubCategory) {
-          cache.writeFragment({
-            id: `SubBudgetCategory:${updatedSubCategory.id}`,
-            fragment: gql`
-              fragment UpdateSubBudgetCategory on SubBudgetCategory {
-                id
-                label
-                amount
-                category
-              }
-            `,
-            data: updatedSubCategory,
-          });
-        }
-      },
-    });
 
     return newRow;
   };
