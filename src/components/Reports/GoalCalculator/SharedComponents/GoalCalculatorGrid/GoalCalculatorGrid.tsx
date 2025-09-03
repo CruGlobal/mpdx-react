@@ -123,19 +123,21 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
         const updatedCategory =
           data?.updatePrimaryBudgetCategory?.primaryBudgetCategory;
         if (updatedCategory) {
-          cache.writeFragment({
-            id: `PrimaryBudgetCategory:${category.id}`,
-            fragment: gql`
-              fragment UpdatePrimaryBudgetCategory on PrimaryBudgetCategory {
-                id
-                directInput
-              }
-            `,
-            data: {
-              id: category.id,
-              directInput: value,
+          cache.updateFragment(
+            {
+              id: `PrimaryBudgetCategory:${category.id}`,
+              fragment: gql`
+                fragment UpdatePrimaryBudgetCategory on PrimaryBudgetCategory {
+                  id
+                  directInput
+                }
+              `,
             },
-          });
+            (data) => ({
+              ...data,
+              directInput: value,
+            })
+          );
         }
       },
     });
@@ -209,28 +211,32 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
       update: (cache, { data }) => {
         const newItem = data?.createSubBudgetCategory?.subBudgetCategory;
         if (newItem) {
-          cache.modify({
-            id: `PrimaryBudgetCategory:${category.id}`,
-            fields: {
-              subBudgetCategories(existingRefs = []) {
-                const newSubCategoryRef = cache.writeFragment({
-                  data: {
-                    ...newItem,
-                    category: null,
-                  },
-                  fragment: gql`
-                    fragment NewSubBudgetCategory on SubBudgetCategory {
-                      id
-                      label
-                      amount
-                      category
-                    }
-                  `,
-                });
-                return [...existingRefs, newSubCategoryRef];
-              },
+          cache.updateFragment(
+            {
+              id: `PrimaryBudgetCategory:${category.id}`,
+              fragment: gql`
+                fragment UpdateSubBudgetCategories on PrimaryBudgetCategory {
+                  id
+                  subBudgetCategories {
+                    id
+                    label
+                    amount
+                    category
+                  }
+                }
+              `,
             },
-          });
+            (data) => ({
+              ...data,
+              subBudgetCategories: [
+                ...(data?.subBudgetCategories || []),
+                {
+                  ...newItem,
+                  category: null,
+                },
+              ],
+            })
+          );
         }
       },
     });
