@@ -142,31 +142,11 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
         updatePrimaryBudgetCategory: {
           __typename: 'PrimaryBudgetCategoryUpdateMutationPayload',
           primaryBudgetCategory: {
-            ...category,
+            __typename: 'PrimaryBudgetCategory',
+            id: category.id,
             directInput: value,
           },
         },
-      },
-      update: (cache, { data }) => {
-        const updatedCategory =
-          data?.updatePrimaryBudgetCategory?.primaryBudgetCategory;
-        if (updatedCategory) {
-          cache.updateFragment(
-            {
-              id: `PrimaryBudgetCategory:${category.id}`,
-              fragment: gql`
-                fragment UpdatePrimaryBudgetCategory on PrimaryBudgetCategory {
-                  id
-                  directInput
-                }
-              `,
-            },
-            (data) => ({
-              ...data,
-              directInput: value,
-            })
-          );
-        }
       },
     });
   };
@@ -287,29 +267,11 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
         },
       },
       update: (cache, { data }) => {
-        const deletedId = data?.deleteSubBudgetCategory?.id;
-        if (deletedId) {
-          cache.updateFragment(
-            {
-              id: `PrimaryBudgetCategory:${category.id}`,
-              fragment: gql`
-                fragment UpdateSubBudgetCategories on PrimaryBudgetCategory {
-                  id
-                  subBudgetCategories {
-                    ...NewSubBudgetCategory
-                  }
-                }
-                ${NewSubBudgetCategoryFragmentDoc}
-              `,
-              fragmentName: 'UpdateSubBudgetCategories',
-            },
-            (data) => ({
-              ...data,
-              subBudgetCategories: data.subBudgetCategories.filter(
-                (item) => item.id !== deletedId
-              ),
-            })
-          );
+        if (data?.deleteSubBudgetCategory?.id) {
+          cache.evict({
+            id: `SubBudgetCategory:${data.deleteSubBudgetCategory.id}`,
+          });
+          cache.gc();
         }
       },
     });
@@ -340,9 +302,9 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
           input: {
             accountListId,
             attributes: {
-              id: newRow.id as string,
-              label: newRow.label as string,
-              amount: newRow.amount as number,
+              id: rowId,
+              label,
+              amount,
             },
           },
         },
@@ -351,29 +313,11 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
             __typename: 'SubBudgetCategoryUpdateMutationPayload',
             subBudgetCategory: {
               __typename: 'SubBudgetCategory',
-              id: newRow.id as string,
-              label: newRow.label as string,
-              amount: newRow.amount as number,
+              id: rowId,
+              label,
+              amount,
             },
           },
-        },
-        update: (cache, { data }) => {
-          const updatedSubCategory =
-            data?.updateSubBudgetCategory?.subBudgetCategory;
-          if (updatedSubCategory) {
-            cache.writeFragment({
-              id: `SubBudgetCategory:${updatedSubCategory.id}`,
-              fragment: gql`
-                fragment UpdateSubBudgetCategory on SubBudgetCategory {
-                  id
-                  label
-                  amount
-                  category
-                }
-              `,
-              data: updatedSubCategory,
-            });
-          }
         },
       });
     } catch (error) {
