@@ -1,6 +1,5 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { PrimaryBudgetCategory } from 'src/graphql/types.generated';
 import { getPrimaryCategoryRightPanel } from '../RightPanels/rightPanels';
 import { useGoalCalculator } from '../Shared/GoalCalculatorContext';
 import { GoalCalculatorLayout } from '../Shared/GoalCalculatorLayout';
@@ -31,7 +30,7 @@ export const SettingsStep: React.FC = () => {
           {specialFamilyPrimaryBudgetCategories?.map((category) => (
             <GoalCalculatorSection key={category.id}>
               <GoalCalculatorGrid
-                category={category as PrimaryBudgetCategory}
+                category={category}
                 rightPanelContent={
                   getPrimaryCategoryRightPanel(category.category) ?? undefined
                 }
