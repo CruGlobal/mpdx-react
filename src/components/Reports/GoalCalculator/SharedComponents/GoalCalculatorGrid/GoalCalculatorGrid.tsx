@@ -99,7 +99,9 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   );
 
   const totalAmount = gridData.reduce((sum, item) => sum + item.amount, 0);
-  const [cellErrors, setCellErrors] = useState<Record<string, string>>({});
+  const [cellErrors, setCellErrors] = useState<
+    Record<string, string | undefined>
+  >({});
   const [directInputError, setDirectInputError] = useState<string>('');
   const [inputValue, setInputValue] = useState<string>('');
   const [updatePrimaryBudgetCategory] =
