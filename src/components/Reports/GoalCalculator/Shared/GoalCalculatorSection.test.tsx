@@ -21,7 +21,7 @@ const RightPanel: React.FC = () => {
 };
 
 const TestComponent: React.FC<Partial<GoalCalculatorSectionProps>> = (
-  props,
+  props
 ) => (
   <TestRouter>
     <ThemeProvider theme={theme}>
@@ -40,9 +40,12 @@ const TestComponent: React.FC<Partial<GoalCalculatorSectionProps>> = (
 );
 
 describe('GoalCalculatorSection', () => {
-  it('renders the header with the subtitle', () => {
-    const { getByText } = render(<TestComponent />);
+  it('renders the header with the title and subtitle', () => {
+    const { getByRole, getByText } = render(
+      <TestComponent title={'Section Title'} />
+    );
 
+    expect(getByRole('heading', { name: 'Section Title' })).toBeInTheDocument();
     expect(getByText('Section Subtitle')).toBeInTheDocument();
   });
 
@@ -50,7 +53,7 @@ describe('GoalCalculatorSection', () => {
     const { queryByRole } = render(<TestComponent />);
 
     expect(
-      queryByRole('button', { name: 'Show additional info' }),
+      queryByRole('button', { name: 'Show additional info' })
     ).not.toBeInTheDocument();
   });
 

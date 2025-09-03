@@ -32,7 +32,7 @@ export const GoalCalculatorSection: React.FC<GoalCalculatorSectionProps> = ({
       <Box pb={4}>
         <Stack direction="row" justifyContent="space-between">
           <Typography variant="h6">
-            {title || null}
+            {title}
             {rightPanelContent && (
               <IconButton
                 className="print-hidden"
