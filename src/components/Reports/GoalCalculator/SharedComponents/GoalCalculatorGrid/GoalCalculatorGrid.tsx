@@ -79,6 +79,9 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   const [inputValue, setInputValue] = useState<string>('');
   const [updatePrimaryBudgetCategory] =
     useUpdatePrimaryBudgetCategoryMutation();
+  const [localDirectInput, setLocalDirectInput] = useState<boolean | null>(
+    null
+  );
   const [updateSubBudgetCategory] = useUpdateSubBudgetCategoryMutation();
   const [createSubBudgetCategory] = useCreateSubBudgetCategoryMutation();
   const [deleteSubBudgetCategory] = useDeleteSubBudgetCategoryMutation();
@@ -88,11 +91,14 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
     { id: 'total', label: 'Total', amount: totalAmount },
   ];
 
-  const directInput = !!category.directInput;
+  const directInput =
+    localDirectInput !== null ? localDirectInput : !!category.directInput;
   const lumpSumAmount = category.directInput || 0;
 
   useEffect(() => {
-    setInputValue(lumpSumAmount.toString());
+    if (directInput) {
+      setInputValue(lumpSumAmount.toString());
+    }
   }, [lumpSumAmount]);
 
   const updatePrimaryBudgetCategoryMutation = (value: number | null) => {
@@ -141,8 +147,18 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   );
 
   const handleDirectInputToggle = (enableDirectInput: boolean) => {
-    const valueToSet = enableDirectInput ? lumpSumAmount || totalAmount : null;
+    let valueToSet: number | null = null;
 
+    if (enableDirectInput) {
+      const existingValue = inputValue ? parseFloat(inputValue) : null;
+      valueToSet = existingValue || totalAmount;
+
+      if (!inputValue) {
+        setInputValue(totalAmount.toString());
+      }
+    }
+
+    setLocalDirectInput(enableDirectInput);
     setCellErrors({});
     setDirectInputError('');
     updatePrimaryBudgetCategoryMutation(valueToSet);
@@ -449,7 +465,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
               size="small"
               label={t('Total')}
               type="number"
-              value={inputValue || lumpSumAmount}
+              value={inputValue}
               onChange={(e) => handleLumpSumChange(e.target.value)}
               error={!!directInputError}
               helperText={directInputError}
