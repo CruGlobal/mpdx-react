@@ -1,6 +1,5 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { getPrimaryCategoryRightPanel } from '../RightPanels/rightPanels';
 import { useGoalCalculator } from '../Shared/GoalCalculatorContext';
 import { GoalCalculatorLayout } from '../Shared/GoalCalculatorLayout';
 import { GoalCalculatorSection } from '../Shared/GoalCalculatorSection';
@@ -28,13 +27,7 @@ export const SettingsStep: React.FC = () => {
             <InformationCategory />
           </GoalCalculatorSection>
           {specialFamilyPrimaryBudgetCategories?.map((category) => (
-            <GoalCalculatorGrid
-              key={category.id}
-              category={category}
-              rightPanelContent={
-                getPrimaryCategoryRightPanel(category.category) ?? undefined
-              }
-            />
+            <GoalCalculatorGrid key={category.id} category={category} />
           ))}
         </SectionPage>
       }

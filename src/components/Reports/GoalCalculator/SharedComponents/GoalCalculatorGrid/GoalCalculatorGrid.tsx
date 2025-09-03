@@ -27,6 +27,7 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useDebouncedCallback } from 'src/hooks/useDebounce';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { getPrimaryCategoryRightPanel } from '../../RightPanels/rightPanels';
 import { BudgetFamilyFragment } from '../../Shared/GoalCalculation.generated';
 import { GoalCalculatorSection } from '../../Shared/GoalCalculatorSection';
 import {
@@ -51,7 +52,6 @@ const ErrorCell = styled(Box)(({ theme }) => ({
 interface GoalCalculatorGridProps {
   category: BudgetFamilyFragment['primaryBudgetCategories'][number];
   promptText?: string;
-  rightPanelContent?: JSX.Element;
 }
 
 // Yup validation schemas
@@ -78,7 +78,6 @@ const subBudgetCategorySchema = yup.object({
 export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   category,
   promptText,
-  rightPanelContent,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -432,7 +431,9 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
           </Button>
         </ButtonGroup>
       }
-      rightPanelContent={rightPanelContent}
+      rightPanelContent={
+        getPrimaryCategoryRightPanel(category.category) ?? undefined
+      }
     >
       {promptText && <Typography sx={{ mb: 2 }}>{t(promptText)}</Typography>}
       <Box
