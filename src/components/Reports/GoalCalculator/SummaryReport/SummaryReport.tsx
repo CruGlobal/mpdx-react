@@ -20,10 +20,11 @@ export const SummaryReport: React.FC = () => {
   const { selectedReport } = useGoalCalculator();
   const theme = useTheme();
 
-  const { expenses, ministryExpensesTotal, loading } = useReportExpenses();
+  const { ministryExpenses, ministryExpensesTotal, loading } =
+    useReportExpenses();
 
   const goal = useMemo(() => {
-    if (!expenses) {
+    if (!ministryExpenses) {
       return null;
     }
     return {
@@ -31,10 +32,10 @@ export const SummaryReport: React.FC = () => {
       taxesPercentage: 0.17,
       rothContributionPercentage: 0.04,
       traditionalContributionPercentage: 0.06,
-      ministryExpenses: expenses,
+      ministryExpenses: ministryExpenses,
       ministryExpensesTotal,
     };
-  }, [expenses]);
+  }, [ministryExpenses]);
 
   if (loading) {
     return <Loading loading />;

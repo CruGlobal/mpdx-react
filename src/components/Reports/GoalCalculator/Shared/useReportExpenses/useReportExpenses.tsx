@@ -1,10 +1,7 @@
-import { useRouter } from 'next/router';
 import { useMemo } from 'react';
 import { PrimaryBudgetCategoryEnum } from 'src/graphql/types.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
-import { getQueryParam } from 'src/utils/queryParam';
-import { useGoalCalculationQuery } from '../../SummaryReport/GoalCalculation.generated';
-import { getMinistryExpensesTotal, getPrimaryTotal } from './helpers';
+import { useGoalCalculator } from '../GoalCalculatorContext';
+import { getFamilyTotal, getPrimaryTotal } from './helpers';
 
 export interface Goal {
   netMonthlySalary: number;
@@ -25,18 +22,11 @@ export interface MinistryExpenses {
 }
 
 export const useReportExpenses = () => {
-  const accountListId = useAccountListId() ?? '';
-  const { query } = useRouter();
-  const goalCalculationId = getQueryParam(query, 'goalCalculationId') ?? '';
+  const {
+    goalCalculationResult: { data: goalData, loading },
+  } = useGoalCalculator();
 
-  const { data: goalData, loading } = useGoalCalculationQuery({
-    variables: {
-      accountListId,
-      goalCalculationId,
-    },
-  });
-
-  const expenses: MinistryExpenses | null = useMemo(() => {
+  const ministryExpenses: MinistryExpenses | null = useMemo(() => {
     if (!goalData?.goalCalculation) {
       return null;
     }
@@ -60,11 +50,11 @@ export const useReportExpenses = () => {
     if (!goalData?.goalCalculation?.ministryFamily) {
       return 0;
     }
-    return getMinistryExpensesTotal(goalData.goalCalculation.ministryFamily);
+    return getFamilyTotal(goalData.goalCalculation.ministryFamily);
   }, [goalData]);
 
   return {
-    expenses,
+    ministryExpenses,
     ministryExpensesTotal,
     loading,
   };
