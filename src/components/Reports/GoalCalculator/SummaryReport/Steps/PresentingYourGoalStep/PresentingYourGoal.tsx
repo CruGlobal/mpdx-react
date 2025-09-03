@@ -111,22 +111,25 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
   const organizationName =
     salaryOrganization?.userOrganizationAccounts[0].organization.name;
 
-  const presentationData = [
-    { name: 'Salary', value: goal.netMonthlySalary },
-    { name: 'Ministry Expenses', value: goal.ministryExpensesTotal },
-    { name: 'Benefits', value: 300 },
-    { name: 'Social Security and Taxes', value: calculations.taxes },
-    {
-      name: 'Voluntary 403b Retirement Plan',
-      value:
-        calculations.traditionalContribution + calculations.rothContribution,
-    },
-    {
-      name: 'Administrative Charge',
-      value:
-        calculations.overallSubtotalWithAdmin - calculations.overallSubtotal,
-    },
-  ];
+  const presentationData = useMemo(
+    () => [
+      { name: 'Salary', value: goal.netMonthlySalary },
+      { name: 'Ministry Expenses', value: goal.ministryExpensesTotal },
+      { name: 'Benefits', value: 300 },
+      { name: 'Social Security and Taxes', value: calculations.taxes },
+      {
+        name: 'Voluntary 403b Retirement Plan',
+        value:
+          calculations.traditionalContribution + calculations.rothContribution,
+      },
+      {
+        name: 'Administrative Charge',
+        value:
+          calculations.overallSubtotalWithAdmin - calculations.overallSubtotal,
+      },
+    ],
+    [goal, calculations],
+  );
 
   const total = useMemo(
     () => presentationData.reduce((sum, entry) => sum + entry.value, 0),
