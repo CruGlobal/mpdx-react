@@ -90,7 +90,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
 
   const gridData = React.useMemo(
     () =>
-      (category.subBudgetCategories || []).map((subCategory) => ({
+      category.subBudgetCategories.map((subCategory) => ({
         id: subCategory.id,
         label: subCategory.label,
         amount: subCategory.amount,
