@@ -1,15 +1,12 @@
-import type { GoalCalculationQuery } from '../../SummaryReport/GoalCalculation.generated';
+import type { BudgetFamilyFragment } from '../GoalCalculation.generated';
 
-export type MinistryFamily = NonNullable<
-  GoalCalculationQuery['goalCalculation']['ministryFamily']
->;
 export type PrimaryBudgetCategory =
-  MinistryFamily['primaryBudgetCategories'][number];
+  BudgetFamilyFragment['primaryBudgetCategories'][number];
 export type SubBudgetCategory =
   PrimaryBudgetCategory['subBudgetCategories'][number];
 
 export const getPrimaryTotal = (primary: PrimaryBudgetCategory): number => {
-  if (primary.directInput !== null && primary.directInput !== undefined) {
+  if (typeof primary.directInput === 'number') {
     return primary.directInput;
   }
   return primary.subBudgetCategories.reduce(
@@ -18,14 +15,9 @@ export const getPrimaryTotal = (primary: PrimaryBudgetCategory): number => {
   );
 };
 
-export const getMinistryExpensesTotal = (family: MinistryFamily): number => {
+export const getFamilyTotal = (family: BudgetFamilyFragment): number => {
   return family.primaryBudgetCategories.reduce(
-    (sum: number, primary) =>
-      sum +
-      primary.subBudgetCategories.reduce(
-        (subSum: number, sub) => subSum + sub.amount,
-        0,
-      ),
+    (sum: number, primary) => sum + getPrimaryTotal(primary),
     0,
   );
 };
