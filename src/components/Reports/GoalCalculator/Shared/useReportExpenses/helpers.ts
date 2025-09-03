@@ -9,7 +9,7 @@ export type SubBudgetCategory =
   PrimaryBudgetCategory['subBudgetCategories'][number];
 
 export const getPrimaryTotal = (primary: PrimaryBudgetCategory): number => {
-  if (primary.directInput) {
+  if (primary.directInput !== null && primary.directInput !== undefined) {
     return primary.directInput;
   }
   return primary.subBudgetCategories.reduce(
