@@ -233,6 +233,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
             id: tempId,
             label: t('New Income'),
             amount: 0,
+            category: null,
           },
         },
       },
