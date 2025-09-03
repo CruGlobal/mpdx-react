@@ -9,12 +9,12 @@ import { PrimaryBudgetCategoryEnum, SubBudgetCategoryEnum } from 'src/graphql/ty
 import theme from 'src/theme';
 import { GoalCalculationQuery } from './Shared/GoalCalculation.generated';
 import { GoalCalculatorProvider } from './Shared/GoalCalculatorContext';
-import { UpdatePrimaryBudgetCategoryMutation } from './SharedComponents/GoalCalculatorGrid/PrimaryBudgetCategory.generated';
 import { 
   CreateSubBudgetCategoryMutation,
   DeleteSubBudgetCategoryMutation,
+  UpdatePrimaryBudgetCategoryMutation,
   UpdateSubBudgetCategoryMutation,
-} from './SharedComponents/GoalCalculatorGrid/SubBudgetCategory.generated';
+} from './SharedComponents/GoalCalculatorGrid/GoalCalculatorGrid.generated';
 
 interface GoalCalculatorTestWrapper {
   onCall?: MockLinkCallHandler;

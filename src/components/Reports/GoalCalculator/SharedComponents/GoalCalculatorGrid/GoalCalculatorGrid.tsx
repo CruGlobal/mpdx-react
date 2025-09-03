@@ -36,7 +36,7 @@ import {
   useDeleteSubBudgetCategoryMutation,
   useUpdatePrimaryBudgetCategoryMutation,
   useUpdateSubBudgetCategoryMutation,
-} from './GoalCalculatorGrid.graphql.generated';
+} from './GoalCalculatorGrid.generated';
 import { StyledGrid } from './StyledGrid';
 
 const StyledCard = styled(Card)(({ theme }) => ({
