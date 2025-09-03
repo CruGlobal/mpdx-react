@@ -1,12 +1,15 @@
 import React from 'react';
 import { Box } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
 import { GoalCalculatorReportEnum } from '../GoalCalculatorHelper';
 import { useGoalCalculator } from '../Shared/GoalCalculatorContext';
 import { GoalCalculatorSection } from '../Shared/GoalCalculatorSection';
 import { MpdGoalHeaderCards } from './MpdGoal/MpdGoalHeaderCards/MpdGoalHeaderCards';
 import { MpdGoalTable } from './MpdGoal/MpdGoalTable';
+import { MpdGoalStepRightPanel } from './MpdGoalStep/MpdGoalStepRightPanel/MpdGoalStepRightPanel/MpdGoalStepRightPanel';
 import { PresentingYourGoal } from './Steps/PresentingYourGoalStep/PresentingYourGoal';
+import { PresentingYourGoalStepRightPanel } from './Steps/PresentingYourGoalStepRightPanelComponent/PresentingYourGoalStepRightPanel';
 
 const goal = {
   netMonthlySalary: 8774.25,
@@ -31,12 +34,17 @@ const goal = {
 };
 
 export const SummaryReport: React.FC = () => {
+  const { t } = useTranslation();
   const { selectedReport } = useGoalCalculator();
   const theme = useTheme();
 
   if (selectedReport === GoalCalculatorReportEnum.MpdGoal) {
     return (
-      <GoalCalculatorSection printable>
+      <GoalCalculatorSection
+        title={t('MPD Goal')}
+        rightPanelContent={<MpdGoalStepRightPanel />}
+        printable
+      >
         <Box mb={theme.spacing(4)}>
           <MpdGoalHeaderCards goal={goal} />
         </Box>
@@ -45,7 +53,11 @@ export const SummaryReport: React.FC = () => {
     );
   } else if (selectedReport === GoalCalculatorReportEnum.PresentingYourGoal) {
     return (
-      <GoalCalculatorSection printable>
+      <GoalCalculatorSection
+        title={t('Presenting Your Goal')}
+        rightPanelContent={<PresentingYourGoalStepRightPanel />}
+        printable
+      >
         <PresentingYourGoal />
       </GoalCalculatorSection>
     );
