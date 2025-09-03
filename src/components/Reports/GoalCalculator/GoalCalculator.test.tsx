@@ -47,31 +47,29 @@ describe('GoalCalculator', () => {
     const { getByRole } = render(
       <TestComponent
         selectedStepId={GoalCalculatorStepEnum.HouseholdExpenses}
-      />,
+      />
     );
 
     expect(
-      getByRole('heading', { name: 'Household Expenses' }),
+      getByRole('heading', { name: 'Household Expenses' })
     ).toBeInTheDocument();
 
     expect(
-      getByRole('heading', { name: 'Enter your monthly budget' }),
+      getByRole('heading', { name: 'Enter your monthly budget' })
     ).toBeInTheDocument();
   });
 
   it('renders right panel components', async () => {
     const { findByRole, getByRole } = render(<TestComponent />);
-    const heading = await findByRole('heading', {
-      name: 'Ministry & Medical Mileage',
-    });
+
     userEvent.click(
-      within(heading).getByRole('button', {
+      await findByRole('button', {
         name: 'Show additional info',
-      }),
+      })
     );
 
     expect(
-      getByRole('complementary', { name: 'Right Panel' }),
+      getByRole('complementary', { name: 'Right Panel' })
     ).toHaveTextContent('Mileage Expenses');
   });
 
@@ -84,7 +82,7 @@ describe('GoalCalculator', () => {
   describe('reports step', () => {
     it('renders custom section list and main content', () => {
       const { getByRole } = render(
-        <TestComponent selectedStepId={GoalCalculatorStepEnum.SummaryReport} />,
+        <TestComponent selectedStepId={GoalCalculatorStepEnum.SummaryReport} />
       );
 
       expect(getByRole('button', { name: 'MPD Goal' })).toBeInTheDocument();

@@ -8,14 +8,14 @@ describe('PresentingYourGoalStepRightPanel', () => {
     const { getByRole } = render(
       <GoalCalculatorTestWrapper>
         <PresentingYourGoalStepRightPanel />
-      </GoalCalculatorTestWrapper>,
+      </GoalCalculatorTestWrapper>
     );
     expect(getByRole('button', { name: 'Close Panel' })).toBeEnabled();
 
     expect(
       getByRole('heading', {
         name: 'Presenting Your Goal Step',
-      }),
+      })
     ).toBeInTheDocument();
   });
 });

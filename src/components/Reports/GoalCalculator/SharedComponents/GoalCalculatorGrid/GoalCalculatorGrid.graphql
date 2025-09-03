@@ -1,0 +1,45 @@
+fragment NewSubBudgetCategory on SubBudgetCategory {
+  id
+  label
+  amount
+  category
+}
+
+mutation UpdatePrimaryBudgetCategory(
+  $input: PrimaryBudgetCategoryUpdateMutationInput!
+) {
+  updatePrimaryBudgetCategory(input: $input) {
+    primaryBudgetCategory {
+      id
+      directInput
+    }
+  }
+}
+
+mutation UpdateSubBudgetCategory(
+  $input: SubBudgetCategoryUpdateMutationInput!
+) {
+  updateSubBudgetCategory(input: $input) {
+    subBudgetCategory {
+      ...NewSubBudgetCategory
+    }
+  }
+}
+
+mutation CreateSubBudgetCategory(
+  $input: SubBudgetCategoryCreateMutationInput!
+) {
+  createSubBudgetCategory(input: $input) {
+    subBudgetCategory {
+      ...NewSubBudgetCategory
+    }
+  }
+}
+
+mutation DeleteSubBudgetCategory(
+  $input: SubBudgetCategoryDeleteMutationInput!
+) {
+  deleteSubBudgetCategory(input: $input) {
+    id
+  }
+}

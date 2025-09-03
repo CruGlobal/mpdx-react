@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { gql } from '@apollo/client';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
+import DoNotDisturbAltIcon from '@mui/icons-material/DoNotDisturbAlt';
 import FunctionsIcon from '@mui/icons-material/Functions';
 import ViewHeadlineIcon from '@mui/icons-material/ViewHeadline';
 import {
@@ -8,6 +10,7 @@ import {
   Button,
   ButtonGroup,
   Card,
+  FormHelperText,
   TextField,
   Typography,
   styled,
@@ -15,15 +18,25 @@ import {
 import {
   GridActionsCellItem,
   GridColDef,
+  GridRenderCellParams,
   GridValidRowModel,
 } from '@mui/x-data-grid';
-import { Form, Formik, useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useDebouncedCallback } from 'src/hooks/useDebounce';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
-import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
-import { StyledSectionTitle } from '../styledComponents/StyledSectionTitle';
+import { getPrimaryCategoryRightPanel } from '../../RightPanels/rightPanels';
+import { BudgetFamilyFragment } from '../../Shared/GoalCalculation.generated';
+import { GoalCalculatorSection } from '../../Shared/GoalCalculatorSection';
+import {
+  NewSubBudgetCategoryFragmentDoc,
+  useCreateSubBudgetCategoryMutation,
+  useDeleteSubBudgetCategoryMutation,
+  useUpdatePrimaryBudgetCategoryMutation,
+  useUpdateSubBudgetCategoryMutation,
+} from './GoalCalculatorGrid.generated';
 import { StyledGrid } from './StyledGrid';
 
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -31,139 +44,233 @@ const StyledCard = styled(Card)(({ theme }) => ({
   paddingTop: theme.spacing(2),
 }));
 
-const StyledAddButton = styled(Button)({
-  color: 'primary.main',
-});
-
-const StyledBox = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  justifyContent: 'flex-start',
-  marginBottom: theme.spacing(2),
+const ErrorCell = styled(Box)(({ theme }) => ({
+  height: '100%',
+  border: `2px solid ${theme.palette.error.main}`,
 }));
 
-const StyledGridContainer = styled(Box)({
-  height: 'auto',
-  width: '100%',
+interface GoalCalculatorGridProps {
+  category: BudgetFamilyFragment['primaryBudgetCategories'][number];
+  promptText?: string;
+}
+
+// Yup validation schemas
+const directInputSchema = yup.object({
+  amount: yup
+    .number()
+    .min(0, 'Amount must be positive')
+    .required('Amount is required'),
 });
 
-export interface GoalCalculatorGridFormValues {
-  gridData: Array<{
-    id: number;
-    name: string;
-    amount: number;
-  }>;
-  lumpSumAmount: number;
-}
-
-interface GoalCalculatorGridProps {
-  formData?: Array<{
-    id: number;
-    name: string;
-    amount: number;
-  }>;
-  promptText?: string;
-  categoryName: string;
-}
+const subBudgetCategorySchema = yup.object({
+  label: yup
+    .string()
+    .trim()
+    .min(1, 'Label is required')
+    .max(100, 'Label must be less than 100 characters')
+    .required('Label is required'),
+  amount: yup
+    .number()
+    .min(0, 'Amount must be positive')
+    .required('Amount is required'),
+});
 
 export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
-  formData,
+  category,
   promptText,
-  categoryName,
-}) => {
-  const { handleContinue } = useGoalCalculator();
-  const { t } = useTranslation();
-
-  const initialValues: GoalCalculatorGridFormValues = {
-    gridData: formData || [
-      { id: 1, name: 'Freelance Work', amount: 2500 },
-      { id: 2, name: 'Investment Returns', amount: 1200 },
-      { id: 3, name: 'Rental Income', amount: 1800 },
-    ],
-    lumpSumAmount: 0,
-  };
-
-  const validationSchema = yup.object({
-    gridData: yup
-      .array()
-      .of(
-        yup.object({
-          id: yup.number().required(),
-          name: yup
-            .string()
-            .min(2, t('Name must be at least 2 characters'))
-            .required(t('Name is required')),
-          amount: yup
-            .number()
-            .min(0, t('Amount must be positive'))
-            .required(t('Amount is required')),
-        }),
-      )
-      .optional(),
-    lumpSumAmount: yup.number().min(0, t('Amount must be positive')).optional(),
-  });
-
-  const handleSubmit = () => {
-    // Handle form submission here
-    // TODO: Implement form submission logic
-    handleContinue();
-  };
-
-  return (
-    <>
-      {promptText && <StyledSectionTitle>{t(promptText)}</StyledSectionTitle>}
-
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
-        enableReinitialize
-      >
-        <Form>
-          <GoalCalculatorGridForm categoryName={categoryName} />
-        </Form>
-      </Formik>
-    </>
-  );
-};
-
-interface GoalCalculatorGridFormProps {
-  categoryName: string;
-}
-
-const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
-  categoryName,
 }) => {
   const { t } = useTranslation();
-  const { values, setFieldValue } =
-    useFormikContext<GoalCalculatorGridFormValues>();
   const locale = useLocale();
+  const { label: categoryName } = category;
+  const accountListId = useAccountListId() ?? '';
 
-  const totalAmount = values.gridData.reduce(
-    (sum, item) => sum + item.amount,
-    0,
+  const gridData = React.useMemo(
+    () =>
+      category.subBudgetCategories.map((subCategory) => ({
+        id: subCategory.id,
+        label: subCategory.label,
+        amount: subCategory.amount,
+        canDelete: !subCategory.category,
+      })),
+    [category.subBudgetCategories]
   );
+
+  const totalAmount = gridData.reduce((sum, item) => sum + item.amount, 0);
+  const [cellErrors, setCellErrors] = useState<
+    Record<string, string | undefined>
+  >({});
+  const [directInputError, setDirectInputError] = useState<string>('');
+  const [inputValue, setInputValue] = useState<string>('');
+  const [updatePrimaryBudgetCategory] =
+    useUpdatePrimaryBudgetCategoryMutation();
+  const [localDirectInput, setLocalDirectInput] = useState<boolean | null>(
+    null
+  );
+  const [updateSubBudgetCategory] = useUpdateSubBudgetCategoryMutation();
+  const [createSubBudgetCategory] = useCreateSubBudgetCategoryMutation();
+  const [deleteSubBudgetCategory] = useDeleteSubBudgetCategoryMutation();
 
   const dataWithTotal = [
-    ...values.gridData,
-    { id: 'total', name: 'Total', amount: totalAmount },
+    ...gridData,
+    { id: 'total', label: 'Total', amount: totalAmount },
   ];
 
-  const [directInput, setDirectInput] = useState(false);
+  const directInput =
+    localDirectInput !== null ? localDirectInput : !!category.directInput;
+  const lumpSumAmount = category.directInput || 0;
 
-  const addExpense = () => {
-    const newId = Math.max(...values.gridData.map((item) => item.id), 0) + 1;
-    const newIncomeItem = {
-      id: newId,
-      name: t('New Income'),
-      amount: 0,
-    };
-    const updatedData = [...values.gridData, newIncomeItem];
-    setFieldValue('gridData', updatedData);
+  useEffect(() => {
+    if (directInput) {
+      setInputValue(lumpSumAmount.toString());
+    }
+  }, [lumpSumAmount]);
+
+  const updatePrimaryBudgetCategoryMutation = (value: number | null) => {
+    updatePrimaryBudgetCategory({
+      variables: {
+        input: {
+          accountListId,
+          id: category.id,
+          directInput: value,
+        },
+      },
+      optimisticResponse: {
+        updatePrimaryBudgetCategory: {
+          __typename: 'PrimaryBudgetCategoryUpdateMutationPayload',
+          primaryBudgetCategory: {
+            __typename: 'PrimaryBudgetCategory',
+            id: category.id,
+            directInput: value,
+          },
+        },
+      },
+    });
   };
 
-  const handleDelete = (id: number) => {
-    const updatedData = values.gridData.filter((item) => item.id !== id);
-    setFieldValue('gridData', updatedData);
+  const debouncedUpdateMutation = useDebouncedCallback(
+    updatePrimaryBudgetCategoryMutation,
+    500
+  );
+
+  const handleDirectInputToggle = (enableDirectInput: boolean) => {
+    let valueToSet: number | null = null;
+
+    if (enableDirectInput) {
+      const existingValue = inputValue ? parseFloat(inputValue) : null;
+      valueToSet = existingValue || totalAmount;
+
+      if (!inputValue) {
+        setInputValue(totalAmount.toString());
+      }
+    }
+
+    setLocalDirectInput(enableDirectInput);
+    setCellErrors({});
+    setDirectInputError('');
+    updatePrimaryBudgetCategoryMutation(valueToSet);
+  };
+
+  const handleLumpSumChange = (value: string | number) => {
+    const stringValue = value.toString();
+    const numericValue =
+      typeof value === 'string' ? parseFloat(value) || 0 : value;
+    setInputValue(stringValue);
+
+    try {
+      directInputSchema.validateSync({ amount: numericValue });
+      setDirectInputError('');
+      debouncedUpdateMutation(numericValue);
+    } catch (error) {
+      if (error instanceof yup.ValidationError) {
+        setDirectInputError(error.message);
+      }
+    }
+  };
+
+  const addExpense = () => {
+    const tempId = `temp-${Date.now()}`;
+
+    createSubBudgetCategory({
+      variables: {
+        input: {
+          accountListId,
+          attributes: {
+            primaryBudgetCategoryId: category.id,
+            label: t('New Income'),
+            amount: 0,
+          },
+        },
+      },
+      optimisticResponse: {
+        createSubBudgetCategory: {
+          __typename: 'SubBudgetCategoryCreateMutationPayload',
+          subBudgetCategory: {
+            __typename: 'SubBudgetCategory',
+            id: tempId,
+            label: t('New Income'),
+            amount: 0,
+            category: null,
+          },
+        },
+      },
+      update: (cache, { data }) => {
+        const newItem = data?.createSubBudgetCategory?.subBudgetCategory;
+        if (newItem) {
+          cache.updateFragment(
+            {
+              id: `PrimaryBudgetCategory:${category.id}`,
+              fragment: gql`
+                fragment UpdateSubBudgetCategories on PrimaryBudgetCategory {
+                  id
+                  subBudgetCategories {
+                    ...NewSubBudgetCategory
+                  }
+                }
+                ${NewSubBudgetCategoryFragmentDoc}
+              `,
+              fragmentName: 'UpdateSubBudgetCategories',
+            },
+            (data) => ({
+              ...data,
+              subBudgetCategories: [
+                ...(data?.subBudgetCategories || []),
+                {
+                  ...newItem,
+                  category: null,
+                },
+              ],
+            })
+          );
+        }
+      },
+    });
+  };
+
+  const handleDelete = (id: string | number) => {
+    const rowId = id.toString();
+
+    deleteSubBudgetCategory({
+      variables: {
+        input: {
+          accountListId,
+          id: rowId,
+        },
+      },
+      optimisticResponse: {
+        deleteSubBudgetCategory: {
+          __typename: 'SubBudgetCategoryDeleteMutationPayload',
+          id: rowId,
+        },
+      },
+      update: (cache, { data }) => {
+        if (data?.deleteSubBudgetCategory?.id) {
+          cache.evict({
+            id: `SubBudgetCategory:${data.deleteSubBudgetCategory.id}`,
+          });
+          cache.gc();
+        }
+      },
+    });
   };
 
   const processRowUpdate = (newRow: GridValidRowModel) => {
@@ -171,26 +278,88 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
       return newRow;
     }
 
-    const updatedData = values.gridData.map((item) =>
-      item.id === newRow.id
-        ? {
-            ...item,
-            name: newRow.name as string,
-            amount: newRow.amount as number,
-          }
-        : item,
-    );
-    setFieldValue('gridData', updatedData);
+    const rowId = newRow.id as string;
+    const label = newRow.label as string;
+    const amount = newRow.amount as number;
+
+    try {
+      subBudgetCategorySchema.validateSync({ label, amount });
+
+      // Clear any existing errors for this row
+      setCellErrors((prev) => {
+        const updated = { ...prev };
+        delete updated[`${rowId}-label`];
+        delete updated[`${rowId}-amount`];
+        return updated;
+      });
+
+      updateSubBudgetCategory({
+        variables: {
+          input: {
+            accountListId,
+            attributes: {
+              id: rowId,
+              label,
+              amount,
+            },
+          },
+        },
+        optimisticResponse: {
+          updateSubBudgetCategory: {
+            __typename: 'SubBudgetCategoryUpdateMutationPayload',
+            subBudgetCategory: {
+              __typename: 'SubBudgetCategory',
+              id: rowId,
+              label,
+              amount,
+            },
+          },
+        },
+      });
+    } catch (error) {
+      if (error instanceof yup.ValidationError) {
+        // Set validation errors
+        setCellErrors((prev) => ({
+          ...prev,
+          [`${rowId}-${error.path}`]: error.message,
+        }));
+      }
+    }
+
     return newRow;
+  };
+
+  const renderLabelCell = (params: GridRenderCellParams) => {
+    const cellKey = `${params.id}-label`;
+    const hasError = cellErrors[cellKey];
+
+    if (hasError) {
+      return <ErrorCell title={hasError}>{params.value}</ErrorCell>;
+    }
+
+    return params.value;
+  };
+
+  const renderAmountCell = (params: GridRenderCellParams) => {
+    const cellKey = `${params.id}-amount`;
+    const hasError = cellErrors[cellKey];
+    const formattedValue = currencyFormat(params.value, 'USD', locale);
+
+    if (hasError) {
+      return <ErrorCell title={hasError}>{formattedValue}</ErrorCell>;
+    }
+
+    return formattedValue;
   };
 
   const columns: GridColDef[] = [
     {
-      field: 'name',
+      field: 'label',
       headerName: t('Expense Name'),
       flex: 1,
       minWidth: 200,
       editable: true,
+      renderCell: renderLabelCell,
     },
     {
       field: 'amount',
@@ -201,7 +370,7 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
       type: 'number',
       align: 'center',
       headerAlign: 'center',
-      renderCell: (params) => currencyFormat(params.value, 'USD', locale),
+      renderCell: renderAmountCell,
     },
     {
       field: 'actions',
@@ -214,12 +383,24 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
           return [];
         }
 
+        if (!params.row.canDelete) {
+          return [
+            <GridActionsCellItem
+              key="forbidden"
+              icon={<DoNotDisturbAltIcon />}
+              label="forbidden"
+              disabled
+              showInMenu={false}
+            />,
+          ];
+        }
+
         return [
           <GridActionsCellItem
             key="delete"
             icon={<DeleteIcon />}
             label="Delete"
-            onClick={() => handleDelete(params.id as number)}
+            onClick={() => handleDelete(params.id)}
             showInMenu={false}
           />,
         ];
@@ -228,16 +409,14 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
   ];
 
   return (
-    <>
-      <StyledBox>
-        <Typography variant="h6" component="span" sx={{ mr: 2 }}>
-          {categoryName}
-        </Typography>
-        <ButtonGroup sx={{ mb: 1 }}>
+    <GoalCalculatorSection
+      title={categoryName}
+      titleExtra={
+        <ButtonGroup>
           <Button
             variant={directInput ? 'contained' : 'outlined'}
             size="small"
-            onClick={() => setDirectInput(true)}
+            onClick={() => handleDirectInputToggle(true)}
             startIcon={<FunctionsIcon />}
           >
             {t('Lump Sum')}
@@ -245,13 +424,26 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
           <Button
             size="small"
             variant={!directInput ? 'contained' : 'outlined'}
-            onClick={() => setDirectInput(false)}
+            onClick={() => handleDirectInputToggle(false)}
             startIcon={<ViewHeadlineIcon />}
           >
             {t('Line Item')}
           </Button>
         </ButtonGroup>
-      </StyledBox>
+      }
+      rightPanelContent={
+        getPrimaryCategoryRightPanel(category.category) ?? undefined
+      }
+    >
+      {promptText && <Typography sx={{ mb: 2 }}>{t(promptText)}</Typography>}
+      <Box
+        sx={{
+          mb: 2,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      ></Box>
       <StyledCard>
         {directInput ? (
           <Box sx={{ p: 2 }}>
@@ -260,32 +452,51 @@ const GoalCalculatorGridForm: React.FC<GoalCalculatorGridFormProps> = ({
               size="small"
               label={t('Total')}
               type="number"
-              value={values.lumpSumAmount}
-              onChange={(e) => setFieldValue('lumpSumAmount', e.target.value)}
+              value={inputValue}
+              onChange={(e) => handleLumpSumChange(e.target.value)}
+              error={!!directInputError}
+              helperText={directInputError}
               sx={{ mb: 2 }}
             />
           </Box>
         ) : (
           <>
-            <StyledAddButton
+            <Button
               variant="text"
               onClick={addExpense}
               size="small"
               startIcon={<AddIcon />}
             >
               {t('Add Line Item')}
-            </StyledAddButton>
+            </Button>
 
-            <StyledGridContainer>
+            <Box>
               <StyledGrid
                 rows={dataWithTotal}
                 columns={columns}
                 processRowUpdate={processRowUpdate}
+                isCellEditable={(params) => {
+                  // Don't allow editing the total row or label field when canDelete is false
+                  if (params.id === 'total') {
+                    return false;
+                  }
+                  if (params.field === 'label' && !params.row.canDelete) {
+                    return false;
+                  }
+                  return true;
+                }}
               />
-            </StyledGridContainer>
+            </Box>
           </>
         )}
       </StyledCard>
-    </>
+
+      {Object.keys(cellErrors).length > 0 &&
+        Object.entries(cellErrors).map(([cellKey, error]) => (
+          <FormHelperText key={cellKey} error={true} sx={{ mb: 0.5 }}>
+            {error}
+          </FormHelperText>
+        ))}
+    </GoalCalculatorSection>
   );
 };
