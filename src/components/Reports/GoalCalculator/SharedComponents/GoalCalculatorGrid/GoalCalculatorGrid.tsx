@@ -99,7 +99,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   );
 
   const totalAmount = gridData.reduce((sum, item) => sum + item.amount, 0);
-  const [cellErrors, setCellErrors] = useState<Record<string, string[]>>({});
+  const [cellErrors, setCellErrors] = useState<Record<string, string>>({});
   const [directInputError, setDirectInputError] = useState<string>('');
   const [inputValue, setInputValue] = useState<string>('');
   const [updatePrimaryBudgetCategory] =
@@ -379,7 +379,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
         // Set validation errors
         setCellErrors((prev) => ({
           ...prev,
-          [`${rowId}-${error.path}`]: [error.message],
+          [`${rowId}-${error.path}`]: error.message,
         }));
       }
     }
@@ -392,7 +392,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
     const hasError = cellErrors[cellKey];
 
     if (hasError) {
-      return <ErrorCell title={hasError[0]}>{params.value}</ErrorCell>;
+      return <ErrorCell title={hasError}>{params.value}</ErrorCell>;
     }
 
     return params.value;
@@ -404,7 +404,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
     const formattedValue = currencyFormat(params.value, 'USD', locale);
 
     if (hasError) {
-      return <ErrorCell title={hasError[0]}>{formattedValue}</ErrorCell>;
+      return <ErrorCell title={hasError}>{formattedValue}</ErrorCell>;
     }
 
     return formattedValue;
@@ -561,9 +561,9 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
       </StyledCard>
 
       {Object.keys(cellErrors).length > 0 &&
-        Object.entries(cellErrors).map(([cellKey, errors]) => (
+        Object.entries(cellErrors).map(([cellKey, error]) => (
           <FormHelperText key={cellKey} error={true} sx={{ mb: 0.5 }}>
-            {errors[0]}
+            {error}
           </FormHelperText>
         ))}
     </>
