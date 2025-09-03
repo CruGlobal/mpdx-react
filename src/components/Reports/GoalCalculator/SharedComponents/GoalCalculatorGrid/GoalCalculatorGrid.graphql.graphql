@@ -1,3 +1,14 @@
+mutation UpdatePrimaryBudgetCategory(
+  $input: PrimaryBudgetCategoryUpdateMutationInput!
+) {
+  updatePrimaryBudgetCategory(input: $input) {
+    primaryBudgetCategory {
+      id
+      directInput
+    }
+  }
+}
+
 mutation UpdateSubBudgetCategory(
   $input: SubBudgetCategoryUpdateMutationInput!
 ) {

@@ -30,13 +30,13 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { BudgetFamilyFragment } from '../../Shared/GoalCalculation.generated';
 import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
-import { useUpdatePrimaryBudgetCategoryMutation } from './PrimaryBudgetCategory.generated';
-import { StyledGrid } from './StyledGrid';
 import {
   useCreateSubBudgetCategoryMutation,
   useDeleteSubBudgetCategoryMutation,
+  useUpdatePrimaryBudgetCategoryMutation,
   useUpdateSubBudgetCategoryMutation,
-} from './SubBudgetCategory.generated';
+} from './GoalCalculatorGrid.graphql.generated';
+import { StyledGrid } from './StyledGrid';
 import { validateDirectInput, validateRowData } from './gridErrorHelpers';
 
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -66,12 +66,16 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   const accountListId = useAccountListId() ?? '';
   const { setRightPanelContent } = useGoalCalculator();
 
-  const gridData = (category.subBudgetCategories || []).map((subCategory) => ({
-    id: subCategory.id,
-    label: subCategory.label,
-    amount: subCategory.amount,
-    canDelete: !subCategory.category,
-  }));
+  const gridData = React.useMemo(
+    () =>
+      (category.subBudgetCategories || []).map((subCategory) => ({
+        id: subCategory.id,
+        label: subCategory.label,
+        amount: subCategory.amount,
+        canDelete: !subCategory.category,
+      })),
+    [category.subBudgetCategories]
+  );
 
   const totalAmount = gridData.reduce((sum, item) => sum + item.amount, 0);
   const [cellErrors, setCellErrors] = useState<Record<string, string[]>>({});
@@ -259,10 +263,31 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
         },
       },
       update: (cache, { data }) => {
-        cache.evict({
-          id: `SubBudgetCategory:${data?.deleteSubBudgetCategory?.id}`,
-        });
-        cache.gc();
+        const deletedId = data?.deleteSubBudgetCategory?.id;
+        if (deletedId) {
+          cache.updateFragment(
+            {
+              id: `PrimaryBudgetCategory:${category.id}`,
+              fragment: gql`
+                fragment UpdateSubBudgetCategories on PrimaryBudgetCategory {
+                  id
+                  subBudgetCategories {
+                    id
+                    label
+                    amount
+                    category
+                  }
+                }
+              `,
+            },
+            (data) => ({
+              ...data,
+              subBudgetCategories: data.subBudgetCategories.filter(
+                (item) => item.id !== deletedId
+              ),
+            })
+          );
+        }
       },
     });
   };
