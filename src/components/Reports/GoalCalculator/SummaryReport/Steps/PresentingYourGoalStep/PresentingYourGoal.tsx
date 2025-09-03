@@ -207,7 +207,7 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
       { title: 'Total Support Goal', amount: total, bold: true },
       { title: 'Total Solid Support', amount: calculations.supportRaised },
     ],
-    [presentationData, total, t],
+    [presentationData, total, t, calculations],
   );
 
   return (
