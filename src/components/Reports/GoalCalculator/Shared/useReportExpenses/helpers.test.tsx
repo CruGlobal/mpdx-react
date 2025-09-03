@@ -1,75 +1,48 @@
+import { gqlMock } from '__tests__/util/graphqlMocking';
+import {} from 'src/graphql/types.generated';
 import {
-  BudgetFamilyCategoryEnum,
-  PrimaryBudgetCategoryEnum,
-  SubBudgetCategoryEnum,
-} from 'src/graphql/types.generated';
-import {
-  MinistryFamily,
-  getMinistryExpensesTotal,
-  getPrimaryTotal,
-} from './helpers';
+  BudgetFamilyFragment,
+  BudgetFamilyFragmentDoc,
+} from '../GoalCalculation.generated';
+import { getFamilyTotal, getPrimaryTotal } from './helpers';
 
-const mockFamily: MinistryFamily = {
-  __typename: 'BudgetFamily',
-  category: BudgetFamilyCategoryEnum.Ministry,
-  id: '1',
-  label: 'Ministry',
-  primaryBudgetCategories: [
-    {
-      __typename: 'PrimaryBudgetCategory',
-      category: PrimaryBudgetCategoryEnum.Utilities,
-      id: 'p1',
-      label: 'Utilities',
-      subBudgetCategories: [
-        {
-          __typename: 'SubBudgetCategory',
-          id: 's1',
-          category: SubBudgetCategoryEnum.UtilitiesInternet,
-          label: 'Internet',
-          amount: 100,
-        },
-        {
-          __typename: 'SubBudgetCategory',
-          id: 's2',
-          category: SubBudgetCategoryEnum.UtilitiesGas,
-          label: 'Gas',
-          amount: 200,
-        },
-      ],
-    },
-    {
-      __typename: 'PrimaryBudgetCategory',
-      category: PrimaryBudgetCategoryEnum.Recreation,
-      id: 'p2',
-      label: 'Recreation',
-      subBudgetCategories: [
-        {
-          __typename: 'SubBudgetCategory',
-          id: 's3',
-          category: SubBudgetCategoryEnum.RecreationEntertainment,
-          label: 'Entertainment',
-          amount: 300,
-        },
-        {
-          __typename: 'SubBudgetCategory',
-          id: 's4',
-          category: SubBudgetCategoryEnum.RecreationVacation,
-          label: 'Travel',
-          amount: 400,
-        },
-      ],
-    },
-  ],
-};
+const mockFamily = gqlMock<BudgetFamilyFragment>(BudgetFamilyFragmentDoc, {
+  mocks: {
+    primaryBudgetCategories: [
+      {
+        directInput: 20,
+        subBudgetCategories: [{ amount: 100 }, { amount: 200 }],
+      },
+      {
+        directInput: null,
+        subBudgetCategories: [{ amount: 300 }, { amount: 400 }],
+      },
+    ],
+  },
+});
 
 describe('getPrimaryCategoryTotal', () => {
-  it('returns sum of all subcategory amounts for primary category', () => {
-    expect(getPrimaryTotal(mockFamily.primaryBudgetCategories[0])).toBe(300);
+  it('returns sum of all subcategory amounts for primary category with directInput set', () => {
+    expect(getPrimaryTotal(mockFamily.primaryBudgetCategories[0])).toBe(20);
+  });
+  it('returns sum of all subcategory amounts for primary category without directInput set', () => {
+    expect(getPrimaryTotal(mockFamily.primaryBudgetCategories[1])).toBe(700);
+  });
+});
+
+describe('getMinistryExpensesTotal', () => {
+  it('returns correct sum of all primary category amounts for ministry family with a directInput value set', () => {
+    expect(getFamilyTotal(mockFamily)).toBe(720);
   });
 
-  describe('getMinistryExpensesTotal', () => {
-    it('returns sum of all primary category amounts for ministry family', () => {
-      expect(getMinistryExpensesTotal(mockFamily)).toBe(1000);
-    });
+  it('returns sum of all primary category amounts for ministry family without any directInput set', () => {
+    const noDirectInputMockFamily = {
+      ...mockFamily,
+      primaryBudgetCategories: [
+        { ...mockFamily.primaryBudgetCategories[0], directInput: null },
+        mockFamily.primaryBudgetCategories[1],
+      ],
+    };
+    expect(getFamilyTotal(noDirectInputMockFamily)).toBe(1000);
   });
 });
