@@ -11,6 +11,7 @@ export interface GoalCalculatorSectionProps {
   rightPanelContent?: JSX.Element;
   printable?: boolean;
   children: React.ReactNode;
+  titleExtra?: React.ReactNode;
 }
 
 export const GoalCalculatorSection: React.FC<GoalCalculatorSectionProps> = ({
@@ -19,6 +20,7 @@ export const GoalCalculatorSection: React.FC<GoalCalculatorSectionProps> = ({
   rightPanelContent,
   printable = false,
   children,
+  titleExtra,
 }) => {
   const { setRightPanelContent } = useGoalCalculator();
   const { t } = useTranslation();
@@ -31,20 +33,25 @@ export const GoalCalculatorSection: React.FC<GoalCalculatorSectionProps> = ({
     <div>
       <Box pb={4}>
         <Stack direction="row" justifyContent="space-between">
-          <Typography variant="h6">
-            {title}
-            {rightPanelContent && (
-              <IconButton
-                className="print-hidden"
-                onClick={() => {
-                  rightPanelContent && setRightPanelContent(rightPanelContent);
-                }}
-                aria-label={t('Show additional info')}
-              >
-                <InfoIcon />
-              </IconButton>
-            )}
-          </Typography>
+          <Stack direction="row" spacing={2}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Typography variant="h6">{title}</Typography>
+              {rightPanelContent && (
+                <IconButton
+                  className="print-hidden"
+                  onClick={() => {
+                    rightPanelContent &&
+                      setRightPanelContent(rightPanelContent);
+                  }}
+                  aria-label={t('Show additional info')}
+                >
+                  <InfoIcon />
+                </IconButton>
+              )}
+            </Box>
+            {titleExtra}
+          </Stack>
+
           {printable && (
             <Button
               className="print-hidden"

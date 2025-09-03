@@ -4,7 +4,6 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DoNotDisturbAltIcon from '@mui/icons-material/DoNotDisturbAlt';
 import FunctionsIcon from '@mui/icons-material/Functions';
-import InfoIcon from '@mui/icons-material/Info';
 import ViewHeadlineIcon from '@mui/icons-material/ViewHeadline';
 import {
   Box,
@@ -12,7 +11,6 @@ import {
   ButtonGroup,
   Card,
   FormHelperText,
-  IconButton,
   TextField,
   Typography,
   styled,
@@ -30,7 +28,7 @@ import { useDebouncedCallback } from 'src/hooks/useDebounce';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { BudgetFamilyFragment } from '../../Shared/GoalCalculation.generated';
-import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
+import { GoalCalculatorSection } from '../../Shared/GoalCalculatorSection';
 import {
   NewSubBudgetCategoryFragmentDoc,
   useCreateSubBudgetCategoryMutation,
@@ -52,8 +50,8 @@ const ErrorCell = styled(Box)(({ theme }) => ({
 
 interface GoalCalculatorGridProps {
   category: BudgetFamilyFragment['primaryBudgetCategories'][number];
-  rightPanelContent?: JSX.Element;
   promptText?: string;
+  rightPanelContent?: JSX.Element;
 }
 
 // Yup validation schemas
@@ -79,14 +77,13 @@ const subBudgetCategorySchema = yup.object({
 
 export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   category,
-  rightPanelContent,
   promptText,
+  rightPanelContent,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const { label: categoryName } = category;
   const accountListId = useAccountListId() ?? '';
-  const { setRightPanelContent } = useGoalCalculator();
 
   const gridData = React.useMemo(
     () =>
@@ -413,7 +410,30 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   ];
 
   return (
-    <>
+    <GoalCalculatorSection
+      title={categoryName}
+      titleExtra={
+        <ButtonGroup>
+          <Button
+            variant={directInput ? 'contained' : 'outlined'}
+            size="small"
+            onClick={() => handleDirectInputToggle(true)}
+            startIcon={<FunctionsIcon />}
+          >
+            {t('Lump Sum')}
+          </Button>
+          <Button
+            size="small"
+            variant={!directInput ? 'contained' : 'outlined'}
+            onClick={() => handleDirectInputToggle(false)}
+            startIcon={<ViewHeadlineIcon />}
+          >
+            {t('Line Item')}
+          </Button>
+        </ButtonGroup>
+      }
+      rightPanelContent={rightPanelContent}
+    >
       {promptText && <Typography sx={{ mb: 2 }}>{t(promptText)}</Typography>}
       <Box
         sx={{
@@ -422,43 +442,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
           alignItems: 'center',
           justifyContent: 'space-between',
         }}
-      >
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-          <Typography variant="h6" component="span" sx={{ mr: 3 }}>
-            {categoryName}
-          </Typography>
-
-          <ButtonGroup>
-            <Button
-              variant={directInput ? 'contained' : 'outlined'}
-              size="small"
-              onClick={() => handleDirectInputToggle(true)}
-              startIcon={<FunctionsIcon />}
-            >
-              {t('Lump Sum')}
-            </Button>
-            <Button
-              size="small"
-              variant={!directInput ? 'contained' : 'outlined'}
-              onClick={() => handleDirectInputToggle(false)}
-              startIcon={<ViewHeadlineIcon />}
-            >
-              {t('Line Item')}
-            </Button>
-          </ButtonGroup>
-        </Box>
-        {rightPanelContent && (
-          <IconButton
-            className="print-hidden"
-            onClick={() => {
-              rightPanelContent && setRightPanelContent(rightPanelContent);
-            }}
-            aria-label={t('Show additional info')}
-          >
-            <InfoIcon />
-          </IconButton>
-        )}
-      </Box>
+      ></Box>
       <StyledCard>
         {directInput ? (
           <Box sx={{ p: 2 }}>
@@ -512,6 +496,6 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
             {error}
           </FormHelperText>
         ))}
-    </>
+    </GoalCalculatorSection>
   );
 };
