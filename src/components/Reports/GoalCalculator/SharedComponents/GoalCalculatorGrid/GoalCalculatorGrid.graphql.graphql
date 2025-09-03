@@ -1,3 +1,10 @@
+fragment NewSubBudgetCategory on SubBudgetCategory {
+  id
+  label
+  amount
+  category
+}
+
 mutation UpdatePrimaryBudgetCategory(
   $input: PrimaryBudgetCategoryUpdateMutationInput!
 ) {
@@ -14,10 +21,7 @@ mutation UpdateSubBudgetCategory(
 ) {
   updateSubBudgetCategory(input: $input) {
     subBudgetCategory {
-      id
-      label
-      category
-      amount
+      ...NewSubBudgetCategory
     }
   }
 }
@@ -27,10 +31,7 @@ mutation CreateSubBudgetCategory(
 ) {
   createSubBudgetCategory(input: $input) {
     subBudgetCategory {
-      id
-      label
-      category
-      amount
+      ...NewSubBudgetCategory
     }
   }
 }

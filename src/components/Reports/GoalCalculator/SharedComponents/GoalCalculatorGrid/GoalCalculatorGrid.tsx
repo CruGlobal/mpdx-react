@@ -32,6 +32,7 @@ import { currencyFormat } from 'src/lib/intlFormat';
 import { BudgetFamilyFragment } from '../../Shared/GoalCalculation.generated';
 import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
 import {
+  NewSubBudgetCategoryFragmentDoc,
   useCreateSubBudgetCategoryMutation,
   useDeleteSubBudgetCategoryMutation,
   useUpdatePrimaryBudgetCategoryMutation,
@@ -245,13 +246,12 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
                 fragment UpdateSubBudgetCategories on PrimaryBudgetCategory {
                   id
                   subBudgetCategories {
-                    id
-                    label
-                    amount
-                    category
+                    ...NewSubBudgetCategory
                   }
                 }
+                ${NewSubBudgetCategoryFragmentDoc}
               `,
+              fragmentName: 'UpdateSubBudgetCategories',
             },
             (data) => ({
               ...data,
@@ -295,13 +295,12 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
                 fragment UpdateSubBudgetCategories on PrimaryBudgetCategory {
                   id
                   subBudgetCategories {
-                    id
-                    label
-                    amount
-                    category
+                    ...NewSubBudgetCategory
                   }
                 }
+                ${NewSubBudgetCategoryFragmentDoc}
               `,
+              fragmentName: 'UpdateSubBudgetCategories',
             },
             (data) => ({
               ...data,
