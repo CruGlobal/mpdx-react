@@ -1,5 +1,5 @@
-import { BudgetFamilyFragment } from '../../Shared/GoalCalculation.generated';
-import { SectionItem } from '../SectionList';
+import { SectionItem } from '../SharedComponents/SectionList';
+import { BudgetFamilyFragment } from './GoalCalculation.generated';
 
 export const getFamilySections = (
   budgetFamily: BudgetFamilyFragment,
