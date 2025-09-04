@@ -8,6 +8,7 @@ import { GoalCalculatorSection } from '../Shared/GoalCalculatorSection';
 import { MpdGoalHeaderCards } from './MpdGoal/MpdGoalHeaderCards/MpdGoalHeaderCards';
 import { MpdGoalTable } from './MpdGoal/MpdGoalTable';
 import { MpdGoalStepRightPanel } from './MpdGoalStep/MpdGoalStepRightPanel/MpdGoalStepRightPanel/MpdGoalStepRightPanel';
+import { GoalApplicationButtonGroup } from './Steps/PresentingYourGoalStep/GoalApplicationButtonGroup';
 import { PresentingYourGoal } from './Steps/PresentingYourGoalStep/PresentingYourGoal';
 import { PresentingYourGoalStepRightPanel } from './Steps/PresentingYourGoalStepRightPanelComponent/PresentingYourGoalStepRightPanel';
 
@@ -59,6 +60,7 @@ export const SummaryReport: React.FC = () => {
         printable
       >
         <PresentingYourGoal />
+        <GoalApplicationButtonGroup goal={goal} />
       </GoalCalculatorSection>
     );
   }
