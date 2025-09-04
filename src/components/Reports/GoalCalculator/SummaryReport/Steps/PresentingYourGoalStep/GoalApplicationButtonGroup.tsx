@@ -43,7 +43,7 @@ export const GoalApplicationButtonGroup: React.FC<
           }),
           {
             variant: 'success',
-          }
+          },
         );
       },
     });
