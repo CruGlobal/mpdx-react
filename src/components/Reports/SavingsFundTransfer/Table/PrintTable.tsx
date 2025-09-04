@@ -11,6 +11,7 @@ import {
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
+import { StyledTableRow } from '../../styledComponents';
 import {
   ScheduleEnum,
   StaffSavingFundEnum,
@@ -47,7 +48,7 @@ export const PrintTable: React.FC<PrintTableProps> = ({ transfers }) => {
           <TableBody>
             {transfers.length ? (
               transfers.map((transfer) => (
-                <TableRow
+                <StyledTableRow
                   key={`${transfer.transferFrom}-${transfer.transferTo}-${transfer.amount}-${transfer.transferDate}`}
                 >
                   <TableCell>
@@ -86,7 +87,7 @@ export const PrintTable: React.FC<PrintTableProps> = ({ transfers }) => {
                     {transfer.endDate?.toLocaleString(DateTime.DATE_MED)}
                   </TableCell>
                   <TableCell>{transfer.note}</TableCell>
-                </TableRow>
+                </StyledTableRow>
               ))
             ) : (
               <TableRow>

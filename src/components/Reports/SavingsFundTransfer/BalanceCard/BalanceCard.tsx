@@ -9,7 +9,11 @@ import {
 import { Box, Button, Card, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
+import { useUpdatedAt } from 'src/hooks/useUpdatedAt';
+import { currencyFormat } from 'src/lib/intlFormat';
+import theme from 'src/theme';
 import { TransferModalData } from '../TransferModal/TransferModal';
+import { useUpdatedAtContext } from '../UpdatedAtContext/UpdateAtContext';
 import { Fund, StaffSavingFundEnum } from '../mockData';
 import { ScreenOnly } from '../styledComponents/DisplayStyling';
 
@@ -27,10 +31,8 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const staffAccountColor = '#F08020';
-  const staffConferenceSavingsColor = '#00C0D8';
-  const staffSavingsColor = '#007890';
-  const amountColor = '#00000061';
+  const { updatedAt } = useUpdatedAtContext();
+  const updatedAtLabel = useUpdatedAt(updatedAt);
 
   const title = `${fund.name} Balance`;
   const Icon =
@@ -41,10 +43,10 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
         : Savings;
   const iconBgColor =
     fund.type === StaffSavingFundEnum.StaffAccount
-      ? staffAccountColor
+      ? theme.palette.chartOrange.main
       : fund.type === StaffSavingFundEnum.StaffConferenceSavings
-        ? staffConferenceSavingsColor
-        : staffSavingsColor;
+        ? theme.palette.chartBlue.main
+        : theme.palette.chartBlueDark.main;
 
   const handleTransferFrom = () => {
     handleOpenTransferModal({
@@ -106,56 +108,46 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
           </Typography>
           <ScreenOnly>
             <Typography variant="body2" mt={0}>
-              {t('Updated 3 min ago')}
+              {updatedAtLabel ?? 'Not updated'}
             </Typography>
           </ScreenOnly>
         </Box>
       </Box>
       <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="center"
-        mt={5}
-        mb={1}
-        mr={1}
         sx={{
-          '@media print': {
-            fontSize: '14pt',
-            flexDirection: 'column',
-            alignItems: 'flex-start',
-            mt: 2,
-          },
+          mt: 5,
+          '@media print': { mt: 2 },
         }}
       >
-        <Typography variant="h5" sx={{ fontSize: 'inherit' }}>
-          {fund.balance.toLocaleString(locale, {
-            style: 'currency',
-            currency: 'USD',
-          })}
+        <Typography
+          variant="body1"
+          mb={0}
+          sx={{ '@media print': { fontSize: '10pt' } }}
+        >
+          {t('Current Balance')}
         </Typography>
-        {!!fund.pending && (
-          <Typography
-            variant="h5"
-            color={amountColor}
-            sx={{ fontSize: 'inherit' }}
-          >
-            {fund.pending.toLocaleString(locale, {
-              style: 'currency',
-              currency: 'USD',
-            })}{' '}
-            ({t('pending')})
-          </Typography>
-        )}
+
+        <Typography
+          variant="h5"
+          color={fund.balance < 0 ? 'error.main' : 'text.primary'}
+          sx={{ fontSize: 'inherit' }}
+        >
+          {fund.balance < 0 ? '(' : ''}
+          {currencyFormat(Math.abs(fund.balance), 'USD', locale, {
+            showTrailingZeros: true,
+          })}
+          {fund.balance < 0 ? ')' : ''}
+        </Typography>
       </Box>
 
       <ScreenOnly
         sx={{
           alignItems: 'left',
-          mt: 3,
+          mt: 2,
           ml: 0,
         }}
       >
-        <Button onClick={handleTransferFrom}>
+        <Button onClick={handleTransferFrom} disabled={fund.balance <= 0}>
           <Outbox fontSize="small" sx={{ mr: 0.5 }} />
           {t('TRANSFER FROM')}
         </Button>

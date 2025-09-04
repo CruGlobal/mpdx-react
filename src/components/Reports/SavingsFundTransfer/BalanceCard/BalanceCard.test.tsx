@@ -8,6 +8,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
+import { UpdatedAtProvider } from '../UpdatedAtContext/UpdateAtContext';
 import { Fund, StaffSavingFundEnum } from '../mockData';
 import { BalanceCard } from './BalanceCard';
 
@@ -25,7 +26,6 @@ const defaultFund: Fund = {
   type: StaffSavingFundEnum.StaffAccount,
   name: 'Staff Account',
   balance: 15000,
-  pending: 17500,
 };
 
 interface ComponentsProps {
@@ -42,11 +42,13 @@ const Components = ({
       <TestRouter router={router}>
         <I18nextProvider i18n={i18n}>
           <GqlMockedProvider onCall={mutationSpy}>
-            <BalanceCard
-              fund={fund}
-              handleOpenTransferModal={mockHandleOpenTransferModal}
-              isSelected={isSelected}
-            />
+            <UpdatedAtProvider>
+              <BalanceCard
+                fund={fund}
+                handleOpenTransferModal={mockHandleOpenTransferModal}
+                isSelected={isSelected}
+              />
+            </UpdatedAtProvider>
           </GqlMockedProvider>
         </I18nextProvider>
       </TestRouter>
@@ -63,8 +65,8 @@ describe('BalanceCard', () => {
     const { getByText, getByRole } = render(<Components />);
 
     expect(getByText('Staff Account Balance')).toBeInTheDocument();
+    expect(getByText('Current Balance')).toBeInTheDocument();
     expect(getByText('$15,000.00')).toBeInTheDocument();
-    expect(getByText('$17,500.00 (pending)')).toBeInTheDocument();
     expect(getByRole('button', { name: /transfer from/i })).toBeInTheDocument();
     expect(getByRole('button', { name: /transfer to/i })).toBeInTheDocument();
   });
@@ -125,34 +127,30 @@ describe('BalanceCard', () => {
   });
 
   describe('Handle formatting', () => {
-    it('should format balance and pending amounts correctly', () => {
+    it('should format balance amount correctly', () => {
       const { getByText } = render(
         <Components
           fund={{
             ...defaultFund,
             balance: 1234567.89,
-            pending: 123.45,
           }}
         />,
       );
 
       expect(getByText('$1,234,567.89')).toBeInTheDocument();
-      expect(getByText('$123.45 (pending)')).toBeInTheDocument();
     });
 
-    it('should handle zero balance and pending amounts', () => {
-      const { getByText, queryByText } = render(
+    it('should handle zero balance amount', () => {
+      const { getAllByText } = render(
         <Components
           fund={{
             ...defaultFund,
             balance: 0,
-            pending: 0,
           }}
         />,
       );
 
-      expect(getByText('$0.00')).toBeInTheDocument();
-      expect(queryByText(/pending/i)).not.toBeInTheDocument();
+      expect(getAllByText('$0.00')).toHaveLength(1);
     });
 
     it('should handle negative balance amounts', () => {
@@ -161,13 +159,12 @@ describe('BalanceCard', () => {
           fund={{
             ...defaultFund,
             balance: -500,
-            pending: -100,
           }}
         />,
       );
 
-      expect(getByText('-$500.00')).toBeInTheDocument();
-      expect(getByText('-$100.00 (pending)')).toBeInTheDocument();
+      expect(getByText('($500.00)')).toBeInTheDocument();
+      expect(getByText('($500.00)')).toHaveStyle('color: rgb(211, 47, 47)');
     });
 
     it('should handle decimal precision correctly', () => {
@@ -176,13 +173,11 @@ describe('BalanceCard', () => {
           fund={{
             ...defaultFund,
             balance: 1234.567,
-            pending: 98.76,
           }}
         />,
       );
 
       expect(getByText('$1,234.57')).toBeInTheDocument();
-      expect(getByText('$98.76 (pending)')).toBeInTheDocument();
     });
   });
 
@@ -214,5 +209,22 @@ describe('BalanceCard', () => {
         transferTo: expect.any(String),
       },
     });
+  });
+
+  it('should disable transfer from button when current balance is zero', async () => {
+    const { findByRole } = render(
+      <Components
+        fund={{
+          ...defaultFund,
+          balance: 0,
+        }}
+      />,
+    );
+
+    const transferFromButton = await findByRole('button', {
+      name: /transfer from/i,
+    });
+
+    expect(transferFromButton).toBeDisabled();
   });
 });

@@ -10,6 +10,7 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { StaffSavingFundProvider } from '../../StaffSavingFund/StaffSavingFundContext';
 import { TransferTypeEnum } from '../Helper/TransferHistoryEnum';
+import { UpdatedAtProvider } from '../UpdatedAtContext/UpdateAtContext';
 import { ScheduleEnum, mockData } from '../mockData';
 import { TransferModal, TransferModalData } from './TransferModal';
 
@@ -67,14 +68,16 @@ const Components = ({
         <TestRouter router={router}>
           <GqlMockedProvider onCall={mutationSpy}>
             <StaffSavingFundProvider>
-              <TransferModal
-                data={{
-                  type,
-                  transfer,
-                }}
-                funds={mockData.funds}
-                handleClose={handleClose}
-              />
+              <UpdatedAtProvider>
+                <TransferModal
+                  data={{
+                    type,
+                    transfer,
+                  }}
+                  funds={mockData.funds}
+                  handleClose={handleClose}
+                />
+              </UpdatedAtProvider>
             </StaffSavingFundProvider>
           </GqlMockedProvider>
         </TestRouter>
@@ -199,9 +202,12 @@ describe('TransferModal', () => {
       userEvent.click(getByRole('button', { name: /submit/i }));
 
       await waitFor(() => {
-        expect(mockEnqueue).toHaveBeenCalledWith('Transfer successful', {
-          variant: 'success',
-        });
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          'Transfer created successfully',
+          {
+            variant: 'success',
+          },
+        );
       });
     });
 
@@ -225,9 +231,12 @@ describe('TransferModal', () => {
       userEvent.click(submitButton);
 
       await waitFor(() => {
-        expect(mockEnqueue).toHaveBeenCalledWith('Transfer successful', {
-          variant: 'success',
-        });
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          'Transfer created successfully',
+          {
+            variant: 'success',
+          },
+        );
       });
     });
   });

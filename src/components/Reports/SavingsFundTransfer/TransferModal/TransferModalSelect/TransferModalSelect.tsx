@@ -1,10 +1,12 @@
 import React from 'react';
-import { Box, MenuItem, Select, SelectProps } from '@mui/material';
+import { Box, MenuItem, Select, SelectProps, Typography } from '@mui/material';
 import {
   StaffAccount,
   StaffConferenceSavings,
   StaffSavings,
 } from 'src/components/Reports/SavingsFundTransfer/Helper/TransferIcons';
+import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat';
 import { TransferDirectionEnum } from '../../Helper/TransferHistoryEnum';
 import { Fund, StaffSavingFundEnum } from '../../mockData';
 
@@ -20,6 +22,7 @@ export const TransferModalSelect: React.FC<TransferModalSelectProps> = ({
   funds,
   ...props
 }) => {
+  const locale = useLocale();
   const filteredFunds =
     type === TransferDirectionEnum.From
       ? funds
@@ -36,8 +39,21 @@ export const TransferModalSelect: React.FC<TransferModalSelectProps> = ({
                 ? StaffSavings
                 : fund.type === StaffSavingFundEnum.StaffConferenceSavings
                   ? StaffConferenceSavings
-                  : null}{' '}
-            <b>{fund.name}</b>
+                  : null}
+            {''}
+            <Typography>
+              <b>{fund.name}</b>
+              {' - '}
+            </Typography>
+            <Typography
+              sx={{ color: fund.balance < 0 ? 'error.main' : 'text.primary' }}
+            >
+              {fund.balance < 0 ? ' (' : ' '}
+              {currencyFormat(Math.abs(fund.balance), 'USD', locale, {
+                showTrailingZeros: true,
+              })}
+              {fund.balance < 0 ? ')' : ' available'}
+            </Typography>
           </Box>
         </MenuItem>
       ))}
