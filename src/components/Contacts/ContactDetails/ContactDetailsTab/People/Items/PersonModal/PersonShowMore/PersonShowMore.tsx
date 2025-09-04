@@ -100,6 +100,20 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
     [anniversaryMonth, anniversaryDay, anniversaryYear],
   );
 
+  const handleOnDateEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      const inputValue = (event.target as HTMLInputElement).value.trim();
+      if (!inputValue) {
+        handleDateChange(null);
+      } else {
+        const parsed = DateTime.fromFormat(inputValue, 'M/d/yyyy');
+        if (parsed.isValid) {
+          handleDateChange(parsed);
+        }
+      }
+    }
+  };
+
   return (
     <>
       {/* Legal First Name and Gender Section */}
@@ -186,6 +200,7 @@ export const PersonShowMore: React.FC<PersonShowMoreProps> = ({
                   : anniversaryDate
               }
               onChange={(date) => handleDateChange(date)}
+              onKeyDown={handleOnDateEnter}
             />
           </Grid>
         </Grid>
