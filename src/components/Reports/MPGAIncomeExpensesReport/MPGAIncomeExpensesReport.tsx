@@ -31,7 +31,6 @@ import { AllData } from './mockData';
 import { PrintOnly, StyledHeaderBox } from './styledComponents';
 
 interface MPGAIncomeExpensesReportProps {
-  accountId: string;
   isNavListOpen: boolean;
   onNavListToggle: () => void;
   title: string;
@@ -39,7 +38,7 @@ interface MPGAIncomeExpensesReportProps {
 
 export const MPGAIncomeExpensesReport: React.FC<
   MPGAIncomeExpensesReportProps
-> = ({ accountId, title, isNavListOpen, onNavListToggle }) => {
+> = ({ title, isNavListOpen, onNavListToggle }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const currency = 'USD';
@@ -55,7 +54,6 @@ export const MPGAIncomeExpensesReport: React.FC<
 
   const { data: reportData } = useReportsStaffExpensesQuery({
     variables: {
-      accountId: accountId,
       fundTypes: [FundTypes.Primary],
       startMonth: start,
       endMonth: end,

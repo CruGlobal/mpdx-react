@@ -2,7 +2,7 @@ import { gqlMock } from '__tests__/util/graphqlMocking';
 import {
   BudgetFamilyFragment,
   BudgetFamilyFragmentDoc,
-} from '../../Shared/GoalCalculation.generated';
+} from './GoalCalculation.generated';
 import { getFamilySections } from './familySections';
 
 describe('getFamilySections', () => {
