@@ -465,14 +465,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
       }
     >
       {promptText && <Typography sx={{ mb: 2 }}>{t(promptText)}</Typography>}
-      <Box
-        sx={{
-          mb: 2,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      ></Box>
+
       <StyledCard>
         {directInput ? (
           <Box sx={{ p: 2 }}>
