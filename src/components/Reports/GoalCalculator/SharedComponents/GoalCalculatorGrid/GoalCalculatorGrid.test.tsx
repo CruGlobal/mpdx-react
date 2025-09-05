@@ -24,8 +24,9 @@ const TestComponent: React.FC = () => {
 
 describe('GoalCalculatorGrid', () => {
   it('allows entering a value in the lump sum text field', async () => {
+    const mutationSpy = jest.fn();
     const { findByLabelText, findByText } = render(
-      <GoalCalculatorTestWrapper>
+      <GoalCalculatorTestWrapper onCall={mutationSpy}>
         <TestComponent />
       </GoalCalculatorTestWrapper>,
     );
@@ -35,6 +36,19 @@ describe('GoalCalculatorGrid', () => {
     userEvent.clear(textField);
     userEvent.type(textField, '1500');
     expect(textField).toHaveValue(1500);
+
+    // Check that the UpdatePrimaryBudgetCategory mutation was called
+    await waitFor(() => {
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'UpdatePrimaryBudgetCategory',
+        {
+          input: {
+            accountListId: 'account-list-1',
+            directInput: 1500,
+          },
+        },
+      );
+    });
   });
 
   it('adds a new row when Add button is clicked', async () => {
