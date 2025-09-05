@@ -93,9 +93,10 @@ describe('GoalCalculatorGrid', () => {
   });
 
   it('edits a row name and updates the data', async () => {
+    const mutationSpy = jest.fn();
     const { queryByDisplayValue, getByDisplayValue, findByText, getByText } =
       render(
-        <GoalCalculatorTestWrapper>
+        <GoalCalculatorTestWrapper onCall={mutationSpy}>
           <TestComponent />
         </GoalCalculatorTestWrapper>,
       );
@@ -112,6 +113,19 @@ describe('GoalCalculatorGrid', () => {
 
     await waitFor(() => {
       expect(queryByDisplayValue('New Income')).not.toBeInTheDocument();
+    });
+
+    // Check that the UpdateSubBudgetCategory mutation was called
+    await waitFor(() => {
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateSubBudgetCategory', {
+        input: {
+          accountListId: 'account-list-1',
+          attributes: {
+            amount: 0,
+            label: 'Consulting Work',
+          },
+        },
+      });
     });
   });
 
