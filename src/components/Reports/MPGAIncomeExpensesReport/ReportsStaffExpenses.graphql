@@ -8,7 +8,6 @@ query ReportsStaffExpenses(
     startMonth: $startMonth
     endMonth: $endMonth
   ) {
-    accountId
     funds {
       categories {
         averagePerMonth
@@ -31,7 +30,5 @@ query ReportsStaffExpenses(
       fundType
       total
     }
-    name
-    status
   }
 }
