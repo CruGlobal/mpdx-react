@@ -5,6 +5,13 @@ fragment NewSubBudgetCategory on SubBudgetCategory {
   category
 }
 
+fragment UpdateSubBudgetCategories on PrimaryBudgetCategory {
+  id
+  subBudgetCategories {
+    ...NewSubBudgetCategory
+  }
+}
+
 mutation UpdatePrimaryBudgetCategory(
   $input: PrimaryBudgetCategoryUpdateMutationInput!
 ) {

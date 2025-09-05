@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { gql } from '@apollo/client';
+import React, { useEffect, useMemo, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DoNotDisturbAltIcon from '@mui/icons-material/DoNotDisturbAlt';
@@ -31,7 +30,8 @@ import { getPrimaryCategoryRightPanel } from '../../RightPanels/rightPanels';
 import { BudgetFamilyFragment } from '../../Shared/GoalCalculation.generated';
 import { GoalCalculatorSection } from '../../Shared/GoalCalculatorSection';
 import {
-  NewSubBudgetCategoryFragmentDoc,
+  UpdateSubBudgetCategoriesFragment,
+  UpdateSubBudgetCategoriesFragmentDoc,
   useCreateSubBudgetCategoryMutation,
   useDeleteSubBudgetCategoryMutation,
   useUpdatePrimaryBudgetCategoryMutation,
@@ -84,7 +84,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   const { label: categoryName } = category;
   const accountListId = useAccountListId() ?? '';
 
-  const gridData = React.useMemo(
+  const gridData = useMemo(
     () =>
       category.subBudgetCategories.map((subCategory) => ({
         id: subCategory.id,
@@ -100,7 +100,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
     Record<string, string | undefined>
   >({});
   const [directInputError, setDirectInputError] = useState<string>('');
-  const [inputValue, setInputValue] = useState<string>('');
+  const [lumpSumValue, setLumpSumValue] = useState<string>('');
   const [updatePrimaryBudgetCategory] =
     useUpdatePrimaryBudgetCategoryMutation();
   const [updateSubBudgetCategory] = useUpdateSubBudgetCategoryMutation();
@@ -117,7 +117,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
 
   useEffect(() => {
     if (directInput) {
-      setInputValue(lumpSumAmount.toString());
+      setLumpSumValue(lumpSumAmount.toString());
     }
   }, [lumpSumAmount, directInput]);
 
@@ -152,11 +152,11 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
     if (enableDirectInput) {
       // Switching to "Lump Sum" mode
       // Parse the current input value, or use null if empty/invalid
-      const existingValue = inputValue ? parseFloat(inputValue) : null;
+      const existingValue = lumpSumValue ? parseFloat(lumpSumValue) : null;
 
       // If no input value exists, populate with the current total from line items
-      if (!inputValue) {
-        setInputValue(totalAmount.toString());
+      if (!lumpSumValue) {
+        setLumpSumValue(totalAmount.toString());
       }
 
       // Set directInput to the existing value or fall back to totalAmount
@@ -177,7 +177,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
     const stringValue = value.toString();
     const numericValue =
       typeof value === 'string' ? parseFloat(value) || 0 : value;
-    setInputValue(stringValue);
+    setLumpSumValue(stringValue);
 
     try {
       directInputSchema.validateSync({ amount: numericValue });
@@ -219,30 +219,28 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
       update: (cache, { data }) => {
         const newItem = data?.createSubBudgetCategory?.subBudgetCategory;
         if (newItem) {
-          cache.updateFragment(
+          cache.updateFragment<UpdateSubBudgetCategoriesFragment>(
             {
               id: `PrimaryBudgetCategory:${category.id}`,
-              fragment: gql`
-                fragment UpdateSubBudgetCategories on PrimaryBudgetCategory {
-                  id
-                  subBudgetCategories {
-                    ...NewSubBudgetCategory
-                  }
-                }
-                ${NewSubBudgetCategoryFragmentDoc}
-              `,
+              fragment: UpdateSubBudgetCategoriesFragmentDoc,
               fragmentName: 'UpdateSubBudgetCategories',
             },
-            (data) => ({
-              ...data,
-              subBudgetCategories: [
-                ...(data?.subBudgetCategories || []),
-                {
-                  ...newItem,
-                  category: null,
-                },
-              ],
-            }),
+            (data) => {
+              if (!data) {
+                return data;
+              }
+              return {
+                ...data,
+                id: data.id,
+                subBudgetCategories: [
+                  ...(data.subBudgetCategories || []),
+                  {
+                    ...newItem,
+                    category: null,
+                  },
+                ],
+              };
+            },
           );
         }
       },
@@ -267,26 +265,24 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
       },
       update: (cache, { data }) => {
         if (data?.deleteSubBudgetCategory?.id) {
-          cache.updateFragment(
+          cache.updateFragment<UpdateSubBudgetCategoriesFragment>(
             {
               id: `PrimaryBudgetCategory:${category.id}`,
-              fragment: gql`
-                fragment UpdateSubBudgetCategoriesAfterDelete on PrimaryBudgetCategory {
-                  id
-                  subBudgetCategories {
-                    ...NewSubBudgetCategory
-                  }
-                }
-                ${NewSubBudgetCategoryFragmentDoc}
-              `,
-              fragmentName: 'UpdateSubBudgetCategoriesAfterDelete',
+              fragment: UpdateSubBudgetCategoriesFragmentDoc,
+              fragmentName: 'UpdateSubBudgetCategories',
             },
-            (data) => ({
-              ...data,
-              subBudgetCategories: data?.subBudgetCategories.filter(
-                (cat) => cat.id !== rowId,
-              ),
-            }),
+            (data) => {
+              if (!data) {
+                return data;
+              }
+              return {
+                ...data,
+                id: data.id,
+                subBudgetCategories: (data.subBudgetCategories || []).filter(
+                  (cat) => cat.id !== rowId,
+                ),
+              };
+            },
           );
         }
       },
@@ -474,7 +470,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
               size="small"
               label={t('Total')}
               type="number"
-              value={inputValue}
+              value={lumpSumValue}
               onChange={(e) => handleLumpSumChange(e.target.value)}
               error={!!directInputError}
               helperText={directInputError}
