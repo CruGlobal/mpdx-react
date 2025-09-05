@@ -12,14 +12,8 @@ const mockGoal = {
     benefitsCharge: 0,
     primaryCategories: [],
   },
-  ministryExpensesTotal: 2000,
+  ministryExpensesTotal: 3800,
 };
-
-jest.mock('../../MpdGoal/useGoalLineItems', () => ({
-  useGoalLineItems: () => ({
-    overallTotal: 14575,
-  }),
-}));
 
 describe('GoalApplicationButtonGroup', () => {
   it('renders both buttons initially', () => {
