@@ -83,91 +83,6 @@ export const goalCalculationMock = {
   },
 } satisfies DeepPartial<GoalCalculationQuery>;
 
-interface MockOperation {
-  variables?: {
-    input?: {
-      attributes?: {
-        id?: string;
-        label?: string;
-        amount?: number;
-        category?: null;
-        primaryBudgetCategoryId?: string;
-      };
-      id?: string;
-      directInput?: number | null;
-      accountListId?: string;
-    };
-  };
-}
-
-// Dynamic mock handlers
-export const createDynamicMocks = () => {
-  const createdItems = new Map<
-    string,
-    { id: string; label: string; amount: number; category: null }
-  >();
-
-  return {
-    CreateSubBudgetCategory: (operation: MockOperation) => {
-      const dynamicId = `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-      const newItem = {
-        id: dynamicId,
-        label: operation.variables?.input?.attributes?.label || 'New Income',
-        amount: operation.variables?.input?.attributes?.amount || 0,
-        category: operation.variables?.input?.attributes?.category || null,
-      };
-      createdItems.set(dynamicId, newItem);
-
-      return {
-        createSubBudgetCategory: {
-          subBudgetCategory: newItem,
-        },
-      };
-    },
-
-    UpdateSubBudgetCategory: (operation: MockOperation) => {
-      const updatedItem = {
-        id: operation.variables?.input?.attributes?.id,
-        label: operation.variables?.input?.attributes?.label,
-        amount: operation.variables?.input?.attributes?.amount,
-        category: operation.variables?.input?.attributes?.category || null,
-      };
-
-      return {
-        updateSubBudgetCategory: {
-          subBudgetCategory: updatedItem,
-        },
-      };
-    },
-
-    DeleteSubBudgetCategory: (operation: MockOperation) => {
-      const idToDelete = operation.variables?.input?.id;
-      if (idToDelete) {
-        createdItems.delete(idToDelete);
-      }
-
-      return {
-        deleteSubBudgetCategory: {
-          id: idToDelete,
-        },
-      };
-    },
-
-    UpdatePrimaryBudgetCategory: (operation: MockOperation) => {
-      const updatedCategory = {
-        id: operation.variables?.input?.id,
-        directInput: operation.variables?.input?.directInput,
-      };
-
-      return {
-        updatePrimaryBudgetCategory: {
-          primaryBudgetCategory: updatedCategory,
-        },
-      };
-    },
-  };
-};
-
 export const createSubBudgetCategoryMock = {
   createSubBudgetCategory: {
     subBudgetCategory: {
@@ -214,7 +129,7 @@ export const GoalCalculatorTestWrapper: React.FC<GoalCalculatorTestWrapper> = ({
         router={{
           query: {
             accountListId: 'account-list-1',
-            goalCalculatorId: 'goal-calculator-1',
+            goalCalculationId: 'goal-calculator-1',
           },
         }}
       >
