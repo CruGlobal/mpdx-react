@@ -7,7 +7,7 @@ import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { MPGAIncomeExpensesReport } from './MPGAIncomeExpensesReport';
-import { ReportsStaffExpensesQuery } from './ReportsStaffExpenses.generated';
+import { StaffAccountQuery } from './ReportsStaffExpenses.generated';
 
 const mutationSpy = jest.fn();
 const onNavListToggle = jest.fn();
@@ -15,8 +15,8 @@ const onNavListToggle = jest.fn();
 const title = 'MPGA Report';
 
 const mockData = {
-  ReportsStaffExpenses: {
-    reportsStaffExpenses: {
+  StaffAccount: {
+    staffAccount: {
       accountId: '12345',
       name: 'Test Account',
     },
@@ -27,7 +27,7 @@ const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <GqlMockedProvider<{
-        ReportsStaffExpenses: ReportsStaffExpensesQuery;
+        StaffAccount: StaffAccountQuery;
       }>
         mocks={mockData}
         onCall={mutationSpy}
