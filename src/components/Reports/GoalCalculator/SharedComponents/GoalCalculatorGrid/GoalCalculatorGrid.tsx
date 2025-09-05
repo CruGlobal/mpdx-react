@@ -92,7 +92,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
         amount: subCategory.amount,
         canDelete: !subCategory.category,
       })),
-    [category.subBudgetCategories]
+    [category.subBudgetCategories],
   );
 
   const totalAmount = gridData.reduce((sum, item) => sum + item.amount, 0);
@@ -103,9 +103,6 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   const [inputValue, setInputValue] = useState<string>('');
   const [updatePrimaryBudgetCategory] =
     useUpdatePrimaryBudgetCategoryMutation();
-  const [localDirectInput, setLocalDirectInput] = useState<boolean | null>(
-    null
-  );
   const [updateSubBudgetCategory] = useUpdateSubBudgetCategoryMutation();
   const [createSubBudgetCategory] = useCreateSubBudgetCategoryMutation();
   const [deleteSubBudgetCategory] = useDeleteSubBudgetCategoryMutation();
@@ -115,15 +112,14 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
     { id: 'total', label: 'Total', amount: totalAmount },
   ];
 
-  const directInput =
-    localDirectInput !== null ? localDirectInput : !!category.directInput;
+  const directInput = category.directInput !== null;
   const lumpSumAmount = category.directInput || 0;
 
   useEffect(() => {
     if (directInput) {
       setInputValue(lumpSumAmount.toString());
     }
-  }, [lumpSumAmount]);
+  }, [lumpSumAmount, directInput]);
 
   const updatePrimaryBudgetCategoryMutation = (value: number | null) => {
     updatePrimaryBudgetCategory({
@@ -149,25 +145,32 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
 
   const debouncedUpdateMutation = useDebouncedCallback(
     updatePrimaryBudgetCategoryMutation,
-    500
+    500,
   );
 
   const handleDirectInputToggle = (enableDirectInput: boolean) => {
-    let valueToSet: number | null = null;
-
     if (enableDirectInput) {
+      // Switching to "Lump Sum" mode
+      // Parse the current input value, or use null if empty/invalid
       const existingValue = inputValue ? parseFloat(inputValue) : null;
-      valueToSet = existingValue || totalAmount;
 
+      // If no input value exists, populate with the current total from line items
       if (!inputValue) {
         setInputValue(totalAmount.toString());
       }
+
+      // Set directInput to the existing value or fall back to totalAmount
+      // This preserves user input or defaults to the calculated total
+      updatePrimaryBudgetCategoryMutation(existingValue || totalAmount);
+    } else {
+      // Switching to "Line Item" mode
+      // Set directInput to null to indicate line item mode
+      updatePrimaryBudgetCategoryMutation(null);
     }
 
-    setLocalDirectInput(enableDirectInput);
+    // Clear any validation errors when switching modes
     setCellErrors({});
     setDirectInputError('');
-    updatePrimaryBudgetCategoryMutation(valueToSet);
   };
 
   const handleLumpSumChange = (value: string | number) => {
@@ -239,7 +242,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
                   category: null,
                 },
               ],
-            })
+            }),
           );
         }
       },
@@ -264,28 +267,48 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
       },
       update: (cache, { data }) => {
         if (data?.deleteSubBudgetCategory?.id) {
-          cache.evict({
-            id: `SubBudgetCategory:${data.deleteSubBudgetCategory.id}`,
-          });
-          cache.gc();
+          cache.updateFragment(
+            {
+              id: `PrimaryBudgetCategory:${category.id}`,
+              fragment: gql`
+                fragment UpdateSubBudgetCategoriesAfterDelete on PrimaryBudgetCategory {
+                  id
+                  subBudgetCategories {
+                    ...NewSubBudgetCategory
+                  }
+                }
+                ${NewSubBudgetCategoryFragmentDoc}
+              `,
+              fragmentName: 'UpdateSubBudgetCategoriesAfterDelete',
+            },
+            (data) => ({
+              ...data,
+              subBudgetCategories: data?.subBudgetCategories.filter(
+                (cat) => cat.id !== rowId,
+              ),
+            }),
+          );
         }
       },
     });
   };
 
   const processRowUpdate = (newRow: GridValidRowModel) => {
+    // Don't process the total row - it's read-only and calculated
     if (newRow.id === 'total') {
       return newRow;
     }
 
+    // Extract the updated values from the grid row
     const rowId = newRow.id as string;
     const label = newRow.label as string;
     const amount = newRow.amount as number;
 
     try {
+      // Validate the updated row data using yup schema
       subBudgetCategorySchema.validateSync({ label, amount });
 
-      // Clear any existing errors for this row
+      // Clear any existing validation errors for this row since validation passed
       setCellErrors((prev) => {
         const updated = { ...prev };
         delete updated[`${rowId}-label`];
@@ -312,13 +335,18 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
               id: rowId,
               label,
               amount,
+              // Preserve the original category value from the server data
+              category:
+                category.subBudgetCategories.find((sub) => sub.id === rowId)
+                  ?.category || null,
             },
           },
         },
       });
     } catch (error) {
+      // Handle validation errors from yup schema
       if (error instanceof yup.ValidationError) {
-        // Set validation errors
+        // Set validation errors in state to display in the UI
         setCellErrors((prev) => ({
           ...prev,
           [`${rowId}-${error.path}`]: error.message,
@@ -326,6 +354,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
       }
     }
 
+    // Return the updated row data for the grid to display
     return newRow;
   };
 
