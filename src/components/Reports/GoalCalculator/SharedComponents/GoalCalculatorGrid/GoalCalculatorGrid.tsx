@@ -34,8 +34,8 @@ import {
   UpdateSubBudgetCategoriesFragmentDoc,
   useCreateSubBudgetCategoryMutation,
   useDeleteSubBudgetCategoryMutation,
-  useUpdatePrimaryBudgetCategoryMutation,
   useUpdateSubBudgetCategoryMutation,
+  useupdateDirectInput,
 } from './GoalCalculatorGrid.generated';
 import { StyledGrid } from './StyledGrid';
 
@@ -101,16 +101,15 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   >({});
   const [directInputError, setDirectInputError] = useState<string>('');
   const [lumpSumValue, setLumpSumValue] = useState<string>('');
-  const [updatePrimaryBudgetCategory] =
-    useUpdatePrimaryBudgetCategoryMutation();
+  const [updatePrimaryBudgetCategory] = useupdateDirectInput();
   const [updateSubBudgetCategory] = useUpdateSubBudgetCategoryMutation();
   const [createSubBudgetCategory] = useCreateSubBudgetCategoryMutation();
   const [deleteSubBudgetCategory] = useDeleteSubBudgetCategoryMutation();
 
-  const dataWithTotal = [
-    ...gridData,
-    { id: 'total', label: 'Total', amount: totalAmount },
-  ];
+  const dataWithTotal = useMemo(
+    () => [...gridData, { id: 'total', label: 'Total', amount: totalAmount }],
+    [gridData, totalAmount],
+  );
 
   const directInput = category.directInput !== null;
   const lumpSumAmount = category.directInput || 0;
@@ -121,13 +120,13 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
     }
   }, [lumpSumAmount, directInput]);
 
-  const updatePrimaryBudgetCategoryMutation = (value: number | null) => {
+  const updateDirectInput = (directInput: number | null) => {
     updatePrimaryBudgetCategory({
       variables: {
         input: {
           accountListId,
           id: category.id,
-          directInput: value,
+          directInput: directInput,
         },
       },
       optimisticResponse: {
@@ -136,17 +135,14 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
           primaryBudgetCategory: {
             __typename: 'PrimaryBudgetCategory',
             id: category.id,
-            directInput: value,
+            directInput: directInput,
           },
         },
       },
     });
   };
 
-  const debouncedUpdateMutation = useDebouncedCallback(
-    updatePrimaryBudgetCategoryMutation,
-    500,
-  );
+  const debouncedUpdateMutation = useDebouncedCallback(updateDirectInput, 500);
 
   const handleDirectInputToggle = (enableDirectInput: boolean) => {
     if (enableDirectInput) {
@@ -161,11 +157,11 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
 
       // Set directInput to the existing value or fall back to totalAmount
       // This preserves user input or defaults to the calculated total
-      updatePrimaryBudgetCategoryMutation(existingValue || totalAmount);
+      updateDirectInput(existingValue || totalAmount);
     } else {
       // Switching to "Line Item" mode
       // Set directInput to null to indicate line item mode
-      updatePrimaryBudgetCategoryMutation(null);
+      updateDirectInput(null);
     }
 
     // Clear any validation errors when switching modes
