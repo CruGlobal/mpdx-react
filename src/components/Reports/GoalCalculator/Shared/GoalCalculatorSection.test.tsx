@@ -1,6 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -21,7 +22,7 @@ const RightPanel: React.FC = () => {
 };
 
 const TestComponent: React.FC<Partial<GoalCalculatorSectionProps>> = (
-  props
+  props,
 ) => (
   <TestRouter>
     <ThemeProvider theme={theme}>
@@ -29,7 +30,11 @@ const TestComponent: React.FC<Partial<GoalCalculatorSectionProps>> = (
         <GqlMockedProvider>
           <GoalCalculatorProvider>
             <RightPanel />
-            <GoalCalculatorSection subtitle="Section Subtitle" {...props}>
+            <GoalCalculatorSection
+              title="Section Title"
+              subtitle="Section Subtitle"
+              {...props}
+            >
               Main content
             </GoalCalculatorSection>
           </GoalCalculatorProvider>
@@ -41,19 +46,26 @@ const TestComponent: React.FC<Partial<GoalCalculatorSectionProps>> = (
 
 describe('GoalCalculatorSection', () => {
   it('renders the header with the title and subtitle', () => {
-    const { getByRole, getByText } = render(
-      <TestComponent title={'Section Title'} />
-    );
+    const { getByRole, getByText } = render(<TestComponent />);
 
     expect(getByRole('heading', { name: 'Section Title' })).toBeInTheDocument();
     expect(getByText('Section Subtitle')).toBeInTheDocument();
+  });
+
+  it('shows right panel content when icon is clicked', async () => {
+    const { getByRole, getByText } = render(
+      <TestComponent rightPanelContent={<div>Right panel content</div>} />,
+    );
+
+    userEvent.click(getByRole('button', { name: 'Show additional info' }));
+    expect(getByText('Right panel content')).toBeInTheDocument();
   });
 
   it('does not render icon when there is no right panel content', () => {
     const { queryByRole } = render(<TestComponent />);
 
     expect(
-      queryByRole('button', { name: 'Show additional info' })
+      queryByRole('button', { name: 'Show additional info' }),
     ).not.toBeInTheDocument();
   });
 
