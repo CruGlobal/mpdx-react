@@ -82,13 +82,15 @@ describe('GoalCalculator', () => {
   });
 
   describe('reports step', () => {
-    it('renders custom section list and main content', () => {
-      const { getByRole } = render(
+    it('renders custom section list and main content', async () => {
+      const { getByRole, findByRole } = render(
         <TestComponent selectedStepId={GoalCalculatorStepEnum.SummaryReport} />,
       );
 
       expect(getByRole('button', { name: 'MPD Goal' })).toBeInTheDocument();
-      expect(getByRole('heading', { name: 'MPD Goal' })).toBeInTheDocument();
+      expect(
+        await findByRole('heading', { name: 'MPD Goal' }),
+      ).toBeInTheDocument();
     });
   });
 });
