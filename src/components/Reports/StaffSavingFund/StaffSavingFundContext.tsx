@@ -1,5 +1,4 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 
 export type StaffSavingFundType = {
   accountListId?: string;
@@ -16,7 +15,6 @@ interface Props {
 }
 
 export const StaffSavingFundProvider: React.FC<Props> = ({ children }) => {
-  const accountListId = useAccountListId();
   const [isNavListOpen, setIsNavListOpen] = useState(false);
 
   const onNavListToggle = useCallback(() => {
@@ -25,11 +23,10 @@ export const StaffSavingFundProvider: React.FC<Props> = ({ children }) => {
 
   const contextValue = useMemo(
     () => ({
-      accountListId,
       isNavListOpen,
       onNavListToggle,
     }),
-    [accountListId, isNavListOpen, onNavListToggle],
+    [isNavListOpen, onNavListToggle],
   );
 
   return (

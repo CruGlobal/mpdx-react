@@ -6,8 +6,8 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
+import { StaffAccountQuery } from '../StaffAccount.generated';
 import { MPGAIncomeExpensesReport } from './MPGAIncomeExpensesReport';
-import { StaffAccountQuery } from './ReportsStaffExpenses.generated';
 
 const mutationSpy = jest.fn();
 const onNavListToggle = jest.fn();

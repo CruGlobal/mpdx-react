@@ -1,11 +1,3 @@
-query StaffAccount {
-  staffAccount {
-    accountId
-    name
-    status
-  }
-}
-
 query ReportsStaffExpenses(
   $fundTypes: [String!]
   $startMonth: ISO8601Date

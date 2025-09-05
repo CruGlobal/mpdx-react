@@ -16,6 +16,7 @@ import {
 import { useFilteredFunds } from 'src/hooks/useFilteredFunds';
 import { useGetLastTwelveMonths } from 'src/hooks/useGetLastTwelveMonths';
 import { useLocale } from 'src/hooks/useLocale';
+import { useStaffAccountQuery } from '../StaffAccount.generated';
 import {
   SimplePrintOnly,
   SimpleScreenOnly,
@@ -25,10 +26,7 @@ import { PrintOnlyReport } from './DisplayModes/PrintOnlyReport';
 import { ScreenOnlyReport } from './DisplayModes/ScreenOnlyReport';
 import { FundTypes } from './Helper/MPGAReportEnum';
 import { convertMonths } from './Helper/convertMonths';
-import {
-  useReportsStaffExpensesQuery,
-  useStaffAccountQuery,
-} from './ReportsStaffExpenses.generated';
+import { useReportsStaffExpensesQuery } from './ReportsStaffExpenses.generated';
 import { TotalsProvider } from './TotalsContext/TotalsContext';
 import { AllData } from './mockData';
 import { PrintOnly, StyledHeaderBox } from './styledComponents';
@@ -55,9 +53,7 @@ export const MPGAIncomeExpensesReport: React.FC<
   const start = convertMonths(last12Months[0], locale);
   const end = DateTime.now().toISODate();
 
-  const { data: staffAccountData } = useStaffAccountQuery({
-    variables: {},
-  });
+  const { data: staffAccountData } = useStaffAccountQuery();
 
   const { data: reportData } = useReportsStaffExpensesQuery({
     variables: {
