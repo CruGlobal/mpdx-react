@@ -21,7 +21,6 @@ import {
 interface GoalCalculatorTestWrapper {
   onCall?: MockLinkCallHandler;
   children?: React.ReactNode;
-  useDynamicMocks?: boolean;
 }
 
 export const goalCalculationMock = {
@@ -208,40 +207,7 @@ export const updatePrimaryBudgetCategoryMock = {
 export const GoalCalculatorTestWrapper: React.FC<GoalCalculatorTestWrapper> = ({
   children,
   onCall,
-  useDynamicMocks = false,
 }) => {
-  const dynamicMocks = useDynamicMocks ? createDynamicMocks() : undefined;
-
-  const handleCall =
-    onCall ||
-    ((operation) => {
-      if (useDynamicMocks && dynamicMocks) {
-        if (operation.operation.operationName === 'CreateSubBudgetCategory') {
-          return dynamicMocks.CreateSubBudgetCategory(
-            operation as MockOperation,
-          );
-        }
-        if (operation.operation.operationName === 'UpdateSubBudgetCategory') {
-          return dynamicMocks.UpdateSubBudgetCategory(
-            operation as MockOperation,
-          );
-        }
-        if (operation.operation.operationName === 'DeleteSubBudgetCategory') {
-          return dynamicMocks.DeleteSubBudgetCategory(
-            operation as MockOperation,
-          );
-        }
-        if (
-          operation.operation.operationName === 'UpdatePrimaryBudgetCategory'
-        ) {
-          return dynamicMocks.UpdatePrimaryBudgetCategory(
-            operation as MockOperation,
-          );
-        }
-      }
-      return null;
-    });
-
   return (
     <ThemeProvider theme={theme}>
       <TestRouter
@@ -267,7 +233,7 @@ export const GoalCalculatorTestWrapper: React.FC<GoalCalculatorTestWrapper> = ({
               DeleteSubBudgetCategory: deleteSubBudgetCategoryMock,
               UpdatePrimaryBudgetCategory: updatePrimaryBudgetCategoryMock,
             }}
-            onCall={handleCall}
+            onCall={onCall}
           >
             <GoalCalculatorProvider>{children}</GoalCalculatorProvider>
           </GqlMockedProvider>

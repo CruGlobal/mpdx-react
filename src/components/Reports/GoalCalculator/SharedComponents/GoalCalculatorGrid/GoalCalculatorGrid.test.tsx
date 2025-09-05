@@ -39,7 +39,7 @@ describe('GoalCalculatorGrid', () => {
 
   it('adds a new row when Add button is clicked', async () => {
     const { getByRole, findByText } = render(
-      <GoalCalculatorTestWrapper useDynamicMocks={true}>
+      <GoalCalculatorTestWrapper>
         <TestComponent />
       </GoalCalculatorTestWrapper>,
     );
@@ -73,7 +73,7 @@ describe('GoalCalculatorGrid', () => {
 
   it('adds and removes a row when delete button is clicked', async () => {
     const { getByText, findByText } = render(
-      <GoalCalculatorTestWrapper useDynamicMocks={true}>
+      <GoalCalculatorTestWrapper>
         <TestComponent />
       </GoalCalculatorTestWrapper>,
     );
@@ -92,7 +92,7 @@ describe('GoalCalculatorGrid', () => {
   it('edits a row name and updates the data', async () => {
     const { queryByDisplayValue, getByDisplayValue, findByText, getByText } =
       render(
-        <GoalCalculatorTestWrapper useDynamicMocks={true}>
+        <GoalCalculatorTestWrapper>
           <TestComponent />
         </GoalCalculatorTestWrapper>,
       );
@@ -114,7 +114,7 @@ describe('GoalCalculatorGrid', () => {
 
   it('edits a row amount and updates the total', async () => {
     const { findByText, getByDisplayValue, getByText } = render(
-      <GoalCalculatorTestWrapper useDynamicMocks={true}>
+      <GoalCalculatorTestWrapper>
         <TestComponent />
       </GoalCalculatorTestWrapper>,
     );
@@ -140,7 +140,7 @@ describe('GoalCalculatorGrid', () => {
 
   it('prevents editing the total row', async () => {
     const { getByText, getAllByLabelText, findByText } = render(
-      <GoalCalculatorTestWrapper useDynamicMocks={true}>
+      <GoalCalculatorTestWrapper>
         <TestComponent />
       </GoalCalculatorTestWrapper>,
     );
