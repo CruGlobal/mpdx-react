@@ -16,6 +16,9 @@ export const getPrimaryTotal = (primary: PrimaryBudgetCategory): number => {
 };
 
 export const getFamilyTotal = (family: BudgetFamilyFragment): number => {
+  if (typeof family.directInput === 'number') {
+    return family.directInput;
+  }
   return family.primaryBudgetCategories.reduce(
     (sum: number, primary) => sum + getPrimaryTotal(primary),
     0,

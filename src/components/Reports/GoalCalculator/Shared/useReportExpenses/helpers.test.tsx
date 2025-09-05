@@ -25,24 +25,20 @@ describe('getPrimaryCategoryTotal', () => {
   it('returns sum of all subcategory amounts for primary category with directInput set', () => {
     expect(getPrimaryTotal(mockFamily.primaryBudgetCategories[0])).toBe(20);
   });
+
   it('returns sum of all subcategory amounts for primary category without directInput set', () => {
     expect(getPrimaryTotal(mockFamily.primaryBudgetCategories[1])).toBe(700);
   });
 });
 
 describe('getMinistryExpensesTotal', () => {
-  it('returns correct sum of all primary category amounts for ministry family with a directInput value set', () => {
+  it('returns correct sum of all primary category amounts for ministry family with a primaryBudgetCategory directInput value set', () => {
+    mockFamily.directInput = null;
     expect(getFamilyTotal(mockFamily)).toBe(720);
   });
 
-  it('returns sum of all primary category amounts for ministry family without any directInput set', () => {
-    const noDirectInputMockFamily = {
-      ...mockFamily,
-      primaryBudgetCategories: [
-        { ...mockFamily.primaryBudgetCategories[0], directInput: null },
-        mockFamily.primaryBudgetCategories[1],
-      ],
-    };
-    expect(getFamilyTotal(noDirectInputMockFamily)).toBe(1000);
+  it('returns sum of family directInput for ministry family with directInput set', () => {
+    mockFamily.directInput = 1200;
+    expect(getFamilyTotal(mockFamily)).toBe(1200);
   });
 });
