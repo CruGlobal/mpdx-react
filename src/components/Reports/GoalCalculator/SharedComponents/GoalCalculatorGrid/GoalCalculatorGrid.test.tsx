@@ -87,6 +87,9 @@ describe('GoalCalculatorGrid', () => {
     const deleteButton = newIncomeRow?.querySelector('[aria-label="Delete"]');
 
     userEvent.click(deleteButton as Element);
+    await waitFor(() => {
+      expect(newIncomeRow).not.toBeInTheDocument();
+    });
   });
 
   it('edits a row name and updates the data', async () => {
