@@ -34,8 +34,8 @@ import {
   UpdateSubBudgetCategoriesFragmentDoc,
   useCreateSubBudgetCategoryMutation,
   useDeleteSubBudgetCategoryMutation,
+  useUpdatePrimaryBudgetCategoryMutation,
   useUpdateSubBudgetCategoryMutation,
-  useupdateDirectInput,
 } from './GoalCalculatorGrid.generated';
 import { StyledGrid } from './StyledGrid';
 
@@ -101,7 +101,8 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   >({});
   const [directInputError, setDirectInputError] = useState<string>('');
   const [lumpSumValue, setLumpSumValue] = useState<string>('');
-  const [updatePrimaryBudgetCategory] = useupdateDirectInput();
+  const [updatePrimaryBudgetCategory] =
+    useUpdatePrimaryBudgetCategoryMutation();
   const [updateSubBudgetCategory] = useUpdateSubBudgetCategoryMutation();
   const [createSubBudgetCategory] = useCreateSubBudgetCategoryMutation();
   const [deleteSubBudgetCategory] = useDeleteSubBudgetCategoryMutation();
