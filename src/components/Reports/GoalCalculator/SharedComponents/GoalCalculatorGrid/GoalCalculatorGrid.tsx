@@ -492,23 +492,21 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
               {t('Add Line Item')}
             </Button>
 
-            <Box>
-              <StyledGrid
-                rows={dataWithTotal}
-                columns={columns}
-                processRowUpdate={processRowUpdate}
-                isCellEditable={(params) => {
-                  // Don't allow editing the total row or label field when canDelete is false
-                  if (params.id === 'total') {
-                    return false;
-                  }
-                  if (params.field === 'label' && !params.row.canDelete) {
-                    return false;
-                  }
-                  return true;
-                }}
-              />
-            </Box>
+            <StyledGrid
+              rows={dataWithTotal}
+              columns={columns}
+              processRowUpdate={processRowUpdate}
+              isCellEditable={(params) => {
+                // Don't allow editing the total row or label field when canDelete is false
+                if (params.id === 'total') {
+                  return false;
+                }
+                if (params.field === 'label' && !params.row.canDelete) {
+                  return false;
+                }
+                return true;
+              }}
+            />
           </>
         )}
       </StyledCard>
