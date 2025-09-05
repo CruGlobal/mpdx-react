@@ -52,8 +52,9 @@ describe('GoalCalculatorGrid', () => {
   });
 
   it('adds a new row when Add button is clicked', async () => {
+    const mutationSpy = jest.fn();
     const { getByRole, findByText } = render(
-      <GoalCalculatorTestWrapper>
+      <GoalCalculatorTestWrapper onCall={mutationSpy}>
         <TestComponent />
       </GoalCalculatorTestWrapper>,
     );
@@ -63,6 +64,18 @@ describe('GoalCalculatorGrid', () => {
     const addButton = getByRole('button', { name: /Add Line Item/i });
     userEvent.click(addButton);
     expect(await findByText('New Income')).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(mutationSpy).toHaveGraphqlOperation('CreateSubBudgetCategory', {
+        input: {
+          accountListId: 'account-list-1',
+          attributes: {
+            label: 'New Income',
+            amount: 0,
+          },
+        },
+      });
+    });
   });
 
   it("doesn't remove base rows with categories", async () => {
@@ -74,10 +87,6 @@ describe('GoalCalculatorGrid', () => {
     const lumpSumButton = await findByText('Line Item');
     userEvent.click(lumpSumButton);
 
-    expect(getByText('Compass Room')).toBeInTheDocument();
-    expect(getByText('Desk')).toBeInTheDocument();
-    expect(getByText('Eyes PaintBrush Bible')).toBeInTheDocument();
-
     const compassRow = getByText('Compass Room').closest('[role="row"]');
     userEvent.hover(compassRow!);
     const deleteButton = compassRow?.querySelector('[aria-label="Delete"]');
@@ -86,8 +95,9 @@ describe('GoalCalculatorGrid', () => {
   });
 
   it('adds and removes a row when delete button is clicked', async () => {
+    const mutationSpy = jest.fn();
     const { getByText, findByText } = render(
-      <GoalCalculatorTestWrapper>
+      <GoalCalculatorTestWrapper onCall={mutationSpy}>
         <TestComponent />
       </GoalCalculatorTestWrapper>,
     );
@@ -95,14 +105,24 @@ describe('GoalCalculatorGrid', () => {
     userEvent.click(lumpSumButton);
 
     userEvent.click(getByText(/Add Line Item/i));
-    expect(await findByText('New Income')).toBeInTheDocument();
-    const newIncomeRow = getByText('New Income').closest('[role="row"]');
+    const newIncomeRow = (await findByText('New Income')).closest(
+      '[role="row"]',
+    );
     userEvent.hover(newIncomeRow!);
     const deleteButton = newIncomeRow?.querySelector('[aria-label="Delete"]');
 
     userEvent.click(deleteButton as Element);
+
     await waitFor(() => {
       expect(newIncomeRow).not.toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(mutationSpy).toHaveGraphqlOperation('DeleteSubBudgetCategory', {
+        input: {
+          accountListId: 'account-list-1',
+        },
+      });
     });
   });
 
@@ -155,7 +175,6 @@ describe('GoalCalculatorGrid', () => {
     userEvent.click(getByText(/Add Line Item/i));
     const newIncomeRow = getByText('New Income').closest('[role="row"]');
     const amountCell = newIncomeRow?.querySelector('[data-field="amount"]');
-    expect(amountCell).toBeInTheDocument();
     userEvent.dblClick(amountCell!);
 
     await waitFor(async () => {
@@ -267,8 +286,6 @@ describe('GoalCalculatorGrid', () => {
     const textField = await findByLabelText('Total');
     userEvent.clear(textField);
     userEvent.type(textField, '2500');
-
-    mutationSpy.mockClear();
 
     const lineItemButton = await findByText('Line Item');
     userEvent.click(lineItemButton);
