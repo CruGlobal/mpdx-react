@@ -130,8 +130,9 @@ describe('GoalCalculatorGrid', () => {
   });
 
   it('edits a row amount and updates the total', async () => {
+    const mutationSpy = jest.fn();
     const { findByText, getByDisplayValue, getByText } = render(
-      <GoalCalculatorTestWrapper>
+      <GoalCalculatorTestWrapper onCall={mutationSpy}>
         <TestComponent />
       </GoalCalculatorTestWrapper>,
     );
@@ -153,6 +154,19 @@ describe('GoalCalculatorGrid', () => {
     const totalRow = getByText('Total').closest('[role="row"]');
     const totalCell = totalRow?.querySelector('[data-field="amount"]');
     expect(totalCell).toHaveTextContent('$1,450');
+
+    // Check that the UpdateSubBudgetCategory mutation was called
+    await waitFor(() => {
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateSubBudgetCategory', {
+        input: {
+          accountListId: 'account-list-1',
+          attributes: {
+            label: 'New Income',
+            amount: 3000,
+          },
+        },
+      });
+    });
   });
 
   it('prevents editing the total row', async () => {
