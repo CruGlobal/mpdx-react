@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useGoalCalculator } from './GoalCalculatorContext';
 
 export interface GoalCalculatorSectionProps {
-  title?: string;
+  title: string;
   subtitle?: string;
   rightPanelContent?: JSX.Element;
   printable?: boolean;
@@ -32,12 +32,18 @@ export const GoalCalculatorSection: React.FC<GoalCalculatorSectionProps> = ({
   return (
     <div>
       <Box pb={4}>
-        <Stack direction="row" justifyContent="space-between">
-          <Stack direction="row" spacing={2}>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Typography variant="h6">{title}</Typography>
+        <Stack direction="row" spacing={2}>
+          <Stack
+            direction="row"
+            spacing={1}
+            alignItems="center"
+            sx={{ flex: 1 }}
+          >
+            <Typography variant="h6">
+              {title}{' '}
               {rightPanelContent && (
                 <IconButton
+                  size="small"
                   className="print-hidden"
                   onClick={() => {
                     rightPanelContent &&
@@ -48,20 +54,27 @@ export const GoalCalculatorSection: React.FC<GoalCalculatorSectionProps> = ({
                   <InfoIcon />
                 </IconButton>
               )}
-            </Box>
-            {titleExtra}
+            </Typography>
           </Stack>
-
-          {printable && (
-            <Button
-              className="print-hidden"
-              variant="outlined"
-              endIcon={<PrintIcon />}
-              onClick={handlePrint}
-            >
-              {t('Print')}
-            </Button>
-          )}
+          <Stack
+            direction="row"
+            justifyContent="flex-start"
+            alignItems="center"
+            sx={{ flex: 1 }}
+            spacing={2}
+          >
+            {titleExtra}
+            {printable && (
+              <Button
+                className="print-hidden"
+                variant="outlined"
+                endIcon={<PrintIcon />}
+                onClick={handlePrint}
+              >
+                {t('Print')}
+              </Button>
+            )}
+          </Stack>
         </Stack>
         {subtitle && <Typography pt={1}>{subtitle}</Typography>}
       </Box>
