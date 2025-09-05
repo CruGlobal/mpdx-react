@@ -1,3 +1,11 @@
+query StaffAccount {
+  staffAccount {
+    accountId
+    name
+    status
+  }
+}
+
 query ReportsStaffExpenses(
   $fundTypes: [String!]
   $startMonth: ISO8601Date
@@ -8,7 +16,6 @@ query ReportsStaffExpenses(
     startMonth: $startMonth
     endMonth: $endMonth
   ) {
-    accountId
     funds {
       categories {
         averagePerMonth
@@ -31,7 +38,5 @@ query ReportsStaffExpenses(
       fundType
       total
     }
-    name
-    status
   }
 }

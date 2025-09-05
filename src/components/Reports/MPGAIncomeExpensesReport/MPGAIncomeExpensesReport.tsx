@@ -25,7 +25,10 @@ import { PrintOnlyReport } from './DisplayModes/PrintOnlyReport';
 import { ScreenOnlyReport } from './DisplayModes/ScreenOnlyReport';
 import { FundTypes } from './Helper/MPGAReportEnum';
 import { convertMonths } from './Helper/convertMonths';
-import { useReportsStaffExpensesQuery } from './ReportsStaffExpenses.generated';
+import {
+  useReportsStaffExpensesQuery,
+  useStaffAccountQuery,
+} from './ReportsStaffExpenses.generated';
 import { TotalsProvider } from './TotalsContext/TotalsContext';
 import { AllData } from './mockData';
 import { PrintOnly, StyledHeaderBox } from './styledComponents';
@@ -51,6 +54,10 @@ export const MPGAIncomeExpensesReport: React.FC<
 
   const start = convertMonths(last12Months[0], locale);
   const end = DateTime.now().toISODate();
+
+  const { data: staffAccountData } = useStaffAccountQuery({
+    variables: {},
+  });
 
   const { data: reportData } = useReportsStaffExpensesQuery({
     variables: {
@@ -122,9 +129,9 @@ export const MPGAIncomeExpensesReport: React.FC<
               </SimpleScreenOnly>
             </StyledHeaderBox>
             <Box display="flex" flexDirection="row" gap={3} mb={2}>
-              <Typography>{reportData?.reportsStaffExpenses.name}</Typography>
+              <Typography>{staffAccountData?.staffAccount?.name}</Typography>
               <Typography>
-                {reportData?.reportsStaffExpenses.accountId}
+                {staffAccountData?.staffAccount?.accountId}
               </Typography>
             </Box>
           </Container>
