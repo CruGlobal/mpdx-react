@@ -32,30 +32,23 @@ export const GoalCalculatorSection: React.FC<GoalCalculatorSectionProps> = ({
   return (
     <div>
       <Box pb={4}>
-        <Stack direction="row" spacing={2}>
-          <Stack
-            direction="row"
-            spacing={1}
-            alignItems="center"
-            sx={{ flex: 1 }}
-          >
-            <Typography variant="h6">
-              {title}{' '}
-              {rightPanelContent && (
-                <IconButton
-                  size="small"
-                  className="print-hidden"
-                  onClick={() => {
-                    rightPanelContent &&
-                      setRightPanelContent(rightPanelContent);
-                  }}
-                  aria-label={t('Show additional info')}
-                >
-                  <InfoIcon />
-                </IconButton>
-              )}
-            </Typography>
-          </Stack>
+        <Stack direction="row" gap={2}>
+          <Typography variant="h6">
+            {title}
+            {rightPanelContent && (
+              <IconButton
+                size="small"
+                className="print-hidden"
+                onClick={() => {
+                  rightPanelContent && setRightPanelContent(rightPanelContent);
+                }}
+                aria-label={t('Show additional info')}
+              >
+                <InfoIcon />
+              </IconButton>
+            )}
+          </Typography>
+
           <Stack
             direction="row"
             justifyContent="flex-start"

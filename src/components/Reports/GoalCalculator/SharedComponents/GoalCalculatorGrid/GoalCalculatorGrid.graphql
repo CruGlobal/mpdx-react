@@ -28,7 +28,9 @@ mutation UpdateSubBudgetCategory(
 ) {
   updateSubBudgetCategory(input: $input) {
     subBudgetCategory {
-      ...NewSubBudgetCategory
+      id
+      label
+      amount
     }
   }
 }

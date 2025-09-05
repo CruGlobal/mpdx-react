@@ -223,20 +223,12 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
               fragmentName: 'UpdateSubBudgetCategories',
             },
             (data) => {
-              if (!data) {
-                return data;
-              }
-              return {
-                ...data,
-                id: data.id,
-                subBudgetCategories: [
-                  ...(data.subBudgetCategories || []),
-                  {
-                    ...newItem,
-                    category: null,
-                  },
-                ],
-              };
+              return (
+                data && {
+                  ...data,
+                  subBudgetCategories: [...data.subBudgetCategories, newItem],
+                }
+              );
             },
           );
         }
@@ -269,16 +261,14 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
               fragmentName: 'UpdateSubBudgetCategories',
             },
             (data) => {
-              if (!data) {
-                return data;
-              }
-              return {
-                ...data,
-                id: data.id,
-                subBudgetCategories: (data.subBudgetCategories || []).filter(
-                  (cat) => cat.id !== rowId,
-                ),
-              };
+              return (
+                data && {
+                  ...data,
+                  subBudgetCategories: data.subBudgetCategories.filter(
+                    (cat) => cat.id !== rowId,
+                  ),
+                }
+              );
             },
           );
         }
@@ -328,10 +318,6 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
               id: rowId,
               label,
               amount,
-              // Preserve the original category value from the server data
-              category:
-                category.subBudgetCategories.find((sub) => sub.id === rowId)
-                  ?.category || null,
             },
           },
         },
