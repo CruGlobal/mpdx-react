@@ -253,4 +253,36 @@ describe('GoalCalculatorGrid', () => {
 
     expect(getByText('Special Income')).toBeInTheDocument();
   });
+
+  it('switches from lump sum to line items and clears directInput', async () => {
+    const mutationSpy = jest.fn();
+    const { findByLabelText, findByText } = render(
+      <GoalCalculatorTestWrapper onCall={mutationSpy}>
+        <TestComponent />
+      </GoalCalculatorTestWrapper>,
+    );
+
+    const lumpSumButton = await findByText('Lump Sum');
+    userEvent.click(lumpSumButton);
+    const textField = await findByLabelText('Total');
+    userEvent.clear(textField);
+    userEvent.type(textField, '2500');
+
+    mutationSpy.mockClear();
+
+    const lineItemButton = await findByText('Line Item');
+    userEvent.click(lineItemButton);
+
+    await waitFor(() => {
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'UpdatePrimaryBudgetCategory',
+        {
+          input: {
+            accountListId: 'account-list-1',
+            directInput: null,
+          },
+        },
+      );
+    });
+  });
 });
