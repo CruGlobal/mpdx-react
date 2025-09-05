@@ -1,5 +1,4 @@
 import { gqlMock } from '__tests__/util/graphqlMocking';
-import {} from 'src/graphql/types.generated';
 import {
   BudgetFamilyFragment,
   BudgetFamilyFragmentDoc,
