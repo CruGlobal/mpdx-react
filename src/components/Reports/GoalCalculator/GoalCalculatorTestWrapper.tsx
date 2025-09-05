@@ -1,15 +1,17 @@
-import { InMemoryCache } from '@apollo/client';
 import { ThemeProvider } from '@emotion/react';
 import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
 import { SnackbarProvider } from 'notistack';
 import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { PrimaryBudgetCategoryEnum, SubBudgetCategoryEnum } from 'src/graphql/types.generated';
+import {
+  PrimaryBudgetCategoryEnum,
+  SubBudgetCategoryEnum,
+} from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { GoalCalculationQuery } from './Shared/GoalCalculation.generated';
 import { GoalCalculatorProvider } from './Shared/GoalCalculatorContext';
-import { 
+import {
   CreateSubBudgetCategoryMutation,
   DeleteSubBudgetCategoryMutation,
   UpdatePrimaryBudgetCategoryMutation,
@@ -19,7 +21,6 @@ import {
 interface GoalCalculatorTestWrapper {
   onCall?: MockLinkCallHandler;
   children?: React.ReactNode;
-  cache?: InMemoryCache;
   useDynamicMocks?: boolean;
 }
 
@@ -102,8 +103,11 @@ interface MockOperation {
 
 // Dynamic mock handlers
 export const createDynamicMocks = () => {
-  const createdItems = new Map<string, { id: string; label: string; amount: number; category: null }>();
-  
+  const createdItems = new Map<
+    string,
+    { id: string; label: string; amount: number; category: null }
+  >();
+
   return {
     CreateSubBudgetCategory: (operation: MockOperation) => {
       const dynamicId = `temp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -114,14 +118,14 @@ export const createDynamicMocks = () => {
         category: operation.variables?.input?.attributes?.category || null,
       };
       createdItems.set(dynamicId, newItem);
-      
+
       return {
         createSubBudgetCategory: {
           subBudgetCategory: newItem,
         },
       };
     },
-    
+
     UpdateSubBudgetCategory: (operation: MockOperation) => {
       const updatedItem = {
         id: operation.variables?.input?.attributes?.id,
@@ -129,20 +133,20 @@ export const createDynamicMocks = () => {
         amount: operation.variables?.input?.attributes?.amount,
         category: operation.variables?.input?.attributes?.category || null,
       };
-      
+
       return {
         updateSubBudgetCategory: {
           subBudgetCategory: updatedItem,
         },
       };
     },
-    
+
     DeleteSubBudgetCategory: (operation: MockOperation) => {
       const idToDelete = operation.variables?.input?.id;
       if (idToDelete) {
         createdItems.delete(idToDelete);
       }
-      
+
       return {
         deleteSubBudgetCategory: {
           id: idToDelete,
@@ -155,7 +159,7 @@ export const createDynamicMocks = () => {
         id: operation.variables?.input?.id,
         directInput: operation.variables?.input?.directInput,
       };
-      
+
       return {
         updatePrimaryBudgetCategory: {
           primaryBudgetCategory: updatedCategory,
@@ -204,28 +208,39 @@ export const updatePrimaryBudgetCategoryMock = {
 export const GoalCalculatorTestWrapper: React.FC<GoalCalculatorTestWrapper> = ({
   children,
   onCall,
-  cache,
   useDynamicMocks = false,
 }) => {
   const dynamicMocks = useDynamicMocks ? createDynamicMocks() : undefined;
-  
-  const handleCall = onCall || ((operation) => {
-    if (useDynamicMocks && dynamicMocks) {
-      if (operation.operation.operationName === 'CreateSubBudgetCategory') {
-        return dynamicMocks.CreateSubBudgetCategory(operation as MockOperation);
+
+  const handleCall =
+    onCall ||
+    ((operation) => {
+      if (useDynamicMocks && dynamicMocks) {
+        if (operation.operation.operationName === 'CreateSubBudgetCategory') {
+          return dynamicMocks.CreateSubBudgetCategory(
+            operation as MockOperation,
+          );
+        }
+        if (operation.operation.operationName === 'UpdateSubBudgetCategory') {
+          return dynamicMocks.UpdateSubBudgetCategory(
+            operation as MockOperation,
+          );
+        }
+        if (operation.operation.operationName === 'DeleteSubBudgetCategory') {
+          return dynamicMocks.DeleteSubBudgetCategory(
+            operation as MockOperation,
+          );
+        }
+        if (
+          operation.operation.operationName === 'UpdatePrimaryBudgetCategory'
+        ) {
+          return dynamicMocks.UpdatePrimaryBudgetCategory(
+            operation as MockOperation,
+          );
+        }
       }
-      if (operation.operation.operationName === 'UpdateSubBudgetCategory') {
-        return dynamicMocks.UpdateSubBudgetCategory(operation as MockOperation);
-      }
-      if (operation.operation.operationName === 'DeleteSubBudgetCategory') {
-        return dynamicMocks.DeleteSubBudgetCategory(operation as MockOperation);
-      }
-      if (operation.operation.operationName === 'UpdatePrimaryBudgetCategory') {
-        return dynamicMocks.UpdatePrimaryBudgetCategory(operation as MockOperation);
-      }
-    }
-    return null;
-  });
+      return null;
+    });
 
   return (
     <ThemeProvider theme={theme}>
@@ -238,7 +253,7 @@ export const GoalCalculatorTestWrapper: React.FC<GoalCalculatorTestWrapper> = ({
         }}
       >
         <SnackbarProvider>
-          <GqlMockedProvider<{ 
+          <GqlMockedProvider<{
             GoalCalculation: GoalCalculationQuery;
             CreateSubBudgetCategory: CreateSubBudgetCategoryMutation;
             UpdateSubBudgetCategory: UpdateSubBudgetCategoryMutation;
@@ -253,7 +268,6 @@ export const GoalCalculatorTestWrapper: React.FC<GoalCalculatorTestWrapper> = ({
               UpdatePrimaryBudgetCategory: updatePrimaryBudgetCategoryMock,
             }}
             onCall={handleCall}
-            cache={cache}
           >
             <GoalCalculatorProvider>{children}</GoalCalculatorProvider>
           </GqlMockedProvider>

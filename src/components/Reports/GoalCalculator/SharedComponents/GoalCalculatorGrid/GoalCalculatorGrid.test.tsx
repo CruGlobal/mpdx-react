@@ -22,49 +22,16 @@ const TestComponent: React.FC = () => {
   ) : null;
 };
 
-const defaultProps = {
-  promptText: 'Add your special income sources',
-  category: {
-    id: 'category-1',
-    label: 'Special Income',
-    category: PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage,
-    directInput: 0,
-    createdAt: '2024-01-01T00:00:00Z',
-    updatedAt: '2024-01-01T00:00:00Z',
-    subBudgetCategories: [
-      {
-        id: '1',
-        label: 'Freelance Work',
-        amount: 2500,
-        category: null,
-      },
-      {
-        id: '2',
-        label: 'Investment Returns',
-        amount: 1200,
-        category: null,
-      },
-      {
-        id: '3',
-        label: 'Rental Income',
-        amount: 1800,
-        category: null,
-      },
-    ],
-  } as unknown as PrimaryBudgetCategory,
-};
-
 describe('GoalCalculatorGrid', () => {
   it('allows entering a value in the lump sum text field', async () => {
     const { findByLabelText, findByText } = render(
       <GoalCalculatorTestWrapper>
         <TestComponent />
-      </GoalCalculatorTestWrapper>
+      </GoalCalculatorTestWrapper>,
     );
     const lumpSumButton = await findByText('Lump Sum');
     userEvent.click(lumpSumButton);
     const textField = await findByLabelText('Total');
-    expect(textField).toBeInTheDocument();
     userEvent.clear(textField);
     userEvent.type(textField, '1500');
     expect(textField).toHaveValue(1500);
@@ -74,23 +41,21 @@ describe('GoalCalculatorGrid', () => {
     const { getByRole, findByText } = render(
       <GoalCalculatorTestWrapper useDynamicMocks={true}>
         <TestComponent />
-      </GoalCalculatorTestWrapper>
+      </GoalCalculatorTestWrapper>,
     );
     const lumpSumButton = await findByText('Line Item');
     userEvent.click(lumpSumButton);
 
     const addButton = getByRole('button', { name: /Add Line Item/i });
-    expect(addButton).toBeInTheDocument();
-
     userEvent.click(addButton);
     expect(await findByText('New Income')).toBeInTheDocument();
   });
 
-  it('doesnt remove base rows with categories', async () => {
+  it("doesn't remove base rows with categories", async () => {
     const { getByText, findByText } = render(
       <GoalCalculatorTestWrapper>
         <TestComponent />
-      </GoalCalculatorTestWrapper>
+      </GoalCalculatorTestWrapper>,
     );
     const lumpSumButton = await findByText('Line Item');
     userEvent.click(lumpSumButton);
@@ -110,7 +75,7 @@ describe('GoalCalculatorGrid', () => {
     const { getByText, findByText } = render(
       <GoalCalculatorTestWrapper useDynamicMocks={true}>
         <TestComponent />
-      </GoalCalculatorTestWrapper>
+      </GoalCalculatorTestWrapper>,
     );
     const lumpSumButton = await findByText('Line Item');
     userEvent.click(lumpSumButton);
@@ -129,7 +94,7 @@ describe('GoalCalculatorGrid', () => {
       render(
         <GoalCalculatorTestWrapper useDynamicMocks={true}>
           <TestComponent />
-        </GoalCalculatorTestWrapper>
+        </GoalCalculatorTestWrapper>,
       );
     const lumpSumButton = await findByText('Line Item');
     userEvent.click(lumpSumButton);
@@ -151,7 +116,7 @@ describe('GoalCalculatorGrid', () => {
     const { findByText, getByDisplayValue, getByText } = render(
       <GoalCalculatorTestWrapper useDynamicMocks={true}>
         <TestComponent />
-      </GoalCalculatorTestWrapper>
+      </GoalCalculatorTestWrapper>,
     );
     const lumpSumButton = await findByText('Line Item');
     userEvent.click(lumpSumButton);
@@ -177,13 +142,13 @@ describe('GoalCalculatorGrid', () => {
     const { getByText, getAllByLabelText, findByText } = render(
       <GoalCalculatorTestWrapper useDynamicMocks={true}>
         <TestComponent />
-      </GoalCalculatorTestWrapper>
+      </GoalCalculatorTestWrapper>,
     );
     const lumpSumButton = await findByText('Line Item');
     userEvent.click(lumpSumButton);
     const totalRow = getByText('Total').closest('[role="row"]');
     const editableCells = totalRow?.querySelectorAll(
-      '[contenteditable="true"]'
+      '[contenteditable="true"]',
     );
     expect(editableCells).toHaveLength(0);
     userEvent.hover(totalRow!);
@@ -195,7 +160,7 @@ describe('GoalCalculatorGrid', () => {
     const { getByText, getByRole, findByText, getAllByRole } = render(
       <GoalCalculatorTestWrapper>
         <TestComponent />
-      </GoalCalculatorTestWrapper>
+      </GoalCalculatorTestWrapper>,
     );
     const lumpSumButton = await findByText('Line Item');
     userEvent.click(lumpSumButton);
@@ -203,7 +168,7 @@ describe('GoalCalculatorGrid', () => {
     userEvent.click(
       getByRole('button', {
         name: /Add Line Item/i,
-      })
+      }),
     );
     await findByText('New Income');
     const totalRow = getByText('Total').closest('[role="row"]');
@@ -225,15 +190,20 @@ describe('GoalCalculatorGrid', () => {
   it('uses default data when no subBudgetCategories are provided', () => {
     const propsWithoutData = {
       category: {
-        ...defaultProps.category,
+        id: 'category-1',
+        label: 'Special Income',
+        category: PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage,
+        directInput: 0,
+        createdAt: '2024-01-01T00:00:00Z',
+        updatedAt: '2024-01-01T00:00:00Z',
         subBudgetCategories: [],
-      },
+      } as unknown as PrimaryBudgetCategory,
     };
 
     const { getByText } = render(
       <GoalCalculatorTestWrapper>
         <GoalCalculatorGrid {...propsWithoutData} />
-      </GoalCalculatorTestWrapper>
+      </GoalCalculatorTestWrapper>,
     );
 
     expect(getByText('Special Income')).toBeInTheDocument();
