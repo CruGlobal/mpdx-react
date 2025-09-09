@@ -327,7 +327,7 @@ describe('FixSendNewsletter', () => {
             attributes: [
               {
                 id: 'contactId3',
-                sendNewsletter: SendNewsletterEnum.None,
+                sendNewsletter: SendNewsletterEnum.Email,
               },
               {
                 id: 'contactId1',
