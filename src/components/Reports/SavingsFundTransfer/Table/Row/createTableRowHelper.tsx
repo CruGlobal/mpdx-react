@@ -1,49 +1,39 @@
+import theme from 'src/theme';
 import {
-  StaffAccount,
-  StaffConferenceSavings,
-  StaffSavings,
+  ConferenceSavingsAccount,
+  PrimaryAccount,
+  SavingsAccount,
 } from '../../Helper/TransferIcons';
 import { StatusEnum } from '../../mockData';
 
 export const iconMap: Record<string, React.ReactElement> = {
-  StaffAccount,
-  StaffConferenceSavings,
-  StaffSavings,
+  primary: PrimaryAccount,
+  conference: ConferenceSavingsAccount,
+  savings: SavingsAccount,
 };
-
-const pendingAvatarColor = '#FFC107';
-const pendingChipColor = '#FFF8E1';
-const ongoingAvatarColor = '#2196F3';
-const ongoingChipColor = '#E3F2FD';
-const completeAvatarColor = '#4CAF50';
-const completeChipColor = '#E8F5E9';
-const endedAvatarColor = '#9E9E9E';
-const endedChipColor = '#FAFAFA';
-const failedAvatarColor = '#F44336';
-const failedChipColor = '#FEEBEE';
 
 export const chipStyle: Record<
   StatusEnum,
   { avatarColor: string; chipColor: string }
 > = {
   [StatusEnum.Pending]: {
-    avatarColor: pendingAvatarColor,
-    chipColor: pendingChipColor,
+    avatarColor: theme.palette.chipYellowDark.main,
+    chipColor: theme.palette.chipYellowLight.main,
   },
   [StatusEnum.Ongoing]: {
-    avatarColor: ongoingAvatarColor,
-    chipColor: ongoingChipColor,
+    avatarColor: theme.palette.chipBlueDark.main,
+    chipColor: theme.palette.chipBlueLight.main,
   },
   [StatusEnum.Complete]: {
-    avatarColor: completeAvatarColor,
-    chipColor: completeChipColor,
+    avatarColor: theme.palette.chipGreenDark.main,
+    chipColor: theme.palette.chipGreenLight.main,
   },
   [StatusEnum.Ended]: {
-    avatarColor: endedAvatarColor,
-    chipColor: endedChipColor,
+    avatarColor: theme.palette.chipGrayDark.main,
+    chipColor: theme.palette.chipGrayLight.main,
   },
   [StatusEnum.Failed]: {
-    avatarColor: failedAvatarColor,
-    chipColor: failedChipColor,
+    avatarColor: theme.palette.chipRedDark.main,
+    chipColor: theme.palette.chipRedLight.main,
   },
 };

@@ -14,6 +14,9 @@ const mutationSpy = jest.fn();
 const mockTransfers = [
   {
     ...mockData.history[0],
+    transferFrom: 'savings',
+    transferTo: 'primary',
+    amount: 2500,
     status: StatusEnum.Complete,
     transferDate: DateTime.fromISO('2023-01-01'),
     endDate: null,

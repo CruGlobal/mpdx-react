@@ -11,11 +11,7 @@ import {
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
-import {
-  ScheduleEnum,
-  StaffSavingFundEnum,
-  TransferHistory,
-} from '../mockData';
+import { FundTypeEnum, ScheduleEnum, TransferHistory } from '../mockData';
 
 interface PrintTableProps {
   transfers: TransferHistory[];
@@ -51,17 +47,19 @@ export const PrintTable: React.FC<PrintTableProps> = ({ transfers }) => {
                   key={`${transfer.transferFrom}-${transfer.transferTo}-${transfer.amount}-${transfer.transferDate}`}
                 >
                   <TableCell>
-                    {transfer.transferFrom === StaffSavingFundEnum.StaffAccount
+                    {transfer.transferFrom?.toLowerCase() ===
+                    FundTypeEnum.Primary
                       ? 'Staff Account'
-                      : transfer.transferFrom ===
-                          StaffSavingFundEnum.StaffSavings
+                      : transfer.transferFrom?.toLowerCase() ===
+                          FundTypeEnum.Savings
                         ? 'Staff Savings'
                         : 'Staff Conference Savings'}
                   </TableCell>
                   <TableCell>
-                    {transfer.transferTo === StaffSavingFundEnum.StaffAccount
+                    {transfer.transferTo?.toLowerCase() === FundTypeEnum.Primary
                       ? 'Staff Account'
-                      : transfer.transferTo === StaffSavingFundEnum.StaffSavings
+                      : transfer.transferTo?.toLowerCase() ===
+                          FundTypeEnum.Savings
                         ? 'Staff Savings'
                         : 'Staff Conference Savings'}
                   </TableCell>
@@ -83,7 +81,9 @@ export const PrintTable: React.FC<PrintTableProps> = ({ transfers }) => {
                     {transfer.transferDate?.toLocaleString(DateTime.DATE_MED)}
                   </TableCell>
                   <TableCell>
-                    {transfer.endDate?.toLocaleString(DateTime.DATE_MED)}
+                    {transfer.schedule === ScheduleEnum.Monthly
+                      ? transfer.endDate?.toLocaleString(DateTime.DATE_MED)
+                      : (t('') as string)}
                   </TableCell>
                   <TableCell>{transfer.note}</TableCell>
                 </TableRow>

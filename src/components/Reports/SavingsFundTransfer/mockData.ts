@@ -20,12 +20,45 @@ export enum StaffSavingFundEnum {
   StaffConferenceSavings = 'staffConferenceSavings',
 }
 
+export enum FundTypeEnum {
+  Primary = 'primary',
+  Savings = 'savings',
+  Conference = 'conference',
+}
+
 export interface Fund {
   accountId: string;
   type: StaffSavingFundEnum;
   name: string;
   balance: number;
   pending: number;
+}
+
+export interface SubCategory {
+  id: string;
+  name: string;
+}
+
+export interface RecurringTransfer {
+  id?: string | null;
+  recurringStart?: DateTime | null;
+  recurringEnd?: DateTime | null;
+  active?: boolean | null;
+}
+
+export interface Transfer {
+  sourceFundTypeName: string;
+  destinationFundTypeName: string;
+}
+
+export interface Transactions {
+  id: string;
+  amount: number;
+  description?: string | null;
+  transactedAt: DateTime;
+  subCategory: SubCategory;
+  transfer: Transfer;
+  recurringTransfer?: RecurringTransfer | null;
 }
 
 export interface TransferHistory {

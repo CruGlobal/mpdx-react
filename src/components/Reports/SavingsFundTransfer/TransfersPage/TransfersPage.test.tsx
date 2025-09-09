@@ -11,6 +11,7 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { StaffSavingFundContext } from '../../StaffSavingFund/StaffSavingFundContext';
+import { ReportsSavingsFundTransferQuery } from '../ReportsSavingsFund.generated';
 import { mockData } from '../mockData';
 import { TransfersPage } from './TransfersPage';
 
@@ -23,6 +24,58 @@ const router = {
 const mutationSpy = jest.fn();
 const mockEnqueue = jest.fn();
 const onNavListToggle = jest.fn();
+
+const mock = {
+  ReportsSavingsFundTransfer: {
+    reportsSavingsFundTransfer: {
+      transactions: [
+        {
+          id: '12345',
+          amount: 2500,
+          description: null,
+          transactedAt: '2023-09-26T00:00:00+00:00',
+          subCategory: {
+            id: '1',
+            name: 'deposit',
+          },
+          transfer: {
+            sourceFundTypeName: 'Primary',
+            destinationFundTypeName: 'Savings',
+          },
+          recurringTransfer: null,
+        },
+        {
+          id: '67890',
+          amount: 1200,
+          description: null,
+          transactedAt: '2023-09-30T00:00:00+00:00',
+          subCategory: {
+            id: '1',
+            name: 'deposit',
+          },
+          transfer: {
+            sourceFundTypeName: 'Primary',
+            destinationFundTypeName: 'Savings',
+          },
+          recurringTransfer: {
+            id: '1',
+            recurringStart: '2023-09-30T00:00:00+00:00',
+            recurringEnd: '2025-09-30T00:00:00+00:00',
+            active: true,
+          },
+        },
+      ],
+    },
+  },
+};
+
+const emptyMock = {
+  ReportsSavingsFundTransfer: {
+    reportsSavingsFundTransfer: {
+      transactions: [],
+    },
+  },
+};
 
 const MockStaffSavingFundProvider = ({
   children,
@@ -61,7 +114,12 @@ const Components = ({
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <TestRouter router={router}>
           <I18nextProvider i18n={i18n}>
-            <GqlMockedProvider onCall={mutationSpy}>
+            <GqlMockedProvider<{
+              ReportsSavingsFundTransfer: ReportsSavingsFundTransferQuery;
+            }>
+              mocks={mock}
+              onCall={mutationSpy}
+            >
               <MockStaffSavingFundProvider>
                 <TransfersPage title={title} />
               </MockStaffSavingFundProvider>
@@ -103,27 +161,45 @@ describe('TransfersPage', () => {
     expect(getAllByText('$2,500.00').length).toBeGreaterThan(0);
   });
 
-  it('should render cards and transfer history table', () => {
-    const { getByRole, getAllByRole } = render(<Components />);
+  it('should render cards and transfer history table', async () => {
+    const { findByRole, getAllByRole } = render(<Components />);
 
     expect(getAllByRole('button', { name: 'TRANSFER FROM' })).toHaveLength(3);
     expect(getAllByRole('button', { name: 'TRANSFER TO' })).toHaveLength(3);
 
-    expect(getByRole('grid')).toBeInTheDocument();
-    expect(within(getByRole('grid')).getAllByRole('columnheader')).toHaveLength(
-      8,
-    );
+    expect(await findByRole('grid')).toBeInTheDocument();
+    expect(
+      within(await findByRole('grid')).getAllByRole('columnheader'),
+    ).toHaveLength(8);
   });
 
-  it('should show empty state when no transfer history', () => {
-    const originalHistory = mockData.history;
-    mockData.history = [];
+  it('should show empty state when no transfer history', async () => {
+    const { findByText } = render(
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <TestRouter router={router}>
+              <I18nextProvider i18n={i18n}>
+                <GqlMockedProvider<{
+                  ReportsSavingsFundTransfer: ReportsSavingsFundTransferQuery;
+                }>
+                  mocks={emptyMock}
+                  onCall={mutationSpy}
+                >
+                  <MockStaffSavingFundProvider>
+                    <TransfersPage title={'Empty Transfer History'} />
+                  </MockStaffSavingFundProvider>
+                </GqlMockedProvider>
+              </I18nextProvider>
+            </TestRouter>
+          </LocalizationProvider>
+        </ThemeProvider>
+      </SnackbarProvider>,
+    );
 
-    const { getByText } = render(<Components />);
-
-    expect(getByText('Transfer History not available')).toBeInTheDocument();
-
-    mockData.history = originalHistory;
+    expect(
+      await findByText('Transfer History not available'),
+    ).toBeInTheDocument();
   });
 
   it('should open transfer modal when balance card transfer button is clicked', async () => {

@@ -15,9 +15,13 @@ const handleOpenMock = jest.fn();
 const mockHistory: TransferHistory[] = [
   {
     ...mockData.history[0],
+    transferFrom: 'savings',
+    transferTo: 'primary',
   },
   {
     ...mockData.history[1],
+    transferFrom: 'primary',
+    transferTo: 'savings',
   },
 ];
 
@@ -42,7 +46,7 @@ describe('TransferHistoryTable', () => {
     const { getByRole, findByRole } = render(<TestComponent />);
 
     const iconRow = getByRole('row', {
-      name: 'Staff Savings Arrow Staff Account $2,500.00 One Time pending Sep 26, 2023 N/A Reimbursements Edit Stop ongoing Transfer',
+      name: 'Staff Savings Arrow Staff Account $2,500.00 One Time pending Sep 26, 2023 Reimbursements Edit Stop ongoing Transfer',
     });
     const cells = within(iconRow).getAllByRole('gridcell');
 
@@ -84,7 +88,7 @@ describe('TransferHistoryTable', () => {
     expect(
       await findByRole('columnheader', { name: 'Stop Date' }),
     ).toBeInTheDocument();
-    expect(getByRole('gridcell', { name: 'N/A' })).toBeInTheDocument();
+    expect(getByRole('gridcell', { name: '' })).toBeInTheDocument();
     expect(
       await findByRole('columnheader', { name: 'Note' }),
     ).toBeInTheDocument();

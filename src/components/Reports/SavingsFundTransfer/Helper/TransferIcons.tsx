@@ -1,6 +1,6 @@
 import { Groups, Savings, Wallet } from '@mui/icons-material';
 
-export const StaffAccount = (
+export const PrimaryAccount = (
   <Wallet
     titleAccess="Staff Account"
     sx={{
@@ -15,7 +15,7 @@ export const StaffAccount = (
     }}
   />
 );
-export const StaffSavings = (
+export const SavingsAccount = (
   <Savings
     titleAccess="Staff Savings"
     sx={{
@@ -30,7 +30,7 @@ export const StaffSavings = (
     }}
   />
 );
-export const StaffConferenceSavings = (
+export const ConferenceSavingsAccount = (
   <Groups
     titleAccess="Staff Conference Savings"
     sx={{

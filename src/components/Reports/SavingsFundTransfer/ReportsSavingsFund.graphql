@@ -15,12 +15,6 @@ query ReportsSavingsFundTransfer(
       amount
       description
       transactedAt
-      fund {
-        id
-        fundType
-        name
-        balance
-      }
       subCategory {
         id
         name
