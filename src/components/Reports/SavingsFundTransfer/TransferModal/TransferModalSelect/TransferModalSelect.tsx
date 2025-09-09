@@ -1,9 +1,9 @@
 import React from 'react';
 import { Box, MenuItem, Select, SelectProps } from '@mui/material';
 import {
-  StaffAccount,
-  StaffConferenceSavings,
-  StaffSavings,
+  ConferenceSavingsAccount,
+  PrimaryAccount,
+  SavingsAccount,
 } from 'src/components/Reports/SavingsFundTransfer/Helper/TransferIcons';
 import { TransferDirectionEnum } from '../../Helper/TransferHistoryEnum';
 import { Fund, StaffSavingFundEnum } from '../../mockData';
@@ -31,11 +31,11 @@ export const TransferModalSelect: React.FC<TransferModalSelectProps> = ({
         <MenuItem key={fund.accountId} value={fund.accountId}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             {fund.type === StaffSavingFundEnum.StaffAccount
-              ? StaffAccount
+              ? PrimaryAccount
               : fund.type === StaffSavingFundEnum.StaffSavings
-                ? StaffSavings
+                ? SavingsAccount
                 : fund.type === StaffSavingFundEnum.StaffConferenceSavings
-                  ? StaffConferenceSavings
+                  ? ConferenceSavingsAccount
                   : null}{' '}
             <b>{fund.name}</b>
           </Box>
