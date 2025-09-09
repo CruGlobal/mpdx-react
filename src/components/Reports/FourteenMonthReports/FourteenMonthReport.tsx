@@ -1,14 +1,12 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Box, CircularProgress, useMediaQuery } from '@mui/material';
+import React, { useMemo, useState } from 'react';
+import { Box, useMediaQuery } from '@mui/material';
 import { Theme } from '@mui/material/styles';
-import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { mapFourteenMonthReport } from 'pages/api/Schema/reports/fourteenMonth/datahandler';
-import { FourteenMonthReport as FourteenMonthReportQueryResponse } from 'pages/api/graphql-rest.page.generated';
 import { Notification } from 'src/components/Notification/Notification';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
+import { LoadingBox } from 'src/components/Shared/styledComponents/LoadingStyling';
 import { FourteenMonthReportCurrencyType } from 'src/graphql/types.generated';
-import { useRequiredSession } from 'src/hooks/useRequiredSession';
+import { useReportsSalaryCurrencyDonationsQuery } from './GetFourteenMonthReport.generated';
 import { FourteenMonthReportHeader as Header } from './Layout/Header/Header';
 import {
   FourteenMonthReportTable as Table,
@@ -16,6 +14,7 @@ import {
 } from './Layout/Table/Table';
 import { calculateTotals, sortContacts } from './Layout/Table/helpers';
 import { useCsvData } from './useCsvData';
+import { useFourteenMonthReport } from './useFourteenMonthReport';
 import type { Order } from '../Reports.type';
 import type { OrderBy } from './Layout/Table/TableHead/TableHead';
 
@@ -40,7 +39,6 @@ export interface MonthTotal {
 
 export const FourteenMonthReport: React.FC<Props> = ({
   accountListId,
-  designationAccounts,
   currencyType,
   isNavListOpen,
   title,
@@ -49,14 +47,18 @@ export const FourteenMonthReport: React.FC<Props> = ({
   const [isExpanded, setExpanded] = useState<boolean>(false);
   const [order, setOrder] = useState<Order>('asc');
   const [orderBy, setOrderBy] = useState<OrderBy | null>(null);
-  const [fourteenMonthReport, setFourteenMonthReport] = useState<
-    FourteenMonthReportQueryResponse | undefined
-  >(undefined);
-  const [fourteenMonthReportError, setFourteenMonthReportError] =
-    useState<string>('');
 
   const { t } = useTranslation();
-  const { apiToken } = useRequiredSession();
+
+  const {
+    data: gqlData,
+    loading,
+    error,
+  } = useReportsSalaryCurrencyDonationsQuery({
+    variables: {
+      accountListId,
+    },
+  });
 
   const isMobile = useMediaQuery((theme: Theme) =>
     theme.breakpoints.down('sm'),
@@ -64,43 +66,10 @@ export const FourteenMonthReport: React.FC<Props> = ({
 
   const isPrint = useMediaQuery('print');
 
-  useEffect(() => {
-    (async () => {
-      try {
-        setFourteenMonthReportError('');
-        const designationAccountFilter = designationAccounts?.length
-          ? `&filter[designation_account_id]=${designationAccounts.join(',')}`
-          : '';
-        const requestUrl = `${
-          currencyType === 'salary'
-            ? 'salary_currency_donations'
-            : 'donor_currency_donations'
-        }?filter[account_list_id]=${accountListId}${designationAccountFilter}&filter[month_range]=${DateTime.now()
-          .minus({ months: 13 })
-          .toISODate()}...${DateTime.now().toISODate()}`;
-
-        const response = await fetch(
-          `${process.env.REST_API_URL}reports/${requestUrl}`,
-          {
-            headers: {
-              authorization: `Bearer ${apiToken}`,
-              'Content-Type': 'application/vnd.api+json',
-            },
-          },
-        );
-
-        const { data } = await response.json();
-
-        setFourteenMonthReport(mapFourteenMonthReport(data, currencyType));
-      } catch (error: unknown) {
-        if (error instanceof Error) {
-          setFourteenMonthReportError(error.message);
-        } else {
-          setFourteenMonthReportError(String(error));
-        }
-      }
-    })();
-  }, [accountListId, designationAccounts, currencyType]);
+  const fourteenMonthReport = useFourteenMonthReport(
+    gqlData?.reportsSalaryCurrencyDonations,
+    currencyType,
+  );
 
   // Generate a table for each currency group in the report
   const currencyTables = useMemo<CurrencyTable[]>(
@@ -143,42 +112,45 @@ export const FourteenMonthReport: React.FC<Props> = ({
         onPrint={handlePrint}
         title={title}
       />
-      {!fourteenMonthReport && !fourteenMonthReportError ? (
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          height="100%"
-        >
-          <CircularProgress data-testid="LoadingFourteenMonthReport" />
-        </Box>
-      ) : fourteenMonthReportError ? (
-        <Notification type="error" message={fourteenMonthReportError} />
-      ) : currencyTables.length > 0 ? (
-        <Box display="flex" flexDirection="column" gap={isPrint ? 1 : 4}>
-          {currencyTables.map(({ currency, orderedContacts, totals }) => (
-            <Table
-              key={currency}
-              isExpanded={isExpanded}
-              onRequestSort={handleRequestSort}
-              order={order}
-              orderBy={orderBy}
-              orderedContacts={orderedContacts}
-              salaryCurrency={currency}
-              totals={totals}
-            />
-          ))}
-        </Box>
-      ) : (
-        <EmptyReport
-          title={t(
-            'You have received no donations in the last fourteen months',
-          )}
-          subTitle={t(
-            'You can setup an organization account to import them or add a new donation.',
-          )}
-        />
-      )}
+      {(() => {
+        if (loading) {
+          return <LoadingBox />;
+        }
+
+        if (error) {
+          return <Notification type="error" message={error.message} />;
+        }
+
+        if (currencyTables.length > 0) {
+          return (
+            <Box display="flex" flexDirection="column" gap={isPrint ? 1 : 4}>
+              {currencyTables.map(({ currency, orderedContacts, totals }) => (
+                <Table
+                  key={currency}
+                  isExpanded={isExpanded}
+                  onRequestSort={handleRequestSort}
+                  order={order}
+                  orderBy={orderBy}
+                  orderedContacts={orderedContacts}
+                  salaryCurrency={currency}
+                  totals={totals}
+                />
+              ))}
+            </Box>
+          );
+        }
+
+        return (
+          <EmptyReport
+            title={t(
+              'You have received no donations in the last fourteen months',
+            )}
+            subTitle={t(
+              'You can setup an organization account to import them or add a new donation.',
+            )}
+          />
+        );
+      })()}
     </Box>
   );
 };
