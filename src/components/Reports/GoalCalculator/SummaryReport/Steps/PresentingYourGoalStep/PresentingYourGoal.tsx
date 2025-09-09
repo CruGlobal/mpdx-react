@@ -23,14 +23,14 @@ import {
 } from 'recharts';
 import { useGetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { useOrganizationId } from 'src/hooks/useOrganizationId';
 import cruLogo from 'src/images/cru/cru-logo.svg';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { useGetAccountListQuery } from './GetAccountList.generated';
+import { useGoalLineItems } from '../../MpdGoal/useGoalLineItems';
 import { useGetOrganizationsQuery } from './GetOrganization.generated';
+import type { Goal } from '../../../Shared/useReportExpenses/useReportExpenses';
 
 const ChartContainer = styled(Box)({
   '@media print': {
@@ -67,27 +67,6 @@ const StyledTableCell = styled(TableCell)({
   paddingBlock: theme.spacing(2),
 });
 
-const mockData = [
-  { name: 'Salary', value: 1000 },
-  {
-    name: 'Ministry Expenses',
-    value: 200,
-  },
-  { name: 'Benefits', value: 400 },
-  {
-    name: 'Social Security and Taxes',
-    value: 300,
-  },
-  {
-    name: 'Voluntary 403b Retirement Plan',
-    value: 1900,
-  },
-  {
-    name: 'Administrative Charge',
-    value: 150,
-  },
-];
-
 interface PersonalInfoRow {
   label: string;
   value?: string;
@@ -100,19 +79,23 @@ interface PresentingYourGoalRow {
   bold?: boolean;
 }
 
-export const PresentingYourGoal: React.FC = () => {
+interface PresentingYourGoalProps {
+  goal: Goal;
+}
+
+export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
+  goal,
+}) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
+  const calculations = useGoalLineItems(goal);
 
   /*
    * We don't want to display ministry location and Cru image if
    * the user is not part of Cru.
-   * organizationType allows us to determine if a user's organization
-   * is a Cru ministry.
    */
   const { data: userData } = useGetUserQuery();
-  const accountListId = useAccountListId();
   const salaryOrganizationId = useOrganizationId();
   const { data: salaryOrganization } = useGetUsersOrganizationsAccountsQuery({
     skip: !salaryOrganizationId,
@@ -128,16 +111,29 @@ export const PresentingYourGoal: React.FC = () => {
   const organizationName =
     salaryOrganization?.userOrganizationAccounts[0].organization.name;
 
-  const { data: receivedPledgesData } = useGetAccountListQuery({
-    variables: { accountListId: accountListId || '' },
-  });
-  const totalSolidSupport =
-    receivedPledgesData?.accountList?.receivedPledges || 0;
+  const presentationData = useMemo(
+    () => [
+      { name: 'Salary', value: goal.netMonthlySalary },
+      { name: 'Ministry Expenses', value: goal.ministryExpensesTotal },
+      { name: 'Benefits', value: 300 },
+      { name: 'Social Security and Taxes', value: calculations.taxes },
+      {
+        name: 'Voluntary 403b Retirement Plan',
+        value:
+          calculations.traditionalContribution + calculations.rothContribution,
+      },
+      {
+        name: 'Administrative Charge',
+        value:
+          calculations.overallSubtotalWithAdmin - calculations.overallSubtotal,
+      },
+    ],
+    [goal, calculations],
+  );
 
-  // Made useMemo for when real data is added.
   const total = useMemo(
-    () => mockData.reduce((sum, entry) => sum + entry.value, 0),
-    [mockData],
+    () => presentationData.reduce((sum, entry) => sum + entry.value, 0),
+    [presentationData],
   );
 
   // Consider adding more brand colors to theme.
@@ -178,38 +174,40 @@ export const PresentingYourGoal: React.FC = () => {
         title: 'Salary',
         description:
           'Salaries are based upon marital status, number of children, tenure with Cru, and adjustments for certain geographic locations.',
-        amount: mockData[0].value,
+        amount: presentationData[0].value,
       },
       {
         title: 'Ministry Expenses',
         description:
           'Training, conferences, supplies, evangelism & discipleship materials, communication with ministry partners, ministry travel expenses, etc.',
-        amount: mockData[1].value,
+        amount: presentationData[1].value,
       },
       {
         title: 'Benefits',
         description:
           "Includes group medical and dental coverage, life insurance, disability insurance, worker's compensation, and employer contribution to a 403(b) retirement plan.",
-        amount: mockData[2].value,
+        amount: presentationData[2].value,
       },
       {
         title: 'Social Security and Taxes',
         description:
           'Since Campus Crusade is a non-profit organization, staff members are responsible for paying the entire amount of Social Security.',
-        amount: mockData[3].value,
+        amount: presentationData[3].value,
       },
       {
         title: 'Voluntary 403b Retirement Plan',
         description:
           'Staff members are eligible to contribute to a voluntary retirement program each month.',
-        amount: mockData[4].value,
+        amount: presentationData[4].value,
       },
-      { title: 'Administrative Charge', amount: mockData[5].value },
+      {
+        title: 'Administrative Charge',
+        amount: presentationData[5].value,
+      },
       { title: 'Total Support Goal', amount: total, bold: true },
-      // change amount when real data is added
-      { title: 'Total Solid Support', amount: totalSolidSupport },
+      { title: 'Total Solid Support', amount: calculations.supportRaised },
     ],
-    [mockData, total, t],
+    [presentationData, total, t, calculations],
   );
 
   return (
@@ -331,7 +329,7 @@ export const PresentingYourGoal: React.FC = () => {
             <ResponsiveContainer width="100%">
               <PieChart>
                 <Pie
-                  data={mockData}
+                  data={presentationData}
                   dataKey="value"
                   nameKey="name"
                   cx="50%"
@@ -339,7 +337,7 @@ export const PresentingYourGoal: React.FC = () => {
                   outerRadius={isMobile ? 130 : 180}
                   cornerRadius={theme.shape.borderRadius}
                 >
-                  {mockData.map((entry, index) => (
+                  {presentationData.map((entry, index) => (
                     <Cell
                       key={entry.name}
                       fill={chartColors[index % chartColors.length]}

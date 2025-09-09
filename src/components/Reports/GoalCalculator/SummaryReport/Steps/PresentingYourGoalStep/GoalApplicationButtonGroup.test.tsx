@@ -9,20 +9,10 @@ const mockGoal = {
   rothContributionPercentage: 0.1,
   traditionalContributionPercentage: 0.04,
   ministryExpenses: {
-    benefitsCharge: 2000,
-    ministryMileage: 300,
-    medicalMileage: 50,
-    medicalExpenses: 300,
-    ministryPartnerDevelopment: 200,
-    communications: 100,
-    entertainment: 200,
-    staffDevelopment: 50,
-    supplies: 50,
-    technology: 50,
-    travel: 200,
-    transfers: 100,
-    other: 200,
+    benefitsCharge: 0,
+    primaryCategories: [],
   },
+  ministryExpensesTotal: 3800,
 };
 
 describe('GoalApplicationButtonGroup', () => {

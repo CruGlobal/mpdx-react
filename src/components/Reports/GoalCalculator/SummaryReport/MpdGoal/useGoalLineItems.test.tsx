@@ -11,20 +11,10 @@ const mockGoal = {
   rothContributionPercentage: 0.1,
   traditionalContributionPercentage: 0.04,
   ministryExpenses: {
-    benefitsCharge: 2000,
-    ministryMileage: 300,
-    medicalMileage: 50,
-    medicalExpenses: 300,
-    ministryPartnerDevelopment: 200,
-    communications: 100,
-    entertainment: 200,
-    staffDevelopment: 50,
-    supplies: 50,
-    technology: 50,
-    travel: 200,
-    transfers: 100,
-    other: 200,
+    benefitsCharge: 0,
+    primaryCategories: [],
   },
+  ministryExpensesTotal: 3800,
 };
 
 const Wrapper: React.FC<{ children: ReactElement }> = ({ children }) => (
@@ -63,7 +53,7 @@ describe('useGoalLineItems', () => {
         traditionalContribution: 300,
         grossAnnualSalary: 99600,
         grossMonthlySalary: 8300,
-        totalMinistryExpenses: 3800,
+        ministryExpensesTotal: 3800,
         overallSubtotal: 12100,
         overallSubtotalWithAdmin: 13750,
         overallTotal: 14575,
