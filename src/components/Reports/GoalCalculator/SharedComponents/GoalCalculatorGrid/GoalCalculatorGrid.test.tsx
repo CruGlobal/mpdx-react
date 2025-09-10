@@ -364,10 +364,8 @@ describe('GoalCalculatorGrid', () => {
     expect(infoButtons.length).toBeGreaterThan(0);
 
     userEvent.click(infoButtons[1]);
-    await waitFor(() => {
-      expect(
-        getByText('Only the portion not reimbursed as ministry expense.'),
-      ).toBeInTheDocument();
-    });
+    expect(
+      await findByText('Only the portion not reimbursed as ministry expense.'),
+    ).toBeInTheDocument();
   });
 });
