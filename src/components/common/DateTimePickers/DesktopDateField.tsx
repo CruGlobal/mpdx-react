@@ -84,7 +84,11 @@ export const DesktopDateField: React.FC<DesktopDateFieldProps> = ({
       }}
       onKeyDown={(event) => {
         if (event.key === 'Enter') {
-          parsedDate?.isValid ? onChange(parsedDate) : onChange(null);
+          if (parsedDate?.isValid) {
+            onChange(parsedDate);
+          } else {
+            onChange(null);
+          }
         }
         props.onKeyDown?.(event);
       }}

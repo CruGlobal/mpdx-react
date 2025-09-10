@@ -76,6 +76,16 @@ export const DesktopTimeField: React.FC<DesktopTimeFieldProps> = ({
       onChange={(event) => {
         setRawTime(event.target.value);
       }}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter') {
+          if (parsedTime?.isValid) {
+            onChange(parsedTime);
+          } else {
+            onChange(null);
+          }
+        }
+        props.onKeyDown?.(event);
+      }}
       onBlur={(event) => {
         onChange(parsedTime);
         props.onBlur?.(event);
