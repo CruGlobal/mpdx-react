@@ -1,8 +1,12 @@
 import React from 'react';
-import { PrimaryBudgetCategoryEnum } from 'src/graphql/types.generated';
+import {
+  PrimaryBudgetCategoryEnum,
+  SubBudgetCategoryEnum,
+} from 'src/graphql/types.generated';
 import { MedicalPanel } from './MedicalPanel';
 import { MileagePanel } from './MileagePanel';
 import { SavingsPanel } from './SavingsPanel';
+import { SubUtilitiesPanel } from './SubUtilitiesPanel';
 import { UtilitiesPanel } from './UtilitiesPanel';
 
 export const getPrimaryCategoryRightPanel = (
@@ -17,6 +21,18 @@ export const getPrimaryCategoryRightPanel = (
       return <MedicalPanel />;
     case PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage:
       return <MileagePanel />;
+    default:
+      return null;
+  }
+};
+
+export const getSubCategoryRightPanel = (
+  subCategory: SubBudgetCategoryEnum,
+) => {
+  switch (subCategory) {
+    case SubBudgetCategoryEnum.UtilitiesInternet:
+    case SubBudgetCategoryEnum.UtilitiesPhoneMobile:
+      return <SubUtilitiesPanel />;
     default:
       return null;
   }

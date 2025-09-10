@@ -3,6 +3,7 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DoNotDisturbAltIcon from '@mui/icons-material/DoNotDisturbAlt';
 import FunctionsIcon from '@mui/icons-material/Functions';
+import InfoIcon from '@mui/icons-material/Info';
 import ViewHeadlineIcon from '@mui/icons-material/ViewHeadline';
 import {
   Box,
@@ -10,6 +11,7 @@ import {
   ButtonGroup,
   Card,
   FormHelperText,
+  IconButton,
   TextField,
   Typography,
   styled,
@@ -22,12 +24,17 @@ import {
 } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { SubBudgetCategoryEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useDebouncedCallback } from 'src/hooks/useDebounce';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
-import { getPrimaryCategoryRightPanel } from '../../RightPanels/rightPanels';
+import {
+  getPrimaryCategoryRightPanel,
+  getSubCategoryRightPanel,
+} from '../../RightPanels/rightPanels';
 import { BudgetFamilyFragment } from '../../Shared/GoalCalculation.generated';
+import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
 import { GoalCalculatorSection } from '../../Shared/GoalCalculatorSection';
 import {
   UpdateSubBudgetCategoriesFragment,
@@ -83,6 +90,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   const locale = useLocale();
   const { label: categoryName } = category;
   const accountListId = useAccountListId() ?? '';
+  const { setRightPanelContent } = useGoalCalculator();
 
   const gridData = useMemo(
     () =>
@@ -91,6 +99,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
         label: subCategory.label,
         amount: subCategory.amount,
         canDelete: !subCategory.category,
+        category: subCategory.category,
       })),
     [category.subBudgetCategories],
   );
@@ -340,12 +349,31 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   const renderLabelCell = (params: GridRenderCellParams) => {
     const cellKey = `${params.id}-label`;
     const hasError = cellErrors[cellKey];
+    const rowCategory = params.row.category as SubBudgetCategoryEnum | null;
+    const rightPanelContent = rowCategory
+      ? getSubCategoryRightPanel(rowCategory)
+      : null;
+
+    const content = (
+      <Box sx={{ display: 'flex', gap: 1 }}>
+        <span>{params.value}</span>
+        {rightPanelContent && (
+          <IconButton
+            size="small"
+            onClick={() => setRightPanelContent(rightPanelContent)}
+            aria-label={t('Show additional info')}
+          >
+            <InfoIcon fontSize="small" />
+          </IconButton>
+        )}
+      </Box>
+    );
 
     if (hasError) {
-      return <ErrorCell title={hasError}>{params.value}</ErrorCell>;
+      return <ErrorCell title={hasError}>{content}</ErrorCell>;
     }
 
-    return params.value;
+    return content;
   };
 
   const renderAmountCell = (params: GridRenderCellParams) => {
