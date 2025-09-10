@@ -9,14 +9,36 @@ import React, {
 } from 'react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import {
+  MpdGoalBenefitsConstantPlanEnum,
+  MpdGoalBenefitsConstantSizeEnum,
+  MpdGoalMiscConstantEnum,
+} from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getQueryParam } from 'src/utils/queryParam';
 import {
   GoalCalculatorReportEnum,
   GoalCalculatorStepEnum,
 } from '../GoalCalculatorHelper';
-import { useGoalCalculationQuery } from './GoalCalculation.generated';
+import {
+  useGoalCalculationQuery,
+  useGoalCalculatorConstantsQuery,
+} from './GoalCalculation.generated';
 import { GoalCalculatorStep, useSteps } from './useSteps';
+
+type GoalBenefitsConstantMap = Map<
+  string,
+  {
+    plan: MpdGoalBenefitsConstantPlanEnum;
+    size: MpdGoalBenefitsConstantSizeEnum;
+    cost: number;
+  }
+>;
+type GoalMiscConstantMap = Map<MpdGoalMiscConstantEnum, string>;
+type GoalGeographicConstant = {
+  location: string;
+  percentageMultiplier: number;
+};
 
 export type GoalCalculatorType = {
   steps: GoalCalculatorStep[];
@@ -38,6 +60,9 @@ export type GoalCalculatorType = {
   setDrawerOpen: (open: boolean) => void;
 
   goalCalculationResult: ReturnType<typeof useGoalCalculationQuery>;
+  goalBenefitsConstantMap: GoalBenefitsConstantMap;
+  goalGeographicConstant: GoalGeographicConstant[];
+  goalMiscConstantMap: GoalMiscConstantMap;
 };
 
 const GoalCalculatorContext = createContext<GoalCalculatorType | null>(null);
@@ -69,6 +94,29 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       id: goalCalculationId,
     },
   });
+
+  const { data } = useGoalCalculatorConstantsQuery();
+
+  const goalBenefitsConstantMap: GoalBenefitsConstantMap = new Map();
+  data?.constant.mpdGoalBenefitsConstants?.forEach((constant) => {
+    const { plan, size, cost } = constant;
+    goalBenefitsConstantMap.set(`${size}-${plan}`, {
+      plan,
+      size,
+      cost,
+    });
+  });
+  const goalMiscConstantMap = new Map();
+  data?.constant.mpdGoalMiscConstants?.forEach((constant) => {
+    const { category, label } = constant;
+    goalMiscConstantMap.set(category, label);
+  });
+
+  const goalGeographicConstant =
+    data?.constant.mpdGoalGeographicConstants?.map((constant) => ({
+      location: constant.location,
+      percentageMultiplier: constant.percentageMultiplier,
+    })) || [];
 
   const steps = useSteps();
   const [stepIndex, setStepIndex] = useState(0);
@@ -127,6 +175,9 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       selectedReport,
       setSelectedReport,
       goalCalculationResult,
+      goalBenefitsConstantMap,
+      goalGeographicConstant,
+      goalMiscConstantMap,
     }),
     [
       steps,
@@ -142,6 +193,9 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       selectedReport,
       setSelectedReport,
       goalCalculationResult,
+      goalBenefitsConstantMap,
+      goalGeographicConstant,
+      goalMiscConstantMap,
     ],
   );
 
