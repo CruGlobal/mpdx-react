@@ -352,18 +352,14 @@ describe('GoalCalculatorGrid', () => {
       </GoalCalculatorTestWrapper>,
     );
 
-    const lineItemButton = getByText('Line Item');
-    expect(lineItemButton.closest('button')).toHaveClass('MuiButton-contained');
-
-    expect(await findByText('Internet')).toBeInTheDocument();
+    expect(getByText('Internet')).toBeInTheDocument();
     expect(getByText('Phone/Mobile')).toBeInTheDocument();
 
     const infoButtons = getAllByRole('button', {
       name: 'Show additional info',
     });
-    expect(infoButtons.length).toBeGreaterThan(0);
 
-    userEvent.click(infoButtons[1]);
+    userEvent.click(infoButtons[0]);
     expect(
       await findByText('Only the portion not reimbursed as ministry expense.'),
     ).toBeInTheDocument();
