@@ -4,7 +4,7 @@ import {
   MpdGoalBenefitsConstantSizeEnum,
   MpdGoalMiscConstantEnum,
 } from 'src/graphql/types.generated';
-import { GoalCalculatorConstantsQuery } from './GoalCalculation.generated';
+import { GoalCalculatorConstantsQuery } from '../components/Reports/GoalCalculator/Shared/GoalCalculation.generated';
 
 export type GoalBenefitsConstantMap = Map<
   string,
