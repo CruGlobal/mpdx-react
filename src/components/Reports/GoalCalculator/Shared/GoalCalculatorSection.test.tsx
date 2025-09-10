@@ -74,4 +74,12 @@ describe('GoalCalculatorSection', () => {
 
     expect(getByRole('button', { name: 'Print' })).toBeInTheDocument();
   });
+
+  it('renders titleExtra content', () => {
+    const { getByText } = render(
+      <TestComponent titleExtra={<div>Extra Title Content</div>} />,
+    );
+
+    expect(getByText('Extra Title Content')).toBeInTheDocument();
+  });
 });
