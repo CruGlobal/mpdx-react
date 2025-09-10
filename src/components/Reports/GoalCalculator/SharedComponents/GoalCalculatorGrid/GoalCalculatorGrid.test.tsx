@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import {
   PrimaryBudgetCategory,
   PrimaryBudgetCategoryEnum,
+  SubBudgetCategoryEnum,
 } from 'src/graphql/types.generated';
 import { GoalCalculatorTestWrapper } from '../../GoalCalculatorTestWrapper';
 import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
@@ -20,6 +21,12 @@ const TestComponent: React.FC = () => {
       category={data.goalCalculation.ministryFamily.primaryBudgetCategories[0]}
     />
   ) : null;
+};
+
+const RightPanel: React.FC = () => {
+  const { rightPanelContent } = useGoalCalculator();
+
+  return <aside aria-label="Right Panel">{rightPanelContent}</aside>;
 };
 
 describe('GoalCalculatorGrid', () => {
@@ -305,6 +312,62 @@ describe('GoalCalculatorGrid', () => {
           },
         },
       );
+    });
+  });
+
+  it('renders subCategoryPanel', async () => {
+    const propsWithSubCategory = {
+      category: {
+        id: 'category-1',
+        label: 'Internet & Mobile',
+        category: PrimaryBudgetCategoryEnum.Utilities,
+        directInput: null, // null means Line Item mode, which shows subcategories
+        createdAt: '2024-01-01T00:00:00Z',
+        updatedAt: '2024-01-01T00:00:00Z',
+        subBudgetCategories: [
+          {
+            id: 'sub-1',
+            label: 'Internet',
+            amount: 60,
+            category: SubBudgetCategoryEnum.UtilitiesInternet,
+            createdAt: '2024-01-01T00:00:00Z',
+            updatedAt: '2024-01-01T00:00:00Z',
+          },
+          {
+            id: 'sub-2',
+            label: 'Phone/Mobile',
+            amount: 40,
+            category: SubBudgetCategoryEnum.UtilitiesPhoneMobile,
+            createdAt: '2024-01-01T00:00:00Z',
+            updatedAt: '2024-01-01T00:00:00Z',
+          },
+        ],
+      } as unknown as PrimaryBudgetCategory,
+    };
+
+    const { getByText, getAllByRole, findByText } = render(
+      <GoalCalculatorTestWrapper>
+        <RightPanel />
+        <GoalCalculatorGrid {...propsWithSubCategory} />
+      </GoalCalculatorTestWrapper>,
+    );
+
+    const lineItemButton = getByText('Line Item');
+    expect(lineItemButton.closest('button')).toHaveClass('MuiButton-contained');
+
+    expect(await findByText('Internet')).toBeInTheDocument();
+    expect(getByText('Phone/Mobile')).toBeInTheDocument();
+
+    const infoButtons = getAllByRole('button', {
+      name: 'Show additional info',
+    });
+    expect(infoButtons.length).toBeGreaterThan(0);
+
+    userEvent.click(infoButtons[1]);
+    await waitFor(() => {
+      expect(
+        getByText('Only the portion not reimbursed as ministry expense.'),
+      ).toBeInTheDocument();
     });
   });
 });
