@@ -12,6 +12,12 @@ import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getQueryParam } from 'src/utils/queryParam';
 import {
+  GoalBenefitsConstantMap,
+  GoalGeographicConstant,
+  GoalMiscConstantMap,
+  useFormatConstants,
+} from '../../../../hooks/useFormatConstants';
+import {
   GoalCalculatorReportEnum,
   GoalCalculatorStepEnum,
 } from '../GoalCalculatorHelper';
@@ -19,12 +25,6 @@ import {
   useGoalCalculationQuery,
   useGoalCalculatorConstantsQuery,
 } from './GoalCalculation.generated';
-import {
-  GoalBenefitsConstantMap,
-  GoalGeographicConstant,
-  GoalMiscConstantMap,
-  useFormatConstants,
-} from './useFormatConstants';
 import { GoalCalculatorStep, useSteps } from './useSteps';
 
 export type GoalCalculatorType = {
