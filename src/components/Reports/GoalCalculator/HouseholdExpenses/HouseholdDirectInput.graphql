@@ -1,0 +1,17 @@
+mutation UpdateHouseholdDirectInput(
+  $accountListId: ID!
+  $id: ID!
+  $directInput: Float
+) {
+  updateBudgetFamily(
+    input: {
+      accountListId: $accountListId
+      attributes: { id: $id, directInput: $directInput }
+    }
+  ) {
+    budgetFamily {
+      id
+      directInput
+    }
+  }
+}
