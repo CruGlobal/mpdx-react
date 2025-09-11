@@ -44,6 +44,9 @@ export const reportNavItems: NavItems[] = [
     id: 'coaching',
     title: i18n.t('Coaching'),
   },
+  // {
+  //   id: 'staffExpense',
+  //   title: i18n.t('Staff Expense Report'),
   // Goal Calculator
   // {
   //   id: 'goalCalculator',
