@@ -27,6 +27,8 @@ export const StyledGrid = styled(DataGrid)(({ theme }) => ({
     overflow: 'hidden',
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
+    display: 'flex',
+    alignItems: 'center',
   },
 }));
 
@@ -72,7 +74,10 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const [pageSize, setPageSize] = useState(5);
+  const [paginationModel, setPaginationModel] = useState({
+    page: 0,
+    pageSize: 5,
+  });
 
   const staffReportRows = useMemo(() => {
     return transactions.map((data, index) => createStaffReportRow(data, index));
@@ -166,12 +171,17 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
         sortingOrder={['desc', 'asc']}
         sortModel={sortModel}
         onSortModelChange={(size) => setSortModel(size)}
-        rowsPerPageOptions={[5, 10, 25]}
-        pageSize={pageSize}
-        onPageSizeChange={(model) => setPageSize(model)}
-        autoHeight
+        pageSizeOptions={[
+          5,
+          10,
+          25,
+          { label: 'All', value: staffReportRows.length },
+        ]}
+        paginationModel={paginationModel}
+        onPaginationModelChange={(model) => setPaginationModel(model)}
+        disableRowSelectionOnClick
         pagination
-        disableSelectionOnClick
+        disableColumnMenu
       />
       <Box display="flex" justifyContent="flex-end" mt={2} mb={2} mr={8.5}>
         {tableType === TableType.Income ? (

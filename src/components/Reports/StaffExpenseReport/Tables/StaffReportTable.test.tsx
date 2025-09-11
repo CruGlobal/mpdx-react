@@ -36,9 +36,6 @@ const TestComponent: React.FC<TestComponentProps> = ({
         }>
           mocks={{
             reportsStaffExpenses: {
-              accountId: 'account-1',
-              name: 'Test Account',
-              status: 'active',
               startBalance: 1000,
               endBalance: 2000,
               funds: isEmpty
@@ -117,13 +114,15 @@ describe('StaffReportTable', () => {
     expect(
       await findByRole('columnheader', { name: 'Date' }),
     ).toBeInTheDocument();
-    expect(getByRole('cell', { name: '1/1/2025' })).toBeInTheDocument();
+    expect(getByRole('gridcell', { name: '1/1/2025' })).toBeInTheDocument();
     expect(
       getByRole('columnheader', { name: 'Description' }),
     ).toBeInTheDocument();
-    expect(getByRole('cell', { name: 'Travel - Flights' })).toBeInTheDocument();
+    expect(
+      getByRole('gridcell', { name: 'Travel - Flights' }),
+    ).toBeInTheDocument();
     expect(getByRole('columnheader', { name: 'Amount' })).toBeInTheDocument();
-    expect(getByRole('cell', { name: '-$100.00' })).toBeInTheDocument();
+    expect(getByRole('gridcell', { name: '-$100.00' })).toBeInTheDocument();
   });
 
   it('renders loading spinner when loading prop is true', async () => {
@@ -158,12 +157,12 @@ describe('StaffReportTable', () => {
     ).toBeInTheDocument();
 
     userEvent.click(await findByRole('columnheader', { name: 'Amount' }));
-    const ascCells = getAllByRole('cell', { name: /-\$\d+\.\d{2}/ });
+    const ascCells = getAllByRole('gridcell', { name: /-\$\d+\.\d{2}/ });
     expect(ascCells[0]).toHaveTextContent('-$50.00');
     expect(ascCells[1]).toHaveTextContent('-$100.00');
 
     userEvent.click(await findByRole('columnheader', { name: 'Amount' }));
-    const descCells = getAllByRole('cell', { name: /-\$\d+\.\d{2}/ });
+    const descCells = getAllByRole('gridcell', { name: /-\$\d+\.\d{2}/ });
     expect(descCells[0]).toHaveTextContent('-$100.00');
     expect(descCells[1]).toHaveTextContent('-$50.00');
   });
