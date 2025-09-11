@@ -211,7 +211,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
           ({
             name: snakeToCamel(key),
             value: parsedFilter[key],
-          } as { name: string; value: FilterKey }),
+          }) as { name: string; value: FilterKey },
       );
 
       const newFilter = filters.reduce<FilterInput>((acc, filter) => {

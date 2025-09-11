@@ -277,35 +277,13 @@ describe('FixSendNewsletter', () => {
     });
 
     it('should successfully update all the contacts', async () => {
-      let cardinality = 0;
       const mutationSpy = jest.fn();
       const { getAllByRole, getByRole, queryByRole, getByText } = render(
         <TestComponent
           mocks={{
-            InvalidNewsletter: () => {
-              let queryResult;
-              if (cardinality === 0) {
-                queryResult = {
-                  ...mockInvalidNewslettersResponse.InvalidNewsletter,
-                };
-              } else {
-                queryResult = {
-                  contacts: {
-                    nodes: [
-                      {
-                        ...mockInvalidNewslettersResponse.InvalidNewsletter
-                          .contacts.nodes[2],
-                      },
-                    ],
-                  },
-                };
-              }
-              cardinality++;
-              return queryResult;
-            },
-            MassActionsUpdateContacts: {
-              ...mockMassActionsUpdateContactsData.MassActionsUpdateContacts,
-            },
+            InvalidNewsletter: mockInvalidNewslettersResponse.InvalidNewsletter,
+            MassActionsUpdateContacts:
+              mockMassActionsUpdateContactsData.MassActionsUpdateContacts,
           }}
           onCall={mutationSpy}
         />,
@@ -321,28 +299,26 @@ describe('FixSendNewsletter', () => {
         );
       });
       await waitFor(() => {
-        expect(mutationSpy.mock.calls[1][0]).toMatchObject({
-          operation: {
-            operationName: 'MassActionsUpdateContacts',
-            variables: {
-              accountListId: 'account-id',
-              attributes: [
-                {
-                  id: 'contactId3',
-                  sendNewsletter: SendNewsletterEnum.None,
-                },
-                {
-                  id: 'contactId1',
-                  sendNewsletter: SendNewsletterEnum.Physical,
-                },
-                {
-                  id: 'contactId2',
-                  sendNewsletter: SendNewsletterEnum.Both,
-                },
-              ],
-            },
+        expect(mutationSpy).toHaveGraphqlOperation(
+          'MassActionsUpdateContacts',
+          {
+            accountListId: 'account-id',
+            attributes: [
+              {
+                id: 'contactId3',
+                sendNewsletter: SendNewsletterEnum.Email,
+              },
+              {
+                id: 'contactId1',
+                sendNewsletter: SendNewsletterEnum.Physical,
+              },
+              {
+                id: 'contactId2',
+                sendNewsletter: SendNewsletterEnum.Both,
+              },
+            ],
           },
-        });
+        );
       });
     });
 

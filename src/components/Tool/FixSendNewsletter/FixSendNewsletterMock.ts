@@ -1,4 +1,12 @@
-import { SendNewsletterEnum, StatusEnum } from 'src/graphql/types.generated';
+import { DeepPartial } from 'ts-essentials';
+import { MassActionsUpdateContactsMutation } from 'src/components/Contacts/MassActions/MassActionsUpdateContacts.generated';
+import {
+  ContactSourceEnum,
+  SendNewsletterEnum,
+  StatusEnum,
+} from 'src/graphql/types.generated';
+import { InvalidNewsletterQuery } from './InvalidNewsletter.generated';
+import { UpdateContactNewsletterMutation } from './UpdateNewsletter.generated';
 
 export const mpdxSourcedAddress = {
   id: '1',
@@ -53,7 +61,8 @@ export const mockInvalidNewslettersResponse = {
           id: 'contactId1',
           name: 'Baggins, Frodo',
           status: StatusEnum.PartnerPray,
-          source: 'MPDX',
+          sendNewsletter: SendNewsletterEnum.Physical,
+          source: ContactSourceEnum.Mpdx,
           primaryAddress: mpdxSourcedAddress,
           primaryPerson,
         },
@@ -61,7 +70,8 @@ export const mockInvalidNewslettersResponse = {
           id: 'contactId2',
           name: 'Gamgee, Samwise',
           status: StatusEnum.PartnerFinancial,
-          source: 'MPDX',
+          sendNewsletter: SendNewsletterEnum.Physical,
+          source: ContactSourceEnum.Mpdx,
           primaryAddress: emptyAddress,
           primaryPerson: emptyPerson,
         },
@@ -69,15 +79,16 @@ export const mockInvalidNewslettersResponse = {
           id: 'contactId3',
           name: 'Gollum, Smeagol',
           status: StatusEnum.NeverAsk,
-          source: 'MPDX',
+          sendNewsletter: SendNewsletterEnum.Physical,
+          source: ContactSourceEnum.Mpdx,
           primaryAddress: emptyAddress,
           primaryPerson: {
             deceased: true,
           },
         },
       ],
+      totalCount: 3,
     },
-    totalCount: 2,
     constant: {
       status: [
         { id: StatusEnum.PartnerPray, value: 'Partner - Pray' },
@@ -85,7 +96,7 @@ export const mockInvalidNewslettersResponse = {
         { id: StatusEnum.NeverAsk, value: 'Never Ask' },
       ],
     },
-  },
+  } satisfies DeepPartial<InvalidNewsletterQuery>,
 };
 
 export const mockUploadNewsletterChange = {
@@ -96,20 +107,13 @@ export const mockUploadNewsletterChange = {
         sendNewsletter: SendNewsletterEnum.Physical,
       },
     },
-  },
+  } satisfies DeepPartial<UpdateContactNewsletterMutation>,
 };
 
 export const mockMassActionsUpdateContactsData = {
   MassActionsUpdateContacts: {
-    updateContacts: [
-      {
-        id: 'contactId',
-        sendNewsletter: SendNewsletterEnum.Physical,
-      },
-      {
-        id: 'contactId2',
-        sendNewsletter: SendNewsletterEnum.Both,
-      },
-    ],
-  },
+    updateContacts: {
+      contacts: [{ id: 'contactId1' }, { id: 'contactId2' }],
+    },
+  } satisfies DeepPartial<MassActionsUpdateContactsMutation>,
 };

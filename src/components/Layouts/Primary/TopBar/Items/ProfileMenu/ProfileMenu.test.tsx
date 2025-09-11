@@ -39,6 +39,7 @@ const defaultRouter = {
 
 const routerNoAccountListId = {
   pathname: '/accountLists/',
+  query: {},
   isReady: true,
   push: jest.fn(),
 };

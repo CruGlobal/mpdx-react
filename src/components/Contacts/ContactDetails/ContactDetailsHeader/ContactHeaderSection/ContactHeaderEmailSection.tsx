@@ -1,10 +1,11 @@
 import React, { ReactElement } from 'react';
 import Email from '@mui/icons-material/Email';
-import { Link, Skeleton, Typography } from '@mui/material';
+import { Link, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import theme from '../../../../../theme';
 import { ContactHeaderEmailFragment } from './ContactHeaderEmail.generated';
 import { ContactHeaderSection } from './ContactHeaderSection';
+import { TextSkeleton } from './styledComponents/TextSkeleton';
 
 interface Props {
   loading: boolean;
@@ -16,12 +17,6 @@ const EmailIcon = styled(Email)(({}) => ({
   width: 20,
   height: 20,
   color: theme.palette.text.secondary,
-}));
-const TextSkeleton = styled(Skeleton)(({}) => ({
-  display: 'inline',
-  marginLeft: 18,
-  width: 200,
-  fontSize: 16,
 }));
 
 export const ContactHeaderEmailSection = ({

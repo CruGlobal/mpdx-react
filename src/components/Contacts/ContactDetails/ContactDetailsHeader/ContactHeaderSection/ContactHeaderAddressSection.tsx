@@ -1,11 +1,12 @@
 import React, { ReactElement } from 'react';
 import LocationOn from '@mui/icons-material/LocationOn';
-import { Box, Link, Skeleton, Typography } from '@mui/material';
+import { Box, Link, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import theme from '../../../../../theme';
 import { ContactHeaderAddressFragment } from './ContactHeaderAddress.generated';
 import { ContactHeaderSection } from './ContactHeaderSection';
+import { TextSkeleton } from './styledComponents/TextSkeleton';
 
 interface Props {
   loading: boolean;
@@ -17,12 +18,6 @@ const LocationIcon = styled(LocationOn)(({}) => ({
   width: 20,
   height: 20,
   color: theme.palette.text.secondary,
-}));
-const TextSkeleton = styled(Skeleton)(({}) => ({
-  display: 'inline',
-  marginLeft: 18,
-  width: 200,
-  fontSize: 16,
 }));
 
 const StyledAddressTypography = styled(Typography)(() => ({

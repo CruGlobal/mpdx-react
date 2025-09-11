@@ -2,13 +2,7 @@ import NextLink from 'next/link';
 import React, { useEffect, useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import {
-  Box,
-  Checkbox,
-  IconButton,
-  ListItemIcon,
-  Typography,
-} from '@mui/material';
+import { Box, IconButton, ListItemIcon, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useDrag } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
@@ -20,6 +14,7 @@ import {
   DraggableBox,
 } from 'src/components/Contacts/ContactFlow/ContactFlowRow/ContactFlowRow';
 import { StarContactIconButton } from 'src/components/Contacts/StarContactIconButton/StarContactIconButton';
+import { StyledCheckbox } from 'src/components/Shared/styledComponents/StyledCheckbox';
 import { useGetPledgeOrDonation } from 'src/components/Tool/Appeal/Shared/useGetPledgeOrDonation/useGetPledgeOrDonation';
 import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { StatusEnum } from 'src/graphql/types.generated';
@@ -57,12 +52,6 @@ export interface DraggedContact extends Omit<ContactsDraggedContact, 'status'> {
   appealStatus: AppealStatusEnum;
   pledge: AppealContactInfoFragment['pledges'][0];
 }
-
-const StyledCheckbox = styled(Checkbox)(() => ({
-  '&:hover': {
-    backgroundColor: 'rgba(0, 0, 0, 0.04)',
-  },
-}));
 
 const StyledListItemIcon = styled(ListItemIcon)(() => ({
   minWidth: '40px',

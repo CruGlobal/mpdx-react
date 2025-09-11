@@ -42,6 +42,26 @@ describe('Helpjuice', () => {
     ).toHaveAttribute('href', 'https://domain.helpjuice.com/article-2');
   });
 
+  it('makes links absolute URLs', async () => {
+    render(<Helpjuice />);
+
+    document
+      .getElementsByClassName('hj-swifty')[0]
+      .setAttribute('data-current-question-id', 'article-1');
+
+    expect(
+      await screen.findByRole('link', { name: 'Question Link' }),
+    ).toHaveAttribute('href', 'https://domain.helpjuice.com/question/123');
+    expect(screen.getByRole('link', { name: 'External Link' })).toHaveAttribute(
+      'href',
+      'https://google.com/',
+    );
+    expect(screen.getByRole('link', { name: 'Email Link' })).toHaveAttribute(
+      'href',
+      'mailto:test@example.com',
+    );
+  });
+
   it('does nothing if the element is missing', () => {
     document.body.innerHTML = '';
 

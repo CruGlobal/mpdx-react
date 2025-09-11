@@ -68,7 +68,7 @@ export const createCache = () =>
       },
       // Disable cache normalization for 12 month report contacts because a contact in one currency group should not be
       // merged a contact with the same id in a different currency group
-      TwelveMonthReportContact: { keyFields: false },
+      FourteenMonthReportContact: { keyFields: false },
       // Disable cache normalization for tags because a tag like { id: 'abc', count: 3 } in one period should not be
       // merged with a tag like { id: 'def', count 2 } in another period
       Tag: { keyFields: false },

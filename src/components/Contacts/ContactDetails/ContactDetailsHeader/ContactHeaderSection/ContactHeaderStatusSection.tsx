@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Skeleton, Typography } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { Box, Typography } from '@mui/material';
 import { StatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
@@ -10,18 +9,12 @@ import { EditPartnershipInfoModal } from '../../ContactDonationsTab/PartnershipI
 import { ContactHeaderSection } from './ContactHeaderSection';
 import { ContactHeaderStatusFragment } from './ContactHeaderStatus.generated';
 import { HandshakeIcon } from './HandshakeIcon';
+import { TextSkeleton } from './styledComponents/TextSkeleton';
 
 interface Props {
   loading: boolean;
   contact?: ContactHeaderStatusFragment;
 }
-
-const TextSkeleton = styled(Skeleton)(({}) => ({
-  display: 'inline',
-  marginLeft: 18,
-  width: 200,
-  fontSize: 16,
-}));
 
 export const ContactHeaderStatusSection: React.FC<Props> = ({
   loading,

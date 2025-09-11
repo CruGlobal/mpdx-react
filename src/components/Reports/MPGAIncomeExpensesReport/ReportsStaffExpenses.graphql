@@ -1,0 +1,37 @@
+query ReportsStaffExpenses(
+  $fundTypes: [String!]
+  $startMonth: ISO8601Date
+  $endMonth: ISO8601Date
+) {
+  reportsStaffExpenses(
+    fundTypes: $fundTypes
+    startMonth: $startMonth
+    endMonth: $endMonth
+  ) {
+    accountId
+    funds {
+      categories {
+        averagePerMonth
+        breakdownByMonth {
+          month
+          total
+        }
+        category
+        subcategories {
+          averagePerMonth
+          breakdownByMonth {
+            month
+            total
+          }
+          subCategory
+          total
+        }
+        total
+      }
+      fundType
+      total
+    }
+    name
+    status
+  }
+}

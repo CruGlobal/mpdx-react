@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom/extend-expect';
 import 'isomorphic-fetch';
 import { webcrypto } from 'node:crypto';
+import { TextEncoder } from 'node:util';
 import { Settings } from 'luxon';
 import { type useSession } from 'next-auth/react';
 import { session } from '__tests__/fixtures/session';
@@ -44,6 +45,10 @@ Object.defineProperty(window, 'crypto', {
   value: webcrypto,
 });
 
+Object.defineProperty(global, 'TextEncoder', {
+  value: TextEncoder,
+});
+
 window.document.createRange = (): Range =>
   ({
     setStart: jest.fn(),
@@ -52,7 +57,7 @@ window.document.createRange = (): Range =>
       nodeName: 'BODY',
       ownerDocument: document,
     } as unknown as Node,
-  } as unknown as Range);
+  }) as unknown as Range;
 
 Object.defineProperty(window, 'location', {
   value: { ...window.location, assign: jest.fn(), replace: jest.fn() },

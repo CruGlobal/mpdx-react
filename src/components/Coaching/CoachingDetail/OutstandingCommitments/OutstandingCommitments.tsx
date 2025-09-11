@@ -1,17 +1,13 @@
 import React from 'react';
 import {
   Box,
-  Button,
-  CardContent,
   CardHeader,
   Table,
   TableBody,
-  TableCell,
   TableContainer,
   TableHead,
   TableRow,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import AnimatedCard from 'src/components/AnimatedCard';
@@ -22,26 +18,14 @@ import theme from 'src/theme';
 import { MultilineSkeleton } from '../../../Shared/MultilineSkeleton';
 import { AccountListTypeEnum } from '../CoachingDetail';
 import {
+  AlignedTableCell,
+  ContentContainer,
+  LoadMoreButton,
+} from '../styledComponents/styledComponents';
+import {
   useLoadAccountListCoachingCommitmentsQuery,
   useLoadCoachingCommitmentsQuery,
 } from './OutstandingCommitments.generated';
-
-const ContentContainer = styled(CardContent)(({ theme }) => ({
-  padding: theme.spacing(2),
-  overflowX: 'scroll',
-}));
-
-const AlignedTableCell = styled(TableCell)({
-  border: 'none',
-  textAlign: 'right',
-  ':first-of-type': {
-    textAlign: 'unset',
-  },
-});
-
-const LoadMoreButton = styled(Button)(({ theme }) => ({
-  margin: theme.spacing(1),
-}));
 
 interface OutstandingCommitmentsProps {
   accountListId: string;

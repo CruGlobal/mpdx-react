@@ -1,24 +1,19 @@
 import React from 'react';
 import {
-  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingStyling';
 import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { useDeleteTaskMutation } from '../../../Task/Modal/Form/TaskModal.generated';
-
-const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
-  margin: theme.spacing(0, 1, 0, 0),
-}));
 
 interface DeleteConfirmationProps {
   deleteType: string;

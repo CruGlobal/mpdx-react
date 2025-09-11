@@ -1,0 +1,6 @@
+query AccountListSupportRaised($accountListId: ID!) {
+  accountList(id: $accountListId) {
+    id
+    receivedPledges
+  }
+}

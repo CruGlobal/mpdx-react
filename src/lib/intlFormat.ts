@@ -10,11 +10,18 @@ export const percentageFormat = (value: number, locale: string): string =>
     style: 'percent',
   }).format(Number.isFinite(value) ? value : 0);
 
+interface CurrencyFormatOptions {
+  showTrailingZeros?: boolean;
+}
+
 export const currencyFormat = (
   value: number,
   currency: string | null | undefined,
   locale: string,
+  options?: CurrencyFormatOptions,
 ): string => {
+  const { showTrailingZeros = false } = options ?? {};
+
   const amount = Number.isNaN(value) ? 0 : value;
   if (!currency) {
     currency = 'USD';
@@ -23,7 +30,7 @@ export const currencyFormat = (
     return new Intl.NumberFormat(locale, {
       style: 'currency',
       currency: currency,
-      trailingZeroDisplay: 'stripIfInteger',
+      trailingZeroDisplay: showTrailingZeros ? undefined : 'stripIfInteger',
     }).format(Number.isFinite(amount) ? amount : 0);
   } catch (error) {
     // eslint-disable-next-line no-console
@@ -52,6 +59,16 @@ export const amountFormat = (
     console.error(`Error formatting amount: ${error}`);
     return value.toString();
   }
+};
+
+export const zeroAmountFormat = (
+  value: number | undefined | null,
+  locale: string,
+): string => {
+  if (value === 0) {
+    return '-';
+  }
+  return amountFormat(value, locale);
 };
 
 export const parseNumberFromCurrencyString = (
@@ -110,13 +127,22 @@ export const monthYearFormat = (
     year: fullYear ? 'numeric' : '2-digit',
   }).format(DateTime.local(year, month, 1).toJSDate());
 
-export const dateFormat = (date: DateTime | null, locale: string): string => {
+interface DateFormatOptions {
+  fullMonth?: boolean;
+}
+
+export const dateFormat = (
+  date: DateTime | null,
+  locale: string,
+  options?: DateFormatOptions,
+): string => {
+  const { fullMonth } = options ?? {};
   if (date === null) {
     return '';
   }
   return new Intl.DateTimeFormat(locale, {
     day: 'numeric',
-    month: 'short',
+    month: fullMonth ? 'long' : 'short',
     year: 'numeric',
   }).format(date.toJSDate());
 };

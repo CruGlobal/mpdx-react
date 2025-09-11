@@ -63,6 +63,6 @@ export const formatNumber = (
   const number =
     typeof numberAsString === 'string'
       ? Number(numberAsString)
-      : numberAsString ?? 0;
+      : (numberAsString ?? 0);
   return Math.ceil(makeAbsolute ? Math.abs(number) : number);
 };

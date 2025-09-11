@@ -47,10 +47,11 @@ const formatPledgeOrDonation = ({
   const pledgeOrDonationDate =
     appealStatus === AppealStatusEnum.Asked ||
     appealStatus === AppealStatusEnum.Excluded
-      ? (dateOrFrequency && getLocalizedPledgeFrequency(dateOrFrequency)) ?? ''
+      ? ((dateOrFrequency && getLocalizedPledgeFrequency(dateOrFrequency)) ??
+        '')
       : dateOrFrequency
-      ? dateFormat(DateTime.fromISO(dateOrFrequency), locale)
-      : '';
+        ? dateFormat(DateTime.fromISO(dateOrFrequency), locale)
+        : '';
   return {
     amount: pledgeOrDonationAmount,
     dateOrFrequency: pledgeOrDonationDate,

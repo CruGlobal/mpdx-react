@@ -76,6 +76,16 @@ describe('intlFormat', () => {
       expect(currencyFormat(1000.1, 'EUR', 'fr')).toEqual('1 000,10 €');
     });
 
+    it('strips trailing zeros by default', () => {
+      expect(currencyFormat(1000, 'USD', 'en-US')).toEqual('$1,000');
+    });
+
+    it('showTrailingZeros shows trailing zeros', () => {
+      expect(
+        currencyFormat(1000, 'USD', 'en-US', { showTrailingZeros: true }),
+      ).toEqual('$1,000.00');
+    });
+
     describe('value', () => {
       it('handles NaN case', () => {
         expect(currencyFormat(NaN, 'NZD', 'en-US')).toEqual('NZ$0');
@@ -192,55 +202,49 @@ describe('intlFormat', () => {
     });
   });
 
+  const date = DateTime.local(2020, 1, 5);
+
   describe('dateFormat', () => {
     it('formats day and month as date', () => {
-      expect(dateFormat(DateTime.local(2020, 1, 5), 'en-US')).toEqual(
-        'Jan 5, 2020',
+      expect(dateFormat(date, 'en-US')).toEqual('Jan 5, 2020');
+    });
+
+    it('formats full date', () => {
+      expect(dateFormat(date, 'en-US', { fullMonth: true })).toEqual(
+        'January 5, 2020',
       );
     });
 
     it('handles language', () => {
-      expect(dateFormat(DateTime.local(2020, 1, 5), 'fr')).toEqual(
-        '5 janv. 2020',
-      );
+      expect(dateFormat(date, 'fr')).toEqual('5 janv. 2020');
     });
 
     describe('different language', () => {
       it('handles language', () => {
-        expect(dateFormat(DateTime.local(2020, 1, 5), 'es-419')).toEqual(
-          '5 ene 2020',
-        );
+        expect(dateFormat(date, 'es-419')).toEqual('5 ene 2020');
       });
     });
   });
 
   describe('dateFormatWithoutYear', () => {
     it('formats day and month as date', () => {
-      expect(
-        dateFormatWithoutYear(DateTime.local(2020, 1, 5), 'en-US'),
-      ).toEqual('Jan 5');
+      expect(dateFormatWithoutYear(date, 'en-US')).toEqual('Jan 5');
     });
 
     it('handles language', () => {
-      expect(dateFormatWithoutYear(DateTime.local(2020, 1, 5), 'fr')).toEqual(
-        '5 janv.',
-      );
+      expect(dateFormatWithoutYear(date, 'fr')).toEqual('5 janv.');
     });
 
     describe('different language', () => {
       it('handles language', () => {
-        expect(
-          dateFormatWithoutYear(DateTime.local(2020, 1, 5), 'es-419'),
-        ).toEqual('5 ene');
+        expect(dateFormatWithoutYear(date, 'es-419')).toEqual('5 ene');
       });
     });
   });
 
   describe('dateFormatMonthOnly', () => {
     it('format month', () => {
-      expect(dateFormatMonthOnly(DateTime.local(2020, 1, 5), 'en-US')).toEqual(
-        'Jan',
-      );
+      expect(dateFormatMonthOnly(date, 'en-US')).toEqual('Jan');
     });
     it('handles null date', () => {
       expect(dateFormatMonthOnly(null, 'en-US')).toEqual('');

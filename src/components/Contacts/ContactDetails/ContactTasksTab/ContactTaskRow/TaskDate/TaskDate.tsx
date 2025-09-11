@@ -30,8 +30,8 @@ const DateText = styled(Typography, {
     color: isLate
       ? theme.palette.error.main
       : isComplete
-      ? theme.palette.text.secondary
-      : theme.palette.text.primary,
+        ? theme.palette.text.secondary
+        : theme.palette.text.primary,
     marginLeft: small ? theme.spacing(0.5) : theme.spacing(1),
   }),
 );

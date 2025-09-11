@@ -121,8 +121,8 @@ export const bulkUpdateDuplicates = async (
           result.success && result?.successfulMerges
             ? result.successfulMerges
             : result.success
-            ? 1
-            : 0;
+              ? 1
+              : 0;
       });
       const totalDuplicatesAttempted =
         mergeActions.length + duplicatesToIgnore.length;

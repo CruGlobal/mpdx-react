@@ -25,8 +25,7 @@
     "**/*.ts",
     "**/*.tsx",
     "next.config.ts",
-    "onesky/upload.js",
-    "onesky/download.js"
+    "crowdin/sort-translations.js"
   ],
   "exclude": ["node_modules"]
 }
