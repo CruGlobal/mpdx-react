@@ -4,13 +4,14 @@ import userEvent from '@testing-library/user-event';
 import {
   PrimaryBudgetCategory,
   PrimaryBudgetCategoryEnum,
-  SubBudgetCategoryEnum,
 } from 'src/graphql/types.generated';
 import { GoalCalculatorTestWrapper } from '../../GoalCalculatorTestWrapper';
 import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
 import { GoalCalculatorGrid } from './GoalCalculatorGrid';
 
-const TestComponent: React.FC = () => {
+const TestComponent: React.FC<{ primaryBudgetCategoryIndex?: number }> = ({
+  primaryBudgetCategoryIndex = 0,
+}) => {
   const {
     goalCalculationResult: { data },
   } = useGoalCalculator();
@@ -18,7 +19,11 @@ const TestComponent: React.FC = () => {
   return data ? (
     <GoalCalculatorGrid
       promptText=""
-      category={data.goalCalculation.ministryFamily.primaryBudgetCategories[0]}
+      category={
+        data.goalCalculation.ministryFamily.primaryBudgetCategories[
+          primaryBudgetCategoryIndex
+        ]
+      }
     />
   ) : null;
 };
@@ -316,41 +321,14 @@ describe('GoalCalculatorGrid', () => {
   });
 
   it('renders subCategoryPanel', async () => {
-    const propsWithSubCategory = {
-      category: {
-        id: 'category-1',
-        label: 'Internet & Mobile',
-        category: PrimaryBudgetCategoryEnum.Utilities,
-        directInput: null, // null means Line Item mode, which shows subcategories
-        createdAt: '2024-01-01T00:00:00Z',
-        updatedAt: '2024-01-01T00:00:00Z',
-        subBudgetCategories: [
-          {
-            id: 'sub-1',
-            label: 'Internet',
-            amount: 60,
-            category: SubBudgetCategoryEnum.UtilitiesInternet,
-            createdAt: '2024-01-01T00:00:00Z',
-            updatedAt: '2024-01-01T00:00:00Z',
-          },
-          {
-            id: 'sub-2',
-            label: 'Phone/Mobile',
-            amount: 40,
-            category: SubBudgetCategoryEnum.UtilitiesPhoneMobile,
-            createdAt: '2024-01-01T00:00:00Z',
-            updatedAt: '2024-01-01T00:00:00Z',
-          },
-        ],
-      } as unknown as PrimaryBudgetCategory,
-    };
-
     const { getByText, getAllByRole, findByText } = render(
       <GoalCalculatorTestWrapper>
         <RightPanel />
-        <GoalCalculatorGrid {...propsWithSubCategory} />
+        <TestComponent primaryBudgetCategoryIndex={2} />
       </GoalCalculatorTestWrapper>,
     );
+    const lumpSumButton = await findByText('Line Item');
+    userEvent.click(lumpSumButton);
 
     expect(getByText('Internet')).toBeInTheDocument();
     expect(getByText('Phone/Mobile')).toBeInTheDocument();
@@ -361,7 +339,9 @@ describe('GoalCalculatorGrid', () => {
 
     userEvent.click(infoButtons[0]);
     expect(
-      await findByText('Only the portion not reimbursed as ministry expense.'),
+      await findByText(
+        'For mobile phone and internet expenses, only include the portion not reimbursed as a ministry expense.',
+      ),
     ).toBeInTheDocument();
   });
 });
