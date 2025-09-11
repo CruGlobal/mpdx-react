@@ -9,7 +9,9 @@ import { GoalCalculatorTestWrapper } from '../../GoalCalculatorTestWrapper';
 import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
 import { GoalCalculatorGrid } from './GoalCalculatorGrid';
 
-const TestComponent: React.FC = () => {
+const TestComponent: React.FC<{ primaryBudgetCategoryIndex?: number }> = ({
+  primaryBudgetCategoryIndex = 0,
+}) => {
   const {
     goalCalculationResult: { data },
   } = useGoalCalculator();
@@ -17,9 +19,19 @@ const TestComponent: React.FC = () => {
   return data ? (
     <GoalCalculatorGrid
       promptText=""
-      category={data.goalCalculation.ministryFamily.primaryBudgetCategories[0]}
+      category={
+        data.goalCalculation.ministryFamily.primaryBudgetCategories[
+          primaryBudgetCategoryIndex
+        ]
+      }
     />
   ) : null;
+};
+
+const RightPanel: React.FC = () => {
+  const { rightPanelContent } = useGoalCalculator();
+
+  return <aside aria-label="Right Panel">{rightPanelContent}</aside>;
 };
 
 describe('GoalCalculatorGrid', () => {
@@ -306,5 +318,30 @@ describe('GoalCalculatorGrid', () => {
         },
       );
     });
+  });
+
+  it('renders subCategoryPanel', async () => {
+    const { getByText, getAllByRole, findByText } = render(
+      <GoalCalculatorTestWrapper>
+        <RightPanel />
+        <TestComponent primaryBudgetCategoryIndex={2} />
+      </GoalCalculatorTestWrapper>,
+    );
+    const lumpSumButton = await findByText('Line Item');
+    userEvent.click(lumpSumButton);
+
+    expect(getByText('Internet')).toBeInTheDocument();
+    expect(getByText('Phone/Mobile')).toBeInTheDocument();
+
+    const infoButtons = getAllByRole('button', {
+      name: 'Show additional info',
+    });
+
+    userEvent.click(infoButtons[0]);
+    expect(
+      await findByText(
+        'For mobile phone and internet expenses, only include the portion not reimbursed as a ministry expense.',
+      ),
+    ).toBeInTheDocument();
   });
 });
