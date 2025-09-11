@@ -12,10 +12,19 @@ import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getQueryParam } from 'src/utils/queryParam';
 import {
+  GoalBenefitsConstantMap,
+  GoalGeographicConstant,
+  GoalMiscConstantMap,
+  useFormatConstants,
+} from '../../../../hooks/useFormatConstants';
+import {
   GoalCalculatorReportEnum,
   GoalCalculatorStepEnum,
 } from '../GoalCalculatorHelper';
-import { useGoalCalculationQuery } from './GoalCalculation.generated';
+import {
+  useGoalCalculationQuery,
+  useGoalCalculatorConstantsQuery,
+} from './GoalCalculation.generated';
 import { GoalCalculatorStep, useSteps } from './useSteps';
 
 export type GoalCalculatorType = {
@@ -38,6 +47,9 @@ export type GoalCalculatorType = {
   setDrawerOpen: (open: boolean) => void;
 
   goalCalculationResult: ReturnType<typeof useGoalCalculationQuery>;
+  goalBenefitsConstantMap: GoalBenefitsConstantMap;
+  goalGeographicConstant: GoalGeographicConstant[];
+  goalMiscConstantMap: GoalMiscConstantMap;
 };
 
 const GoalCalculatorContext = createContext<GoalCalculatorType | null>(null);
@@ -69,6 +81,13 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       id: goalCalculationId,
     },
   });
+
+  const { data } = useGoalCalculatorConstantsQuery();
+  const {
+    goalBenefitsConstantMap,
+    goalMiscConstantMap,
+    goalGeographicConstant,
+  } = useFormatConstants(data);
 
   const steps = useSteps();
   const [stepIndex, setStepIndex] = useState(0);
@@ -127,6 +146,9 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       selectedReport,
       setSelectedReport,
       goalCalculationResult,
+      goalBenefitsConstantMap,
+      goalGeographicConstant,
+      goalMiscConstantMap,
     }),
     [
       steps,
@@ -142,6 +164,9 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       selectedReport,
       setSelectedReport,
       goalCalculationResult,
+      goalBenefitsConstantMap,
+      goalGeographicConstant,
+      goalMiscConstantMap,
     ],
   );
 
