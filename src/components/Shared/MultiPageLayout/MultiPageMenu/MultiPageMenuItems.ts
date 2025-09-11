@@ -44,10 +44,10 @@ export const reportNavItems: NavItems[] = [
     id: 'coaching',
     title: i18n.t('Coaching'),
   },
-  {
-    id: 'staffExpense',
-    title: i18n.t('Staff Expense Report'),
-  },
+  // {
+  //   id: 'staffExpense',
+  //   title: i18n.t('Staff Expense Report'),
+  // },
 ];
 
 export const settingsNavItems: NavItems[] = [

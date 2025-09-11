@@ -9,6 +9,7 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
+import { StaffAccountQuery } from '../StaffAccount.generated';
 import { ReportsStaffExpensesQuery } from './GetStaffExpense.generated';
 import { StaffExpenseReport } from './StaffExpenseReport';
 
@@ -26,9 +27,9 @@ const time = DateTime.fromISO('2025-01-01').startOf('month');
 const title = 'Report title';
 
 const router = {
-  query: { accountListId: 'account-1' },
   isReady: true,
   push,
+  query: {},
 };
 
 const TestComponent: React.FC<TestComponentProps> = ({
@@ -41,7 +42,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
         routerMonth
           ? {
               ...router,
-              query: { ...router.query, month: '2025-01-01' },
+              query: { month: '2025-01-01' },
             }
           : router
       }
@@ -51,13 +52,11 @@ const TestComponent: React.FC<TestComponentProps> = ({
           <TestRouter router={router}>
             <GqlMockedProvider<{
               ReportsStaffExpenses: ReportsStaffExpensesQuery;
+              StaffAccount: StaffAccountQuery;
             }>
               mocks={{
                 ReportsStaffExpenses: {
                   reportsStaffExpenses: {
-                    accountId: 'account-1',
-                    name: 'Test Account',
-                    status: 'active',
                     startBalance: 1000,
                     endBalance: 2000,
                     funds: isEmpty
@@ -101,11 +100,17 @@ const TestComponent: React.FC<TestComponentProps> = ({
                         ],
                   },
                 },
+                StaffAccount: {
+                  staffAccount: {
+                    accountId: '1000000001',
+                    name: 'Test Account',
+                    status: 'active',
+                  },
+                },
               }}
               onCall={mutationSpy}
             >
               <StaffExpenseReport
-                accountId={'account-1'}
                 isNavListOpen={true}
                 onNavListToggle={onNavListToggle}
                 title={title}
@@ -122,14 +127,11 @@ const TestComponent: React.FC<TestComponentProps> = ({
 
 describe('StaffExpenseReport', () => {
   it('renders with data', async () => {
-    const { getByTestId, getByRole } = render(
-      <TestComponent isEmpty={false} />,
-    );
+    const { getByRole, findByText } = render(<TestComponent isEmpty={false} />);
 
     expect(getByRole('heading', { name: 'Report title' })).toBeInTheDocument();
-    const boxInfo = getByTestId('account-info');
-    await waitFor(() => expect(boxInfo).toHaveTextContent('Test Account'));
-    await waitFor(() => expect(boxInfo).toHaveTextContent('account-1'));
+    expect(await findByText('Test Account')).toBeInTheDocument();
+    expect(await findByText('1000000001')).toBeInTheDocument();
   });
 
   it('initializes with month from query', () => {

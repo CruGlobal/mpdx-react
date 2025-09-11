@@ -1,16 +1,5 @@
-query ReportsStaffExpenses(
-  $accountId: ID!
-  $startMonth: ISO8601Date
-  $endMonth: ISO8601Date
-) {
-  reportsStaffExpenses(
-    accountId: $accountId
-    startMonth: $startMonth
-    endMonth: $endMonth
-  ) {
-    accountId
-    name
-    status
+query ReportsStaffExpenses($startMonth: ISO8601Date, $endMonth: ISO8601Date) {
+  reportsStaffExpenses(startMonth: $startMonth, endMonth: $endMonth) {
     startBalance
     endBalance
     funds {

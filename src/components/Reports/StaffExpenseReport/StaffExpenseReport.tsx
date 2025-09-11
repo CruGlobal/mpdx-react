@@ -33,6 +33,7 @@ import {
   TransactionCategory,
 } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
+import { useStaffAccountQuery } from '../StaffAccount.generated';
 import { BalanceCard } from './BalanceCard/BalanceCard';
 import { DownloadButtonGroup } from './DownloadButtonGroup/DownloadButtonGroup';
 import { useReportsStaffExpensesQuery } from './GetStaffExpense.generated';
@@ -49,7 +50,6 @@ export interface Transaction extends BreakdownByMonth {
 }
 
 interface StaffExpenseReportProps {
-  accountId: string;
   isNavListOpen: boolean;
   onNavListToggle: () => void;
   title: string;
@@ -103,11 +103,12 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
 
   const { data, loading } = useReportsStaffExpensesQuery({
     variables: {
-      accountId: '1000000001',
       ...getQueryDateRange(),
     },
   });
-  console.log(data);
+
+  const { data: accountData } = useStaffAccountQuery();
+
   const handlePrint = () => window.print();
 
   const timeTitle = time.toJSDate().toLocaleDateString(locale, {
@@ -176,7 +177,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                     category: `${category.category} - ${subcategory.subCategory}`,
                   })) ?? [],
             )
-          : category.breakdownByMonth
+          : (category.breakdownByMonth
               ?.filter((tx) => {
                 const txDate = DateTime.fromISO(tx.month);
                 if (filters && (filters.startDate || filters.endDate)) {
@@ -196,7 +197,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                 ...tx,
                 fundType: fund.fundType,
                 category: category.category,
-              })) ?? [],
+              })) ?? []),
       ) ?? []
     );
   };
@@ -398,18 +399,12 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                 </ScreenOnly>
               ) : null}
             </Box>
-            <Box
-              display="flex"
-              flexDirection="row"
-              gap={3}
-              mb={2}
-              data-testid="account-info"
-            >
+            <Box display="flex" flexDirection="row" gap={3} mb={2}>
               <Typography>
-                {t(data?.reportsStaffExpenses.name ?? '')}
+                {t(accountData?.staffAccount?.name ?? '')}
               </Typography>
               <Typography>
-                {t(data?.reportsStaffExpenses.accountId ?? '')}
+                {t(accountData?.staffAccount?.accountId ?? '')}
               </Typography>
             </Box>
             <ScreenOnly>
@@ -429,15 +424,15 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                       fund.fundType === 'Primary'
                         ? Wallet
                         : fund.fundType === 'Savings'
-                        ? Savings
-                        : Groups
+                          ? Savings
+                          : Groups
                     }
                     iconBgColor={
                       fund.fundType === 'Primary'
                         ? '#FF9800'
                         : fund.fundType === 'Savings'
-                        ? '#90CAF9'
-                        : '#588C87'
+                          ? '#90CAF9'
+                          : '#588C87'
                     }
                     title={fund.fundType}
                     isSelected={selectedFundType === fund.fundType}
