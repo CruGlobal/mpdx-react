@@ -8,6 +8,7 @@ import {
   dateFromParts,
   dateTimeFormat,
   dayMonthFormat,
+  formatRelativeTime,
   monthYearFormat,
   numberFormat,
   parseNumberFromCurrencyString,
@@ -325,6 +326,65 @@ describe('intlFormat', () => {
       const date = dateTimeFormat(null, locale);
 
       expect(date).toBe('');
+    });
+  });
+
+  describe('formatRelativeTime', () => {
+    const locale = 'en-US';
+
+    it('formats 0 milliseconds', () => {
+      expect(formatRelativeTime(0, locale)).toBe('now');
+    });
+
+    it('formats seconds', () => {
+      expect(formatRelativeTime(1000, locale)).toBe('in 1 second');
+      expect(formatRelativeTime(-5200, locale)).toBe('5 seconds ago');
+    });
+
+    it('formats minutes', () => {
+      expect(formatRelativeTime(60 * 1000, locale)).toBe('in 1 minute');
+      expect(formatRelativeTime(-5.2 * 60 * 1000, locale)).toBe(
+        '5 minutes ago',
+      );
+    });
+
+    it('formats hours', () => {
+      expect(formatRelativeTime(60 * 60 * 1000, locale)).toBe('in 1 hour');
+      expect(formatRelativeTime(-5.2 * 60 * 60 * 1000, locale)).toBe(
+        '5 hours ago',
+      );
+    });
+
+    it('formats days', () => {
+      expect(formatRelativeTime(24 * 60 * 60 * 1000, locale)).toBe('tomorrow');
+      expect(formatRelativeTime(-5.2 * 24 * 60 * 60 * 1000, locale)).toBe(
+        '5 days ago',
+      );
+    });
+
+    it('formats months', () => {
+      expect(formatRelativeTime(30 * 24 * 60 * 60 * 1000, locale)).toBe(
+        'next month',
+      );
+      expect(formatRelativeTime(-5.2 * 30 * 24 * 60 * 60 * 1000, locale)).toBe(
+        '5 months ago',
+      );
+    });
+
+    it('formats years', () => {
+      expect(formatRelativeTime(365.2 * 24 * 60 * 60 * 1000, locale)).toBe(
+        'next year',
+      );
+      expect(
+        formatRelativeTime(-5.2 * 365.2 * 24 * 60 * 60 * 1000, locale),
+      ).toBe('5 years ago');
+    });
+
+    it('formats in different locales', () => {
+      expect(formatRelativeTime(60 * 1000, 'fr')).toBe('dans 1 minute');
+      expect(formatRelativeTime(-60 * 1000, 'fr')).toBe('il y a 1 minute');
+      expect(formatRelativeTime(24 * 60 * 60 * 1000, 'es')).toBe('mañana');
+      expect(formatRelativeTime(-24 * 60 * 60 * 1000, 'es')).toBe('ayer');
     });
   });
 });

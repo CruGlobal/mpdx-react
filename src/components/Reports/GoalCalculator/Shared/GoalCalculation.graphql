@@ -3,16 +3,19 @@ fragment BudgetFamily on BudgetFamily {
   label
   category
   directInput
+  updatedAt
   primaryBudgetCategories {
     id
     label
     category
     directInput
+    updatedAt
     subBudgetCategories {
       id
       label
       category
       amount
+      updatedAt
     }
   }
 }
@@ -21,6 +24,7 @@ query GoalCalculation($accountListId: ID!, $id: ID!) {
   goalCalculation(accountListId: $accountListId, id: $id) {
     id
     primary
+    updatedAt
     ministryFamily {
       ...BudgetFamily
     }
