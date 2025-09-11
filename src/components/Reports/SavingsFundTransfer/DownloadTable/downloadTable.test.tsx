@@ -22,7 +22,7 @@ const mockHeaders = [
   'Note',
 ];
 
-const mockHistory = [mockData.history[1]];
+const mockHistory = [mockData[1]];
 
 describe('DownloadTable', () => {
   it('should download csv file', () => {

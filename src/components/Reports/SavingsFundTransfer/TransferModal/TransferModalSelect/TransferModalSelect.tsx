@@ -1,12 +1,11 @@
 import React from 'react';
 import { Box, MenuItem, Select, SelectProps } from '@mui/material';
 import {
-  ConferenceSavingsAccount,
   PrimaryAccount,
   SavingsAccount,
 } from 'src/components/Reports/SavingsFundTransfer/Helper/TransferIcons';
 import { TransferDirectionEnum } from '../../Helper/TransferHistoryEnum';
-import { Fund, StaffSavingFundEnum } from '../../mockData';
+import { Fund, FundTypeEnum } from '../../mockData';
 
 type TransferModalSelectProps = Partial<SelectProps> & {
   type: TransferDirectionEnum;
@@ -23,21 +22,19 @@ export const TransferModalSelect: React.FC<TransferModalSelectProps> = ({
   const filteredFunds =
     type === TransferDirectionEnum.From
       ? funds
-      : funds.filter((fund) => fund.type !== selectedTransferFrom);
+      : funds.filter((fund) => fund.id !== selectedTransferFrom);
 
   return (
     <Select {...props}>
       {filteredFunds.map((fund) => (
-        <MenuItem key={fund.accountId} value={fund.accountId}>
+        <MenuItem key={fund.id} value={fund.id}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            {fund.type === StaffSavingFundEnum.StaffAccount
+            {fund.name === FundTypeEnum.Primary
               ? PrimaryAccount
-              : fund.type === StaffSavingFundEnum.StaffSavings
+              : fund.name === FundTypeEnum.Savings
                 ? SavingsAccount
-                : fund.type === StaffSavingFundEnum.StaffConferenceSavings
-                  ? ConferenceSavingsAccount
-                  : null}{' '}
-            <b>{fund.name}</b>
+                : null}{' '}
+            <b>{fund.name} Account</b>
           </Box>
         </MenuItem>
       ))}

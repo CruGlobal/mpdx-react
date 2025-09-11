@@ -11,20 +11,16 @@ export const createTable = (
   const newTransfers = transfers.map((transfer) => {
     const fromFund =
       transfer.transferFrom === FundTypeEnum.Savings
-        ? 'Staff Savings'
+        ? 'Savings'
         : transfer.transferFrom === FundTypeEnum.Primary
-          ? 'Staff Account'
-          : transfer.transferFrom === FundTypeEnum.Conference
-            ? 'Staff Conference Savings'
-            : transfer.transferFrom;
+          ? 'Primary'
+          : transfer.transferFrom;
     const toFund =
       transfer.transferTo === FundTypeEnum.Savings
-        ? 'Staff Savings'
+        ? 'Savings'
         : transfer.transferTo === FundTypeEnum.Primary
-          ? 'Staff Account'
-          : transfer.transferTo === FundTypeEnum.Conference
-            ? 'Staff Conference Savings'
-            : transfer.transferTo;
+          ? 'Primary'
+          : transfer.transferTo;
     const schedule =
       transfer.schedule === ScheduleEnum.OneTime ? 'One Time' : 'Monthly';
     const status = transfer.status

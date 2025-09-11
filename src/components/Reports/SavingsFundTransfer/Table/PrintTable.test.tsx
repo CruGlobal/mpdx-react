@@ -13,9 +13,9 @@ const mutationSpy = jest.fn();
 
 const mockTransfers = [
   {
-    ...mockData.history[0],
-    transferFrom: 'savings',
-    transferTo: 'primary',
+    ...mockData[0],
+    transferFrom: 'Savings',
+    transferTo: 'Primary',
     amount: 2500,
     status: StatusEnum.Complete,
     transferDate: DateTime.fromISO('2023-01-01'),
@@ -39,11 +39,11 @@ describe('PrintTable', () => {
     expect(
       await findByRole('columnheader', { name: 'From' }),
     ).toBeInTheDocument();
-    expect(getByRole('cell', { name: 'Staff Savings' })).toBeInTheDocument();
+    expect(getByRole('cell', { name: 'Savings Balance' })).toBeInTheDocument();
     expect(
       await findByRole('columnheader', { name: 'To' }),
     ).toBeInTheDocument();
-    expect(getByRole('cell', { name: 'Staff Account' })).toBeInTheDocument();
+    expect(getByRole('cell', { name: 'Primary Balance' })).toBeInTheDocument();
     expect(
       await findByRole('columnheader', { name: 'Amount' }),
     ).toBeInTheDocument();

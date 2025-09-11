@@ -2,7 +2,7 @@ import { Groups, Savings, Wallet } from '@mui/icons-material';
 
 export const PrimaryAccount = (
   <Wallet
-    titleAccess="Staff Account"
+    titleAccess="Primary Account"
     sx={{
       backgroundColor: '#F08020',
       color: 'primary.contrastText',
@@ -17,7 +17,7 @@ export const PrimaryAccount = (
 );
 export const SavingsAccount = (
   <Savings
-    titleAccess="Staff Savings"
+    titleAccess="Savings Account"
     sx={{
       backgroundColor: '#007890',
       color: 'primary.contrastText',
@@ -32,7 +32,7 @@ export const SavingsAccount = (
 );
 export const ConferenceSavingsAccount = (
   <Groups
-    titleAccess="Staff Conference Savings"
+    titleAccess="Conference Savings Account"
     sx={{
       backgroundColor: '#00C0D8',
       color: 'primary.contrastText',

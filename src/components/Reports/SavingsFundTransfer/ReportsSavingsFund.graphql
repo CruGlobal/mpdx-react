@@ -32,3 +32,12 @@ query ReportsSavingsFundTransfer(
     }
   }
 }
+
+query Funds($fundTypes: [String!]) {
+  funds(fundTypes: $fundTypes) {
+    id
+    fundType
+    endBalance
+    deficitLimit
+  }
+}

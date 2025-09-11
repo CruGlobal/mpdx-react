@@ -11,8 +11,10 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { StaffSavingFundContext } from '../../StaffSavingFund/StaffSavingFundContext';
-import { ReportsSavingsFundTransferQuery } from '../ReportsSavingsFund.generated';
-import { mockData } from '../mockData';
+import {
+  FundsQuery,
+  ReportsSavingsFundTransferQuery,
+} from '../ReportsSavingsFund.generated';
 import { TransfersPage } from './TransfersPage';
 
 const accountListId = 'abc';
@@ -67,6 +69,22 @@ const mock = {
       ],
     },
   },
+  Funds: {
+    funds: [
+      {
+        id: '1',
+        fundType: 'Primary',
+        endBalance: 15000,
+        deficitLimit: 0,
+      },
+      {
+        id: '2',
+        fundType: 'Savings',
+        endBalance: 25000,
+        deficitLimit: 0,
+      },
+    ],
+  },
 };
 
 const emptyMock = {
@@ -74,6 +92,22 @@ const emptyMock = {
     reportsSavingsFundTransfer: {
       transactions: [],
     },
+  },
+  Funds: {
+    funds: [
+      {
+        id: '1',
+        fundType: 'Primary',
+        endBalance: 15000,
+        deficitLimit: 0,
+      },
+      {
+        id: '2',
+        fundType: 'Savings',
+        endBalance: 2500,
+        deficitLimit: 0,
+      },
+    ],
   },
 };
 
@@ -116,6 +150,7 @@ const Components = ({
           <I18nextProvider i18n={i18n}>
             <GqlMockedProvider<{
               ReportsSavingsFundTransfer: ReportsSavingsFundTransferQuery;
+              Funds: FundsQuery;
             }>
               mocks={mock}
               onCall={mutationSpy}
@@ -145,27 +180,29 @@ describe('TransfersPage', () => {
     expect(getByText('Staff Savings Fund Transfers')).toBeInTheDocument();
     expect(getByText('Fund Transfer')).toBeInTheDocument();
 
-    expect(getByText(mockData.accountName)).toBeInTheDocument();
-    expect(getByText(mockData.accountListId)).toBeInTheDocument();
+    expect(getByText('Test Account')).toBeInTheDocument();
+    expect(getByText('123456789')).toBeInTheDocument();
   });
 
-  it('should render all balance cards with correct information', () => {
-    const { getByText, getAllByText } = render(<Components />);
+  it('should render all balance cards with correct information', async () => {
+    const { findByText } = render(<Components />);
 
-    expect(getByText('Staff Account Balance')).toBeInTheDocument();
-    expect(getByText('Staff Conference Savings Balance')).toBeInTheDocument();
-    expect(getByText('Staff Savings Balance')).toBeInTheDocument();
+    expect(await findByText('Primary Account Balance')).toBeInTheDocument();
+    expect(await findByText('Savings Account Balance')).toBeInTheDocument();
 
-    expect(getAllByText('$15,000.00').length).toBeGreaterThan(0);
-    expect(getAllByText('$500.00').length).toBeGreaterThan(0);
-    expect(getAllByText('$2,500.00').length).toBeGreaterThan(0);
+    expect(await findByText('$15,000.00')).toBeInTheDocument();
+    expect(await findByText('$25,000.00')).toBeInTheDocument();
   });
 
   it('should render cards and transfer history table', async () => {
-    const { findByRole, getAllByRole } = render(<Components />);
+    const { findByRole, findAllByRole } = render(<Components />);
 
-    expect(getAllByRole('button', { name: 'TRANSFER FROM' })).toHaveLength(3);
-    expect(getAllByRole('button', { name: 'TRANSFER TO' })).toHaveLength(3);
+    expect(
+      await findAllByRole('button', { name: 'TRANSFER FROM' }),
+    ).toHaveLength(2);
+    expect(await findAllByRole('button', { name: 'TRANSFER TO' })).toHaveLength(
+      2,
+    );
 
     expect(await findByRole('grid')).toBeInTheDocument();
     expect(
@@ -182,6 +219,7 @@ describe('TransfersPage', () => {
               <I18nextProvider i18n={i18n}>
                 <GqlMockedProvider<{
                   ReportsSavingsFundTransfer: ReportsSavingsFundTransferQuery;
+                  Funds: FundsQuery;
                 }>
                   mocks={emptyMock}
                   onCall={mutationSpy}
@@ -203,9 +241,11 @@ describe('TransfersPage', () => {
   });
 
   it('should open transfer modal when balance card transfer button is clicked', async () => {
-    const { getByRole, getByText, getAllByRole } = render(<Components />);
+    const { getByRole, getByText, findAllByRole } = render(<Components />);
 
-    const transferButtons = getAllByRole('button', { name: /transfer/i });
+    const transferButtons = await findAllByRole('button', {
+      name: /transfer/i,
+    });
     expect(transferButtons.length).toBeGreaterThan(0);
 
     const firstTransferButton = transferButtons[0].closest('button');
@@ -219,9 +259,11 @@ describe('TransfersPage', () => {
   });
 
   it('should close transfer modal when close button is clicked', async () => {
-    const { getByRole, queryByRole, getAllByRole } = render(<Components />);
+    const { getByRole, queryByRole, findAllByRole } = render(<Components />);
 
-    const transferButtons = getAllByRole('button', { name: /transfer/i });
+    const transferButtons = await findAllByRole('button', {
+      name: /transfer/i,
+    });
     const firstTransferButton = transferButtons?.[0].closest('button');
     userEvent.click(firstTransferButton!);
 
@@ -263,9 +305,11 @@ describe('TransfersPage', () => {
   });
 
   it('should display transfer modal with correct type', async () => {
-    const { getByRole, getAllByRole } = render(<Components />);
+    const { getByRole, findAllByRole } = render(<Components />);
 
-    const transferButtons = getAllByRole('button', { name: /transfer/i });
+    const transferButtons = await findAllByRole('button', {
+      name: /transfer/i,
+    });
     const firstTransferButton = transferButtons[0].closest('button');
     userEvent.click(firstTransferButton!);
 
@@ -281,14 +325,20 @@ describe('TransfersPage', () => {
     expect(toAccount).toBeInTheDocument();
 
     expect(
-      within(fromAccount).getByText(mockData.funds[0].name, {
-        selector: 'b',
-      }),
+      within(fromAccount).getByText(
+        `${mock['Funds']['funds'][0].fundType} Account`,
+        {
+          selector: 'b',
+        },
+      ),
     ).toBeInTheDocument();
     expect(
-      within(toAccount).queryByText(mockData.funds[0].name, {
-        selector: 'b',
-      }),
+      within(toAccount).queryByText(
+        `${mock['Funds']['funds'][0].fundType} Account`,
+        {
+          selector: 'b',
+        },
+      ),
     ).not.toBeInTheDocument();
   });
 });

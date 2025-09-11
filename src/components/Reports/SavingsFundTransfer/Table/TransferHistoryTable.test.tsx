@@ -14,14 +14,14 @@ const handleOpenMock = jest.fn();
 
 const mockHistory: TransferHistory[] = [
   {
-    ...mockData.history[0],
-    transferFrom: 'savings',
-    transferTo: 'primary',
+    ...mockData[0],
+    transferFrom: 'Savings',
+    transferTo: 'Primary',
   },
   {
-    ...mockData.history[1],
-    transferFrom: 'primary',
-    transferTo: 'savings',
+    ...mockData[1],
+    transferFrom: 'Primary',
+    transferTo: 'Savings',
   },
 ];
 
@@ -46,7 +46,7 @@ describe('TransferHistoryTable', () => {
     const { getByRole, findByRole } = render(<TestComponent />);
 
     const iconRow = getByRole('row', {
-      name: 'Staff Savings Arrow Staff Account $2,500.00 One Time pending Sep 26, 2023 Reimbursements Edit Stop ongoing Transfer',
+      name: 'Savings Account Arrow Primary Account $2,500.00 One Time pending Sep 26, 2023 Reimbursements Edit Stop ongoing Transfer',
     });
     const cells = within(iconRow).getAllByRole('gridcell');
 
@@ -58,10 +58,10 @@ describe('TransferHistoryTable', () => {
       await findByRole('columnheader', { name: 'Transfers' }),
     ).toBeInTheDocument();
     expect(
-      within(transferIconCell).getByRole('img', { name: 'Staff Account' }),
+      within(transferIconCell).getByRole('img', { name: 'Primary Account' }),
     ).toBeInTheDocument();
     expect(
-      within(transferIconCell).getByRole('img', { name: 'Staff Savings' }),
+      within(transferIconCell).getByRole('img', { name: 'Savings Account' }),
     ).toBeInTheDocument();
     expect(
       within(transferIconCell).getByRole('img', { name: 'Arrow' }),

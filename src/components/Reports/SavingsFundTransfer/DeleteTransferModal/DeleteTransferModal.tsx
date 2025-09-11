@@ -34,7 +34,7 @@ export const DeleteTransferModal: React.FC<DeleteTransferModalProps> = ({
   return (
     <Modal
       isOpen={true}
-      title={t('Stop Transfer: ${{transfer}}', { transfer: transfer.amount })}
+      title={t('Stop Transfer:', { transfer: transfer.amount })}
       handleClose={handleClose}
     >
       <DialogContent dividers>

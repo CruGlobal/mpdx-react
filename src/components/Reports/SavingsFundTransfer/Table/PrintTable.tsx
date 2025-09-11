@@ -47,21 +47,18 @@ export const PrintTable: React.FC<PrintTableProps> = ({ transfers }) => {
                   key={`${transfer.transferFrom}-${transfer.transferTo}-${transfer.amount}-${transfer.transferDate}`}
                 >
                   <TableCell>
-                    {transfer.transferFrom?.toLowerCase() ===
-                    FundTypeEnum.Primary
-                      ? 'Staff Account'
-                      : transfer.transferFrom?.toLowerCase() ===
-                          FundTypeEnum.Savings
-                        ? 'Staff Savings'
-                        : 'Staff Conference Savings'}
+                    {transfer.transferFrom === FundTypeEnum.Primary
+                      ? 'Primary Balance'
+                      : transfer.transferFrom === FundTypeEnum.Savings
+                        ? 'Savings Balance'
+                        : 'Conference Savings Balance'}
                   </TableCell>
                   <TableCell>
-                    {transfer.transferTo?.toLowerCase() === FundTypeEnum.Primary
-                      ? 'Staff Account'
-                      : transfer.transferTo?.toLowerCase() ===
-                          FundTypeEnum.Savings
-                        ? 'Staff Savings'
-                        : 'Staff Conference Savings'}
+                    {transfer.transferTo === FundTypeEnum.Primary
+                      ? 'Primary Balance'
+                      : transfer.transferTo === FundTypeEnum.Savings
+                        ? 'Savings Balance'
+                        : 'Conference Savings Balance'}
                   </TableCell>
                   <TableCell>
                     {transfer.amount?.toLocaleString(locale, {

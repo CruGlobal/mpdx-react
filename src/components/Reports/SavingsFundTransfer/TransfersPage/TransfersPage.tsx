@@ -23,18 +23,22 @@ import {
 } from '../../StaffSavingFund/StaffSavingFundContext';
 import { BalanceCard } from '../BalanceCard/BalanceCard';
 import { getStatusLabel } from '../Helper/getStatus';
-import { useReportsSavingsFundTransferQuery } from '../ReportsSavingsFund.generated';
+import {
+  useFundsQuery,
+  useReportsSavingsFundTransferQuery,
+} from '../ReportsSavingsFund.generated';
 import { EmptyTable } from '../Table/EmptyTable';
 import { PrintTable } from '../Table/PrintTable';
 import { TransferHistoryTable } from '../Table/TransferHistoryTable';
 import { DynamicTransferModal } from '../TransferModal/DynamicTransferModal';
 import { TransferModalData } from '../TransferModal/TransferModal';
 import {
+  Fund,
+  FundTypeEnum,
   ScheduleEnum,
   StatusEnum,
   Transactions,
   TransferHistory,
-  mockData,
 } from '../mockData';
 import { PrintOnly, ScreenOnly } from '../styledComponents/DisplayStyling';
 
@@ -63,7 +67,20 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
     StaffSavingFundContext,
   ) as StaffSavingFundType;
 
-  const { data: reportData, loading } = useReportsSavingsFundTransferQuery();
+  const { data: reportData, loading: reportLoading } =
+    useReportsSavingsFundTransferQuery();
+  const { data: fundsData, loading: fundsLoading } = useFundsQuery({
+    variables: {
+      fundTypes: [FundTypeEnum.Primary, FundTypeEnum.Savings],
+    },
+  });
+
+  const funds: Fund[] = (fundsData?.funds ?? []).map((fund) => ({
+    id: fund.id,
+    name: fund.fundType,
+    balance: fund.endBalance,
+    deficit: fund.deficitLimit,
+  }));
 
   const transactions: Transactions[] = (
     reportData?.reportsSavingsFundTransfer.transactions ?? []
@@ -176,8 +193,8 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                 mb: 2,
               }}
             >
-              <Typography>{mockData.accountName}</Typography>
-              <Typography>{mockData.accountListId}</Typography>
+              <Typography>{'Test Account'}</Typography>
+              <Typography>{'123456789'}</Typography>
             </Box>
             <Box
               display="flex"
@@ -187,11 +204,12 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                 flexDirection: { xs: 'column', sm: 'row' },
               }}
             >
-              {mockData.funds.map((fund) => (
+              {funds.map((fund) => (
                 <BalanceCard
                   fund={fund}
-                  key={fund.accountId}
+                  key={fund.id}
                   handleOpenTransferModal={handleOpenTransferModal}
+                  loading={fundsLoading}
                 />
               ))}
             </Box>
@@ -205,7 +223,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                     subtitle={t('No data found across any accounts.')}
                   />
                 }
-                loading={loading}
+                loading={reportLoading}
               />
             </ScreenOnly>
             <PrintOnly>
@@ -217,7 +235,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
           <DynamicTransferModal
             handleClose={() => setModalData(null)}
             data={modalData}
-            funds={mockData.funds}
+            funds={funds}
           />
         )}
       </Box>
