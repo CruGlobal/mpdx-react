@@ -359,7 +359,6 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
         <span>{params.value}</span>
         {rightPanelContent && (
           <IconButton
-            size="small"
             onClick={() => setRightPanelContent(rightPanelContent)}
             aria-label={t('Show additional info')}
           >
