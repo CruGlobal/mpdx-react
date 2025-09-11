@@ -51,8 +51,7 @@ export const HouseholdExpensesHeader: React.FC<
   const accountListId = useAccountListId() ?? '';
   const {
     goalCalculationResult: { data, loading },
-    onMutationStart,
-    onMutationComplete,
+    trackMutation,
   } = useGoalCalculator();
   const { t } = useTranslation();
   const locale = useLocale();
@@ -73,26 +72,25 @@ export const HouseholdExpensesHeader: React.FC<
   const setDirectInput = async (directInput: number | null) => {
     const householdFamilyId = data?.goalCalculation.householdFamily.id;
     if (householdFamilyId) {
-      onMutationStart();
-      return updateDirectInput({
-        variables: {
-          accountListId,
-          id: householdFamilyId,
-          directInput,
-        },
-        optimisticResponse: {
-          updateBudgetFamily: {
-            budgetFamily: {
-              __typename: 'BudgetFamily',
-              id: householdFamilyId,
-              directInput,
-              updatedAt: DateTime.now().toISO(),
+      return trackMutation(
+        updateDirectInput({
+          variables: {
+            accountListId,
+            id: householdFamilyId,
+            directInput,
+          },
+          optimisticResponse: {
+            updateBudgetFamily: {
+              budgetFamily: {
+                __typename: 'BudgetFamily',
+                id: householdFamilyId,
+                directInput,
+                updatedAt: DateTime.now().toISO(),
+              },
             },
           },
-        },
-        onCompleted: () => onMutationComplete(),
-        onError: () => onMutationComplete(),
-      });
+        }),
+      );
     }
   };
 

@@ -40,10 +40,8 @@ export type GoalCalculatorType = {
   goalCalculationResult: ReturnType<typeof useGoalCalculationQuery>;
   /** Whether any mutations are currently in progress */
   isMutating: boolean;
-  /** Call when a mutation starts */
-  onMutationStart: () => void;
-  /** Call when a mutation completes */
-  onMutationComplete: () => void;
+  /** Call with the mutation promise to track the start and end of mutations */
+  trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
 };
 
 const GoalCalculatorContext = createContext<GoalCalculatorType | null>(null);
@@ -120,13 +118,15 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     setIsDrawerOpen((prev) => !prev);
   }, []);
 
-  const onMutationStart = useCallback(() => {
-    setMutationCount((prev) => prev + 1);
-  }, []);
-
-  const onMutationComplete = useCallback(() => {
-    setMutationCount((prev) => Math.max(0, prev - 1));
-  }, []);
+  const trackMutation = useCallback(
+    async <T,>(mutation: Promise<T>): Promise<T> => {
+      setMutationCount((prev) => prev + 1);
+      return mutation.finally(() => {
+        setMutationCount((prev) => Math.max(0, prev - 1));
+      });
+    },
+    [],
+  );
 
   const contextValue = useMemo(
     (): GoalCalculatorType => ({
@@ -144,8 +144,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       setSelectedReport,
       goalCalculationResult,
       isMutating,
-      onMutationStart,
-      onMutationComplete,
+      trackMutation,
     }),
     [
       steps,
@@ -162,8 +161,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       setSelectedReport,
       goalCalculationResult,
       isMutating,
-      onMutationStart,
-      onMutationComplete,
+      trackMutation,
     ],
   );
 
