@@ -25,6 +25,7 @@ import { PrintTable } from '../Table/PrintTable';
 import { TransferHistoryTable } from '../Table/TransferHistoryTable';
 import { DynamicTransferModal } from '../TransferModal/DynamicTransferModal';
 import { TransferModalData } from '../TransferModal/TransferModal';
+import { UpdatedAtProvider } from '../UpdatedAtContext/UpdateAtContext';
 import { mockData } from '../mockData';
 import { PrintOnly, ScreenOnly } from '../styledComponents/DisplayStyling';
 
@@ -133,13 +134,15 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                 flexDirection: { xs: 'column', sm: 'row' },
               }}
             >
-              {mockData.funds.map((fund) => (
-                <BalanceCard
-                  fund={fund}
-                  key={fund.accountId}
-                  handleOpenTransferModal={handleOpenTransferModal}
-                />
-              ))}
+              <UpdatedAtProvider>
+                {mockData.funds.map((fund) => (
+                  <BalanceCard
+                    fund={fund}
+                    key={fund.accountId}
+                    handleOpenTransferModal={handleOpenTransferModal}
+                  />
+                ))}
+              </UpdatedAtProvider>
             </Box>
             <ScreenOnly sx={{ mt: 2, mb: 3 }}>
               <TransferHistoryTable
@@ -158,13 +161,15 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
             </PrintOnly>
           </Container>
         </Box>
-        {modalData && (
-          <DynamicTransferModal
-            handleClose={() => setModalData(null)}
-            data={modalData}
-            funds={mockData.funds}
-          />
-        )}
+        <UpdatedAtProvider>
+          {modalData && (
+            <DynamicTransferModal
+              handleClose={() => setModalData(null)}
+              data={modalData}
+              funds={mockData.funds}
+            />
+          )}
+        </UpdatedAtProvider>
       </Box>
     </>
   );

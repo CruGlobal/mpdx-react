@@ -25,7 +25,6 @@ export interface Fund {
   type: StaffSavingFundEnum;
   name: string;
   balance: number;
-  pending: number;
 }
 
 export interface TransferHistory {
@@ -56,22 +55,19 @@ export const mockData: MockData = {
       accountId: 'staffAccount',
       type: StaffSavingFundEnum.StaffAccount,
       name: 'Staff Account',
-      balance: 15000,
-      pending: 17500,
+      balance: -316,
     },
     {
       accountId: 'staffConferenceSavings',
       type: StaffSavingFundEnum.StaffConferenceSavings,
       name: 'Staff Conference Savings',
       balance: 500,
-      pending: 200,
     },
     {
       accountId: 'staffSavings',
       type: StaffSavingFundEnum.StaffSavings,
       name: 'Staff Savings',
       balance: 2500,
-      pending: 0,
     },
   ],
   history: [
