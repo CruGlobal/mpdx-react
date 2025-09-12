@@ -53,3 +53,27 @@ fragment FourteenMonthReportContact on FourteenMonthReportContact {
   pledgeFrequency
   status
 }
+
+query ReportsSalaryCurrencyDonations($accountListId: ID!) {
+  reportsSalaryCurrencyDonations(accountListId: $accountListId) {
+    currencyGroups
+    defaultCurrency
+    donorInfos {
+      accountNumbers
+      contactId
+      contactName
+      lateBy30Days
+      lateBy60Days
+      pledgeAmount
+      pledgeCurrency
+      pledgeFrequency
+      status
+    }
+    months
+    accountList {
+      id
+      createdAt
+      updatedAt
+    }
+  }
+}
