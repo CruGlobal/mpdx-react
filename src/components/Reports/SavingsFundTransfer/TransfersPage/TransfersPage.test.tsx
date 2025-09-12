@@ -28,13 +28,6 @@ const mockStaffAccount = {
   },
 };
 
-const router = {
-  query: {
-    accountListId: mockStaffAccount.StaffAccount.staffAccount.accountId,
-  },
-  isReady: true,
-};
-
 const MockStaffSavingFundProvider = ({
   children,
 }: {
@@ -69,7 +62,7 @@ const Components = ({
   <SnackbarProvider>
     <ThemeProvider theme={theme}>
       <LocalizationProvider dateAdapter={AdapterLuxon}>
-        <TestRouter router={router}>
+        <TestRouter>
           <I18nextProvider i18n={i18n}>
             <GqlMockedProvider<{
               StaffAccount: StaffAccountQuery;
