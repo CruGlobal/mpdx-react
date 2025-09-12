@@ -57,6 +57,7 @@ const StyledDrawer = styled('nav', {
     position: 'absolute',
     top: multiPageHeaderHeight,
     left: `calc(${iconPanelWidth} + 1px)`,
+    borderRight: `1px solid ${theme.palette.divider}`,
     height: '100%',
     backgroundColor: theme.palette.common.white,
     zIndex: 270,
