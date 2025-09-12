@@ -1,10 +1,12 @@
 import { useRouter } from 'next/router';
 import React, {
   Dispatch,
+  RefObject,
   SetStateAction,
   createContext,
   useCallback,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { useSnackbar } from 'notistack';
@@ -38,6 +40,10 @@ export type GoalCalculatorType = {
   setDrawerOpen: (open: boolean) => void;
 
   goalCalculationResult: ReturnType<typeof useGoalCalculationQuery>;
+
+  scrollToSection: (title: string) => void;
+  registerSection: (title: string, ref: RefObject<HTMLDivElement>) => void;
+  unregisterSection: (title: string) => void;
 };
 
 const GoalCalculatorContext = createContext<GoalCalculatorType | null>(null);
@@ -79,6 +85,26 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(true);
 
   const currentStep = steps[stepIndex];
+
+  const sectionRefs = useRef(new Map<string, RefObject<HTMLDivElement>>());
+
+  const scrollToSection = useCallback((title: string) => {
+    const ref = sectionRefs.current.get(title);
+    if (ref?.current) {
+      ref.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, []);
+
+  const registerSection = useCallback(
+    (title: string, ref: RefObject<HTMLDivElement>) => {
+      sectionRefs.current.set(title, ref);
+    },
+    [],
+  );
+
+  const unregisterSection = useCallback((title: string) => {
+    sectionRefs.current.delete(title);
+  }, []);
 
   const handleStepChange = useCallback(
     (newStep: GoalCalculatorStepEnum) => {
@@ -127,6 +153,9 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       selectedReport,
       setSelectedReport,
       goalCalculationResult,
+      scrollToSection,
+      registerSection,
+      unregisterSection,
     }),
     [
       steps,
@@ -142,6 +171,9 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       selectedReport,
       setSelectedReport,
       goalCalculationResult,
+      scrollToSection,
+      registerSection,
+      unregisterSection,
     ],
   );
 

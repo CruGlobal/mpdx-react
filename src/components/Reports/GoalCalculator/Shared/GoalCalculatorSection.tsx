@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import InfoIcon from '@mui/icons-material/Info';
 import PrintIcon from '@mui/icons-material/Print';
 import { Box, Button, IconButton, Stack, Typography } from '@mui/material';
@@ -22,15 +22,24 @@ export const GoalCalculatorSection: React.FC<GoalCalculatorSectionProps> = ({
   children,
   titleExtra,
 }) => {
-  const { setRightPanelContent } = useGoalCalculator();
+  const { setRightPanelContent, registerSection, unregisterSection } =
+    useGoalCalculator();
   const { t } = useTranslation();
+  const sectionRef = useRef<HTMLDivElement>(null);
 
   const handlePrint = () => {
     window.print();
   };
 
+  useEffect(() => {
+    registerSection(title, sectionRef);
+    return () => {
+      unregisterSection(title);
+    };
+  }, [title, registerSection, unregisterSection]);
+
   return (
-    <div>
+    <div ref={sectionRef}>
       <Box pb={4}>
         <Stack direction="row" gap={2} alignItems="center">
           <Typography variant="h6">
