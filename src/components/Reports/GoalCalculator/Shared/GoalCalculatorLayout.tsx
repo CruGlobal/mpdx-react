@@ -51,7 +51,8 @@ const StyledDrawer = styled('nav', {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.enteringScreen,
   }),
-  overflow: 'hidden',
+  overflow: 'scroll',
+  height: `calc(100vh - ${navBarHeight} - ${multiPageHeaderHeight})`,
   [theme.breakpoints.down('sm')]: {
     position: 'absolute',
     top: multiPageHeaderHeight,
