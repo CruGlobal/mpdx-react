@@ -3,15 +3,13 @@ import { Alert } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { RightPanel } from './RightPanel';
 
-export const UtilitiesPanel: React.FC = () => {
+export const SubUtilitiesPanel: React.FC = () => {
   const { t } = useTranslation();
 
   return (
-    <RightPanel title={t('Utilities')}>
+    <RightPanel title={t('Internet and Mobile Expenses')}>
       <Alert severity="warning">
-        {t(
-          'For mobile phone and internet expenses, only include the portion not reimbursed as a ministry expense.',
-        )}
+        {t('Only the portion not reimbursed as ministry expense.')}
       </Alert>
     </RightPanel>
   );
