@@ -1,6 +1,7 @@
 import React, { useCallback, useMemo, useState } from 'react';
 
 export type StaffSavingFundType = {
+  accountListId?: string;
   isNavListOpen: boolean;
   onNavListToggle: () => void;
 };
