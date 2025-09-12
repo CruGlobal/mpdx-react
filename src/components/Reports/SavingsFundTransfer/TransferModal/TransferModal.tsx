@@ -49,8 +49,8 @@ interface TransferFormValues {
   amount: number;
 }
 
-const getStartOfNextMonth = (): DateTime => {
-  return DateTime.utc().plus({ months: 1 }).startOf('month');
+const getToday = (): DateTime => {
+  return DateTime.utc().startOf('day');
 };
 
 const transferSchema = yup.object({
@@ -152,7 +152,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
           amount: amount || 0,
           schedule: schedule || ScheduleEnum.OneTime,
           status: status || '',
-          transferDate: transferDate || getStartOfNextMonth(),
+          transferDate: transferDate || getToday(),
           endDate: endDate || null,
           note: note || '',
         }}

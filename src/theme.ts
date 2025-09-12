@@ -34,6 +34,19 @@ const chartColors = {
   black: '#000000',
 };
 
+const chipColors = {
+  yellowDark: '#FFC107',
+  yellowLight: '#FFF8E1',
+  blueDark: '#2196F3',
+  blueLight: '#E3F2FD',
+  greenDark: '#4CAF50',
+  greenLight: '#E8F5E9',
+  grayDark: '#9E9E9E',
+  grayLight: '#FAFAFA',
+  redDark: '#F44336',
+  redLight: '#FEEBEE',
+};
+
 const progressBarColors = {
   yellow: '#F9B625',
   orange: '#DD7D1A',
@@ -63,6 +76,16 @@ declare module '@mui/material/styles/createPalette' {
     chartGray: Palette['primary'];
     chartBlueLight: Palette['primary'];
     chartBlack: Palette['primary'];
+    chipYellowDark: Palette['primary'];
+    chipYellowLight: Palette['primary'];
+    chipBlueDark: Palette['primary'];
+    chipBlueLight: Palette['primary'];
+    chipGreenDark: Palette['primary'];
+    chipGreenLight: Palette['primary'];
+    chipGrayDark: Palette['primary'];
+    chipGrayLight: Palette['primary'];
+    chipRedDark: Palette['primary'];
+    chipRedLight: Palette['primary'];
   }
   interface PaletteOptions {
     cruYellow: PaletteOptions['primary'];
@@ -86,6 +109,16 @@ declare module '@mui/material/styles/createPalette' {
     chartGray: PaletteOptions['primary'];
     chartBlueLight: PaletteOptions['primary'];
     chartBlack: PaletteOptions['primary'];
+    chipYellowDark: PaletteOptions['primary'];
+    chipYellowLight: PaletteOptions['primary'];
+    chipBlueDark: PaletteOptions['primary'];
+    chipBlueLight: PaletteOptions['primary'];
+    chipGreenDark: PaletteOptions['primary'];
+    chipGreenLight: PaletteOptions['primary'];
+    chipGrayDark: PaletteOptions['primary'];
+    chipGrayLight: PaletteOptions['primary'];
+    chipRedDark: PaletteOptions['primary'];
+    chipRedLight: PaletteOptions['primary'];
   }
 }
 
@@ -169,6 +202,36 @@ const theme = createTheme({
     },
     chartBlack: {
       main: chartColors.black,
+    },
+    chipYellowDark: {
+      main: chipColors.yellowDark,
+    },
+    chipYellowLight: {
+      main: chipColors.yellowLight,
+    },
+    chipBlueDark: {
+      main: chipColors.blueDark,
+    },
+    chipBlueLight: {
+      main: chipColors.blueLight,
+    },
+    chipGreenDark: {
+      main: chipColors.greenDark,
+    },
+    chipGreenLight: {
+      main: chipColors.greenLight,
+    },
+    chipGrayDark: {
+      main: chipColors.grayDark,
+    },
+    chipGrayLight: {
+      main: chipColors.grayLight,
+    },
+    chipRedDark: {
+      main: chipColors.redDark,
+    },
+    chipRedLight: {
+      main: chipColors.redLight,
     },
   },
   components: {

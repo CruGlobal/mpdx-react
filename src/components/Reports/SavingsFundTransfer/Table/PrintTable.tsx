@@ -11,11 +11,7 @@ import {
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
-import {
-  ScheduleEnum,
-  StaffSavingFundEnum,
-  TransferHistory,
-} from '../mockData';
+import { FundTypeEnum, ScheduleEnum, TransferHistory } from '../mockData';
 
 interface PrintTableProps {
   transfers: TransferHistory[];
@@ -51,19 +47,18 @@ export const PrintTable: React.FC<PrintTableProps> = ({ transfers }) => {
                   key={`${transfer.transferFrom}-${transfer.transferTo}-${transfer.amount}-${transfer.transferDate}`}
                 >
                   <TableCell>
-                    {transfer.transferFrom === StaffSavingFundEnum.StaffAccount
-                      ? 'Staff Account'
-                      : transfer.transferFrom ===
-                          StaffSavingFundEnum.StaffSavings
-                        ? 'Staff Savings'
-                        : 'Staff Conference Savings'}
+                    {transfer.transferFrom === FundTypeEnum.Primary
+                      ? 'Primary Balance'
+                      : transfer.transferFrom === FundTypeEnum.Savings
+                        ? 'Savings Balance'
+                        : 'Conference Savings Balance'}
                   </TableCell>
                   <TableCell>
-                    {transfer.transferTo === StaffSavingFundEnum.StaffAccount
-                      ? 'Staff Account'
-                      : transfer.transferTo === StaffSavingFundEnum.StaffSavings
-                        ? 'Staff Savings'
-                        : 'Staff Conference Savings'}
+                    {transfer.transferTo === FundTypeEnum.Primary
+                      ? 'Primary Balance'
+                      : transfer.transferTo === FundTypeEnum.Savings
+                        ? 'Savings Balance'
+                        : 'Conference Savings Balance'}
                   </TableCell>
                   <TableCell>
                     {transfer.amount?.toLocaleString(locale, {
@@ -83,7 +78,9 @@ export const PrintTable: React.FC<PrintTableProps> = ({ transfers }) => {
                     {transfer.transferDate?.toLocaleString(DateTime.DATE_MED)}
                   </TableCell>
                   <TableCell>
-                    {transfer.endDate?.toLocaleString(DateTime.DATE_MED)}
+                    {transfer.schedule === ScheduleEnum.Monthly
+                      ? transfer.endDate?.toLocaleString(DateTime.DATE_MED)
+                      : (t('') as string)}
                   </TableCell>
                   <TableCell>{transfer.note}</TableCell>
                 </TableRow>
