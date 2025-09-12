@@ -31,11 +31,13 @@ const CategoryListItemIcon = styled(ListItemIcon)(({ theme }) => ({
 interface ListItemContentProps {
   title: string;
   complete: boolean;
+  onClick?: () => void;
 }
 
 const ListItemContent: React.FC<ListItemContentProps> = ({
   title,
   complete,
+  onClick,
 }) => (
   <>
     <CategoryListItemIcon
@@ -43,13 +45,17 @@ const ListItemContent: React.FC<ListItemContentProps> = ({
         color: complete
           ? theme.palette.mpdxBlue.main
           : theme.palette.cruGrayDark.main,
+        cursor: onClick ? 'pointer' : 'default',
       })}
+      onClick={onClick}
     >
       {complete ? <CircleIcon /> : <RadioButtonUncheckedIcon />}
     </CategoryListItemIcon>
     <ListItemText
       primary={title}
       primaryTypographyProps={{ variant: 'body2' }}
+      onClick={onClick}
+      sx={onClick ? { cursor: 'pointer' } : {}}
     />
   </>
 );
@@ -64,11 +70,17 @@ interface SectionListProps {
 }
 
 export const SectionList: React.FC<SectionListProps> = ({ sections }) => {
+  const { scrollToSection } = useGoalCalculator();
+
   return (
     <List disablePadding>
       {sections.map(({ title, complete }, index) => (
         <ListItem key={index} sx={categoryListItemStyles}>
-          <ListItemContent title={title} complete={complete} />
+          <ListItemContent
+            title={title}
+            complete={complete}
+            onClick={() => scrollToSection(title)}
+          />
         </ListItem>
       ))}
     </List>
