@@ -347,8 +347,6 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   };
 
   const renderLabelCell = (params: GridRenderCellParams) => {
-    const cellKey = `${params.id}-label`;
-    const hasError = cellErrors[cellKey];
     const rowCategory = params.row.category as SubBudgetCategoryEnum | null;
     const rightPanelContent = rowCategory
       ? getSubCategoryRightPanel(rowCategory)
@@ -367,10 +365,6 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
         )}
       </Box>
     );
-
-    if (hasError) {
-      return <ErrorCell title={hasError}>{content}</ErrorCell>;
-    }
 
     return content;
   };
