@@ -5,10 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import {
-  afterTestResizeObserver,
-  beforeTestResizeObserver,
-} from '__tests__/util/windowResizeObserver';
+import { beforeTestResizeObserver } from '__tests__/util/windowResizeObserver';
 import theme from 'src/theme';
 import {
   GoalCalculatorReportEnum,
@@ -45,7 +42,6 @@ const ContextHelper: React.FC = () => {
     </>
   );
 };
-
 const TestComponent: React.FC = () => (
   <TestRouter>
     <ThemeProvider theme={theme}>
@@ -66,23 +62,23 @@ describe('SummaryReport', () => {
     beforeTestResizeObserver();
   });
 
-  afterAll(() => {
-    afterTestResizeObserver();
-  });
-
-  it('renders MPD Goal report', () => {
-    const { getByRole } = render(<TestComponent />);
+  it('renders MPD Goal report', async () => {
+    const { getByRole, findByRole } = render(<TestComponent />);
 
     userEvent.click(getByRole('button', { name: 'MPD Goal' }));
-    expect(getByRole('heading', { name: 'MPD Goal' })).toBeInTheDocument();
+    expect(
+      await findByRole('heading', { name: 'MPD Goal' }),
+    ).toBeInTheDocument();
   });
 
-  it('renders Presenting Your Goal report', () => {
-    const { getByRole } = render(<TestComponent />);
+  it('renders Presenting Your Goal report', async () => {
+    const { getByRole, findByRole } = render(<TestComponent />);
 
     userEvent.click(getByRole('button', { name: 'Presenting Your Goal' }));
     expect(
-      getByRole('heading', { name: 'Presenting Your Goal' }),
+      await findByRole('heading', {
+        name: 'Presenting Your Goal',
+      }),
     ).toBeInTheDocument();
   });
 });

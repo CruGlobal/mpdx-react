@@ -17,6 +17,7 @@ import {
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { useFilteredTransfers } from 'src/hooks/useFilteredTransfers';
 import theme from 'src/theme';
+import { useStaffAccountQuery } from '../../StaffAccount.generated';
 import {
   StaffSavingFundContext,
   StaffSavingFundType,
@@ -65,6 +66,8 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
   const { isNavListOpen, onNavListToggle } = useContext(
     StaffSavingFundContext,
   ) as StaffSavingFundType;
+
+  const { data: staffAccountData } = useStaffAccountQuery();
 
   const { data: reportData, loading: reportLoading } =
     useReportsSavingsFundTransferQuery();
@@ -192,8 +195,8 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                 mb: 2,
               }}
             >
-              <Typography>{'Test Account'}</Typography>
-              <Typography>{'123456789'}</Typography>
+              <Typography>{staffAccountData?.staffAccount?.name}</Typography>
+              <Typography>{staffAccountData?.staffAccount?.id}</Typography>
             </Box>
             <Box
               display="flex"

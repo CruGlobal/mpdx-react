@@ -17,6 +17,7 @@ import {
   HeaderTypeEnum,
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import {
   StaffSavingFundContext,
   StaffSavingFundType,
@@ -37,10 +38,11 @@ export const SavingsFundTransfer: React.FC<SavingsFundTransferProps> = ({
   title,
 }) => {
   const { t } = useTranslation();
-  const { accountListId, isNavListOpen, onNavListToggle } = useContext(
+  const { isNavListOpen, onNavListToggle } = useContext(
     StaffSavingFundContext,
   ) as StaffSavingFundType;
 
+  const accountListId = useAccountListId();
   const transferLink = `/accountLists/${accountListId}/reports/staffSavingFund/transfers`;
 
   return (
