@@ -24,7 +24,7 @@ import {
 import { BalanceCard } from '../BalanceCard/BalanceCard';
 import { getStatusLabel } from '../Helper/getStatus';
 import {
-  useFundsQuery,
+  useAccountFundsQuery,
   useReportsSavingsFundTransferQuery,
 } from '../ReportsSavingsFund.generated';
 import { EmptyTable } from '../Table/EmptyTable';
@@ -68,13 +68,16 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
 
   const { data: reportData, loading: reportLoading } =
     useReportsSavingsFundTransferQuery();
-  const { data: fundsData, loading: fundsLoading } = useFundsQuery({
+  const { data: fundsData, loading: fundsLoading } = useAccountFundsQuery({
     variables: {
       fundTypes: [FundTypeEnum.Primary, FundTypeEnum.Savings],
     },
   });
 
-  const funds = useMemo(() => fundsData?.funds ?? [], [fundsData]);
+  const funds = useMemo(
+    () => fundsData?.accountFunds?.funds ?? [],
+    [fundsData],
+  );
 
   const transactions: Transactions[] = useMemo(
     () =>

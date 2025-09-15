@@ -12,7 +12,7 @@ import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { StaffSavingFundContext } from '../../StaffSavingFund/StaffSavingFundContext';
 import {
-  FundsQuery,
+  AccountFundsQuery,
   ReportsSavingsFundTransferQuery,
 } from '../ReportsSavingsFund.generated';
 import { TransfersPage } from './TransfersPage';
@@ -69,21 +69,23 @@ const mock = {
       ],
     },
   },
-  Funds: {
-    funds: [
-      {
-        id: '1',
-        fundType: 'Primary',
-        endBalance: 15000,
-        deficitLimit: 0,
-      },
-      {
-        id: '2',
-        fundType: 'Savings',
-        endBalance: 25000,
-        deficitLimit: 0,
-      },
-    ],
+  AccountFunds: {
+    accountFunds: {
+      funds: [
+        {
+          id: '1',
+          fundType: 'Primary',
+          balance: 15000,
+          deficitLimit: 0,
+        },
+        {
+          id: '2',
+          fundType: 'Savings',
+          balance: 25000,
+          deficitLimit: 0,
+        },
+      ],
+    },
   },
 };
 
@@ -93,21 +95,23 @@ const emptyMock = {
       transactions: [],
     },
   },
-  Funds: {
-    funds: [
-      {
-        id: '1',
-        fundType: 'Primary',
-        endBalance: 15000,
-        deficitLimit: 0,
-      },
-      {
-        id: '2',
-        fundType: 'Savings',
-        endBalance: 2500,
-        deficitLimit: 0,
-      },
-    ],
+  AccountFunds: {
+    accountFunds: {
+      funds: [
+        {
+          id: '1',
+          fundType: 'Primary',
+          balance: 15000,
+          deficitLimit: 0,
+        },
+        {
+          id: '2',
+          fundType: 'Savings',
+          balance: 2500,
+          deficitLimit: 0,
+        },
+      ],
+    },
   },
 };
 
@@ -150,7 +154,7 @@ const Components = ({
           <I18nextProvider i18n={i18n}>
             <GqlMockedProvider<{
               ReportsSavingsFundTransfer: ReportsSavingsFundTransferQuery;
-              Funds: FundsQuery;
+              AccountFunds: AccountFundsQuery;
             }>
               mocks={mock}
               onCall={mutationSpy}
@@ -219,7 +223,7 @@ describe('TransfersPage', () => {
               <I18nextProvider i18n={i18n}>
                 <GqlMockedProvider<{
                   ReportsSavingsFundTransfer: ReportsSavingsFundTransferQuery;
-                  Funds: FundsQuery;
+                  AccountFunds: AccountFundsQuery;
                 }>
                   mocks={emptyMock}
                   onCall={mutationSpy}
@@ -326,7 +330,7 @@ describe('TransfersPage', () => {
 
     expect(
       within(fromAccount).getByText(
-        `${mock['Funds']['funds'][0].fundType} Account`,
+        `${mock['AccountFunds']['accountFunds']['funds'][0].fundType} Account`,
         {
           selector: 'b',
         },
@@ -334,7 +338,7 @@ describe('TransfersPage', () => {
     ).toBeInTheDocument();
     expect(
       within(toAccount).queryByText(
-        `${mock['Funds']['funds'][0].fundType} Account`,
+        `${mock['AccountFunds']['accountFunds']['funds'][0].fundType} Account`,
         {
           selector: 'b',
         },

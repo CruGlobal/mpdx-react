@@ -6,11 +6,14 @@ import {
   SavingsAccount,
 } from 'src/components/Reports/SavingsFundTransfer/Helper/TransferIcons';
 import { TransferDirectionEnum } from '../../Helper/TransferHistoryEnum';
-import { Fund, FundTypeEnum } from '../../mockData';
+import { FundFieldsFragment } from '../../ReportsSavingsFund.generated';
+import { FundTypeEnum } from '../../mockData';
+
+type SelectFunds = Pick<FundFieldsFragment, 'id' | 'fundType'>;
 
 type TransferModalSelectProps = Partial<SelectProps> & {
   type: TransferDirectionEnum;
-  funds: Fund[];
+  funds: SelectFunds[];
   selectedTransferFrom?: string;
 };
 

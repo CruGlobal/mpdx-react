@@ -147,7 +147,7 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
     },
   ];
 
-  if (loading && !history?.length) {
+  if (loading && !history.length) {
     return (
       <LoadingBox>
         <LoadingIndicator

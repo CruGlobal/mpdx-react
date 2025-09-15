@@ -8,7 +8,8 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
-import { Fund, FundTypeEnum } from '../mockData';
+import { FundFieldsFragment } from '../ReportsSavingsFund.generated';
+import { FundTypeEnum } from '../mockData';
 import { BalanceCard } from './BalanceCard';
 
 const accountListId = 'abc';
@@ -20,15 +21,15 @@ const router = {
 const mutationSpy = jest.fn();
 const mockHandleOpenTransferModal = jest.fn();
 
-const defaultFund: Fund = {
+const defaultFund = {
   id: crypto.randomUUID(),
   fundType: 'Primary',
-  endBalance: 15000,
+  balance: 15000,
   deficitLimit: 0,
 };
 
 interface ComponentsProps {
-  fund?: Fund;
+  fund?: FundFieldsFragment;
   isSelected?: boolean;
 }
 
@@ -128,7 +129,7 @@ describe('BalanceCard', () => {
         <Components
           fund={{
             ...defaultFund,
-            endBalance: 1234567.89,
+            balance: 1234567.89,
           }}
         />,
       );
@@ -141,7 +142,7 @@ describe('BalanceCard', () => {
         <Components
           fund={{
             ...defaultFund,
-            endBalance: 0,
+            balance: 0,
           }}
         />,
       );
@@ -154,7 +155,7 @@ describe('BalanceCard', () => {
         <Components
           fund={{
             ...defaultFund,
-            endBalance: -500,
+            balance: -500,
           }}
         />,
       );
@@ -167,7 +168,7 @@ describe('BalanceCard', () => {
         <Components
           fund={{
             ...defaultFund,
-            endBalance: 1234.567,
+            balance: 1234.567,
           }}
         />,
       );

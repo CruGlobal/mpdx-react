@@ -32,7 +32,8 @@ import {
   TransferDirectionEnum,
   TransferTypeEnum,
 } from '../Helper/TransferHistoryEnum';
-import { Fund, ScheduleEnum, TransferHistory } from '../mockData';
+import { FundFieldsFragment } from '../ReportsSavingsFund.generated';
+import { ScheduleEnum, TransferHistory } from '../mockData';
 import { TransferModalSelect } from './TransferModalSelect/TransferModalSelect';
 
 export interface TransferModalData {
@@ -92,7 +93,7 @@ const transferSchema = yup.object({
 
 interface TransferModalProps {
   data: TransferModalData;
-  funds: Fund[];
+  funds: FundFieldsFragment[];
   handleClose: () => void;
 }
 

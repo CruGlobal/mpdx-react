@@ -100,9 +100,7 @@ export const populateTransferHistoryRows = (
   const transferDate: RenderCell = ({ row }) => {
     return (
       <Typography variant="body2" noWrap>
-        {row.transferDate
-          ? dateFormat(row.transferDate, locale)
-          : (t('') as string)}
+        {row.transferDate ? dateFormat(row.transferDate, locale) : ''}
       </Typography>
     );
   };
@@ -112,7 +110,7 @@ export const populateTransferHistoryRows = (
       <Typography variant="body2" noWrap>
         {row.schedule === ScheduleEnum.Monthly && row.endDate
           ? dateFormat(row.endDate, locale)
-          : (t('') as string)}
+          : ''}
       </Typography>
     );
   };

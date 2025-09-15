@@ -77,13 +77,13 @@ export const PrintTable: React.FC<PrintTableProps> = ({ transfers }) => {
                   <TableCell>
                     {transfer.transferDate
                       ? dateFormat(transfer.transferDate, locale)
-                      : (t('') as string)}
+                      : ''}
                   </TableCell>
                   <TableCell>
                     {transfer.schedule === ScheduleEnum.Monthly &&
                     transfer.endDate
                       ? dateFormat(transfer.endDate, locale)
-                      : (t('') as string)}
+                      : ''}
                   </TableCell>
                   <TableCell>{transfer.note}</TableCell>
                 </TableRow>

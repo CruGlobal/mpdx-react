@@ -14,12 +14,15 @@ import {
 } from 'src/components/Shared/styledComponents/LoadingStyling';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { FundFieldsFragment } from '../ReportsSavingsFund.generated';
 import { TransferModalData } from '../TransferModal/TransferModal';
-import { Fund, FundTypeEnum } from '../mockData';
+import { FundTypeEnum } from '../mockData';
 import { ScreenOnly } from '../styledComponents/DisplayStyling';
 
+type CardFunds = Pick<FundFieldsFragment, 'id' | 'fundType' | 'balance'>;
+
 export interface BalanceCardProps {
-  fund: Fund;
+  fund: CardFunds;
   handleOpenTransferModal: ({ type, transfer }: TransferModalData) => void;
   isSelected?: boolean;
   loading?: boolean;
@@ -144,7 +147,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
             }}
           >
             <Typography variant="h5" sx={{ fontSize: 'inherit' }}>
-              {currencyFormat(fund.endBalance, 'USD', locale, {
+              {currencyFormat(fund.balance, 'USD', locale, {
                 showTrailingZeros: true,
               })}
             </Typography>

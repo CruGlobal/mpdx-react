@@ -33,11 +33,20 @@ query ReportsSavingsFundTransfer(
   }
 }
 
-query Funds($fundTypes: [String!]) {
-  funds(fundTypes: $fundTypes) {
-    id
-    fundType
-    endBalance
-    deficitLimit
+query AccountFunds($fundTypes: [String!]) {
+  accountFunds(fundTypes: $fundTypes) {
+    funds {
+      id
+      fundType
+      balance
+      deficitLimit
+    }
   }
+}
+
+fragment FundFields on AccountFund {
+  id
+  fundType
+  balance
+  deficitLimit
 }
