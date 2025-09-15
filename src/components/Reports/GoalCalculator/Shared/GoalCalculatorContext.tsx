@@ -169,7 +169,6 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       return 0;
     }
 
-    // Use getFamilySections to get completion status for all families
     let totalCategories = 0;
     let completedCategories = 0;
 

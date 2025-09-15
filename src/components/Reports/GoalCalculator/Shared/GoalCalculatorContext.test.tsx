@@ -1,8 +1,13 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { gqlMock } from '__tests__/util/graphqlMocking';
 import { GoalCalculatorStepEnum } from '../GoalCalculatorHelper';
 import { GoalCalculatorTestWrapper } from '../GoalCalculatorTestWrapper';
+import {
+  BudgetFamilyFragment,
+  BudgetFamilyFragmentDoc,
+} from './GoalCalculation.generated';
 import { useGoalCalculator } from './GoalCalculatorContext';
 
 const sleep = (duration: number) =>
@@ -101,5 +106,79 @@ describe('GoalCalculatorContext', () => {
     await waitFor(() =>
       expect(getByTestId('mutating-status')).toHaveTextContent('Not mutating'),
     );
+  });
+
+  describe('percentComplete', () => {
+    it('should calculate percentage with mixed completion states', async () => {
+      let percentComplete: number | undefined;
+      const TestPercentComplete: React.FC = () => {
+        const context = useGoalCalculator();
+        percentComplete = context.percentComplete;
+        return null;
+      };
+
+      render(
+        <GoalCalculatorTestWrapper>
+          <TestPercentComplete />
+        </GoalCalculatorTestWrapper>,
+      );
+
+      await waitFor(() => {
+        expect(percentComplete).toEqual(100);
+      });
+    });
+  });
+
+  describe('getFamilySections', () => {
+    it('should calculate completion status', () => {
+      let getFamilySections:
+        | ((
+            budgetFamily: BudgetFamilyFragment,
+          ) => { title: string; complete: boolean }[])
+        | undefined;
+
+      const TestGetFamilySections: React.FC = () => {
+        const context = useGoalCalculator();
+        getFamilySections = context.getFamilySections;
+        return null;
+      };
+
+      render(
+        <GoalCalculatorTestWrapper>
+          <TestGetFamilySections />
+        </GoalCalculatorTestWrapper>,
+      );
+
+      const budgetFamily = gqlMock<BudgetFamilyFragment>(
+        BudgetFamilyFragmentDoc,
+        {
+          mocks: {
+            primaryBudgetCategories: [
+              {
+                label: 'Incomplete',
+                directInput: null,
+                subBudgetCategories: [{ amount: 0 }, { amount: 0 }],
+              },
+              {
+                label: 'Direct input',
+                directInput: 1000,
+                subBudgetCategories: [{ amount: 0 }, { amount: 0 }],
+              },
+              {
+                label: 'Complete',
+                directInput: null,
+                subBudgetCategories: [{ amount: 100 }, { amount: 0 }],
+              },
+            ],
+          },
+        },
+      );
+
+      expect(getFamilySections!(budgetFamily)).toEqual([
+        { title: 'Incomplete', complete: false },
+        { title: 'Direct input', complete: true },
+        { title: 'Complete', complete: true },
+      ]);
+    });
   });
 });
