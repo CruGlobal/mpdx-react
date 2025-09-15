@@ -126,9 +126,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
               }}
             >
               <Typography>{staffAccountData?.staffAccount?.name}</Typography>
-              <Typography>
-                {staffAccountData?.staffAccount?.accountId}
-              </Typography>
+              <Typography>{staffAccountData?.staffAccount?.id}</Typography>
             </Box>
             <Box
               display="flex"

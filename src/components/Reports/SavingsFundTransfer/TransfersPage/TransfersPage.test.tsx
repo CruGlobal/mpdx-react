@@ -22,7 +22,7 @@ const onNavListToggle = jest.fn();
 const mockStaffAccount = {
   StaffAccount: {
     staffAccount: {
-      accountId: '12345',
+      id: '12345',
       name: 'Test Account',
     },
   },
@@ -99,7 +99,7 @@ describe('TransfersPage', () => {
       await findByText(mockStaffAccount.StaffAccount.staffAccount.name),
     ).toBeInTheDocument();
     expect(
-      await findByText(mockStaffAccount.StaffAccount.staffAccount.accountId),
+      await findByText(mockStaffAccount.StaffAccount.staffAccount.id),
     ).toBeInTheDocument();
   });
 

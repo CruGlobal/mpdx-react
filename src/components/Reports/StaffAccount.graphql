@@ -1,6 +1,6 @@
 query StaffAccount {
   staffAccount {
-    accountId
+    id
     name
     status
   }

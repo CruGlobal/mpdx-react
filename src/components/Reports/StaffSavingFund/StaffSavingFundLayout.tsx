@@ -40,7 +40,7 @@ export const StaffSavingFundLayout: React.FC<StaffSavingFundLayoutProps> = ({
       <Head>
         <title>{`${pageTitle}`}</title>
       </Head>
-      {staffAccountData?.staffAccount?.accountId ? (
+      {staffAccountData?.staffAccount?.id ? (
         <StaffSavingFundPageWrapper>
           <SidePanelsLayout
             isScrollBox={false}

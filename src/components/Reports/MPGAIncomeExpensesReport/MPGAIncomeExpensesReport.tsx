@@ -126,9 +126,7 @@ export const MPGAIncomeExpensesReport: React.FC<
             </StyledHeaderBox>
             <Box display="flex" flexDirection="row" gap={3} mb={2}>
               <Typography>{staffAccountData?.staffAccount?.name}</Typography>
-              <Typography>
-                {staffAccountData?.staffAccount?.accountId}
-              </Typography>
+              <Typography>{staffAccountData?.staffAccount?.id}</Typography>
             </Box>
           </Container>
         </Box>

@@ -17,7 +17,7 @@ const title = 'MPGA Report';
 const mockData = {
   StaffAccount: {
     staffAccount: {
-      accountId: '12345',
+      id: '12345',
       name: 'Test Account',
     },
   },
