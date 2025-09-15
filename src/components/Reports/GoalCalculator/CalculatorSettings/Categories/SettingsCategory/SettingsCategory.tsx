@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import React from 'react';
+import React, { useRef } from 'react';
 import { TextField } from '@mui/material';
 import { Field, Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +15,7 @@ export const SettingsCategory: React.FC = () => {
   const accountListId = useAccountListId() ?? '';
   const { query } = useRouter();
   const goalCalculationId = getQueryParam(query, 'goalCalculationId') ?? '';
+  const hasUserInteracted = useRef(false);
 
   const shouldFetch = !!accountListId && !!goalCalculationId;
   const { data: goalData } = useGoalCalculationQuery({
@@ -50,9 +51,11 @@ export const SettingsCategory: React.FC = () => {
 
   return (
     <Formik
+      key={goalCalculationId}
       initialValues={{ goalTitle: goalTitle }}
-      enableReinitialize
+      enableReinitialize={!hasUserInteracted.current}
       validationSchema={validationSchema}
+      validateOnChange
       onSubmit={() => {}}
     >
       {({ values, errors, setFieldTouched, handleChange }) => (
@@ -66,16 +69,15 @@ export const SettingsCategory: React.FC = () => {
             helperText={errors.goalTitle}
             value={values.goalTitle}
             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+              hasUserInteracted.current = true;
               handleChange(event);
               setFieldTouched('goalTitle', true, false);
 
-              try {
-                validationSchema.validateSync({
-                  goalTitle: event.target.value,
-                });
+              // isValid doesn't work here. isValidSync allows for synchronous validation.
+              if (
+                validationSchema.isValidSync({ goalTitle: event.target.value })
+              ) {
                 debouncedUpdateGoalTitle(event.target.value);
-              } catch {
-                // Don't call mutation if validation fails
               }
             }}
           />

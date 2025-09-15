@@ -34,7 +34,7 @@ export const GoalsList: React.FC = () => {
   });
   const goals = data?.goalCalculations.nodes
     ?.slice()
-    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 
   const { data: userData } = useGetUserQuery();
   const defaultName = t('User');

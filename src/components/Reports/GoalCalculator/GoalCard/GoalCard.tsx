@@ -144,8 +144,9 @@ export const GoalCard: React.FC<GoalCardProps> = ({
         cancelLabel={t('Cancel')}
         message={
           <Trans t={t}>
-            Are you sure you want to delete <strong>{goal.createdAt}</strong>?
-            Deleting this goal will remove it permanently.
+            Are you sure you want to delete{' '}
+            <strong>{goal.name ?? t('Untitled Goal')}</strong>? Deleting this
+            goal will remove it permanently.
           </Trans>
         }
         confirmButtonProps={{
@@ -199,7 +200,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({
                 {t('Last Updated')}
               </Typography>
               <Typography data-testid="date-value" variant="body1">
-                {dateFormat(DateTime.fromISO(goal.createdAt), locale, {
+                {dateFormat(DateTime.fromISO(goal.updatedAt), locale, {
                   fullMonth: true,
                 })}
               </Typography>

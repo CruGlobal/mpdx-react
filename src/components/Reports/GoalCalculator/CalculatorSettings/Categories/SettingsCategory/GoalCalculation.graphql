@@ -3,6 +3,7 @@ mutation UpdateGoalCalculation($input: GoalCalculationUpdateMutationInput!) {
     goalCalculation {
       id
       name
+      updatedAt
     }
   }
 }
