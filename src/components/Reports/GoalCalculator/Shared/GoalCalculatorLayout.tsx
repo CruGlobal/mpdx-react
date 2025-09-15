@@ -15,6 +15,7 @@ import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { multiPageHeaderHeight } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import theme from 'src/theme';
 import { GoalCalculatorStepEnum } from '../GoalCalculatorHelper';
+import { CircularProgressWithLabel } from '../SharedComponents/CircularProgressWithLabel/CircularProgressWithLabel';
 import { useGoalCalculator } from './GoalCalculatorContext';
 
 const iconPanelWidth = theme.spacing(5);
@@ -87,6 +88,7 @@ export const GoalCalculatorLayout: React.FC<GoalCalculatorLayoutProps> = ({
     isDrawerOpen,
     setDrawerOpen,
     toggleDrawer,
+    progress,
   } = useGoalCalculator();
 
   const handleStepIconClick = (step: GoalCalculatorStepEnum) => {
@@ -101,6 +103,9 @@ export const GoalCalculatorLayout: React.FC<GoalCalculatorLayoutProps> = ({
   return (
     <PrintableStack direction="row">
       <Stack direction="column" width={iconPanelWidth}>
+        <IconButton>
+          <CircularProgressWithLabel progress={progress} />
+        </IconButton>
         {steps.map((step) => (
           <IconButton
             key={step.step}
