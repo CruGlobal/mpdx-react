@@ -43,7 +43,7 @@ export const useFourteenMonthReport = (
       salaryCurrency: data.defaultCurrency ?? 'USD',
       currencyGroups: Object.entries(currencyGroups ?? {}).map(
         ([currency, currencyGroup]: [string, CurrencyGroups[string]]) => ({
-          currency: currency,
+          currency,
           totals: {
             year: Number(
               isSalaryType
