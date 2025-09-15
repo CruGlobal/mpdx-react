@@ -82,7 +82,7 @@ export const defaultFourteenMonthReport = {
           ],
           accountNumbers: ['12345'],
           lateBy30Days: false,
-          lateBy60Days: false,
+          lateBy60Days: true,
           pledgeAmount: 100,
           pledgeCurrency: 'CAD',
           pledgeFrequency: 'Monthly',
