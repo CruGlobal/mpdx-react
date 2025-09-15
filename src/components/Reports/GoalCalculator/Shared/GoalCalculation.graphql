@@ -42,7 +42,9 @@ query GoalCalculatorConstants {
     mpdGoalBenefitsConstants {
       id
       size
+      sizeDisplayName
       plan
+      planDisplayName
       cost
     }
     mpdGoalGeographicConstants {

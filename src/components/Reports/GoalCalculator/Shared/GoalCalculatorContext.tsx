@@ -13,10 +13,10 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getQueryParam } from 'src/utils/queryParam';
 import {
   GoalBenefitsConstantMap,
-  GoalGeographicConstant,
+  GoalGeographicConstantMap,
   GoalMiscConstantMap,
   useFormatConstants,
-} from '../../../../hooks/useFormatConstants';
+} from '../../../../hooks/useFormatGoalCalculatorConstants';
 import {
   GoalCalculatorReportEnum,
   GoalCalculatorStepEnum,
@@ -52,7 +52,7 @@ export type GoalCalculatorType = {
   /** Call with the mutation promise to track the start and end of mutations */
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
   goalBenefitsConstantMap: GoalBenefitsConstantMap;
-  goalGeographicConstant: GoalGeographicConstant[];
+  goalGeographicConstantMap: GoalGeographicConstantMap;
   goalMiscConstantMap: GoalMiscConstantMap;
 };
 
@@ -90,7 +90,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const {
     goalBenefitsConstantMap,
     goalMiscConstantMap,
-    goalGeographicConstant,
+    goalGeographicConstantMap,
   } = useFormatConstants(data);
 
   const steps = useSteps();
@@ -165,7 +165,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       isMutating,
       trackMutation,
       goalBenefitsConstantMap,
-      goalGeographicConstant,
+      goalGeographicConstantMap,
       goalMiscConstantMap,
     }),
     [
@@ -185,7 +185,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       isMutating,
       trackMutation,
       goalBenefitsConstantMap,
-      goalGeographicConstant,
+      goalGeographicConstantMap,
       goalMiscConstantMap,
     ],
   );

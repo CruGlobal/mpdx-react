@@ -5,7 +5,7 @@ import {
   MpdGoalMiscConstantEnum,
 } from 'src/graphql/types.generated';
 import { GoalCalculatorConstantsQuery } from '../components/Reports/GoalCalculator/Shared/GoalCalculation.generated';
-import { useFormatConstants } from './useFormatConstants';
+import { useFormatConstants } from './useFormatGoalCalculatorConstants';
 
 const mockData = {
   constant: {
@@ -15,14 +15,18 @@ const mockData = {
         __typename: 'MpdGoalBenefitsConstant',
         id: '3d0a4925-214c-4e2e-b800-e97e31c727d8',
         size: MpdGoalBenefitsConstantSizeEnum.Single,
+        sizeDisplayName: 'Single or spouse not staff',
         plan: MpdGoalBenefitsConstantPlanEnum.Select,
+        planDisplayName: 'Select',
         cost: 1204.45,
       },
       {
         __typename: 'MpdGoalBenefitsConstant',
         id: '317a7530-1313-4f6a-a756-00520a3c01a3',
-        size: MpdGoalBenefitsConstantSizeEnum.Married,
+        size: MpdGoalBenefitsConstantSizeEnum.MarriedNoChildren,
+        sizeDisplayName: 'Married with no children',
         plan: MpdGoalBenefitsConstantPlanEnum.Base,
+        planDisplayName: 'Base',
         cost: 1093.96,
       },
     ],
@@ -64,7 +68,7 @@ describe('useFormatConstants', () => {
     expect(result.current).toEqual({
       goalBenefitsConstantMap: new Map(),
       goalMiscConstantMap: new Map(),
-      goalGeographicConstant: [],
+      goalGeographicConstantMap: new Map(),
     });
   });
 
@@ -76,16 +80,20 @@ describe('useFormatConstants', () => {
         [
           'SINGLE-SELECT',
           {
-            plan: 'SELECT',
             size: 'SINGLE',
+            sizeDisplayName: 'Single or spouse not staff',
+            plan: 'SELECT',
+            planDisplayName: 'Select',
             cost: 1204.45,
           },
         ],
         [
-          'MARRIED-BASE',
+          'MARRIED_NO_CHILDREN-BASE',
           {
+            size: 'MARRIED_NO_CHILDREN',
+            sizeDisplayName: 'Married with no children',
             plan: 'BASE',
-            size: 'MARRIED',
+            planDisplayName: 'Base',
             cost: 1093.96,
           },
         ],
@@ -94,16 +102,10 @@ describe('useFormatConstants', () => {
         ['ADMIN_RATE', '0.12'],
         ['SECA', '0.22'],
       ]),
-      goalGeographicConstant: [
-        {
-          location: 'None',
-          percentageMultiplier: 0,
-        },
-        {
-          location: 'Atlanta, GA',
-          percentageMultiplier: 0.12,
-        },
-      ],
+      goalGeographicConstantMap: new Map([
+        ['None', 0],
+        ['Atlanta, GA', 0.12],
+      ]),
     });
   });
 });
