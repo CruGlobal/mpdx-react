@@ -31,20 +31,35 @@ const TestingComponent: React.FC<TestingComponentProps> = ({
   return (
     <ThemeProvider theme={theme}>
       <TestRouter router={router}>
-        <GqlMockedProvider<{ GetFourteenMonthReport: GetFourteenMonthReportQuery }>
+        <GqlMockedProvider<{
+          GetFourteenMonthReport: GetFourteenMonthReportQuery;
+        }>
           mocks={{
             GetFourteenMonthReport: {
               reportsSalaryCurrencyDonations: {
-                currencyGroups: { USD: { totals: { year: 0, year_converted: 0, months: [] }, donation_infos: [] } },
+                currencyGroups: {
+                  USD: {
+                    totals: { year: 0, year_converted: 0, months: [] },
+                    donation_infos: [],
+                  },
+                },
                 defaultCurrency: 'USD',
                 donorInfos: [],
                 months: ['2024-01', '2024-02'],
-                accountList: { id: 'account-list-1', createdAt: '2024-01-01', updatedAt: '2024-01-01' },
+                accountList: {
+                  id: 'account-list-1',
+                  createdAt: '2024-01-01',
+                  updatedAt: '2024-01-01',
+                },
               },
               reportsDonorCurrencyDonations: {
                 currencyGroups: {
                   USD: {
-                    totals: { year: 200, year_converted: 200, months: [100, 100] },
+                    totals: {
+                      year: 200,
+                      year_converted: 200,
+                      months: [100, 100],
+                    },
                     donation_infos: [
                       {
                         contact_id: 'contact-1',
