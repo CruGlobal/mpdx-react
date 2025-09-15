@@ -15,6 +15,7 @@ import {
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import theme from 'src/theme';
+import { useStaffAccountQuery } from '../../StaffAccount.generated';
 import {
   StaffSavingFundContext,
   StaffSavingFundType,
@@ -52,6 +53,8 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
   const { isNavListOpen, onNavListToggle } = useContext(
     StaffSavingFundContext,
   ) as StaffSavingFundType;
+
+  const { data: staffAccountData } = useStaffAccountQuery();
 
   const handlePrint = () => window.print();
 
@@ -122,8 +125,8 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                 mb: 2,
               }}
             >
-              <Typography>{mockData.accountName}</Typography>
-              <Typography>{mockData.accountListId}</Typography>
+              <Typography>{staffAccountData?.staffAccount?.name}</Typography>
+              <Typography>{staffAccountData?.staffAccount?.id}</Typography>
             </Box>
             <Box
               display="flex"

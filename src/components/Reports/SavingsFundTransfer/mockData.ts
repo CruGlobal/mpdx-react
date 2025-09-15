@@ -42,15 +42,11 @@ export interface TransferHistory {
 }
 
 interface MockData {
-  accountListId: string;
-  accountName: string;
   funds: Fund[];
   history: TransferHistory[];
 }
 
 export const mockData: MockData = {
-  accountListId: '123456789',
-  accountName: 'Test Account',
   funds: [
     {
       accountId: 'staffAccount',

@@ -16,6 +16,7 @@ import {
 import { useFilteredFunds } from 'src/hooks/useFilteredFunds';
 import { useGetLastTwelveMonths } from 'src/hooks/useGetLastTwelveMonths';
 import { useLocale } from 'src/hooks/useLocale';
+import { useStaffAccountQuery } from '../StaffAccount.generated';
 import {
   SimplePrintOnly,
   SimpleScreenOnly,
@@ -51,6 +52,8 @@ export const MPGAIncomeExpensesReport: React.FC<
 
   const start = convertMonths(last12Months[0], locale);
   const end = DateTime.now().toISODate();
+
+  const { data: staffAccountData } = useStaffAccountQuery();
 
   const { data: reportData } = useReportsStaffExpensesQuery({
     variables: {
@@ -122,10 +125,8 @@ export const MPGAIncomeExpensesReport: React.FC<
               </SimpleScreenOnly>
             </StyledHeaderBox>
             <Box display="flex" flexDirection="row" gap={3} mb={2}>
-              <Typography>{reportData?.reportsStaffExpenses.name}</Typography>
-              <Typography>
-                {reportData?.reportsStaffExpenses.accountId}
-              </Typography>
+              <Typography>{staffAccountData?.staffAccount?.name}</Typography>
+              <Typography>{staffAccountData?.staffAccount?.id}</Typography>
             </Box>
           </Container>
         </Box>

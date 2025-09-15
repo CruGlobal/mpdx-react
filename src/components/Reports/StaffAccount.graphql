@@ -1,0 +1,7 @@
+query StaffAccount {
+  staffAccount {
+    id
+    name
+    status
+  }
+}

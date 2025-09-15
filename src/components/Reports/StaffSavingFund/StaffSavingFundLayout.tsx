@@ -8,6 +8,7 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import { useStaffAccountQuery } from '../StaffAccount.generated';
 import {
   StaffSavingFundContext,
   StaffSavingFundType,
@@ -28,16 +29,18 @@ export const StaffSavingFundLayout: React.FC<StaffSavingFundLayoutProps> = ({
   selectedMenuId,
   children,
 }) => {
-  const { accountListId, isNavListOpen, onNavListToggle } = useContext(
+  const { isNavListOpen, onNavListToggle } = useContext(
     StaffSavingFundContext,
   ) as StaffSavingFundType;
+
+  const { data: staffAccountData } = useStaffAccountQuery();
 
   return (
     <>
       <Head>
         <title>{`${pageTitle}`}</title>
       </Head>
-      {accountListId ? (
+      {staffAccountData?.staffAccount?.id ? (
         <StaffSavingFundPageWrapper>
           <SidePanelsLayout
             isScrollBox={false}

@@ -10,19 +10,23 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
+import { StaffAccountQuery } from '../../StaffAccount.generated';
 import { StaffSavingFundContext } from '../../StaffSavingFund/StaffSavingFundContext';
 import { mockData } from '../mockData';
 import { TransfersPage } from './TransfersPage';
 
-const accountListId = 'abc';
-const router = {
-  query: { accountListId },
-  isReady: true,
-};
-
 const mutationSpy = jest.fn();
 const mockEnqueue = jest.fn();
 const onNavListToggle = jest.fn();
+
+const mockStaffAccount = {
+  StaffAccount: {
+    staffAccount: {
+      id: '12345',
+      name: 'Test Account',
+    },
+  },
+};
 
 const MockStaffSavingFundProvider = ({
   children,
@@ -31,7 +35,6 @@ const MockStaffSavingFundProvider = ({
 }) => (
   <StaffSavingFundContext.Provider
     value={{
-      accountListId: 'abc123',
       isNavListOpen: false,
       onNavListToggle: onNavListToggle,
     }}
@@ -59,9 +62,14 @@ const Components = ({
   <SnackbarProvider>
     <ThemeProvider theme={theme}>
       <LocalizationProvider dateAdapter={AdapterLuxon}>
-        <TestRouter router={router}>
+        <TestRouter>
           <I18nextProvider i18n={i18n}>
-            <GqlMockedProvider onCall={mutationSpy}>
+            <GqlMockedProvider<{
+              StaffAccount: StaffAccountQuery;
+            }>
+              mocks={mockStaffAccount}
+              onCall={mutationSpy}
+            >
               <MockStaffSavingFundProvider>
                 <TransfersPage title={title} />
               </MockStaffSavingFundProvider>
@@ -81,14 +89,18 @@ describe('TransfersPage', () => {
     expect(getByText(customTitle)).toBeInTheDocument();
   });
 
-  it('should render the page with header, title, and account information', () => {
-    const { getByText } = render(<Components />);
+  it('should render the page with header, title, and account information', async () => {
+    const { getByText, findByText } = render(<Components />);
 
     expect(getByText('Staff Savings Fund Transfers')).toBeInTheDocument();
     expect(getByText('Fund Transfer')).toBeInTheDocument();
 
-    expect(getByText(mockData.accountName)).toBeInTheDocument();
-    expect(getByText(mockData.accountListId)).toBeInTheDocument();
+    expect(
+      await findByText(mockStaffAccount.StaffAccount.staffAccount.name),
+    ).toBeInTheDocument();
+    expect(
+      await findByText(mockStaffAccount.StaffAccount.staffAccount.id),
+    ).toBeInTheDocument();
   });
 
   it('should render all balance cards with correct information', () => {

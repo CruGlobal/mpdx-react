@@ -4,9 +4,6 @@ import { useFilteredFunds } from './useFilteredFunds';
 
 const mockData: ReportsStaffExpensesQuery = {
   reportsStaffExpenses: {
-    accountId: '123',
-    name: 'Example Report',
-    status: 'active',
     funds: [
       {
         categories: [
