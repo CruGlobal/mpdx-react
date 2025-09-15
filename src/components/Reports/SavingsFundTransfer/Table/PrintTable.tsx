@@ -8,9 +8,9 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
+import { dateFormat } from 'src/lib/intlFormat';
 import { FundTypeEnum, ScheduleEnum, TransferHistory } from '../mockData';
 
 interface PrintTableProps {
@@ -48,17 +48,17 @@ export const PrintTable: React.FC<PrintTableProps> = ({ transfers }) => {
                 >
                   <TableCell>
                     {transfer.transferFrom === FundTypeEnum.Primary
-                      ? 'Primary Balance'
+                      ? t('Primary Balance')
                       : transfer.transferFrom === FundTypeEnum.Savings
-                        ? 'Savings Balance'
-                        : 'Conference Savings Balance'}
+                        ? t('Savings Balance')
+                        : t('Conference Savings Balance')}
                   </TableCell>
                   <TableCell>
                     {transfer.transferTo === FundTypeEnum.Primary
-                      ? 'Primary Balance'
+                      ? t('Primary Balance')
                       : transfer.transferTo === FundTypeEnum.Savings
-                        ? 'Savings Balance'
-                        : 'Conference Savings Balance'}
+                        ? t('Savings Balance')
+                        : t('Conference Savings Balance')}
                   </TableCell>
                   <TableCell>
                     {transfer.amount?.toLocaleString(locale, {
@@ -68,18 +68,21 @@ export const PrintTable: React.FC<PrintTableProps> = ({ transfers }) => {
                   </TableCell>
                   <TableCell>
                     {transfer.schedule === ScheduleEnum.OneTime
-                      ? 'One Time'
-                      : 'Monthly'}
+                      ? t('One Time')
+                      : t('Monthly')}
                   </TableCell>
                   <TableCell sx={{ textTransform: 'capitalize' }}>
                     {transfer.status}
                   </TableCell>
                   <TableCell>
-                    {transfer.transferDate?.toLocaleString(DateTime.DATE_MED)}
+                    {transfer.transferDate
+                      ? dateFormat(transfer.transferDate, locale)
+                      : (t('') as string)}
                   </TableCell>
                   <TableCell>
-                    {transfer.schedule === ScheduleEnum.Monthly
-                      ? transfer.endDate?.toLocaleString(DateTime.DATE_MED)
+                    {transfer.schedule === ScheduleEnum.Monthly &&
+                    transfer.endDate
+                      ? dateFormat(transfer.endDate, locale)
                       : (t('') as string)}
                   </TableCell>
                   <TableCell>{transfer.note}</TableCell>

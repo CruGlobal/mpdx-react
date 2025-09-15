@@ -8,7 +8,7 @@ import {
   Typography,
 } from '@mui/material';
 import { TFunction } from 'i18next';
-import { DateTime } from 'luxon';
+import { dateFormat } from 'src/lib/intlFormat';
 import { ScheduleEnum, StatusEnum, TransferHistory } from '../../mockData';
 import { RenderCell } from '../TransferHistoryTable';
 import { chipStyle, iconMap } from './createTableRowHelper';
@@ -100,8 +100,9 @@ export const populateTransferHistoryRows = (
   const transferDate: RenderCell = ({ row }) => {
     return (
       <Typography variant="body2" noWrap>
-        {row.transferDate?.toLocaleString(DateTime.DATE_MED) ||
-          (t('N/A') as string)}
+        {row.transferDate
+          ? dateFormat(row.transferDate, locale)
+          : (t('') as string)}
       </Typography>
     );
   };
@@ -109,8 +110,8 @@ export const populateTransferHistoryRows = (
   const endDate: RenderCell = ({ row }) => {
     return (
       <Typography variant="body2" noWrap>
-        {row.schedule === ScheduleEnum.Monthly
-          ? row.endDate?.toLocaleString(DateTime.DATE_MED)
+        {row.schedule === ScheduleEnum.Monthly && row.endDate
+          ? dateFormat(row.endDate, locale)
           : (t('') as string)}
       </Typography>
     );

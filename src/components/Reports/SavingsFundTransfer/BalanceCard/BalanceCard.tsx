@@ -13,6 +13,7 @@ import {
   LoadingIndicator,
 } from 'src/components/Shared/styledComponents/LoadingStyling';
 import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat';
 import { TransferModalData } from '../TransferModal/TransferModal';
 import { Fund, FundTypeEnum } from '../mockData';
 import { ScreenOnly } from '../styledComponents/DisplayStyling';
@@ -37,17 +38,17 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
   const staffConferenceSavingsColor = '#00C0D8';
   const staffSavingsColor = '#007890';
 
-  const title = `${fund.name} Account Balance`;
+  const title = t('{{ name }} Account Balance', { name: fund.fundType });
   const Icon =
-    fund.name === FundTypeEnum.Primary
+    fund.fundType === FundTypeEnum.Primary
       ? Wallet
-      : fund.name === FundTypeEnum.Savings
+      : fund.fundType === FundTypeEnum.Savings
         ? Savings
         : Groups;
   const iconBgColor =
-    fund.name === FundTypeEnum.Primary
+    fund.fundType === FundTypeEnum.Primary
       ? staffAccountColor
-      : fund.name === FundTypeEnum.Savings
+      : fund.fundType === FundTypeEnum.Savings
         ? staffSavingsColor
         : staffConferenceSavingsColor;
 
@@ -143,9 +144,8 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
             }}
           >
             <Typography variant="h5" sx={{ fontSize: 'inherit' }}>
-              {fund.balance.toLocaleString(locale, {
-                style: 'currency',
-                currency: 'USD',
+              {currencyFormat(fund.endBalance, 'USD', locale, {
+                showTrailingZeros: true,
               })}
             </Typography>
           </Box>

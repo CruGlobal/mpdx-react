@@ -50,7 +50,7 @@ interface TransferFormValues {
 }
 
 const getToday = (): DateTime => {
-  return DateTime.utc().startOf('day');
+  return DateTime.local().startOf('day');
 };
 
 const transferSchema = yup.object({
@@ -330,7 +330,6 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                         helperText={
                           touched.endDate && (errors.endDate as string)
                         }
-                        required
                       />
                     </Grid>
                   )}

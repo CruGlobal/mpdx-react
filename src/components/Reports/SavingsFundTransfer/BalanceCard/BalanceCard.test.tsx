@@ -22,9 +22,9 @@ const mockHandleOpenTransferModal = jest.fn();
 
 const defaultFund: Fund = {
   id: crypto.randomUUID(),
-  name: 'Primary',
-  balance: 15000,
-  deficit: 0,
+  fundType: 'Primary',
+  endBalance: 15000,
+  deficitLimit: 0,
 };
 
 interface ComponentsProps {
@@ -68,17 +68,17 @@ describe('BalanceCard', () => {
   });
 
   it('should display title correctly', () => {
-    const name = 'Custom Title';
+    const fundType = 'Custom Title';
     const { getByText } = render(
       <Components
         fund={{
           ...defaultFund,
-          name,
+          fundType,
         }}
       />,
     );
 
-    expect(getByText(`${name} Account Balance`)).toBeInTheDocument();
+    expect(getByText(`${fundType} Account Balance`)).toBeInTheDocument();
   });
 
   describe('Icons', () => {
@@ -87,7 +87,7 @@ describe('BalanceCard', () => {
         <Components
           fund={{
             ...defaultFund,
-            name: FundTypeEnum.Savings,
+            fundType: FundTypeEnum.Savings,
           }}
         />,
       );
@@ -100,7 +100,7 @@ describe('BalanceCard', () => {
         <Components
           fund={{
             ...defaultFund,
-            name: 'Conference Savings',
+            fundType: 'Conference Savings',
           }}
         />,
       );
@@ -113,7 +113,7 @@ describe('BalanceCard', () => {
         <Components
           fund={{
             ...defaultFund,
-            name: FundTypeEnum.Primary,
+            fundType: FundTypeEnum.Primary,
           }}
         />,
       );
@@ -128,7 +128,7 @@ describe('BalanceCard', () => {
         <Components
           fund={{
             ...defaultFund,
-            balance: 1234567.89,
+            endBalance: 1234567.89,
           }}
         />,
       );
@@ -141,7 +141,7 @@ describe('BalanceCard', () => {
         <Components
           fund={{
             ...defaultFund,
-            balance: 0,
+            endBalance: 0,
           }}
         />,
       );
@@ -154,7 +154,7 @@ describe('BalanceCard', () => {
         <Components
           fund={{
             ...defaultFund,
-            balance: -500,
+            endBalance: -500,
           }}
         />,
       );
@@ -167,7 +167,7 @@ describe('BalanceCard', () => {
         <Components
           fund={{
             ...defaultFund,
-            balance: 1234.567,
+            endBalance: 1234.567,
           }}
         />,
       );

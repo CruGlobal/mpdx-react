@@ -147,7 +147,7 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
     },
   ];
 
-  if (loading) {
+  if (loading && !history?.length) {
     return (
       <LoadingBox>
         <LoadingIndicator
@@ -182,12 +182,7 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
         sortingOrder={['desc', 'asc']}
         sortModel={sortModel}
         onSortModelChange={(size) => setSortModel(size)}
-        pageSizeOptions={[
-          5,
-          10,
-          25,
-          { value: transferHistoryRows.length, label: 'All' },
-        ]}
+        pageSizeOptions={[5, 10, 25, 100]}
         paginationMode="server"
         paginationModel={paginationModel}
         onPaginationModelChange={setPaginationModel}
@@ -203,7 +198,6 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
       {openDeleteModal && (
         <DynamicDeleteTransferModal
           handleClose={() => setOpenDeleteModal(null)}
-          transfer={openDeleteModal}
         />
       )}
     </>

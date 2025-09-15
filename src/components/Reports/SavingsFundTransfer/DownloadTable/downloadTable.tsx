@@ -1,6 +1,6 @@
 import { TFunction } from 'i18next';
-import { DateTime } from 'luxon';
 import { buildURI } from 'react-csv/lib/core';
+import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { FundTypeEnum, ScheduleEnum, TransferHistory } from '../mockData';
 
 export const createTable = (
@@ -27,21 +27,20 @@ export const createTable = (
       ? transfer.status[0].toUpperCase() + transfer.status.slice(1)
       : transfer.status;
     const endDate =
-      transfer.schedule === ScheduleEnum.Monthly
-        ? transfer.endDate
-          ? transfer.endDate.toLocaleString(DateTime.DATE_MED)
-          : '...'
+      transfer.schedule === ScheduleEnum.Monthly && transfer.endDate
+        ? dateFormat(transfer.endDate, locale)
         : '';
     return [
       fromFund,
       toFund,
-      transfer.amount?.toLocaleString(locale, {
-        style: 'currency',
-        currency: 'USD',
-      }),
+      transfer.amount
+        ? currencyFormat(transfer.amount, 'USD', locale, {
+            showTrailingZeros: true,
+          })
+        : '',
       schedule,
       status,
-      transfer.transferDate?.toLocaleString(DateTime.DATE_MED),
+      transfer.transferDate ? dateFormat(transfer.transferDate, locale) : '',
       endDate,
       transfer.note,
     ];

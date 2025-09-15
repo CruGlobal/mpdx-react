@@ -21,9 +21,9 @@ export enum FundTypeEnum {
 
 export interface Fund {
   id: string;
-  name: string;
-  balance: number;
-  deficit: number;
+  fundType: string;
+  endBalance: number;
+  deficitLimit: number;
 }
 
 export interface SubCategory {
@@ -69,15 +69,15 @@ export interface TransferHistory {
 export const fundsMock: Fund[] = [
   {
     id: '1',
-    name: 'Staff Account',
-    balance: 15000,
-    deficit: 0,
+    fundType: 'Staff Account',
+    endBalance: 15000,
+    deficitLimit: 0,
   },
   {
     id: '2',
-    name: 'Staff Savings',
-    balance: 2500,
-    deficit: 0,
+    fundType: 'Staff Savings',
+    endBalance: 2500,
+    deficitLimit: 0,
   },
 ];
 

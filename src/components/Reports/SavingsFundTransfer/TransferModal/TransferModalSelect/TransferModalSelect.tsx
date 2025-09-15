@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, MenuItem, Select, SelectProps } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import {
   PrimaryAccount,
   SavingsAccount,
@@ -19,6 +20,8 @@ export const TransferModalSelect: React.FC<TransferModalSelectProps> = ({
   funds,
   ...props
 }) => {
+  const { t } = useTranslation();
+
   const filteredFunds =
     type === TransferDirectionEnum.From
       ? funds
@@ -29,12 +32,12 @@ export const TransferModalSelect: React.FC<TransferModalSelectProps> = ({
       {filteredFunds.map((fund) => (
         <MenuItem key={fund.id} value={fund.id}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            {fund.name === FundTypeEnum.Primary
+            {fund.fundType === FundTypeEnum.Primary
               ? PrimaryAccount
-              : fund.name === FundTypeEnum.Savings
+              : fund.fundType === FundTypeEnum.Savings
                 ? SavingsAccount
                 : null}{' '}
-            <b>{fund.name} Account</b>
+            <b>{t(`${fund.fundType} Account`)}</b>
           </Box>
         </MenuItem>
       ))}

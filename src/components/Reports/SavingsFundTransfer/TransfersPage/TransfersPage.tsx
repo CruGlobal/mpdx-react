@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import PrintIcon from '@mui/icons-material/Print';
 import {
   Box,
@@ -33,7 +33,6 @@ import { TransferHistoryTable } from '../Table/TransferHistoryTable';
 import { DynamicTransferModal } from '../TransferModal/DynamicTransferModal';
 import { TransferModalData } from '../TransferModal/TransferModal';
 import {
-  Fund,
   FundTypeEnum,
   ScheduleEnum,
   StatusEnum,
@@ -75,32 +74,29 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
     },
   });
 
-  const funds: Fund[] = (fundsData?.funds ?? []).map((fund) => ({
-    id: fund.id,
-    name: fund.fundType,
-    balance: fund.endBalance,
-    deficit: fund.deficitLimit,
-  }));
+  const funds = useMemo(() => fundsData?.funds ?? [], [fundsData]);
 
-  const transactions: Transactions[] = (
-    reportData?.reportsSavingsFundTransfer.transactions ?? []
-  ).map((tx) => {
-    return {
-      ...tx,
-      transactedAt: DateTime.fromISO(tx.transactedAt),
-      recurringTransfer: tx.recurringTransfer
-        ? {
-            ...tx.recurringTransfer,
-            recurringStart: tx.recurringTransfer.recurringStart
-              ? DateTime.fromISO(tx.recurringTransfer.recurringStart)
-              : null,
-            recurringEnd: tx.recurringTransfer.recurringEnd
-              ? DateTime.fromISO(tx.recurringTransfer.recurringEnd)
-              : null,
-          }
-        : null,
-    };
-  });
+  const transactions: Transactions[] = useMemo(
+    () =>
+      (reportData?.reportsSavingsFundTransfer.transactions ?? []).map((tx) => {
+        return {
+          ...tx,
+          transactedAt: DateTime.fromISO(tx.transactedAt),
+          recurringTransfer: tx.recurringTransfer
+            ? {
+                ...tx.recurringTransfer,
+                recurringStart: tx.recurringTransfer.recurringStart
+                  ? DateTime.fromISO(tx.recurringTransfer.recurringStart)
+                  : null,
+                recurringEnd: tx.recurringTransfer.recurringEnd
+                  ? DateTime.fromISO(tx.recurringTransfer.recurringEnd)
+                  : null,
+              }
+            : null,
+        };
+      }),
+    [reportData],
+  );
 
   const filteredTransactions = useFilteredTransfers(transactions);
 
