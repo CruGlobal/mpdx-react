@@ -28,13 +28,19 @@ export const useFourteenMonthReport = (
     currencyType === FourteenMonthReportCurrencyType.Salary
       ? gqlData?.reportsSalaryCurrencyDonations
       : gqlData?.reportsDonorCurrencyDonations;
+
   const fourteenMonthReport = useMemo(() => {
+    if (!data) {
+      return null;
+    }
+
     const isSalaryType =
       currencyType === FourteenMonthReportCurrencyType.Salary;
-    const currencyGroups: CurrencyGroups = data?.currencyGroups;
+    const currencyGroups: CurrencyGroups = data.currencyGroups;
+
     return {
       currencyType,
-      salaryCurrency: data?.defaultCurrency ?? 'USD',
+      salaryCurrency: data.defaultCurrency ?? 'USD',
       currencyGroups: Object.entries(currencyGroups ?? {}).map(
         ([currency, currencyGroup]: [string, CurrencyGroups[string]]) => ({
           currency: currency,
@@ -45,7 +51,7 @@ export const useFourteenMonthReport = (
                 : currencyGroup.totals.year,
             ),
             months: currencyGroup.totals.months.map((total, index) => ({
-              month: data?.months[index],
+              month: data.months[index],
               total: Number(total),
             })),
             average: currencyGroup.donation_infos.reduce(
@@ -61,7 +67,7 @@ export const useFourteenMonthReport = (
           },
           contacts: currencyGroup.donation_infos
             .map((contactDonationInfo) => {
-              const contact = data?.donorInfos.find(
+              const contact = data.donorInfos.find(
                 (donor) => donor.contactId === contactDonationInfo.contact_id,
               );
               return {
@@ -80,7 +86,7 @@ export const useFourteenMonthReport = (
                     0,
                   );
                   return {
-                    month: data?.months[index],
+                    month: data.months[index],
                     total: isSalaryType
                       ? salaryCurrencyTotal
                       : Number(month.total),
