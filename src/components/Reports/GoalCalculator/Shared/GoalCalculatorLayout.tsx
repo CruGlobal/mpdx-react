@@ -88,7 +88,7 @@ export const GoalCalculatorLayout: React.FC<GoalCalculatorLayoutProps> = ({
     isDrawerOpen,
     setDrawerOpen,
     toggleDrawer,
-    progress,
+    percentComplete,
   } = useGoalCalculator();
 
   const handleStepIconClick = (step: GoalCalculatorStepEnum) => {
@@ -104,7 +104,7 @@ export const GoalCalculatorLayout: React.FC<GoalCalculatorLayoutProps> = ({
     <PrintableStack direction="row">
       <Stack direction="column" width={iconPanelWidth}>
         <IconButton>
-          <CircularProgressWithLabel progress={progress} />
+          <CircularProgressWithLabel progress={percentComplete} />
         </IconButton>
         {steps.map((step) => (
           <IconButton
