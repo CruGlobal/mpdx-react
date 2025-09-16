@@ -1,13 +1,8 @@
 import React from 'react';
-import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import theme from 'src/theme';
-import { GoalCalculationQuery } from '../../../Shared/GoalCalculation.generated';
-import { UpdateGoalCalculationMutation } from './GoalCalculation.generated';
+import { GoalCalculatorTestWrapper } from '../../../GoalCalculatorTestWrapper';
 import { SettingsCategory } from './SettingsCategory';
 
 const router = {
@@ -18,32 +13,9 @@ const router = {
 };
 const TestComponent = () => (
   <TestRouter router={router}>
-    <ThemeProvider theme={theme}>
-      <SnackbarProvider>
-        <GqlMockedProvider<{
-          GoalCalculation: GoalCalculationQuery;
-          UpdateGoalCalculation: UpdateGoalCalculationMutation;
-        }>
-          mocks={{
-            GoalCalculation: {
-              goalCalculation: {
-                name: 'Initial Goal Name',
-              },
-            },
-            UpdateGoalCalculation: {
-              updateGoalCalculation: {
-                goalCalculation: {
-                  id: 'test-goal-calculation-id',
-                  name: 'Updated Goal Name',
-                },
-              },
-            },
-          }}
-        >
+    <GoalCalculatorTestWrapper>
           <SettingsCategory />
-        </GqlMockedProvider>
-      </SnackbarProvider>
-    </ThemeProvider>
+    </GoalCalculatorTestWrapper>
   </TestRouter>
 );
 

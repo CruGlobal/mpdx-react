@@ -17,6 +17,7 @@ interface GoalCalculatorTestWrapper {
 
 export const goalCalculationMock = {
   goalCalculation: {
+    name: 'Initial Goal Name',
     ministryFamily: {
       primaryBudgetCategories: [
         {
