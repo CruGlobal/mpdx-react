@@ -1,5 +1,5 @@
-query GetFourteenMonthReport($accountListId: ID!) {
-  reportsSalaryCurrencyDonations(accountListId: $accountListId) {
+query GetFourteenMonthReport($accountListId: ID!, $range: String) {
+  reportsSalaryCurrencyDonations(accountListId: $accountListId, range: $range) {
     currencyGroups
     defaultCurrency
     donorInfos {
@@ -21,7 +21,7 @@ query GetFourteenMonthReport($accountListId: ID!) {
     }
   }
 
-  reportsDonorCurrencyDonations(accountListId: $accountListId) {
+  reportsDonorCurrencyDonations(accountListId: $accountListId, range: $range) {
     currencyGroups
     defaultCurrency
     donorInfos {

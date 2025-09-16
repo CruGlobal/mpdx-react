@@ -21,6 +21,8 @@ export const useFourteenMonthReport = (
   } = useGetFourteenMonthReportQuery({
     variables: {
       accountListId,
+      // Backend sends one extra month, e.g. 13m returns 14 months
+      range: '13m',
     },
   });
 
