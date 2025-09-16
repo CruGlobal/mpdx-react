@@ -201,8 +201,8 @@ describe('TransfersPage', () => {
     expect(await findByText('Primary Account Balance')).toBeInTheDocument();
     expect(await findByText('Savings Account Balance')).toBeInTheDocument();
 
-    expect(getAllByText('($316.00)').length).toBeGreaterThan(0);
-    expect(getAllByText('$500.00').length).toBeGreaterThan(0);
+    expect(getAllByText('$15,000.00').length).toBeGreaterThan(0);
+    expect(getAllByText('$2,500.00').length).toBeGreaterThan(0);
   });
 
   it('should render cards and transfer history table', async () => {

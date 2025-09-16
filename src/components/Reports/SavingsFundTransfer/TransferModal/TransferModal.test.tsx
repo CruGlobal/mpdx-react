@@ -422,8 +422,8 @@ describe('TransferModal', () => {
             operationName: 'CreateTransfer',
             variables: {
               amount: 100,
-              sourceFundTypeName: 'staffAccount',
-              destinationFundTypeName: 'staffSavings',
+              sourceFundTypeName: '1',
+              destinationFundTypeName: '2',
               description: '',
             },
           }),
@@ -472,8 +472,8 @@ describe('TransferModal', () => {
             operationName: 'CreateRecurringTransfer',
             variables: {
               amount: 100,
-              sourceFundTypeName: 'staffAccount',
-              destinationFundTypeName: 'staffSavings',
+              sourceFundTypeName: '1',
+              destinationFundTypeName: '2',
               recurringStart: '2024-12-01T00:00:00.000+00:00',
               recurringEnd: '2025-12-01T00:00:00.000+00:00',
             },
