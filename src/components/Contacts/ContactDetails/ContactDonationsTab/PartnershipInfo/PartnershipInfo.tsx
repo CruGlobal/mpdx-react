@@ -246,10 +246,6 @@ export const PartnershipInfo: React.FC<PartnershipInfoProp> = ({ contact }) => {
         <LabelsAndText variant="subtitle1">
           {contact?.contactReferralsToMe.nodes
             .map((referral) => referral.referredBy.name)
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore
-            // TypeScript incorrectly declares this method as having zero args
-            // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/toLocaleString#syntax
             .toLocaleString(locale)}
         </LabelsAndText>
       </IconAndTextContainerCenter>
