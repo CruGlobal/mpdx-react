@@ -36,3 +36,26 @@ query GoalCalculation($accountListId: ID!, $id: ID!) {
     }
   }
 }
+
+query GoalCalculatorConstants {
+  constant {
+    mpdGoalBenefitsConstants {
+      id
+      size
+      sizeDisplayName
+      plan
+      planDisplayName
+      cost
+    }
+    mpdGoalGeographicConstants {
+      id
+      location
+      percentageMultiplier
+    }
+    mpdGoalMiscConstants {
+      id
+      category
+      label
+    }
+  }
+}

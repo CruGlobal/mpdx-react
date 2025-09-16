@@ -12,10 +12,19 @@ import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getQueryParam } from 'src/utils/queryParam';
 import {
+  GoalBenefitsConstantMap,
+  GoalGeographicConstantMap,
+  GoalMiscConstantMap,
+  useFormatConstants,
+} from '../../../../hooks/useFormatGoalCalculatorConstants';
+import {
   GoalCalculatorReportEnum,
   GoalCalculatorStepEnum,
 } from '../GoalCalculatorHelper';
-import { useGoalCalculationQuery } from './GoalCalculation.generated';
+import {
+  useGoalCalculationQuery,
+  useGoalCalculatorConstantsQuery,
+} from './GoalCalculation.generated';
 import { GoalCalculatorStep, useSteps } from './useSteps';
 
 export type GoalCalculatorType = {
@@ -42,6 +51,9 @@ export type GoalCalculatorType = {
   isMutating: boolean;
   /** Call with the mutation promise to track the start and end of mutations */
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
+  goalBenefitsConstantMap: GoalBenefitsConstantMap;
+  goalGeographicConstantMap: GoalGeographicConstantMap;
+  goalMiscConstantMap: GoalMiscConstantMap;
 };
 
 const GoalCalculatorContext = createContext<GoalCalculatorType | null>(null);
@@ -73,6 +85,13 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       id: goalCalculationId,
     },
   });
+
+  const { data } = useGoalCalculatorConstantsQuery();
+  const {
+    goalBenefitsConstantMap,
+    goalMiscConstantMap,
+    goalGeographicConstantMap,
+  } = useFormatConstants(data);
 
   const steps = useSteps();
   const [stepIndex, setStepIndex] = useState(0);
@@ -145,6 +164,9 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       goalCalculationResult,
       isMutating,
       trackMutation,
+      goalBenefitsConstantMap,
+      goalGeographicConstantMap,
+      goalMiscConstantMap,
     }),
     [
       steps,
@@ -162,6 +184,9 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       goalCalculationResult,
       isMutating,
       trackMutation,
+      goalBenefitsConstantMap,
+      goalGeographicConstantMap,
+      goalMiscConstantMap,
     ],
   );
 
