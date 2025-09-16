@@ -10,25 +10,23 @@ query ReportsSavingsFundTransfer(
     subCategoryName: $subCategoryName
     fundTypeName: $fundTypeName
   ) {
-    transactions {
+    id
+    amount
+    description
+    transactedAt
+    subCategory {
       id
-      amount
-      description
-      transactedAt
-      subCategory {
-        id
-        name
-      }
-      transfer {
-        sourceFundTypeName
-        destinationFundTypeName
-      }
-      recurringTransfer {
-        id
-        recurringStart
-        recurringEnd
-        active
-      }
+      name
+    }
+    transfer {
+      sourceFundTypeName
+      destinationFundTypeName
+    }
+    recurringTransfer {
+      id
+      recurringStart
+      recurringEnd
+      active
     }
   }
 }

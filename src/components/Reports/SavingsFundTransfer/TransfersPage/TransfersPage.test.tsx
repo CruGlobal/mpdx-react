@@ -30,45 +30,43 @@ const mock = {
     },
   },
   ReportsSavingsFundTransfer: {
-    reportsSavingsFundTransfer: {
-      transactions: [
-        {
-          id: '12345',
-          amount: 2500,
-          description: null,
-          transactedAt: '2023-09-26T00:00:00+00:00',
-          subCategory: {
-            id: '1',
-            name: 'deposit',
-          },
-          transfer: {
-            sourceFundTypeName: 'Primary',
-            destinationFundTypeName: 'Savings',
-          },
-          recurringTransfer: null,
+    reportsSavingsFundTransfer: [
+      {
+        id: '12345',
+        amount: 2500,
+        description: null,
+        transactedAt: '2023-09-26T00:00:00+00:00',
+        subCategory: {
+          id: '1',
+          name: 'deposit',
         },
-        {
-          id: '67890',
-          amount: 1200,
-          description: null,
-          transactedAt: '2023-09-30T00:00:00+00:00',
-          subCategory: {
-            id: '1',
-            name: 'deposit',
-          },
-          transfer: {
-            sourceFundTypeName: 'Primary',
-            destinationFundTypeName: 'Savings',
-          },
-          recurringTransfer: {
-            id: '1',
-            recurringStart: '2023-09-30T00:00:00+00:00',
-            recurringEnd: '2025-09-30T00:00:00+00:00',
-            active: true,
-          },
+        transfer: {
+          sourceFundTypeName: 'Primary',
+          destinationFundTypeName: 'Savings',
         },
-      ],
-    },
+        recurringTransfer: null,
+      },
+      {
+        id: '67890',
+        amount: 1200,
+        description: null,
+        transactedAt: '2023-09-30T00:00:00+00:00',
+        subCategory: {
+          id: '1',
+          name: 'deposit',
+        },
+        transfer: {
+          sourceFundTypeName: 'Primary',
+          destinationFundTypeName: 'Savings',
+        },
+        recurringTransfer: {
+          id: '1',
+          recurringStart: '2023-09-30T00:00:00+00:00',
+          recurringEnd: '2025-09-30T00:00:00+00:00',
+          active: true,
+        },
+      },
+    ],
   },
   AccountFunds: {
     accountFunds: {
@@ -98,9 +96,7 @@ const emptyMock = {
     },
   },
   ReportsSavingsFundTransfer: {
-    reportsSavingsFundTransfer: {
-      transactions: [],
-    },
+    reportsSavingsFundTransfer: [],
   },
   AccountFunds: {
     accountFunds: {

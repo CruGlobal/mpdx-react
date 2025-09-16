@@ -84,7 +84,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
 
   const transactions: Transactions[] = useMemo(
     () =>
-      (reportData?.reportsSavingsFundTransfer.transactions ?? []).map((tx) => {
+      (reportData?.reportsSavingsFundTransfer ?? []).map((tx) => {
         return {
           ...tx,
           transactedAt: DateTime.fromISO(tx.transactedAt),
