@@ -15,11 +15,8 @@ import {
   GoalCalculatorReportEnum,
   GoalCalculatorStepEnum,
 } from '../GoalCalculatorHelper';
-import { SectionItem } from '../SharedComponents/SectionList';
-import {
-  BudgetFamilyFragment,
-  useGoalCalculationQuery,
-} from './GoalCalculation.generated';
+import { useGoalCalculationQuery } from './GoalCalculation.generated';
+import { calculatePercentage } from './calculatePercentage';
 import { GoalCalculatorStep, useSteps } from './useSteps';
 
 export type GoalCalculatorType = {
@@ -46,9 +43,6 @@ export type GoalCalculatorType = {
   isMutating: boolean;
   /** Call with the mutation promise to track the start and end of mutations */
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
-
-  /** Get family sections with completion status calculated in context */
-  getFamilySections: (budgetFamily: BudgetFamilyFragment) => SectionItem[];
 
   /** Calculate overall completion percentage of the goal calculator */
   percentComplete: number;
@@ -85,6 +79,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   });
 
   const steps = useSteps();
+  const percentComplete = calculatePercentage(goalCalculationResult);
   const [stepIndex, setStepIndex] = useState(0);
   const [selectedReport, setSelectedReport] =
     useState<GoalCalculatorReportEnum>(GoalCalculatorReportEnum.MpdGoal);
@@ -137,55 +132,6 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     },
     [],
   );
-
-  const getFamilySections = useCallback(
-    (budgetFamily: BudgetFamilyFragment): SectionItem[] => {
-      return (
-        budgetFamily.primaryBudgetCategories.map((category) => ({
-          title: category.label,
-          complete:
-            category.directInput !== null ||
-            category.subBudgetCategories.some(
-              (category) => category.amount > 0,
-            ),
-        })) ?? []
-      );
-    },
-    [],
-  );
-
-  const percentComplete = useMemo(() => {
-    const { data } = goalCalculationResult;
-    if (!data?.goalCalculation) {
-      return 0;
-    }
-
-    const allFamilies = [
-      data.goalCalculation.householdFamily,
-      data.goalCalculation.ministryFamily,
-    ].filter(Boolean);
-
-    if (allFamilies.length === 0) {
-      return 0;
-    }
-
-    let totalCategories = 0;
-    let completedCategories = 0;
-
-    allFamilies.forEach((family) => {
-      if (family) {
-        const sections = getFamilySections(family);
-        totalCategories += sections.length;
-        completedCategories += sections.filter(
-          (section) => section.complete,
-        ).length;
-      }
-    });
-
-    return totalCategories > 0
-      ? Math.round((completedCategories / totalCategories) * 100)
-      : 0;
-  }, [goalCalculationResult, getFamilySections]);
 
   const contextValue = useMemo(
     (): GoalCalculatorType => ({
