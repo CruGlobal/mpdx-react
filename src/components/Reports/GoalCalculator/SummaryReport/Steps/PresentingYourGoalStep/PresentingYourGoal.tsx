@@ -28,7 +28,7 @@ import { useOrganizationId } from 'src/hooks/useOrganizationId';
 import cruLogo from 'src/images/cru/cru-logo.svg';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { useGoalLineItems } from '../../MpdGoal/useGoalLineItems';
+import { useGoalLineItems } from '../../../Shared/useGoalLineItems';
 import { useGetOrganizationsQuery } from './GetOrganization.generated';
 import type { Goal } from '../../../Shared/useReportExpenses/useReportExpenses';
 
@@ -89,7 +89,13 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
   const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
-  const calculations = useGoalLineItems(goal);
+  const calculations = useGoalLineItems({
+    netMonthlySalary: goal.netMonthlySalary,
+    taxesPercentage: goal.taxesPercentage,
+    rothContributionPercentage: goal.rothContributionPercentage,
+    traditionalContributionPercentage: goal.traditionalContributionPercentage,
+    ministryExpensesTotal: goal.ministryExpensesTotal,
+  });
 
   /*
    * We don't want to display ministry location and Cru image if

@@ -3,6 +3,48 @@ fragment ListGoalCalculation on GoalCalculation {
   name
   primary
   updatedAt
+  householdFamily {
+    id
+    label
+    category
+    directInput
+    updatedAt
+    primaryBudgetCategories {
+      id
+      label
+      category
+      directInput
+      updatedAt
+      subBudgetCategories {
+        id
+        label
+        category
+        amount
+        updatedAt
+      }
+    }
+  }
+  ministryFamily {
+    id
+    label
+    category
+    directInput
+    updatedAt
+    primaryBudgetCategories {
+      id
+      label
+      category
+      directInput
+      updatedAt
+      subBudgetCategories {
+        id
+        label
+        category
+        amount
+        updatedAt
+      }
+    }
+  }
 }
 
 query GoalCalculations($accountListId: ID!) {

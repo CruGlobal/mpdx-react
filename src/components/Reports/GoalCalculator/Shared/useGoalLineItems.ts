@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { useAccountListSupportRaisedQuery } from './MpdGoalTable.generated';
-import type { Goal } from '../../Shared/useReportExpenses/useReportExpenses';
+import { useAccountListSupportRaisedQuery } from './GoalLineItems.generated';
 
 export interface GoalTableLineItems {
   taxes: number;
@@ -19,7 +18,17 @@ export interface GoalTableLineItems {
   supportRaisedPercentage: number;
 }
 
-export const useGoalLineItems = (goal: Goal): GoalTableLineItems => {
+export interface GoalLineItemsInput {
+  netMonthlySalary: number;
+  taxesPercentage: number;
+  rothContributionPercentage: number;
+  traditionalContributionPercentage: number;
+  ministryExpensesTotal: number;
+}
+
+export const useGoalLineItems = (
+  goal: GoalLineItemsInput,
+): GoalTableLineItems => {
   const accountListId = useAccountListId() ?? '';
   const { data } = useAccountListSupportRaisedQuery({
     variables: { accountListId },

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
-import { useGoalLineItems } from './useGoalLineItems';
+import { useGoalLineItems } from '../../Shared/useGoalLineItems';
 import type { Goal } from '../../Shared/useReportExpenses/useReportExpenses';
 
 interface MpdGoalRow {
@@ -42,7 +42,13 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({ goal }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const localeText = useDataGridLocaleText();
-  const calculations = useGoalLineItems(goal);
+  const calculations = useGoalLineItems({
+    netMonthlySalary: goal.netMonthlySalary,
+    taxesPercentage: goal.taxesPercentage,
+    rothContributionPercentage: goal.rothContributionPercentage,
+    traditionalContributionPercentage: goal.traditionalContributionPercentage,
+    ministryExpensesTotal: goal.ministryExpensesTotal,
+  });
 
   const valueFormatter = useCallback(
     (value: number, row: MpdGoalRow) =>

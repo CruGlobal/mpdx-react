@@ -2,7 +2,7 @@ import { ReactElement } from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { AccountListSupportRaisedQuery } from './MpdGoalTable.generated';
+import { AccountListSupportRaisedQuery } from './GoalLineItems.generated';
 import { useGoalLineItems } from './useGoalLineItems';
 
 const mockGoal = {
