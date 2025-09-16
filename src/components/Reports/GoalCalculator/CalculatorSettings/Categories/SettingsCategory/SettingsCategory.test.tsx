@@ -11,10 +11,12 @@ const router = {
     goalCalculationId: 'test-goal-calculation-id',
   },
 };
+const mutationSpy = jest.fn();
+
 const TestComponent = () => (
   <TestRouter router={router}>
-    <GoalCalculatorTestWrapper>
-          <SettingsCategory />
+    <GoalCalculatorTestWrapper onCall={mutationSpy}>
+      <SettingsCategory />
     </GoalCalculatorTestWrapper>
   </TestRouter>
 );
@@ -22,28 +24,44 @@ const TestComponent = () => (
 describe('SettingsCategory', () => {
   it('renders goal title input field', () => {
     const { getByRole } = render(<TestComponent />);
-
-    expect(getByRole('textbox', { name: 'Goal Title' })).toBeInTheDocument();
-  });
-
-  it('accepts valid input', () => {
-    const { getByRole } = render(<TestComponent />);
-
-    const input = getByRole('textbox', { name: 'Goal Title' });
-    userEvent.type(input, 'My Goal');
-    expect(input).toHaveValue('My Goal');
+    expect(getByRole('textbox', { name: 'Goal Name' })).toBeInTheDocument();
   });
 
   it('displays initial goal title from query after loading', async () => {
     const { getByRole } = render(<TestComponent />);
+    const input = getByRole('textbox', { name: 'Goal Name' });
+    await waitFor(() => expect(input).toHaveValue('Initial Goal Name'));
+  });
 
-    const input = getByRole('textbox', { name: 'Goal Title' });
+  it('calls mutation on blur with valid input', async () => {
+    const { getByRole } = render(<TestComponent />);
+    const input = getByRole('textbox', { name: 'Goal Name' });
 
-    await waitFor(
-      () => {
-        expect(input).toHaveValue('Initial Goal Name');
-      },
-      { timeout: 3000 },
+    await waitFor(() => expect(input).toHaveValue('Initial Goal Name'));
+
+    userEvent.clear(input);
+    userEvent.type(input, 'Valid Goal');
+    userEvent.tab();
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateGoalCalculation', {
+        input: {
+          accountListId: 'account-list-1',
+          attributes: {
+            id: 'test-goal-id',
+            name: 'Valid Goal',
+          },
+        },
+      }),
     );
+  });
+
+  it('handles onChange successfully', async () => {
+    const { getByRole } = render(<TestComponent />);
+    const input = getByRole('textbox', { name: 'Goal Name' });
+
+    await waitFor(() => expect(input).toHaveValue('Initial Goal Name'));
+    userEvent.type(input, ' Updated');
+    expect(input).toHaveValue('Initial Goal Name Updated');
   });
 });

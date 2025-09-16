@@ -145,7 +145,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({
         message={
           <Trans t={t}>
             Are you sure you want to delete{' '}
-            <strong>{goal.name ?? t('Untitled Goal')}</strong>? Deleting this
+            <strong>{goal.name ?? t('Unnamed Goal')}</strong>? Deleting this
             goal will remove it permanently.
           </Trans>
         }
@@ -159,8 +159,8 @@ export const GoalCard: React.FC<GoalCardProps> = ({
       <StyledCard>
         <StyledHeaderBox>
           <StyledTitleBox>
-            <Typography data-testid="goal-title" variant="h6">
-              {goal.name ?? t('Untitled Goal')}
+            <Typography data-testid="goal-name" variant="h6">
+              {goal.name ?? t('Unnamed Goal')}
             </Typography>
           </StyledTitleBox>
           {renderStar && (
