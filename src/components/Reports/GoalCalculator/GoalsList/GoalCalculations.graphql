@@ -4,46 +4,10 @@ fragment ListGoalCalculation on GoalCalculation {
   primary
   updatedAt
   householdFamily {
-    id
-    label
-    category
-    directInput
-    updatedAt
-    primaryBudgetCategories {
-      id
-      label
-      category
-      directInput
-      updatedAt
-      subBudgetCategories {
-        id
-        label
-        category
-        amount
-        updatedAt
-      }
-    }
+    ...BudgetFamily
   }
   ministryFamily {
-    id
-    label
-    category
-    directInput
-    updatedAt
-    primaryBudgetCategories {
-      id
-      label
-      category
-      directInput
-      updatedAt
-      subBudgetCategories {
-        id
-        label
-        category
-        amount
-        updatedAt
-      }
-    }
+    ...BudgetFamily
   }
 }
 
