@@ -10,7 +10,7 @@ import { GoalCard } from './GoalCard';
 
 const goal: ListGoalCalculationFragment = {
   id: 'goal-1',
-  createdAt: '2025-01-01T00:00:00.000Z',
+  updatedAt: '2025-01-01T00:00:00.000Z',
   primary: false,
 };
 const mutationSpy = jest.fn();
@@ -38,7 +38,7 @@ const TestComponent: React.FC<TestComponentProps> = ({ primary = false }) => (
 describe('GoalCard', () => {
   it('renders goal title, amount, and date', () => {
     const { getByTestId } = render(<TestComponent />);
-    expect(getByTestId('goal-title')).toBeInTheDocument();
+    expect(getByTestId('goal-name')).toBeInTheDocument();
     expect(getByTestId('goal-amount-value')).toBeInTheDocument();
     expect(getByTestId('date-value')).toBeInTheDocument();
   });

@@ -135,8 +135,10 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
       variables: {
         input: {
           accountListId,
-          id: category.id,
-          directInput: directInput,
+          attributes: {
+            id: category.id,
+            directInput: directInput,
+          },
         },
       },
       optimisticResponse: {

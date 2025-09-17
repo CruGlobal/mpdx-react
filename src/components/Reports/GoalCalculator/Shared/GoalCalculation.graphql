@@ -24,6 +24,7 @@ query GoalCalculation($accountListId: ID!, $id: ID!) {
   goalCalculation(accountListId: $accountListId, id: $id) {
     id
     primary
+    name
     updatedAt
     ministryFamily {
       ...BudgetFamily

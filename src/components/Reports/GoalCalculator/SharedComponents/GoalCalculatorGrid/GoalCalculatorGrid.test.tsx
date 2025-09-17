@@ -339,9 +339,7 @@ describe('GoalCalculatorGrid', () => {
 
     userEvent.click(infoButtons[0]);
     expect(
-      await findByText(
-        'For mobile phone and internet expenses, only include the portion not reimbursed as a ministry expense.',
-      ),
+      await findByText('Only the portion not reimbursed as ministry expense.'),
     ).toBeInTheDocument();
   });
 });
