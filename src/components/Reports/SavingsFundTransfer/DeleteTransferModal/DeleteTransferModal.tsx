@@ -7,22 +7,36 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
+import { useDeleteRecurringTransferMutation } from '../TransferMutations.generated';
+import { TransferHistory } from '../mockData';
 
 interface DeleteTransferModalProps {
   handleClose: () => void;
+  transfer: TransferHistory;
 }
 
 export const DeleteTransferModal: React.FC<DeleteTransferModalProps> = ({
   handleClose,
+  transfer,
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
   const [deleting, setDeleting] = useState(false);
 
-  //TODO: Complete handleDelete when delete mutation is built
+  const [deleteRecurringTransfer] = useDeleteRecurringTransferMutation({
+    refetchQueries: ['ReportsSavingsFundTransfer', 'AccountFunds'],
+    awaitRefetchQueries: true,
+  });
+
   const handleDelete = () => {
     setDeleting(true);
+
+    deleteRecurringTransfer({
+      variables: {
+        id: transfer.recurringId ?? '',
+      },
+    });
 
     enqueueSnackbar(t('Transfer stopped successfully'), { variant: 'success' });
     handleClose();

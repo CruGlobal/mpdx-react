@@ -11,6 +11,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat } from 'src/lib/intlFormat';
+import { StyledTableRow } from '../../styledComponents';
 import { FundTypeEnum, ScheduleEnum, TransferHistory } from '../mockData';
 
 interface PrintTableProps {
@@ -43,7 +44,7 @@ export const PrintTable: React.FC<PrintTableProps> = ({ transfers }) => {
           <TableBody>
             {transfers.length ? (
               transfers.map((transfer) => (
-                <TableRow
+                <StyledTableRow
                   key={`${transfer.transferFrom}-${transfer.transferTo}-${transfer.amount}-${transfer.transferDate}`}
                 >
                   <TableCell>
@@ -76,17 +77,21 @@ export const PrintTable: React.FC<PrintTableProps> = ({ transfers }) => {
                   </TableCell>
                   <TableCell>
                     {transfer.transferDate
-                      ? dateFormat(transfer.transferDate, locale)
+                      ? dateFormat(transfer.transferDate, locale, {
+                          timezone: 'UTC',
+                        })
                       : ''}
                   </TableCell>
                   <TableCell>
                     {transfer.schedule === ScheduleEnum.Monthly &&
                     transfer.endDate
-                      ? dateFormat(transfer.endDate, locale)
+                      ? dateFormat(transfer.endDate, locale, {
+                          timezone: 'UTC',
+                        })
                       : ''}
                   </TableCell>
                   <TableCell>{transfer.note}</TableCell>
-                </TableRow>
+                </StyledTableRow>
               ))
             ) : (
               <TableRow>

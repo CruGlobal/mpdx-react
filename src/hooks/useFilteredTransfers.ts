@@ -9,6 +9,10 @@ export function useFilteredTransfers(transfers: Transactions[]) {
     const recurring = new Map<string, number>();
 
     for (const transfer of transfers) {
+      if (transfer.amount <= 0) {
+        continue;
+      }
+
       if (!transfer.recurringTransfer?.id) {
         filtered.push(transfer);
         continue;

@@ -28,7 +28,7 @@ export const createTable = (
       : transfer.status;
     const endDate =
       transfer.schedule === ScheduleEnum.Monthly && transfer.endDate
-        ? dateFormat(transfer.endDate, locale)
+        ? dateFormat(transfer.endDate, locale, { timezone: 'UTC' })
         : '';
     return [
       fromFund,
@@ -40,7 +40,9 @@ export const createTable = (
         : '',
       schedule,
       status,
-      transfer.transferDate ? dateFormat(transfer.transferDate, locale) : '',
+      transfer.transferDate
+        ? dateFormat(transfer.transferDate, locale, { timezone: 'UTC' })
+        : '',
       endDate,
       transfer.note,
     ];
