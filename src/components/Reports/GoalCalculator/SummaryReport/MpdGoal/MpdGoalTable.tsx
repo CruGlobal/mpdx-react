@@ -42,13 +42,7 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({ goal }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const localeText = useDataGridLocaleText();
-  const calculations = useGoalLineItems({
-    netMonthlySalary: goal.netMonthlySalary,
-    taxesPercentage: goal.taxesPercentage,
-    rothContributionPercentage: goal.rothContributionPercentage,
-    traditionalContributionPercentage: goal.traditionalContributionPercentage,
-    ministryExpensesTotal: goal.ministryExpensesTotal,
-  });
+  const calculations = useGoalLineItems(goal);
 
   const valueFormatter = useCallback(
     (value: number, row: MpdGoalRow) =>

@@ -89,13 +89,7 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
   const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
-  const calculations = useGoalLineItems({
-    netMonthlySalary: goal.netMonthlySalary,
-    taxesPercentage: goal.taxesPercentage,
-    rothContributionPercentage: goal.rothContributionPercentage,
-    traditionalContributionPercentage: goal.traditionalContributionPercentage,
-    ministryExpensesTotal: goal.ministryExpensesTotal,
-  });
+  const calculations = useGoalLineItems(goal);
 
   /*
    * We don't want to display ministry location and Cru image if

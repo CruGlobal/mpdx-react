@@ -22,7 +22,7 @@ import {
   useDeleteGoalCalculationMutation,
   useUpdateGoalCalculationMutation,
 } from '../GoalsList/GoalCalculations.generated';
-import { useGoalCardCalculations } from './useGoalCardCalculations';
+import { useGoalTotal } from './useGoalTotal';
 
 const StyledCard = styled(Card)({
   minWidth: 350,
@@ -91,7 +91,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({
   const [deleteGoalCalculation] = useDeleteGoalCalculationMutation();
   const [deleting, setDeleting] = useState(false);
 
-  const { overallTotal } = useGoalCardCalculations(goal);
+  const overallTotal = useGoalTotal(goal);
 
   const handleStarClick = async () => {
     await updateGoalCalculation({

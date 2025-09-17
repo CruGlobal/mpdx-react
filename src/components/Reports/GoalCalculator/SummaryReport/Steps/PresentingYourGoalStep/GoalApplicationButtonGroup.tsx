@@ -19,13 +19,7 @@ export const GoalApplicationButtonGroup: React.FC<
   const { t } = useTranslation();
   const locale = useLocale();
   const { enqueueSnackbar } = useSnackbar();
-  const { overallTotal } = useGoalLineItems({
-    netMonthlySalary: goal.netMonthlySalary,
-    taxesPercentage: goal.taxesPercentage,
-    rothContributionPercentage: goal.rothContributionPercentage,
-    traditionalContributionPercentage: goal.traditionalContributionPercentage,
-    ministryExpensesTotal: goal.ministryExpensesTotal,
-  });
+  const { overallTotal } = useGoalLineItems(goal);
   const [updateAccountPreferences, { loading }] =
     useUpdateAccountPreferencesMutation();
   const accountListId = useAccountListId() || '';

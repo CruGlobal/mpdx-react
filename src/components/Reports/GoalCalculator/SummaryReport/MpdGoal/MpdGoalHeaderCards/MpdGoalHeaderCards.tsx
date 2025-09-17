@@ -36,13 +36,7 @@ export const MpdGoalHeaderCards: React.FC<MpdGoalHeaderCardsProps> = ({
   const { t } = useTranslation();
   const theme = useTheme();
   const locale = useLocale();
-  const { overallTotal, supportRaisedPercentage } = useGoalLineItems({
-    netMonthlySalary: goal.netMonthlySalary,
-    taxesPercentage: goal.taxesPercentage,
-    rothContributionPercentage: goal.rothContributionPercentage,
-    traditionalContributionPercentage: goal.traditionalContributionPercentage,
-    ministryExpensesTotal: goal.ministryExpensesTotal,
-  });
+  const { overallTotal, supportRaisedPercentage } = useGoalLineItems(goal);
 
   return (
     <Stack
