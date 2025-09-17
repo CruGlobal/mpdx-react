@@ -30,7 +30,7 @@ describe('getPrimaryCategoryTotal', () => {
   });
 });
 
-describe('getMinistryExpensesTotal', () => {
+describe('getFamilyTotal', () => {
   it('returns correct sum of all primary category amounts for ministry family with a primaryBudgetCategory directInput value set', () => {
     expect(getFamilyTotal({ ...mockFamily, directInput: null })).toBe(720);
   });
