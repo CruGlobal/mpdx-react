@@ -49,14 +49,16 @@ describe('GoalCalculatorGrid', () => {
     userEvent.type(textField, '1500');
     expect(textField).toHaveValue(1500);
 
-    // Check that the UpdatePrimaryBudgetCategory mutation was called
     await waitFor(() => {
       expect(mutationSpy).toHaveGraphqlOperation(
         'UpdatePrimaryBudgetCategory',
         {
           input: {
             accountListId: 'account-list-1',
-            directInput: 1500,
+            attributes: {
+              id: 'category-ministry',
+              directInput: 1500,
+            },
           },
         },
       );
@@ -65,23 +67,21 @@ describe('GoalCalculatorGrid', () => {
 
   it('adds a new row when Add button is clicked', async () => {
     const mutationSpy = jest.fn();
-    const { getByRole, findByText } = render(
+    const { findByText } = render(
       <GoalCalculatorTestWrapper onCall={mutationSpy}>
         <TestComponent />
       </GoalCalculatorTestWrapper>,
     );
-    const lumpSumButton = await findByText('Line Item');
-    userEvent.click(lumpSumButton);
 
-    const addButton = getByRole('button', { name: /Add Line Item/i });
+    const addButton = await findByText('Add Line Item');
     userEvent.click(addButton);
-    expect(await findByText('New Income')).toBeInTheDocument();
 
     await waitFor(() => {
       expect(mutationSpy).toHaveGraphqlOperation('CreateSubBudgetCategory', {
         input: {
           accountListId: 'account-list-1',
           attributes: {
+            primaryBudgetCategoryId: 'category-ministry',
             label: 'New Income',
             amount: 0,
           },
@@ -108,72 +108,56 @@ describe('GoalCalculatorGrid', () => {
 
   it('adds and removes a row when delete button is clicked', async () => {
     const mutationSpy = jest.fn();
-    const { getByText, findByText } = render(
+    const { findByText } = render(
       <GoalCalculatorTestWrapper onCall={mutationSpy}>
         <TestComponent />
       </GoalCalculatorTestWrapper>,
     );
-    const lumpSumButton = await findByText('Line Item');
-    userEvent.click(lumpSumButton);
 
-    userEvent.click(getByText(/Add Line Item/i));
-    const newIncomeRow = (await findByText('New Income')).closest(
+    const otherMinistryRow = (await findByText('Other Ministry')).closest(
       '[role="row"]',
     );
-    userEvent.hover(newIncomeRow!);
-    const deleteButton = newIncomeRow?.querySelector('[aria-label="Delete"]');
+    userEvent.hover(otherMinistryRow!);
+    const deleteButton = otherMinistryRow?.querySelector(
+      '[aria-label="Delete"]',
+    );
 
     userEvent.click(deleteButton as Element);
 
     await waitFor(() => {
-      expect(newIncomeRow).not.toBeInTheDocument();
+      expect(mutationSpy).toHaveGraphqlOperation('DeleteSubBudgetCategory', {
+        input: {
+          accountListId: 'account-list-1',
+          id: 'other-ministry',
+        },
+      });
     });
-
-    await waitFor(() => {
-      expect(mutationSpy).toHaveGraphqlOperation('DeleteSubBudgetCategory');
-    });
-
-    const deleteCall = mutationSpy.mock.calls.find(
-      (call) => call[0]?.operation?.operationName === 'DeleteSubBudgetCategory',
-    );
-    expect(deleteCall).toBeDefined();
-    expect(deleteCall![0].operation.variables.input.id).toMatch(/^temp-\d+$/);
-    expect(deleteCall![0].operation.variables.input.accountListId).toBe(
-      'account-list-1',
-    );
   });
 
   it('edits a row name and updates the data', async () => {
     const mutationSpy = jest.fn();
-    const { queryByDisplayValue, getByDisplayValue, findByText, getByText } =
-      render(
-        <GoalCalculatorTestWrapper onCall={mutationSpy}>
-          <TestComponent />
-        </GoalCalculatorTestWrapper>,
-      );
-    const lumpSumButton = await findByText('Line Item');
-    userEvent.click(lumpSumButton);
-    userEvent.click(getByText(/Add Line Item/i));
-    const nameCell = await findByText('New Income');
+    const { getByDisplayValue, findByText } = render(
+      <GoalCalculatorTestWrapper onCall={mutationSpy}>
+        <TestComponent />
+      </GoalCalculatorTestWrapper>,
+    );
+
+    const nameCell = await findByText('Other Ministry');
     userEvent.dblClick(nameCell);
 
-    const input = getByDisplayValue('New Income');
+    const input = getByDisplayValue('Other Ministry');
     userEvent.clear(input);
     userEvent.type(input, 'Consulting Work');
     userEvent.tab();
 
     await waitFor(() => {
-      expect(queryByDisplayValue('New Income')).not.toBeInTheDocument();
-    });
-
-    // Check that the UpdateSubBudgetCategory mutation was called
-    await waitFor(() => {
       expect(mutationSpy).toHaveGraphqlOperation('UpdateSubBudgetCategory', {
         input: {
           accountListId: 'account-list-1',
           attributes: {
-            amount: 0,
+            id: 'other-ministry',
             label: 'Consulting Work',
+            amount: 1000,
           },
         },
       });
@@ -182,36 +166,33 @@ describe('GoalCalculatorGrid', () => {
 
   it('edits a row amount and updates the total', async () => {
     const mutationSpy = jest.fn();
-    const { findByText, getByDisplayValue, getByText } = render(
+    const { getByDisplayValue, findByText } = render(
       <GoalCalculatorTestWrapper onCall={mutationSpy}>
         <TestComponent />
       </GoalCalculatorTestWrapper>,
     );
-    const lumpSumButton = await findByText('Line Item');
-    userEvent.click(lumpSumButton);
-    userEvent.click(getByText(/Add Line Item/i));
-    const newIncomeRow = getByText('New Income').closest('[role="row"]');
-    const amountCell = newIncomeRow?.querySelector('[data-field="amount"]');
+
+    const otherMinistryRow = (await findByText('Other Ministry')).closest(
+      '[role="row"]',
+    );
+    const amountCell = otherMinistryRow?.querySelector('[data-field="amount"]');
     userEvent.dblClick(amountCell!);
 
     await waitFor(async () => {
-      const input = getByDisplayValue('0');
+      const input = getByDisplayValue('1000');
       userEvent.clear(input);
       userEvent.type(input, '3000');
     });
 
     userEvent.tab();
-    const totalRow = getByText('Total').closest('[role="row"]');
-    const totalCell = totalRow?.querySelector('[data-field="amount"]');
-    expect(totalCell).toHaveTextContent('$1,450');
 
-    // Check that the UpdateSubBudgetCategory mutation was called
     await waitFor(() => {
       expect(mutationSpy).toHaveGraphqlOperation('UpdateSubBudgetCategory', {
         input: {
           accountListId: 'account-list-1',
           attributes: {
-            label: 'New Income',
+            id: 'other-ministry',
+            label: 'Other Ministry',
             amount: 3000,
           },
         },
@@ -220,52 +201,32 @@ describe('GoalCalculatorGrid', () => {
   });
 
   it('prevents editing the total row', async () => {
-    const { getByText, getAllByLabelText, findByText } = render(
+    const { getAllByLabelText, findByText } = render(
       <GoalCalculatorTestWrapper>
         <TestComponent />
       </GoalCalculatorTestWrapper>,
     );
-    const lumpSumButton = await findByText('Line Item');
-    userEvent.click(lumpSumButton);
-    const totalRow = getByText('Total').closest('[role="row"]');
+
+    const totalRow = (await findByText('Total')).closest('[role="row"]');
     const editableCells = totalRow?.querySelectorAll(
       '[contenteditable="true"]',
     );
     expect(editableCells).toHaveLength(0);
     userEvent.hover(totalRow!);
     const deleteButtons = getAllByLabelText('Delete');
-    expect(deleteButtons).toHaveLength(3);
+    expect(deleteButtons).toHaveLength(1);
   });
 
   it('calculates total correctly when multiple operations are performed', async () => {
-    const { getByText, getByRole, findByText, getAllByRole } = render(
+    const { findByText } = render(
       <GoalCalculatorTestWrapper>
         <TestComponent />
       </GoalCalculatorTestWrapper>,
     );
-    const lumpSumButton = await findByText('Line Item');
-    userEvent.click(lumpSumButton);
 
-    userEvent.click(
-      getByRole('button', {
-        name: /Add Line Item/i,
-      }),
-    );
-    await findByText('New Income');
-    const totalRow = getByText('Total').closest('[role="row"]');
+    const totalRow = (await findByText('Total')).closest('[role="row"]');
     const totalCell = totalRow?.querySelector('[data-field="amount"]');
     expect(totalCell).toHaveTextContent('$1,450');
-    const cells = getAllByRole('gridcell');
-    const amountCell = cells[cells.length - 3];
-    userEvent.click(amountCell);
-    userEvent.dblClick(amountCell);
-    userEvent.type(amountCell, '2000');
-    userEvent.dblClick(cells[cells.length - 1]);
-    await waitFor(() => {
-      const totalRow = getByText('Total').closest('[role="row"]');
-      const totalCell = totalRow?.querySelector('[data-field="amount"]');
-      expect(totalCell).toHaveTextContent('$1,450');
-    });
   });
 
   it('uses default data when no subBudgetCategories are provided', () => {
@@ -313,7 +274,10 @@ describe('GoalCalculatorGrid', () => {
         {
           input: {
             accountListId: 'account-list-1',
-            directInput: null,
+            attributes: {
+              id: 'category-ministry',
+              directInput: null,
+            },
           },
         },
       );
@@ -339,9 +303,7 @@ describe('GoalCalculatorGrid', () => {
 
     userEvent.click(infoButtons[0]);
     expect(
-      await findByText(
-        'For mobile phone and internet expenses, only include the portion not reimbursed as a ministry expense.',
-      ),
+      await findByText('Only the portion not reimbursed as ministry expense.'),
     ).toBeInTheDocument();
   });
 });

@@ -47,7 +47,7 @@ describe('ExpensesStep', () => {
     const { getAllByRole } = render(<TestComponent />);
 
     const gridSections = getAllByRole('region');
-    expect(gridSections).toHaveLength(2);
+    expect(gridSections).toHaveLength(3);
   });
 
   it('renders categories with different completion states', async () => {

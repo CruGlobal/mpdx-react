@@ -28,8 +28,21 @@ export const goalCalculationMock = {
           id: 'category-ministry',
           label: 'Ministry & Medical Mileage',
           category: PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage,
-          directInput: 0,
-          subBudgetCategories: [],
+          directInput: null,
+          subBudgetCategories: [
+            {
+              id: 'compass-room',
+              label: 'Compass Room',
+              amount: 450,
+              category: SubBudgetCategoryEnum.PersonalMisc,
+            },
+            {
+              id: 'other-ministry',
+              label: 'Other Ministry',
+              amount: 1000,
+              category: null,
+            },
+          ],
         },
         {
           id: 'category-transfers',
