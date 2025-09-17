@@ -1,7 +1,8 @@
 fragment ListGoalCalculation on GoalCalculation {
   id
-  createdAt
+  name
   primary
+  updatedAt
 }
 
 query GoalCalculations($accountListId: ID!) {

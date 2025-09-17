@@ -12,6 +12,7 @@ export const SettingsSectionList: React.FC = () => {
   const specialFamily = data?.goalCalculation.specialFamily;
 
   const sections = [
+    { title: t('Settings'), complete: false },
     { title: t('Information'), complete: false },
     ...(specialFamily ? getFamilySections(specialFamily) : []),
   ];
