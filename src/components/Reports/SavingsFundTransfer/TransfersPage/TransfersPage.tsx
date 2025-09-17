@@ -32,7 +32,6 @@ import { EmptyTable } from '../Table/EmptyTable';
 import { PrintTable } from '../Table/PrintTable';
 import { TransferHistoryTable } from '../Table/TransferHistoryTable';
 import { DynamicTransferModal } from '../TransferModal/DynamicTransferModal';
-import { TransferModalData } from '../TransferModal/TransferModal';
 import { UpdatedAtProvider } from '../UpdatedAtContext/UpdateAtContext';
 import {
   FundTypeEnum,
@@ -40,6 +39,7 @@ import {
   StatusEnum,
   Transactions,
   TransferHistory,
+  TransferModalData,
 } from '../mockData';
 import { PrintOnly, ScreenOnly } from '../styledComponents/DisplayStyling';
 
@@ -79,7 +79,10 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
   });
 
   const funds = useMemo(
-    () => fundsData?.accountFunds?.funds ?? [],
+    () =>
+      (fundsData?.accountFunds?.funds ?? []).toSorted((a, b) =>
+        a.id.localeCompare(b.id),
+      ),
     [fundsData],
   );
 
@@ -93,10 +96,14 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
             ? {
                 ...tx.recurringTransfer,
                 recurringStart: tx.recurringTransfer.recurringStart
-                  ? DateTime.fromISO(tx.recurringTransfer.recurringStart)
+                  ? DateTime.fromISO(tx.recurringTransfer.recurringStart, {
+                      setZone: true,
+                    }).toUTC()
                   : null,
                 recurringEnd: tx.recurringTransfer.recurringEnd
-                  ? DateTime.fromISO(tx.recurringTransfer.recurringEnd)
+                  ? DateTime.fromISO(tx.recurringTransfer.recurringEnd, {
+                      setZone: true,
+                    }).toUTC()
                   : null,
               }
             : null,
@@ -107,6 +114,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
 
   const filteredTransactions = useFilteredTransfers(transactions);
 
+  // Ask about description --> always null in test data
   const transferHistory: TransferHistory[] = filteredTransactions.map((tx) => {
     const isRecurring = !!tx.recurringTransfer?.id;
     const status = getStatusLabel(tx);
@@ -124,6 +132,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
       endDate: tx.recurringTransfer?.recurringEnd || null,
       note: tx.subCategory.name || '',
       actions: status !== StatusEnum.Complete ? 'edit-delete' : '',
+      recurringId: tx.recurringTransfer?.id || '',
     };
   });
 
@@ -153,61 +162,61 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
           },
         }}
       />
-      <Box>
-        <ScreenOnly>
-          <MultiPageHeader
-            isNavListOpen={isNavListOpen}
-            onNavListToggle={onNavListToggle}
-            headerType={HeaderTypeEnum.Report}
-            title={title}
-          />
-        </ScreenOnly>
-        <Box sx={{ mt: 2 }}>
-          <Container>
-            <StyledHeaderBox>
-              <Typography variant="h4">{t('Fund Transfer')}</Typography>
-              <ScreenOnly
+      <UpdatedAtProvider storageKey="fundsUpdatedAt">
+        <Box>
+          <ScreenOnly>
+            <MultiPageHeader
+              isNavListOpen={isNavListOpen}
+              onNavListToggle={onNavListToggle}
+              headerType={HeaderTypeEnum.Report}
+              title={title}
+            />
+          </ScreenOnly>
+          <Box sx={{ mt: 2 }}>
+            <Container>
+              <StyledHeaderBox>
+                <Typography variant="h4">{t('Fund Transfer')}</Typography>
+                <ScreenOnly
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'flex-end',
+                    gap: 1,
+                    mt: 1,
+                  }}
+                >
+                  <StyledPrintButton
+                    startIcon={
+                      <SvgIcon fontSize="small">
+                        <PrintIcon titleAccess={t('Print')} />
+                      </SvgIcon>
+                    }
+                    onClick={handlePrint}
+                  >
+                    {t('Print')}
+                  </StyledPrintButton>
+                </ScreenOnly>
+              </StyledHeaderBox>
+              <Box
                 sx={{
                   display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'flex-end',
-                  gap: 1,
-                  mt: 1,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 3,
+                  mb: 2,
                 }}
               >
-                <StyledPrintButton
-                  startIcon={
-                    <SvgIcon fontSize="small">
-                      <PrintIcon titleAccess={t('Print')} />
-                    </SvgIcon>
-                  }
-                  onClick={handlePrint}
-                >
-                  {t('Print')}
-                </StyledPrintButton>
-              </ScreenOnly>
-            </StyledHeaderBox>
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 3,
-                mb: 2,
-              }}
-            >
-              <Typography>{staffAccountData?.staffAccount?.name}</Typography>
-              <Typography>{staffAccountData?.staffAccount?.id}</Typography>
-            </Box>
-            <Box
-              display="flex"
-              flexWrap="wrap"
-              gap={2}
-              sx={{
-                flexDirection: { xs: 'column', sm: 'row' },
-              }}
-            >
-              <UpdatedAtProvider>
+                <Typography>{staffAccountData?.staffAccount?.name}</Typography>
+                <Typography>{staffAccountData?.staffAccount?.id}</Typography>
+              </Box>
+              <Box
+                display="flex"
+                flexWrap="wrap"
+                gap={2}
+                sx={{
+                  flexDirection: { xs: 'column', sm: 'row' },
+                }}
+              >
                 {funds.map((fund) => (
                   <BalanceCard
                     fund={fund}
@@ -216,27 +225,25 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                     loading={fundsLoading}
                   />
                 ))}
-              </UpdatedAtProvider>
-            </Box>
-            <ScreenOnly sx={{ mt: 2, mb: 3 }}>
-              <TransferHistoryTable
-                history={transferHistory}
-                handleOpenTransferModal={handleOpenTransferModal}
-                emptyPlaceholder={
-                  <EmptyTable
-                    title={t('Transfer History not available')}
-                    subtitle={t('No data found across any accounts.')}
-                  />
-                }
-                loading={reportLoading}
-              />
-            </ScreenOnly>
-            <PrintOnly>
-              <PrintTable transfers={transferHistory} />
-            </PrintOnly>
-          </Container>
-        </Box>
-        <UpdatedAtProvider>
+              </Box>
+              <ScreenOnly sx={{ mt: 2, mb: 3 }}>
+                <TransferHistoryTable
+                  history={transferHistory}
+                  handleOpenTransferModal={handleOpenTransferModal}
+                  emptyPlaceholder={
+                    <EmptyTable
+                      title={t('Transfer History not available')}
+                      subtitle={t('No data found across any accounts.')}
+                    />
+                  }
+                  loading={reportLoading}
+                />
+              </ScreenOnly>
+              <PrintOnly>
+                <PrintTable transfers={transferHistory} />
+              </PrintOnly>
+            </Container>
+          </Box>
           {modalData && (
             <DynamicTransferModal
               handleClose={() => setModalData(null)}
@@ -244,8 +251,8 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
               funds={funds}
             />
           )}
-        </UpdatedAtProvider>
-      </Box>
+        </Box>
+      </UpdatedAtProvider>
     </>
   );
 };

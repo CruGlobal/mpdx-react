@@ -212,12 +212,12 @@ describe('BalanceCard', () => {
     });
   });
 
-  it('should disable transfer from button when current balance is zero', async () => {
+  it('should disable transfer from button when current balance goes beyond deficit limit', async () => {
     const { findByRole } = render(
       <Components
         fund={{
           ...defaultFund,
-          balance: 0,
+          balance: -100,
         }}
       />,
     );

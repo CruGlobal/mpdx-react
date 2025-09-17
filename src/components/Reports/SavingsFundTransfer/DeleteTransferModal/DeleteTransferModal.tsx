@@ -24,17 +24,17 @@ export const DeleteTransferModal: React.FC<DeleteTransferModalProps> = ({
 
   const [deleting, setDeleting] = useState(false);
 
-  const [deleteRecurringTransfer] = useDeleteRecurringTransferMutation();
+  const [deleteRecurringTransfer] = useDeleteRecurringTransferMutation({
+    refetchQueries: ['ReportsSavingsFundTransfer', 'AccountFunds'],
+    awaitRefetchQueries: true,
+  });
 
   const handleDelete = () => {
     setDeleting(true);
 
     deleteRecurringTransfer({
       variables: {
-        id: transfer.id ?? '',
-      },
-      update: (cache) => {
-        cache.evict({ id: cache.identify({ id: transfer.id }) });
+        id: transfer.recurringId ?? '',
       },
     });
 
