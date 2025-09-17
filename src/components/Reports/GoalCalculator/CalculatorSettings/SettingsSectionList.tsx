@@ -9,6 +9,7 @@ export const SettingsSectionList: React.FC = () => {
   const {
     goalCalculationResult: { data },
   } = useGoalCalculator();
+
   const specialFamily = data?.goalCalculation.specialFamily;
 
   const sections = [
