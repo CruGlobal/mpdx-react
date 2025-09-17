@@ -199,8 +199,6 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   };
 
   const addExpense = () => {
-    const tempId = `temp-${Date.now()}`;
-
     createSubBudgetCategory({
       variables: {
         input: {
@@ -209,18 +207,6 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
             primaryBudgetCategoryId: category.id,
             label: t('New Income'),
             amount: 0,
-          },
-        },
-      },
-      optimisticResponse: {
-        createSubBudgetCategory: {
-          __typename: 'SubBudgetCategoryCreateMutationPayload',
-          subBudgetCategory: {
-            __typename: 'SubBudgetCategory',
-            id: tempId,
-            label: t('New Income'),
-            amount: 0,
-            category: null,
           },
         },
       },
