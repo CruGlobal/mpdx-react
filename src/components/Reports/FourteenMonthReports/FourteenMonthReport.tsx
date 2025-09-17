@@ -42,6 +42,7 @@ export interface MonthTotal {
 export const FourteenMonthReport: React.FC<Props> = ({
   accountListId,
   currencyType,
+  designationAccounts,
   isNavListOpen,
   title,
   onNavListToggle,
@@ -61,6 +62,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
   const { fourteenMonthReport, loading, error } = useFourteenMonthReport(
     accountListId,
     currencyType,
+    designationAccounts,
   );
 
   // Generate a table for each currency group in the report
