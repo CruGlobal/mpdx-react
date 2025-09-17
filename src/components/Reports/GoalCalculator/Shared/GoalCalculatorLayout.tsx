@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import React from 'react';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {
+  Box,
   Divider,
   IconButton,
   Link,
@@ -103,9 +104,16 @@ export const GoalCalculatorLayout: React.FC<GoalCalculatorLayoutProps> = ({
   return (
     <PrintableStack direction="row">
       <Stack direction="column" width={iconPanelWidth}>
-        <IconButton>
+        <Box
+          sx={{
+            p: 1,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
           <CircularProgressWithLabel progress={percentComplete} />
-        </IconButton>
+        </Box>
         {steps.map((step) => (
           <IconButton
             key={step.step}

@@ -79,7 +79,10 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   });
 
   const steps = useSteps();
-  const percentComplete = calculatePercentage(goalCalculationResult);
+  const percentComplete = useMemo(
+    () => calculatePercentage(goalCalculationResult.data?.goalCalculation),
+    [goalCalculationResult.data],
+  );
   const [stepIndex, setStepIndex] = useState(0);
   const [selectedReport, setSelectedReport] =
     useState<GoalCalculatorReportEnum>(GoalCalculatorReportEnum.MpdGoal);
