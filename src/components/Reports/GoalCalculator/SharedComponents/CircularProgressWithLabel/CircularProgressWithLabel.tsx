@@ -1,5 +1,7 @@
 import { Box, CircularProgress } from '@mui/material';
 import Typography from '@mui/material/Typography';
+import { useLocale } from 'src/hooks/useLocale';
+import { percentageFormat } from 'src/lib/intlFormat';
 
 interface CircularProgressWithLabelProps {
   progress: number;
@@ -8,6 +10,7 @@ interface CircularProgressWithLabelProps {
 export const CircularProgressWithLabel: React.FC<
   CircularProgressWithLabelProps
 > = ({ progress }) => {
+  const locale = useLocale();
   return (
     <Box
       sx={{
@@ -31,7 +34,9 @@ export const CircularProgressWithLabel: React.FC<
           variant="caption"
           component="div"
           sx={{ color: 'text.secondary', fontSize: 10 }}
-        >{`${Math.round(progress)}%`}</Typography>
+        >
+          {percentageFormat(progress / 100, locale)}
+        </Typography>
       </Box>
     </Box>
   );
