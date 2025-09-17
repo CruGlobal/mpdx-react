@@ -43,8 +43,6 @@ export type GoalCalculatorType = {
   isMutating: boolean;
   /** Call with the mutation promise to track the start and end of mutations */
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
-
-  /** Calculate overall completion percentage of the goal calculator */
   percentComplete: number;
 };
 
@@ -151,6 +149,9 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       selectedReport,
       setSelectedReport,
       goalCalculationResult,
+      isMutating,
+      trackMutation,
+      percentComplete,
     }),
     [
       steps,
@@ -166,6 +167,9 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       selectedReport,
       setSelectedReport,
       goalCalculationResult,
+      isMutating,
+      trackMutation,
+      percentComplete,
     ],
   );
 
