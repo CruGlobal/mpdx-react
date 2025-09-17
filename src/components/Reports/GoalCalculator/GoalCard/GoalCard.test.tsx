@@ -26,6 +26,15 @@ const goal: ListGoalCalculationFragment = {
     updatedAt: '2025-01-01T00:00:00.000Z',
     primaryBudgetCategories: [],
   },
+  householdFamily: {
+    __typename: 'BudgetFamily',
+    id: 'budget-family-2',
+    label: 'Household Budget Family',
+    category: BudgetFamilyCategoryEnum.Household,
+    directInput: 0,
+    updatedAt: '2025-01-01T00:00:00.000Z',
+    primaryBudgetCategories: [],
+  },
 };
 const mutationSpy = jest.fn();
 
