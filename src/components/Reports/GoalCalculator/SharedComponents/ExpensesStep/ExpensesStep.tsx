@@ -1,8 +1,6 @@
 import React from 'react';
-import { getPrimaryCategoryRightPanel } from '../../RightPanels/rightPanels';
 import { BudgetFamilyFragment } from '../../Shared/GoalCalculation.generated';
 import { GoalCalculatorLayout } from '../../Shared/GoalCalculatorLayout';
-import { GoalCalculatorSection } from '../../Shared/GoalCalculatorSection';
 import { getFamilySections } from '../../Shared/familySections';
 import { GoalCalculatorGrid } from '../GoalCalculatorGrid/GoalCalculatorGrid';
 import { SectionList } from '../SectionList';
@@ -25,15 +23,7 @@ export const ExpensesStep: React.FC<ExpensesStepProps> = ({
       <SectionPage>
         {instructions}
         {family?.primaryBudgetCategories.map((category) => (
-          <GoalCalculatorSection
-            key={category.id}
-            title={category.label}
-            rightPanelContent={
-              getPrimaryCategoryRightPanel(category.category) ?? undefined
-            }
-          >
-            <GoalCalculatorGrid categoryName={category.label} />
-          </GoalCalculatorSection>
+          <GoalCalculatorGrid key={category.id} category={category} />
         ))}
       </SectionPage>
     }
