@@ -248,7 +248,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
       if (isEdit && !isOneTime) {
         await updateRecurringTransfer({
           variables: {
-            id: data.transfer.id ?? '',
+            id: data.transfer.recurringId ?? '',
             amount: amount,
             recurringStart: convertedTransferDate,
             recurringEnd: convertedEndDate,

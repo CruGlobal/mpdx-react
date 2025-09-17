@@ -552,6 +552,7 @@ describe('TransferModal', () => {
         transferDate: DateTime.fromISO('2024-11-01'),
         endDate: DateTime.fromISO('2025-11-01'),
         note: 'Test note',
+        recurringId: 'recurring-id',
       };
 
       const { getByRole, getByLabelText } = render(
@@ -585,7 +586,7 @@ describe('TransferModal', () => {
           expect.objectContaining({
             operationName: 'UpdateRecurringTransfer',
             variables: {
-              id: 'transfer-id',
+              id: 'recurring-id',
               amount: 600,
               recurringStart: '2024-12-01T00:00:00.000+00:00',
               recurringEnd: '2025-12-01T00:00:00.000+00:00',
