@@ -59,6 +59,26 @@ const mockTransactions: Transactions[] = [
       active: true,
     },
   },
+  {
+    id: '64675',
+    amount: -10,
+    description: null,
+    transactedAt: DateTime.fromISO('2023-11-30'),
+    subCategory: {
+      id: '2',
+      name: 'withdrawal',
+    },
+    transfer: {
+      sourceFundTypeName: 'Primary',
+      destinationFundTypeName: 'Savings',
+    },
+    recurringTransfer: {
+      id: null,
+      recurringStart: null,
+      recurringEnd: null,
+      active: null,
+    },
+  },
 ];
 
 describe('useFilteredTransfers', () => {
@@ -83,5 +103,11 @@ describe('useFilteredTransfers', () => {
     );
     expect(oneTimeTransfer).toBeDefined();
     expect(oneTimeTransfer?.amount).toBe(2500);
+  });
+
+  it('should exclude transfers with zero or negative amounts', () => {
+    const { result } = renderHook(() => useFilteredTransfers(mockTransactions));
+    const negativeAmountTransfer = result.current.find((tx) => tx.amount < 0);
+    expect(negativeAmountTransfer).toBeUndefined();
   });
 });

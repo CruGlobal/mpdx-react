@@ -2,7 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
@@ -10,15 +10,19 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { StaffSavingFundProvider } from '../../StaffSavingFund/StaffSavingFundContext';
-import { TransferTypeEnum } from '../Helper/TransferHistoryEnum';
 import {
   CreateRecurringTransferMutation,
   CreateTransferMutation,
   UpdateRecurringTransferMutation,
 } from '../TransferMutations.generated';
 import { UpdatedAtProvider } from '../UpdatedAtContext/UpdateAtContext';
-import { ScheduleEnum, fundsMock } from '../mockData';
-import { TransferModal, TransferModalData } from './TransferModal';
+import {
+  ScheduleEnum,
+  TransferModalData,
+  TransferTypeEnum,
+  fundsMock,
+} from '../mockData';
+import { TransferModal } from './TransferModal';
 
 const accountListId = 'abc';
 const router = {
@@ -289,7 +293,6 @@ describe('TransferModal', () => {
       );
 
       expect(getByDisplayValue('500')).toBeInTheDocument();
-      expect(getByDisplayValue('Test note')).toBeInTheDocument();
       expect(getByRole('radio', { name: /monthly/i })).toBeChecked();
       expect(getByLabelText(/end date/i)).toHaveValue('');
     });
@@ -373,6 +376,63 @@ describe('TransferModal', () => {
       );
     });
 
+    it('should show error message when monthly schedule is selected', async () => {
+      const { getByRole, getByLabelText, findByText } = render(<Components />);
+
+      userEvent.click(getByRole('radio', { name: /monthly/i }));
+      expect(getByRole('radio', { name: /monthly/i })).toBeChecked();
+
+      expect(getByLabelText(/transfer date/i)).toBeInTheDocument();
+
+      expect(
+        await findByText(
+          'Recurring transfers must start at least one day in the future',
+        ),
+      ).toBeInTheDocument();
+    });
+
+    it('should show information box when monthly is selected', async () => {
+      const { getByRole, findByRole } = render(<Components />);
+
+      const monthly = getByRole('radio', { name: /monthly/i });
+
+      userEvent.click(monthly);
+      expect(monthly).toBeChecked();
+
+      const alert = await findByRole('alert');
+      expect(alert).toBeInTheDocument();
+      expect(
+        within(alert).getByText(
+          'Recurring transfers will appear after the first scheduled payment is processed tomorrow.',
+        ),
+      ).toBeInTheDocument();
+    });
+
+    it('should show error message when amount will exceed available balance', async () => {
+      const { getByRole, findByText } = render(<Components />);
+
+      const fromAccount = getByRole('combobox', { name: /from account/i });
+      const toAccount = getByRole('combobox', { name: /to account/i });
+
+      userEvent.click(fromAccount);
+      userEvent.click(getByRole('option', { name: /staff account/i }));
+
+      userEvent.click(toAccount);
+      userEvent.click(getByRole('option', { name: /staff savings/i }));
+
+      const amountField = getByRole('spinbutton', { name: /amount/i });
+
+      userEvent.clear(amountField);
+      userEvent.type(amountField, '20000');
+      userEvent.tab();
+
+      expect(
+        await findByText(
+          'This amount will cause your account balance to exceed the deficit limit',
+        ),
+      ).toBeInTheDocument();
+    });
+
     it('should show proper currency symbol in amount field', () => {
       const { getByText } = render(<Components />);
 
@@ -422,8 +482,8 @@ describe('TransferModal', () => {
             operationName: 'CreateTransfer',
             variables: {
               amount: 100,
-              sourceFundTypeName: '1',
-              destinationFundTypeName: '2',
+              sourceFundTypeName: 'Staff Account',
+              destinationFundTypeName: 'Staff Savings',
               description: '',
             },
           }),
@@ -472,8 +532,8 @@ describe('TransferModal', () => {
             operationName: 'CreateRecurringTransfer',
             variables: {
               amount: 100,
-              sourceFundTypeName: '1',
-              destinationFundTypeName: '2',
+              sourceFundTypeName: 'Staff Account',
+              destinationFundTypeName: 'Staff Savings',
               recurringStart: '2024-12-01T00:00:00.000+00:00',
               recurringEnd: '2025-12-01T00:00:00.000+00:00',
             },
@@ -492,6 +552,7 @@ describe('TransferModal', () => {
         transferDate: DateTime.fromISO('2024-11-01'),
         endDate: DateTime.fromISO('2025-11-01'),
         note: 'Test note',
+        recurringId: 'recurring-id',
       };
 
       const { getByRole, getByLabelText } = render(
@@ -525,7 +586,7 @@ describe('TransferModal', () => {
           expect.objectContaining({
             operationName: 'UpdateRecurringTransfer',
             variables: {
-              id: 'transfer-id',
+              id: 'recurring-id',
               amount: 600,
               recurringStart: '2024-12-01T00:00:00.000+00:00',
               recurringEnd: '2025-12-01T00:00:00.000+00:00',
@@ -542,6 +603,58 @@ describe('TransferModal', () => {
           },
         );
       });
+    });
+  });
+
+  describe('Edit mode', () => {
+    const dataWithValues: TransferModalData['transfer'] = {
+      id: '2',
+      transferFrom: 'Primary',
+      transferTo: 'Savings',
+      amount: 500,
+      schedule: ScheduleEnum.Monthly,
+      transferDate: DateTime.fromISO('2024-11-01'),
+      endDate: DateTime.fromISO('2025-11-01'),
+      note: 'Test note',
+    };
+
+    it('should show error message when transfer date is before original start date', async () => {
+      const { getByLabelText, findByText } = render(
+        <Components transfer={dataWithValues} type={TransferTypeEnum.Edit} />,
+      );
+
+      const transferDate = getByLabelText(/transfer date/i);
+
+      userEvent.clear(transferDate);
+      userEvent.type(transferDate, '10/01/2024');
+      expect(transferDate).toHaveValue('10/01/2024');
+      userEvent.tab();
+
+      expect(
+        await findByText('Transfer date cannot be earlier than Nov 01, 2024'),
+      ).toBeInTheDocument();
+    });
+
+    it('should disable specific fields', () => {
+      const { getByText, getByRole } = render(
+        <Components transfer={dataWithValues} type={TransferTypeEnum.Edit} />,
+      );
+
+      expect(getByText('Edit Fund Transfer')).toBeInTheDocument();
+
+      const fromAccountInput = getByRole('combobox', {
+        name: /from account/i,
+      }).parentElement?.querySelector('input[name="transferFrom"]');
+      const toAccountInput = getByRole('combobox', {
+        name: /to account/i,
+      }).parentElement?.querySelector('input[name="transferTo"]');
+
+      expect(fromAccountInput).toHaveValue('Primary');
+      expect(fromAccountInput).toBeDisabled();
+      expect(toAccountInput).toHaveValue('Savings');
+      expect(toAccountInput).toBeDisabled();
+
+      expect(getByRole('radio', { name: /monthly/i })).toBeDisabled();
     });
   });
 });

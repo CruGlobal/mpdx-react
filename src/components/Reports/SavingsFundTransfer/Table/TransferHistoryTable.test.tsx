@@ -46,7 +46,7 @@ describe('TransferHistoryTable', () => {
     const { getByRole, findByRole } = render(<TestComponent />);
 
     const iconRow = getByRole('row', {
-      name: 'Savings Account Arrow Primary Account $2,500.00 One Time pending Sep 26, 2023 Reimbursements Edit Stop ongoing Transfer',
+      name: 'Savings Account Arrow Primary Account $2,500.00 One Time pending Sep 26, 2023 Reimbursements Edit Stop Transfer',
     });
     const cells = within(iconRow).getAllByRole('gridcell');
 
@@ -103,7 +103,7 @@ describe('TransferHistoryTable', () => {
       within(actionCell).getByRole('img', { name: 'Edit' }),
     ).toBeInTheDocument();
     expect(
-      within(actionCell).getByRole('img', { name: 'Stop ongoing Transfer' }),
+      within(actionCell).getByRole('img', { name: 'Stop Transfer' }),
     ).toBeInTheDocument();
   });
 

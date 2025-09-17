@@ -129,6 +129,7 @@ export const monthYearFormat = (
 
 interface DateFormatOptions {
   fullMonth?: boolean;
+  timezone?: string;
 }
 
 export const dateFormat = (
@@ -136,7 +137,7 @@ export const dateFormat = (
   locale: string,
   options?: DateFormatOptions,
 ): string => {
-  const { fullMonth } = options ?? {};
+  const { fullMonth, timezone } = options ?? {};
   if (date === null) {
     return '';
   }
@@ -144,6 +145,7 @@ export const dateFormat = (
     day: 'numeric',
     month: fullMonth ? 'long' : 'short',
     year: 'numeric',
+    timeZone: timezone,
   }).format(date.toJSDate());
 };
 

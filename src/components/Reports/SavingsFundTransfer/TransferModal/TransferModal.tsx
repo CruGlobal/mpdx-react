@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import {
+  Alert,
   Box,
   DialogActions,
   DialogContent,
@@ -29,10 +30,6 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
 import i18n from 'src/lib/i18n';
-import {
-  TransferDirectionEnum,
-  TransferTypeEnum,
-} from '../Helper/TransferHistoryEnum';
 import { FundFieldsFragment } from '../ReportsSavingsFund.generated';
 import {
   useCreateRecurringTransferMutation,
@@ -40,13 +37,8 @@ import {
   useUpdateRecurringTransferMutation,
 } from '../TransferMutations.generated';
 import { useUpdatedAtContext } from '../UpdatedAtContext/UpdateAtContext';
-import { ScheduleEnum, TransferHistory } from '../mockData';
+import { ScheduleEnum, TransferModalData, TransferTypeEnum } from '../mockData';
 import { TransferModalSelect } from './TransferModalSelect/TransferModalSelect';
-
-export interface TransferModalData {
-  type?: TransferTypeEnum;
-  transfer: TransferHistory;
-}
 
 interface TransferFormValues {
   transferFrom: string;
@@ -62,34 +54,96 @@ const getToday = (): DateTime => {
   return DateTime.local().startOf('day');
 };
 
-const transferSchema = yup.object({
-  transferFrom: yup.string().required(i18n.t('From account is required')),
-  transferTo: yup.string().required(i18n.t('To account is required')),
-  schedule: yup
-    .mixed<ScheduleEnum>()
-    .oneOf(Object.values(ScheduleEnum))
-    .required(i18n.t('Schedule is required')),
-  transferDate: yup.date().required(i18n.t('Transfer date is required')),
-  endDate: yup
-    .date()
-    .nullable()
-    .when('schedule', {
-      is: (schedule: ScheduleEnum) => schedule !== ScheduleEnum.OneTime,
-      then: (schema) =>
-        schema.min(
-          yup.ref('transferDate'),
-          i18n.t('End date must be after transfer date'),
-        ),
-      otherwise: (schema) => schema.notRequired(),
-    }),
-  amount: yup
-    .number()
-    .required(i18n.t('Amount is required'))
-    .positive(i18n.t('Amount must be positive'))
-    .min(0.01, i18n.t('Amount must be at least $0.01')),
-  note: yup.string().nullable(),
-});
+const getTomorrow = (): DateTime => {
+  return getToday().plus({ days: 1 });
+};
 
+const transferSchema = (funds: FundFieldsFragment[]) =>
+  yup.object({
+    transferFrom: yup.string().required(i18n.t('From account is required')),
+    transferTo: yup.string().required(i18n.t('To account is required')),
+    schedule: yup
+      .mixed<ScheduleEnum>()
+      .oneOf(Object.values(ScheduleEnum))
+      .required(i18n.t('Schedule is required')),
+    transferDate: yup
+      .date()
+      .required(i18n.t('Transfer date is required'))
+      .test('start-date', function (value) {
+        if (!value) {
+          return false;
+        }
+        const selected = DateTime.fromJSDate(value).startOf('day');
+        const { schedule, originalStart, isEditing } = this.parent as {
+          schedule: ScheduleEnum;
+          originalStart?: DateTime<boolean> | null;
+          isEditing?: boolean;
+        };
+        if (!value) {
+          return false;
+        }
+        if (isEditing) {
+          const baseline = originalStart
+            ? originalStart.startOf('day')
+            : getToday();
+          if (selected >= baseline) {
+            return true;
+          }
+
+          return this.createError({
+            message: i18n.t('Transfer date cannot be earlier than {{date}}', {
+              date: baseline.toFormat('LLL dd, yyyy'),
+            }),
+          });
+        }
+
+        const minimum =
+          schedule === ScheduleEnum.OneTime ? getToday() : getTomorrow();
+        if (selected >= minimum) {
+          return true;
+        }
+
+        return this.createError({
+          message: i18n.t(
+            'Recurring transfers must start at least one day in the future',
+          ),
+        });
+      }),
+    endDate: yup
+      .date()
+      .nullable()
+      .when('schedule', {
+        is: (schedule: ScheduleEnum) => schedule !== ScheduleEnum.OneTime,
+        then: (schema) =>
+          schema.min(
+            yup.ref('transferDate'),
+            i18n.t('End date must be after transfer date'),
+          ),
+        otherwise: (schema) => schema.notRequired(),
+      }),
+    amount: yup
+      .number()
+      .required(i18n.t('Amount is required'))
+      .min(0.01, i18n.t('Amount must be at least $0.01'))
+      .test(
+        'deficit-limit',
+        i18n.t(
+          'This amount will cause your account balance to exceed the deficit limit',
+        ),
+        function (value) {
+          const { transferFrom } = this.parent;
+          if (!value || !transferFrom) {
+            return true;
+          }
+          const fund = funds.find((f) => f.fundType === transferFrom);
+          if (!fund) {
+            return true;
+          }
+          return fund.balance - value >= -fund.deficitLimit;
+        },
+      ),
+    note: yup.string().nullable(),
+  });
 interface TransferModalProps {
   data: TransferModalData;
   funds: FundFieldsFragment[];
@@ -105,13 +159,35 @@ export const TransferModal: React.FC<TransferModalProps> = ({
   const { enqueueSnackbar } = useSnackbar();
   const [submitting, setSubmitting] = useState(false);
 
-  const [createRecurringTransfer] = useCreateRecurringTransferMutation();
-  const [updateRecurringTransfer] = useUpdateRecurringTransferMutation();
-  const [createTransferMutation] = useCreateTransferMutation();
+  const [createRecurringTransfer] = useCreateRecurringTransferMutation({
+    refetchQueries: ['ReportsSavingsFundTransfer', 'AccountFunds'],
+    awaitRefetchQueries: true,
+    onCompleted: () => {
+      setUpdatedAt();
+    },
+  });
+  const [createTransferMutation] = useCreateTransferMutation({
+    refetchQueries: ['ReportsSavingsFundTransfer', 'AccountFunds'],
+    awaitRefetchQueries: true,
+    onCompleted: () => {
+      setUpdatedAt();
+    },
+  });
+  const [updateRecurringTransfer] = useUpdateRecurringTransferMutation({
+    refetchQueries: ['ReportsSavingsFundTransfer', 'AccountFunds'],
+    awaitRefetchQueries: true,
+    onCompleted: () => {
+      setUpdatedAt();
+    },
+  });
+
+  const validationSchema = useMemo(() => transferSchema(funds), [funds]);
 
   const { setUpdatedAt } = useUpdatedAtContext();
 
   const type = data.type || TransferTypeEnum.New;
+  const isNew = type === TransferTypeEnum.New;
+  const isEdit = type === TransferTypeEnum.Edit;
 
   const title =
     type === TransferTypeEnum.New
@@ -132,7 +208,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
     } = _values;
 
     const convertedTransferDate = transferDate.toISO() ?? '';
-    const convertedEndDate = endDate?.toISO() ?? '';
+    const convertedEndDate = endDate?.toISO() ?? null;
 
     const successMessage =
       type === TransferTypeEnum.New
@@ -143,8 +219,6 @@ export const TransferModal: React.FC<TransferModalProps> = ({
         ? t('Failed to create transfer')
         : t('Failed to update transfer');
 
-    const isNew = type === TransferTypeEnum.New;
-    const isEdit = type === TransferTypeEnum.Edit;
     const isOneTime = schedule === ScheduleEnum.OneTime;
 
     try {
@@ -167,7 +241,6 @@ export const TransferModal: React.FC<TransferModalProps> = ({
             sourceFundTypeName: transferFrom,
             destinationFundTypeName: transferTo,
             description: note,
-            //transferDate: convertedTransferDate,
           },
         });
       }
@@ -175,20 +248,10 @@ export const TransferModal: React.FC<TransferModalProps> = ({
       if (isEdit && !isOneTime) {
         await updateRecurringTransfer({
           variables: {
-            id: data.transfer.id ?? '',
+            id: data.transfer.recurringId ?? '',
             amount: amount,
             recurringStart: convertedTransferDate,
             recurringEnd: convertedEndDate,
-          },
-        });
-      }
-
-      if (isEdit && isOneTime) {
-        await updateRecurringTransfer({
-          variables: {
-            id: data.transfer.id ?? '',
-            amount: amount,
-            recurringStart: convertedTransferDate,
           },
         });
       }
@@ -220,8 +283,10 @@ export const TransferModal: React.FC<TransferModalProps> = ({
           transferDate: data.transfer.transferDate ?? getToday(),
           endDate: data.transfer.endDate ?? null,
           note: data.transfer.note ?? '',
+          isEditing: Boolean(data.transfer.id),
+          originalStart: data.transfer.transferDate ?? null,
         }}
-        validationSchema={transferSchema}
+        validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
         {({
@@ -242,6 +307,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
           handleChange,
           setFieldValue,
           setFieldTouched,
+          validateField,
           handleBlur,
         }) => (
           <form onSubmit={handleSubmit} noValidate>
@@ -258,12 +324,13 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                         {t('From Account')}
                       </InputLabel>
                       <TransferModalSelect
-                        type={TransferDirectionEnum.From}
+                        notSelected={transferTo}
                         funds={funds}
                         label={t('From Account')}
                         labelId="transferFrom"
                         name="transferFrom"
                         value={transferFrom}
+                        disabled={isEdit}
                         onChange={handleChange}
                         onBlur={handleBlur}
                         error={
@@ -289,30 +356,32 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                       alignItems: 'center',
                     }}
                   >
-                    <IconButton
-                      onClick={() => {
-                        setFieldValue('transferFrom', transferTo);
-                        setFieldValue('transferTo', transferFrom);
-                      }}
-                      color="primary"
-                      disabled={!transferFrom || !transferTo}
-                    >
-                      <Tooltip title={t('Swap')}>
-                        <SwapHorizIcon />
-                      </Tooltip>
-                    </IconButton>
+                    {type === TransferTypeEnum.New && (
+                      <IconButton
+                        onClick={() => {
+                          setFieldValue('transferFrom', transferTo);
+                          setFieldValue('transferTo', transferFrom);
+                        }}
+                        color="primary"
+                        disabled={!transferFrom || !transferTo}
+                      >
+                        <Tooltip title={t('Swap')}>
+                          <SwapHorizIcon />
+                        </Tooltip>
+                      </IconButton>
+                    )}
                   </Grid>
 
                   <Grid item xs={12} sm={5.5}>
                     <FormControl fullWidth>
                       <InputLabel id="transferTo">{t('To Account')}</InputLabel>
                       <TransferModalSelect
-                        type={TransferDirectionEnum.To}
-                        selectedTransferFrom={transferFrom}
+                        notSelected={transferFrom}
                         funds={funds}
                         label={t('To Account')}
                         labelId="transferTo"
                         name="transferTo"
+                        disabled={isEdit}
                         value={transferTo}
                         onChange={handleChange}
                         onBlur={handleBlur}
@@ -333,13 +402,22 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                 <FormControl
                   component="fieldset"
                   error={touched.schedule && Boolean(errors.schedule)}
+                  disabled={isEdit}
                 >
                   <FormLabel component="legend">{t('Schedule')}</FormLabel>
                   <RadioGroup
                     row
                     name="schedule"
                     value={schedule}
-                    onChange={handleChange}
+                    onChange={(_event, value) => {
+                      setFieldValue('schedule', value);
+                      if (value === ScheduleEnum.Monthly) {
+                        setFieldTouched('transferDate', true, false);
+                        validateField('transferDate');
+                      } else {
+                        validateField('transferDate');
+                      }
+                    }}
                   >
                     <FormControlLabel
                       value={ScheduleEnum.OneTime}
@@ -367,39 +445,51 @@ export const TransferModal: React.FC<TransferModalProps> = ({
 
               <Box sx={{ mb: 3 }}>
                 <Grid container spacing={2}>
-                  <Grid item xs={schedule === ScheduleEnum.OneTime ? 12 : 6}>
-                    <CustomDateField
-                      label={t('Transfer Date')}
-                      value={transferDate}
-                      onChange={(date) => {
-                        setFieldValue('transferDate', date);
-                        setFieldTouched('transferDate', true, false);
-                      }}
-                      error={
-                        touched.transferDate && Boolean(errors.transferDate)
-                      }
-                      helperText={
-                        touched.transferDate && (errors.transferDate as string)
-                      }
-                      required
-                    />
-                  </Grid>
-
-                  {schedule !== ScheduleEnum.OneTime && (
-                    <Grid item xs={6}>
-                      <CustomDateField
-                        label={t('End Date (Optional)')}
-                        value={endDate}
-                        onChange={(date) => {
-                          setFieldValue('endDate', date);
-                          setFieldTouched('endDate', true, false);
-                        }}
-                        error={touched.endDate && Boolean(errors.endDate)}
-                        helperText={
-                          touched.endDate && (errors.endDate as string)
-                        }
+                  {schedule === ScheduleEnum.OneTime ? (
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        label={t('Transfer Date')}
+                        value={transferDate.toFormat('MM/dd/yyyy')}
+                        disabled={true}
                       />
                     </Grid>
+                  ) : (
+                    <>
+                      <Grid item xs={6}>
+                        <CustomDateField
+                          label={t('Transfer Date')}
+                          value={transferDate}
+                          onChange={(date) => {
+                            setFieldValue('transferDate', date);
+                            setFieldTouched('transferDate', true, false);
+                          }}
+                          error={
+                            touched.transferDate && Boolean(errors.transferDate)
+                          }
+                          helperText={
+                            touched.transferDate &&
+                            (errors.transferDate as string)
+                          }
+                          required
+                        />
+                      </Grid>
+
+                      <Grid item xs={6}>
+                        <CustomDateField
+                          label={t('End Date (Optional)')}
+                          value={endDate}
+                          onChange={(date) => {
+                            setFieldValue('endDate', date);
+                            setFieldTouched('endDate', true, false);
+                          }}
+                          error={touched.endDate && Boolean(errors.endDate)}
+                          helperText={
+                            touched.endDate && (errors.endDate as string)
+                          }
+                        />
+                      </Grid>
+                    </>
                   )}
                 </Grid>
               </Box>
@@ -424,18 +514,29 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                 />
               </Box>
 
-              <Box sx={{ mb: 2 }}>
-                <FormControl fullWidth>
-                  <TextField
-                    id="transfer-note"
-                    label={t('Note')}
-                    name="note"
-                    value={note}
-                    onChange={handleChange}
-                    fullWidth
-                  />
-                </FormControl>
-              </Box>
+              {schedule === ScheduleEnum.OneTime && (
+                <Box sx={{ mb: 2 }}>
+                  <FormControl fullWidth>
+                    <TextField
+                      id="transfer-note"
+                      label={t('Note (Optional)')}
+                      name="note"
+                      disabled={isEdit}
+                      value={note}
+                      onChange={handleChange}
+                      fullWidth
+                    />
+                  </FormControl>
+                </Box>
+              )}
+
+              {schedule === ScheduleEnum.Monthly && isNew && (
+                <Alert severity="info">
+                  {t(
+                    'Recurring transfers will appear after the first scheduled payment is processed tomorrow.',
+                  )}
+                </Alert>
+              )}
             </DialogContent>
 
             <DialogActions>

@@ -7,34 +7,33 @@ import {
 } from 'src/components/Reports/SavingsFundTransfer/Helper/TransferIcons';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
-import { TransferDirectionEnum } from '../../Helper/TransferHistoryEnum';
 import { FundFieldsFragment } from '../../ReportsSavingsFund.generated';
 import { FundTypeEnum } from '../../mockData';
 
 type TransferModalSelectProps = Partial<SelectProps> & {
-  type: TransferDirectionEnum;
   funds: FundFieldsFragment[];
-  selectedTransferFrom?: string;
+  notSelected?: string;
+  disabled?: boolean;
 };
 
 export const TransferModalSelect: React.FC<TransferModalSelectProps> = ({
-  type,
-  selectedTransferFrom,
+  notSelected,
   funds,
+  disabled,
   ...props
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
 
   const filteredFunds =
-    type === TransferDirectionEnum.From
+    notSelected === null
       ? funds
-      : funds.filter((fund) => fund.id !== selectedTransferFrom);
+      : funds.filter((fund) => fund.fundType !== notSelected);
 
   return (
-    <Select {...props}>
+    <Select {...props} disabled={disabled}>
       {filteredFunds.map((fund) => (
-        <MenuItem key={fund.id} value={fund.id}>
+        <MenuItem key={fund.id} value={fund.fundType}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             {fund.fundType === FundTypeEnum.Primary
               ? PrimaryAccount

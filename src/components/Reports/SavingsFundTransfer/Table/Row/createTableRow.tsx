@@ -99,7 +99,9 @@ export const populateTransferHistoryRows = (
   const transferDate: RenderCell = ({ row }) => {
     return (
       <Typography variant="body2" noWrap>
-        {row.transferDate ? dateFormat(row.transferDate, locale) : ''}
+        {row.transferDate
+          ? dateFormat(row.transferDate, locale, { timezone: 'UTC' })
+          : ''}
       </Typography>
     );
   };
@@ -108,7 +110,7 @@ export const populateTransferHistoryRows = (
     return (
       <Typography variant="body2" noWrap>
         {row.schedule === ScheduleEnum.Monthly && row.endDate
-          ? dateFormat(row.endDate, locale)
+          ? dateFormat(row.endDate, locale, { timezone: 'UTC' })
           : ''}
       </Typography>
     );
@@ -131,7 +133,7 @@ export const populateTransferHistoryRows = (
           </IconButton>
           <IconButton>
             <StopCircle
-              titleAccess={t('Stop ongoing Transfer')}
+              titleAccess={t('Stop Transfer')}
               sx={{ color: 'error.main' }}
               onClick={() => {
                 handleDeleteModalOpen(row);

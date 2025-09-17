@@ -19,6 +19,16 @@ export enum FundTypeEnum {
   Savings = 'Savings',
 }
 
+export enum TransferTypeEnum {
+  New = 'new',
+  Edit = 'edit',
+}
+
+export interface TransferModalData {
+  type?: TransferTypeEnum;
+  transfer: TransferHistory;
+}
+
 export interface SubCategory {
   id: string;
   name: string;
@@ -56,6 +66,7 @@ export interface TransferHistory {
   endDate?: DateTime<boolean> | null;
   note?: string;
   actions?: string;
+  recurringId?: string | null;
 }
 
 export const fundsMock = [

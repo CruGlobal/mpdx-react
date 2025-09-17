@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 export type UpdatedAtType = {
   updatedAt: Date | null;
@@ -17,14 +17,23 @@ export const useUpdatedAtContext = () => {
   return context;
 };
 
-export const UpdatedAtProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  const [updatedAt, setUpdatedAt] = useState<Date | null>(null);
+export const UpdatedAtProvider: React.FC<
+  React.PropsWithChildren<{ storageKey?: string }>
+> = ({ children, storageKey = 'fundsUpdatedAt' }) => {
+  const [updatedAt, _setUpdatedAt] = useState<Date | null>(() => {
+    const stored = localStorage.getItem(storageKey);
+    return stored ? new Date(stored) : null;
+  });
+
+  const setUpdatedAt = useCallback(() => {
+    const date = new Date();
+    _setUpdatedAt(date);
+    localStorage.setItem(storageKey, date.toISOString());
+  }, [storageKey]);
 
   const value = useMemo(
-    () => ({ updatedAt, setUpdatedAt: () => setUpdatedAt(new Date()) }),
-    [updatedAt],
+    () => ({ updatedAt, setUpdatedAt }),
+    [updatedAt, setUpdatedAt],
   );
 
   return (

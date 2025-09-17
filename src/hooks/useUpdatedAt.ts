@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 
 export const useUpdatedAt = (updatedAt: Date | null) => {
-  const [, setUpdatedAt] = useState(Date.now());
+  const [now, setNow] = useState(Date.now());
 
   useEffect(() => {
     if (!updatedAt) {
@@ -9,7 +9,7 @@ export const useUpdatedAt = (updatedAt: Date | null) => {
     }
 
     const id = setInterval(() => {
-      setUpdatedAt(Date.now());
+      setNow(Date.now());
     }, 1000);
 
     return () => {
@@ -22,7 +22,7 @@ export const useUpdatedAt = (updatedAt: Date | null) => {
       return null;
     }
 
-    const timeElapsed = Date.now() - updatedAt.getTime();
+    const timeElapsed = now - updatedAt.getTime();
     const minutesElapsed = Math.floor(timeElapsed / 60_000);
     const hoursElapsed = Math.floor(minutesElapsed / 60);
     const daysElapsed = Math.floor(hoursElapsed / 24);
@@ -32,13 +32,13 @@ export const useUpdatedAt = (updatedAt: Date | null) => {
     }
 
     if (hoursElapsed < 1) {
-      return `Updated ${minutesElapsed} minutes ago`;
+      return `Updated ${minutesElapsed} minute${minutesElapsed === 1 ? '' : 's'} ago`;
     }
 
     if (daysElapsed < 1) {
-      return `Updated ${hoursElapsed} hours ago`;
+      return `Updated ${hoursElapsed} hour${hoursElapsed === 1 ? '' : 's'} ago`;
     }
 
     return `Updated ${daysElapsed} day${daysElapsed === 1 ? '' : 's'} ago`;
-  }, [updatedAt]);
+  }, [updatedAt, now]);
 };

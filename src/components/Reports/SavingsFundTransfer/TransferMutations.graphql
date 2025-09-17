@@ -3,7 +3,7 @@ mutation CreateRecurringTransfer(
   $sourceFundTypeName: String!
   $destinationFundTypeName: String!
   $recurringStart: ISO8601DateTime!
-  $recurringEnd: ISO8601DateTime!
+  $recurringEnd: ISO8601DateTime
 ) {
   createRecurringTransfer(
     input: {

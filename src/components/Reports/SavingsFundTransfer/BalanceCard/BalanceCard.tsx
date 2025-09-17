@@ -17,9 +17,8 @@ import { useUpdatedAt } from 'src/hooks/useUpdatedAt';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { FundFieldsFragment } from '../ReportsSavingsFund.generated';
-import { TransferModalData } from '../TransferModal/TransferModal';
 import { useUpdatedAtContext } from '../UpdatedAtContext/UpdateAtContext';
-import { FundTypeEnum } from '../mockData';
+import { FundTypeEnum, TransferModalData } from '../mockData';
 import { ScreenOnly } from '../styledComponents/DisplayStyling';
 
 export interface BalanceCardProps {
@@ -52,13 +51,13 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
     fund.fundType === FundTypeEnum.Primary
       ? theme.palette.chartOrange.main
       : fund.fundType === FundTypeEnum.Savings
-        ? theme.palette.chartBlue.main
-        : theme.palette.chartBlueDark.main;
+        ? theme.palette.chartBlueDark.main
+        : theme.palette.chartBlue.main;
 
   const handleTransferFrom = () => {
     handleOpenTransferModal({
       transfer: {
-        transferFrom: fund.id,
+        transferFrom: fund.fundType,
       },
     });
   };
@@ -66,7 +65,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
   const handleTransferTo = () => {
     handleOpenTransferModal({
       transfer: {
-        transferTo: fund.id,
+        transferTo: fund.fundType,
       },
     });
   };
@@ -164,7 +163,10 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
               ml: 0,
             }}
           >
-            <Button onClick={handleTransferFrom} disabled={fund.balance <= 0}>
+            <Button
+              onClick={handleTransferFrom}
+              disabled={fund.balance <= fund.deficitLimit}
+            >
               <Outbox fontSize="small" sx={{ mr: 0.5 }} />
               {t('TRANSFER FROM')}
             </Button>

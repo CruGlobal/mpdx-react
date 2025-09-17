@@ -12,9 +12,12 @@ import {
 } from 'src/components/Shared/styledComponents/LoadingStyling';
 import { useLocale } from 'src/hooks/useLocale';
 import { DynamicDeleteTransferModal } from '../DeleteTransferModal/DynamicDeleteTransferModal';
-import { TransferTypeEnum } from '../Helper/TransferHistoryEnum';
-import { TransferModalData } from '../TransferModal/TransferModal';
-import { ScheduleEnum, TransferHistory } from '../mockData';
+import {
+  ScheduleEnum,
+  TransferHistory,
+  TransferModalData,
+  TransferTypeEnum,
+} from '../mockData';
 import { StyledFundDataGrid } from '../styledComponents/StyledFundDataGrid';
 import { CustomToolbar } from './CustomToolbar';
 import { populateTransferHistoryRows } from './Row/createTableRow';
@@ -34,6 +37,7 @@ export const CreateTransferHistoryRows = (
   endDate: history.endDate || null,
   note: history.note || '',
   actions: history.actions || '',
+  recurringId: history.recurringId || '',
 });
 
 const createToolbar = (history: TransferHistory[]) => {

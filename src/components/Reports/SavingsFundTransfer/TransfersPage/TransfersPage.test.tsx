@@ -72,15 +72,15 @@ const mock = {
     reportsStaffExpenses: {
       funds: [
         {
-          id: '1',
-          fundType: 'Primary',
-          balance: 15000,
-          deficitLimit: 0,
-        },
-        {
           id: '2',
           fundType: 'Savings',
           balance: 25000,
+          deficitLimit: 0,
+        },
+        {
+          id: '1',
+          fundType: 'Primary',
+          balance: 15000,
           deficitLimit: 0,
         },
       ],
@@ -203,6 +203,21 @@ describe('TransfersPage', () => {
 
     expect(getAllByText('$15,000.00').length).toBeGreaterThan(0);
     expect(getAllByText('$2,500.00').length).toBeGreaterThan(0);
+  });
+
+  it('should sort fund cards in ascending order by id', async () => {
+    const { findAllByText } = render(<Components />);
+
+    const fundCards = await findAllByText(/Account Balance/i);
+    expect(fundCards.length).toBe(2);
+
+    const firstCard = fundCards[0];
+    const secondCard = fundCards[1];
+
+    expect(within(firstCard).getByText('Primary Account Balance')).toBeTruthy();
+    expect(
+      within(secondCard).getByText('Savings Account Balance'),
+    ).toBeTruthy();
   });
 
   it('should render cards and transfer history table', async () => {
@@ -337,7 +352,7 @@ describe('TransfersPage', () => {
 
     expect(
       within(fromAccount).getByText(
-        `${mock.ReportsStaffExpenses.reportsStaffExpenses.funds[0].fundType} Account`,
+        `${mock.ReportsStaffExpenses.reportsStaffExpenses.funds[1].fundType} Account`,
         {
           selector: 'b',
         },
@@ -345,7 +360,7 @@ describe('TransfersPage', () => {
     ).toBeInTheDocument();
     expect(
       within(toAccount).queryByText(
-        `${mock.ReportsStaffExpenses.reportsStaffExpenses.funds[0].fundType} Account`,
+        `${mock.ReportsStaffExpenses.reportsStaffExpenses.funds[1].fundType} Account`,
         {
           selector: 'b',
         },
