@@ -11,6 +11,7 @@ export interface GoalCalculatorSectionProps {
   rightPanelContent?: JSX.Element;
   printable?: boolean;
   children: React.ReactNode;
+  titleExtra?: React.ReactNode;
 }
 
 export const GoalCalculatorSection: React.FC<GoalCalculatorSectionProps> = ({
@@ -19,6 +20,7 @@ export const GoalCalculatorSection: React.FC<GoalCalculatorSectionProps> = ({
   rightPanelContent,
   printable = false,
   children,
+  titleExtra,
 }) => {
   const { setRightPanelContent } = useGoalCalculator();
   const { t } = useTranslation();
@@ -30,11 +32,12 @@ export const GoalCalculatorSection: React.FC<GoalCalculatorSectionProps> = ({
   return (
     <div>
       <Box pb={4}>
-        <Stack direction="row" justifyContent="space-between">
+        <Stack direction="row" gap={2} alignItems="center">
           <Typography variant="h6">
             {title}
             {rightPanelContent && (
               <IconButton
+                size="small"
                 className="print-hidden"
                 onClick={() => {
                   rightPanelContent && setRightPanelContent(rightPanelContent);
@@ -45,6 +48,8 @@ export const GoalCalculatorSection: React.FC<GoalCalculatorSectionProps> = ({
               </IconButton>
             )}
           </Typography>
+          {titleExtra}
+          <Box sx={{ flexGrow: 1 }} />
           {printable && (
             <Button
               className="print-hidden"

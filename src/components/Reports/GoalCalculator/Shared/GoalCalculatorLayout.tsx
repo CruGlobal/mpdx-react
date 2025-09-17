@@ -52,7 +52,6 @@ const StyledDrawer = styled('nav', {
     duration: theme.transitions.duration.enteringScreen,
   }),
   overflow: 'hidden',
-  borderRight: open ? `1px solid ${theme.palette.cruGrayLight.main}` : 'none',
   [theme.breakpoints.down('sm')]: {
     position: 'absolute',
     top: multiPageHeaderHeight,
@@ -142,7 +141,6 @@ export const GoalCalculatorLayout: React.FC<GoalCalculatorLayoutProps> = ({
         {sectionListPanel}
       </StyledDrawer>
       {isDrawerOpen && <Divider orientation="vertical" flexItem />}
-      <Divider orientation="vertical" flexItem />
       <MainContent className="main-content">{mainContent}</MainContent>
     </PrintableStack>
   );
