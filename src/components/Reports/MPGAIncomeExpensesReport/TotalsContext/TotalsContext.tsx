@@ -40,7 +40,7 @@ export const TotalsProvider: React.FC<TotalsContextProps> = ({
     data.expenses,
   );
 
-  const incomeTotal = sum(data.income);
+  const incomeTotal = useMemo(() => sum(data.income), [data.income]);
 
   const ministryTotal = sum(ministry);
 
