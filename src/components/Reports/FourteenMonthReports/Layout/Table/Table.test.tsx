@@ -1,12 +1,162 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor, within } from '@testing-library/react';
+import { render, renderHook, waitFor, within } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
+import { gqlMock } from '__tests__/util/graphqlMocking';
 import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import theme from 'src/theme';
-import { defaultFourteenMonthReport } from '../../FourteenMonthReportMock';
+import { FourteenMonthReportCurrencyType } from '../../FourteenMonthReport';
+import {
+  GetFourteenMonthReportDocument,
+  GetFourteenMonthReportQuery,
+  GetFourteenMonthReportQueryVariables,
+} from '../../GetFourteenMonthReport.generated';
+import { useFourteenMonthReport } from '../../useFourteenMonthReport';
 import { FourteenMonthReportTable } from './Table';
 import { OrderBy } from './TableHead/TableHead';
+
+// Use gqlMock to create test data for table tests
+const mockGraphQLData = gqlMock<
+  GetFourteenMonthReportQuery,
+  GetFourteenMonthReportQueryVariables
+>(GetFourteenMonthReportDocument, {
+  variables: {
+    accountListId: 'account-list-1',
+    range: '13m',
+    designationAccountId: null,
+  },
+  mocks: {
+    reportsSalaryCurrencyDonations: {
+      months: ['2018-12', '2019-01', '2019-02', '2019-03'],
+      currencyGroups: {
+        CAD: {
+          totals: {
+            months: [100, 100, 100, 100],
+          },
+          donation_infos: [
+            {
+              contact_id: 'contact-1',
+              total: 150,
+              average: 25,
+              minimum: 50,
+              complete_months_total: 150,
+              months: [
+                { total: 50, donations: [{ converted_amount: 50 }] },
+                { total: 50, donations: [{ converted_amount: 50 }] },
+                { total: 50, donations: [{ converted_amount: 50 }] },
+                { total: 0, donations: [] },
+              ],
+            },
+            {
+              contact_id: 'contact-2',
+              total: 150,
+              average: 25,
+              minimum: 50,
+              complete_months_total: 150,
+              months: [
+                { total: 50, donations: [{ converted_amount: 50 }] },
+                { total: 50, donations: [{ converted_amount: 50 }] },
+                { total: 50, donations: [{ converted_amount: 50 }] },
+                { total: 0, donations: [] },
+              ],
+            },
+          ],
+        },
+      },
+      donorInfos: [
+        {
+          contactId: 'contact-1',
+          contactName: 'test name',
+          lateBy60Days: true,
+          pledgeAmount: '100',
+          pledgeCurrency: 'CAD',
+          pledgeFrequency: 'Monthly',
+        },
+        {
+          contactId: 'contact-2',
+          contactName: 'test name',
+          pledgeAmount: '100',
+          pledgeCurrency: 'CAD',
+          pledgeFrequency: 'Monthly',
+        },
+      ],
+    },
+    reportsDonorCurrencyDonations: {
+      months: ['2018-12', '2019-01', '2019-02', '2019-03'],
+      currencyGroups: {
+        CAD: {
+          totals: {
+            months: [100, 100, 100, 100],
+          },
+          donation_infos: [
+            {
+              contact_id: 'contact-1',
+              total: 150,
+              average: 25,
+              minimum: 50,
+              complete_months_total: 150,
+              months: [
+                { total: 50, donations: [{ converted_amount: 50 }] },
+                { total: 50, donations: [{ converted_amount: 50 }] },
+                { total: 50, donations: [{ converted_amount: 50 }] },
+                { total: 0, donations: [] },
+              ],
+            },
+            {
+              contact_id: 'contact-2',
+              total: 150,
+              average: 25,
+              minimum: 50,
+              complete_months_total: 150,
+              months: [
+                { total: 50, donations: [{ converted_amount: 50 }] },
+                { total: 50, donations: [{ converted_amount: 50 }] },
+                { total: 50, donations: [{ converted_amount: 50 }] },
+                { total: 0, donations: [] },
+              ],
+            },
+          ],
+        },
+      },
+      donorInfos: [
+        {
+          contactId: 'contact-1',
+          contactName: 'test name',
+          lateBy60Days: true,
+          pledgeAmount: '100',
+          pledgeCurrency: 'CAD',
+          pledgeFrequency: 'Monthly',
+        },
+        {
+          contactId: 'contact-2',
+          contactName: 'test name',
+          pledgeAmount: '100',
+          pledgeCurrency: 'CAD',
+          pledgeFrequency: 'Monthly',
+        },
+      ],
+    },
+  },
+});
+
+// Mock the GraphQL hook to return our test data
+jest.mock('../../GetFourteenMonthReport.generated', () => ({
+  ...jest.requireActual('../../GetFourteenMonthReport.generated'),
+  useGetFourteenMonthReportQuery: jest.fn(() => ({
+    data: mockGraphQLData,
+    loading: false,
+    error: null,
+  })),
+}));
+
+const { result } = renderHook(() =>
+  useFourteenMonthReport(
+    'account-list-1',
+    FourteenMonthReportCurrencyType.Salary,
+    [],
+  ),
+);
+const transformedData = () => result.current.fourteenMonthReport;
 
 const router = {
   pathname:
@@ -19,33 +169,31 @@ const router = {
 };
 const onRequestSort = jest.fn();
 
-const getTotals = (mocks: typeof defaultFourteenMonthReport) =>
-  mocks.currencyGroups[0].totals.months;
-
 interface ComponentsProps {
-  mocks?: typeof defaultFourteenMonthReport;
   orderBy?: OrderBy | null;
 }
-const Components: React.FC<ComponentsProps> = ({
-  mocks = defaultFourteenMonthReport,
-  orderBy = 'name',
-}) => (
-  <ThemeProvider theme={theme}>
-    <TestRouter router={router}>
-      <ContactPanelProvider>
-        <FourteenMonthReportTable
-          isExpanded={true}
-          order="asc"
-          orderBy={orderBy}
-          orderedContacts={mocks.currencyGroups[0].contacts}
-          salaryCurrency={mocks.currencyGroups[0].currency}
-          onRequestSort={onRequestSort}
-          totals={getTotals(mocks)}
-        />
-      </ContactPanelProvider>
-    </TestRouter>
-  </ThemeProvider>
-);
+const Components: React.FC<ComponentsProps> = ({ orderBy = 'name' }) => {
+  const mocks = transformedData();
+  const getTotals = () => mocks?.currencyGroups[0].totals.months || [];
+
+  return (
+    <ThemeProvider theme={theme}>
+      <TestRouter router={router}>
+        <ContactPanelProvider>
+          <FourteenMonthReportTable
+            isExpanded={true}
+            order="asc"
+            orderBy={orderBy}
+            orderedContacts={mocks?.currencyGroups[0].contacts || []}
+            salaryCurrency={mocks?.currencyGroups[0].currency || 'CAD'}
+            onRequestSort={onRequestSort}
+            totals={getTotals()}
+          />
+        </ContactPanelProvider>
+      </TestRouter>
+    </ThemeProvider>
+  );
+};
 
 describe('FourteenMonthReportTable', () => {
   it('default', async () => {
