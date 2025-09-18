@@ -174,7 +174,10 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                   .map((tx) => ({
                     ...tx,
                     fundType: fund.fundType,
-                    category: `${category.category} - ${subcategory.subCategory}`,
+                    category:
+                      category.category === subcategory.subCategory
+                        ? category.category
+                        : `${category.category} - ${subcategory.subCategory}`,
                   })) ?? [],
             )
           : (category.breakdownByMonth

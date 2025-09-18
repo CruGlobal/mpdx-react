@@ -4,6 +4,7 @@ import { Button, ButtonGroup } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTranslation } from 'react-i18next';
+import { useLocale } from 'src/hooks/useLocale';
 import { ReportType } from '../Helpers/StaffReportEnum';
 import { Transaction } from '../StaffExpenseReport';
 import { downloadCsv } from './downloadReport';
@@ -18,6 +19,8 @@ export const DownloadButtonGroup: React.FC<DownloadButtonGroupProps> = ({
   enqueueSnackbar,
 }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
+
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -51,7 +54,7 @@ export const DownloadButtonGroup: React.FC<DownloadButtonGroupProps> = ({
         startIcon={<Download fontSize={iconFontSize} />}
         sx={buttonSx}
         onClick={() =>
-          downloadCsv(ReportType.Income, enqueueSnackbar, transactions)
+          downloadCsv(ReportType.Income, enqueueSnackbar, transactions, locale)
         }
       >
         {t('Income Report')}
