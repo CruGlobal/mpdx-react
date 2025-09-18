@@ -261,7 +261,12 @@ export const InformationCategoryPersonalForm: React.FC<
                 <InputLabel>
                   {isSpouse ? t('Spouse Years on Staff') : t('Years on Staff')}
                 </InputLabel>
-                <Select {...field} label={t('Years on Staff')}>
+                <Select
+                  {...field}
+                  label={
+                    isSpouse ? t('Spouse Years on Staff') : t('Years on Staff')
+                  }
+                >
                   {tenureOptions.map((tenure) => (
                     <MenuItem key={tenure} value={tenure}>
                       {t(tenure)}
@@ -282,7 +287,10 @@ export const InformationCategoryPersonalForm: React.FC<
             {({ field, meta }: FieldProps) => (
               <FormControl fullWidth size="small">
                 <InputLabel>{isSpouse ? t('Spouse Age') : t('Age')}</InputLabel>
-                <Select {...field} label={t('Age')}>
+                <Select
+                  {...field}
+                  label={isSpouse ? t('Spouse Age') : t('Age')}
+                >
                   {ageOptions.map((age) => (
                     <MenuItem key={age} value={age}>
                       {t(age)}
