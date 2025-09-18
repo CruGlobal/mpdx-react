@@ -171,12 +171,7 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
         sortingOrder={['desc', 'asc']}
         sortModel={sortModel}
         onSortModelChange={(size) => setSortModel(size)}
-        pageSizeOptions={[
-          5,
-          10,
-          25,
-          { label: 'All', value: staffReportRows.length },
-        ]}
+        pageSizeOptions={[5, 10, 25, 100]}
         paginationModel={paginationModel}
         onPaginationModelChange={(model) => setPaginationModel(model)}
         disableRowSelectionOnClick

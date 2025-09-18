@@ -8,6 +8,7 @@ import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { StaffAccountStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { StaffAccountQuery } from '../StaffAccount.generated';
 import { ReportsStaffExpensesQuery } from './GetStaffExpense.generated';
@@ -102,9 +103,9 @@ const TestComponent: React.FC<TestComponentProps> = ({
                 },
                 StaffAccount: {
                   staffAccount: {
-                    accountId: '1000000001',
+                    id: '1000000001',
                     name: 'Test Account',
-                    status: 'active',
+                    status: StaffAccountStatusEnum.Active,
                   },
                 },
               }}

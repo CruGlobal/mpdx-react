@@ -403,9 +403,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
               <Typography>
                 {t(accountData?.staffAccount?.name ?? '')}
               </Typography>
-              <Typography>
-                {t(accountData?.staffAccount?.accountId ?? '')}
-              </Typography>
+              <Typography>{t(accountData?.staffAccount?.id ?? '')}</Typography>
             </Box>
             <ScreenOnly>
               <Box
