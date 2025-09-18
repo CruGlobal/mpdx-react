@@ -33,7 +33,7 @@ function TestConsumer() {
     expensesTotal,
     ministryTotal,
     healthcareTotal,
-    miscTotal,
+    assessmentTotal,
     otherTotal,
   } = useTotals();
 
@@ -43,7 +43,7 @@ function TestConsumer() {
       <div data-testid="expenses">{expensesTotal}</div>
       <div data-testid="ministry">{ministryTotal}</div>
       <div data-testid="healthcare">{healthcareTotal}</div>
-      <div data-testid="misc">{miscTotal}</div>
+      <div data-testid="assessment">{assessmentTotal}</div>
       <div data-testid="other">{otherTotal}</div>
     </div>
   );
@@ -72,12 +72,12 @@ describe('TotalsContext', () => {
     );
 
     expect(getByText('108856')).toBeInTheDocument();
+    expect(getByText('18569')).toBeInTheDocument();
 
-    // Add back later
-    // expect(getByText('2324')).toBeInTheDocument();
-    // expect(getByText('1933')).toBeInTheDocument();
-    // expect(getByText('533')).toBeInTheDocument();
-    // expect(getByText('13779')).toBeInTheDocument();
+    expect(getByText('2124')).toBeInTheDocument();
+    expect(getByText('1933')).toBeInTheDocument();
+    expect(getByText('26')).toBeInTheDocument();
+    expect(getByText('14486')).toBeInTheDocument();
   });
 
   it('renders children correctly', () => {
