@@ -24,7 +24,10 @@ export const useFourteenMonthReport = (
       accountListId,
       // Backend sends one extra month, e.g. 13m returns 14 months
       range: '13m',
-      designationAccountId: designationAccounts && designationAccounts.length > 0 ? designationAccounts : undefined,
+      designationAccountId:
+        designationAccounts && designationAccounts.length > 0
+          ? designationAccounts
+          : null,
     },
   });
 
