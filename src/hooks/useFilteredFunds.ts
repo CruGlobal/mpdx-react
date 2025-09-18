@@ -69,7 +69,10 @@ export function useFilteredFunds(reportData) {
         if (category.subcategories?.length) {
           category.subcategories.forEach((subcategory) => {
             const id = `${baseId}-${subcategory.subCategory}`;
-            const description = `${category.category} - ${subcategory.subCategory}`;
+            const description =
+              category.category === subcategory.subCategory
+                ? category.category
+                : `${category.category} - ${subcategory.subCategory}`;
             const monthly = subcategory.breakdownByMonth.map((month) =>
               Number(month.total.toFixed(2)),
             );
