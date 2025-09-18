@@ -1,17 +1,21 @@
+fragment DonorInfo on DonorInfo {
+  accountNumbers
+  contactId
+  contactName
+  lateBy30Days
+  lateBy60Days
+  pledgeAmount
+  pledgeCurrency
+  pledgeFrequency
+  status
+}
+
 query GetFourteenMonthReport($accountListId: ID!, $range: String, $donorAccountId: [ID!], $designationAccountId: [ID!]) {
   reportsSalaryCurrencyDonations(accountListId: $accountListId, range: $range, donorAccountId: $donorAccountId, designationAccountId: $designationAccountId) {
     currencyGroups
     defaultCurrency
     donorInfos {
-      accountNumbers
-      contactId
-      contactName
-      lateBy30Days
-      lateBy60Days
-      pledgeAmount
-      pledgeCurrency
-      pledgeFrequency
-      status
+      ...DonorInfo
     }
     months
     accountList {
@@ -25,15 +29,7 @@ query GetFourteenMonthReport($accountListId: ID!, $range: String, $donorAccountI
     currencyGroups
     defaultCurrency
     donorInfos {
-      accountNumbers
-      contactId
-      contactName
-      lateBy30Days
-      lateBy60Days
-      pledgeAmount
-      pledgeCurrency
-      pledgeFrequency
-      status
+      ...DonorInfo
     }
     months
     accountList {
