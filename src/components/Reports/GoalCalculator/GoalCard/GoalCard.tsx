@@ -22,6 +22,7 @@ import {
   useDeleteGoalCalculationMutation,
   useUpdateGoalCalculationMutation,
 } from '../GoalsList/GoalCalculations.generated';
+import { useGoalTotal } from './useGoalTotal';
 
 const StyledCard = styled(Card)({
   minWidth: 350,
@@ -89,6 +90,8 @@ export const GoalCard: React.FC<GoalCardProps> = ({
   const [updateGoalCalculation] = useUpdateGoalCalculationMutation();
   const [deleteGoalCalculation] = useDeleteGoalCalculationMutation();
   const [deleting, setDeleting] = useState(false);
+
+  const overallTotal = useGoalTotal(goal);
 
   const handleStarClick = async () => {
     await updateGoalCalculation({
@@ -189,7 +192,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({
                 {t('Goal Amount')}
               </Typography>
               <Typography data-testid="goal-amount-value" variant="body1">
-                {currencyFormat(0, 'USD', locale)}
+                {currencyFormat(overallTotal, 'USD', locale)}
               </Typography>
             </StyledInfoRow>
 

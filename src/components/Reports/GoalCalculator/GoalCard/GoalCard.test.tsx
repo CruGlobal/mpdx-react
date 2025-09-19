@@ -3,16 +3,30 @@ import { ThemeProvider } from '@mui/system';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
-import { ListGoalCalculationFragment } from '../GoalsList/GoalCalculations.generated';
+import {
+  ListGoalCalculationFragment,
+  ListGoalCalculationFragmentDoc,
+} from '../GoalsList/GoalCalculations.generated';
 import { GoalCard } from './GoalCard';
 
-const goal: ListGoalCalculationFragment = {
-  id: 'goal-1',
-  updatedAt: '2025-01-01T00:00:00.000Z',
-  primary: false,
-};
+const goal = gqlMock<ListGoalCalculationFragment>(
+  ListGoalCalculationFragmentDoc,
+  {
+    mocks: {
+      id: 'goal-1',
+      householdFamily: {
+        directInput: 90,
+      },
+      ministryFamily: {
+        directInput: null,
+        primaryBudgetCategories: [{ directInput: 49.63 }],
+      },
+    },
+  },
+);
+
 const mutationSpy = jest.fn();
 
 interface TestComponentProps {
@@ -89,5 +103,10 @@ describe('GoalCard', () => {
       'href',
       '/accountLists/account-list-1/reports/goalCalculator/goal-1',
     );
+  });
+
+  it('shows a goal amount value from useGoalTotal hook', async () => {
+    const { getByTestId } = render(<TestComponent />);
+    expect(getByTestId('goal-amount-value')).toHaveTextContent('$200');
   });
 });
