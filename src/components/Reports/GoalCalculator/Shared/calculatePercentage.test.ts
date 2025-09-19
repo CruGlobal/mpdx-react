@@ -47,10 +47,6 @@ describe('calculatePercentage', () => {
     expect(calculatePercentage(undefined)).toEqual(0);
   });
 
-  it('should return 0 when no goalCalculation', () => {
-    expect(calculatePercentage(undefined)).toEqual(0);
-  });
-
   it('should calculate 100% for all complete categories', () => {
     const goalCalculation = createMockGoalCalculation([
       { directInput: 0 },
