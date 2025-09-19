@@ -1,11 +1,7 @@
 import { TFunction } from 'i18next';
-import { DateTime } from 'luxon';
 import { buildURI } from 'react-csv/lib/core';
-import {
-  ScheduleEnum,
-  StaffSavingFundEnum,
-  TransferHistory,
-} from '../mockData';
+import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
+import { FundTypeEnum, ScheduleEnum, TransferHistory } from '../mockData';
 
 export const createTable = (
   csvHeader: string[],
@@ -14,34 +10,39 @@ export const createTable = (
 ) => {
   const newTransfers = transfers.map((transfer) => {
     const fromFund =
-      transfer.transferFrom === StaffSavingFundEnum.StaffSavings
-        ? 'Staff Savings'
-        : transfer.transferFrom === StaffSavingFundEnum.StaffAccount
-          ? 'Staff Account'
-          : transfer.transferFrom === StaffSavingFundEnum.StaffConferenceSavings
-            ? 'Staff Conference Savings'
-            : transfer.transferFrom;
+      transfer.transferFrom === FundTypeEnum.Savings
+        ? 'Savings'
+        : transfer.transferFrom === FundTypeEnum.Primary
+          ? 'Primary'
+          : transfer.transferFrom;
     const toFund =
-      transfer.transferTo === StaffSavingFundEnum.StaffSavings
-        ? 'Staff Savings'
-        : transfer.transferTo === StaffSavingFundEnum.StaffAccount
-          ? 'Staff Account'
-          : transfer.transferTo === StaffSavingFundEnum.StaffConferenceSavings
-            ? 'Staff Conference Savings'
-            : transfer.transferTo;
+      transfer.transferTo === FundTypeEnum.Savings
+        ? 'Savings'
+        : transfer.transferTo === FundTypeEnum.Primary
+          ? 'Primary'
+          : transfer.transferTo;
     const schedule =
       transfer.schedule === ScheduleEnum.OneTime ? 'One Time' : 'Monthly';
+    const status = transfer.status
+      ? transfer.status[0].toUpperCase() + transfer.status.slice(1)
+      : transfer.status;
+    const endDate =
+      transfer.schedule === ScheduleEnum.Monthly && transfer.endDate
+        ? dateFormat(transfer.endDate, locale)
+        : '';
     return [
       fromFund,
       toFund,
-      transfer.amount?.toLocaleString(locale, {
-        style: 'currency',
-        currency: 'USD',
-      }),
+      transfer.amount
+        ? currencyFormat(transfer.amount, 'USD', locale, {
+            showTrailingZeros: true,
+          })
+        : '',
       schedule,
-      transfer.status,
-      transfer.transferDate?.toLocaleString(DateTime.DATE_MED),
-      transfer.endDate?.toLocaleString(DateTime.DATE_MED),
+      status,
+      transfer.transferDate ? dateFormat(transfer.transferDate, locale) : '',
+      endDate,
+      transfer.note,
     ];
   });
 
@@ -62,6 +63,7 @@ export const downloadCSV = (
     t('Status'),
     t('Transfer Date'),
     t('Stop Date'),
+    t('Note'),
   ];
 
   const csvData = createTable(csvHeader, transfers, locale);
