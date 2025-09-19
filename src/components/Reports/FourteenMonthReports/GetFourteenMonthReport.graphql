@@ -10,8 +10,24 @@ fragment DonorInfo on DonorInfo {
   status
 }
 
-query GetFourteenMonthReport($accountListId: ID!, $range: String, $donorAccountId: [ID!], $designationAccountId: [ID!]) {
-  reportsSalaryCurrencyDonations(accountListId: $accountListId, range: $range, donorAccountId: $donorAccountId, designationAccountId: $designationAccountId) {
+fragment accountList on AccountList {
+  id
+  createdAt
+  updatedAt
+}
+
+query GetFourteenMonthReport(
+  $accountListId: ID!
+  $range: String
+  $donorAccountId: [ID!]
+  $designationAccountId: [ID!]
+) {
+  reportsSalaryCurrencyDonations(
+    accountListId: $accountListId
+    range: $range
+    donorAccountId: $donorAccountId
+    designationAccountId: $designationAccountId
+  ) {
     currencyGroups
     defaultCurrency
     donorInfos {
@@ -19,13 +35,16 @@ query GetFourteenMonthReport($accountListId: ID!, $range: String, $donorAccountI
     }
     months
     accountList {
-      id
-      createdAt
-      updatedAt
+      ...accountList
     }
   }
 
-  reportsDonorCurrencyDonations(accountListId: $accountListId, range: $range, donorAccountId: $donorAccountId, designationAccountId: $designationAccountId) {
+  reportsDonorCurrencyDonations(
+    accountListId: $accountListId
+    range: $range
+    donorAccountId: $donorAccountId
+    designationAccountId: $designationAccountId
+  ) {
     currencyGroups
     defaultCurrency
     donorInfos {
@@ -33,9 +52,7 @@ query GetFourteenMonthReport($accountListId: ID!, $range: String, $donorAccountI
     }
     months
     accountList {
-      id
-      createdAt
-      updatedAt
+      ...accountList
     }
   }
 }
