@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import React from 'react';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {
+  Box,
   Divider,
   IconButton,
   Link,
@@ -15,6 +16,7 @@ import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { multiPageHeaderHeight } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import theme from 'src/theme';
 import { GoalCalculatorStepEnum } from '../GoalCalculatorHelper';
+import { CircularProgressWithLabel } from '../SharedComponents/CircularProgressWithLabel/CircularProgressWithLabel';
 import { useGoalCalculator } from './GoalCalculatorContext';
 
 const iconPanelWidth = theme.spacing(5);
@@ -87,6 +89,7 @@ export const GoalCalculatorLayout: React.FC<GoalCalculatorLayoutProps> = ({
     isDrawerOpen,
     setDrawerOpen,
     toggleDrawer,
+    percentComplete,
   } = useGoalCalculator();
 
   const handleStepIconClick = (step: GoalCalculatorStepEnum) => {
@@ -101,6 +104,16 @@ export const GoalCalculatorLayout: React.FC<GoalCalculatorLayoutProps> = ({
   return (
     <PrintableStack direction="row">
       <Stack direction="column" width={iconPanelWidth}>
+        <Box
+          sx={{
+            p: 1,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <CircularProgressWithLabel progress={percentComplete} />
+        </Box>
         {steps.map((step) => (
           <IconButton
             key={step.step}
