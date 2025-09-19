@@ -1,55 +1,58 @@
-query FourteenMonthReport(
-  $accountListId: ID!
-  $designationAccountIds: [ID!]
-  $currencyType: FourteenMonthReportCurrencyType!
-) {
-  fourteenMonthReport(
-    accountListId: $accountListId
-    designationAccountId: $designationAccountIds
-    currencyType: $currencyType
-  ) {
-    currencyType
-    salaryCurrency
-    currencyGroups {
-      currency
-      totals {
-        year
-        months {
-          month
-          total
-        }
-        average
-        minimum
-      }
-      contacts {
-        ...FourteenMonthReportContact
-      }
-    }
-  }
-}
-
-fragment FourteenMonthReportContact on FourteenMonthReportContact {
-  id
-  name
-  total
-  average
-  minimum
-  completeMonthsTotal
-  months {
-    month
-    total
-    donations {
-      amount
-      currency
-      date
-      paymentMethod
-    }
-  }
+fragment DonorInfo on DonorInfo {
   accountNumbers
+  contactId
+  contactName
   lateBy30Days
   lateBy60Days
   pledgeAmount
   pledgeCurrency
   pledgeFrequency
   status
+}
+
+fragment accountList on AccountList {
+  id
+  createdAt
+  updatedAt
+}
+
+query GetFourteenMonthReport(
+  $accountListId: ID!
+  $range: String
+  $donorAccountId: [ID!]
+  $designationAccountId: [ID!]
+) {
+  reportsSalaryCurrencyDonations(
+    accountListId: $accountListId
+    range: $range
+    donorAccountId: $donorAccountId
+    designationAccountId: $designationAccountId
+  ) {
+    currencyGroups
+    defaultCurrency
+    donorInfos {
+      ...DonorInfo
+    }
+    months
+    accountList {
+      ...accountList
+    }
+  }
+
+  reportsDonorCurrencyDonations(
+    accountListId: $accountListId
+    range: $range
+    donorAccountId: $donorAccountId
+    designationAccountId: $designationAccountId
+  ) {
+    currencyGroups
+    defaultCurrency
+    donorInfos {
+      ...DonorInfo
+    }
+    months
+    accountList {
+      ...accountList
+    }
+  }
 }

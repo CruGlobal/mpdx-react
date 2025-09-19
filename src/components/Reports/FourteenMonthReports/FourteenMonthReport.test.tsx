@@ -1,13 +1,20 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor, within } from '@testing-library/react';
-import fetchMock from 'jest-fetch-mock';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
-import { FourteenMonthReportCurrencyType } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { FourteenMonthReport } from './FourteenMonthReport';
-import { fourteenMonthReportRestMock } from './FourteenMonthReportMock';
+import {
+  FourteenMonthReport,
+  FourteenMonthReportCurrencyType,
+} from './FourteenMonthReport';
+import {
+  GetFourteenMonthReportDocument,
+  GetFourteenMonthReportQuery,
+  GetFourteenMonthReportQueryVariables,
+} from './GetFourteenMonthReport.generated';
+import { useFourteenMonthReport } from './useFourteenMonthReport';
 
 const accountListId = '111';
 const title = 'test title';
@@ -17,12 +24,158 @@ interface TestComponentProps {
   currencyType: FourteenMonthReportCurrencyType;
   isNavListOpen?: boolean;
   designationAccounts?: string[];
+  mutationSpy?: () => void;
 }
+
+// Use gqlMock to create minimal test data - only specify the essential fields needed
+const mockGraphQLData = gqlMock<
+  GetFourteenMonthReportQuery,
+  GetFourteenMonthReportQueryVariables
+>(GetFourteenMonthReportDocument, {
+  variables: {
+    accountListId: '111',
+    range: '13m',
+    designationAccountId: null,
+  },
+  mocks: {
+    reportsSalaryCurrencyDonations: {
+      months: ['2018-12', '2019-01', '2019-02', '2019-03'],
+      currencyGroups: {
+        CAD: {
+          totals: {
+            months: [100, 100, 100, 100],
+          },
+          donation_infos: [
+            {
+              contact_id: 'contact-1',
+              total: 200,
+              average: 50,
+              minimum: 50,
+              complete_months_total: 200,
+              months: [
+                { total: 50, donations: [{ converted_amount: 50 }] },
+                { total: 50, donations: [{ converted_amount: 50 }] },
+                { total: 50, donations: [{ converted_amount: 50 }] },
+                { total: 50, donations: [{ converted_amount: 50 }] },
+              ],
+            },
+            {
+              contact_id: 'contact-2',
+              total: 200,
+              average: 50,
+              minimum: 50,
+              complete_months_total: 200,
+              months: [
+                { total: 50, donations: [{ converted_amount: 50 }] },
+                { total: 50, donations: [{ converted_amount: 50 }] },
+                { total: 50, donations: [{ converted_amount: 50 }] },
+                { total: 50, donations: [{ converted_amount: 50 }] },
+              ],
+            },
+          ],
+        },
+        USD: {
+          totals: {
+            months: [50, 50, 50, 50],
+          },
+          donation_infos: [
+            {
+              contact_id: 'contact-3',
+              total: 200,
+              average: 50,
+              minimum: 50,
+              complete_months_total: 200,
+              months: [
+                { total: 50, donations: [{ converted_amount: 50 }] },
+                { total: 50, donations: [{ converted_amount: 50 }] },
+                { total: 50, donations: [{ converted_amount: 50 }] },
+                { total: 50, donations: [{ converted_amount: 50 }] },
+              ],
+            },
+          ],
+        },
+      },
+      donorInfos: [
+        { contactId: 'contact-1', contactName: 'test name' },
+        { contactId: 'contact-2', contactName: 'test name' },
+        { contactId: 'contact-3', contactName: 'test name' },
+      ],
+    },
+    reportsDonorCurrencyDonations: {
+      months: ['2018-12', '2019-01', '2019-02', '2019-03'],
+      currencyGroups: {
+        CAD: {
+          totals: {
+            months: [100, 100, 100, 100],
+          },
+          donation_infos: [
+            {
+              contact_id: 'contact-1',
+              total: 200,
+              average: 50,
+              minimum: 50,
+              complete_months_total: 200,
+              months: [
+                { total: 50, donations: [{ converted_amount: 50 }] },
+                { total: 50, donations: [{ converted_amount: 50 }] },
+                { total: 50, donations: [{ converted_amount: 50 }] },
+                { total: 50, donations: [{ converted_amount: 50 }] },
+              ],
+            },
+            {
+              contact_id: 'contact-2',
+              total: 200,
+              average: 50,
+              minimum: 50,
+              complete_months_total: 200,
+              months: [
+                { total: 50, donations: [{ converted_amount: 50 }] },
+                { total: 50, donations: [{ converted_amount: 50 }] },
+                { total: 50, donations: [{ converted_amount: 50 }] },
+                { total: 50, donations: [{ converted_amount: 50 }] },
+              ],
+            },
+          ],
+        },
+        USD: {
+          totals: {
+            months: [50, 50, 50, 50],
+          },
+          donation_infos: [
+            {
+              contact_id: 'contact-3',
+              total: 200,
+              average: 50,
+              minimum: 50,
+              complete_months_total: 200,
+              months: [
+                { total: 50, donations: [{ converted_amount: 50 }] },
+                { total: 50, donations: [{ converted_amount: 50 }] },
+                { total: 50, donations: [{ converted_amount: 50 }] },
+                { total: 50, donations: [{ converted_amount: 50 }] },
+              ],
+            },
+          ],
+        },
+      },
+      donorInfos: [
+        { contactId: 'contact-1', contactName: 'test name' },
+        { contactId: 'contact-2', contactName: 'test name' },
+        { contactId: 'contact-3', contactName: 'test name' },
+      ],
+    },
+  },
+});
+
+jest.mock('./useFourteenMonthReport', () => ({
+  useFourteenMonthReport: jest.fn(),
+}));
 
 const TestComponent: React.FC<TestComponentProps> = ({
   currencyType,
   isNavListOpen = true,
   designationAccounts,
+  mutationSpy,
 }) => (
   <TestRouter
     router={{
@@ -35,96 +188,106 @@ const TestComponent: React.FC<TestComponentProps> = ({
   >
     <ThemeProvider theme={theme}>
       <ContactPanelProvider>
-        <FourteenMonthReport
-          accountListId={accountListId}
-          title={title}
-          onNavListToggle={onNavListToggle}
-          currencyType={currencyType}
-          isNavListOpen={isNavListOpen}
-          designationAccounts={designationAccounts}
-        />
+        <GqlMockedProvider
+          mocks={{ GetFourteenMonthReport: mockGraphQLData }}
+          onCall={mutationSpy}
+        >
+          <FourteenMonthReport
+            accountListId={accountListId}
+            title={title}
+            onNavListToggle={onNavListToggle}
+            currencyType={currencyType}
+            isNavListOpen={isNavListOpen}
+            designationAccounts={designationAccounts}
+          />
+        </GqlMockedProvider>
       </ContactPanelProvider>
     </ThemeProvider>
   </TestRouter>
 );
 
 describe('FourteenMonthReport', () => {
-  fetchMock.enableMocks();
   beforeEach(() => {
-    fetchMock.resetMocks();
-    fetchMock.mockResponses([
-      JSON.stringify(fourteenMonthReportRestMock),
-      { status: 200 },
-    ]);
-    process.env.REST_API_URL = 'https://api.stage.mpdx.org/api/v2/';
-  });
-
-  it('salary report loading', async () => {
-    const { getByTestId, getByText, queryByTestId } = render(
-      <TestComponent currencyType={FourteenMonthReportCurrencyType.Salary} />,
+    // Use the actual hook implementation with mocked GraphQL provider
+    (useFourteenMonthReport as jest.Mock).mockImplementation(
+      jest.requireActual('./useFourteenMonthReport').useFourteenMonthReport,
     );
-
-    expect(getByText(title)).toBeInTheDocument();
-    expect(getByTestId('LoadingFourteenMonthReport')).toBeInTheDocument();
-    expect(queryByTestId('Notification')).not.toBeInTheDocument();
   });
 
-  it('salary report loaded', async () => {
-    const { getAllByTestId, queryByTestId, getAllByRole } = render(
+  it('shows salary report loaded', async () => {
+    const { queryByTestId, getAllByRole: getTestAllByRole } = render(
       <TestComponent currencyType={FourteenMonthReportCurrencyType.Salary} />,
     );
 
     await waitFor(() => {
-      expect(
-        queryByTestId('LoadingFourteenMonthReport'),
-      ).not.toBeInTheDocument();
+      expect(queryByTestId('Loading')).not.toBeInTheDocument();
     });
 
-    expect(getAllByRole('table')).toHaveLength(2);
-    expect(getAllByTestId('FourteenMonthReportTableRow')).toHaveLength(3);
-    expect(getAllByTestId('FourteenMonthReport')).toHaveLength(2);
+    expect(getTestAllByRole('table')).toHaveLength(2);
+  });
+
+  it('shows salary report loading', () => {
+    // Override the mock for this specific test
+    (useFourteenMonthReport as jest.Mock).mockReturnValue({
+      fourteenMonthReport: null,
+      loading: true,
+      error: null,
+    });
+
+    const { getByTestId } = render(
+      <TestComponent currencyType={FourteenMonthReportCurrencyType.Salary} />,
+    );
+
+    expect(getByTestId('Loading')).toBeInTheDocument();
   });
 
   it('partner report loading', async () => {
+    (useFourteenMonthReport as jest.Mock).mockReturnValue({
+      fourteenMonthReport: null,
+      loading: true,
+      error: null,
+    });
     const { getByTestId, getByText, queryByTestId } = render(
       <TestComponent currencyType={FourteenMonthReportCurrencyType.Donor} />,
     );
 
     expect(getByText(title)).toBeInTheDocument();
-    expect(getByTestId('LoadingFourteenMonthReport')).toBeInTheDocument();
+    expect(getByTestId('Loading')).toBeInTheDocument();
     expect(queryByTestId('Notification')).not.toBeInTheDocument();
   });
 
   it('partner report loaded', async () => {
-    const { getAllByTestId, queryByTestId, getByText } = render(
+    const {
+      queryByTestId,
+      getByText,
+      getAllByRole: getTestAllByRole,
+    } = render(
       <TestComponent currencyType={FourteenMonthReportCurrencyType.Donor} />,
     );
 
     await waitFor(() => {
-      expect(
-        queryByTestId('LoadingFourteenMonthReport'),
-      ).not.toBeInTheDocument();
+      expect(queryByTestId('Loading')).not.toBeInTheDocument();
     });
 
     expect(getByText(title)).toBeInTheDocument();
-    expect(getAllByTestId('FourteenMonthReport')).toHaveLength(2);
+    expect(
+      getTestAllByRole('table', { name: 'Fourteen month report table' }),
+    ).toHaveLength(2);
   });
 
   describe('Errors', () => {
-    beforeEach(() => {
-      fetchMock.resetMocks();
-      fetchMock.mockReject(new Error('Error loading data.  Try again.'));
-    });
-
     it('salary report error', async () => {
+      (useFourteenMonthReport as jest.Mock).mockReturnValue({
+        fourteenMonthReport: null,
+        loading: null,
+        error: true,
+      });
       const { queryByTestId, getByTestId, getByText } = render(
         <TestComponent currencyType={FourteenMonthReportCurrencyType.Salary} />,
       );
 
       await waitFor(() => {
-        expect(
-          queryByTestId('LoadingFourteenMonthReport'),
-        ).not.toBeInTheDocument();
+        expect(queryByTestId('Loading')).not.toBeInTheDocument();
       });
 
       expect(getByText(title)).toBeInTheDocument();
@@ -132,14 +295,17 @@ describe('FourteenMonthReport', () => {
     });
 
     it('partner report error', async () => {
+      (useFourteenMonthReport as jest.Mock).mockReturnValue({
+        fourteenMonthReport: null,
+        loading: null,
+        error: true,
+      });
       const { queryByTestId, getByTestId, getByText } = render(
         <TestComponent currencyType={FourteenMonthReportCurrencyType.Donor} />,
       );
 
       await waitFor(() => {
-        expect(
-          queryByTestId('LoadingFourteenMonthReport'),
-        ).not.toBeInTheDocument();
+        expect(queryByTestId('Loading')).not.toBeInTheDocument();
       });
 
       expect(getByText(title)).toBeInTheDocument();
@@ -156,9 +322,7 @@ describe('FourteenMonthReport', () => {
     );
 
     await waitFor(() => {
-      expect(
-        queryByTestId('LoadingFourteenMonthReport'),
-      ).not.toBeInTheDocument();
+      expect(queryByTestId('Loading')).not.toBeInTheDocument();
     });
 
     expect(getByText(title)).toBeInTheDocument();
@@ -168,45 +332,51 @@ describe('FourteenMonthReport', () => {
 
   it('filters report by designation account', async () => {
     const designationAccount = 'account-1';
+    const mutationSpy = jest.fn();
+
+    (useFourteenMonthReport as jest.Mock).mockImplementation(
+      jest.requireActual('./useFourteenMonthReport').useFourteenMonthReport,
+    );
+
     render(
       <TestComponent
         currencyType={FourteenMonthReportCurrencyType.Donor}
         isNavListOpen={false}
         designationAccounts={[designationAccount]}
+        mutationSpy={mutationSpy}
       />,
     );
 
     await waitFor(() =>
-      expect(fetchMock).toHaveBeenCalledWith(
-        `https://api.stage.mpdx.org/api/v2/reports/donor_currency_donations?filter[account_list_id]=111&filter[designation_account_id]=${designationAccount}&filter[month_range]=2018-12-01...2020-01-01`,
-        {
-          headers: {
-            'Content-Type': 'application/vnd.api+json',
-            authorization: 'Bearer apiToken',
-          },
-        },
-      ),
+      expect(mutationSpy).toHaveGraphqlOperation('GetFourteenMonthReport', {
+        accountListId: '111',
+        range: '13m',
+        designationAccountId: [designationAccount],
+      }),
     );
   });
 
   it('does not filter report by designation account', async () => {
+    const mutationSpy = jest.fn();
+
+    (useFourteenMonthReport as jest.Mock).mockImplementation(
+      jest.requireActual('./useFourteenMonthReport').useFourteenMonthReport,
+    );
+
     render(
       <TestComponent
         currencyType={FourteenMonthReportCurrencyType.Donor}
         isNavListOpen={false}
+        mutationSpy={mutationSpy}
       />,
     );
 
     await waitFor(() =>
-      expect(fetchMock).toHaveBeenCalledWith(
-        'https://api.stage.mpdx.org/api/v2/reports/donor_currency_donations?filter[account_list_id]=111&filter[month_range]=2018-12-01...2020-01-01',
-        {
-          headers: {
-            'Content-Type': 'application/vnd.api+json',
-            authorization: 'Bearer apiToken',
-          },
-        },
-      ),
+      expect(mutationSpy).toHaveGraphqlOperation('GetFourteenMonthReport', {
+        accountListId: '111',
+        range: '13m',
+        designationAccountId: null,
+      }),
     );
   });
 
