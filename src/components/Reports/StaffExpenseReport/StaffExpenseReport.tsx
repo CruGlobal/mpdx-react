@@ -147,6 +147,39 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
 
   const selectedFund = allFunds.find((f) => f.fundType === selectedFundType);
 
+  const categoriesForFilter = useMemo(
+    // Grab category names
+    () => selectedFund?.categories?.map((category) => category.category),
+    [selectedFund],
+  );
+
+  const filterTransactionsByCategory = (
+    fund: Fund,
+    categoryNames: string[],
+  ): Transaction[] => {
+    return (
+      fund.categories
+        ?.filter((category) => categoryNames.includes(category.category))
+        .flatMap((category) =>
+          category.subcategories
+            ? category.subcategories.flatMap(
+                (subcategory) =>
+                  subcategory.breakdownByMonth?.map((transaction) => ({
+                    ...transaction,
+                    fundType: fund.fundType,
+                    category: category.category,
+                    subcategory: subcategory.subCategory,
+                  })) ?? [],
+              )
+            : (category.breakdownByMonth?.map((transaction) => ({
+                ...transaction,
+                fundType: fund.fundType,
+                category: category.category,
+              })) ?? []),
+        ) ?? []
+    );
+  };
+
   const filterTransactionsByTime = (
     fund: Fund,
     targetTime: DateTime,
@@ -255,12 +288,34 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     setTransactions(newTransactions);
   }, [allFunds, time, filters]);
 
+  // Apply category filtering to transactions when filters are active
+  const filteredTransactions = useMemo(() => {
+    if (
+      !filters?.categories ||
+      filters.categories.length === 0 ||
+      !selectedFund
+    ) {
+      return transactions;
+    }
+
+    const categoryFilteredTransactions = filterTransactionsByCategory(
+      selectedFund,
+      filters.categories,
+    );
+
+    const newTransactions = {
+      ...transactions,
+      [selectedFund.fundType]: categoryFilteredTransactions,
+    };
+
+    return newTransactions;
+  }, [transactions, filters?.categories, selectedFund]);
+
   const handleCardClick = (fundType: Fund['fundType']) => {
     setSelectedFundType(fundType);
   };
 
   const handleSettingsClick = () => {
-    console.log('Settings clicked');
     setIsSettingsOpen(!isSettingsOpen);
   };
 
@@ -268,8 +323,8 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     tableType: TableType,
     fundType: Fund['fundType'],
   ) => {
-    const txs = transactions[fundType] ?? [];
-    return txs.filter((tx) =>
+    const transactions = filteredTransactions[fundType] ?? [];
+    return transactions.filter((tx) =>
       tableType === TableType.Income ? tx.total > 0 : tx.total < 0,
     );
   };
@@ -285,19 +340,21 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   const transferTotals = useMemo(() => {
     const totals: Record<Fund['fundType'], { in: number; out: number }> = {};
 
-    for (const [fundType, txs] of Object.entries(transactions)) {
+    for (const [fundType, transactions] of Object.entries(
+      filteredTransactions,
+    )) {
       totals[fundType as Fund['fundType']] = {
-        in: txs
-          .filter((tx) => tx.total > 0)
+        in: transactions
+          .filter((transaction) => transaction.total > 0)
           .reduce((sum, tx) => sum + tx.total, 0),
-        out: txs
-          .filter((tx) => tx.total < 0)
+        out: transactions
+          .filter((transaction) => transaction.total < 0)
           .reduce((sum, tx) => sum + tx.total, 0),
       };
     }
 
     return totals;
-  }, [transactions]);
+  }, [filteredTransactions]);
 
   const changeFilterTimeTitle = (newFilters: Filters | undefined) => {
     let newFilterTimeTitle: string | null = null;
