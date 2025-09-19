@@ -28,7 +28,7 @@ import { useOrganizationId } from 'src/hooks/useOrganizationId';
 import cruLogo from 'src/images/cru/cru-logo.svg';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { useGoalLineItems } from '../../MpdGoal/useGoalLineItems';
+import { useGoalLineItems } from '../../../Shared/useGoalLineItems';
 import { useGetOrganizationsQuery } from './GetOrganization.generated';
 import type { Goal } from '../../../Shared/useReportExpenses/useReportExpenses';
 

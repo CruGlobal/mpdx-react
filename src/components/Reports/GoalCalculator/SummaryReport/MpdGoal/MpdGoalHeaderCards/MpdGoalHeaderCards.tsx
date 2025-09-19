@@ -4,8 +4,8 @@ import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
+import { useGoalLineItems } from '../../../Shared/useGoalLineItems';
 import { Goal } from '../../../Shared/useReportExpenses/useReportExpenses';
-import { useGoalLineItems } from '../useGoalLineItems';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   flex: 1,

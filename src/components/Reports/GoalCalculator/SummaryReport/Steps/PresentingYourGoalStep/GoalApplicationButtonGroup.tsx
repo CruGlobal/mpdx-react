@@ -6,8 +6,8 @@ import { useUpdateAccountPreferencesMutation } from 'src/components/Settings/pre
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { useGoalLineItems } from '../../../Shared/useGoalLineItems';
 import { Goal } from '../../../Shared/useReportExpenses/useReportExpenses';
-import { useGoalLineItems } from '../../MpdGoal/useGoalLineItems';
 
 interface GoalApplicationButtonGroupProps {
   goal: Goal;

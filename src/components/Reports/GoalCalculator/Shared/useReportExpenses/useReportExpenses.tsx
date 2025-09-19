@@ -53,7 +53,15 @@ export const useReportExpenses = () => {
     return getFamilyTotal(goalData.goalCalculation.ministryFamily);
   }, [goalData]);
 
+  const netMonthlySalary = useMemo(() => {
+    if (!goalData?.goalCalculation?.householdFamily) {
+      return 0;
+    }
+    return getFamilyTotal(goalData.goalCalculation.householdFamily);
+  }, [goalData]);
+
   return {
+    netMonthlySalary,
     ministryExpenses,
     ministryExpensesTotal,
     loading,
