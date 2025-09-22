@@ -1,8 +1,10 @@
-import { ArrowForward, Edit, StopCircle } from '@mui/icons-material';
+import { useEffect } from 'react';
+import { ArrowForward, StopCircle } from '@mui/icons-material';
 import {
   Avatar,
   Box,
   Chip,
+  Icon,
   IconButton,
   Tooltip,
   Typography,
@@ -16,9 +18,22 @@ import { chipStyle, iconMap } from './createTableRowHelper';
 export const populateTransferHistoryRows = (
   handleEditModalOpen: (transfer: TransferHistory) => void,
   handleDeleteModalOpen: (transfer: TransferHistory) => void,
+  handleCalendarOpen: (transfer: TransferHistory) => void,
   t: TFunction,
   locale: string,
 ) => {
+  useEffect(() => {
+    const MaterialSymbols = document.createElement('link');
+    MaterialSymbols.rel = 'stylesheet';
+    MaterialSymbols.href =
+      'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined';
+    document.head.appendChild(MaterialSymbols);
+
+    return () => {
+      document.head.removeChild(MaterialSymbols);
+    };
+  }, []);
+
   const transfers: RenderCell = ({ row }) => {
     const fromIconName = row.transferFrom?.toLowerCase() || 'primary';
     const toIconName = row.transferTo?.toLowerCase() || 'savings';
@@ -128,9 +143,46 @@ export const populateTransferHistoryRows = (
     if (row.actions === 'edit-delete') {
       return (
         <>
-          <IconButton>
+          {/* <IconButton>
             <Edit titleAccess="Edit" onClick={() => handleEditModalOpen(row)} />
-          </IconButton>
+          </IconButton> */}
+          {row.endDate ? (
+            <IconButton
+              title={t('Edit Stop Date') as string}
+              onClick={(event) => {
+                event.stopPropagation();
+                handleCalendarOpen(row);
+              }}
+            >
+              <Icon
+                className="material-symbols-outlined"
+                sx={{
+                  fontSize: 20,
+                  color: 'cruGrayMedium',
+                }}
+              >
+                edit_calendar
+              </Icon>
+            </IconButton>
+          ) : (
+            <IconButton
+              title={t('Add Stop Date') as string}
+              onClick={(event) => {
+                event.stopPropagation();
+                handleCalendarOpen(row);
+              }}
+            >
+              <Icon
+                className="material-symbols-outlined"
+                sx={{
+                  fontSize: 20,
+                  color: 'cruGrayMedium',
+                }}
+              >
+                calendar_add_on
+              </Icon>
+            </IconButton>
+          )}
           <IconButton>
             <StopCircle
               titleAccess={t('Stop Transfer')}

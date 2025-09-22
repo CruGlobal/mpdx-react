@@ -6,6 +6,7 @@ import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
+import { UpdateRecurringTransferMutation } from '../TransferMutations.generated';
 import { TransferHistory, mockData } from '../mockData';
 import { TransferHistoryTable } from './TransferHistoryTable';
 
@@ -29,7 +30,11 @@ const TestComponent: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <LocalizationProvider dateAdapter={AdapterLuxon}>
-        <GqlMockedProvider onCall={mutationSpy}>
+        <GqlMockedProvider<{
+          updateRecurringTransfer: UpdateRecurringTransferMutation;
+        }>
+          onCall={mutationSpy}
+        >
           <TransferHistoryTable
             history={mockHistory}
             emptyPlaceholder={<span>Empty Table</span>}
@@ -46,7 +51,7 @@ describe('TransferHistoryTable', () => {
     const { getByRole, findByRole } = render(<TestComponent />);
 
     const iconRow = getByRole('row', {
-      name: 'Savings Account Arrow Primary Account $2,500.00 One Time pending Sep 26, 2023 Reimbursements Edit Stop Transfer',
+      name: 'Savings Account Arrow Primary Account $2,500.00 One Time pending Sep 26, 2023 Reimbursements Stop Transfer',
     });
     const cells = within(iconRow).getAllByRole('gridcell');
 
@@ -100,7 +105,7 @@ describe('TransferHistoryTable', () => {
       await findByRole('columnheader', { name: 'Actions' }),
     ).toBeInTheDocument();
     expect(
-      within(actionCell).getByRole('img', { name: 'Edit' }),
+      within(actionCell).getByRole('button', { name: 'Add Stop Date' }),
     ).toBeInTheDocument();
     expect(
       within(actionCell).getByRole('img', { name: 'Stop Transfer' }),
@@ -109,11 +114,13 @@ describe('TransferHistoryTable', () => {
 
   it('renders empty table when no transfer history is found', async () => {
     const { findByText } = render(
-      <TransferHistoryTable
-        history={[]}
-        emptyPlaceholder={<span>Empty Table</span>}
-        handleOpenTransferModal={handleOpenMock}
-      />,
+      <GqlMockedProvider onCall={mutationSpy}>
+        <TransferHistoryTable
+          history={[]}
+          emptyPlaceholder={<span>Empty Table</span>}
+          handleOpenTransferModal={handleOpenMock}
+        />
+      </GqlMockedProvider>,
     );
 
     expect(await findByText('Empty Table')).toBeInTheDocument();

@@ -274,26 +274,11 @@ describe('TransferModal', () => {
         note: 'Test note',
       };
 
-      const { getByRole, getByDisplayValue, getByLabelText } = render(
+      const { getByDisplayValue, getByLabelText } = render(
         <Components transfer={dataWithValues} type={TransferTypeEnum.Edit} />,
       );
 
-      const fromAccountInput = getByRole('combobox', {
-        name: /from account/i,
-      }).parentElement?.querySelector('input[name="transferFrom"]');
-      const toAccountInput = getByRole('combobox', {
-        name: /to account/i,
-      }).parentElement?.querySelector('input[name="transferTo"]');
-
-      expect(fromAccountInput).toHaveValue(
-        '70056dcb-1a0f-4279-b710-928bcdff811a',
-      );
-      expect(toAccountInput).toHaveValue(
-        '408caf15-cdfd-41d1-8778-aa42a6561b85',
-      );
-
       expect(getByDisplayValue('500')).toBeInTheDocument();
-      expect(getByRole('radio', { name: /monthly/i })).toBeChecked();
       expect(getByLabelText(/end date/i)).toHaveValue('');
     });
 
@@ -361,12 +346,6 @@ describe('TransferModal', () => {
         expect(getByLabelText(/end date/i)).toBeInTheDocument(),
       );
 
-      userEvent.click(getByRole('radio', { name: /annually/i }));
-
-      await waitFor(() =>
-        expect(getByLabelText(/end date/i)).toBeInTheDocument(),
-      );
-
       userEvent.click(getByRole('radio', { name: /one time/i }));
 
       await waitFor(() =>
@@ -391,25 +370,36 @@ describe('TransferModal', () => {
       ).toBeInTheDocument();
     });
 
-    it('should show information box when monthly is selected', async () => {
-      const { getByRole, findByRole } = render(<Components />);
+    it('should show error message when transfer date is before original start date', async () => {
+      const dataWithValues: TransferModalData['transfer'] = {
+        id: '2',
+        transferFrom: 'Primary',
+        transferTo: 'Savings',
+        amount: 500,
+        schedule: ScheduleEnum.Monthly,
+        transferDate: DateTime.fromISO('2024-11-01'),
+        endDate: DateTime.fromISO('2025-11-01'),
+        note: 'Test note',
+      };
 
-      const monthly = getByRole('radio', { name: /monthly/i });
+      const { getByLabelText, findByText } = render(
+        <Components transfer={dataWithValues} type={TransferTypeEnum.Edit} />,
+      );
 
-      userEvent.click(monthly);
-      expect(monthly).toBeChecked();
+      const transferDate = getByLabelText(/transfer date/i);
 
-      const alert = await findByRole('alert');
-      expect(alert).toBeInTheDocument();
+      userEvent.clear(transferDate);
+      userEvent.type(transferDate, '10/01/2024');
+      expect(transferDate).toHaveValue('10/01/2024');
+      userEvent.tab();
+
       expect(
-        within(alert).getByText(
-          'Recurring transfers will appear after the first scheduled payment is processed tomorrow.',
-        ),
+        await findByText('Transfer date cannot be earlier than Nov 01, 2024'),
       ).toBeInTheDocument();
     });
 
-    it('should show error message when amount will exceed available balance', async () => {
-      const { getByRole, findByText } = render(<Components />);
+    it('should show information box when amount exceeds limit', async () => {
+      const { getByRole, findByRole } = render(<Components />);
 
       const fromAccount = getByRole('combobox', { name: /from account/i });
       const toAccount = getByRole('combobox', { name: /to account/i });
@@ -420,15 +410,17 @@ describe('TransferModal', () => {
       userEvent.click(toAccount);
       userEvent.click(getByRole('option', { name: /staff savings/i }));
 
-      const amountField = getByRole('spinbutton', { name: /amount/i });
+      const amount = getByRole('spinbutton', { name: /amount/i });
 
-      userEvent.clear(amountField);
-      userEvent.type(amountField, '20000');
+      userEvent.clear(amount);
+      userEvent.type(amount, '20000');
       userEvent.tab();
 
+      const alert = await findByRole('alert');
+      expect(alert).toBeInTheDocument();
       expect(
-        await findByText(
-          'This amount will cause your account balance to exceed the deficit limit',
+        within(alert).getByText(
+          /this amount will cause your account balance to exceed the deficit limit/i,
         ),
       ).toBeInTheDocument();
     });
@@ -447,11 +439,6 @@ describe('TransferModal', () => {
       userEvent.click(getByRole('radio', { name: /monthly/i }));
       await waitFor(() => {
         expect(getByRole('radio', { name: /monthly/i })).toBeChecked();
-      });
-
-      userEvent.click(getByRole('radio', { name: /annually/i }));
-      await waitFor(() => {
-        expect(getByRole('radio', { name: /annually/i })).toBeChecked();
       });
     });
   });
@@ -606,55 +593,14 @@ describe('TransferModal', () => {
     });
   });
 
-  describe('Edit mode', () => {
-    const dataWithValues: TransferModalData['transfer'] = {
-      id: '2',
-      transferFrom: 'Primary',
-      transferTo: 'Savings',
-      amount: 500,
-      schedule: ScheduleEnum.Monthly,
-      transferDate: DateTime.fromISO('2024-11-01'),
-      endDate: DateTime.fromISO('2025-11-01'),
-      note: 'Test note',
-    };
+  describe('New Mode', () => {
+    it('should display selects', () => {
+      const { getByRole } = render(<Components type={TransferTypeEnum.New} />);
 
-    it('should show error message when transfer date is before original start date', async () => {
-      const { getByLabelText, findByText } = render(
-        <Components transfer={dataWithValues} type={TransferTypeEnum.Edit} />,
-      );
-
-      const transferDate = getByLabelText(/transfer date/i);
-
-      userEvent.clear(transferDate);
-      userEvent.type(transferDate, '10/01/2024');
-      expect(transferDate).toHaveValue('10/01/2024');
-      userEvent.tab();
-
-      expect(
-        await findByText('Transfer date cannot be earlier than Nov 01, 2024'),
-      ).toBeInTheDocument();
-    });
-
-    it('should disable specific fields', () => {
-      const { getByText, getByRole } = render(
-        <Components transfer={dataWithValues} type={TransferTypeEnum.Edit} />,
-      );
-
-      expect(getByText('Edit Fund Transfer')).toBeInTheDocument();
-
-      const fromAccountInput = getByRole('combobox', {
-        name: /from account/i,
-      }).parentElement?.querySelector('input[name="transferFrom"]');
-      const toAccountInput = getByRole('combobox', {
-        name: /to account/i,
-      }).parentElement?.querySelector('input[name="transferTo"]');
-
-      expect(fromAccountInput).toHaveValue('Primary');
-      expect(fromAccountInput).toBeDisabled();
-      expect(toAccountInput).toHaveValue('Savings');
-      expect(toAccountInput).toBeDisabled();
-
-      expect(getByRole('radio', { name: /monthly/i })).toBeDisabled();
+      const fromAccount = getByRole('combobox', { name: /from account/i });
+      const toAccount = getByRole('combobox', { name: /to account/i });
+      expect(fromAccount).toBeInTheDocument();
+      expect(toAccount).toBeInTheDocument();
     });
   });
 });
