@@ -94,99 +94,58 @@ export const InformationCategoryPersonalForm: React.FC<
       </Typography>
       <Grid container spacing={3}>
         <Grid item xs={12} sm={isSpouse ? 12 : 6}>
-          <Field name="firstName">
-            {({ field, meta }: FieldProps) => (
-              <TextField
-                {...field}
-                fullWidth
-                size="small"
-                label={isSpouse ? t('Spouse First Name') : t('First Name')}
-                error={meta.touched && Boolean(meta.error)}
-                helperText={meta.touched && meta.error}
-                variant="outlined"
-                required={!isSpouse}
-              />
-            )}
-          </Field>
+          <TextField
+            fullWidth
+            size="small"
+            label={isSpouse ? t('Spouse First Name') : t('First Name')}
+            variant="outlined"
+            required={!isSpouse}
+          />
         </Grid>
         {!isSpouse && (
           <Grid item xs={12} sm={6}>
-            <Field name="lastName">
-              {({ field, meta }: FieldProps) => (
-                <TextField
-                  {...field}
-                  fullWidth
-                  size="small"
-                  label={t('Last Name')}
-                  error={meta.touched && Boolean(meta.error)}
-                  helperText={meta.touched && meta.error}
-                  variant="outlined"
-                  required
-                />
-              )}
-            </Field>
+            <TextField
+              fullWidth
+              size="small"
+              label={t('Last Name')}
+              variant="outlined"
+              required
+            />
           </Grid>
         )}
 
         {!isSpouse && (
           <Grid item xs={12}>
-            <Field name="geographicLocation">
-              {({ field, meta, form }: FieldProps) => (
-                <Autocomplete
-                  {...field}
-                  onChange={(_, value) =>
-                    form.setFieldValue('geographicLocation', value)
-                  }
-                  options={locations}
-                  size="small"
-                  renderInput={(params) => (
-                    <TextField
-                      {...params}
-                      label={t('Geographic Location')}
-                      error={meta.touched && Boolean(meta.error)}
-                      helperText={meta.touched && meta.error}
-                    />
-                  )}
-                />
+            <Autocomplete
+              options={locations}
+              size="small"
+              renderInput={(params) => (
+                <TextField {...params} label={t('Geographic Location')} />
               )}
-            </Field>
+            />
           </Grid>
         )}
 
         {!isSpouse && (
           <Grid item xs={12}>
-            <Field name="role">
-              {({ field, meta }: FieldProps) => (
-                <FormControl fullWidth size="small">
-                  <InputLabel>{t('Role Type')}</InputLabel>
-                  <Select {...field} label={t('Role Type')}>
-                    <MenuItem value={Role.Office}>{t('Office')}</MenuItem>
-                    <MenuItem value={Role.Field}>{t('Field')}</MenuItem>
-                  </Select>
-                  <FormHelperText error={meta.touched && Boolean(meta.error)}>
-                    {meta.touched && meta.error}
-                  </FormHelperText>
-                </FormControl>
-              )}
-            </Field>
+            <FormControl fullWidth size="small">
+              <InputLabel>{t('Role Type')}</InputLabel>
+              <Select label={t('Role Type')}>
+                <MenuItem value={Role.Office}>{t('Office')}</MenuItem>
+                <MenuItem value={Role.Field}>{t('Field')}</MenuItem>
+              </Select>
+            </FormControl>
           </Grid>
         )}
 
         {!isSpouse && (
           <Grid item xs={12}>
-            <Field name="location">
-              {({ field, meta }: FieldProps) => (
-                <TextField
-                  {...field}
-                  fullWidth
-                  size="small"
-                  label={t('Ministry Location')}
-                  error={meta.touched && Boolean(meta.error)}
-                  helperText={meta.touched && meta.error}
-                  variant="outlined"
-                />
-              )}
-            </Field>
+            <TextField
+              fullWidth
+              size="small"
+              label={t('Ministry Location')}
+              variant="outlined"
+            />
           </Grid>
         )}
 
@@ -255,78 +214,48 @@ export const InformationCategoryPersonalForm: React.FC<
         )}
 
         <Grid item xs={12}>
-          <Field name="tenure">
-            {({ field, meta }: FieldProps) => (
-              <FormControl fullWidth size="small">
-                <InputLabel>
-                  {isSpouse ? t('Spouse Years on Staff') : t('Years on Staff')}
-                </InputLabel>
-                <Select
-                  {...field}
-                  label={
-                    isSpouse ? t('Spouse Years on Staff') : t('Years on Staff')
-                  }
-                >
-                  {tenureOptions.map((tenure) => (
-                    <MenuItem key={tenure} value={tenure}>
-                      {t(tenure)}
-                    </MenuItem>
-                  ))}
-                </Select>
-                <FormHelperText error={meta.touched && Boolean(meta.error)}>
-                  {(meta.touched && meta.error) ||
-                    t('For new staff reference goal')}
-                </FormHelperText>
-              </FormControl>
-            )}
-          </Field>
+          <FormControl fullWidth size="small">
+            <InputLabel>
+              {isSpouse ? t('Spouse Years on Staff') : t('Years on Staff')}
+            </InputLabel>
+            <Select
+              label={
+                isSpouse ? t('Spouse Years on Staff') : t('Years on Staff')
+              }
+            >
+              {tenureOptions.map((tenure) => (
+                <MenuItem key={tenure} value={tenure}>
+                  {t(tenure)}
+                </MenuItem>
+              ))}
+            </Select>
+            <FormHelperText>{t('For new staff reference goal')}</FormHelperText>
+          </FormControl>
         </Grid>
 
         <Grid item xs={12}>
-          <Field name="age">
-            {({ field, meta }: FieldProps) => (
-              <FormControl fullWidth size="small">
-                <InputLabel>{isSpouse ? t('Spouse Age') : t('Age')}</InputLabel>
-                <Select
-                  {...field}
-                  label={isSpouse ? t('Spouse Age') : t('Age')}
-                >
-                  {ageOptions.map((age) => (
-                    <MenuItem key={age} value={age}>
-                      {t(age)}
-                    </MenuItem>
-                  ))}
-                </Select>
-                <FormHelperText error={meta.touched && Boolean(meta.error)}>
-                  {(meta.touched && meta.error) ||
-                    t('For new staff reference goal')}
-                </FormHelperText>
-              </FormControl>
-            )}
-          </Field>
+          <FormControl fullWidth size="small">
+            <InputLabel>{isSpouse ? t('Spouse Age') : t('Age')}</InputLabel>
+            <Select label={isSpouse ? t('Spouse Age') : t('Age')}>
+              {ageOptions.map((age) => (
+                <MenuItem key={age} value={age}>
+                  {t(age)}
+                </MenuItem>
+              ))}
+            </Select>
+            <FormHelperText>{t('For new staff reference goal')}</FormHelperText>
+          </FormControl>
         </Grid>
 
         {!isSpouse && (
           <Grid item xs={12}>
-            <Field name="children">
-              {({ field, meta }: FieldProps) => (
-                <>
-                  <TextField
-                    {...field}
-                    fullWidth
-                    size="small"
-                    label={t("Children's Names and Ages")}
-                    error={meta.touched && Boolean(meta.error)}
-                    helperText={meta.touched && meta.error}
-                    variant="outlined"
-                  />
-                  <FormHelperText error={meta.touched && Boolean(meta.error)}>
-                    {(meta.touched && meta.error) ||
-                      t('For informational purposes only')}
-                  </FormHelperText>
-                </>
-              )}
-            </Field>
+            <TextField
+              fullWidth
+              size="small"
+              label={t("Children's Names and Ages")}
+              variant="outlined"
+              helperText={t('For informational purposes only')}
+            />
           </Grid>
         )}
       </Grid>

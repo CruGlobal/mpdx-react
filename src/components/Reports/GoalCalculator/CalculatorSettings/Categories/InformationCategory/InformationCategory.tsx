@@ -12,7 +12,6 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/system';
-import { Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
@@ -20,7 +19,6 @@ import {
   MpdGoalBenefitsConstantPlanEnum,
   MpdGoalBenefitsConstantSizeEnum,
 } from 'src/graphql/types.generated';
-import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
 import { InformationCategoryFinancialForm } from './InformationCategoryForm/InformationCategoryFinancialForm';
 import { InformationCategoryPersonalForm } from './InformationCategoryForm/InformationCategoryPersonalForm';
 import { Role } from './InformationCategoryForm/enums';
@@ -39,28 +37,6 @@ const StyledTabs = styled(Tabs)(({ theme }) => ({
   paddingLeft: theme.spacing(2),
   paddingRight: theme.spacing(2),
 }));
-
-export interface InformationFormValues {
-  // Financial form fields
-  paycheckAmount: number;
-  taxes: number;
-  secaStatus: string;
-  contributionRoth403b: number;
-  contributionTraditional403b: number;
-  mhaAmountPerPaycheck: number;
-
-  // Personal form fields
-  firstName: string;
-  lastName: string;
-  geographicLocation: string;
-  location: string;
-  role: string;
-  benefits: string;
-  familySize: string;
-  tenure: string;
-  age: string;
-  children: string;
-}
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -86,7 +62,6 @@ interface InformationCategoryProps {
 }
 
 export const InformationCategory: React.FC<InformationCategoryProps> = () => {
-  const { handleContinue } = useGoalCalculator();
   const [value, setValue] = useState(0);
   const { t } = useTranslation();
   const { data: userData } = useGetUserQuery();
@@ -161,7 +136,7 @@ export const InformationCategory: React.FC<InformationCategoryProps> = () => {
   /* Initially pick was used here, but certain fields
    * like tenure may not be required for a spouse.
    */
-  const spouseValidationSchema = yup.object(
+  const _spouseValidationSchema = yup.object(
     Object.fromEntries(
       [
         'firstName',
@@ -180,50 +155,6 @@ export const InformationCategory: React.FC<InformationCategoryProps> = () => {
 
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
-  };
-
-  const initialValues: InformationFormValues = {
-    // Financial form initial values
-    paycheckAmount: 0,
-    taxes: 0,
-    secaStatus: '',
-    contributionRoth403b: 0,
-    contributionTraditional403b: 0,
-    mhaAmountPerPaycheck: 0,
-
-    // Personal form initial values
-    firstName: userData?.user?.firstName || '',
-    lastName: userData?.user?.lastName || '',
-    geographicLocation: '',
-    location: '',
-    role: '',
-    benefits: '',
-    familySize: '',
-    tenure: '',
-    age: '',
-    children: '',
-  };
-
-  const initialSpouseValues: Partial<InformationFormValues> = {
-    // Financial form initial values for spouse
-    paycheckAmount: 0,
-    taxes: 0,
-    secaStatus: '',
-    contributionRoth403b: 0,
-    contributionTraditional403b: 0,
-    mhaAmountPerPaycheck: 0,
-
-    // Personal form initial values for spouse
-    role: '',
-    tenure: '',
-    age: '',
-  };
-
-  const handleSubmit = () => {
-    // Handle form submission here
-    // TODO: Implement form submission logic
-
-    handleContinue();
   };
 
   // Someone may or may not have a spouse,
@@ -281,90 +212,69 @@ export const InformationCategory: React.FC<InformationCategoryProps> = () => {
       </Box>
 
       {!spouseInformation && (
-        <Formik
-          initialValues={initialValues}
-          validationSchema={validationSchema}
-          onSubmit={handleSubmit}
-          enableReinitialize
-        >
-          <Form>
-            <StyledCard>
-              <StyledInfoBox>
-                <StyledTabs
-                  value={value}
-                  onChange={handleChange}
-                  aria-label={t('information tabs')}
-                >
-                  <Tab
-                    data-testid="personal-tab"
-                    iconPosition={'start'}
-                    icon={<PersonIcon />}
-                    label={t('Personal')}
-                  />
-                  <Tab
-                    data-testid="financial-tab"
-                    iconPosition={'start'}
-                    icon={<CreditCardIcon />}
-                    label={t('Financial')}
-                  />
-                </StyledTabs>
-              </StyledInfoBox>
+        <StyledCard>
+          <StyledInfoBox>
+            <StyledTabs
+              value={value}
+              onChange={handleChange}
+              aria-label={t('information tabs')}
+            >
+              <Tab
+                data-testid="personal-tab"
+                iconPosition={'start'}
+                icon={<PersonIcon />}
+                label={t('Personal')}
+              />
+              <Tab
+                data-testid="financial-tab"
+                iconPosition={'start'}
+                icon={<CreditCardIcon />}
+                label={t('Financial')}
+              />
+            </StyledTabs>
+          </StyledInfoBox>
 
-              <TabPanel value={value} index={0}>
-                <InformationCategoryPersonalForm />
-              </TabPanel>
+          <TabPanel value={value} index={0}>
+            <InformationCategoryPersonalForm />
+          </TabPanel>
 
-              <TabPanel value={value} index={1}>
-                <InformationCategoryFinancialForm />
-              </TabPanel>
-            </StyledCard>
-          </Form>
-        </Formik>
+          <TabPanel value={value} index={1}>
+            <InformationCategoryFinancialForm />
+          </TabPanel>
+        </StyledCard>
       )}
 
       {spouseInformation && (
-        <Formik
-          initialValues={initialSpouseValues}
-          validationSchema={spouseValidationSchema}
-          onSubmit={handleSubmit}
-          enableReinitialize
-        >
-          <Form>
-            <StyledCard>
-              <StyledInfoBox>
-                <StyledTabs
-                  value={value}
-                  onChange={handleChange}
-                  aria-label={t('information tabs')}
-                >
-                  <Tab
-                    data-testid="spouse-personal-tab"
-                    iconPosition={'start'}
-                    icon={<PersonIcon />}
-                    label={t("Spouse's Personal")}
-                  />
-                  <Tab
-                    data-testid="spouse-financial-tab"
-                    iconPosition={'start'}
-                    icon={<CreditCardIcon />}
-                    label={t("Spouse's Financial")}
-                  />
-                </StyledTabs>
-              </StyledInfoBox>
+        <StyledCard>
+          <StyledInfoBox>
+            <StyledTabs
+              value={value}
+              onChange={handleChange}
+              aria-label={t('information tabs')}
+            >
+              <Tab
+                data-testid="spouse-personal-tab"
+                iconPosition={'start'}
+                icon={<PersonIcon />}
+                label={t("Spouse's Personal")}
+              />
+              <Tab
+                data-testid="spouse-financial-tab"
+                iconPosition={'start'}
+                icon={<CreditCardIcon />}
+                label={t("Spouse's Financial")}
+              />
+            </StyledTabs>
+          </StyledInfoBox>
 
-              <TabPanel value={value} index={0}>
-                <InformationCategoryPersonalForm isSpouse />
-              </TabPanel>
+          <TabPanel value={value} index={0}>
+            <InformationCategoryPersonalForm isSpouse />
+          </TabPanel>
 
-              <TabPanel value={value} index={1}>
-                {/* isSpouse logic does not currently need to be handled in
-                  InformationCategoryFinancialForm but it's worth passing
-                  in the event we do make changes */}
-                <InformationCategoryFinancialForm isSpouse />
-              </TabPanel>
-            </StyledCard>
-          </Form>
-        </Formik>
+          <TabPanel value={value} index={1}>
+            <InformationCategoryFinancialForm isSpouse />
+          </TabPanel>
+        </StyledCard>
       )}
     </StyledCard>
   );
