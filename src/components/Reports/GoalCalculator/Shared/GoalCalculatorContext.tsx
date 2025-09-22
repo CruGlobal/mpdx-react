@@ -22,6 +22,7 @@ import {
   GoalCalculatorStepEnum,
 } from '../GoalCalculatorHelper';
 import { useGoalCalculationQuery } from './GoalCalculation.generated';
+import { calculatePercentage } from './calculatePercentage';
 import { GoalCalculatorStep, useSteps } from './useSteps';
 
 export type GoalCalculatorType = {
@@ -51,6 +52,7 @@ export type GoalCalculatorType = {
   goalBenefitsConstantMap: GoalBenefitsConstantMap;
   goalGeographicConstantMap: GoalGeographicConstantMap;
   goalMiscConstantMap: GoalMiscConstantMap;
+  percentComplete: number;
 };
 
 const GoalCalculatorContext = createContext<GoalCalculatorType | null>(null);
@@ -90,6 +92,10 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   } = useGoalCalculatorConstants();
 
   const steps = useSteps();
+  const percentComplete = useMemo(
+    () => calculatePercentage(goalCalculationResult.data?.goalCalculation),
+    [goalCalculationResult.data],
+  );
   const [stepIndex, setStepIndex] = useState(0);
   const [selectedReport, setSelectedReport] =
     useState<GoalCalculatorReportEnum>(GoalCalculatorReportEnum.MpdGoal);
@@ -163,6 +169,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       goalBenefitsConstantMap,
       goalGeographicConstantMap,
       goalMiscConstantMap,
+      percentComplete,
     }),
     [
       steps,
@@ -183,6 +190,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       goalBenefitsConstantMap,
       goalGeographicConstantMap,
       goalMiscConstantMap,
+      percentComplete,
     ],
   );
 

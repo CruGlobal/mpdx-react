@@ -22,9 +22,9 @@ const TestComponent: React.FC<TestComponentProps> = ({ noGoals = false }) => (
             nodes: noGoals
               ? []
               : [
-                  { createdAt: '2025-01-01T00:00:00.000Z' },
-                  { createdAt: '2025-02-01T00:00:00.000Z' },
-                  { createdAt: '2025-03-01T00:00:00.000Z' },
+                  { name: 'Monthly Support Goal' },
+                  { name: 'Annual Giving Goal' },
+                  { name: 'Partnership Goal' },
                 ],
           },
         },
@@ -60,7 +60,7 @@ describe('GoalsList', () => {
     const { findByRole, queryByRole } = render(<TestComponent />);
 
     expect(
-      await findByRole('heading', { name: '2025-01-01T00:00:00.000Z' }),
+      await findByRole('heading', { name: 'Monthly Support Goal' }),
     ).toBeInTheDocument();
     expect(queryByRole('progressbar')).not.toBeInTheDocument();
   });
