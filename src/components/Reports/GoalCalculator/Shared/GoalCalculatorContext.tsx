@@ -15,16 +15,13 @@ import {
   GoalBenefitsConstantMap,
   GoalGeographicConstantMap,
   GoalMiscConstantMap,
-  useFormatConstants,
-} from '../../../../hooks/useFormatGoalCalculatorConstants';
+  useGoalCalculatorConstants,
+} from '../../../../hooks/useGoalCalculatorConstants';
 import {
   GoalCalculatorReportEnum,
   GoalCalculatorStepEnum,
 } from '../GoalCalculatorHelper';
-import {
-  useGoalCalculationQuery,
-  useGoalCalculatorConstantsQuery,
-} from './GoalCalculation.generated';
+import { useGoalCalculationQuery } from './GoalCalculation.generated';
 import { GoalCalculatorStep, useSteps } from './useSteps';
 
 export type GoalCalculatorType = {
@@ -86,12 +83,11 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     },
   });
 
-  const { data } = useGoalCalculatorConstantsQuery();
   const {
     goalBenefitsConstantMap,
     goalMiscConstantMap,
     goalGeographicConstantMap,
-  } = useFormatConstants(data);
+  } = useGoalCalculatorConstants();
 
   const steps = useSteps();
   const [stepIndex, setStepIndex] = useState(0);

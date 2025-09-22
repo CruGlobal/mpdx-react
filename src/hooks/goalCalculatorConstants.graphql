@@ -1,0 +1,25 @@
+query GoalCalculatorConstants {
+  constant {
+    mpdGoalBenefitsConstants {
+      id
+      size
+      sizeDisplayName
+      plan
+      planDisplayName
+      cost
+    }
+    mpdGoalGeographicConstants {
+      id
+      location
+      percentageMultiplier
+    }
+    mpdGoalMiscConstants {
+      id
+      category
+      categoryDisplayName
+      label
+      labelDisplayName
+      fee
+    }
+  }
+}

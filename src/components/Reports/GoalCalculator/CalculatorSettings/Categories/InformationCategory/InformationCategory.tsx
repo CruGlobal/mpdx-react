@@ -15,9 +15,11 @@ import { styled } from '@mui/system';
 import { Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { MpdGoalBenefitsConstantSizeEnum } from 'pages/api/graphql-rest.page.generated';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
-import { MpdGoalBenefitsConstantPlanEnum } from 'src/graphql/types.generated';
+import {
+  MpdGoalBenefitsConstantPlanEnum,
+  MpdGoalBenefitsConstantSizeEnum,
+} from 'src/graphql/types.generated';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
 import { InformationCategoryFinancialForm } from './InformationCategoryForm/InformationCategoryFinancialForm';
 import { InformationCategoryPersonalForm } from './InformationCategoryForm/InformationCategoryPersonalForm';

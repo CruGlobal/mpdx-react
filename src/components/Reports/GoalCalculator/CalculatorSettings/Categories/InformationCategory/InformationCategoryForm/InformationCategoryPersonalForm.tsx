@@ -40,7 +40,7 @@ export const InformationCategoryPersonalForm: React.FC<
   } = useGoalCalculator();
 
   const locations = useMemo(
-    () => goalGeographicConstantMap.keys().toArray(),
+    () => Array.from(goalGeographicConstantMap.keys()),
     [goalGeographicConstantMap],
   );
 
@@ -50,7 +50,7 @@ export const InformationCategoryPersonalForm: React.FC<
       familySize.set(benefits.size, benefits.sizeDisplayName);
     });
 
-    return familySize.entries().toArray();
+    return Array.from(familySize.entries());
   }, [goalBenefitsConstantMap]);
 
   const planOptions = useMemo(() => {
@@ -61,7 +61,7 @@ export const InformationCategoryPersonalForm: React.FC<
         plans.set(benefits.plan, benefits.planDisplayName);
       }
     });
-    return plans.entries().toArray();
+    return Array.from(plans.entries());
   }, [goalBenefitsConstantMap, values.familySize]);
 
   useEffect(() => {
