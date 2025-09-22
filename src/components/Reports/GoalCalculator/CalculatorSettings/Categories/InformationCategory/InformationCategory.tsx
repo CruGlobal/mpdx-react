@@ -16,13 +16,14 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import {
+  GoalCalculationAge,
+  GoalCalculationRole,
   MpdGoalBenefitsConstantPlanEnum,
   MpdGoalBenefitsConstantSizeEnum,
 } from 'src/graphql/types.generated';
 import { InformationCategoryFinancialForm } from './InformationCategoryForm/InformationCategoryFinancialForm';
 import { InformationCategoryPersonalForm } from './InformationCategoryForm/InformationCategoryPersonalForm';
-import { Role } from './InformationCategoryForm/enums';
-import { ageOptions, tenureOptions } from './InformationCategoryForm/mockData';
+import { amount, integer, percentage } from './schema';
 
 const StyledInfoBox = styled(Box)({
   borderBottom: 1,
@@ -66,91 +67,76 @@ export const InformationCategory: React.FC<InformationCategoryProps> = () => {
   const { t } = useTranslation();
   const { data: userData } = useGetUserQuery();
 
-  const validationSchema = yup.object({
-    // Financial validation
-    paycheckAmount: yup
-      .number()
-      .min(0, t('Paycheck amount must be positive'))
-      .required(t('Paycheck amount is required')),
-    taxes: yup
-      .number()
-      .min(0, t('Taxes must be positive'))
-      .max(100, t('Taxes cannot exceed 100%'))
-      .required(t('Taxes percentage is required')),
-    secaStatus: yup
-      .string()
-      .oneOf(
-        ['exempt', 'non-exempt'],
-        t('SECA status must be either exempt or non-exempt'),
-      )
-      .required(t('SECA status is required')),
-    contributionRoth403b: yup
-      .number()
-      .min(0, t('Roth 403(b) contribution must be positive'))
-      .optional(),
-    contributionTraditional403b: yup
-      .number()
-      .min(0, t('Traditional 403(b) contribution must be positive'))
-      .optional(),
-    mhaAmountPerPaycheck: yup
-      .number()
-      .min(0, t('MHA amount per paycheck must be positive'))
-      .optional(),
+  const validationSchema = useMemo(
+    () =>
+      yup.object({
+        // Personal validation
+        firstName: yup.string(),
+        spouseFirstName: yup.string(),
+        lastName: yup.string(),
+        geographicLocation: yup.string(),
+        role: yup
+          .string()
+          .oneOf(
+            Object.values(GoalCalculationRole),
+            t('Role must be one of the options'),
+          ),
+        ministryLocation: yup.string(),
+        familySize: yup
+          .string()
+          .oneOf(
+            Object.values(MpdGoalBenefitsConstantSizeEnum),
+            t('Family size must be one of the options'),
+          ),
+        benefits: yup
+          .string()
+          .oneOf(
+            Object.values(MpdGoalBenefitsConstantPlanEnum),
+            t('Benefits plan must be one of the options'),
+          ),
+        yearsOnStaff: integer(t('Years on staff'), t),
+        spouseYearsOnStaff: integer(t('Spouse years on staff'), t),
+        age: yup
+          .string()
+          .oneOf(
+            Object.values(GoalCalculationAge),
+            t('Age must be one of the options'),
+          ),
+        spouseAge: yup
+          .string()
+          .oneOf(
+            Object.values(GoalCalculationAge),
+            t('Spouse age must be one of the options'),
+          ),
+        childrenNamesAges: yup.string(),
 
-    // Personal validation
-    firstName: yup.string().required(t('First name is required')),
-    lastName: yup.string().required(t('Last name is required')),
-    geographicLocation: yup
-      .string()
-      .required(t('Geographic location is required')),
-    role: yup
-      .string()
-      .oneOf(Object.values(Role), t('Role must be one of the options'))
-      .required(t('Role is required')),
-    location: yup.string().required(t('Location is required')),
-    benefits: yup
-      .string()
-      .oneOf(
-        Object.values(MpdGoalBenefitsConstantPlanEnum),
-        t('Benefits plan must be one of the options'),
-      )
-      .required(t('Benefits plan is required')),
-    familySize: yup
-      .string()
-      .oneOf(
-        Object.values(MpdGoalBenefitsConstantSizeEnum),
-        t('Family size must be one of the options'),
-      )
-      .required(t('Family size is required')),
-    tenure: yup
-      .string()
-      .oneOf(tenureOptions, t('Years on staff must be one of the options'))
-      .required(t('Years on staff is required')),
-    age: yup
-      .string()
-      .oneOf(ageOptions, t('Age range must be one of the options'))
-      .required(t('Age is required')),
-    children: yup.string().optional(),
-  });
-
-  /* Initially pick was used here, but certain fields
-   * like tenure may not be required for a spouse.
-   */
-  const _spouseValidationSchema = yup.object(
-    Object.fromEntries(
-      [
-        'firstName',
-        'lastName',
-        'paycheckAmount',
-        'taxes',
-        'secaStatus',
-        'contributionRoth403b',
-        'mhaAmountPerPaycheck',
-        'contributionTraditional403b',
-        'tenure',
-        'age',
-      ].map((field) => [field, validationSchema.fields[field].notRequired()]),
-    ),
+        // Financial validation
+        netPaycheckAmount: amount(t('Net Paycheck Amount'), t),
+        spouseNetPaycheckAmount: amount(t('Spouse Net Paycheck Amount'), t),
+        taxesPercentage: percentage(t('Taxes'), t),
+        spouseTaxesPercentage: percentage(t('Spouse Taxes'), t),
+        secaExempt: yup.boolean(),
+        spouseSecaExempt: yup.boolean(),
+        rothContributionPercentage: percentage(
+          t('Roth 403(b) Contributions'),
+          t,
+        ),
+        spouseRothContributionPercentage: percentage(
+          t('Spouse Roth 403(b) Contributions'),
+          t,
+        ),
+        traditionalContributionPercentage: percentage(
+          t('Traditional 403(b) Contributions'),
+          t,
+        ),
+        spouseTraditionalContributionPercentage: percentage(
+          t('Spouse Traditional 403(b) Contributions'),
+          t,
+        ),
+        mhaAmount: amount(t('MHA Amount Per Paycheck'), t),
+        spouseMhaAmount: amount(t('Spouse MHA Amount Per Paycheck'), t),
+      }),
+    [t],
   );
 
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
@@ -235,11 +221,11 @@ export const InformationCategory: React.FC<InformationCategoryProps> = () => {
           </StyledInfoBox>
 
           <TabPanel value={value} index={0}>
-            <InformationCategoryPersonalForm />
+            <InformationCategoryPersonalForm schema={validationSchema} />
           </TabPanel>
 
           <TabPanel value={value} index={1}>
-            <InformationCategoryFinancialForm />
+            <InformationCategoryFinancialForm schema={validationSchema} />
           </TabPanel>
         </StyledCard>
       )}
@@ -268,11 +254,17 @@ export const InformationCategory: React.FC<InformationCategoryProps> = () => {
           </StyledInfoBox>
 
           <TabPanel value={value} index={0}>
-            <InformationCategoryPersonalForm isSpouse />
+            <InformationCategoryPersonalForm
+              schema={validationSchema}
+              isSpouse
+            />
           </TabPanel>
 
           <TabPanel value={value} index={1}>
-            <InformationCategoryFinancialForm isSpouse />
+            <InformationCategoryFinancialForm
+              schema={validationSchema}
+              isSpouse
+            />
           </TabPanel>
         </StyledCard>
       )}

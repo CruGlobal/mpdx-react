@@ -13,15 +13,18 @@ import {
   Typography,
 } from '@mui/material';
 import { Field, FieldProps, useFormikContext } from 'formik';
+import { range } from 'lodash';
 import { useTranslation } from 'react-i18next';
+import * as yup from 'yup';
 import { useGoalCalculator } from 'src/components/Reports/GoalCalculator/Shared/GoalCalculatorContext';
 import {
+  GoalCalculationAge,
+  GoalCalculationRole,
   MpdGoalBenefitsConstantPlanEnum,
   MpdGoalBenefitsConstantSizeEnum,
 } from 'src/graphql/types.generated';
+import { AutosaveTextField } from '../../Autosave/AutosaveTextField';
 import { BenefitsPlanHelperPanel } from '../InformationHelperPanel/BenefitsPlanHelperPanel';
-import { Role } from './enums';
-import { ageOptions, tenureOptions } from './mockData';
 
 interface GoalCategoryFormValues {
   familySize: string;
@@ -29,12 +32,19 @@ interface GoalCategoryFormValues {
 }
 
 interface InformationCategoryPersonalFormProps {
+  schema: yup.Schema;
   isSpouse?: boolean;
 }
 
+const MAX_TENURE = 50;
+const tenureOptions = range(0, MAX_TENURE + 1, 5).map((value) => ({
+  label: value === MAX_TENURE ? `${value}+` : `${value}-${value + 4}`,
+  value,
+}));
+
 export const InformationCategoryPersonalForm: React.FC<
   InformationCategoryPersonalFormProps
-> = ({ isSpouse }) => {
+> = ({ schema, isSpouse }) => {
   const { t } = useTranslation();
   const { values, setFieldValue } = useFormikContext<GoalCategoryFormValues>();
   const {
@@ -94,7 +104,9 @@ export const InformationCategoryPersonalForm: React.FC<
       </Typography>
       <Grid container spacing={3}>
         <Grid item xs={12} sm={isSpouse ? 12 : 6}>
-          <TextField
+          <AutosaveTextField
+            fieldName={isSpouse ? 'spouseFirstName' : 'firstName'}
+            schema={schema}
             fullWidth
             size="small"
             label={isSpouse ? t('Spouse First Name') : t('First Name')}
@@ -104,7 +116,9 @@ export const InformationCategoryPersonalForm: React.FC<
         </Grid>
         {!isSpouse && (
           <Grid item xs={12} sm={6}>
-            <TextField
+            <AutosaveTextField
+              fieldName="lastName"
+              schema={schema}
               fullWidth
               size="small"
               label={t('Last Name')}
@@ -128,19 +142,30 @@ export const InformationCategoryPersonalForm: React.FC<
 
         {!isSpouse && (
           <Grid item xs={12}>
-            <FormControl fullWidth size="small">
-              <InputLabel>{t('Role Type')}</InputLabel>
-              <Select label={t('Role Type')}>
-                <MenuItem value={Role.Office}>{t('Office')}</MenuItem>
-                <MenuItem value={Role.Field}>{t('Field')}</MenuItem>
-              </Select>
-            </FormControl>
+            <AutosaveTextField
+              fieldName="role"
+              schema={schema}
+              fullWidth
+              size="small"
+              select
+              label={t('Role Type')}
+              variant="outlined"
+            >
+              <MenuItem value={GoalCalculationRole.Office}>
+                {t('Office')}
+              </MenuItem>
+              <MenuItem value={GoalCalculationRole.Field}>
+                {t('Field')}
+              </MenuItem>
+            </AutosaveTextField>
           </Grid>
         )}
 
         {!isSpouse && (
           <Grid item xs={12}>
-            <TextField
+            <AutosaveTextField
+              fieldName="ministryLocation"
+              schema={schema}
               fullWidth
               size="small"
               label={t('Ministry Location')}
@@ -214,47 +239,59 @@ export const InformationCategoryPersonalForm: React.FC<
         )}
 
         <Grid item xs={12}>
-          <FormControl fullWidth size="small">
-            <InputLabel>
-              {isSpouse ? t('Spouse Years on Staff') : t('Years on Staff')}
-            </InputLabel>
-            <Select
-              label={
-                isSpouse ? t('Spouse Years on Staff') : t('Years on Staff')
-              }
-            >
-              {tenureOptions.map((tenure) => (
-                <MenuItem key={tenure} value={tenure}>
-                  {t(tenure)}
-                </MenuItem>
-              ))}
-            </Select>
-            <FormHelperText>{t('For new staff reference goal')}</FormHelperText>
-          </FormControl>
+          <AutosaveTextField
+            fieldName={isSpouse ? 'spouseYearsOnStaff' : 'yearsOnStaff'}
+            schema={schema}
+            fullWidth
+            size="small"
+            select
+            label={isSpouse ? t('Spouse Years on Staff') : t('Years on Staff')}
+            helperText={t('For new staff reference goal')}
+            variant="outlined"
+          >
+            {tenureOptions.map((tenure) => (
+              <MenuItem key={tenure.value} value={tenure.value}>
+                {tenure.label}
+              </MenuItem>
+            ))}
+          </AutosaveTextField>
         </Grid>
 
         <Grid item xs={12}>
-          <FormControl fullWidth size="small">
-            <InputLabel>{isSpouse ? t('Spouse Age') : t('Age')}</InputLabel>
-            <Select label={isSpouse ? t('Spouse Age') : t('Age')}>
-              {ageOptions.map((age) => (
-                <MenuItem key={age} value={age}>
-                  {t(age)}
-                </MenuItem>
-              ))}
-            </Select>
-            <FormHelperText>{t('For new staff reference goal')}</FormHelperText>
-          </FormControl>
+          <AutosaveTextField
+            fieldName={isSpouse ? 'spouseAge' : 'age'}
+            schema={schema}
+            fullWidth
+            size="small"
+            select
+            label={isSpouse ? t('Spouse Age') : t('Age')}
+            helperText={t('For new staff reference goal')}
+            variant="outlined"
+          >
+            <MenuItem value={GoalCalculationAge.UnderThirty}>
+              {t('Under 30')}
+            </MenuItem>
+            <MenuItem value={GoalCalculationAge.ThirtyToThirtyFour}>
+              {t('30-34')}
+            </MenuItem>
+            <MenuItem value={GoalCalculationAge.ThirtyFiveToThirtyNine}>
+              {t('35-39')}
+            </MenuItem>
+            <MenuItem value={GoalCalculationAge.OverForty}>
+              {t('Over 40')}
+            </MenuItem>
+          </AutosaveTextField>
         </Grid>
 
         {!isSpouse && (
           <Grid item xs={12}>
-            <TextField
+            <AutosaveTextField
+              fieldName="childrenNamesAges"
+              schema={schema}
               fullWidth
               size="small"
               label={t("Children's Names and Ages")}
               variant="outlined"
-              helperText={t('For informational purposes only')}
             />
           </Grid>
         )}

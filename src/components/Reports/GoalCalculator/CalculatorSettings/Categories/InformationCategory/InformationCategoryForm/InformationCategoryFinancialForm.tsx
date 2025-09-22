@@ -8,22 +8,32 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import * as yup from 'yup';
 import { useGoalCalculator } from 'src/components/Reports/GoalCalculator/Shared/GoalCalculatorContext';
 import {
   CurrencyAdornment,
   PercentageAdornment,
 } from '../../../../Shared/Adornments';
+import { AutosaveTextField } from '../../Autosave/AutosaveTextField';
+import { useSaveField } from '../../Autosave/useSaveField';
 import { Contribution403bHelperPanel } from '../InformationHelperPanel/Contribution403bHelperPanel';
 
 interface InformationCategoryFinancialFormProps {
+  schema: yup.Schema;
   isSpouse?: boolean;
 }
 
 export const InformationCategoryFinancialForm: React.FC<
   InformationCategoryFinancialFormProps
-> = ({ isSpouse }) => {
+> = ({ schema, isSpouse }) => {
   const { t } = useTranslation();
-  const { setRightPanelContent } = useGoalCalculator();
+  const {
+    setRightPanelContent,
+    goalCalculationResult: { data },
+  } = useGoalCalculator();
+
+  const saveField = useSaveField();
+  const secaField = isSpouse ? 'spouseSecaExempt' : 'secaExempt';
 
   return (
     <>
@@ -40,7 +50,11 @@ export const InformationCategoryFinancialForm: React.FC<
 
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <TextField
+          <AutosaveTextField
+            fieldName={
+              isSpouse ? 'spouseNetPaycheckAmount' : 'netPaycheckAmount'
+            }
+            schema={schema}
             fullWidth
             size="small"
             label={
@@ -58,13 +72,15 @@ export const InformationCategoryFinancialForm: React.FC<
         </Grid>
 
         <Grid item xs={12}>
-          <TextField
+          <AutosaveTextField
+            fieldName={isSpouse ? 'spouseTaxesPercentage' : 'taxesPercentage'}
+            schema={schema}
             fullWidth
             size="small"
-            label={isSpouse ? t('Spouse Taxes (%)') : t('Taxes (%)')}
+            label={isSpouse ? t('Spouse Taxes') : t('Taxes')}
             type="number"
             variant="outlined"
-            inputProps={{ min: 0, max: 100, step: 0.01 }}
+            inputProps={{ min: 0, max: 100, step: 1 }}
             InputProps={{
               endAdornment: <PercentageAdornment />,
             }}
@@ -73,6 +89,10 @@ export const InformationCategoryFinancialForm: React.FC<
 
         <Grid item xs={12}>
           <TextField
+            value={data?.goalCalculation[secaField]?.toString()}
+            onChange={(event) => {
+              saveField({ [secaField]: event.target.value === 'true' });
+            }}
             fullWidth
             size="small"
             select
@@ -83,14 +103,19 @@ export const InformationCategoryFinancialForm: React.FC<
             }
             variant="outlined"
           >
-            <MenuItem value="">{t('Select SECA Status')}</MenuItem>
-            <MenuItem value="exempt">{t('Exempt')}</MenuItem>
-            <MenuItem value="non-exempt">{t('Non-Exempt')}</MenuItem>
+            <MenuItem value="false">{t('Non-Exempt')}</MenuItem>
+            <MenuItem value="true">{t('Exempt')}</MenuItem>
           </TextField>
         </Grid>
 
         <Grid item xs={12}>
-          <TextField
+          <AutosaveTextField
+            fieldName={
+              isSpouse
+                ? 'spouseRothContributionPercentage'
+                : 'rothContributionPercentage'
+            }
+            schema={schema}
             fullWidth
             size="small"
             label={
@@ -100,24 +125,32 @@ export const InformationCategoryFinancialForm: React.FC<
             }
             type="number"
             variant="outlined"
-            inputProps={{ min: 0, step: 0.01 }}
+            inputProps={{ min: 0, max: 100, step: 1 }}
             InputProps={{
-              startAdornment: <CurrencyAdornment />,
               endAdornment: (
-                <IconButton
-                  onClick={() =>
-                    setRightPanelContent(<Contribution403bHelperPanel />)
-                  }
-                >
-                  <InfoIcon />
-                </IconButton>
+                <>
+                  <PercentageAdornment />
+                  <IconButton
+                    onClick={() =>
+                      setRightPanelContent(<Contribution403bHelperPanel />)
+                    }
+                  >
+                    <InfoIcon />
+                  </IconButton>
+                </>
               ),
             }}
           />
         </Grid>
 
         <Grid item xs={12}>
-          <TextField
+          <AutosaveTextField
+            fieldName={
+              isSpouse
+                ? 'spouseTraditionalContributionPercentage'
+                : 'traditionalContributionPercentage'
+            }
+            schema={schema}
             fullWidth
             size="small"
             label={
@@ -127,24 +160,28 @@ export const InformationCategoryFinancialForm: React.FC<
             }
             type="number"
             variant="outlined"
-            inputProps={{ min: 0, step: 0.01 }}
+            inputProps={{ min: 0, max: 100, step: 1 }}
             InputProps={{
-              startAdornment: <CurrencyAdornment />,
               endAdornment: (
-                <IconButton
-                  onClick={() =>
-                    setRightPanelContent(<Contribution403bHelperPanel />)
-                  }
-                >
-                  <InfoIcon />
-                </IconButton>
+                <>
+                  <PercentageAdornment />
+                  <IconButton
+                    onClick={() =>
+                      setRightPanelContent(<Contribution403bHelperPanel />)
+                    }
+                  >
+                    <InfoIcon />
+                  </IconButton>
+                </>
               ),
             }}
           />
         </Grid>
 
         <Grid item xs={12}>
-          <TextField
+          <AutosaveTextField
+            fieldName={isSpouse ? 'spouseMhaAmount' : 'mhaAmount'}
+            schema={schema}
             fullWidth
             size="small"
             label={
@@ -154,7 +191,7 @@ export const InformationCategoryFinancialForm: React.FC<
             }
             type="number"
             variant="outlined"
-            inputProps={{ min: 0, step: 0.01 }}
+            inputProps={{ min: 0, step: 1 }}
             InputProps={{
               startAdornment: <CurrencyAdornment />,
             }}

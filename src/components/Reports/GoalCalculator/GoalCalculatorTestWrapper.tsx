@@ -22,6 +22,7 @@ export const goalCalculationMock = {
   goalCalculation: {
     id: 'test-goal-id',
     name: 'Initial Goal Name',
+    mhaAmount: 1000,
     ministryFamily: {
       primaryBudgetCategories: [
         {
