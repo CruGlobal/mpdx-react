@@ -27,7 +27,9 @@ export const CustomEditCalendar: React.FC<CustomEditCalendarProps> = ({
       onAccept={onAccept}
       minDate={minDate}
       slotProps={{
-        textField: { sx: { display: 'none' } },
+        textField: {
+          sx: { display: 'none' },
+        },
         actionBar: {
           actions: ['accept', 'cancel', 'clear'],
         },

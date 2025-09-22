@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { ArrowForward, StopCircle } from '@mui/icons-material';
+import { ArrowForward, Edit, StopCircle } from '@mui/icons-material';
 import {
   Avatar,
   Box,
@@ -11,14 +11,20 @@ import {
 } from '@mui/material';
 import { TFunction } from 'i18next';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
-import { ScheduleEnum, StatusEnum, TransferHistory } from '../../mockData';
-import { RenderCell } from '../TransferHistoryTable';
+import {
+  ScheduleEnum,
+  StatusEnum,
+  TableTypeEnum,
+  Transfers,
+} from '../../mockData';
+import { RenderCell } from '../TransfersTable';
 import { chipStyle, iconMap } from './createTableRowHelper';
 
-export const populateTransferHistoryRows = (
-  handleEditModalOpen: (transfer: TransferHistory) => void,
-  handleDeleteModalOpen: (transfer: TransferHistory) => void,
-  handleCalendarOpen: (transfer: TransferHistory) => void,
+export const populateTransferRows = (
+  type: TableTypeEnum,
+  handleEditModalOpen: (transfer: Transfers) => void,
+  handleDeleteModalOpen: (transfer: Transfers) => void,
+  handleCalendarOpen: (transfer: Transfers) => void,
   t: TFunction,
   locale: string,
 ) => {
@@ -143,10 +149,14 @@ export const populateTransferHistoryRows = (
     if (row.actions === 'edit-delete') {
       return (
         <>
-          {/* <IconButton>
-            <Edit titleAccess="Edit" onClick={() => handleEditModalOpen(row)} />
-          </IconButton> */}
-          {row.endDate ? (
+          {type === TableTypeEnum.Upcoming ? (
+            <IconButton>
+              <Edit
+                titleAccess="Edit"
+                onClick={() => handleEditModalOpen(row)}
+              />
+            </IconButton>
+          ) : row.endDate ? (
             <IconButton
               title={t('Edit Stop Date') as string}
               onClick={(event) => {
@@ -157,7 +167,7 @@ export const populateTransferHistoryRows = (
               <Icon
                 className="material-symbols-outlined"
                 sx={{
-                  fontSize: 20,
+                  fontSize: 24,
                   color: 'cruGrayMedium',
                 }}
               >
@@ -175,7 +185,7 @@ export const populateTransferHistoryRows = (
               <Icon
                 className="material-symbols-outlined"
                 sx={{
-                  fontSize: 20,
+                  fontSize: 24,
                   color: 'cruGrayMedium',
                 }}
               >

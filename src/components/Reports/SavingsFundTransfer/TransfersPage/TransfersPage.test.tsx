@@ -220,8 +220,8 @@ describe('TransfersPage', () => {
     ).toBeTruthy();
   });
 
-  it('should render cards and transfer history table', async () => {
-    const { findByRole, findAllByRole } = render(<Components />);
+  it('should render cards and transfer tables', async () => {
+    const { findAllByRole } = render(<Components />);
 
     expect(
       await findAllByRole('button', { name: 'TRANSFER FROM' }),
@@ -230,10 +230,10 @@ describe('TransfersPage', () => {
       2,
     );
 
-    expect(await findByRole('grid')).toBeInTheDocument();
-    expect(
-      within(await findByRole('grid')).getAllByRole('columnheader'),
-    ).toHaveLength(8);
+    const tables = await findAllByRole('grid');
+    expect(tables.length).toBe(2);
+
+    expect(within(tables[0]).getAllByRole('columnheader')).toHaveLength(8);
   });
 
   it('should show empty state when no transfer history', async () => {
