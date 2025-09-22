@@ -49,17 +49,17 @@ export const PrintTable: React.FC<PrintTableProps> = ({ transfers }) => {
                 >
                   <TableCell>
                     {transfer.transferFrom === FundTypeEnum.Primary
-                      ? t('Primary Balance')
+                      ? t('Primary Account')
                       : transfer.transferFrom === FundTypeEnum.Savings
-                        ? t('Savings Balance')
-                        : t('Conference Savings Balance')}
+                        ? t('Savings Account')
+                        : t('Conference Savings Account')}
                   </TableCell>
                   <TableCell>
                     {transfer.transferTo === FundTypeEnum.Primary
-                      ? t('Primary Balance')
+                      ? t('Primary Account')
                       : transfer.transferTo === FundTypeEnum.Savings
-                        ? t('Savings Balance')
-                        : t('Conference Savings Balance')}
+                        ? t('Savings Account')
+                        : t('Conference Savings Account')}
                   </TableCell>
                   <TableCell>
                     {transfer.amount?.toLocaleString(locale, {

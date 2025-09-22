@@ -47,11 +47,11 @@ describe('PrintTable', () => {
     expect(
       await findByRole('columnheader', { name: 'From' }),
     ).toBeInTheDocument();
-    expect(getByRole('cell', { name: 'Savings Balance' })).toBeInTheDocument();
+    expect(getByRole('cell', { name: 'Savings Account' })).toBeInTheDocument();
     expect(
       await findByRole('columnheader', { name: 'To' }),
     ).toBeInTheDocument();
-    expect(getByRole('cell', { name: 'Primary Balance' })).toBeInTheDocument();
+    expect(getByRole('cell', { name: 'Primary Account' })).toBeInTheDocument();
     expect(
       await findByRole('columnheader', { name: 'Amount' }),
     ).toBeInTheDocument();

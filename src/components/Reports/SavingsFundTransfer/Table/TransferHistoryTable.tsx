@@ -5,15 +5,19 @@ import {
   GridPaginationModel,
   GridSortModel,
 } from '@mui/x-data-grid';
+import { DateTime } from 'luxon/src/luxon';
 import { useTranslation } from 'react-i18next';
 import {
   LoadingBox,
   LoadingIndicator,
 } from 'src/components/Shared/styledComponents/LoadingStyling';
 import { useLocale } from 'src/hooks/useLocale';
+import { CustomEditCalendar } from '../CustomEditCalendar/CustomEditCalendar';
 import { DynamicDeleteTransferModal } from '../DeleteTransferModal/DynamicDeleteTransferModal';
+import { useUpdateRecurringTransferMutation } from '../TransferMutations.generated';
 import {
   ScheduleEnum,
+  StatusEnum,
   TransferHistory,
   TransferModalData,
   TransferTypeEnum,
@@ -27,17 +31,17 @@ export type RenderCell = GridColDef<TransferHistory>['renderCell'];
 export const CreateTransferHistoryRows = (
   history: TransferHistory,
 ): TransferHistory => ({
-  id: history.id || crypto.randomUUID(),
-  transferFrom: history.transferFrom || '',
-  transferTo: history.transferTo || '',
-  amount: history.amount || 0,
-  schedule: history.schedule || ScheduleEnum.OneTime,
-  status: history.status || undefined,
-  transferDate: history.transferDate || null,
-  endDate: history.endDate || null,
-  note: history.note || '',
-  actions: history.actions || '',
-  recurringId: history.recurringId || '',
+  id: history.id ?? crypto.randomUUID(),
+  transferFrom: history.transferFrom ?? '',
+  transferTo: history.transferTo ?? '',
+  amount: history.amount ?? 0,
+  schedule: history.schedule ?? ScheduleEnum.OneTime,
+  status: history.status ?? StatusEnum.Pending,
+  transferDate: history.transferDate ?? null,
+  endDate: history.endDate ?? null,
+  note: history.note ?? '',
+  actions: history.actions ?? '',
+  recurringId: history.recurringId ?? '',
 });
 
 const createToolbar = (history: TransferHistory[]) => {
@@ -61,6 +65,15 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
 
+  const [updateRecurringTransfer] = useUpdateRecurringTransferMutation({
+    refetchQueries: ['ReportsSavingsFundTransfer', 'AccountFunds'],
+    awaitRefetchQueries: true,
+  });
+
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [calendarRow, setCalendarRow] = useState<TransferHistory | null>(null);
+  const [calendarDate, setCalendarDate] = useState<DateTime | null>(null);
+
   const [openDeleteModal, setOpenDeleteModal] =
     useState<TransferHistory | null>(null);
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
@@ -82,6 +95,29 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
     });
   };
 
+  const handleCalendarOpen = (transfer: TransferHistory) => {
+    setCalendarRow(transfer);
+    setCalendarDate(transfer.endDate ?? null);
+    setCalendarOpen(true);
+  };
+
+  const handleCalendarClose = () => {
+    setCalendarOpen(false);
+  };
+
+  const handleAcceptCalendar = async (date: DateTime | null) => {
+    if (calendarRow) {
+      await updateRecurringTransfer({
+        variables: {
+          id: calendarRow.recurringId ?? '',
+          amount: calendarRow.amount ?? 0,
+          recurringStart: calendarRow.transferDate?.toISO() ?? '',
+          recurringEnd: date?.toISO() ?? null,
+        },
+      });
+    }
+  };
+
   const {
     transfers,
     amount,
@@ -94,6 +130,7 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
   } = populateTransferHistoryRows(
     handleEditModalOpen,
     handleDeleteModalOpen,
+    handleCalendarOpen,
     t,
     locale,
   );
@@ -146,7 +183,7 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
     {
       field: 'actions',
       headerName: t('Actions'),
-      width: 150,
+      width: 100,
       renderCell: actions,
     },
   ];
@@ -198,6 +235,17 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
         slots={{
           toolbar: createToolbar(history),
         }}
+      />
+      <CustomEditCalendar
+        open={calendarOpen}
+        onClose={handleCalendarClose}
+        onAccept={(date) => {
+          handleAcceptCalendar(date);
+          handleCalendarClose();
+        }}
+        minDate={calendarRow?.transferDate ?? undefined}
+        value={calendarDate}
+        onChange={(newValue) => setCalendarDate(newValue)}
       />
       {openDeleteModal && (
         <DynamicDeleteTransferModal
