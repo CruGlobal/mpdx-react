@@ -22,6 +22,7 @@ import {
   GridRenderCellParams,
   GridValidRowModel,
 } from '@mui/x-data-grid';
+import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { SubBudgetCategoryEnum } from 'src/graphql/types.generated';
@@ -90,7 +91,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   const locale = useLocale();
   const { label: categoryName } = category;
   const accountListId = useAccountListId() ?? '';
-  const { setRightPanelContent } = useGoalCalculator();
+  const { setRightPanelContent, trackMutation } = useGoalCalculator();
 
   const gridData = useMemo(
     () =>
@@ -131,27 +132,30 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   }, [lumpSumAmount, directInput]);
 
   const updateDirectInput = (directInput: number | null) => {
-    updatePrimaryBudgetCategory({
-      variables: {
-        input: {
-          accountListId,
-          attributes: {
-            id: category.id,
-            directInput: directInput,
+    trackMutation(
+      updatePrimaryBudgetCategory({
+        variables: {
+          input: {
+            accountListId,
+            attributes: {
+              id: category.id,
+              directInput,
+            },
           },
         },
-      },
-      optimisticResponse: {
-        updatePrimaryBudgetCategory: {
-          __typename: 'PrimaryBudgetCategoryUpdateMutationPayload',
-          primaryBudgetCategory: {
-            __typename: 'PrimaryBudgetCategory',
-            id: category.id,
-            directInput: directInput,
+        optimisticResponse: {
+          updatePrimaryBudgetCategory: {
+            __typename: 'PrimaryBudgetCategoryUpdateMutationPayload',
+            primaryBudgetCategory: {
+              __typename: 'PrimaryBudgetCategory',
+              id: category.id,
+              directInput,
+              updatedAt: DateTime.now().toISO(),
+            },
           },
         },
-      },
-    });
+      }),
+    );
   };
 
   const debouncedUpdateMutation = useDebouncedCallback(updateDirectInput, 500);
@@ -201,90 +205,95 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   const addExpense = () => {
     const tempId = `temp-${Date.now()}`;
 
-    createSubBudgetCategory({
-      variables: {
-        input: {
-          accountListId,
-          attributes: {
-            primaryBudgetCategoryId: category.id,
-            label: t('New Income'),
-            amount: 0,
+    trackMutation(
+      createSubBudgetCategory({
+        variables: {
+          input: {
+            accountListId,
+            attributes: {
+              primaryBudgetCategoryId: category.id,
+              label: t('New Income'),
+              amount: 0,
+            },
           },
         },
-      },
-      optimisticResponse: {
-        createSubBudgetCategory: {
-          __typename: 'SubBudgetCategoryCreateMutationPayload',
-          subBudgetCategory: {
-            __typename: 'SubBudgetCategory',
-            id: tempId,
-            label: t('New Income'),
-            amount: 0,
-            category: null,
+        optimisticResponse: {
+          createSubBudgetCategory: {
+            __typename: 'SubBudgetCategoryCreateMutationPayload',
+            subBudgetCategory: {
+              __typename: 'SubBudgetCategory',
+              id: tempId,
+              label: t('New Income'),
+              amount: 0,
+              category: null,
+              updatedAt: DateTime.now().toISO(),
+            },
           },
         },
-      },
-      update: (cache, { data }) => {
-        const newItem = data?.createSubBudgetCategory?.subBudgetCategory;
-        if (newItem) {
-          cache.updateFragment<UpdateSubBudgetCategoriesFragment>(
-            {
-              id: `PrimaryBudgetCategory:${category.id}`,
-              fragment: UpdateSubBudgetCategoriesFragmentDoc,
-              fragmentName: 'UpdateSubBudgetCategories',
-            },
-            (data) => {
-              return (
-                data && {
-                  ...data,
-                  subBudgetCategories: [...data.subBudgetCategories, newItem],
-                }
-              );
-            },
-          );
-        }
-      },
-    });
+        update: (cache, { data }) => {
+          const newItem = data?.createSubBudgetCategory?.subBudgetCategory;
+          if (newItem) {
+            cache.updateFragment<UpdateSubBudgetCategoriesFragment>(
+              {
+                id: `PrimaryBudgetCategory:${category.id}`,
+                fragment: UpdateSubBudgetCategoriesFragmentDoc,
+                fragmentName: 'UpdateSubBudgetCategories',
+              },
+              (data) => {
+                return (
+                  data && {
+                    ...data,
+                    subBudgetCategories: [...data.subBudgetCategories, newItem],
+                  }
+                );
+              },
+            );
+          }
+        },
+      }),
+    );
   };
 
   const handleDelete = (id: string | number) => {
     const rowId = id.toString();
 
-    deleteSubBudgetCategory({
-      variables: {
-        input: {
-          accountListId,
-          id: rowId,
+    trackMutation(
+      deleteSubBudgetCategory({
+        variables: {
+          input: {
+            accountListId,
+            id: rowId,
+          },
         },
-      },
-      optimisticResponse: {
-        deleteSubBudgetCategory: {
-          __typename: 'SubBudgetCategoryDeleteMutationPayload',
-          id: rowId,
+        optimisticResponse: {
+          deleteSubBudgetCategory: {
+            __typename: 'SubBudgetCategoryDeleteMutationPayload',
+            id: rowId,
+          },
         },
-      },
-      update: (cache, { data }) => {
-        if (data?.deleteSubBudgetCategory?.id) {
-          cache.updateFragment<UpdateSubBudgetCategoriesFragment>(
-            {
-              id: `PrimaryBudgetCategory:${category.id}`,
-              fragment: UpdateSubBudgetCategoriesFragmentDoc,
-              fragmentName: 'UpdateSubBudgetCategories',
-            },
-            (data) => {
-              return (
-                data && {
-                  ...data,
-                  subBudgetCategories: data.subBudgetCategories.filter(
-                    (cat) => cat.id !== rowId,
-                  ),
-                }
-              );
-            },
-          );
-        }
-      },
-    });
+        update: (cache, { data }) => {
+          if (data?.deleteSubBudgetCategory?.id) {
+            cache.updateFragment<UpdateSubBudgetCategoriesFragment>(
+              {
+                id: `PrimaryBudgetCategory:${category.id}`,
+                fragment: UpdateSubBudgetCategoriesFragmentDoc,
+                fragmentName: 'UpdateSubBudgetCategories',
+              },
+              (data) => {
+                return (
+                  data && {
+                    ...data,
+                    subBudgetCategories: data.subBudgetCategories.filter(
+                      (cat) => cat.id !== rowId,
+                    ),
+                  }
+                );
+              },
+            );
+          }
+        },
+      }),
+    );
   };
 
   const processRowUpdate = (newRow: GridValidRowModel) => {
@@ -310,29 +319,32 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
         return updated;
       });
 
-      updateSubBudgetCategory({
-        variables: {
-          input: {
-            accountListId,
-            attributes: {
-              id: rowId,
-              label,
-              amount,
+      trackMutation(
+        updateSubBudgetCategory({
+          variables: {
+            input: {
+              accountListId,
+              attributes: {
+                id: rowId,
+                label,
+                amount,
+              },
             },
           },
-        },
-        optimisticResponse: {
-          updateSubBudgetCategory: {
-            __typename: 'SubBudgetCategoryUpdateMutationPayload',
-            subBudgetCategory: {
-              __typename: 'SubBudgetCategory',
-              id: rowId,
-              label,
-              amount,
+          optimisticResponse: {
+            updateSubBudgetCategory: {
+              __typename: 'SubBudgetCategoryUpdateMutationPayload',
+              subBudgetCategory: {
+                __typename: 'SubBudgetCategory',
+                id: rowId,
+                label,
+                amount,
+                updatedAt: DateTime.now().toISO(),
+              },
             },
           },
-        },
-      });
+        }),
+      );
     } catch (error) {
       // Handle validation errors from yup schema
       if (error instanceof yup.ValidationError) {

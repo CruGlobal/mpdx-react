@@ -3,6 +3,7 @@ fragment NewSubBudgetCategory on SubBudgetCategory {
   label
   amount
   category
+  updatedAt
 }
 
 fragment UpdateSubBudgetCategories on PrimaryBudgetCategory {
@@ -19,6 +20,7 @@ mutation UpdatePrimaryBudgetCategory(
     primaryBudgetCategory {
       id
       directInput
+      updatedAt
     }
   }
 }
@@ -31,6 +33,7 @@ mutation UpdateSubBudgetCategory(
       id
       label
       amount
+      updatedAt
     }
   }
 }
