@@ -236,7 +236,7 @@ export const InformationCategory: React.FC<InformationCategoryProps> = () => {
       return t('View Spouse');
     }
     if (userData?.user?.firstName) {
-      return `${t('View')} ${userData.user.firstName}`;
+      return t('View {{spouseName}}', { spouseName: userData.user.firstName });
     }
     return t('View Your Information');
   }, [spouseInformation, userData?.user?.firstName, t]);
