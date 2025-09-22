@@ -289,6 +289,11 @@ export const TransfersTable: React.FC<TransfersTableProps> = ({
         <DynamicDeleteTransferModal
           handleClose={() => setOpenDeleteModal(null)}
           transfer={openDeleteModal}
+          type={
+            type === TableTypeEnum.History
+              ? ActionTypeEnum.Stop
+              : ActionTypeEnum.Cancel
+          }
         />
       )}
     </>

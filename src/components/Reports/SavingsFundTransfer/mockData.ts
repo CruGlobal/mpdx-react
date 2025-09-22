@@ -32,6 +32,8 @@ export enum TableTypeEnum {
 export enum ActionTypeEnum {
   Edit = 'edit',
   Add = 'add',
+  Cancel = 'cancel',
+  Stop = 'stop',
 }
 
 export interface TransferModalData {
