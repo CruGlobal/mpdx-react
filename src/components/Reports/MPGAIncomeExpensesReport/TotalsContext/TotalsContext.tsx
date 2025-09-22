@@ -36,24 +36,15 @@ export const TotalsProvider: React.FC<TotalsContextProps> = ({
   children,
   data,
 }) => {
-  const { ministry, healthcare, assessment, other } = useExpenseCategories(
-    data.expenses,
-  );
+  const {
+    ministryTotal,
+    healthcareTotal,
+    assessmentTotal,
+    otherTotal,
+    expensesTotal,
+  } = useExpenseCategories(data.expenses);
 
   const incomeTotal = useMemo(() => sum(data.income), [data.income]);
-
-  const ministryTotal = sum(ministry);
-
-  const healthcareTotal = sum(healthcare);
-
-  const assessmentTotal = sum(assessment);
-
-  const otherTotal = sum(other);
-
-  const expensesTotal = useMemo(
-    () => ministryTotal + healthcareTotal + assessmentTotal + otherTotal,
-    [ministryTotal, healthcareTotal, assessmentTotal, otherTotal],
-  );
 
   const contextValue: TotalsType = useMemo(
     () => ({

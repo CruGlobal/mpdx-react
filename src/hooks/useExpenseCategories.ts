@@ -2,6 +2,10 @@ import { useMemo } from 'react';
 import { ExpenseCategoriesEnum } from 'src/components/Reports/MPGAIncomeExpensesReport/Helper/MPGAReportEnum';
 import { DataFields } from 'src/components/Reports/MPGAIncomeExpensesReport/mockData';
 
+const sum = (rows: DataFields[]): number => {
+  return rows?.reduce((acc, item) => acc + item.total, 0) || 0;
+};
+
 export function useExpenseCategories(data: DataFields[]) {
   return useMemo(() => {
     const ministry: DataFields[] = [];
@@ -31,6 +35,23 @@ export function useExpenseCategories(data: DataFields[]) {
       }
     });
 
-    return { ministry, healthcare, assessment, other };
+    const ministryTotal = sum(ministry);
+
+    const healthcareTotal = sum(healthcare);
+
+    const assessmentTotal = sum(assessment);
+
+    const otherTotal = sum(other);
+
+    const expensesTotal =
+      ministryTotal + healthcareTotal + assessmentTotal + otherTotal;
+
+    return {
+      ministryTotal,
+      healthcareTotal,
+      assessmentTotal,
+      otherTotal,
+      expensesTotal,
+    };
   }, [data]);
 }
