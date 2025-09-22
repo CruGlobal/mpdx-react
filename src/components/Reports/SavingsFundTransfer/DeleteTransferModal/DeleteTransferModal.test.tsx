@@ -7,7 +7,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
-import { StatusEnum, mockData } from '../mockData';
+import { ActionTypeEnum, StatusEnum, mockData } from '../mockData';
 import { DeleteTransferModal } from './DeleteTransferModal';
 
 const mutationSpy = jest.fn();
@@ -39,6 +39,7 @@ const TestComponent: React.FC = () => {
             <DeleteTransferModal
               handleClose={handleClose}
               transfer={mockTransfer}
+              type={ActionTypeEnum.Stop}
             />
           </GqlMockedProvider>
         </LocalizationProvider>
@@ -53,7 +54,9 @@ describe('DeleteTransferModal', () => {
 
     expect(getByText('Stop Transfer')).toBeInTheDocument();
     expect(
-      getByText('Are you sure you want to stop this recurring transfer?'),
+      getByText(
+        /are you sure you want to {{action}} this recurring transfer?/i,
+      ),
     ).toBeInTheDocument();
   });
 

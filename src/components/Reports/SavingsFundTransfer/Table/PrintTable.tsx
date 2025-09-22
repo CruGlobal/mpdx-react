@@ -12,20 +12,28 @@ import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat } from 'src/lib/intlFormat';
 import { StyledTableRow } from '../../styledComponents';
-import { FundTypeEnum, ScheduleEnum, TransferHistory } from '../mockData';
+import {
+  FundTypeEnum,
+  ScheduleEnum,
+  TableTypeEnum,
+  Transfers,
+} from '../mockData';
 
 interface PrintTableProps {
-  transfers: TransferHistory[];
+  transfers: Transfers[];
+  type: TableTypeEnum;
 }
 
-export const PrintTable: React.FC<PrintTableProps> = ({ transfers }) => {
+export const PrintTable: React.FC<PrintTableProps> = ({ transfers, type }) => {
   const { t } = useTranslation();
   const locale = useLocale();
 
   return (
     <>
       <Typography variant="h6" sx={{ mt: 2 }}>
-        {t('Transfer History')}
+        {type === TableTypeEnum.History
+          ? t('Transfer History')
+          : t('Upcoming Transfers')}
       </Typography>
       <TableContainer>
         <Table>

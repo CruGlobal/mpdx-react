@@ -8,16 +8,18 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
 import { useDeleteRecurringTransferMutation } from '../TransferMutations.generated';
-import { TransferHistory } from '../mockData';
+import { ActionTypeEnum, Transfers } from '../mockData';
 
 interface DeleteTransferModalProps {
   handleClose: () => void;
-  transfer: TransferHistory;
+  transfer: Transfers;
+  type: ActionTypeEnum;
 }
 
 export const DeleteTransferModal: React.FC<DeleteTransferModalProps> = ({
   handleClose,
   transfer,
+  type,
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -43,10 +45,18 @@ export const DeleteTransferModal: React.FC<DeleteTransferModalProps> = ({
   };
 
   return (
-    <Modal isOpen={true} title={t('Stop Transfer')} handleClose={handleClose}>
+    <Modal
+      isOpen={true}
+      title={
+        type === ActionTypeEnum.Stop ? t('Stop Transfer') : t('Cancel Transfer')
+      }
+      handleClose={handleClose}
+    >
       <DialogContent dividers>
         <DialogContentText component={'div'}>
-          {t('Are you sure you want to stop this recurring transfer?')}
+          {t('Are you sure you want to {{action}} this recurring transfer?', {
+            action: type === ActionTypeEnum.Stop ? t('stop') : t('cancel'),
+          })}
         </DialogContentText>
       </DialogContent>
       <DialogActions>

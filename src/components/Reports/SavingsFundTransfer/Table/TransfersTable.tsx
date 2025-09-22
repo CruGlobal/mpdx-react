@@ -5,7 +5,8 @@ import {
   GridPaginationModel,
   GridSortModel,
 } from '@mui/x-data-grid';
-import { DateTime } from 'luxon/src/luxon';
+import { DateTime } from 'luxon';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import {
   LoadingBox,
@@ -16,21 +17,23 @@ import { CustomEditCalendar } from '../CustomEditCalendar/CustomEditCalendar';
 import { DynamicDeleteTransferModal } from '../DeleteTransferModal/DynamicDeleteTransferModal';
 import { useUpdateRecurringTransferMutation } from '../TransferMutations.generated';
 import {
+  ActionTypeEnum,
   ScheduleEnum,
   StatusEnum,
-  TransferHistory,
+  TableTypeEnum,
   TransferModalData,
   TransferTypeEnum,
+  Transfers,
 } from '../mockData';
 import { StyledFundDataGrid } from '../styledComponents/StyledFundDataGrid';
 import { CustomToolbar } from './CustomToolbar';
-import { populateTransferHistoryRows } from './Row/createTableRow';
+import { populateTransferRows } from './Row/createTableRow';
 
-export type RenderCell = GridColDef<TransferHistory>['renderCell'];
+type CalendarType = { row: Transfers; actionType: ActionTypeEnum };
 
-export const CreateTransferHistoryRows = (
-  history: TransferHistory,
-): TransferHistory => ({
+export type RenderCell = GridColDef<Transfers>['renderCell'];
+
+export const CreateTransferRows = (history: Transfers): Transfers => ({
   id: history.id ?? crypto.randomUUID(),
   transferFrom: history.transferFrom ?? '',
   transferTo: history.transferTo ?? '',
@@ -44,26 +47,29 @@ export const CreateTransferHistoryRows = (
   recurringId: history.recurringId ?? '',
 });
 
-const createToolbar = (history: TransferHistory[]) => {
-  const Toolbar = () => <CustomToolbar history={history} />;
+const createToolbar = (history: Transfers[], type: TableTypeEnum) => {
+  const Toolbar = () => <CustomToolbar history={history} type={type} />;
   Toolbar.displayName = 'TransferHistoryTableCustomToolbar';
   return Toolbar;
 };
 
-export interface TransferHistoryTableProps {
-  history: TransferHistory[];
+export interface TransfersTableProps {
+  history: Transfers[];
+  type: TableTypeEnum;
   emptyPlaceholder: React.ReactElement;
   handleOpenTransferModal: ({ type, transfer }: TransferModalData) => void;
   loading?: boolean;
 }
-export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
+export const TransfersTable: React.FC<TransfersTableProps> = ({
   history,
+  type,
   emptyPlaceholder,
   handleOpenTransferModal,
   loading,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const { enqueueSnackbar } = useSnackbar();
 
   const [updateRecurringTransfer] = useUpdateRecurringTransferMutation({
     refetchQueries: ['ReportsSavingsFundTransfer', 'AccountFunds'],
@@ -71,11 +77,13 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
   });
 
   const [calendarOpen, setCalendarOpen] = useState(false);
-  const [calendarRow, setCalendarRow] = useState<TransferHistory | null>(null);
+  const [calendarType, setCalendarType] = useState<CalendarType | null>(null);
+  const [calendarRow, setCalendarRow] = useState<Transfers | null>(null);
   const [calendarDate, setCalendarDate] = useState<DateTime | null>(null);
 
-  const [openDeleteModal, setOpenDeleteModal] =
-    useState<TransferHistory | null>(null);
+  const [openDeleteModal, setOpenDeleteModal] = useState<Transfers | null>(
+    null,
+  );
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
     pageSize: 5,
@@ -84,18 +92,22 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
     { field: 'date', sort: 'desc' },
   ]);
 
-  const handleDeleteModalOpen = (transfer: TransferHistory) => {
+  const handleDeleteModalOpen = (transfer: Transfers) => {
     setOpenDeleteModal(transfer);
   };
 
-  const handleEditModalOpen = (transfer: TransferHistory) => {
+  const handleEditModalOpen = (transfer: Transfers) => {
     handleOpenTransferModal({
       type: TransferTypeEnum.Edit,
       transfer,
     });
   };
 
-  const handleCalendarOpen = (transfer: TransferHistory) => {
+  const handleCalendarOpen = (transfer: Transfers) => {
+    setCalendarType({
+      row: transfer,
+      actionType: transfer.endDate ? ActionTypeEnum.Edit : ActionTypeEnum.Add,
+    });
     setCalendarRow(transfer);
     setCalendarDate(transfer.endDate ?? null);
     setCalendarOpen(true);
@@ -103,17 +115,38 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
 
   const handleCalendarClose = () => {
     setCalendarOpen(false);
+    setCalendarType(null);
   };
 
-  const handleAcceptCalendar = async (date: DateTime | null) => {
-    if (calendarRow) {
-      await updateRecurringTransfer({
-        variables: {
-          id: calendarRow.recurringId ?? '',
-          amount: calendarRow.amount ?? 0,
-          recurringStart: calendarRow.transferDate?.toISO() ?? '',
-          recurringEnd: date?.toISO() ?? null,
-        },
+  const handleAcceptCalendar = async (
+    date: DateTime | null,
+    actionType: ActionTypeEnum,
+  ) => {
+    const successMessage =
+      actionType === ActionTypeEnum.Edit
+        ? t('Stop date updated successfully')
+        : t('Stop date added successfully');
+    const errorMessage =
+      actionType === ActionTypeEnum.Edit
+        ? t('Failed to update stop date')
+        : t('Failed to add stop date');
+    try {
+      if (calendarRow) {
+        const recurringEnd: string | null = date ? date.toISO() : null;
+        await updateRecurringTransfer({
+          variables: {
+            id: calendarRow.recurringId ?? '',
+            recurringEnd: recurringEnd,
+          },
+        });
+
+        enqueueSnackbar(successMessage, {
+          variant: 'success',
+        });
+      }
+    } catch (error) {
+      enqueueSnackbar(errorMessage, {
+        variant: 'error',
       });
     }
   };
@@ -127,7 +160,8 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
     endDate,
     note,
     actions,
-  } = populateTransferHistoryRows(
+  } = populateTransferRows(
+    type,
     handleEditModalOpen,
     handleDeleteModalOpen,
     handleCalendarOpen,
@@ -135,7 +169,7 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
     locale,
   );
 
-  const transferHistoryRows = history.map(CreateTransferHistoryRows);
+  const transferRows = history.map(CreateTransferRows);
 
   const columns: GridColDef[] = [
     {
@@ -209,15 +243,17 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
         mb={1}
       >
         <Typography variant="h6" mb={1}>
-          {t('Transfer History')}
+          {type === TableTypeEnum.History
+            ? t('Transfer History')
+            : t('Upcoming Transfers')}
         </Typography>
       </Box>
       <StyledFundDataGrid
-        rows={transferHistoryRows.slice(
+        rows={transferRows.slice(
           paginationModel.page * paginationModel.pageSize,
           (paginationModel.page + 1) * paginationModel.pageSize,
         )}
-        rowCount={transferHistoryRows.length}
+        rowCount={transferRows.length}
         columns={columns}
         getRowId={(row) => row.id}
         sortingOrder={['desc', 'asc']}
@@ -233,14 +269,16 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
         disableVirtualization
         showToolbar
         slots={{
-          toolbar: createToolbar(history),
+          toolbar: createToolbar(history, type),
         }}
       />
       <CustomEditCalendar
         open={calendarOpen}
         onClose={handleCalendarClose}
         onAccept={(date) => {
-          handleAcceptCalendar(date);
+          if (calendarType) {
+            handleAcceptCalendar(date, calendarType.actionType);
+          }
           handleCalendarClose();
         }}
         minDate={calendarRow?.transferDate ?? undefined}
@@ -251,6 +289,11 @@ export const TransferHistoryTable: React.FC<TransferHistoryTableProps> = ({
         <DynamicDeleteTransferModal
           handleClose={() => setOpenDeleteModal(null)}
           transfer={openDeleteModal}
+          type={
+            type === TableTypeEnum.History
+              ? ActionTypeEnum.Stop
+              : ActionTypeEnum.Cancel
+          }
         />
       )}
     </>

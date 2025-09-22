@@ -24,9 +24,21 @@ export enum TransferTypeEnum {
   Edit = 'edit',
 }
 
+export enum TableTypeEnum {
+  History = 'history',
+  Upcoming = 'upcoming',
+}
+
+export enum ActionTypeEnum {
+  Edit = 'edit',
+  Add = 'add',
+  Cancel = 'cancel',
+  Stop = 'stop',
+}
+
 export interface TransferModalData {
   type?: TransferTypeEnum;
-  transfer: TransferHistory;
+  transfer: Transfers;
 }
 
 export interface SubCategory {
@@ -55,7 +67,7 @@ export interface Transactions {
   recurringTransfer?: RecurringTransfer | null;
 }
 
-export interface TransferHistory {
+export interface Transfers {
   id?: string;
   transferFrom?: string;
   transferTo?: string;
@@ -68,6 +80,33 @@ export interface TransferHistory {
   actions?: string;
   recurringId?: string | null;
 }
+
+export const incomingTransfers = [
+  {
+    id: '1',
+    transferFrom: 'Savings',
+    transferTo: 'Primary',
+    amount: 20,
+    schedule: ScheduleEnum.Monthly,
+    status: StatusEnum.Pending,
+    transferDate: DateTime.fromISO('2025-11-01'),
+    endDate: null,
+    note: 'Test transfer',
+    actions: 'edit-delete',
+  },
+  {
+    id: '2',
+    transferFrom: 'Primary',
+    transferTo: 'Savings',
+    amount: 50,
+    schedule: ScheduleEnum.Monthly,
+    status: StatusEnum.Pending,
+    transferDate: DateTime.fromISO('2025-12-15'),
+    endDate: DateTime.fromISO('2026-02-15'),
+    note: 'Test transfer 2',
+    actions: 'edit-delete',
+  },
+];
 
 export const fundsMock = [
   {
@@ -84,7 +123,7 @@ export const fundsMock = [
   },
 ];
 
-export const mockData: TransferHistory[] = [
+export const mockData: Transfers[] = [
   {
     id: crypto.randomUUID(),
     transferFrom: 'staffSavings',
@@ -104,8 +143,8 @@ export const mockData: TransferHistory[] = [
     amount: 1200,
     schedule: ScheduleEnum.Monthly,
     status: StatusEnum.Ongoing,
-    transferDate: DateTime.fromISO('2023-09-30'),
-    endDate: DateTime.fromISO('2025-09-30'),
+    transferDate: DateTime.fromISO('2023-09-25'),
+    endDate: DateTime.fromISO('2025-09-25'),
     note: 'Long-term savings',
     actions: 'edit-delete',
   },

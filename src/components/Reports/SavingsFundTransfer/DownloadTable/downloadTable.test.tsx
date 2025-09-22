@@ -1,4 +1,4 @@
-import { StatusEnum, mockData } from '../mockData';
+import { StatusEnum, TableTypeEnum, mockData } from '../mockData';
 import { createTable, downloadCSV } from './downloadTable';
 
 const mockT = (key: string) => key;
@@ -32,7 +32,12 @@ describe('DownloadTable', () => {
     jest.spyOn(link, 'setAttribute').mockImplementation(mockSetAttribute);
     jest.spyOn(link, 'click').mockImplementation(mockClick);
 
-    const data = downloadCSV(mockT, mockHistory, mockLocale);
+    const data = downloadCSV(
+      mockT,
+      mockHistory,
+      TableTypeEnum.History,
+      mockLocale,
+    );
 
     expect(mockSetAttribute).toHaveBeenCalledWith(
       'href',
@@ -59,8 +64,8 @@ describe('DownloadTable', () => {
       '$1,200.00',
       'Monthly',
       StatusEnum.Ongoing.charAt(0).toUpperCase() + StatusEnum.Ongoing.slice(1),
-      'Sep 30, 2023',
-      'Sep 30, 2025',
+      'Sep 25, 2023',
+      'Sep 25, 2025',
       'Long-term savings',
     ]);
   });

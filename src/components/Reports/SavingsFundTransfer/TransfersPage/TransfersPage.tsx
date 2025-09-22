@@ -30,16 +30,18 @@ import {
 } from '../ReportsSavingsFund.generated';
 import { EmptyTable } from '../Table/EmptyTable';
 import { PrintTable } from '../Table/PrintTable';
-import { TransferHistoryTable } from '../Table/TransferHistoryTable';
+import { TransfersTable } from '../Table/TransfersTable';
 import { DynamicTransferModal } from '../TransferModal/DynamicTransferModal';
 import { UpdatedAtProvider } from '../UpdatedAtContext/UpdateAtContext';
 import {
   FundTypeEnum,
   ScheduleEnum,
   StatusEnum,
+  TableTypeEnum,
   Transactions,
-  TransferHistory,
   TransferModalData,
+  Transfers,
+  incomingTransfers,
 } from '../mockData';
 import { PrintOnly, ScreenOnly } from '../styledComponents/DisplayStyling';
 
@@ -116,7 +118,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
   const filteredTransactions = useFilteredTransfers(transactions);
 
   // Ask about description --> always null in test data
-  const transferHistory: TransferHistory[] = filteredTransactions.map((tx) => {
+  const transferHistory: Transfers[] = filteredTransactions.map((tx) => {
     const isRecurring = !!tx.recurringTransfer?.id;
     const status = getStatusLabel(tx);
 
@@ -136,6 +138,8 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
       recurringId: tx.recurringTransfer?.id || '',
     };
   });
+
+  const incoming = incomingTransfers;
 
   const handlePrint = () => window.print();
 
@@ -228,8 +232,23 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                 ))}
               </Box>
               <ScreenOnly sx={{ mt: 2, mb: 3 }}>
-                <TransferHistoryTable
+                <Box sx={{ mb: 3 }}>
+                  <TransfersTable
+                    history={incoming}
+                    type={TableTypeEnum.Upcoming}
+                    handleOpenTransferModal={handleOpenTransferModal}
+                    emptyPlaceholder={
+                      <EmptyTable
+                        title={t('Upcoming Transfers not available')}
+                        subtitle={t('No data found across any accounts.')}
+                      />
+                    }
+                    loading={reportLoading}
+                  />
+                </Box>
+                <TransfersTable
                   history={transferHistory}
+                  type={TableTypeEnum.History}
                   handleOpenTransferModal={handleOpenTransferModal}
                   emptyPlaceholder={
                     <EmptyTable
@@ -241,7 +260,16 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                 />
               </ScreenOnly>
               <PrintOnly>
-                <PrintTable transfers={transferHistory} />
+                <Box sx={{ my: 4 }}>
+                  <PrintTable
+                    transfers={incoming}
+                    type={TableTypeEnum.Upcoming}
+                  />
+                  <PrintTable
+                    transfers={transferHistory}
+                    type={TableTypeEnum.History}
+                  />
+                </Box>
               </PrintOnly>
             </Container>
           </Box>

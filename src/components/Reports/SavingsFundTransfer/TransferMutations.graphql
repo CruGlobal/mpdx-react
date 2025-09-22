@@ -26,8 +26,8 @@ mutation DeleteRecurringTransfer($id: ID!) {
 
 mutation UpdateRecurringTransfer(
   $id: ID!
-  $amount: Float!
-  $recurringStart: ISO8601DateTime!
+  $amount: Float
+  $recurringStart: ISO8601DateTime
   $recurringEnd: ISO8601DateTime
 ) {
   updateRecurringTransfer(

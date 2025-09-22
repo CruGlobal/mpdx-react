@@ -6,7 +6,7 @@ import { render } from '@testing-library/react';
 import { DateTime } from 'luxon';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
-import { StatusEnum, mockData } from '../mockData';
+import { StatusEnum, TableTypeEnum, mockData } from '../mockData';
 import { PrintTable } from './PrintTable';
 
 const mutationSpy = jest.fn();
@@ -38,7 +38,10 @@ describe('PrintTable', () => {
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <GqlMockedProvider onCall={mutationSpy}>
-            <PrintTable transfers={mockTransfers} />
+            <PrintTable
+              transfers={mockTransfers}
+              type={TableTypeEnum.History}
+            />
           </GqlMockedProvider>
         </LocalizationProvider>
       </ThemeProvider>,
@@ -99,7 +102,7 @@ describe('PrintTable', () => {
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <GqlMockedProvider onCall={mutationSpy}>
-            <PrintTable transfers={[]} />
+            <PrintTable transfers={[]} type={TableTypeEnum.History} />
           </GqlMockedProvider>
         </LocalizationProvider>
       </ThemeProvider>,
