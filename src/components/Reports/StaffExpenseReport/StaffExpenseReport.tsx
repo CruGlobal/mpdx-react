@@ -675,6 +675,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
               );
               changeFilterTimeTitle(newFilters);
             }}
+            categories={categoriesForFilter}
           />
           <ScreenOnly mt={2}>
             <Container>
