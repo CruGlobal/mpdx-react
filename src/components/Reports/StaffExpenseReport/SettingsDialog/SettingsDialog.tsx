@@ -255,7 +255,17 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                           }}
                         />
                       }
-                      label={t(category)}
+                      /* Temporary uppercase logic since API returns lowercase values */
+                      label={t(
+                        category
+                          .split(' ')
+                          .map(
+                            (word) =>
+                              word.charAt(0).toUpperCase() +
+                              word.slice(1).toLowerCase(),
+                          )
+                          .join(' '),
+                      )}
                     />
                   ))}
                 </FormGroup>
