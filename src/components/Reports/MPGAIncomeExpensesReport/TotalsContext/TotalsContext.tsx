@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useExpenseCategories } from 'src/hooks/useExpenseCategories';
 import { AllData, DataFields } from '../mockData';
 
 export type TotalsType = {
@@ -6,7 +7,7 @@ export type TotalsType = {
   expensesTotal: number;
   ministryTotal: number;
   healthcareTotal: number;
-  miscTotal: number;
+  assessmentTotal: number;
   otherTotal: number;
 };
 
@@ -35,40 +36,15 @@ export const TotalsProvider: React.FC<TotalsContextProps> = ({
   children,
   data,
 }) => {
-  const incomeTotal = useMemo(() => {
-    return sum(data.income);
-  }, [data.income]);
+  const {
+    ministryTotal,
+    healthcareTotal,
+    assessmentTotal,
+    otherTotal,
+    expensesTotal,
+  } = useExpenseCategories(data.expenses);
 
-  // const ministryTotal = useMemo(() => {
-  //   return sum(data.ministryExpenses);
-  // }, [data.ministryExpenses]);
-
-  // const healthcareTotal = useMemo(() => {
-  //   return sum(data.healthcareExpenses);
-  // }, [data.healthcareExpenses]);
-
-  // const miscTotal = useMemo(() => {
-  //   return sum(data.misc);
-  // }, [data.misc]);
-
-  // const otherTotal = useMemo(() => {
-  //   return sum(data.other);
-  // }, [data.other]);
-
-  // const expensesTotal = useMemo(
-  //   () => ministryTotal + healthcareTotal + miscTotal + otherTotal,
-  //   [ministryTotal, healthcareTotal, miscTotal, otherTotal],
-  // );
-
-  // Remove Later
-  const ministryTotal = 2_456.78;
-  const healthcareTotal = 1_799.26;
-  const miscTotal = 1_732.11;
-  const otherTotal = 980.25;
-
-  const expensesTotal = useMemo(() => {
-    return sum(data.expenses);
-  }, [data.expenses]);
+  const incomeTotal = useMemo(() => sum(data.income), [data.income]);
 
   const contextValue: TotalsType = useMemo(
     () => ({
@@ -76,7 +52,7 @@ export const TotalsProvider: React.FC<TotalsContextProps> = ({
       expensesTotal,
       ministryTotal,
       healthcareTotal,
-      miscTotal,
+      assessmentTotal,
       otherTotal,
     }),
     [
@@ -84,7 +60,7 @@ export const TotalsProvider: React.FC<TotalsContextProps> = ({
       expensesTotal,
       ministryTotal,
       healthcareTotal,
-      miscTotal,
+      assessmentTotal,
       otherTotal,
     ],
   );

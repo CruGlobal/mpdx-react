@@ -79,8 +79,6 @@ export const TableCard: React.FC<TableCardProps> = ({
     return data.map((data) => CreateCardTableRows(data));
   }, [data]);
 
-  const tableLength = useMemo(() => cardTableRows.length, [cardTableRows]);
-
   const { description, average, total } = populateCardTableRows(locale);
 
   const columns = useMemo<GridColDef<DataFields>[]>(() => {
@@ -156,7 +154,7 @@ export const TableCard: React.FC<TableCardProps> = ({
           sortingOrder={['desc', 'asc']}
           sortModel={sortModel}
           onSortModelChange={(model) => setSortModel(model)}
-          pageSizeOptions={[5, 10, 25, { label: 'All', value: tableLength }]}
+          pageSizeOptions={[5, 10, 25, 100]}
           paginationModel={paginationModel}
           onPaginationModelChange={(model) => setPaginationModel(model)}
           disableVirtualization

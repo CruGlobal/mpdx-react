@@ -58,7 +58,7 @@ describe('ExpensesPieChart', () => {
 
     expect(await findByText('Ministry')).toBeInTheDocument();
     expect(getByText('Healthcare')).toBeInTheDocument();
-    expect(getByText('Miscellaneous')).toBeInTheDocument();
+    expect(getByText('Other')).toBeInTheDocument();
     expect(getByText('Assessment, Benefits, Salary')).toBeInTheDocument();
   });
 });

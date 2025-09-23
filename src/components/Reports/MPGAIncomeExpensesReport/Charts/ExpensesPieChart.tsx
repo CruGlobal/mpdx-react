@@ -20,13 +20,14 @@ export const ExpensesPieChart: React.FC<ExpensesPieChartProps> = ({
   width,
 }) => {
   const { t } = useTranslation();
-  const { ministryTotal, healthcareTotal, miscTotal, otherTotal } = useTotals();
+  const { ministryTotal, healthcareTotal, assessmentTotal, otherTotal } =
+    useTotals();
 
   const data = [
     { name: t('Ministry'), value: ministryTotal ?? 0 },
     { name: t('Healthcare'), value: healthcareTotal ?? 0 },
-    { name: t('Miscellaneous'), value: miscTotal ?? 0 },
-    { name: t('Assessment, Benefits, Salary'), value: otherTotal ?? 0 },
+    { name: t('Other'), value: otherTotal ?? 0 },
+    { name: t('Assessment, Benefits, Salary'), value: assessmentTotal ?? 0 },
   ];
 
   return (
