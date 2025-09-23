@@ -34,6 +34,7 @@ import {
   TransactionCategory,
 } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
+import theme from 'src/theme';
 import { useStaffAccountQuery } from '../StaffAccount.generated';
 import { BalanceCard } from './BalanceCard/BalanceCard';
 import { PrintHeader } from './BalanceCard/PrintHeader';
@@ -449,10 +450,10 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                       }
                       iconBgColor={
                         fund.fundType === 'Primary'
-                          ? '#FF9800'
+                          ? theme.palette.chartOrange.main
                           : fund.fundType === 'Savings'
-                            ? '#90CAF9'
-                            : '#588C87'
+                            ? theme.palette.chartBlueDark.main
+                            : theme.palette.chartBlue.main
                       }
                       title={fund.fundType}
                       isSelected={selectedFundType === fund.fundType}
@@ -478,10 +479,10 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                   }
                   iconBgColor={
                     selectedFundType === 'Primary'
-                      ? '#FF9800'
+                      ? theme.palette.chartOrange.main
                       : selectedFundType === 'Savings'
-                        ? '#90CAF9'
-                        : '#588C87'
+                        ? theme.palette.chartBlueDark.main
+                        : theme.palette.chartBlue.main
                   }
                   fund={selectedFundType ?? ''}
                   data={data?.reportsStaffExpenses}

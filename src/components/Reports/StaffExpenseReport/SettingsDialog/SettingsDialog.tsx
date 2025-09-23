@@ -82,11 +82,11 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
     startDate:
       selectedFilters?.selectedDateRange !== undefined
         ? null
-        : selectedFilters?.startDate ?? null,
+        : (selectedFilters?.startDate ?? null),
     endDate:
       selectedFilters?.selectedDateRange !== undefined
         ? null
-        : selectedFilters?.endDate ?? null,
+        : (selectedFilters?.endDate ?? null),
     categories: selectedFilters?.categories ?? [],
   };
 

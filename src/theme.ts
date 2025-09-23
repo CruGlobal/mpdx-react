@@ -32,6 +32,7 @@ const chartColors = {
   gray: '#565652',
   blueLight: '#BBDEFB',
   black: '#000000',
+  blueDark: '#007890',
 };
 
 const progressBarColors = {
@@ -63,6 +64,7 @@ declare module '@mui/material/styles/createPalette' {
     chartGray: Palette['primary'];
     chartBlueLight: Palette['primary'];
     chartBlack: Palette['primary'];
+    chartBlueDark: Palette['primary'];
   }
   interface PaletteOptions {
     cruYellow: PaletteOptions['primary'];
@@ -86,6 +88,7 @@ declare module '@mui/material/styles/createPalette' {
     chartGray: PaletteOptions['primary'];
     chartBlueLight: PaletteOptions['primary'];
     chartBlack: PaletteOptions['primary'];
+    chartBlueDark: PaletteOptions['primary'];
   }
 }
 
@@ -169,6 +172,9 @@ const theme = createTheme({
     },
     chartBlack: {
       main: chartColors.black,
+    },
+    chartBlueDark: {
+      main: chartColors.blueDark,
     },
   },
   components: {
