@@ -24,6 +24,7 @@ import { DateRange } from '../Helpers/StaffReportEnum';
 interface SettingsDialogProps {
   isOpen: boolean;
   selectedFilters?: Filters;
+  categories?: string[];
   onClose: (filters?: Filters) => void;
 }
 
@@ -71,6 +72,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
   isOpen,
   onClose,
   selectedFilters,
+  categories,
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
@@ -239,7 +241,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                 </Typography>
 
                 <FormGroup row>
-                  {['Benefits', 'Contributions', 'Salary'].map((category) => (
+                  {categories?.map((category) => (
                     <FormControlLabel
                       key={category}
                       control={
@@ -253,7 +255,17 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                           }}
                         />
                       }
-                      label={t(category)}
+                      /* Temporary uppercase logic since API returns lowercase values */
+                      label={t(
+                        category
+                          .split(' ')
+                          .map(
+                            (word) =>
+                              word.charAt(0).toUpperCase() +
+                              word.slice(1).toLowerCase(),
+                          )
+                          .join(' '),
+                      )}
                     />
                   ))}
                 </FormGroup>

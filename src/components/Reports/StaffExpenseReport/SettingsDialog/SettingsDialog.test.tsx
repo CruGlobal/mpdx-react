@@ -31,6 +31,7 @@ describe('SettingsDialog', () => {
   const defaultProps = {
     isOpen: true,
     onClose: jest.fn(),
+    categories: ['Benefits', 'Salary', 'Contributions'],
   };
 
   beforeEach(() => {
