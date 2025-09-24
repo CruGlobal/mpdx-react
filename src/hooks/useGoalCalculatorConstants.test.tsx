@@ -60,6 +60,15 @@ const mockData = {
       },
       {
         __typename: 'MpdGoalMiscConstant' as const,
+        id: '5a92245c-a6ca-4d97-8e7c-b88203573eby',
+        category: MpdGoalMiscConstantCategoryEnum.Rates,
+        categoryDisplayName: 'Rates',
+        label: MpdGoalMiscConstantLabelEnum.AttritionRate,
+        labelDisplayName: 'Attrition Rate',
+        fee: 0.15,
+      },
+      {
+        __typename: 'MpdGoalMiscConstant' as const,
         id: '8d0d738e-6031-4336-8c27-cb9a52b58b0e',
         category: MpdGoalMiscConstantCategoryEnum.DebtPercentage,
         categoryDisplayName: 'Debt Percentage',
@@ -81,7 +90,7 @@ describe('useGoalCalculatorConstants', () => {
 
     expect(result.current).toEqual({
       goalBenefitsConstantMap: new Map(),
-      goalMiscConstantMap: new Map(),
+      GoalMiscConstants: {},
       goalGeographicConstantMap: new Map(),
       loading: true,
       error: undefined,
@@ -131,31 +140,39 @@ describe('useGoalCalculatorConstants', () => {
             },
           ],
         ]),
-        goalMiscConstantMap: new Map([
-          [
-            MpdGoalMiscConstantLabelEnum.AdminRate,
-            {
+        GoalMiscConstants: {
+          [MpdGoalMiscConstantCategoryEnum.Rates]: {
+            [MpdGoalMiscConstantLabelEnum.AdminRate]: {
               __typename: 'MpdGoalMiscConstant',
               id: '5a92245c-a6ca-4d97-8e7c-b88203573ebd',
               category: MpdGoalMiscConstantCategoryEnum.Rates,
               categoryDisplayName: 'Rates',
               labelDisplayName: 'Administrative Rate',
+              label: MpdGoalMiscConstantLabelEnum.AdminRate,
               fee: 0.12,
             },
-          ],
-          [
-            // cSpell:ignore Seca
-            MpdGoalMiscConstantLabelEnum.Seca,
-            {
+            [MpdGoalMiscConstantLabelEnum.AttritionRate]: {
+              __typename: 'MpdGoalMiscConstant',
+              id: '5a92245c-a6ca-4d97-8e7c-b88203573eby',
+              category: MpdGoalMiscConstantCategoryEnum.Rates,
+              categoryDisplayName: 'Rates',
+              labelDisplayName: 'Attrition Rate',
+              label: MpdGoalMiscConstantLabelEnum.AttritionRate,
+              fee: 0.15,
+            },
+          },
+          [MpdGoalMiscConstantCategoryEnum.DebtPercentage]: {
+            [MpdGoalMiscConstantLabelEnum.Seca]: {
               __typename: 'MpdGoalMiscConstant',
               id: '8d0d738e-6031-4336-8c27-cb9a52b58b0e',
               category: MpdGoalMiscConstantCategoryEnum.DebtPercentage,
               categoryDisplayName: 'Debt Percentage',
               labelDisplayName: 'Self-Employment Contributions Act',
+              label: MpdGoalMiscConstantLabelEnum.Seca,
               fee: 0.22,
             },
-          ],
-        ]),
+          },
+        },
         goalGeographicConstantMap: new Map([
           ['None', 0],
           ['Atlanta, GA', 0.12],

@@ -14,7 +14,7 @@ import { getQueryParam } from 'src/utils/queryParam';
 import {
   GoalBenefitsConstantMap,
   GoalGeographicConstantMap,
-  GoalMiscConstantMap,
+  GoalMiscConstants,
   useGoalCalculatorConstants,
 } from '../../../../hooks/useGoalCalculatorConstants';
 import {
@@ -51,7 +51,7 @@ export type GoalCalculatorType = {
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
   goalBenefitsConstantMap: GoalBenefitsConstantMap;
   goalGeographicConstantMap: GoalGeographicConstantMap;
-  goalMiscConstantMap: GoalMiscConstantMap;
+  GoalMiscConstants: GoalMiscConstants;
   percentComplete: number;
 };
 
@@ -87,7 +87,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
 
   const {
     goalBenefitsConstantMap,
-    goalMiscConstantMap,
+    GoalMiscConstants,
     goalGeographicConstantMap,
   } = useGoalCalculatorConstants();
 
@@ -168,7 +168,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       trackMutation,
       goalBenefitsConstantMap,
       goalGeographicConstantMap,
-      goalMiscConstantMap,
+      GoalMiscConstants,
       percentComplete,
     }),
     [
@@ -189,7 +189,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       trackMutation,
       goalBenefitsConstantMap,
       goalGeographicConstantMap,
-      goalMiscConstantMap,
+      GoalMiscConstants,
       percentComplete,
     ],
   );

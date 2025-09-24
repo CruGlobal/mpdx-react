@@ -3,6 +3,7 @@ import { ApolloError } from '@apollo/client';
 import {
   MpdGoalBenefitsConstant,
   MpdGoalMiscConstant,
+  MpdGoalMiscConstantCategoryEnum,
   MpdGoalMiscConstantLabelEnum,
 } from 'src/graphql/types.generated';
 import { useGoalCalculatorConstantsQuery } from './goalCalculatorConstants.generated';
@@ -14,18 +15,26 @@ export type GoalBenefitsConstantMap = Map<
     'id' | 'size' | 'sizeDisplayName' | 'plan' | 'planDisplayName' | 'cost'
   >
 >;
-export type GoalMiscConstantMap = Map<
-  MpdGoalMiscConstantLabelEnum,
-  Pick<
-    MpdGoalMiscConstant,
-    'id' | 'category' | 'categoryDisplayName' | 'labelDisplayName' | 'fee'
+export type GoalMiscConstants = Record<
+  MpdGoalMiscConstantCategoryEnum,
+  Record<
+    MpdGoalMiscConstantLabelEnum,
+    Pick<
+      MpdGoalMiscConstant,
+      | 'id'
+      | 'category'
+      | 'categoryDisplayName'
+      | 'labelDisplayName'
+      | 'label'
+      | 'fee'
+    >
   >
 >;
 export type GoalGeographicConstantMap = Map<string, number>;
 
 interface FormattedConstants {
   goalBenefitsConstantMap: GoalBenefitsConstantMap;
-  goalMiscConstantMap: GoalMiscConstantMap;
+  GoalMiscConstants: GoalMiscConstants;
   goalGeographicConstantMap: GoalGeographicConstantMap;
   loading: boolean;
   error: ApolloError | undefined;
@@ -49,13 +58,19 @@ export const useGoalCalculatorConstants = (): FormattedConstants => {
     return map;
   }, [data?.constant.mpdGoalBenefitsConstants]);
 
-  const goalMiscConstantMap = useMemo(() => {
-    const map: GoalMiscConstantMap = new Map();
+  const GoalMiscConstants = useMemo(() => {
+    const miscObject: Record<string, Record<string, any>> = {};
     data?.constant.mpdGoalMiscConstants?.forEach((constant) => {
-      const { label, ...props } = constant;
-      map.set(label, props);
+      const { category, label } = constant;
+      if (!miscObject[category]) {
+        miscObject[category] = {
+          [label]: constant,
+        };
+      } else {
+        miscObject[category] = { ...miscObject[category], [label]: constant };
+      }
     });
-    return map;
+    return miscObject as GoalMiscConstants;
   }, [data?.constant.mpdGoalMiscConstants]);
 
   const goalGeographicConstantMap = useMemo(() => {
@@ -70,7 +85,7 @@ export const useGoalCalculatorConstants = (): FormattedConstants => {
 
   return {
     goalBenefitsConstantMap,
-    goalMiscConstantMap,
+    GoalMiscConstants,
     goalGeographicConstantMap,
     error,
     loading: !data,
