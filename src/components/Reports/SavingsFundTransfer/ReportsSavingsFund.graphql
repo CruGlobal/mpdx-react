@@ -31,8 +31,8 @@ query ReportsSavingsFundTransfer(
   }
 }
 
-query AccountFunds($fundTypes: [String!]) {
-  accountFunds(fundTypes: $fundTypes) {
+query ReportsStaffExpenses($fundTypes: [String!]) {
+  reportsStaffExpenses(fundTypes: $fundTypes) {
     funds {
       id
       fundType
@@ -42,7 +42,7 @@ query AccountFunds($fundTypes: [String!]) {
   }
 }
 
-fragment FundFields on AccountFund {
+fragment FundFields on Fund {
   id
   fundType
   balance

@@ -13,8 +13,8 @@ import theme from 'src/theme';
 import { StaffAccountQuery } from '../../StaffAccount.generated';
 import { StaffSavingFundContext } from '../../StaffSavingFund/StaffSavingFundContext';
 import {
-  AccountFundsQuery,
   ReportsSavingsFundTransferQuery,
+  ReportsStaffExpensesQuery,
 } from '../ReportsSavingsFund.generated';
 import { TransfersPage } from './TransfersPage';
 
@@ -68,8 +68,8 @@ const mock = {
       },
     ],
   },
-  AccountFunds: {
-    accountFunds: {
+  ReportsStaffExpenses: {
+    reportsStaffExpenses: {
       funds: [
         {
           id: '2',
@@ -98,8 +98,8 @@ const emptyMock = {
   ReportsSavingsFundTransfer: {
     reportsSavingsFundTransfer: [],
   },
-  AccountFunds: {
-    accountFunds: {
+  ReportsStaffExpenses: {
+    reportsStaffExpenses: {
       funds: [
         {
           id: '1',
@@ -157,7 +157,7 @@ const Components = ({
             <GqlMockedProvider<{
               StaffAccount: StaffAccountQuery;
               ReportsSavingsFundTransfer: ReportsSavingsFundTransferQuery;
-              AccountFunds: AccountFundsQuery;
+              ReportsStaffExpenses: ReportsStaffExpensesQuery;
             }>
               mocks={mock}
               onCall={mutationSpy}
@@ -245,7 +245,7 @@ describe('TransfersPage', () => {
               <I18nextProvider i18n={i18n}>
                 <GqlMockedProvider<{
                   ReportsSavingsFundTransfer: ReportsSavingsFundTransferQuery;
-                  AccountFunds: AccountFundsQuery;
+                  ReportsStaffExpenses: ReportsStaffExpensesQuery;
                 }>
                   mocks={emptyMock}
                   onCall={mutationSpy}
@@ -352,7 +352,7 @@ describe('TransfersPage', () => {
 
     expect(
       within(fromAccount).getByText(
-        `${mock['AccountFunds']['accountFunds']['funds'][1].fundType} Account`,
+        `${mock['ReportsStaffExpenses']['reportsStaffExpenses']['funds'][0].fundType} Account`,
         {
           selector: 'b',
         },
@@ -360,7 +360,7 @@ describe('TransfersPage', () => {
     ).toBeInTheDocument();
     expect(
       within(toAccount).queryByText(
-        `${mock['AccountFunds']['accountFunds']['funds'][1].fundType} Account`,
+        `${mock['ReportsStaffExpenses']['reportsStaffExpenses']['funds'][0].fundType} Account`,
         {
           selector: 'b',
         },

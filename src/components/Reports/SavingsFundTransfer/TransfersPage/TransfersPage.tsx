@@ -25,8 +25,8 @@ import {
 import { BalanceCard } from '../BalanceCard/BalanceCard';
 import { getStatusLabel } from '../Helper/getStatus';
 import {
-  useAccountFundsQuery,
   useReportsSavingsFundTransferQuery,
+  useReportsStaffExpensesQuery,
 } from '../ReportsSavingsFund.generated';
 import { EmptyTable } from '../Table/EmptyTable';
 import { PrintTable } from '../Table/PrintTable';
@@ -74,15 +74,16 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
 
   const { data: reportData, loading: reportLoading } =
     useReportsSavingsFundTransferQuery();
-  const { data: fundsData, loading: fundsLoading } = useAccountFundsQuery({
-    variables: {
-      fundTypes: [FundTypeEnum.Primary, FundTypeEnum.Savings],
-    },
-  });
+  const { data: fundsData, loading: fundsLoading } =
+    useReportsStaffExpensesQuery({
+      variables: {
+        fundTypes: [FundTypeEnum.Primary, FundTypeEnum.Savings],
+      },
+    });
 
   const funds = useMemo(
     () =>
-      (fundsData?.accountFunds?.funds ?? []).toSorted((a, b) =>
+      (fundsData?.reportsStaffExpenses?.funds ?? []).toSorted((a, b) =>
         a.id.localeCompare(b.id),
       ),
     [fundsData],
