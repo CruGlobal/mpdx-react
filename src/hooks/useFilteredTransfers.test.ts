@@ -72,12 +72,7 @@ const mockTransactions: Transactions[] = [
       sourceFundTypeName: 'Primary',
       destinationFundTypeName: 'Savings',
     },
-    recurringTransfer: {
-      id: null,
-      recurringStart: null,
-      recurringEnd: null,
-      active: null,
-    },
+    recurringTransfer: null,
   },
 ];
 

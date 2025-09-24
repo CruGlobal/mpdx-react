@@ -13,15 +13,12 @@ export function useFilteredTransfers(transfers: Transactions[]) {
         continue;
       }
 
-      if (!transfer.recurringTransfer?.id) {
+      if (!transfer.recurringTransfer) {
         filtered.push(transfer);
         continue;
       }
 
-      const key = [
-        transfer.subCategory.name,
-        transfer.recurringTransfer?.id,
-      ].join('-');
+      const key = [transfer.recurringTransfer?.id].join('-');
 
       const index = recurring.get(key);
       if (index === undefined) {
