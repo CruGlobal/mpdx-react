@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import React from 'react';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {
+  Box,
   Divider,
   IconButton,
   Link,
@@ -15,6 +16,7 @@ import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { multiPageHeaderHeight } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import theme from 'src/theme';
 import { GoalCalculatorStepEnum } from '../GoalCalculatorHelper';
+import { CircularProgressWithLabel } from '../SharedComponents/CircularProgressWithLabel/CircularProgressWithLabel';
 import { useGoalCalculator } from './GoalCalculatorContext';
 
 const iconPanelWidth = theme.spacing(5);
@@ -52,7 +54,6 @@ const StyledDrawer = styled('nav', {
     duration: theme.transitions.duration.enteringScreen,
   }),
   overflow: 'hidden',
-  borderRight: open ? `1px solid ${theme.palette.cruGrayLight.main}` : 'none',
   [theme.breakpoints.down('sm')]: {
     position: 'absolute',
     top: multiPageHeaderHeight,
@@ -88,6 +89,7 @@ export const GoalCalculatorLayout: React.FC<GoalCalculatorLayoutProps> = ({
     isDrawerOpen,
     setDrawerOpen,
     toggleDrawer,
+    percentComplete,
   } = useGoalCalculator();
 
   const handleStepIconClick = (step: GoalCalculatorStepEnum) => {
@@ -102,6 +104,16 @@ export const GoalCalculatorLayout: React.FC<GoalCalculatorLayoutProps> = ({
   return (
     <PrintableStack direction="row">
       <Stack direction="column" width={iconPanelWidth}>
+        <Box
+          sx={{
+            p: 1,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <CircularProgressWithLabel progress={percentComplete} />
+        </Box>
         {steps.map((step) => (
           <IconButton
             key={step.step}
@@ -142,7 +154,6 @@ export const GoalCalculatorLayout: React.FC<GoalCalculatorLayoutProps> = ({
         {sectionListPanel}
       </StyledDrawer>
       {isDrawerOpen && <Divider orientation="vertical" flexItem />}
-      <Divider orientation="vertical" flexItem />
       <MainContent className="main-content">{mainContent}</MainContent>
     </PrintableStack>
   );

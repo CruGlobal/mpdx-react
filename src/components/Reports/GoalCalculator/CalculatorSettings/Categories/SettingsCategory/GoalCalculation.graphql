@@ -1,0 +1,9 @@
+mutation UpdateGoalCalculation($input: GoalCalculationUpdateMutationInput!) {
+  updateGoalCalculation(input: $input) {
+    goalCalculation {
+      id
+      name
+      updatedAt
+    }
+  }
+}
