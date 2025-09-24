@@ -8,12 +8,37 @@ export enum FundTypes {
 }
 
 export enum ExpenseCategoriesEnum {
-  Transfer = 'transfer',
-  Ministry = 'ministry reimbursement',
-  Healthcare = 'healthcare reimbursement',
-  AdditionalSalary = 'additional salary',
-  Salary = 'salary',
-  Benefits = 'benefits',
-  Other = 'other',
-  Assessment = 'assessment',
+  Transfer = 'Transfer',
+  Ministry = 'Ministry Reimbursement',
+  Healthcare = 'Healthcare Reimbursement',
+  AdditionalSalary = 'Additional Salary',
+  Salary = 'Salary',
+  Benefits = 'Benefits',
+  Other = 'Other',
+  Assessment = 'Assessment',
+}
+
+interface BreakdownByMonth {
+  month: string;
+  total: number;
+}
+
+interface SubCategories {
+  averagePerMonth: number;
+  total: number;
+  subCategory: string;
+  breakdownByMonth: BreakdownByMonth[];
+}
+interface Categories {
+  averagePerMonth: number;
+  total: number;
+  category: string;
+  subcategories: SubCategories[];
+  breakdownByMonth: BreakdownByMonth[];
+}
+
+export interface Funds {
+  fundType: string;
+  categories: Categories[];
+  total: number;
 }

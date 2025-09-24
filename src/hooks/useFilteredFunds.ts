@@ -10,7 +10,8 @@ const sum = (data: number[]) => {
   return data.reduce((acc, item) => acc + item, 0);
 };
 
-export function useFilteredFunds(reportData) {
+export function useFilteredFunds(funds) {
+  const fundsArray = Array.isArray(funds) ? funds : [];
   return useMemo(() => {
     const incomeData: DataFields[] = [];
     const expenseData: DataFields[] = [];
@@ -62,7 +63,7 @@ export function useFilteredFunds(reportData) {
       });
     };
 
-    reportData?.reportsStaffExpenses.funds.forEach((fund) => {
+    fundsArray.forEach((fund) => {
       const base = fund.fundType;
       fund.categories?.forEach((category) => {
         const baseId = `${base}-${category.category}`;
@@ -109,5 +110,5 @@ export function useFilteredFunds(reportData) {
       incomeData,
       expenseData,
     };
-  }, [reportData]);
+  }, [funds]);
 }

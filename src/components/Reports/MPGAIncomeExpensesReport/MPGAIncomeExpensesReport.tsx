@@ -24,8 +24,12 @@ import {
 } from '../styledComponents';
 import { PrintOnlyReport } from './DisplayModes/PrintOnlyReport';
 import { ScreenOnlyReport } from './DisplayModes/ScreenOnlyReport';
-import { FundTypes } from './Helper/MPGAReportEnum';
+import { FundTypes, Funds } from './Helper/MPGAReportEnum';
 import { convertMonths } from './Helper/convertMonths';
+import {
+  transformCategory,
+  transformSubcategory,
+} from './Helper/transformEnums';
 import { useReportsStaffExpensesQuery } from './ReportsStaffExpenses.generated';
 import { TotalsProvider } from './TotalsContext/TotalsContext';
 import { AllData } from './mockData';
@@ -63,7 +67,32 @@ export const MPGAIncomeExpensesReport: React.FC<
     },
   });
 
-  const { incomeData, expenseData } = useFilteredFunds(reportData);
+  const transformedData: Funds[] = (
+    reportData?.reportsStaffExpenses?.funds ?? []
+  ).map((fund) => ({
+    fundType: fund.fundType,
+    total: fund.total,
+    categories: (fund.categories ?? []).map((category) => ({
+      category: transformCategory(category.category),
+      averagePerMonth: category.averagePerMonth,
+      total: category.total,
+      breakdownByMonth: category.breakdownByMonth.map((month) => ({
+        month: month.month,
+        total: month.total,
+      })),
+      subcategories: (category.subcategories ?? []).map((subcategory) => ({
+        subCategory: transformSubcategory(subcategory.subCategory),
+        averagePerMonth: subcategory.averagePerMonth,
+        total: subcategory.total,
+        breakdownByMonth: subcategory.breakdownByMonth.map((month) => ({
+          month: month.month,
+          total: month.total,
+        })),
+      })),
+    })),
+  }));
+
+  const { incomeData, expenseData } = useFilteredFunds(transformedData);
 
   const allData: AllData = useMemo(() => {
     return {
