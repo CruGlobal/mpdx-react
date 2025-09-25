@@ -94,8 +94,8 @@ export const InformationCategory: React.FC<InformationCategoryProps> = () => {
             Object.values(MpdGoalBenefitsConstantPlanEnum),
             t('Benefits plan must be one of the options'),
           ),
-        yearsOnStaff: integer(t('Years on staff'), t),
-        spouseYearsOnStaff: integer(t('Spouse years on staff'), t),
+        yearsOnStaff: integer(t('Years on Staff'), t),
+        spouseYearsOnStaff: integer(t('Spouse Years on Staff'), t),
         age: yup
           .string()
           .oneOf(
@@ -106,7 +106,7 @@ export const InformationCategory: React.FC<InformationCategoryProps> = () => {
           .string()
           .oneOf(
             Object.values(GoalCalculationAge),
-            t('Spouse age must be one of the options'),
+            t('Spouse Age must be one of the options'),
           ),
         childrenNamesAges: yup.string(),
 
