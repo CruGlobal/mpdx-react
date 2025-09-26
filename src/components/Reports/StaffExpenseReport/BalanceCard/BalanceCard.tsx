@@ -2,10 +2,49 @@ import React from 'react';
 import { Visibility } from '@mui/icons-material';
 import { Box, Card, CardActionArea, Typography, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { Fund } from 'src/graphql/types.generated';
+import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat';
+
+const StyledCardActionArea = styled(CardActionArea, {
+  shouldForwardProp: (prop) => prop !== 'isSelected',
+})<{ isSelected: boolean }>(({ theme, isSelected }) => ({
+  padding: theme.spacing(1),
+  margin: 0,
+  minHeight: 48,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: isSelected ? 'center' : 'flex-start',
+}));
+
+const StyledIconBox = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'iconBgColor',
+})<{ iconBgColor?: string }>(({ theme, iconBgColor }) => ({
+  backgroundColor: iconBgColor || theme.palette.primary.main,
+  color: theme.palette.primary.contrastText,
+  borderRadius: theme.spacing(1),
+  padding: theme.spacing(1),
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+}));
+
+const StyledCard = styled(Card, {
+  shouldForwardProp: (prop) => prop !== 'isSelected',
+})<{ isSelected: boolean }>(({ theme, isSelected }) => ({
+  padding: theme.spacing(2),
+  flex: 1,
+  minWidth: 0,
+  maxWidth: 'none',
+  fontSize: '1.25rem',
+  boxShadow: isSelected ? theme.shadows[3] : theme.shadows[1],
+  transition: 'box-shadow 0.3s ease-in-out, border 0.3s ease-in-out',
+  border: isSelected
+    ? `1px dashed ${theme.palette.primary.main}`
+    : `1px solid ${theme.palette.divider}`,
+}));
 
 interface BalanceCardProps {
-  fundType: Fund['fundType'];
+  fundType: string;
   title: string;
   icon: React.ComponentType;
   iconBgColor?: string;
@@ -13,15 +52,15 @@ interface BalanceCardProps {
   endingBalance: number;
   transfersIn: number;
   transfersOut: number;
-  onClick?: (fundType: Fund['fundType']) => void;
+  onClick: (fundType: string) => void;
   isSelected?: boolean;
 }
 
-const ScreenOnly = styled(Box)(() => ({
+const ScreenOnly = styled(Box)({
   '@media print': {
     display: 'none',
   },
-}));
+});
 
 export const BalanceCard: React.FC<BalanceCardProps> = ({
   fundType,
@@ -36,88 +75,41 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
   isSelected = false,
 }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
 
   return (
-    <Card
-      variant="outlined"
-      sx={{
-        p: 2,
-        flex: 1,
-        minWidth: 0,
-        maxWidth: 'none',
-        fontSize: '1.25rem',
-        boxShadow: isSelected ? 3 : 1,
-        transition: 'box-shadow 0.3s ease-in-out',
-      }}
-    >
+    <StyledCard variant="outlined" isSelected={isSelected}>
       <Box display={'flex'} flexDirection="row" alignItems="center" gap={1}>
-        <Box
-          sx={{
-            backgroundColor: iconBgColor || 'primary.main',
-            color: 'primary.contrastText',
-            borderRadius: 1,
-            p: 1,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
+        <StyledIconBox iconBgColor={iconBgColor}>
           <Icon />
-        </Box>
+        </StyledIconBox>
         <Typography variant="h6">{title}</Typography>
       </Box>
       <Box display="flex" flexDirection="column" mt={3} mb={2}>
         <Typography>
           {t('Starting Balance: ')}
-          {startingBalance !== undefined
-            ? startingBalance.toLocaleString(undefined, {
-                style: 'currency',
-                currency: 'USD',
-              })
-            : ''}
+          {currencyFormat(startingBalance, 'USD', locale)}
         </Typography>
         <Typography>
           {t('+ Transfers in: ')}
-          {transfersIn !== undefined
-            ? transfersIn.toLocaleString(undefined, {
-                style: 'currency',
-                currency: 'USD',
-              })
-            : ''}
+          {currencyFormat(transfersIn, 'USD', locale)}
         </Typography>
         <Typography>
           {t('- Transfers out: ')}
-          {transfersOut !== undefined
-            ? Math.abs(transfersOut).toLocaleString(undefined, {
-                style: 'currency',
-                currency: 'USD',
-              })
-            : ''}
+          {currencyFormat(Math.abs(transfersOut), 'USD', locale)}
         </Typography>
         <Typography>
           {t('= Ending Balance: ')}
-          {endingBalance !== undefined
-            ? endingBalance.toLocaleString(undefined, {
-                style: 'currency',
-                currency: 'USD',
-              })
-            : ''}
+          {currencyFormat(endingBalance, 'USD', locale)}
         </Typography>
       </Box>
 
       <ScreenOnly>
-        <CardActionArea
+        <StyledCardActionArea
           onClick={() => {
-            onClick?.(fundType);
+            onClick(fundType);
           }}
-          sx={{
-            p: 1,
-            m: 0,
-            minHeight: 48,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: isSelected ? 'center' : 'flex-start',
-          }}
+          isSelected={isSelected}
         >
           {isSelected ? (
             <Typography
@@ -140,8 +132,8 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
               </Typography>
             </Box>
           )}
-        </CardActionArea>
+        </StyledCardActionArea>
       </ScreenOnly>
-    </Card>
+    </StyledCard>
   );
 };
