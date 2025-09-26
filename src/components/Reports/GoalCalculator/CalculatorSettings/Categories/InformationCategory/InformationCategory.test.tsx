@@ -20,7 +20,9 @@ const TestComponent = () => (
       GetUser: GetUserQuery;
     }>
       mocks={{
-        GoalCalculation: goalCalculationMock,
+        GoalCalculation: {
+          goalCalculation: goalCalculationMock,
+        },
         GetUser: {
           user: {
             id: 'user-id-1',
