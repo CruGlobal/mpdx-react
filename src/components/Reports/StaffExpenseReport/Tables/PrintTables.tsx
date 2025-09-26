@@ -10,6 +10,7 @@ import {
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat';
 import { Transaction } from '../StaffExpenseReport';
 
 export interface PrintTablesProps {
@@ -53,10 +54,7 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
                   <TableCell>{row.category}</TableCell>
                   <TableCell>
                     {row.total < 0 ? '-' : ''}
-                    {Math.abs(row.total).toLocaleString(locale, {
-                      style: 'currency',
-                      currency: 'USD',
-                    })}
+                    {currencyFormat(Math.abs(row.total), 'USD', locale)}
                   </TableCell>
                 </TableRow>
               ))}
@@ -70,11 +68,7 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
                     <span
                       style={{ color: transactionTotal < 0 ? 'red' : 'green' }}
                     >
-                      {transactionTotal < 0 ? '-' : ''}
-                      {Math.abs(transactionTotal).toLocaleString(locale, {
-                        style: 'currency',
-                        currency: 'USD',
-                      })}
+                      {currencyFormat(transactionTotal, 'USD', locale)}
                     </span>
                   </strong>
                 </TableCell>
@@ -99,7 +93,9 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
                 </TableCell>
                 <TableCell />
                 <TableCell>
-                  <strong>${transactionTotal}</strong>
+                  <strong>
+                    ${currencyFormat(transactionTotal, 'USD', locale)}
+                  </strong>
                 </TableCell>
               </TableRow>
             </>
