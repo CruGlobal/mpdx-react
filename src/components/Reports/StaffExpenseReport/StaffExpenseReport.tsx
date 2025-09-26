@@ -24,11 +24,7 @@ import {
   HeaderTypeEnum,
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
-import {
-  BreakdownByMonth,
-  SubCategory,
-  TransactionCategory,
-} from 'src/graphql/types.generated';
+import { BreakdownByMonth, SubCategory } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import theme from 'src/theme';
 import { useStaffAccountQuery } from '../StaffAccount.generated';
@@ -103,7 +99,7 @@ const StyledCardsBox = styled(Box)({
 
 export interface Transaction extends BreakdownByMonth {
   fundType: string;
-  category: TransactionCategory['category'];
+  category: string;
   subcategory?: SubCategory['subCategory'];
 }
 
@@ -137,8 +133,6 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
 
   const { data, loading } = useReportsStaffExpensesQuery({
     variables: {
-      // Replace when we have account data
-      accountId: '1000000001',
       startMonth:
         filters?.startDate?.startOf('month').toISODate() ??
         filters?.endDate?.startOf('month').toISODate() ??
@@ -148,6 +142,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
         time.endOf('month').toISODate(),
     },
   });
+
   const handlePrint = () => window.print();
 
   const timeTitle = time.toJSDate().toLocaleDateString(locale, {
