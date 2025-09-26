@@ -1,11 +1,10 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { ReportsStaffExpensesQuery } from '../GetStaffExpense.generated';
 import { TableType } from '../Helpers/StaffReportEnum';
@@ -28,83 +27,81 @@ const TestComponent: React.FC<TestComponentProps> = ({
   tableProps,
   isEmpty,
 }) => (
-  <LocalizationProvider dateAdapter={AdapterLuxon}>
-    <ThemeProvider theme={theme}>
-      <TestRouter router={router}>
-        <GqlMockedProvider<{
-          StaffExpenseReport: ReportsStaffExpensesQuery;
-        }>
-          mocks={{
-            reportsStaffExpenses: {
-              startBalance: 1000,
-              endBalance: 2000,
-              funds: isEmpty
-                ? []
-                : [
-                    {
-                      fundType: 'Primary',
-                      total: -500,
-                      categories: [
-                        {
-                          category: 'Travel',
-                          total: -300,
-                          averagePerMonth: -100,
-                          subcategories: [
-                            {
-                              subCategory: 'Flights',
-                              total: -200,
-                              averagePerMonth: -50,
-                              breakdownByMonth: [
-                                { month: '2025-01-01', total: -100 },
-                                { month: '2025-02-01', total: -100 },
-                              ],
-                            },
-                            {
-                              subCategory: 'Hotels',
-                              total: -100,
-                              averagePerMonth: -50,
-                              breakdownByMonth: [
-                                { month: '2025-01-01', total: -50 },
-                                { month: '2025-02-01', total: -50 },
-                              ],
-                            },
-                          ],
-                          breakdownByMonth: [
-                            { month: '2025-01-01', total: -150 },
-                            { month: '2025-02-01', total: -150 },
-                          ],
-                        },
-                      ],
-                    },
-                  ],
+  <ThemeProvider theme={theme}>
+    <TestRouter router={router}>
+      <GqlMockedProvider<{
+        StaffExpenseReport: ReportsStaffExpensesQuery;
+      }>
+        mocks={{
+          reportsStaffExpenses: {
+            startBalance: 1000,
+            endBalance: 2000,
+            funds: isEmpty
+              ? []
+              : [
+                  {
+                    fundType: 'Primary',
+                    total: -500,
+                    categories: [
+                      {
+                        category: 'Travel',
+                        total: -300,
+                        averagePerMonth: -100,
+                        subcategories: [
+                          {
+                            subCategory: 'Flights',
+                            total: -200,
+                            averagePerMonth: -50,
+                            breakdownByMonth: [
+                              { month: '2025-01-01', total: -100 },
+                              { month: '2025-02-01', total: -100 },
+                            ],
+                          },
+                          {
+                            subCategory: 'Hotels',
+                            total: -100,
+                            averagePerMonth: -50,
+                            breakdownByMonth: [
+                              { month: '2025-01-01', total: -50 },
+                              { month: '2025-02-01', total: -50 },
+                            ],
+                          },
+                        ],
+                        breakdownByMonth: [
+                          { month: '2025-01-01', total: -150 },
+                          { month: '2025-02-01', total: -150 },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+          },
+        }}
+        onCall={mutationSpy}
+      >
+        <StaffReportTable
+          transactions={[
+            {
+              fundType: 'Primary',
+              category: StaffExpenseCategoryEnum.AdditionalSalary,
+              month: '2025-01-01',
+              total: -100,
             },
-          }}
-          onCall={mutationSpy}
-        >
-          <StaffReportTable
-            transactions={[
-              {
-                fundType: 'Primary',
-                category: 'Travel - Flights',
-                month: '2025-01-01',
-                total: -100,
-              },
-              {
-                fundType: 'Primary',
-                category: 'Travel - Hotels',
-                month: '2025-02-01',
-                total: -50,
-              },
-            ]}
-            tableType={TableType.Expenses}
-            transferTotal={0}
-            emptyPlaceholder={<span>Empty Table</span>}
-            {...tableProps}
-          />
-        </GqlMockedProvider>
-      </TestRouter>
-    </ThemeProvider>
-  </LocalizationProvider>
+            {
+              fundType: 'Primary',
+              category: StaffExpenseCategoryEnum.Transfer,
+              month: '2025-02-01',
+              total: -50,
+            },
+          ]}
+          tableType={TableType.Expenses}
+          transferTotal={0}
+          emptyPlaceholder={<span>Empty Table</span>}
+          {...tableProps}
+        />
+      </GqlMockedProvider>
+    </TestRouter>
+  </ThemeProvider>
 );
 
 describe('StaffReportTable', () => {
@@ -119,10 +116,12 @@ describe('StaffReportTable', () => {
       getByRole('columnheader', { name: 'Description' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('gridcell', { name: 'Travel - Flights' }),
+      getByRole('gridcell', {
+        name: StaffExpenseCategoryEnum.AdditionalSalary,
+      }),
     ).toBeInTheDocument();
     expect(getByRole('columnheader', { name: 'Amount' })).toBeInTheDocument();
-    expect(getByRole('gridcell', { name: '-$100.00' })).toBeInTheDocument();
+    expect(getByRole('gridcell', { name: '-$100' })).toBeInTheDocument();
   });
 
   it('renders loading spinner when loading prop is true', async () => {
@@ -157,14 +156,14 @@ describe('StaffReportTable', () => {
     ).toBeInTheDocument();
 
     userEvent.click(await findByRole('columnheader', { name: 'Amount' }));
-    const ascCells = getAllByRole('gridcell', { name: /-\$\d+\.\d{2}/ });
-    expect(ascCells[0]).toHaveTextContent('-$50.00');
-    expect(ascCells[1]).toHaveTextContent('-$100.00');
+    const ascCells = getAllByRole('gridcell', { name: /-\$\d/ });
+    expect(ascCells[0]).toHaveTextContent('-$50');
+    expect(ascCells[1]).toHaveTextContent('-$100');
 
     userEvent.click(await findByRole('columnheader', { name: 'Amount' }));
-    const descCells = getAllByRole('gridcell', { name: /-\$\d+\.\d{2}/ });
-    expect(descCells[0]).toHaveTextContent('-$100.00');
-    expect(descCells[1]).toHaveTextContent('-$50.00');
+    const descCells = getAllByRole('gridcell', { name: /-\$\d/ });
+    expect(descCells[0]).toHaveTextContent('-$100');
+    expect(descCells[1]).toHaveTextContent('-$50');
   });
 
   it('updates the page size without reloading data', async () => {
