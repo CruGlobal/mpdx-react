@@ -16,15 +16,15 @@ import { Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
+import {
+  MpdGoalBenefitsConstantPlanEnum,
+  MpdGoalBenefitsConstantSizeEnum,
+} from 'src/graphql/types.generated';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
 import { InformationCategoryFinancialForm } from './InformationCategoryForm/InformationCategoryFinancialForm';
 import { InformationCategoryPersonalForm } from './InformationCategoryForm/InformationCategoryPersonalForm';
-import { BenefitsPlan, Role } from './InformationCategoryForm/enums';
-import {
-  ageOptions,
-  familySizeOptions,
-  tenureOptions,
-} from './InformationCategoryForm/mockData';
+import { Role } from './InformationCategoryForm/enums';
+import { ageOptions, tenureOptions } from './InformationCategoryForm/mockData';
 
 const StyledInfoBox = styled(Box)({
   borderBottom: 1,
@@ -136,13 +136,16 @@ export const InformationCategory: React.FC<InformationCategoryProps> = () => {
     benefits: yup
       .string()
       .oneOf(
-        Object.values(BenefitsPlan),
+        Object.values(MpdGoalBenefitsConstantPlanEnum),
         t('Benefits plan must be one of the options'),
       )
       .required(t('Benefits plan is required')),
     familySize: yup
       .string()
-      .oneOf(familySizeOptions, t('Family size must be one of the options'))
+      .oneOf(
+        Object.values(MpdGoalBenefitsConstantSizeEnum),
+        t('Family size must be one of the options'),
+      )
       .required(t('Family size is required')),
     tenure: yup
       .string()
