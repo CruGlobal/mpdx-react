@@ -22,6 +22,8 @@ const mockData: Transactions[] = [
       recurringEnd: null,
       active: null,
     },
+    failedCount: 0,
+    baseAmount: 100,
   },
   {
     id: '2',
@@ -39,6 +41,8 @@ const mockData: Transactions[] = [
       recurringEnd: DateTime.fromISO('2023-01-01'),
       active: true,
     },
+    failedCount: 0,
+    baseAmount: 200,
   },
   {
     id: '3',
@@ -56,6 +60,8 @@ const mockData: Transactions[] = [
       recurringEnd: null,
       active: true,
     },
+    failedCount: 0,
+    baseAmount: 300,
   },
   {
     id: '4',
@@ -73,6 +79,8 @@ const mockData: Transactions[] = [
       recurringEnd: DateTime.fromISO('2024-12-31'),
       active: true,
     },
+    failedCount: 0,
+    baseAmount: 400,
   },
 ];
 

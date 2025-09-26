@@ -1,24 +1,48 @@
-import { ArrowForward, Edit, StopCircle } from '@mui/icons-material';
+import { useEffect } from 'react';
+import { ArrowForward, Cancel, Edit, StopCircle } from '@mui/icons-material';
+import PriorityHigh from '@mui/icons-material/PriorityHigh';
 import {
   Avatar,
+  Badge,
   Box,
   Chip,
+  Icon,
   IconButton,
   Tooltip,
   Typography,
 } from '@mui/material';
 import { TFunction } from 'i18next';
-import { dateFormat } from 'src/lib/intlFormat';
-import { ScheduleEnum, StatusEnum, TransferHistory } from '../../mockData';
-import { RenderCell } from '../TransferHistoryTable';
+import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
+import {
+  ScheduleEnum,
+  StatusEnum,
+  TableTypeEnum,
+  Transfers,
+} from '../../mockData';
+import { RenderCell } from '../TransfersTable';
 import { chipStyle, iconMap } from './createTableRowHelper';
 
-export const populateTransferHistoryRows = (
-  handleEditModalOpen: (transfer: TransferHistory) => void,
-  handleDeleteModalOpen: (transfer: TransferHistory) => void,
+export const populateTransferRows = (
+  type: TableTypeEnum,
+  handleEditModalOpen: (transfer: Transfers) => void,
+  handleDeleteModalOpen: (transfer: Transfers) => void,
+  handleCalendarOpen: (transfer: Transfers) => void,
+  handleFailedTransferOpen: (transfer: Transfers) => void,
   t: TFunction,
   locale: string,
 ) => {
+  useEffect(() => {
+    const MaterialSymbols = document.createElement('link');
+    MaterialSymbols.rel = 'stylesheet';
+    MaterialSymbols.href =
+      'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined';
+    document.head.appendChild(MaterialSymbols);
+
+    return () => {
+      document.head.removeChild(MaterialSymbols);
+    };
+  }, []);
+
   const transfers: RenderCell = ({ row }) => {
     const fromIconName = row.transferFrom?.toLowerCase() || 'primary';
     const toIconName = row.transferTo?.toLowerCase() || 'savings';
@@ -45,13 +69,51 @@ export const populateTransferHistoryRows = (
   };
 
   const amount: RenderCell = ({ row }) => {
+    const failed = row.failedCount && row.failedCount > 0;
     return (
-      <Typography variant="body2" noWrap>
-        {row.amount?.toLocaleString(locale, {
-          style: 'currency',
-          currency: 'USD',
-        })}
-      </Typography>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
+        <Typography variant="body2" noWrap>
+          {currencyFormat(row.amount ?? 0, 'USD', locale, {
+            showTrailingZeros: true,
+          })}
+        </Typography>
+        {failed ? (
+          <Badge
+            badgeContent={row.failedCount}
+            overlap="circular"
+            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            color="error"
+            max={99}
+            sx={{
+              '& .MuiBadge-badge': {
+                minWidth: 16,
+                height: 16,
+                lineHeight: '16px',
+                padding: 0,
+                borderRadius: '50%',
+              },
+            }}
+          >
+            <IconButton>
+              <PriorityHigh
+                sx={{ color: 'error.main' }}
+                titleAccess={t('Failed Transfers') as string}
+                onClick={() => handleFailedTransferOpen(row)}
+              />
+            </IconButton>
+          </Badge>
+        ) : (
+          <Typography variant="body2" noWrap>
+            {'' as string}
+          </Typography>
+        )}
+      </Box>
     );
   };
 
@@ -100,7 +162,9 @@ export const populateTransferHistoryRows = (
   const transferDate: RenderCell = ({ row }) => {
     return (
       <Typography variant="body2" noWrap>
-        {row.transferDate ? dateFormat(row.transferDate, locale) : ''}
+        {row.transferDate
+          ? dateFormat(row.transferDate, locale, { timezone: 'UTC' })
+          : ''}
       </Typography>
     );
   };
@@ -109,7 +173,7 @@ export const populateTransferHistoryRows = (
     return (
       <Typography variant="body2" noWrap>
         {row.schedule === ScheduleEnum.Monthly && row.endDate
-          ? dateFormat(row.endDate, locale)
+          ? dateFormat(row.endDate, locale, { timezone: 'UTC' })
           : ''}
       </Typography>
     );
@@ -125,14 +189,75 @@ export const populateTransferHistoryRows = (
 
   const actions: RenderCell = ({ row }) => {
     if (row.actions === 'edit-delete') {
-      return (
+      return type === TableTypeEnum.Upcoming ? (
         <>
           <IconButton>
-            <Edit titleAccess="Edit" onClick={() => handleEditModalOpen(row)} />
+            <Edit
+              titleAccess={t('Edit')}
+              onClick={() => handleEditModalOpen(row)}
+            />
+          </IconButton>
+          <IconButton>
+            <Cancel
+              titleAccess={t('Cancel Transfer')}
+              onClick={() => {
+                handleDeleteModalOpen(row);
+              }}
+              sx={{ color: 'error.main' }}
+            />
+          </IconButton>
+        </>
+      ) : row.endDate ? (
+        <>
+          <IconButton
+            title={t('Edit Stop Date') as string}
+            onClick={(event) => {
+              event.stopPropagation();
+              handleCalendarOpen(row);
+            }}
+          >
+            <Icon
+              className="material-symbols-outlined"
+              sx={{
+                fontSize: 24,
+                color: 'cruGrayMedium',
+              }}
+            >
+              edit_calendar
+            </Icon>
           </IconButton>
           <IconButton>
             <StopCircle
-              titleAccess={t('Stop ongoing Transfer')}
+              titleAccess={t('Stop Transfer')}
+              sx={{ color: 'error.main' }}
+              onClick={() => {
+                handleDeleteModalOpen(row);
+              }}
+            />
+          </IconButton>
+        </>
+      ) : (
+        <>
+          <IconButton
+            title={t('Add Stop Date') as string}
+            onClick={(event) => {
+              event.stopPropagation();
+              handleCalendarOpen(row);
+            }}
+          >
+            <Icon
+              className="material-symbols-outlined"
+              sx={{
+                fontSize: 24,
+                color: 'cruGrayMedium',
+              }}
+            >
+              calendar_add_on
+            </Icon>
+          </IconButton>
+          <IconButton>
+            <StopCircle
+              titleAccess={t('Stop Transfer')}
               sx={{ color: 'error.main' }}
               onClick={() => {
                 handleDeleteModalOpen(row);

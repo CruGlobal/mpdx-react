@@ -30,15 +30,18 @@ import {
 } from '../ReportsSavingsFund.generated';
 import { EmptyTable } from '../Table/EmptyTable';
 import { PrintTable } from '../Table/PrintTable';
-import { TransferHistoryTable } from '../Table/TransferHistoryTable';
+import { TransfersTable } from '../Table/TransfersTable';
 import { DynamicTransferModal } from '../TransferModal/DynamicTransferModal';
-import { TransferModalData } from '../TransferModal/TransferModal';
+import { UpdatedAtProvider } from '../UpdatedAtContext/UpdateAtContext';
 import {
   FundTypeEnum,
   ScheduleEnum,
   StatusEnum,
+  TableTypeEnum,
   Transactions,
-  TransferHistory,
+  TransferModalData,
+  Transfers,
+  incomingTransfers,
 } from '../mockData';
 import { PrintOnly, ScreenOnly } from '../styledComponents/DisplayStyling';
 
@@ -79,7 +82,10 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
     });
 
   const funds = useMemo(
-    () => fundsData?.reportsStaffExpenses?.funds ?? [],
+    () =>
+      (fundsData?.reportsStaffExpenses?.funds ?? []).toSorted((a, b) =>
+        a.id.localeCompare(b.id),
+      ),
     [fundsData],
   );
 
@@ -93,13 +99,19 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
             ? {
                 ...tx.recurringTransfer,
                 recurringStart: tx.recurringTransfer.recurringStart
-                  ? DateTime.fromISO(tx.recurringTransfer.recurringStart)
+                  ? DateTime.fromISO(
+                      tx.recurringTransfer.recurringStart,
+                    ).toUTC()
                   : null,
                 recurringEnd: tx.recurringTransfer.recurringEnd
-                  ? DateTime.fromISO(tx.recurringTransfer.recurringEnd)
+                  ? DateTime.fromISO(tx.recurringTransfer.recurringEnd).toUTC()
                   : null,
               }
             : null,
+          baseAmount: tx.amount || 0,
+          failedCount: 0,
+          summarizedTransfers: null,
+          missingMonths: null,
         };
       }),
     [reportData],
@@ -107,9 +119,15 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
 
   const filteredTransactions = useFilteredTransfers(transactions);
 
-  const transferHistory: TransferHistory[] = filteredTransactions.map((tx) => {
-    const isRecurring = !!tx.recurringTransfer?.id;
+  const transferHistory: Transfers[] = filteredTransactions.map((tx) => {
+    const isRecurring = !!tx.recurringTransfer;
     const status = getStatusLabel(tx);
+    const shouldShowActions = () => {
+      if (status === StatusEnum.Pending || status === StatusEnum.Ongoing) {
+        return false;
+      }
+      return true;
+    };
 
     return {
       id: tx.id || crypto.randomUUID(),
@@ -123,9 +141,16 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
         : tx.transactedAt || null,
       endDate: tx.recurringTransfer?.recurringEnd || null,
       note: tx.subCategory.name || '',
-      actions: status !== StatusEnum.Complete ? 'edit-delete' : '',
+      actions: shouldShowActions() === false ? 'edit-delete' : '',
+      recurringId: tx.recurringTransfer?.id || '',
+      baseAmount: tx.baseAmount || 0,
+      failedCount: tx.failedCount || 0,
+      summarizedTransfers: tx.summarizedTransfers,
+      missingMonths: tx.missingMonths,
     };
   });
+
+  const incoming = incomingTransfers;
 
   const handlePrint = () => window.print();
 
@@ -153,95 +178,121 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
           },
         }}
       />
-      <Box>
-        <ScreenOnly>
-          <MultiPageHeader
-            isNavListOpen={isNavListOpen}
-            onNavListToggle={onNavListToggle}
-            headerType={HeaderTypeEnum.Report}
-            title={title}
-          />
-        </ScreenOnly>
-        <Box sx={{ mt: 2 }}>
-          <Container>
-            <StyledHeaderBox>
-              <Typography variant="h4">{t('Fund Transfer')}</Typography>
-              <ScreenOnly
+      <UpdatedAtProvider storageKey="fundsUpdatedAt">
+        <Box>
+          <ScreenOnly>
+            <MultiPageHeader
+              isNavListOpen={isNavListOpen}
+              onNavListToggle={onNavListToggle}
+              headerType={HeaderTypeEnum.Report}
+              title={title}
+            />
+          </ScreenOnly>
+          <Box sx={{ mt: 2 }}>
+            <Container>
+              <StyledHeaderBox>
+                <Typography variant="h4">{t('Fund Transfer')}</Typography>
+                <ScreenOnly
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'flex-end',
+                    gap: 1,
+                    mt: 1,
+                  }}
+                >
+                  <StyledPrintButton
+                    startIcon={
+                      <SvgIcon fontSize="small">
+                        <PrintIcon titleAccess={t('Print')} />
+                      </SvgIcon>
+                    }
+                    onClick={handlePrint}
+                  >
+                    {t('Print')}
+                  </StyledPrintButton>
+                </ScreenOnly>
+              </StyledHeaderBox>
+              <Box
                 sx={{
                   display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'flex-end',
-                  gap: 1,
-                  mt: 1,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  gap: 3,
+                  mb: 2,
                 }}
               >
-                <StyledPrintButton
-                  startIcon={
-                    <SvgIcon fontSize="small">
-                      <PrintIcon titleAccess={t('Print')} />
-                    </SvgIcon>
-                  }
-                  onClick={handlePrint}
-                >
-                  {t('Print')}
-                </StyledPrintButton>
-              </ScreenOnly>
-            </StyledHeaderBox>
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 3,
-                mb: 2,
-              }}
-            >
-              <Typography>{staffAccountData?.staffAccount?.name}</Typography>
-              <Typography>{staffAccountData?.staffAccount?.id}</Typography>
-            </Box>
-            <Box
-              display="flex"
-              flexWrap="wrap"
-              gap={2}
-              sx={{
-                flexDirection: { xs: 'column', sm: 'row' },
-              }}
-            >
-              {funds.map((fund) => (
-                <BalanceCard
-                  fund={fund}
-                  key={fund.id}
-                  handleOpenTransferModal={handleOpenTransferModal}
-                  loading={fundsLoading}
-                />
-              ))}
-            </Box>
-            <ScreenOnly sx={{ mt: 2, mb: 3 }}>
-              <TransferHistoryTable
-                history={transferHistory}
-                handleOpenTransferModal={handleOpenTransferModal}
-                emptyPlaceholder={
-                  <EmptyTable
-                    title={t('Transfer History not available')}
-                    subtitle={t('No data found across any accounts.')}
+                <Typography>{staffAccountData?.staffAccount?.name}</Typography>
+                <Typography>{staffAccountData?.staffAccount?.id}</Typography>
+              </Box>
+              <Box
+                display="flex"
+                flexWrap="wrap"
+                gap={2}
+                sx={{
+                  flexDirection: { xs: 'column', sm: 'row' },
+                }}
+              >
+                {funds.map((fund) => (
+                  <BalanceCard
+                    fund={fund}
+                    key={fund.id}
+                    handleOpenTransferModal={handleOpenTransferModal}
+                    loading={fundsLoading}
                   />
-                }
-                loading={reportLoading}
-              />
-            </ScreenOnly>
-            <PrintOnly>
-              <PrintTable transfers={transferHistory} />
-            </PrintOnly>
-          </Container>
+                ))}
+              </Box>
+              <ScreenOnly sx={{ mt: 2, mb: 3 }}>
+                <Box sx={{ mb: 3 }}>
+                  <TransfersTable
+                    history={incoming}
+                    type={TableTypeEnum.Upcoming}
+                    handleOpenTransferModal={handleOpenTransferModal}
+                    emptyPlaceholder={
+                      <EmptyTable
+                        title={t('Upcoming Transfers not available')}
+                        subtitle={t('No data found across any accounts.')}
+                      />
+                    }
+                    loading={reportLoading}
+                  />
+                </Box>
+                <TransfersTable
+                  history={transferHistory}
+                  type={TableTypeEnum.History}
+                  handleOpenTransferModal={handleOpenTransferModal}
+                  emptyPlaceholder={
+                    <EmptyTable
+                      title={t('Transfer History not available')}
+                      subtitle={t('No data found across any accounts.')}
+                    />
+                  }
+                  loading={reportLoading}
+                />
+              </ScreenOnly>
+              <PrintOnly>
+                <Box sx={{ my: 4 }}>
+                  <PrintTable
+                    transfers={incoming}
+                    type={TableTypeEnum.Upcoming}
+                  />
+                  <PrintTable
+                    transfers={transferHistory}
+                    type={TableTypeEnum.History}
+                  />
+                </Box>
+              </PrintOnly>
+            </Container>
+          </Box>
+          {modalData && (
+            <DynamicTransferModal
+              handleClose={() => setModalData(null)}
+              data={modalData}
+              funds={funds}
+            />
+          )}
         </Box>
-        {modalData && (
-          <DynamicTransferModal
-            handleClose={() => setModalData(null)}
-            data={modalData}
-            funds={funds}
-          />
-        )}
-      </Box>
+      </UpdatedAtProvider>
     </>
   );
 };
