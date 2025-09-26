@@ -22,7 +22,7 @@ import {
   useDeleteGoalCalculationMutation,
   useUpdateGoalCalculationMutation,
 } from '../GoalsList/GoalCalculations.generated';
-import { calculateTotals } from '../Shared/calculateTotals';
+import { calculateGoalTotals } from '../Shared/calculateTotals';
 
 const StyledCard = styled(Card)({
   minWidth: 350,
@@ -92,7 +92,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({
   const [deleting, setDeleting] = useState(false);
 
   const overallTotal = useMemo(
-    () => calculateTotals(goal).overallTotal,
+    () => calculateGoalTotals(goal).overallTotal,
     [goal],
   );
 

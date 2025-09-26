@@ -8,7 +8,7 @@ import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
 import { useAccountListSupportRaisedQuery } from '../../Shared/GoalLineItems.generated';
-import { getPrimaryTotal } from '../../Shared/useReportExpenses/helpers';
+import { calculateCategoryTotal } from '../../Shared/calculateTotals';
 import { MpdGoalHeaderCards } from './MpdGoalHeaderCards/MpdGoalHeaderCards';
 
 interface MpdGoalRow {
@@ -68,7 +68,7 @@ export const MpdGoalTable: React.FC = () => {
           return {
             line: `3${lineNumber}`,
             category: t(category.label),
-            amount: getPrimaryTotal(category),
+            amount: calculateCategoryTotal(category),
             reference: Math.random() * 391 + 10,
           };
         },

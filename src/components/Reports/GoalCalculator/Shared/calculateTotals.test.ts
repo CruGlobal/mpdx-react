@@ -4,7 +4,15 @@ import {
   ListGoalCalculationFragment,
   ListGoalCalculationFragmentDoc,
 } from '../GoalsList/GoalCalculations.generated';
-import { calculateTotals } from './calculateTotals';
+import {
+  BudgetFamilyFragment,
+  BudgetFamilyFragmentDoc,
+} from './GoalCalculation.generated';
+import {
+  calculateCategoryTotal,
+  calculateFamilyTotal,
+  calculateGoalTotals,
+} from './calculateTotals';
 
 const mockGoal = gqlMock<ListGoalCalculationFragment>(
   ListGoalCalculationFragmentDoc,
@@ -36,9 +44,24 @@ const mockGoal = gqlMock<ListGoalCalculationFragment>(
   },
 );
 
-describe('calculateTotals', () => {
+const mockFamily = gqlMock<BudgetFamilyFragment>(BudgetFamilyFragmentDoc, {
+  mocks: {
+    primaryBudgetCategories: [
+      {
+        directInput: 20,
+        subBudgetCategories: [{ amount: 100 }, { amount: 200 }],
+      },
+      {
+        directInput: null,
+        subBudgetCategories: [{ amount: 300 }, { amount: 400 }],
+      },
+    ],
+  },
+});
+
+describe('calculateGoalTotals', () => {
   it('should calculate goal totals correctly', async () => {
-    expect(calculateTotals(mockGoal)).toEqual({
+    expect(calculateGoalTotals(mockGoal)).toEqual({
       netMonthlySalary: 4500,
       taxesPercentage: expect.closeTo(0.209, 3),
       taxes: expect.closeTo(940),
@@ -58,7 +81,7 @@ describe('calculateTotals', () => {
   });
 
   it('returns 0 not NaN for missing goals', async () => {
-    expect(calculateTotals(null)).toEqual({
+    expect(calculateGoalTotals(null)).toEqual({
       netMonthlySalary: 0,
       taxesPercentage: 0,
       taxes: 0,
@@ -75,5 +98,32 @@ describe('calculateTotals', () => {
       overallSubtotalWithAdmin: 0,
       overallTotal: 0,
     });
+  });
+});
+
+describe('calculateFamilyTotal', () => {
+  it('returns correct sum of all primary category amounts for ministry family with a primaryBudgetCategory directInput value set', () => {
+    expect(calculateFamilyTotal({ ...mockFamily, directInput: null })).toBe(
+      720,
+    );
+  });
+  it('returns sum of family directInput for ministry family with directInput set', () => {
+    expect(calculateFamilyTotal({ ...mockFamily, directInput: 1200 })).toBe(
+      1200,
+    );
+  });
+});
+
+describe('calculateCategoryTotal', () => {
+  it('returns sum of all subcategory amounts for primary category with directInput set', () => {
+    expect(calculateCategoryTotal(mockFamily.primaryBudgetCategories[0])).toBe(
+      20,
+    );
+  });
+
+  it('returns sum of all subcategory amounts for primary category without directInput set', () => {
+    expect(calculateCategoryTotal(mockFamily.primaryBudgetCategories[1])).toBe(
+      700,
+    );
   });
 });
