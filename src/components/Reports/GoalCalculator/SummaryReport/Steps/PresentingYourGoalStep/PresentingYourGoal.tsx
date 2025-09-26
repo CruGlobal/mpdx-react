@@ -28,9 +28,8 @@ import { useOrganizationId } from 'src/hooks/useOrganizationId';
 import cruLogo from 'src/images/cru/cru-logo.svg';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { useGoalLineItems } from '../../../Shared/useGoalLineItems';
+import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
 import { useGetOrganizationsQuery } from './GetOrganization.generated';
-import type { Goal } from '../../../Shared/useReportExpenses/useReportExpenses';
 
 const ChartContainer = styled(Box)({
   '@media print': {
@@ -79,17 +78,11 @@ interface PresentingYourGoalRow {
   bold?: boolean;
 }
 
-interface PresentingYourGoalProps {
-  goal: Goal;
-}
-
-export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
-  goal,
-}) => {
+export const PresentingYourGoal: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
   const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
-  const calculations = useGoalLineItems(goal);
+  const { goalTotals } = useGoalCalculator();
 
   /*
    * We don't want to display ministry location and Cru image if
@@ -113,22 +106,20 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
 
   const presentationData = useMemo(
     () => [
-      { name: 'Salary', value: goal.netMonthlySalary },
-      { name: 'Ministry Expenses', value: goal.ministryExpensesTotal },
-      { name: 'Benefits', value: 300 },
-      { name: 'Social Security and Taxes', value: calculations.taxes },
+      { name: 'Salary', value: goalTotals.netMonthlySalary },
+      { name: 'Ministry Expenses', value: goalTotals.ministryExpensesTotal },
+      { name: 'Benefits', value: goalTotals.benefitsCharge },
+      { name: 'Social Security and Taxes', value: goalTotals.taxes },
       {
         name: 'Voluntary 403b Retirement Plan',
-        value:
-          calculations.traditionalContribution + calculations.rothContribution,
+        value: goalTotals.traditionalContribution + goalTotals.rothContribution,
       },
       {
         name: 'Administrative Charge',
-        value:
-          calculations.overallSubtotalWithAdmin - calculations.overallSubtotal,
+        value: goalTotals.overallSubtotalWithAdmin - goalTotals.overallSubtotal,
       },
     ],
-    [goal, calculations],
+    [goalTotals],
   );
 
   const total = useMemo(
@@ -205,9 +196,8 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
         amount: presentationData[5].value,
       },
       { title: 'Total Support Goal', amount: total, bold: true },
-      { title: 'Total Solid Support', amount: calculations.supportRaised },
     ],
-    [presentationData, total, t, calculations],
+    [presentationData, total, t, goalTotals],
   );
 
   return (

@@ -1,5 +1,5 @@
 import NextLink from 'next/link';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Star, StarBorderOutlined } from '@mui/icons-material';
 import {
   Box,
@@ -22,7 +22,7 @@ import {
   useDeleteGoalCalculationMutation,
   useUpdateGoalCalculationMutation,
 } from '../GoalsList/GoalCalculations.generated';
-import { useGoalTotal } from './useGoalTotal';
+import { calculateTotals } from '../Shared/calculateTotals';
 
 const StyledCard = styled(Card)({
   minWidth: 350,
@@ -91,7 +91,10 @@ export const GoalCard: React.FC<GoalCardProps> = ({
   const [deleteGoalCalculation] = useDeleteGoalCalculationMutation();
   const [deleting, setDeleting] = useState(false);
 
-  const overallTotal = useGoalTotal(goal);
+  const overallTotal = useMemo(
+    () => calculateTotals(goal).overallTotal,
+    [goal],
+  );
 
   const handleStarClick = async () => {
     await updateGoalCalculation({
