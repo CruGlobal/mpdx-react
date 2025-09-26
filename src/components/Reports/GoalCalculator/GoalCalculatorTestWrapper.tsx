@@ -5,6 +5,7 @@ import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import {
+  GoalCalculationAge,
   PrimaryBudgetCategoryEnum,
   SubBudgetCategoryEnum,
 } from 'src/graphql/types.generated';
@@ -22,6 +23,13 @@ export const goalCalculationMock = {
   goalCalculation: {
     id: 'test-goal-id',
     name: 'Initial Goal Name',
+    firstName: 'John',
+    age: GoalCalculationAge.UnderThirty,
+    yearsOnStaff: 5,
+    secaExempt: false,
+    spouseSecaExempt: false,
+    mhaAmount: 1000,
+    spouseMhaAmount: 500,
     ministryFamily: {
       primaryBudgetCategories: [
         {
