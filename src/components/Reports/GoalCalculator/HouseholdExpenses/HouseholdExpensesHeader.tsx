@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Button,
   Card,
@@ -17,6 +17,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import { CurrencyAdornment } from '../Shared/Adornments';
 import { useGoalCalculator } from '../Shared/GoalCalculatorContext';
+import { calculateFamilyTotal } from '../Shared/calculateTotals';
 import { useUpdateHouseholdDirectInputMutation } from './HouseholdDirectInput.generated';
 
 const StyledCard = styled(Card)({
@@ -40,14 +41,7 @@ const AmountTypography = styled(Typography)(({ theme }) => ({
   color: theme.palette.mpdxBlue.main,
 }));
 
-interface HouseholdExpensesHeaderProps {
-  /** The total of the household expenses categories */
-  categoriesTotal: number;
-}
-
-export const HouseholdExpensesHeader: React.FC<
-  HouseholdExpensesHeaderProps
-> = ({ categoriesTotal }) => {
+export const HouseholdExpensesHeader: React.FC = () => {
   const accountListId = useAccountListId() ?? '';
   const {
     goalCalculationResult: { data, loading },
@@ -63,6 +57,16 @@ export const HouseholdExpensesHeader: React.FC<
   const [showPercentage, setShowPercentage] = useState(true);
   const [editing, setEditing] = useState(false);
 
+  const categoriesTotal = useMemo(
+    () =>
+      data
+        ? calculateFamilyTotal({
+            ...data.goalCalculation.householdFamily,
+            directInput: null,
+          })
+        : 0,
+    [data],
+  );
   const budgetTotal = directInput ?? categoriesTotal;
   const leftToAllocate =
     typeof directInput === 'number' ? directInput - categoriesTotal : 0;

@@ -99,6 +99,7 @@ export const goalCalculationMock = gqlMock<
       householdFamily: {
         id: 'household-family',
         directInput: 5500,
+        primaryBudgetCategories: [{ directInput: 5000 }],
       },
       specialFamily: {
         primaryBudgetCategories: [
