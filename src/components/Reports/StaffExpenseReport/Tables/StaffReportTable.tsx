@@ -5,7 +5,7 @@ import { DataGrid, GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
-import { dateFormatShort } from 'src/lib/intlFormat';
+import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import { TableType } from '../Helpers/StaffReportEnum';
 import { Transaction } from '../StaffExpenseReport';
 
@@ -19,7 +19,7 @@ export interface StaffReportTableProps {
   loading?: boolean;
 }
 
-export const StyledGrid = styled(DataGrid)(({ theme }) => ({
+const StyledGrid = styled(DataGrid)(({ theme }) => ({
   '.MuiDataGrid-row:nth-of-type(2n + 1):not(:hover)': {
     backgroundColor: theme.palette.cruGrayLight.main,
   },
@@ -32,7 +32,7 @@ export const StyledGrid = styled(DataGrid)(({ theme }) => ({
   },
 }));
 
-export const LoadingBox = styled(Box)(({ theme }) => ({
+const LoadingBox = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.cruGrayLight.main,
   height: 300,
   minWidth: 700,
@@ -43,7 +43,7 @@ export const LoadingBox = styled(Box)(({ theme }) => ({
   alignItems: 'center',
 }));
 
-export const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
+const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
   margin: theme.spacing(0, 1, 0, 0),
 }));
 
@@ -54,7 +54,7 @@ export interface StaffReportRow {
   amount: number;
 }
 
-export const createStaffReportRow = (
+const createStaffReportRow = (
   transaction: Transaction,
   index: number,
 ): StaffReportRow => ({
@@ -105,10 +105,7 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
 
     return (
       <Typography variant="body2" noWrap>
-        {row.amount.toLocaleString(locale, {
-          style: 'currency',
-          currency: 'USD',
-        })}
+        {currencyFormat(row.amount, 'USD', locale)}
       </Typography>
     );
   };

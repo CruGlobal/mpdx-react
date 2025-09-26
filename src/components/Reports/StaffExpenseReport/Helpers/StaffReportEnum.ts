@@ -10,9 +10,9 @@ export enum CategoryType {
 }
 
 export enum DateRange {
-  WeekToDate = 'Week to Date',
-  MonthToDate = 'Month to Date',
-  YearToDate = 'Year to Date',
+  WeekToDate = 'weekToDate',
+  MonthToDate = 'monthToDate',
+  YearToDate = 'yearToDate',
 }
 
 export enum ReportType {

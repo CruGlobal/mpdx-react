@@ -15,55 +15,86 @@ import {
 } from '@mui/material';
 import { Form, Formik } from 'formik';
 import { DateTime } from 'luxon';
-import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import * as Yup from 'yup';
+import * as yup from 'yup';
 import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
+import i18n from 'src/lib/i18n';
 import { DateRange } from '../Helpers/StaffReportEnum';
 
-interface SettingsDialogProps {
+export interface SettingsDialogProps {
   isOpen: boolean;
   selectedFilters?: Filters;
   onClose: (filters?: Filters) => void;
 }
 
 export interface Filters {
-  selectedDateRange: DateRange | undefined;
+  selectedDateRange: DateRange | null;
   startDate?: DateTime | null;
   endDate?: DateTime | null;
-  // change to enum array when category data is provided
   categories?: string[] | null;
 }
 
-const validationSchema = Yup.object({
-  selectedDateRange: Yup.mixed().nullable(),
-  startDate: Yup.mixed().nullable(),
-  endDate: Yup.mixed().nullable(),
-  categories: Yup.array().of(Yup.string()),
+const validationSchema = yup.object({
+  selectedDateRange: yup.mixed().nullable(),
+  startDate: yup
+    .mixed()
+    .nullable()
+    .test(
+      'start-date-validation',
+      i18n.t('Start date must be earlier than or equal to end date'),
+      function (value) {
+        const { endDate } = this.parent;
+        if (!value || !endDate) {
+          return true;
+        }
+
+        return value <= endDate;
+      },
+    ),
+  endDate: yup
+    .mixed()
+    .nullable()
+    .test(
+      'end-date-validation',
+      i18n.t('End date must be later than or equal to start date'),
+      function (value) {
+        const { startDate } = this.parent;
+        if (!value || !startDate) {
+          return true;
+        }
+
+        return startDate <= value;
+      },
+    ),
+  categories: yup.array().of(yup.string()),
 });
 
 const calculateDateRange = (
   range: DateRange,
 ): { startDate: DateTime; endDate: DateTime } => {
   const now = DateTime.now();
-
+  const endDate = now.endOf('day');
   switch (range) {
     case DateRange.WeekToDate:
       return {
         startDate: now.startOf('week'),
-        endDate: now.endOf('day'),
+        endDate,
       };
     case DateRange.MonthToDate:
       return {
         startDate: now.startOf('month'),
-        endDate: now.endOf('day'),
+        endDate,
       };
     case DateRange.YearToDate:
       return {
         startDate: now.startOf('year'),
-        endDate: now.endOf('day'),
+        endDate,
       };
-    // consider a default case if needed
+    default:
+      return {
+        startDate: now.startOf('day'),
+        endDate,
+      };
   }
 };
 
@@ -73,41 +104,30 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
   selectedFilters,
 }) => {
   const { t } = useTranslation();
-  const { enqueueSnackbar } = useSnackbar();
-
-  const [hasDateRangeError, setHasDateRangeError] = React.useState(false);
 
   const initialValues = {
-    selectedDateRange: selectedFilters?.selectedDateRange ?? undefined,
+    selectedDateRange: selectedFilters?.selectedDateRange ?? null,
     startDate:
-      selectedFilters?.selectedDateRange !== undefined
-        ? null
-        : (selectedFilters?.startDate ?? null),
+      selectedFilters?.selectedDateRange === null
+        ? selectedFilters?.startDate
+        : null,
     endDate:
-      selectedFilters?.selectedDateRange !== undefined
-        ? null
-        : (selectedFilters?.endDate ?? null),
+      selectedFilters?.selectedDateRange === null
+        ? selectedFilters?.endDate
+        : null,
     categories: selectedFilters?.categories ?? [],
   };
 
-  /*
-   * Initially, date range validation was handled by Yup,
-   * but it would not properly disable the submit button.
-   * This manual validation function is a temporary solution.
-   */
-  const validateDateRange = (
-    startDate: DateTime | null,
-    endDate: DateTime | null,
-  ) => {
-    if (startDate && endDate && startDate > endDate) {
-      enqueueSnackbar(t('Start date must be earlier than end date'), {
-        variant: 'error',
-      });
-      setHasDateRangeError(true);
-      return false;
+  const handleSubmit = (values: Filters) => {
+    const finalValues = { ...values };
+    if (values.selectedDateRange !== null) {
+      const { startDate, endDate } = calculateDateRange(
+        values.selectedDateRange,
+      );
+      finalValues.startDate = startDate;
+      finalValues.endDate = endDate;
     }
-    setHasDateRangeError(false);
-    return true;
+    onClose(finalValues);
   };
 
   return (
@@ -118,39 +138,24 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
       maxWidth="md"
     >
       <DialogTitle>{t('Report Settings')}</DialogTitle>
-
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
-        onSubmit={(values) => {
-          if (
-            values.startDate &&
-            values.endDate &&
-            !validateDateRange(values.startDate, values.endDate)
-          ) {
-            // Don't submit if validation fails
-            return;
-          }
-
-          const finalValues = { ...values };
-          if (values.selectedDateRange !== undefined) {
-            const { startDate, endDate } = calculateDateRange(
-              values.selectedDateRange,
-            );
-            finalValues.startDate = startDate;
-            finalValues.endDate = endDate;
-          }
-          onClose(finalValues);
-        }}
+        validateOnChange
+        validateOnBlur
+        enableReinitialize
+        onSubmit={handleSubmit}
       >
-        {({ values, setFieldValue, isValid, dirty, resetForm }) => {
-          const isDateRangeValid =
-            !values.startDate || !values.endDate
-              ? true
-              : values.endDate >= values.startDate;
-
-          const isFormValid = isValid && isDateRangeValid && !hasDateRangeError;
-
+        {({
+          values,
+          setFieldValue,
+          isValid,
+          dirty,
+          errors,
+          touched,
+          validateForm,
+          setTouched,
+        }) => {
           return (
             <Form>
               <DialogContent>
@@ -160,15 +165,19 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                   fullWidth
                   value={values.selectedDateRange ?? ''}
                   onChange={(e) => {
-                    const value =
-                      e.target.value === '' ? undefined : e.target.value;
+                    const value = e.target.value === '' ? null : e.target.value;
                     setFieldValue('selectedDateRange', value);
-                    // Clear custom dates when predefined range is selected
-                    if (value !== undefined) {
+                    if (value !== null) {
                       setFieldValue('startDate', null);
                       setFieldValue('endDate', null);
-                      setHasDateRangeError(false);
+
+                      setTouched({
+                        ...touched,
+                        startDate: false,
+                        endDate: false,
+                      });
                     }
+                    setTimeout(() => validateForm(), 0);
                   }}
                 >
                   <MenuItem value="">{t('None')}</MenuItem>
@@ -190,48 +199,47 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                 <Box display="flex" gap={2}>
                   <CustomDateField
                     label={t('Start Date')}
-                    value={values.startDate}
+                    value={values.startDate ?? null}
                     onChange={(date) => {
                       setFieldValue('startDate', date);
-                      if (date && values.endDate) {
-                        validateDateRange(date, values.endDate);
-                      } else {
-                        setHasDateRangeError(false);
-                      }
-
-                      // Clear predefined range when custom date is set
+                      setTouched({ ...touched, startDate: true });
                       if (date) {
-                        setFieldValue('selectedDateRange', undefined);
+                        setFieldValue('selectedDateRange', null);
                       }
+                      setTimeout(() => validateForm(), 0);
                     }}
                     fullWidth
+                    error={Boolean(errors.startDate && touched.startDate)}
+                    helperText={
+                      errors.startDate && touched.startDate
+                        ? errors.startDate
+                        : ''
+                    }
                   />
                   <CustomDateField
                     label={t('End Date')}
-                    value={values.endDate}
+                    value={values.endDate ?? null}
                     onChange={(date) => {
                       setFieldValue('endDate', date);
-                      if (date && values.startDate) {
-                        validateDateRange(values.startDate, date);
-                      } else {
-                        setHasDateRangeError(false);
-                      }
-
-                      // Clear predefined range when custom date is set
+                      setTouched({ ...touched, endDate: true });
                       if (date) {
-                        setFieldValue('selectedDateRange', undefined);
+                        setFieldValue('selectedDateRange', null);
                       }
+                      setTimeout(() => validateForm(), 0);
                     }}
                     fullWidth
+                    error={Boolean(errors.endDate && touched.endDate)}
+                    helperText={
+                      errors.endDate && touched.endDate ? errors.endDate : ''
+                    }
                   />
                 </Box>
 
-                <Typography sx={{ mt: 2 }}>
-                  If you like, you can combine certain categories of data into
-                  single rows. This may be useful when using long date ranges,
-                  such as &quot;Year to Date.&quot; Select which categories of
-                  items you wish to consolidate (each category is still kept
-                  separate from the other categories).{' '}
+                <Typography sx={{ mt: 2, whiteSpace: 'pre-line' }}>
+                  {t(
+                    `You can combine certain categories of data into single rows. This may be useful for long date ranges (e.g., "Year to Date").
+                    Select which categories to consolidate. Each category remains separate.`,
+                  )}
                 </Typography>
 
                 <Typography sx={{ mt: 2, mb: 1 }}>
@@ -239,34 +247,36 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                 </Typography>
 
                 <FormGroup row>
-                  {['Benefits', 'Contributions', 'Salary'].map((category) => (
-                    <FormControlLabel
-                      key={category}
-                      control={
-                        <Checkbox
-                          checked={values.categories.includes(category)}
-                          onChange={(e) => {
-                            const newCategories = e.target.checked
-                              ? [...values.categories, category]
-                              : values.categories.filter((c) => c !== category);
-                            setFieldValue('categories', newCategories);
-                          }}
-                        />
-                      }
-                      label={t(category)}
-                    />
-                  ))}
+                  {[t('Benefits'), t('Contributions'), t('Salary')].map(
+                    (category) => (
+                      <FormControlLabel
+                        key={category}
+                        control={
+                          <Checkbox
+                            checked={values.categories.includes(category)}
+                            onChange={(e) => {
+                              const newCategories = e.target.checked
+                                ? [...values.categories, category]
+                                : values.categories.filter(
+                                    (c) => c !== category,
+                                  );
+                              setFieldValue('categories', newCategories);
+                            }}
+                          />
+                        }
+                        label={category}
+                      />
+                    ),
+                  )}
                 </FormGroup>
               </DialogContent>
 
               <DialogActions>
                 <Button
+                  sx={{ color: 'black' }}
                   onClick={() => {
-                    resetForm();
-                    setHasDateRangeError(false);
                     onClose(selectedFilters);
                   }}
-                  color="secondary"
                 >
                   {t('Cancel')}
                 </Button>
@@ -274,7 +284,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                   type="submit"
                   color="primary"
                   variant="contained"
-                  disabled={!dirty || !isFormValid}
+                  disabled={!dirty || !isValid}
                 >
                   {t('Apply Filters')}
                 </Button>
