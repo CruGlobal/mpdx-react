@@ -33,7 +33,7 @@ const TestComponent: React.FC<TestComponentProps> = ({ single = false }) => (
     mocks={{
       GoalCalculation: {
         goalCalculation: {
-          ...goalCalculationMock.goalCalculation,
+          ...goalCalculationMock,
           familySize: single
             ? MpdGoalBenefitsConstantSizeEnum.Single
             : MpdGoalBenefitsConstantSizeEnum.MarriedNoChildren,

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { beforeTestResizeObserver } from '__tests__/util/windowResizeObserver';
 import { GetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
@@ -34,18 +34,6 @@ jest.mock('src/hooks/useOrganizationId', () => ({
   useOrganizationId: jest.fn(() => 'organization-id-1'),
 }));
 
-const goal = {
-  netMonthlySalary: 5000,
-  taxesPercentage: 0.25,
-  rothContributionPercentage: 0.1,
-  traditionalContributionPercentage: 0.5,
-  ministryExpenses: {
-    benefitsCharge: 0,
-    primaryCategories: [],
-  },
-  ministryExpensesTotal: 2080,
-};
-
 const TestComponent: React.FC = () => (
   <GoalCalculatorTestWrapper>
     <GqlMockedProvider<{
@@ -56,7 +44,9 @@ const TestComponent: React.FC = () => (
       GetOrganizations: GetOrganizationsQuery;
     }>
       mocks={{
-        GoalCalculation: goalCalculationMock,
+        GoalCalculation: {
+          goalCalculation: goalCalculationMock,
+        },
         GetUser: {
           user: {
             id: 'account-list-id-1',
@@ -95,7 +85,7 @@ const TestComponent: React.FC = () => (
         },
       }}
     >
-      <PresentingYourGoal goal={goal} />
+      <PresentingYourGoal />
     </GqlMockedProvider>
   </GoalCalculatorTestWrapper>
 );
@@ -144,17 +134,12 @@ describe('PresentingYourGoal', () => {
   it('renders the pie chart', async () => {
     const { container } = render(<TestComponent />);
 
-    const chart = container.querySelector('.recharts-pie');
-    expect(chart).toBeInTheDocument();
+    await waitFor(() =>
+      expect(container.querySelector('.recharts-pie')).toBeInTheDocument(),
+    );
 
     const legend = container.querySelector('.recharts-legend-wrapper');
     expect(legend).toBeInTheDocument();
-    expect(legend?.textContent).toMatch('Salary');
-  });
-
-  it('renders the legend with all pie chart categories', async () => {
-    const { container } = render(<TestComponent />);
-    const legend = container.querySelector('.recharts-legend-wrapper');
     expect(legend?.textContent).toMatch('Salary');
     expect(legend?.textContent).toMatch('Ministry Expenses');
     expect(legend?.textContent).toMatch('Benefits');

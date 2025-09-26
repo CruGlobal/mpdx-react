@@ -25,7 +25,6 @@ const mockGoal = gqlMock<ListGoalCalculationFragment>(
         directInput: 5500,
       },
       specialFamily: {
-        directInput: 0,
         primaryBudgetCategories: [
           {
             category: PrimaryBudgetCategoryEnum.SpecialIncome,
@@ -55,6 +54,26 @@ describe('calculateTotals', () => {
       overallSubtotal: expect.closeTo(7496, 0),
       overallSubtotalWithAdmin: expect.closeTo(8519, 0),
       overallTotal: expect.closeTo(9030, 0),
+    });
+  });
+
+  it('returns 0 not NaN for missing goals', async () => {
+    expect(calculateTotals(null)).toEqual({
+      netMonthlySalary: 0,
+      taxesPercentage: 0,
+      taxes: 0,
+      salaryPreIra: 0,
+      rothContributionPercentage: 0,
+      traditionalContributionPercentage: 0,
+      rothContribution: 0,
+      traditionalContribution: 0,
+      grossAnnualSalary: 0,
+      grossMonthlySalary: 0,
+      ministryExpensesTotal: 0,
+      benefitsCharge: 0,
+      overallSubtotal: 0,
+      overallSubtotalWithAdmin: 0,
+      overallTotal: 0,
     });
   });
 });

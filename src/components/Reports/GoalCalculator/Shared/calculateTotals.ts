@@ -32,12 +32,11 @@ export const calculateTotals = (
   const spouseTaxesPercentage = toPercentage(
     goalCalculation?.spouseTaxesPercentage,
   );
-  const husbandWeightedTaxPercentage =
-    (netPaycheckAmount / totalNetPaycheckAmount) * taxesPercentage;
-  const spouseWeightedTaxPercentage =
-    (spouseNetPaycheckAmount / totalNetPaycheckAmount) * spouseTaxesPercentage;
+  const paySplitPercentage = netPaycheckAmount / totalNetPaycheckAmount || 1;
+  const spousePaySplitPercentage = 1 - paySplitPercentage;
   const totalTaxesPercentage =
-    husbandWeightedTaxPercentage + spouseWeightedTaxPercentage;
+    paySplitPercentage * taxesPercentage +
+    spousePaySplitPercentage * spouseTaxesPercentage;
 
   const specialIncomeCategory =
     goalCalculation?.specialFamily.primaryBudgetCategories.find(
@@ -53,8 +52,6 @@ export const calculateTotals = (
   const taxes = netMonthlySalary * totalTaxesPercentage;
   const salaryPreIra = netMonthlySalary + taxes;
 
-  const paySplitPercentage = netPaycheckAmount / totalNetPaycheckAmount;
-  const spousePaySplitPercentage = 1 - paySplitPercentage;
   const rothContributionPercentage =
     toPercentage(goalCalculation?.rothContributionPercentage) *
       paySplitPercentage +
@@ -77,7 +74,7 @@ export const calculateTotals = (
   const ministryExpensesTotal = goalCalculation
     ? getFamilyTotal(goalCalculation.ministryFamily)
     : 0;
-  const benefitsCharge = 1008.6; /* TODO: mocked data */
+  const benefitsCharge = goalCalculation ? 1008.6 : 0; /* TODO: mocked data */
   const overallSubtotal = grossMonthlySalary + benefitsCharge;
   const overallSubtotalWithAdmin = overallSubtotal / 0.88;
   const overallTotal = overallSubtotalWithAdmin * 1.06;

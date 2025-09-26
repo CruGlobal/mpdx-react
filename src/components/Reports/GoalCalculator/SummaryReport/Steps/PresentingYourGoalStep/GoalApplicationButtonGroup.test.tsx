@@ -1,27 +1,19 @@
+import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GoalCalculatorTestWrapper } from '../../../GoalCalculatorTestWrapper';
 import { GoalApplicationButtonGroup } from './GoalApplicationButtonGroup';
 
-const mockGoal = {
-  netMonthlySalary: 6000,
-  taxesPercentage: 0.2,
-  rothContributionPercentage: 0.1,
-  traditionalContributionPercentage: 0.04,
-  ministryExpenses: {
-    benefitsCharge: 0,
-    primaryCategories: [],
-  },
-  ministryExpensesTotal: 3800,
-};
+const mutationSpy = jest.fn();
+const TestComponent: React.FC = () => (
+  <GoalCalculatorTestWrapper onCall={mutationSpy}>
+    <GoalApplicationButtonGroup />
+  </GoalCalculatorTestWrapper>
+);
 
 describe('GoalApplicationButtonGroup', () => {
   it('renders both buttons initially', () => {
-    const { getByRole } = render(
-      <GoalCalculatorTestWrapper>
-        <GoalApplicationButtonGroup goal={mockGoal} />
-      </GoalCalculatorTestWrapper>,
-    );
+    const { getByRole } = render(<TestComponent />);
 
     expect(
       getByRole('button', { name: /finish & apply goal/i }),
@@ -32,11 +24,7 @@ describe('GoalApplicationButtonGroup', () => {
   });
 
   it('hides both buttons when "Save Goal Without Applying" is clicked', () => {
-    const { queryByRole, getByRole } = render(
-      <GoalCalculatorTestWrapper>
-        <GoalApplicationButtonGroup goal={mockGoal} />
-      </GoalCalculatorTestWrapper>,
-    );
+    const { queryByRole, getByRole } = render(<TestComponent />);
 
     const saveWithoutApplyingButton = getByRole('button', {
       name: /save goal without applying/i,
@@ -49,37 +37,32 @@ describe('GoalApplicationButtonGroup', () => {
   });
 
   it('shows loading state when "Finish & Apply Goal" is clicked', async () => {
-    const mutationSpy = jest.fn();
-    const { getByRole, findByText, queryByRole } = render(
-      <GoalCalculatorTestWrapper onCall={mutationSpy}>
-        <GoalApplicationButtonGroup goal={mockGoal} />
-      </GoalCalculatorTestWrapper>,
-    );
+    const { getByRole, findByText, queryByRole } = render(<TestComponent />);
 
-    const finishButton = getByRole('button', {
+    const applyButton = getByRole('button', {
       name: /finish & apply goal/i,
     });
-
-    userEvent.click(finishButton);
+    await waitFor(() => expect(applyButton).toBeEnabled());
+    userEvent.click(applyButton);
 
     expect(
       queryByRole('button', { name: /finish & apply goal/i }),
     ).not.toBeInTheDocument();
 
-    await waitFor(() => {
+    await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('UpdateAccountPreferences', {
         input: {
           attributes: {
             id: 'account-list-1',
-            settings: { monthlyGoal: 14575 },
+            settings: { monthlyGoal: 9030 },
           },
           id: 'account-list-1',
         },
-      });
-    });
+      }),
+    );
 
     expect(
-      await findByText(/Successfully updated your monthly goal to \$14,575!/i),
+      await findByText('Successfully updated your monthly goal to $9,030!'),
     ).toBeInTheDocument();
   });
 });

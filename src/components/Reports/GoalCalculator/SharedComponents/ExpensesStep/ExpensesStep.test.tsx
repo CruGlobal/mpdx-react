@@ -17,19 +17,12 @@ jest.mock('../GoalCalculatorGrid/GoalCalculatorGrid', () => ({
   GoalCalculatorGrid: () => <div role="region" />,
 }));
 
-const mockBudgetFamily = gqlMock<BudgetFamilyFragment>(
-  BudgetFamilyFragmentDoc,
-  {
-    mocks: goalCalculationMock.goalCalculation.ministryFamily,
-  },
-);
-
 interface TestComponentProps {
   family?: BudgetFamilyFragment;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
-  family = mockBudgetFamily,
+  family = goalCalculationMock.ministryFamily,
 }) => (
   <GoalCalculatorTestWrapper>
     <ExpensesStep instructions={<h1>Instructions</h1>} family={family} />
