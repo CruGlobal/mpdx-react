@@ -25,7 +25,7 @@ describe('useExpenseCategories', () => {
       ...mockData.expenses,
       {
         id: '7',
-        description: 'ministry reimbursement',
+        description: 'Ministry Reimbursement',
         monthly: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 12],
         average: 1,
         total: 12,

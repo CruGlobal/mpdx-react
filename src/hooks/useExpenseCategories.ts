@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { ExpenseCategoriesEnum } from 'src/components/Reports/MPGAIncomeExpensesReport/Helper/MPGAReportEnum';
 import { DataFields } from 'src/components/Reports/MPGAIncomeExpensesReport/mockData';
 
 const sum = (rows: DataFields[]): number => {
@@ -19,15 +18,15 @@ export function useExpenseCategories(data: DataFields[]) {
           ? item.description.split(' - ')[0]
           : item.description;
 
-      if (category === ExpenseCategoriesEnum.Ministry) {
+      if (category === 'Ministry Reimbursement') {
         ministry.push(item);
-      } else if (category === ExpenseCategoriesEnum.Healthcare) {
+      } else if (category === 'Healthcare Reimbursement') {
         healthcare.push(item);
       } else if (
-        category === ExpenseCategoriesEnum.Assessment ||
-        category === ExpenseCategoriesEnum.AdditionalSalary ||
-        category === ExpenseCategoriesEnum.Benefits ||
-        category === ExpenseCategoriesEnum.Salary
+        category === 'Assessment' ||
+        category === 'Additional Salary' ||
+        category === 'Benefits' ||
+        category === 'Salary'
       ) {
         assessment.push(item);
       } else {
