@@ -65,6 +65,9 @@ export interface Transactions {
   subCategory: SubCategory;
   transfer: Transfer;
   recurringTransfer?: RecurringTransfer | null;
+  baseAmount: number;
+  failedStatus?: boolean;
+  failedCount?: number;
 }
 
 export interface Transfers {
@@ -79,6 +82,8 @@ export interface Transfers {
   note?: string;
   actions?: string;
   recurringId?: string | null;
+  baseAmount?: number;
+  failedCount?: number;
 }
 
 export const incomingTransfers = [

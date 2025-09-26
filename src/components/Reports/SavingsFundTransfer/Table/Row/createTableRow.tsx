@@ -1,7 +1,9 @@
 import { useEffect } from 'react';
 import { ArrowForward, Cancel, Edit, StopCircle } from '@mui/icons-material';
+import PriorityHigh from '@mui/icons-material/PriorityHigh';
 import {
   Avatar,
+  Badge,
   Box,
   Chip,
   Icon,
@@ -66,12 +68,50 @@ export const populateTransferRows = (
   };
 
   const amount: RenderCell = ({ row }) => {
+    const failed = row.failedCount && row.failedCount > 0;
     return (
-      <Typography variant="body2" noWrap>
-        {currencyFormat(row.amount ?? 0, 'USD', locale, {
-          showTrailingZeros: true,
-        })}
-      </Typography>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
+        <Typography variant="body2" noWrap>
+          {currencyFormat(row.amount ?? 0, 'USD', locale, {
+            showTrailingZeros: true,
+          })}
+        </Typography>
+        {failed ? (
+          <Badge
+            badgeContent={row.failedCount}
+            overlap="circular"
+            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            color="error"
+            max={99}
+            sx={{
+              '& .MuiBadge-badge': {
+                minWidth: 16,
+                height: 16,
+                lineHeight: '16px',
+                padding: 0,
+                borderRadius: '50%',
+              },
+            }}
+          >
+            <IconButton>
+              <PriorityHigh
+                sx={{ color: 'error.main' }}
+                titleAccess={t('Failed Transfers') as string}
+              />
+            </IconButton>
+          </Badge>
+        ) : (
+          <Typography variant="body2" noWrap>
+            {'' as string}
+          </Typography>
+        )}
+      </Box>
     );
   };
 
