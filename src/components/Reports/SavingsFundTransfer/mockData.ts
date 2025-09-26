@@ -66,8 +66,9 @@ export interface Transactions {
   transfer: Transfer;
   recurringTransfer?: RecurringTransfer | null;
   baseAmount: number;
-  failedStatus?: boolean;
   failedCount?: number;
+  summarizedTransfers?: Map<string, Transactions> | null;
+  missingMonths?: DateTime[] | null;
 }
 
 export interface Transfers {
@@ -84,6 +85,8 @@ export interface Transfers {
   recurringId?: string | null;
   baseAmount?: number;
   failedCount?: number;
+  summarizedTransfers?: Map<string, Transactions> | null;
+  missingMonths?: DateTime[] | null;
 }
 
 export const incomingTransfers = [

@@ -15,6 +15,7 @@ import {
 import { useLocale } from 'src/hooks/useLocale';
 import { CustomEditCalendar } from '../CustomEditCalendar/CustomEditCalendar';
 import { DynamicDeleteTransferModal } from '../DeleteTransferModal/DynamicDeleteTransferModal';
+import { DynamicFailedTransferModal } from '../FailedTransferModal/DynamicFailedTransferModal';
 import { useUpdateRecurringTransferMutation } from '../TransferMutations.generated';
 import {
   ActionTypeEnum,
@@ -46,6 +47,9 @@ export const CreateTransferRows = (history: Transfers): Transfers => ({
   actions: history.actions ?? '',
   recurringId: history.recurringId ?? '',
   failedCount: history.failedCount ?? 0,
+  baseAmount: history.baseAmount ?? 0,
+  summarizedTransfers: history.summarizedTransfers ?? null,
+  missingMonths: history.missingMonths ?? null,
 });
 
 const createToolbar = (history: Transfers[], type: TableTypeEnum) => {
@@ -77,6 +81,10 @@ export const TransfersTable: React.FC<TransfersTableProps> = ({
     awaitRefetchQueries: true,
   });
 
+  const [openFailedModal, setOpenFailedModal] = useState<Transfers | null>(
+    null,
+  );
+
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [calendarType, setCalendarType] = useState<CalendarType | null>(null);
   const [calendarRow, setCalendarRow] = useState<Transfers | null>(null);
@@ -92,6 +100,14 @@ export const TransfersTable: React.FC<TransfersTableProps> = ({
   const [sortModel, setSortModel] = useState<GridSortModel>([
     { field: 'date', sort: 'desc' },
   ]);
+
+  const handleFailedTransferOpen = (transfer: Transfers) => {
+    setOpenFailedModal(transfer);
+  };
+
+  const handleFailedTransferClose = () => {
+    setOpenFailedModal(null);
+  };
 
   const handleDeleteModalOpen = (transfer: Transfers) => {
     setOpenDeleteModal(transfer);
@@ -166,6 +182,7 @@ export const TransfersTable: React.FC<TransfersTableProps> = ({
     handleEditModalOpen,
     handleDeleteModalOpen,
     handleCalendarOpen,
+    handleFailedTransferOpen,
     t,
     locale,
   );
@@ -295,6 +312,12 @@ export const TransfersTable: React.FC<TransfersTableProps> = ({
               ? ActionTypeEnum.Stop
               : ActionTypeEnum.Cancel
           }
+        />
+      )}
+      {openFailedModal && (
+        <DynamicFailedTransferModal
+          handleClose={handleFailedTransferClose}
+          transfer={openFailedModal}
         />
       )}
     </>

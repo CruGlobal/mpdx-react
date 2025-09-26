@@ -13,6 +13,7 @@ export function useFilteredTransfers(
     const filtered: Transactions[] = [];
     const recurring = new Map<string, number>();
     const seenMonths = new Map<number, Set<DateTime>>();
+    const summarized = new Map<number, Map<string, Transactions>>();
 
     for (const transfer of transfers) {
       if (transfer.amount <= 0) {
@@ -32,28 +33,30 @@ export function useFilteredTransfers(
         const idx = filtered.length - 1;
         recurring.set(key, idx);
         seenMonths.set(idx, new Set([transfer.transactedAt]));
+        summarized.set(idx, new Map([[transfer.id, transfer]]));
       } else {
         filtered[index].amount += transfer.amount;
         seenMonths.get(index)?.add(transfer.transactedAt);
+        summarized.get(index)?.set(transfer.id, transfer);
       }
     }
 
     for (const [, index] of recurring) {
-      const transfer = filtered[index];
-      const currentDate = (today || DateTime.local()).startOf('month');
+      const transferRow = filtered[index];
+      const currentDate = (today || DateTime.local()).startOf('day');
       const start =
-        transfer.recurringTransfer?.recurringStart?.startOf('month');
+        transferRow.recurringTransfer?.recurringStart?.startOf('day');
       const end = DateTime.min(
-        (transfer.recurringTransfer?.recurringEnd ?? currentDate).startOf(
-          'month',
+        (transferRow.recurringTransfer?.recurringEnd ?? currentDate).startOf(
+          'day',
         ),
         currentDate,
       );
 
-      const transferCount = transfer.amount / transfer.baseAmount;
+      const transferCount = transferRow.amount / transferRow.baseAmount;
 
       const expectedCount = () => {
-        if (transfer.recurringTransfer?.recurringEnd) {
+        if (transferRow.recurringTransfer?.recurringEnd) {
           if (!start) {
             return 1;
           }
@@ -67,7 +70,7 @@ export function useFilteredTransfers(
       };
 
       if (transferCount < expectedCount()) {
-        transfer.failedCount = expectedCount() - transferCount;
+        transferRow.failedCount = expectedCount() - transferCount;
 
         const seen = seenMonths.get(index);
         if (seen && start) {
@@ -85,18 +88,11 @@ export function useFilteredTransfers(
             current = current.plus({ months: 1 });
           }
 
-          for (const missingDate of missing) {
-            filtered.push({
-              ...transfer,
-              id: `${transfer.id}-missed-${missingDate.toFormat('yyyy-MM-dd')}`,
-              amount: transfer.baseAmount,
-              transactedAt: missingDate,
-              failedStatus: true,
-              failedCount: 0,
-            });
-          }
+          transferRow.missingMonths = missing;
         }
       }
+
+      transferRow.summarizedTransfers = summarized.get(index) || null;
     }
 
     return filtered;

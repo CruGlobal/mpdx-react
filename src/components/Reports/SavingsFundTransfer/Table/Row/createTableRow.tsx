@@ -27,6 +27,7 @@ export const populateTransferRows = (
   handleEditModalOpen: (transfer: Transfers) => void,
   handleDeleteModalOpen: (transfer: Transfers) => void,
   handleCalendarOpen: (transfer: Transfers) => void,
+  handleFailedTransferOpen: (transfer: Transfers) => void,
   t: TFunction,
   locale: string,
 ) => {
@@ -103,6 +104,7 @@ export const populateTransferRows = (
               <PriorityHigh
                 sx={{ color: 'error.main' }}
                 titleAccess={t('Failed Transfers') as string}
+                onClick={() => handleFailedTransferOpen(row)}
               />
             </IconButton>
           </Badge>
