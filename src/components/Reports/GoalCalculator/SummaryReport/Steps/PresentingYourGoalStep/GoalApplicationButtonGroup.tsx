@@ -13,8 +13,10 @@ export const GoalApplicationButtonGroup: React.FC = () => {
   const locale = useLocale();
   const { enqueueSnackbar } = useSnackbar();
   const {
+    goalCalculationResult,
     goalTotals: { overallTotal },
   } = useGoalCalculator();
+  const monthlyGoal = Math.round(overallTotal);
   const [updateAccountPreferences, { loading }] =
     useUpdateAccountPreferencesMutation();
   const accountListId = useAccountListId() || '';
@@ -27,14 +29,14 @@ export const GoalApplicationButtonGroup: React.FC = () => {
           id: accountListId,
           attributes: {
             id: accountListId,
-            settings: { monthlyGoal: overallTotal },
+            settings: { monthlyGoal },
           },
         },
       },
       onCompleted: () => {
         enqueueSnackbar(
           t('Successfully updated your monthly goal to {{formattedTotal}}!', {
-            formattedTotal: currencyFormat(overallTotal, 'USD', locale),
+            formattedTotal: currencyFormat(monthlyGoal, 'USD', locale),
           }),
           {
             variant: 'success',
@@ -63,7 +65,7 @@ export const GoalApplicationButtonGroup: React.FC = () => {
           onSave();
           setButtonsHidden(true);
         }}
-        disabled={loading}
+        disabled={goalCalculationResult.loading || loading}
         startIcon={loading ? <CircularProgress size={20} /> : undefined}
       >
         {loading ? t('Saving...') : t('Finish & Apply Goal')}
