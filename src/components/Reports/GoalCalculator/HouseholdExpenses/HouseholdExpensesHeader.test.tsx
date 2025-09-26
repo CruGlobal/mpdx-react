@@ -36,7 +36,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
     onCall={mutationSpy}
   >
     <GoalCalculatorTestWrapper noMocks>
-      <HouseholdExpensesHeader categoriesTotal={5000} />
+      <HouseholdExpensesHeader />
     </GoalCalculatorTestWrapper>
   </GqlMockedProvider>
 );

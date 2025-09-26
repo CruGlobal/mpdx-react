@@ -42,7 +42,7 @@ export const HouseholdExpensesStep: React.FC = () => {
       instructions={
         <>
           <Instructions />
-          <HouseholdExpensesHeader categoriesTotal={7000} />
+          <HouseholdExpensesHeader />
         </>
       }
       family={data?.goalCalculation.householdFamily}
