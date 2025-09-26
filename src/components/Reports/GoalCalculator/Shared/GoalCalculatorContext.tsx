@@ -17,6 +17,7 @@ import {
 } from '../GoalCalculatorHelper';
 import { useGoalCalculationQuery } from './GoalCalculation.generated';
 import { calculatePercentage } from './calculatePercentage';
+import { GoalTotals, calculateTotals } from './calculateTotals';
 import { GoalCalculatorStep, useSteps } from './useSteps';
 
 export type GoalCalculatorType = {
@@ -39,6 +40,8 @@ export type GoalCalculatorType = {
   setDrawerOpen: (open: boolean) => void;
 
   goalCalculationResult: ReturnType<typeof useGoalCalculationQuery>;
+  goalTotals: GoalTotals;
+
   /** Whether any mutations are currently in progress */
   isMutating: boolean;
   /** Call with the mutation promise to track the start and end of mutations */
@@ -79,6 +82,10 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const steps = useSteps();
   const percentComplete = useMemo(
     () => calculatePercentage(goalCalculationResult.data?.goalCalculation),
+    [goalCalculationResult.data],
+  );
+  const goalTotals = useMemo(
+    () => calculateTotals(goalCalculationResult.data?.goalCalculation ?? null),
     [goalCalculationResult.data],
   );
   const [stepIndex, setStepIndex] = useState(0);
@@ -152,6 +159,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       isMutating,
       trackMutation,
       percentComplete,
+      goalTotals,
     }),
     [
       steps,
@@ -170,6 +178,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       isMutating,
       trackMutation,
       percentComplete,
+      goalTotals,
     ],
   );
 
