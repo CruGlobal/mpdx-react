@@ -99,17 +99,16 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
             ? {
                 ...tx.recurringTransfer,
                 recurringStart: tx.recurringTransfer.recurringStart
-                  ? DateTime.fromISO(tx.recurringTransfer.recurringStart, {
-                      setZone: true,
-                    }).toUTC()
+                  ? DateTime.fromISO(tx.recurringTransfer.recurringStart)
                   : null,
                 recurringEnd: tx.recurringTransfer.recurringEnd
-                  ? DateTime.fromISO(tx.recurringTransfer.recurringEnd, {
-                      setZone: true,
-                    }).toUTC()
+                  ? DateTime.fromISO(tx.recurringTransfer.recurringEnd)
                   : null,
               }
             : null,
+          baseAmount: tx.amount || 0,
+          failedStatus: false,
+          failedCount: 0,
         };
       }),
     [reportData],
@@ -117,10 +116,15 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
 
   const filteredTransactions = useFilteredTransfers(transactions);
 
-  // Ask about description --> always null in test data
   const transferHistory: Transfers[] = filteredTransactions.map((tx) => {
-    const isRecurring = !!tx.recurringTransfer?.id;
-    const status = getStatusLabel(tx);
+    const isRecurring = !!tx.recurringTransfer;
+    const status = tx.failedStatus ? StatusEnum.Failed : getStatusLabel(tx);
+    const shouldShowActions = () => {
+      if (status === StatusEnum.Pending || status === StatusEnum.Ongoing) {
+        return false;
+      }
+      return true;
+    };
 
     return {
       id: tx.id || crypto.randomUUID(),
@@ -129,13 +133,17 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
       amount: tx.amount || 0,
       schedule: isRecurring ? ScheduleEnum.Monthly : ScheduleEnum.OneTime,
       status: status || undefined,
-      transferDate: isRecurring
-        ? tx.recurringTransfer?.recurringStart || null
-        : tx.transactedAt || null,
+      transferDate: tx.failedStatus
+        ? tx.transactedAt
+        : isRecurring
+          ? tx.recurringTransfer?.recurringStart || null
+          : tx.transactedAt || null,
       endDate: tx.recurringTransfer?.recurringEnd || null,
       note: tx.subCategory.name || '',
-      actions: status !== StatusEnum.Complete ? 'edit-delete' : '',
+      actions: shouldShowActions() === false ? 'edit-delete' : '',
       recurringId: tx.recurringTransfer?.id || '',
+      baseAmount: tx.baseAmount || 0,
+      failedCount: tx.failedCount || 0,
     };
   });
 

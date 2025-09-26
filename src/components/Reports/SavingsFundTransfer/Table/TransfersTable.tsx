@@ -45,6 +45,7 @@ export const CreateTransferRows = (history: Transfers): Transfers => ({
   note: history.note ?? '',
   actions: history.actions ?? '',
   recurringId: history.recurringId ?? '',
+  failedCount: history.failedCount ?? 0,
 });
 
 const createToolbar = (history: Transfers[], type: TableTypeEnum) => {

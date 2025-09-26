@@ -123,7 +123,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
               <Typography
                 variant="body1"
                 mb={0}
-                sx={{ '@media print': { fontSize: '10pt' }, fontWeight: 500 }}
+                sx={{ '@media print': { fontSize: '14pt' }, fontWeight: 500 }}
               >
                 {title}
               </Typography>
@@ -143,7 +143,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
             <Typography
               variant="body1"
               mb={0}
-              sx={{ '@media print': { fontSize: '10pt' } }}
+              sx={{ '@media print': { fontSize: '12pt' } }}
             >
               {t('Current Balance')}
             </Typography>
