@@ -1,18 +1,73 @@
 import { renderHook } from '@testing-library/react';
-import { ReportsStaffExpensesQuery } from 'src/components/Reports/MPGAIncomeExpensesReport/ReportsStaffExpenses.generated';
+import { Funds } from 'src/components/Reports/MPGAIncomeExpensesReport/Helper/MPGAReportEnum';
 import {
   StaffExpenseCategoryEnum,
   StaffExpensesSubCategoryEnum,
 } from 'src/graphql/types.generated';
 import { useFilteredFunds } from './useFilteredFunds';
 
-const mockData: ReportsStaffExpensesQuery = {
-  reportsStaffExpenses: {
-    funds: [
+const mockData: Funds[] = [
+  {
+    fundType: 'Primary',
+    total: 10560,
+    categories: [
       {
-        categories: [
+        category: StaffExpenseCategoryEnum.MinistryReimbursement,
+        total: 7800,
+        averagePerMonth: 650,
+        breakdownByMonth: [
           {
-            category: StaffExpenseCategoryEnum.MinistryReimbursement,
+            month: '2024-01-01',
+            total: 100,
+          },
+          {
+            month: '2024-02-01',
+            total: 200,
+          },
+          {
+            month: '2024-03-01',
+            total: 300,
+          },
+          {
+            month: '2024-04-01',
+            total: 400,
+          },
+          {
+            month: '2024-05-01',
+            total: 500,
+          },
+          {
+            month: '2024-06-01',
+            total: 600,
+          },
+          {
+            month: '2024-07-01',
+            total: 700,
+          },
+          {
+            month: '2024-08-01',
+            total: 800,
+          },
+          {
+            month: '2024-09-01',
+            total: 900,
+          },
+          {
+            month: '2024-10-01',
+            total: 1000,
+          },
+          {
+            month: '2024-11-01',
+            total: 1100,
+          },
+          {
+            month: '2024-12-01',
+            total: 1200,
+          },
+        ],
+        subcategories: [
+          {
+            subCategory: StaffExpensesSubCategoryEnum.MinistryReimbursement,
             total: 7800,
             averagePerMonth: 650,
             breakdownByMonth: [
@@ -65,127 +120,68 @@ const mockData: ReportsStaffExpensesQuery = {
                 total: 1200,
               },
             ],
-            subcategories: [
-              {
-                subCategory: StaffExpensesSubCategoryEnum.MinistryReimbursement,
-                total: 7800,
-                averagePerMonth: 650,
-                breakdownByMonth: [
-                  {
-                    month: '2024-01-01',
-                    total: 100,
-                  },
-                  {
-                    month: '2024-02-01',
-                    total: 200,
-                  },
-                  {
-                    month: '2024-03-01',
-                    total: 300,
-                  },
-                  {
-                    month: '2024-04-01',
-                    total: 400,
-                  },
-                  {
-                    month: '2024-05-01',
-                    total: 500,
-                  },
-                  {
-                    month: '2024-06-01',
-                    total: 600,
-                  },
-                  {
-                    month: '2024-07-01',
-                    total: 700,
-                  },
-                  {
-                    month: '2024-08-01',
-                    total: 800,
-                  },
-                  {
-                    month: '2024-09-01',
-                    total: 900,
-                  },
-                  {
-                    month: '2024-10-01',
-                    total: 1000,
-                  },
-                  {
-                    month: '2024-11-01',
-                    total: 1100,
-                  },
-                  {
-                    month: '2024-12-01',
-                    total: 1200,
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            category: StaffExpenseCategoryEnum.HealthcareReimbursement,
-            total: 2760,
-            averagePerMonth: 230,
-            breakdownByMonth: [
-              {
-                month: '2024-01-01',
-                total: 0,
-              },
-              {
-                month: '2024-02-01',
-                total: 0,
-              },
-              {
-                month: '2024-03-01',
-                total: 300,
-              },
-              {
-                month: '2024-04-01',
-                total: 400,
-              },
-              {
-                month: '2024-05-01',
-                total: 500,
-              },
-              {
-                month: '2024-06-01',
-                total: 0,
-              },
-              {
-                month: '2024-07-01',
-                total: 700,
-              },
-              {
-                month: '2024-08-01',
-                total: -40,
-              },
-              {
-                month: '2024-09-01',
-                total: 900,
-              },
-              {
-                month: '2024-10-01',
-                total: 0,
-              },
-              {
-                month: '2024-11-01',
-                total: 0,
-              },
-              {
-                month: '2024-12-01',
-                total: 0,
-              },
-            ],
-            subcategories: [],
           },
         ],
-        fundType: 'Primary',
-        total: 10560,
+      },
+      {
+        category: StaffExpenseCategoryEnum.HealthcareReimbursement,
+        total: 2760,
+        averagePerMonth: 230,
+        breakdownByMonth: [
+          {
+            month: '2024-01-01',
+            total: 0,
+          },
+          {
+            month: '2024-02-01',
+            total: 0,
+          },
+          {
+            month: '2024-03-01',
+            total: 300,
+          },
+          {
+            month: '2024-04-01',
+            total: 400,
+          },
+          {
+            month: '2024-05-01',
+            total: 500,
+          },
+          {
+            month: '2024-06-01',
+            total: 0,
+          },
+          {
+            month: '2024-07-01',
+            total: 700,
+          },
+          {
+            month: '2024-08-01',
+            total: -40,
+          },
+          {
+            month: '2024-09-01',
+            total: 900,
+          },
+          {
+            month: '2024-10-01',
+            total: 0,
+          },
+          {
+            month: '2024-11-01',
+            total: 0,
+          },
+          {
+            month: '2024-12-01',
+            total: 0,
+          },
+        ],
+        subcategories: [],
       },
     ],
   },
-};
+];
 
 describe('useFilteredFunds', () => {
   it('should filter funds correctly', () => {
@@ -195,7 +191,7 @@ describe('useFilteredFunds', () => {
       incomeData: [
         {
           id: 'Primary-MINISTRY_REIMBURSEMENT-MINISTRY_REIMBURSEMENT',
-          description: 'MINISTRY_REIMBURSEMENT - MINISTRY_REIMBURSEMENT',
+          description: 'MINISTRY_REIMBURSEMENT',
           monthly: [
             100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200,
           ],

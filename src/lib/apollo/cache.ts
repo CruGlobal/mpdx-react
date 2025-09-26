@@ -66,6 +66,12 @@ export const createCache = () =>
           },
         },
       },
+      PrimaryBudgetCategory: {
+        fields: {
+          // Always overwrite the existing sub budget categories with the incoming categories
+          subBudgetCategories: { merge: false },
+        },
+      },
       // Disable cache normalization for 12 month report contacts because a contact in one currency group should not be
       // merged a contact with the same id in a different currency group
       FourteenMonthReportContact: { keyFields: false },
