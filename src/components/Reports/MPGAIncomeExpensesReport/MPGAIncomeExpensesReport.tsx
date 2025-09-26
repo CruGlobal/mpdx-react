@@ -27,8 +27,8 @@ import { ScreenOnlyReport } from './DisplayModes/ScreenOnlyReport';
 import { FundTypes, Funds } from './Helper/MPGAReportEnum';
 import { convertMonths } from './Helper/convertMonths';
 import {
-  transformCategory,
-  transformSubcategory,
+  getLocalizedCategory,
+  getLocalizedSubcategory,
 } from './Helper/transformEnums';
 import { useReportsStaffExpensesQuery } from './ReportsStaffExpenses.generated';
 import { TotalsProvider } from './TotalsContext/TotalsContext';
@@ -67,30 +67,27 @@ export const MPGAIncomeExpensesReport: React.FC<
     },
   });
 
-  const transformedData: Funds[] = (
-    reportData?.reportsStaffExpenses?.funds ?? []
-  ).map((fund) => ({
-    fundType: fund.fundType,
-    total: fund.total,
-    categories: (fund.categories ?? []).map((category) => ({
-      category: transformCategory(category.category),
-      averagePerMonth: category.averagePerMonth,
-      total: category.total,
-      breakdownByMonth: category.breakdownByMonth.map((month) => ({
-        month: month.month,
-        total: month.total,
-      })),
-      subcategories: (category.subcategories ?? []).map((subcategory) => ({
-        subCategory: transformSubcategory(subcategory.subCategory),
-        averagePerMonth: subcategory.averagePerMonth,
-        total: subcategory.total,
-        breakdownByMonth: subcategory.breakdownByMonth.map((month) => ({
-          month: month.month,
-          total: month.total,
+  const transformedData: Funds[] = useMemo(
+    () =>
+      (reportData?.reportsStaffExpenses?.funds ?? []).map((fund) => ({
+        ...fund,
+        categories: (fund.categories ?? []).map((category) => ({
+          ...category,
+          category: getLocalizedCategory(category.category),
+          breakdownByMonth: category.breakdownByMonth.map((month) => ({
+            ...month,
+          })),
+          subcategories: (category.subcategories ?? []).map((subcategory) => ({
+            ...subcategory,
+            subCategory: getLocalizedSubcategory(subcategory.subCategory),
+            breakdownByMonth: subcategory.breakdownByMonth.map((month) => ({
+              ...month,
+            })),
+          })),
         })),
       })),
-    })),
-  }));
+    [reportData],
+  );
 
   const { incomeData, expenseData } = useFilteredFunds(transformedData);
 

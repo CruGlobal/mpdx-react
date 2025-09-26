@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { Funds } from 'src/components/Reports/MPGAIncomeExpensesReport/Helper/MPGAReportEnum';
 import { DataFields } from '../components/Reports/MPGAIncomeExpensesReport/mockData';
 
 const average = (data: number[]) => {
@@ -10,8 +11,7 @@ const sum = (data: number[]) => {
   return data.reduce((acc, item) => acc + item, 0);
 };
 
-export function useFilteredFunds(funds) {
-  const fundsArray = Array.isArray(funds) ? funds : [];
+export function useFilteredFunds(funds: Funds[]) {
   return useMemo(() => {
     const incomeData: DataFields[] = [];
     const expenseData: DataFields[] = [];
@@ -63,7 +63,7 @@ export function useFilteredFunds(funds) {
       });
     };
 
-    fundsArray.forEach((fund) => {
+    funds.forEach((fund) => {
       const base = fund.fundType;
       fund.categories?.forEach((category) => {
         const baseId = `${base}-${category.category}`;

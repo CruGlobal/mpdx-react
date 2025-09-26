@@ -7,17 +7,6 @@ export enum FundTypes {
   Primary = 'Primary',
 }
 
-export enum ExpenseCategoriesEnum {
-  Transfer = 'Transfer',
-  Ministry = 'Ministry Reimbursement',
-  Healthcare = 'Healthcare Reimbursement',
-  AdditionalSalary = 'Additional Salary',
-  Salary = 'Salary',
-  Benefits = 'Benefits',
-  Other = 'Other',
-  Assessment = 'Assessment',
-}
-
 interface BreakdownByMonth {
   month: string;
   total: number;

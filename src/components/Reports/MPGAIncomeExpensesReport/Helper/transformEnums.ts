@@ -3,11 +3,13 @@ import {
   StaffExpensesSubCategoryEnum,
 } from 'src/graphql/types.generated';
 
-export const transformCategory = (value: StaffExpenseCategoryEnum) => {
+export const getLocalizedCategory = (value: StaffExpenseCategoryEnum) => {
   return categoryLabels[value];
 };
 
-export const transformSubcategory = (value: StaffExpensesSubCategoryEnum) => {
+export const getLocalizedSubcategory = (
+  value: StaffExpensesSubCategoryEnum,
+) => {
   return subcategoryLabels[value];
 };
 
