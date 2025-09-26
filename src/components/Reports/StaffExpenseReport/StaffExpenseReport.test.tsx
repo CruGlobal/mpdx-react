@@ -6,7 +6,11 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { StaffAccountStatusEnum } from 'src/graphql/types.generated';
+import {
+  StaffAccountStatusEnum,
+  StaffExpenseCategoryEnum,
+  StaffExpensesSubCategoryEnum,
+} from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { ReportsStaffExpensesQuery } from './GetStaffExpense.generated';
 import { StaffExpenseReport } from './StaffExpenseReport';
@@ -41,12 +45,13 @@ const TestComponent: React.FC<TestComponentProps> = ({ isEmpty }) => (
                         total: -500,
                         categories: [
                           {
-                            category: 'Travel',
+                            category: StaffExpenseCategoryEnum.Salary,
                             total: -300,
                             averagePerMonth: -100,
                             subcategories: [
                               {
-                                subCategory: 'Flights',
+                                subCategory:
+                                  StaffExpensesSubCategoryEnum.AdditionalSalary,
                                 total: -200,
                                 averagePerMonth: -50,
                                 breakdownByMonth: [
@@ -55,7 +60,8 @@ const TestComponent: React.FC<TestComponentProps> = ({ isEmpty }) => (
                                 ],
                               },
                               {
-                                subCategory: 'Hotels',
+                                subCategory:
+                                  StaffExpensesSubCategoryEnum.Deposit,
                                 total: -100,
                                 averagePerMonth: -50,
                                 breakdownByMonth: [
