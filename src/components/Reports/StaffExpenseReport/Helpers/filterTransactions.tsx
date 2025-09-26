@@ -4,7 +4,7 @@ import { Transaction } from 'src/components/Reports/StaffExpenseReport/StaffExpe
 import { BreakdownByMonth, Fund } from 'src/graphql/types.generated';
 
 export const filterTransactions = (
-  fund: Fund,
+  fund: Pick<Fund, 'fundType' | 'total' | 'categories'>,
   targetTime: DateTime,
   filters?: Filters | null,
 ): Transaction[] => {
