@@ -1,25 +1,44 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { GoalCalculatorTestWrapper } from '../GoalCalculatorTestWrapper';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  GoalCalculatorTestWrapper,
+  goalCalculationMock,
+} from '../GoalCalculatorTestWrapper';
+import { GoalCalculationQuery } from '../Shared/GoalCalculation.generated';
 import { HouseholdExpensesHeader } from './HouseholdExpensesHeader';
 
 const accountListId = 'account-list-1';
 const mutationSpy = jest.fn();
 
 type TestComponentProps = {
-  directInput?: number | null;
+  directInputNull?: boolean;
 };
 
 const TestComponent: React.FC<TestComponentProps> = ({
-  directInput = null,
+  directInputNull = false,
 }) => (
-  <GoalCalculatorTestWrapper
-    householdDirectInput={directInput}
+  <GqlMockedProvider<{ GoalCalculation: GoalCalculationQuery }>
+    mocks={{
+      GoalCalculation: {
+        goalCalculation: directInputNull
+          ? {
+              ...goalCalculationMock,
+              householdFamily: {
+                ...goalCalculationMock.householdFamily,
+                directInput: null,
+              },
+            }
+          : goalCalculationMock,
+      },
+    }}
     onCall={mutationSpy}
   >
-    <HouseholdExpensesHeader categoriesTotal={5000} />
-  </GoalCalculatorTestWrapper>
+    <GoalCalculatorTestWrapper noMocks>
+      <HouseholdExpensesHeader categoriesTotal={5000} />
+    </GoalCalculatorTestWrapper>
+  </GqlMockedProvider>
 );
 
 describe('HouseholdExpensesHeader', () => {
@@ -37,21 +56,19 @@ describe('HouseholdExpensesHeader', () => {
     });
 
     it('should render categories total when direct input is null', async () => {
-      const { findByText } = render(<TestComponent directInput={null} />);
+      const { findByText } = render(<TestComponent directInputNull />);
 
       expect(await findByText('$5,000')).toBeInTheDocument();
     });
 
     it('should render direct input total when it is set', async () => {
-      const { findByText } = render(<TestComponent directInput={6000} />);
+      const { findByText } = render(<TestComponent />);
 
-      expect(await findByText('$6,000')).toBeInTheDocument();
+      expect(await findByText('$5,500')).toBeInTheDocument();
     });
 
     it('manual input should update total', async () => {
-      const { findByRole, getByText } = render(
-        <TestComponent directInput={6000} />,
-      );
+      const { findByRole, getByText } = render(<TestComponent />);
 
       userEvent.click(await findByRole('button', { name: 'Manual input' }));
 
@@ -69,7 +86,9 @@ describe('HouseholdExpensesHeader', () => {
     });
 
     it('direct input should update total', async () => {
-      const { findByRole, getByRole, getByText } = render(<TestComponent />);
+      const { findByRole, getByRole, getByText } = render(
+        <TestComponent directInputNull />,
+      );
 
       userEvent.click(await findByRole('button', { name: 'Direct input' }));
 
@@ -94,7 +113,9 @@ describe('HouseholdExpensesHeader', () => {
     });
 
     it('direct input should validate that amount is not negative', async () => {
-      const { findByRole, getByRole, getByText } = render(<TestComponent />);
+      const { findByRole, getByRole, getByText } = render(
+        <TestComponent directInputNull />,
+      );
 
       userEvent.click(await findByRole('button', { name: 'Direct input' }));
 
@@ -109,7 +130,7 @@ describe('HouseholdExpensesHeader', () => {
 
     it('cancel should abort setting direct input', async () => {
       const { findByRole, getByRole, getByText, queryByRole } = render(
-        <TestComponent />,
+        <TestComponent directInputNull />,
       );
 
       userEvent.click(await findByRole('button', { name: 'Direct input' }));
@@ -130,19 +151,17 @@ describe('HouseholdExpensesHeader', () => {
 
   describe('left to allocate card', () => {
     it('should display the amount left to allocate', async () => {
-      const { findByText, getByRole, getByText } = render(
-        <TestComponent directInput={7500} />,
-      );
+      const { findByText, getByRole, getByText } = render(<TestComponent />);
 
-      expect(await findByText('33%')).toBeInTheDocument();
+      expect(await findByText('9%')).toBeInTheDocument();
 
       userEvent.click(getByRole('button', { name: 'Switch to amount' }));
 
-      expect(getByText('$2,500')).toBeInTheDocument();
+      expect(getByText('$500')).toBeInTheDocument();
 
       userEvent.click(getByRole('button', { name: 'Switch to percentage' }));
 
-      expect(getByText('33%')).toBeInTheDocument();
+      expect(getByText('9%')).toBeInTheDocument();
     });
   });
 });

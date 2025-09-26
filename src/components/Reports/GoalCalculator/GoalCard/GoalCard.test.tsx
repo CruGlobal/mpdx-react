@@ -3,29 +3,10 @@ import { ThemeProvider } from '@mui/system';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
-import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
-import {
-  ListGoalCalculationFragment,
-  ListGoalCalculationFragmentDoc,
-} from '../GoalsList/GoalCalculations.generated';
+import { goalCalculationMock } from '../GoalCalculatorTestWrapper';
 import { GoalCard } from './GoalCard';
-
-const goal = gqlMock<ListGoalCalculationFragment>(
-  ListGoalCalculationFragmentDoc,
-  {
-    mocks: {
-      id: 'goal-1',
-      householdFamily: {
-        directInput: 90,
-      },
-      ministryFamily: {
-        directInput: null,
-        primaryBudgetCategories: [{ directInput: 49.63 }],
-      },
-    },
-  },
-);
 
 const mutationSpy = jest.fn();
 
@@ -34,16 +15,10 @@ interface TestComponentProps {
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({ primary = false }) => (
-  <TestRouter
-    router={{
-      query: {
-        accountListId: 'account-list-1',
-      },
-    }}
-  >
+  <TestRouter>
     <ThemeProvider theme={theme}>
       <GqlMockedProvider onCall={mutationSpy}>
-        <GoalCard goal={{ ...goal, primary }} renderStar />
+        <GoalCard goal={{ ...goalCalculationMock, primary }} renderStar />
       </GqlMockedProvider>
     </ThemeProvider>
   </TestRouter>
@@ -66,7 +41,7 @@ describe('GoalCard', () => {
       expect(mutationSpy).toHaveGraphqlOperation('UpdateGoalCalculation', {
         accountListId: 'account-list-1',
         attributes: {
-          id: 'goal-1',
+          id: 'test-goal-id',
           primary: true,
         },
       }),
@@ -92,21 +67,21 @@ describe('GoalCard', () => {
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('DeleteGoalCalculation', {
         accountListId: 'account-list-1',
-        id: 'goal-1',
+        id: 'test-goal-id',
       }),
     );
   });
 
-  it('renders view link', async () => {
+  it('renders view link', () => {
     const { getByRole } = render(<TestComponent />);
     expect(getByRole('link', { name: 'View' })).toHaveAttribute(
       'href',
-      '/accountLists/account-list-1/reports/goalCalculator/goal-1',
+      '/accountLists/account-list-1/reports/goalCalculator/test-goal-id',
     );
   });
 
-  it('shows a goal amount value from useGoalTotal hook', async () => {
+  it('calculates goal total', () => {
     const { getByTestId } = render(<TestComponent />);
-    expect(getByTestId('goal-amount-value')).toHaveTextContent('$200');
+    expect(getByTestId('goal-amount-value')).toHaveTextContent('$9,029.79');
   });
 });

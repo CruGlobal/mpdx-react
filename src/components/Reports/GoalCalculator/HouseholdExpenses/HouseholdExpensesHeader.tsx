@@ -53,6 +53,7 @@ export const HouseholdExpensesHeader: React.FC<
     goalCalculationResult: { data, loading },
     trackMutation,
   } = useGoalCalculator();
+
   const { t } = useTranslation();
   const locale = useLocale();
 
