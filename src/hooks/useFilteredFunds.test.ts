@@ -1,5 +1,9 @@
 import { renderHook } from '@testing-library/react';
 import { ReportsStaffExpensesQuery } from 'src/components/Reports/MPGAIncomeExpensesReport/ReportsStaffExpenses.generated';
+import {
+  StaffExpenseCategoryEnum,
+  StaffExpensesSubCategoryEnum,
+} from 'src/graphql/types.generated';
 import { useFilteredFunds } from './useFilteredFunds';
 
 const mockData: ReportsStaffExpensesQuery = {
@@ -8,7 +12,7 @@ const mockData: ReportsStaffExpensesQuery = {
       {
         categories: [
           {
-            category: 'Example Category 1',
+            category: StaffExpenseCategoryEnum.Benefits,
             total: 7800,
             averagePerMonth: 650,
             breakdownByMonth: [
@@ -63,7 +67,7 @@ const mockData: ReportsStaffExpensesQuery = {
             ],
             subcategories: [
               {
-                subCategory: 'Example Subcategory',
+                subCategory: StaffExpensesSubCategoryEnum.BenefitsOther,
                 total: 7800,
                 averagePerMonth: 650,
                 breakdownByMonth: [
@@ -120,7 +124,7 @@ const mockData: ReportsStaffExpensesQuery = {
             ],
           },
           {
-            category: 'Example Category 2',
+            category: StaffExpenseCategoryEnum.Assessment,
             total: 2760,
             averagePerMonth: 230,
             breakdownByMonth: [
@@ -190,8 +194,8 @@ describe('useFilteredFunds', () => {
     expect(result.current).toEqual({
       incomeData: [
         {
-          id: 'Primary-Example Category 1-Example Subcategory',
-          description: 'Example Category 1 - Example Subcategory',
+          id: `Primary-${StaffExpenseCategoryEnum.Benefits}-${StaffExpensesSubCategoryEnum.BenefitsOther}`,
+          description: `${StaffExpenseCategoryEnum.Benefits} - ${StaffExpensesSubCategoryEnum.BenefitsOther}`,
           monthly: [
             100, 200, 300, 400, 500, 600, 700, 800, 900, 1000, 1100, 1200,
           ],
@@ -199,8 +203,8 @@ describe('useFilteredFunds', () => {
           total: 7800,
         },
         {
-          id: 'Primary-Example Category 2',
-          description: 'Example Category 2',
+          id: `Primary-${StaffExpenseCategoryEnum.Assessment}`,
+          description: `${StaffExpenseCategoryEnum.Assessment}`,
           monthly: [0, 0, 300, 400, 500, 0, 700, 0, 900, 0, 0, 0],
           average: 2800 / 12,
           total: 2800,
@@ -208,8 +212,8 @@ describe('useFilteredFunds', () => {
       ],
       expenseData: [
         {
-          id: 'Primary-Example Category 2',
-          description: 'Example Category 2',
+          id: `Primary-${StaffExpenseCategoryEnum.Assessment}`,
+          description: `${StaffExpenseCategoryEnum.Assessment}`,
           monthly: [0, 0, 0, 0, 0, 0, 0, 40, 0, 0, 0, 0],
           average: 40 / 12,
           total: 40,
