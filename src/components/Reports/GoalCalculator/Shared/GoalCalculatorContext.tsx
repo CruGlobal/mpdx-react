@@ -23,7 +23,7 @@ import {
 } from '../GoalCalculatorHelper';
 import { useGoalCalculationQuery } from './GoalCalculation.generated';
 import { calculatePercentage } from './calculatePercentage';
-import { GoalTotals, calculateTotals } from './calculateTotals';
+import { GoalTotals, calculateGoalTotals } from './calculateTotals';
 import { GoalCalculatorStep, useSteps } from './useSteps';
 
 export type GoalCalculatorType = {
@@ -100,7 +100,8 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     [goalCalculationResult.data],
   );
   const goalTotals = useMemo(
-    () => calculateTotals(goalCalculationResult.data?.goalCalculation ?? null),
+    () =>
+      calculateGoalTotals(goalCalculationResult.data?.goalCalculation ?? null),
     [goalCalculationResult.data],
   );
   const [stepIndex, setStepIndex] = useState(0);
