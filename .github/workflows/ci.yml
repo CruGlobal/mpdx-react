@@ -4,12 +4,22 @@ on:
   push:
     branches: [main]
   pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - labeled
+      - unlabeled
   workflow_dispatch:
 
 env:
-  # Use production API for codegen to make sure production is compatible with the code to be merged
-  API_URL: 'https://api.mpdx.org/graphql'
-  SITE_URL: 'http://stage.mpdx.org'
+  # Normally, we want to use production API for codegen to make sure production is compatible with
+  # the code to be merged. However, sometimes GraphQL queries or mutations are only available in
+  # staging and haven't been merged to production yet. In that case, we still want CI to run, but
+  # we don't want to let the PR be merged yet. If the "Staging API" label is added to the PR, we
+  # run codegen against the staging API instead of the production API and block the PR from merging.
+  API_URL: ${{ contains(github.event.pull_request.labels.*.name, 'Staging API') && 'https://api.stage.mpdx.org/graphql' || 'https://api.mpdx.org/graphql' }}
+  SITE_URL: http://stage.mpdx.org
 
 jobs:
   test:
@@ -161,3 +171,11 @@ jobs:
         env:
           # This secret is automatically injected by GitHub
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  staging-api-block:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'Staging API')
+    steps:
+      - run: |
+          echo "PR cannot be merged until Staging API label is removed"
+          exit 1
