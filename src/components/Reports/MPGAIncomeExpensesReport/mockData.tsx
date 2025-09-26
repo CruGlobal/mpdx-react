@@ -56,28 +56,28 @@ export const mockData: AllData = {
   expenses: [
     {
       id: crypto.randomUUID(),
-      description: 'transfer',
+      description: 'Transfer',
       monthly: [0, 0, 200, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       average: 17,
       total: 200,
     },
     {
       id: crypto.randomUUID(),
-      description: 'ministry reimbursement',
+      description: 'Ministry Reimbursement',
       monthly: [0, 0, 0, 0, 0, 0, 565, 0, 488, 253, 818, 0],
       average: 177,
       total: 2124,
     },
     {
       id: crypto.randomUUID(),
-      description: 'healthcare reimbursement',
+      description: 'Healthcare Reimbursement',
       monthly: [0, 0, 0, 976, 55, 0, 0, 0, 194, 708, 0, 0],
       average: 161,
       total: 1933,
     },
     {
       id: crypto.randomUUID(),
-      description: 'salary',
+      description: 'Salary',
       monthly: [26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       average: 2,
       total: 26,
