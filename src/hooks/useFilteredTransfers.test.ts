@@ -21,7 +21,6 @@ const mockTransactions: Transactions[] = [
     },
     recurringTransfer: null,
     baseAmount: 2500,
-    failedStatus: false,
     failedCount: 0,
   },
   {
@@ -44,7 +43,6 @@ const mockTransactions: Transactions[] = [
       active: true,
     },
     baseAmount: 20,
-    failedStatus: false,
     failedCount: 0,
   },
   {
@@ -67,7 +65,6 @@ const mockTransactions: Transactions[] = [
       active: true,
     },
     baseAmount: 20,
-    failedStatus: false,
     failedCount: 0,
   },
   {
@@ -85,7 +82,6 @@ const mockTransactions: Transactions[] = [
     },
     recurringTransfer: null,
     baseAmount: -10,
-    failedStatus: false,
     failedCount: 0,
   },
   {
@@ -108,7 +104,6 @@ const mockTransactions: Transactions[] = [
       active: true,
     },
     baseAmount: 20,
-    failedStatus: false,
     failedCount: 0,
   },
 ];
@@ -118,7 +113,7 @@ describe('useFilteredTransfers', () => {
     const { result } = renderHook(() =>
       useFilteredTransfers(mockTransactions, mockToday),
     );
-    expect(result.current).toHaveLength(3);
+    expect(result.current).toHaveLength(2);
   });
 
   it('should correctly add amounts for recurring transfers', () => {
@@ -158,5 +153,20 @@ describe('useFilteredTransfers', () => {
     );
     expect(recurringTransfer).toBeDefined();
     expect(recurringTransfer?.failedCount).toBe(1);
+  });
+
+  it('should find missing months for recurring transfers', () => {
+    const { result } = renderHook(() =>
+      useFilteredTransfers(mockTransactions, mockToday),
+    );
+    const recurringTransfer = result.current.find(
+      (tx) => tx.recurringTransfer?.id === '1',
+    );
+    expect(recurringTransfer).toBeDefined();
+    expect(recurringTransfer?.missingMonths).toBeDefined();
+    expect(recurringTransfer?.missingMonths).toHaveLength(1);
+    expect(recurringTransfer?.missingMonths?.[0].toISODate()).toBe(
+      '2023-11-15',
+    );
   });
 });

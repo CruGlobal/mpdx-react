@@ -99,16 +99,19 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
             ? {
                 ...tx.recurringTransfer,
                 recurringStart: tx.recurringTransfer.recurringStart
-                  ? DateTime.fromISO(tx.recurringTransfer.recurringStart)
+                  ? DateTime.fromISO(
+                      tx.recurringTransfer.recurringStart,
+                    ).toUTC()
                   : null,
                 recurringEnd: tx.recurringTransfer.recurringEnd
-                  ? DateTime.fromISO(tx.recurringTransfer.recurringEnd)
+                  ? DateTime.fromISO(tx.recurringTransfer.recurringEnd).toUTC()
                   : null,
               }
             : null,
           baseAmount: tx.amount || 0,
-          failedStatus: false,
           failedCount: 0,
+          summarizedTransfers: null,
+          missingMonths: null,
         };
       }),
     [reportData],
@@ -118,7 +121,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
 
   const transferHistory: Transfers[] = filteredTransactions.map((tx) => {
     const isRecurring = !!tx.recurringTransfer;
-    const status = tx.failedStatus ? StatusEnum.Failed : getStatusLabel(tx);
+    const status = getStatusLabel(tx);
     const shouldShowActions = () => {
       if (status === StatusEnum.Pending || status === StatusEnum.Ongoing) {
         return false;
@@ -133,17 +136,17 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
       amount: tx.amount || 0,
       schedule: isRecurring ? ScheduleEnum.Monthly : ScheduleEnum.OneTime,
       status: status || undefined,
-      transferDate: tx.failedStatus
-        ? tx.transactedAt
-        : isRecurring
-          ? tx.recurringTransfer?.recurringStart || null
-          : tx.transactedAt || null,
+      transferDate: isRecurring
+        ? tx.recurringTransfer?.recurringStart || null
+        : tx.transactedAt || null,
       endDate: tx.recurringTransfer?.recurringEnd || null,
       note: tx.subCategory.name || '',
       actions: shouldShowActions() === false ? 'edit-delete' : '',
       recurringId: tx.recurringTransfer?.id || '',
       baseAmount: tx.baseAmount || 0,
       failedCount: tx.failedCount || 0,
+      summarizedTransfers: tx.summarizedTransfers,
+      missingMonths: tx.missingMonths,
     };
   });
 
