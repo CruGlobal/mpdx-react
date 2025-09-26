@@ -6,20 +6,15 @@ import { useUpdateAccountPreferencesMutation } from 'src/components/Settings/pre
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
-import { useGoalLineItems } from '../../../Shared/useGoalLineItems';
-import { Goal } from '../../../Shared/useReportExpenses/useReportExpenses';
+import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
 
-interface GoalApplicationButtonGroupProps {
-  goal: Goal;
-}
-
-export const GoalApplicationButtonGroup: React.FC<
-  GoalApplicationButtonGroupProps
-> = ({ goal }) => {
+export const GoalApplicationButtonGroup: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
   const { enqueueSnackbar } = useSnackbar();
-  const { overallTotal } = useGoalLineItems(goal);
+  const {
+    goalTotals: { overallTotal },
+  } = useGoalCalculator();
   const [updateAccountPreferences, { loading }] =
     useUpdateAccountPreferencesMutation();
   const accountListId = useAccountListId() || '';
