@@ -32,7 +32,8 @@ import {
   TransferDirectionEnum,
   TransferTypeEnum,
 } from '../Helper/TransferHistoryEnum';
-import { Fund, ScheduleEnum, TransferHistory } from '../mockData';
+import { FundFieldsFragment } from '../ReportsSavingsFund.generated';
+import { ScheduleEnum, TransferHistory } from '../mockData';
 import { TransferModalSelect } from './TransferModalSelect/TransferModalSelect';
 
 export interface TransferModalData {
@@ -49,8 +50,8 @@ interface TransferFormValues {
   amount: number;
 }
 
-const getStartOfNextMonth = (): DateTime => {
-  return DateTime.utc().plus({ months: 1 }).startOf('month');
+const getToday = (): DateTime => {
+  return DateTime.local().startOf('day');
 };
 
 const transferSchema = yup.object({
@@ -92,7 +93,7 @@ const transferSchema = yup.object({
 
 interface TransferModalProps {
   data: TransferModalData;
-  funds: Fund[];
+  funds: FundFieldsFragment[];
   handleClose: () => void;
 }
 
@@ -152,7 +153,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
           amount: amount || 0,
           schedule: schedule || ScheduleEnum.OneTime,
           status: status || '',
-          transferDate: transferDate || getStartOfNextMonth(),
+          transferDate: transferDate || getToday(),
           endDate: endDate || null,
           note: note || '',
         }}
@@ -330,7 +331,6 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                         helperText={
                           touched.endDate && (errors.endDate as string)
                         }
-                        required
                       />
                     </Grid>
                   )}
