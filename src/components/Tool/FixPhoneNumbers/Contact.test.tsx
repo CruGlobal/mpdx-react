@@ -188,7 +188,7 @@ describe('Fix PhoneNumber Contact', () => {
       const addButton = getByTestId('addButton-contactTestId');
       expect(addButton).toBeDisabled();
 
-      expect(await findByText('This field is required')).toBeVisible();
+      expect(await findByText('Phone Number is required')).toBeVisible();
     });
 
     it('should show an error message if there is an invalid number', async () => {

@@ -206,7 +206,7 @@ export const MergeForm: React.FC<MergeFormProps> = ({ isSpouse }) => {
                         </Select>
                         {errors.selectedAccountId && (
                           <FormHelperText error={true}>
-                            {t('This field is required')}
+                            {t('Account is required')}
                           </FormHelperText>
                         )}
                       </FieldWrapper>
@@ -286,7 +286,7 @@ export const MergeForm: React.FC<MergeFormProps> = ({ isSpouse }) => {
                     />
                     {errors.accept && (
                       <FormHelperText error={true}>
-                        {t('This field is required')}
+                        {t('You must accept before proceeding')}
                       </FormHelperText>
                     )}
                   </FieldWrapper>
