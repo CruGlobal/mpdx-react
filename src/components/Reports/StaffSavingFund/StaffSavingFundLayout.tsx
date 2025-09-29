@@ -3,11 +3,11 @@ import React, { ReactElement, useContext } from 'react';
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
-import Loading from 'src/components/Loading';
 import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import { NoStaffAccount } from '../Shared/NoStaffAccount';
 import { useStaffAccountQuery } from '../StaffAccount.generated';
 import {
   StaffSavingFundContext,
@@ -58,7 +58,7 @@ export const StaffSavingFundLayout: React.FC<StaffSavingFundLayoutProps> = ({
           />
         </StaffSavingFundPageWrapper>
       ) : (
-        <Loading loading />
+        <NoStaffAccount />
       )}
     </>
   );
