@@ -3,6 +3,7 @@ import React, { ReactElement, useContext } from 'react';
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
+import Loading from 'src/components/Loading';
 import {
   MultiPageMenu,
   NavTypeEnum,
@@ -33,7 +34,7 @@ export const StaffSavingFundLayout: React.FC<StaffSavingFundLayoutProps> = ({
     StaffSavingFundContext,
   ) as StaffSavingFundType;
 
-  const { data: staffAccountData } = useStaffAccountQuery();
+  const { data: staffAccountData, loading } = useStaffAccountQuery();
 
   return (
     <>
@@ -57,6 +58,8 @@ export const StaffSavingFundLayout: React.FC<StaffSavingFundLayoutProps> = ({
             mainContent={children}
           />
         </StaffSavingFundPageWrapper>
+      ) : loading ? (
+        <Loading loading />
       ) : (
         <NoStaffAccount />
       )}

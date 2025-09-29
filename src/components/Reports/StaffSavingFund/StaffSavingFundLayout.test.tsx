@@ -1,6 +1,4 @@
 import { ThemeProvider } from '@emotion/react';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
@@ -41,22 +39,20 @@ const MockStaffSavingFundProvider = ({
 
 const Components = () => (
   <ThemeProvider theme={theme}>
-    <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <TestRouter>
-        <GqlMockedProvider<{
-          StaffAccount: StaffAccountQuery;
-        }>
-          mocks={mockStaffAccount}
-          onCall={mutationSpy}
-        >
-          <MockStaffSavingFundProvider>
-            <StaffSavingFundLayout pageTitle={title} selectedMenuId={id}>
-              <div>Test Children</div>
-            </StaffSavingFundLayout>
-          </MockStaffSavingFundProvider>
-        </GqlMockedProvider>
-      </TestRouter>
-    </LocalizationProvider>
+    <TestRouter>
+      <GqlMockedProvider<{
+        StaffAccount: StaffAccountQuery;
+      }>
+        mocks={mockStaffAccount}
+        onCall={mutationSpy}
+      >
+        <MockStaffSavingFundProvider>
+          <StaffSavingFundLayout pageTitle={title} selectedMenuId={id}>
+            <div>Test Children</div>
+          </StaffSavingFundLayout>
+        </MockStaffSavingFundProvider>
+      </GqlMockedProvider>
+    </TestRouter>
   </ThemeProvider>
 );
 
@@ -79,18 +75,20 @@ describe('StaffSavingFundLayout', () => {
       },
     };
     const { findByText } = render(
-      <GqlMockedProvider<{
-        StaffAccount: StaffAccountQuery;
-      }>
-        mocks={mockNoStaffAccount}
-        onCall={mutationSpy}
-      >
-        <MockStaffSavingFundProvider>
-          <StaffSavingFundLayout pageTitle={title} selectedMenuId={id}>
-            <div>Test Children</div>
-          </StaffSavingFundLayout>
-        </MockStaffSavingFundProvider>
-      </GqlMockedProvider>,
+      <TestRouter>
+        <GqlMockedProvider<{
+          StaffAccount: StaffAccountQuery;
+        }>
+          mocks={mockNoStaffAccount}
+          onCall={mutationSpy}
+        >
+          <MockStaffSavingFundProvider>
+            <StaffSavingFundLayout pageTitle={title} selectedMenuId={id}>
+              <div>Test Children</div>
+            </StaffSavingFundLayout>
+          </MockStaffSavingFundProvider>
+        </GqlMockedProvider>
+      </TestRouter>,
     );
     expect(
       await findByText(/access to this feature is limited/i),
