@@ -1,4 +1,6 @@
 import { ThemeProvider } from '@mui/material/styles';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon/AdapterLuxon';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
@@ -11,9 +13,11 @@ const onClick = jest.fn();
 
 const Components = () => (
   <ThemeProvider theme={theme}>
-    <TestRouter router={router}>
-      <NoStaffAccount />
-    </TestRouter>
+    <LocalizationProvider dateAdapter={AdapterLuxon}>
+      <TestRouter router={router}>
+        <NoStaffAccount />
+      </TestRouter>
+    </LocalizationProvider>
   </ThemeProvider>
 );
 
