@@ -14,7 +14,7 @@ const createTable = (
     csvHeader,
     ...transactions.map((transaction) => [
       transaction.month,
-      transaction.category,
+      transaction.displayCategory,
       transaction.total.toLocaleString(locale, {
         style: 'currency',
         currency: 'USD',

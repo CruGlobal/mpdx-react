@@ -1,24 +1,28 @@
+import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import { ReportType } from '../Helpers/StaffReportEnum';
 import { Transaction } from '../StaffExpenseReport';
 import { createCsvReport } from './downloadReport';
 
 const mockData: Transaction[] = [
   {
-    category: 'transfer - withdrawal',
+    category: StaffExpenseCategoryEnum.MinistryReimbursement,
+    displayCategory: 'Ministry Reimbursement',
     fundType: 'Primary',
     month: '2025-07-01',
     total: -2724,
     __typename: 'BreakdownByMonth',
   },
   {
-    category: 'salary',
+    category: StaffExpenseCategoryEnum.Salary,
+    displayCategory: 'Salary',
     fundType: 'Secondary',
     month: '2025-08-01',
     total: 3500,
     __typename: 'BreakdownByMonth',
   },
   {
-    category: 'expense reimbursement',
+    category: StaffExpenseCategoryEnum.Benefits,
+    displayCategory: 'Benefits',
     fundType: 'Primary',
     month: '2025-09-01',
     total: -500,
