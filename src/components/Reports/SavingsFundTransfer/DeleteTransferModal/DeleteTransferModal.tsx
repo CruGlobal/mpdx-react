@@ -7,11 +7,9 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
-import { TransferHistory } from '../mockData';
 
 interface DeleteTransferModalProps {
   handleClose: () => void;
-  transfer: TransferHistory;
 }
 
 export const DeleteTransferModal: React.FC<DeleteTransferModalProps> = ({
