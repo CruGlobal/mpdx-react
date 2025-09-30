@@ -12,19 +12,73 @@ import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { StaffAccountQuery } from '../../StaffAccount.generated';
 import { StaffSavingFundContext } from '../../StaffSavingFund/StaffSavingFundContext';
-import { mockData } from '../mockData';
+import {
+  ReportsSavingsFundTransferQuery,
+  ReportsStaffExpensesQuery,
+} from '../ReportsSavingsFund.generated';
 import { TransfersPage } from './TransfersPage';
 
 const mutationSpy = jest.fn();
 const mockEnqueue = jest.fn();
 const onNavListToggle = jest.fn();
 
-const mockStaffAccount = {
+const mock = {
   StaffAccount: {
     staffAccount: {
       id: '12345',
       name: 'Test Account',
     },
+  },
+  ReportsSavingsFundTransfer: {
+    reportsSavingsFundTransfer: [
+      {
+        id: '12345',
+        amount: 2500,
+        description: null,
+        transactedAt: '2023-09-26T00:00:00+00:00',
+        subCategory: {
+          id: '1',
+          name: 'deposit',
+        },
+        transfer: {
+          sourceFundTypeName: 'Primary',
+          destinationFundTypeName: 'Savings',
+        },
+        recurringTransfer: null,
+      },
+      {
+        id: '67890',
+        amount: 1200,
+        description: null,
+        transactedAt: '2023-09-30T00:00:00+00:00',
+        subCategory: {
+          id: '1',
+          name: 'deposit',
+        },
+        transfer: {
+          sourceFundTypeName: 'Primary',
+          destinationFundTypeName: 'Savings',
+        },
+        recurringTransfer: {
+          id: '1',
+          recurringStart: '2023-09-30T00:00:00+00:00',
+          recurringEnd: '2025-09-30T00:00:00+00:00',
+          active: true,
+        },
+      },
+    ],
+  },
+};
+
+const emptyMock = {
+  StaffAccount: {
+    staffAccount: {
+      id: '12345',
+      name: 'Test Account',
+    },
+  },
+  ReportsSavingsFundTransfer: {
+    reportsSavingsFundTransfer: [],
   },
 };
 
@@ -66,8 +120,10 @@ const Components = ({
           <I18nextProvider i18n={i18n}>
             <GqlMockedProvider<{
               StaffAccount: StaffAccountQuery;
+              ReportsSavingsFundTransfer: ReportsSavingsFundTransferQuery;
+              ReportsStaffExpenses: ReportsStaffExpensesQuery;
             }>
-              mocks={mockStaffAccount}
+              mocks={mock}
               onCall={mutationSpy}
             >
               <MockStaffSavingFundProvider>
@@ -96,46 +152,67 @@ describe('TransfersPage', () => {
     expect(getByText('Fund Transfer')).toBeInTheDocument();
 
     expect(
-      await findByText(mockStaffAccount.StaffAccount.staffAccount.name),
+      await findByText(mock.StaffAccount.staffAccount.name),
     ).toBeInTheDocument();
     expect(
-      await findByText(mockStaffAccount.StaffAccount.staffAccount.id),
+      await findByText(mock.StaffAccount.staffAccount.id),
     ).toBeInTheDocument();
   });
 
-  it('should render all balance cards with correct information', () => {
-    const { getByText, getAllByText } = render(<Components />);
+  it('should render all balance cards with correct information', async () => {
+    const { findByText } = render(<Components />);
 
-    expect(getByText('Staff Account Balance')).toBeInTheDocument();
-    expect(getByText('Staff Conference Savings Balance')).toBeInTheDocument();
-    expect(getByText('Staff Savings Balance')).toBeInTheDocument();
+    expect(await findByText('Primary Account Balance')).toBeInTheDocument();
+    expect(await findByText('Savings Account Balance')).toBeInTheDocument();
 
-    expect(getAllByText('$15,000.00').length).toBeGreaterThan(0);
-    expect(getAllByText('$500.00').length).toBeGreaterThan(0);
-    expect(getAllByText('$2,500.00').length).toBeGreaterThan(0);
+    expect(await findByText('$15,000.00')).toBeInTheDocument();
+    expect(await findByText('$25,000.00')).toBeInTheDocument();
   });
 
-  it('should render cards and transfer history table', () => {
-    const { getByRole, getAllByRole } = render(<Components />);
+  it('should render cards and transfer history table', async () => {
+    const { findByRole, findAllByRole } = render(<Components />);
 
-    expect(getAllByRole('button', { name: 'TRANSFER FROM' })).toHaveLength(3);
-    expect(getAllByRole('button', { name: 'TRANSFER TO' })).toHaveLength(3);
-
-    expect(getByRole('grid')).toBeInTheDocument();
-    expect(within(getByRole('grid')).getAllByRole('columnheader')).toHaveLength(
-      8,
+    expect(
+      await findAllByRole('button', { name: 'TRANSFER FROM' }),
+    ).toHaveLength(2);
+    expect(await findAllByRole('button', { name: 'TRANSFER TO' })).toHaveLength(
+      2,
     );
+
+    expect(await findByRole('grid')).toBeInTheDocument();
+    expect(
+      within(await findByRole('grid')).getAllByRole('columnheader'),
+    ).toHaveLength(8);
   });
 
-  it('should show empty state when no transfer history', () => {
-    const originalHistory = mockData.history;
-    mockData.history = [];
+  it('should show empty state when no transfer history', async () => {
+    const { findByText } = render(
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <TestRouter>
+              <I18nextProvider i18n={i18n}>
+                <GqlMockedProvider<{
+                  ReportsSavingsFundTransfer: ReportsSavingsFundTransferQuery;
+                  ReportsStaffExpenses: ReportsStaffExpensesQuery;
+                }>
+                  mocks={emptyMock}
+                  onCall={mutationSpy}
+                >
+                  <MockStaffSavingFundProvider>
+                    <TransfersPage title={'Empty Transfer History'} />
+                  </MockStaffSavingFundProvider>
+                </GqlMockedProvider>
+              </I18nextProvider>
+            </TestRouter>
+          </LocalizationProvider>
+        </ThemeProvider>
+      </SnackbarProvider>,
+    );
 
-    const { getByText } = render(<Components />);
-
-    expect(getByText('Transfer History not available')).toBeInTheDocument();
-
-    mockData.history = originalHistory;
+    expect(
+      await findByText('Transfer History not available'),
+    ).toBeInTheDocument();
   });
 
   it('should open transfer modal when balance card transfer button is clicked', async () => {

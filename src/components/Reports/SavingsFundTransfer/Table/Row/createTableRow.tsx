@@ -8,7 +8,7 @@ import {
   Typography,
 } from '@mui/material';
 import { TFunction } from 'i18next';
-import { DateTime } from 'luxon';
+import { dateFormat } from 'src/lib/intlFormat';
 import { ScheduleEnum, StatusEnum, TransferHistory } from '../../mockData';
 import { RenderCell } from '../TransferHistoryTable';
 import { chipStyle, iconMap } from './createTableRowHelper';
@@ -20,12 +20,10 @@ export const populateTransferHistoryRows = (
   locale: string,
 ) => {
   const transfers: RenderCell = ({ row }) => {
-    const fromIconName = row.transferFrom || 'staffAccount';
-    const toIconName = row.transferTo || 'staffSavings';
-    const fromIcon =
-      iconMap[fromIconName.charAt(0).toUpperCase() + fromIconName.slice(1)];
-    const toIcon =
-      iconMap[toIconName.charAt(0).toUpperCase() + toIconName.slice(1)];
+    const fromIconName = row.transferFrom?.toLowerCase() || 'primary';
+    const toIconName = row.transferTo?.toLowerCase() || 'savings';
+    const fromIcon = iconMap[fromIconName];
+    const toIcon = iconMap[toIconName];
 
     if (fromIcon && toIcon) {
       return (
@@ -102,8 +100,7 @@ export const populateTransferHistoryRows = (
   const transferDate: RenderCell = ({ row }) => {
     return (
       <Typography variant="body2" noWrap>
-        {row.transferDate?.toLocaleString(DateTime.DATE_MED) ||
-          (t('N/A') as string)}
+        {row.transferDate ? dateFormat(row.transferDate, locale) : ''}
       </Typography>
     );
   };
@@ -111,18 +108,18 @@ export const populateTransferHistoryRows = (
   const endDate: RenderCell = ({ row }) => {
     return (
       <Typography variant="body2" noWrap>
-        {row.endDate?.toLocaleString(DateTime.DATE_MED) || (t('N/A') as string)}
+        {row.schedule === ScheduleEnum.Monthly && row.endDate
+          ? dateFormat(row.endDate, locale)
+          : ''}
       </Typography>
     );
   };
 
   const note: RenderCell = ({ row }) => {
     return (
-      <Tooltip title={t(row.note ? row.note : 'N/A') as string}>
-        <Typography variant="body2" noWrap>
-          {row.note}
-        </Typography>
-      </Tooltip>
+      <Typography variant="body2" noWrap>
+        {row.note}
+      </Typography>
     );
   };
 

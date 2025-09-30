@@ -1,12 +1,11 @@
 import React from 'react';
 import { Box, MenuItem, Select, SelectProps } from '@mui/material';
 import {
-  StaffAccount,
-  StaffConferenceSavings,
-  StaffSavings,
+  PrimaryAccount,
+  SavingsAccount,
 } from 'src/components/Reports/SavingsFundTransfer/Helper/TransferIcons';
 import { TransferDirectionEnum } from '../../Helper/TransferHistoryEnum';
-import { Fund, StaffSavingFundEnum } from '../../mockData';
+import { FundTypeEnum } from '../../mockData';
 
 type TransferModalSelectProps = Partial<SelectProps> & {
   type: TransferDirectionEnum;
@@ -30,12 +29,10 @@ export const TransferModalSelect: React.FC<TransferModalSelectProps> = ({
       {filteredFunds.map((fund) => (
         <MenuItem key={fund.accountId} value={fund.accountId}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            {fund.type === StaffSavingFundEnum.StaffAccount
-              ? StaffAccount
-              : fund.type === StaffSavingFundEnum.StaffSavings
-                ? StaffSavings
-                : fund.type === StaffSavingFundEnum.StaffConferenceSavings
-                  ? StaffConferenceSavings
+            {fund.fundType === FundTypeEnum.Primary
+              ? PrimaryAccount
+              : fund.fundType === FundTypeEnum.Savings
+                ? SavingsAccount
                   : null}{' '}
             <b>{fund.name}</b>
           </Box>
