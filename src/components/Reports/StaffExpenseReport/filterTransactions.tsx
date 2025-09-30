@@ -1,17 +1,25 @@
+import { TFunction } from 'i18next';
 import { DateTime } from 'luxon';
 import { Filters } from 'src/components/Reports/StaffExpenseReport/SettingsDialog/SettingsDialog';
 import { Transaction } from 'src/components/Reports/StaffExpenseReport/StaffExpenseReport';
-import { BreakdownByMonth, Fund } from 'src/graphql/types.generated';
+import {
+  BreakdownByMonth,
+  Fund,
+  StaffExpenseCategoryEnum,
+} from 'src/graphql/types.generated';
+import { getReadableCategory } from './Helpers/useReadableCategories';
 
 export const filterTransactions = (
-  fund: Fund,
+  fund: Pick<Fund, 'fundType' | 'total' | 'categories'>,
   targetTime: DateTime,
+  t: TFunction,
   filters?: Filters | null,
+  tableType?: 'income' | 'expenses',
 ): Transaction[] => {
   // Create a date range filter based on the provided filters or default to the target time
   const isInRange = createDateRangeFilter(filters, targetTime);
 
-  return (
+  const transactions =
     fund.categories?.flatMap((category) => {
       if (category.subcategories) {
         return category.subcategories.flatMap(
@@ -24,7 +32,11 @@ export const filterTransactions = (
                 mapTransactionToCategory(
                   transaction,
                   fund.fundType,
-                  `${category.category} - ${subcategory.subCategory}`,
+                  category.category,
+                  `${getReadableCategory(
+                    category.category,
+                    t,
+                  )} - ${getReadableCategory(subcategory.subCategory, t)}`,
                 ),
               ) ?? [],
         );
@@ -39,21 +51,32 @@ export const filterTransactions = (
               transaction,
               fund.fundType,
               category.category,
+              getReadableCategory(category.category, t),
             ),
           ) ?? []
       );
-    }) ?? []
-  );
+    }) ?? [];
+
+  // Filter by positive/negative values BEFORE grouping if tableType is specified
+  const filteredTransactions = tableType
+    ? transactions.filter((transaction) =>
+        tableType === 'income' ? transaction.total > 0 : transaction.total < 0,
+      )
+    : transactions;
+
+  return filteredTransactions;
 };
 
 const mapTransactionToCategory = (
   transaction: BreakdownByMonth,
   fundType: Fund['fundType'],
-  category: string,
+  categoryEnum: StaffExpenseCategoryEnum,
+  displayCategory: string,
 ): Transaction => ({
   ...transaction,
   fundType,
-  category,
+  category: categoryEnum,
+  displayCategory,
 });
 
 const createDateRangeFilter = (
