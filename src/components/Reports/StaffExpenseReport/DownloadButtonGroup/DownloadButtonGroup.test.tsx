@@ -1,6 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
+import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { Transaction } from '../StaffExpenseReport';
 import { DownloadButtonGroup } from './DownloadButtonGroup';
@@ -19,35 +20,47 @@ const mockTransactions: Transaction[] = [
   {
     fundType: 'Income',
     total: 100,
-    category: 'Contributions',
+    category: StaffExpenseCategoryEnum.Salary,
     month: '2025-01-01',
+    displayCategory: 'Salary',
   },
   {
     fundType: 'Expense',
     total: -50,
-    category: 'Contributions',
+    category: StaffExpenseCategoryEnum.Assessment,
     month: '2025-01-01',
+    displayCategory: 'Assessment',
   },
   {
     fundType: 'Income',
     total: 200,
-    category: 'Salary',
+    category: StaffExpenseCategoryEnum.Transfer,
     month: '2025-02-01',
+    displayCategory: 'Transfer',
   },
   {
     fundType: 'Expense',
     total: -30,
-    category: 'Benefits',
+    category: StaffExpenseCategoryEnum.Benefits,
     month: '2025-02-01',
+    displayCategory: 'Benefits',
   },
 ];
 
 const incomeOnlyTransactions: Transaction[] = [
-  { total: 100, category: 'Salary', month: '2025-01-01' } as Transaction,
+  {
+    total: 100,
+    category: StaffExpenseCategoryEnum.Salary,
+    month: '2025-01-01',
+  } as Transaction,
 ];
 
 const expenseOnlyTransactions: Transaction[] = [
-  { total: -50, category: 'Travel', month: '2025-01-01' } as Transaction,
+  {
+    total: -50,
+    category: StaffExpenseCategoryEnum.Donation,
+    month: '2025-01-01',
+  } as Transaction,
 ];
 
 describe('DownloadButtonGroup', () => {
@@ -123,8 +136,16 @@ describe('DownloadButtonGroup', () => {
 
   it('handles transactions with zero amounts correctly', () => {
     const transactionsWithZero = [
-      { total: 0, category: 'Misc', month: '2025-01-01' } as Transaction,
-      { total: 100, category: 'Salary', month: '2025-01-01' } as Transaction,
+      {
+        total: 0,
+        category: StaffExpenseCategoryEnum.Transfer,
+        month: '2025-01-01',
+      } as Transaction,
+      {
+        total: 100,
+        category: StaffExpenseCategoryEnum.Salary,
+        month: '2025-01-01',
+      } as Transaction,
     ];
 
     const { getByText } = render(
