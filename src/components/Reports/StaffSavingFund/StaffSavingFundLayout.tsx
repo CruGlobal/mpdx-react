@@ -8,6 +8,7 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import { NoStaffAccount } from '../Shared/NoStaffAccount';
 import { useStaffAccountQuery } from '../StaffAccount.generated';
 import {
   StaffSavingFundContext,
@@ -33,7 +34,7 @@ export const StaffSavingFundLayout: React.FC<StaffSavingFundLayoutProps> = ({
     StaffSavingFundContext,
   ) as StaffSavingFundType;
 
-  const { data: staffAccountData } = useStaffAccountQuery();
+  const { data: staffAccountData, loading } = useStaffAccountQuery();
 
   return (
     <>
@@ -57,8 +58,10 @@ export const StaffSavingFundLayout: React.FC<StaffSavingFundLayoutProps> = ({
             mainContent={children}
           />
         </StaffSavingFundPageWrapper>
-      ) : (
+      ) : loading ? (
         <Loading loading />
+      ) : (
+        <NoStaffAccount />
       )}
     </>
   );

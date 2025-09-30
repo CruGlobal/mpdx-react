@@ -7,11 +7,12 @@ import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
 import { MPGAIncomeExpensesReport } from 'src/components/Reports/MPGAIncomeExpensesReport/MPGAIncomeExpensesReport';
+import { NoStaffAccount } from 'src/components/Reports/Shared/NoStaffAccount';
+import { useStaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
 import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
 const MPGAReportPageWrapper = styled(Box)(({ theme }) => ({
@@ -21,7 +22,9 @@ const MPGAReportPageWrapper = styled(Box)(({ theme }) => ({
 const MPGAReportPage: React.FC = () => {
   const { appName } = useGetAppSettings();
   const { t } = useTranslation();
-  const accountListId = useAccountListId();
+
+  const { data: staffAccountData, loading } = useStaffAccountQuery();
+
   const [isNavListOpen, setIsNavListOpen] = useState<boolean>(false);
 
   const handleNavListToggle = () => {
@@ -35,7 +38,7 @@ const MPGAReportPage: React.FC = () => {
           'MPGA Monthly Report',
         )}`}</title>
       </Head>
-      {accountListId ? (
+      {staffAccountData?.staffAccount?.id ? (
         <MPGAReportPageWrapper>
           <SidePanelsLayout
             isScrollBox={false}
@@ -58,8 +61,10 @@ const MPGAReportPage: React.FC = () => {
             }
           />
         </MPGAReportPageWrapper>
-      ) : (
+      ) : loading ? (
         <Loading loading />
+      ) : (
+        <NoStaffAccount />
       )}
     </>
   );
