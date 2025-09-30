@@ -1,11 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import { Box, CircularProgress, Tooltip, Typography } from '@mui/material';
-import { styled } from '@mui/material/styles';
+import { styled, useTheme } from '@mui/material/styles';
 import { DataGrid, GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
+import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { TableType } from '../Helpers/StaffReportEnum';
 import { Transaction } from '../StaffExpenseReport';
 
@@ -58,7 +58,7 @@ export const createStaffReportRow = (
 ): StaffReportRow => ({
   id: index.toString(),
   date: DateTime.fromISO(transaction.month),
-  description: transaction.category,
+  description: transaction.displayCategory,
   amount: transaction.total,
 });
 
@@ -71,15 +71,16 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const theme = useTheme();
 
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(10);
 
   const staffReportRows = useMemo(() => {
     return transactions.map((data, index) => createStaffReportRow(data, index));
   }, [transactions]);
 
   const date: RenderCell = ({ row }) => {
-    return dateFormatShort(row.date, locale);
+    return dateFormat(row.date, locale);
   };
 
   const description: RenderCell = ({ row }) => (
@@ -159,7 +160,7 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
       <StyledGrid
         rows={staffReportRows || []}
         columns={columns}
-        getRowId={(row) => `${row.date}-${row.description}`}
+        getRowId={(row) => row.id}
         sortingOrder={['desc', 'asc']}
         sortModel={sortModel}
         onSortModelChange={(size) => setSortModel(size)}
@@ -174,14 +175,14 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
         {tableType === TableType.Income ? (
           <Typography fontWeight="bold">
             {t('Total Income:')}{' '}
-            <span style={{ color: 'green' }}>
+            <span style={{ color: theme.palette.success.main }}>
               {currencyFormat(transferTotal, 'USD', locale)}
             </span>
           </Typography>
         ) : (
           <Typography fontWeight="bold">
             {t('Total Expenses:')}{' '}
-            <span style={{ color: 'red' }}>
+            <span style={{ color: theme.palette.error.main }}>
               {currencyFormat(transferTotal, 'USD', locale)}
             </span>
           </Typography>

@@ -33,9 +33,6 @@ const TestComponent: React.FC<TestComponentProps> = ({
       }>
         mocks={{
           reportsStaffExpenses: {
-            accountId: 'account-1',
-            name: 'Test Account',
-            status: 'active',
             startBalance: 1000,
             endBalance: 2000,
             funds: isEmpty
@@ -85,15 +82,17 @@ const TestComponent: React.FC<TestComponentProps> = ({
           transactions={[
             {
               fundType: 'Primary',
-              category: 'Travel - Flights',
+              category: StaffExpenseCategoryEnum.AdditionalSalary,
               month: '2025-01-01',
               total: -100,
+              displayCategory: 'Additional Salary',
             },
             {
               fundType: 'Primary',
-              category: 'Travel - Hotels',
+              category: StaffExpenseCategoryEnum.Transfer,
               month: '2025-02-01',
               total: -50,
+              displayCategory: 'Transfer',
             },
           ]}
           tableType={TableType.Expenses}
@@ -113,13 +112,17 @@ describe('StaffReportTable', () => {
     expect(
       await findByRole('columnheader', { name: 'Date' }),
     ).toBeInTheDocument();
-    expect(getByRole('cell', { name: '1/1/2025' })).toBeInTheDocument();
+    expect(getByRole('cell', { name: 'Jan 1, 2025' })).toBeInTheDocument();
     expect(
       getByRole('columnheader', { name: 'Description' }),
     ).toBeInTheDocument();
-    expect(getByRole('cell', { name: 'Travel - Flights' })).toBeInTheDocument();
+    expect(
+      getByRole('cell', {
+        name: 'Additional Salary',
+      }),
+    ).toBeInTheDocument();
     expect(getByRole('columnheader', { name: 'Amount' })).toBeInTheDocument();
-    expect(getByRole('cell', { name: '-$100.00' })).toBeInTheDocument();
+    expect(getByRole('cell', { name: '-$100' })).toBeInTheDocument();
   });
 
   it('renders loading spinner when loading prop is true', async () => {
@@ -154,14 +157,14 @@ describe('StaffReportTable', () => {
     ).toBeInTheDocument();
 
     userEvent.click(await findByRole('columnheader', { name: 'Amount' }));
-    const ascCells = getAllByRole('cell', { name: /-\$\d+\.\d{2}/ });
-    expect(ascCells[0]).toHaveTextContent('-$50.00');
-    expect(ascCells[1]).toHaveTextContent('-$100.00');
+    const ascCells = getAllByRole('cell', { name: /-\$\d/ });
+    expect(ascCells[0]).toHaveTextContent('-$50');
+    expect(ascCells[1]).toHaveTextContent('-$100');
 
     userEvent.click(await findByRole('columnheader', { name: 'Amount' }));
-    const descCells = getAllByRole('cell', { name: /-\$\d+\.\d{2}/ });
-    expect(descCells[0]).toHaveTextContent('-$100.00');
-    expect(descCells[1]).toHaveTextContent('-$50.00');
+    const descCells = getAllByRole('cell', { name: /-\$\d/ });
+    expect(descCells[0]).toHaveTextContent('-$100');
+    expect(descCells[1]).toHaveTextContent('-$50');
   });
 
   it('updates the page size without reloading data', async () => {
