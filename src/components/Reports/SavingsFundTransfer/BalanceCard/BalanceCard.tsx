@@ -57,7 +57,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
   const handleTransferFrom = () => {
     handleOpenTransferModal({
       transfer: {
-        transferFrom: fund.id,
+        transferFrom: fund.fundType,
       },
     });
   };
@@ -65,7 +65,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
   const handleTransferTo = () => {
     handleOpenTransferModal({
       transfer: {
-        transferTo: fund.id,
+        transferTo: fund.fundType,
       },
     });
   };
