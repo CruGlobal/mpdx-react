@@ -5,7 +5,10 @@ import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
-import { FourteenMonthReport } from 'src/components/Reports/FourteenMonthReports/FourteenMonthReport';
+import {
+  FourteenMonthReport,
+  FourteenMonthReportCurrencyType,
+} from 'src/components/Reports/FourteenMonthReports/FourteenMonthReport';
 import {
   MultiPageMenu,
   NavTypeEnum,
@@ -15,7 +18,6 @@ import {
   ContactPanelProvider,
   useContactPanel,
 } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
-import { FourteenMonthReportCurrencyType } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
