@@ -37,6 +37,7 @@ import { AccountInfoBox } from './AccountInfoBox/AccountInfoBox';
 import { AccountInfoBoxSkeleton } from './AccountInfoBox/AccountInfoBoxSkeleton';
 import { BalanceCard } from './BalanceCard/BalanceCard';
 import { BalanceCardSkeleton } from './BalanceCard/BalanceCardSkeleton';
+import { CategoryBreakdownDialog } from './CategoryBreakdownDialog/CategoryBreakdownDialog';
 import { DownloadButtonGroup } from './DownloadButtonGroup/DownloadButtonGroup';
 import { useReportsStaffExpensesQuery } from './GetStaffExpense.generated';
 import { TableType } from './Helpers/StaffReportEnum';
@@ -107,6 +108,7 @@ export interface Transaction extends BreakdownByMonth {
   category: StaffExpenseCategoryEnum;
   subcategory?: StaffExpensesSubCategoryEnum;
   displayCategory: string;
+  subTransactions?: Transaction[];
 }
 
 interface StaffExpenseReportProps {
@@ -125,6 +127,8 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [filters, setFilters] = useState<Filters | null>(null);
   const [time, setTime] = useState(DateTime.now().startOf('month'));
+  const [selectedTransaction, setSelectedTransaction] =
+    useState<Transaction | null>(null);
 
   const isFilterDateSelected = useMemo(() => {
     return Boolean(
@@ -218,6 +222,20 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
 
     return newTransactions;
   }, [allFunds, time, t, filters]);
+
+  const categoryFilterOptions = useMemo(() => {
+    const categories: StaffExpenseCategoryEnum[] = [];
+
+    allFunds.forEach((fund) => {
+      fund.categories?.forEach((category) => {
+        if (!categories.includes(category.category)) {
+          categories.push(category.category);
+        }
+      });
+    });
+
+    return categories;
+  }, [allFunds]);
 
   const handleCardClick = (fundType: string) => {
     setSelectedFundType(fundType);
@@ -521,6 +539,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
             setFilters(newFilters ?? null);
             setIsSettingsOpen(false);
           }}
+          categoryFilterOptions={categoryFilterOptions}
         />
         <ScreenOnly mt={2}>
           <Container>
@@ -539,6 +558,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                   <EmptyReportTable title={t('No Income Transactions Found')} />
                 }
                 tableType={TableType.Income}
+                onTransactionSelect={setSelectedTransaction}
               />
             )}
           </Container>
@@ -562,6 +582,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                   />
                 }
                 tableType={TableType.Expenses}
+                onTransactionSelect={setSelectedTransaction}
               />
             )}
           </Container>
@@ -601,6 +622,10 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
           )}
         </PrintOnly>
       </Box>
+      <CategoryBreakdownDialog
+        transaction={selectedTransaction}
+        onClose={() => setSelectedTransaction(null)}
+      />
     </Box>
   );
 };

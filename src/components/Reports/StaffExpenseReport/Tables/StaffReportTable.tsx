@@ -1,5 +1,12 @@
 import React, { useMemo, useState } from 'react';
-import { Box, CircularProgress, Tooltip, Typography } from '@mui/material';
+import { Info } from '@mui/icons-material';
+import {
+  Box,
+  CircularProgress,
+  IconButton,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import { DataGrid, GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { DateTime } from 'luxon';
@@ -17,6 +24,7 @@ export interface StaffReportTableProps {
   transferTotal: number;
   emptyPlaceholder: React.ReactElement;
   loading?: boolean;
+  onTransactionSelect?: (transaction: Transaction) => void;
 }
 
 const StyledGrid = styled(DataGrid)(({ theme }) => ({
@@ -27,6 +35,8 @@ const StyledGrid = styled(DataGrid)(({ theme }) => ({
     overflow: 'hidden',
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
+    display: 'flex',
+    alignItems: 'center',
   },
 }));
 
@@ -50,9 +60,10 @@ export interface StaffReportRow {
   date: DateTime;
   description: string;
   amount: number;
+  icon: React.ReactElement;
 }
 
-export const createStaffReportRow = (
+const createStaffReportRow = (
   transaction: Transaction,
   index: number,
 ): StaffReportRow => ({
@@ -60,6 +71,7 @@ export const createStaffReportRow = (
   date: DateTime.fromISO(transaction.month),
   description: transaction.displayCategory,
   amount: transaction.total,
+  icon: <Info fontSize="small" />,
 });
 
 export const StaffReportTable: React.FC<StaffReportTableProps> = ({
@@ -68,12 +80,13 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
   transferTotal,
   emptyPlaceholder,
   loading,
+  onTransactionSelect,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const theme = useTheme();
 
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState<number>(10);
 
   const staffReportRows = useMemo(() => {
     return transactions.map((data, index) => createStaffReportRow(data, index));
@@ -83,13 +96,30 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
     return dateFormat(row.date, locale);
   };
 
-  const description: RenderCell = ({ row }) => (
-    <Tooltip title={t(row.description)}>
-      <Typography variant="body2" noWrap>
-        {row.description}
-      </Typography>
-    </Tooltip>
-  );
+  const description: RenderCell = ({ row }) => {
+    return (
+      <Tooltip title={t(row.description)}>
+        <Typography variant="body2" noWrap>
+          {row.description}
+        </Typography>
+      </Tooltip>
+    );
+  };
+
+  // For category breakdown filter info button
+  const categoryBreakdownButton: RenderCell = ({ row }) => {
+    const transaction = transactions[parseInt(row.id, 10)];
+    return onTransactionSelect && transaction.subTransactions ? (
+      <Tooltip title={t('View Category Breakdown')}>
+        <IconButton
+          size="small"
+          onClick={() => onTransactionSelect(transaction)}
+        >
+          <Info />
+        </IconButton>
+      </Tooltip>
+    ) : null;
+  };
 
   const amount: RenderCell = ({ row }) => {
     const isExpense = tableType === TableType.Expenses && row.amount < 0;
@@ -125,6 +155,17 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
       width: 150,
       renderCell: amount,
     },
+    ...(onTransactionSelect &&
+    transactions.some((transaction) => transaction.subTransactions)
+      ? [
+          {
+            field: 'details',
+            headerName: t('Details'),
+            width: 70,
+            renderCell: categoryBreakdownButton,
+          },
+        ]
+      : []),
   ];
 
   const [sortModel, setSortModel] = useState<GridSortModel>([
@@ -176,14 +217,20 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
           <Typography fontWeight="bold">
             {t('Total Income:')}{' '}
             <span style={{ color: theme.palette.success.main }}>
-              {currencyFormat(transferTotal, 'USD', locale)}
+              {transferTotal.toLocaleString(locale, {
+                style: 'currency',
+                currency: 'USD',
+              })}
             </span>
           </Typography>
         ) : (
           <Typography fontWeight="bold">
             {t('Total Expenses:')}{' '}
             <span style={{ color: theme.palette.error.main }}>
-              {currencyFormat(transferTotal, 'USD', locale)}
+              {transferTotal.toLocaleString(locale, {
+                style: 'currency',
+                currency: 'USD',
+              })}
             </span>
           </Typography>
         )}

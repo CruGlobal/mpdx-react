@@ -64,7 +64,65 @@ export const filterTransactions = (
       )
     : transactions;
 
-  return filteredTransactions;
+  // If no categories to group by, return filtered transactions
+  if (!filters?.categories || filters.categories.length === 0) {
+    return filteredTransactions;
+  }
+
+  // Group transactions by filter categories
+  return groupTransactionsByCategories(
+    filteredTransactions,
+    filters.categories,
+    t,
+  );
+};
+
+const groupTransactionsByCategories = (
+  transactions: Transaction[],
+  categoriesToGroup: StaffExpenseCategoryEnum[],
+  t: TFunction,
+): Transaction[] => {
+  const grouped: Record<string, Transaction[]> = {};
+  const ungrouped: Transaction[] = [];
+
+  // Separate transactions into grouped and ungrouped
+  transactions.forEach((transaction) => {
+    if (categoriesToGroup.includes(transaction.category)) {
+      const categoryKey = transaction.category;
+      if (!grouped[categoryKey]) {
+        grouped[categoryKey] = [];
+      }
+      grouped[categoryKey].push(transaction);
+    } else {
+      ungrouped.push(transaction);
+    }
+  });
+
+  // Create aggregated transactions for each grouped category
+  const aggregatedTransactions: Transaction[] = Object.entries(grouped).map(
+    ([categoryKey, categoryTransactions]) => {
+      const totalAmount = categoryTransactions.reduce(
+        (sum, transaction) => sum + transaction.total,
+        0,
+      );
+
+      const firstTransaction = categoryTransactions[0];
+      return {
+        ...firstTransaction,
+        total: totalAmount,
+        displayCategory: getReadableCategory(
+          categoryKey as StaffExpenseCategoryEnum,
+          t,
+        ),
+        // Keep the month from the first transaction for date display
+        month: firstTransaction.month,
+        subTransactions: categoryTransactions,
+      };
+    },
+  );
+
+  // Return aggregated transactions plus ungrouped ones
+  return [...aggregatedTransactions, ...ungrouped];
 };
 
 const mapTransactionToCategory = (

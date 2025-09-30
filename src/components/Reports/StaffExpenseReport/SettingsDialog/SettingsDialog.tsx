@@ -1,13 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   Box,
   Button,
-  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  FormControlLabel,
   FormGroup,
   MenuItem,
   TextField,
@@ -18,12 +16,15 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
+import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import { DateRange } from '../Helpers/StaffReportEnum';
+import { CategoryCheckbox } from './CategoryCheckbox/CategoryCheckbox';
 
 export interface SettingsDialogProps {
   isOpen: boolean;
   selectedFilters?: Filters;
+  categoryFilterOptions?: StaffExpenseCategoryEnum[];
   onClose: (filters?: Filters) => void;
 }
 
@@ -31,7 +32,7 @@ export interface Filters {
   selectedDateRange: DateRange | null;
   startDate?: DateTime | null;
   endDate?: DateTime | null;
-  categories?: string[] | null;
+  categories: StaffExpenseCategoryEnum[];
 }
 
 const validationSchema = yup.object({
@@ -102,6 +103,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
   isOpen,
   onClose,
   selectedFilters,
+  categoryFilterOptions,
 }) => {
   const { t } = useTranslation();
 
@@ -129,6 +131,21 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
     }
     onClose(finalValues);
   };
+
+  const sortedCategories = useMemo(() => {
+    const sorted = categoryFilterOptions
+      ? [...categoryFilterOptions].sort((a, b) =>
+          a.localeCompare(b, i18n.language, { sensitivity: 'base' }),
+        )
+      : [];
+    const otherIndex = sorted.indexOf(StaffExpenseCategoryEnum.Other);
+    if (otherIndex > -1) {
+      const otherCategory = sorted.splice(otherIndex, 1);
+      sorted.push(...otherCategory);
+    }
+
+    return sorted;
+  }, [categoryFilterOptions]);
 
   return (
     <Dialog
@@ -247,27 +264,19 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                 </Typography>
 
                 <FormGroup row>
-                  {[t('Benefits'), t('Contributions'), t('Salary')].map(
-                    (category) => (
-                      <FormControlLabel
-                        key={category}
-                        control={
-                          <Checkbox
-                            checked={values.categories.includes(category)}
-                            onChange={(e) => {
-                              const newCategories = e.target.checked
-                                ? [...values.categories, category]
-                                : values.categories.filter(
-                                    (c) => c !== category,
-                                  );
-                              setFieldValue('categories', newCategories);
-                            }}
-                          />
-                        }
-                        label={category}
-                      />
-                    ),
-                  )}
+                  {sortedCategories?.map((category) => (
+                    <CategoryCheckbox
+                      key={category}
+                      category={category}
+                      checked={values.categories.includes(category)}
+                      onChange={(e) => {
+                        const newCategories = e.target.checked
+                          ? [...values.categories, category]
+                          : values.categories.filter((c) => c !== category);
+                        setFieldValue('categories', newCategories);
+                      }}
+                    />
+                  ))}
                 </FormGroup>
               </DialogContent>
 
