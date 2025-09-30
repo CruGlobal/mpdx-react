@@ -555,14 +555,19 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                 {showAlert && (
                   <Alert severity="warning">
                     {t(
-                      "This amount will cause your account balance to exceed the deficit limit. If you proceed, your {{ fund }} account's projected balance will be {{ projected }} after the first scheduled payment is processed.",
+                      "This amount will cause your account balance to exceed the deficit limit. If you proceed, your {{ fund }} account's projected balance will be ",
                       {
                         fund: fund.fundType,
+                      },
+                    )}
+                    <strong>
+                      {t('{{ projected }}', {
                         projected: currencyFormat(projected, 'USD', locale, {
                           showTrailingZeros: true,
                         }),
-                      },
-                    )}
+                      })}
+                    </strong>
+                    {t(' after the first scheduled payment is processed.')}
                   </Alert>
                 )}
               </DialogContent>
