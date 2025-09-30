@@ -27,11 +27,12 @@ import {
 import {
   BreakdownByMonth,
   Fund,
-  SubCategory,
-  TransactionCategory,
+  StaffExpenseCategoryEnum,
+  StaffExpensesSubCategoryEnum,
 } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import theme from 'src/theme';
+import { useStaffAccountQuery } from '../StaffAccount.generated';
 import { AccountInfoBox } from './AccountInfoBox/AccountInfoBox';
 import { AccountInfoBoxSkeleton } from './AccountInfoBox/AccountInfoBoxSkeleton';
 import { BalanceCard } from './BalanceCard/BalanceCard';
@@ -103,8 +104,9 @@ const StyledCardsBox = styled(Box)({
 
 export interface Transaction extends BreakdownByMonth {
   fundType: string;
-  category: TransactionCategory['category'];
-  subcategory?: SubCategory['subCategory'];
+  category: StaffExpenseCategoryEnum;
+  subcategory?: StaffExpensesSubCategoryEnum;
+  displayCategory: string;
 }
 
 interface StaffExpenseReportProps {
@@ -187,15 +189,35 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   };
 
   const transactions = useMemo(() => {
-    const newTransactions: Record<string, Transaction[]> = {};
+    const newTransactions: Record<
+      string,
+      { income: Transaction[]; expenses: Transaction[] }
+    > = {};
 
     allFunds.forEach((fund) => {
-      const fundTransactions = filterTransactions(fund, time, filters);
-      newTransactions[fund.fundType] = fundTransactions;
+      const incomeTransactions = filterTransactions(
+        fund,
+        time,
+        t,
+        filters,
+        'income',
+      );
+      const expenseTransactions = filterTransactions(
+        fund,
+        time,
+        t,
+        filters,
+        'expenses',
+      );
+
+      newTransactions[fund.fundType] = {
+        income: incomeTransactions,
+        expenses: expenseTransactions,
+      };
     });
 
     return newTransactions;
-  }, [allFunds, time, filters]);
+  }, [allFunds, time, t, filters]);
 
   const handleCardClick = (fundType: string) => {
     setSelectedFundType(fundType);
@@ -206,12 +228,14 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   };
 
   const getPosOrNegTransactions = (tableType: TableType, fundType: string) => {
-    const allTransactions = transactions[fundType] ?? [];
-    return allTransactions.filter((transaction) =>
-      tableType === TableType.Income
-        ? transaction.total > 0
-        : transaction.total < 0,
-    );
+    const fundTransactions = transactions[fundType];
+    if (!fundTransactions) {
+      return [];
+    }
+
+    return tableType === TableType.Income
+      ? fundTransactions.income
+      : fundTransactions.expenses;
   };
 
   const getFilteredTotals = (tableType: TableType, fundType: string) => {
@@ -222,14 +246,16 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   const transferTotals = useMemo(() => {
     const totals: Record<string, { in: number; out: number }> = {};
 
-    for (const [fundType, allTransactions] of Object.entries(transactions)) {
+    for (const [fundType, fundTransactions] of Object.entries(transactions)) {
       totals[fundType] = {
-        in: allTransactions
-          .filter((transaction) => transaction.total > 0)
-          .reduce((sum, transaction) => sum + transaction.total, 0),
-        out: allTransactions
-          .filter((transaction) => transaction.total < 0)
-          .reduce((sum, transaction) => sum + transaction.total, 0),
+        in: fundTransactions.income.reduce(
+          (sum, transaction) => sum + transaction.total,
+          0,
+        ),
+        out: fundTransactions.expenses.reduce(
+          (sum, transaction) => sum + transaction.total,
+          0,
+        ),
       };
     }
 
@@ -278,7 +304,9 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                 <Typography variant="h4">{t('Income and Expenses')}</Typography>
               </ScreenOnly>
               {Object.values(transactions).some(
-                (allTransactions) => allTransactions.length > 0,
+                (fundTransactions) =>
+                  fundTransactions.income.length ||
+                  fundTransactions.expenses.length,
               ) ? (
                 <ScreenOnly
                   display="flex"
@@ -451,7 +479,10 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
       <ScreenOnly>
         <Container sx={{ gap: 1, display: 'flex', flexDirection: 'row' }}>
           <DownloadButtonGroup
-            transactions={transactions[selectedFundType ?? ''] ?? []}
+            transactions={[
+              ...(transactions[selectedFundType ?? '']?.income ?? []),
+              ...(transactions[selectedFundType ?? '']?.expenses ?? []),
+            ]}
           />
           <Box display={'flex'} flexGrow={1} justifyContent="flex-end" gap={1}>
             {isFilterDateSelected ? (

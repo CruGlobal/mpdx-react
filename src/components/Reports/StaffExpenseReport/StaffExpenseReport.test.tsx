@@ -7,7 +7,13 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  StaffAccountStatusEnum,
+  StaffExpenseCategoryEnum,
+  StaffExpensesSubCategoryEnum,
+} from 'src/graphql/types.generated';
 import theme from 'src/theme';
+import { StaffAccountQuery } from '../StaffAccount.generated';
 import { ReportsStaffExpensesQuery } from './GetStaffExpense.generated';
 import { StaffExpenseReport } from './StaffExpenseReport';
 
@@ -23,7 +29,6 @@ const push = jest.fn();
 const title = 'Report title';
 
 const router = {
-  query: { accountListId: 'account-1' },
   isReady: true,
   push,
 };
@@ -38,7 +43,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
         routerMonth
           ? {
               ...router,
-              query: { ...router.query, month: '2025-01-01' },
+              query: { month: '2025-01-01' },
             }
           : router
       }
@@ -48,49 +53,68 @@ const TestComponent: React.FC<TestComponentProps> = ({
           <TestRouter router={router}>
             <GqlMockedProvider<{
               ReportsStaffExpenses: ReportsStaffExpensesQuery;
+              StaffAccount: StaffAccountQuery;
             }>
               mocks={{
                 ReportsStaffExpenses: {
                   reportsStaffExpenses: {
-                    accountId: 'account-1',
-                    name: 'Test Account',
-                    status: 'active',
                     startBalance: 1000,
                     endBalance: 2000,
                     funds: isEmpty
                       ? []
                       : [
                           {
+                            __typename: 'Fund',
                             fundType: 'Primary',
                             total: -500,
                             categories: [
                               {
-                                category: 'Travel',
+                                category: StaffExpenseCategoryEnum.Assessment,
                                 total: -300,
                                 averagePerMonth: -100,
                                 subcategories: [
                                   {
-                                    subCategory: 'Flights',
+                                    subCategory:
+                                      StaffExpensesSubCategoryEnum.BenefitsOther,
                                     total: -200,
                                     averagePerMonth: -50,
                                     breakdownByMonth: [
-                                      { month: '2025-01-01', total: -100 },
-                                      { month: '2025-02-01', total: -100 },
+                                      {
+                                        month: '2025-01-01',
+                                        total: -100,
+                                      },
+                                      {
+                                        month: '2025-02-01',
+                                        total: -100,
+                                      },
                                     ],
                                   },
                                   {
-                                    subCategory: 'Hotels',
+                                    subCategory:
+                                      StaffExpensesSubCategoryEnum.CreditCardFee,
                                     total: -100,
                                     averagePerMonth: -50,
                                     breakdownByMonth: [
-                                      { month: '2025-01-01', total: -50 },
-                                      { month: '2025-02-01', total: -50 },
+                                      {
+                                        month: '2025-01-01',
+                                        total: -50,
+                                      },
+                                      {
+                                        month: '2025-02-01',
+                                        total: -50,
+                                      },
                                     ],
                                   },
                                 ],
                                 breakdownByMonth: [
-                                  { month: '2025-01-01', total: -150 },
-                                  { month: '2025-02-01', total: -150 },
+                                  {
+                                    month: '2025-01-01',
+                                    total: -150,
+                                  },
+                                  {
+                                    month: '2025-02-01',
+                                    total: -150,
+                                  },
                                 ],
                               },
                             ],
@@ -98,11 +122,17 @@ const TestComponent: React.FC<TestComponentProps> = ({
                         ],
                   },
                 },
+                StaffAccount: {
+                  staffAccount: {
+                    id: '1000000001',
+                    name: 'Test Account',
+                    status: StaffAccountStatusEnum.Active,
+                  },
+                },
               }}
               onCall={mutationSpy}
             >
               <StaffExpenseReport
-                accountId={'account-1'}
                 isNavListOpen={true}
                 onNavListToggle={onNavListToggle}
                 title={title}
@@ -116,6 +146,14 @@ const TestComponent: React.FC<TestComponentProps> = ({
 );
 
 describe('StaffExpenseReport', () => {
+  it('renders with data', async () => {
+    const { getByRole, findByText } = render(<TestComponent isEmpty={false} />);
+
+    expect(getByRole('heading', { name: 'Report title' })).toBeInTheDocument();
+    expect(await findByText('Test Account')).toBeInTheDocument();
+    expect(await findByText('1000000001')).toBeInTheDocument();
+  });
+
   it('initializes with month from query', () => {
     const { getByText } = render(<TestComponent />);
 
