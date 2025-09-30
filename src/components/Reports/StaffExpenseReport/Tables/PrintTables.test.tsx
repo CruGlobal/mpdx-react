@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { ReportsStaffExpensesQuery } from '../GetStaffExpense.generated';
 import { TableType } from '../Helpers/StaffReportEnum';
@@ -58,7 +59,8 @@ const TestComponent: React.FC<TestComponentProps> = ({ tableProps }) => (
           {
             fundType: 'Primary',
             month: '2025-01-01',
-            category: 'Travel - Flights',
+            category: StaffExpenseCategoryEnum.Transfer,
+            displayCategory: 'Transfer - Other',
             total: -100,
           },
         ]}
@@ -81,7 +83,7 @@ describe('PrintTables', () => {
     expect(
       await findByRole('columnheader', { name: 'Description' }),
     ).toBeInTheDocument();
-    expect(getByRole('cell', { name: 'Travel - Flights' })).toBeInTheDocument();
+    expect(getByRole('cell', { name: 'Transfer - Other' })).toBeInTheDocument();
     expect(
       await findByRole('columnheader', { name: 'Amount' }),
     ).toBeInTheDocument();

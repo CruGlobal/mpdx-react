@@ -48,7 +48,7 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
               {transactions.map((row) => (
                 <TableRow key={`${row.month}-${row.category}`}>
                   <TableCell>{row.month}</TableCell>
-                  <TableCell>{row.category}</TableCell>
+                  <TableCell>{row.displayCategory}</TableCell>
                   <TableCell>
                     {currencyFormat(row.total, 'USD', locale)}
                   </TableCell>
