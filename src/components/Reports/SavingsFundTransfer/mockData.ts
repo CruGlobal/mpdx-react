@@ -45,6 +45,7 @@ export interface SubCategory {
   id: string;
   name: string;
 }
+
 export interface RecurringTransfer {
   id?: string | null;
   recurringStart?: DateTime | null;

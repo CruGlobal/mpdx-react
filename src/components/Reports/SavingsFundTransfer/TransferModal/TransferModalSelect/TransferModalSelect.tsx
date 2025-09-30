@@ -3,10 +3,8 @@ import { MenuItem, Select, SelectProps } from '@mui/material';
 import { FundFieldsFragment } from '../../ReportsSavingsFund.generated';
 import { FundInfoDisplay } from '../Helper/FundInfoDisplay';
 
-type SelectFunds = Pick<FundFieldsFragment, 'id' | 'fundType' | 'balance'>;
-
 type TransferModalSelectProps = Partial<SelectProps> & {
-  funds: SelectFunds[];
+  funds: FundFieldsFragment[];
   notSelected?: string;
   disabled?: boolean;
 };

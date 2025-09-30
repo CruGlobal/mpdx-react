@@ -16,6 +16,7 @@ import {
   GoalCalculatorStepEnum,
 } from '../GoalCalculatorHelper';
 import { useGoalCalculationQuery } from './GoalCalculation.generated';
+import { calculatePercentage } from './calculatePercentage';
 import { GoalCalculatorStep, useSteps } from './useSteps';
 
 export type GoalCalculatorType = {
@@ -42,6 +43,7 @@ export type GoalCalculatorType = {
   isMutating: boolean;
   /** Call with the mutation promise to track the start and end of mutations */
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
+  percentComplete: number;
 };
 
 const GoalCalculatorContext = createContext<GoalCalculatorType | null>(null);
@@ -75,6 +77,10 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   });
 
   const steps = useSteps();
+  const percentComplete = useMemo(
+    () => calculatePercentage(goalCalculationResult.data?.goalCalculation),
+    [goalCalculationResult.data],
+  );
   const [stepIndex, setStepIndex] = useState(0);
   const [selectedReport, setSelectedReport] =
     useState<GoalCalculatorReportEnum>(GoalCalculatorReportEnum.MpdGoal);
@@ -145,6 +151,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       goalCalculationResult,
       isMutating,
       trackMutation,
+      percentComplete,
     }),
     [
       steps,
@@ -162,6 +169,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       goalCalculationResult,
       isMutating,
       trackMutation,
+      percentComplete,
     ],
   );
 

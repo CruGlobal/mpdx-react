@@ -352,7 +352,7 @@ describe('TransfersPage', () => {
 
     expect(
       within(fromAccount).getByText(
-        `${mock['ReportsStaffExpenses']['reportsStaffExpenses']['funds'][1].fundType} Account`,
+        `${mock.ReportsStaffExpenses.reportsStaffExpenses.funds[0].fundType} Account`,
         {
           selector: 'b',
         },
@@ -360,7 +360,7 @@ describe('TransfersPage', () => {
     ).toBeInTheDocument();
     expect(
       within(toAccount).queryByText(
-        `${mock['ReportsStaffExpenses']['reportsStaffExpenses']['funds'][1].fundType} Account`,
+        `${mock.ReportsStaffExpenses.reportsStaffExpenses.funds[0].fundType} Account`,
         {
           selector: 'b',
         },

@@ -24,6 +24,14 @@ const mockTransfers = [
   },
 ];
 
+const mockDefault = [
+  {
+    ...mockData[1],
+    transferFrom: 'Conference',
+    transferTo: 'Primary',
+  },
+];
+
 describe('PrintTable', () => {
   it('renders the table with transfer data', async () => {
     const { getByRole, findByRole } = render(
@@ -71,6 +79,22 @@ describe('PrintTable', () => {
       await findByRole('columnheader', { name: 'Note' }),
     ).toBeInTheDocument();
     expect(getByRole('cell', { name: 'Test transfer' })).toBeInTheDocument();
+  });
+
+  it('renders default fund when no transfer provided', async () => {
+    const { findByRole } = render(
+      <ThemeProvider theme={theme}>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <GqlMockedProvider onCall={mutationSpy}>
+            <PrintTable transfers={mockDefault} type={TableTypeEnum.History} />
+          </GqlMockedProvider>
+        </LocalizationProvider>
+      </ThemeProvider>,
+    );
+
+    expect(
+      await findByRole('cell', { name: 'Conference Savings Balance' }),
+    ).toBeInTheDocument();
   });
 
   it('renders empty table message when no transfers are found', async () => {

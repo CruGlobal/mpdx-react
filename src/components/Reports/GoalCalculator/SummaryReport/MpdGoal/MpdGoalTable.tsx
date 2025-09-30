@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
-import { useGoalLineItems } from './useGoalLineItems';
+import { useGoalLineItems } from '../../Shared/useGoalLineItems';
 import type { Goal } from '../../Shared/useReportExpenses/useReportExpenses';
 
 interface MpdGoalRow {

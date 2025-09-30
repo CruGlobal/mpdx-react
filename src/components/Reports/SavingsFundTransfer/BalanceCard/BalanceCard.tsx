@@ -21,13 +21,8 @@ import { useUpdatedAtContext } from '../UpdatedAtContext/UpdateAtContext';
 import { FundTypeEnum, TransferModalData } from '../mockData';
 import { ScreenOnly } from '../styledComponents/DisplayStyling';
 
-type CardFunds = Pick<
-  FundFieldsFragment,
-  'id' | 'fundType' | 'balance' | 'deficitLimit'
->;
-
 export interface BalanceCardProps {
-  fund: CardFunds;
+  fund: FundFieldsFragment;
   handleOpenTransferModal: ({ type, transfer }: TransferModalData) => void;
   isSelected?: boolean;
   loading?: boolean;
@@ -62,7 +57,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
   const handleTransferFrom = () => {
     handleOpenTransferModal({
       transfer: {
-        transferFrom: fund.fundType,
+        transferFrom: fund.id,
       },
     });
   };
@@ -70,7 +65,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
   const handleTransferTo = () => {
     handleOpenTransferModal({
       transfer: {
-        transferTo: fund.fundType,
+        transferTo: fund.id,
       },
     });
   };

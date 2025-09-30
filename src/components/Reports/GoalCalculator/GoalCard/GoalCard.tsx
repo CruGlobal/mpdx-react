@@ -22,6 +22,7 @@ import {
   useDeleteGoalCalculationMutation,
   useUpdateGoalCalculationMutation,
 } from '../GoalsList/GoalCalculations.generated';
+import { useGoalTotal } from './useGoalTotal';
 
 const StyledCard = styled(Card)({
   minWidth: 350,
@@ -90,6 +91,8 @@ export const GoalCard: React.FC<GoalCardProps> = ({
   const [deleteGoalCalculation] = useDeleteGoalCalculationMutation();
   const [deleting, setDeleting] = useState(false);
 
+  const overallTotal = useGoalTotal(goal);
+
   const handleStarClick = async () => {
     await updateGoalCalculation({
       variables: {
@@ -144,8 +147,9 @@ export const GoalCard: React.FC<GoalCardProps> = ({
         cancelLabel={t('Cancel')}
         message={
           <Trans t={t}>
-            Are you sure you want to delete <strong>{goal.createdAt}</strong>?
-            Deleting this goal will remove it permanently.
+            Are you sure you want to delete{' '}
+            <strong>{goal.name ?? t('Unnamed Goal')}</strong>? Deleting this
+            goal will remove it permanently.
           </Trans>
         }
         confirmButtonProps={{
@@ -158,8 +162,8 @@ export const GoalCard: React.FC<GoalCardProps> = ({
       <StyledCard>
         <StyledHeaderBox>
           <StyledTitleBox>
-            <Typography data-testid="goal-title" variant="h6">
-              {goal.createdAt}
+            <Typography data-testid="goal-name" variant="h6">
+              {goal.name ?? t('Unnamed Goal')}
             </Typography>
           </StyledTitleBox>
           {renderStar && (
@@ -188,7 +192,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({
                 {t('Goal Amount')}
               </Typography>
               <Typography data-testid="goal-amount-value" variant="body1">
-                {currencyFormat(0, 'USD', locale)}
+                {currencyFormat(overallTotal, 'USD', locale)}
               </Typography>
             </StyledInfoRow>
 
@@ -199,7 +203,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({
                 {t('Last Updated')}
               </Typography>
               <Typography data-testid="date-value" variant="body1">
-                {dateFormat(DateTime.fromISO(goal.createdAt), locale, {
+                {dateFormat(DateTime.fromISO(goal.updatedAt), locale, {
                   fullMonth: true,
                 })}
               </Typography>

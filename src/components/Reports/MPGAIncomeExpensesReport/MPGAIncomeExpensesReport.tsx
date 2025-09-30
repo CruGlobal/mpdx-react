@@ -24,8 +24,12 @@ import {
 } from '../styledComponents';
 import { PrintOnlyReport } from './DisplayModes/PrintOnlyReport';
 import { ScreenOnlyReport } from './DisplayModes/ScreenOnlyReport';
-import { FundTypes } from './Helper/MPGAReportEnum';
+import { FundTypes, Funds } from './Helper/MPGAReportEnum';
 import { convertMonths } from './Helper/convertMonths';
+import {
+  getLocalizedCategory,
+  getLocalizedSubcategory,
+} from './Helper/transformEnums';
 import { useReportsStaffExpensesQuery } from './ReportsStaffExpenses.generated';
 import { TotalsProvider } from './TotalsContext/TotalsContext';
 import { AllData } from './mockData';
@@ -63,7 +67,29 @@ export const MPGAIncomeExpensesReport: React.FC<
     },
   });
 
-  const { incomeData, expenseData } = useFilteredFunds(reportData);
+  const transformedData: Funds[] = useMemo(
+    () =>
+      (reportData?.reportsStaffExpenses?.funds ?? []).map((fund) => ({
+        ...fund,
+        categories: (fund.categories ?? []).map((category) => ({
+          ...category,
+          category: getLocalizedCategory(category.category),
+          breakdownByMonth: category.breakdownByMonth.map((month) => ({
+            ...month,
+          })),
+          subcategories: (category.subcategories ?? []).map((subcategory) => ({
+            ...subcategory,
+            subCategory: getLocalizedSubcategory(subcategory.subCategory),
+            breakdownByMonth: subcategory.breakdownByMonth.map((month) => ({
+              ...month,
+            })),
+          })),
+        })),
+      })),
+    [reportData],
+  );
+
+  const { incomeData, expenseData } = useFilteredFunds(transformedData);
 
   const allData: AllData = useMemo(() => {
     return {
