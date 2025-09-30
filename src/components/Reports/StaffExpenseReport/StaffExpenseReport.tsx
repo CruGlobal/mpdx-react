@@ -108,7 +108,6 @@ export interface Transaction extends BreakdownByMonth {
 }
 
 interface StaffExpenseReportProps {
-  accountId: string;
   isNavListOpen: boolean;
   onNavListToggle: () => void;
   title: string;
@@ -134,7 +133,6 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
 
   const { data, loading } = useReportsStaffExpensesQuery({
     variables: {
-      accountId: '1000000001',
       startMonth:
         filters?.startDate?.startOf('month').toISODate() ??
         filters?.endDate?.startOf('month').toISODate() ??
@@ -144,6 +142,10 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
         time.endOf('month').toISODate(),
     },
   });
+
+  const { data: accountData } = useStaffAccountQuery();
+  const { id, name } = accountData?.staffAccount ?? {};
+
   const handlePrint = () => window.print();
 
   const timeTitle = time.toJSDate().toLocaleDateString(locale, {
@@ -300,10 +302,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
             {loading ? (
               <AccountInfoBoxSkeleton />
             ) : (
-              <AccountInfoBox
-                name={data?.reportsStaffExpenses.name}
-                accountId={data?.reportsStaffExpenses.accountId}
-              />
+              <AccountInfoBox name={name} accountId={id} />
             )}
             <ScreenOnly>
               <Box

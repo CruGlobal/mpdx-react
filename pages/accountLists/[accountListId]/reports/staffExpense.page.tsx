@@ -54,7 +54,6 @@ const StaffExpenseReportPage: React.FC = () => {
             leftWidth="290px"
             mainContent={
               <StaffExpenseReport
-                accountId={accountListId}
                 isNavListOpen={isNavListOpen}
                 onNavListToggle={handleNavListToggle}
                 title={t('Staff Expense Report')}
