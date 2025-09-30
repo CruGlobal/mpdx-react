@@ -1,16 +1,17 @@
 import React from 'react';
 import { Box, MenuItem, Select, SelectProps } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import {
-  StaffAccount,
-  StaffConferenceSavings,
-  StaffSavings,
+  PrimaryAccount,
+  SavingsAccount,
 } from 'src/components/Reports/SavingsFundTransfer/Helper/TransferIcons';
 import { TransferDirectionEnum } from '../../Helper/TransferHistoryEnum';
-import { Fund, StaffSavingFundEnum } from '../../mockData';
+import { FundFieldsFragment } from '../../ReportsSavingsFund.generated';
+import { FundTypeEnum } from '../../mockData';
 
 type TransferModalSelectProps = Partial<SelectProps> & {
   type: TransferDirectionEnum;
-  funds: Fund[];
+  funds: FundFieldsFragment[];
   selectedTransferFrom?: string;
 };
 
@@ -20,24 +21,24 @@ export const TransferModalSelect: React.FC<TransferModalSelectProps> = ({
   funds,
   ...props
 }) => {
+  const { t } = useTranslation();
+
   const filteredFunds =
     type === TransferDirectionEnum.From
       ? funds
-      : funds.filter((fund) => fund.type !== selectedTransferFrom);
+      : funds.filter((fund) => fund.id !== selectedTransferFrom);
 
   return (
     <Select {...props}>
       {filteredFunds.map((fund) => (
-        <MenuItem key={fund.accountId} value={fund.accountId}>
+        <MenuItem key={fund.id} value={fund.id}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            {fund.type === StaffSavingFundEnum.StaffAccount
-              ? StaffAccount
-              : fund.type === StaffSavingFundEnum.StaffSavings
-                ? StaffSavings
-                : fund.type === StaffSavingFundEnum.StaffConferenceSavings
-                  ? StaffConferenceSavings
-                  : null}{' '}
-            <b>{fund.name}</b>
+            {fund.fundType === FundTypeEnum.Primary
+              ? PrimaryAccount
+              : fund.fundType === FundTypeEnum.Savings
+                ? SavingsAccount
+                : null}{' '}
+            <b>{t(`${fund.fundType} Account`)}</b>
           </Box>
         </MenuItem>
       ))}

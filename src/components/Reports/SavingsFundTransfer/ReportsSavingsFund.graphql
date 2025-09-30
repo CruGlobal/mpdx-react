@@ -1,0 +1,47 @@
+query ReportsSavingsFundTransfer(
+  $transactedAtStart: ISO8601Date
+  $transactedAtEnd: ISO8601Date
+  $subCategoryName: [String!]
+  $fundTypeName: [String!]
+) {
+  reportsSavingsFundTransfer(
+    transactedAtStart: $transactedAtStart
+    transactedAtEnd: $transactedAtEnd
+    subCategoryName: $subCategoryName
+    fundTypeName: $fundTypeName
+  ) {
+    id
+    amount
+    description
+    transactedAt
+    subCategory {
+      id
+      name
+    }
+    transfer {
+      sourceFundTypeName
+      destinationFundTypeName
+    }
+    recurringTransfer {
+      id
+      recurringStart
+      recurringEnd
+      active
+    }
+  }
+}
+
+query ReportsStaffExpenses($fundTypes: [String!]) {
+  reportsStaffExpenses(fundTypes: $fundTypes) {
+    funds {
+      ...FundFields
+    }
+  }
+}
+
+fragment FundFields on Fund {
+  id
+  fundType
+  balance
+  deficitLimit
+}

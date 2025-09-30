@@ -8,7 +8,8 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
-import { Fund, StaffSavingFundEnum } from '../mockData';
+import { FundFieldsFragment } from '../ReportsSavingsFund.generated';
+import { FundTypeEnum } from '../mockData';
 import { BalanceCard } from './BalanceCard';
 
 const accountListId = 'abc';
@@ -20,16 +21,15 @@ const router = {
 const mutationSpy = jest.fn();
 const mockHandleOpenTransferModal = jest.fn();
 
-const defaultFund: Fund = {
-  accountId: crypto.randomUUID(),
-  type: StaffSavingFundEnum.StaffAccount,
-  name: 'Staff Account',
+const defaultFund = {
+  id: crypto.randomUUID(),
+  fundType: 'Primary',
   balance: 15000,
-  pending: 17500,
+  deficitLimit: 0,
 };
 
 interface ComponentsProps {
-  fund?: Fund;
+  fund?: FundFieldsFragment;
   isSelected?: boolean;
 }
 
@@ -62,25 +62,24 @@ describe('BalanceCard', () => {
   it('should render the card with all required elements', () => {
     const { getByText, getByRole } = render(<Components />);
 
-    expect(getByText('Staff Account Balance')).toBeInTheDocument();
+    expect(getByText('Primary Account Balance')).toBeInTheDocument();
     expect(getByText('$15,000.00')).toBeInTheDocument();
-    expect(getByText('$17,500.00 (pending)')).toBeInTheDocument();
     expect(getByRole('button', { name: /transfer from/i })).toBeInTheDocument();
     expect(getByRole('button', { name: /transfer to/i })).toBeInTheDocument();
   });
 
   it('should display title correctly', () => {
-    const name = 'Custom Title';
+    const fundType = 'Custom Title';
     const { getByText } = render(
       <Components
         fund={{
           ...defaultFund,
-          name,
+          fundType,
         }}
       />,
     );
 
-    expect(getByText(`${name} Balance`)).toBeInTheDocument();
+    expect(getByText(`${fundType} Account Balance`)).toBeInTheDocument();
   });
 
   describe('Icons', () => {
@@ -89,7 +88,7 @@ describe('BalanceCard', () => {
         <Components
           fund={{
             ...defaultFund,
-            type: StaffSavingFundEnum.StaffSavings,
+            fundType: FundTypeEnum.Savings,
           }}
         />,
       );
@@ -102,7 +101,7 @@ describe('BalanceCard', () => {
         <Components
           fund={{
             ...defaultFund,
-            type: StaffSavingFundEnum.StaffConferenceSavings,
+            fundType: 'Conference Savings',
           }}
         />,
       );
@@ -115,7 +114,7 @@ describe('BalanceCard', () => {
         <Components
           fund={{
             ...defaultFund,
-            type: StaffSavingFundEnum.StaffAccount,
+            fundType: FundTypeEnum.Primary,
           }}
         />,
       );
@@ -125,49 +124,43 @@ describe('BalanceCard', () => {
   });
 
   describe('Handle formatting', () => {
-    it('should format balance and pending amounts correctly', () => {
+    it('should format balance amount correctly', () => {
       const { getByText } = render(
         <Components
           fund={{
             ...defaultFund,
             balance: 1234567.89,
-            pending: 123.45,
           }}
         />,
       );
 
       expect(getByText('$1,234,567.89')).toBeInTheDocument();
-      expect(getByText('$123.45 (pending)')).toBeInTheDocument();
     });
 
-    it('should handle zero balance and pending amounts', () => {
-      const { getByText, queryByText } = render(
+    it('should handle zero balance amount', () => {
+      const { getByText } = render(
         <Components
           fund={{
             ...defaultFund,
             balance: 0,
-            pending: 0,
           }}
         />,
       );
 
       expect(getByText('$0.00')).toBeInTheDocument();
-      expect(queryByText(/pending/i)).not.toBeInTheDocument();
     });
 
-    it('should handle negative balance amounts', () => {
+    it('should handle negative balance amount', () => {
       const { getByText } = render(
         <Components
           fund={{
             ...defaultFund,
             balance: -500,
-            pending: -100,
           }}
         />,
       );
 
       expect(getByText('-$500.00')).toBeInTheDocument();
-      expect(getByText('-$100.00 (pending)')).toBeInTheDocument();
     });
 
     it('should handle decimal precision correctly', () => {
@@ -176,13 +169,11 @@ describe('BalanceCard', () => {
           fund={{
             ...defaultFund,
             balance: 1234.567,
-            pending: 98.76,
           }}
         />,
       );
 
       expect(getByText('$1,234.57')).toBeInTheDocument();
-      expect(getByText('$98.76 (pending)')).toBeInTheDocument();
     });
   });
 

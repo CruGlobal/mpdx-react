@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import PrintIcon from '@mui/icons-material/Print';
 import {
   Box,
@@ -9,11 +9,13 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
+import { useFilteredTransfers } from 'src/hooks/useFilteredTransfers';
 import theme from 'src/theme';
 import { useStaffAccountQuery } from '../../StaffAccount.generated';
 import {
@@ -21,12 +23,23 @@ import {
   StaffSavingFundType,
 } from '../../StaffSavingFund/StaffSavingFundContext';
 import { BalanceCard } from '../BalanceCard/BalanceCard';
+import { getStatusLabel } from '../Helper/getStatus';
+import {
+  useReportsSavingsFundTransferQuery,
+  useReportsStaffExpensesQuery,
+} from '../ReportsSavingsFund.generated';
 import { EmptyTable } from '../Table/EmptyTable';
 import { PrintTable } from '../Table/PrintTable';
 import { TransferHistoryTable } from '../Table/TransferHistoryTable';
 import { DynamicTransferModal } from '../TransferModal/DynamicTransferModal';
 import { TransferModalData } from '../TransferModal/TransferModal';
-import { mockData } from '../mockData';
+import {
+  FundTypeEnum,
+  ScheduleEnum,
+  StatusEnum,
+  Transactions,
+  TransferHistory,
+} from '../mockData';
 import { PrintOnly, ScreenOnly } from '../styledComponents/DisplayStyling';
 
 const StyledPrintButton = styled(Button)({
@@ -55,6 +68,64 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
   ) as StaffSavingFundType;
 
   const { data: staffAccountData } = useStaffAccountQuery();
+
+  const { data: reportData, loading: reportLoading } =
+    useReportsSavingsFundTransferQuery();
+  const { data: fundsData, loading: fundsLoading } =
+    useReportsStaffExpensesQuery({
+      variables: {
+        fundTypes: [FundTypeEnum.Primary, FundTypeEnum.Savings],
+      },
+    });
+
+  const funds = useMemo(
+    () => fundsData?.reportsStaffExpenses?.funds ?? [],
+    [fundsData],
+  );
+
+  const transactions: Transactions[] = useMemo(
+    () =>
+      (reportData?.reportsSavingsFundTransfer ?? []).map((tx) => {
+        return {
+          ...tx,
+          transactedAt: DateTime.fromISO(tx.transactedAt),
+          recurringTransfer: tx.recurringTransfer
+            ? {
+                ...tx.recurringTransfer,
+                recurringStart: tx.recurringTransfer.recurringStart
+                  ? DateTime.fromISO(tx.recurringTransfer.recurringStart)
+                  : null,
+                recurringEnd: tx.recurringTransfer.recurringEnd
+                  ? DateTime.fromISO(tx.recurringTransfer.recurringEnd)
+                  : null,
+              }
+            : null,
+        };
+      }),
+    [reportData],
+  );
+
+  const filteredTransactions = useFilteredTransfers(transactions);
+
+  const transferHistory: TransferHistory[] = filteredTransactions.map((tx) => {
+    const isRecurring = !!tx.recurringTransfer?.id;
+    const status = getStatusLabel(tx);
+
+    return {
+      id: tx.id || crypto.randomUUID(),
+      transferFrom: tx.transfer.sourceFundTypeName || '',
+      transferTo: tx.transfer.destinationFundTypeName || '',
+      amount: tx.amount || 0,
+      schedule: isRecurring ? ScheduleEnum.Monthly : ScheduleEnum.OneTime,
+      status: status || undefined,
+      transferDate: isRecurring
+        ? tx.recurringTransfer?.recurringStart || null
+        : tx.transactedAt || null,
+      endDate: tx.recurringTransfer?.recurringEnd || null,
+      note: tx.subCategory.name || '',
+      actions: status !== StatusEnum.Complete ? 'edit-delete' : '',
+    };
+  });
 
   const handlePrint = () => window.print();
 
@@ -136,17 +207,18 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                 flexDirection: { xs: 'column', sm: 'row' },
               }}
             >
-              {mockData.funds.map((fund) => (
+              {funds.map((fund) => (
                 <BalanceCard
                   fund={fund}
-                  key={fund.accountId}
+                  key={fund.id}
                   handleOpenTransferModal={handleOpenTransferModal}
+                  loading={fundsLoading}
                 />
               ))}
             </Box>
             <ScreenOnly sx={{ mt: 2, mb: 3 }}>
               <TransferHistoryTable
-                history={mockData.history}
+                history={transferHistory}
                 handleOpenTransferModal={handleOpenTransferModal}
                 emptyPlaceholder={
                   <EmptyTable
@@ -154,10 +226,11 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                     subtitle={t('No data found across any accounts.')}
                   />
                 }
+                loading={reportLoading}
               />
             </ScreenOnly>
             <PrintOnly>
-              <PrintTable transfers={mockData.history} />
+              <PrintTable transfers={transferHistory} />
             </PrintOnly>
           </Container>
         </Box>
@@ -165,7 +238,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
           <DynamicTransferModal
             handleClose={() => setModalData(null)}
             data={modalData}
-            funds={mockData.funds}
+            funds={funds}
           />
         )}
       </Box>

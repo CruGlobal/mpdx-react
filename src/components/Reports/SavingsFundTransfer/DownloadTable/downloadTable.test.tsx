@@ -19,9 +19,10 @@ const mockHeaders = [
   'Status',
   'Transfer Date',
   'Stop Date',
+  'Note',
 ];
 
-const mockHistory = [mockData.history[1]];
+const mockHistory = [mockData[1]];
 
 describe('DownloadTable', () => {
   it('should download csv file', () => {
@@ -53,13 +54,14 @@ describe('DownloadTable', () => {
 
     expect(csvData).toContain(mockHeaders);
     expect(csvData[1]).toEqual([
-      'Staff Account',
-      'Staff Savings',
+      'staffAccount',
+      'staffSavings',
       '$1,200.00',
       'Monthly',
-      StatusEnum.Ongoing,
+      StatusEnum.Ongoing.charAt(0).toUpperCase() + StatusEnum.Ongoing.slice(1),
       'Sep 30, 2023',
       'Sep 30, 2025',
+      'Long-term savings',
     ]);
   });
 });

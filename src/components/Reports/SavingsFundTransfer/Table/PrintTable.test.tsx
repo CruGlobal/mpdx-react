@@ -13,11 +13,22 @@ const mutationSpy = jest.fn();
 
 const mockTransfers = [
   {
-    ...mockData.history[0],
+    ...mockData[0],
+    transferFrom: 'Savings',
+    transferTo: 'Primary',
+    amount: 2500,
     status: StatusEnum.Complete,
     transferDate: DateTime.fromISO('2023-01-01'),
     endDate: null,
     note: 'Test transfer',
+  },
+];
+
+const mockDefault = [
+  {
+    ...mockData[1],
+    transferFrom: 'Conference',
+    transferTo: 'Primary',
   },
 ];
 
@@ -36,11 +47,11 @@ describe('PrintTable', () => {
     expect(
       await findByRole('columnheader', { name: 'From' }),
     ).toBeInTheDocument();
-    expect(getByRole('cell', { name: 'Staff Savings' })).toBeInTheDocument();
+    expect(getByRole('cell', { name: 'Savings Balance' })).toBeInTheDocument();
     expect(
       await findByRole('columnheader', { name: 'To' }),
     ).toBeInTheDocument();
-    expect(getByRole('cell', { name: 'Staff Account' })).toBeInTheDocument();
+    expect(getByRole('cell', { name: 'Primary Balance' })).toBeInTheDocument();
     expect(
       await findByRole('columnheader', { name: 'Amount' }),
     ).toBeInTheDocument();
@@ -65,6 +76,22 @@ describe('PrintTable', () => {
       await findByRole('columnheader', { name: 'Note' }),
     ).toBeInTheDocument();
     expect(getByRole('cell', { name: 'Test transfer' })).toBeInTheDocument();
+  });
+
+  it('renders default fund when no transfer provided', async () => {
+    const { findByRole } = render(
+      <ThemeProvider theme={theme}>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <GqlMockedProvider onCall={mutationSpy}>
+            <PrintTable transfers={mockDefault} />
+          </GqlMockedProvider>
+        </LocalizationProvider>
+      </ThemeProvider>,
+    );
+
+    expect(
+      await findByRole('cell', { name: 'Conference Savings Balance' }),
+    ).toBeInTheDocument();
   });
 
   it('renders empty table message when no transfers are found', async () => {

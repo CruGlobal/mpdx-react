@@ -7,15 +7,12 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
-import { TransferHistory } from '../mockData';
 
 interface DeleteTransferModalProps {
   handleClose: () => void;
-  transfer: TransferHistory;
 }
 
 export const DeleteTransferModal: React.FC<DeleteTransferModalProps> = ({
-  transfer,
   handleClose,
 }) => {
   const { t } = useTranslation();
@@ -32,11 +29,7 @@ export const DeleteTransferModal: React.FC<DeleteTransferModalProps> = ({
   };
 
   return (
-    <Modal
-      isOpen={true}
-      title={t('Stop Transfer: ${{transfer}}', { transfer: transfer.amount })}
-      handleClose={handleClose}
-    >
+    <Modal isOpen={true} title={t('Stop Transfer')} handleClose={handleClose}>
       <DialogContent dividers>
         <DialogContentText component={'div'}>
           {t('Are you sure you want to stop this recurring transfer?')}
