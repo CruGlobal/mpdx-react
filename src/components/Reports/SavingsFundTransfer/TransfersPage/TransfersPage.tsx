@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import PrintIcon from '@mui/icons-material/Print';
 import {
   Box,
@@ -26,6 +26,7 @@ import { BalanceCard } from '../BalanceCard/BalanceCard';
 import { getStatusLabel } from '../Helper/getStatus';
 import {
   useReportsSavingsFundTransferQuery,
+  useReportsStaffExpensesQuery,
 } from '../ReportsSavingsFund.generated';
 import { EmptyTable } from '../Table/EmptyTable';
 import { PrintTable } from '../Table/PrintTable';
@@ -33,6 +34,7 @@ import { TransferHistoryTable } from '../Table/TransferHistoryTable';
 import { DynamicTransferModal } from '../TransferModal/DynamicTransferModal';
 import { TransferModalData } from '../TransferModal/TransferModal';
 import {
+  FundTypeEnum,
   ScheduleEnum,
   StatusEnum,
   Transactions,
@@ -69,6 +71,17 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
 
   const { data: reportData, loading: reportLoading } =
     useReportsSavingsFundTransferQuery();
+  const { data: fundsData, loading: fundsLoading } =
+    useReportsStaffExpensesQuery({
+      variables: {
+        fundTypes: [FundTypeEnum.Primary, FundTypeEnum.Savings],
+      },
+    });
+
+  const funds = useMemo(
+    () => fundsData?.reportsStaffExpenses?.funds ?? [],
+    [fundsData],
+  );
 
   const transactions: Transactions[] = useMemo(
     () =>
@@ -194,11 +207,12 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                 flexDirection: { xs: 'column', sm: 'row' },
               }}
             >
-              {mockData.funds.map((fund) => (
+              {funds.map((fund) => (
                 <BalanceCard
                   fund={fund}
-                  key={fund.accountId}
+                  key={fund.id}
                   handleOpenTransferModal={handleOpenTransferModal}
+                  loading={fundsLoading}
                 />
               ))}
             </Box>
@@ -224,7 +238,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
           <DynamicTransferModal
             handleClose={() => setModalData(null)}
             data={modalData}
-            funds={mockData.funds}
+            funds={funds}
           />
         )}
       </Box>

@@ -15,7 +15,6 @@ interface DeleteTransferModalProps {
 }
 
 export const DeleteTransferModal: React.FC<DeleteTransferModalProps> = ({
-  transfer,
   handleClose,
 }) => {
   const { t } = useTranslation();
@@ -32,11 +31,7 @@ export const DeleteTransferModal: React.FC<DeleteTransferModalProps> = ({
   };
 
   return (
-    <Modal
-      isOpen={true}
-      title={t('Stop Transfer: ${{transfer}}', { transfer: transfer.amount })}
-      handleClose={handleClose}
-    >
+    <Modal isOpen={true} title={t('Stop Transfer')} handleClose={handleClose}>
       <DialogContent dividers>
         <DialogContentText component={'div'}>
           {t('Are you sure you want to stop this recurring transfer?')}

@@ -10,7 +10,7 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { StaffSavingFundProvider } from '../../StaffSavingFund/StaffSavingFundContext';
 import { TransferTypeEnum } from '../Helper/TransferHistoryEnum';
-import { ScheduleEnum, mockData } from '../mockData';
+import { ScheduleEnum, fundsMock } from '../mockData';
 import { TransferModal, TransferModalData } from './TransferModal';
 
 const accountListId = 'abc';
@@ -72,7 +72,7 @@ const Components = ({
                   type,
                   transfer,
                 }}
-                funds={mockData.funds}
+                funds={fundsMock}
                 handleClose={handleClose}
               />
             </StaffSavingFundProvider>

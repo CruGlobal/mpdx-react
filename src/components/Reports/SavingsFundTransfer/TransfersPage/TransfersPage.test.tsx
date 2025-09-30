@@ -68,6 +68,24 @@ const mock = {
       },
     ],
   },
+  ReportsStaffExpenses: {
+    reportsStaffExpenses: {
+      funds: [
+        {
+          id: '1',
+          fundType: 'Primary',
+          balance: 15000,
+          deficitLimit: 0,
+        },
+        {
+          id: '2',
+          fundType: 'Savings',
+          balance: 25000,
+          deficitLimit: 0,
+        },
+      ],
+    },
+  },
 };
 
 const emptyMock = {
@@ -79,6 +97,24 @@ const emptyMock = {
   },
   ReportsSavingsFundTransfer: {
     reportsSavingsFundTransfer: [],
+  },
+  ReportsStaffExpenses: {
+    reportsStaffExpenses: {
+      funds: [
+        {
+          id: '1',
+          fundType: 'Primary',
+          balance: 15000,
+          deficitLimit: 0,
+        },
+        {
+          id: '2',
+          fundType: 'Savings',
+          balance: 2500,
+          deficitLimit: 0,
+        },
+      ],
+    },
   },
 };
 
@@ -216,9 +252,11 @@ describe('TransfersPage', () => {
   });
 
   it('should open transfer modal when balance card transfer button is clicked', async () => {
-    const { getByRole, getByText, getAllByRole } = render(<Components />);
+    const { getByRole, getByText, findAllByRole } = render(<Components />);
 
-    const transferButtons = getAllByRole('button', { name: /transfer/i });
+    const transferButtons = await findAllByRole('button', {
+      name: /transfer/i,
+    });
     expect(transferButtons.length).toBeGreaterThan(0);
 
     const firstTransferButton = transferButtons[0].closest('button');
@@ -232,9 +270,11 @@ describe('TransfersPage', () => {
   });
 
   it('should close transfer modal when close button is clicked', async () => {
-    const { getByRole, queryByRole, getAllByRole } = render(<Components />);
+    const { getByRole, queryByRole, findAllByRole } = render(<Components />);
 
-    const transferButtons = getAllByRole('button', { name: /transfer/i });
+    const transferButtons = await findAllByRole('button', {
+      name: /transfer/i,
+    });
     const firstTransferButton = transferButtons?.[0].closest('button');
     userEvent.click(firstTransferButton!);
 
@@ -276,9 +316,11 @@ describe('TransfersPage', () => {
   });
 
   it('should display transfer modal with correct type', async () => {
-    const { getByRole, getAllByRole } = render(<Components />);
+    const { getByRole, findAllByRole } = render(<Components />);
 
-    const transferButtons = getAllByRole('button', { name: /transfer/i });
+    const transferButtons = await findAllByRole('button', {
+      name: /transfer/i,
+    });
     const firstTransferButton = transferButtons[0].closest('button');
     userEvent.click(firstTransferButton!);
 
@@ -294,14 +336,20 @@ describe('TransfersPage', () => {
     expect(toAccount).toBeInTheDocument();
 
     expect(
-      within(fromAccount).getByText(mockData.funds[0].name, {
-        selector: 'b',
-      }),
+      within(fromAccount).getByText(
+        `${mock.ReportsStaffExpenses.reportsStaffExpenses.funds[0].fundType} Account`,
+        {
+          selector: 'b',
+        },
+      ),
     ).toBeInTheDocument();
     expect(
-      within(toAccount).queryByText(mockData.funds[0].name, {
-        selector: 'b',
-      }),
+      within(toAccount).queryByText(
+        `${mock.ReportsStaffExpenses.reportsStaffExpenses.funds[0].fundType} Account`,
+        {
+          selector: 'b',
+        },
+      ),
     ).not.toBeInTheDocument();
   });
 });

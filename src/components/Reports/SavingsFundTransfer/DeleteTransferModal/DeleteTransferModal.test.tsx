@@ -50,8 +50,7 @@ describe('DeleteTransferModal', () => {
   it('renders the modal', () => {
     const { getByText } = render(<TestComponent />);
 
-    // temporary modal title
-    expect(getByText('Stop Transfer: ${{transfer}}')).toBeInTheDocument();
+    expect(getByText('Stop Transfer')).toBeInTheDocument();
     expect(
       getByText('Are you sure you want to stop this recurring transfer?'),
     ).toBeInTheDocument();
