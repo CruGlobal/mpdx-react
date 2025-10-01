@@ -12,6 +12,12 @@ import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getQueryParam } from 'src/utils/queryParam';
 import {
+  GoalBenefitsConstantMap,
+  GoalGeographicConstantMap,
+  GoalMiscConstants,
+  useGoalCalculatorConstants,
+} from '../../../../hooks/useGoalCalculatorConstants';
+import {
   GoalCalculatorReportEnum,
   GoalCalculatorStepEnum,
 } from '../GoalCalculatorHelper';
@@ -43,6 +49,9 @@ export type GoalCalculatorType = {
   isMutating: boolean;
   /** Call with the mutation promise to track the start and end of mutations */
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
+  goalBenefitsConstantMap: GoalBenefitsConstantMap;
+  goalGeographicConstantMap: GoalGeographicConstantMap;
+  goalMiscConstants: GoalMiscConstants;
   percentComplete: number;
 };
 
@@ -75,6 +84,12 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       id: goalCalculationId,
     },
   });
+
+  const {
+    goalBenefitsConstantMap,
+    goalMiscConstants,
+    goalGeographicConstantMap,
+  } = useGoalCalculatorConstants();
 
   const steps = useSteps();
   const percentComplete = useMemo(
@@ -151,6 +166,9 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       goalCalculationResult,
       isMutating,
       trackMutation,
+      goalBenefitsConstantMap,
+      goalGeographicConstantMap,
+      goalMiscConstants,
       percentComplete,
     }),
     [
@@ -169,6 +187,9 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       goalCalculationResult,
       isMutating,
       trackMutation,
+      goalBenefitsConstantMap,
+      goalGeographicConstantMap,
+      goalMiscConstants,
       percentComplete,
     ],
   );

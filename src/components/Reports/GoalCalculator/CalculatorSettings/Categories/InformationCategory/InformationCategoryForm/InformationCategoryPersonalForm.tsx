@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useMemo } from 'react';
 import InfoIcon from '@mui/icons-material/Info';
 import {
   Autocomplete,
@@ -12,13 +12,21 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { Field, FieldProps } from 'formik';
+import { Field, FieldProps, useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { useGoalCalculator } from 'src/components/Reports/GoalCalculator/Shared/GoalCalculatorContext';
+import {
+  MpdGoalBenefitsConstantPlanEnum,
+  MpdGoalBenefitsConstantSizeEnum,
+} from 'src/graphql/types.generated';
 import { BenefitsPlanHelperPanel } from '../InformationHelperPanel/BenefitsPlanHelperPanel';
-import { BenefitsPlan, Role } from './enums';
-import { locations } from './geographicAdjustments';
-import { ageOptions, familySizeOptions, tenureOptions } from './mockData';
+import { Role } from './enums';
+import { ageOptions, tenureOptions } from './mockData';
+
+interface GoalCategoryFormValues {
+  familySize: string;
+  benefitsPlan: string;
+}
 
 interface InformationCategoryPersonalFormProps {
   isSpouse?: boolean;
@@ -28,7 +36,49 @@ export const InformationCategoryPersonalForm: React.FC<
   InformationCategoryPersonalFormProps
 > = ({ isSpouse }) => {
   const { t } = useTranslation();
-  const { setRightPanelContent } = useGoalCalculator();
+  const { values, setFieldValue } = useFormikContext<GoalCategoryFormValues>();
+  const {
+    setRightPanelContent,
+    goalGeographicConstantMap,
+    goalBenefitsConstantMap,
+  } = useGoalCalculator();
+
+  const locations = useMemo(
+    () => Array.from(goalGeographicConstantMap.keys()),
+    [goalGeographicConstantMap],
+  );
+
+  const familySizeOptions = useMemo(() => {
+    const familySize = new Map<MpdGoalBenefitsConstantSizeEnum, string>();
+    goalBenefitsConstantMap.forEach((benefits) => {
+      familySize.set(benefits.size, benefits.sizeDisplayName);
+    });
+
+    return Array.from(familySize.entries());
+  }, [goalBenefitsConstantMap]);
+
+  const planOptions = useMemo(() => {
+    const plans = new Map<MpdGoalBenefitsConstantPlanEnum, string>();
+    goalBenefitsConstantMap.forEach((benefits) => {
+      // Only include plans that match the selected family size (if one is selected)
+      if (!values.familySize || benefits.size === values.familySize) {
+        plans.set(benefits.plan, benefits.planDisplayName);
+      }
+    });
+    return Array.from(plans.entries());
+  }, [goalBenefitsConstantMap, values.familySize]);
+
+  useEffect(() => {
+    // Clear benefits plan if it's not compatible with selected family size
+    if (values.familySize && values.benefitsPlan) {
+      const isPlanValid = planOptions.some(
+        ([value]) => value === values.benefitsPlan,
+      );
+      if (!isPlanValid) {
+        setFieldValue('benefitsPlan', '');
+      }
+    }
+  }, [values.familySize, values.benefitsPlan, planOptions, setFieldValue]);
 
   return (
     <>
@@ -147,8 +197,8 @@ export const InformationCategoryPersonalForm: React.FC<
                 <FormControl fullWidth size="small">
                   <InputLabel>{t('Family Size')}</InputLabel>
                   <Select {...field} label={t('Family Size')}>
-                    {Object.values(familySizeOptions).map((label) => (
-                      <MenuItem key={label} value={label}>
+                    {Object.values(familySizeOptions).map(([value, label]) => (
+                      <MenuItem key={label} value={value}>
                         {label}
                       </MenuItem>
                     ))}
@@ -164,7 +214,7 @@ export const InformationCategoryPersonalForm: React.FC<
 
         {!isSpouse && (
           <Grid item xs={12}>
-            <Field name="benefits">
+            <Field name="benefitsPlan">
               {({ field, meta }: FieldProps) => (
                 <FormControl fullWidth size="small">
                   <InputLabel>{t('Benefits Plan')}</InputLabel>
@@ -172,6 +222,7 @@ export const InformationCategoryPersonalForm: React.FC<
                   <Select
                     {...field}
                     label={t('Benefits Plan')}
+                    disabled={!values.familySize}
                     endAdornment={
                       <IconButton
                         size="small"
@@ -184,17 +235,18 @@ export const InformationCategoryPersonalForm: React.FC<
                       </IconButton>
                     }
                   >
-                    <MenuItem value={BenefitsPlan.Select}>
-                      {t('Select')}
-                    </MenuItem>
-                    <MenuItem value={BenefitsPlan.Plus}>{t('Plus')}</MenuItem>
-                    <MenuItem value={BenefitsPlan.Base}>{t('Base')}</MenuItem>
-                    <MenuItem value={BenefitsPlan.Minimum}>
-                      {t('Minimum')}
-                    </MenuItem>
+                    {Object.values(planOptions).map(([value, label]) => (
+                      <MenuItem key={label} value={value}>
+                        {label}
+                      </MenuItem>
+                    ))}
                   </Select>
                   <FormHelperText error={meta.touched && Boolean(meta.error)}>
-                    {meta.touched && meta.error}
+                    {(meta.touched && meta.error) ||
+                      (!values.familySize &&
+                        t(
+                          'Select Family Size to enable benefits plan dropdown',
+                        ))}
                   </FormHelperText>
                 </FormControl>
               )}
