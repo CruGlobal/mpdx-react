@@ -67,7 +67,7 @@ describe('AutosaveTextField', () => {
         input: {
           accountListId: 'account-list-1',
           attributes: {
-            id: 'test-goal-id',
+            id: 'goal-calculation-1',
             mhaAmount: 2000,
           },
         },
@@ -89,7 +89,7 @@ describe('AutosaveTextField', () => {
         input: {
           accountListId: 'account-list-1',
           attributes: {
-            id: 'test-goal-id',
+            id: 'goal-calculation-1',
             mhaAmount: null,
           },
         },
@@ -156,7 +156,7 @@ describe('AutosaveTextField', () => {
           input: {
             accountListId: 'account-list-1',
             attributes: {
-              id: 'test-goal-id',
+              id: 'goal-calculation-1',
               mhaAmount: 2000,
             },
           },

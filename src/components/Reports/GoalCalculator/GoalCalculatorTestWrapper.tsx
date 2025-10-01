@@ -6,24 +6,23 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import {
   GoalCalculationAge,
+  MpdGoalBenefitsConstantPlanEnum,
+  MpdGoalBenefitsConstantSizeEnum,
   PrimaryBudgetCategoryEnum,
   SubBudgetCategoryEnum,
 } from 'src/graphql/types.generated';
+import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
 import { GoalCalculationQuery } from './Shared/GoalCalculation.generated';
 import { GoalCalculatorProvider } from './Shared/GoalCalculatorContext';
 
-interface GoalCalculatorTestWrapper {
-  householdDirectInput?: number | null;
-  onCall?: MockLinkCallHandler;
-  children?: React.ReactNode;
-}
-
 export const goalCalculationMock = {
   goalCalculation: {
-    id: 'test-goal-id',
+    id: 'goal-calculation-1',
     name: 'Initial Goal Name',
     firstName: 'John',
+    familySize: MpdGoalBenefitsConstantSizeEnum.MarriedNoChildren,
+    benefitsPlan: MpdGoalBenefitsConstantPlanEnum.Base,
     age: GoalCalculationAge.UnderThirty,
     yearsOnStaff: 5,
     secaExempt: false,
@@ -105,41 +104,74 @@ export const goalCalculationMock = {
   },
 } satisfies DeepPartial<GoalCalculationQuery>;
 
-export const GoalCalculatorTestWrapper: React.FC<GoalCalculatorTestWrapper> = ({
-  householdDirectInput = null,
-  onCall,
-  children,
-}) => (
-  <ThemeProvider theme={theme}>
-    <TestRouter
-      router={{
-        query: {
-          accountListId: 'account-list-1',
-          goalCalculationId: 'goal-calculator-1',
-        },
-      }}
-    >
-      <SnackbarProvider>
-        <GqlMockedProvider<{
-          GoalCalculation: GoalCalculationQuery;
-        }>
-          mocks={{
-            GoalCalculation: {
-              ...goalCalculationMock,
-              goalCalculation: {
-                ...goalCalculationMock.goalCalculation,
-                householdFamily: {
-                  ...goalCalculationMock.goalCalculation.householdFamily,
-                  directInput: householdDirectInput,
+export const constantsMock = {
+  constant: {
+    mpdGoalBenefitsConstants: [
+      {
+        size: MpdGoalBenefitsConstantSizeEnum.Single,
+        sizeDisplayName: 'Single or spouse not staff',
+        plan: MpdGoalBenefitsConstantPlanEnum.Select,
+        planDisplayName: 'Select',
+      },
+      {
+        size: MpdGoalBenefitsConstantSizeEnum.MarriedNoChildren,
+        sizeDisplayName: 'Married with no children',
+        plan: MpdGoalBenefitsConstantPlanEnum.Base,
+        planDisplayName: 'Base',
+      },
+    ],
+  },
+} satisfies DeepPartial<GoalCalculatorConstantsQuery>;
+
+interface GoalCalculatorTestWrapperProps {
+  householdDirectInput?: number | null;
+  onCall?: MockLinkCallHandler;
+  noMocks?: boolean;
+  children?: React.ReactNode;
+}
+
+export const GoalCalculatorTestWrapper: React.FC<
+  GoalCalculatorTestWrapperProps
+> = ({ householdDirectInput = null, onCall, noMocks = false, children }) => {
+  const content = <GoalCalculatorProvider>{children}</GoalCalculatorProvider>;
+  return (
+    <ThemeProvider theme={theme}>
+      <TestRouter
+        router={{
+          query: {
+            accountListId: 'account-list-1',
+            goalCalculationId: 'goal-calculation-1',
+          },
+        }}
+      >
+        <SnackbarProvider>
+          {noMocks ? (
+            content
+          ) : (
+            <GqlMockedProvider<{
+              GoalCalculation: GoalCalculationQuery;
+              GoalCalculatorConstants: GoalCalculatorConstantsQuery;
+            }>
+              mocks={{
+                GoalCalculation: {
+                  ...goalCalculationMock,
+                  goalCalculation: {
+                    ...goalCalculationMock.goalCalculation,
+                    householdFamily: {
+                      ...goalCalculationMock.goalCalculation.householdFamily,
+                      directInput: householdDirectInput,
+                    },
+                  },
                 },
-              },
-            },
-          }}
-          onCall={onCall}
-        >
-          <GoalCalculatorProvider>{children}</GoalCalculatorProvider>
-        </GqlMockedProvider>
-      </SnackbarProvider>
-    </TestRouter>
-  </ThemeProvider>
-);
+                GoalCalculatorConstants: constantsMock,
+              }}
+              onCall={onCall}
+            >
+              {content}
+            </GqlMockedProvider>
+          )}
+        </SnackbarProvider>
+      </TestRouter>
+    </ThemeProvider>
+  );
+};

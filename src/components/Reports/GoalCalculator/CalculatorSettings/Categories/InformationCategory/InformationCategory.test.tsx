@@ -5,9 +5,11 @@ import { I18nextProvider } from 'react-i18next';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { GoalCalculationAge } from 'src/graphql/types.generated';
+import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import i18n from 'src/lib/i18n';
 import {
   GoalCalculatorTestWrapper,
+  constantsMock,
   goalCalculationMock,
 } from '../../../GoalCalculatorTestWrapper';
 import { GoalCalculationQuery } from '../../../Shared/GoalCalculation.generated';
@@ -16,29 +18,31 @@ import { InformationCategory } from './InformationCategory';
 const mutationSpy = jest.fn();
 
 const TestComponent = () => (
-  <GoalCalculatorTestWrapper>
-    <GqlMockedProvider<{
-      GoalCalculation: GoalCalculationQuery;
-      GetUser: GetUserQuery;
-    }>
-      mocks={{
-        GoalCalculation: goalCalculationMock,
-        GetUser: {
-          user: {
-            id: 'user-id-1',
-            firstName: 'Obi',
-            lastName: 'Wan',
-            avatar: 'avatar.jpg',
-          },
+  <GqlMockedProvider<{
+    GoalCalculation: GoalCalculationQuery;
+    GoalCalculatorConstants: GoalCalculatorConstantsQuery;
+    GetUser: GetUserQuery;
+  }>
+    mocks={{
+      GoalCalculation: goalCalculationMock,
+      GoalCalculatorConstants: constantsMock,
+      GetUser: {
+        user: {
+          id: 'user-id-1',
+          firstName: 'Obi',
+          lastName: 'Wan',
+          avatar: 'avatar.jpg',
         },
-      }}
-      onCall={mutationSpy}
-    >
-      <I18nextProvider i18n={i18n}>
+      },
+    }}
+    onCall={mutationSpy}
+  >
+    <I18nextProvider i18n={i18n}>
+      <GoalCalculatorTestWrapper noMocks>
         <InformationCategory />
-      </I18nextProvider>
-    </GqlMockedProvider>
-  </GoalCalculatorTestWrapper>
+      </GoalCalculatorTestWrapper>
+    </I18nextProvider>
+  </GqlMockedProvider>
 );
 
 describe('InformationCategory', () => {
@@ -90,8 +94,34 @@ describe('InformationCategory', () => {
           input: {
             accountListId: 'account-list-1',
             attributes: {
-              id: 'test-goal-id',
+              id: 'goal-calculation-1',
               firstName: 'Jack',
+            },
+          },
+        }),
+      );
+    });
+
+    it('clears invalid benefits plan', async () => {
+      const { getByRole } = render(<TestComponent />);
+
+      const input = getByRole('combobox', { name: 'Family Size' });
+      await waitFor(() =>
+        expect(input).toHaveTextContent('Married with no children'),
+      );
+
+      userEvent.click(input);
+      userEvent.click(
+        getByRole('option', { name: 'Single or spouse not staff' }),
+      );
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('UpdateGoalCalculation', {
+          input: {
+            accountListId: 'account-list-1',
+            attributes: {
+              id: 'goal-calculation-1',
+              benefitsPlan: null,
             },
           },
         }),
@@ -117,7 +147,7 @@ describe('InformationCategory', () => {
           input: {
             accountListId: 'account-list-1',
             attributes: {
-              id: 'test-goal-id',
+              id: 'goal-calculation-1',
               spouseMhaAmount: 750,
             },
           },
@@ -138,7 +168,7 @@ describe('InformationCategory', () => {
           input: {
             accountListId: 'account-list-1',
             attributes: {
-              id: 'test-goal-id',
+              id: 'goal-calculation-1',
               yearsOnStaff: 10,
             },
           },
@@ -159,7 +189,7 @@ describe('InformationCategory', () => {
           input: {
             accountListId: 'account-list-1',
             attributes: {
-              id: 'test-goal-id',
+              id: 'goal-calculation-1',
               age: GoalCalculationAge.ThirtyToThirtyFour,
             },
           },
@@ -190,7 +220,7 @@ describe('InformationCategory', () => {
           input: {
             accountListId: 'account-list-1',
             attributes: {
-              id: 'test-goal-id',
+              id: 'goal-calculation-1',
               spouseSecaExempt: true,
             },
           },
@@ -215,7 +245,7 @@ describe('InformationCategory', () => {
           input: {
             accountListId: 'account-list-1',
             attributes: {
-              id: 'test-goal-id',
+              id: 'goal-calculation-1',
               mhaAmount: null,
             },
           },
