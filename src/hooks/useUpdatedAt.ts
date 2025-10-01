@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
+import { DateTime } from 'luxon';
+import { formatRelativeTime } from 'src/lib/intlFormat';
 
-export const useUpdatedAt = (updatedAt: Date | null) => {
-  const [now, setNow] = useState(Date.now());
+export const useUpdatedAt = (updatedAt: DateTime | null, locale: string) => {
+  const [now, setNow] = useState(DateTime.now());
 
   useEffect(() => {
     if (!updatedAt) {
@@ -9,7 +11,7 @@ export const useUpdatedAt = (updatedAt: Date | null) => {
     }
 
     const id = setInterval(() => {
-      setNow(Date.now());
+      setNow(DateTime.now());
     }, 1000);
 
     return () => {
@@ -22,23 +24,11 @@ export const useUpdatedAt = (updatedAt: Date | null) => {
       return null;
     }
 
-    const timeElapsed = now - updatedAt.getTime();
-    const minutesElapsed = Math.floor(timeElapsed / 60_000);
-    const hoursElapsed = Math.floor(minutesElapsed / 60);
-    const daysElapsed = Math.floor(hoursElapsed / 24);
+    const milliseconds = updatedAt.diff(now).as('milliseconds');
 
-    if (minutesElapsed < 1) {
-      return `Updated just now`;
-    }
-
-    if (hoursElapsed < 1) {
-      return `Updated ${minutesElapsed} minute${minutesElapsed === 1 ? '' : 's'} ago`;
-    }
-
-    if (daysElapsed < 1) {
-      return `Updated ${hoursElapsed} hour${hoursElapsed === 1 ? '' : 's'} ago`;
-    }
-
-    return `Updated ${daysElapsed} day${daysElapsed === 1 ? '' : 's'} ago`;
+    const relativeTime = formatRelativeTime(milliseconds, locale);
+    return relativeTime === 'now'
+      ? 'Updated just now'
+      : `Updated ${relativeTime}`;
   }, [updatedAt, now]);
 };

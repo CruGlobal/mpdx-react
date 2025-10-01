@@ -1,6 +1,6 @@
 import { TFunction } from 'i18next';
 import { buildURI } from 'react-csv/lib/core';
-import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
+import { currencyFormat } from 'src/lib/intlFormat';
 import {
   FundTypeEnum,
   ScheduleEnum,
@@ -33,7 +33,7 @@ export const createTable = (
       : transfer.status;
     const endDate =
       transfer.schedule === ScheduleEnum.Monthly && transfer.endDate
-        ? dateFormat(transfer.endDate, locale, { timezone: 'UTC' })
+        ? transfer.endDate.toFormat('MMM d, yyyy')
         : '';
     return [
       fromFund,
@@ -46,7 +46,7 @@ export const createTable = (
       schedule,
       status,
       transfer.transferDate
-        ? dateFormat(transfer.transferDate, locale, { timezone: 'UTC' })
+        ? transfer.transferDate.toFormat('MMM d, yyyy')
         : '',
       endDate,
       transfer.note,

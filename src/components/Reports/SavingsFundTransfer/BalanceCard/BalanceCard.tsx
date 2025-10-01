@@ -38,7 +38,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
   const locale = useLocale();
 
   const { updatedAt } = useUpdatedAtContext();
-  const updatedAtLabel = useUpdatedAt(updatedAt);
+  const updatedAtLabel = useUpdatedAt(updatedAt, locale);
 
   const title = t('{{ name }} Account Balance', { name: fund.fundType });
   const Icon =

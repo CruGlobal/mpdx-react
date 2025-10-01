@@ -27,10 +27,9 @@ export const FundInfoDisplay: React.FC<FundInfoDisplayProps> = ({ fund }) => {
         : fund.fundType === FundTypeEnum.Savings
           ? SavingsAccount
           : null}{' '}
-      {''}
       <Typography>
-        <b>{t(`${fund.fundType} Account`)}</b>
-        {' - '}
+        <b>{t('{{type}} Account', { type: fund.fundType })}</b>
+        <b>{' \u00B7 '}</b>
       </Typography>
       <Typography
         sx={{ color: fund.balance < 0 ? 'error.main' : 'text.primary' }}

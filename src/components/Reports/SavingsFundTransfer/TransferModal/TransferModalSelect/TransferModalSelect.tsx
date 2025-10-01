@@ -15,10 +15,9 @@ export const TransferModalSelect: React.FC<TransferModalSelectProps> = ({
   disabled,
   ...props
 }) => {
-  const filteredFunds =
-    notSelected === null
-      ? funds
-      : funds.filter((fund) => fund.fundType !== notSelected);
+  const filteredFunds = notSelected
+    ? funds.filter((fund) => fund.fundType !== notSelected)
+    : funds;
 
   return (
     <Select {...props} disabled={disabled}>

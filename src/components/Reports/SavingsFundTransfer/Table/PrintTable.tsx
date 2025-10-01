@@ -10,7 +10,6 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
-import { dateFormat } from 'src/lib/intlFormat';
 import { StyledTableRow } from '../../styledComponents';
 import {
   FundTypeEnum,
@@ -85,17 +84,13 @@ export const PrintTable: React.FC<PrintTableProps> = ({ transfers, type }) => {
                   </TableCell>
                   <TableCell>
                     {transfer.transferDate
-                      ? dateFormat(transfer.transferDate, locale, {
-                          timezone: 'UTC',
-                        })
+                      ? transfer.transferDate.toFormat('MMM d, yyyy')
                       : ''}
                   </TableCell>
                   <TableCell>
                     {transfer.schedule === ScheduleEnum.Monthly &&
                     transfer.endDate
-                      ? dateFormat(transfer.endDate, locale, {
-                          timezone: 'UTC',
-                        })
+                      ? transfer.endDate.toFormat('MMM d, yyyy')
                       : ''}
                   </TableCell>
                   <TableCell>{transfer.note}</TableCell>

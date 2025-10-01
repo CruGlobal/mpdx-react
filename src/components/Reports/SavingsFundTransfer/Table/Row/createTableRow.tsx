@@ -8,11 +8,10 @@ import {
   Chip,
   Icon,
   IconButton,
-  Tooltip,
   Typography,
 } from '@mui/material';
 import { TFunction } from 'i18next';
-import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
+import { currencyFormat } from 'src/lib/intlFormat';
 import {
   ScheduleEnum,
   StatusEnum,
@@ -22,15 +21,27 @@ import {
 import { RenderCell } from '../TransfersTable';
 import { chipStyle, iconMap } from './createTableRowHelper';
 
-export const populateTransferRows = (
-  type: TableTypeEnum,
-  handleEditModalOpen: (transfer: Transfers) => void,
-  handleDeleteModalOpen: (transfer: Transfers) => void,
-  handleCalendarOpen: (transfer: Transfers) => void,
-  handleFailedTransferOpen: (transfer: Transfers) => void,
-  t: TFunction,
-  locale: string,
-) => {
+type Options = {
+  type: TableTypeEnum;
+  handleEditModalOpen: (transfer: Transfers) => void;
+  handleDeleteModalOpen: (transfer: Transfers) => void;
+  handleCalendarOpen: (transfer: Transfers) => void;
+  handleFailedTransferOpen: (transfer: Transfers) => void;
+  t: TFunction;
+  locale: string;
+};
+
+export function populateTransferRows(options: Options) {
+  const {
+    type,
+    handleEditModalOpen,
+    handleDeleteModalOpen,
+    handleCalendarOpen,
+    handleFailedTransferOpen,
+    t,
+    locale,
+  } = options;
+
   useEffect(() => {
     const MaterialSymbols = document.createElement('link');
     MaterialSymbols.rel = 'stylesheet';
@@ -60,11 +71,9 @@ export const populateTransferRows = (
     }
 
     return (
-      <Tooltip title={t('N/A') as string}>
-        <Typography variant="body2" noWrap>
-          {t('N/A') as string}
-        </Typography>
-      </Tooltip>
+      <Typography variant="body2" noWrap>
+        {t('N/A') as string}
+      </Typography>
     );
   };
 
@@ -103,16 +112,12 @@ export const populateTransferRows = (
             <IconButton>
               <PriorityHigh
                 sx={{ color: 'error.main' }}
-                titleAccess={t('Failed Transfers') as string}
+                titleAccess={t('Failed Transfers')}
                 onClick={() => handleFailedTransferOpen(row)}
               />
             </IconButton>
           </Badge>
-        ) : (
-          <Typography variant="body2" noWrap>
-            {'' as string}
-          </Typography>
-        )}
+        ) : null}
       </Box>
     );
   };
@@ -162,9 +167,7 @@ export const populateTransferRows = (
   const transferDate: RenderCell = ({ row }) => {
     return (
       <Typography variant="body2" noWrap>
-        {row.transferDate
-          ? dateFormat(row.transferDate, locale, { timezone: 'UTC' })
-          : ''}
+        {row.transferDate ? row.transferDate.toFormat('MMM d, yyyy') : ''}
       </Typography>
     );
   };
@@ -173,7 +176,7 @@ export const populateTransferRows = (
     return (
       <Typography variant="body2" noWrap>
         {row.schedule === ScheduleEnum.Monthly && row.endDate
-          ? dateFormat(row.endDate, locale, { timezone: 'UTC' })
+          ? row.endDate.toFormat('MMM d, yyyy')
           : ''}
       </Typography>
     );
@@ -210,7 +213,7 @@ export const populateTransferRows = (
       ) : row.endDate ? (
         <>
           <IconButton
-            title={t('Edit Stop Date') as string}
+            title={t('Edit Stop Date')}
             onClick={(event) => {
               event.stopPropagation();
               handleCalendarOpen(row);
@@ -239,7 +242,7 @@ export const populateTransferRows = (
       ) : (
         <>
           <IconButton
-            title={t('Add Stop Date') as string}
+            title={t('Add Stop Date')}
             onClick={(event) => {
               event.stopPropagation();
               handleCalendarOpen(row);
@@ -285,4 +288,4 @@ export const populateTransferRows = (
     note,
     actions,
   };
-};
+}

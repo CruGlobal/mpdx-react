@@ -15,7 +15,6 @@ import {
   HeaderTypeEnum,
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
-import { useFilteredTransfers } from 'src/hooks/useFilteredTransfers';
 import theme from 'src/theme';
 import { useStaffAccountQuery } from '../../StaffAccount.generated';
 import {
@@ -23,6 +22,7 @@ import {
   StaffSavingFundType,
 } from '../../StaffSavingFund/StaffSavingFundContext';
 import { BalanceCard } from '../BalanceCard/BalanceCard';
+import { filteredTransfers } from '../Helper/filterTransfers';
 import { getStatusLabel } from '../Helper/getStatus';
 import {
   useReportsSavingsFundTransferQuery,
@@ -94,17 +94,19 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
       (reportData?.reportsSavingsFundTransfer ?? []).map((tx) => {
         return {
           ...tx,
-          transactedAt: DateTime.fromISO(tx.transactedAt),
+          transactedAt: DateTime.fromISO(tx.transactedAt, { setZone: true }),
           recurringTransfer: tx.recurringTransfer
             ? {
                 ...tx.recurringTransfer,
                 recurringStart: tx.recurringTransfer.recurringStart
-                  ? DateTime.fromISO(
-                      tx.recurringTransfer.recurringStart,
-                    ).toUTC()
+                  ? DateTime.fromISO(tx.recurringTransfer.recurringStart, {
+                      setZone: true,
+                    })
                   : null,
                 recurringEnd: tx.recurringTransfer.recurringEnd
-                  ? DateTime.fromISO(tx.recurringTransfer.recurringEnd).toUTC()
+                  ? DateTime.fromISO(tx.recurringTransfer.recurringEnd, {
+                      setZone: true,
+                    })
                   : null,
               }
             : null,
@@ -117,16 +119,16 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
     [reportData],
   );
 
-  const filteredTransactions = useFilteredTransfers(transactions);
+  const filteredTransactions = useMemo(
+    () => filteredTransfers(transactions),
+    [transactions],
+  );
 
   const transferHistory: Transfers[] = filteredTransactions.map((tx) => {
     const isRecurring = !!tx.recurringTransfer;
     const status = getStatusLabel(tx);
     const shouldShowActions = () => {
-      if (status === StatusEnum.Pending || status === StatusEnum.Ongoing) {
-        return false;
-      }
-      return true;
+      return status !== StatusEnum.Pending && status !== StatusEnum.Ongoing;
     };
 
     return {
