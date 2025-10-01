@@ -1,9 +1,6 @@
-import { renderHook } from '@testing-library/react';
-import { DateTime } from 'luxon';
+import { DateTime, Settings } from 'luxon';
 import { Transactions } from 'src/components/Reports/SavingsFundTransfer/mockData';
-import { useFilteredTransfers } from './useFilteredTransfers';
-
-const mockToday = DateTime.fromISO('2024-01-15');
+import { filteredTransfers } from './filterTransfers';
 
 const mockTransactions: Transactions[] = [
   {
@@ -109,64 +106,50 @@ const mockTransactions: Transactions[] = [
 ];
 
 describe('useFilteredTransfers', () => {
+  beforeEach(() => {
+    Settings.now = () => Date.parse('2024-01-15');
+  });
   it('should return the correct number of filtered transfers', () => {
-    const { result } = renderHook(() =>
-      useFilteredTransfers(mockTransactions, mockToday),
-    );
-    expect(result.current).toHaveLength(2);
+    const result = filteredTransfers(mockTransactions);
+    expect(result).toHaveLength(2);
   });
 
   it('should correctly add amounts for recurring transfers', () => {
-    const { result } = renderHook(() => useFilteredTransfers(mockTransactions));
-    const recurringTransfer = result.current.find(
+    const result = filteredTransfers(mockTransactions);
+    const recurringTransfer = result.find(
       (tx) => tx.recurringTransfer?.id === '1',
     );
-    expect(recurringTransfer).toBeDefined();
     expect(recurringTransfer?.amount).toBe(60);
   });
 
   it('should include one-time transfers', () => {
-    const { result } = renderHook(() =>
-      useFilteredTransfers(mockTransactions, mockToday),
-    );
-    const oneTimeTransfer = result.current.find(
-      (tx) => tx.recurringTransfer === null,
-    );
+    const result = filteredTransfers(mockTransactions);
+    const oneTimeTransfer = result.find((tx) => tx.recurringTransfer === null);
     expect(oneTimeTransfer).toBeDefined();
     expect(oneTimeTransfer?.amount).toBe(2500);
   });
 
   it('should exclude transfers with zero or negative amounts', () => {
-    const { result } = renderHook(() =>
-      useFilteredTransfers(mockTransactions, mockToday),
-    );
-    const negativeAmountTransfer = result.current.find((tx) => tx.amount < 0);
+    const result = filteredTransfers(mockTransactions);
+    const negativeAmountTransfer = result.find((tx) => tx.amount < 0);
     expect(negativeAmountTransfer).toBeUndefined();
   });
 
   it('should correctly calculate failedCount for recurring transfers', () => {
-    const { result } = renderHook(() =>
-      useFilteredTransfers(mockTransactions, mockToday),
-    );
-    const recurringTransfer = result.current.find(
+    const result = filteredTransfers(mockTransactions);
+    const recurringTransfer = result.find(
       (tx) => tx.recurringTransfer?.id === '1',
     );
-    expect(recurringTransfer).toBeDefined();
     expect(recurringTransfer?.failedCount).toBe(1);
   });
 
   it('should find missing months for recurring transfers', () => {
-    const { result } = renderHook(() =>
-      useFilteredTransfers(mockTransactions, mockToday),
-    );
-    const recurringTransfer = result.current.find(
+    const result = filteredTransfers(mockTransactions);
+    const recurringTransfer = result.find(
       (tx) => tx.recurringTransfer?.id === '1',
     );
-    expect(recurringTransfer).toBeDefined();
-    expect(recurringTransfer?.missingMonths).toBeDefined();
-    expect(recurringTransfer?.missingMonths).toHaveLength(1);
-    expect(recurringTransfer?.missingMonths?.[0].toISODate()).toBe(
-      '2023-11-15',
-    );
+    expect(
+      recurringTransfer?.missingMonths?.map((month) => month.toISODate()),
+    ).toEqual(['2023-11-15']);
   });
 });

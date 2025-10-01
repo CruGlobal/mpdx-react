@@ -32,7 +32,7 @@ import {
 import Modal from 'src/components/common/Modal/Modal';
 import { useLocale } from 'src/hooks/useLocale';
 import i18n from 'src/lib/i18n';
-import { currencyFormat } from 'src/lib/intlFormat';
+import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { FundFieldsFragment } from '../ReportsSavingsFund.generated';
 import {
   useCreateRecurringTransferMutation,
@@ -63,7 +63,7 @@ const getTomorrow = (): DateTime => {
   return getToday().plus({ days: 1 });
 };
 
-const transferSchema = () =>
+const transferSchema = (locale: string) =>
   yup.object({
     transferFrom: yup.string().required(i18n.t('From account is required')),
     transferTo: yup.string().required(i18n.t('To account is required')),
@@ -97,7 +97,7 @@ const transferSchema = () =>
 
           return this.createError({
             message: i18n.t('Transfer date cannot be earlier than {{date}}', {
-              date: baseline.toFormat('LLL dd, yyyy'),
+              date: dateFormat(baseline, locale),
             }),
           });
         }
@@ -144,25 +144,26 @@ export const TransferModal: React.FC<TransferModalProps> = ({
   handleClose,
 }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
   const { enqueueSnackbar } = useSnackbar();
   const [submitting, setSubmitting] = useState(false);
 
   const [createRecurringTransfer] = useCreateRecurringTransferMutation({
-    refetchQueries: ['ReportsSavingsFundTransfer', 'AccountFunds'],
+    refetchQueries: ['ReportsSavingsFundTransfer', 'ReportsStaffExpenses'],
     awaitRefetchQueries: true,
     onCompleted: () => {
       setUpdatedAt();
     },
   });
   const [createTransferMutation] = useCreateTransferMutation({
-    refetchQueries: ['ReportsSavingsFundTransfer', 'AccountFunds'],
+    refetchQueries: ['ReportsSavingsFundTransfer', 'ReportsStaffExpenses'],
     awaitRefetchQueries: true,
     onCompleted: () => {
       setUpdatedAt();
     },
   });
   const [updateRecurringTransfer] = useUpdateRecurringTransferMutation({
-    refetchQueries: ['ReportsSavingsFundTransfer', 'AccountFunds'],
+    refetchQueries: ['ReportsSavingsFundTransfer', 'ReportsStaffExpenses'],
     awaitRefetchQueries: true,
     onCompleted: () => {
       setUpdatedAt();
@@ -173,14 +174,13 @@ export const TransferModal: React.FC<TransferModalProps> = ({
 
   const type = data.type || TransferTypeEnum.New;
   const isNew = type === TransferTypeEnum.New;
-  const isEdit = type === TransferTypeEnum.Edit;
 
   const title =
     type === TransferTypeEnum.New
       ? t('New Fund Transfer')
       : t('Edit Fund Transfer');
 
-  const handleSubmit = async (_values: TransferFormValues) => {
+  const handleSubmit = async (values: TransferFormValues) => {
     setSubmitting(true);
 
     const {
@@ -191,7 +191,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
       transferDate,
       endDate,
       note,
-    } = _values;
+    } = values;
 
     const convertedTransferDate = transferDate.toISO() ?? '';
     const convertedEndDate = endDate?.toISO() ?? null;
@@ -218,9 +218,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
             recurringEnd: convertedEndDate,
           },
         });
-      }
-
-      if (isNew && isOneTime) {
+      } else if (isNew && isOneTime) {
         await createTransferMutation({
           variables: {
             amount: amount,
@@ -229,9 +227,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
             description: note,
           },
         });
-      }
-
-      if (isEdit && !isOneTime) {
+      } else {
         await updateRecurringTransfer({
           variables: {
             id: data.transfer.recurringId ?? '',
@@ -272,7 +268,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
           isEditing: Boolean(data.transfer.id),
           originalStart: data.transfer.transferDate ?? null,
         }}
-        validationSchema={transferSchema}
+        validationSchema={transferSchema(locale)}
         onSubmit={handleSubmit}
       >
         {({
@@ -327,7 +323,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                             labelId="transferFrom"
                             name="transferFrom"
                             value={transferFrom}
-                            disabled={isEdit}
+                            disabled={!isNew}
                             onChange={handleChange}
                             onBlur={handleBlur}
                             error={
@@ -543,7 +539,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                         id="transfer-note"
                         label={t('Note (Optional)')}
                         name="note"
-                        disabled={isEdit}
+                        disabled={!isNew}
                         value={note}
                         onChange={handleChange}
                         fullWidth

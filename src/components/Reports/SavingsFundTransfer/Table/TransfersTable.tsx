@@ -77,7 +77,7 @@ export const TransfersTable: React.FC<TransfersTableProps> = ({
   const { enqueueSnackbar } = useSnackbar();
 
   const [updateRecurringTransfer] = useUpdateRecurringTransferMutation({
-    refetchQueries: ['ReportsSavingsFundTransfer', 'AccountFunds'],
+    refetchQueries: ['ReportsSavingsFundTransfer', 'ReportsStaffExpenses'],
     awaitRefetchQueries: true,
   });
 
@@ -177,7 +177,7 @@ export const TransfersTable: React.FC<TransfersTableProps> = ({
     endDate,
     note,
     actions,
-  } = populateTransferRows(
+  } = populateTransferRows({
     type,
     handleEditModalOpen,
     handleDeleteModalOpen,
@@ -185,7 +185,7 @@ export const TransfersTable: React.FC<TransfersTableProps> = ({
     handleFailedTransferOpen,
     t,
     locale,
-  );
+  });
 
   const transferRows = history.map(CreateTransferRows);
 
@@ -302,6 +302,7 @@ export const TransfersTable: React.FC<TransfersTableProps> = ({
         minDate={calendarRow?.transferDate ?? undefined}
         value={calendarDate}
         onChange={(newValue) => setCalendarDate(newValue)}
+        type={calendarType?.actionType}
       />
       {openDeleteModal && (
         <DynamicDeleteTransferModal

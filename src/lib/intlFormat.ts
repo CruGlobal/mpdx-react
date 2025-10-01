@@ -110,11 +110,15 @@ export const dayMonthFormat = (
   day: number,
   month: number,
   locale: string,
-): string =>
-  new Intl.DateTimeFormat(locale, {
+  options?: { weekday: 'short' },
+): string => {
+  const { weekday } = options ?? {};
+  return new Intl.DateTimeFormat(locale, {
     day: 'numeric',
     month: 'short',
+    weekday: weekday,
   }).format(DateTime.local().set({ month, day }).toJSDate());
+};
 
 export const monthYearFormat = (
   month: number,
@@ -129,7 +133,7 @@ export const monthYearFormat = (
 
 interface DateFormatOptions {
   fullMonth?: boolean;
-  timezone?: string;
+  timeZone?: string;
 }
 
 export const dateFormat = (
@@ -137,7 +141,7 @@ export const dateFormat = (
   locale: string,
   options?: DateFormatOptions,
 ): string => {
-  const { fullMonth, timezone } = options ?? {};
+  const { fullMonth, timeZone } = options ?? {};
   if (date === null) {
     return '';
   }
@@ -145,7 +149,7 @@ export const dateFormat = (
     day: 'numeric',
     month: fullMonth ? 'long' : 'short',
     year: 'numeric',
-    timeZone: timezone,
+    timeZone: timeZone,
   }).format(date.toJSDate());
 };
 

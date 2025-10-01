@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { CancelButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
 import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
+import { currencyFormat } from 'src/lib/intlFormat';
 import { chipStyle } from '../Table/Row/createTableRowHelper';
 import { StatusEnum, Transfers } from '../mockData';
 
@@ -114,9 +114,7 @@ export const FailedTransferModal: React.FC<FailedTransferModalProps> = ({
                     />
                   </TableCell>
                   <TableCell>
-                    {dateFormat(transfer.transferDate, locale, {
-                      timezone: 'UTC',
-                    })}
+                    {transfer.transferDate.toFormat('MMM d, yyyy')}
                   </TableCell>
                 </TableRow>
               ))}

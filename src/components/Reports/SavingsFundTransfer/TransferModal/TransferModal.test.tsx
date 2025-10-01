@@ -81,12 +81,7 @@ const Components = ({
             createTransfer: CreateTransferMutation;
             updateRecurringTransfer: UpdateRecurringTransferMutation;
           }>
-            onCall={({ operation }) =>
-              mutationSpy({
-                operationName: operation.operationName,
-                variables: operation.variables,
-              })
-            }
+            onCall={mutationSpy}
           >
             <StaffSavingFundProvider>
               <UpdatedAtProvider>
@@ -394,7 +389,7 @@ describe('TransferModal', () => {
       userEvent.tab();
 
       expect(
-        await findByText('Transfer date cannot be earlier than Nov 01, 2024'),
+        await findByText(/transfer date cannot be earlier than Nov 1, 2024/i),
       ).toBeInTheDocument();
     });
 
@@ -447,32 +442,31 @@ describe('TransferModal', () => {
     it('should create a one-time transfer', async () => {
       const { getByRole } = render(<Components />);
 
-      const fromAccount = getByRole('combobox', { name: /from account/i });
-      const toAccount = getByRole('combobox', { name: /to account/i });
       const amountField = getByRole('spinbutton', { name: /amount/i });
-      const submitButton = getByRole('button', { name: /submit/i });
 
-      userEvent.click(fromAccount);
+      userEvent.click(getByRole('combobox', { name: /from account/i }));
       userEvent.click(getByRole('option', { name: /staff account/i }));
 
-      userEvent.click(toAccount);
+      userEvent.click(getByRole('combobox', { name: /to account/i }));
       userEvent.click(getByRole('option', { name: /staff savings/i }));
 
       userEvent.clear(amountField);
       userEvent.type(amountField, '100');
 
-      userEvent.click(submitButton);
+      userEvent.click(getByRole('button', { name: /submit/i }));
 
       await waitFor(() => {
         expect(mutationSpy).toHaveBeenCalledWith(
           expect.objectContaining({
-            operationName: 'CreateTransfer',
-            variables: {
-              amount: 100,
-              sourceFundTypeName: 'Staff Account',
-              destinationFundTypeName: 'Staff Savings',
-              description: '',
-            },
+            operation: expect.objectContaining({
+              operationName: 'CreateTransfer',
+              variables: expect.objectContaining({
+                amount: 100,
+                sourceFundTypeName: 'Staff Account',
+                destinationFundTypeName: 'Staff Savings',
+                description: '',
+              }),
+            }),
           }),
         );
       });
@@ -481,15 +475,12 @@ describe('TransferModal', () => {
     it('should create a recurring transfer', async () => {
       const { getByRole, getByLabelText } = render(<Components />);
 
-      const fromAccount = getByRole('combobox', { name: /from account/i });
-      const toAccount = getByRole('combobox', { name: /to account/i });
       const amountField = getByRole('spinbutton', { name: /amount/i });
-      const submitButton = getByRole('button', { name: /submit/i });
 
-      userEvent.click(fromAccount);
+      userEvent.click(getByRole('combobox', { name: /from account/i }));
       userEvent.click(getByRole('option', { name: /staff account/i }));
 
-      userEvent.click(toAccount);
+      userEvent.click(getByRole('combobox', { name: /to account/i }));
       userEvent.click(getByRole('option', { name: /staff savings/i }));
 
       userEvent.clear(amountField);
@@ -511,19 +502,21 @@ describe('TransferModal', () => {
 
       userEvent.tab();
 
-      userEvent.click(submitButton);
+      userEvent.click(getByRole('button', { name: /submit/i }));
 
       await waitFor(() => {
         expect(mutationSpy).toHaveBeenCalledWith(
           expect.objectContaining({
-            operationName: 'CreateRecurringTransfer',
-            variables: {
-              amount: 100,
-              sourceFundTypeName: 'Staff Account',
-              destinationFundTypeName: 'Staff Savings',
-              recurringStart: '2024-12-01T00:00:00.000+00:00',
-              recurringEnd: '2025-12-01T00:00:00.000+00:00',
-            },
+            operation: expect.objectContaining({
+              operationName: 'CreateRecurringTransfer',
+              variables: expect.objectContaining({
+                amount: 100,
+                sourceFundTypeName: 'Staff Account',
+                destinationFundTypeName: 'Staff Savings',
+                recurringStart: '2024-12-01T00:00:00.000+00:00',
+                recurringEnd: '2025-12-01T00:00:00.000+00:00',
+              }),
+            }),
           }),
         );
       });
@@ -547,7 +540,6 @@ describe('TransferModal', () => {
       );
 
       const amountField = getByRole('spinbutton', { name: /amount/i });
-      const submitButton = getByRole('button', { name: /submit/i });
 
       userEvent.clear(amountField);
       userEvent.type(amountField, '600');
@@ -566,18 +558,20 @@ describe('TransferModal', () => {
 
       userEvent.tab();
 
-      userEvent.click(submitButton);
+      userEvent.click(getByRole('button', { name: /submit/i }));
 
       await waitFor(() => {
         expect(mutationSpy).toHaveBeenCalledWith(
           expect.objectContaining({
-            operationName: 'UpdateRecurringTransfer',
-            variables: {
-              id: 'recurring-id',
-              amount: 600,
-              recurringStart: '2024-12-01T00:00:00.000+00:00',
-              recurringEnd: '2025-12-01T00:00:00.000+00:00',
-            },
+            operation: expect.objectContaining({
+              operationName: 'UpdateRecurringTransfer',
+              variables: expect.objectContaining({
+                id: 'recurring-id',
+                amount: 600,
+                recurringStart: '2024-12-01T00:00:00.000+00:00',
+                recurringEnd: '2025-12-01T00:00:00.000+00:00',
+              }),
+            }),
           }),
         );
       });

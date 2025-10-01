@@ -1,7 +1,8 @@
 import React, { useCallback, useMemo, useState } from 'react';
+import { DateTime } from 'luxon';
 
 export type UpdatedAtType = {
-  updatedAt: Date | null;
+  updatedAt: DateTime | null;
   setUpdatedAt: () => void;
 };
 
@@ -20,15 +21,15 @@ export const useUpdatedAtContext = () => {
 export const UpdatedAtProvider: React.FC<
   React.PropsWithChildren<{ storageKey?: string }>
 > = ({ children, storageKey = 'fundsUpdatedAt' }) => {
-  const [updatedAt, _setUpdatedAt] = useState<Date | null>(() => {
+  const [updatedAt, _setUpdatedAt] = useState<DateTime | null>(() => {
     const stored = localStorage.getItem(storageKey);
-    return stored ? new Date(stored) : null;
+    return stored ? DateTime.fromISO(stored) : null;
   });
 
   const setUpdatedAt = useCallback(() => {
-    const date = new Date();
+    const date = DateTime.now();
     _setUpdatedAt(date);
-    localStorage.setItem(storageKey, date.toISOString());
+    localStorage.setItem(storageKey, date.toISO());
   }, [storageKey]);
 
   const value = useMemo(

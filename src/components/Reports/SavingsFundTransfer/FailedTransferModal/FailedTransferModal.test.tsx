@@ -39,8 +39,8 @@ const mockTransfer: Transfers = {
         },
         recurringTransfer: {
           id: '1',
-          recurringStart: DateTime.fromISO('2023-06-15').toUTC(),
-          recurringEnd: DateTime.fromISO('2023-09-15').toUTC(),
+          recurringStart: DateTime.fromISO('2023-06-15'),
+          recurringEnd: DateTime.fromISO('2023-09-15'),
           active: true,
         },
         baseAmount: 10,
@@ -63,8 +63,8 @@ const mockTransfer: Transfers = {
         },
         recurringTransfer: {
           id: '1',
-          recurringStart: DateTime.fromISO('2023-06-15').toUTC(),
-          recurringEnd: DateTime.fromISO('2023-09-15').toUTC(),
+          recurringStart: DateTime.fromISO('2023-06-15'),
+          recurringEnd: DateTime.fromISO('2023-09-15'),
           active: true,
         },
         baseAmount: 10,
@@ -87,8 +87,8 @@ const mockTransfer: Transfers = {
         },
         recurringTransfer: {
           id: '1',
-          recurringStart: DateTime.fromISO('2023-06-15').toUTC(),
-          recurringEnd: DateTime.fromISO('2023-09-15').toUTC(),
+          recurringStart: DateTime.fromISO('2023-06-15'),
+          recurringEnd: DateTime.fromISO('2023-09-15'),
           active: true,
         },
         baseAmount: 10,
