@@ -123,6 +123,8 @@ describe('AutosaveTextField', () => {
     expect(input).toHaveAccessibleDescription('MHA Amount must be positive');
 
     input.blur();
+
+    await Promise.resolve();
     await waitFor(() =>
       expect(mutationSpy).not.toHaveGraphqlOperation('UpdateGoalCalculation'),
     );
@@ -172,6 +174,7 @@ describe('AutosaveTextField', () => {
       userEvent.click(getByRole('option', { name: '-100' }));
 
       expect(input).toHaveAccessibleDescription('MHA Amount must be positive');
+      await Promise.resolve();
       await waitFor(() =>
         expect(mutationSpy).not.toHaveGraphqlOperation('UpdateGoalCalculation'),
       );
