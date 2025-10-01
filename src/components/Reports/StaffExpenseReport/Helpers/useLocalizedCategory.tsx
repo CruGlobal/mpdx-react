@@ -6,7 +6,7 @@ import {
 
 type Category = StaffExpenseCategoryEnum | StaffExpensesSubCategoryEnum;
 
-export const getReadableCategory = (category: Category, t: TFunction) => {
+export const getLocalizedCategory = (category: Category, t: TFunction) => {
   const humanReadableCategories: Record<
     StaffExpenseCategoryEnum | StaffExpensesSubCategoryEnum,
     string
@@ -49,7 +49,7 @@ export const getReadableCategory = (category: Category, t: TFunction) => {
   return humanReadableCategories[category] ?? t('Unknown Category');
 };
 
-export const useReadableCategory = (category: Category) => {
+export const useLocalizedCategory = (category: Category) => {
   const { t } = useTranslation();
-  return getReadableCategory(category, t);
+  return getLocalizedCategory(category, t);
 };
