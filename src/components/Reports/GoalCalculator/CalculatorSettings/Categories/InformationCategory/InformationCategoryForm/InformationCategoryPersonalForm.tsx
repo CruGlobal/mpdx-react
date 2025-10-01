@@ -111,7 +111,6 @@ export const InformationCategoryPersonalForm: React.FC<
             size="small"
             label={isSpouse ? t('Spouse First Name') : t('First Name')}
             variant="outlined"
-            required={!isSpouse}
           />
         </Grid>
         {!isSpouse && (
@@ -123,7 +122,6 @@ export const InformationCategoryPersonalForm: React.FC<
               size="small"
               label={t('Last Name')}
               variant="outlined"
-              required
             />
           </Grid>
         )}
