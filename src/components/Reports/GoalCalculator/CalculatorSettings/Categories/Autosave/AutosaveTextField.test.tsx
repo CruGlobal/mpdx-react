@@ -97,6 +97,21 @@ describe('AutosaveTextField', () => {
     );
   });
 
+  it('does not save when value does not change', async () => {
+    const { getByRole } = render(<TestComponent />);
+
+    const input = getByRole('textbox', { name: 'MHA Amount' });
+    await waitFor(() => expect(input).toHaveValue('1000'));
+
+    input.focus();
+    input.blur();
+
+    await Promise.resolve();
+    await waitFor(() =>
+      expect(mutationSpy).not.toHaveGraphqlOperation('UpdateGoalCalculation'),
+    );
+  });
+
   it('shows validation error', async () => {
     const { getByRole } = render(<TestComponent />);
 

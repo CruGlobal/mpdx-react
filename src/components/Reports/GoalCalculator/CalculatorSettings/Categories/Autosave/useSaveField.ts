@@ -17,6 +17,13 @@ export const useSaveField = () => {
       return;
     }
 
+    const unchanged = Object.entries(attributes).every(
+      ([key, value]) => goalCalculation[key] === value,
+    );
+    if (unchanged) {
+      return;
+    }
+
     trackMutation(
       updateGoalCalculation({
         variables: {
