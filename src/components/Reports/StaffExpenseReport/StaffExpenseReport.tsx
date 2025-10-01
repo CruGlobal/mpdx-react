@@ -172,7 +172,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     if (!selectedFundType && defaultFundType) {
       setSelectedFundType(defaultFundType);
     }
-  }, [allFunds, selectedFundType, defaultFundType]);
+  }, [selectedFundType, defaultFundType]);
 
   const selectedFund = allFunds.find(
     (fund) => fund.fundType === selectedFundType,
@@ -195,20 +195,20 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     > = {};
 
     allFunds.forEach((fund) => {
-      const incomeTransactions = filterTransactions(
+      const incomeTransactions = filterTransactions({
+        tableType: 'income',
+        targetTime: time,
         fund,
-        time,
-        t,
         filters,
-        'income',
-      );
-      const expenseTransactions = filterTransactions(
+        t,
+      });
+      const expenseTransactions = filterTransactions({
+        tableType: 'expenses',
+        targetTime: time,
         fund,
-        time,
-        t,
         filters,
-        'expenses',
-      );
+        t,
+      });
 
       newTransactions[fund.fundType] = {
         income: incomeTransactions,
@@ -229,9 +229,6 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
 
   const getPosOrNegTransactions = (tableType: TableType, fundType: string) => {
     const fundTransactions = transactions[fundType];
-    if (!fundTransactions) {
-      return [];
-    }
 
     return tableType === TableType.Income
       ? fundTransactions.income
@@ -479,10 +476,14 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
       <ScreenOnly>
         <Container sx={{ gap: 1, display: 'flex', flexDirection: 'row' }}>
           <DownloadButtonGroup
-            transactions={[
-              ...(transactions[selectedFundType ?? '']?.income ?? []),
-              ...(transactions[selectedFundType ?? '']?.expenses ?? []),
-            ]}
+            transactions={
+              selectedFundType
+                ? [
+                    ...(transactions[selectedFundType]?.income ?? []),
+                    ...(transactions[selectedFundType]?.expenses ?? []),
+                  ]
+                : []
+            }
           />
           <Box display={'flex'} flexGrow={1} justifyContent="flex-end" gap={1}>
             {isFilterDateSelected ? (

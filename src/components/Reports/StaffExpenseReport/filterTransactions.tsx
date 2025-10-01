@@ -7,15 +7,23 @@ import {
   Fund,
   StaffExpenseCategoryEnum,
 } from 'src/graphql/types.generated';
-import { getReadableCategory } from './Helpers/useReadableCategories';
+import { getLocalizedCategory } from './Helpers/useLocalizedCategory';
 
-export const filterTransactions = (
-  fund: Pick<Fund, 'fundType' | 'total' | 'categories'>,
-  targetTime: DateTime,
-  t: TFunction,
-  filters?: Filters | null,
-  tableType?: 'income' | 'expenses',
-): Transaction[] => {
+interface FilterTransactionsParams {
+  fund: Pick<Fund, 'fundType' | 'total' | 'categories'>;
+  targetTime: DateTime;
+  t: TFunction;
+  filters?: Filters | null;
+  tableType?: 'income' | 'expenses';
+}
+
+export const filterTransactions = ({
+  fund,
+  targetTime,
+  t,
+  filters,
+  tableType,
+}: FilterTransactionsParams): Transaction[] => {
   // Create a date range filter based on the provided filters or default to the target time
   const isInRange = createDateRangeFilter(filters, targetTime);
 
@@ -33,10 +41,10 @@ export const filterTransactions = (
                   transaction,
                   fund.fundType,
                   category.category,
-                  `${getReadableCategory(
+                  `${getLocalizedCategory(
                     category.category,
                     t,
-                  )} - ${getReadableCategory(subcategory.subCategory, t)}`,
+                  )} - ${getLocalizedCategory(subcategory.subCategory, t)}`,
                 ),
               ) ?? [],
         );
@@ -51,7 +59,7 @@ export const filterTransactions = (
               transaction,
               fund.fundType,
               category.category,
-              getReadableCategory(category.category, t),
+              getLocalizedCategory(category.category, t),
             ),
           ) ?? []
       );
@@ -70,12 +78,12 @@ export const filterTransactions = (
 const mapTransactionToCategory = (
   transaction: BreakdownByMonth,
   fundType: Fund['fundType'],
-  categoryEnum: StaffExpenseCategoryEnum,
+  category: StaffExpenseCategoryEnum,
   displayCategory: string,
 ): Transaction => ({
   ...transaction,
   fundType,
-  category: categoryEnum,
+  category: category,
   displayCategory,
 });
 
