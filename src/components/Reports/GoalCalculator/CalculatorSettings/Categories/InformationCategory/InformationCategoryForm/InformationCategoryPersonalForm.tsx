@@ -2,13 +2,9 @@ import React, { useEffect, useMemo } from 'react';
 import InfoIcon from '@mui/icons-material/Info';
 import {
   Autocomplete,
-  FormControl,
-  FormHelperText,
   Grid,
   IconButton,
-  InputLabel,
   MenuItem,
-  Select,
   TextField,
   Typography,
 } from '@mui/material';
@@ -176,19 +172,21 @@ export const InformationCategoryPersonalForm: React.FC<
           <Grid item xs={12}>
             <Field name="familySize">
               {({ field, meta }: FieldProps) => (
-                <FormControl fullWidth size="small">
-                  <InputLabel>{t('Family Size')}</InputLabel>
-                  <Select {...field} label={t('Family Size')}>
-                    {Object.values(familySizeOptions).map(([value, label]) => (
-                      <MenuItem key={label} value={value}>
-                        {label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  <FormHelperText error={meta.touched && Boolean(meta.error)}>
-                    {(meta.touched && meta.error) || t('For benefits plan')}
-                  </FormHelperText>
-                </FormControl>
+                <TextField
+                  {...field}
+                  fullWidth
+                  size="small"
+                  select
+                  label={t('Family Size')}
+                  helperText={(meta.touched && meta.error) || t('For benefits plan')}
+                  error={meta.touched && Boolean(meta.error)}
+                >
+                  {Object.values(familySizeOptions).map(([value, label]) => (
+                    <MenuItem key={label} value={value}>
+                      {label}
+                    </MenuItem>
+                  ))}
+                </TextField>
               )}
             </Field>
           </Grid>
@@ -198,14 +196,21 @@ export const InformationCategoryPersonalForm: React.FC<
           <Grid item xs={12}>
             <Field name="benefitsPlan">
               {({ field, meta }: FieldProps) => (
-                <FormControl fullWidth size="small">
-                  <InputLabel>{t('Benefits Plan')}</InputLabel>
-
-                  <Select
-                    {...field}
-                    label={t('Benefits Plan')}
-                    disabled={!values.familySize}
-                    endAdornment={
+                <TextField
+                  {...field}
+                  fullWidth
+                  size="small"
+                  select
+                  label={t('Benefits Plan')}
+                  disabled={!values.familySize}
+                  helperText={
+                    (meta.touched && meta.error) ||
+                    (!values.familySize &&
+                      t('Select Family Size to enable benefits plan dropdown'))
+                  }
+                  error={meta.touched && Boolean(meta.error)}
+                  InputProps={{
+                    endAdornment: (
                       <IconButton
                         size="small"
                         onClick={() =>
@@ -215,22 +220,15 @@ export const InformationCategoryPersonalForm: React.FC<
                       >
                         <InfoIcon fontSize="small" />
                       </IconButton>
-                    }
-                  >
-                    {Object.values(planOptions).map(([value, label]) => (
-                      <MenuItem key={label} value={value}>
-                        {label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                  <FormHelperText error={meta.touched && Boolean(meta.error)}>
-                    {(meta.touched && meta.error) ||
-                      (!values.familySize &&
-                        t(
-                          'Select Family Size to enable benefits plan dropdown',
-                        ))}
-                  </FormHelperText>
-                </FormControl>
+                    ),
+                  }}
+                >
+                  {Object.values(planOptions).map(([value, label]) => (
+                    <MenuItem key={label} value={value}>
+                      {label}
+                    </MenuItem>
+                  ))}
+                </TextField>
               )}
             </Field>
           </Grid>
