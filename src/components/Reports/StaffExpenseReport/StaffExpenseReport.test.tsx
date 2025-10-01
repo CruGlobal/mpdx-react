@@ -64,7 +64,6 @@ const TestComponent: React.FC<TestComponentProps> = ({
                       ? []
                       : [
                           {
-                            __typename: 'Fund',
                             fundType: 'Primary',
                             total: -500,
                             categories: [

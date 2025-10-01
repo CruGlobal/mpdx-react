@@ -47,21 +47,9 @@ const mockTransactions: Transaction[] = [
   },
 ];
 
-const incomeOnlyTransactions: Transaction[] = [
-  {
-    total: 100,
-    category: StaffExpenseCategoryEnum.Salary,
-    month: '2025-01-01',
-  } as Transaction,
-];
+const incomeOnlyTransactions: Transaction[] = [mockTransactions[0]];
 
-const expenseOnlyTransactions: Transaction[] = [
-  {
-    total: -50,
-    category: StaffExpenseCategoryEnum.Donation,
-    month: '2025-01-01',
-  } as Transaction,
-];
+const expenseOnlyTransactions: Transaction[] = [mockTransactions[1]];
 
 describe('DownloadButtonGroup', () => {
   it('renders a ButtonGroup with three buttons', () => {
@@ -140,12 +128,10 @@ describe('DownloadButtonGroup', () => {
         total: 0,
         category: StaffExpenseCategoryEnum.Transfer,
         month: '2025-01-01',
-      } as Transaction,
-      {
-        total: 100,
-        category: StaffExpenseCategoryEnum.Salary,
-        month: '2025-01-01',
-      } as Transaction,
+        displayCategory: 'Transfer',
+        fundType: 'Saving',
+      },
+      ...incomeOnlyTransactions,
     ];
 
     const { getByText } = render(

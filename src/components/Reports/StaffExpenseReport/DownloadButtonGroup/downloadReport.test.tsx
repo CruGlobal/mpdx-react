@@ -10,7 +10,6 @@ const mockData: Transaction[] = [
     fundType: 'Primary',
     month: '2025-07-01',
     total: -2724,
-    __typename: 'BreakdownByMonth',
   },
   {
     category: StaffExpenseCategoryEnum.Salary,
@@ -18,7 +17,6 @@ const mockData: Transaction[] = [
     fundType: 'Secondary',
     month: '2025-08-01',
     total: 3500,
-    __typename: 'BreakdownByMonth',
   },
   {
     category: StaffExpenseCategoryEnum.Benefits,
@@ -26,7 +24,6 @@ const mockData: Transaction[] = [
     fundType: 'Primary',
     month: '2025-09-01',
     total: -500,
-    __typename: 'BreakdownByMonth',
   },
 ];
 
