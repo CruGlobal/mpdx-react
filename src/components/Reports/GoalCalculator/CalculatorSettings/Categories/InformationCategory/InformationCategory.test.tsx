@@ -1,9 +1,11 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { I18nextProvider } from 'react-i18next';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { GoalCalculationAge } from 'src/graphql/types.generated';
+import i18n from 'src/lib/i18n';
 import {
   GoalCalculatorTestWrapper,
   goalCalculationMock,
@@ -32,7 +34,9 @@ const TestComponent = () => (
       }}
       onCall={mutationSpy}
     >
-      <InformationCategory />
+      <I18nextProvider i18n={i18n}>
+        <InformationCategory />
+      </I18nextProvider>
     </GqlMockedProvider>
   </GoalCalculatorTestWrapper>
 );
@@ -191,6 +195,53 @@ describe('InformationCategory', () => {
             },
           },
         }),
+      );
+    });
+
+    it('sets field to null when input is empty', async () => {
+      const { getByRole } = render(<TestComponent />);
+
+      userEvent.click(getByRole('tab', { name: 'Financial' }));
+      const input = getByRole('spinbutton', {
+        name: 'MHA Amount Per Paycheck',
+      });
+      await waitFor(() => expect(input).toHaveValue(1000));
+
+      userEvent.clear(input);
+      input.blur();
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('UpdateGoalCalculation', {
+          input: {
+            accountListId: 'account-list-1',
+            attributes: {
+              id: 'test-goal-id',
+              mhaAmount: null,
+            },
+          },
+        }),
+      );
+    });
+
+    it('shows errors and does not save when input is invalid', async () => {
+      const { getByRole } = render(<TestComponent />);
+
+      userEvent.click(getByRole('tab', { name: 'Financial' }));
+      const input = getByRole('spinbutton', {
+        name: 'MHA Amount Per Paycheck',
+      });
+      await waitFor(() => expect(input).toHaveValue(1000));
+
+      userEvent.clear(input);
+      userEvent.type(input, '-1000');
+      input.blur();
+
+      expect(input).toHaveAccessibleDescription(
+        'MHA Amount Per Paycheck must be positive',
+      );
+
+      await waitFor(() =>
+        expect(mutationSpy).not.toHaveGraphqlOperation('UpdateGoalCalculation'),
       );
     });
   });
