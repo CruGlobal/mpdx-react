@@ -8,7 +8,6 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { Field, FieldProps, useFormikContext } from 'formik';
 import { range } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -20,12 +19,8 @@ import {
   MpdGoalBenefitsConstantSizeEnum,
 } from 'src/graphql/types.generated';
 import { AutosaveTextField } from '../../Autosave/AutosaveTextField';
+import { useSaveField } from '../../Autosave/useSaveField';
 import { BenefitsPlanHelperPanel } from '../InformationHelperPanel/BenefitsPlanHelperPanel';
-
-interface GoalCategoryFormValues {
-  familySize: string;
-  benefitsPlan: string;
-}
 
 interface InformationCategoryPersonalFormProps {
   schema: yup.Schema;
@@ -42,12 +37,14 @@ export const InformationCategoryPersonalForm: React.FC<
   InformationCategoryPersonalFormProps
 > = ({ schema, isSpouse }) => {
   const { t } = useTranslation();
-  const { values, setFieldValue } = useFormikContext<GoalCategoryFormValues>();
   const {
+    goalCalculationResult: { data },
     setRightPanelContent,
     goalGeographicConstantMap,
     goalBenefitsConstantMap,
   } = useGoalCalculator();
+  const { geographicLocation, familySize, benefitsPlan } =
+    data?.goalCalculation || {};
 
   const locations = useMemo(
     () => Array.from(goalGeographicConstantMap.keys()),
@@ -63,28 +60,28 @@ export const InformationCategoryPersonalForm: React.FC<
     return Array.from(familySize.entries());
   }, [goalBenefitsConstantMap]);
 
+  const saveField = useSaveField();
+
   const planOptions = useMemo(() => {
     const plans = new Map<MpdGoalBenefitsConstantPlanEnum, string>();
     goalBenefitsConstantMap.forEach((benefits) => {
-      // Only include plans that match the selected family size (if one is selected)
-      if (!values.familySize || benefits.size === values.familySize) {
+      // Only include plans that match the selected family size
+      if (benefits.size === familySize) {
         plans.set(benefits.plan, benefits.planDisplayName);
       }
     });
     return Array.from(plans.entries());
-  }, [goalBenefitsConstantMap, values.familySize]);
+  }, [goalBenefitsConstantMap, familySize]);
 
   useEffect(() => {
     // Clear benefits plan if it's not compatible with selected family size
-    if (values.familySize && values.benefitsPlan) {
-      const isPlanValid = planOptions.some(
-        ([value]) => value === values.benefitsPlan,
-      );
+    if (familySize && benefitsPlan) {
+      const isPlanValid = planOptions.some(([plan]) => plan === benefitsPlan);
       if (!isPlanValid) {
-        setFieldValue('benefitsPlan', '');
+        saveField({ benefitsPlan: null });
       }
     }
-  }, [values.familySize, values.benefitsPlan, planOptions, setFieldValue]);
+  }, [familySize, benefitsPlan, planOptions]);
 
   return (
     <>
@@ -126,6 +123,10 @@ export const InformationCategoryPersonalForm: React.FC<
           <Grid item xs={12}>
             <Autocomplete
               options={locations}
+              value={geographicLocation}
+              onChange={(_, newValue) =>
+                saveField({ geographicLocation: newValue })
+              }
               size="small"
               renderInput={(params) => (
                 <TextField {...params} label={t('Geographic Location')} />
@@ -170,67 +171,61 @@ export const InformationCategoryPersonalForm: React.FC<
 
         {!isSpouse && (
           <Grid item xs={12}>
-            <Field name="familySize">
-              {({ field, meta }: FieldProps) => (
-                <TextField
-                  {...field}
-                  fullWidth
-                  size="small"
-                  select
-                  label={t('Family Size')}
-                  helperText={(meta.touched && meta.error) || t('For benefits plan')}
-                  error={meta.touched && Boolean(meta.error)}
-                >
-                  {Object.values(familySizeOptions).map(([value, label]) => (
-                    <MenuItem key={label} value={value}>
-                      {label}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              )}
-            </Field>
+            <AutosaveTextField
+              fieldName="familySize"
+              schema={schema}
+              fullWidth
+              size="small"
+              select
+              label={t('Family Size')}
+              helperText={t('For benefits plan')}
+              variant="outlined"
+            >
+              {Object.values(familySizeOptions).map(([value, label]) => (
+                <MenuItem key={label} value={value}>
+                  {label}
+                </MenuItem>
+              ))}
+            </AutosaveTextField>
           </Grid>
         )}
 
         {!isSpouse && (
           <Grid item xs={12}>
-            <Field name="benefitsPlan">
-              {({ field, meta }: FieldProps) => (
-                <TextField
-                  {...field}
-                  fullWidth
-                  size="small"
-                  select
-                  label={t('Benefits Plan')}
-                  disabled={!values.familySize}
-                  helperText={
-                    (meta.touched && meta.error) ||
-                    (!values.familySize &&
-                      t('Select Family Size to enable benefits plan dropdown'))
-                  }
-                  error={meta.touched && Boolean(meta.error)}
-                  InputProps={{
-                    endAdornment: (
-                      <IconButton
-                        size="small"
-                        onClick={() =>
-                          setRightPanelContent(<BenefitsPlanHelperPanel />)
-                        }
-                        sx={{ mr: 2 }}
-                      >
-                        <InfoIcon fontSize="small" />
-                      </IconButton>
-                    ),
-                  }}
-                >
-                  {Object.values(planOptions).map(([value, label]) => (
-                    <MenuItem key={label} value={value}>
-                      {label}
-                    </MenuItem>
-                  ))}
-                </TextField>
-              )}
-            </Field>
+            <AutosaveTextField
+              fieldName="benefitsPlan"
+              schema={schema}
+              fullWidth
+              size="small"
+              select
+              label={t('Benefits Plan')}
+              disabled={!familySize}
+              helperText={
+                !familySize
+                  ? t('Select Family Size to enable benefits plan dropdown')
+                  : undefined
+              }
+              variant="outlined"
+              InputProps={{
+                endAdornment: (
+                  <IconButton
+                    size="small"
+                    onClick={() =>
+                      setRightPanelContent(<BenefitsPlanHelperPanel />)
+                    }
+                    sx={{ mr: 2 }}
+                  >
+                    <InfoIcon fontSize="small" />
+                  </IconButton>
+                ),
+              }}
+            >
+              {Object.values(planOptions).map(([value, label]) => (
+                <MenuItem key={label} value={value}>
+                  {label}
+                </MenuItem>
+              ))}
+            </AutosaveTextField>
           </Grid>
         )}
 

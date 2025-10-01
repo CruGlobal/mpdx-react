@@ -12,7 +12,6 @@ import {
   Typography,
 } from '@mui/material';
 import { styled } from '@mui/system';
-import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
@@ -87,13 +86,13 @@ export const InformationCategory: React.FC<InformationCategoryProps> = () => {
           .string()
           .oneOf(
             Object.values(MpdGoalBenefitsConstantSizeEnum),
-            t('Family size must be one of the options'),
+            t('Family Size must be one of the options'),
           ),
-        benefits: yup
+        benefitsPlan: yup
           .string()
           .oneOf(
             Object.values(MpdGoalBenefitsConstantPlanEnum),
-            t('Benefits plan must be one of the options'),
+            t('Benefits Plan must be one of the options'),
           ),
         yearsOnStaff: integer(t('Years on Staff'), t),
         spouseYearsOnStaff: integer(t('Spouse Years on Staff'), t),
@@ -164,126 +163,111 @@ export const InformationCategory: React.FC<InformationCategoryProps> = () => {
   };
 
   return (
-    <Formik
-      initialValues={{
-        geographicLocation: null,
-        familySize: '',
-        benefitsPlan: '',
-      }}
-      validationSchema={validationSchema}
-      onSubmit={() => {}}
-    >
-      <StyledCard>
-        <Box
-          display="flex"
-          gap={2}
-          m={2}
-          alignItems="center"
-          justifyContent="space-between"
-        >
-          <Box
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            gap={1}
-          >
-            {userData?.user ? (
-              <Avatar
-                data-testid="info-avatar"
-                src={userData.user.avatar}
-                alt={userData.user.firstName ?? t('User')}
-                variant="rounded"
-                sx={{ width: 36, height: 36, marginRight: 1 }}
-              />
-            ) : (
-              <Avatar variant="rounded" />
-            )}
-            <Typography data-testid="info-name-typography">
-              {userData?.user.firstName ?? t('User')}
-            </Typography>
-          </Box>
-          {spouseInformation !== null && (
-            <Button
-              endIcon={<RightArrowIcon />}
-              onClick={onClickSpouseInformation}
-            >
-              {buttonText}
-            </Button>
+    <StyledCard>
+      <Box
+        display="flex"
+        gap={2}
+        m={2}
+        alignItems="center"
+        justifyContent="space-between"
+      >
+        <Box display="flex" alignItems="center" justifyContent="center" gap={1}>
+          {userData?.user ? (
+            <Avatar
+              data-testid="info-avatar"
+              src={userData.user.avatar}
+              alt={userData.user.firstName ?? t('User')}
+              variant="rounded"
+              sx={{ width: 36, height: 36, marginRight: 1 }}
+            />
+          ) : (
+            <Avatar variant="rounded" />
           )}
+          <Typography data-testid="info-name-typography">
+            {userData?.user.firstName ?? t('User')}
+          </Typography>
         </Box>
-
-        {!spouseInformation && (
-          <StyledCard>
-            <StyledInfoBox>
-              <StyledTabs
-                value={value}
-                onChange={handleChange}
-                aria-label={t('information tabs')}
-              >
-                <Tab
-                  data-testid="personal-tab"
-                  iconPosition={'start'}
-                  icon={<PersonIcon />}
-                  label={t('Personal')}
-                />
-                <Tab
-                  data-testid="financial-tab"
-                  iconPosition={'start'}
-                  icon={<CreditCardIcon />}
-                  label={t('Financial')}
-                />
-              </StyledTabs>
-            </StyledInfoBox>
-
-            <TabPanel value={value} index={0}>
-              <InformationCategoryPersonalForm schema={validationSchema} />
-            </TabPanel>
-
-            <TabPanel value={value} index={1}>
-              <InformationCategoryFinancialForm schema={validationSchema} />
-            </TabPanel>
-          </StyledCard>
+        {spouseInformation !== null && (
+          <Button
+            endIcon={<RightArrowIcon />}
+            onClick={onClickSpouseInformation}
+          >
+            {buttonText}
+          </Button>
         )}
+      </Box>
 
-        {spouseInformation && (
-          <StyledCard>
-            <StyledInfoBox>
-              <StyledTabs
-                value={value}
-                onChange={handleChange}
-                aria-label={t('information tabs')}
-              >
-                <Tab
-                  data-testid="spouse-personal-tab"
-                  iconPosition={'start'}
-                  icon={<PersonIcon />}
-                  label={t("Spouse's Personal")}
-                />
-                <Tab
-                  data-testid="spouse-financial-tab"
-                  iconPosition={'start'}
-                  icon={<CreditCardIcon />}
-                  label={t("Spouse's Financial")}
-                />
-              </StyledTabs>
-            </StyledInfoBox>
-
-            <TabPanel value={value} index={0}>
-              <InformationCategoryPersonalForm
-                schema={validationSchema}
-                isSpouse
+      {!spouseInformation && (
+        <StyledCard>
+          <StyledInfoBox>
+            <StyledTabs
+              value={value}
+              onChange={handleChange}
+              aria-label={t('information tabs')}
+            >
+              <Tab
+                data-testid="personal-tab"
+                iconPosition={'start'}
+                icon={<PersonIcon />}
+                label={t('Personal')}
               />
-            </TabPanel>
-
-            <TabPanel value={value} index={1}>
-              <InformationCategoryFinancialForm
-                schema={validationSchema}
-                isSpouse
+              <Tab
+                data-testid="financial-tab"
+                iconPosition={'start'}
+                icon={<CreditCardIcon />}
+                label={t('Financial')}
               />
-            </TabPanel>
-          </StyledCard>
-        )}
-      </StyledCard>
-    </Formik>
+            </StyledTabs>
+          </StyledInfoBox>
+
+          <TabPanel value={value} index={0}>
+            <InformationCategoryPersonalForm schema={validationSchema} />
+          </TabPanel>
+
+          <TabPanel value={value} index={1}>
+            <InformationCategoryFinancialForm schema={validationSchema} />
+          </TabPanel>
+        </StyledCard>
+      )}
+
+      {spouseInformation && (
+        <StyledCard>
+          <StyledInfoBox>
+            <StyledTabs
+              value={value}
+              onChange={handleChange}
+              aria-label={t('information tabs')}
+            >
+              <Tab
+                data-testid="spouse-personal-tab"
+                iconPosition={'start'}
+                icon={<PersonIcon />}
+                label={t("Spouse's Personal")}
+              />
+              <Tab
+                data-testid="spouse-financial-tab"
+                iconPosition={'start'}
+                icon={<CreditCardIcon />}
+                label={t("Spouse's Financial")}
+              />
+            </StyledTabs>
+          </StyledInfoBox>
+
+          <TabPanel value={value} index={0}>
+            <InformationCategoryPersonalForm
+              schema={validationSchema}
+              isSpouse
+            />
+          </TabPanel>
+
+          <TabPanel value={value} index={1}>
+            <InformationCategoryFinancialForm
+              schema={validationSchema}
+              isSpouse
+            />
+          </TabPanel>
+        </StyledCard>
+      )}
+    </StyledCard>
   );
 };
