@@ -39,7 +39,6 @@ import {
   useCreateTransferMutation,
   useUpdateRecurringTransferMutation,
 } from '../TransferMutations.generated';
-import { useUpdatedAtContext } from '../UpdatedAtContext/UpdateAtContext';
 import { ScheduleEnum, TransferModalData, TransferTypeEnum } from '../mockData';
 import { FundInfoDisplay } from './Helper/FundInfoDisplay';
 import { TransferModalSelect } from './TransferModalSelect/TransferModalSelect';
@@ -151,26 +150,15 @@ export const TransferModal: React.FC<TransferModalProps> = ({
   const [createRecurringTransfer] = useCreateRecurringTransferMutation({
     refetchQueries: ['ReportsSavingsFundTransfer', 'ReportsStaffExpenses'],
     awaitRefetchQueries: true,
-    onCompleted: () => {
-      setUpdatedAt();
-    },
   });
   const [createTransferMutation] = useCreateTransferMutation({
     refetchQueries: ['ReportsSavingsFundTransfer', 'ReportsStaffExpenses'],
     awaitRefetchQueries: true,
-    onCompleted: () => {
-      setUpdatedAt();
-    },
   });
   const [updateRecurringTransfer] = useUpdateRecurringTransferMutation({
     refetchQueries: ['ReportsSavingsFundTransfer', 'ReportsStaffExpenses'],
     awaitRefetchQueries: true,
-    onCompleted: () => {
-      setUpdatedAt();
-    },
   });
-
-  const { setUpdatedAt } = useUpdatedAtContext();
 
   const type = data.type || TransferTypeEnum.New;
   const isNew = type === TransferTypeEnum.New;
@@ -237,8 +225,6 @@ export const TransferModal: React.FC<TransferModalProps> = ({
           },
         });
       }
-
-      setUpdatedAt();
 
       enqueueSnackbar(successMessage, {
         variant: 'success',
