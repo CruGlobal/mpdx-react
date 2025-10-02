@@ -4,6 +4,7 @@ import { Filters } from 'src/components/Reports/StaffExpenseReport/SettingsDialo
 import { Transaction } from 'src/components/Reports/StaffExpenseReport/StaffExpenseReport';
 import {
   BreakdownByMonth,
+  BreakdownByMonthWithTransactions,
   Fund,
   StaffExpenseCategoryEnum,
 } from 'src/graphql/types.generated';
@@ -76,12 +77,15 @@ export const filterTransactions = ({
 };
 
 const mapTransactionToCategory = (
-  transaction: BreakdownByMonth,
+  transaction: BreakdownByMonth | BreakdownByMonthWithTransactions,
   fundType: Fund['fundType'],
   category: StaffExpenseCategoryEnum,
   displayCategory: string,
 ): Transaction => ({
-  ...transaction,
+  month: transaction.month,
+  total: transaction.total,
+  transactions:
+    'transactions' in transaction ? transaction.transactions : undefined,
   fundType,
   category: category,
   displayCategory,

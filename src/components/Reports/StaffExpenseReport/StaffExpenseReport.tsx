@@ -25,7 +25,7 @@ import {
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import {
-  BreakdownByMonth,
+  BreakdownByMonthWithTransactions,
   Fund,
   StaffExpenseCategoryEnum,
   StaffExpensesSubCategoryEnum,
@@ -102,7 +102,7 @@ const StyledCardsBox = styled(Box)({
   gap: theme.spacing(4),
 });
 
-export interface Transaction extends BreakdownByMonth {
+export interface Transaction extends BreakdownByMonthWithTransactions {
   fundType: string;
   category: StaffExpenseCategoryEnum;
   subcategory?: StaffExpensesSubCategoryEnum;

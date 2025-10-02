@@ -55,16 +55,16 @@ describe('StaffReportTable', () => {
     const { getByRole, findByRole } = render(<TestComponent />);
 
     expect(
-      await findByRole('columnheader', { name: 'Date' })
+      await findByRole('columnheader', { name: 'Date' }),
     ).toBeInTheDocument();
     expect(getByRole('gridcell', { name: 'Jan 1, 2025' })).toBeInTheDocument();
     expect(
-      getByRole('columnheader', { name: 'Description' })
+      getByRole('columnheader', { name: 'Description' }),
     ).toBeInTheDocument();
     expect(
       getByRole('gridcell', {
         name: 'Additional Salary',
-      })
+      }),
     ).toBeInTheDocument();
     expect(getByRole('columnheader', { name: 'Amount' })).toBeInTheDocument();
     expect(getByRole('gridcell', { name: '-$100' })).toBeInTheDocument();
@@ -72,7 +72,7 @@ describe('StaffReportTable', () => {
 
   it('renders loading spinner when loading prop is true', async () => {
     const { findByTestId } = render(
-      <TestComponent tableProps={{ loading: true }} />
+      <TestComponent tableProps={{ loading: true }} />,
     );
 
     expect(await findByTestId('loading-spinner')).toBeInTheDocument();
@@ -88,7 +88,7 @@ describe('StaffReportTable', () => {
         tableType={TableType.Expenses}
         transferTotal={0}
         emptyPlaceholder={<span>Empty Table</span>}
-      />
+      />,
     );
     expect(await findByText('Empty Table')).toBeInTheDocument();
   });
@@ -98,7 +98,7 @@ describe('StaffReportTable', () => {
 
     const dateHeader = await findByRole('columnheader', { name: 'Date' });
     expect(
-      within(dateHeader).getByTestId('ArrowDownwardIcon')
+      within(dateHeader).getByTestId('ArrowDownwardIcon'),
     ).toBeInTheDocument();
 
     userEvent.click(await findByRole('columnheader', { name: 'Amount' }));
@@ -121,7 +121,7 @@ describe('StaffReportTable', () => {
     await waitFor(() =>
       expect(mutationSpy).not.toHaveGraphqlOperation('ReportsStaffExpenses', {
         pageSize: 10,
-      })
+      }),
     );
   });
 });
