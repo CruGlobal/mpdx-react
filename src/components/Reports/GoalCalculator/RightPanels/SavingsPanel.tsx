@@ -1,7 +1,7 @@
 import React from 'react';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { useGoalCalculator } from '../Shared/GoalCalculatorContext';
+import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import { RightPanel } from './RightPanel';
 
 const MonthlySavingsTable = styled('table')({
@@ -10,7 +10,7 @@ const MonthlySavingsTable = styled('table')({
 
 export const SavingsPanel: React.FC = () => {
   const { t } = useTranslation();
-  const { goalMiscConstants } = useGoalCalculator();
+  const { goalMiscConstants } = useGoalCalculatorConstants();
 
   return (
     <RightPanel title={t('Emergency Savings Guide')}>

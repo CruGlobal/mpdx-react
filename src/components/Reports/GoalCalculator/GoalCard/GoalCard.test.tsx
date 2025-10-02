@@ -4,8 +4,12 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
-import { goalCalculationMock } from '../GoalCalculatorTestWrapper';
+import {
+  constantsMock,
+  goalCalculationMock,
+} from '../GoalCalculatorTestWrapper';
 import { GoalCard } from './GoalCard';
 
 const mutationSpy = jest.fn();
@@ -17,7 +21,12 @@ interface TestComponentProps {
 const TestComponent: React.FC<TestComponentProps> = ({ primary = false }) => (
   <TestRouter>
     <ThemeProvider theme={theme}>
-      <GqlMockedProvider onCall={mutationSpy}>
+      <GqlMockedProvider<{
+        GoalCalculatorConstants: GoalCalculatorConstantsQuery;
+      }>
+        onCall={mutationSpy}
+        mocks={{ GoalCalculatorConstants: constantsMock }}
+      >
         <GoalCard
           goal={{ ...goalCalculationMock, id: 'goal-1', primary }}
           renderStar
@@ -85,6 +94,6 @@ describe('GoalCard', () => {
 
   it('calculates goal total', () => {
     const { getByTestId } = render(<TestComponent />);
-    expect(getByTestId('goal-amount-value')).toHaveTextContent('$9,029.79');
+    expect(getByTestId('goal-amount-value')).toHaveTextContent('$7,814.89');
   });
 });
