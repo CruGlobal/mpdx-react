@@ -4,6 +4,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
+import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import { DateRange } from '../Helpers/StaffReportEnum';
 import { Filters, SettingsDialog, SettingsDialogProps } from './SettingsDialog';
 
@@ -11,12 +12,18 @@ const TestComponent: React.FC<SettingsDialogProps> = ({
   isOpen,
   onClose,
   selectedFilters,
+  categoryFilterOptions = [
+    StaffExpenseCategoryEnum.Benefits,
+    StaffExpenseCategoryEnum.Salary,
+    StaffExpenseCategoryEnum.Donation,
+  ],
 }) => (
   <LocalizationProvider dateAdapter={AdapterLuxon}>
     <SettingsDialog
       isOpen={isOpen}
       onClose={onClose}
       selectedFilters={selectedFilters}
+      categoryFilterOptions={categoryFilterOptions}
     />
   </LocalizationProvider>
 );
@@ -68,9 +75,7 @@ describe('SettingsDialog', () => {
 
     expect(getByRole('checkbox', { name: 'Benefits' })).toBeInTheDocument();
     expect(getByRole('checkbox', { name: 'Salary' })).toBeInTheDocument();
-    expect(
-      getByRole('checkbox', { name: 'Contributions' }),
-    ).toBeInTheDocument();
+    expect(getByRole('checkbox', { name: 'Donation' })).toBeInTheDocument();
   });
 
   it('should populate form with selectedFilters when provided', () => {
@@ -78,7 +83,10 @@ describe('SettingsDialog', () => {
       selectedDateRange: DateRange.MonthToDate,
       startDate: null,
       endDate: null,
-      categories: ['Benefits', 'Salary'],
+      categories: [
+        StaffExpenseCategoryEnum.Benefits,
+        StaffExpenseCategoryEnum.Salary,
+      ],
     };
 
     const { getByRole } = render(
@@ -92,7 +100,7 @@ describe('SettingsDialog', () => {
 
     expect(getByRole('checkbox', { name: 'Benefits' })).toBeChecked();
     expect(getByRole('checkbox', { name: 'Salary' })).toBeChecked();
-    expect(getByRole('checkbox', { name: 'Contributions' })).not.toBeChecked();
+    expect(getByRole('checkbox', { name: 'Donation' })).not.toBeChecked();
   });
 
   it('should clear custom dates when selectedDateRange is set', () => {
@@ -217,7 +225,7 @@ describe('SettingsDialog', () => {
         selectedDateRange: null,
         startDate: null,
         endDate: null,
-        categories: ['Benefits'],
+        categories: [StaffExpenseCategoryEnum.Benefits],
       });
     });
   });
@@ -253,7 +261,7 @@ describe('SettingsDialog', () => {
       selectedDateRange: DateRange.WeekToDate,
       startDate: null,
       endDate: null,
-      categories: ['Salary'],
+      categories: [StaffExpenseCategoryEnum.Salary],
     };
 
     const { getByLabelText, getByRole } = render(
@@ -264,7 +272,7 @@ describe('SettingsDialog', () => {
       />,
     );
 
-    userEvent.click(getByLabelText('Benefits'));
+    userEvent.click(getByLabelText('Salary'));
     userEvent.click(getByRole('button', { name: 'Cancel' }));
 
     expect(onClose).toHaveBeenCalledWith(originalFilters);
@@ -339,7 +347,7 @@ describe('SettingsDialog', () => {
       selectedDateRange: null,
       startDate: null,
       endDate: null,
-      categories: null,
+      categories: [],
     };
 
     const { getByLabelText } = render(
