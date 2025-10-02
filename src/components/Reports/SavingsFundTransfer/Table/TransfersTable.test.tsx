@@ -184,7 +184,7 @@ describe('TransferHistoryTable', () => {
       expect(dialog).toBeVisible();
     });
 
-    it('closes the calendar when Cancel is clicked', async () => {
+    it('close calendar when Cancel is clicked', async () => {
       const { getByRole, findByRole } = render(<TestComponent />);
 
       const iconRow = getByRole('row', {
@@ -208,6 +208,42 @@ describe('TransferHistoryTable', () => {
 
       expect(dialog).not.toBeVisible();
     });
+  });
+
+  it('opens modal when Clear is clicked and updates when confirmed', async () => {
+    const { getByRole, findByRole, findByText } = render(<TestComponent />);
+
+    const iconRow = getByRole('row', {
+      name: 'Primary Account Arrow Savings Account $1,200.00 Monthly ongoing Sep 25, 2023 Sep 25, 2025 Long-term savings Stop Transfer',
+    });
+    const cells = within(iconRow).getAllByRole('gridcell');
+    const actionCell = cells[7];
+    const icon = within(actionCell).getByRole('button', {
+      name: 'Edit Stop Date',
+    });
+
+    userEvent.click(icon);
+
+    const dialog = await findByRole('dialog');
+    expect(dialog).toBeVisible();
+
+    userEvent.click(within(dialog).getByRole('button', { name: 'Clear' }));
+
+    expect(await findByText('Confirm Clear')).toBeInTheDocument();
+    await userEvent.click(getByRole('button', { name: 'Yes' }));
+
+    expect(mutationSpy).toHaveBeenCalled();
+
+    await waitFor(() => {
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Stop date updated successfully',
+        {
+          variant: 'success',
+        },
+      );
+    });
+
+    expect(dialog).not.toBeVisible();
   });
 
   it('updates end date when Ok is clicked', async () => {
