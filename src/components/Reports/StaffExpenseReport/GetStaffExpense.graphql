@@ -19,6 +19,12 @@ query ReportsStaffExpenses($startMonth: ISO8601Date, $endMonth: ISO8601Date) {
           breakdownByMonth {
             month
             total
+            transactions {
+              id
+              amount
+              transactedAt
+              description
+            }
           }
         }
         breakdownByMonth {
