@@ -58,11 +58,7 @@ const TabPanel: React.FC<TabPanelProps> = ({ children, value, index }) => {
   );
 };
 
-interface InformationCategoryProps {
-  handlePageChange?: (page: string) => void;
-}
-
-export const InformationCategory: React.FC<InformationCategoryProps> = () => {
+export const InformationCategory: React.FC = () => {
   const [value, setValue] = useState(0);
   const { t } = useTranslation();
   const { data: userData } = useGetUserQuery();
