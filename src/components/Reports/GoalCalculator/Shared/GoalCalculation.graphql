@@ -1,3 +1,29 @@
+fragment GoalCalculationSettings on GoalCalculation {
+  name
+  firstName
+  spouseFirstName
+  lastName
+  ministryLocation
+  role
+  yearsOnStaff
+  spouseYearsOnStaff
+  age
+  spouseAge
+  childrenNamesAges
+  netPaycheckAmount
+  spouseNetPaycheckAmount
+  taxesPercentage
+  spouseTaxesPercentage
+  secaExempt
+  spouseSecaExempt
+  rothContributionPercentage
+  spouseRothContributionPercentage
+  traditionalContributionPercentage
+  spouseTraditionalContributionPercentage
+  mhaAmount
+  spouseMhaAmount
+}
+
 fragment BudgetFamily on BudgetFamily {
   id
   label
@@ -24,7 +50,7 @@ query GoalCalculation($accountListId: ID!, $id: ID!) {
   goalCalculation(accountListId: $accountListId, id: $id) {
     id
     primary
-    name
+    ...GoalCalculationSettings
     updatedAt
     ministryFamily {
       ...BudgetFamily

@@ -7,24 +7,33 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { Field, FieldProps } from 'formik';
 import { useTranslation } from 'react-i18next';
+import * as yup from 'yup';
 import { useGoalCalculator } from 'src/components/Reports/GoalCalculator/Shared/GoalCalculatorContext';
 import {
   CurrencyAdornment,
   PercentageAdornment,
 } from '../../../../Shared/Adornments';
+import { AutosaveTextField } from '../../Autosave/AutosaveTextField';
+import { useSaveField } from '../../Autosave/useSaveField';
 import { Contribution403bHelperPanel } from '../InformationHelperPanel/Contribution403bHelperPanel';
 
 interface InformationCategoryFinancialFormProps {
+  schema: yup.Schema;
   isSpouse?: boolean;
 }
 
 export const InformationCategoryFinancialForm: React.FC<
   InformationCategoryFinancialFormProps
-> = ({ isSpouse }) => {
+> = ({ schema, isSpouse }) => {
   const { t } = useTranslation();
-  const { setRightPanelContent } = useGoalCalculator();
+  const {
+    setRightPanelContent,
+    goalCalculationResult: { data },
+  } = useGoalCalculator();
+
+  const saveField = useSaveField();
+  const secaField = isSpouse ? 'spouseSecaExempt' : 'secaExempt';
 
   return (
     <>
@@ -41,167 +50,152 @@ export const InformationCategoryFinancialForm: React.FC<
 
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <Field name="paycheckAmount">
-            {({ field, meta }: FieldProps) => (
-              <TextField
-                {...field}
-                fullWidth
-                size="small"
-                label={
-                  isSpouse
-                    ? t('Spouse Net Paycheck Amount')
-                    : t('Net Paycheck Amount')
-                }
-                type="number"
-                error={meta.touched && Boolean(meta.error)}
-                helperText={meta.touched && meta.error}
-                variant="outlined"
-                inputProps={{ min: 0, step: 0.01 }}
-                InputProps={{
-                  startAdornment: <CurrencyAdornment />,
-                }}
-              />
-            )}
-          </Field>
+          <AutosaveTextField
+            fieldName={
+              isSpouse ? 'spouseNetPaycheckAmount' : 'netPaycheckAmount'
+            }
+            schema={schema}
+            fullWidth
+            size="small"
+            label={
+              isSpouse
+                ? t('Spouse Net Paycheck Amount')
+                : t('Net Paycheck Amount')
+            }
+            type="number"
+            variant="outlined"
+            inputProps={{ min: 0, step: 0.01 }}
+            InputProps={{
+              startAdornment: <CurrencyAdornment />,
+            }}
+          />
         </Grid>
 
         <Grid item xs={12}>
-          <Field name="taxes">
-            {({ field, meta }: FieldProps) => (
-              <TextField
-                {...field}
-                fullWidth
-                size="small"
-                label={isSpouse ? t('Spouse Taxes (%)') : t('Taxes (%)')}
-                type="number"
-                error={meta.touched && Boolean(meta.error)}
-                helperText={meta.touched && meta.error}
-                variant="outlined"
-                inputProps={{ min: 0, max: 100, step: 0.01 }}
-                InputProps={{
-                  endAdornment: <PercentageAdornment />,
-                }}
-              />
-            )}
-          </Field>
+          <AutosaveTextField
+            fieldName={isSpouse ? 'spouseTaxesPercentage' : 'taxesPercentage'}
+            schema={schema}
+            fullWidth
+            size="small"
+            label={isSpouse ? t('Spouse Taxes') : t('Taxes')}
+            type="number"
+            variant="outlined"
+            inputProps={{ min: 0, max: 100, step: 1 }}
+            InputProps={{
+              endAdornment: <PercentageAdornment />,
+            }}
+          />
         </Grid>
 
         <Grid item xs={12}>
-          <Field name="secaStatus">
-            {({ field, meta }: FieldProps) => (
-              <TextField
-                {...field}
-                fullWidth
-                size="small"
-                select
-                label={
-                  isSpouse
-                    ? t('Spouse SECA (Social Security) Status')
-                    : t('SECA (Social Security) Status')
-                }
-                error={meta.touched && Boolean(meta.error)}
-                helperText={meta.touched && meta.error}
-                variant="outlined"
-              >
-                <MenuItem value="">{t('Select SECA Status')}</MenuItem>
-                <MenuItem value="exempt">{t('Exempt')}</MenuItem>
-                <MenuItem value="non-exempt">{t('Non-Exempt')}</MenuItem>
-              </TextField>
-            )}
-          </Field>
+          <TextField
+            value={data?.goalCalculation[secaField]?.toString()}
+            onChange={(event) => {
+              saveField({ [secaField]: event.target.value === 'true' });
+            }}
+            fullWidth
+            size="small"
+            select
+            label={
+              isSpouse
+                ? t('Spouse SECA (Social Security) Status')
+                : t('SECA (Social Security) Status')
+            }
+            variant="outlined"
+          >
+            <MenuItem value="false">{t('Non-Exempt')}</MenuItem>
+            <MenuItem value="true">{t('Exempt')}</MenuItem>
+          </TextField>
         </Grid>
 
         <Grid item xs={12}>
-          <Field name="contributionRoth403b">
-            {({ field, meta }: FieldProps) => (
-              <TextField
-                {...field}
-                fullWidth
-                size="small"
-                label={
-                  isSpouse
-                    ? t('Spouse Roth 403(b) Contributions')
-                    : t('Roth 403(b) Contributions')
-                }
-                type="number"
-                error={meta.touched && Boolean(meta.error)}
-                helperText={meta.touched && meta.error}
-                variant="outlined"
-                inputProps={{ min: 0, step: 0.01 }}
-                InputProps={{
-                  startAdornment: <CurrencyAdornment />,
-                  endAdornment: (
-                    <IconButton
-                      onClick={() =>
-                        setRightPanelContent(<Contribution403bHelperPanel />)
-                      }
-                    >
-                      <InfoIcon />
-                    </IconButton>
-                  ),
-                }}
-              />
-            )}
-          </Field>
+          <AutosaveTextField
+            fieldName={
+              isSpouse
+                ? 'spouseRothContributionPercentage'
+                : 'rothContributionPercentage'
+            }
+            schema={schema}
+            fullWidth
+            size="small"
+            label={
+              isSpouse
+                ? t('Spouse Roth 403(b) Contributions')
+                : t('Roth 403(b) Contributions')
+            }
+            type="number"
+            variant="outlined"
+            inputProps={{ min: 0, max: 100, step: 1 }}
+            InputProps={{
+              endAdornment: (
+                <>
+                  <PercentageAdornment />
+                  <IconButton
+                    onClick={() =>
+                      setRightPanelContent(<Contribution403bHelperPanel />)
+                    }
+                  >
+                    <InfoIcon />
+                  </IconButton>
+                </>
+              ),
+            }}
+          />
         </Grid>
 
         <Grid item xs={12}>
-          <Field name="contributionTraditional403b">
-            {({ field, meta }: FieldProps) => (
-              <TextField
-                {...field}
-                fullWidth
-                size="small"
-                label={
-                  isSpouse
-                    ? t('Spouse Traditional 403(b) Contributions')
-                    : t('Traditional 403(b) Contributions')
-                }
-                type="number"
-                error={meta.touched && Boolean(meta.error)}
-                helperText={meta.touched && meta.error}
-                variant="outlined"
-                inputProps={{ min: 0, step: 0.01 }}
-                InputProps={{
-                  startAdornment: <CurrencyAdornment />,
-                  endAdornment: (
-                    <IconButton
-                      onClick={() =>
-                        setRightPanelContent(<Contribution403bHelperPanel />)
-                      }
-                    >
-                      <InfoIcon />
-                    </IconButton>
-                  ),
-                }}
-              />
-            )}
-          </Field>
+          <AutosaveTextField
+            fieldName={
+              isSpouse
+                ? 'spouseTraditionalContributionPercentage'
+                : 'traditionalContributionPercentage'
+            }
+            schema={schema}
+            fullWidth
+            size="small"
+            label={
+              isSpouse
+                ? t('Spouse Traditional 403(b) Contributions')
+                : t('Traditional 403(b) Contributions')
+            }
+            type="number"
+            variant="outlined"
+            inputProps={{ min: 0, max: 100, step: 1 }}
+            InputProps={{
+              endAdornment: (
+                <>
+                  <PercentageAdornment />
+                  <IconButton
+                    onClick={() =>
+                      setRightPanelContent(<Contribution403bHelperPanel />)
+                    }
+                  >
+                    <InfoIcon />
+                  </IconButton>
+                </>
+              ),
+            }}
+          />
         </Grid>
 
         <Grid item xs={12}>
-          <Field name="mhaAmountPerPaycheck">
-            {({ field, meta }: FieldProps) => (
-              <TextField
-                {...field}
-                fullWidth
-                size="small"
-                label={
-                  isSpouse
-                    ? t('Spouse MHA Amount Per Paycheck')
-                    : t('MHA Amount Per Paycheck')
-                }
-                type="number"
-                error={meta.touched && Boolean(meta.error)}
-                helperText={meta.touched && meta.error}
-                variant="outlined"
-                inputProps={{ min: 0, step: 0.01 }}
-                InputProps={{
-                  startAdornment: <CurrencyAdornment />,
-                }}
-              />
-            )}
-          </Field>
+          <AutosaveTextField
+            fieldName={isSpouse ? 'spouseMhaAmount' : 'mhaAmount'}
+            schema={schema}
+            fullWidth
+            size="small"
+            label={
+              isSpouse
+                ? t('Spouse MHA Amount Per Paycheck')
+                : t('MHA Amount Per Paycheck')
+            }
+            type="number"
+            variant="outlined"
+            inputProps={{ min: 0, step: 1 }}
+            InputProps={{
+              startAdornment: <CurrencyAdornment />,
+            }}
+          />
         </Grid>
       </Grid>
     </>
