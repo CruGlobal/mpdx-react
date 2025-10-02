@@ -18,6 +18,7 @@ import {
   MpdGoalBenefitsConstantPlanEnum,
   MpdGoalBenefitsConstantSizeEnum,
 } from 'src/graphql/types.generated';
+import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import { AutosaveTextField } from '../../Autosave/AutosaveTextField';
 import { useSaveField } from '../../Autosave/useSaveField';
 import { BenefitsPlanHelperPanel } from '../InformationHelperPanel/BenefitsPlanHelperPanel';
@@ -40,9 +41,9 @@ export const InformationCategoryPersonalForm: React.FC<
   const {
     goalCalculationResult: { data },
     setRightPanelContent,
-    goalGeographicConstantMap,
-    goalBenefitsConstantMap,
   } = useGoalCalculator();
+  const { goalGeographicConstantMap, goalBenefitsConstantMap } =
+    useGoalCalculatorConstants();
   const { geographicLocation, familySize, benefitsPlan } =
     data?.goalCalculation || {};
 

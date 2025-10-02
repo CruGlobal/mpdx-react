@@ -1,4 +1,7 @@
-import { PrimaryBudgetCategoryEnum } from 'src/graphql/types.generated';
+import {
+  MpdGoalBenefitsConstant,
+  PrimaryBudgetCategoryEnum,
+} from 'src/graphql/types.generated';
 import { BudgetFamilyFragment } from './GoalCalculation.generated';
 import type { ListGoalCalculationFragment } from '../GoalsList/GoalCalculations.generated';
 
@@ -24,6 +27,7 @@ export interface GoalTotals {
 
 export const calculateGoalTotals = (
   goalCalculation: ListGoalCalculationFragment | null,
+  benefitsPlans: Array<Pick<MpdGoalBenefitsConstant, 'size' | 'plan' | 'cost'>>,
 ): GoalTotals => {
   const netPaycheckAmount = goalCalculation?.netPaycheckAmount ?? 0;
   const spouseNetPaycheckAmount = goalCalculation?.spouseNetPaycheckAmount ?? 0;
@@ -75,7 +79,12 @@ export const calculateGoalTotals = (
   const ministryExpensesTotal = goalCalculation
     ? calculateFamilyTotal(goalCalculation.ministryFamily)
     : 0;
-  const benefitsCharge = goalCalculation ? 1008.6 : 0; /* TODO: mocked data */
+  const benefitsCharge =
+    benefitsPlans.find(
+      ({ plan, size }) =>
+        plan === goalCalculation?.benefitsPlan &&
+        size === goalCalculation?.familySize,
+    )?.cost ?? 0;
   const overallSubtotal = grossMonthlySalary + benefitsCharge;
   const overallSubtotalWithAdmin = overallSubtotal / 0.88;
   const overallTotal = overallSubtotalWithAdmin * 1.06;

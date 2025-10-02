@@ -2,6 +2,8 @@ fragment ListGoalCalculation on GoalCalculation {
   id
   name
   primary
+  familySize
+  benefitsPlan
   netPaycheckAmount
   spouseNetPaycheckAmount
   taxesPercentage

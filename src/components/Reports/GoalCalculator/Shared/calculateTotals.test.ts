@@ -1,5 +1,9 @@
 import { gqlMock } from '__tests__/util/graphqlMocking';
-import { PrimaryBudgetCategoryEnum } from 'src/graphql/types.generated';
+import {
+  MpdGoalBenefitsConstantPlanEnum,
+  MpdGoalBenefitsConstantSizeEnum,
+  PrimaryBudgetCategoryEnum,
+} from 'src/graphql/types.generated';
 import {
   ListGoalCalculationFragment,
   ListGoalCalculationFragmentDoc,
@@ -18,6 +22,8 @@ const mockGoal = gqlMock<ListGoalCalculationFragment>(
   ListGoalCalculationFragmentDoc,
   {
     mocks: {
+      familySize: MpdGoalBenefitsConstantSizeEnum.Single,
+      benefitsPlan: MpdGoalBenefitsConstantPlanEnum.Base,
       netPaycheckAmount: 2500,
       spouseNetPaycheckAmount: 2000,
       taxesPercentage: 20,
@@ -60,8 +66,20 @@ const mockFamily = gqlMock<BudgetFamilyFragment>(BudgetFamilyFragmentDoc, {
 });
 
 describe('calculateGoalTotals', () => {
+  const benefitsPlans = [
+    {
+      plan: MpdGoalBenefitsConstantPlanEnum.Base,
+      size: MpdGoalBenefitsConstantSizeEnum.MarriedNoChildren,
+      cost: 1910.54,
+    },
+    {
+      plan: MpdGoalBenefitsConstantPlanEnum.Base,
+      size: MpdGoalBenefitsConstantSizeEnum.Single,
+      cost: 1008.6,
+    },
+  ];
   it('should calculate goal totals correctly', async () => {
-    expect(calculateGoalTotals(mockGoal)).toEqual({
+    expect(calculateGoalTotals(mockGoal, benefitsPlans)).toEqual({
       netMonthlySalary: 4500,
       taxesPercentage: expect.closeTo(0.209, 3),
       taxes: expect.closeTo(940),
@@ -81,7 +99,7 @@ describe('calculateGoalTotals', () => {
   });
 
   it('returns 0 not NaN for missing goals', async () => {
-    expect(calculateGoalTotals(null)).toEqual({
+    expect(calculateGoalTotals(null, benefitsPlans)).toEqual({
       netMonthlySalary: 0,
       taxesPercentage: 0,
       taxes: 0,

@@ -14,6 +14,7 @@ import { DateTime } from 'luxon';
 import { Trans, useTranslation } from 'react-i18next';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
@@ -76,7 +77,7 @@ const StyledActionBox = styled(Box)({
 export interface GoalCardProps {
   goal: ListGoalCalculationFragment;
 
-  /** Remove this prop and always render the star once we do something with the primary flag*/
+  /** Remove this prop and always render the star once we do something with the primary flag */
   renderStar?: boolean;
 }
 
@@ -87,13 +88,16 @@ export const GoalCard: React.FC<GoalCardProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
   const accountListId = useAccountListId() ?? '';
+  const { goalBenefitsConstantMap } = useGoalCalculatorConstants();
   const [updateGoalCalculation] = useUpdateGoalCalculationMutation();
   const [deleteGoalCalculation] = useDeleteGoalCalculationMutation();
   const [deleting, setDeleting] = useState(false);
 
   const overallTotal = useMemo(
-    () => calculateGoalTotals(goal).overallTotal,
-    [goal],
+    () =>
+      calculateGoalTotals(goal, goalBenefitsConstantMap.values().toArray())
+        .overallTotal,
+    [goal, goalBenefitsConstantMap],
   );
 
   const handleStarClick = async () => {
