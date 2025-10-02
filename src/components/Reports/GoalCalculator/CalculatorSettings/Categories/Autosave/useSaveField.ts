@@ -19,8 +19,8 @@ export const useSaveField = () => {
         return;
       }
 
-      const unchanged = Object.entries(attributes).every(
-        ([key, value]) => goalCalculation[key] === value,
+      const unchanged = Object.keys(attributes).every(
+        (key) => goalCalculation[key] === attributes[key],
       );
       if (unchanged) {
         return;
