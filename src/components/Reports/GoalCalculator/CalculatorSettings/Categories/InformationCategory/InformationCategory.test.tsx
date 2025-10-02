@@ -4,7 +4,10 @@ import userEvent from '@testing-library/user-event';
 import { I18nextProvider } from 'react-i18next';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
-import { GoalCalculationAge } from 'src/graphql/types.generated';
+import {
+  GoalCalculationAge,
+  MpdGoalBenefitsConstantSizeEnum,
+} from 'src/graphql/types.generated';
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import i18n from 'src/lib/i18n';
 import {
@@ -17,14 +20,25 @@ import { InformationCategory } from './InformationCategory';
 
 const mutationSpy = jest.fn();
 
-const TestComponent = () => (
+interface TestComponentProps {
+  single?: boolean;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({ single = false }) => (
   <GqlMockedProvider<{
     GoalCalculation: GoalCalculationQuery;
     GoalCalculatorConstants: GoalCalculatorConstantsQuery;
     GetUser: GetUserQuery;
   }>
     mocks={{
-      GoalCalculation: goalCalculationMock,
+      GoalCalculation: {
+        goalCalculation: {
+          ...goalCalculationMock.goalCalculation,
+          familySize: single
+            ? MpdGoalBenefitsConstantSizeEnum.Single
+            : MpdGoalBenefitsConstantSizeEnum.MarriedNoChildren,
+        },
+      },
       GoalCalculatorConstants: constantsMock,
       GetUser: {
         user: {
@@ -47,23 +61,36 @@ const TestComponent = () => (
 
 describe('InformationCategory', () => {
   it('toggles to spouse information when button is clicked', async () => {
-    const { getByRole, queryByTestId, getByTestId } = render(<TestComponent />);
+    const { findByRole, queryByTestId, getByTestId } = render(
+      <TestComponent />,
+    );
 
     expect(queryByTestId('spouse-personal-tab')).not.toBeInTheDocument();
     expect(queryByTestId('spouse-financial-tab')).not.toBeInTheDocument();
 
-    userEvent.click(getByRole('button', { name: 'View Spouse' }));
+    userEvent.click(await findByRole('button', { name: 'View Spouse' }));
 
     expect(getByTestId('spouse-personal-tab')).toBeInTheDocument();
     expect(getByTestId('spouse-financial-tab')).toBeInTheDocument();
   });
 
   it('shows user information by default', () => {
-    const { getByTestId, getByRole } = render(<TestComponent />);
+    const { getByTestId } = render(<TestComponent />);
 
-    expect(getByRole('button', { name: 'View Spouse' })).toBeInTheDocument();
     expect(getByTestId('personal-tab')).toBeInTheDocument();
     expect(getByTestId('financial-tab')).toBeInTheDocument();
+  });
+
+  it('hides view spouse button if the user has no spouse', async () => {
+    const { getByRole, queryByRole } = render(<TestComponent single />);
+
+    await waitFor(() =>
+      expect(getByRole('textbox', { name: 'First Name' })).toHaveValue('John'),
+    );
+
+    expect(
+      queryByRole('button', { name: 'View Spouse' }),
+    ).not.toBeInTheDocument();
   });
 
   it("renders the user's first name", async () => {
@@ -129,10 +156,10 @@ describe('InformationCategory', () => {
     });
 
     it('updates the spouse MHA amount', async () => {
-      const { getByRole } = render(<TestComponent />);
+      const { getByRole, findByRole } = render(<TestComponent />);
 
       userEvent.click(getByRole('tab', { name: 'Financial' }));
-      userEvent.click(getByRole('button', { name: 'View Spouse' }));
+      userEvent.click(await findByRole('button', { name: 'View Spouse' }));
       const input = getByRole('spinbutton', {
         name: 'Spouse MHA Amount Per Paycheck',
       });

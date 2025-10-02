@@ -21,6 +21,7 @@ import {
   MpdGoalBenefitsConstantPlanEnum,
   MpdGoalBenefitsConstantSizeEnum,
 } from 'src/graphql/types.generated';
+import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
 import { InformationCategoryFinancialForm } from './InformationCategoryForm/InformationCategoryFinancialForm';
 import { InformationCategoryPersonalForm } from './InformationCategoryForm/InformationCategoryPersonalForm';
 import { amount, integer, percentage } from './schema';
@@ -62,6 +63,9 @@ export const InformationCategory: React.FC = () => {
   const [value, setValue] = useState(0);
   const { t } = useTranslation();
   const { data: userData } = useGetUserQuery();
+  const {
+    goalCalculationResult: { data },
+  } = useGoalCalculator();
 
   const validationSchema = useMemo(
     () =>
@@ -139,23 +143,25 @@ export const InformationCategory: React.FC = () => {
     setValue(newValue);
   };
 
-  // Someone may or may not have a spouse,
-  // set to null until query when we have real data
-  const [spouseInformation, setSpouseInformation] = useState<boolean | null>(
-    false,
-  );
+  const familySize = data?.goalCalculation.familySize;
+  const hasSpouse =
+    familySize === MpdGoalBenefitsConstantSizeEnum.MarriedNoChildren ||
+    familySize === MpdGoalBenefitsConstantSizeEnum.MarriedOneToTwoChildren ||
+    familySize === MpdGoalBenefitsConstantSizeEnum.MarriedThreeOrMoreChildren;
+
+  const [viewingSpouse, setViewingSpouse] = useState(false);
   const buttonText = useMemo(() => {
-    if (!spouseInformation) {
+    if (!viewingSpouse) {
       return t('View Spouse');
     }
     if (userData?.user.firstName) {
       return t('View {{spouseName}}', { spouseName: userData.user.firstName });
     }
     return t('View Your Information');
-  }, [spouseInformation, userData?.user.firstName, t]);
+  }, [viewingSpouse, userData?.user.firstName, t]);
 
   const onClickSpouseInformation = () => {
-    setSpouseInformation(!spouseInformation);
+    setViewingSpouse(!viewingSpouse);
   };
 
   return (
@@ -183,7 +189,7 @@ export const InformationCategory: React.FC = () => {
             {userData?.user.firstName ?? t('User')}
           </Typography>
         </Box>
-        {spouseInformation !== null && (
+        {hasSpouse && (
           <Button
             endIcon={<RightArrowIcon />}
             onClick={onClickSpouseInformation}
@@ -193,7 +199,7 @@ export const InformationCategory: React.FC = () => {
         )}
       </Box>
 
-      {!spouseInformation && (
+      {!viewingSpouse && (
         <StyledCard>
           <StyledInfoBox>
             <StyledTabs
@@ -226,7 +232,7 @@ export const InformationCategory: React.FC = () => {
         </StyledCard>
       )}
 
-      {spouseInformation && (
+      {viewingSpouse && (
         <StyledCard>
           <StyledInfoBox>
             <StyledTabs
