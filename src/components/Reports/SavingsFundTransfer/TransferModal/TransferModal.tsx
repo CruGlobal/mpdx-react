@@ -39,12 +39,10 @@ import {
   useCreateTransferMutation,
   useUpdateRecurringTransferMutation,
 } from '../TransferMutations.generated';
-import { useUpdatedAtContext } from '../UpdatedAtContext/UpdateAtContext';
 import { ScheduleEnum, TransferModalData, TransferTypeEnum } from '../mockData';
 import { FundInfoDisplay } from './Helper/FundInfoDisplay';
 import { TransferModalSelect } from './TransferModalSelect/TransferModalSelect';
 
-type Fund = Pick<FundFieldsFragment, 'fundType' | 'balance'>;
 interface TransferFormValues {
   transferFrom: string;
   transferTo: string;
@@ -151,26 +149,15 @@ export const TransferModal: React.FC<TransferModalProps> = ({
   const [createRecurringTransfer] = useCreateRecurringTransferMutation({
     refetchQueries: ['ReportsSavingsFundTransfer', 'ReportsStaffExpenses'],
     awaitRefetchQueries: true,
-    onCompleted: () => {
-      setUpdatedAt();
-    },
   });
   const [createTransferMutation] = useCreateTransferMutation({
     refetchQueries: ['ReportsSavingsFundTransfer', 'ReportsStaffExpenses'],
     awaitRefetchQueries: true,
-    onCompleted: () => {
-      setUpdatedAt();
-    },
   });
   const [updateRecurringTransfer] = useUpdateRecurringTransferMutation({
     refetchQueries: ['ReportsSavingsFundTransfer', 'ReportsStaffExpenses'],
     awaitRefetchQueries: true,
-    onCompleted: () => {
-      setUpdatedAt();
-    },
   });
-
-  const { setUpdatedAt } = useUpdatedAtContext();
 
   const type = data.type || TransferTypeEnum.New;
   const isNew = type === TransferTypeEnum.New;
@@ -237,8 +224,6 @@ export const TransferModal: React.FC<TransferModalProps> = ({
           },
         });
       }
-
-      setUpdatedAt();
 
       enqueueSnackbar(successMessage, {
         variant: 'success',
@@ -403,16 +388,14 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                           alignItems: 'center',
                         }}
                       >
-                        <FundInfoDisplay fund={fund as Fund} />
+                        <FundInfoDisplay fund={fund} />
                       </Grid>
                       <Grid item xs={12} sm={1} sx={{ textAlign: 'center' }}>
                         <East />
                       </Grid>
                       <Grid item xs={12} sm={5.5}>
                         <FundInfoDisplay
-                          fund={
-                            funds.find((f) => f.fundType === transferTo) as Fund
-                          }
+                          fund={funds.find((f) => f.fundType === transferTo)}
                         />
                       </Grid>
                     </Grid>
@@ -434,10 +417,8 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                           setFieldValue('schedule', value);
                           if (value === ScheduleEnum.Monthly) {
                             setFieldTouched('transferDate', true, false);
-                            validateField('transferDate');
-                          } else {
-                            validateField('transferDate');
                           }
+                          validateField('transferDate');
                         }}
                       >
                         <FormControlLabel

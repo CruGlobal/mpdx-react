@@ -1,13 +1,6 @@
 import { useState } from 'react';
+import { DialogActions, DialogContent, DialogContentText } from '@mui/material';
 import {
-  Box,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  Typography,
-} from '@mui/material';
-import {
-  DatePickerToolbarProps,
   MobileDatePicker,
   PickersActionBar,
   PickersActionBarProps,
@@ -19,13 +12,10 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
-import { useLocale } from 'src/hooks/useLocale';
-import { dayMonthFormat } from 'src/lib/intlFormat';
 import { ActionTypeEnum } from '../mockData';
+import { CalendarTypeProvider } from './CalendarContext/CalendarTypeContext';
+import { CalendarTitle } from './CalendarTitle';
 
-type CalendarTitleProps = DatePickerToolbarProps<DateTime> & {
-  type: ActionTypeEnum | undefined;
-};
 interface CustomEditCalendarProps {
   open?: boolean;
   value: DateTime | null;
@@ -76,37 +66,6 @@ function ConfirmClear(props: PickersActionBarProps) {
   );
 }
 
-const CalendarTitle: React.FC<CalendarTitleProps> = ({
-  value,
-  className,
-  type,
-}) => {
-  const { t } = useTranslation();
-  const locale = useLocale();
-  return (
-    <Box
-      className={className}
-      sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        p: 2,
-      }}
-    >
-      <Typography variant="h6" sx={{ mb: 2 }}>
-        {type === ActionTypeEnum.Edit ? t('EDIT DATE') : t('ADD DATE')}
-      </Typography>
-      <Typography variant="body1">{t('Select End Date')}</Typography>
-      <Typography variant="h3">
-        {value
-          ? dayMonthFormat(value.day, value.month, locale, { weekday: 'short' })
-          : '--'}
-      </Typography>
-    </Box>
-  );
-};
-
 export const CustomEditCalendar: React.FC<CustomEditCalendarProps> = ({
   open,
   value,
@@ -116,27 +75,28 @@ export const CustomEditCalendar: React.FC<CustomEditCalendarProps> = ({
   minDate,
   type,
 }) => {
-  const Toolbar: React.FC<DatePickerToolbarProps<DateTime>> = (props) => (
-    <CalendarTitle {...props} type={type} />
-  );
-
   return (
-    <MobileDatePicker<DateTime>
-      open={open}
-      value={value}
-      onChange={onChange}
-      onClose={onClose}
-      onAccept={onAccept}
-      minDate={minDate}
-      slots={{ toolbar: Toolbar, actionBar: ConfirmClear }}
-      slotProps={{
-        textField: {
-          sx: { display: 'none' },
-        },
-        actionBar: {
-          actions: ['accept', 'cancel', 'clear'],
-        },
-      }}
-    />
+    <CalendarTypeProvider type={type ?? ActionTypeEnum.Add}>
+      <MobileDatePicker<DateTime>
+        open={open}
+        value={value}
+        onChange={onChange}
+        onClose={onClose}
+        onAccept={onAccept}
+        minDate={minDate}
+        slots={{
+          toolbar: CalendarTitle,
+          actionBar: ConfirmClear,
+        }}
+        slotProps={{
+          textField: {
+            sx: { display: 'none' },
+          },
+          actionBar: {
+            actions: ['accept', 'cancel', 'clear'],
+          },
+        }}
+      />
+    </CalendarTypeProvider>
   );
 };

@@ -10,7 +10,7 @@ import {
   IconButton,
   Typography,
 } from '@mui/material';
-import { TFunction } from 'i18next';
+import { TFunction } from 'react-i18next';
 import { currencyFormat } from 'src/lib/intlFormat';
 import {
   ScheduleEnum,
@@ -72,7 +72,7 @@ export function populateTransferRows(options: Options) {
 
     return (
       <Typography variant="body2" noWrap>
-        {t('N/A') as string}
+        {t('N/A')}
       </Typography>
     );
   };
@@ -126,13 +126,13 @@ export function populateTransferRows(options: Options) {
     if (row.schedule === ScheduleEnum.OneTime) {
       return (
         <Typography variant="body2" noWrap>
-          {t('One Time') as string}
+          {t('One Time')}
         </Typography>
       );
     } else {
       return (
         <Typography variant="body2" noWrap>
-          {t('Monthly') as string}
+          {t('Monthly')}
         </Typography>
       );
     }

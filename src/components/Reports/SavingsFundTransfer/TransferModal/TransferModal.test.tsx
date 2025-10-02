@@ -15,7 +15,6 @@ import {
   CreateTransferMutation,
   UpdateRecurringTransferMutation,
 } from '../TransferMutations.generated';
-import { UpdatedAtProvider } from '../UpdatedAtContext/UpdateAtContext';
 import {
   ScheduleEnum,
   TransferModalData,
@@ -84,16 +83,14 @@ const Components = ({
             onCall={mutationSpy}
           >
             <StaffSavingFundProvider>
-              <UpdatedAtProvider>
-                <TransferModal
-                  data={{
-                    type,
-                    transfer,
-                  }}
-                  funds={fundsMock}
-                  handleClose={handleClose}
-                />
-              </UpdatedAtProvider>
+              <TransferModal
+                data={{
+                  type,
+                  transfer,
+                }}
+                funds={fundsMock}
+                handleClose={handleClose}
+              />
             </StaffSavingFundProvider>
           </GqlMockedProvider>
         </TestRouter>

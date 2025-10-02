@@ -32,7 +32,6 @@ import { EmptyTable } from '../Table/EmptyTable';
 import { PrintTable } from '../Table/PrintTable';
 import { TransfersTable } from '../Table/TransfersTable';
 import { DynamicTransferModal } from '../TransferModal/DynamicTransferModal';
-import { UpdatedAtProvider } from '../UpdatedAtContext/UpdateAtContext';
 import {
   FundTypeEnum,
   ScheduleEnum,
@@ -98,11 +97,12 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
           recurringTransfer: tx.recurringTransfer
             ? {
                 ...tx.recurringTransfer,
-                recurringStart: tx.recurringTransfer.recurringStart
-                  ? DateTime.fromISO(tx.recurringTransfer.recurringStart, {
-                      setZone: true,
-                    })
-                  : null,
+                recurringStart: DateTime.fromISO(
+                  tx.recurringTransfer.recurringStart,
+                  {
+                    setZone: true,
+                  },
+                ),
                 recurringEnd: tx.recurringTransfer.recurringEnd
                   ? DateTime.fromISO(tx.recurringTransfer.recurringEnd, {
                       setZone: true,
@@ -133,20 +133,20 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
 
     return {
       id: tx.id || crypto.randomUUID(),
-      transferFrom: tx.transfer.sourceFundTypeName || '',
-      transferTo: tx.transfer.destinationFundTypeName || '',
-      amount: tx.amount || 0,
+      transferFrom: tx.transfer.sourceFundTypeName,
+      transferTo: tx.transfer.destinationFundTypeName,
+      amount: tx.amount,
       schedule: isRecurring ? ScheduleEnum.Monthly : ScheduleEnum.OneTime,
-      status: status || undefined,
+      status: status,
       transferDate: isRecurring
-        ? tx.recurringTransfer?.recurringStart || null
-        : tx.transactedAt || null,
+        ? tx.recurringTransfer?.recurringStart
+        : tx.transactedAt,
       endDate: tx.recurringTransfer?.recurringEnd || null,
-      note: tx.subCategory.name || '',
+      note: tx.subCategory.name,
       actions: shouldShowActions() === false ? 'edit-delete' : '',
-      recurringId: tx.recurringTransfer?.id || '',
-      baseAmount: tx.baseAmount || 0,
-      failedCount: tx.failedCount || 0,
+      recurringId: tx.recurringTransfer?.id || null,
+      baseAmount: tx.baseAmount,
+      failedCount: tx.failedCount,
       summarizedTransfers: tx.summarizedTransfers,
       missingMonths: tx.missingMonths,
     };
@@ -180,121 +180,119 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
           },
         }}
       />
-      <UpdatedAtProvider storageKey="fundsUpdatedAt">
-        <Box>
-          <ScreenOnly>
-            <MultiPageHeader
-              isNavListOpen={isNavListOpen}
-              onNavListToggle={onNavListToggle}
-              headerType={HeaderTypeEnum.Report}
-              title={title}
-            />
-          </ScreenOnly>
-          <Box sx={{ mt: 2 }}>
-            <Container>
-              <StyledHeaderBox>
-                <Typography variant="h4">{t('Fund Transfer')}</Typography>
-                <ScreenOnly
-                  sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'flex-end',
-                    gap: 1,
-                    mt: 1,
-                  }}
-                >
-                  <StyledPrintButton
-                    startIcon={
-                      <SvgIcon fontSize="small">
-                        <PrintIcon titleAccess={t('Print')} />
-                      </SvgIcon>
-                    }
-                    onClick={handlePrint}
-                  >
-                    {t('Print')}
-                  </StyledPrintButton>
-                </ScreenOnly>
-              </StyledHeaderBox>
-              <Box
+      <Box>
+        <ScreenOnly>
+          <MultiPageHeader
+            isNavListOpen={isNavListOpen}
+            onNavListToggle={onNavListToggle}
+            headerType={HeaderTypeEnum.Report}
+            title={title}
+          />
+        </ScreenOnly>
+        <Box sx={{ mt: 2 }}>
+          <Container>
+            <StyledHeaderBox>
+              <Typography variant="h4">{t('Fund Transfer')}</Typography>
+              <ScreenOnly
                 sx={{
                   display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  gap: 3,
-                  mb: 2,
+                  flexDirection: 'column',
+                  justifyContent: 'flex-end',
+                  gap: 1,
+                  mt: 1,
                 }}
               >
-                <Typography>{staffAccountData?.staffAccount?.name}</Typography>
-                <Typography>{staffAccountData?.staffAccount?.id}</Typography>
-              </Box>
-              <Box
-                display="flex"
-                flexWrap="wrap"
-                gap={2}
-                sx={{
-                  flexDirection: { xs: 'column', sm: 'row' },
-                }}
-              >
-                {funds.map((fund) => (
-                  <BalanceCard
-                    fund={fund}
-                    key={fund.id}
-                    handleOpenTransferModal={handleOpenTransferModal}
-                    loading={fundsLoading}
-                  />
-                ))}
-              </Box>
-              <ScreenOnly sx={{ mt: 2, mb: 3 }}>
-                <Box sx={{ mb: 3 }}>
-                  <TransfersTable
-                    history={incoming}
-                    type={TableTypeEnum.Upcoming}
-                    handleOpenTransferModal={handleOpenTransferModal}
-                    emptyPlaceholder={
-                      <EmptyTable
-                        title={t('Upcoming Transfers not available')}
-                        subtitle={t('No data found across any accounts.')}
-                      />
-                    }
-                    loading={reportLoading}
-                  />
-                </Box>
+                <StyledPrintButton
+                  startIcon={
+                    <SvgIcon fontSize="small">
+                      <PrintIcon titleAccess={t('Print')} />
+                    </SvgIcon>
+                  }
+                  onClick={handlePrint}
+                >
+                  {t('Print')}
+                </StyledPrintButton>
+              </ScreenOnly>
+            </StyledHeaderBox>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 3,
+                mb: 2,
+              }}
+            >
+              <Typography>{staffAccountData?.staffAccount?.name}</Typography>
+              <Typography>{staffAccountData?.staffAccount?.id}</Typography>
+            </Box>
+            <Box
+              display="flex"
+              flexWrap="wrap"
+              gap={2}
+              sx={{
+                flexDirection: { xs: 'column', sm: 'row' },
+              }}
+            >
+              {funds.map((fund) => (
+                <BalanceCard
+                  fund={fund}
+                  key={fund.id}
+                  handleOpenTransferModal={handleOpenTransferModal}
+                  loading={fundsLoading}
+                />
+              ))}
+            </Box>
+            <ScreenOnly sx={{ mt: 2, mb: 3 }}>
+              <Box sx={{ mb: 3 }}>
                 <TransfersTable
-                  history={transferHistory}
-                  type={TableTypeEnum.History}
+                  history={incoming}
+                  type={TableTypeEnum.Upcoming}
                   handleOpenTransferModal={handleOpenTransferModal}
                   emptyPlaceholder={
                     <EmptyTable
-                      title={t('Transfer History not available')}
+                      title={t('Upcoming Transfers not available')}
                       subtitle={t('No data found across any accounts.')}
                     />
                   }
                   loading={reportLoading}
                 />
-              </ScreenOnly>
-              <PrintOnly>
-                <Box sx={{ my: 4 }}>
-                  <PrintTable
-                    transfers={incoming}
-                    type={TableTypeEnum.Upcoming}
+              </Box>
+              <TransfersTable
+                history={transferHistory}
+                type={TableTypeEnum.History}
+                handleOpenTransferModal={handleOpenTransferModal}
+                emptyPlaceholder={
+                  <EmptyTable
+                    title={t('Transfer History not available')}
+                    subtitle={t('No data found across any accounts.')}
                   />
-                  <PrintTable
-                    transfers={transferHistory}
-                    type={TableTypeEnum.History}
-                  />
-                </Box>
-              </PrintOnly>
-            </Container>
-          </Box>
-          {modalData && (
-            <DynamicTransferModal
-              handleClose={() => setModalData(null)}
-              data={modalData}
-              funds={funds}
-            />
-          )}
+                }
+                loading={reportLoading}
+              />
+            </ScreenOnly>
+            <PrintOnly>
+              <Box sx={{ my: 4 }}>
+                <PrintTable
+                  transfers={incoming}
+                  type={TableTypeEnum.Upcoming}
+                />
+                <PrintTable
+                  transfers={transferHistory}
+                  type={TableTypeEnum.History}
+                />
+              </Box>
+            </PrintOnly>
+          </Container>
         </Box>
-      </UpdatedAtProvider>
+        {modalData && (
+          <DynamicTransferModal
+            handleClose={() => setModalData(null)}
+            data={modalData}
+            funds={funds}
+          />
+        )}
+      </Box>
     </>
   );
 };

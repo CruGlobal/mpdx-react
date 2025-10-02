@@ -13,11 +13,9 @@ import {
   LoadingIndicator,
 } from 'src/components/Shared/styledComponents/LoadingStyling';
 import { useLocale } from 'src/hooks/useLocale';
-import { useUpdatedAt } from 'src/hooks/useUpdatedAt';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { FundFieldsFragment } from '../ReportsSavingsFund.generated';
-import { useUpdatedAtContext } from '../UpdatedAtContext/UpdateAtContext';
 import { FundTypeEnum, TransferModalData } from '../mockData';
 import { ScreenOnly } from '../styledComponents/DisplayStyling';
 
@@ -36,9 +34,6 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-
-  const { updatedAt } = useUpdatedAtContext();
-  const updatedAtLabel = useUpdatedAt(updatedAt, locale);
 
   const title = t('{{ name }} Account Balance', { name: fund.fundType });
   const Icon =
@@ -118,15 +113,14 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
               <Typography
                 variant="body1"
                 mb={0}
-                sx={{ '@media print': { fontSize: '14pt' }, fontWeight: 500 }}
+                sx={{
+                  '@media print': { fontSize: '14pt' },
+                  fontWeight: 500,
+                  fontSize: '15pt',
+                }}
               >
                 {title}
               </Typography>
-              <ScreenOnly>
-                <Typography variant="body2" mt={0}>
-                  {updatedAtLabel ?? 'Not updated'}
-                </Typography>
-              </ScreenOnly>
             </Box>
           </Box>
           <Box

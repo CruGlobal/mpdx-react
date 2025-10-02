@@ -2,75 +2,62 @@ import React from 'react';
 import { ThemeProvider } from '@emotion/react';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
-import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
 import theme from 'src/theme';
-import { UpdatedAtProvider, useUpdatedAtContext } from './UpdateAtContext';
+import { ActionTypeEnum } from '../../mockData';
+import { CalendarTypeProvider, useCalendarType } from './CalendarTypeContext';
 
 const mutationSpy = jest.fn();
-
-const date = new Date('2024-06-03T12:00:00Z');
-const spy = jest.spyOn(Date, 'now').mockReturnValue(date.getTime());
+const type = ActionTypeEnum.Edit;
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <GqlMockedProvider onCall={mutationSpy}>
-        <UpdatedAtProvider>{<div>Test Children</div>}</UpdatedAtProvider>
+        <CalendarTypeProvider type={type}>
+          {<div>Test Children</div>}
+        </CalendarTypeProvider>
       </GqlMockedProvider>
     </LocalizationProvider>
   </ThemeProvider>
 );
 
 function FailedConsumer() {
-  const context = useUpdatedAtContext();
-  return <div>{JSON.stringify(context)}</div>;
+  const context = useCalendarType();
+  return <div>{context}</div>;
 }
 
 function TestConsumer() {
-  const { setUpdatedAt } = useUpdatedAtContext();
-  return (
-    <div>
-      <p>Updated At: {date?.toString()}</p>
-      <button onClick={setUpdatedAt}>Update</button>
-    </div>
-  );
+  const context = useCalendarType();
+  return <div>{context}</div>;
 }
 
-describe('UpdatedAtContext', () => {
-  it('throws an error if used outside of a provider', () => {
+describe('CalendarTypeContext', () => {
+  it('throws an error when used outside of the provider', () => {
     const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
     expect(() => render(<FailedConsumer />)).toThrow(
-      /Could not find UpdatedAtContext/i,
+      /Could not find CalendarTypeContext/i,
     );
     spy.mockRestore();
   });
 
-  it('sets updatedAt value when button clicked', async () => {
-    const { getByText, getByRole } = render(
+  it('provides the correct context value', () => {
+    const { getByText } = render(
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <GqlMockedProvider onCall={mutationSpy}>
-            <UpdatedAtProvider>
+            <CalendarTypeProvider type={type}>
               <TestConsumer />
-            </UpdatedAtProvider>
+            </CalendarTypeProvider>
           </GqlMockedProvider>
         </LocalizationProvider>
       </ThemeProvider>,
     );
-
-    expect(getByText(/Updated At:/i)).toBeInTheDocument();
-
-    await userEvent.click(getByRole('button', { name: 'Update' }));
-    expect(getByText(/Updated At:/i)).toHaveTextContent(
-      `Updated At: ${date.toString()}`,
-    );
-
-    spy.mockRestore();
+    expect(getByText(`${type}`)).toBeInTheDocument();
   });
 
-  it('should render children', () => {
+  it('renders children correctly', () => {
     const { getByText } = render(<TestComponent />);
     expect(getByText('Test Children')).toBeInTheDocument();
   });

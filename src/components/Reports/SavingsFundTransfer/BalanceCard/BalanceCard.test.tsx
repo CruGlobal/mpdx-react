@@ -9,7 +9,6 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { FundFieldsFragment } from '../ReportsSavingsFund.generated';
-import { UpdatedAtProvider } from '../UpdatedAtContext/UpdateAtContext';
 import { FundTypeEnum } from '../mockData';
 import { BalanceCard } from './BalanceCard';
 
@@ -43,13 +42,11 @@ const Components = ({
       <TestRouter router={router}>
         <I18nextProvider i18n={i18n}>
           <GqlMockedProvider onCall={mutationSpy}>
-            <UpdatedAtProvider>
-              <BalanceCard
-                fund={fund}
-                handleOpenTransferModal={mockHandleOpenTransferModal}
-                isSelected={isSelected}
-              />
-            </UpdatedAtProvider>
+            <BalanceCard
+              fund={fund}
+              handleOpenTransferModal={mockHandleOpenTransferModal}
+              isSelected={isSelected}
+            />
           </GqlMockedProvider>
         </I18nextProvider>
       </TestRouter>
