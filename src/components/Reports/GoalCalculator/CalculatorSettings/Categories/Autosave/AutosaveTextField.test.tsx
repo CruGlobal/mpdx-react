@@ -20,7 +20,6 @@ const TestComponent: React.FC = () => (
       label="MHA Amount"
       fieldName="mhaAmount"
       schema={schema}
-      variant="outlined"
     />
   </GoalCalculatorTestWrapper>
 );
@@ -32,7 +31,6 @@ const SelectTestComponent: React.FC = () => (
       fieldName="mhaAmount"
       schema={schema}
       select
-      variant="outlined"
     >
       <MenuItem value={-100}>-100</MenuItem>
       <MenuItem value={1000}>1000</MenuItem>

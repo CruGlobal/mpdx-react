@@ -55,15 +55,12 @@ export const InformationCategoryFinancialForm: React.FC<
               isSpouse ? 'spouseNetPaycheckAmount' : 'netPaycheckAmount'
             }
             schema={schema}
-            fullWidth
-            size="small"
             label={
               isSpouse
                 ? t('Spouse Net Paycheck Amount')
                 : t('Net Paycheck Amount')
             }
             type="number"
-            variant="outlined"
             inputProps={{ min: 0, step: 0.01 }}
             InputProps={{
               startAdornment: <CurrencyAdornment />,
@@ -75,11 +72,8 @@ export const InformationCategoryFinancialForm: React.FC<
           <AutosaveTextField
             fieldName={isSpouse ? 'spouseTaxesPercentage' : 'taxesPercentage'}
             schema={schema}
-            fullWidth
-            size="small"
             label={isSpouse ? t('Spouse Taxes') : t('Taxes')}
             type="number"
-            variant="outlined"
             inputProps={{ min: 0, max: 100, step: 1 }}
             InputProps={{
               endAdornment: <PercentageAdornment />,
@@ -93,15 +87,12 @@ export const InformationCategoryFinancialForm: React.FC<
             onChange={(event) => {
               saveField({ [secaField]: event.target.value === 'true' });
             }}
-            fullWidth
-            size="small"
             select
             label={
               isSpouse
                 ? t('Spouse SECA (Social Security) Status')
                 : t('SECA (Social Security) Status')
             }
-            variant="outlined"
           >
             <MenuItem value="false">{t('Non-Exempt')}</MenuItem>
             <MenuItem value="true">{t('Exempt')}</MenuItem>
@@ -116,15 +107,12 @@ export const InformationCategoryFinancialForm: React.FC<
                 : 'rothContributionPercentage'
             }
             schema={schema}
-            fullWidth
-            size="small"
             label={
               isSpouse
                 ? t('Spouse Roth 403(b) Contributions')
                 : t('Roth 403(b) Contributions')
             }
             type="number"
-            variant="outlined"
             inputProps={{ min: 0, max: 100, step: 1 }}
             InputProps={{
               endAdornment: (
@@ -151,15 +139,12 @@ export const InformationCategoryFinancialForm: React.FC<
                 : 'traditionalContributionPercentage'
             }
             schema={schema}
-            fullWidth
-            size="small"
             label={
               isSpouse
                 ? t('Spouse Traditional 403(b) Contributions')
                 : t('Traditional 403(b) Contributions')
             }
             type="number"
-            variant="outlined"
             inputProps={{ min: 0, max: 100, step: 1 }}
             InputProps={{
               endAdornment: (
@@ -182,15 +167,12 @@ export const InformationCategoryFinancialForm: React.FC<
           <AutosaveTextField
             fieldName={isSpouse ? 'spouseMhaAmount' : 'mhaAmount'}
             schema={schema}
-            fullWidth
-            size="small"
             label={
               isSpouse
                 ? t('Spouse MHA Amount Per Paycheck')
                 : t('MHA Amount Per Paycheck')
             }
             type="number"
-            variant="outlined"
             inputProps={{ min: 0, step: 1 }}
             InputProps={{
               startAdornment: <CurrencyAdornment />,

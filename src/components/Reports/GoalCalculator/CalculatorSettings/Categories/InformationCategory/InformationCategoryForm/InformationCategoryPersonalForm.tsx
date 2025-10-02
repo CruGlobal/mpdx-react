@@ -100,10 +100,7 @@ export const InformationCategoryPersonalForm: React.FC<
           <AutosaveTextField
             fieldName={isSpouse ? 'spouseFirstName' : 'firstName'}
             schema={schema}
-            fullWidth
-            size="small"
             label={isSpouse ? t('Spouse First Name') : t('First Name')}
-            variant="outlined"
           />
         </Grid>
         {!isSpouse && (
@@ -111,10 +108,7 @@ export const InformationCategoryPersonalForm: React.FC<
             <AutosaveTextField
               fieldName="lastName"
               schema={schema}
-              fullWidth
-              size="small"
               label={t('Last Name')}
-              variant="outlined"
             />
           </Grid>
         )}
@@ -140,11 +134,8 @@ export const InformationCategoryPersonalForm: React.FC<
             <AutosaveTextField
               fieldName="role"
               schema={schema}
-              fullWidth
-              size="small"
               select
               label={t('Role Type')}
-              variant="outlined"
             >
               <MenuItem value={GoalCalculationRole.Office}>
                 {t('Office')}
@@ -161,10 +152,7 @@ export const InformationCategoryPersonalForm: React.FC<
             <AutosaveTextField
               fieldName="ministryLocation"
               schema={schema}
-              fullWidth
-              size="small"
               label={t('Ministry Location')}
-              variant="outlined"
             />
           </Grid>
         )}
@@ -174,12 +162,9 @@ export const InformationCategoryPersonalForm: React.FC<
             <AutosaveTextField
               fieldName="familySize"
               schema={schema}
-              fullWidth
-              size="small"
               select
               label={t('Family Size')}
               helperText={t('For benefits plan')}
-              variant="outlined"
             >
               {Object.values(familySizeOptions).map(([value, label]) => (
                 <MenuItem key={label} value={value}>
@@ -195,8 +180,6 @@ export const InformationCategoryPersonalForm: React.FC<
             <AutosaveTextField
               fieldName="benefitsPlan"
               schema={schema}
-              fullWidth
-              size="small"
               select
               label={t('Benefits Plan')}
               disabled={!familySize}
@@ -205,7 +188,6 @@ export const InformationCategoryPersonalForm: React.FC<
                   ? t('Select Family Size to enable benefits plan dropdown')
                   : undefined
               }
-              variant="outlined"
               InputProps={{
                 endAdornment: (
                   <IconButton
@@ -233,12 +215,9 @@ export const InformationCategoryPersonalForm: React.FC<
           <AutosaveTextField
             fieldName={isSpouse ? 'spouseYearsOnStaff' : 'yearsOnStaff'}
             schema={schema}
-            fullWidth
-            size="small"
             select
             label={isSpouse ? t('Spouse Years on Staff') : t('Years on Staff')}
             helperText={t('For new staff reference goal')}
-            variant="outlined"
           >
             {tenureOptions.map((tenure) => (
               <MenuItem key={tenure.value} value={tenure.value}>
@@ -252,12 +231,9 @@ export const InformationCategoryPersonalForm: React.FC<
           <AutosaveTextField
             fieldName={isSpouse ? 'spouseAge' : 'age'}
             schema={schema}
-            fullWidth
-            size="small"
             select
             label={isSpouse ? t('Spouse Age') : t('Age')}
             helperText={t('For new staff reference goal')}
-            variant="outlined"
           >
             <MenuItem value={GoalCalculationAge.UnderThirty}>
               {t('Under 30')}
@@ -279,10 +255,7 @@ export const InformationCategoryPersonalForm: React.FC<
             <AutosaveTextField
               fieldName="childrenNamesAges"
               schema={schema}
-              fullWidth
-              size="small"
               label={t("Children's Names and Ages")}
-              variant="outlined"
             />
           </Grid>
         )}

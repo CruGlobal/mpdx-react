@@ -4,7 +4,10 @@ import { GoalCalculationUpdateInput } from 'src/graphql/types.generated';
 import { useAutoSave } from './useAutosave';
 
 export interface AutosaveTextFieldProps
-  extends Omit<TextFieldProps<'outlined'>, 'value' | 'onChange' | 'onBlur'> {
+  extends Omit<
+    TextFieldProps<'outlined'>,
+    'value' | 'onChange' | 'onBlur' | 'variant'
+  > {
   fieldName: keyof GoalCalculationUpdateInput;
   schema: yup.Schema;
 }
@@ -21,5 +24,13 @@ export const AutosaveTextField: React.FC<AutosaveTextFieldProps> = ({
     saveOnChange: props.select,
   });
 
-  return <TextField {...fieldProps} {...props} />;
+  return (
+    <TextField
+      fullWidth
+      size="small"
+      variant="outlined"
+      {...fieldProps}
+      {...props}
+    />
+  );
 };
