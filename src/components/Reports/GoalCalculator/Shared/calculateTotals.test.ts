@@ -26,7 +26,6 @@ const mockGoal = gqlMock<ListGoalCalculationFragment>(
       spouseRothContributionPercentage: 10,
       traditionalContributionPercentage: 5,
       spouseTraditionalContributionPercentage: 8,
-      paySplitPercentage: 60,
       ministryFamily: {
         directInput: 5000,
       },
