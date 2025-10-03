@@ -3,8 +3,11 @@ fragment GoalCalculationSettings on GoalCalculation {
   firstName
   spouseFirstName
   lastName
+  geographicLocation
   ministryLocation
   role
+  familySize
+  benefitsPlan
   yearsOnStaff
   spouseYearsOnStaff
   age

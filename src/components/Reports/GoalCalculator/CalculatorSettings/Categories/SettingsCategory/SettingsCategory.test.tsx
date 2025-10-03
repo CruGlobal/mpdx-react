@@ -48,7 +48,7 @@ describe('SettingsCategory', () => {
         input: {
           accountListId: 'account-list-1',
           attributes: {
-            id: 'test-goal-id',
+            id: 'goal-calculation-1',
             name: 'Valid Goal',
           },
         },
