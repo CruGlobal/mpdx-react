@@ -11,10 +11,8 @@ const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
 );
 
 describe('useSaveField', () => {
-  it('should call updateGoalCalculation with correct parameters', async () => {
-    const { result } = renderHook(() => useSaveField(), {
-      wrapper: Wrapper,
-    });
+  it('should update goal calculation', async () => {
+    const { result } = renderHook(useSaveField, { wrapper: Wrapper });
 
     // Wait for the goal calculation to load
     await waitFor(() =>
@@ -28,11 +26,27 @@ describe('useSaveField', () => {
         input: {
           accountListId: 'account-list-1',
           attributes: {
-            id: 'test-goal-id',
+            id: 'goal-calculation-1',
             name: 'New Name',
           },
         },
       }),
+    );
+  });
+
+  it('should not update goal calculation when no attributes changed', async () => {
+    const { result } = renderHook(useSaveField, { wrapper: Wrapper });
+
+    // Wait for the goal calculation to load
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('GoalCalculation'),
+    );
+
+    result.current({ name: 'Initial Goal Name', firstName: 'John' });
+
+    await Promise.resolve();
+    await waitFor(() =>
+      expect(mutationSpy).not.toHaveGraphqlOperation('UpdateGoalCalculation'),
     );
   });
 });

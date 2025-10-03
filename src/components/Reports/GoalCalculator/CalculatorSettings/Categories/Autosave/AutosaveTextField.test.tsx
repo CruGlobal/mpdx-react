@@ -20,7 +20,6 @@ const TestComponent: React.FC = () => (
       label="MHA Amount"
       fieldName="mhaAmount"
       schema={schema}
-      variant="outlined"
     />
   </GoalCalculatorTestWrapper>
 );
@@ -32,7 +31,6 @@ const SelectTestComponent: React.FC = () => (
       fieldName="mhaAmount"
       schema={schema}
       select
-      variant="outlined"
     >
       <MenuItem value={-100}>-100</MenuItem>
       <MenuItem value={1000}>1000</MenuItem>
@@ -67,7 +65,7 @@ describe('AutosaveTextField', () => {
         input: {
           accountListId: 'account-list-1',
           attributes: {
-            id: 'test-goal-id',
+            id: 'goal-calculation-1',
             mhaAmount: 2000,
           },
         },
@@ -89,11 +87,26 @@ describe('AutosaveTextField', () => {
         input: {
           accountListId: 'account-list-1',
           attributes: {
-            id: 'test-goal-id',
+            id: 'goal-calculation-1',
             mhaAmount: null,
           },
         },
       }),
+    );
+  });
+
+  it('does not save when value does not change', async () => {
+    const { getByRole } = render(<TestComponent />);
+
+    const input = getByRole('textbox', { name: 'MHA Amount' });
+    await waitFor(() => expect(input).toHaveValue('1000'));
+
+    input.focus();
+    input.blur();
+
+    await Promise.resolve();
+    await waitFor(() =>
+      expect(mutationSpy).not.toHaveGraphqlOperation('UpdateGoalCalculation'),
     );
   });
 
@@ -108,6 +121,8 @@ describe('AutosaveTextField', () => {
     expect(input).toHaveAccessibleDescription('MHA Amount must be positive');
 
     input.blur();
+
+    await Promise.resolve();
     await waitFor(() =>
       expect(mutationSpy).not.toHaveGraphqlOperation('UpdateGoalCalculation'),
     );
@@ -139,7 +154,7 @@ describe('AutosaveTextField', () => {
           input: {
             accountListId: 'account-list-1',
             attributes: {
-              id: 'test-goal-id',
+              id: 'goal-calculation-1',
               mhaAmount: 2000,
             },
           },
@@ -157,6 +172,7 @@ describe('AutosaveTextField', () => {
       userEvent.click(getByRole('option', { name: '-100' }));
 
       expect(input).toHaveAccessibleDescription('MHA Amount must be positive');
+      await Promise.resolve();
       await waitFor(() =>
         expect(mutationSpy).not.toHaveGraphqlOperation('UpdateGoalCalculation'),
       );
