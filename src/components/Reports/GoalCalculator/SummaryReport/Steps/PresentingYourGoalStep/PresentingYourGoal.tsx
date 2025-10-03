@@ -110,7 +110,10 @@ export const PresentingYourGoal: React.FC = () => {
   const presentationData = useMemo(
     () => [
       { name: 'Salary', value: goalTotals.netMonthlySalary },
-      { name: 'Ministry Expenses', value: goalTotals.ministryExpensesTotal },
+      {
+        name: 'Ministry Expenses',
+        value: goalTotals.ministryExpensesTotal + goalTotals.attrition,
+      },
       { name: 'Benefits', value: goalTotals.benefitsCharge },
       { name: 'Social Security and Taxes', value: goalTotals.taxes },
       {
@@ -151,7 +154,7 @@ export const PresentingYourGoal: React.FC = () => {
       : `${firstName} ${lastName}`;
 
     const personalRows: PersonalInfoRow[] = [
-      { label: 'Name', value: fullName },
+      { label: t('Name'), value: fullName },
       {
         label: t('Mission Agency'),
         value: organizationName,
@@ -169,7 +172,9 @@ export const PresentingYourGoal: React.FC = () => {
   const rows: PresentingYourGoalRow[] = useMemo(
     () => [
       {
-        title: 'Salary',
+        title: hasStaffSpouse(goalCalculation?.familySize)
+          ? 'Salary (Combined)'
+          : 'Salary',
         description:
           'Salaries are based upon marital status, number of children, tenure with Cru, and adjustments for certain geographic locations.',
         amount: presentationData[0].value,

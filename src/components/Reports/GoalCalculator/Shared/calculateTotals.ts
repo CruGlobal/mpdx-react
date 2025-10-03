@@ -32,6 +32,7 @@ export interface GoalTotals {
   ministryExpensesTotal: number;
   overallSubtotal: number;
   overallSubtotalWithAdmin: number;
+  attrition: number;
   overallTotal: number;
 }
 
@@ -105,7 +106,8 @@ export const calculateGoalTotals = (
   const overallSubtotal =
     grossMonthlySalary + ministryExpensesTotal + benefitsCharge;
   const overallSubtotalWithAdmin = overallSubtotal / 0.88;
-  const overallTotal = overallSubtotalWithAdmin * 1.06;
+  const attrition = overallSubtotalWithAdmin * 0.06;
+  const overallTotal = overallSubtotalWithAdmin + attrition;
 
   return {
     additionalIncome,
@@ -124,6 +126,7 @@ export const calculateGoalTotals = (
     benefitsCharge,
     overallSubtotal,
     overallSubtotalWithAdmin,
+    attrition,
     overallTotal,
   };
 };
