@@ -18,31 +18,35 @@ const TestComponent: React.FC<TestComponentProps> = ({ transactions }) => (
 
 const mockTransactions: Transaction[] = [
   {
+    id: '1',
     fundType: 'Income',
-    total: 100,
+    amount: 100,
     category: StaffExpenseCategoryEnum.Salary,
-    month: '2025-01-01',
+    transactedAt: '2025-01-01',
     displayCategory: 'Salary',
   },
   {
+    id: '2',
     fundType: 'Expense',
-    total: -50,
+    amount: -50,
     category: StaffExpenseCategoryEnum.Assessment,
-    month: '2025-01-01',
+    transactedAt: '2025-01-01',
     displayCategory: 'Assessment',
   },
   {
+    id: '3',
     fundType: 'Income',
-    total: 200,
+    amount: 200,
     category: StaffExpenseCategoryEnum.Transfer,
-    month: '2025-02-01',
+    transactedAt: '2025-02-01',
     displayCategory: 'Transfer',
   },
   {
+    id: '4',
     fundType: 'Expense',
-    total: -30,
+    amount: -30,
     category: StaffExpenseCategoryEnum.Benefits,
-    month: '2025-02-01',
+    transactedAt: '2025-02-01',
     displayCategory: 'Benefits',
   },
 ];
@@ -125,9 +129,10 @@ describe('DownloadButtonGroup', () => {
   it('handles transactions with zero amounts correctly', () => {
     const transactionsWithZero = [
       {
-        total: 0,
+        id: '0',
+        amount: 0,
         category: StaffExpenseCategoryEnum.Transfer,
-        month: '2025-01-01',
+        transactedAt: '2025-01-01',
         displayCategory: 'Transfer',
         fundType: 'Saving',
       },

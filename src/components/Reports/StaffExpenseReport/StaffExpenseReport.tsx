@@ -25,7 +25,6 @@ import {
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import {
-  BreakdownByMonthWithTransactions,
   Fund,
   StaffExpenseCategoryEnum,
   StaffExpensesSubCategoryEnum,
@@ -39,7 +38,7 @@ import { BalanceCard } from './BalanceCard/BalanceCard';
 import { BalanceCardSkeleton } from './BalanceCard/BalanceCardSkeleton';
 import { DownloadButtonGroup } from './DownloadButtonGroup/DownloadButtonGroup';
 import { useReportsStaffExpensesQuery } from './GetStaffExpense.generated';
-import { TableType } from './Helpers/StaffReportEnum';
+import { ReportType } from './Helpers/StaffReportEnum';
 import {
   dateRangeToString,
   getFormattedDateString,
@@ -102,7 +101,11 @@ const StyledCardsBox = styled(Box)({
   gap: theme.spacing(4),
 });
 
-export interface Transaction extends BreakdownByMonthWithTransactions {
+export interface Transaction {
+  id: string;
+  amount: number;
+  transactedAt: string;
+  description?: string | null;
   fundType: string;
   category: StaffExpenseCategoryEnum;
   subcategory?: StaffExpensesSubCategoryEnum;
@@ -196,14 +199,14 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
 
     allFunds.forEach((fund) => {
       const incomeTransactions = filterTransactions({
-        tableType: 'income',
+        tableType: ReportType.Income,
         targetTime: time,
         fund,
         filters,
         t,
       });
       const expenseTransactions = filterTransactions({
-        tableType: 'expenses',
+        tableType: ReportType.Expense,
         targetTime: time,
         fund,
         filters,
@@ -227,17 +230,17 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     setIsSettingsOpen(!isSettingsOpen);
   };
 
-  const getPosOrNegTransactions = (tableType: TableType, fundType: string) => {
+  const getPosOrNegTransactions = (tableType: ReportType, fundType: string) => {
     const fundTransactions = transactions[fundType];
 
-    return tableType === TableType.Income
+    return tableType === ReportType.Income
       ? fundTransactions.income
       : fundTransactions.expenses;
   };
 
-  const getFilteredTotals = (tableType: TableType, fundType: string) => {
+  const getFilteredTotals = (tableType: ReportType, fundType: string) => {
     const filtered = getPosOrNegTransactions(tableType, fundType);
-    return filtered.reduce((sum, transaction) => sum + transaction.total, 0);
+    return filtered.reduce((sum, transaction) => sum + transaction.amount, 0);
   };
 
   const transferTotals = useMemo(() => {
@@ -246,11 +249,11 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
     for (const [fundType, fundTransactions] of Object.entries(transactions)) {
       totals[fundType] = {
         in: fundTransactions.income.reduce(
-          (sum, transaction) => sum + transaction.total,
+          (sum, transaction) => sum + transaction.amount,
           0,
         ),
         out: fundTransactions.expenses.reduce(
-          (sum, transaction) => sum + transaction.total,
+          (sum, transaction) => sum + transaction.amount,
           0,
         ),
       };
@@ -528,18 +531,18 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
             {selectedFund && (
               <StaffReportTable
                 transactions={getPosOrNegTransactions(
-                  TableType.Income,
+                  ReportType.Income,
                   selectedFund?.fundType,
                 )}
                 transferTotal={getFilteredTotals(
-                  TableType.Income,
+                  ReportType.Income,
                   selectedFund?.fundType,
                 )}
                 loading={loading}
                 emptyPlaceholder={
                   <EmptyReportTable title={t('No Income Transactions Found')} />
                 }
-                tableType={TableType.Income}
+                tableType={ReportType.Income}
               />
             )}
           </Container>
@@ -549,11 +552,11 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
             {selectedFund && (
               <StaffReportTable
                 transactions={getPosOrNegTransactions(
-                  TableType.Expenses,
+                  ReportType.Expense,
                   selectedFund?.fundType,
                 )}
                 transferTotal={getFilteredTotals(
-                  TableType.Expenses,
+                  ReportType.Expense,
                   selectedFund?.fundType,
                 )}
                 loading={loading}
@@ -562,7 +565,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                     title={t('No Expense Transactions Found')}
                   />
                 }
-                tableType={TableType.Expenses}
+                tableType={ReportType.Expense}
               />
             )}
           </Container>
@@ -575,28 +578,28 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
               </Typography>
               <PrintTables
                 transactions={getPosOrNegTransactions(
-                  TableType.Income,
+                  ReportType.Income,
                   selectedFund?.fundType,
                 )}
                 transactionTotal={getFilteredTotals(
-                  TableType.Income,
+                  ReportType.Income,
                   selectedFund?.fundType,
                 )}
-                type={TableType.Income}
+                type={ReportType.Income}
               />
               <Typography variant="h6" mb={0} mt={2} align="center">
                 {t('Expenses')}
               </Typography>
               <PrintTables
                 transactions={getPosOrNegTransactions(
-                  TableType.Expenses,
+                  ReportType.Expense,
                   selectedFund?.fundType,
                 )}
                 transactionTotal={getFilteredTotals(
-                  TableType.Expenses,
+                  ReportType.Expense,
                   selectedFund?.fundType,
                 )}
-                type={TableType.Expenses}
+                type={ReportType.Expense}
               />
             </>
           )}

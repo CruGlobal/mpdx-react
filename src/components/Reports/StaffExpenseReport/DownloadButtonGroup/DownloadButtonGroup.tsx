@@ -54,8 +54,8 @@ export const DownloadButtonGroup: React.FC<DownloadButtonGroupProps> = ({
   const locale = useLocale();
   const isMobile = useMediaQuery('(max-width:600px)');
 
-  const expenses = transactions.filter((transaction) => transaction.total < 0);
-  const incomes = transactions.filter((transaction) => transaction.total > 0);
+  const expenses = transactions.filter((transaction) => transaction.amount < 0);
+  const incomes = transactions.filter((transaction) => transaction.amount > 0);
 
   return (
     <StyledButtonGroup
