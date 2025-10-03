@@ -36,7 +36,7 @@ export const MpdGoalHeaderCards: React.FC<MpdGoalHeaderCardsProps> = ({
   const theme = useTheme();
   const locale = useLocale();
   const {
-    goalTotals: { overallSubtotal },
+    goalTotals: { overallTotal },
   } = useGoalCalculator();
 
   return (
@@ -50,7 +50,7 @@ export const MpdGoalHeaderCards: React.FC<MpdGoalHeaderCardsProps> = ({
       <StyledCard>
         <Typography variant="h5">{t('Your Goal')}</Typography>
         <StyledTypography variant="h2">
-          {currencyFormat(overallSubtotal, 'USD', locale, {
+          {currencyFormat(overallTotal, 'USD', locale, {
             showTrailingZeros: true,
           })}
         </StyledTypography>
