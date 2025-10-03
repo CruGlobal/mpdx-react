@@ -68,7 +68,7 @@ describe('InformationCategory', () => {
     expect(queryByTestId('spouse-personal-tab')).not.toBeInTheDocument();
     expect(queryByTestId('spouse-financial-tab')).not.toBeInTheDocument();
 
-    userEvent.click(await findByRole('button', { name: 'View Spouse' }));
+    userEvent.click(await findByRole('button', { name: 'View Jane' }));
 
     expect(getByTestId('spouse-personal-tab')).toBeInTheDocument();
     expect(getByTestId('spouse-financial-tab')).toBeInTheDocument();
@@ -89,7 +89,7 @@ describe('InformationCategory', () => {
     );
 
     expect(
-      queryByRole('button', { name: 'View Spouse' }),
+      queryByRole('button', { name: 'View Jane' }),
     ).not.toBeInTheDocument();
   });
 
@@ -159,7 +159,7 @@ describe('InformationCategory', () => {
       const { getByRole, findByRole } = render(<TestComponent />);
 
       userEvent.click(getByRole('tab', { name: 'Financial' }));
-      userEvent.click(await findByRole('button', { name: 'View Spouse' }));
+      userEvent.click(await findByRole('button', { name: 'View Jane' }));
       const input = getByRole('spinbutton', {
         name: 'Spouse MHA Amount Per Paycheck',
       });
@@ -234,7 +234,7 @@ describe('InformationCategory', () => {
       );
 
       userEvent.click(getByRole('tab', { name: 'Financial' }));
-      userEvent.click(getByRole('button', { name: 'View Spouse' }));
+      userEvent.click(getByRole('button', { name: 'View Jane' }));
       userEvent.click(
         getByRole('combobox', {
           name: 'Spouse SECA (Social Security) Status',
