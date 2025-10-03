@@ -16,12 +16,7 @@ const mockData: Transactions[] = [
       sourceFundTypeName: 'Primary',
       destinationFundTypeName: 'Savings',
     },
-    recurringTransfer: {
-      id: null,
-      recurringStart: null,
-      recurringEnd: null,
-      active: null,
-    },
+    recurringTransfer: null,
     failedCount: 0,
     baseAmount: 100,
   },
@@ -85,9 +80,9 @@ const mockData: Transactions[] = [
 ];
 
 describe('createTable', () => {
-  it('should return complete status if no recurring transfer id', () => {
+  it('should return complete status if no recurring transfer', () => {
     const transfer = mockData[0];
-    expect(transfer.recurringTransfer?.id).toBeNull();
+    expect(transfer.recurringTransfer).toBeNull();
     expect(getStatusLabel(transfer)).toBe('complete');
   });
 

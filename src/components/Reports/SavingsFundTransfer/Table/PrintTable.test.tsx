@@ -86,7 +86,7 @@ describe('PrintTable', () => {
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
           <GqlMockedProvider onCall={mutationSpy}>
-            <PrintTable transfers={mockDefault} />
+            <PrintTable transfers={mockDefault} type={TableTypeEnum.History} />
           </GqlMockedProvider>
         </LocalizationProvider>
       </ThemeProvider>,

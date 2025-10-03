@@ -93,7 +93,12 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
       (reportData?.reportsSavingsFundTransfer ?? []).map((tx) => {
         return {
           ...tx,
-          transactedAt: DateTime.fromISO(tx.transactedAt, { setZone: true }),
+          id: tx.transaction?.id ? tx.transaction.id : crypto.randomUUID(),
+          amount: tx.transaction?.amount ? tx.transaction.amount : 0,
+          transactedAt: tx.transaction?.transactedAt
+            ? DateTime.fromISO(tx.transaction?.transactedAt, { setZone: true })
+            : DateTime.now(),
+          subCategory: tx.subCategory ? tx.subCategory : null,
           recurringTransfer: tx.recurringTransfer
             ? {
                 ...tx.recurringTransfer,
@@ -110,7 +115,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                   : null,
               }
             : null,
-          baseAmount: tx.amount || 0,
+          baseAmount: tx.transaction?.amount || 0,
           failedCount: 0,
           summarizedTransfers: null,
           missingMonths: null,
@@ -142,7 +147,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
         ? tx.recurringTransfer?.recurringStart
         : tx.transactedAt,
       endDate: tx.recurringTransfer?.recurringEnd || null,
-      note: tx.subCategory.name,
+      note: tx.subCategory?.name ?? 'default note',
       actions: shouldShowActions() === false ? 'edit-delete' : '',
       recurringId: tx.recurringTransfer?.id || null,
       baseAmount: tx.baseAmount,

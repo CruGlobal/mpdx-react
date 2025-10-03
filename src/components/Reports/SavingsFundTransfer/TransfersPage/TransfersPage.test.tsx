@@ -196,13 +196,13 @@ describe('TransfersPage', () => {
   });
 
   it('should render all balance cards with correct information', async () => {
-    const { findByText, getAllByText } = render(<Components />);
+    const { findByText, getByText } = render(<Components />);
 
     expect(await findByText('Primary Account Balance')).toBeInTheDocument();
     expect(await findByText('Savings Account Balance')).toBeInTheDocument();
 
-    expect(getAllByText('$15,000.00').length).toBeGreaterThan(0);
-    expect(getAllByText('$2,500.00').length).toBeGreaterThan(0);
+    expect(getByText('$15,000.00')).toBeInTheDocument();
+    expect(getByText('$25,000.00')).toBeInTheDocument();
   });
 
   it('should sort fund cards in ascending order by id', async () => {

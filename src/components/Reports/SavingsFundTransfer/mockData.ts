@@ -62,7 +62,7 @@ export interface Transactions {
   amount: number;
   description?: string | null;
   transactedAt: DateTime;
-  subCategory: SubCategory;
+  subCategory: SubCategory | null;
   transfer: Transfer;
   recurringTransfer?: RecurringTransfer | null;
   baseAmount: number;
