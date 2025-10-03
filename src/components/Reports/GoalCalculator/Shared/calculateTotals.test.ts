@@ -61,6 +61,7 @@ describe('calculateGoalTotals', () => {
       benefitsCharge: 1910.54,
       overallSubtotal: expect.closeTo(13398, 0),
       overallSubtotalWithAdmin: expect.closeTo(15225, 0),
+      attrition: expect.closeTo(914, 0),
       overallTotal: expect.closeTo(16139, 0),
     });
   });
@@ -83,6 +84,7 @@ describe('calculateGoalTotals', () => {
       benefitsCharge: 0,
       overallSubtotal: 0,
       overallSubtotalWithAdmin: 0,
+      attrition: 0,
       overallTotal: 0,
     });
   });
