@@ -87,6 +87,8 @@ export const InformationCategoryFinancialForm: React.FC<
             onChange={(event) => {
               saveField({ [secaField]: event.target.value === 'true' });
             }}
+            fullWidth
+            size="small"
             select
             label={
               isSpouse
