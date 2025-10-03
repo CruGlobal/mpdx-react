@@ -147,15 +147,17 @@ export const InformationCategory: React.FC = () => {
   const hasSpouse = hasStaffSpouse(data?.goalCalculation.familySize);
 
   const [viewingSpouse, setViewingSpouse] = useState(false);
-  const buttonText = useMemo(() => {
-    if (!viewingSpouse) {
-      return t('View Spouse');
+  const spouseButtonName = useMemo(() => {
+    if (viewingSpouse) {
+      return (
+        data?.goalCalculation.firstName ??
+        userData?.user.firstName ??
+        t('Your Information')
+      );
     }
-    if (userData?.user.firstName) {
-      return t('View {{spouseName}}', { spouseName: userData.user.firstName });
-    }
-    return t('View Your Information');
-  }, [viewingSpouse, userData?.user.firstName, t]);
+
+    return data?.goalCalculation.spouseFirstName ?? t('Spouse');
+  }, [viewingSpouse, data, userData?.user.firstName, t]);
 
   const onClickSpouseInformation = () => {
     setViewingSpouse(!viewingSpouse);
@@ -191,7 +193,7 @@ export const InformationCategory: React.FC = () => {
             endIcon={<RightArrowIcon />}
             onClick={onClickSpouseInformation}
           >
-            {buttonText}
+            {t('View {{name}}', { name: spouseButtonName })}
           </Button>
         )}
       </Box>
