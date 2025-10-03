@@ -97,11 +97,12 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
           recurringTransfer: tx.recurringTransfer
             ? {
                 ...tx.recurringTransfer,
-                recurringStart: tx.recurringTransfer.recurringStart
-                  ? DateTime.fromISO(tx.recurringTransfer.recurringStart, {
-                      setZone: true,
-                    })
-                  : null,
+                recurringStart: DateTime.fromISO(
+                  tx.recurringTransfer.recurringStart,
+                  {
+                    setZone: true,
+                  },
+                ),
                 recurringEnd: tx.recurringTransfer.recurringEnd
                   ? DateTime.fromISO(tx.recurringTransfer.recurringEnd, {
                       setZone: true,
@@ -132,20 +133,20 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
 
     return {
       id: tx.id || crypto.randomUUID(),
-      transferFrom: tx.transfer.sourceFundTypeName || '',
-      transferTo: tx.transfer.destinationFundTypeName || '',
-      amount: tx.amount || 0,
+      transferFrom: tx.transfer.sourceFundTypeName,
+      transferTo: tx.transfer.destinationFundTypeName,
+      amount: tx.amount,
       schedule: isRecurring ? ScheduleEnum.Monthly : ScheduleEnum.OneTime,
-      status: status || undefined,
+      status: status,
       transferDate: isRecurring
-        ? tx.recurringTransfer?.recurringStart || null
-        : tx.transactedAt || null,
+        ? tx.recurringTransfer?.recurringStart
+        : tx.transactedAt,
       endDate: tx.recurringTransfer?.recurringEnd || null,
-      note: tx.subCategory.name || '',
+      note: tx.subCategory.name,
       actions: shouldShowActions() === false ? 'edit-delete' : '',
-      recurringId: tx.recurringTransfer?.id || '',
-      baseAmount: tx.baseAmount || 0,
-      failedCount: tx.failedCount || 0,
+      recurringId: tx.recurringTransfer?.id || null,
+      baseAmount: tx.baseAmount,
+      failedCount: tx.failedCount,
       summarizedTransfers: tx.summarizedTransfers,
       missingMonths: tx.missingMonths,
     };

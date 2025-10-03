@@ -47,10 +47,10 @@ export interface SubCategory {
 }
 
 export interface RecurringTransfer {
-  id?: string | null;
-  recurringStart?: DateTime | null;
-  recurringEnd?: DateTime | null;
-  active?: boolean | null;
+  id: string;
+  recurringStart: DateTime;
+  recurringEnd: DateTime | null;
+  active: boolean;
 }
 
 export interface Transfer {
@@ -79,7 +79,7 @@ export interface Transfers {
   amount?: number;
   schedule?: ScheduleEnum;
   status?: StatusEnum;
-  transferDate?: DateTime<boolean> | null;
+  transferDate?: DateTime<boolean>;
   endDate?: DateTime<boolean> | null;
   note?: string;
   actions?: string;
