@@ -48,17 +48,17 @@ describe('HouseholdExpensesHeader', () => {
 
       expect(queryByText('$5,000')).not.toBeInTheDocument();
       expect(
-        queryByRole('button', { name: 'Direct input' }),
+        queryByRole('button', { name: 'Override paycheck amount' }),
       ).not.toBeInTheDocument();
       expect(
-        queryByRole('button', { name: 'Manual input' }),
+        queryByRole('button', { name: 'Use paycheck amount' }),
       ).not.toBeInTheDocument();
     });
 
-    it('should render categories total when direct input is null', async () => {
+    it('should render paycheck amount when direct input is null', async () => {
       const { findByText } = render(<TestComponent directInputNull />);
 
-      expect(await findByText('$5,000')).toBeInTheDocument();
+      expect(await findByText('$10,000')).toBeInTheDocument();
     });
 
     it('should render direct input total when it is set', async () => {
@@ -67,12 +67,14 @@ describe('HouseholdExpensesHeader', () => {
       expect(await findByText('$5,500')).toBeInTheDocument();
     });
 
-    it('manual input should update total', async () => {
+    it('use paycheck amount should update total', async () => {
       const { findByRole, getByText } = render(<TestComponent />);
 
-      userEvent.click(await findByRole('button', { name: 'Manual input' }));
+      userEvent.click(
+        await findByRole('button', { name: 'Use paycheck amount' }),
+      );
 
-      expect(getByText('$5,000')).toBeInTheDocument();
+      expect(getByText('$10,000')).toBeInTheDocument();
       await waitFor(() =>
         expect(mutationSpy).toHaveGraphqlOperation(
           'UpdateHouseholdDirectInput',
@@ -85,15 +87,29 @@ describe('HouseholdExpensesHeader', () => {
       );
     });
 
-    it('direct input should update total', async () => {
+    it('should allow editing direct input when it is set', async () => {
+      const { getByRole, findByText } = render(<TestComponent />);
+
+      expect(await findByText('$5,500')).toBeInTheDocument();
+      userEvent.click(getByRole('button', { name: 'Edit monthly budget' }));
+      expect(
+        getByRole('spinbutton', {
+          name: 'Total monthly budget',
+        }),
+      ).toHaveValue(5500);
+    });
+
+    it('override paycheck amount should update total', async () => {
       const { findByRole, getByRole, getByText } = render(
         <TestComponent directInputNull />,
       );
 
-      userEvent.click(await findByRole('button', { name: 'Direct input' }));
+      userEvent.click(
+        await findByRole('button', { name: 'Override paycheck amount' }),
+      );
 
       const directInputTextfield = getByRole('spinbutton', {
-        name: 'Direct input',
+        name: 'Total monthly budget',
       });
       userEvent.clear(directInputTextfield);
       userEvent.type(directInputTextfield, '1234');
@@ -112,15 +128,17 @@ describe('HouseholdExpensesHeader', () => {
       );
     });
 
-    it('direct input should validate that amount is not negative', async () => {
+    it('override should validate that amount is not negative', async () => {
       const { findByRole, getByRole, getByText } = render(
         <TestComponent directInputNull />,
       );
 
-      userEvent.click(await findByRole('button', { name: 'Direct input' }));
+      userEvent.click(
+        await findByRole('button', { name: 'Override paycheck amount' }),
+      );
 
       const directInputTextfield = getByRole('spinbutton', {
-        name: 'Direct input',
+        name: 'Total monthly budget',
       });
       userEvent.clear(directInputTextfield);
       userEvent.type(directInputTextfield, '-1');
@@ -128,24 +146,46 @@ describe('HouseholdExpensesHeader', () => {
       expect(getByText('Amount must be positive')).toBeInTheDocument();
     });
 
-    it('cancel should abort setting direct input', async () => {
+    it('cancel should abort setting override', async () => {
       const { findByRole, getByRole, getByText, queryByRole } = render(
         <TestComponent directInputNull />,
       );
 
-      userEvent.click(await findByRole('button', { name: 'Direct input' }));
+      userEvent.click(
+        await findByRole('button', { name: 'Override paycheck amount' }),
+      );
 
       const directInputTextfield = getByRole('spinbutton', {
-        name: 'Direct input',
+        name: 'Total monthly budget',
       });
       userEvent.clear(directInputTextfield);
       userEvent.type(directInputTextfield, '1234');
       userEvent.click(getByRole('button', { name: 'Cancel' }));
 
       expect(
-        queryByRole('button', { name: 'Manual input' }),
+        queryByRole('button', { name: 'Use paycheck amount' }),
       ).not.toBeInTheDocument();
+      expect(getByText('$10,000')).toBeInTheDocument();
+    });
+
+    it('use categories total should update total', async () => {
+      const { findByRole, getByText } = render(<TestComponent />);
+
+      userEvent.click(
+        await findByRole('button', { name: 'Use categories total' }),
+      );
+
       expect(getByText('$5,000')).toBeInTheDocument();
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation(
+          'UpdateHouseholdDirectInput',
+          {
+            accountListId,
+            id: 'household-family',
+            directInput: 5000,
+          },
+        ),
+      );
     });
   });
 

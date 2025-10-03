@@ -1,9 +1,11 @@
 import React, { useMemo, useState } from 'react';
+import EditIcon from '@mui/icons-material/Edit';
 import {
   Button,
   Card,
   CardActions,
   CardContent,
+  IconButton,
   Skeleton,
   Stack,
   TextField,
@@ -45,6 +47,7 @@ export const HouseholdExpensesHeader: React.FC = () => {
   const accountListId = useAccountListId() ?? '';
   const {
     goalCalculationResult: { data, loading },
+    goalTotals: { monthlyBudget },
     trackMutation,
   } = useGoalCalculator();
 
@@ -67,9 +70,7 @@ export const HouseholdExpensesHeader: React.FC = () => {
         : 0,
     [data],
   );
-  const budgetTotal = directInput ?? categoriesTotal;
-  const leftToAllocate =
-    typeof directInput === 'number' ? directInput - categoriesTotal : 0;
+  const leftToAllocate = monthlyBudget - categoriesTotal;
 
   const [directInputFieldValue, setDirectInputFieldValue] = useState(0);
   const directInputInvalid = directInputFieldValue < 0;
@@ -99,13 +100,18 @@ export const HouseholdExpensesHeader: React.FC = () => {
     }
   };
 
-  const handleDirectInputClear = () => {
+  const handleUsePaycheck = () => {
     setDirectInput(null);
     setEditing(false);
   };
 
+  const handleUseCategoriesTotal = () => {
+    setDirectInput(categoriesTotal);
+    setEditing(false);
+  };
+
   const handleEditDirectInput = () => {
-    setDirectInputFieldValue(categoriesTotal);
+    setDirectInputFieldValue(monthlyBudget);
     setEditing(true);
   };
 
@@ -122,7 +128,7 @@ export const HouseholdExpensesHeader: React.FC = () => {
     <Stack direction="row" gap={4}>
       <StyledCard>
         <CardContent>
-          <Typography variant="h6">{t('Budgeted')}</Typography>
+          <Typography variant="h6">{t('Monthly Budget')}</Typography>
           {typeof directInput !== 'number' && loading ? (
             <Skeleton width={120} height={60} />
           ) : editing ? (
@@ -139,7 +145,7 @@ export const HouseholdExpensesHeader: React.FC = () => {
                   handleDirectInputSave();
                 }
               }}
-              label={t('Direct input')}
+              label={t('Total monthly budget')}
               error={directInputInvalid}
               helperText={directInputInvalid && t('Amount must be positive')}
               variant="outlined"
@@ -151,9 +157,19 @@ export const HouseholdExpensesHeader: React.FC = () => {
               }}
             />
           ) : (
-            <AmountTypography>
-              {currencyFormat(budgetTotal, 'USD', locale)}
-            </AmountTypography>
+            <Stack direction="row" alignItems="center" gap={1}>
+              <AmountTypography>
+                {currencyFormat(monthlyBudget, 'USD', locale)}
+              </AmountTypography>
+              {typeof directInput === 'number' && (
+                <IconButton
+                  onClick={handleEditDirectInput}
+                  aria-label={t('Edit monthly budget')}
+                >
+                  <EditIcon />
+                </IconButton>
+              )}
+            </Stack>
           )}
         </CardContent>
         {!loading && (
@@ -170,11 +186,16 @@ export const HouseholdExpensesHeader: React.FC = () => {
               </>
             ) : typeof directInput !== 'number' ? (
               <Button onClick={handleEditDirectInput}>
-                {t('Direct input')}
+                {t('Override paycheck amount')}
               </Button>
             ) : (
-              <Button onClick={handleDirectInputClear}>
-                {t('Manual input')}
+              <Button onClick={handleUsePaycheck}>
+                {t('Use paycheck amount')}
+              </Button>
+            )}
+            {!editing && (
+              <Button onClick={handleUseCategoriesTotal}>
+                {t('Use categories total')}
               </Button>
             )}
           </CardActions>
@@ -185,7 +206,7 @@ export const HouseholdExpensesHeader: React.FC = () => {
           <Typography variant="h6">{t('Left to Allocate')}</Typography>
           <AmountTypography>
             {showPercentage
-              ? percentageFormat(leftToAllocate / budgetTotal, locale)
+              ? percentageFormat(leftToAllocate / monthlyBudget, locale)
               : currencyFormat(leftToAllocate, 'USD', locale)}
           </AmountTypography>
         </CardContent>

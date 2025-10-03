@@ -16,6 +16,8 @@ export const hasStaffSpouse = (
   familySize === MpdGoalBenefitsConstantSizeEnum.MarriedThreeOrMoreChildren;
 
 export interface GoalTotals {
+  additionalIncome: number;
+  monthlyBudget: number;
   netMonthlySalary: number;
   taxesPercentage: number;
   taxes: number;
@@ -60,10 +62,11 @@ export const calculateGoalTotals = (
   const additionalIncome = specialIncomeCategory
     ? calculateCategoryTotal(specialIncomeCategory)
     : 0;
-  const netMonthlySalary =
-    (goalCalculation
-      ? calculateFamilyTotal(goalCalculation.householdFamily)
-      : 0) - additionalIncome;
+
+  const monthlyBudget =
+    goalCalculation?.householdFamily.directInput ??
+    (netPaycheckAmount + spouseNetPaycheckAmount) * 2 + additionalIncome;
+  const netMonthlySalary = monthlyBudget - additionalIncome;
   const taxes = netMonthlySalary * totalTaxesPercentage;
   const salaryPreIra = netMonthlySalary + taxes;
 
@@ -105,6 +108,8 @@ export const calculateGoalTotals = (
   const overallTotal = overallSubtotalWithAdmin * 1.06;
 
   return {
+    additionalIncome,
+    monthlyBudget,
     netMonthlySalary,
     taxesPercentage: totalTaxesPercentage,
     taxes,
