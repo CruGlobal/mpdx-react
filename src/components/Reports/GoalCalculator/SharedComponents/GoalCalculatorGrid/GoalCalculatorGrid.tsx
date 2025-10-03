@@ -510,6 +510,22 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
               rows={dataWithTotal}
               columns={columns}
               processRowUpdate={processRowUpdate}
+              onCellEditStart={(_, event) => {
+                // This is event is triggered before the input exists, so wait briefly for it to be created
+                requestAnimationFrame(() => {
+                  const input =
+                    event.target instanceof HTMLElement &&
+                    event.target.querySelector('input');
+                  if (!input) {
+                    return;
+                  }
+
+                  // number inputs don't support selecting text, so temporarily switch to a text input
+                  input.type = 'text';
+                  input.setSelectionRange(0, input.value.length);
+                  input.type = 'number';
+                });
+              }}
               isCellEditable={(params) => {
                 // Don't allow editing the total row or label field when canDelete is false
                 if (params.id === 'total') {
