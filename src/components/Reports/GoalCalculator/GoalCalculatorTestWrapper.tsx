@@ -30,6 +30,8 @@ export const goalCalculationMock = gqlMock<
       id: 'goal-calculation-1',
       name: 'Initial Goal Name',
       firstName: 'John',
+      spouseFirstName: 'Jane',
+      lastName: 'Doe',
       age: GoalCalculationAge.UnderThirty,
       familySize: MpdGoalBenefitsConstantSizeEnum.MarriedNoChildren,
       benefitsPlan: MpdGoalBenefitsConstantPlanEnum.Base,

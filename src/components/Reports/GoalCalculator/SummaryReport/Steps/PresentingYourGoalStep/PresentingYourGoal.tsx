@@ -22,13 +22,13 @@ import {
   Tooltip,
 } from 'recharts';
 import { useGetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
-import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useOrganizationId } from 'src/hooks/useOrganizationId';
 import cruLogo from 'src/images/cru/cru-logo.svg';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
+import { hasStaffSpouse } from '../../../Shared/calculateTotals';
 import { useGetOrganizationsQuery } from './GetOrganization.generated';
 
 const ChartContainer = styled(Box)({
@@ -82,13 +82,16 @@ export const PresentingYourGoal: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
   const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
-  const { goalTotals } = useGoalCalculator();
+  const {
+    goalCalculationResult: { data },
+    goalTotals,
+  } = useGoalCalculator();
+  const goalCalculation = data?.goalCalculation;
 
   /*
    * We don't want to display ministry location and Cru image if
    * the user is not part of Cru.
    */
-  const { data: userData } = useGetUserQuery();
   const salaryOrganizationId = useOrganizationId();
   const { data: salaryOrganization } = useGetUsersOrganizationsAccountsQuery({
     skip: !salaryOrganizationId,
@@ -138,13 +141,17 @@ export const PresentingYourGoal: React.FC = () => {
   ];
 
   const personalInfoRows: PersonalInfoRow[] = useMemo(() => {
+    const firstName = goalCalculation?.firstName ?? '';
+    const spouseFirstName = hasStaffSpouse(goalCalculation?.familySize)
+      ? goalCalculation?.spouseFirstName
+      : null;
+    const lastName = goalCalculation?.lastName ?? '';
+    const fullName = spouseFirstName
+      ? `${firstName} ${t('and')} ${spouseFirstName ?? ''} ${lastName}`
+      : `${firstName} ${lastName}`;
+
     const personalRows: PersonalInfoRow[] = [
-      {
-        label: 'Name',
-        value: userData?.user
-          ? `${userData.user.firstName} ${userData.user.lastName}`
-          : t('User'),
-      },
+      { label: 'Name', value: fullName },
       {
         label: t('Mission Agency'),
         value: organizationName,
@@ -157,7 +164,7 @@ export const PresentingYourGoal: React.FC = () => {
     }
 
     return personalRows;
-  }, [userData?.user, t, organizationName, isOrganizationTypeCru]);
+  }, [goalCalculation?.firstName, t, organizationName, isOrganizationTypeCru]);
 
   const rows: PresentingYourGoalRow[] = useMemo(
     () => [
