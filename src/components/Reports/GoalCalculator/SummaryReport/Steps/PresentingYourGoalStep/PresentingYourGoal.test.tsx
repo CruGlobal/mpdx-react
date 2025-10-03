@@ -3,7 +3,6 @@ import { render, waitFor } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { beforeTestResizeObserver } from '__tests__/util/windowResizeObserver';
 import { GetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
-import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   GoalCalculatorTestWrapper,
   goalCalculationMock,
@@ -38,7 +37,6 @@ const TestComponent: React.FC = () => (
   <GoalCalculatorTestWrapper>
     <GqlMockedProvider<{
       GoalCalculation: GoalCalculationQuery;
-      GetUser: GetUserQuery;
       GetUsersOrganizationsAccounts: GetUsersOrganizationsAccountsQuery;
       GetAccountList: GetAccountListQuery;
       GetOrganizations: GetOrganizationsQuery;
@@ -46,13 +44,6 @@ const TestComponent: React.FC = () => (
       mocks={{
         GoalCalculation: {
           goalCalculation: goalCalculationMock,
-        },
-        GetUser: {
-          user: {
-            id: 'account-list-id-1',
-            firstName: 'Obiwan',
-            lastName: 'Kenobi',
-          },
         },
         GetUsersOrganizationsAccounts: {
           userOrganizationAccounts: [
@@ -100,14 +91,13 @@ describe('PresentingYourGoal', () => {
     expect(
       getByRole('heading', { name: 'Personal Information' }),
     ).toBeInTheDocument();
-    expect(getByRole('cell', { name: 'User' })).toBeInTheDocument();
     expect(getByRole('cell', { name: 'Mission Agency' })).toBeInTheDocument();
     expect(
       getByRole('heading', { name: 'Monthly Support Needs' }),
     ).toBeInTheDocument();
 
     expect(
-      await findByRole('cell', { name: 'Obiwan Kenobi' }),
+      await findByRole('cell', { name: 'John and Jane Doe' }),
     ).toBeInTheDocument();
     expect(
       getByRole('cell', { name: 'Cru - United States of America' }),
