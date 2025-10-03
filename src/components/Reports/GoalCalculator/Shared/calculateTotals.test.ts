@@ -43,7 +43,7 @@ describe('calculateGoalTotals', () => {
     },
   ];
 
-  it('should calculate goal totals correctly', async () => {
+  it('should calculate goal totals correctly', () => {
     expect(calculateGoalTotals(goalCalculationMock, benefitsPlans)).toEqual({
       additionalIncome: 1000,
       monthlyBudget: 5500,
@@ -66,7 +66,91 @@ describe('calculateGoalTotals', () => {
     });
   });
 
-  it('returns 0 not NaN for missing goals', async () => {
+  it('should ignore spouse fields when the person is single or SOSA', () => {
+    const goalCalculation = {
+      ...goalCalculationMock,
+      familySize: MpdGoalBenefitsConstantSizeEnum.Single,
+    };
+    expect(calculateGoalTotals(goalCalculation, benefitsPlans)).toEqual({
+      additionalIncome: 1000,
+      monthlyBudget: 5500,
+      netMonthlySalary: 4500,
+      taxesPercentage: 0.2,
+      taxes: 900,
+      salaryPreIra: 5400,
+      rothContributionPercentage: 0.12,
+      traditionalContributionPercentage: 0.05,
+      rothContribution: expect.closeTo(736, 0),
+      traditionalContribution: expect.closeTo(284, 0),
+      grossAnnualSalary: expect.closeTo(77047, 0),
+      grossMonthlySalary: expect.closeTo(6421, 0),
+      ministryExpensesTotal: 5000,
+      benefitsCharge: 1008.6,
+      overallSubtotal: expect.closeTo(12429, 0),
+      overallSubtotalWithAdmin: expect.closeTo(14124, 0),
+      attrition: expect.closeTo(847, 0),
+      overallTotal: expect.closeTo(14972, 0),
+    });
+  });
+
+  it('handles spouse paid more', () => {
+    const goalCalculation = {
+      ...goalCalculationMock,
+      spouseNetPaycheckAmount: 3000,
+    };
+    expect(calculateGoalTotals(goalCalculation, benefitsPlans)).toEqual({
+      additionalIncome: 1000,
+      monthlyBudget: 5500,
+      netMonthlySalary: 4500,
+      taxesPercentage: expect.closeTo(0.211, 3),
+      taxes: expect.closeTo(949, 0),
+      salaryPreIra: expect.closeTo(5449, 0),
+      rothContributionPercentage: expect.closeTo(0.1091, 4),
+      traditionalContributionPercentage: expect.closeTo(0.0664, 4),
+      rothContribution: expect.closeTo(667, 0),
+      traditionalContribution: expect.closeTo(387, 0),
+      grossAnnualSalary: expect.closeTo(78044, 0),
+      grossMonthlySalary: expect.closeTo(6504, 0),
+      ministryExpensesTotal: 5000,
+      benefitsCharge: 1910.54,
+      overallSubtotal: expect.closeTo(13414, 0),
+      overallSubtotalWithAdmin: expect.closeTo(15243, 0),
+      attrition: expect.closeTo(915, 0),
+      overallTotal: expect.closeTo(16158, 0),
+    });
+  });
+
+  it('handles no retirement contribution', () => {
+    const goalCalculation = {
+      ...goalCalculationMock,
+      rothContributionPercentage: 0,
+      spouseRothContributionPercentage: 0,
+      traditionalContributionPercentage: 0,
+      spouseTraditionalContributionPercentage: 0,
+    };
+    expect(calculateGoalTotals(goalCalculation, benefitsPlans)).toEqual({
+      additionalIncome: 1000,
+      monthlyBudget: 5500,
+      netMonthlySalary: 4500,
+      taxesPercentage: expect.closeTo(0.209, 3),
+      taxes: expect.closeTo(940),
+      salaryPreIra: expect.closeTo(5440),
+      rothContributionPercentage: 0,
+      traditionalContributionPercentage: 0,
+      rothContribution: 0,
+      traditionalContribution: 0,
+      grossAnnualSalary: 65280,
+      grossMonthlySalary: 5440,
+      ministryExpensesTotal: 5000,
+      benefitsCharge: 1910.54,
+      overallSubtotal: expect.closeTo(12351, 0),
+      overallSubtotalWithAdmin: expect.closeTo(14035, 0),
+      attrition: expect.closeTo(842, 0),
+      overallTotal: expect.closeTo(14877, 0),
+    });
+  });
+
+  it('returns 0 not NaN for missing goals', () => {
     expect(calculateGoalTotals(null, benefitsPlans)).toEqual({
       additionalIncome: 0,
       monthlyBudget: 0,
