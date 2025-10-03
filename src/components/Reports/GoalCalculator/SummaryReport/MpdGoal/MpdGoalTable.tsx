@@ -158,7 +158,7 @@ export const MpdGoalTable: React.FC = () => {
       {
         line: '4',
         category: t('Ministry Expenses Subtotal'),
-        amount: goalTotals.ministryExpensesTotal,
+        amount: goalTotals.ministryExpensesTotal + goalTotals.benefitsCharge,
         reference: ministryExpenseRows.reduce(
           (sum, row) => sum + row.reference,
           0,

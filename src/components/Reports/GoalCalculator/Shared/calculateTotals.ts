@@ -85,7 +85,8 @@ export const calculateGoalTotals = (
         plan === goalCalculation?.benefitsPlan &&
         size === goalCalculation?.familySize,
     )?.cost ?? 0;
-  const overallSubtotal = grossMonthlySalary + benefitsCharge;
+  const overallSubtotal =
+    grossMonthlySalary + ministryExpensesTotal + benefitsCharge;
   const overallSubtotalWithAdmin = overallSubtotal / 0.88;
   const overallTotal = overallSubtotalWithAdmin * 1.06;
 

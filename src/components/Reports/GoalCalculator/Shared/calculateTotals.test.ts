@@ -2,12 +2,8 @@ import { gqlMock } from '__tests__/util/graphqlMocking';
 import {
   MpdGoalBenefitsConstantPlanEnum,
   MpdGoalBenefitsConstantSizeEnum,
-  PrimaryBudgetCategoryEnum,
 } from 'src/graphql/types.generated';
-import {
-  ListGoalCalculationFragment,
-  ListGoalCalculationFragmentDoc,
-} from '../GoalsList/GoalCalculations.generated';
+import { goalCalculationMock } from '../GoalCalculatorTestWrapper';
 import {
   BudgetFamilyFragment,
   BudgetFamilyFragmentDoc,
@@ -17,38 +13,6 @@ import {
   calculateFamilyTotal,
   calculateGoalTotals,
 } from './calculateTotals';
-
-const mockGoal = gqlMock<ListGoalCalculationFragment>(
-  ListGoalCalculationFragmentDoc,
-  {
-    mocks: {
-      familySize: MpdGoalBenefitsConstantSizeEnum.Single,
-      benefitsPlan: MpdGoalBenefitsConstantPlanEnum.Base,
-      netPaycheckAmount: 2500,
-      spouseNetPaycheckAmount: 2000,
-      taxesPercentage: 20,
-      spouseTaxesPercentage: 22,
-      rothContributionPercentage: 12,
-      spouseRothContributionPercentage: 10,
-      traditionalContributionPercentage: 5,
-      spouseTraditionalContributionPercentage: 8,
-      ministryFamily: {
-        directInput: 5000,
-      },
-      householdFamily: {
-        directInput: 5500,
-      },
-      specialFamily: {
-        primaryBudgetCategories: [
-          {
-            category: PrimaryBudgetCategoryEnum.SpecialIncome,
-            directInput: 1000,
-          },
-        ],
-      },
-    },
-  },
-);
 
 const mockFamily = gqlMock<BudgetFamilyFragment>(BudgetFamilyFragmentDoc, {
   mocks: {
@@ -79,7 +43,7 @@ describe('calculateGoalTotals', () => {
     },
   ];
   it('should calculate goal totals correctly', async () => {
-    expect(calculateGoalTotals(mockGoal, benefitsPlans)).toEqual({
+    expect(calculateGoalTotals(goalCalculationMock, benefitsPlans)).toEqual({
       netMonthlySalary: 4500,
       taxesPercentage: expect.closeTo(0.209, 3),
       taxes: expect.closeTo(940),
@@ -91,10 +55,10 @@ describe('calculateGoalTotals', () => {
       grossAnnualSalary: expect.closeTo(77854, 0),
       grossMonthlySalary: expect.closeTo(6488, 0),
       ministryExpensesTotal: 5000,
-      benefitsCharge: 1008.6,
-      overallSubtotal: expect.closeTo(7496, 0),
-      overallSubtotalWithAdmin: expect.closeTo(8519, 0),
-      overallTotal: expect.closeTo(9030, 0),
+      benefitsCharge: 1910.54,
+      overallSubtotal: expect.closeTo(13398, 0),
+      overallSubtotalWithAdmin: expect.closeTo(15225, 0),
+      overallTotal: expect.closeTo(16139, 0),
     });
   });
 
