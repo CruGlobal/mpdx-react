@@ -22,6 +22,7 @@ import {
   MpdGoalBenefitsConstantSizeEnum,
 } from 'src/graphql/types.generated';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
+import { hasStaffSpouse } from '../../../Shared/calculateTotals';
 import { InformationCategoryFinancialForm } from './InformationCategoryForm/InformationCategoryFinancialForm';
 import { InformationCategoryPersonalForm } from './InformationCategoryForm/InformationCategoryPersonalForm';
 import { amount, integer, percentage } from './schema';
@@ -143,11 +144,7 @@ export const InformationCategory: React.FC = () => {
     setValue(newValue);
   };
 
-  const familySize = data?.goalCalculation.familySize;
-  const hasSpouse =
-    familySize === MpdGoalBenefitsConstantSizeEnum.MarriedNoChildren ||
-    familySize === MpdGoalBenefitsConstantSizeEnum.MarriedOneToTwoChildren ||
-    familySize === MpdGoalBenefitsConstantSizeEnum.MarriedThreeOrMoreChildren;
+  const hasSpouse = hasStaffSpouse(data?.goalCalculation.familySize);
 
   const [viewingSpouse, setViewingSpouse] = useState(false);
   const buttonText = useMemo(() => {

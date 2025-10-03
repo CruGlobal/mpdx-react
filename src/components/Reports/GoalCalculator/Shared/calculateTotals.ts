@@ -1,11 +1,19 @@
 import {
   MpdGoalBenefitsConstant,
+  MpdGoalBenefitsConstantSizeEnum,
   PrimaryBudgetCategoryEnum,
 } from 'src/graphql/types.generated';
 import { BudgetFamilyFragment } from './GoalCalculation.generated';
 import type { ListGoalCalculationFragment } from '../GoalsList/GoalCalculations.generated';
 
 const toPercentage = (value: number | null | undefined) => (value ?? 0) / 100;
+
+export const hasStaffSpouse = (
+  familySize: MpdGoalBenefitsConstantSizeEnum | null | undefined,
+): boolean =>
+  familySize === MpdGoalBenefitsConstantSizeEnum.MarriedNoChildren ||
+  familySize === MpdGoalBenefitsConstantSizeEnum.MarriedOneToTwoChildren ||
+  familySize === MpdGoalBenefitsConstantSizeEnum.MarriedThreeOrMoreChildren;
 
 export interface GoalTotals {
   netMonthlySalary: number;
@@ -29,12 +37,14 @@ export const calculateGoalTotals = (
   goalCalculation: ListGoalCalculationFragment | null,
   benefitsPlans: Array<Pick<MpdGoalBenefitsConstant, 'size' | 'plan' | 'cost'>>,
 ): GoalTotals => {
+  const married = hasStaffSpouse(goalCalculation?.familySize);
   const netPaycheckAmount = goalCalculation?.netPaycheckAmount ?? 0;
-  const spouseNetPaycheckAmount = goalCalculation?.spouseNetPaycheckAmount ?? 0;
+  const spouseNetPaycheckAmount =
+    (married ? goalCalculation?.spouseNetPaycheckAmount : null) ?? 0;
   const totalNetPaycheckAmount = netPaycheckAmount + spouseNetPaycheckAmount;
   const taxesPercentage = toPercentage(goalCalculation?.taxesPercentage);
   const spouseTaxesPercentage = toPercentage(
-    goalCalculation?.spouseTaxesPercentage,
+    married ? goalCalculation?.spouseTaxesPercentage : null,
   );
   const paySplitPercentage = netPaycheckAmount / totalNetPaycheckAmount || 1;
   const spousePaySplitPercentage = 1 - paySplitPercentage;
@@ -60,12 +70,16 @@ export const calculateGoalTotals = (
   const rothContributionPercentage =
     toPercentage(goalCalculation?.rothContributionPercentage) *
       paySplitPercentage +
-    toPercentage(goalCalculation?.spouseRothContributionPercentage) *
+    toPercentage(
+      married ? goalCalculation?.spouseRothContributionPercentage : null,
+    ) *
       spousePaySplitPercentage;
   const traditionalContributionPercentage =
     toPercentage(goalCalculation?.traditionalContributionPercentage) *
       paySplitPercentage +
-    toPercentage(goalCalculation?.spouseTraditionalContributionPercentage) *
+    toPercentage(
+      married ? goalCalculation?.spouseTraditionalContributionPercentage : null,
+    ) *
       spousePaySplitPercentage;
 
   const rothContribution =
