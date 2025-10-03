@@ -13,9 +13,9 @@ const createTable = (
     [title],
     csvHeader,
     ...transactions.map((transaction) => [
-      transaction.month,
+      transaction.transactedAt,
       transaction.displayCategory,
-      transaction.total.toLocaleString(locale, {
+      transaction.amount.toLocaleString(locale, {
         style: 'currency',
         currency: 'USD',
       }),
@@ -31,8 +31,8 @@ function createCombinedReport(
   csvHeader: string[],
   locale: string,
 ) {
-  const income = transactions.filter((transaction) => transaction.total > 0);
-  const expenses = transactions.filter((transaction) => transaction.total < 0);
+  const income = transactions.filter((transaction) => transaction.amount > 0);
+  const expenses = transactions.filter((transaction) => transaction.amount < 0);
   const incomeData = createTable(titles.income, csvHeader, income, locale);
   const expenseData = createTable(titles.expense, csvHeader, expenses, locale);
   return [...incomeData, [''], ...expenseData];
