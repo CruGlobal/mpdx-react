@@ -1,45 +1,29 @@
 import React from 'react';
-import { Box, MenuItem, Select, SelectProps } from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import {
-  PrimaryAccount,
-  SavingsAccount,
-} from 'src/components/Reports/SavingsFundTransfer/Helper/TransferIcons';
-import { TransferDirectionEnum } from '../../Helper/TransferHistoryEnum';
+import { MenuItem, Select, SelectProps } from '@mui/material';
 import { FundFieldsFragment } from '../../ReportsSavingsFund.generated';
-import { FundTypeEnum } from '../../mockData';
+import { FundInfoDisplay } from '../Helper/FundInfoDisplay';
 
 type TransferModalSelectProps = Partial<SelectProps> & {
-  type: TransferDirectionEnum;
   funds: FundFieldsFragment[];
-  selectedTransferFrom?: string;
+  notSelected?: string;
+  disabled?: boolean;
 };
 
 export const TransferModalSelect: React.FC<TransferModalSelectProps> = ({
-  type,
-  selectedTransferFrom,
+  notSelected,
   funds,
+  disabled,
   ...props
 }) => {
-  const { t } = useTranslation();
-
-  const filteredFunds =
-    type === TransferDirectionEnum.From
-      ? funds
-      : funds.filter((fund) => fund.id !== selectedTransferFrom);
+  const filteredFunds = notSelected
+    ? funds.filter((fund) => fund.fundType !== notSelected)
+    : funds;
 
   return (
-    <Select {...props}>
+    <Select {...props} disabled={disabled}>
       {filteredFunds.map((fund) => (
-        <MenuItem key={fund.id} value={fund.id}>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            {fund.fundType === FundTypeEnum.Primary
-              ? PrimaryAccount
-              : fund.fundType === FundTypeEnum.Savings
-                ? SavingsAccount
-                : null}{' '}
-            <b>{t(`${fund.fundType} Account`)}</b>
-          </Box>
+        <MenuItem key={fund.id} value={fund.fundType}>
+          <FundInfoDisplay fund={fund} />
         </MenuItem>
       ))}
     </Select>

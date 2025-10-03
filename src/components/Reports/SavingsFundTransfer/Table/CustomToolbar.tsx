@@ -12,14 +12,16 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { downloadCSV } from '../DownloadTable/downloadTable';
-import { TransferHistory } from '../mockData';
+import { TableTypeEnum, Transfers } from '../mockData';
 
 interface CustomToolbarProps {
-  history?: TransferHistory[];
+  history?: Transfers[];
+  type: TableTypeEnum;
 }
 
 export const CustomToolbar: React.FC<CustomToolbarProps> = ({
   history = [],
+  type,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -67,7 +69,7 @@ export const CustomToolbar: React.FC<CustomToolbarProps> = ({
       />
 
       <Tooltip title="Download as CSV">
-        <ToolbarButton onClick={() => downloadCSV(t, history, locale)}>
+        <ToolbarButton onClick={() => downloadCSV(t, history, type, locale)}>
           <FileDownloadIcon fontSize="small" color="primary" />
         </ToolbarButton>
       </Tooltip>
