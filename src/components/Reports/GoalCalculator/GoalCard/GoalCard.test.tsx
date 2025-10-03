@@ -94,6 +94,6 @@ describe('GoalCard', () => {
 
   it('calculates goal total', () => {
     const { getByTestId } = render(<TestComponent />);
-    expect(getByTestId('goal-amount-value')).toHaveTextContent('$7,814.89');
+    expect(getByTestId('goal-amount-value')).toHaveTextContent('$13,837.61');
   });
 });
