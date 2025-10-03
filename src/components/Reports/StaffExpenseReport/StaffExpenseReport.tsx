@@ -105,7 +105,7 @@ export interface Transaction {
   id: string;
   amount: number;
   transactedAt: string;
-  description?: string;
+  description?: string | null;
   fundType: string;
   category: StaffExpenseCategoryEnum;
   subcategory?: StaffExpensesSubCategoryEnum;
