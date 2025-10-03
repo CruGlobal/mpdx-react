@@ -27,35 +27,33 @@ describe('filterTransactions', () => {
             averagePerMonth: -50,
             breakdownByMonth: [
               {
-                month: '2025-01-01',
-                total: -100,
-              },
-              {
                 month: '2025-02-01',
                 total: -100,
-              },
-            ],
-          },
-          {
-            subCategory: StaffExpensesSubCategoryEnum.OtherAssessment,
-            total: -100,
-            averagePerMonth: -50,
-            breakdownByMonth: [
-              {
-                month: '2025-01-01',
-                total: -50,
-              },
-              {
-                month: '2025-02-01',
-                total: -50,
+                transactions: [
+                  {
+                    id: 'transaction-1',
+                    amount: 100,
+                    transactedAt: '2025-01-15',
+                    description: 'January Additional Salary',
+                  },
+                  {
+                    id: 'transaction-2',
+                    amount: -100,
+                    transactedAt: '2025-01-20',
+                    description: 'Star Wars Costume',
+                  },
+                  {
+                    id: 'transaction-3',
+                    amount: -1000,
+                    transactedAt: '2025-01-24',
+                    description: 'January Additional Salary',
+                  },
+                ],
               },
             ],
           },
         ],
-        breakdownByMonth: [
-          { month: '2025-01-01', total: -150 },
-          { month: '2025-02-01', total: -150 },
-        ],
+        breakdownByMonth: [{ month: '2025-01-01', total: -150 }],
       },
     ],
   };
@@ -64,7 +62,6 @@ describe('filterTransactions', () => {
     const targetTime = DateTime.fromISO('2025-01-15');
     const result = filterTransactions({
       fund: mockFund,
-      targetTime,
       t: i18n.t,
       filters: {
         selectedDateRange: null,
@@ -72,8 +69,9 @@ describe('filterTransactions', () => {
         endDate: null,
         categories: [],
       },
+      targetTime,
     });
-    expect(result).toHaveLength(2);
+    expect(result).toHaveLength(3);
   });
 
   it('filters transactions by custom date range', () => {
@@ -89,7 +87,7 @@ describe('filterTransactions', () => {
         categories: [],
       },
     });
-    expect(result).toHaveLength(4);
+    expect(result).toHaveLength(3);
   });
 
   it('returns empty array if no main categories', () => {
