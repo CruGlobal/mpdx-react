@@ -35,7 +35,7 @@ export const RemindersTable: React.FC<RemindersTableProps> = ({ data }) => {
               <TableCell>{t('Ministry Partner')}</TableCell>
               <TableCell>{t('Last Gift')}</TableCell>
               <TableCell>{t('Last Reminder')}</TableCell>
-              <TableCell>{t('Reminder Status')}</TableCell>
+              <TableCell id="status-col">{t('Reminder Status')}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -57,6 +57,7 @@ export const RemindersTable: React.FC<RemindersTableProps> = ({ data }) => {
                             value={values.status}
                             onChange={handleChange}
                             onBlur={handleBlur}
+                            labelId="status-col"
                           />
                         </TableCell>
                       </ScreenOnly>
