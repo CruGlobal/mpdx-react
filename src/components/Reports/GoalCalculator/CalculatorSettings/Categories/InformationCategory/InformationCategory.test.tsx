@@ -42,9 +42,6 @@ const TestComponent: React.FC<TestComponentProps> = ({ single = false }) => (
       GoalCalculatorConstants: constantsMock,
       GetUser: {
         user: {
-          id: 'user-id-1',
-          firstName: 'Obi',
-          lastName: 'Wan',
           avatar: 'avatar.jpg',
         },
       },
@@ -96,7 +93,7 @@ describe('InformationCategory', () => {
   it("renders the user's first name", async () => {
     const { getByTestId } = render(<TestComponent />);
     await waitFor(() => {
-      expect(getByTestId('info-name-typography')).toHaveTextContent('Obi');
+      expect(getByTestId('info-name-typography')).toHaveTextContent('John');
     });
   });
 
