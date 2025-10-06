@@ -14,9 +14,9 @@ import {
 } from 'src/components/Shared/styledComponents/LoadingStyling';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import theme from 'src/theme';
 import { FundFieldsFragment } from '../ReportsSavingsFund.generated';
-import { TransferModalData } from '../TransferModal/TransferModal';
-import { FundTypeEnum } from '../mockData';
+import { FundTypeEnum, TransferModalData } from '../mockData';
 import { ScreenOnly } from '../styledComponents/DisplayStyling';
 
 export interface BalanceCardProps {
@@ -35,10 +35,6 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const staffAccountColor = '#F08020';
-  const staffConferenceSavingsColor = '#00C0D8';
-  const staffSavingsColor = '#007890';
-
   const title = t('{{ name }} Account Balance', { name: fund.fundType });
   const Icon =
     fund.fundType === FundTypeEnum.Primary
@@ -48,15 +44,15 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
         : Groups;
   const iconBgColor =
     fund.fundType === FundTypeEnum.Primary
-      ? staffAccountColor
+      ? theme.palette.chartOrange.main
       : fund.fundType === FundTypeEnum.Savings
-        ? staffSavingsColor
-        : staffConferenceSavingsColor;
+        ? theme.palette.chartBlueDark.main
+        : theme.palette.chartBlue.main;
 
   const handleTransferFrom = () => {
     handleOpenTransferModal({
       transfer: {
-        transferFrom: fund.id,
+        transferFrom: fund.fundType,
       },
     });
   };
@@ -64,7 +60,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
   const handleTransferTo = () => {
     handleOpenTransferModal({
       transfer: {
-        transferTo: fund.id,
+        transferTo: fund.fundType,
       },
     });
   };
@@ -117,48 +113,54 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
               <Typography
                 variant="body1"
                 mb={0}
-                sx={{ '@media print': { fontSize: '10pt' }, fontWeight: 500 }}
+                sx={{
+                  '@media print': { fontSize: '14pt' },
+                  fontWeight: 500,
+                  fontSize: '15pt',
+                }}
               >
                 {title}
               </Typography>
-              <ScreenOnly>
-                <Typography variant="body2" mt={0}>
-                  {t('Updated 3 min ago')}
-                </Typography>
-              </ScreenOnly>
             </Box>
           </Box>
           <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            mt={5}
-            mb={1}
-            mr={1}
             sx={{
-              '@media print': {
-                fontSize: '14pt',
-                flexDirection: 'column',
-                alignItems: 'flex-start',
-                mt: 2,
-              },
+              mt: 5,
+              '@media print': { mt: 2 },
             }}
           >
-            <Typography variant="h5" sx={{ fontSize: 'inherit' }}>
-              {currencyFormat(fund.balance, 'USD', locale, {
+            <Typography
+              variant="body1"
+              mb={0}
+              sx={{ '@media print': { fontSize: '12pt' } }}
+            >
+              {t('Current Balance')}
+            </Typography>
+
+            <Typography
+              variant="h5"
+              color={fund.balance < 0 ? 'error.main' : 'text.primary'}
+              sx={{ fontSize: 'inherit' }}
+            >
+              {fund.balance < 0 ? '(' : ''}
+              {currencyFormat(Math.abs(fund.balance), 'USD', locale, {
                 showTrailingZeros: true,
               })}
+              {fund.balance < 0 ? ')' : ''}
             </Typography>
           </Box>
 
           <ScreenOnly
             sx={{
               alignItems: 'left',
-              mt: 3,
+              mt: 2,
               ml: 0,
             }}
           >
-            <Button onClick={handleTransferFrom}>
+            <Button
+              onClick={handleTransferFrom}
+              disabled={fund.balance <= fund.deficitLimit}
+            >
               <Outbox fontSize="small" sx={{ mr: 0.5 }} />
               {t('TRANSFER FROM')}
             </Button>
