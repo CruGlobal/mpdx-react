@@ -118,7 +118,7 @@ export const InformationCategoryPersonalForm: React.FC<
           <Grid item xs={12}>
             <Autocomplete
               options={locations}
-              value={geographicLocation}
+              value={geographicLocation ?? null}
               onChange={(_, newValue) =>
                 saveField({ geographicLocation: newValue })
               }
