@@ -2,13 +2,14 @@ import React, { useCallback, useMemo } from 'react';
 import { styled } from '@mui/material/styles';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
+import { PrimaryBudgetCategoryEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
 import { useAccountListSupportRaisedQuery } from '../../Shared/GoalLineItems.generated';
-import { calculateCategoryTotal } from '../../Shared/calculateTotals';
+import { calculateCategoryEnumTotal } from '../../Shared/calculateTotals';
 import { MpdGoalHeaderCards } from './MpdGoalHeaderCards/MpdGoalHeaderCards';
 
 interface MpdGoalRow {
@@ -60,19 +61,127 @@ export const MpdGoalTable: React.FC = () => {
   );
 
   const goalCalculation = goalCalculationResult.data?.goalCalculation;
+  // TODO: Replace mock reference values with real values
   const rows = useMemo((): MpdGoalRow[] => {
-    const ministryExpenseRows: MpdGoalRow[] =
-      goalCalculation?.ministryFamily.primaryBudgetCategories.map(
-        (category, index) => {
-          const lineNumber = String.fromCharCode(65 + index);
-          return {
-            line: `3${lineNumber}`,
-            category: t(category.label),
-            amount: calculateCategoryTotal(category),
-            reference: Math.random() * 391 + 10,
-          };
-        },
-      ) ?? [];
+    const family = goalCalculation?.ministryFamily;
+
+    const ministryExpenseRows: MpdGoalRow[] = [
+      {
+        line: '3A',
+        category: t('Ministry Miles'),
+        amount: calculateCategoryEnumTotal(
+          family,
+          PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage,
+        ),
+        reference: Math.random() * 391 + 10,
+      },
+      {
+        line: '3B',
+        category: t('Ministry Travel'),
+        amount: calculateCategoryEnumTotal(
+          family,
+          PrimaryBudgetCategoryEnum.MinistryTravel,
+        ),
+        reference: Math.random() * 391 + 10,
+      },
+      {
+        line: '3C',
+        category: t('Meetings, Retreats, Conferences'),
+        amount:
+          calculateCategoryEnumTotal(
+            family,
+            PrimaryBudgetCategoryEnum.MeetingsRetreatsConferences,
+          ) +
+          calculateCategoryEnumTotal(
+            family,
+            PrimaryBudgetCategoryEnum.UsStaffConference,
+          ),
+        reference: Math.random() * 391 + 10,
+      },
+      {
+        line: '3D',
+        category: t('Meals and Per Diem'),
+        amount: calculateCategoryEnumTotal(
+          family,
+          PrimaryBudgetCategoryEnum.MealsAndPerDiem,
+        ),
+        reference: Math.random() * 391 + 10,
+      },
+      {
+        line: '3E',
+        category: t('MPD'),
+        amount: calculateCategoryEnumTotal(
+          family,
+          PrimaryBudgetCategoryEnum.MinistryPartnerDevelopment,
+        ),
+        reference: Math.random() * 391 + 10,
+      },
+      {
+        line: '3F',
+        category: t('Supplies and Materials'),
+        amount: calculateCategoryEnumTotal(
+          family,
+          PrimaryBudgetCategoryEnum.SuppliesAndMaterials,
+        ),
+        reference: Math.random() * 391 + 10,
+      },
+      {
+        line: '3G',
+        category: t('Summer Assignment Expenses'),
+        amount:
+          calculateCategoryEnumTotal(
+            family,
+            PrimaryBudgetCategoryEnum.SummerAssignmentExpenses,
+          ) +
+          calculateCategoryEnumTotal(
+            family,
+            PrimaryBudgetCategoryEnum.SummerAssignmentTravel,
+          ),
+        reference: Math.random() * 391 + 10,
+      },
+      {
+        line: '3H',
+        category: t('Reimbursable Medical Expenses'),
+        amount: calculateCategoryEnumTotal(
+          family,
+          PrimaryBudgetCategoryEnum.ReimbursableMedicalExpense,
+        ),
+        reference: Math.random() * 391 + 10,
+      },
+      {
+        line: '3I',
+        category: t(
+          'Account transfers to staff members, ministries, projects, etc.',
+        ),
+        amount: calculateCategoryEnumTotal(
+          family,
+          PrimaryBudgetCategoryEnum.AccountTransfers,
+        ),
+        reference: Math.random() * 391 + 10,
+      },
+      {
+        line: '3J',
+        category: t('Other (includes credit card charges)'),
+        amount:
+          calculateCategoryEnumTotal(
+            family,
+            PrimaryBudgetCategoryEnum.InternetServiceProviderFee,
+          ) +
+          calculateCategoryEnumTotal(
+            family,
+            PrimaryBudgetCategoryEnum.CellPhoneWorkLine,
+          ) +
+          calculateCategoryEnumTotal(
+            family,
+            PrimaryBudgetCategoryEnum.CreditCardProcessingCharges,
+          ) +
+          calculateCategoryEnumTotal(
+            family,
+            PrimaryBudgetCategoryEnum.MinistryOther,
+          ),
+        reference: Math.random() * 391 + 10,
+      },
+    ];
 
     return [
       {
@@ -150,7 +259,7 @@ export const MpdGoalTable: React.FC = () => {
       },
       {
         line: '2',
-        category: t('Benefits Charge'),
+        category: t('Benefits'),
         amount: goalTotals.benefitsCharge,
         reference: 2302.24,
       },
