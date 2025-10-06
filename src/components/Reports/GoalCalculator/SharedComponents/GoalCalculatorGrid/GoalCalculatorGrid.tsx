@@ -59,32 +59,13 @@ const ErrorCell = styled(Box)(({ theme }) => ({
 
 interface GoalCalculatorGridProps {
   category: BudgetFamilyFragment['primaryBudgetCategories'][number];
+  maxTotal?: number | null;
   promptText?: string;
 }
 
-// Yup validation schemas
-const directInputSchema = yup.object({
-  amount: yup
-    .number()
-    .min(0, 'Amount must be positive')
-    .required('Amount is required'),
-});
-
-const subBudgetCategorySchema = yup.object({
-  label: yup
-    .string()
-    .trim()
-    .min(1, 'Label is required')
-    .max(100, 'Label must be less than 100 characters')
-    .required('Label is required'),
-  amount: yup
-    .number()
-    .min(0, 'Amount must be positive')
-    .required('Amount is required'),
-});
-
 export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   category,
+  maxTotal,
   promptText,
 }) => {
   const { t } = useTranslation();
@@ -116,6 +97,43 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   const [updateSubBudgetCategory] = useUpdateSubBudgetCategoryMutation();
   const [createSubBudgetCategory] = useCreateSubBudgetCategoryMutation();
   const [deleteSubBudgetCategory] = useDeleteSubBudgetCategoryMutation();
+
+  // Yup validation schemas
+  const directInputSchema = useMemo(() => {
+    const amount = yup
+      .number()
+      .required(t('Total is required'))
+      .min(0, t('Total must be positive'));
+
+    return yup.object({
+      amount:
+        typeof maxTotal === 'number'
+          ? amount.max(
+              maxTotal ?? Infinity,
+              t('Total must be less than {{max}}', {
+                max: currencyFormat(maxTotal, 'USD', locale),
+              }),
+            )
+          : amount,
+    });
+  }, [t, maxTotal, locale]);
+
+  const subBudgetCategorySchema = useMemo(
+    () =>
+      yup.object({
+        label: yup
+          .string()
+          .trim()
+          .min(1, t('Label is required'))
+          .max(100, t('Label must be less than 100 characters'))
+          .required(t('Label is required')),
+        amount: yup
+          .number()
+          .min(0, t('Amount must be positive'))
+          .required(t('Amount is required')),
+      }),
+    [t],
+  );
 
   const dataWithTotal = useMemo(
     () => [...gridData, { id: 'total', label: 'Total', amount: totalAmount }],
@@ -543,10 +561,19 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
 
       {Object.keys(cellErrors).length > 0 &&
         Object.entries(cellErrors).map(([cellKey, error]) => (
-          <FormHelperText key={cellKey} error={true} sx={{ mb: 0.5 }}>
+          <FormHelperText key={cellKey} error sx={{ mb: 0.5 }}>
             {error}
           </FormHelperText>
         ))}
+      {!directInput &&
+        typeof maxTotal === 'number' &&
+        totalAmount > maxTotal && (
+          <FormHelperText error sx={{ mb: 0.5 }}>
+            {t('Total must be less than {{max}}', {
+              max: currencyFormat(maxTotal, 'USD', locale),
+            })}
+          </FormHelperText>
+        )}
     </GoalCalculatorSection>
   );
 };

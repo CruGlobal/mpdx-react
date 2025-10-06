@@ -9,8 +9,14 @@ import { GoalCalculatorTestWrapper } from '../../GoalCalculatorTestWrapper';
 import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
 import { GoalCalculatorGrid } from './GoalCalculatorGrid';
 
-const TestComponent: React.FC<{ primaryBudgetCategoryIndex?: number }> = ({
+interface TestComponentProps {
+  primaryBudgetCategoryIndex?: number;
+  maxTotal?: number;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({
   primaryBudgetCategoryIndex = 0,
+  maxTotal,
 }) => {
   const {
     goalCalculationResult: { data },
@@ -19,6 +25,7 @@ const TestComponent: React.FC<{ primaryBudgetCategoryIndex?: number }> = ({
   return data ? (
     <GoalCalculatorGrid
       promptText=""
+      maxTotal={maxTotal}
       category={
         data.goalCalculation.ministryFamily.primaryBudgetCategories[
           primaryBudgetCategoryIndex
@@ -198,6 +205,49 @@ describe('GoalCalculatorGrid', () => {
         },
       });
     });
+  });
+
+  it('validates total amount', async () => {
+    const { getByDisplayValue, findByText } = render(
+      <GoalCalculatorTestWrapper>
+        <TestComponent maxTotal={100} />
+      </GoalCalculatorTestWrapper>,
+    );
+
+    const otherMinistryRow = (await findByText('Other Ministry')).closest(
+      '[role="row"]',
+    );
+    const amountCell = otherMinistryRow?.querySelector('[data-field="amount"]');
+    userEvent.dblClick(amountCell!);
+
+    await waitFor(async () => {
+      const input = getByDisplayValue('1000');
+      userEvent.clear(input);
+      userEvent.type(input, '3000');
+    });
+
+    userEvent.tab();
+
+    expect(
+      await findByText('Total must be less than $100'),
+    ).toBeInTheDocument();
+  });
+
+  it('validates direct input amount', async () => {
+    const { findByText, findByRole, getByRole } = render(
+      <GoalCalculatorTestWrapper>
+        <TestComponent maxTotal={100} />
+      </GoalCalculatorTestWrapper>,
+    );
+
+    userEvent.click(await findByRole('button', { name: 'Lump Sum' }));
+    const directInput = getByRole('spinbutton', { name: 'Total' });
+    userEvent.clear(directInput);
+    userEvent.type(directInput, '3000');
+
+    expect(
+      await findByText('Total must be less than $100'),
+    ).toBeInTheDocument();
   });
 
   it('prevents editing the total row', async () => {
