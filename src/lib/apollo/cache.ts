@@ -42,6 +42,8 @@ export const createCache = () =>
         },
         merge: true,
       },
+      // There is only one Constant entity, so merge all of them
+      Constant: { keyFields: [] },
       // For Options, use the key as the unique id to make it easier to find them in the cache
       Option: { keyFields: ['key'] },
       User: { merge: true },
