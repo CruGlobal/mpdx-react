@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DoNotDisturbAltIcon from '@mui/icons-material/DoNotDisturbAlt';
@@ -27,9 +27,9 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { SubBudgetCategoryEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { useDebouncedCallback } from 'src/hooks/useDebounce';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { useAutoSave } from '../../CalculatorSettings/Categories/Autosave/useAutosave';
 import {
   getPrimaryCategoryRightPanel,
   getSubCategoryRightPanel,
@@ -90,8 +90,9 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   const [cellErrors, setCellErrors] = useState<
     Record<string, string | undefined>
   >({});
-  const [directInputError, setDirectInputError] = useState<string>('');
-  const [lumpSumValue, setLumpSumValue] = useState<string>('');
+  const [lumpSumValue, setLumpSumValue] = useState(
+    category.directInput?.toString() ?? '',
+  );
   const [updatePrimaryBudgetCategory] =
     useUpdatePrimaryBudgetCategoryMutation();
   const [updateSubBudgetCategory] = useUpdateSubBudgetCategoryMutation();
@@ -141,16 +142,9 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   );
 
   const directInput = category.directInput !== null;
-  const lumpSumAmount = category.directInput || 0;
-
-  useEffect(() => {
-    if (directInput) {
-      setLumpSumValue(lumpSumAmount.toString());
-    }
-  }, [lumpSumAmount, directInput]);
 
   const updateDirectInput = (directInput: number | null) => {
-    trackMutation(
+    return trackMutation(
       updatePrimaryBudgetCategory({
         variables: {
           input: {
@@ -176,8 +170,6 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
     );
   };
 
-  const debouncedUpdateMutation = useDebouncedCallback(updateDirectInput, 500);
-
   const handleDirectInputToggle = (enableDirectInput: boolean) => {
     if (enableDirectInput) {
       // Switching to "Lump Sum" mode
@@ -200,26 +192,15 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
 
     // Clear any validation errors when switching modes
     setCellErrors({});
-    setDirectInputError('');
   };
 
-  const handleLumpSumChange = (value: string | number) => {
-    const stringValue = value.toString();
-    const numericValue =
-      typeof value === 'string' ? parseFloat(value) || 0 : value;
-    setLumpSumValue(stringValue);
-
-    try {
-      directInputSchema.validateSync({ amount: numericValue });
-      setDirectInputError('');
-      debouncedUpdateMutation(numericValue);
-    } catch (error) {
-      if (error instanceof yup.ValidationError) {
-        setDirectInputError(error.message);
-      }
-    }
-  };
-
+  const directInputProps = useAutoSave({
+    value: category.directInput,
+    saveValue: updateDirectInput,
+    fieldName: 'amount',
+    schema: directInputSchema,
+    saveOnChange: false,
+  });
   const addExpense = () => {
     const tempId = `temp-${Date.now()}`;
 
@@ -502,14 +483,11 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
         {directInput ? (
           <Box sx={{ p: 2 }}>
             <TextField
+              {...directInputProps}
               fullWidth
               size="small"
               label={t('Total')}
               type="number"
-              value={lumpSumValue}
-              onChange={(e) => handleLumpSumChange(e.target.value)}
-              error={!!directInputError}
-              helperText={directInputError}
               sx={{ mb: 2 }}
             />
           </Box>
