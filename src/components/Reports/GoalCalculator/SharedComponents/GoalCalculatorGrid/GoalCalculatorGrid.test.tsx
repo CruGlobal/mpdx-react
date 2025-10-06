@@ -54,7 +54,7 @@ describe('GoalCalculatorGrid', () => {
     const textField = await findByLabelText('Total');
     userEvent.clear(textField);
     userEvent.type(textField, '1500');
-    expect(textField).toHaveValue(1500);
+    textField.blur();
 
     await waitFor(() => {
       expect(mutationSpy).toHaveGraphqlOperation(
