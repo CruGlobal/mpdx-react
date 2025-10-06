@@ -76,7 +76,7 @@ const TestComponent: React.FC = () => (
         },
       }}
     >
-      <PresentingYourGoal />
+      <PresentingYourGoal supportRaised={1000} />
     </GqlMockedProvider>
   </GoalCalculatorTestWrapper>
 );

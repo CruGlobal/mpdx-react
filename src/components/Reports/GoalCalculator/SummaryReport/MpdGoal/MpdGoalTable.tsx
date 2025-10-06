@@ -3,12 +3,10 @@ import { styled } from '@mui/material/styles';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import { PrimaryBudgetCategoryEnum } from 'src/graphql/types.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
-import { useAccountListSupportRaisedQuery } from '../../Shared/GoalLineItems.generated';
 import { calculateCategoryEnumTotal } from '../../Shared/calculateTotals';
 import { MpdGoalHeaderCards } from './MpdGoalHeaderCards/MpdGoalHeaderCards';
 
@@ -38,17 +36,18 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   },
 }));
 
-export const MpdGoalTable: React.FC = () => {
+interface MpdGoalTableProps {
+  supportRaised: number;
+}
+
+export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({
+  supportRaised,
+}) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const localeText = useDataGridLocaleText();
-  const accountListId = useAccountListId() ?? '';
   const { goalCalculationResult, goalTotals } = useGoalCalculator();
-  const { data } = useAccountListSupportRaisedQuery({
-    variables: { accountListId },
-  });
 
-  const supportRaised = data?.accountList.receivedPledges ?? 0;
   const supportRemaining = goalTotals.overallTotal - supportRaised;
   const supportRaisedPercentage = supportRaised / goalTotals.overallTotal;
 
