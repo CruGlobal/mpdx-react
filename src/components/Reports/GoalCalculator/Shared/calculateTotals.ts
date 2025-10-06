@@ -55,14 +55,10 @@ export const calculateGoalTotals = (
     paySplitPercentage * taxesPercentage +
     spousePaySplitPercentage * spouseTaxesPercentage;
 
-  const specialIncomeCategory =
-    goalCalculation?.specialFamily.primaryBudgetCategories.find(
-      (category) =>
-        category.category === PrimaryBudgetCategoryEnum.SpecialIncome,
-    );
-  const additionalIncome = specialIncomeCategory
-    ? calculateCategoryTotal(specialIncomeCategory)
-    : 0;
+  const additionalIncome = calculateCategoryEnumTotal(
+    goalCalculation?.specialFamily,
+    PrimaryBudgetCategoryEnum.SpecialIncome,
+  );
 
   const monthlyBudget =
     goalCalculation?.householdFamily.directInput ??
@@ -150,4 +146,14 @@ export const calculateCategoryTotal = (
     (sum: number, sub) => sum + sub.amount,
     0,
   );
+};
+
+export const calculateCategoryEnumTotal = (
+  family: BudgetFamilyFragment | null | undefined,
+  categoryEnum: PrimaryBudgetCategoryEnum,
+): number => {
+  const category = family?.primaryBudgetCategories?.find(
+    ({ category }) => category === categoryEnum,
+  );
+  return category ? calculateCategoryTotal(category) : 0;
 };

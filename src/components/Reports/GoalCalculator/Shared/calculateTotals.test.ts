@@ -2,6 +2,7 @@ import { gqlMock } from '__tests__/util/graphqlMocking';
 import {
   MpdGoalBenefitsConstantPlanEnum,
   MpdGoalBenefitsConstantSizeEnum,
+  PrimaryBudgetCategoryEnum,
 } from 'src/graphql/types.generated';
 import { goalCalculationMock } from '../GoalCalculatorTestWrapper';
 import {
@@ -9,6 +10,7 @@ import {
   BudgetFamilyFragmentDoc,
 } from './GoalCalculation.generated';
 import {
+  calculateCategoryEnumTotal,
   calculateCategoryTotal,
   calculateFamilyTotal,
   calculateGoalTotals,
@@ -18,10 +20,12 @@ const mockFamily = gqlMock<BudgetFamilyFragment>(BudgetFamilyFragmentDoc, {
   mocks: {
     primaryBudgetCategories: [
       {
+        category: PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage,
         directInput: 20,
         subBudgetCategories: [{ amount: 100 }, { amount: 200 }],
       },
       {
+        category: PrimaryBudgetCategoryEnum.MinistryTravel,
         directInput: null,
         subBudgetCategories: [{ amount: 300 }, { amount: 400 }],
       },
@@ -198,5 +202,34 @@ describe('calculateCategoryTotal', () => {
     expect(calculateCategoryTotal(mockFamily.primaryBudgetCategories[1])).toBe(
       700,
     );
+  });
+});
+
+describe('calculateCategoryEnumTotal', () => {
+  it('returns the category total', () => {
+    expect(
+      calculateCategoryEnumTotal(
+        mockFamily,
+        PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage,
+      ),
+    ).toBe(20);
+  });
+
+  it('returns 0 when the category is not found', () => {
+    expect(
+      calculateCategoryEnumTotal(
+        mockFamily,
+        PrimaryBudgetCategoryEnum.MinistryOther,
+      ),
+    ).toBe(0);
+  });
+
+  it('returns 0 when family is null', () => {
+    expect(
+      calculateCategoryEnumTotal(
+        null,
+        PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage,
+      ),
+    ).toBe(0);
   });
 });
