@@ -1,9 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Loading from 'src/components/Loading';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { GoalCalculatorReportEnum } from '../GoalCalculatorHelper';
 import { useGoalCalculator } from '../Shared/GoalCalculatorContext';
 import { GoalCalculatorSection } from '../Shared/GoalCalculatorSection';
+import { useAccountListSupportRaisedQuery } from '../Shared/GoalLineItems.generated';
 import { MpdGoalTable } from './MpdGoal/MpdGoalTable';
 import { MpdGoalStepRightPanel } from './MpdGoalStep/MpdGoalStepRightPanel/MpdGoalStepRightPanel/MpdGoalStepRightPanel';
 import { GoalApplicationButtonGroup } from './Steps/PresentingYourGoalStep/GoalApplicationButtonGroup';
@@ -12,7 +14,12 @@ import { PresentingYourGoalStepRightPanel } from './Steps/PresentingYourGoalStep
 
 export const SummaryReport: React.FC = () => {
   const { t } = useTranslation();
+  const accountListId = useAccountListId() ?? '';
   const { selectedReport, goalCalculationResult } = useGoalCalculator();
+  const { data } = useAccountListSupportRaisedQuery({
+    variables: { accountListId },
+  });
+  const supportRaised = data?.accountList.receivedPledges ?? 0;
 
   if (goalCalculationResult.loading) {
     return <Loading loading />;
@@ -23,7 +30,7 @@ export const SummaryReport: React.FC = () => {
         rightPanelContent={<MpdGoalStepRightPanel />}
         printable
       >
-        <MpdGoalTable />
+        <MpdGoalTable supportRaised={supportRaised} />
       </GoalCalculatorSection>
     );
   } else if (selectedReport === GoalCalculatorReportEnum.PresentingYourGoal) {
@@ -33,7 +40,7 @@ export const SummaryReport: React.FC = () => {
         rightPanelContent={<PresentingYourGoalStepRightPanel />}
         printable
       >
-        <PresentingYourGoal />
+        <PresentingYourGoal supportRaised={supportRaised} />
         <GoalApplicationButtonGroup />
       </GoalCalculatorSection>
     );

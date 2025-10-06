@@ -4,7 +4,7 @@ import { MpdGoalTable } from './MpdGoalTable';
 
 const TestComponent: React.FC = () => (
   <GoalCalculatorTestWrapper>
-    <MpdGoalTable />
+    <MpdGoalTable supportRaised={1000} />
   </GoalCalculatorTestWrapper>
 );
 

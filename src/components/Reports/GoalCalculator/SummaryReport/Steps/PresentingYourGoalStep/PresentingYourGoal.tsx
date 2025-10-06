@@ -78,7 +78,13 @@ interface PresentingYourGoalRow {
   bold?: boolean;
 }
 
-export const PresentingYourGoal: React.FC = () => {
+interface PresentingYourGoalProps {
+  supportRaised: number;
+}
+
+export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
+  supportRaised,
+}) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
@@ -208,8 +214,9 @@ export const PresentingYourGoal: React.FC = () => {
         amount: presentationData[5].value,
       },
       { title: 'Total Support Goal', amount: total, bold: true },
+      { title: 'Total Solid Support', amount: supportRaised },
     ],
-    [presentationData, total, t, goalTotals],
+    [presentationData, total, supportRaised, t, goalTotals],
   );
 
   return (
