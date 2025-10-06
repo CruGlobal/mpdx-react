@@ -110,11 +110,15 @@ export const dayMonthFormat = (
   day: number,
   month: number,
   locale: string,
-): string =>
-  new Intl.DateTimeFormat(locale, {
+  options?: { weekday: 'short' },
+): string => {
+  const { weekday } = options ?? {};
+  return new Intl.DateTimeFormat(locale, {
     day: 'numeric',
     month: 'short',
+    weekday: weekday,
   }).format(DateTime.local().set({ month, day }).toJSDate());
+};
 
 export const monthYearFormat = (
   month: number,

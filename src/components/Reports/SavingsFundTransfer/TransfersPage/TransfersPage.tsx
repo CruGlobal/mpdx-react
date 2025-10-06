@@ -15,7 +15,6 @@ import {
   HeaderTypeEnum,
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
-import { useFilteredTransfers } from 'src/hooks/useFilteredTransfers';
 import theme from 'src/theme';
 import { useStaffAccountQuery } from '../../StaffAccount.generated';
 import {
@@ -23,6 +22,7 @@ import {
   StaffSavingFundType,
 } from '../../StaffSavingFund/StaffSavingFundContext';
 import { BalanceCard } from '../BalanceCard/BalanceCard';
+import { filteredTransfers } from '../Helper/filterTransfers';
 import { getStatusLabel } from '../Helper/getStatus';
 import {
   useReportsSavingsFundTransferQuery,
@@ -30,15 +30,17 @@ import {
 } from '../ReportsSavingsFund.generated';
 import { EmptyTable } from '../Table/EmptyTable';
 import { PrintTable } from '../Table/PrintTable';
-import { TransferHistoryTable } from '../Table/TransferHistoryTable';
+import { TransfersTable } from '../Table/TransfersTable';
 import { DynamicTransferModal } from '../TransferModal/DynamicTransferModal';
-import { TransferModalData } from '../TransferModal/TransferModal';
 import {
   FundTypeEnum,
   ScheduleEnum,
   StatusEnum,
+  TableTypeEnum,
   Transactions,
-  TransferHistory,
+  TransferModalData,
+  Transfers,
+  incomingTransfers,
 } from '../mockData';
 import { PrintOnly, ScreenOnly } from '../styledComponents/DisplayStyling';
 
@@ -79,7 +81,10 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
     });
 
   const funds = useMemo(
-    () => fundsData?.reportsStaffExpenses?.funds ?? [],
+    () =>
+      (fundsData?.reportsStaffExpenses?.funds ?? []).toSorted((a, b) =>
+        a.id.localeCompare(b.id),
+      ),
     [fundsData],
   );
 
@@ -88,44 +93,71 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
       (reportData?.reportsSavingsFundTransfer ?? []).map((tx) => {
         return {
           ...tx,
-          transactedAt: DateTime.fromISO(tx.transactedAt),
+          id: tx.transaction?.id ? tx.transaction.id : crypto.randomUUID(),
+          amount: tx.transaction?.amount ? tx.transaction.amount : 0,
+          transactedAt: tx.transaction?.transactedAt
+            ? DateTime.fromISO(tx.transaction?.transactedAt, { setZone: true })
+            : DateTime.now(),
+          subCategory: tx.subCategory ? tx.subCategory : null,
           recurringTransfer: tx.recurringTransfer
             ? {
                 ...tx.recurringTransfer,
-                recurringStart: tx.recurringTransfer.recurringStart
-                  ? DateTime.fromISO(tx.recurringTransfer.recurringStart)
-                  : null,
+                recurringStart: DateTime.fromISO(
+                  tx.recurringTransfer.recurringStart,
+                  {
+                    setZone: true,
+                  },
+                ),
                 recurringEnd: tx.recurringTransfer.recurringEnd
-                  ? DateTime.fromISO(tx.recurringTransfer.recurringEnd)
+                  ? DateTime.fromISO(tx.recurringTransfer.recurringEnd, {
+                      setZone: true,
+                    })
                   : null,
               }
             : null,
+          baseAmount: tx.transaction?.amount || 0,
+          failedCount: 0,
+          summarizedTransfers: null,
+          missingMonths: null,
         };
       }),
     [reportData],
   );
 
-  const filteredTransactions = useFilteredTransfers(transactions);
+  const filteredTransactions = useMemo(
+    () => filteredTransfers(transactions),
+    [transactions],
+  );
 
-  const transferHistory: TransferHistory[] = filteredTransactions.map((tx) => {
-    const isRecurring = !!tx.recurringTransfer?.id;
+  const transferHistory: Transfers[] = filteredTransactions.map((tx) => {
+    const isRecurring = !!tx.recurringTransfer;
     const status = getStatusLabel(tx);
+    const shouldShowActions = () => {
+      return status !== StatusEnum.Pending && status !== StatusEnum.Ongoing;
+    };
 
     return {
       id: tx.id || crypto.randomUUID(),
-      transferFrom: tx.transfer.sourceFundTypeName || '',
-      transferTo: tx.transfer.destinationFundTypeName || '',
-      amount: tx.amount || 0,
+      transferFrom: tx.transfer.sourceFundTypeName,
+      transferTo: tx.transfer.destinationFundTypeName,
+      amount: tx.amount,
       schedule: isRecurring ? ScheduleEnum.Monthly : ScheduleEnum.OneTime,
-      status: status || undefined,
+      status: status,
       transferDate: isRecurring
-        ? tx.recurringTransfer?.recurringStart || null
-        : tx.transactedAt || null,
+        ? tx.recurringTransfer?.recurringStart
+        : tx.transactedAt,
       endDate: tx.recurringTransfer?.recurringEnd || null,
-      note: tx.subCategory.name || '',
-      actions: status !== StatusEnum.Complete ? 'edit-delete' : '',
+      note: tx.subCategory?.name ?? 'default note',
+      actions: shouldShowActions() === false ? 'edit-delete' : '',
+      recurringId: tx.recurringTransfer?.id || null,
+      baseAmount: tx.baseAmount,
+      failedCount: tx.failedCount,
+      summarizedTransfers: tx.summarizedTransfers,
+      missingMonths: tx.missingMonths,
     };
   });
+
+  const incoming = incomingTransfers;
 
   const handlePrint = () => window.print();
 
@@ -217,8 +249,23 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
               ))}
             </Box>
             <ScreenOnly sx={{ mt: 2, mb: 3 }}>
-              <TransferHistoryTable
+              <Box sx={{ mb: 3 }}>
+                <TransfersTable
+                  history={incoming}
+                  type={TableTypeEnum.Upcoming}
+                  handleOpenTransferModal={handleOpenTransferModal}
+                  emptyPlaceholder={
+                    <EmptyTable
+                      title={t('Upcoming Transfers not available')}
+                      subtitle={t('No data found across any accounts.')}
+                    />
+                  }
+                  loading={reportLoading}
+                />
+              </Box>
+              <TransfersTable
                 history={transferHistory}
+                type={TableTypeEnum.History}
                 handleOpenTransferModal={handleOpenTransferModal}
                 emptyPlaceholder={
                   <EmptyTable
@@ -230,7 +277,16 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
               />
             </ScreenOnly>
             <PrintOnly>
-              <PrintTable transfers={transferHistory} />
+              <Box sx={{ my: 4 }}>
+                <PrintTable
+                  transfers={incoming}
+                  type={TableTypeEnum.Upcoming}
+                />
+                <PrintTable
+                  transfers={transferHistory}
+                  type={TableTypeEnum.History}
+                />
+              </Box>
             </PrintOnly>
           </Container>
         </Box>

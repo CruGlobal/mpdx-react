@@ -63,6 +63,7 @@ describe('BalanceCard', () => {
     const { getByText, getByRole } = render(<Components />);
 
     expect(getByText('Primary Account Balance')).toBeInTheDocument();
+    expect(getByText('Current Balance')).toBeInTheDocument();
     expect(getByText('$15,000.00')).toBeInTheDocument();
     expect(getByRole('button', { name: /transfer from/i })).toBeInTheDocument();
     expect(getByRole('button', { name: /transfer to/i })).toBeInTheDocument();
@@ -138,7 +139,7 @@ describe('BalanceCard', () => {
     });
 
     it('should handle zero balance amount', () => {
-      const { getByText } = render(
+      const { getAllByText } = render(
         <Components
           fund={{
             ...defaultFund,
@@ -147,7 +148,7 @@ describe('BalanceCard', () => {
         />,
       );
 
-      expect(getByText('$0.00')).toBeInTheDocument();
+      expect(getAllByText('$0.00')).toHaveLength(1);
     });
 
     it('should handle negative balance amount', () => {
@@ -160,7 +161,8 @@ describe('BalanceCard', () => {
         />,
       );
 
-      expect(getByText('-$500.00')).toBeInTheDocument();
+      expect(getByText('($500.00)')).toBeInTheDocument();
+      expect(getByText('($500.00)')).toHaveStyle('color: rgb(211, 47, 47)');
     });
 
     it('should handle decimal precision correctly', () => {
@@ -205,5 +207,22 @@ describe('BalanceCard', () => {
         transferTo: expect.any(String),
       },
     });
+  });
+
+  it('should disable transfer from button when current balance goes beyond deficit limit', async () => {
+    const { findByRole } = render(
+      <Components
+        fund={{
+          ...defaultFund,
+          balance: -100,
+        }}
+      />,
+    );
+
+    const transferFromButton = await findByRole('button', {
+      name: /transfer from/i,
+    });
+
+    expect(transferFromButton).toBeDisabled();
   });
 });

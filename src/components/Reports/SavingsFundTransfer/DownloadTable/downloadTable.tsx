@@ -1,11 +1,16 @@
 import { TFunction } from 'i18next';
 import { buildURI } from 'react-csv/lib/core';
-import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
-import { FundTypeEnum, ScheduleEnum, TransferHistory } from '../mockData';
+import { currencyFormat } from 'src/lib/intlFormat';
+import {
+  FundTypeEnum,
+  ScheduleEnum,
+  TableTypeEnum,
+  Transfers,
+} from '../mockData';
 
 export const createTable = (
   csvHeader: string[],
-  transfers: TransferHistory[],
+  transfers: Transfers[],
   locale: string,
 ) => {
   const newTransfers = transfers.map((transfer) => {
@@ -28,7 +33,7 @@ export const createTable = (
       : transfer.status;
     const endDate =
       transfer.schedule === ScheduleEnum.Monthly && transfer.endDate
-        ? dateFormat(transfer.endDate, locale)
+        ? transfer.endDate.toFormat('MMM d, yyyy')
         : '';
     return [
       fromFund,
@@ -40,7 +45,9 @@ export const createTable = (
         : '',
       schedule,
       status,
-      transfer.transferDate ? dateFormat(transfer.transferDate, locale) : '',
+      transfer.transferDate
+        ? transfer.transferDate.toFormat('MMM d, yyyy')
+        : '',
       endDate,
       transfer.note,
     ];
@@ -51,10 +58,14 @@ export const createTable = (
 
 export const downloadCSV = (
   t: TFunction,
-  transfers: TransferHistory[],
+  transfers: Transfers[],
+  type: TableTypeEnum,
   locale: string,
 ) => {
-  const title = t('Transfer History');
+  const title =
+    type === TableTypeEnum.History
+      ? t('Transfer History')
+      : t('Upcoming Transfers');
   const csvHeader = [
     t('From'),
     t('To'),

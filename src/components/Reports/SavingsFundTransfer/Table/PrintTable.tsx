@@ -10,21 +10,29 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
-import { dateFormat } from 'src/lib/intlFormat';
-import { FundTypeEnum, ScheduleEnum, TransferHistory } from '../mockData';
+import { StyledTableRow } from '../../styledComponents';
+import {
+  FundTypeEnum,
+  ScheduleEnum,
+  TableTypeEnum,
+  Transfers,
+} from '../mockData';
 
 interface PrintTableProps {
-  transfers: TransferHistory[];
+  transfers: Transfers[];
+  type: TableTypeEnum;
 }
 
-export const PrintTable: React.FC<PrintTableProps> = ({ transfers }) => {
+export const PrintTable: React.FC<PrintTableProps> = ({ transfers, type }) => {
   const { t } = useTranslation();
   const locale = useLocale();
 
   return (
     <>
       <Typography variant="h6" sx={{ mt: 2 }}>
-        {t('Transfer History')}
+        {type === TableTypeEnum.History
+          ? t('Transfer History')
+          : t('Upcoming Transfers')}
       </Typography>
       <TableContainer>
         <Table>
@@ -43,22 +51,22 @@ export const PrintTable: React.FC<PrintTableProps> = ({ transfers }) => {
           <TableBody>
             {transfers.length ? (
               transfers.map((transfer) => (
-                <TableRow
+                <StyledTableRow
                   key={`${transfer.transferFrom}-${transfer.transferTo}-${transfer.amount}-${transfer.transferDate}`}
                 >
                   <TableCell>
                     {transfer.transferFrom === FundTypeEnum.Primary
-                      ? t('Primary Balance')
+                      ? t('Primary Account')
                       : transfer.transferFrom === FundTypeEnum.Savings
-                        ? t('Savings Balance')
-                        : t('Conference Savings Balance')}
+                        ? t('Savings Account')
+                        : t('Conference Savings Account')}
                   </TableCell>
                   <TableCell>
                     {transfer.transferTo === FundTypeEnum.Primary
-                      ? t('Primary Balance')
+                      ? t('Primary Account')
                       : transfer.transferTo === FundTypeEnum.Savings
-                        ? t('Savings Balance')
-                        : t('Conference Savings Balance')}
+                        ? t('Savings Account')
+                        : t('Conference Savings Account')}
                   </TableCell>
                   <TableCell>
                     {transfer.amount?.toLocaleString(locale, {
@@ -76,17 +84,17 @@ export const PrintTable: React.FC<PrintTableProps> = ({ transfers }) => {
                   </TableCell>
                   <TableCell>
                     {transfer.transferDate
-                      ? dateFormat(transfer.transferDate, locale)
+                      ? transfer.transferDate.toFormat('MMM d, yyyy')
                       : ''}
                   </TableCell>
                   <TableCell>
                     {transfer.schedule === ScheduleEnum.Monthly &&
                     transfer.endDate
-                      ? dateFormat(transfer.endDate, locale)
+                      ? transfer.endDate.toFormat('MMM d, yyyy')
                       : ''}
                   </TableCell>
                   <TableCell>{transfer.note}</TableCell>
-                </TableRow>
+                </StyledTableRow>
               ))
             ) : (
               <TableRow>

@@ -19,16 +19,37 @@ export enum FundTypeEnum {
   Savings = 'Savings',
 }
 
+export enum TransferTypeEnum {
+  New = 'new',
+  Edit = 'edit',
+}
+
+export enum TableTypeEnum {
+  History = 'history',
+  Upcoming = 'upcoming',
+}
+
+export enum ActionTypeEnum {
+  Edit = 'edit',
+  Add = 'add',
+  Cancel = 'cancel',
+  Stop = 'stop',
+}
+
+export interface TransferModalData {
+  type?: TransferTypeEnum;
+  transfer: Transfers;
+}
+
 export interface SubCategory {
   id: string;
   name: string;
 }
-
 export interface RecurringTransfer {
-  id?: string | null;
-  recurringStart?: DateTime | null;
-  recurringEnd?: DateTime | null;
-  active?: boolean | null;
+  id: string;
+  recurringStart: DateTime;
+  recurringEnd: DateTime | null;
+  active: boolean;
 }
 
 export interface Transfer {
@@ -41,23 +62,59 @@ export interface Transactions {
   amount: number;
   description?: string | null;
   transactedAt: DateTime;
-  subCategory: SubCategory;
+  subCategory: SubCategory | null;
   transfer: Transfer;
   recurringTransfer?: RecurringTransfer | null;
+  baseAmount: number;
+  failedCount?: number;
+  summarizedTransfers?: Map<string, Transactions> | null;
+  missingMonths?: DateTime[] | null;
 }
 
-export interface TransferHistory {
+export interface Transfers {
   id?: string;
   transferFrom?: string;
   transferTo?: string;
   amount?: number;
   schedule?: ScheduleEnum;
   status?: StatusEnum;
-  transferDate?: DateTime<boolean> | null;
+  transferDate?: DateTime<boolean>;
   endDate?: DateTime<boolean> | null;
   note?: string;
   actions?: string;
+  recurringId?: string | null;
+  baseAmount?: number;
+  failedCount?: number;
+  summarizedTransfers?: Map<string, Transactions> | null;
+  missingMonths?: DateTime[] | null;
 }
+
+export const incomingTransfers = [
+  {
+    id: '1',
+    transferFrom: 'Savings',
+    transferTo: 'Primary',
+    amount: 20,
+    schedule: ScheduleEnum.Monthly,
+    status: StatusEnum.Pending,
+    transferDate: DateTime.fromISO('2025-11-01'),
+    endDate: null,
+    note: 'Test transfer',
+    actions: 'edit-delete',
+  },
+  {
+    id: '2',
+    transferFrom: 'Primary',
+    transferTo: 'Savings',
+    amount: 50,
+    schedule: ScheduleEnum.Monthly,
+    status: StatusEnum.Pending,
+    transferDate: DateTime.fromISO('2025-12-15'),
+    endDate: DateTime.fromISO('2026-02-15'),
+    note: 'Test transfer 2',
+    actions: 'edit-delete',
+  },
+];
 
 export const fundsMock = [
   {
@@ -74,7 +131,7 @@ export const fundsMock = [
   },
 ];
 
-export const mockData: TransferHistory[] = [
+export const mockData: Transfers[] = [
   {
     id: crypto.randomUUID(),
     transferFrom: 'staffSavings',
@@ -94,8 +151,8 @@ export const mockData: TransferHistory[] = [
     amount: 1200,
     schedule: ScheduleEnum.Monthly,
     status: StatusEnum.Ongoing,
-    transferDate: DateTime.fromISO('2023-09-30'),
-    endDate: DateTime.fromISO('2025-09-30'),
+    transferDate: DateTime.fromISO('2023-09-25'),
+    endDate: DateTime.fromISO('2025-09-25'),
     note: 'Long-term savings',
     actions: 'edit-delete',
   },
