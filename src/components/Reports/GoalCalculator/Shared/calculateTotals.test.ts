@@ -49,7 +49,6 @@ describe('calculateGoalTotals', () => {
 
   it('should calculate goal totals correctly', () => {
     expect(calculateGoalTotals(goalCalculationMock, benefitsPlans)).toEqual({
-      additionalIncome: 1000,
       monthlyBudget: 5500,
       netMonthlySalary: 4500,
       taxesPercentage: expect.closeTo(0.209, 3),
@@ -76,7 +75,6 @@ describe('calculateGoalTotals', () => {
       familySize: MpdGoalBenefitsConstantSizeEnum.Single,
     };
     expect(calculateGoalTotals(goalCalculation, benefitsPlans)).toEqual({
-      additionalIncome: 1000,
       monthlyBudget: 5500,
       netMonthlySalary: 4500,
       taxesPercentage: 0.2,
@@ -103,7 +101,6 @@ describe('calculateGoalTotals', () => {
       spouseNetPaycheckAmount: 3000,
     };
     expect(calculateGoalTotals(goalCalculation, benefitsPlans)).toEqual({
-      additionalIncome: 1000,
       monthlyBudget: 5500,
       netMonthlySalary: 4500,
       taxesPercentage: expect.closeTo(0.211, 3),
@@ -133,7 +130,6 @@ describe('calculateGoalTotals', () => {
       spouseTraditionalContributionPercentage: 0,
     };
     expect(calculateGoalTotals(goalCalculation, benefitsPlans)).toEqual({
-      additionalIncome: 1000,
       monthlyBudget: 5500,
       netMonthlySalary: 4500,
       taxesPercentage: expect.closeTo(0.209, 3),
@@ -156,7 +152,6 @@ describe('calculateGoalTotals', () => {
 
   it('returns 0 not NaN for missing goals', () => {
     expect(calculateGoalTotals(null, benefitsPlans)).toEqual({
-      additionalIncome: 0,
       monthlyBudget: 0,
       netMonthlySalary: 0,
       taxesPercentage: 0,
