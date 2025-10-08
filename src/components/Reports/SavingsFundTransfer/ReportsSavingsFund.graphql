@@ -10,10 +10,12 @@ query ReportsSavingsFundTransfer(
     subCategoryName: $subCategoryName
     fundTypeName: $fundTypeName
   ) {
-    id
-    amount
-    description
-    transactedAt
+    transaction {
+      id
+      amount
+      description
+      transactedAt
+    }
     subCategory {
       id
       name
