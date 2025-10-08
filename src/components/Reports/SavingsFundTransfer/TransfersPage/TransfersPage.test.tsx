@@ -72,15 +72,15 @@ const mock = {
     reportsStaffExpenses: {
       funds: [
         {
-          id: '1',
-          fundType: 'Primary',
-          balance: 15000,
-          deficitLimit: 0,
-        },
-        {
           id: '2',
           fundType: 'Savings',
           balance: 25000,
+          deficitLimit: 0,
+        },
+        {
+          id: '1',
+          fundType: 'Primary',
+          balance: 15000,
           deficitLimit: 0,
         },
       ],
@@ -196,17 +196,32 @@ describe('TransfersPage', () => {
   });
 
   it('should render all balance cards with correct information', async () => {
-    const { findByText } = render(<Components />);
+    const { findByText, getByText } = render(<Components />);
 
     expect(await findByText('Primary Account Balance')).toBeInTheDocument();
     expect(await findByText('Savings Account Balance')).toBeInTheDocument();
 
-    expect(await findByText('$15,000.00')).toBeInTheDocument();
-    expect(await findByText('$25,000.00')).toBeInTheDocument();
+    expect(getByText('$15,000.00')).toBeInTheDocument();
+    expect(getByText('$25,000.00')).toBeInTheDocument();
   });
 
-  it('should render cards and transfer history table', async () => {
-    const { findByRole, findAllByRole } = render(<Components />);
+  it('should sort fund cards in ascending order by id', async () => {
+    const { findAllByText } = render(<Components />);
+
+    const fundCards = await findAllByText(/Account Balance/i);
+    expect(fundCards.length).toBe(2);
+
+    const firstCard = fundCards[0];
+    const secondCard = fundCards[1];
+
+    expect(within(firstCard).getByText('Primary Account Balance')).toBeTruthy();
+    expect(
+      within(secondCard).getByText('Savings Account Balance'),
+    ).toBeTruthy();
+  });
+
+  it('should render cards and transfer tables', async () => {
+    const { findAllByRole } = render(<Components />);
 
     expect(
       await findAllByRole('button', { name: 'TRANSFER FROM' }),
@@ -215,10 +230,10 @@ describe('TransfersPage', () => {
       2,
     );
 
-    expect(await findByRole('grid')).toBeInTheDocument();
-    expect(
-      within(await findByRole('grid')).getAllByRole('columnheader'),
-    ).toHaveLength(8);
+    const tables = await findAllByRole('grid');
+    expect(tables.length).toBe(2);
+
+    expect(within(tables[0]).getAllByRole('columnheader')).toHaveLength(8);
   });
 
   it('should show empty state when no transfer history', async () => {
@@ -255,13 +270,13 @@ describe('TransfersPage', () => {
     const { getByRole, getByText, findAllByRole } = render(<Components />);
 
     const transferButtons = await findAllByRole('button', {
-      name: /transfer/i,
+      name: /transfer from/i,
     });
     expect(transferButtons.length).toBeGreaterThan(0);
 
-    const firstTransferButton = transferButtons[0].closest('button');
-    expect(firstTransferButton).toBeTruthy();
-    userEvent.click(firstTransferButton!);
+    const lastTransferButton = transferButtons[transferButtons.length - 1];
+    expect(lastTransferButton).toBeTruthy();
+    userEvent.click(lastTransferButton!);
 
     await waitFor(() => {
       expect(getByRole('dialog')).toBeInTheDocument();
@@ -273,7 +288,7 @@ describe('TransfersPage', () => {
     const { getByRole, queryByRole, findAllByRole } = render(<Components />);
 
     const transferButtons = await findAllByRole('button', {
-      name: /transfer/i,
+      name: /transfer from/i,
     });
     const firstTransferButton = transferButtons?.[0].closest('button');
     userEvent.click(firstTransferButton!);
@@ -319,7 +334,7 @@ describe('TransfersPage', () => {
     const { getByRole, findAllByRole } = render(<Components />);
 
     const transferButtons = await findAllByRole('button', {
-      name: /transfer/i,
+      name: /transfer from/i,
     });
     const firstTransferButton = transferButtons[0].closest('button');
     userEvent.click(firstTransferButton!);
@@ -337,7 +352,7 @@ describe('TransfersPage', () => {
 
     expect(
       within(fromAccount).getByText(
-        `${mock.ReportsStaffExpenses.reportsStaffExpenses.funds[0].fundType} Account`,
+        `${mock.ReportsStaffExpenses.reportsStaffExpenses.funds[1].fundType} Account`,
         {
           selector: 'b',
         },
@@ -345,7 +360,7 @@ describe('TransfersPage', () => {
     ).toBeInTheDocument();
     expect(
       within(toAccount).queryByText(
-        `${mock.ReportsStaffExpenses.reportsStaffExpenses.funds[0].fundType} Account`,
+        `${mock.ReportsStaffExpenses.reportsStaffExpenses.funds[1].fundType} Account`,
         {
           selector: 'b',
         },
