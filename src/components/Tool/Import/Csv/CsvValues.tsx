@@ -43,7 +43,7 @@ const CsvValues: React.FC<CsvValuesProps> = ({
   const supportedHeaders = useSupportedHeaders();
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
-  const constants = useApiConstants() ?? {};
+  const constants = useApiConstants();
 
   useEffect(() => {
     if (!uploadData?.id && csvFileId) {
