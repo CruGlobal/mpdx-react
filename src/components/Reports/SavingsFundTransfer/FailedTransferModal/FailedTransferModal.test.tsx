@@ -28,10 +28,12 @@ const mockTransfer: Transfers = {
     [
       '2',
       {
-        id: '2',
-        amount: 10,
-        description: null,
-        transactedAt: DateTime.fromISO('2023-06-15'),
+        transaction: {
+          id: '2',
+          amount: 10,
+          description: null,
+          transactedAt: DateTime.fromISO('2023-06-15'),
+        },
         subCategory: { id: '1', name: 'deposit' },
         transfer: {
           sourceFundTypeName: 'Primary',
@@ -39,6 +41,7 @@ const mockTransfer: Transfers = {
         },
         recurringTransfer: {
           id: '1',
+          amount: 10,
           recurringStart: DateTime.fromISO('2023-06-15'),
           recurringEnd: DateTime.fromISO('2023-09-15'),
           active: true,
@@ -52,10 +55,12 @@ const mockTransfer: Transfers = {
     [
       '3',
       {
-        id: '3',
-        amount: 10,
-        description: null,
-        transactedAt: DateTime.fromISO('2023-07-15'),
+        transaction: {
+          id: '3',
+          amount: 10,
+          description: null,
+          transactedAt: DateTime.fromISO('2023-07-15'),
+        },
         subCategory: { id: '1', name: 'deposit' },
         transfer: {
           sourceFundTypeName: 'Primary',
@@ -63,6 +68,7 @@ const mockTransfer: Transfers = {
         },
         recurringTransfer: {
           id: '1',
+          amount: 10,
           recurringStart: DateTime.fromISO('2023-06-15'),
           recurringEnd: DateTime.fromISO('2023-09-15'),
           active: true,
@@ -76,10 +82,12 @@ const mockTransfer: Transfers = {
     [
       '4',
       {
-        id: '4',
-        amount: 10,
-        description: null,
-        transactedAt: DateTime.fromISO('2023-09-15'),
+        transaction: {
+          id: '4',
+          amount: 10,
+          description: null,
+          transactedAt: DateTime.fromISO('2023-09-15'),
+        },
         subCategory: { id: '1', name: 'deposit' },
         transfer: {
           sourceFundTypeName: 'Primary',
@@ -87,6 +95,7 @@ const mockTransfer: Transfers = {
         },
         recurringTransfer: {
           id: '1',
+          amount: 10,
           recurringStart: DateTime.fromISO('2023-06-15'),
           recurringEnd: DateTime.fromISO('2023-09-15'),
           active: true,
