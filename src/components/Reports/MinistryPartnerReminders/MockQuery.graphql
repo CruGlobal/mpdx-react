@@ -1,0 +1,38 @@
+query MockQuery($accountListId: ID!, $after: String) {
+  contacts(
+    accountListId: $accountListId
+    contactsFilter: { statusValid: false }
+    after: $after
+    first: 50
+  ) {
+    nodes {
+      id
+      name
+      status
+      churchName
+      pledgeStartDate
+      pledgeFrequency
+      lastDonation {
+        donationDate
+      }
+      donations(first: 6) {
+        nodes {
+          id
+          amount {
+            amount
+            currency
+            conversionDate
+          }
+        }
+      }
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+    edges {
+      cursor
+    }
+    totalCount
+  }
+}
