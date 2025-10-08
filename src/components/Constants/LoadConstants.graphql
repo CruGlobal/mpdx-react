@@ -23,17 +23,10 @@ query LoadConstants {
       id
       value
     }
-    locations {
-      id
-    }
     newsletter {
       id
       value
     }
-    # notifications {
-    #   id
-    #   value
-    # }
     pledgeCurrency {
       id
       key
@@ -46,18 +39,6 @@ query LoadConstants {
     pledgeFrequency {
       id
       key
-      value
-    }
-    pledgesReceived {
-      id
-      value
-    }
-    preferredContactMethods {
-      id
-      value
-    }
-    sendAppeals {
-      id
       value
     }
     status {

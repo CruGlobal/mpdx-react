@@ -5,14 +5,9 @@ import { TextEncoder } from 'node:util';
 import { Settings } from 'luxon';
 import { type useSession } from 'next-auth/react';
 import { session } from '__tests__/fixtures/session';
-import {
-  LoadConstantsDocument,
-  LoadConstantsQuery,
-} from 'src/components/Constants/LoadConstants.generated';
 import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { toHaveGraphqlOperation } from '../extensions/toHaveGraphqlOperation';
-import { gqlMock } from './graphqlMocking';
 import matchMediaMock from './matchMediaMock';
 
 jest.mock('src/components/Constants/UseApiConstants');
@@ -32,9 +27,7 @@ jest.mock('next-auth/react', () => {
 });
 
 (useApiConstants as jest.MockedFn<typeof useApiConstants>).mockReturnValue(
-  gqlMock<LoadConstantsQuery>(LoadConstantsDocument, {
-    mocks: loadConstantsMockData,
-  }).constant,
+  loadConstantsMockData.constant,
 );
 
 expect.extend({

@@ -60,7 +60,7 @@ export const ContactDetailsOther: React.FC<ContactDetailsOtherProp> = ({
   const { t } = useTranslation();
   const constants = useApiConstants();
   const { buildContactUrl } = useContactPanel();
-  const languages = constants?.languages || undefined;
+  const languages = constants?.languages;
   const {
     user,
     preferredContactMethod,
