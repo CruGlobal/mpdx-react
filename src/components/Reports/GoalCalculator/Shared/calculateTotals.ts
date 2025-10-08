@@ -16,7 +16,6 @@ export const hasStaffSpouse = (
   familySize === MpdGoalBenefitsConstantSizeEnum.MarriedThreeOrMoreChildren;
 
 export interface GoalTotals {
-  additionalIncome: number;
   monthlyBudget: number;
   netMonthlySalary: number;
   taxesPercentage: number;
@@ -106,7 +105,6 @@ export const calculateGoalTotals = (
   const overallTotal = overallSubtotalWithAdmin + attrition;
 
   return {
-    additionalIncome,
     monthlyBudget,
     netMonthlySalary,
     taxesPercentage: totalTaxesPercentage,
