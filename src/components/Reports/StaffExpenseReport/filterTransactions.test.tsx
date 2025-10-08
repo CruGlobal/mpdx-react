@@ -5,7 +5,7 @@ import {
   StaffExpensesSubCategoryEnum,
 } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
-import { DateRange } from './Helpers/StaffReportEnum';
+import { DateRange, ReportType } from './Helpers/StaffReportEnum';
 import { filterTransactions } from './filterTransactions';
 
 describe('filterTransactions', () => {
@@ -69,9 +69,10 @@ describe('filterTransactions', () => {
         endDate: null,
         categories: [],
       },
+      tableType: ReportType.Income,
       targetTime,
     });
-    expect(result).toHaveLength(3);
+    expect(result).toHaveLength(1);
   });
 
   it('filters transactions by custom date range', () => {
@@ -86,8 +87,9 @@ describe('filterTransactions', () => {
         endDate: DateTime.fromISO('2025-02-03'),
         categories: [],
       },
+      tableType: ReportType.Expense,
     });
-    expect(result).toHaveLength(3);
+    expect(result).toHaveLength(2);
   });
 
   it('returns empty array if no main categories', () => {
@@ -103,6 +105,7 @@ describe('filterTransactions', () => {
         endDate: DateTime.fromISO('2025-02-03'),
         categories: [],
       },
+      tableType: ReportType.Expense,
     });
     expect(result).toEqual([]);
   });
@@ -119,6 +122,7 @@ describe('filterTransactions', () => {
         endDate: null,
         categories: [],
       },
+      tableType: ReportType.Expense,
     });
     expect(result).toEqual([]);
   });
@@ -135,6 +139,7 @@ describe('filterTransactions', () => {
         endDate: DateTime.fromISO('2025-06-03'),
         categories: [],
       },
+      tableType: ReportType.Income,
     });
     expect(result).toEqual([]);
   });
