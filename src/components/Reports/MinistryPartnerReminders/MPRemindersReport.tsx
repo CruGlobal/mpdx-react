@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import PrintIcon from '@mui/icons-material/Print';
 import {
   Box,
@@ -7,18 +8,22 @@ import {
   SvgIcon,
   Typography,
 } from '@mui/material';
+import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import { StyledHeaderBox } from '../MPGAIncomeExpensesReport/styledComponents';
 import { ScreenOnly } from '../SavingsFundTransfer/styledComponents/DisplayStyling';
 import { useStaffAccountQuery } from '../StaffAccount.generated';
 import { StyledPrintButton } from '../styledComponents';
+import { getReminderStatus } from './Helper/getReminderStatus';
+import { useMockQueryQuery } from './MockQuery.generated';
 import { RemindersTable } from './Table/RemindersTable';
-import { mockData } from './mockData';
+import { ReminderData, ReminderStatusEnum } from './mockData';
 
 interface MPRemindersReportProps {
   isNavListOpen: boolean;
@@ -32,14 +37,46 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
   onNavListToggle,
 }) => {
   const { t } = useTranslation();
+  const accountListId = useAccountListId();
 
   const { data: staffAccountData } = useStaffAccountQuery({});
+  const {
+    data: mockQueryData,
+    loading: mockLoading,
+    fetchMore,
+  } = useMockQueryQuery({
+    variables: { accountListId: accountListId ?? '' },
+  });
 
   const handlePrint = () => {
     window.print();
   };
 
-  mockData.sort((a, b) => a.partner.localeCompare(b.partner));
+  const sortedData = mockQueryData?.contacts?.nodes.toSorted((a, b) =>
+    a.name.localeCompare(b.name),
+  );
+
+  const transformedData: ReminderData[] = useMemo(
+    () =>
+      (sortedData ?? []).map((contact) => {
+        return {
+          ...contact,
+          id: contact.id,
+          partner: contact.name,
+          partnerId: contact.churchName ?? 'N/A',
+          lastGift: contact.pledgeStartDate
+            ? DateTime.fromISO(contact.pledgeStartDate)
+            : null,
+          lastReminder: contact.lastDonation?.donationDate
+            ? DateTime.fromISO(contact.lastDonation.donationDate)
+            : null,
+          status: contact.pledgeFrequency
+            ? getReminderStatus(contact.pledgeFrequency)
+            : ReminderStatusEnum.NotReminded,
+        };
+      }),
+    [mockQueryData],
+  );
 
   return (
     <Box>
@@ -109,8 +146,22 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
               </Typography>
             </Typography>
           </ScreenOnly>
+          <Box sx={{ mb: 2 }}>
+            <RemindersTable
+              data={transformedData}
+              loading={mockLoading}
+              hasNextPage={
+                mockQueryData?.contacts?.pageInfo?.hasNextPage ?? false
+              }
+              endCursor={mockQueryData?.contacts?.pageInfo?.endCursor ?? ''}
+              fetchMore={fetchMore}
+            />
+          </Box>
           <Box sx={{ mb: 4 }}>
-            <RemindersTable data={mockData} />
+            <Typography>
+              <strong>{t('Number of Ministry Partners: ')}</strong>
+              {mockQueryData?.contacts?.totalCount}
+            </Typography>
           </Box>
           <ScreenOnly>
             <Box sx={{ mb: 4 }}>

@@ -8,7 +8,6 @@ export enum ReminderStatusEnum {
   SemiAnnual = 'Semi-Annual',
   Annual = 'Annual',
 }
-
 export interface ReminderData {
   id: string;
   partner: string;
