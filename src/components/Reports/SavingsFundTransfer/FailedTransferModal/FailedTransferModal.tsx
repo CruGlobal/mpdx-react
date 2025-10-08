@@ -44,7 +44,9 @@ export const FailedTransferModal: React.FC<FailedTransferModalProps> = ({
         results.push({
           amount: tx.baseAmount,
           status: StatusEnum.Complete,
-          transferDate: tx.transactedAt,
+          transferDate: tx.transaction
+            ? tx.transaction.transactedAt
+            : DateTime.now(),
         });
       });
     }
