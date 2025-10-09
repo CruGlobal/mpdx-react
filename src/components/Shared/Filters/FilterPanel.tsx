@@ -194,10 +194,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
       // Parse from string to json object
       const parsedFilter = JSON.parse(filter.value);
 
-      if (
-        filter.key?.includes('graphql_') ||
-        filter.key?.includes('saved_contacts_filter_')
-      ) {
+      if (filter.key?.includes('graphql_')) {
         // Clear current filters
         clearSelectedFilter();
         // Filter out accountListId from filter

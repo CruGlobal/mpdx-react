@@ -26,16 +26,12 @@ export const FilterList: React.FC<FilterListProps> = ({
           ?.replace(/^(graphql_)?saved_(contacts|tasks|)_filter_/, '')
           .replaceAll('_', ' ');
 
-        const isPrewrittenFilter =
-          filter.id.startsWith('prewritten-filter-') ||
-          filter.key?.includes('saved_contacts_filter_');
-
         return (
           <ListItem
             key={filter.id}
             button
             secondaryAction={
-              showDeleteButton && !isPrewrittenFilter ? (
+              showDeleteButton ? (
                 <IconButton
                   edge="end"
                   aria-label={t('Delete')}
