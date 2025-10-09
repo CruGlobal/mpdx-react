@@ -5,25 +5,28 @@ import { createCsvReport } from './downloadReport';
 
 const mockData: Transaction[] = [
   {
+    id: '1',
     category: StaffExpenseCategoryEnum.MinistryReimbursement,
     displayCategory: 'Ministry Reimbursement',
     fundType: 'Primary',
-    month: '2025-07-01',
-    total: -2724,
+    transactedAt: '2025-07-01',
+    amount: -2724,
   },
   {
+    id: '2',
     category: StaffExpenseCategoryEnum.Salary,
     displayCategory: 'Salary',
     fundType: 'Secondary',
-    month: '2025-08-01',
-    total: 3500,
+    transactedAt: '2025-08-01',
+    amount: 3500,
   },
   {
+    id: '3',
     category: StaffExpenseCategoryEnum.Benefits,
     displayCategory: 'Benefits',
     fundType: 'Primary',
-    month: '2025-09-01',
-    total: -500,
+    transactedAt: '2025-09-01',
+    amount: -500,
   },
 ];
 
@@ -44,7 +47,7 @@ describe('downloadReport', () => {
     jest.spyOn(document, 'createElement').mockReturnValue(realLink);
 
     const incomeMockData = mockData.filter(
-      (transaction) => transaction.total > 0,
+      (transaction) => transaction.amount > 0,
     );
     createCsvReport(ReportType.Income, incomeMockData, mockT, mockLocale);
 
@@ -70,7 +73,7 @@ describe('downloadReport', () => {
     jest.spyOn(document, 'createElement').mockReturnValue(realLink);
 
     const expenseMockData = mockData.filter(
-      (transaction) => transaction.total < 0,
+      (transaction) => transaction.amount < 0,
     );
     createCsvReport(ReportType.Expense, expenseMockData, mockT, mockLocale);
 

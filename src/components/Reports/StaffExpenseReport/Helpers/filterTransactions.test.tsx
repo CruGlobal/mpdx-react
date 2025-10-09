@@ -5,7 +5,7 @@ import {
   StaffExpensesSubCategoryEnum,
 } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
-import { DateRange } from './StaffReportEnum';
+import { DateRange, ReportType } from './StaffReportEnum';
 import { filterTransactions } from './filterTransactions';
 
 describe('filterTransactions', () => {
@@ -27,35 +27,33 @@ describe('filterTransactions', () => {
             averagePerMonth: -50,
             breakdownByMonth: [
               {
-                month: '2025-01-01',
-                total: -100,
-              },
-              {
                 month: '2025-02-01',
                 total: -100,
-              },
-            ],
-          },
-          {
-            subCategory: StaffExpensesSubCategoryEnum.OtherAssessment,
-            total: -100,
-            averagePerMonth: -50,
-            breakdownByMonth: [
-              {
-                month: '2025-01-01',
-                total: -50,
-              },
-              {
-                month: '2025-02-01',
-                total: -50,
+                transactions: [
+                  {
+                    id: 'transaction-1',
+                    amount: 100,
+                    transactedAt: '2025-01-15',
+                    description: 'January Additional Salary',
+                  },
+                  {
+                    id: 'transaction-2',
+                    amount: -100,
+                    transactedAt: '2025-01-20',
+                    description: 'Star Wars Costume',
+                  },
+                  {
+                    id: 'transaction-3',
+                    amount: -1000,
+                    transactedAt: '2025-01-24',
+                    description: 'January Additional Salary',
+                  },
+                ],
               },
             ],
           },
         ],
-        breakdownByMonth: [
-          { month: '2025-01-01', total: -150 },
-          { month: '2025-02-01', total: -150 },
-        ],
+        breakdownByMonth: [{ month: '2025-01-01', total: -150 }],
       },
     ],
   };
@@ -64,7 +62,6 @@ describe('filterTransactions', () => {
     const targetTime = DateTime.fromISO('2025-01-15');
     const result = filterTransactions({
       fund: mockFund,
-      targetTime,
       t: i18n.t,
       filters: {
         selectedDateRange: null,
@@ -72,8 +69,10 @@ describe('filterTransactions', () => {
         endDate: null,
         categories: [],
       },
+      tableType: ReportType.Income,
+      targetTime,
     });
-    expect(result).toHaveLength(2);
+    expect(result).toHaveLength(1);
   });
 
   it('filters transactions by custom date range', () => {
@@ -88,8 +87,9 @@ describe('filterTransactions', () => {
         endDate: DateTime.fromISO('2025-02-03'),
         categories: [],
       },
+      tableType: ReportType.Expense,
     });
-    expect(result).toHaveLength(4);
+    expect(result).toHaveLength(2);
   });
 
   it('returns empty array if no main categories', () => {
@@ -105,6 +105,7 @@ describe('filterTransactions', () => {
         endDate: DateTime.fromISO('2025-02-03'),
         categories: [],
       },
+      tableType: ReportType.Expense,
     });
     expect(result).toEqual([]);
   });
@@ -121,6 +122,7 @@ describe('filterTransactions', () => {
         endDate: null,
         categories: [],
       },
+      tableType: ReportType.Expense,
     });
     expect(result).toEqual([]);
   });
@@ -137,6 +139,7 @@ describe('filterTransactions', () => {
         endDate: DateTime.fromISO('2025-06-03'),
         categories: [],
       },
+      tableType: ReportType.Income,
     });
     expect(result).toEqual([]);
   });

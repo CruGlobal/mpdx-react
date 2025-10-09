@@ -1,6 +1,8 @@
 import { TFunction } from 'i18next';
+import { DateTime } from 'luxon';
 import { buildURI } from 'react-csv/lib/core';
 import { Transaction } from 'src/components/Reports/StaffExpenseReport/StaffExpenseReport';
+import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { ReportType } from '../Helpers/StaffReportEnum';
 
 const createTable = (
@@ -13,12 +15,9 @@ const createTable = (
     [title],
     csvHeader,
     ...transactions.map((transaction) => [
-      transaction.month,
+      dateFormat(DateTime.fromISO(transaction.transactedAt), locale),
       transaction.displayCategory,
-      transaction.total.toLocaleString(locale, {
-        style: 'currency',
-        currency: 'USD',
-      }),
+      currencyFormat(transaction.amount, 'USD', locale),
     ]),
   ];
 
@@ -31,8 +30,8 @@ function createCombinedReport(
   csvHeader: string[],
   locale: string,
 ) {
-  const income = transactions.filter((transaction) => transaction.total > 0);
-  const expenses = transactions.filter((transaction) => transaction.total < 0);
+  const income = transactions.filter((transaction) => transaction.amount > 0);
+  const expenses = transactions.filter((transaction) => transaction.amount < 0);
   const incomeData = createTable(titles.income, csvHeader, income, locale);
   const expenseData = createTable(titles.expense, csvHeader, expenses, locale);
   return [...incomeData, [''], ...expenseData];
