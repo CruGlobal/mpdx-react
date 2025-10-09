@@ -102,6 +102,7 @@ export interface FilterPanelProps {
   filters: FilterPanelGroupFragment[];
   defaultExpandedFilterGroups?: Set<string>;
   savedFilters: UserOptionFragment[];
+  preDefinedFilters?: UserOptionFragment[];
   onClose: () => void;
   showSaveButton?: boolean;
 }
@@ -110,6 +111,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   filters,
   defaultExpandedFilterGroups = new Set(),
   savedFilters,
+  preDefinedFilters,
   onClose,
   showSaveButton = true,
   ...boxProps
@@ -635,6 +637,51 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                 </ListItem>
               ) : (
                 <>
+                  {preDefinedFilters && preDefinedFilters.length > 0 && (
+                    <FlatAccordion>
+                      <AccordionSummary expandIcon={<ExpandMore />}>
+                        <Typography>{t('Predefined Filters')}</Typography>
+                      </AccordionSummary>
+                      <AccordionDetails>
+                        <FilterList dense sx={{ paddingY: 0 }}>
+                          {preDefinedFilters.map((filter) => {
+                            const filterName = filter?.key
+                              ?.replace(
+                                /^(graphql_)?saved_(contacts|tasks|)_filter_/,
+                                '',
+                              )
+                              .replaceAll('_', ' ');
+
+                            return (
+                              <ListItem
+                                key={filter.id}
+                                button
+                                secondaryAction={
+                                  <IconButton
+                                    edge="end"
+                                    aria-label={t('Delete')}
+                                    data-testid="deleteSavedFilter"
+                                    onClick={() =>
+                                      handleDeleteSavedFilter(filter)
+                                    }
+                                  ></IconButton>
+                                }
+                              >
+                                <ListItemText
+                                  onClick={() => setSelectedSavedFilter(filter)}
+                                  primary={filterName}
+                                  primaryTypographyProps={{
+                                    variant: 'subtitle1',
+                                  }}
+                                />
+                              </ListItem>
+                            );
+                          })}
+                        </FilterList>
+                      </AccordionDetails>
+                    </FlatAccordion>
+                  )}
+
                   {savedFilters.length > 0 && (
                     <FlatAccordion>
                       <AccordionSummary expandIcon={<ExpandMore />}>
@@ -650,26 +697,21 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                               )
                               .replaceAll('_', ' ');
 
-                            const isPrewrittenFilter =
-                              filter.id.startsWith('prewritten-filter-');
-
                             return (
                               <ListItem
                                 key={filter.id}
                                 button
                                 secondaryAction={
-                                  !isPrewrittenFilter ? (
-                                    <IconButton
-                                      edge="end"
-                                      aria-label={t('Delete')}
-                                      data-testid="deleteSavedFilter"
-                                      onClick={() =>
-                                        handleDeleteSavedFilter(filter)
-                                      }
-                                    >
-                                      <DeleteIcon />
-                                    </IconButton>
-                                  ) : undefined
+                                  <IconButton
+                                    edge="end"
+                                    aria-label={t('Delete')}
+                                    data-testid="deleteSavedFilter"
+                                    onClick={() =>
+                                      handleDeleteSavedFilter(filter)
+                                    }
+                                  >
+                                    <DeleteIcon />
+                                  </IconButton>
                                 }
                               >
                                 <ListItemText

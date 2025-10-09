@@ -37,6 +37,7 @@ export type ContactsType = {
   filtersLoading: boolean;
   toggleFilterPanel: () => void;
   savedFilters: UserOptionFragment[];
+  preDefinedFilters: UserOptionFragment[];
   selected: Coordinates | null;
   setSelected: Dispatch<SetStateAction<Coordinates | null>>;
   mapRef: React.MutableRefObject<google.maps.Map | null>;
@@ -66,7 +67,7 @@ export const parseSavedFilters = (
   filterData: ContactFiltersQuery | undefined,
   accountListId: string | undefined,
 ): UserOptionFragment[] => {
-  const userSavedFilters =
+  return (
     filterData?.userOptions.filter((option) => {
       let parsedJson: Record<string, string>;
       try {
@@ -82,9 +83,8 @@ export const parseSavedFilters = (
           (parsedJson.accountListId === accountListId &&
             !parsedJson.account_list_id))
       );
-    }) ?? [];
-
-  return [...preExistingFilters(accountListId || ''), ...userSavedFilters];
+    }) ?? []
+  );
 };
 
 export const ContactsProvider: React.FC<ContactsContextProps> = ({
@@ -174,6 +174,11 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     () => parseSavedFilters(filterData, accountListId),
     [filterData, accountListId],
   );
+
+  const preDefinedFilters: UserOptionFragment[] = useMemo(
+    () => preExistingFilters(accountListId || ''),
+    [accountListId],
+  );
   //#endregion
 
   //#region JSX
@@ -210,6 +215,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
       filtersLoading,
       toggleFilterPanel,
       savedFilters,
+      preDefinedFilters,
       selected,
       setSelected,
       mapRef,
@@ -234,6 +240,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
       filtersLoading,
       toggleFilterPanel,
       savedFilters,
+      preDefinedFilters,
       selected,
       setSelected,
       mapData,
