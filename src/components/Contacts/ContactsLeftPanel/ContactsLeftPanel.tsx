@@ -9,7 +9,7 @@ import { DynamicContactsMapPanel } from '../ContactsMap/DynamicContactsMapPanel'
 
 export const ContactsLeftPanel: React.FC = () => {
   const {
-    filterData,
+    filters,
     filtersLoading,
     savedFilters,
     toggleFilterPanel,
@@ -20,6 +20,8 @@ export const ContactsLeftPanel: React.FC = () => {
     viewMode,
   } = React.useContext(ContactsContext) as ContactsType;
 
+  console.log('render ContactsLeftPanel', filters);
+
   return viewMode === TableViewModeEnum.Map ? (
     <DynamicContactsMapPanel
       data={mapData}
@@ -28,9 +30,10 @@ export const ContactsLeftPanel: React.FC = () => {
       setSelected={setSelected}
       onClose={toggleFilterPanel}
     />
-  ) : filterData && !filtersLoading ? (
+  ) : filters && !filtersLoading ? (
     <DynamicFilterPanel
-      filters={filterData?.accountList?.contactFilterGroups}
+      // filters={filterData?.accountList?.contactFilterGroups}
+      filters={filters}
       savedFilters={savedFilters}
       onClose={toggleFilterPanel}
     />

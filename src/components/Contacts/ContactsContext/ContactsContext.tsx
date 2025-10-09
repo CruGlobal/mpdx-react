@@ -32,6 +32,7 @@ export type ContactsType = {
   isRowChecked: (id: string) => boolean;
   toggleSelectAll: () => void;
   toggleSelectionById: (id: string) => void;
+  filters: Record<string, unknown> | undefined;
   filterData: ContactFiltersQuery | undefined;
   filtersLoading: boolean;
   toggleFilterPanel: () => void;
@@ -168,13 +169,56 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     setFilterPanelOpen((open) => !open);
   }, [setFilterPanelOpen]);
 
-  const savedFilters: UserOptionFragment[] = useMemo(
-    () => parseSavedFilters(filterData, accountListId),
-    [filterData, accountListId],
-  );
+  const savedFilters: UserOptionFragment[] = useMemo(() => {
+    return parseSavedFilters(filterData, accountListId);
+  }, [filterData, accountListId]);
   //#endregion
 
   //#region JSX
+
+  const filters = useMemo(() => {
+    const everGivenFilter = {};
+    const givenInTheLastTwoYearsFilter = {};
+    const lostPartners = {};
+    const ministryPartnerFilterGroup = {
+      featured: false,
+      name: 'Ministry Partner',
+      __typename: 'FilterGroup',
+      filters: [
+        {
+          defaultSelection: 'EVER_GIVEN',
+          filterKey: 'ministry_partner',
+          options: [
+            {
+              name: 'Ever Given',
+              placeholder: null,
+              value: 'EVER_GIVEN',
+              __typename: 'FilterOption',
+            },
+            {
+              name: 'Given in the Last 2 Years',
+              placeholder: null,
+              value: 'GIVEN_IN_THE_LAST_TWO_YEARS',
+              __typename: 'FilterOption',
+            },
+            {
+              name: 'Lost Partners 2',
+              placeholder: null,
+              value: 'LOST_PARTNERS',
+              __typename: 'FilterOption',
+            },
+          ],
+          title: 'Ministry Partner',
+          __typename: 'RadioFilter',
+        },
+      ],
+    };
+    const additionalContactFilterGroups = [ministryPartnerFilterGroup];
+    return [
+      ...(filterData?.accountList?.contactFilterGroups ?? []),
+      ...additionalContactFilterGroups,
+    ];
+  }, [filterData]);
 
   // map states and functions
   const [selected, setSelected] = useState<Coordinates | null>(null);
@@ -204,6 +248,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
       toggleSelectionById,
       selectedIds: ids,
       deselectAll,
+      filters,
       filterData,
       filtersLoading,
       toggleFilterPanel,
@@ -228,6 +273,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
       toggleSelectionById,
       ids,
       deselectAll,
+      filters,
       filterData,
       filtersLoading,
       toggleFilterPanel,
