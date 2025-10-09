@@ -1,7 +1,6 @@
 import { useMemo } from 'react';
 import { ApolloError } from '@apollo/client';
 import {
-  MpdGoalBenefitsConstant,
   MpdGoalMiscConstant,
   MpdGoalMiscConstantCategoryEnum,
   MpdGoalMiscConstantLabelEnum,
@@ -11,13 +10,6 @@ import {
   useGoalCalculatorConstantsQuery,
 } from './goalCalculatorConstants.generated';
 
-export type GoalBenefitsConstantMap = Map<
-  string,
-  Pick<
-    MpdGoalBenefitsConstant,
-    'id' | 'size' | 'sizeDisplayName' | 'plan' | 'planDisplayName' | 'cost'
-  >
->;
 export type GoalMiscConstants = Partial<
   Record<
     MpdGoalMiscConstantCategoryEnum,
@@ -39,8 +31,8 @@ export type GoalMiscConstants = Partial<
 >;
 export type GoalGeographicConstantMap = Map<string, number>;
 
-interface FormattedConstants {
-  goalBenefitsConstantMap: GoalBenefitsConstantMap;
+export interface FormattedConstants {
+  goalBenefitsPlans: GoalCalculatorConstantsQuery['constant']['mpdGoalBenefitsConstants'];
   goalMiscConstants: GoalMiscConstants;
   goalGeographicConstantMap: GoalGeographicConstantMap;
 }
@@ -48,12 +40,6 @@ interface FormattedConstants {
 export const formatConstants = (
   constant: GoalCalculatorConstantsQuery['constant'] | undefined,
 ): FormattedConstants => {
-  const goalBenefitsConstantMap: GoalBenefitsConstantMap = new Map();
-  constant?.mpdGoalBenefitsConstants.forEach((constant) => {
-    const { plan, size } = constant;
-    goalBenefitsConstantMap.set(`${size}-${plan}`, constant);
-  });
-
   const goalMiscConstants: GoalMiscConstants = {};
   constant?.mpdGoalMiscConstants.forEach((constant) => {
     const { category, label } = constant;
@@ -68,7 +54,7 @@ export const formatConstants = (
   });
 
   return {
-    goalBenefitsConstantMap,
+    goalBenefitsPlans: constant?.mpdGoalBenefitsConstants ?? [],
     goalMiscConstants,
     goalGeographicConstantMap,
   };
