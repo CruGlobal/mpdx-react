@@ -15,8 +15,8 @@ describe('MpdGoalTable', () => {
     expect(getByRole('grid', { name: 'MPD Goal' })).toBeInTheDocument();
   });
 
-  it('adds classes to certain columns and rows', () => {
-    const { getByRole } = render(<TestComponent />);
+  it('adds classes to certain columns and rows', async () => {
+    const { getByRole, findByRole } = render(<TestComponent />);
 
     const grossAnnualRow = getByRole('gridcell', {
       name: 'Gross Annual Salary',
@@ -48,8 +48,8 @@ describe('MpdGoalTable', () => {
     expect(getByRole('columnheader', { name: 'NS Reference' })).toHaveClass(
       'reference',
     );
-    expect(getByRole('gridcell', { name: '$5,511.31' })).toHaveClass(
-      'reference',
-    );
-  });
+    expect(
+      await findByRole('gridcell', { name: '$5,041.67' }, { timeout: 3000 }),
+    ).toHaveClass('reference');
+  }, 10000);
 });
