@@ -17,6 +17,7 @@ import {
 import {
   GoalTotals,
   calculateCategoryEnumTotal,
+  calculateFinalGoalTotals,
   hasStaffSpouse,
 } from './calculateTotals';
 
@@ -204,25 +205,9 @@ export const calculateNewStaffGoalTotals = (
   const cappedMultiplier = Math.min(salaryCap / totalUncappedBase, 1);
   const cappedBase = uncappedBase * cappedMultiplier;
   const spouseCappedBase = spouseUncappedBase * cappedMultiplier;
+  const netMonthlySalary = (cappedBase + spouseCappedBase) / 12;
 
   const miscConstants = constants.goalMiscConstants;
-  const totalTaxesPercentage = miscConstants.RATES?.SECA?.fee ?? 0;
-  const netMonthlySalary = (cappedBase + spouseCappedBase) / 12;
-  const taxes = netMonthlySalary * totalTaxesPercentage;
-  const salaryPreIra = netMonthlySalary + taxes;
-
-  const rothContributionPercentage =
-    miscConstants.RATES?.FOUR_OH_THREE_B?.fee ?? 0;
-  const traditionalContributionPercentage = 0;
-
-  const rothContribution =
-    salaryPreIra / (1 - rothContributionPercentage) - salaryPreIra;
-  const traditionalContribution =
-    salaryPreIra / (1 - traditionalContributionPercentage) - salaryPreIra;
-  const grossMonthlySalary =
-    salaryPreIra + rothContribution + traditionalContribution;
-  const grossAnnualSalary = grossMonthlySalary * 12;
-
   const ministryExpensesTotal = MINISTRY_CATEGORIES.reduce((sum, category) => {
     const categoryTotal = getNewStaffBudgetCategory(
       goalCalculation,
@@ -231,40 +216,17 @@ export const calculateNewStaffGoalTotals = (
     );
     return sum + categoryTotal;
   }, 0);
-  const benefitsCharge =
-    constants.goalBenefitsPlans.find(
-      ({ plan, size }) =>
-        plan === goalCalculation?.benefitsPlan &&
-        size === goalCalculation?.familySize,
-    )?.cost ?? 0;
-  const overallSubtotal =
-    grossMonthlySalary + ministryExpensesTotal + benefitsCharge;
 
-  const adminRate = miscConstants.RATES?.ADMIN_RATE?.fee ?? 0;
-  const attritionRate = miscConstants.RATES?.ATTRITION_RATE?.fee ?? 0;
-  const overallSubtotalWithAdmin = overallSubtotal / (1 - adminRate);
-  const attrition = overallSubtotalWithAdmin * attritionRate;
-  const overallTotal = overallSubtotalWithAdmin + attrition;
-
-  return {
+  return calculateFinalGoalTotals({
+    constants,
+    goalCalculation,
     monthlyBudget: netMonthlySalary,
     netMonthlySalary,
-    taxesPercentage: totalTaxesPercentage,
-    taxes,
-    salaryPreIra,
-    rothContributionPercentage,
-    traditionalContributionPercentage,
-    rothContribution,
-    traditionalContribution,
-    grossAnnualSalary,
-    grossMonthlySalary,
+    taxesPercentage: miscConstants.RATES?.SECA?.fee ?? 0,
+    rothContributionPercentage: miscConstants.RATES?.FOUR_OH_THREE_B?.fee ?? 0,
+    traditionalContributionPercentage: 0,
     ministryExpensesTotal,
-    benefitsCharge,
-    overallSubtotal,
-    overallSubtotalWithAdmin,
-    attrition,
-    overallTotal,
-  };
+  });
 };
 
 interface Multipliers {
