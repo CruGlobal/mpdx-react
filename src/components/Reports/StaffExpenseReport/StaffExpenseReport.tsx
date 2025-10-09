@@ -140,7 +140,13 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
 
   const hasNext = time.hasSame(DateTime.now(), 'month');
 
-  const allFunds: Fund[] = data?.reportsStaffExpenses?.funds ?? [];
+  const allFunds: Fund[] = useMemo(
+    () =>
+      (data?.reportsStaffExpenses?.funds ?? []).toSorted((a, b) =>
+        a.id.localeCompare(b.id),
+      ),
+    [data],
+  );
 
   const defaultFundType: string | null =
     allFunds.find((f) => f.fundType === 'Primary')?.fundType ??

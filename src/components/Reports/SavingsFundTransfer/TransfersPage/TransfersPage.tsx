@@ -27,6 +27,7 @@ import {
 } from '../../StaffSavingFund/StaffSavingFundContext';
 import { SimplePrintOnly, SimpleScreenOnly } from '../../styledComponents';
 import { BalanceCard } from '../BalanceCard/BalanceCard';
+import { CardSkeleton } from '../BalanceCard/CardSkeleton';
 import { filteredTransfers } from '../Helper/filterTransfers';
 import { getStatusLabel } from '../Helper/getStatus';
 import {
@@ -64,6 +65,13 @@ const StyledHeaderBox = styled(Box)({
 interface TransfersPageProps {
   title: string;
 }
+
+const StyledCardsBox = styled(Box)({
+  flex: 1,
+  minWidth: 250,
+  display: 'flex',
+  gap: theme.spacing(4),
+});
 
 export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
   const { t } = useTranslation();
@@ -177,11 +185,11 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
       <GlobalStyles
         styles={{
           '@media print': {
-            'svg, .MuiSvgIcon-root': {
-              display: 'inline !important',
-              visibility: 'visible !important',
-              width: '24px',
-              height: '24px',
+            '.StyledIconBox-root': {
+              width: '26px',
+              height: '26px',
+              WebkitPrintColorAdjust: 'exact',
+              printColorAdjust: 'exact',
             },
           },
           '@page': {
@@ -239,14 +247,20 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                 flexDirection: { xs: 'column', sm: 'row' },
               }}
             >
-              {funds.map((fund) => (
-                <BalanceCard
-                  fund={fund}
-                  key={fund.id}
-                  handleOpenTransferModal={handleOpenTransferModal}
-                  loading={fundsLoading}
-                />
-              ))}
+              {fundsLoading ? (
+                <StyledCardsBox>
+                  <CardSkeleton />
+                  <CardSkeleton />
+                </StyledCardsBox>
+              ) : (
+                funds.map((fund) => (
+                  <BalanceCard
+                    fund={fund}
+                    key={fund.id}
+                    handleOpenTransferModal={handleOpenTransferModal}
+                  />
+                ))
+              )}
             </Box>
             <SimpleScreenOnly sx={{ mt: 2, mb: 3 }}>
               <Box sx={{ mb: 3 }}>
