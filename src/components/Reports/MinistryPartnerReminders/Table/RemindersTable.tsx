@@ -17,6 +17,7 @@ import {
   LoadingBox,
   LoadingIndicator,
 } from 'src/components/Shared/styledComponents/LoadingStyling';
+import { EmptyTable } from '../../MPGAIncomeExpensesReport/Tables/EmptyTable';
 import { ReminderData, ReminderStatusEnum } from '../mockData';
 import { StyledRow } from '../styledComponents/StyledRow';
 import { RemindersTableRow } from './RemindersTableRow';
@@ -54,12 +55,24 @@ const TableComponents: TableVirtuosoProps<HeaderProps, unknown>['components'] =
             backgroundColor: 'background.paper',
             boxShadow: (t) => `inset 0 -1px 0 ${t.palette.divider}`,
           },
+          tableLayout: 'fixed',
         }}
       />
     ),
     TableHead,
     TableBody: Body,
     TableRow: StyledRow,
+
+    EmptyPlaceholder: () => (
+      <TableRow>
+        <TableCell colSpan={4}>
+          <EmptyTable
+            title={'No ministry partners to display'}
+            subtitle={'Add a ministry partner to get started'}
+          />
+        </TableCell>
+      </TableRow>
+    ),
   };
 interface RemindersTableProps {
   data: ReminderData[];
@@ -77,6 +90,8 @@ export const RemindersTable: React.FC<RemindersTableProps> = ({
   fetchMore,
 }) => {
   const { t } = useTranslation();
+
+  const isEmpty = !data.length;
 
   const initialValues = useMemo(
     () => ({
@@ -105,21 +120,27 @@ export const RemindersTable: React.FC<RemindersTableProps> = ({
   return (
     <Formik initialValues={initialValues} onSubmit={() => {}}>
       {({ handleChange, handleBlur, values }) => (
-    <TableVirtuoso
-      data={data}
-      style={{
-        height: `calc(100vh - ${navBarHeight} - ${headerHeight})`,
-        scrollbarWidth: 'none',
-      }}
-      components={TableComponents}
-      fixedHeaderContent={() => (
-        <TableRow>
-          <TableCell>{t('Ministry Partner')}</TableCell>
-          <TableCell>{t('Last Gift')}</TableCell>
-          <TableCell>{t('Last Reminder')}</TableCell>
-          <TableCell id="status-col">{t('Reminder Status')}</TableCell>
-        </TableRow>
-      )}
+        <TableVirtuoso
+          data={data}
+          style={{
+            height: isEmpty
+              ? 390
+              : `calc(100vh - ${navBarHeight} - ${headerHeight} - 48px)`,
+            scrollbarWidth: 'none',
+          }}
+          components={TableComponents}
+          fixedHeaderContent={() => (
+            <TableRow>
+              <TableCell sx={{ width: '35%' }}>
+                {t('Ministry Partner')}
+              </TableCell>
+              <TableCell sx={{ width: '20%' }}>{t('Last Gift')}</TableCell>
+              <TableCell sx={{ width: '20%' }}>{t('Last Reminder')}</TableCell>
+              <TableCell id="status-col" sx={{ width: '25%' }}>
+                {t('Reminder Status')}
+              </TableCell>
+            </TableRow>
+          )}
           itemContent={(_, row) => (
             <RemindersTableRow
               key={row.id}
@@ -130,13 +151,13 @@ export const RemindersTable: React.FC<RemindersTableProps> = ({
               value={values.status[row.id]}
             />
           )}
-      endReached={() =>
-        hasNextPage &&
-        fetchMore({
-          variables: { after: endCursor },
-        })
-      }
-    />
+          endReached={() =>
+            hasNextPage &&
+            fetchMore({
+              variables: { after: endCursor },
+            })
+          }
+        />
       )}
     </Formik>
   );
