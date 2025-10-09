@@ -16,6 +16,8 @@ import {
 import { useFilteredFunds } from 'src/hooks/useFilteredFunds';
 import { useGetLastTwelveMonths } from 'src/hooks/useGetLastTwelveMonths';
 import { useLocale } from 'src/hooks/useLocale';
+import { AccountInfoBox } from '../Shared/AccountInfoBox/AccountInfoBox';
+import { AccountInfoBoxSkeleton } from '../Shared/AccountInfoBox/AccountInfoBoxSkeleton';
 import { useStaffAccountQuery } from '../StaffAccount.generated';
 import {
   SimplePrintOnly,
@@ -57,7 +59,7 @@ export const MPGAIncomeExpensesReport: React.FC<
   const start = convertMonths(last12Months[0], locale);
   const end = DateTime.now().toISODate();
 
-  const { data: staffAccountData } = useStaffAccountQuery();
+  const { data: staffAccountData, loading } = useStaffAccountQuery();
 
   const { data: reportData } = useReportsStaffExpensesQuery({
     variables: {
@@ -150,10 +152,14 @@ export const MPGAIncomeExpensesReport: React.FC<
                 </StyledPrintButton>
               </SimpleScreenOnly>
             </StyledHeaderBox>
-            <Box display="flex" flexDirection="row" gap={3} mb={2}>
-              <Typography>{staffAccountData?.staffAccount?.name}</Typography>
-              <Typography>{staffAccountData?.staffAccount?.id}</Typography>
-            </Box>
+            {loading ? (
+              <AccountInfoBoxSkeleton />
+            ) : (
+              <AccountInfoBox
+                name={staffAccountData?.staffAccount?.name}
+                accountId={staffAccountData?.staffAccount?.id}
+              />
+            )}
           </Container>
         </Box>
         <SimpleScreenOnly>

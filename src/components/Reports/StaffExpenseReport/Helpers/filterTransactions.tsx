@@ -8,7 +8,7 @@ import {
   Fund,
   StaffExpenseCategoryEnum,
 } from 'src/graphql/types.generated';
-import { getLocalizedCategory } from './Helpers/useLocalizedCategory';
+import { getLocalizedCategory } from './useLocalizedCategory';
 
 interface FilterTransactionsParams {
   fund: Pick<Fund, 'fundType' | 'total' | 'categories'>;

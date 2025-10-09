@@ -5,7 +5,7 @@ import {
   StaffExpensesSubCategoryEnum,
 } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
-import { DateRange } from './Helpers/StaffReportEnum';
+import { DateRange } from './StaffReportEnum';
 import { filterTransactions } from './filterTransactions';
 
 describe('filterTransactions', () => {

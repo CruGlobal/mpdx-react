@@ -1,4 +1,5 @@
 import React, { useContext, useMemo, useState } from 'react';
+import { HourglassDisabled } from '@mui/icons-material';
 import PrintIcon from '@mui/icons-material/Print';
 import {
   Box,
@@ -16,11 +17,15 @@ import {
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import theme from 'src/theme';
+import { AccountInfoBox } from '../../Shared/AccountInfoBox/AccountInfoBox';
+import { AccountInfoBoxSkeleton } from '../../Shared/AccountInfoBox/AccountInfoBoxSkeleton';
+import { EmptyTable } from '../../Shared/EmptyTable/EmptyTable';
 import { useStaffAccountQuery } from '../../StaffAccount.generated';
 import {
   StaffSavingFundContext,
   StaffSavingFundType,
 } from '../../StaffSavingFund/StaffSavingFundContext';
+import { SimplePrintOnly, SimpleScreenOnly } from '../../styledComponents';
 import { BalanceCard } from '../BalanceCard/BalanceCard';
 import { filteredTransfers } from '../Helper/filterTransfers';
 import { getStatusLabel } from '../Helper/getStatus';
@@ -28,7 +33,6 @@ import {
   useReportsSavingsFundTransferQuery,
   useReportsStaffExpensesQuery,
 } from '../ReportsSavingsFund.generated';
-import { EmptyTable } from '../Table/EmptyTable';
 import { PrintTable } from '../Table/PrintTable';
 import { TransfersTable } from '../Table/TransfersTable';
 import { DynamicTransferModal } from '../TransferModal/DynamicTransferModal';
@@ -42,7 +46,6 @@ import {
   Transfers,
   incomingTransfers,
 } from '../mockData';
-import { PrintOnly, ScreenOnly } from '../styledComponents/DisplayStyling';
 
 const StyledPrintButton = styled(Button)({
   border: '1px solid',
@@ -69,7 +72,8 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
     StaffSavingFundContext,
   ) as StaffSavingFundType;
 
-  const { data: staffAccountData } = useStaffAccountQuery();
+  const { data: staffAccountData, loading: staffAccountLoading } =
+    useStaffAccountQuery();
 
   const { data: reportData, loading: reportLoading } =
     useReportsSavingsFundTransferQuery();
@@ -186,19 +190,19 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
         }}
       />
       <Box>
-        <ScreenOnly>
+        <SimpleScreenOnly>
           <MultiPageHeader
             isNavListOpen={isNavListOpen}
             onNavListToggle={onNavListToggle}
             headerType={HeaderTypeEnum.Report}
             title={title}
           />
-        </ScreenOnly>
+        </SimpleScreenOnly>
         <Box sx={{ mt: 2 }}>
           <Container>
             <StyledHeaderBox>
               <Typography variant="h4">{t('Fund Transfer')}</Typography>
-              <ScreenOnly
+              <SimpleScreenOnly
                 sx={{
                   display: 'flex',
                   flexDirection: 'column',
@@ -217,20 +221,16 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                 >
                   {t('Print')}
                 </StyledPrintButton>
-              </ScreenOnly>
+              </SimpleScreenOnly>
             </StyledHeaderBox>
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 3,
-                mb: 2,
-              }}
-            >
-              <Typography>{staffAccountData?.staffAccount?.name}</Typography>
-              <Typography>{staffAccountData?.staffAccount?.id}</Typography>
-            </Box>
+            {staffAccountLoading ? (
+              <AccountInfoBoxSkeleton />
+            ) : (
+              <AccountInfoBox
+                name={staffAccountData?.staffAccount?.name}
+                accountId={staffAccountData?.staffAccount?.id}
+              />
+            )}
             <Box
               display="flex"
               flexWrap="wrap"
@@ -248,7 +248,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                 />
               ))}
             </Box>
-            <ScreenOnly sx={{ mt: 2, mb: 3 }}>
+            <SimpleScreenOnly sx={{ mt: 2, mb: 3 }}>
               <Box sx={{ mb: 3 }}>
                 <TransfersTable
                   history={incoming}
@@ -258,6 +258,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                     <EmptyTable
                       title={t('Upcoming Transfers not available')}
                       subtitle={t('No data found across any accounts.')}
+                      icon={HourglassDisabled}
                     />
                   }
                   loading={reportLoading}
@@ -271,12 +272,13 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                   <EmptyTable
                     title={t('Transfer History not available')}
                     subtitle={t('No data found across any accounts.')}
+                    icon={HourglassDisabled}
                   />
                 }
                 loading={reportLoading}
               />
-            </ScreenOnly>
-            <PrintOnly>
+            </SimpleScreenOnly>
+            <SimplePrintOnly>
               <Box sx={{ my: 4 }}>
                 <PrintTable
                   transfers={incoming}
@@ -287,7 +289,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                   type={TableTypeEnum.History}
                 />
               </Box>
-            </PrintOnly>
+            </SimplePrintOnly>
           </Container>
         </Box>
         {modalData && (
