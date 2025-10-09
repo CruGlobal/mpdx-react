@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useMemo } from 'react';
 import {
   Paper,
   Table,
@@ -8,6 +8,7 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
+import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { TableVirtuoso, TableVirtuosoProps } from 'react-virtuoso';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
@@ -16,8 +17,8 @@ import {
   LoadingBox,
   LoadingIndicator,
 } from 'src/components/Shared/styledComponents/LoadingStyling';
-import { ReminderData } from '../mockData';
-import { StyledRow } from '../styledComponents';
+import { ReminderData, ReminderStatusEnum } from '../mockData';
+import { StyledRow } from '../styledComponents/StyledRow';
 import { RemindersTableRow } from './RemindersTableRow';
 
 interface HeaderProps {
@@ -77,6 +78,18 @@ export const RemindersTable: React.FC<RemindersTableProps> = ({
 }) => {
   const { t } = useTranslation();
 
+  const initialValues = useMemo(
+    () => ({
+      status: Object.fromEntries(
+        data.map((row) => [
+          row.id,
+          row.status ?? ReminderStatusEnum.NotReminded,
+        ]),
+      ),
+    }),
+    [data],
+  );
+
   if (loading && !data.length) {
     return (
       <LoadingBox>
@@ -90,6 +103,8 @@ export const RemindersTable: React.FC<RemindersTableProps> = ({
   }
 
   return (
+    <Formik initialValues={initialValues} onSubmit={() => {}}>
+      {({ handleChange, handleBlur, values }) => (
     <TableVirtuoso
       data={data}
       style={{
@@ -105,7 +120,16 @@ export const RemindersTable: React.FC<RemindersTableProps> = ({
           <TableCell id="status-col">{t('Reminder Status')}</TableCell>
         </TableRow>
       )}
-      itemContent={(_, row) => <RemindersTableRow key={row.id} row={row} />}
+          itemContent={(_, row) => (
+            <RemindersTableRow
+              key={row.id}
+              id={row.id}
+              row={row}
+              handleChange={handleChange}
+              handleBlur={handleBlur}
+              value={values.status[row.id]}
+            />
+          )}
       endReached={() =>
         hasNextPage &&
         fetchMore({
@@ -113,5 +137,7 @@ export const RemindersTable: React.FC<RemindersTableProps> = ({
         })
       }
     />
+      )}
+    </Formik>
   );
 };

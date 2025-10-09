@@ -1,5 +1,4 @@
 import { TableCell, Typography } from '@mui/material';
-import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat } from 'src/lib/intlFormat';
@@ -9,15 +8,27 @@ import {
 } from '../../SavingsFundTransfer/styledComponents/DisplayStyling';
 import { ReminderData } from '../mockData';
 import { StatusSelect } from './StatusSelect/StatusSelect';
+import type { SelectChangeEvent } from '@mui/material';
 
 interface RemindersTableRowProps {
   row: ReminderData;
+  id: string;
+  handleChange: (
+    event: SelectChangeEvent<unknown>,
+    child?: React.ReactNode,
+  ) => void;
+  handleBlur: React.FocusEventHandler<Element>;
+  value: string;
 }
 
 export const RemindersTableRow: React.FC<RemindersTableRowProps> = ({
   row,
+  id,
+  handleChange,
+  handleBlur,
+  value,
 }) => {
-  const { partner, partnerId, lastGift, lastReminder, status } = row;
+  const { partner, partnerId, lastGift, lastReminder } = row;
   const { t } = useTranslation();
   const locale = useLocale();
 
@@ -33,26 +44,20 @@ export const RemindersTableRow: React.FC<RemindersTableRowProps> = ({
       </TableCell>
       <TableCell>{dateFormat(lastGift, locale)}</TableCell>
       <TableCell>{dateFormat(lastReminder, locale)}</TableCell>
-      <Formik initialValues={{ status }} onSubmit={() => {}}>
-        {({ handleChange, handleBlur, values }) => (
-          <>
-            <ScreenOnly>
-              <TableCell>
-                <StatusSelect
-                  name="status"
-                  value={values.status}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  labelId="status-col"
-                />
-              </TableCell>
-            </ScreenOnly>
-            <PrintOnly>
-              <TableCell>{t(values.status)}</TableCell>
-            </PrintOnly>
-          </>
-        )}
-      </Formik>
+      <ScreenOnly>
+        <TableCell>
+          <StatusSelect
+            name={`status.${id}`}
+            value={value}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            labelId="status-col"
+          />
+        </TableCell>
+      </ScreenOnly>
+      <PrintOnly>
+        <TableCell>{t(value)}</TableCell>
+      </PrintOnly>
     </>
   );
 };
