@@ -80,8 +80,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     },
   });
 
-  const { goalBenefitsConstantMap, goalMiscConstants } =
-    useGoalCalculatorConstants();
+  const constants = useGoalCalculatorConstants();
 
   const steps = useSteps();
   const percentComplete = useMemo(
@@ -92,10 +91,9 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     () =>
       calculateGoalTotals(
         goalCalculationResult.data?.goalCalculation ?? null,
-        goalBenefitsConstantMap.values().toArray(),
-        goalMiscConstants,
+        constants,
       ),
-    [goalCalculationResult.data, goalBenefitsConstantMap, goalMiscConstants],
+    [goalCalculationResult.data, constants],
   );
   const [stepIndex, setStepIndex] = useState(0);
   const [selectedReport, setSelectedReport] =

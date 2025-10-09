@@ -37,13 +37,10 @@ const mockFamily = gqlMock<BudgetFamilyFragment>(BudgetFamilyFragmentDoc, {
 });
 
 describe('calculateGoalTotals', () => {
-  const benefitsPlans = constantsMock.mpdGoalBenefitsConstants;
-  const miscConstants = formatConstants(constantsMock).goalMiscConstants;
+  const constants = formatConstants(constantsMock);
 
   it('should calculate goal totals correctly', () => {
-    expect(
-      calculateGoalTotals(goalCalculationMock, benefitsPlans, miscConstants),
-    ).toEqual({
+    expect(calculateGoalTotals(goalCalculationMock, constants)).toEqual({
       monthlyBudget: 5500,
       netMonthlySalary: 4500,
       taxesPercentage: expect.closeTo(0.209, 3),
@@ -69,9 +66,7 @@ describe('calculateGoalTotals', () => {
       ...goalCalculationMock,
       familySize: MpdGoalBenefitsConstantSizeEnum.Single,
     };
-    expect(
-      calculateGoalTotals(goalCalculation, benefitsPlans, miscConstants),
-    ).toEqual({
+    expect(calculateGoalTotals(goalCalculation, constants)).toEqual({
       monthlyBudget: 5500,
       netMonthlySalary: 4500,
       taxesPercentage: 0.2,
@@ -97,9 +92,7 @@ describe('calculateGoalTotals', () => {
       ...goalCalculationMock,
       spouseNetPaycheckAmount: 3000,
     };
-    expect(
-      calculateGoalTotals(goalCalculation, benefitsPlans, miscConstants),
-    ).toEqual({
+    expect(calculateGoalTotals(goalCalculation, constants)).toEqual({
       monthlyBudget: 5500,
       netMonthlySalary: 4500,
       taxesPercentage: expect.closeTo(0.211, 3),
@@ -128,9 +121,7 @@ describe('calculateGoalTotals', () => {
       traditionalContributionPercentage: 0,
       spouseTraditionalContributionPercentage: 0,
     };
-    expect(
-      calculateGoalTotals(goalCalculation, benefitsPlans, miscConstants),
-    ).toEqual({
+    expect(calculateGoalTotals(goalCalculation, constants)).toEqual({
       monthlyBudget: 5500,
       netMonthlySalary: 4500,
       taxesPercentage: expect.closeTo(0.209, 3),
@@ -152,7 +143,7 @@ describe('calculateGoalTotals', () => {
   });
 
   it('returns 0 not NaN for missing goals', () => {
-    expect(calculateGoalTotals(null, benefitsPlans, miscConstants)).toEqual({
+    expect(calculateGoalTotals(null, constants)).toEqual({
       monthlyBudget: 0,
       netMonthlySalary: 0,
       taxesPercentage: 0,

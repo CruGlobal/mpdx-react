@@ -1,13 +1,12 @@
 import {
   GoalCalculationAge,
   GoalCalculationRole,
-  MpdGoalBenefitsConstant,
   MpdGoalBenefitsConstantPlanEnum,
   MpdGoalBenefitsConstantSizeEnum,
   PrimaryBudgetCategoryEnum,
 } from 'src/graphql/types.generated';
 import {
-  GoalGeographicConstantMap,
+  FormattedConstants,
   GoalMiscConstants,
 } from 'src/hooks/useGoalCalculatorConstants';
 import { ListGoalCalculationFragment } from '../GoalsList/GoalCalculations.generated';
@@ -107,20 +106,21 @@ const getBaseMultiplier = (goalCalculation: GoalCalculation): number => {
 const getUncappedBase = (
   goalCalculation: GoalCalculation,
   yearsOnStaff: number,
-  miscConstants: GoalMiscConstants,
-  geographicConstants: GoalGeographicConstantMap,
+  constants: FormattedConstants,
 ): number => {
   const single = !hasStaffSpouse(goalCalculation?.familySize);
   const debtPercentage = single
-    ? (miscConstants.DEBT_PERCENTAGE?.SINGLE?.fee ?? 0)
-    : (miscConstants.DEBT_PERCENTAGE?.MARRIED?.fee ?? 0);
+    ? (constants.goalMiscConstants.DEBT_PERCENTAGE?.SINGLE?.fee ?? 0)
+    : (constants.goalMiscConstants.DEBT_PERCENTAGE?.MARRIED?.fee ?? 0);
   const debtCapPercentage =
     0.8 * (LEVEL_2_RATE / LEVEL_1_RATE) * debtPercentage;
 
   const baseMultiplier = getBaseMultiplier(goalCalculation);
   const geographicMultiplier =
     (typeof goalCalculation?.geographicLocation === 'string'
-      ? geographicConstants.get(goalCalculation.geographicLocation)
+      ? constants.goalGeographicConstantMap.get(
+          goalCalculation.geographicLocation,
+        )
       : null) ?? 0;
   const tenureIncrease = getTenureIncrease(yearsOnStaff);
   const base = BASE_SALARY * LEVEL_1_RATE * (1 + baseMultiplier);
@@ -135,8 +135,9 @@ const getUncappedBase = (
 
 const getSalaryCap = (
   goalCalculation: GoalCalculation,
-  miscConstants: GoalMiscConstants,
+  constants: FormattedConstants,
 ): number => {
+  const miscConstants = constants.goalMiscConstants;
   const married = hasStaffSpouse(goalCalculation?.familySize);
 
   if (goalCalculation?.geographicLocation === 'New York City') {
@@ -183,31 +184,28 @@ type GoalCalculation =
 
 export const calculateNewStaffGoalTotals = (
   goalCalculation: GoalCalculation,
-  benefitsPlans: Array<Pick<MpdGoalBenefitsConstant, 'size' | 'plan' | 'cost'>>,
-  miscConstants: GoalMiscConstants,
-  geographicConstants: GoalGeographicConstantMap,
+  constants: FormattedConstants,
 ): GoalTotals => {
   const uncappedBase = getUncappedBase(
     goalCalculation,
     goalCalculation?.yearsOnStaff ?? 0,
-    miscConstants,
-    geographicConstants,
+    constants,
   );
   const spouseUncappedBase = getUncappedBase(
     goalCalculation,
     goalCalculation?.spouseYearsOnStaff ?? 0,
-    miscConstants,
-    geographicConstants,
+    constants,
   );
   const totalUncappedBase = uncappedBase + spouseUncappedBase;
 
-  const salaryCap = getSalaryCap(goalCalculation, miscConstants);
+  const salaryCap = getSalaryCap(goalCalculation, constants);
   // If the combined salary exceeds the cap, weight each spouse's salaries so that they will add
   // up to salaryCap
   const cappedMultiplier = Math.min(salaryCap / totalUncappedBase, 1);
   const cappedBase = uncappedBase * cappedMultiplier;
   const spouseCappedBase = spouseUncappedBase * cappedMultiplier;
 
+  const miscConstants = constants.goalMiscConstants;
   const totalTaxesPercentage = miscConstants.RATES?.SECA?.fee ?? 0;
   const netMonthlySalary = (cappedBase + spouseCappedBase) / 12;
   const taxes = netMonthlySalary * totalTaxesPercentage;
@@ -234,7 +232,7 @@ export const calculateNewStaffGoalTotals = (
     return sum + categoryTotal;
   }, 0);
   const benefitsCharge =
-    benefitsPlans.find(
+    constants.goalBenefitsPlans.find(
       ({ plan, size }) =>
         plan === goalCalculation?.benefitsPlan &&
         size === goalCalculation?.familySize,

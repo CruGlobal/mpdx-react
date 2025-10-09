@@ -52,11 +52,8 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({
   const locale = useLocale();
   const localeText = useDataGridLocaleText();
   const { goalCalculationResult, goalTotals } = useGoalCalculator();
-  const {
-    goalBenefitsConstantMap,
-    goalMiscConstants,
-    goalGeographicConstantMap,
-  } = useGoalCalculatorConstants();
+  const constants = useGoalCalculatorConstants();
+  const { goalMiscConstants } = constants;
 
   const valueFormatter = useCallback(
     (value: number, row: MpdGoalRow) =>
@@ -70,11 +67,9 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({
     () =>
       calculateNewStaffGoalTotals(
         goalCalculationResult.data?.goalCalculation ?? null,
-        goalBenefitsConstantMap.values().toArray(),
-        goalMiscConstants,
-        goalGeographicConstantMap,
+        constants,
       ),
-    [goalCalculationResult, goalBenefitsConstantMap],
+    [goalCalculationResult, constants],
   );
 
   const goalCalculation = goalCalculationResult.data?.goalCalculation;
