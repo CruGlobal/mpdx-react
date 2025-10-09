@@ -3,6 +3,8 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
+import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { StaffAccountQuery } from '../StaffAccount.generated';
@@ -21,21 +23,37 @@ const mockStaffAccount = {
   },
 };
 
+const mockEnqueue = jest.fn();
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
+
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <GqlMockedProvider<{
-        StaffAccount: StaffAccountQuery;
-      }>
-        mocks={mockStaffAccount}
-        onCall={mutationSpy}
-      >
-        <MPRemindersReport
-          isNavListOpen={true}
-          onNavListToggle={onNavListToggle}
-          title={title}
-        />
-      </GqlMockedProvider>
+      <SnackbarProvider>
+        <TestRouter>
+          <GqlMockedProvider<{
+            StaffAccount: StaffAccountQuery;
+          }>
+            mocks={mockStaffAccount}
+            onCall={mutationSpy}
+          >
+            <MPRemindersReport
+              isNavListOpen={true}
+              onNavListToggle={onNavListToggle}
+              title={title}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
+      </SnackbarProvider>
     </LocalizationProvider>
   </ThemeProvider>
 );
@@ -72,5 +90,18 @@ describe('MPRemindersReport', () => {
     expect(getByTestId('ReportsFilterIcon')).toBeInTheDocument();
     userEvent.click(getByTestId('ReportsFilterIcon'));
     await waitFor(() => expect(onNavListToggle).toHaveBeenCalled());
+  });
+
+  it('should show saved snackbar when save is clicked', async () => {
+    mockEnqueue.mockClear();
+    const { getByRole } = render(<TestComponent />);
+
+    userEvent.click(getByRole('button', { name: 'Save' }));
+
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith('Changes saved', {
+        variant: 'success',
+      }),
+    );
   });
 });
