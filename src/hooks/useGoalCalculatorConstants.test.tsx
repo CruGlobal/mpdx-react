@@ -89,7 +89,7 @@ describe('useGoalCalculatorConstants', () => {
     });
 
     expect(result.current).toEqual({
-      goalBenefitsConstantMap: new Map(),
+      goalBenefitsPlans: [],
       goalMiscConstants: {},
       goalGeographicConstantMap: new Map(),
       loading: true,
@@ -114,32 +114,26 @@ describe('useGoalCalculatorConstants', () => {
 
     await waitFor(() => {
       expect(result.current).toEqual({
-        goalBenefitsConstantMap: new Map([
-          [
-            'SINGLE-SELECT',
-            {
-              __typename: 'MpdGoalBenefitsConstant',
-              id: '3d0a4925-214c-4e2e-b800-e97e31c727d8',
-              size: 'SINGLE',
-              sizeDisplayName: 'Single or spouse not staff',
-              plan: 'SELECT',
-              planDisplayName: 'Select',
-              cost: 1204.45,
-            },
-          ],
-          [
-            'MARRIED_NO_CHILDREN-BASE',
-            {
-              __typename: 'MpdGoalBenefitsConstant',
-              id: '317a7530-1313-4f6a-a756-00520a3c01a3',
-              size: 'MARRIED_NO_CHILDREN',
-              sizeDisplayName: 'Married with no children',
-              plan: 'BASE',
-              planDisplayName: 'Base',
-              cost: 1093.96,
-            },
-          ],
-        ]),
+        goalBenefitsPlans: [
+          {
+            __typename: 'MpdGoalBenefitsConstant',
+            id: '3d0a4925-214c-4e2e-b800-e97e31c727d8',
+            size: 'SINGLE',
+            sizeDisplayName: 'Single or spouse not staff',
+            plan: 'SELECT',
+            planDisplayName: 'Select',
+            cost: 1204.45,
+          },
+          {
+            __typename: 'MpdGoalBenefitsConstant',
+            id: '317a7530-1313-4f6a-a756-00520a3c01a3',
+            size: 'MARRIED_NO_CHILDREN',
+            sizeDisplayName: 'Married with no children',
+            plan: 'BASE',
+            planDisplayName: 'Base',
+            cost: 1093.96,
+          },
+        ],
         goalMiscConstants: {
           [MpdGoalMiscConstantCategoryEnum.Rates]: {
             [MpdGoalMiscConstantLabelEnum.AdminRate]: {
