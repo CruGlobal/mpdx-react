@@ -18,15 +18,17 @@ import {
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import { StyledHeaderBox } from '../MPGAIncomeExpensesReport/styledComponents';
-import { ScreenOnly } from '../SavingsFundTransfer/styledComponents/DisplayStyling';
 import { useStaffAccountQuery } from '../StaffAccount.generated';
 import { AccountInfoBox } from '../StaffExpenseReport/AccountInfoBox/AccountInfoBox';
 import { AccountInfoBoxSkeleton } from '../StaffExpenseReport/AccountInfoBox/AccountInfoBoxSkeleton';
 import {
+  SimplePrintOnly,
+  SimpleScreenOnly,
   StyledPrintButton,
 } from '../styledComponents';
 import { getReminderStatus } from './Helper/getReminderStatus';
 import { useMockQueryQuery } from './MockQuery.generated';
+import { PrintTable } from './Table/PrintTable';
 import { RemindersTable } from './Table/RemindersTable';
 import { ReminderData, ReminderStatusEnum } from './mockData';
 
@@ -91,19 +93,19 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
 
   return (
     <Box>
-      <ScreenOnly>
+      <SimpleScreenOnly>
         <MultiPageHeader
           isNavListOpen={isNavListOpen}
           onNavListToggle={onNavListToggle}
           headerType={HeaderTypeEnum.Report}
           title={title}
         />
-      </ScreenOnly>
+      </SimpleScreenOnly>
       <Box mt={2}>
         <Container>
           <StyledHeaderBox>
             <Typography variant="h4">{t('Online Reminder System')}</Typography>
-            <ScreenOnly>
+            <SimpleScreenOnly>
               <StyledPrintButton
                 startIcon={
                   <SvgIcon fontSize="small">
@@ -114,7 +116,7 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
               >
                 {t('Print')}
               </StyledPrintButton>
-            </ScreenOnly>
+            </SimpleScreenOnly>
           </StyledHeaderBox>
           {staffLoading ? (
             <AccountInfoBoxSkeleton />
@@ -128,7 +130,7 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
       </Box>
       <Box>
         <Container>
-          <ScreenOnly>
+          <SimpleScreenOnly>
             <Typography variant="body1" mt={4} mb={2}>
               {t(
                 'You can now change the reminder status of any of your ministry partners online! Your current list and related information is displayed below. To change the reminder status of any of your ministry partners, use the drop-down boxes in the "Change Reminder Status" column. When you\'re done click the "Save" button at the bottom of the page.',
@@ -160,31 +162,36 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
                 .
               </Typography>
             </Typography>
-          </ScreenOnly>
+          </SimpleScreenOnly>
           <Box sx={{ mb: 2 }}>
-            <RemindersTable
-              data={transformedData}
-              loading={mockLoading}
-              hasNextPage={
-                mockQueryData?.contacts?.pageInfo?.hasNextPage ?? false
-              }
-              endCursor={mockQueryData?.contacts?.pageInfo?.endCursor ?? ''}
-              fetchMore={fetchMore}
-            />
+            <SimpleScreenOnly>
+              <RemindersTable
+                data={transformedData}
+                loading={mockLoading}
+                hasNextPage={
+                  mockQueryData?.contacts?.pageInfo?.hasNextPage ?? false
+                }
+                endCursor={mockQueryData?.contacts?.pageInfo?.endCursor ?? ''}
+                fetchMore={fetchMore}
+              />
+            </SimpleScreenOnly>
+            <SimplePrintOnly>
+              <PrintTable data={transformedData} />
+            </SimplePrintOnly>
           </Box>
-          <Box sx={{ mb: 4 }}>
+          <Box sx={{ mb: 3 }}>
             <Typography>
               <strong>{t('Number of Ministry Partners: ')}</strong>
               {mockQueryData?.contacts?.totalCount}
             </Typography>
           </Box>
-          <ScreenOnly>
+          <SimpleScreenOnly>
             <Box sx={{ mb: 4 }}>
               <Button variant="contained" onClick={handleSave}>
                 {t('Save')}
               </Button>
             </Box>
-          </ScreenOnly>
+          </SimpleScreenOnly>
         </Container>
       </Box>
     </Box>

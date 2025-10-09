@@ -17,8 +17,8 @@ const TestComponent: React.FC = () => (
     <VirtuosoMockContext.Provider
       value={{ viewportHeight: 300, itemHeight: 100 }}
     >
-    <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <GqlMockedProvider onCall={mutationSpy}>
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <GqlMockedProvider onCall={mutationSpy}>
           <RemindersTable
             data={mockData}
             loading={false}
@@ -26,8 +26,8 @@ const TestComponent: React.FC = () => (
             endCursor=""
             fetchMore={mockFetchMore}
           />
-      </GqlMockedProvider>
-    </LocalizationProvider>
+        </GqlMockedProvider>
+      </LocalizationProvider>
     </VirtuosoMockContext.Provider>
   </ThemeProvider>
 );
@@ -76,5 +76,32 @@ describe('RemindersTable', () => {
 
     await userEvent.click(option);
     expect(select[0]).toHaveTextContent('Monthly');
+  });
+
+  it('should render empty table message when no data available', () => {
+    const { getByText } = render(
+      <ThemeProvider theme={theme}>
+        <VirtuosoMockContext.Provider
+          value={{ viewportHeight: 300, itemHeight: 100 }}
+        >
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <GqlMockedProvider onCall={mutationSpy}>
+              <RemindersTable
+                data={[]}
+                loading={false}
+                hasNextPage={false}
+                endCursor=""
+                fetchMore={mockFetchMore}
+              />
+            </GqlMockedProvider>
+          </LocalizationProvider>
+        </VirtuosoMockContext.Provider>
+      </ThemeProvider>,
+    );
+
+    expect(getByText('No ministry partners to display')).toBeInTheDocument();
+    expect(
+      getByText('Add a ministry partner to get started'),
+    ).toBeInTheDocument();
   });
 });
