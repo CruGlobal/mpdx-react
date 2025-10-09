@@ -79,11 +79,31 @@ const TestComponent: React.FC<TestComponentProps> = ({
                                     averagePerMonth: -50,
                                     breakdownByMonth: [
                                       {
-                                        month: '2025-01-01',
-                                        total: -100,
+                                        month: '2020-01-01',
+                                        total: -200,
+                                        transactions: [
+                                          {
+                                            id: 'transaction-1',
+                                            amount: -100,
+                                            transactedAt: '2020-01-15',
+                                            description: 'Star Wars Costume',
+                                          },
+                                          {
+                                            id: 'transaction-2',
+                                            amount: -100,
+                                            transactedAt: '2020-01-24',
+                                          },
+
+                                          {
+                                            id: 'transaction-3',
+                                            amount: 50,
+                                            transactedAt: '2020-02-15',
+                                            description: 'Credit Card Fee',
+                                          },
+                                        ],
                                       },
                                       {
-                                        month: '2025-02-01',
+                                        month: '2020-02-01',
                                         total: -100,
                                       },
                                     ],
@@ -91,28 +111,75 @@ const TestComponent: React.FC<TestComponentProps> = ({
                                   {
                                     subCategory:
                                       StaffExpensesSubCategoryEnum.CreditCardFee,
-                                    total: -100,
-                                    averagePerMonth: -50,
+                                    total: 150,
+                                    averagePerMonth: 75,
                                     breakdownByMonth: [
                                       {
-                                        month: '2025-01-01',
-                                        total: -50,
+                                        month: '2020-01-01',
+                                        total: 50,
                                       },
                                       {
-                                        month: '2025-02-01',
-                                        total: -50,
+                                        month: '2020-02-01',
+                                        total: 50,
+                                        transactions: [
+                                          {
+                                            id: 'transaction-3',
+                                            amount: 50,
+                                            transactedAt: '2020-02-15',
+                                            description: 'Credit Card Fee',
+                                          },
+                                        ],
                                       },
                                     ],
                                   },
                                 ],
                                 breakdownByMonth: [
                                   {
-                                    month: '2025-01-01',
+                                    month: '2020-01-01',
                                     total: -150,
                                   },
                                   {
-                                    month: '2025-02-01',
+                                    month: '2020-02-01',
                                     total: -150,
+                                  },
+                                ],
+                              },
+                            ],
+                          },
+                          {
+                            fundType: 'Savings',
+                            total: -100,
+                            categories: [
+                              {
+                                category: StaffExpenseCategoryEnum.Assessment,
+                                total: -100,
+                                averagePerMonth: -50,
+                                subcategories: [
+                                  {
+                                    subCategory:
+                                      StaffExpensesSubCategoryEnum.BenefitsOther,
+                                    total: -100,
+                                    averagePerMonth: -50,
+                                    breakdownByMonth: [
+                                      {
+                                        month: '2020-01-01',
+                                        total: -100,
+                                        transactions: [
+                                          {
+                                            id: 'transaction-savings-1',
+                                            amount: -100,
+                                            transactedAt: '2020-01-10',
+                                            description: 'Savings Expense',
+                                          },
+                                        ],
+                                      },
+                                    ],
+                                  },
+                                ],
+                                breakdownByMonth: [
+                                  {
+                                    month: '2020-01-01',
+                                    total: -100,
                                   },
                                 ],
                               },
@@ -172,5 +239,37 @@ describe('StaffExpenseReport', () => {
     const { getByRole, getByText } = render(<TestComponent />);
     userEvent.click(getByRole('button', { name: 'Previous Month' }));
     expect(getByText('December 2019')).toBeInTheDocument();
+  });
+
+  it('correctly displays totals for income and expenses', async () => {
+    const { getAllByRole, queryByRole } = render(<TestComponent />);
+
+    // Header row and 2 expense transaction rows
+    await waitFor(() => {
+      expect(getAllByRole('row')).toHaveLength(3);
+    });
+
+    expect(queryByRole('heading', { name: 'Income' })).not.toBeInTheDocument();
+  });
+
+  it('switches fund display when clicking View Account button', async () => {
+    const { findByRole, findByText, getAllByRole } = render(<TestComponent />);
+
+    await findByRole('heading', { name: 'Primary' });
+    expect(await findByText('Currently Viewing')).toBeInTheDocument();
+
+    waitFor(() => {
+      expect(getAllByRole('row')).toHaveLength(3);
+    });
+
+    userEvent.click(
+      await findByRole('button', {
+        name: 'View Account',
+      }),
+    );
+
+    waitFor(() => {
+      expect(getAllByRole('row')).toHaveLength(2);
+    });
   });
 });

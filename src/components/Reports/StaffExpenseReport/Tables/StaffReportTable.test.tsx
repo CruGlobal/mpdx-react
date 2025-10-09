@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { TableType } from '../Helpers/StaffReportEnum';
+import { ReportType } from '../Helpers/StaffReportEnum';
 import { StaffReportTable, StaffReportTableProps } from './StaffReportTable';
 
 const mutationSpy = jest.fn();
@@ -27,21 +27,23 @@ const TestComponent: React.FC<TestComponentProps> = ({ tableProps }) => (
       <StaffReportTable
         transactions={[
           {
+            id: '1',
             fundType: 'Primary',
             category: StaffExpenseCategoryEnum.AdditionalSalary,
-            month: '2025-01-01',
-            total: -100,
+            transactedAt: '2025-01-01',
+            amount: -100,
             displayCategory: 'Additional Salary',
           },
           {
+            id: '2',
             fundType: 'Primary',
             category: StaffExpenseCategoryEnum.Transfer,
-            month: '2025-02-01',
-            total: -50,
+            transactedAt: '2025-02-01',
+            amount: -50,
             displayCategory: 'Transfer',
           },
         ]}
-        tableType={TableType.Expenses}
+        tableType={ReportType.Expense}
         transferTotal={0}
         emptyPlaceholder={<span>Empty Table</span>}
         {...tableProps}
@@ -85,7 +87,7 @@ describe('StaffReportTable', () => {
     const { findByText } = render(
       <StaffReportTable
         transactions={[]}
-        tableType={TableType.Expenses}
+        tableType={ReportType.Expense}
         transferTotal={0}
         emptyPlaceholder={<span>Empty Table</span>}
       />,

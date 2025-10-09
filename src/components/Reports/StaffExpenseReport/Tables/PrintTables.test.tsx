@@ -5,7 +5,7 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { ReportsStaffExpensesQuery } from '../GetStaffExpense.generated';
-import { TableType } from '../Helpers/StaffReportEnum';
+import { ReportType } from '../Helpers/StaffReportEnum';
 import { PrintTables, PrintTablesProps } from './PrintTables';
 
 const mutationSpy = jest.fn();
@@ -57,15 +57,16 @@ const TestComponent: React.FC<TestComponentProps> = ({ tableProps }) => (
       <PrintTables
         transactions={[
           {
+            id: '1',
             fundType: 'Primary',
-            month: '2025-01-01',
+            transactedAt: '2025-01-01',
             category: StaffExpenseCategoryEnum.Transfer,
             displayCategory: 'Transfer - Other',
-            total: -100,
+            amount: -100,
           },
         ]}
         transactionTotal={0}
-        type={TableType.Expenses}
+        type={ReportType.Expense}
         {...tableProps}
       />
     </GqlMockedProvider>
@@ -79,7 +80,7 @@ describe('PrintTables', () => {
     expect(
       await findByRole('columnheader', { name: 'Date' }),
     ).toBeInTheDocument();
-    expect(getByRole('cell', { name: '2025-01-01' })).toBeInTheDocument();
+    expect(getByRole('cell', { name: 'Jan 1, 2025' })).toBeInTheDocument();
     expect(
       await findByRole('columnheader', { name: 'Description' }),
     ).toBeInTheDocument();
@@ -97,7 +98,7 @@ describe('PrintTables', () => {
       <PrintTables
         transactions={[]}
         transactionTotal={0}
-        type={TableType.Expenses}
+        type={ReportType.Expense}
       />,
     );
 
