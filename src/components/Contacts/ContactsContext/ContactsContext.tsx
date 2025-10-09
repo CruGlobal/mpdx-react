@@ -24,6 +24,7 @@ import {
   TableViewModeEnum,
 } from '../../Shared/Header/ListHeader';
 import { Coordinates } from '../ContactsMap/coordinates';
+import { preExistingFilters } from './preExistingFilters';
 
 export type ContactsType = {
   accountListId: string | undefined;
@@ -65,7 +66,7 @@ export const parseSavedFilters = (
   filterData: ContactFiltersQuery | undefined,
   accountListId: string | undefined,
 ): UserOptionFragment[] => {
-  return (
+  const userSavedFilters =
     filterData?.userOptions.filter((option) => {
       let parsedJson: Record<string, string>;
       try {
@@ -81,8 +82,9 @@ export const parseSavedFilters = (
           (parsedJson.accountListId === accountListId &&
             !parsedJson.account_list_id))
       );
-    }) ?? []
-  );
+    }) ?? [];
+
+  return [...preExistingFilters(accountListId || ''), ...userSavedFilters];
 };
 
 export const ContactsProvider: React.FC<ContactsContextProps> = ({
