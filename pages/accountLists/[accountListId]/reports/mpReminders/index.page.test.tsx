@@ -1,5 +1,6 @@
 import { ThemeProvider } from '@emotion/react';
 import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
@@ -24,16 +25,18 @@ const mockStaffAccount = {
 
 const Components = () => (
   <ThemeProvider theme={theme}>
-    <TestRouter>
-      <GqlMockedProvider<{
-        StaffAccount: StaffAccountQuery;
-      }>
-        mocks={mockStaffAccount}
-        onCall={mutationSpy}
-      >
-        <MPRemindersReportPage />
-      </GqlMockedProvider>
-    </TestRouter>
+    <SnackbarProvider>
+      <TestRouter>
+        <GqlMockedProvider<{
+          StaffAccount: StaffAccountQuery;
+        }>
+          mocks={mockStaffAccount}
+          onCall={mutationSpy}
+        >
+          <MPRemindersReportPage />
+        </GqlMockedProvider>
+      </TestRouter>
+    </SnackbarProvider>
   </ThemeProvider>
 );
 
