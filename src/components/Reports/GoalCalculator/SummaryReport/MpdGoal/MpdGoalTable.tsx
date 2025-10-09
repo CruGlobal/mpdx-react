@@ -3,6 +3,7 @@ import { styled } from '@mui/material/styles';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import { PrimaryBudgetCategoryEnum } from 'src/graphql/types.generated';
+import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import { useLocale } from 'src/hooks/useLocale';
 import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
@@ -47,6 +48,7 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({
   const locale = useLocale();
   const localeText = useDataGridLocaleText();
   const { goalCalculationResult, goalTotals } = useGoalCalculator();
+  const { goalMiscConstants } = useGoalCalculatorConstants();
 
   const supportRemaining = goalTotals.overallTotal - supportRaised;
   const supportRaisedPercentage = supportRaised / goalTotals.overallTotal;
@@ -280,13 +282,23 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({
       },
       {
         line: '6',
-        category: t('Subtotal with 12% admin charge'),
+        category: t('Subtotal with 12% admin charge', {
+          admin: percentageFormat(
+            goalMiscConstants.RATES?.ADMIN_RATE?.fee ?? 0,
+            locale,
+          ),
+        }),
         amount: goalTotals.overallSubtotalWithAdmin,
         reference: 11618.9,
       },
       {
         line: '7',
-        category: t('Total Goal (line 16 x 1.06 attrition)'),
+        category: t('Total Goal (line 6 with {{attrition}} attrition)', {
+          attrition: percentageFormat(
+            goalMiscConstants.RATES?.ATTRITION_RATE?.fee ?? 0,
+            locale,
+          ),
+        }),
         amount: goalTotals.overallTotal,
         reference: 12316.03,
       },
@@ -314,6 +326,7 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({
     t,
     goalCalculation,
     goalTotals,
+    goalMiscConstants,
     supportRaised,
     supportRemaining,
     supportRaisedPercentage,
