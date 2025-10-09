@@ -78,14 +78,6 @@ const FAMILY_SIZE_BASE_SALARY = {
   6: 1.0,
 } as const;
 
-/** The only ages taken into consideration are under 30 and 40+ */
-const AGE_COLUMNS: Record<GoalCalculationAge, number> = {
-  [GoalCalculationAge.UnderThirty]: 0,
-  [GoalCalculationAge.ThirtyToThirtyFour]: 0,
-  [GoalCalculationAge.ThirtyFiveToThirtyNine]: 0,
-  [GoalCalculationAge.OverForty]: 3,
-};
-
 const getBaseMultiplier = (goalCalculation: GoalCalculation): number => {
   const single = !hasStaffSpouse(goalCalculation?.familySize);
 
@@ -100,7 +92,9 @@ const getBaseMultiplier = (goalCalculation: GoalCalculation): number => {
   }
 
   const ageIncrement = single ? 0.3 : 0.1;
-  const ageColumn = goalCalculation?.age ? AGE_COLUMNS[goalCalculation.age] : 0;
+  // The only age columns used from the data table are under 30 and 40+
+  const ageColumn =
+    goalCalculation?.age === GoalCalculationAge.OverForty ? 3 : 0;
   return baseSalary + ageIncrement * ageColumn;
 };
 
