@@ -6,14 +6,14 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
-import { TableType } from '../Helpers/StaffReportEnum';
+import { ReportType } from '../Helpers/StaffReportEnum';
 import { Transaction } from '../StaffExpenseReport';
 
 type RenderCell = GridColDef<StaffReportRow>['renderCell'];
 
 export interface StaffReportTableProps {
   transactions: Transaction[];
-  tableType: TableType;
+  tableType: ReportType;
   transferTotal: number;
   emptyPlaceholder: React.ReactElement;
   loading?: boolean;
@@ -59,9 +59,9 @@ export const createStaffReportRow = (
   index: number,
 ): StaffReportRow => ({
   id: index.toString(),
-  date: DateTime.fromISO(transaction.month),
+  date: DateTime.fromISO(transaction.transactedAt),
   description: transaction.displayCategory,
-  amount: transaction.total,
+  amount: transaction.amount,
 });
 
 export const StaffReportTable: React.FC<StaffReportTableProps> = ({
@@ -77,7 +77,7 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
 
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
-    pageSize: 5,
+    pageSize: 10,
   });
 
   const staffReportRows = useMemo(() => {
@@ -97,13 +97,6 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
   );
 
   const amount: RenderCell = ({ row }) => {
-    const isExpense = tableType === TableType.Expenses && row.amount < 0;
-    const isIncome = tableType === TableType.Income && row.amount > 0;
-
-    if (!isExpense && !isIncome) {
-      return null;
-    }
-
     return (
       <Typography variant="body2" noWrap>
         {currencyFormat(row.amount, 'USD', locale)}
@@ -152,7 +145,7 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
         justifyContent="space-between"
         mb={1}
       >
-        {tableType === TableType.Income ? (
+        {tableType === ReportType.Income ? (
           <Typography variant="h6" mb={1}>
             {t('Income')}
           </Typography>
@@ -169,12 +162,7 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
         sortingOrder={['desc', 'asc']}
         sortModel={sortModel}
         onSortModelChange={(size) => setSortModel(size)}
-        pageSizeOptions={[
-          5,
-          10,
-          25,
-          { label: 'All', value: staffReportRows.length },
-        ]}
+        pageSizeOptions={[10, 25, 100]}
         paginationModel={paginationModel}
         onPaginationModelChange={(model) => setPaginationModel(model)}
         disableRowSelectionOnClick
@@ -182,7 +170,7 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
         disableColumnMenu
       />
       <Box display="flex" justifyContent="flex-end" mt={2} mb={2} mr={8.5}>
-        {tableType === TableType.Income ? (
+        {tableType === ReportType.Income ? (
           <Typography fontWeight="bold">
             {t('Total Income:')}{' '}
             <span style={{ color: theme.palette.success.main }}>
