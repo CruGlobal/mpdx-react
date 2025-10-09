@@ -9,6 +9,7 @@ import {
   Typography,
 } from '@mui/material';
 import { DateTime } from 'luxon';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import {
   HeaderTypeEnum,
@@ -19,7 +20,11 @@ import theme from 'src/theme';
 import { StyledHeaderBox } from '../MPGAIncomeExpensesReport/styledComponents';
 import { ScreenOnly } from '../SavingsFundTransfer/styledComponents/DisplayStyling';
 import { useStaffAccountQuery } from '../StaffAccount.generated';
-import { StyledPrintButton } from '../styledComponents';
+import { AccountInfoBox } from '../StaffExpenseReport/AccountInfoBox/AccountInfoBox';
+import { AccountInfoBoxSkeleton } from '../StaffExpenseReport/AccountInfoBox/AccountInfoBoxSkeleton';
+import {
+  StyledPrintButton,
+} from '../styledComponents';
 import { getReminderStatus } from './Helper/getReminderStatus';
 import { useMockQueryQuery } from './MockQuery.generated';
 import { RemindersTable } from './Table/RemindersTable';
@@ -38,8 +43,10 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
 }) => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
+  const { enqueueSnackbar } = useSnackbar();
 
-  const { data: staffAccountData } = useStaffAccountQuery({});
+  const { data: staffAccountData, loading: staffLoading } =
+    useStaffAccountQuery({});
   const {
     data: mockQueryData,
     loading: mockLoading,
@@ -50,6 +57,10 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
 
   const handlePrint = () => {
     window.print();
+  };
+
+  const handleSave = () => {
+    enqueueSnackbar(t('Changes saved'), { variant: 'success' });
   };
 
   const sortedData = mockQueryData?.contacts?.nodes.toSorted((a, b) =>
@@ -105,10 +116,14 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
               </StyledPrintButton>
             </ScreenOnly>
           </StyledHeaderBox>
-          <Box display="flex" flexDirection="row" gap={3} mb={2}>
-            <Typography>{staffAccountData?.staffAccount?.name}</Typography>
-            <Typography>{staffAccountData?.staffAccount?.id}</Typography>
-          </Box>
+          {staffLoading ? (
+            <AccountInfoBoxSkeleton />
+          ) : (
+            <AccountInfoBox
+              name={staffAccountData?.staffAccount?.name}
+              accountId={staffAccountData?.staffAccount?.id}
+            />
+          )}
         </Container>
       </Box>
       <Box>
@@ -165,7 +180,9 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
           </Box>
           <ScreenOnly>
             <Box sx={{ mb: 4 }}>
-              <Button variant="contained">{t('Save')}</Button>
+              <Button variant="contained" onClick={handleSave}>
+                {t('Save')}
+              </Button>
             </Box>
           </ScreenOnly>
         </Container>
