@@ -3,6 +3,7 @@ import {
   MpdGoalBenefitsConstantSizeEnum,
   PrimaryBudgetCategoryEnum,
 } from 'src/graphql/types.generated';
+import { GoalMiscConstants } from 'src/hooks/useGoalCalculatorConstants';
 import { BudgetFamilyFragment } from './GoalCalculation.generated';
 import type { ListGoalCalculationFragment } from '../GoalsList/GoalCalculations.generated';
 
@@ -38,6 +39,7 @@ export interface GoalTotals {
 export const calculateGoalTotals = (
   goalCalculation: ListGoalCalculationFragment | null,
   benefitsPlans: Array<Pick<MpdGoalBenefitsConstant, 'size' | 'plan' | 'cost'>>,
+  miscConstants: GoalMiscConstants,
 ): GoalTotals => {
   const married = hasStaffSpouse(goalCalculation?.familySize);
   const netPaycheckAmount = goalCalculation?.netPaycheckAmount ?? 0;
@@ -100,8 +102,11 @@ export const calculateGoalTotals = (
     )?.cost ?? 0;
   const overallSubtotal =
     grossMonthlySalary + ministryExpensesTotal + benefitsCharge;
-  const overallSubtotalWithAdmin = overallSubtotal / 0.88;
-  const attrition = overallSubtotalWithAdmin * 0.06;
+
+  const adminRate = miscConstants.RATES?.ADMIN_RATE?.fee ?? 0;
+  const attritionRate = miscConstants.RATES?.ATTRITION_RATE?.fee ?? 0;
+  const overallSubtotalWithAdmin = overallSubtotal / (1 - adminRate);
+  const attrition = overallSubtotalWithAdmin * attritionRate;
   const overallTotal = overallSubtotalWithAdmin + attrition;
 
   return {

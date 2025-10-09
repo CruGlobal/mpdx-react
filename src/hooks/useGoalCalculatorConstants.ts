@@ -6,7 +6,10 @@ import {
   MpdGoalMiscConstantCategoryEnum,
   MpdGoalMiscConstantLabelEnum,
 } from 'src/graphql/types.generated';
-import { useGoalCalculatorConstantsQuery } from './goalCalculatorConstants.generated';
+import {
+  GoalCalculatorConstantsQuery,
+  useGoalCalculatorConstantsQuery,
+} from './goalCalculatorConstants.generated';
 
 export type GoalBenefitsConstantMap = Map<
   string,
@@ -40,49 +43,53 @@ interface FormattedConstants {
   goalBenefitsConstantMap: GoalBenefitsConstantMap;
   goalMiscConstants: GoalMiscConstants;
   goalGeographicConstantMap: GoalGeographicConstantMap;
-  loading: boolean;
-  error: ApolloError | undefined;
 }
 
-export const useGoalCalculatorConstants = (): FormattedConstants => {
-  const { data, error } = useGoalCalculatorConstantsQuery({
-    fetchPolicy: 'cache-first',
+export const formatConstants = (
+  constant: GoalCalculatorConstantsQuery['constant'] | undefined,
+): FormattedConstants => {
+  const goalBenefitsConstantMap: GoalBenefitsConstantMap = new Map();
+  constant?.mpdGoalBenefitsConstants.forEach((constant) => {
+    const { plan, size } = constant;
+    goalBenefitsConstantMap.set(`${size}-${plan}`, constant);
   });
 
-  const goalBenefitsConstantMap = useMemo(() => {
-    const map: GoalBenefitsConstantMap = new Map();
-    data?.constant.mpdGoalBenefitsConstants?.forEach((constant) => {
-      const { plan, size } = constant;
-      map.set(`${size}-${plan}`, constant);
-    });
-    return map;
-  }, [data?.constant.mpdGoalBenefitsConstants]);
+  const goalMiscConstants: GoalMiscConstants = {};
+  constant?.mpdGoalMiscConstants.forEach((constant) => {
+    const { category, label } = constant;
+    goalMiscConstants[category] ||= {};
+    goalMiscConstants[category][label] = constant;
+  });
 
-  const goalMiscConstants = useMemo(() => {
-    const miscObject: GoalMiscConstants = {};
-    data?.constant.mpdGoalMiscConstants?.forEach((constant) => {
-      const { category, label } = constant;
-      miscObject[category] ||= {};
-      miscObject[category][label] = constant;
-    });
-    return miscObject;
-  }, [data?.constant.mpdGoalMiscConstants]);
-
-  const goalGeographicConstantMap = useMemo(() => {
-    const map: GoalGeographicConstantMap = new Map();
-
-    data?.constant.mpdGoalGeographicConstants?.forEach((constant) => {
-      const { location, percentageMultiplier } = constant;
-      map.set(location, percentageMultiplier ?? 0);
-    });
-    return map;
-  }, [data?.constant.mpdGoalGeographicConstants]);
+  const goalGeographicConstantMap: GoalGeographicConstantMap = new Map();
+  constant?.mpdGoalGeographicConstants.forEach((constant) => {
+    const { location, percentageMultiplier } = constant;
+    goalGeographicConstantMap.set(location, percentageMultiplier);
+  });
 
   return {
     goalBenefitsConstantMap,
     goalMiscConstants,
     goalGeographicConstantMap,
-    error,
-    loading: !data,
   };
 };
+
+interface UseGoalCalculatorConstantsResult extends FormattedConstants {
+  loading: boolean;
+  error: ApolloError | undefined;
+}
+
+export const useGoalCalculatorConstants =
+  (): UseGoalCalculatorConstantsResult => {
+    const { data, error } = useGoalCalculatorConstantsQuery({
+      fetchPolicy: 'cache-first',
+    });
+
+    const constants = useMemo(() => formatConstants(data?.constant), [data]);
+
+    return {
+      ...constants,
+      error,
+      loading: !data,
+    };
+  };

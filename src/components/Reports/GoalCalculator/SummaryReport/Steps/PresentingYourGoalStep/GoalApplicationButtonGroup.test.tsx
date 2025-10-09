@@ -54,7 +54,7 @@ describe('GoalApplicationButtonGroup', () => {
         input: {
           attributes: {
             id: 'account-list-1',
-            settings: { monthlyGoal: 13838 },
+            settings: { monthlyGoal: 16139 },
           },
           id: 'account-list-1',
         },
@@ -62,7 +62,7 @@ describe('GoalApplicationButtonGroup', () => {
     );
 
     expect(
-      await findByText('Successfully updated your monthly goal to $13,838!'),
+      await findByText('Successfully updated your monthly goal to $16,139!'),
     ).toBeInTheDocument();
   });
 });

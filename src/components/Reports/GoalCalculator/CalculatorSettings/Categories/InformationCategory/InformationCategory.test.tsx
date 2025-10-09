@@ -39,7 +39,9 @@ const TestComponent: React.FC<TestComponentProps> = ({ single = false }) => (
             : MpdGoalBenefitsConstantSizeEnum.MarriedNoChildren,
         },
       },
-      GoalCalculatorConstants: constantsMock,
+      GoalCalculatorConstants: {
+        constant: constantsMock,
+      },
       GetUser: {
         user: {
           avatar: 'avatar.jpg',
@@ -136,7 +138,7 @@ describe('InformationCategory', () => {
 
       userEvent.click(input);
       userEvent.click(
-        getByRole('option', { name: 'Single or spouse not staff' }),
+        getByRole('option', { name: 'Married with 1-2 children' }),
       );
 
       await waitFor(() =>
@@ -183,9 +185,9 @@ describe('InformationCategory', () => {
       const { getByRole } = render(<TestComponent />);
 
       const input = getByRole('combobox', { name: 'Years on Staff' });
-      await waitFor(() => expect(input).toHaveTextContent('5-9'));
+      await waitFor(() => expect(input).toHaveTextContent('10-14'));
       userEvent.click(input);
-      userEvent.click(getByRole('option', { name: '10-14' }));
+      userEvent.click(getByRole('option', { name: '5-9' }));
 
       await waitFor(() =>
         expect(mutationSpy).toHaveGraphqlOperation('UpdateGoalCalculation', {
@@ -193,7 +195,7 @@ describe('InformationCategory', () => {
             accountListId: 'account-list-1',
             attributes: {
               id: 'goal-calculation-1',
-              yearsOnStaff: 10,
+              yearsOnStaff: 5,
             },
           },
         }),
@@ -204,9 +206,9 @@ describe('InformationCategory', () => {
       const { getByRole } = render(<TestComponent />);
 
       const input = getByRole('combobox', { name: 'Age' });
-      await waitFor(() => expect(input).toHaveTextContent('Under 30'));
+      await waitFor(() => expect(input).toHaveTextContent('30-34'));
       userEvent.click(input);
-      userEvent.click(getByRole('option', { name: '30-34' }));
+      userEvent.click(getByRole('option', { name: 'Under 30' }));
 
       await waitFor(() =>
         expect(mutationSpy).toHaveGraphqlOperation('UpdateGoalCalculation', {
@@ -214,7 +216,7 @@ describe('InformationCategory', () => {
             accountListId: 'account-list-1',
             attributes: {
               id: 'goal-calculation-1',
-              age: GoalCalculationAge.ThirtyToThirtyFour,
+              age: GoalCalculationAge.UnderThirty,
             },
           },
         }),
