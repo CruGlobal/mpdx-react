@@ -187,16 +187,19 @@ export const calculateNewStaffGoalTotals = (
   goalCalculation: GoalCalculation,
   constants: FormattedConstants,
 ): GoalTotals => {
+  const married = hasStaffSpouse(goalCalculation?.familySize);
   const uncappedBase = getUncappedBase(
     goalCalculation,
     goalCalculation?.yearsOnStaff ?? 0,
     constants,
   );
-  const spouseUncappedBase = getUncappedBase(
-    goalCalculation,
-    goalCalculation?.spouseYearsOnStaff ?? 0,
-    constants,
-  );
+  const spouseUncappedBase = married
+    ? getUncappedBase(
+        goalCalculation,
+        goalCalculation?.spouseYearsOnStaff ?? 0,
+        constants,
+      )
+    : 0;
   const totalUncappedBase = uncappedBase + spouseUncappedBase;
 
   const salaryCap = getSalaryCap(goalCalculation, constants);

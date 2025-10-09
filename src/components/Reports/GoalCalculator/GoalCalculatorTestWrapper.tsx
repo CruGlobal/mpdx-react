@@ -171,6 +171,9 @@ export const constantsMock = gqlMock<
           cost: 3219.27,
         },
       ],
+      mpdGoalGeographicConstants: [
+        { location: 'Orlando, FL', percentageMultiplier: 0.06 },
+      ],
       mpdGoalMiscConstants: [
         {
           category: MpdGoalMiscConstantCategoryEnum.Rates,
