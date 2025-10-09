@@ -192,7 +192,10 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
       // Parse from string to json object
       const parsedFilter = JSON.parse(filter.value);
 
-      if (filter.key?.includes('graphql_')) {
+      if (
+        filter.key?.includes('graphql_') ||
+        filter.key?.includes('saved_contacts_filter_')
+      ) {
         // Clear current filters
         clearSelectedFilter();
         // Filter out accountListId from filter
@@ -647,21 +650,26 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                               )
                               .replaceAll('_', ' ');
 
+                            const isPrewrittenFilter =
+                              filter.id.startsWith('prewritten-filter-');
+
                             return (
                               <ListItem
                                 key={filter.id}
                                 button
                                 secondaryAction={
-                                  <IconButton
-                                    edge="end"
-                                    aria-label={t('Delete')}
-                                    data-testid="deleteSavedFilter"
-                                    onClick={() =>
-                                      handleDeleteSavedFilter(filter)
-                                    }
-                                  >
-                                    <DeleteIcon />
-                                  </IconButton>
+                                  !isPrewrittenFilter ? (
+                                    <IconButton
+                                      edge="end"
+                                      aria-label={t('Delete')}
+                                      data-testid="deleteSavedFilter"
+                                      onClick={() =>
+                                        handleDeleteSavedFilter(filter)
+                                      }
+                                    >
+                                      <DeleteIcon />
+                                    </IconButton>
+                                  ) : undefined
                                 }
                               >
                                 <ListItemText
