@@ -44,6 +44,7 @@ import {
 } from '../styledComponents';
 import { BalanceCard } from './BalanceCard/BalanceCard';
 import { BalanceCardSkeleton } from './BalanceCard/BalanceCardSkeleton';
+import { PrintHeader } from './BalanceCard/PrintHeader';
 import { DownloadButtonGroup } from './DownloadButtonGroup/DownloadButtonGroup';
 import { useReportsStaffExpensesQuery } from './GetStaffExpense.generated';
 import { TableType } from './Helpers/StaffReportEnum';
@@ -346,10 +347,10 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                         }
                         iconBgColor={
                           fund.fundType === 'Primary'
-                            ? '#FF9800'
+                            ? theme.palette.chartOrange.main
                             : fund.fundType === 'Savings'
-                              ? '#90CAF9'
-                              : '#588C87'
+                              ? theme.palette.chartBlueDark.main
+                              : theme.palette.chartBlue.main
                         }
                         title={fund.fundType}
                         isSelected={selectedFundType === fund.fundType}
@@ -371,47 +372,27 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
             <SimplePrintOnly>
               <Box>
                 {selectedFundType && (
-                  <>
-                    <Typography variant="h6" mb={0}>
-                      {t('{{fundType}}', {
-                        fundType: selectedFundType,
-                      }).toUpperCase()}
-                    </Typography>
-                    <Typography>
-                      {t('Starting Balance: ${{balance}}', {
-                        balance: data?.reportsStaffExpenses.startBalance
-                          ? data.reportsStaffExpenses.startBalance.toLocaleString(
-                              locale,
-                            )
-                          : '0',
-                      })}
-                    </Typography>
-                    <Typography>
-                      {t('+ Transfers in: ${{transfersIn}}', {
-                        transfersIn:
-                          transferTotals[selectedFundType]?.in.toLocaleString(
-                            locale,
-                          ) ?? '0',
-                      })}
-                    </Typography>
-                    <Typography>
-                      {t('- Transfers out: ${{transfersOut}}', {
-                        transfersOut:
-                          Math.abs(
-                            transferTotals[selectedFundType]?.out,
-                          ).toLocaleString(locale) ?? '0',
-                      })}
-                    </Typography>
-                    <Typography>
-                      {t('Ending Balance: ${{balance}}', {
-                        balance: data?.reportsStaffExpenses.endBalance
-                          ? data.reportsStaffExpenses.endBalance.toLocaleString(
-                              locale,
-                            )
-                          : '0',
-                      })}
-                    </Typography>
-                  </>
+                  <PrintHeader
+                    icon={
+                      selectedFundType === 'Primary'
+                        ? Wallet
+                        : selectedFundType === 'Savings'
+                          ? Savings
+                          : Groups
+                    }
+                    iconColor={
+                      selectedFundType === 'Primary'
+                        ? theme.palette.chartOrange.main
+                        : selectedFundType === 'Savings'
+                          ? theme.palette.chartBlueDark.main
+                          : theme.palette.chartBlue.main
+                    }
+                    title={selectedFundType}
+                    startBalance={data?.reportsStaffExpenses.startBalance ?? 0}
+                    endBalance={data?.reportsStaffExpenses.endBalance ?? 0}
+                    transfersIn={transferTotals[selectedFundType]?.in ?? 0}
+                    transfersOut={transferTotals[selectedFundType]?.out ?? 0}
+                  />
                 )}
               </Box>
             </SimplePrintOnly>
