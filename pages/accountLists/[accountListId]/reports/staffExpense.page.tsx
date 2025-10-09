@@ -6,12 +6,13 @@ import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
+import { NoStaffAccount } from 'src/components/Reports/Shared/NoStaffAccount/NoStaffAccount';
+import { useStaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
 import { StaffExpenseReport } from 'src/components/Reports/StaffExpenseReport/StaffExpenseReport';
 import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
 const StaffExpenseReportPageWrapper = styled(Box)(({ theme }) => ({
@@ -21,9 +22,10 @@ const StaffExpenseReportPageWrapper = styled(Box)(({ theme }) => ({
 const StaffExpenseReportPage: React.FC = () => {
   const { appName } = useGetAppSettings();
   const { t } = useTranslation();
-  const accountListId = useAccountListId();
   const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
   const [isNavListOpen, setIsNavListOpen] = useState<boolean>(false);
+
+  const { data: staffAccountData, loading } = useStaffAccountQuery();
 
   const handleNavListToggle = () => {
     setIsNavListOpen(!isNavListOpen);
@@ -36,7 +38,7 @@ const StaffExpenseReportPage: React.FC = () => {
           'Staff Expense Report',
         )}`}</title>
       </Head>
-      {accountListId ? (
+      {staffAccountData?.staffAccount?.id ? (
         <StaffExpenseReportPageWrapper>
           <SidePanelsLayout
             isScrollBox={false}
@@ -61,8 +63,10 @@ const StaffExpenseReportPage: React.FC = () => {
             }
           />
         </StaffExpenseReportPageWrapper>
-      ) : (
+      ) : loading ? (
         <Loading loading />
+      ) : (
+        <NoStaffAccount />
       )}
     </>
   );
