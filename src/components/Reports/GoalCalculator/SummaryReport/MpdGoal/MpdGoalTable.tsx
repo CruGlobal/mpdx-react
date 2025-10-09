@@ -12,7 +12,10 @@ import {
   calculateNewStaffGoalTotals,
   getNewStaffBudgetCategory,
 } from '../../Shared/calculateNewStaffTotals';
-import { calculateCategoryEnumTotal } from '../../Shared/calculateTotals';
+import {
+  GoalTotals,
+  calculateCategoryEnumTotal,
+} from '../../Shared/calculateTotals';
 import { MpdGoalHeaderCards } from './MpdGoalHeaderCards/MpdGoalHeaderCards';
 
 interface MpdGoalRow {
@@ -164,103 +167,92 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({
       }),
     );
 
-    return [
+    // The rows can have an amount and reference value, or a value function that calculates the
+    // amount and reference value from the goal total and new staff goal total
+    const rows: Array<
+      | MpdGoalRow
+      | (Omit<MpdGoalRow, 'amount' | 'reference'> & {
+          value: (goalTotals: GoalTotals) => number;
+        })
+    > = [
       {
         line: '1A',
         category: t('Net Monthly Combined Salary'),
-        amount: goalTotals.netMonthlySalary,
-        reference: newStaffReference.netMonthlySalary,
+        value: (goalTotals) => goalTotals.netMonthlySalary,
       },
       {
         line: '1B',
         category: t('Taxes, SECA, VTL, etc. %'),
-        amount: goalTotals.taxesPercentage,
-        reference: newStaffReference.taxesPercentage,
+        value: (goalTotals) => goalTotals.taxesPercentage,
         percentage: true,
       },
       {
         line: '1C',
         category: t('Taxes, SECA, VTL, etc.'),
-        amount: goalTotals.taxes,
-        reference: newStaffReference.taxes,
+        value: (goalTotals) => goalTotals.taxes,
       },
       {
         line: '1D',
         category: t('Subtotal with Net, Taxes, and SECA'),
-        amount: goalTotals.salaryPreIra,
-        reference: newStaffReference.salaryPreIra,
+        value: (goalTotals) => goalTotals.salaryPreIra,
       },
       {
         line: '1E',
         category: t('Roth 403(b) Contribution %'),
-        amount: goalTotals.rothContributionPercentage,
-        reference: newStaffReference.rothContributionPercentage,
+        value: (goalTotals) => goalTotals.rothContributionPercentage,
         percentage: true,
       },
       {
         line: '1F',
         category: t('Traditional 403(b) Contribution %'),
-        amount: goalTotals.traditionalContributionPercentage,
-        reference: newStaffReference.traditionalContributionPercentage,
+        value: (goalTotals) => goalTotals.traditionalContributionPercentage,
         percentage: true,
       },
       {
         line: '1G',
         category: t('100% - (Roth + Traditional 403(b)) %'),
-        amount:
+        value: (goalTotals) =>
           1 -
           goalTotals.rothContributionPercentage -
           goalTotals.traditionalContributionPercentage,
-        reference:
-          1 -
-          newStaffReference.rothContributionPercentage -
-          newStaffReference.traditionalContributionPercentage,
         percentage: true,
       },
       {
         line: '1H',
         category: t('Roth 403(b)'),
-        amount: goalTotals.rothContribution,
-        reference: newStaffReference.rothContribution,
+        value: (goalTotals) => goalTotals.rothContribution,
       },
       {
         line: '1I',
         category: t('Traditional 403(b)'),
-        amount: goalTotals.traditionalContribution,
-        reference: newStaffReference.traditionalContribution,
+        value: (goalTotals) => goalTotals.traditionalContribution,
       },
       {
         line: '1J',
         category: t('Gross Annual Salary'),
-        amount: goalTotals.grossAnnualSalary,
-        reference: newStaffReference.grossAnnualSalary,
+        value: (goalTotals) => goalTotals.grossAnnualSalary,
       },
       {
         line: '1',
         category: t('Gross Monthly Salary'),
-        amount: goalTotals.grossMonthlySalary,
-        reference: newStaffReference.grossMonthlySalary,
+        value: (goalTotals) => goalTotals.grossMonthlySalary,
       },
       {
         line: '2',
         category: t('Benefits'),
-        amount: goalTotals.benefitsCharge,
-        reference: newStaffReference.benefitsCharge,
+        value: (goalTotals) => goalTotals.benefitsCharge,
       },
       ...ministryExpenseRows,
       {
         line: '4',
         category: t('Ministry Expenses Subtotal'),
-        amount: goalTotals.ministryExpensesTotal + goalTotals.benefitsCharge,
-        reference:
-          newStaffReference.ministryExpensesTotal +
-          newStaffReference.benefitsCharge,
+        value: (goalTotals) =>
+          goalTotals.ministryExpensesTotal + goalTotals.benefitsCharge,
       },
       {
         line: '5',
         category: t('Subtotal'),
-        amount: goalTotals.overallSubtotal,
-        reference: newStaffReference.overallSubtotal,
+        value: (goalTotals) => goalTotals.overallSubtotal,
       },
       {
         line: '6',
@@ -270,8 +262,7 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({
             locale,
           ),
         }),
-        amount: goalTotals.overallSubtotalWithAdmin,
-        reference: newStaffReference.overallSubtotalWithAdmin,
+        value: (goalTotals) => goalTotals.overallSubtotalWithAdmin,
       },
       {
         line: '7',
@@ -281,29 +272,37 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({
             locale,
           ),
         }),
-        amount: goalTotals.overallTotal,
-        reference: newStaffReference.overallTotal,
+        value: (goalTotals) => goalTotals.overallTotal,
       },
       {
         line: '8',
         category: t('Solid Monthly Support Developed'),
-        amount: supportRaised,
-        reference: supportRaised,
+        value: () => supportRaised,
       },
       {
         line: '9',
         category: t('Monthly Support to be Developed'),
-        amount: goalTotals.overallTotal - supportRaised,
-        reference: newStaffReference.overallTotal - supportRaised,
+        value: (goalTotals) => goalTotals.overallTotal - supportRaised,
       },
       {
         line: '10',
         category: t('Support Goal Percentage Progress'),
-        amount: supportRaised / goalTotals.overallTotal,
-        reference: supportRaised / newStaffReference.overallTotal,
+        value: (goalTotals) => supportRaised / goalTotals.overallTotal,
         percentage: true,
       },
     ];
+
+    return rows.map((row) => {
+      if ('value' in row) {
+        return {
+          ...row,
+          amount: row.value(goalTotals),
+          reference: row.value(newStaffReference),
+        };
+      }
+
+      return row;
+    });
   }, [
     t,
     goalCalculation,
