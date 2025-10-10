@@ -1,11 +1,12 @@
+import { HourglassDisabled } from '@mui/icons-material';
 import { Box, Container, Grid } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { EmptyTable } from '../../Shared/EmptyTable/EmptyTable';
 import { CardSkeleton } from '../Card/CardSkeleton';
 import { ExpensesPieChart } from '../Charts/ExpensesPieChart';
 import { MonthlySummaryChart } from '../Charts/MonthlySummaryChart';
 import { SummaryBarChart } from '../Charts/SummaryBarChart';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
-import { EmptyTable } from '../Tables/EmptyTable';
 import { TableCard } from '../Tables/TableCard';
 import { AllData } from '../mockData';
 
@@ -50,6 +51,7 @@ export const ScreenOnlyReport: React.FC<ScreenOnlyReportProps> = ({
               <EmptyTable
                 title={t('No Income data available')}
                 subtitle={t('Data not found in the last 12 months')}
+                icon={HourglassDisabled}
               />
             }
             title={t('Income')}
@@ -64,6 +66,7 @@ export const ScreenOnlyReport: React.FC<ScreenOnlyReportProps> = ({
               <EmptyTable
                 title={t('No Expenses data available')}
                 subtitle={t('Data not found in the last 12 months')}
+                icon={HourglassDisabled}
               />
             }
             title={t('Expenses')}

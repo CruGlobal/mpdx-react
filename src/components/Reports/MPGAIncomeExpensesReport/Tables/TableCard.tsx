@@ -154,7 +154,7 @@ export const TableCard: React.FC<TableCardProps> = ({
           sortingOrder={['desc', 'asc']}
           sortModel={sortModel}
           onSortModelChange={(model) => setSortModel(model)}
-          pageSizeOptions={[5, 10, 25, 100]}
+          pageSizeOptions={[5, 10, 25]}
           paginationModel={paginationModel}
           onPaginationModelChange={(model) => setPaginationModel(model)}
           disableVirtualization

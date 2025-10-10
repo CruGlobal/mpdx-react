@@ -8,6 +8,7 @@ import {
 } from '@mui/icons-material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import LocalAtmIcon from '@mui/icons-material/LocalAtm';
 import PrintIcon from '@mui/icons-material/Print';
 import {
   Box,
@@ -31,52 +32,35 @@ import {
 } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import theme from 'src/theme';
+import { AccountInfoBox } from '../Shared/AccountInfoBox/AccountInfoBox';
+import { AccountInfoBoxSkeleton } from '../Shared/AccountInfoBox/AccountInfoBoxSkeleton';
+import { EmptyTable } from '../Shared/EmptyTable/EmptyTable';
 import { useStaffAccountQuery } from '../StaffAccount.generated';
-import { AccountInfoBox } from './AccountInfoBox/AccountInfoBox';
-import { AccountInfoBoxSkeleton } from './AccountInfoBox/AccountInfoBoxSkeleton';
+import {
+  SimplePrintOnly,
+  SimpleScreenOnly,
+  StyledPrintButton,
+} from '../styledComponents';
 import { BalanceCard } from './BalanceCard/BalanceCard';
 import { BalanceCardSkeleton } from './BalanceCard/BalanceCardSkeleton';
+import { PrintHeader } from './BalanceCard/PrintHeader';
 import { DownloadButtonGroup } from './DownloadButtonGroup/DownloadButtonGroup';
 import { useReportsStaffExpensesQuery } from './GetStaffExpense.generated';
 import { ReportType } from './Helpers/StaffReportEnum';
+import { filterTransactions } from './Helpers/filterTransactions';
 import {
   dateRangeToString,
   getFormattedDateString,
 } from './Helpers/formatDate';
 import { Filters, SettingsDialog } from './SettingsDialog/SettingsDialog';
-import { EmptyReportTable } from './Tables/EmptyReportTable';
 import { PrintTables } from './Tables/PrintTables';
 import { StaffReportTable } from './Tables/StaffReportTable';
-import { filterTransactions } from './filterTransactions';
-
-const ScreenOnly = styled(Box)({
-  '@media print': {
-    display: 'none',
-  },
-});
-
-const PrintOnly = styled(Box)({
-  display: 'none',
-  '@media print': {
-    display: 'block',
-  },
-});
 
 const StyledHeaderBox = styled(Box)({
   display: 'flex',
   alignItems: 'center',
   gap: theme.spacing(2),
   justifyContent: 'space-between',
-});
-
-const StyledPrintButton = styled(Button)({
-  border: '1px solid',
-  borderRadius: theme.spacing(1),
-  marginLeft: theme.spacing(2),
-  paddingLeft: theme.spacing(2),
-  paddingRight: theme.spacing(2),
-  paddingTop: theme.spacing(1),
-  paddingBottom: theme.spacing(1),
 });
 
 const StyledTimeNavBox = styled(Box)({
@@ -160,7 +144,13 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
 
   const hasNext = time.hasSame(DateTime.now(), 'month');
 
-  const allFunds: Fund[] = data?.reportsStaffExpenses?.funds ?? [];
+  const allFunds: Fund[] = useMemo(
+    () =>
+      (data?.reportsStaffExpenses?.funds ?? []).toSorted((a, b) =>
+        a.id.localeCompare(b.id),
+      ),
+    [data],
+  );
 
   const defaultFundType: string | null =
     allFunds.find((f) => f.fundType === 'Primary')?.fundType ??
@@ -281,34 +271,34 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
 
   return (
     <Box>
-      <ScreenOnly>
+      <SimpleScreenOnly>
         <MultiPageHeader
           isNavListOpen={isNavListOpen}
           onNavListToggle={onNavListToggle}
           title={title}
           headerType={HeaderTypeEnum.Report}
         />
-      </ScreenOnly>
+      </SimpleScreenOnly>
       <Box mt={2}>
         <Container>
           <Box>
             <StyledHeaderBox>
-              <PrintOnly>
+              <SimplePrintOnly>
                 <Typography variant="h4">
                   {t('Income and Expenses: {{timeTitle}}', {
                     timeTitle: timeTitle,
                   })}
                 </Typography>
-              </PrintOnly>
-              <ScreenOnly>
+              </SimplePrintOnly>
+              <SimpleScreenOnly>
                 <Typography variant="h4">{t('Income and Expenses')}</Typography>
-              </ScreenOnly>
+              </SimpleScreenOnly>
               {Object.values(transactions).some(
                 (fundTransactions) =>
                   fundTransactions.income.length ||
                   fundTransactions.expenses.length,
               ) ? (
-                <ScreenOnly
+                <SimpleScreenOnly
                   display="flex"
                   flexDirection="column"
                   alignItems="flex-end"
@@ -324,7 +314,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                   >
                     {t('Print')}
                   </StyledPrintButton>
-                </ScreenOnly>
+                </SimpleScreenOnly>
               ) : null}
             </StyledHeaderBox>
             {loading ? (
@@ -332,7 +322,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
             ) : (
               <AccountInfoBox name={name} accountId={id} />
             )}
-            <ScreenOnly>
+            <SimpleScreenOnly>
               <Box
                 display="flex"
                 flexWrap="wrap"
@@ -360,10 +350,10 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                         }
                         iconBgColor={
                           fund.fundType === 'Primary'
-                            ? '#FF9800'
+                            ? theme.palette.chartOrange.main
                             : fund.fundType === 'Savings'
-                              ? '#90CAF9'
-                              : '#588C87'
+                              ? theme.palette.chartBlueDark.main
+                              : theme.palette.chartBlue.main
                         }
                         title={fund.fundType}
                         isSelected={selectedFundType === fund.fundType}
@@ -381,63 +371,43 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                   ))
                 )}
               </Box>
-            </ScreenOnly>
-            <PrintOnly>
+            </SimpleScreenOnly>
+            <SimplePrintOnly>
               <Box>
                 {selectedFundType && (
-                  <>
-                    <Typography variant="h6" mb={0}>
-                      {t('{{fundType}}', {
-                        fundType: selectedFundType,
-                      }).toUpperCase()}
-                    </Typography>
-                    <Typography>
-                      {t('Starting Balance: ${{balance}}', {
-                        balance: data?.reportsStaffExpenses.startBalance
-                          ? data.reportsStaffExpenses.startBalance.toLocaleString(
-                              locale,
-                            )
-                          : '0',
-                      })}
-                    </Typography>
-                    <Typography>
-                      {t('+ Transfers in: ${{transfersIn}}', {
-                        transfersIn:
-                          transferTotals[selectedFundType]?.in.toLocaleString(
-                            locale,
-                          ) ?? '0',
-                      })}
-                    </Typography>
-                    <Typography>
-                      {t('- Transfers out: ${{transfersOut}}', {
-                        transfersOut:
-                          Math.abs(
-                            transferTotals[selectedFundType]?.out,
-                          ).toLocaleString(locale) ?? '0',
-                      })}
-                    </Typography>
-                    <Typography>
-                      {t('Ending Balance: ${{balance}}', {
-                        balance: data?.reportsStaffExpenses.endBalance
-                          ? data.reportsStaffExpenses.endBalance.toLocaleString(
-                              locale,
-                            )
-                          : '0',
-                      })}
-                    </Typography>
-                  </>
+                  <PrintHeader
+                    icon={
+                      selectedFundType === 'Primary'
+                        ? Wallet
+                        : selectedFundType === 'Savings'
+                          ? Savings
+                          : Groups
+                    }
+                    iconColor={
+                      selectedFundType === 'Primary'
+                        ? theme.palette.chartOrange.main
+                        : selectedFundType === 'Savings'
+                          ? theme.palette.chartBlueDark.main
+                          : theme.palette.chartBlue.main
+                    }
+                    title={selectedFundType}
+                    startBalance={data?.reportsStaffExpenses.startBalance ?? 0}
+                    endBalance={data?.reportsStaffExpenses.endBalance ?? 0}
+                    transfersIn={transferTotals[selectedFundType]?.in ?? 0}
+                    transfersOut={transferTotals[selectedFundType]?.out ?? 0}
+                  />
                 )}
               </Box>
-            </PrintOnly>
+            </SimplePrintOnly>
           </Box>
         </Container>
       </Box>
-      <ScreenOnly mt={2} mb={2}>
+      <SimpleScreenOnly mt={2} mb={2}>
         <Container>
           <Divider />
         </Container>
-      </ScreenOnly>
-      <ScreenOnly mt={2}>
+      </SimpleScreenOnly>
+      <SimpleScreenOnly mt={2}>
         <Container>
           <StyledTimeNavBox>
             {!filters ? (
@@ -470,13 +440,13 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
             ) : null}
           </StyledTimeNavBox>
         </Container>
-      </ScreenOnly>
+      </SimpleScreenOnly>
       <Box mt={2} mb={2}>
         <Container>
           <Divider></Divider>
         </Container>
       </Box>
-      <ScreenOnly>
+      <SimpleScreenOnly>
         <Container sx={{ gap: 1, display: 'flex', flexDirection: 'row' }}>
           <DownloadButtonGroup
             transactions={
@@ -511,12 +481,12 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
             </StyledFilterButton>
           </Box>
         </Container>
-      </ScreenOnly>
-      <ScreenOnly mt={2} mb={2}>
+      </SimpleScreenOnly>
+      <SimpleScreenOnly mt={2} mb={2}>
         <Container>
           <Divider />
         </Container>
-      </ScreenOnly>
+      </SimpleScreenOnly>
       <Box>
         <SettingsDialog
           selectedFilters={filters || undefined}
@@ -526,7 +496,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
             setIsSettingsOpen(false);
           }}
         />
-        <ScreenOnly mt={2}>
+        <SimpleScreenOnly mt={2}>
           <Container>
             {selectedFund && (
               <StaffReportTable
@@ -540,14 +510,18 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                 )}
                 loading={loading}
                 emptyPlaceholder={
-                  <EmptyReportTable title={t('No Income Transactions Found')} />
+                  <EmptyTable
+                    title={t('No Income Transactions Found')}
+                    subtitle={t('No data to display for this time period.')}
+                    icon={LocalAtmIcon}
+                  />
                 }
                 tableType={ReportType.Income}
               />
             )}
           </Container>
-        </ScreenOnly>
-        <ScreenOnly mt={2} mb={4}>
+        </SimpleScreenOnly>
+        <SimpleScreenOnly mt={2} mb={4}>
           <Container>
             {selectedFund && (
               <StaffReportTable
@@ -561,16 +535,18 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                 )}
                 loading={loading}
                 emptyPlaceholder={
-                  <EmptyReportTable
+                  <EmptyTable
                     title={t('No Expense Transactions Found')}
+                    subtitle={t('No data to display for this time period.')}
+                    icon={LocalAtmIcon}
                   />
                 }
                 tableType={ReportType.Expense}
               />
             )}
           </Container>
-        </ScreenOnly>
-        <PrintOnly mt={2}>
+        </SimpleScreenOnly>
+        <SimplePrintOnly mt={2}>
           {selectedFund && (
             <>
               <Typography variant="h6" mb={0} align="center">
@@ -603,7 +579,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
               />
             </>
           )}
-        </PrintOnly>
+        </SimplePrintOnly>
       </Box>
     </Box>
   );

@@ -8,29 +8,23 @@ import {
 } from '@mui/icons-material';
 import { Box, Button, Card, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import {
-  LoadingBox,
-  LoadingIndicator,
-} from 'src/components/Shared/styledComponents/LoadingStyling';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
+import { SimpleScreenOnly } from '../../styledComponents';
 import { FundFieldsFragment } from '../ReportsSavingsFund.generated';
 import { FundTypeEnum, TransferModalData } from '../mockData';
-import { ScreenOnly } from '../styledComponents/DisplayStyling';
 
 export interface BalanceCardProps {
   fund: FundFieldsFragment;
   handleOpenTransferModal: ({ type, transfer }: TransferModalData) => void;
   isSelected?: boolean;
-  loading?: boolean;
 }
 
 export const BalanceCard: React.FC<BalanceCardProps> = ({
   fund,
   handleOpenTransferModal,
   isSelected = false,
-  loading,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -78,99 +72,85 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
         transition: 'box-shadow 0.3s ease-in-out',
       }}
     >
-      {loading && !fund ? (
-        <LoadingBox>
-          <LoadingIndicator
-            data-testid="loading-spinner"
-            color="primary"
-            size={50}
+      <Box display={'flex'} flexDirection="row" alignItems="center" gap={1}>
+        <Box
+          sx={{
+            backgroundColor: iconBgColor || 'primary.main',
+            color: 'primary.contrastText',
+            borderRadius: 1,
+            p: 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          className="StyledIconBox-root"
+        >
+          <Icon
+            sx={{
+              color: 'inherit',
+            }}
           />
-        </LoadingBox>
-      ) : (
-        <>
-          <Box display={'flex'} flexDirection="row" alignItems="center" gap={1}>
-            <Box
-              sx={{
-                backgroundColor: iconBgColor || 'primary.main',
-                color: 'primary.contrastText',
-                borderRadius: 1,
-                p: 1,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                '@media print': {
-                  color: iconBgColor,
-                },
-              }}
-            >
-              <Icon
-                sx={{
-                  color: 'inherit',
-                }}
-              />
-            </Box>
-            <Box>
-              <Typography
-                variant="body1"
-                mb={0}
-                sx={{
-                  '@media print': { fontSize: '14pt' },
-                  fontWeight: 500,
-                  fontSize: '15pt',
-                }}
-              >
-                {title}
-              </Typography>
-            </Box>
-          </Box>
-          <Box
+        </Box>
+        <Box>
+          <Typography
+            variant="body1"
+            mb={0}
             sx={{
-              mt: 5,
-              '@media print': { mt: 2 },
+              '@media print': { fontSize: '14pt' },
+              fontWeight: 500,
+              fontSize: '15pt',
             }}
           >
-            <Typography
-              variant="body1"
-              mb={0}
-              sx={{ '@media print': { fontSize: '12pt' } }}
-            >
-              {t('Current Balance')}
-            </Typography>
+            {title}
+          </Typography>
+        </Box>
+      </Box>
+      <Box
+        sx={{
+          mt: 5,
+          '@media print': { mt: 2 },
+        }}
+      >
+        <Typography
+          variant="body1"
+          mb={0}
+          sx={{ '@media print': { fontSize: '12pt' } }}
+        >
+          {t('Current Balance')}
+        </Typography>
 
-            <Typography
-              variant="h5"
-              color={fund.balance < 0 ? 'error.main' : 'text.primary'}
-              sx={{ fontSize: 'inherit' }}
-            >
-              {fund.balance < 0 ? '(' : ''}
-              {currencyFormat(Math.abs(fund.balance), 'USD', locale, {
-                showTrailingZeros: true,
-              })}
-              {fund.balance < 0 ? ')' : ''}
-            </Typography>
-          </Box>
+        <Typography
+          variant="h5"
+          color={fund.balance < 0 ? 'error.main' : 'text.primary'}
+          sx={{ fontSize: 'inherit' }}
+        >
+          {fund.balance < 0 ? '(' : ''}
+          {currencyFormat(Math.abs(fund.balance), 'USD', locale, {
+            showTrailingZeros: true,
+          })}
+          {fund.balance < 0 ? ')' : ''}
+        </Typography>
+      </Box>
 
-          <ScreenOnly
-            sx={{
-              alignItems: 'left',
-              mt: 2,
-              ml: 0,
-            }}
-          >
-            <Button
-              onClick={handleTransferFrom}
-              disabled={fund.balance <= fund.deficitLimit}
-            >
-              <Outbox fontSize="small" sx={{ mr: 0.5 }} />
-              {t('TRANSFER FROM')}
-            </Button>
-            <Button onClick={handleTransferTo}>
-              <MoveToInbox fontSize="small" sx={{ mr: 0.5 }} />
-              {t('TRANSFER TO')}
-            </Button>
-          </ScreenOnly>
-        </>
-      )}
+      <SimpleScreenOnly
+        sx={{
+          alignItems: 'left',
+          mt: 2,
+          ml: 0,
+        }}
+      >
+        <Button
+          onClick={handleTransferFrom}
+          disabled={fund.balance <= fund.deficitLimit}
+        >
+          <Outbox fontSize="small" sx={{ mr: 0.5 }} />
+          {t('TRANSFER FROM')}
+        </Button>
+        <Button onClick={handleTransferTo}>
+          <MoveToInbox fontSize="small" sx={{ mr: 0.5 }} />
+          {t('TRANSFER TO')}
+        </Button>
+      </SimpleScreenOnly>
     </Card>
   );
 };
