@@ -153,7 +153,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
         ? tx.recurringTransfer?.recurringStart
         : tx.transaction?.transactedAt,
       endDate: tx.recurringTransfer?.recurringEnd || null,
-      note: tx.subCategory?.name ?? 'default note',
+      note: tx.transaction?.description ?? '',
       actions: shouldShowActions() === false ? 'edit-delete' : '',
       recurringId: tx.recurringTransfer?.id ?? null,
       baseAmount: tx.baseAmount,
