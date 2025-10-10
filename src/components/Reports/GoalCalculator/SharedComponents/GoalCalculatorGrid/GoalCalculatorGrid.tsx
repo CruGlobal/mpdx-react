@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DoNotDisturbAltIcon from '@mui/icons-material/DoNotDisturbAlt';
@@ -27,9 +27,9 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { SubBudgetCategoryEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { useDebouncedCallback } from 'src/hooks/useDebounce';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { useAutoSave } from '../../CalculatorSettings/Categories/Autosave/useAutosave';
 import {
   getPrimaryCategoryRightPanel,
   getSubCategoryRightPanel,
@@ -59,32 +59,13 @@ const ErrorCell = styled(Box)(({ theme }) => ({
 
 interface GoalCalculatorGridProps {
   category: BudgetFamilyFragment['primaryBudgetCategories'][number];
+  maxTotal?: number | null;
   promptText?: string;
 }
 
-// Yup validation schemas
-const directInputSchema = yup.object({
-  amount: yup
-    .number()
-    .min(0, 'Amount must be positive')
-    .required('Amount is required'),
-});
-
-const subBudgetCategorySchema = yup.object({
-  label: yup
-    .string()
-    .trim()
-    .min(1, 'Label is required')
-    .max(100, 'Label must be less than 100 characters')
-    .required('Label is required'),
-  amount: yup
-    .number()
-    .min(0, 'Amount must be positive')
-    .required('Amount is required'),
-});
-
 export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   category,
+  maxTotal,
   promptText,
 }) => {
   const { t } = useTranslation();
@@ -109,13 +90,51 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   const [cellErrors, setCellErrors] = useState<
     Record<string, string | undefined>
   >({});
-  const [directInputError, setDirectInputError] = useState<string>('');
-  const [lumpSumValue, setLumpSumValue] = useState<string>('');
+  const [lumpSumValue, setLumpSumValue] = useState(
+    category.directInput?.toString() ?? '',
+  );
   const [updatePrimaryBudgetCategory] =
     useUpdatePrimaryBudgetCategoryMutation();
   const [updateSubBudgetCategory] = useUpdateSubBudgetCategoryMutation();
   const [createSubBudgetCategory] = useCreateSubBudgetCategoryMutation();
   const [deleteSubBudgetCategory] = useDeleteSubBudgetCategoryMutation();
+
+  // Yup validation schemas
+  const directInputSchema = useMemo(() => {
+    const amount = yup
+      .number()
+      .required(t('Total is required'))
+      .min(0, t('Total must be positive'));
+
+    return yup.object({
+      amount:
+        typeof maxTotal === 'number'
+          ? amount.max(
+              maxTotal ?? Infinity,
+              t('Total must be less than {{max}}', {
+                max: currencyFormat(maxTotal, 'USD', locale),
+              }),
+            )
+          : amount,
+    });
+  }, [t, maxTotal, locale]);
+
+  const subBudgetCategorySchema = useMemo(
+    () =>
+      yup.object({
+        label: yup
+          .string()
+          .trim()
+          .min(1, t('Label is required'))
+          .max(100, t('Label must be less than 100 characters'))
+          .required(t('Label is required')),
+        amount: yup
+          .number()
+          .min(0, t('Amount must be positive'))
+          .required(t('Amount is required')),
+      }),
+    [t],
+  );
 
   const dataWithTotal = useMemo(
     () => [...gridData, { id: 'total', label: 'Total', amount: totalAmount }],
@@ -123,16 +142,9 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   );
 
   const directInput = category.directInput !== null;
-  const lumpSumAmount = category.directInput || 0;
-
-  useEffect(() => {
-    if (directInput) {
-      setLumpSumValue(lumpSumAmount.toString());
-    }
-  }, [lumpSumAmount, directInput]);
 
   const updateDirectInput = (directInput: number | null) => {
-    trackMutation(
+    return trackMutation(
       updatePrimaryBudgetCategory({
         variables: {
           input: {
@@ -158,8 +170,6 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
     );
   };
 
-  const debouncedUpdateMutation = useDebouncedCallback(updateDirectInput, 500);
-
   const handleDirectInputToggle = (enableDirectInput: boolean) => {
     if (enableDirectInput) {
       // Switching to "Lump Sum" mode
@@ -182,26 +192,15 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
 
     // Clear any validation errors when switching modes
     setCellErrors({});
-    setDirectInputError('');
   };
 
-  const handleLumpSumChange = (value: string | number) => {
-    const stringValue = value.toString();
-    const numericValue =
-      typeof value === 'string' ? parseFloat(value) || 0 : value;
-    setLumpSumValue(stringValue);
-
-    try {
-      directInputSchema.validateSync({ amount: numericValue });
-      setDirectInputError('');
-      debouncedUpdateMutation(numericValue);
-    } catch (error) {
-      if (error instanceof yup.ValidationError) {
-        setDirectInputError(error.message);
-      }
-    }
-  };
-
+  const directInputProps = useAutoSave({
+    value: category.directInput,
+    saveValue: updateDirectInput,
+    fieldName: 'amount',
+    schema: directInputSchema,
+    saveOnChange: false,
+  });
   const addExpense = () => {
     const tempId = `temp-${Date.now()}`;
 
@@ -484,14 +483,11 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
         {directInput ? (
           <Box sx={{ p: 2 }}>
             <TextField
+              {...directInputProps}
               fullWidth
               size="small"
               label={t('Total')}
               type="number"
-              value={lumpSumValue}
-              onChange={(e) => handleLumpSumChange(e.target.value)}
-              error={!!directInputError}
-              helperText={directInputError}
               sx={{ mb: 2 }}
             />
           </Box>
@@ -510,6 +506,22 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
               rows={dataWithTotal}
               columns={columns}
               processRowUpdate={processRowUpdate}
+              onCellEditStart={(_, event) => {
+                // This is event is triggered before the input exists, so wait briefly for it to be created
+                requestAnimationFrame(() => {
+                  const input =
+                    event.target instanceof HTMLElement &&
+                    event.target.querySelector('input');
+                  if (!input) {
+                    return;
+                  }
+
+                  // number inputs don't support selecting text, so temporarily switch to a text input
+                  input.type = 'text';
+                  input.setSelectionRange(0, input.value.length);
+                  input.type = 'number';
+                });
+              }}
               isCellEditable={(params) => {
                 // Don't allow editing the total row or label field when canDelete is false
                 if (params.id === 'total') {
@@ -527,10 +539,19 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
 
       {Object.keys(cellErrors).length > 0 &&
         Object.entries(cellErrors).map(([cellKey, error]) => (
-          <FormHelperText key={cellKey} error={true} sx={{ mb: 0.5 }}>
+          <FormHelperText key={cellKey} error sx={{ mb: 0.5 }}>
             {error}
           </FormHelperText>
         ))}
+      {!directInput &&
+        typeof maxTotal === 'number' &&
+        totalAmount > maxTotal && (
+          <FormHelperText error sx={{ mb: 0.5 }}>
+            {t('Total must be less than {{max}}', {
+              max: currencyFormat(maxTotal, 'USD', locale),
+            })}
+          </FormHelperText>
+        )}
     </GoalCalculatorSection>
   );
 };

@@ -1,31 +1,26 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { prepareDataForValidation } from 'formik';
 import * as yup from 'yup';
-import { useGoalCalculator } from 'src/components/Reports/GoalCalculator/Shared/GoalCalculatorContext';
-import { GoalCalculationUpdateInput } from 'src/graphql/types.generated';
-import { useSaveField } from './useSaveField';
 
-interface UseAutoSaveOptions {
-  fieldName: keyof GoalCalculationUpdateInput;
+interface UseAutoSaveOptions<Value extends string | number> {
+  value: Value | null | undefined;
+  saveValue: (value: Value | null) => Promise<unknown>;
+  fieldName: string;
   schema: yup.Schema;
   saveOnChange?: boolean;
 }
 
-export const useAutoSave = ({
+export const useAutoSave = <Value extends string | number>({
+  value,
+  saveValue,
   fieldName,
   schema,
   saveOnChange = false,
-}: UseAutoSaveOptions) => {
-  const saveField = useSaveField();
-  const {
-    goalCalculationResult: { data },
-  } = useGoalCalculator();
-
-  const value: string = data?.goalCalculation[fieldName]?.toString() ?? '';
-  const [internalValue, setInternalValue] = useState(value);
+}: UseAutoSaveOptions<Value>) => {
+  const [internalValue, setInternalValue] = useState(value?.toString() ?? '');
 
   useEffect(() => {
-    setInternalValue(value);
+    setInternalValue(value?.toString() ?? '');
   }, [value]);
 
   const parseValue = useCallback(
@@ -36,7 +31,8 @@ export const useAutoSave = ({
         const values = prepareDataForValidation({
           [fieldName]: valueToValidate,
         });
-        const parsedValue = schema.validateSyncAt(fieldName, values) ?? null;
+        const parsedValue: Value | null =
+          schema.validateSyncAt(fieldName, values) ?? null;
         return { parsedValue, errorMessage: null };
       } catch (error) {
         if (error instanceof yup.ValidationError) {
@@ -62,13 +58,13 @@ export const useAutoSave = ({
       if (saveOnChange) {
         const { parsedValue, errorMessage } = parseValue(newValue);
         if (!errorMessage) {
-          saveField({ [fieldName]: parsedValue });
+          saveValue(parsedValue);
         }
       }
     },
     onBlur: () => {
       if (!saveOnChange && !errorMessage) {
-        saveField({ [fieldName]: parsedValue });
+        saveValue(parsedValue);
       }
     },
     ...(errorMessage ? { error: true, helperText: errorMessage } : {}),

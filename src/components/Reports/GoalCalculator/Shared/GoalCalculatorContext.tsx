@@ -11,18 +11,14 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getQueryParam } from 'src/utils/queryParam';
-import {
-  GoalBenefitsConstantMap,
-  GoalGeographicConstantMap,
-  GoalMiscConstants,
-  useGoalCalculatorConstants,
-} from '../../../../hooks/useGoalCalculatorConstants';
+import { useGoalCalculatorConstants } from '../../../../hooks/useGoalCalculatorConstants';
 import {
   GoalCalculatorReportEnum,
   GoalCalculatorStepEnum,
 } from '../GoalCalculatorHelper';
 import { useGoalCalculationQuery } from './GoalCalculation.generated';
 import { calculatePercentage } from './calculatePercentage';
+import { GoalTotals, calculateGoalTotals } from './calculateTotals';
 import { GoalCalculatorStep, useSteps } from './useSteps';
 
 export type GoalCalculatorType = {
@@ -45,13 +41,12 @@ export type GoalCalculatorType = {
   setDrawerOpen: (open: boolean) => void;
 
   goalCalculationResult: ReturnType<typeof useGoalCalculationQuery>;
+  goalTotals: GoalTotals;
+
   /** Whether any mutations are currently in progress */
   isMutating: boolean;
   /** Call with the mutation promise to track the start and end of mutations */
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
-  goalBenefitsConstantMap: GoalBenefitsConstantMap;
-  goalGeographicConstantMap: GoalGeographicConstantMap;
-  goalMiscConstants: GoalMiscConstants;
   percentComplete: number;
 };
 
@@ -85,16 +80,20 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     },
   });
 
-  const {
-    goalBenefitsConstantMap,
-    goalMiscConstants,
-    goalGeographicConstantMap,
-  } = useGoalCalculatorConstants();
+  const { goalBenefitsConstantMap } = useGoalCalculatorConstants();
 
   const steps = useSteps();
   const percentComplete = useMemo(
     () => calculatePercentage(goalCalculationResult.data?.goalCalculation),
     [goalCalculationResult.data],
+  );
+  const goalTotals = useMemo(
+    () =>
+      calculateGoalTotals(
+        goalCalculationResult.data?.goalCalculation ?? null,
+        goalBenefitsConstantMap.values().toArray(),
+      ),
+    [goalCalculationResult.data, goalBenefitsConstantMap],
   );
   const [stepIndex, setStepIndex] = useState(0);
   const [selectedReport, setSelectedReport] =
@@ -166,10 +165,8 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       goalCalculationResult,
       isMutating,
       trackMutation,
-      goalBenefitsConstantMap,
-      goalGeographicConstantMap,
-      goalMiscConstants,
       percentComplete,
+      goalTotals,
     }),
     [
       steps,
@@ -187,10 +184,8 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       goalCalculationResult,
       isMutating,
       trackMutation,
-      goalBenefitsConstantMap,
-      goalGeographicConstantMap,
-      goalMiscConstants,
       percentComplete,
+      goalTotals,
     ],
   );
 

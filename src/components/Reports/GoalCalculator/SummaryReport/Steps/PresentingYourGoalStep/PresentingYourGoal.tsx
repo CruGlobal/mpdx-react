@@ -22,15 +22,14 @@ import {
   Tooltip,
 } from 'recharts';
 import { useGetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
-import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useOrganizationId } from 'src/hooks/useOrganizationId';
 import cruLogo from 'src/images/cru/cru-logo.svg';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { useGoalLineItems } from '../../../Shared/useGoalLineItems';
+import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
+import { hasStaffSpouse } from '../../../Shared/calculateTotals';
 import { useGetOrganizationsQuery } from './GetOrganization.generated';
-import type { Goal } from '../../../Shared/useReportExpenses/useReportExpenses';
 
 const ChartContainer = styled(Box)({
   '@media print': {
@@ -80,22 +79,25 @@ interface PresentingYourGoalRow {
 }
 
 interface PresentingYourGoalProps {
-  goal: Goal;
+  supportRaised: number;
 }
 
 export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
-  goal,
+  supportRaised,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
-  const calculations = useGoalLineItems(goal);
+  const {
+    goalCalculationResult: { data },
+    goalTotals,
+  } = useGoalCalculator();
+  const goalCalculation = data?.goalCalculation;
 
   /*
    * We don't want to display ministry location and Cru image if
    * the user is not part of Cru.
    */
-  const { data: userData } = useGetUserQuery();
   const salaryOrganizationId = useOrganizationId();
   const { data: salaryOrganization } = useGetUsersOrganizationsAccountsQuery({
     skip: !salaryOrganizationId,
@@ -113,22 +115,23 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
 
   const presentationData = useMemo(
     () => [
-      { name: 'Salary', value: goal.netMonthlySalary },
-      { name: 'Ministry Expenses', value: goal.ministryExpensesTotal },
-      { name: 'Benefits', value: 300 },
-      { name: 'Social Security and Taxes', value: calculations.taxes },
+      { name: 'Salary', value: goalTotals.netMonthlySalary },
+      {
+        name: 'Ministry Expenses',
+        value: goalTotals.ministryExpensesTotal + goalTotals.attrition,
+      },
+      { name: 'Benefits', value: goalTotals.benefitsCharge },
+      { name: 'Social Security and Taxes', value: goalTotals.taxes },
       {
         name: 'Voluntary 403b Retirement Plan',
-        value:
-          calculations.traditionalContribution + calculations.rothContribution,
+        value: goalTotals.traditionalContribution + goalTotals.rothContribution,
       },
       {
         name: 'Administrative Charge',
-        value:
-          calculations.overallSubtotalWithAdmin - calculations.overallSubtotal,
+        value: goalTotals.overallSubtotalWithAdmin - goalTotals.overallSubtotal,
       },
     ],
-    [goal, calculations],
+    [goalTotals],
   );
 
   const total = useMemo(
@@ -147,13 +150,17 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
   ];
 
   const personalInfoRows: PersonalInfoRow[] = useMemo(() => {
+    const firstName = goalCalculation?.firstName ?? '';
+    const spouseFirstName = hasStaffSpouse(goalCalculation?.familySize)
+      ? goalCalculation?.spouseFirstName
+      : null;
+    const lastName = goalCalculation?.lastName ?? '';
+    const fullName = spouseFirstName
+      ? `${firstName} ${t('and')} ${spouseFirstName ?? ''} ${lastName}`
+      : `${firstName} ${lastName}`;
+
     const personalRows: PersonalInfoRow[] = [
-      {
-        label: 'Name',
-        value: userData?.user
-          ? `${userData.user.firstName} ${userData.user.lastName}`
-          : t('User'),
-      },
+      { label: t('Name'), value: fullName },
       {
         label: t('Mission Agency'),
         value: organizationName,
@@ -166,12 +173,14 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
     }
 
     return personalRows;
-  }, [userData?.user, t, organizationName, isOrganizationTypeCru]);
+  }, [goalCalculation?.firstName, t, organizationName, isOrganizationTypeCru]);
 
   const rows: PresentingYourGoalRow[] = useMemo(
     () => [
       {
-        title: 'Salary',
+        title: hasStaffSpouse(goalCalculation?.familySize)
+          ? 'Salary (Combined)'
+          : 'Salary',
         description:
           'Salaries are based upon marital status, number of children, tenure with Cru, and adjustments for certain geographic locations.',
         amount: presentationData[0].value,
@@ -205,9 +214,9 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
         amount: presentationData[5].value,
       },
       { title: 'Total Support Goal', amount: total, bold: true },
-      { title: 'Total Solid Support', amount: calculations.supportRaised },
+      { title: 'Total Solid Support', amount: supportRaised },
     ],
-    [presentationData, total, t, calculations],
+    [presentationData, total, supportRaised, t, goalTotals],
   );
 
   return (
