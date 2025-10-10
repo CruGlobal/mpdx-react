@@ -7,10 +7,12 @@ jest.spyOn(DateTime, 'now').mockReturnValue(fixed);
 
 const mockData: Transactions[] = [
   {
-    id: '1',
-    amount: 100,
-    description: 'One-time transfer',
-    transactedAt: DateTime.fromISO('2023-10-01'),
+    transaction: {
+      id: '1',
+      amount: 100,
+      description: 'One-time transfer',
+      transactedAt: DateTime.fromISO('2023-10-01'),
+    },
     subCategory: { id: '1', name: 'General' },
     transfer: {
       sourceFundTypeName: 'Primary',
@@ -21,10 +23,12 @@ const mockData: Transactions[] = [
     baseAmount: 100,
   },
   {
-    id: '2',
-    amount: 200,
-    description: 'Recurring transfer',
-    transactedAt: DateTime.fromISO('2023-10-01'),
+    transaction: {
+      id: '2',
+      amount: 200,
+      description: 'Recurring transfer',
+      transactedAt: DateTime.fromISO('2023-10-01'),
+    },
     subCategory: { id: '1', name: 'General' },
     transfer: {
       sourceFundTypeName: 'Primary',
@@ -32,6 +36,7 @@ const mockData: Transactions[] = [
     },
     recurringTransfer: {
       id: '1',
+      amount: 200,
       recurringStart: DateTime.fromISO('2022-10-01'),
       recurringEnd: DateTime.fromISO('2023-01-01'),
       active: true,
@@ -40,10 +45,12 @@ const mockData: Transactions[] = [
     baseAmount: 200,
   },
   {
-    id: '3',
-    amount: 300,
-    description: 'Ended recurring transfer',
-    transactedAt: DateTime.fromISO('2022-10-01'),
+    transaction: {
+      id: '3',
+      amount: 300,
+      description: 'Ended recurring transfer',
+      transactedAt: DateTime.fromISO('2022-10-01'),
+    },
     subCategory: { id: '1', name: 'General' },
     transfer: {
       sourceFundTypeName: 'Primary',
@@ -51,6 +58,7 @@ const mockData: Transactions[] = [
     },
     recurringTransfer: {
       id: '2',
+      amount: 300,
       recurringStart: DateTime.fromISO('2022-01-01'),
       recurringEnd: null,
       active: true,
@@ -59,10 +67,12 @@ const mockData: Transactions[] = [
     baseAmount: 300,
   },
   {
-    id: '4',
-    amount: 400,
-    description: 'Ongoing recurring transfer',
-    transactedAt: DateTime.fromISO('2023-11-01'),
+    transaction: {
+      id: '4',
+      amount: 400,
+      description: 'Ongoing recurring transfer',
+      transactedAt: DateTime.fromISO('2023-11-01'),
+    },
     subCategory: { id: '1', name: 'General' },
     transfer: {
       sourceFundTypeName: 'Primary',
@@ -70,6 +80,7 @@ const mockData: Transactions[] = [
     },
     recurringTransfer: {
       id: '3',
+      amount: 400,
       recurringStart: DateTime.fromISO('2023-11-01'),
       recurringEnd: DateTime.fromISO('2024-12-31'),
       active: true,
