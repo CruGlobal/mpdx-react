@@ -1,12 +1,16 @@
+import NextLink from 'next/link';
 import React from 'react';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {
   Box,
   Divider,
   IconButton,
+  Link,
   Stack,
   Typography,
   styled,
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { CircularProgressWithLabel } from 'src/components/Reports/GoalCalculator/SharedComponents/CircularProgressWithLabel/CircularProgressWithLabel';
 import { multiPageHeaderHeight } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
@@ -77,7 +81,7 @@ export interface IconPanelLayoutProps {
   percentComplete: number;
   iconPanelItems?: IconPanelItem[];
   sidebarContent?: React.ReactNode;
-  backButton: IconPanelItem;
+  backHref: string;
   sidebarTitle?: string;
   isSidebarOpen?: boolean;
   sidebarAriaLabel?: string;
@@ -95,9 +99,11 @@ export const IconPanelLayout: React.FC<IconPanelLayoutProps> = ({
   sidebarTitle,
   isSidebarOpen = false,
   sidebarAriaLabel,
-  backButton,
+  backHref,
   mainContent,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <PrintableStack direction="row">
       <Stack direction="column" width={iconPanelWidth}>
@@ -118,15 +124,20 @@ export const IconPanelLayout: React.FC<IconPanelLayoutProps> = ({
             {item.icon}
           </IconButton>
         ))}
-        <IconButton
-          aria-label={backButton.label}
-          sx={{
-            color: theme.palette.cruGrayDark.main,
-          }}
-          onClick={backButton.onClick}
+        <Link
+          component={NextLink}
+          href={backHref}
+          sx={{ textDecoration: 'none' }}
+          aria-label={t('Go back')}
         >
-          {backButton.icon}
-        </IconButton>
+          <IconButton
+            sx={(theme) => ({
+              color: theme.palette.cruGrayDark.main,
+            })}
+          >
+            <ArrowBackIcon />
+          </IconButton>
+        </Link>
       </Stack>
       <Divider orientation="vertical" flexItem />
       <StyledSidebar

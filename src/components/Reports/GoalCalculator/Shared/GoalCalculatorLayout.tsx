@@ -1,6 +1,5 @@
 import { useRouter } from 'next/router';
 import React from 'react';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useTranslation } from 'react-i18next';
 import { IconPanelLayout } from 'src/components/Shared/IconPanelLayout/IconPanelLayout';
 import { GoalCalculatorStepEnum } from '../GoalCalculatorHelper';
@@ -50,24 +49,16 @@ export const GoalCalculatorLayout: React.FC<GoalCalculatorLayoutProps> = ({
     onClick: () => handleStepIconClick(step.step),
   }));
 
-  const handleBackClick = () => {
-    router.push(`/accountLists/${accountListId}/reports/goalCalculator`);
-  };
-
   return (
     <IconPanelLayout
       percentComplete={percentComplete}
       iconPanelItems={iconPanelItems}
-      backButton={{
-        icon: <ArrowBackIcon />,
-        onClick: handleBackClick,
-        label: t('Go back'),
-      }}
       sidebarContent={sectionListPanel}
       sidebarTitle={currentStep.title}
       isSidebarOpen={isDrawerOpen}
       sidebarAriaLabel={t('{{step}} Sections', { step: currentStep.title })}
       mainContent={mainContent}
+      backHref={`/accountLists/${accountListId}/reports/goalCalculator`}
     />
   );
 };
