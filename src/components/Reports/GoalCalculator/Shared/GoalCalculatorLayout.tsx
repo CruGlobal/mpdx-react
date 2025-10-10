@@ -1,68 +1,9 @@
-import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import {
-  Box,
-  Divider,
-  IconButton,
-  Link,
-  Stack,
-  Typography,
-  styled,
-} from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
-import { multiPageHeaderHeight } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
-import theme from 'src/theme';
+import { IconPanelLayout } from 'src/components/Shared/IconPanelLayout/IconPanelLayout';
 import { GoalCalculatorStepEnum } from '../GoalCalculatorHelper';
-import { CircularProgressWithLabel } from '../SharedComponents/CircularProgressWithLabel/CircularProgressWithLabel';
 import { useGoalCalculator } from './GoalCalculatorContext';
-
-const iconPanelWidth = theme.spacing(5);
-
-const PrintableStack = styled(Stack)({
-  '@media print': {
-    // Hide all children except for the main content
-    '> *:not(.main-content)': {
-      display: 'none',
-    },
-  },
-});
-
-const MainContent = styled('div')(({ theme }) => ({
-  paddingBlock: theme.spacing(4),
-  width: '100%',
-  '@media screen': {
-    height: `calc(100vh - ${navBarHeight} - ${multiPageHeaderHeight})`,
-    overflow: 'scroll',
-  },
-}));
-
-const StepTitle = styled(Typography)(({ theme }) => ({
-  marginBottom: 0,
-  marginTop: theme.spacing(1),
-  paddingLeft: theme.spacing(2),
-}));
-
-const StyledDrawer = styled('nav', {
-  shouldForwardProp: (prop) => prop !== 'open',
-})<{ open: boolean }>(({ theme, open }) => ({
-  width: open ? 240 : 0,
-  transition: theme.transitions.create('width', {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.enteringScreen,
-  }),
-  overflow: 'hidden',
-  [theme.breakpoints.down('sm')]: {
-    position: 'absolute',
-    top: multiPageHeaderHeight,
-    left: `calc(${iconPanelWidth} + 1px)`,
-    height: '100%',
-    backgroundColor: theme.palette.common.white,
-    zIndex: 270,
-  },
-}));
 
 interface GoalCalculatorLayoutProps {
   sectionListPanel: React.ReactNode;
@@ -81,7 +22,6 @@ export const GoalCalculatorLayout: React.FC<GoalCalculatorLayoutProps> = ({
   const { t } = useTranslation();
   const router = useRouter();
   const { accountListId } = router.query;
-  const iconPanelWidth = theme.spacing(5);
   const {
     steps,
     currentStep,
@@ -101,60 +41,24 @@ export const GoalCalculatorLayout: React.FC<GoalCalculatorLayoutProps> = ({
     }
   };
 
+  const iconPanelItems = steps.map((step) => ({
+    key: step.step,
+    icon: step.icon,
+    label: step.title,
+    isActive: currentStep.step === step.step,
+    onClick: () => handleStepIconClick(step.step),
+  }));
+
   return (
-    <PrintableStack direction="row">
-      <Stack direction="column" width={iconPanelWidth}>
-        <Box
-          sx={{
-            p: 1,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <CircularProgressWithLabel progress={percentComplete} />
-        </Box>
-        {steps.map((step) => (
-          <IconButton
-            key={step.step}
-            aria-label={step.title}
-            sx={(theme) => ({
-              color:
-                currentStep.step === step.step
-                  ? theme.palette.mpdxBlue.main
-                  : theme.palette.cruGrayDark.main,
-            })}
-            onClick={() => handleStepIconClick(step.step)}
-          >
-            {step.icon}
-          </IconButton>
-        ))}
-        <Link
-          component={NextLink}
-          href={`/accountLists/${accountListId}/reports/goalCalculator`}
-          sx={{ textDecoration: 'none' }}
-          aria-label={t('Go back')}
-        >
-          <IconButton
-            sx={(theme) => ({
-              color: theme.palette.cruGrayDark.main,
-            })}
-          >
-            <ArrowBackIcon />
-          </IconButton>
-        </Link>
-      </Stack>
-      <Divider orientation="vertical" flexItem />
-      <StyledDrawer
-        open={isDrawerOpen}
-        aria-label={t('{{step}} Sections', { step: currentStep.title })}
-        aria-expanded={isDrawerOpen}
-      >
-        <StepTitle variant="h6">{currentStep.title}</StepTitle>
-        {sectionListPanel}
-      </StyledDrawer>
-      {isDrawerOpen && <Divider orientation="vertical" flexItem />}
-      <MainContent className="main-content">{mainContent}</MainContent>
-    </PrintableStack>
+    <IconPanelLayout
+      percentComplete={percentComplete}
+      iconPanelItems={iconPanelItems}
+      sidebarContent={sectionListPanel}
+      sidebarTitle={currentStep.title}
+      isSidebarOpen={isDrawerOpen}
+      sidebarAriaLabel={t('{{step}} Sections', { step: currentStep.title })}
+      mainContent={mainContent}
+      backHref={`/accountLists/${accountListId}/reports/goalCalculator`}
+    />
   );
 };
