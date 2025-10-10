@@ -50,6 +50,7 @@ export function filteredTransfers(transfers: Transactions[]) {
         transactions: new Map([[transfer.transaction.id, transfer]]),
       });
     } else {
+      // Already filtered out non-existing transactions, so it is safe to assume the transaction is valid.
       filtered[item.index].transaction!.amount += transfer.transaction.amount;
       item.seenMonths.add(`${transactedAt.year}-${transactedAt.month}`);
       item.transactions.set(transfer.transaction.id, transfer);

@@ -143,10 +143,10 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
     };
 
     return {
-      id: tx.transaction ? tx.transaction.id : crypto.randomUUID(),
+      id: tx.transaction?.id ?? crypto.randomUUID(),
       transferFrom: tx.transfer.sourceFundTypeName,
       transferTo: tx.transfer.destinationFundTypeName,
-      amount: tx.transaction ? tx.transaction.amount : 0,
+      amount: tx.transaction?.amount ?? 0,
       schedule: isRecurring ? ScheduleEnum.Monthly : ScheduleEnum.OneTime,
       status: status,
       transferDate: isRecurring
@@ -155,7 +155,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
       endDate: tx.recurringTransfer?.recurringEnd || null,
       note: tx.subCategory?.name ?? 'default note',
       actions: shouldShowActions() === false ? 'edit-delete' : '',
-      recurringId: tx.recurringTransfer?.id || null,
+      recurringId: tx.recurringTransfer?.id ?? null,
       baseAmount: tx.baseAmount,
       failedCount: tx.failedCount,
       summarizedTransfers: tx.summarizedTransfers,
@@ -164,18 +164,14 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
   });
 
   const upcomingTransfers: Transfers[] = upcoming.map((tx) => {
-    const isRecurring = !!tx.recurringTransfer;
-
     return {
-      id: tx.transaction ? tx.transaction.id : crypto.randomUUID(),
+      id: tx.transaction?.id ?? crypto.randomUUID(),
       transferFrom: tx.transfer.sourceFundTypeName,
       transferTo: tx.transfer.destinationFundTypeName,
-      amount: isRecurring ? tx.recurringTransfer?.amount : 0,
+      amount: tx.recurringTransfer?.amount ?? 0,
       schedule: ScheduleEnum.Monthly,
       status: StatusEnum.Pending,
-      transferDate: isRecurring
-        ? tx.recurringTransfer?.recurringStart
-        : tx.transaction?.transactedAt,
+      transferDate: tx.recurringTransfer?.recurringStart,
       endDate: tx.recurringTransfer?.recurringEnd ?? null,
       note: tx.subCategory?.name ?? '',
       actions: 'edit-delete',

@@ -22,7 +22,7 @@ import { StatusEnum, Transfers } from '../mockData';
 interface FailedTransfers {
   amount: number;
   status: StatusEnum;
-  transferDate: DateTime;
+  transferDate: DateTime | undefined;
 }
 
 interface FailedTransferModalProps {
@@ -44,9 +44,7 @@ export const FailedTransferModal: React.FC<FailedTransferModalProps> = ({
         results.push({
           amount: tx.baseAmount,
           status: StatusEnum.Complete,
-          transferDate: tx.transaction
-            ? tx.transaction.transactedAt
-            : DateTime.now(),
+          transferDate: tx.transaction?.transactedAt,
         });
       });
     }
