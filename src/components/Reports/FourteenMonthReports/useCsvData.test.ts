@@ -1,24 +1,40 @@
 import { renderHook } from '@testing-library/react-hooks';
-import { ErgonoMockShape } from 'graphql-ergonomock';
-import { DeepPartial } from 'ts-essentials';
-import { gqlMock } from '__tests__/util/graphqlMocking';
 import { StatusEnum } from 'src/graphql/types.generated';
 import { CurrencyTable } from './FourteenMonthReport';
-import {
-  FourteenMonthReportContactFragment,
-  FourteenMonthReportContactFragmentDoc,
-} from './GetFourteenMonthReport.generated';
+import { Contact } from './Layout/Table/TableHead/TableHead';
 import { useCsvData } from './useCsvData';
 
-const mockContact = (
-  mocks?: ErgonoMockShape & DeepPartial<FourteenMonthReportContactFragment>,
-) =>
-  gqlMock<FourteenMonthReportContactFragment>(
-    FourteenMonthReportContactFragmentDoc,
+const mockContact = (mocks?: Partial<Contact>): Contact => ({
+  id: 'contact-1',
+  name: 'Test Contact',
+  total: 100,
+  average: 25,
+  minimum: 50,
+  completeMonthsTotal: 100,
+  accountNumbers: ['12345'],
+  lateBy30Days: false,
+  lateBy60Days: false,
+  pledgeAmount: 100,
+  pledgeCurrency: 'USD',
+  pledgeFrequency: 'Monthly',
+  status: 'PARTNER_FINANCIAL',
+  months: [
     {
-      mocks,
+      month: '2021-01',
+      total: 25,
+      salaryCurrencyTotal: 25,
+      donations: [
+        {
+          amount: 25,
+          date: '2021-01-15',
+          paymentMethod: 'Check',
+          currency: 'USD',
+        },
+      ],
     },
-  );
+  ],
+  ...mocks,
+});
 
 describe('useCsvData', () => {
   it('generates CSV data', async () => {
@@ -50,20 +66,90 @@ describe('useCsvData', () => {
             pledgeCurrency: 'USD',
             pledgeFrequency: '3.0',
             months: [
-              { total: 0, month: '2020-12-01' },
-              { total: 350, month: '2020-11-01' },
-              { total: 300, month: '2020-10-01' },
-              { total: 250, month: '2020-09-01' },
-              { total: 200, month: '2020-08-01' },
-              { total: 0, month: '2020-07-01' },
-              { total: 0, month: '2020-06-01' },
-              { total: 0, month: '2020-05-01' },
-              { total: 0, month: '2020-04-01' },
-              { total: 0, month: '2020-03-01' },
-              { total: 0, month: '2020-02-01' },
-              { total: 0, month: '2020-01-01' },
-              { total: 0, month: '2019-12-01' },
-              { total: 0, month: '2019-11-01' },
+              {
+                total: 0,
+                month: '2020-12-01',
+                salaryCurrencyTotal: 0,
+                donations: [],
+              },
+              {
+                total: 350,
+                month: '2020-11-01',
+                salaryCurrencyTotal: 350,
+                donations: [],
+              },
+              {
+                total: 300,
+                month: '2020-10-01',
+                salaryCurrencyTotal: 300,
+                donations: [],
+              },
+              {
+                total: 250,
+                month: '2020-09-01',
+                salaryCurrencyTotal: 250,
+                donations: [],
+              },
+              {
+                total: 200,
+                month: '2020-08-01',
+                salaryCurrencyTotal: 200,
+                donations: [],
+              },
+              {
+                total: 0,
+                month: '2020-07-01',
+                salaryCurrencyTotal: 0,
+                donations: [],
+              },
+              {
+                total: 0,
+                month: '2020-06-01',
+                salaryCurrencyTotal: 0,
+                donations: [],
+              },
+              {
+                total: 0,
+                month: '2020-05-01',
+                salaryCurrencyTotal: 0,
+                donations: [],
+              },
+              {
+                total: 0,
+                month: '2020-04-01',
+                salaryCurrencyTotal: 0,
+                donations: [],
+              },
+              {
+                total: 0,
+                month: '2020-03-01',
+                salaryCurrencyTotal: 0,
+                donations: [],
+              },
+              {
+                total: 0,
+                month: '2020-02-01',
+                salaryCurrencyTotal: 0,
+                donations: [],
+              },
+              {
+                total: 0,
+                month: '2020-01-01',
+                salaryCurrencyTotal: 0,
+                donations: [],
+              },
+              {
+                total: 0,
+                month: '2019-12-01',
+                salaryCurrencyTotal: 0,
+                donations: [],
+              },
+              {
+                total: 0,
+                month: '2019-11-01',
+                salaryCurrencyTotal: 0,
+                donations: [],
+              },
             ],
           }),
 
@@ -75,20 +161,90 @@ describe('useCsvData', () => {
             pledgeCurrency: 'USD',
             pledgeFrequency: '12.0',
             months: [
-              { total: 0, month: '2020-12-01' },
-              { total: 100, month: '2020-11-01' },
-              { total: 0, month: '2020-10-01' },
-              { total: 200, month: '2020-09-01' },
-              { total: 0, month: '2020-08-01' },
-              { total: 100, month: '2020-07-01' },
-              { total: 0, month: '2020-06-01' },
-              { total: 200, month: '2020-05-01' },
-              { total: 0, month: '2020-04-01' },
-              { total: 100, month: '2020-03-01' },
-              { total: 0, month: '2020-02-01' },
-              { total: 200, month: '2020-01-01' },
-              { total: 0, month: '2019-12-01' },
-              { total: 100, month: '2019-11-01' },
+              {
+                total: 0,
+                month: '2020-12-01',
+                salaryCurrencyTotal: 0,
+                donations: [],
+              },
+              {
+                total: 100,
+                month: '2020-11-01',
+                salaryCurrencyTotal: 100,
+                donations: [],
+              },
+              {
+                total: 0,
+                month: '2020-10-01',
+                salaryCurrencyTotal: 0,
+                donations: [],
+              },
+              {
+                total: 200,
+                month: '2020-09-01',
+                salaryCurrencyTotal: 200,
+                donations: [],
+              },
+              {
+                total: 0,
+                month: '2020-08-01',
+                salaryCurrencyTotal: 0,
+                donations: [],
+              },
+              {
+                total: 100,
+                month: '2020-07-01',
+                salaryCurrencyTotal: 100,
+                donations: [],
+              },
+              {
+                total: 0,
+                month: '2020-06-01',
+                salaryCurrencyTotal: 0,
+                donations: [],
+              },
+              {
+                total: 200,
+                month: '2020-05-01',
+                salaryCurrencyTotal: 200,
+                donations: [],
+              },
+              {
+                total: 0,
+                month: '2020-04-01',
+                salaryCurrencyTotal: 0,
+                donations: [],
+              },
+              {
+                total: 100,
+                month: '2020-03-01',
+                salaryCurrencyTotal: 100,
+                donations: [],
+              },
+              {
+                total: 0,
+                month: '2020-02-01',
+                salaryCurrencyTotal: 0,
+                donations: [],
+              },
+              {
+                total: 200,
+                month: '2020-01-01',
+                salaryCurrencyTotal: 200,
+                donations: [],
+              },
+              {
+                total: 0,
+                month: '2019-12-01',
+                salaryCurrencyTotal: 0,
+                donations: [],
+              },
+              {
+                total: 100,
+                month: '2019-11-01',
+                salaryCurrencyTotal: 100,
+                donations: [],
+              },
             ],
           }),
         ],
@@ -159,7 +315,7 @@ describe('useCsvData', () => {
         0,
         0,
         0,
-        84,
+        100,
       ],
       [
         'Annual Partner',
@@ -186,7 +342,7 @@ describe('useCsvData', () => {
         200,
         0,
         100,
-        84,
+        100,
       ],
       [
         'Totals',

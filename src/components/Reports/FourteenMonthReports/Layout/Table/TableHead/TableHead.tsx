@@ -5,23 +5,43 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { MonthTotal } from '../../../FourteenMonthReport';
-import {
-  FourteenMonthReportContactFragment,
-  FourteenMonthReportQuery,
-} from '../../../GetFourteenMonthReport.generated';
 import { StyledTableCell } from '../StyledComponents';
 import { TableHeadCell } from './TableHeadCell/TableHeadCell';
 import type { Order } from '../../../../Reports.type';
 
-export type Contact = FourteenMonthReportContactFragment;
-export type OrderBy = keyof FourteenMonthReportContactFragment | number; // numbers mean sorting by a specific month index
+export interface Contact {
+  id: string;
+  name: string;
+  total: number;
+  average: number;
+  minimum: number;
+  completeMonthsTotal: number;
+  accountNumbers: string[];
+  lateBy30Days: boolean;
+  lateBy60Days: boolean;
+  pledgeAmount: number | null;
+  pledgeCurrency?: string | null;
+  pledgeFrequency?: string | null;
+  status?: string | null;
+  months: Array<{
+    month: string;
+    total: number;
+    salaryCurrencyTotal: number;
+    donations: Array<{
+      amount: number;
+      date: string;
+      paymentMethod: string | null;
+      currency: string;
+    }>;
+  }>;
+}
+
+export type OrderBy = keyof Contact | number; // numbers mean sorting by a specific month index
 
 export interface FourteenMonthReportTableHeadProps {
   isExpanded: boolean;
   totals: MonthTotal[] | undefined;
-  salaryCurrency:
-    | FourteenMonthReportQuery['fourteenMonthReport']['salaryCurrency']
-    | undefined;
+  salaryCurrency: string | undefined;
   onRequestSort: (event: React.MouseEvent<unknown>, property: OrderBy) => void;
   order: Order;
   orderBy: OrderBy | null;
