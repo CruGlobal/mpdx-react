@@ -153,7 +153,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
         ? tx.recurringTransfer?.recurringStart
         : tx.transaction?.transactedAt,
       endDate: tx.recurringTransfer?.recurringEnd || null,
-      note: tx.subCategory?.name ?? 'default note',
+      note: tx.transaction?.description ?? '',
       actions: shouldShowActions() === false ? 'edit-delete' : '',
       recurringId: tx.recurringTransfer?.id ?? null,
       baseAmount: tx.baseAmount,
@@ -163,21 +163,25 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
     };
   });
 
-  const upcomingTransfers: Transfers[] = upcoming.map((tx) => {
-    return {
-      id: tx.transaction?.id ?? crypto.randomUUID(),
-      transferFrom: tx.transfer.sourceFundTypeName,
-      transferTo: tx.transfer.destinationFundTypeName,
-      amount: tx.recurringTransfer?.amount ?? 0,
-      schedule: ScheduleEnum.Monthly,
-      status: StatusEnum.Pending,
-      transferDate: tx.recurringTransfer?.recurringStart,
-      endDate: tx.recurringTransfer?.recurringEnd ?? null,
-      note: tx.subCategory?.name ?? '',
-      actions: 'edit-delete',
-      recurringId: tx.recurringTransfer?.id ?? null,
-    };
-  });
+  const upcomingTransfers: Transfers[] = useMemo(
+    () =>
+      upcoming.map((tx) => {
+        return {
+          id: tx.transaction?.id ?? crypto.randomUUID(),
+          transferFrom: tx.transfer.sourceFundTypeName,
+          transferTo: tx.transfer.destinationFundTypeName,
+          amount: tx.recurringTransfer?.amount ?? 0,
+          schedule: ScheduleEnum.Monthly,
+          status: StatusEnum.Pending,
+          transferDate: tx.recurringTransfer?.recurringStart,
+          endDate: tx.recurringTransfer?.recurringEnd ?? null,
+          note: tx.subCategory?.name ?? '',
+          actions: 'edit-delete',
+          recurringId: tx.recurringTransfer?.id ?? null,
+        };
+      }),
+    [upcoming],
+  );
 
   const handlePrint = () => window.print();
 
