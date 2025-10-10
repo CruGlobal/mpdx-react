@@ -12,6 +12,7 @@ export const ContactsLeftPanel: React.FC = () => {
     filterData,
     filtersLoading,
     savedFilters,
+    preDefinedFilters,
     toggleFilterPanel,
     mapData,
     panTo,
@@ -31,6 +32,7 @@ export const ContactsLeftPanel: React.FC = () => {
   ) : filterData && !filtersLoading ? (
     <DynamicFilterPanel
       filters={filterData?.accountList?.contactFilterGroups}
+      preDefinedFilters={preDefinedFilters}
       savedFilters={savedFilters}
       onClose={toggleFilterPanel}
     />

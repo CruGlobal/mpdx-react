@@ -61,6 +61,7 @@ export interface AppealsType
     | 'setViewMode'
     | 'getContactHrefObject'
     | 'userOptionsLoading'
+    | 'preDefinedFilters'
   > {
   selectMultipleIds: (ids: string[]) => void;
   deselectMultipleIds: (ids: string[]) => void;
