@@ -6,14 +6,12 @@ import { UserOptionFragment } from './FilterPanel.generated';
 
 interface FilterListProps {
   filters: UserOptionFragment[];
-  showDeleteButton: boolean;
   onFilterSelect: (filter: UserOptionFragment) => void;
   onFilterDelete: (filter: UserOptionFragment) => void;
 }
 
 export const FilterList: React.FC<FilterListProps> = ({
   filters,
-  showDeleteButton,
   onFilterSelect,
   onFilterDelete,
 }) => {
@@ -23,15 +21,17 @@ export const FilterList: React.FC<FilterListProps> = ({
     <>
       {filters.map((filter) => {
         const filterName = filter?.key
-          ?.replace(/^(graphql_)?saved_(contacts|tasks|)_filter_/, '')
+          .replace(/^(graphql_)?saved_(contacts|tasks|)_filter_/, '')
           .replaceAll('_', ' ');
+
+        const showDeleteButton = filter?.id.startsWith('prewritten-filter-');
 
         return (
           <ListItem
             key={filter.id}
             button
             secondaryAction={
-              showDeleteButton ? (
+              !showDeleteButton ? (
                 <IconButton
                   edge="end"
                   aria-label={t('Delete')}

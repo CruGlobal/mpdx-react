@@ -643,7 +643,6 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                         <StyledFilterList dense sx={{ paddingY: 0 }}>
                           <FilterList
                             filters={preDefinedFilters}
-                            showDeleteButton={false}
                             onFilterSelect={setSelectedSavedFilter}
                             onFilterDelete={handleDeleteSavedFilter}
                           />
@@ -661,7 +660,6 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                         <StyledFilterList dense sx={{ paddingY: 0 }}>
                           <FilterList
                             filters={savedFilters}
-                            showDeleteButton={true}
                             onFilterSelect={setSelectedSavedFilter}
                             onFilterDelete={handleDeleteSavedFilter}
                           />
