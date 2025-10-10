@@ -175,6 +175,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
       endDate: tx.recurringTransfer?.recurringEnd ?? null,
       note: tx.subCategory?.name ?? '',
       actions: 'edit-delete',
+      recurringId: tx.recurringTransfer?.id ?? null,
     };
   });
 
