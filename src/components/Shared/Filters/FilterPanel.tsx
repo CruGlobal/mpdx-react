@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from 'react';
 import Close from '@mui/icons-material/Close';
-import DeleteIcon from '@mui/icons-material/Delete';
 import ExpandMore from '@mui/icons-material/ExpandMore';
 import {
   Accordion,
@@ -37,6 +36,7 @@ import {
 } from 'src/graphql/types.generated';
 import { convertStatus } from 'src/utils/functions/convertContactStatus';
 import { DeleteFilterModal } from './DeleteFilterModal/DeleteFilterModal';
+import { FilterList } from './FilterList';
 import { FilterListItem } from './FilterListItem';
 import { FilterListItemShowAll } from './FilterListItemShowAll';
 import {
@@ -66,7 +66,7 @@ const FilterHeader = styled(Box)(({ theme }) => ({
   borderBottomColor: theme.palette.grey[200],
 }));
 
-const FilterList = styled(List)(({ theme }) => ({
+const StyledFilterList = styled(List)(({ theme }) => ({
   '& .MuiListItemIcon-root': {
     minWidth: '37px',
   },
@@ -87,6 +87,8 @@ const FlatAccordion = styled(Accordion)(({ theme }) => ({
   '&.MuiPaper-elevation1': {
     boxShadow: 'none',
     borderBottom: `1px solid ${theme.palette.cruGrayLight.main}`,
+    marginBottom: 0,
+    '&:before': { display: 'none' },
   },
   '& .MuiAccordionDetails-root': {
     paddingLeft: 0,
@@ -102,6 +104,7 @@ export interface FilterPanelProps {
   filters: FilterPanelGroupFragment[];
   defaultExpandedFilterGroups?: Set<string>;
   savedFilters: UserOptionFragment[];
+  preDefinedFilters?: UserOptionFragment[];
   onClose: () => void;
   showSaveButton?: boolean;
 }
@@ -110,6 +113,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
   filters,
   defaultExpandedFilterGroups = new Set(),
   savedFilters,
+  preDefinedFilters,
   onClose,
   showSaveButton = true,
   ...boxProps
@@ -192,7 +196,10 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
       // Parse from string to json object
       const parsedFilter = JSON.parse(filter.value);
 
-      if (filter.key?.includes('graphql_')) {
+      if (
+        filter.key?.includes('graphql_') ||
+        filter.id?.includes('pre-defined-filter-')
+      ) {
         // Clear current filters
         clearSelectedFilter();
         // Filter out accountListId from filter
@@ -622,7 +629,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                 onSelectedFiltersChanged={setActiveFilters}
               />
             )}
-            <FilterList dense sx={{ paddingY: 0 }}>
+            <StyledFilterList dense sx={{ paddingY: 0 }}>
               {filters?.length === 0 ? (
                 <ListItem data-testid="NoFiltersState">
                   <ListItemText
@@ -632,49 +639,36 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                 </ListItem>
               ) : (
                 <>
+                  {preDefinedFilters && preDefinedFilters.length > 0 && (
+                    <FlatAccordion>
+                      <AccordionSummary expandIcon={<ExpandMore />}>
+                        <Typography>{t('Predefined Filters')}</Typography>
+                      </AccordionSummary>
+                      <AccordionDetails sx={{ p: 0 }}>
+                        <StyledFilterList dense sx={{ paddingY: 0 }}>
+                          <FilterList
+                            filters={preDefinedFilters}
+                            onFilterSelect={setSelectedSavedFilter}
+                            onFilterDelete={handleDeleteSavedFilter}
+                          />
+                        </StyledFilterList>
+                      </AccordionDetails>
+                    </FlatAccordion>
+                  )}
+
                   {savedFilters.length > 0 && (
                     <FlatAccordion>
                       <AccordionSummary expandIcon={<ExpandMore />}>
                         <Typography>{t('Saved Filters')}</Typography>
                       </AccordionSummary>
-                      <AccordionDetails>
-                        <FilterList dense sx={{ paddingY: 0 }}>
-                          {savedFilters.map((filter) => {
-                            const filterName = filter?.key
-                              ?.replace(
-                                /^(graphql_)?saved_(contacts|tasks|)_filter_/,
-                                '',
-                              )
-                              .replaceAll('_', ' ');
-
-                            return (
-                              <ListItem
-                                key={filter.id}
-                                button
-                                secondaryAction={
-                                  <IconButton
-                                    edge="end"
-                                    aria-label={t('Delete')}
-                                    data-testid="deleteSavedFilter"
-                                    onClick={() =>
-                                      handleDeleteSavedFilter(filter)
-                                    }
-                                  >
-                                    <DeleteIcon />
-                                  </IconButton>
-                                }
-                              >
-                                <ListItemText
-                                  onClick={() => setSelectedSavedFilter(filter)}
-                                  primary={filterName}
-                                  primaryTypographyProps={{
-                                    variant: 'subtitle1',
-                                  }}
-                                />
-                              </ListItem>
-                            );
-                          })}
-                        </FilterList>
+                      <AccordionDetails sx={{ p: 0 }}>
+                        <StyledFilterList dense sx={{ paddingY: 0 }}>
+                          <FilterList
+                            filters={savedFilters}
+                            onFilterSelect={setSelectedSavedFilter}
+                            onFilterDelete={handleDeleteSavedFilter}
+                          />
+                        </StyledFilterList>
                       </AccordionDetails>
                     </FlatAccordion>
                   )}
@@ -707,7 +701,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                               </Typography>
                             </AccordionSummary>
                             <AccordionDetails>
-                              <FilterList dense>
+                              <StyledFilterList dense>
                                 {group.filters.map((filter) => {
                                   const { filterKey } = filter;
                                   const filterKeyCamel = snakeToCamel(
@@ -752,7 +746,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                                     />
                                   );
                                 })}
-                              </FilterList>
+                              </StyledFilterList>
                             </AccordionDetails>
                           </FlatAccordion>
                         </Collapse>
@@ -766,7 +760,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                   ) : null}
                 </>
               )}
-            </FilterList>
+            </StyledFilterList>
           </div>
         </Slide>
       </div>
