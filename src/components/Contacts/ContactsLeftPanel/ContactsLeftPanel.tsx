@@ -6,6 +6,7 @@ import {
   ContactsType,
 } from '../ContactsContext/ContactsContext';
 import { DynamicContactsMapPanel } from '../ContactsMap/DynamicContactsMapPanel';
+import { preDefinedFilters } from './preDefinedFilters';
 
 export const ContactsLeftPanel: React.FC = () => {
   const {
@@ -31,6 +32,7 @@ export const ContactsLeftPanel: React.FC = () => {
   ) : filterData && !filtersLoading ? (
     <DynamicFilterPanel
       filters={filterData?.accountList?.contactFilterGroups}
+      preDefinedFilters={preDefinedFilters}
       savedFilters={savedFilters}
       onClose={toggleFilterPanel}
     />
