@@ -87,6 +87,7 @@ const FlatAccordion = styled(Accordion)(({ theme }) => ({
   '&.MuiPaper-elevation1': {
     boxShadow: 'none',
     borderBottom: `1px solid ${theme.palette.cruGrayLight.main}`,
+    marginBottom: 0,
   },
   '& .MuiAccordionDetails-root': {
     paddingLeft: 0,
@@ -194,7 +195,10 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
       // Parse from string to json object
       const parsedFilter = JSON.parse(filter.value);
 
-      if (filter.key?.includes('graphql_')) {
+      if (
+        filter.key?.includes('graphql_') ||
+        filter.id?.includes('prewritten-filter-')
+      ) {
         // Clear current filters
         clearSelectedFilter();
         // Filter out accountListId from filter
@@ -639,7 +643,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                       <AccordionSummary expandIcon={<ExpandMore />}>
                         <Typography>{t('Predefined Filters')}</Typography>
                       </AccordionSummary>
-                      <AccordionDetails>
+                      <AccordionDetails sx={{ p: 0 }}>
                         <StyledFilterList dense sx={{ paddingY: 0 }}>
                           <FilterList
                             filters={preDefinedFilters}
@@ -656,7 +660,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
                       <AccordionSummary expandIcon={<ExpandMore />}>
                         <Typography>{t('Saved Filters')}</Typography>
                       </AccordionSummary>
-                      <AccordionDetails>
+                      <AccordionDetails sx={{ p: 0 }}>
                         <StyledFilterList dense sx={{ paddingY: 0 }}>
                           <FilterList
                             filters={savedFilters}
