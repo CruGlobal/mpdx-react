@@ -30,7 +30,7 @@ import {
   ContactFilterSetInput,
   ContactFilterStatusEnum,
   FilterGroup,
-  ReportContactFilterSetInput,
+  PartnerGivingAnalysisFilterSetInput,
   ResultEnum,
   TaskFilterSetInput,
 } from 'src/graphql/types.generated';
@@ -98,7 +98,7 @@ const FlatAccordion = styled(Accordion)(({ theme }) => ({
 
 export type FilterInput = ContactFilterSetInput &
   TaskFilterSetInput &
-  ReportContactFilterSetInput;
+  PartnerGivingAnalysisFilterSetInput;
 
 export interface FilterPanelProps {
   filters: FilterPanelGroupFragment[];
@@ -263,10 +263,6 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
               case 'reverseDesignationAccountId':
               case 'reverseDonation':
               case 'reverseDonationAmount':
-              case 'reverseDonationPeriodAverage':
-              case 'reverseDonationPeriodCount':
-              case 'reverseDonationPeriodPercentRank':
-              case 'reverseDonationPeriodSum':
               case 'reverseIds':
               case 'reverseLikely':
               case 'reverseLocale':

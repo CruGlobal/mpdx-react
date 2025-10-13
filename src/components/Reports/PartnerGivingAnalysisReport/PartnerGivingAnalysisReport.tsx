@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Box, CircularProgress, TablePagination } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Panel } from 'pages/accountLists/[accountListId]/reports/helpers';
@@ -10,14 +10,19 @@ import {
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import {
-  PartnerGivingAnalysisReportContact,
-  ReportContactFilterSetInput,
-  SortDirection,
+  PartnerGivingAnalysis,
+  PartnerGivingAnalysisFilterSetInput,
+  PartnerGivingAnalysisSortEnum,
 } from 'src/graphql/types.generated';
 import { useGetPartnerGivingAnalysisIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import { useTablePaginationLocaleText } from 'src/hooks/useMuiLocaleText';
-import { useGetPartnerGivingAnalysisReportQuery } from './PartnerGivingAnalysisReport.generated';
+import {
+  AscendingSortEnums,
+  DescendingSortEnums,
+  EnumMap,
+} from './Helper/sortRecords';
+import { usePartnerGivingAnalysisQuery } from './PartnerGivingAnalysis.generated';
 import { PartnerGivingAnalysisReportTable as Table } from './Table/Table';
 import type { Order } from '../Reports.type';
 
@@ -29,7 +34,7 @@ interface Props {
   title: string;
 }
 
-export type Contact = PartnerGivingAnalysisReportContact;
+export type Contact = PartnerGivingAnalysis;
 
 export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   accountListId,
@@ -40,61 +45,56 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
   const [order, setOrder] = useState<Order>('asc');
-  const [orderBy, setOrderBy] = useState<keyof Contact>('name');
+  const [orderBy, setOrderBy] = useState<PartnerGivingAnalysisSortEnum>(
+    PartnerGivingAnalysisSortEnum.NameAsc,
+  );
   const [limit, setLimit] = useState<number>(10);
   const [page, setPage] = useState<number>(0);
   const { activeFilters, searchTerm } = useUrlFilters();
+  const cursorsRef = useRef(new Map<number, string | null>([[0, null]]));
 
-  const contactFilters: ReportContactFilterSetInput = {
+  const contactFilters: PartnerGivingAnalysisFilterSetInput = {
     ...activeFilters,
     ...(searchTerm && {
       nameLike: `%${searchTerm}%`,
     }),
   };
 
-  const { data, previousData, loading } =
-    useGetPartnerGivingAnalysisReportQuery({
+  const { data, previousData, loading, refetch } =
+    usePartnerGivingAnalysisQuery({
       variables: {
         input: {
           accountListId,
-          // Page 1 is the first page for the API
-          page: page + 1,
-          pageSize: limit,
-          sortField: orderBy ?? '',
-          sortDirection:
-            order === 'asc'
-              ? SortDirection.Ascending
-              : SortDirection.Descending,
-          contactFilters,
+          sortBy: orderBy,
+          filters: contactFilters,
         },
+        first: limit,
+        after: cursorsRef.current.get(page) ?? null,
       },
+      notifyOnNetworkStatusChange: true,
     });
-  const contacts = data?.partnerGivingAnalysisReport.contacts ?? [];
+
+  const contacts = data?.partnerGivingAnalysis.nodes ?? [];
 
   const contactCount =
-    (data ?? previousData)?.partnerGivingAnalysisReport?.totalContacts ?? 0;
+    (data ?? previousData)?.partnerGivingAnalysis?.totalCount ?? 0;
   const { data: allContacts, previousData: allContactsPrevious } =
     useGetPartnerGivingAnalysisIdsForMassSelectionQuery({
       variables: {
         input: {
           accountListId,
-          page: 1,
-          pageSize: contactCount,
-          sortField: '',
-          sortDirection: SortDirection.Ascending,
-          contactFilters,
         },
       },
       skip: contactCount === 0,
+      notifyOnNetworkStatusChange: true,
     });
   // When the next batch of contact ids is loading, use the previous batch of contact ids in the
   // meantime to avoid throwing out the selected contact ids.
   const allContactIds = useMemo(
     () =>
-      (
-        allContacts ?? allContactsPrevious
-      )?.partnerGivingAnalysisReport?.contacts.map((contact) => contact.id) ??
-      [],
+      (allContacts ?? allContactsPrevious)?.partnerGivingAnalysis?.nodes.map(
+        (contact) => contact.id,
+      ) ?? [],
     [allContacts, allContactsPrevious],
   );
 
@@ -108,20 +108,39 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
 
   const localeText = useTablePaginationLocaleText();
 
+  useEffect(() => {
+    const end = data?.partnerGivingAnalysis?.pageInfo?.endCursor ?? null;
+    if (end !== null) {
+      cursorsRef.current.set(page + 1, end);
+    }
+  }, [data, page]);
+
   const handleRequestSort = (
     _event: React.MouseEvent<unknown>,
     property: string,
   ) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property as keyof Contact);
+    const transformOrderBy = EnumMap[orderBy];
+    const isAsc = transformOrderBy === property && order === 'asc';
+    const newOrder = isAsc ? 'desc' : 'asc';
+
+    setOrder(newOrder);
+    setOrderBy(
+      newOrder === 'asc'
+        ? AscendingSortEnums[property]
+        : DescendingSortEnums[property],
+    );
   };
 
-  const handlePageChange = (
+  const handlePageChange = async (
     _event: React.MouseEvent<unknown> | null,
     newPage: number,
-  ): void => {
+  ) => {
     setPage(newPage);
+    await refetch({
+      input: { accountListId },
+      first: limit,
+      after: cursorsRef.current.get(newPage) ?? null,
+    });
   };
 
   const handleLimitChange = (
@@ -169,10 +188,9 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
           />
           <TablePagination
             colSpan={3}
-            count={data?.partnerGivingAnalysisReport.pagination.totalItems ?? 0}
+            count={contactCount}
             onPageChange={handlePageChange}
             onRowsPerPageChange={handleLimitChange}
-            // Page 0 is the first page for the component
             page={page}
             rowsPerPage={limit}
             rowsPerPageOptions={[10, 25, 50]}
@@ -188,7 +206,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
       ) : (
         <EmptyReport
           title={t('You have {{contacts}} total contacts', {
-            contacts: data?.partnerGivingAnalysisReport.totalContacts ?? '?',
+            contacts: data?.partnerGivingAnalysis.totalCount ?? '?',
           })}
           subTitle={t(
             'Unfortunately none of them match your current search or filters.',

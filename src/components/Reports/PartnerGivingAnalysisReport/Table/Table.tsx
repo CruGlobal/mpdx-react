@@ -17,16 +17,13 @@ import { useContactPanel } from 'src/components/common/ContactPanelProvider/Cont
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import theme from 'src/theme';
+import { Contact } from '../PartnerGivingAnalysisReport';
 import { PartnerGivingAnalysisReportTableHead as TableHead } from './TableHead/TableHead';
 import type { Order } from '../../Reports.type';
-import type { Contact } from '../PartnerGivingAnalysisReport';
 
 interface PartnerGivingAnalysisReportTableProps {
   onSelectOne: (contactId: string) => void;
-  onRequestSort: (
-    event: React.MouseEvent<unknown>,
-    property: keyof Contact,
-  ) => void;
+  onRequestSort: (event: React.MouseEvent<unknown>, property: string) => void;
   contacts: Contact[];
   order: Order;
   orderBy: string | null;
@@ -131,7 +128,7 @@ export const PartnerGivingAnalysisReportTable: FC<
               </TableCell>
               <TableCell>
                 {currencyFormat(
-                  contact.donationPeriodSum,
+                  contact.donationPeriodSum ?? 0,
                   contact.pledgeCurrency,
                   locale,
                 )}
@@ -139,27 +136,27 @@ export const PartnerGivingAnalysisReportTable: FC<
               <TableCell>{contact.donationPeriodCount}</TableCell>
               <TableCell>
                 {currencyFormat(
-                  contact.donationPeriodAverage,
+                  contact.donationPeriodAverage ?? 0,
                   contact.pledgeCurrency,
                   locale,
                 )}
               </TableCell>
               <TableCell>
                 {currencyFormat(
-                  contact.lastDonationAmount,
+                  contact.lastDonationAmount ?? 0,
                   contact.lastDonationCurrency,
                   locale,
                 )}
               </TableCell>
               <TableCell>
                 {dateFormatShort(
-                  DateTime.fromISO(contact.lastDonationDate),
+                  DateTime.fromISO(contact.lastDonationDate ?? ''),
                   locale,
                 )}
               </TableCell>
               <TableCell>
                 {currencyFormat(
-                  contact.totalDonations,
+                  contact.totalDonations ?? 0,
                   contact.pledgeCurrency,
                   locale,
                 )}
