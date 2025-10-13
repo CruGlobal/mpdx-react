@@ -4,9 +4,9 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
-import { PartnerGivingAnalysisReportContact } from 'src/graphql/types.generated';
+import { PartnerGivingAnalysis } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { GetPartnerGivingAnalysisReportQuery } from '../PartnerGivingAnalysisReport.generated';
+import { PartnerGivingAnalysisQuery } from '../PartnerGivingAnalysis.generated';
 import { PartnerGivingAnalysisReportTable } from './Table';
 import type { Order } from '../../Reports.type';
 
@@ -20,7 +20,7 @@ const router = {
   push: jest.fn(),
 };
 
-type Contact = PartnerGivingAnalysisReportContact;
+type Contact = PartnerGivingAnalysis;
 
 const order: Order = 'asc';
 const orderBy: keyof Contact = 'name';
@@ -31,11 +31,11 @@ const onSelectAll = jest.fn();
 const onSelectOne = jest.fn();
 
 const mocks: {
-  GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
+  PartnerGivingAnalysis: PartnerGivingAnalysisQuery;
 } = {
-  GetPartnerGivingAnalysisReport: {
-    partnerGivingAnalysisReport: {
-      contacts: [
+  PartnerGivingAnalysis: {
+    partnerGivingAnalysis: {
+      nodes: [
         {
           donationPeriodAverage: 88.468,
           donationPeriodCount: 176,
@@ -73,19 +73,19 @@ const mocks: {
           totalDonations: 25218.42,
         },
       ],
-      pagination: {
-        page: 1,
-        pageSize: 10,
-        totalItems: 120,
-        totalPages: 12,
+      pageInfo: {
+        hasNextPage: true,
+        endCursor: 'endCursor',
       },
-      totalContacts: 300,
+      edges: [{ cursor: 'cursor' }],
+      totalCount: 300,
+      totalPageCount: 12,
     },
   },
 };
 
 const allContactIds =
-  mocks.GetPartnerGivingAnalysisReport.partnerGivingAnalysisReport?.contacts.map(
+  mocks.PartnerGivingAnalysis.partnerGivingAnalysis?.nodes.map(
     (contact) => contact.id,
   ) ?? [];
 
@@ -106,10 +106,7 @@ const Components = () => (
       <ContactPanelProvider>
         <PartnerGivingAnalysisReportTable
           {...defaultProps}
-          contacts={
-            mocks.GetPartnerGivingAnalysisReport.partnerGivingAnalysisReport
-              .contacts
-          }
+          contacts={mocks.PartnerGivingAnalysis.partnerGivingAnalysis.nodes}
         />
       </ContactPanelProvider>
     </TestRouter>
