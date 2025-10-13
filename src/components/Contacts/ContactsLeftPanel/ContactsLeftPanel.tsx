@@ -6,13 +6,13 @@ import {
   ContactsType,
 } from '../ContactsContext/ContactsContext';
 import { DynamicContactsMapPanel } from '../ContactsMap/DynamicContactsMapPanel';
+import { preDefinedFilters } from './preDefinedFilters';
 
 export const ContactsLeftPanel: React.FC = () => {
   const {
     filterData,
     filtersLoading,
     savedFilters,
-    preDefinedFilters,
     toggleFilterPanel,
     mapData,
     panTo,

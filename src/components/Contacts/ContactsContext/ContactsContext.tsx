@@ -24,7 +24,6 @@ import {
   TableViewModeEnum,
 } from '../../Shared/Header/ListHeader';
 import { Coordinates } from '../ContactsMap/coordinates';
-import { getPreDefinedFilters } from './preDefinedFilters';
 
 export type ContactsType = {
   accountListId: string | undefined;
@@ -37,7 +36,6 @@ export type ContactsType = {
   filtersLoading: boolean;
   toggleFilterPanel: () => void;
   savedFilters: UserOptionFragment[];
-  preDefinedFilters: UserOptionFragment[];
   selected: Coordinates | null;
   setSelected: Dispatch<SetStateAction<Coordinates | null>>;
   mapRef: React.MutableRefObject<google.maps.Map | null>;
@@ -175,10 +173,6 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     [filterData, accountListId],
   );
 
-  const preDefinedFilters: UserOptionFragment[] = useMemo(
-    () => getPreDefinedFilters(),
-    [accountListId],
-  );
   //#endregion
 
   //#region JSX
@@ -215,7 +209,6 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
       filtersLoading,
       toggleFilterPanel,
       savedFilters,
-      preDefinedFilters,
       selected,
       setSelected,
       mapRef,
@@ -240,7 +233,6 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
       filtersLoading,
       toggleFilterPanel,
       savedFilters,
-      preDefinedFilters,
       selected,
       setSelected,
       mapData,
