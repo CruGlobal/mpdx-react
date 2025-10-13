@@ -8,8 +8,8 @@ import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider
 import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { GetPartnerGivingAnalysisIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import theme from 'src/theme';
+import { PartnerGivingAnalysisQuery } from './PartnerGivingAnalysis.generated';
 import { PartnerGivingAnalysisReport } from './PartnerGivingAnalysisReport';
-import { GetPartnerGivingAnalysisReportQuery } from './PartnerGivingAnalysisReport.generated';
 
 const accountListId = '111';
 const title = 'test title';
@@ -45,18 +45,15 @@ const TestComponent: React.FC<TestComponentProps> = ({
   <TestRouter router={router}>
     <ThemeProvider theme={theme}>
       <GqlMockedProvider<{
-        GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
+        GetPartnerGivingAnalysis: PartnerGivingAnalysisQuery;
       }>
         mocks={
           noContacts
             ? {
-                GetPartnerGivingAnalysisReport: {
-                  partnerGivingAnalysisReport: {
-                    contacts: [],
-                    pagination:
-                      mocks.GetPartnerGivingAnalysisReport
-                        .partnerGivingAnalysisReport.pagination,
-                    totalContacts: 300,
+                GetPartnerGivingAnalysis: {
+                  partnerGivingAnalysis: {
+                    nodes: [],
+                    totalCount: 300,
                   },
                 },
               }
@@ -81,14 +78,14 @@ const TestComponent: React.FC<TestComponentProps> = ({
 );
 
 type Mocks = {
-  GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
+  GetPartnerGivingAnalysis: PartnerGivingAnalysisQuery;
   GetPartnerGivingAnalysisIdsForMassSelection?: GetPartnerGivingAnalysisIdsForMassSelectionQuery;
 };
 
 const mocks: Mocks = {
-  GetPartnerGivingAnalysisReport: {
-    partnerGivingAnalysisReport: {
-      contacts: [
+  GetPartnerGivingAnalysis: {
+    partnerGivingAnalysis: {
+      nodes: [
         {
           donationPeriodAverage: 88.468,
           donationPeriodCount: 176,
@@ -222,18 +219,18 @@ const mocks: Mocks = {
           totalDonations: 25218.42,
         },
       ],
-      pagination: {
-        page: 1,
-        pageSize: 10,
-        totalItems: 120,
-        totalPages: 12,
+      pageInfo: {
+        endCursor: 'endCursor',
+        hasNextPage: true,
       },
-      totalContacts: 11,
+      edges: [{ cursor: 'cursor' }],
+      totalCount: 11,
+      totalPageCount: 12,
     },
   },
   GetPartnerGivingAnalysisIdsForMassSelection: {
-    partnerGivingAnalysisReport: {
-      contacts: [
+    partnerGivingAnalysis: {
+      nodes: [
         { id: '01' },
         { id: '02' },
         { id: '03' },

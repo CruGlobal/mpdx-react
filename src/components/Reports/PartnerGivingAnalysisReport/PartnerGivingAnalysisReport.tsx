@@ -8,16 +8,11 @@ import {
   HeaderTypeEnum,
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
-import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
-import {
-  PartnerGivingAnalysisReportContact,
-  ReportContactFilterSetInput,
-  SortDirection,
-} from 'src/graphql/types.generated';
+import { PartnerGivingAnalysis } from 'src/graphql/types.generated';
 import { useGetPartnerGivingAnalysisIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import { useTablePaginationLocaleText } from 'src/hooks/useMuiLocaleText';
-import { useGetPartnerGivingAnalysisReportQuery } from './PartnerGivingAnalysisReport.generated';
+import { usePartnerGivingAnalysisQuery } from './PartnerGivingAnalysis.generated';
 import { PartnerGivingAnalysisReportTable as Table } from './Table/Table';
 import type { Order } from '../Reports.type';
 
@@ -29,7 +24,7 @@ interface Props {
   title: string;
 }
 
-export type Contact = PartnerGivingAnalysisReportContact;
+export type Contact = PartnerGivingAnalysis;
 
 export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   accountListId,
@@ -43,46 +38,24 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   const [orderBy, setOrderBy] = useState<keyof Contact>('name');
   const [limit, setLimit] = useState<number>(10);
   const [page, setPage] = useState<number>(0);
-  const { activeFilters, searchTerm } = useUrlFilters();
 
-  const contactFilters: ReportContactFilterSetInput = {
-    ...activeFilters,
-    ...(searchTerm && {
-      nameLike: `%${searchTerm}%`,
-    }),
-  };
-
-  const { data, previousData, loading } =
-    useGetPartnerGivingAnalysisReportQuery({
-      variables: {
-        input: {
-          accountListId,
-          // Page 1 is the first page for the API
-          page: page + 1,
-          pageSize: limit,
-          sortField: orderBy ?? '',
-          sortDirection:
-            order === 'asc'
-              ? SortDirection.Ascending
-              : SortDirection.Descending,
-          contactFilters,
-        },
+  const { data, previousData, loading } = usePartnerGivingAnalysisQuery({
+    variables: {
+      input: {
+        accountListId,
       },
-    });
-  const contacts = data?.partnerGivingAnalysisReport.contacts ?? [];
+    },
+  });
+
+  const contacts = data?.partnerGivingAnalysis.nodes ?? [];
 
   const contactCount =
-    (data ?? previousData)?.partnerGivingAnalysisReport?.totalContacts ?? 0;
+    (data ?? previousData)?.partnerGivingAnalysis?.totalCount ?? 0;
   const { data: allContacts, previousData: allContactsPrevious } =
     useGetPartnerGivingAnalysisIdsForMassSelectionQuery({
       variables: {
         input: {
           accountListId,
-          page: 1,
-          pageSize: contactCount,
-          sortField: '',
-          sortDirection: SortDirection.Ascending,
-          contactFilters,
         },
       },
       skip: contactCount === 0,
@@ -91,10 +64,9 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   // meantime to avoid throwing out the selected contact ids.
   const allContactIds = useMemo(
     () =>
-      (
-        allContacts ?? allContactsPrevious
-      )?.partnerGivingAnalysisReport?.contacts.map((contact) => contact.id) ??
-      [],
+      (allContacts ?? allContactsPrevious)?.partnerGivingAnalysis?.nodes.map(
+        (contact) => contact.id,
+      ) ?? [],
     [allContacts, allContactsPrevious],
   );
 
@@ -169,7 +141,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
           />
           <TablePagination
             colSpan={3}
-            count={data?.partnerGivingAnalysisReport.pagination.totalItems ?? 0}
+            count={data?.partnerGivingAnalysis.totalPageCount ?? 0}
             onPageChange={handlePageChange}
             onRowsPerPageChange={handleLimitChange}
             // Page 0 is the first page for the component
@@ -188,7 +160,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
       ) : (
         <EmptyReport
           title={t('You have {{contacts}} total contacts', {
-            contacts: data?.partnerGivingAnalysisReport.totalContacts ?? '?',
+            contacts: data?.partnerGivingAnalysis.totalCount ?? '?',
           })}
           subTitle={t(
             'Unfortunately none of them match your current search or filters.',

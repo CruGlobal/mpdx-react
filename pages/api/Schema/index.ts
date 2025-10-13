@@ -46,8 +46,6 @@ import { financialAccountEntriesResolvers } from './reports/financialAccounts/fi
 import { FinancialAccountsResolvers } from './reports/financialAccounts/resolvers';
 import FourteenMonthReportTypeDefs from './reports/fourteenMonth/fourteenMonth.graphql';
 import { FourteenMonthReportResolvers } from './reports/fourteenMonth/resolvers';
-import PartnerGivingAnalysisTypeDefs from './reports/partnerGivingAnalysis/partnerGivingAnalysis.graphql';
-import { PartnerGivingAnalysisReportResolvers } from './reports/partnerGivingAnalysis/resolvers';
 import ReportsPledgeHistoriesTyeDefs from './reports/pledgeHistories/pledgeHistories.graphql';
 import { ReportsPledgeHistoriesResolvers } from './reports/pledgeHistories/resolvers';
 import { ScalarResolvers } from './scalarResolvers';
@@ -86,10 +84,6 @@ const schema = buildSubgraphSchema([
   {
     typeDefs: FourteenMonthReportTypeDefs,
     resolvers: FourteenMonthReportResolvers,
-  },
-  {
-    typeDefs: PartnerGivingAnalysisTypeDefs,
-    resolvers: PartnerGivingAnalysisReportResolvers,
   },
   {
     typeDefs: ExpectedMonthlyTotalReportTypeDefs,

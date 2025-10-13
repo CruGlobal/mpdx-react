@@ -139,7 +139,7 @@ export const PartnerGivingAnalysisReportTable: FC<
               <TableCell>{contact.donationPeriodCount}</TableCell>
               <TableCell>
                 {currencyFormat(
-                  contact.donationPeriodAverage,
+                  contact.donationPeriodAverage ?? 0,
                   contact.pledgeCurrency,
                   locale,
                 )}
@@ -153,7 +153,7 @@ export const PartnerGivingAnalysisReportTable: FC<
               </TableCell>
               <TableCell>
                 {dateFormatShort(
-                  DateTime.fromISO(contact.lastDonationDate),
+                  DateTime.fromISO(contact.lastDonationDate ?? ''),
                   locale,
                 )}
               </TableCell>
