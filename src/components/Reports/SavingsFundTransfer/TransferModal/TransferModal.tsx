@@ -70,13 +70,13 @@ const transferSchema = (locale: string) =>
       .oneOf(Object.values(ScheduleEnum))
       .required(i18n.t('Schedule is required')),
     transferDate: yup
-      .date()
+      .mixed<DateTime>()
       .required(i18n.t('Transfer date is required'))
       .test('start-date', function (value) {
         if (!value) {
           return false;
         }
-        const selected = DateTime.fromJSDate(value).startOf('day');
+        const selected = value.startOf('day');
         const { schedule, originalStart, isEditing } = this.parent as {
           schedule: ScheduleEnum;
           originalStart?: DateTime<boolean> | null;
@@ -113,14 +113,21 @@ const transferSchema = (locale: string) =>
         });
       }),
     endDate: yup
-      .date()
+      .mixed<DateTime>()
       .nullable()
       .when('schedule', {
         is: (schedule: ScheduleEnum) => schedule !== ScheduleEnum.OneTime,
         then: (schema) =>
-          schema.min(
-            yup.ref('transferDate'),
+          schema.test(
+            'end>=start',
             i18n.t('End date must be after transfer date'),
+            function (end) {
+              const start = this.parent.transferDate as DateTime | null;
+              if (!end || !start) {
+                return true;
+              }
+              return end.toMillis() >= start.toMillis();
+            },
           ),
         otherwise: (schema) => schema.notRequired(),
       }),

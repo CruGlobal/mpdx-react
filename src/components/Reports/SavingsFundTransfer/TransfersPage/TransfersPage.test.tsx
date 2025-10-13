@@ -4,6 +4,7 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { Settings } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
@@ -32,10 +33,12 @@ const mock = {
   ReportsSavingsFundTransfer: {
     reportsSavingsFundTransfer: [
       {
-        id: '12345',
-        amount: 2500,
-        description: null,
-        transactedAt: '2023-09-26T00:00:00+00:00',
+        transaction: {
+          id: '12345',
+          amount: 2500,
+          description: null,
+          transactedAt: '2023-09-26T00:00:00+00:00',
+        },
         subCategory: {
           id: '1',
           name: 'deposit',
@@ -47,10 +50,12 @@ const mock = {
         recurringTransfer: null,
       },
       {
-        id: '67890',
-        amount: 1200,
-        description: null,
-        transactedAt: '2023-09-30T00:00:00+00:00',
+        transaction: {
+          id: '67890',
+          amount: 1200,
+          description: null,
+          transactedAt: '2023-09-30T00:00:00+00:00',
+        },
         subCategory: {
           id: '1',
           name: 'deposit',
@@ -61,8 +66,24 @@ const mock = {
         },
         recurringTransfer: {
           id: '1',
+          amount: 1200,
           recurringStart: '2023-09-30T00:00:00+00:00',
           recurringEnd: '2025-09-30T00:00:00+00:00',
+          active: true,
+        },
+      },
+      {
+        transaction: null,
+        subCategory: null,
+        transfer: {
+          sourceFundTypeName: 'Primary',
+          destinationFundTypeName: 'Savings',
+        },
+        recurringTransfer: {
+          id: '2',
+          amount: 100,
+          recurringStart: '2024-05-30T00:00:00+00:00',
+          recurringEnd: '2025-05-30T00:00:00+00:00',
           active: true,
         },
       },
@@ -174,6 +195,10 @@ const Components = ({
 );
 
 describe('TransfersPage', () => {
+  beforeEach(() => {
+    Settings.now = () => Date.parse('2024-01-15');
+  });
+
   it('should render with custom title', () => {
     const customTitle = 'Custom Transfer Page Title';
     const { getByText } = render(<Components title={customTitle} />);
