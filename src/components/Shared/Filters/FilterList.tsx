@@ -24,7 +24,7 @@ export const FilterList: React.FC<FilterListProps> = ({
           .replace(/^(graphql_)?saved_(contacts|tasks|)_filter_/, '')
           .replaceAll('_', ' ');
 
-        const showDeleteButton = filter?.id.startsWith('prewritten-filter-');
+        const showDeleteButton = filter?.id.startsWith('pre-defined-filter-');
 
         return (
           <ListItem
