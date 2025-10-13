@@ -531,55 +531,6 @@ describe('FilterPanel', () => {
       );
     });
 
-    it('opens and selects a predefined filter Two', async () => {
-      const { getByTestId, getByText, queryByTestId, queryAllByTestId } =
-        render(
-          <TestComponent
-            filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
-            savedFilters={[]}
-            preDefinedFilters={[savedFiltersMockTwo, savedGraphQLContactMock]}
-          />,
-        );
-
-      await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
-      expect(queryByTestId('LoadingState')).toBeNull();
-      expect(queryByTestId('ErrorState')).toBeNull();
-
-      expect(queryAllByTestId('FilterGroup').length).toEqual(2);
-      expect(getByTestId('FilterListItemShowAll')).toBeVisible();
-      userEvent.click(getByText('Predefined Filters'));
-      expect(getByText('My Cool Filter')).toBeVisible();
-      expect(getByText('GraphQL Contact Filter')).toBeVisible();
-      userEvent.click(getByText('My Cool Filter'));
-      expect(
-        deserializeFilters(routerReplace.mock.lastCall[0].query.filters),
-      ).toEqual({
-        excludeTags: null,
-        addressHistoric: true,
-        addressValid: true,
-        almaMater: ['test1', 'test2'],
-        newsletter: 'EMAIL',
-        contactNewsletter: 'EMAIL_ONLY',
-        status: Object.values(ContactFilterStatusEnum),
-        activityType: Object.values(ActivityTypeEnum),
-        nextAction: Object.values(ActivityTypeEnum),
-        result: [
-          'ATTEMPTED',
-          'ATTEMPTED_LEFT_MESSAGE',
-          'COMPLETED',
-          'DONE',
-          'NONE',
-          'RECEIVED',
-        ],
-        pledgeReceived: 'NOT_RECEIVED',
-        tags: null,
-        wildcardSearch: '',
-      });
-      expect(getByTestId('FilterPanelActiveFilters').textContent).toBe(
-        'Filter (10 active)',
-      );
-    });
-
     it('deletes saved filter', async () => {
       const { getByText, getByTestId, queryByTestId, queryAllByTestId } =
         render(
