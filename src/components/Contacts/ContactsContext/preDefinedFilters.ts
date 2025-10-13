@@ -1,10 +1,10 @@
 import { UserOptionFragment } from '../../Shared/Filters/FilterPanel.generated';
 
-export const preExistingFilters = (
+export const getPreDefinedFilters = (
   accountListId: string,
 ): UserOptionFragment[] => [
   {
-    id: 'prewritten-filter-one-or-more-gifts',
+    id: 'pre-defined-filter-one-or-more-gifts',
     key: 'saved_contacts_filter_One_or_More_Gifts',
     value: JSON.stringify({
       donation: ['one'],
@@ -13,7 +13,7 @@ export const preExistingFilters = (
     __typename: 'Option' as const,
   },
   {
-    id: 'prewritten-filter-given-in-last-2-years',
+    id: 'pre-defined-filter-given-in-last-2-years',
     key: 'saved_contacts_filter_Given_in_the_Last_2_Years',
     value: JSON.stringify({
       donation: ['one'],
@@ -28,7 +28,7 @@ export const preExistingFilters = (
     __typename: 'Option' as const,
   },
   {
-    id: 'prewritten-filter-lost-partners',
+    id: 'pre-defined-filter-lost-partners',
     key: 'saved_contacts_filter_Lost_Partners',
     value: JSON.stringify({
       donation: ['last'],

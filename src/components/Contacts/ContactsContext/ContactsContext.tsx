@@ -24,7 +24,7 @@ import {
   TableViewModeEnum,
 } from '../../Shared/Header/ListHeader';
 import { Coordinates } from '../ContactsMap/coordinates';
-import { preExistingFilters } from './preExistingFilters';
+import { getPreDefinedFilters } from './preDefinedFilters';
 
 export type ContactsType = {
   accountListId: string | undefined;
@@ -176,7 +176,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
   );
 
   const preDefinedFilters: UserOptionFragment[] = useMemo(
-    () => preExistingFilters(accountListId || ''),
+    () => getPreDefinedFilters(accountListId || ''),
     [accountListId],
   );
   //#endregion

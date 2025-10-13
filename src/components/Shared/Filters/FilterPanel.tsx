@@ -198,7 +198,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
 
       if (
         filter.key?.includes('graphql_') ||
-        filter.id?.includes('prewritten-filter-')
+        filter.id?.includes('pre-defined-filter-')
       ) {
         // Clear current filters
         clearSelectedFilter();
