@@ -88,6 +88,7 @@ const FlatAccordion = styled(Accordion)(({ theme }) => ({
     boxShadow: 'none',
     borderBottom: `1px solid ${theme.palette.cruGrayLight.main}`,
     marginBottom: 0,
+    '&:before': { display: 'none' },
   },
   '& .MuiAccordionDetails-root': {
     paddingLeft: 0,
