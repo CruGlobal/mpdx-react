@@ -1,3 +1,4 @@
+import { DateTime } from 'luxon';
 import { UserOptionFragment } from '../../Shared/Filters/FilterPanel.generated';
 
 export const getPreDefinedFilters = (): UserOptionFragment[] => [
@@ -15,10 +16,8 @@ export const getPreDefinedFilters = (): UserOptionFragment[] => [
     value: JSON.stringify({
       donation: ['one'],
       donationDate: {
-        min: new Date(new Date().setFullYear(new Date().getFullYear() - 2))
-          .toISOString()
-          .split('T')[0],
-        max: new Date().toISOString().split('T')[0],
+        min: DateTime.now().minus({ years: 2 }).toISODate(),
+        max: DateTime.now().toISODate(),
       },
     }),
     __typename: 'Option' as const,
@@ -29,10 +28,8 @@ export const getPreDefinedFilters = (): UserOptionFragment[] => [
     value: JSON.stringify({
       donation: ['last'],
       donationDate: {
-        min: new Date(new Date().setFullYear(new Date().getFullYear() - 3))
-          .toISOString()
-          .split('T')[0],
-        max: new Date().toISOString().split('T')[0],
+        min: DateTime.now().minus({ years: 3 }).toISODate(),
+        max: DateTime.now().toISODate(),
       },
     }),
     __typename: 'Option' as const,
