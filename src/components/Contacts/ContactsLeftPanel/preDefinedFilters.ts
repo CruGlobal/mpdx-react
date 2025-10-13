@@ -28,7 +28,8 @@ export const preDefinedFilters: UserOptionFragment[] = [
     value: JSON.stringify({
       donation: ['last'],
       donationDate: {
-        max: DateTime.now().minus({ years: 3 }).toISODate(),
+        min: DateTime.now().minus({ years: 3 }).toISODate(),
+        max: DateTime.now().minus({ years: 1 }).toISODate(),
       },
     }),
     __typename: 'Option' as const,
