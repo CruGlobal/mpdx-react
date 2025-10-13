@@ -32,6 +32,7 @@ import {
   noteSearchSavedFilterMock,
   noteSearchSavedGraphQLFilterMock,
   savedFiltersMock,
+  savedFiltersMockFour,
   savedFiltersMockThree,
   savedFiltersMockTwo,
   savedGraphQLContactMock,
@@ -71,6 +72,7 @@ interface TestComponentProps {
   filters: FilterPanelGroupFragment[];
   defaultExpandedFilterGroups?: Set<string>;
   savedFilters: UserOptionFragment[];
+  preDefinedFilters?: UserOptionFragment[];
   initialFilters?: ContactFilterSetInput & TaskFilterSetInput;
 }
 
@@ -78,6 +80,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   filters,
   defaultExpandedFilterGroups = new Set(),
   savedFilters,
+  preDefinedFilters = [],
   initialFilters = {},
 }) => (
   <TestRouter
@@ -104,6 +107,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
                 filters={filters}
                 defaultExpandedFilterGroups={defaultExpandedFilterGroups}
                 savedFilters={savedFilters}
+                preDefinedFilters={preDefinedFilters}
                 onClose={onClose}
               />
             </ContactsProvider>
@@ -485,6 +489,48 @@ describe('FilterPanel', () => {
       );
     });
 
+    it('opens and selects a predefined filter One', async () => {
+      const { getByTestId, getByText, queryByTestId, queryAllByTestId } =
+        render(
+          <TestComponent
+            filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+            savedFilters={[]}
+            preDefinedFilters={[savedFiltersMockThree, savedGraphQLContactMock]}
+          />,
+        );
+
+      await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
+      expect(queryByTestId('LoadingState')).toBeNull();
+      expect(queryByTestId('ErrorState')).toBeNull();
+
+      expect(queryAllByTestId('FilterGroup').length).toEqual(2);
+      expect(getByTestId('FilterListItemShowAll')).toBeVisible();
+      userEvent.click(getByText('Predefined Filters'));
+      expect(getByText('My Cool Filter')).toBeVisible();
+      expect(getByText('GraphQL Contact Filter')).toBeVisible();
+      userEvent.click(getByText('My Cool Filter'));
+      expect(
+        deserializeFilters(routerReplace.mock.lastCall[0].query.filters),
+      ).toEqual({
+        excludeTags: null,
+        addressLatLng: 'test1',
+        appealStatus: 'test1',
+        contactAppeal: 'test1',
+        donationAmountRange: {
+          min: 0,
+          max: 2000.45,
+        },
+        newsletter: 'NONE',
+        contactNewsletter: 'PHYSICAL',
+        pledgeReceived: 'ANY',
+        tags: null,
+        wildcardSearch: '',
+      });
+      expect(getByTestId('FilterPanelActiveFilters').textContent).toBe(
+        'Filter (7 active)',
+      );
+    });
+
     it('deletes saved filter', async () => {
       const { getByText, getByTestId, queryByTestId, queryAllByTestId } =
         render(
@@ -509,6 +555,26 @@ describe('FilterPanel', () => {
       );
       userEvent.click(getByText('No'));
       expect(getByText('Delete Saved filter')).not.toBeVisible();
+    });
+
+    it('cannot delete predefined filter', async () => {
+      const { getByText, getByTestId, queryByTestId, queryAllByTestId } =
+        render(
+          <TestComponent
+            filters={[filterPanelDefaultMock, filterPanelFeaturedMock]}
+            savedFilters={[]}
+            preDefinedFilters={[savedFiltersMockFour]}
+          />,
+        );
+
+      await waitFor(() => expect(queryByTestId('LoadingState')).toBeNull());
+
+      expect(queryAllByTestId('FilterGroup').length).toEqual(2);
+      expect(getByTestId('FilterListItemShowAll')).toBeVisible();
+      userEvent.click(getByText('Predefined Filters'));
+      expect(getByText('My Cool Filter')).toBeVisible();
+
+      expect(queryByTestId('deleteSavedFilter')).not.toBeInTheDocument();
     });
 
     it('closes panel', async () => {
