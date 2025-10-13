@@ -26,6 +26,7 @@ query ReportsSavingsFundTransfer(
     }
     recurringTransfer {
       id
+      amount
       recurringStart
       recurringEnd
       active

@@ -199,37 +199,37 @@ export const TransfersTable: React.FC<TransfersTableProps> = ({
     {
       field: 'amount',
       headerName: t('Amount'),
-      width: 150,
+      width: 130,
       renderCell: amount,
     },
     {
       field: 'schedule',
       headerName: t('Schedule'),
-      width: 150,
+      width: 130,
       renderCell: schedule,
     },
     {
       field: 'status',
       headerName: t('Status'),
-      width: 150,
+      width: 140,
       renderCell: status,
     },
     {
       field: 'transferDate',
       headerName: t('Transfer Date'),
-      width: 150,
+      width: 145,
       renderCell: transferDate,
     },
     {
       field: 'endDate',
       headerName: t('Stop Date'),
-      width: 150,
+      width: 145,
       renderCell: endDate,
     },
     {
       field: 'note',
       headerName: t('Note'),
-      width: 150,
+      width: 210,
       renderCell: note,
     },
     {

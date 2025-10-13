@@ -51,9 +51,7 @@ export const PrintTable: React.FC<PrintTableProps> = ({ transfers, type }) => {
           <TableBody>
             {transfers.length ? (
               transfers.map((transfer) => (
-                <StyledTableRow
-                  key={`${transfer.transferFrom}-${transfer.transferTo}-${transfer.amount}-${transfer.transferDate}`}
-                >
+                <StyledTableRow key={transfer.id}>
                   <TableCell>
                     {transfer.transferFrom === FundTypeEnum.Primary
                       ? t('Primary Account')
