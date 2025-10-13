@@ -172,7 +172,6 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
     () => parseSavedFilters(filterData, accountListId),
     [filterData, accountListId],
   );
-
   //#endregion
 
   //#region JSX
