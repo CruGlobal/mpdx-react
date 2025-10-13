@@ -80,17 +80,16 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
     StaffSavingFundContext,
   ) as StaffSavingFundType;
 
-  const { data: staffAccountData, loading: staffAccountLoading } =
+  const { data: staffAccountData, error: staffAccountError } =
     useStaffAccountQuery();
 
   const { data: reportData, loading: reportLoading } =
     useReportsSavingsFundTransferQuery();
-  const { data: fundsData, loading: fundsLoading } =
-    useReportsStaffExpensesQuery({
-      variables: {
-        fundTypes: [FundTypeEnum.Primary, FundTypeEnum.Savings],
-      },
-    });
+  const { data: fundsData, error: fundsError } = useReportsStaffExpensesQuery({
+    variables: {
+      fundTypes: [FundTypeEnum.Primary, FundTypeEnum.Savings],
+    },
+  });
 
   const funds = useMemo(
     () =>
@@ -231,7 +230,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                 </StyledPrintButton>
               </SimpleScreenOnly>
             </StyledHeaderBox>
-            {staffAccountLoading ? (
+            {!staffAccountData && !staffAccountError ? (
               <AccountInfoBoxSkeleton />
             ) : (
               <AccountInfoBox
@@ -247,7 +246,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                 flexDirection: { xs: 'column', sm: 'row' },
               }}
             >
-              {fundsLoading ? (
+              {!fundsData && !fundsError ? (
                 <StyledCardsBox>
                   <CardSkeleton />
                   <CardSkeleton />

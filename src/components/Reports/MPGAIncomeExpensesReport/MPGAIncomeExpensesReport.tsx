@@ -59,7 +59,7 @@ export const MPGAIncomeExpensesReport: React.FC<
   const start = convertMonths(last12Months[0], locale);
   const end = DateTime.now().toISODate();
 
-  const { data: staffAccountData, loading } = useStaffAccountQuery();
+  const { data: staffAccountData, error } = useStaffAccountQuery();
 
   const { data: reportData } = useReportsStaffExpensesQuery({
     variables: {
@@ -152,7 +152,7 @@ export const MPGAIncomeExpensesReport: React.FC<
                 </StyledPrintButton>
               </SimpleScreenOnly>
             </StyledHeaderBox>
-            {loading ? (
+            {!staffAccountData && !error ? (
               <AccountInfoBoxSkeleton />
             ) : (
               <AccountInfoBox
