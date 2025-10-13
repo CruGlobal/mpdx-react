@@ -176,7 +176,7 @@ export const ContactsProvider: React.FC<ContactsContextProps> = ({
   );
 
   const preDefinedFilters: UserOptionFragment[] = useMemo(
-    () => getPreDefinedFilters(accountListId || ''),
+    () => getPreDefinedFilters(),
     [accountListId],
   );
   //#endregion
