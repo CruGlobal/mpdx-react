@@ -78,11 +78,10 @@ const FAMILY_SIZE_BASE_SALARY = {
   6: 1.0,
 } as const;
 
-/** The only ages taken into consideration are under 30 and 40+ */
 const AGE_COLUMNS: Record<GoalCalculationAge, number> = {
   [GoalCalculationAge.UnderThirty]: 0,
-  [GoalCalculationAge.ThirtyToThirtyFour]: 0,
-  [GoalCalculationAge.ThirtyFiveToThirtyNine]: 0,
+  [GoalCalculationAge.ThirtyToThirtyFour]: 1,
+  [GoalCalculationAge.ThirtyFiveToThirtyNine]: 2,
   [GoalCalculationAge.OverForty]: 3,
 };
 
