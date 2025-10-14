@@ -107,7 +107,7 @@ const getUncappedBase = (
   const debtPercentage = single
     ? (constants.goalMiscConstants.DEBT_PERCENTAGE?.SINGLE?.fee ?? 0)
     : (constants.goalMiscConstants.DEBT_PERCENTAGE?.MARRIED?.fee ?? 0);
-  const getDebtCapPercentage =
+  const debtCapPercentage =
     0.8 * (LEVEL_2_RATE / LEVEL_1_RATE) * debtPercentage;
 
   const baseMultiplier = getBaseMultiplier(goalCalculation);
@@ -120,7 +120,7 @@ const getUncappedBase = (
   const tenureIncrease = getTenureIncrease(yearsOnStaff);
   const base = BASE_SALARY * LEVEL_1_RATE * (1 + baseMultiplier);
   const monthlyDebt = 0; // TODO: Use monthly debt when implementing New Staff Goals
-  const debtCap = (base + tenureIncrease) * getDebtCapPercentage;
+  const debtCap = (base + tenureIncrease) * debtCapPercentage;
   const annualDebtSalary = Math.min(
     (monthlyDebt * 12) / (single ? 1 : 2),
     debtCap,
