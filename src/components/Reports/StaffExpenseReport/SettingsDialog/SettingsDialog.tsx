@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import {
+  Alert,
   Box,
   Button,
   Checkbox,
@@ -17,9 +18,14 @@ import { Form, Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import Loading from 'src/components/Loading/Loading';
 import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
+import { Fund, StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
+import { useReportsStaffExpensesQuery } from '../GetStaffExpense.generated';
 import { DateRange } from '../Helpers/StaffReportEnum';
+import { getAvailableCategories } from '../Helpers/filterTransactions';
+import { getLocalizedCategory } from '../Helpers/useLocalizedCategory';
 
 export interface SettingsDialogProps {
   isOpen: boolean;
@@ -98,12 +104,56 @@ const calculateDateRange = (
   }
 };
 
+const getFiltersWithCalculatedDates = (values: Filters): Filters => {
+  const finalValues = { ...values };
+  if (values.selectedDateRange !== null) {
+    const { startDate, endDate } = calculateDateRange(values.selectedDateRange);
+    finalValues.startDate = startDate;
+    finalValues.endDate = endDate;
+  }
+  return finalValues;
+};
+
 export const SettingsDialog: React.FC<SettingsDialogProps> = ({
   isOpen,
   onClose,
   selectedFilters,
 }) => {
   const { t } = useTranslation();
+  const [previewFilters, setPreviewFilters] = useState<Filters | null>(null);
+
+  const currentTime = useMemo(() => DateTime.now().startOf('month'), []);
+
+  const getQueryVariables = (filterParams: Filters | null) => ({
+    startMonth:
+      filterParams?.startDate?.startOf('month').toISODate() ??
+      filterParams?.endDate?.startOf('month').toISODate() ??
+      currentTime.startOf('month').toISODate(),
+    endMonth:
+      filterParams?.endDate?.endOf('month').toISODate() ??
+      currentTime.endOf('month').toISODate(),
+  });
+
+  const {
+    data: categoryData,
+    loading: categoryLoading,
+    error: categoryError,
+  } = useReportsStaffExpensesQuery({
+    variables: getQueryVariables(previewFilters ?? selectedFilters ?? null),
+  });
+
+  const availableCategories = useMemo(() => {
+    const categoryFunds: Fund[] =
+      categoryData?.reportsStaffExpenses?.funds ?? [];
+
+    const filtersToUse = previewFilters ?? selectedFilters ?? null;
+
+    return getAvailableCategories(categoryFunds, filtersToUse, currentTime);
+  }, [categoryData, previewFilters, selectedFilters, currentTime]);
+
+  const handleRefetch = (refetchFilters: Filters) => {
+    setPreviewFilters(getFiltersWithCalculatedDates(refetchFilters));
+  };
 
   const initialValues = {
     selectedDateRange: selectedFilters?.selectedDateRange ?? null,
@@ -119,21 +169,17 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
   };
 
   const handleSubmit = (values: Filters) => {
-    const finalValues = { ...values };
-    if (values.selectedDateRange !== null) {
-      const { startDate, endDate } = calculateDateRange(
-        values.selectedDateRange,
-      );
-      finalValues.startDate = startDate;
-      finalValues.endDate = endDate;
-    }
-    onClose(finalValues);
+    setPreviewFilters(null); // Clear preview filters when dialog closes
+    onClose(getFiltersWithCalculatedDates(values));
   };
 
   return (
     <Dialog
       open={isOpen}
-      onClose={() => onClose(selectedFilters)}
+      onClose={() => {
+        setPreviewFilters(null);
+        onClose(selectedFilters);
+      }}
       fullWidth
       maxWidth="md"
     >
@@ -177,7 +223,14 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                         endDate: false,
                       });
                     }
-                    setTimeout(() => validateForm(), 0);
+                    validateForm().then((errors) => {
+                      if (Object.keys(errors).length === 0) {
+                        handleRefetch({
+                          ...values,
+                          selectedDateRange: value as DateRange | null,
+                        });
+                      }
+                    });
                   }}
                 >
                   <MenuItem value="">{t('None')}</MenuItem>
@@ -206,7 +259,17 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                       if (date) {
                         setFieldValue('selectedDateRange', null);
                       }
-                      setTimeout(() => validateForm(), 0);
+                      validateForm().then((errors) => {
+                        if (Object.keys(errors).length === 0) {
+                          handleRefetch({
+                            ...values,
+                            startDate: date,
+                            selectedDateRange: date
+                              ? null
+                              : values.selectedDateRange,
+                          });
+                        }
+                      });
                     }}
                     fullWidth
                     error={Boolean(errors.startDate && touched.startDate)}
@@ -225,7 +288,17 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                       if (date) {
                         setFieldValue('selectedDateRange', null);
                       }
-                      setTimeout(() => validateForm(), 0);
+                      validateForm().then((errors) => {
+                        if (Object.keys(errors).length === 0) {
+                          handleRefetch({
+                            ...values,
+                            endDate: date,
+                            selectedDateRange: date
+                              ? null
+                              : values.selectedDateRange,
+                          });
+                        }
+                      });
                     }}
                     fullWidth
                     error={Boolean(errors.endDate && touched.endDate)}
@@ -246,35 +319,48 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                   {t('Select Categories:')}
                 </Typography>
 
-                <FormGroup row>
-                  {[t('Benefits'), t('Contributions'), t('Salary')].map(
-                    (category) => (
-                      <FormControlLabel
-                        key={category}
-                        control={
-                          <Checkbox
-                            checked={values.categories.includes(category)}
-                            onChange={(e) => {
-                              const newCategories = e.target.checked
-                                ? [...values.categories, category]
-                                : values.categories.filter(
-                                    (c) => c !== category,
-                                  );
-                              setFieldValue('categories', newCategories);
-                            }}
-                          />
-                        }
-                        label={category}
-                      />
-                    ),
-                  )}
-                </FormGroup>
+                {categoryLoading ? (
+                  <Loading loading />
+                ) : categoryError ? (
+                  <Alert severity="error">
+                    {t('Failed to load categories. Please try again.')}
+                  </Alert>
+                ) : (
+                  <FormGroup row>
+                    {availableCategories.map((category) => {
+                      const localizedCategory = getLocalizedCategory(
+                        category as StaffExpenseCategoryEnum,
+                        t,
+                      );
+                      return (
+                        <FormControlLabel
+                          key={category}
+                          control={
+                            <Checkbox
+                              checked={values.categories.includes(category)}
+                              onChange={(e) => {
+                                const newCategories = e.target.checked
+                                  ? [...values.categories, category]
+                                  : values.categories.filter(
+                                      (c) => c !== category,
+                                    );
+                                setFieldValue('categories', newCategories);
+                              }}
+                            />
+                          }
+                          label={localizedCategory}
+                        />
+                      );
+                    })}
+                  </FormGroup>
+                )}
               </DialogContent>
 
               <DialogActions>
                 <Button
                   sx={{ color: 'black' }}
                   onClick={() => {
+                    setPreviewFilters(null);
                     onClose(selectedFilters);
                   }}
                 >
