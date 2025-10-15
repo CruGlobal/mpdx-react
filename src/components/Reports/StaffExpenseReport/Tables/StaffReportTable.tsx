@@ -151,15 +151,16 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
   };
 
   const tooltip: RenderCell = ({ row }) => {
-    if (!row.isGrouped) {
+    if (!row.isGrouped || !row.groupedTransaction) {
       return null;
     }
+    const grouped = row.groupedTransaction;
 
     return (
       <Tooltip title={t('View breakdown')}>
         <IconButton
           size="small"
-          onClick={() => handleOpenBreakdown(row.groupedTransaction!)}
+          onClick={() => handleOpenBreakdown(grouped)}
           aria-label={t('View breakdown')}
         >
           <InfoOutlined />
@@ -254,7 +255,7 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
             {t('Total Income:')}{' '}
             <Typography
               component="span"
-              sx={{ color: theme.palette.success.main, fontWeight: 'inherit' }}
+              sx={{ color: theme.palette.success.main }}
             >
               {currencyFormat(transferTotal, 'USD', locale)}
             </Typography>
@@ -264,7 +265,7 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
             {t('Total Expenses:')}{' '}
             <Typography
               component="span"
-              sx={{ color: theme.palette.error.main, fontWeight: 'inherit' }}
+              sx={{ color: theme.palette.error.main }}
             >
               {currencyFormat(transferTotal, 'USD', locale)}
             </Typography>

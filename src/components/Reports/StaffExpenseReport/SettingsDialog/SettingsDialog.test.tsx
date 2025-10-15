@@ -432,12 +432,12 @@ describe('SettingsDialog', () => {
     expect(getByLabelText('Benefits')).not.toBeChecked();
   });
 
-  it('should handle null categories in selectedFilters', async () => {
+  it('should handle undefined categories in selectedFilters', async () => {
     const selectedFilters: Filters = {
       selectedDateRange: null,
       startDate: null,
       endDate: null,
-      categories: null,
+      categories: undefined,
     };
 
     const { getByLabelText } = render(

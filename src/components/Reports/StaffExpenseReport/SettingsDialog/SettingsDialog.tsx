@@ -37,7 +37,7 @@ export interface Filters {
   selectedDateRange: DateRange | null;
   startDate?: DateTime | null;
   endDate?: DateTime | null;
-  categories?: string[] | null;
+  categories?: string[];
 }
 
 const validationSchema = yup.object({
@@ -124,6 +124,11 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
 
   const currentTime = useMemo(() => DateTime.now().startOf('month'), []);
 
+  const handleClose = () => {
+    setPreviewFilters(null);
+    onClose(selectedFilters);
+  };
+
   const getQueryVariables = (filterParams: Filters | null) => ({
     startMonth:
       filterParams?.startDate?.startOf('month').toISODate() ??
@@ -151,8 +156,17 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
     return getAvailableCategories(categoryFunds, filtersToUse, currentTime);
   }, [categoryData, previewFilters, selectedFilters, currentTime]);
 
-  const handleRefetch = (refetchFilters: Filters) => {
-    setPreviewFilters(getFiltersWithCalculatedDates(refetchFilters));
+  const validateAndRefetch = (
+    validateForm: () => Promise<Record<string, unknown>>,
+    filters: Filters,
+  ) => {
+    setTimeout(() => {
+      validateForm().then((errors) => {
+        if (Object.keys(errors).length === 0) {
+          setPreviewFilters(getFiltersWithCalculatedDates(filters));
+        }
+      });
+    }, 0);
   };
 
   const initialValues = {
@@ -174,15 +188,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
   };
 
   return (
-    <Dialog
-      open={isOpen}
-      onClose={() => {
-        setPreviewFilters(null);
-        onClose(selectedFilters);
-      }}
-      fullWidth
-      maxWidth="md"
-    >
+    <Dialog open={isOpen} onClose={handleClose} fullWidth maxWidth="md">
       <DialogTitle>{t('Report Settings')}</DialogTitle>
       <Formik
         initialValues={initialValues}
@@ -223,13 +229,10 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                         endDate: false,
                       });
                     }
-                    validateForm().then((errors) => {
-                      if (Object.keys(errors).length === 0) {
-                        handleRefetch({
-                          ...values,
-                          selectedDateRange: value as DateRange | null,
-                        });
-                      }
+                    validateAndRefetch(validateForm, {
+                      ...values,
+                      selectedDateRange: value as DateRange,
+                      ...(value !== null && { startDate: null, endDate: null }),
                     });
                   }}
                 >
@@ -259,16 +262,12 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                       if (date) {
                         setFieldValue('selectedDateRange', null);
                       }
-                      validateForm().then((errors) => {
-                        if (Object.keys(errors).length === 0) {
-                          handleRefetch({
-                            ...values,
-                            startDate: date,
-                            selectedDateRange: date
-                              ? null
-                              : values.selectedDateRange,
-                          });
-                        }
+                      validateAndRefetch(validateForm, {
+                        ...values,
+                        startDate: date,
+                        selectedDateRange: date
+                          ? null
+                          : values.selectedDateRange,
                       });
                     }}
                     fullWidth
@@ -288,16 +287,12 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                       if (date) {
                         setFieldValue('selectedDateRange', null);
                       }
-                      validateForm().then((errors) => {
-                        if (Object.keys(errors).length === 0) {
-                          handleRefetch({
-                            ...values,
-                            endDate: date,
-                            selectedDateRange: date
-                              ? null
-                              : values.selectedDateRange,
-                          });
-                        }
+                      validateAndRefetch(validateForm, {
+                        ...values,
+                        endDate: date,
+                        selectedDateRange: date
+                          ? null
+                          : values.selectedDateRange,
                       });
                     }}
                     fullWidth
@@ -324,6 +319,12 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                 ) : categoryError ? (
                   <Alert severity="error">
                     {t('Failed to load categories. Please try again.')}
+                  </Alert>
+                ) : !availableCategories.length ? (
+                  <Alert severity="info">
+                    {t(
+                      'No transactions with categories found in the selected date range.',
+                    )}
                   </Alert>
                 ) : (
                   <FormGroup row>
@@ -357,13 +358,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
               </DialogContent>
 
               <DialogActions>
-                <Button
-                  sx={{ color: 'black' }}
-                  onClick={() => {
-                    setPreviewFilters(null);
-                    onClose(selectedFilters);
-                  }}
-                >
+                <Button sx={{ color: 'black' }} onClick={handleClose}>
                   {t('Cancel')}
                 </Button>
                 <Button

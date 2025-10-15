@@ -28,6 +28,11 @@ const groupTransactionsByCategory = (
   fundType: string,
   t: TFunction,
 ): (Transaction | GroupedTransaction)[] => {
+  // If no categories are selected for grouping, return all transactions
+  if (selectedCategories.length === 0) {
+    return transactions;
+  }
+
   // Group transactions by category if the category is in selectedCategories
   const grouped: Map<string, Transaction[]> = new Map();
   const ungrouped: Transaction[] = [];
@@ -55,15 +60,19 @@ const groupTransactionsByCategory = (
         (sum, transaction) => sum + transaction.amount,
         0,
       );
-      const earliestDate = transactions
-        .map((transaction) => transaction.transactedAt)
-        .sort()[0];
+      const earliestDate = transactions.reduce(
+        (earliest, transaction) =>
+          transaction.transactedAt < earliest
+            ? transaction.transactedAt
+            : earliest,
+        transactions[0].transactedAt,
+      );
 
       return {
         id: `grouped-${category}`,
         amount: totalAmount,
         transactedAt: earliestDate,
-        description: null,
+        description: t('Grouped Transactions'),
         fundType,
         category: transactions[0].category,
         subcategory: transactions[0].subcategory,
@@ -117,11 +126,6 @@ export const filterTransactions = ({
       ? transaction.amount > 0
       : transaction.amount < 0,
   );
-
-  // If no categories are selected for grouping, return all transactions
-  if (selectedCategories.length === 0) {
-    return transactions;
-  }
 
   return groupTransactionsByCategory(
     filteredTransactions,

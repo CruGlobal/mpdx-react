@@ -47,7 +47,9 @@ export const CategoryBreakdownDialog: React.FC<
         },
       }}
     >
-      <DialogTitle>{`${categoryName} Breakdown`}</DialogTitle>
+      <DialogTitle>
+        {categoryName} {t('Breakdown')}
+      </DialogTitle>
       <DialogContent
         sx={{
           padding: theme.spacing(4),
