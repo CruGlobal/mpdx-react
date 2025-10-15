@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -22,6 +22,8 @@ import { useStaffAccountQuery } from '../StaffAccount.generated';
 import { AccountInfoBox } from '../StaffExpenseReport/AccountInfoBox/AccountInfoBox';
 import { AccountInfoBoxSkeleton } from '../StaffExpenseReport/AccountInfoBox/AccountInfoBoxSkeleton';
 import {
+  LoadingBox,
+  LoadingIndicator,
   SimplePrintOnly,
   SimpleScreenOnly,
   StyledPrintButton,
@@ -62,11 +64,17 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
   };
 
   const handleSave = () => {
+    // TODO: Implement save functionality
+
     enqueueSnackbar(t('Changes saved'), { variant: 'success' });
   };
 
-  const sortedData = mockQueryData?.contacts?.nodes.toSorted((a, b) =>
-    a.name.localeCompare(b.name),
+  const sortedData = useMemo(
+    () =>
+      mockQueryData?.contacts?.nodes.toSorted((a, b) =>
+        a.name.localeCompare(b.name),
+      ),
+    [mockQueryData],
   );
 
   const transformedData: ReminderData[] = useMemo(
@@ -76,7 +84,7 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
           ...contact,
           id: contact.id,
           partner: contact.name,
-          partnerId: contact.churchName ?? 'N/A',
+          partnerId: contact.churchName ?? '',
           lastGift: contact.pledgeStartDate
             ? DateTime.fromISO(contact.pledgeStartDate)
             : null,
@@ -131,49 +139,57 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
       <Box>
         <Container>
           <SimpleScreenOnly>
-            <Typography variant="body1" mt={4} mb={2}>
-              {t(
-                'You can now change the reminder status of any of your ministry partners online! Your current list and related information is displayed below. To change the reminder status of any of your ministry partners, use the drop-down boxes in the "Change Reminder Status" column. When you\'re done click the "Save" button at the bottom of the page.',
-              )}
-            </Typography>
-            <Typography variant="body1" mb={2}>
-              {t('Wondering how the ')}
-              <Typography
-                variant="body1"
-                sx={{ display: 'inline', fontStyle: 'italic' }}
-              >
-                {t('Reminder System')}
-              </Typography>
-              <Typography variant="body1" sx={{ display: 'inline' }}>
-                {t(
-                  ' works and how it differs from the Receipting System? Check out ',
-                )}
-                <Link
-                  style={{
-                    color: theme.palette.primary.main,
-                    fontWeight: 'bold',
-                  }}
-                  underline="hover"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Ministry Partner Reminder help
-                </Link>
-                .
-              </Typography>
-            </Typography>
+            <Box mt={3} mb={4}>
+              <Trans i18nKey={'reminders.description'}>
+                <p style={{ lineHeight: 1.5 }}>
+                  You can now change the reminder status of any of your ministry
+                  partners online! Your current list and related information is
+                  displayed below. To change the reminder status of any of your
+                  ministry partners, use the drop-down boxes in the &quot;Change
+                  Reminder Status&quot; column.
+                </p>
+
+                <p style={{ marginTop: 10, lineHeight: 1.5 }}>
+                  When you&apos;re done, click the &quot;Save&quot; button at
+                  the bottom of the page. Wondering how the{' '}
+                  <i>Reminder System</i> works and how it differs from the
+                  Receipting System? Check out{' '}
+                  <Link
+                    style={{
+                      color: theme.palette.primary.main,
+                      fontWeight: 'bold',
+                    }}
+                    underline="hover"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Ministry Partner Reminder help
+                  </Link>
+                  .
+                </p>
+              </Trans>
+            </Box>
           </SimpleScreenOnly>
           <Box sx={{ mb: 2 }}>
             <SimpleScreenOnly>
-              <RemindersTable
-                data={transformedData}
-                loading={mockLoading}
-                hasNextPage={
-                  mockQueryData?.contacts?.pageInfo?.hasNextPage ?? false
-                }
-                endCursor={mockQueryData?.contacts?.pageInfo?.endCursor ?? ''}
-                fetchMore={fetchMore}
-              />
+              {mockLoading && !mockQueryData ? (
+                <LoadingBox>
+                  <LoadingIndicator
+                    data-testid="loading-spinner"
+                    color="primary"
+                    size={50}
+                  />
+                </LoadingBox>
+              ) : (
+                <RemindersTable
+                  data={transformedData}
+                  hasNextPage={
+                    mockQueryData?.contacts?.pageInfo?.hasNextPage ?? false
+                  }
+                  endCursor={mockQueryData?.contacts?.pageInfo?.endCursor ?? ''}
+                  fetchMore={fetchMore}
+                />
+              )}
             </SimpleScreenOnly>
             <SimplePrintOnly>
               <PrintTable data={transformedData} />

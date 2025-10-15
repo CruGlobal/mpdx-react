@@ -8,16 +8,25 @@ import {
 } from '../../SavingsFundTransfer/styledComponents/DisplayStyling';
 import { ReminderData } from '../mockData';
 import { StatusSelect } from './StatusSelect/StatusSelect';
-import type { SelectChangeEvent } from '@mui/material';
+
+type FormikHandleChange = {
+  (e: React.ChangeEvent<unknown>): void;
+  <T = string | React.ChangeEvent<unknown>>(
+    field: T,
+  ): T extends React.ChangeEvent<unknown>
+    ? void
+    : (e: string | React.ChangeEvent<unknown>) => void;
+};
+
+type FormikHandleBlur = {
+  (e: React.FocusEvent<unknown, Element>): void;
+};
 
 interface RemindersTableRowProps {
   row: ReminderData;
   id: string;
-  handleChange: (
-    event: SelectChangeEvent<unknown>,
-    child?: React.ReactNode,
-  ) => void;
-  handleBlur: React.FocusEventHandler<Element>;
+  handleChange: FormikHandleChange;
+  handleBlur: FormikHandleBlur;
   value: string;
 }
 
@@ -37,9 +46,7 @@ export const RemindersTableRow: React.FC<RemindersTableRowProps> = ({
       <TableCell>
         <Typography sx={{ fontSize: '14px' }}>{partner}</Typography>
         <Typography sx={{ fontSize: '14px' }}>
-          {t('(')}
-          {partnerId}
-          {t(')')}
+          {partnerId ? t('({{partnerId}})', { partnerId }) : t('(N/A)')}
         </Typography>
       </TableCell>
       <TableCell>{dateFormat(lastGift, locale)}</TableCell>

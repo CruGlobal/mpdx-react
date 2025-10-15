@@ -21,7 +21,6 @@ const TestComponent: React.FC = () => (
         <GqlMockedProvider onCall={mutationSpy}>
           <RemindersTable
             data={mockData}
-            loading={false}
             hasNextPage={true}
             endCursor=""
             fetchMore={mockFetchMore}
@@ -88,7 +87,6 @@ describe('RemindersTable', () => {
             <GqlMockedProvider onCall={mutationSpy}>
               <RemindersTable
                 data={[]}
-                loading={false}
                 hasNextPage={false}
                 endCursor=""
                 fetchMore={mockFetchMore}

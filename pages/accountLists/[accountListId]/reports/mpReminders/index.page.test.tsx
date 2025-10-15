@@ -57,7 +57,7 @@ describe('MP Reminders Report Page', () => {
     ).toBeInTheDocument();
   });
 
-  it('should open and close  menu', async () => {
+  it('should open and close menu', async () => {
     const { findByRole, getByRole, queryByRole } = render(<Components />);
 
     userEvent.click(

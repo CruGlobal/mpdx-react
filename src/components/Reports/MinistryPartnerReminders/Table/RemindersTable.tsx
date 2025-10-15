@@ -13,13 +13,9 @@ import { useTranslation } from 'react-i18next';
 import { TableVirtuoso, TableVirtuosoProps } from 'react-virtuoso';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { headerHeight } from 'src/components/Shared/Header/ListHeader';
-import {
-  LoadingBox,
-  LoadingIndicator,
-} from 'src/components/Shared/styledComponents/LoadingStyling';
+import theme from 'src/theme';
 import { EmptyTable } from '../../MPGAIncomeExpensesReport/Tables/EmptyTable';
 import { ReminderData, ReminderStatusEnum } from '../mockData';
-import { StyledRow } from '../styledComponents/StyledRow';
 import { RemindersTableRow } from './RemindersTableRow';
 
 interface HeaderProps {
@@ -56,12 +52,27 @@ const TableComponents: TableVirtuosoProps<HeaderProps, unknown>['components'] =
             boxShadow: (t) => `inset 0 -1px 0 ${t.palette.divider}`,
           },
           tableLayout: 'fixed',
+          minWidth: 730,
         }}
       />
     ),
     TableHead,
     TableBody: Body,
-    TableRow: StyledRow,
+    TableRow: (props) => {
+      const index = props['data-index'] ?? 0;
+      const even = index % 2 === 0;
+      return (
+        <TableRow
+          {...props}
+          style={{
+            ...props.style,
+            backgroundColor: even
+              ? theme.palette.chipBlueLight.main
+              : 'inherit',
+          }}
+        />
+      );
+    },
 
     EmptyPlaceholder: () => (
       <TableRow>
@@ -76,7 +87,6 @@ const TableComponents: TableVirtuosoProps<HeaderProps, unknown>['components'] =
   };
 interface RemindersTableProps {
   data: ReminderData[];
-  loading: boolean;
   hasNextPage: boolean;
   endCursor: string;
   fetchMore: (args: { variables: { after: string } }) => void;
@@ -84,7 +94,6 @@ interface RemindersTableProps {
 
 export const RemindersTable: React.FC<RemindersTableProps> = ({
   data,
-  loading,
   hasNextPage,
   endCursor,
   fetchMore,
@@ -105,18 +114,6 @@ export const RemindersTable: React.FC<RemindersTableProps> = ({
     [data],
   );
 
-  if (loading && !data.length) {
-    return (
-      <LoadingBox>
-        <LoadingIndicator
-          data-testid="loading-spinner"
-          color="primary"
-          size={50}
-        />
-      </LoadingBox>
-    );
-  }
-
   return (
     <Formik initialValues={initialValues} onSubmit={() => {}}>
       {({ handleChange, handleBlur, values }) => (
@@ -125,7 +122,7 @@ export const RemindersTable: React.FC<RemindersTableProps> = ({
           style={{
             height: isEmpty
               ? 390
-              : `calc(100vh - ${navBarHeight} - ${headerHeight} - 48px)`,
+              : `calc(100vh - ${navBarHeight} - ${headerHeight} - 62px)`,
             scrollbarWidth: 'none',
           }}
           components={TableComponents}
