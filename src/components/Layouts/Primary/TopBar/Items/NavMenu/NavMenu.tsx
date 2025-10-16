@@ -19,11 +19,13 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { useLoadCoachingListQuery } from 'src/components/Coaching/LoadCoachingList.generated';
-import { reportNavItems } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenuItems';
+import {
+  NavPage,
+  getNavPages,
+} from 'src/components/Layouts/Shared/getNavPages';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { useCurrentToolId } from '../../../../../../hooks/useCurrentToolId';
 import theme from '../../../../../../theme';
-import { ToolsListNav } from '../../../../../Tool/Home/ToolsListNav';
 import { useGetToolNotificationsQuery } from './GetToolNotifcations.generated';
 
 const useStyles = makeStyles()(() => ({
@@ -101,6 +103,16 @@ export enum ToolName {
   MergePeople = 'mergePeople',
 }
 
+interface NavDropdown {
+  page: NavPage;
+  anchorRef: React.RefObject<HTMLLIElement>;
+  menuOpen: boolean;
+  handleMenuToggle: () => void;
+  handleMenuClose: () => void;
+  testId: string;
+  isToolDropdown?: boolean;
+}
+
 const NavMenu: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
@@ -169,77 +181,56 @@ const NavMenu: React.FC = () => {
   };
   const { pathname } = useRouter();
 
-  return accountListId ? (
-    <Grid container item alignItems="center" xs="auto">
-      <Grid item className={classes.navListItem}>
-        <MenuItem
-          component={NextLink}
-          href={`/accountLists/${accountListId}`}
-          tabIndex={0}
-          className={classes.menuItem}
-          aria-current={
-            pathname === '/accountLists/[accountListId]' ? 'page' : undefined
-          }
-        >
-          <ListItemText primary={t('Dashboard')} />
-        </MenuItem>
-      </Grid>
-      <Grid item className={classes.navListItem}>
-        <MenuItem
-          component={NextLink}
-          href={`/accountLists/${accountListId}/contacts`}
-          tabIndex={0}
-          className={classes.menuItem}
-          aria-current={
-            pathname ===
-            '/accountLists/[accountListId]/contacts/[[...contactId]]'
-              ? 'page'
-              : undefined
-          }
-        >
-          <ListItemText primary={t('Contacts')} />
-        </MenuItem>
-      </Grid>
-      <Grid item className={classes.navListItem}>
-        <MenuItem
-          component={NextLink}
-          href={`/accountLists/${accountListId}/tasks`}
-          tabIndex={0}
-          className={classes.menuItem}
-          aria-current={
-            pathname === '/accountLists/[accountListId]/tasks/[[...contactId]]'
-              ? 'page'
-              : undefined
-          }
-        >
-          <ListItemText primary={t('Tasks')} />
-        </MenuItem>
-      </Grid>
-      <Grid item className={classes.navListItem}>
+  const { navMenuPages } = getNavPages(coachingAccounts?.totalCount);
+  const coachingIndex = process.env.HELP_WHATS_NEW_URL
+    ? navMenuPages.length - 2
+    : navMenuPages.length - 1;
+
+  function NavMenuDropdown({
+    page,
+    anchorRef,
+    menuOpen,
+    handleMenuToggle,
+    handleMenuClose,
+    testId,
+    isToolDropdown,
+  }: NavDropdown) {
+    return (
+      <Grid key={page.id} item className={classes.navListItem}>
         <MenuItem
           tabIndex={0}
           ref={anchorRef}
-          aria-controls={reportsMenuOpen ? 'menu-list-grow' : undefined}
+          aria-controls={menuOpen ? 'menu-list-grow' : undefined}
           aria-haspopup="true"
-          onClick={handleReportsMenuToggle}
-          data-testid="ReportMenuToggle"
-          aria-expanded={reportsMenuOpen}
+          onClick={handleMenuToggle}
+          data-testid={testId}
+          aria-expanded={menuOpen}
           className={clsx(
             classes.menuItem,
-            reportsMenuOpen && classes.menuItemSelected,
-            pathname.startsWith('/accountLists/[accountListId]/reports') &&
+            menuOpen && classes.menuItemSelected,
+            pathname.startsWith(page.pathname ?? '') &&
               classes.menuItemSelected,
           )}
         >
-          <ListItemText primary={t('Reports')} />
+          <ListItemText primary={page.title} />
+          {isToolDropdown && sum > 0 && (
+            <Box
+              className={classes.notificationBox}
+              data-testid="notificationTotal"
+            >
+              <Typography data-testid="notificationTotalText">
+                {sum < 100 ? sum : '99+'}
+              </Typography>
+            </Box>
+          )}
           <ArrowDropDownIcon
             className={clsx(classes.expand, {
-              [classes.expandOpen]: reportsMenuOpen,
+              [classes.expandOpen]: menuOpen,
             })}
           />
         </MenuItem>
         <Popper
-          open={reportsMenuOpen}
+          open={menuOpen}
           anchorEl={anchorRef.current}
           role={undefined}
           transition
@@ -253,170 +244,149 @@ const NavMenu: React.FC = () => {
                   placement === 'bottom' ? 'center top' : 'center bottom',
               }}
             >
-              <Paper>
-                <ClickAwayListener onClickAway={handleReportsMenuClose}>
-                  <MenuList autoFocusItem={reportsMenuOpen} id="menu-list-grow">
-                    {reportNavItems.map(({ id, title }) => (
-                      <MenuItem
-                        key={id}
-                        component={NextLink}
-                        href={`/accountLists/${accountListId}/reports/${id}`}
-                        onClick={handleReportsMenuClose}
-                        tabIndex={0}
-                        aria-current={
-                          pathname.startsWith(
-                            `/accountLists/[accountListId]/reports/${id}`,
-                          )
-                            ? 'page'
-                            : undefined
-                        }
-                      >
-                        <ListItemText primary={t(title)} />
-                      </MenuItem>
-                    ))}
-                  </MenuList>
-                </ClickAwayListener>
-              </Paper>
-            </Grow>
-          )}
-        </Popper>
-      </Grid>
-      <Grid item className={classes.navListItem}>
-        <MenuItem
-          tabIndex={0}
-          ref={anchorRefTools}
-          aria-controls={toolsMenuOpen ? 'menu-list-grow' : undefined}
-          aria-haspopup="true"
-          onClick={handleToolsMenuToggle}
-          data-testid="ToolsMenuToggle"
-          className={clsx(
-            classes.menuItem,
-            toolsMenuOpen && classes.menuItemSelected,
-            pathname.startsWith('/accountLists/[accountListId]/tools') &&
-              classes.menuItemSelected,
-          )}
-          aria-expanded={toolsMenuOpen}
-        >
-          <ListItemText primary={t('Tools')} />
-          {sum > 0 && (
-            <Box
-              className={classes.notificationBox}
-              data-testid="notificationTotal"
-            >
-              <Typography data-testid="notificationTotalText">
-                {sum < 100 ? sum : '99+'}
-              </Typography>
-            </Box>
-          )}
-          <ArrowDropDownIcon
-            className={clsx(classes.expand, {
-              [classes.expandOpen]: toolsMenuOpen,
-            })}
-          />
-        </MenuItem>
-        <Popper
-          open={toolsMenuOpen}
-          anchorEl={anchorRefTools.current}
-          role={undefined}
-          transition
-          disablePortal
-        >
-          {({ TransitionProps, placement }) => (
-            <Grow
-              {...TransitionProps}
-              style={{
-                transformOrigin:
-                  placement === 'bottom' ? 'center top' : 'center bottom',
-              }}
-            >
-              <Paper className={classes.subMenu}>
-                <ClickAwayListener onClickAway={handleToolsMenuClose}>
-                  <MenuList autoFocusItem={toolsMenuOpen} id="menu-list-grow">
-                    {ToolsListNav.map((toolsGroup) => (
-                      <Box key={toolsGroup.groupName}>
-                        {toolsGroup.items.map((tool) => {
-                          const needsAttention = toolData
-                            ? toolData[tool.id]?.totalCount > 0
-                            : false;
-                          return (
-                            <MenuItem
-                              key={tool.id}
-                              component={NextLink}
-                              href={`/accountLists/${accountListId}/tools/${tool.url}`}
-                              tabIndex={0}
-                              onClick={handleToolsMenuClose}
-                              data-testid={`${tool.id}-${
-                                currentToolId === tool.id
-                              }`}
-                              aria-current={
-                                pathname.startsWith(
-                                  `/accountLists/[accountListId]/tools/${tool.url}`,
-                                )
-                                  ? 'page'
-                                  : undefined
-                              }
+              {isToolDropdown ? (
+                <Paper className={classes.subMenu}>
+                  <ClickAwayListener onClickAway={handleMenuClose}>
+                    <MenuList autoFocusItem={menuOpen} id="menu-list-grow">
+                      {page.items?.map((tool) => {
+                        const needsAttention = toolData
+                          ? toolData[tool.id!]?.totalCount > 0
+                          : false;
+                        return (
+                          <MenuItem
+                            key={tool.id}
+                            component={NextLink}
+                            href={tool.href ?? ''}
+                            tabIndex={0}
+                            onClick={handleToolsMenuClose}
+                            data-testid={`${tool.id}-${
+                              currentToolId === tool.id
+                            }`}
+                            aria-current={
+                              pathname.startsWith(tool.href?.toString() ?? '')
+                                ? 'page'
+                                : undefined
+                            }
+                            className={clsx(
+                              classes.menuItem,
+                              needsAttention && classes.needsAttention,
+                            )}
+                          >
+                            <Icon
+                              path={tool.icon}
+                              size={1}
                               className={clsx(
-                                classes.menuItem,
-                                needsAttention && classes.needsAttention,
+                                classes.menuIcon,
+                                needsAttention
+                                  ? classes.darkText
+                                  : classes.whiteText,
                               )}
-                            >
-                              <Icon
-                                path={tool.icon}
-                                size={1}
-                                className={clsx(
-                                  classes.menuIcon,
-                                  needsAttention
-                                    ? classes.darkText
-                                    : classes.whiteText,
-                                )}
-                              />
-                              <ListItemText
-                                className={clsx(
-                                  needsAttention
-                                    ? classes.darkText
-                                    : classes.whiteText,
-                                )}
-                                primary={t(tool.tool)}
-                              />
-                              {!loading && needsAttention && (
-                                <Box
-                                  className={classes.notificationBox}
-                                  data-testid={`${tool.id}-notifications`}
-                                >
-                                  <Typography>
-                                    {toolData[tool.id].totalCount < 100
-                                      ? toolData[tool.id].totalCount
-                                      : '99+'}
-                                  </Typography>
-                                </Box>
+                            />
+                            <ListItemText
+                              className={clsx(
+                                needsAttention
+                                  ? classes.darkText
+                                  : classes.whiteText,
                               )}
-                            </MenuItem>
-                          );
-                        })}
-                      </Box>
-                    ))}
-                  </MenuList>
-                </ClickAwayListener>
-              </Paper>
+                              primary={tool.title}
+                            />
+                            {!loading && needsAttention && (
+                              <Box
+                                className={classes.notificationBox}
+                                data-testid={`${tool.id}-notifications`}
+                              >
+                                <Typography>
+                                  {toolData[tool.id!].totalCount < 100
+                                    ? toolData[tool.id!].totalCount
+                                    : '99+'}
+                                </Typography>
+                              </Box>
+                            )}
+                          </MenuItem>
+                        );
+                      })}
+                    </MenuList>
+                  </ClickAwayListener>
+                </Paper>
+              ) : (
+                <Paper>
+                  <ClickAwayListener onClickAway={handleMenuClose}>
+                    <MenuList autoFocusItem={menuOpen} id="menu-list-grow">
+                      {page.items?.map(({ id, title, href }) => (
+                        <MenuItem
+                          key={id}
+                          component={NextLink}
+                          href={href ?? ''}
+                          onClick={handleReportsMenuClose}
+                          tabIndex={0}
+                          aria-current={
+                            pathname.startsWith(href?.toString() ?? '')
+                              ? 'page'
+                              : undefined
+                          }
+                        >
+                          <ListItemText primary={t(title)} />
+                        </MenuItem>
+                      ))}
+                    </MenuList>
+                  </ClickAwayListener>
+                </Paper>
+              )}
             </Grow>
           )}
         </Popper>
       </Grid>
+    );
+  }
+
+  return accountListId ? (
+    <Grid container item alignItems="center" xs="auto">
+      {navMenuPages.slice(0, 3).map((page) => (
+        <Grid key={page.id} item className={classes.navListItem}>
+          <MenuItem
+            component={NextLink}
+            href={page.href ?? ''}
+            tabIndex={0}
+            className={classes.menuItem}
+            aria-current={pathname === page.pathname ? 'page' : undefined}
+          >
+            <ListItemText primary={page.title} />
+          </MenuItem>
+        </Grid>
+      ))}
+
+      {NavMenuDropdown({
+        page: navMenuPages[3],
+        anchorRef,
+        menuOpen: reportsMenuOpen,
+        handleMenuToggle: handleReportsMenuToggle,
+        handleMenuClose: handleReportsMenuClose,
+        testId: 'ReportMenuToggle',
+      })}
+      {NavMenuDropdown({
+        page: navMenuPages[4],
+        anchorRef: anchorRefTools,
+        menuOpen: toolsMenuOpen,
+        handleMenuToggle: handleToolsMenuToggle,
+        handleMenuClose: handleToolsMenuClose,
+        testId: 'ToolsMenuToggle',
+        isToolDropdown: true,
+      })}
 
       {!!coachingAccounts?.totalCount && (
         <Grid item className={classes.navListItem}>
           <MenuItem
             component={NextLink}
-            href={`/accountLists/${accountListId}/coaching`}
+            href={navMenuPages[coachingIndex].href ?? ''}
             tabIndex={0}
             className={classes.menuItem}
             aria-current={
-              pathname === '/accountLists/[accountListId]/coaching'
+              pathname === navMenuPages[coachingIndex].pathname
                 ? 'page'
                 : undefined
             }
           >
-            <ListItemText primary={t('Coaching')} />
+            <ListItemText primary={navMenuPages[coachingIndex].title} />
           </MenuItem>
         </Grid>
       )}
