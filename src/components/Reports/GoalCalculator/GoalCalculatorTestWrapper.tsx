@@ -37,6 +37,7 @@ export const goalCalculationMock = gqlMock<
       firstName: 'John',
       spouseFirstName: 'Jane',
       lastName: 'Doe',
+      geographicLocation: null,
       role: GoalCalculationRole.Office,
       familySize: MpdGoalBenefitsConstantSizeEnum.MarriedNoChildren,
       benefitsPlan: MpdGoalBenefitsConstantPlanEnum.Base,
