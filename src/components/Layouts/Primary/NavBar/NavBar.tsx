@@ -1,15 +1,13 @@
-import { LinkProps } from 'next/link';
 import { useRouter } from 'next/router';
 import React, { ReactElement, useEffect } from 'react';
 import type { FC } from 'react';
+import MdiIcon from '@mdi/react';
 import { Box, Drawer, Hidden, List, Theme, useMediaQuery } from '@mui/material';
-import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { useLoadCoachingListQuery } from 'src/components/Coaching/LoadCoachingList.generated';
 import { useSetupContext } from 'src/components/Setup/SetupProvider';
-import { reportNavItems } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenuItems';
-import { ToolsListNav } from 'src/components/Tool/Home/ToolsListNav';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { NavPage, getNavPages } from '../../Shared/getNavPages';
 import { LogoLink } from '../LogoLink/LogoLink';
 import { NavItem } from './NavItem/NavItem';
 import { NavTools } from './NavTools/NavTools';
@@ -19,22 +17,10 @@ interface NavBarProps {
   openMobile: boolean;
 }
 
-interface Item {
-  href?: LinkProps['href'];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  icon?: any;
-  items?: Item[];
-  title: string;
-}
-
-interface Section {
-  href?: LinkProps['href'];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  icon?: any;
-  items?: Item[];
-  title: string;
-  whatsNewLink?: boolean;
-}
+const makeMdi = (path: string) =>
+  function Mdi(props) {
+    return <MdiIcon path={path} {...props} />;
+  };
 
 function renderNavItems({
   accountListId,
@@ -43,7 +29,7 @@ function renderNavItems({
   depth = 0,
 }: {
   accountListId: string | undefined;
-  items: Section[];
+  items: NavPage[];
   pathname: string;
   depth?: number;
 }) {
@@ -74,12 +60,14 @@ function reduceChildRoutes({
   acc: ReactElement[];
   accountListId: string | undefined;
   pathname: string;
-  item: Section;
+  item: NavPage;
   depth: number;
 }) {
+  const convertIcon =
+    typeof item.icon === 'string' ? makeMdi(item.icon) : item.icon;
   const sharedProps = {
     depth: depth,
-    icon: item.icon,
+    icon: convertIcon,
     key: item.title + depth,
     title: item.title,
     whatsNewLink: item.whatsNewLink,
@@ -114,56 +102,12 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
   const { classes } = useStyles();
   const accountListId = useAccountListId();
   const { pathname } = useRouter();
-  const { t } = useTranslation();
   const { onSetupTour } = useSetupContext();
   const { data } = useLoadCoachingListQuery();
 
   const coachingAccountCount = data?.coachingAccountLists.totalCount;
 
-  const sections: Section[] = [
-    {
-      title: t('Dashboard'),
-      href: `/accountLists/${accountListId}`,
-    },
-    {
-      title: t('Contacts'),
-      href: `/accountLists/${accountListId}/contacts`,
-    },
-    {
-      title: t('Tasks'),
-      href: `/accountLists/${accountListId}/tasks`,
-    },
-    {
-      title: t('Reports'),
-      items: reportNavItems.map((item) => ({
-        ...item,
-        title: item.title,
-        href: `/accountLists/${accountListId}/reports/${item.id}`,
-      })),
-    },
-    {
-      title: t('Tools'),
-      items: ToolsListNav.flatMap((toolsGroup) =>
-        toolsGroup.items.map((tool) => ({
-          title: tool.tool,
-          href: `/accountLists/${accountListId}/tools/${tool.url}`,
-        })),
-      ),
-    },
-  ];
-  if (coachingAccountCount) {
-    sections.push({
-      title: t('Coaching'),
-      href: `/accountLists/${accountListId}/coaching`,
-    });
-  }
-  if (process.env.HELP_WHATS_NEW_URL) {
-    sections.push({
-      title: t("What's New"),
-      href: process.env.HELP_WHATS_NEW_URL,
-      whatsNewLink: true,
-    });
-  }
+  const { navBarPages: sections } = getNavPages(coachingAccountCount);
 
   const drawerHidden = useMediaQuery<Theme>((theme) =>
     theme.breakpoints.up('md'),
