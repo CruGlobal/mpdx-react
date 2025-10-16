@@ -3,8 +3,8 @@ import { DateTime } from 'luxon';
 import { Filters } from 'src/components/Reports/StaffExpenseReport/SettingsDialog/SettingsDialog';
 import { Transaction } from 'src/components/Reports/StaffExpenseReport/StaffExpenseReport';
 import { Fund } from 'src/graphql/types.generated';
-import { ReportType } from './Helpers/StaffReportEnum';
-import { getLocalizedCategory } from './Helpers/useLocalizedCategory';
+import { ReportType } from './StaffReportEnum';
+import { getLocalizedCategory } from './useLocalizedCategory';
 
 interface FilterTransactionsParams {
   fund: Pick<Fund, 'fundType' | 'total' | 'categories'>;

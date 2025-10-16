@@ -33,7 +33,7 @@ const StyledCardActionArea = styled(Box)(({ theme }) => ({
   justifyContent: 'flex-start',
 }));
 
-export const BalanceCardSkeleton: React.FC = () => {
+export const CardSkeleton: React.FC = () => {
   return (
     <SimpleScreenOnly sx={{ flex: 1, minWidth: 250, display: 'flex' }}>
       <StyledCard variant="outlined" data-testid="balance-card-skeleton">
@@ -49,21 +49,7 @@ export const BalanceCardSkeleton: React.FC = () => {
           />
         </Box>
 
-        <Box display="flex" flexDirection="column" mt={2} mb={1}>
-          <Skeleton
-            data-testid="text-skeleton"
-            variant="text"
-            width="30%"
-            height={24}
-            sx={{ mb: 0.5 }}
-          />
-          <Skeleton
-            data-testid="text-skeleton"
-            variant="text"
-            width="25%"
-            height={24}
-            sx={{ mb: 0.5 }}
-          />
+        <Box display="flex" flexDirection="column" mt={4} mb={1}>
           <Skeleton
             data-testid="text-skeleton"
             variant="text"

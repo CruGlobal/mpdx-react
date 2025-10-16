@@ -8,7 +8,7 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
-import { NoStaffAccount } from '../Shared/NoStaffAccount';
+import { NoStaffAccount } from '../Shared/NoStaffAccount/NoStaffAccount';
 import { useStaffAccountQuery } from '../StaffAccount.generated';
 import {
   StaffSavingFundContext,
