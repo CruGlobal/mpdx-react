@@ -378,6 +378,8 @@ export const getNewStaffBudgetCategory = (
       return getExpenseAmount(goalCalculation, 'travel');
     case PrimaryBudgetCategoryEnum.MeetingsRetreatsConferences:
       return getExpenseAmount(goalCalculation, 'conference');
+    case PrimaryBudgetCategoryEnum.UsStaffConference:
+      return 0;
     case PrimaryBudgetCategoryEnum.MealsAndPerDiem:
       return getExpenseAmount(goalCalculation, 'meals');
     case PrimaryBudgetCategoryEnum.MinistryPartnerDevelopment:
@@ -392,7 +394,6 @@ export const getNewStaffBudgetCategory = (
       const spouses = hasStaffSpouse(goalCalculation.familySize) ? 2 : 1;
       return REIMBURSEMENT_AMOUNTS[goalCalculation.benefitsPlan] * spouses;
 
-    case PrimaryBudgetCategoryEnum.UsStaffConference:
     case PrimaryBudgetCategoryEnum.AccountTransfers:
     case PrimaryBudgetCategoryEnum.InternetServiceProviderFee:
     case PrimaryBudgetCategoryEnum.CellPhoneWorkLine:
