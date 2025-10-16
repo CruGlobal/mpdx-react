@@ -85,7 +85,10 @@ const AGE_COLUMNS: Record<GoalCalculationAge, number> = {
   [GoalCalculationAge.OverForty]: 3,
 };
 
-const getBaseMultiplier = (goalCalculation: GoalCalculation): number => {
+const getBaseMultiplier = (
+  goalCalculation: GoalCalculation,
+  spouse: boolean,
+): number => {
   const single = !hasStaffSpouse(goalCalculation?.familySize);
 
   let baseSalary = FAMILY_SIZE_BASE_SALARY.single;
@@ -99,30 +102,38 @@ const getBaseMultiplier = (goalCalculation: GoalCalculation): number => {
   }
 
   const ageIncrement = single ? 0.3 : 0.1;
-  const ageColumn = goalCalculation?.age ? AGE_COLUMNS[goalCalculation.age] : 0;
+  const age = spouse ? goalCalculation?.spouseAge : goalCalculation?.age;
+  const ageColumn = age ? AGE_COLUMNS[age] : 0;
   return baseSalary + ageIncrement * ageColumn;
 };
 
 const getUncappedBase = (
   goalCalculation: GoalCalculation,
-  yearsOnStaff: number,
+  spouse: boolean,
   constants: FormattedConstants,
 ): number => {
   const single = !hasStaffSpouse(goalCalculation?.familySize);
+  if (single && spouse) {
+    return 0;
+  }
+
   const debtPercentage = single
     ? (constants.goalMiscConstants.DEBT_PERCENTAGE?.SINGLE?.fee ?? 0)
     : (constants.goalMiscConstants.DEBT_PERCENTAGE?.MARRIED?.fee ?? 0);
   const debtCapPercentage =
     0.8 * (LEVEL_2_RATE / LEVEL_1_RATE) * debtPercentage;
 
-  const baseMultiplier = getBaseMultiplier(goalCalculation);
+  const baseMultiplier = getBaseMultiplier(goalCalculation, spouse);
   const geographicMultiplier =
     (typeof goalCalculation?.geographicLocation === 'string'
       ? constants.goalGeographicConstantMap.get(
           goalCalculation.geographicLocation,
         )
       : null) ?? 0;
-  const tenureIncrease = getTenureIncrease(yearsOnStaff);
+  const yearsOnStaff = spouse
+    ? goalCalculation?.spouseYearsOnStaff
+    : goalCalculation?.yearsOnStaff;
+  const tenureIncrease = getTenureIncrease(yearsOnStaff ?? 0);
   const base = BASE_SALARY * LEVEL_1_RATE * (1 + baseMultiplier);
   const monthlyDebt = 0; // TODO: Use monthly debt when implementing New Staff Goals
   const debtCap = (base + tenureIncrease) * debtCapPercentage;
@@ -186,19 +197,8 @@ export const calculateNewStaffGoalTotals = (
   goalCalculation: GoalCalculation,
   constants: FormattedConstants,
 ): GoalTotals => {
-  const married = hasStaffSpouse(goalCalculation?.familySize);
-  const uncappedBase = getUncappedBase(
-    goalCalculation,
-    goalCalculation?.yearsOnStaff ?? 0,
-    constants,
-  );
-  const spouseUncappedBase = married
-    ? getUncappedBase(
-        goalCalculation,
-        goalCalculation?.spouseYearsOnStaff ?? 0,
-        constants,
-      )
-    : 0;
+  const uncappedBase = getUncappedBase(goalCalculation, false, constants);
+  const spouseUncappedBase = getUncappedBase(goalCalculation, true, constants);
   const totalUncappedBase = uncappedBase + spouseUncappedBase;
 
   const salaryCap = getSalaryCap(goalCalculation, constants);
