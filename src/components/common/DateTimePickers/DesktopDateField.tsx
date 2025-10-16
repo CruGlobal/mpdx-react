@@ -82,6 +82,16 @@ export const DesktopDateField: React.FC<DesktopDateFieldProps> = ({
       onChange={(event) => {
         setRawDate(event.target.value);
       }}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter') {
+          if (parsedDate?.isValid) {
+            onChange(parsedDate);
+          } else {
+            onChange(null);
+          }
+        }
+        props.onKeyDown?.(event);
+      }}
       onBlur={(event) => {
         onChange(parsedDate);
         props.onBlur?.(event);

@@ -1,6 +1,5 @@
 import React from 'react';
 import { DynamicFilterPanel } from 'src/components/Shared/Filters/DynamicFilterPanel';
-import { ContextTypesEnum } from 'src/components/Shared/Filters/FilterPanel';
 import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
 import {
   AppealsContext,
@@ -13,9 +12,7 @@ export const AppealsLeftPanel: React.FC = () => {
     filterData,
     filtersLoading,
     savedFilters,
-    activeFilters,
     toggleFilterPanel,
-    setActiveFilters,
     viewMode,
   } = React.useContext(AppealsContext) as AppealsType;
 
@@ -25,10 +22,7 @@ export const AppealsLeftPanel: React.FC = () => {
     <DynamicFilterPanel
       filters={filterData?.accountList?.contactFilterGroups}
       savedFilters={savedFilters}
-      selectedFilters={activeFilters}
       onClose={toggleFilterPanel}
-      onSelectedFiltersChanged={setActiveFilters}
-      contextType={ContextTypesEnum.Appeals}
     />
   ) : null;
 };

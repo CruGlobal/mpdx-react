@@ -20,7 +20,6 @@ import {
   StatusEnum,
 } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { useContactLinks } from 'src/hooks/useContactLinks';
 import { useLocale } from 'src/hooks/useLocale';
 import { numberFormat } from 'src/lib/intlFormat';
 import illustration14 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-14.svg';
@@ -62,7 +61,7 @@ const LateCommitmentsCardContent = styled(CardContent)(({ theme }) => ({
   },
 }));
 
-interface Props {
+export interface LateCommitmentsProps {
   loading?: boolean;
   latePledgeContacts?: GetThisWeekQuery['latePledgeContacts'];
 }
@@ -70,13 +69,10 @@ interface Props {
 const LateCommitments = ({
   loading,
   latePledgeContacts,
-}: Props): ReactElement => {
+}: LateCommitmentsProps): ReactElement => {
   const { t } = useTranslation();
   const locale = useLocale();
   const accountListId = useAccountListId();
-  const { getContactUrl } = useContactLinks({
-    url: `/accountLists/${accountListId}/contacts/`,
-  });
 
   return (
     <LateCommitmentsContainer>
@@ -134,11 +130,10 @@ const LateCommitments = ({
                     return null;
                   }
 
-                  const contactUrl = getContactUrl(contact.id);
                   return (
                     <ListItemButton
                       component={NextLink}
-                      href={contactUrl}
+                      href={`/accountLists/${accountListId}/contacts/${contact.id}`}
                       shallow
                       data-testid={`LateCommitmentsListItemContact-${contact.id}`}
                       key={contact.id}

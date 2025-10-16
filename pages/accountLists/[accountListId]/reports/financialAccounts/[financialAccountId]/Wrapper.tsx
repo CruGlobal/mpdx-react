@@ -1,11 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { FinancialAccountProvider } from 'src/components/Reports/FinancialAccountsReport/Context/FinancialAccountsContext';
-import {
-  DateRangeInput,
-  InputMaybe,
-  Scalars,
-} from 'src/graphql/types.generated';
+import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { getQueryParam } from 'src/utils/queryParam';
 
 interface Props {
@@ -18,26 +14,13 @@ export enum FinancialAccountPageEnum {
   AccountTransactionsPage = 'AccountTransactionsPage',
 }
 
-export interface FinancialAccountTransactionFilters {
-  dateRange?: InputMaybe<DateRangeInput>;
-  categoryId?: InputMaybe<Scalars['String']['input']>;
-}
-
 export const FinancialAccountsWrapper: React.FC<Props> = ({ children }) => {
   const router = useRouter();
-  const { query, replace, pathname, isReady } = router;
-
-  const urlFilters =
-    query?.filters && JSON.parse(decodeURI(query.filters as string));
-
-  const [activeFilters, setActiveFilters] =
-    useState<FinancialAccountTransactionFilters>(urlFilters ?? {});
+  const { query } = router;
 
   const [financialAccountId, setFinancialAccountId] = useState(
     getQueryParam(query, 'financialAccountId') ?? '',
   );
-
-  const { searchTerm } = query;
 
   useEffect(() => {
     if (!query.financialAccountId) {
@@ -48,32 +31,11 @@ export const FinancialAccountsWrapper: React.FC<Props> = ({ children }) => {
     }
   }, [query.financialAccountId]);
 
-  useEffect(() => {
-    if (!isReady) {
-      return;
-    }
-
-    const { filters: _, ...oldQuery } = query;
-    replace({
-      pathname,
-      query: {
-        ...oldQuery,
-        ...(Object.keys(activeFilters).length
-          ? { filters: encodeURI(JSON.stringify(activeFilters)) }
-          : undefined),
-      },
-    });
-  }, [activeFilters, isReady]);
-
   return (
-    <FinancialAccountProvider
-      urlFilters={urlFilters}
-      activeFilters={activeFilters}
-      setActiveFilters={setActiveFilters}
-      financialAccountId={financialAccountId}
-      search={searchTerm}
-    >
-      {children}
-    </FinancialAccountProvider>
+    <UrlFiltersProvider>
+      <FinancialAccountProvider financialAccountId={financialAccountId}>
+        {children}
+      </FinancialAccountProvider>
+    </UrlFiltersProvider>
   );
 };

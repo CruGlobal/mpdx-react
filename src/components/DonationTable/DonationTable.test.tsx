@@ -8,6 +8,7 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
+import { ContactPanelProvider } from '../common/ContactPanelProvider/ContactPanelProvider';
 import { DonationTable, DonationTableProps } from './DonationTable';
 import {
   AccountListCurrencyQuery,
@@ -17,6 +18,7 @@ import {
 const mutationSpy = jest.fn();
 
 const router = {
+  pathname: '/accountLists/[accountListId]/reports/donations/[[...contactId]]',
   query: { accountListId: 'account-list-1' },
   isReady: true,
 };
@@ -104,6 +106,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
                           },
                         },
                       ],
+                  totalCount: 2,
                   pageInfo: {
                     endCursor: 'cursor',
                     hasNextPage: hasMultiplePages,
@@ -113,16 +116,18 @@ const TestComponent: React.FC<TestComponentProps> = ({
             }}
             onCall={mutationSpy}
           >
-            <DonationTable
-              accountListId={'abc'}
-              filter={{
-                designationAccountIds: ['designation-1'],
-              }}
-              visibleColumnsStorageKey=""
-              emptyPlaceholder={<span>Empty Table</span>}
-              hideDisplayName={hideDisplayName}
-              {...tableProps}
-            />
+            <ContactPanelProvider>
+              <DonationTable
+                accountListId={'abc'}
+                filter={{
+                  designationAccountIds: ['designation-1'],
+                }}
+                visibleColumnsStorageKey=""
+                emptyPlaceholder={<span>Empty Table</span>}
+                hideDisplayName={hideDisplayName}
+                {...tableProps}
+              />
+            </ContactPanelProvider>
           </GqlMockedProvider>
         </TestRouter>
       </ThemeProvider>
@@ -134,15 +139,17 @@ describe('DonationTable', () => {
   it('renders with data', async () => {
     const { getByRole, findByRole } = render(<TestComponent />);
 
-    expect(await findByRole('cell', { name: 'Donor 1' })).toBeInTheDocument();
-    expect(getByRole('cell', { name: 'Donor 2' })).toBeInTheDocument();
-    expect(getByRole('cell', { name: 'CA$11.55' })).toBeInTheDocument();
-    expect(getByRole('cell', { name: 'CA$100' })).toBeInTheDocument();
-    expect(getByRole('cell', { name: '3/1/2023' })).toBeInTheDocument();
-    expect(getByRole('cell', { name: '3/2/2023' })).toBeInTheDocument();
-    expect(getByRole('cell', { name: 'Check' })).toBeInTheDocument();
-    expect(getByRole('cell', { name: 'Credit Card' })).toBeInTheDocument();
-    expect(getByRole('cell', { name: 'Appeal 1' })).toBeInTheDocument();
+    expect(
+      await findByRole('gridcell', { name: 'Donor 1' }),
+    ).toBeInTheDocument();
+    expect(getByRole('gridcell', { name: 'Donor 2' })).toBeInTheDocument();
+    expect(getByRole('gridcell', { name: 'CA$11.55' })).toBeInTheDocument();
+    expect(getByRole('gridcell', { name: 'CA$100' })).toBeInTheDocument();
+    expect(getByRole('gridcell', { name: '3/1/2023' })).toBeInTheDocument();
+    expect(getByRole('gridcell', { name: '3/2/2023' })).toBeInTheDocument();
+    expect(getByRole('gridcell', { name: 'Check' })).toBeInTheDocument();
+    expect(getByRole('gridcell', { name: 'Credit Card' })).toBeInTheDocument();
+    expect(getByRole('gridcell', { name: 'Appeal 1' })).toBeInTheDocument();
   });
 
   it('renders the partner display name when not on contact page.', async () => {
@@ -151,7 +158,7 @@ describe('DonationTable', () => {
     expect(
       await findByRole('columnheader', { name: 'Partner' }),
     ).toBeInTheDocument();
-    expect(getByRole('cell', { name: 'Donor 2' })).toBeInTheDocument();
+    expect(getByRole('gridcell', { name: 'Donor 2' })).toBeInTheDocument();
   });
 
   it('renders the partner account number when on contact page', async () => {
@@ -162,7 +169,9 @@ describe('DonationTable', () => {
     expect(
       await findByRole('columnheader', { name: 'Partner No.' }),
     ).toBeInTheDocument();
-    expect(getByRole('cell', { name: 'accountNumber-2' })).toBeInTheDocument();
+    expect(
+      getByRole('gridcell', { name: 'accountNumber-2' }),
+    ).toBeInTheDocument();
   });
 
   it('opens and closes the edit donation modal', async () => {
@@ -175,7 +184,9 @@ describe('DonationTable', () => {
       }),
     );
 
-    expect(await findByRole('cell', { name: 'Donor 1' })).toBeInTheDocument();
+    expect(
+      await findByRole('gridcell', { name: 'Donor 1' }),
+    ).toBeInTheDocument();
     expect(queryByText('Edit Donation')).not.toBeInTheDocument();
 
     userEvent.click(getByTestId('edit-donation-1'));
@@ -202,25 +213,28 @@ describe('DonationTable', () => {
     expect(await findByText('Empty Table')).toBeInTheDocument();
   });
 
-  it('contact name is not link when getContactUrl is not provided', async () => {
+  it('contact name is not a link when the contact has no donor account', async () => {
     const { findByText, queryByRole } = render(<TestComponent />);
 
-    expect(await findByText('Donor 1')).toBeInTheDocument();
-    expect(queryByRole('link', { name: 'Donor 1' })).not.toBeInTheDocument();
+    expect(await findByText('Donor 2')).toBeInTheDocument();
+    expect(queryByRole('link', { name: 'Donor 2' })).not.toBeInTheDocument();
   });
 
-  it('contact name is a link when getContactUrl is provided', async () => {
-    const { findByRole } = render(
-      <TestComponent tableProps={{ getContactUrl: () => 'contact-1' }} />,
-    );
+  it('contact name is a link when the contact has a donor account', async () => {
+    const { findByRole } = render(<TestComponent />);
 
-    expect(await findByRole('link', { name: 'Donor 1' })).toBeInTheDocument();
+    expect(await findByRole('link', { name: 'Donor 1' })).toHaveAttribute(
+      'href',
+      '/accountLists/account-list-1/reports/donations/contact-1',
+    );
   });
 
   it('hides currency column when all currencies match the account currency', async () => {
     const { queryByRole, findByRole } = render(<TestComponent />);
 
-    expect(await findByRole('cell', { name: 'Donor 1' })).toBeInTheDocument();
+    expect(
+      await findByRole('gridcell', { name: 'Donor 1' }),
+    ).toBeInTheDocument();
     expect(
       queryByRole('columnheader', { name: 'Foreign Amount' }),
     ).not.toBeInTheDocument();
@@ -233,17 +247,21 @@ describe('DonationTable', () => {
   });
 
   it('shows currency column and additional total rows when a currency does not match the account currency', async () => {
-    const { findByRole, getAllByRole } = render(
+    const { findByRole, findAllByRole, getAllByRole } = render(
       <TestComponent hasForeignCurrency />,
     );
 
     expect(
-      await findByRole('columnheader', { name: 'Foreign Amount' }),
+      await findAllByRole('columnheader', { name: 'Foreign Amount' }),
+    ).toHaveLength(2);
+    expect(
+      await findByRole('gridcell', { name: 'Donor 1' }),
     ).toBeInTheDocument();
-    expect(await findByRole('cell', { name: 'Donor 1' })).toBeInTheDocument();
-    // a donation with the same currency as the contact is not rounded
-    // It should be found 4 times - two in the donation table and two in the totals table
-    expect(getAllByRole('cell', { name: 'CA$11.55' })).toHaveLength(4);
+    // Test that a donation with the same currency as the contact is not rounded
+    // It should be found twice in the donation table
+    expect(getAllByRole('gridcell', { name: 'CA$11.55' })).toHaveLength(2);
+    // It should be found and twice in the totals table
+    expect(getAllByRole('cell', { name: 'CA$11.55' })).toHaveLength(2);
 
     const totalsRows = within(
       await findByRole('table', { name: 'Donation Totals' }),
@@ -268,12 +286,12 @@ describe('DonationTable', () => {
     ).toBeInTheDocument();
 
     userEvent.click(await findByRole('columnheader', { name: 'Amount' }));
-    const cellsAsc = getAllByRole('cell', { name: /CA/ });
+    const cellsAsc = getAllByRole('gridcell', { name: /CA/ });
     expect(cellsAsc[0]).toHaveTextContent('CA$11.55');
     expect(cellsAsc[1]).toHaveTextContent('CA$100');
 
     userEvent.click(await findByRole('columnheader', { name: 'Amount' }));
-    const cellsDesc = getAllByRole('cell', { name: /CA/ });
+    const cellsDesc = getAllByRole('gridcell', { name: /CA/ });
     expect(cellsDesc[0]).toHaveTextContent('CA$100');
     expect(cellsDesc[1]).toHaveTextContent('CA$11.55');
   });

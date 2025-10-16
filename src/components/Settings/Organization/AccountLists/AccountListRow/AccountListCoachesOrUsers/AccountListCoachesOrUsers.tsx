@@ -56,8 +56,8 @@ export const AccountListCoachesOrUsers: React.FC<Props> = ({
           item.__typename === 'AccountListUsers'
             ? item.userEmailAddresses
             : item.__typename === 'OrganizationAccountListCoaches'
-            ? item.coachEmailAddresses
-            : [];
+              ? item.coachEmailAddresses
+              : [];
 
         return (
           <BorderBottomBox key={`designationAccounts-coaches-${idx}`}>

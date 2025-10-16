@@ -9,12 +9,10 @@ import { ToolsWrapper } from '../ToolsWrapper';
 const GoogleImportPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const pageUrl = 'tools/import/google';
 
   return (
     <ToolsWrapper
       pageTitle={t('Import from Google')}
-      pageUrl={pageUrl}
       selectedMenuId="import/google"
     >
       {accountListId ? (

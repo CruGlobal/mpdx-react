@@ -10,11 +10,18 @@ export const percentageFormat = (value: number, locale: string): string =>
     style: 'percent',
   }).format(Number.isFinite(value) ? value : 0);
 
+interface CurrencyFormatOptions {
+  showTrailingZeros?: boolean;
+}
+
 export const currencyFormat = (
   value: number,
   currency: string | null | undefined,
   locale: string,
+  options?: CurrencyFormatOptions,
 ): string => {
+  const { showTrailingZeros = false } = options ?? {};
+
   const amount = Number.isNaN(value) ? 0 : value;
   if (!currency) {
     currency = 'USD';
@@ -23,7 +30,7 @@ export const currencyFormat = (
     return new Intl.NumberFormat(locale, {
       style: 'currency',
       currency: currency,
-      trailingZeroDisplay: 'stripIfInteger',
+      trailingZeroDisplay: showTrailingZeros ? undefined : 'stripIfInteger',
     }).format(Number.isFinite(amount) ? amount : 0);
   } catch (error) {
     // eslint-disable-next-line no-console
@@ -52,6 +59,16 @@ export const amountFormat = (
     console.error(`Error formatting amount: ${error}`);
     return value.toString();
   }
+};
+
+export const zeroAmountFormat = (
+  value: number | undefined | null,
+  locale: string,
+): string => {
+  if (value === 0) {
+    return '-';
+  }
+  return amountFormat(value, locale);
 };
 
 export const parseNumberFromCurrencyString = (
@@ -93,11 +110,15 @@ export const dayMonthFormat = (
   day: number,
   month: number,
   locale: string,
-): string =>
-  new Intl.DateTimeFormat(locale, {
+  options?: { weekday: 'short' },
+): string => {
+  const { weekday } = options ?? {};
+  return new Intl.DateTimeFormat(locale, {
     day: 'numeric',
     month: 'short',
+    weekday: weekday,
   }).format(DateTime.local().set({ month, day }).toJSDate());
+};
 
 export const monthYearFormat = (
   month: number,
@@ -110,13 +131,22 @@ export const monthYearFormat = (
     year: fullYear ? 'numeric' : '2-digit',
   }).format(DateTime.local(year, month, 1).toJSDate());
 
-export const dateFormat = (date: DateTime | null, locale: string): string => {
+interface DateFormatOptions {
+  fullMonth?: boolean;
+}
+
+export const dateFormat = (
+  date: DateTime | null,
+  locale: string,
+  options?: DateFormatOptions,
+): string => {
+  const { fullMonth } = options ?? {};
   if (date === null) {
     return '';
   }
   return new Intl.DateTimeFormat(locale, {
     day: 'numeric',
-    month: 'short',
+    month: fullMonth ? 'long' : 'short',
     year: 'numeric',
   }).format(date.toJSDate());
 };
@@ -230,6 +260,33 @@ export const validateAndFormatInvalidDate = (
   };
 };
 
+const SECOND_MS = 1000;
+const MINUTE_MS = 60 * SECOND_MS;
+const HOUR_MS = 60 * MINUTE_MS;
+const DAY_MS = 24 * HOUR_MS;
+const UNITS = [
+  { threshold: 365 * DAY_MS, name: 'year' as const },
+  { threshold: 30 * DAY_MS, name: 'month' as const },
+  { threshold: DAY_MS, name: 'day' as const },
+  { threshold: HOUR_MS, name: 'hour' as const },
+  { threshold: MINUTE_MS, name: 'minute' as const },
+  { threshold: SECOND_MS, name: 'second' as const },
+];
+
+export const formatRelativeTime = (
+  milliseconds: number,
+  locale: string,
+): string => {
+  const unit =
+    UNITS.find((unit) => Math.abs(milliseconds) >= unit.threshold) ??
+    UNITS[UNITS.length - 1];
+  const count = Math.round(milliseconds / unit.threshold);
+
+  return new Intl.RelativeTimeFormat(locale, { numeric: 'auto' }).format(
+    count,
+    unit.name,
+  );
+};
 const intlFormat = {
   numberFormat,
   percentageFormat,

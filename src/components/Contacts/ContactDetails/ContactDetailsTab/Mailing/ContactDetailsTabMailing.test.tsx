@@ -3,7 +3,6 @@ import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import { SendNewsletterEnum } from 'src/graphql/types.generated';
 import theme from '../../../../../theme';
 import { ContactDetailProvider } from '../../ContactDetailContext';
@@ -65,14 +64,12 @@ describe('ContactDetailsTabMailing', () => {
       <TestRouter router={router}>
         <ThemeProvider theme={theme}>
           <GqlMockedProvider>
-            <ContactsWrapper>
-              <ContactDetailProvider>
-                <ContactDetailsTabMailing
-                  accountListId={accountListId}
-                  data={data}
-                />
-              </ContactDetailProvider>
-            </ContactsWrapper>
+            <ContactDetailProvider>
+              <ContactDetailsTabMailing
+                accountListId={accountListId}
+                data={data}
+              />
+            </ContactDetailProvider>
           </GqlMockedProvider>
         </ThemeProvider>
       </TestRouter>,
@@ -86,14 +83,12 @@ describe('ContactDetailsTabMailing', () => {
       <TestRouter router={router}>
         <ThemeProvider theme={theme}>
           <GqlMockedProvider>
-            <ContactsWrapper>
-              <ContactDetailProvider>
-                <ContactDetailsTabMailing
-                  accountListId={accountListId}
-                  data={data}
-                />
-              </ContactDetailProvider>
-            </ContactsWrapper>
+            <ContactDetailProvider>
+              <ContactDetailsTabMailing
+                accountListId={accountListId}
+                data={data}
+              />
+            </ContactDetailProvider>
           </GqlMockedProvider>
         </ThemeProvider>
       </TestRouter>,
@@ -107,14 +102,12 @@ describe('ContactDetailsTabMailing', () => {
       <TestRouter router={router}>
         <ThemeProvider theme={theme}>
           <GqlMockedProvider>
-            <ContactsWrapper>
-              <ContactDetailProvider>
-                <ContactDetailsTabMailing
-                  accountListId={accountListId}
-                  data={data}
-                />
-              </ContactDetailProvider>
-            </ContactsWrapper>
+            <ContactDetailProvider>
+              <ContactDetailsTabMailing
+                accountListId={accountListId}
+                data={data}
+              />
+            </ContactDetailProvider>
           </GqlMockedProvider>
         </ThemeProvider>
       </TestRouter>,
@@ -137,14 +130,12 @@ describe('ContactDetailsTabMailing', () => {
       <TestRouter router={router}>
         <ThemeProvider theme={theme}>
           <GqlMockedProvider>
-            <ContactsWrapper>
-              <ContactDetailProvider>
-                <ContactDetailsTabMailing
-                  accountListId={accountListId}
-                  data={data}
-                />
-              </ContactDetailProvider>
-            </ContactsWrapper>
+            <ContactDetailProvider>
+              <ContactDetailsTabMailing
+                accountListId={accountListId}
+                data={data}
+              />
+            </ContactDetailProvider>
           </GqlMockedProvider>
         </ThemeProvider>
       </TestRouter>,

@@ -8,7 +8,6 @@ import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
-import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
@@ -24,6 +23,14 @@ import {
 } from 'src/components/Shared/Header/ListHeader';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import { TaskRow } from 'src/components/Task/TaskRow/TaskRow';
+import {
+  ContactPanelProvider,
+  useContactPanel,
+} from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
+import {
+  UrlFiltersProvider,
+  useUrlFilters,
+} from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { useGetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
@@ -40,7 +47,7 @@ import {
   useTaskFiltersQuery,
   useTasksQuery,
 } from './Tasks.generated';
-import { useTasksContactContext } from './useTasksContactContext';
+import { removeTagsFromFilters } from './sanitizeFilters';
 
 export type ContactUrl = {
   contactUrl: string;
@@ -97,24 +104,18 @@ export const tasksSavedFilters = (
   );
 };
 
-const TasksPage: React.FC = () => {
+const PageContent: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId() ?? '';
+  const { isOpen, openContact: setContactFocus } = useContactPanel();
   const { openTaskModal, preloadTaskModal } = useTaskModal();
   const { appName } = useGetAppSettings();
 
   const {
     activeFilters,
     setActiveFilters,
-    starredFilter,
-    setStarredFilter,
-    searchTerm,
-    setSearchTerm,
-    getContactHrefObject,
-    contactId: contactDetailsId,
-    setContactId: setContactFocus,
-  } = useTasksContactContext();
-  const contactDetailsOpen = !!contactDetailsId;
+    combinedFilters: tasksFilter,
+  } = useUrlFilters();
   const [filterPanelOpen, setFilterPanelOpen] = useUserPreference({
     key: 'tasks_filters_collapse',
     defaultValue: false,
@@ -137,15 +138,6 @@ const TasksPage: React.FC = () => {
       ...typeDetails?.activeFiltersOptions,
     });
   };
-
-  const tasksFilter = useMemo(
-    () => ({
-      ...activeFilters,
-      ...starredFilter,
-      wildcardSearch: searchTerm as string,
-    }),
-    [activeFilters, starredFilter, searchTerm],
-  );
 
   const { data, loading, fetchMore } = useTasksQuery({
     variables: {
@@ -178,8 +170,6 @@ const TasksPage: React.FC = () => {
     variables: { accountListId: accountListId ?? '' },
     skip: !accountListId,
   });
-
-  const isFiltered = Object.keys(activeFilters).length > 0;
 
   const toggleFilterPanel = () => {
     setFilterPanelOpen(!filterPanelOpen);
@@ -224,183 +214,146 @@ const TasksPage: React.FC = () => {
       </Head>
       {accountListId ? (
         <WhiteBackground>
-          <ContactsProvider
-            activeFilters={{}}
-            setActiveFilters={setActiveFilters}
-            starredFilter={{}}
-            setStarredFilter={setStarredFilter}
-            filterPanelOpen={filterPanelOpen}
-            setFilterPanelOpen={setFilterPanelOpen}
-            contactId={contactDetailsId}
-            setContactId={setContactFocus}
-            getContactHrefObject={getContactHrefObject}
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-          >
-            <SidePanelsLayout
-              leftPanel={
-                filterData && !filtersLoading ? (
-                  <DynamicFilterPanel
-                    filters={filterData?.accountList.taskFilterGroups}
-                    savedFilters={savedFilters}
-                    selectedFilters={activeFilters}
-                    onClose={toggleFilterPanel}
-                    onSelectedFiltersChanged={setActiveFilters}
-                  />
-                ) : undefined
-              }
-              leftOpen={filterPanelOpen}
-              leftWidth="290px"
-              mainContent={
-                <>
-                  <ListHeader
-                    page={PageEnum.Task}
-                    activeFilters={isFiltered}
-                    filterPanelOpen={filterPanelOpen}
-                    toggleFilterPanel={toggleFilterPanel}
-                    contactDetailsOpen={contactDetailsOpen}
-                    onCheckAllItems={toggleSelectAll}
-                    onSearchTermChanged={setSearchTerm}
-                    searchTerm={searchTerm}
-                    totalItems={data?.tasks?.totalCount}
-                    starredFilter={starredFilter}
-                    toggleStarredFilter={setStarredFilter}
-                    headerCheckboxState={selectionType}
-                    massDeselectAll={deselectAll}
-                    showShowingCount
-                    selectedIds={ids}
-                    buttonGroup={
-                      <Hidden xsDown>
-                        <TaskHeaderButton
-                          onClick={() =>
-                            openTaskModal({ view: TaskModalEnum.Add })
-                          }
-                          onMouseEnter={() =>
-                            preloadTaskModal(TaskModalEnum.Add)
-                          }
-                          variant="text"
-                          startIcon={<TaskAddIcon />}
-                        >
-                          <Hidden smUp>{t('Add')}</Hidden>
-                          <Hidden smDown>{t('Add Task')}</Hidden>
-                        </TaskHeaderButton>
-                        <TaskHeaderButton
-                          onClick={() =>
-                            openTaskModal({ view: TaskModalEnum.Log })
-                          }
-                          onMouseEnter={() =>
-                            preloadTaskModal(TaskModalEnum.Log)
-                          }
-                          variant="text"
-                          startIcon={<TaskCheckIcon />}
-                        >
-                          <Hidden smUp>{t('Log')}</Hidden>
-                          <Hidden smDown>{t('Log Task')}</Hidden>
-                        </TaskHeaderButton>
-                      </Hidden>
+          <SidePanelsLayout
+            leftPanel={
+              filterData && !filtersLoading ? (
+                <DynamicFilterPanel
+                  filters={filterData?.accountList.taskFilterGroups}
+                  savedFilters={savedFilters}
+                  onClose={toggleFilterPanel}
+                />
+              ) : undefined
+            }
+            leftOpen={filterPanelOpen}
+            leftWidth="290px"
+            mainContent={
+              <>
+                <ListHeader
+                  page={PageEnum.Task}
+                  filterPanelOpen={filterPanelOpen}
+                  toggleFilterPanel={toggleFilterPanel}
+                  onCheckAllItems={toggleSelectAll}
+                  totalItems={data?.tasks?.totalCount}
+                  headerCheckboxState={selectionType}
+                  massDeselectAll={deselectAll}
+                  showShowingCount
+                  selectedIds={ids}
+                  buttonGroup={
+                    <Hidden xsDown>
+                      <TaskHeaderButton
+                        onClick={() =>
+                          openTaskModal({ view: TaskModalEnum.Add })
+                        }
+                        onMouseEnter={() => preloadTaskModal(TaskModalEnum.Add)}
+                        variant="text"
+                        startIcon={<TaskAddIcon />}
+                      >
+                        <Hidden smUp>{t('Add')}</Hidden>
+                        <Hidden smDown>{t('Add Task')}</Hidden>
+                      </TaskHeaderButton>
+                      <TaskHeaderButton
+                        onClick={() =>
+                          openTaskModal({ view: TaskModalEnum.Log })
+                        }
+                        onMouseEnter={() => preloadTaskModal(TaskModalEnum.Log)}
+                        variant="text"
+                        startIcon={<TaskCheckIcon />}
+                      >
+                        <Hidden smUp>{t('Log')}</Hidden>
+                        <Hidden smDown>{t('Log Task')}</Hidden>
+                      </TaskHeaderButton>
+                    </Hidden>
+                  }
+                />
+                <Box>
+                  <TaskCurrentHistoryButtonGroup
+                    variant="outlined"
+                    size="small"
+                    sx={{
+                      // Subtract out one unit of margin for both the top and the bottom
+                      height: `calc(${buttonBarHeight} - ${theme.spacing(2)})`,
+                    }}
+                  >
+                    {taskFiltersTabs.map((tab) => (
+                      <Button
+                        variant={
+                          taskType === tab.name ? 'contained' : 'outlined'
+                        }
+                        onClick={() => setTaskTypeFilter(tab.name)}
+                        key={`btn-${tab.name}`}
+                      >
+                        {tab.uiName}
+                      </Button>
+                    ))}
+                  </TaskCurrentHistoryButtonGroup>
+                  <InfiniteList
+                    data-foo="bar"
+                    loading={loading}
+                    data={data?.tasks.nodes}
+                    style={{
+                      height: `calc(100vh - ${navBarHeight} - ${headerHeight} - ${buttonBarHeight})`,
+                    }}
+                    itemContent={(index, task) => (
+                      <TaskRow
+                        key={task.id}
+                        accountListId={accountListId}
+                        task={task}
+                        onContactSelected={setContactFocus}
+                        onTaskCheckToggle={toggleSelectionById}
+                        isChecked={isRowChecked(task.id)}
+                        useTopMargin={index === 0}
+                        removeSelectedIds={deselectMultipleIds}
+                        filterPanelOpen={filterPanelOpen}
+                      />
+                    )}
+                    groupBy={(item) => {
+                      if (item.completedAt) {
+                        return { order: 5, label: t('Completed') };
+                      } else if (!item.startAt) {
+                        return { order: 1, label: t('No Due Date') };
+                      } else if (
+                        DateTime.fromISO(item.startAt).hasSame(
+                          DateTime.now(),
+                          'day',
+                        )
+                      ) {
+                        return { order: 2, label: t('Today') };
+                      } else if (
+                        DateTime.now().startOf('day') >
+                        DateTime.fromISO(item.startAt).startOf('day')
+                      ) {
+                        return { order: 1, label: t('Overdue') };
+                      } else if (
+                        DateTime.now().startOf('day') <
+                        DateTime.fromISO(item.startAt).startOf('day')
+                      ) {
+                        return { order: 3, label: t('Upcoming') };
+                      }
+                      return { order: 4, label: t('No Due Date') };
+                    }}
+                    endReached={() =>
+                      data?.tasks?.pageInfo.hasNextPage &&
+                      fetchMore({
+                        variables: { after: data.tasks?.pageInfo.endCursor },
+                      })
+                    }
+                    EmptyPlaceholder={
+                      <Box width="75%" margin="auto" mt={2}>
+                        <NullState
+                          page="task"
+                          totalCount={data?.allTasks?.totalCount || 0}
+                        />
+                      </Box>
                     }
                   />
-                  <Box>
-                    <TaskCurrentHistoryButtonGroup
-                      variant="outlined"
-                      size="small"
-                      sx={{
-                        // Subtract out one unit of margin for both the top and the bottom
-                        height: `calc(${buttonBarHeight} - ${theme.spacing(
-                          2,
-                        )})`,
-                      }}
-                    >
-                      {taskFiltersTabs.map((tab) => (
-                        <Button
-                          variant={
-                            taskType === tab.name ? 'contained' : 'outlined'
-                          }
-                          onClick={() => setTaskTypeFilter(tab.name)}
-                          key={`btn-${tab.name}`}
-                        >
-                          {tab.uiName}
-                        </Button>
-                      ))}
-                    </TaskCurrentHistoryButtonGroup>
-                    <InfiniteList
-                      data-foo="bar"
-                      loading={loading}
-                      data={data?.tasks.nodes}
-                      style={{
-                        height: `calc(100vh - ${navBarHeight} - ${headerHeight} - ${buttonBarHeight})`,
-                      }}
-                      itemContent={(index, task) => (
-                        <TaskRow
-                          key={task.id}
-                          accountListId={accountListId}
-                          task={task}
-                          onContactSelected={setContactFocus}
-                          onTaskCheckToggle={toggleSelectionById}
-                          isChecked={isRowChecked(task.id)}
-                          useTopMargin={index === 0}
-                          getContactHrefObject={getContactHrefObject}
-                          removeSelectedIds={deselectMultipleIds}
-                          filterPanelOpen={filterPanelOpen}
-                        />
-                      )}
-                      groupBy={(item) => {
-                        if (item.completedAt) {
-                          return { order: 5, label: t('Completed') };
-                        } else if (!item.startAt) {
-                          return { order: 1, label: t('No Due Date') };
-                        } else if (
-                          DateTime.fromISO(item.startAt).hasSame(
-                            DateTime.now(),
-                            'day',
-                          )
-                        ) {
-                          return { order: 2, label: t('Today') };
-                        } else if (
-                          DateTime.now().startOf('day') >
-                          DateTime.fromISO(item.startAt).startOf('day')
-                        ) {
-                          return { order: 1, label: t('Overdue') };
-                        } else if (
-                          DateTime.now().startOf('day') <
-                          DateTime.fromISO(item.startAt).startOf('day')
-                        ) {
-                          return { order: 3, label: t('Upcoming') };
-                        }
-                        return { order: 4, label: t('No Due Date') };
-                      }}
-                      endReached={() =>
-                        data?.tasks?.pageInfo.hasNextPage &&
-                        fetchMore({
-                          variables: { after: data.tasks?.pageInfo.endCursor },
-                        })
-                      }
-                      EmptyPlaceholder={
-                        <Box width="75%" margin="auto" mt={2}>
-                          <NullState
-                            page="task"
-                            totalCount={data?.allTasks?.totalCount || 0}
-                            filtered={isFiltered || !!searchTerm}
-                            changeFilters={setActiveFilters}
-                          />
-                        </Box>
-                      }
-                    />
-                  </Box>
-                </>
-              }
-              rightPanel={
-                contactDetailsId ? (
-                  <DynamicContactsRightPanel
-                    onClose={() => setContactFocus(undefined)}
-                  />
-                ) : undefined
-              }
-              rightOpen={contactDetailsOpen}
-              rightWidth="60%"
-              headerHeight={headerHeight}
-            />
-          </ContactsProvider>
+                </Box>
+              </>
+            }
+            rightPanel={isOpen ? <DynamicContactsRightPanel /> : undefined}
+            rightOpen={isOpen}
+            rightWidth="60%"
+            headerHeight={headerHeight}
+          />
         </WhiteBackground>
       ) : (
         <Loading loading />
@@ -409,6 +362,14 @@ const TasksPage: React.FC = () => {
   );
   //#endregion
 };
+
+const TasksPage: React.FC = () => (
+  <UrlFiltersProvider sanitizeFilters={removeTagsFromFilters}>
+    <ContactPanelProvider>
+      <PageContent />
+    </ContactPanelProvider>
+  </UrlFiltersProvider>
+);
 
 export const getServerSideProps = ensureSessionAndAccountList;
 

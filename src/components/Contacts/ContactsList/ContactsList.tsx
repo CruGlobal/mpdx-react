@@ -13,9 +13,6 @@ import { ContactRow } from '../ContactRow/ContactRow';
 export const ContactsList: React.FC = () => {
   const {
     contactsQueryResult: { data, loading, fetchMore },
-    searchTerm,
-    isFiltered,
-    setActiveFilters,
   } = React.useContext(ContactsContext) as ContactsType;
 
   return (
@@ -44,8 +41,6 @@ export const ContactsList: React.FC = () => {
           <NullState
             page="contact"
             totalCount={data?.allContacts.totalCount || 0}
-            filtered={isFiltered || !!searchTerm}
-            changeFilters={setActiveFilters}
           />
         </Box>
       }

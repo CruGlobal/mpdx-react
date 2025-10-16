@@ -7,7 +7,6 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
-import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import { ContactOptionsQuery } from 'src/components/Task/Modal/Form/Inputs/ContactsAutocomplete/ContactsAutocomplete.generated';
 import { PreferredContactMethodEnum } from 'src/graphql/types.generated';
 import theme from '../../../../../../theme';
@@ -68,17 +67,15 @@ describe('EditContactOtherModal', () => {
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider>
-              <ContactsWrapper>
-                <ContactDetailProvider>
-                  <EditContactOtherModal
-                    accountListId={accountListId}
-                    isOpen={true}
-                    handleClose={handleClose}
-                    contact={mockContact}
-                    referral={referral}
-                  />
-                </ContactDetailProvider>
-              </ContactsWrapper>
+              <ContactDetailProvider>
+                <EditContactOtherModal
+                  accountListId={accountListId}
+                  isOpen={true}
+                  handleClose={handleClose}
+                  contact={mockContact}
+                  referral={referral}
+                />
+              </ContactDetailProvider>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -113,17 +110,15 @@ describe('EditContactOtherModal', () => {
                 },
               }}
             >
-              <ContactsWrapper>
-                <ContactDetailProvider>
-                  <EditContactOtherModal
-                    accountListId={accountListId}
-                    isOpen={true}
-                    handleClose={handleClose}
-                    contact={mockContact}
-                    referral={referral}
-                  />
-                </ContactDetailProvider>
-              </ContactsWrapper>
+              <ContactDetailProvider>
+                <EditContactOtherModal
+                  accountListId={accountListId}
+                  isOpen={true}
+                  handleClose={handleClose}
+                  contact={mockContact}
+                  referral={referral}
+                />
+              </ContactDetailProvider>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -158,17 +153,15 @@ describe('EditContactOtherModal', () => {
                 },
               }}
             >
-              <ContactsWrapper>
-                <ContactDetailProvider>
-                  <EditContactOtherModal
-                    accountListId={accountListId}
-                    isOpen={true}
-                    handleClose={handleClose}
-                    contact={mockContact}
-                    referral={referral}
-                  />
-                </ContactDetailProvider>
-              </ContactsWrapper>
+              <ContactDetailProvider>
+                <EditContactOtherModal
+                  accountListId={accountListId}
+                  isOpen={true}
+                  handleClose={handleClose}
+                  contact={mockContact}
+                  referral={referral}
+                />
+              </ContactDetailProvider>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -193,17 +186,15 @@ describe('EditContactOtherModal', () => {
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider>
-              <ContactsWrapper>
-                <ContactDetailProvider>
-                  <EditContactOtherModal
-                    accountListId={accountListId}
-                    isOpen={true}
-                    handleClose={handleClose}
-                    contact={mockContact}
-                    referral={referral}
-                  />
-                </ContactDetailProvider>
-              </ContactsWrapper>
+              <ContactDetailProvider>
+                <EditContactOtherModal
+                  accountListId={accountListId}
+                  isOpen={true}
+                  handleClose={handleClose}
+                  contact={mockContact}
+                  referral={referral}
+                />
+              </ContactDetailProvider>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -221,17 +212,15 @@ describe('EditContactOtherModal', () => {
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider>
-              <ContactsWrapper>
-                <ContactDetailProvider>
-                  <EditContactOtherModal
-                    accountListId={accountListId}
-                    isOpen={true}
-                    handleClose={handleClose}
-                    contact={mockContact}
-                    referral={referral}
-                  />
-                </ContactDetailProvider>
-              </ContactsWrapper>
+              <ContactDetailProvider>
+                <EditContactOtherModal
+                  accountListId={accountListId}
+                  isOpen={true}
+                  handleClose={handleClose}
+                  contact={mockContact}
+                  referral={referral}
+                />
+              </ContactDetailProvider>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -251,17 +240,15 @@ describe('EditContactOtherModal', () => {
           <TestRouter router={router}>
             <ThemeProvider theme={theme}>
               <GqlMockedProvider onCall={mutationSpy}>
-                <ContactsWrapper>
-                  <ContactDetailProvider>
-                    <EditContactOtherModal
-                      accountListId={accountListId}
-                      isOpen={true}
-                      handleClose={handleClose}
-                      contact={mockContact}
-                      referral={undefined}
-                    />
-                  </ContactDetailProvider>
-                </ContactsWrapper>
+                <ContactDetailProvider>
+                  <EditContactOtherModal
+                    accountListId={accountListId}
+                    isOpen={true}
+                    handleClose={handleClose}
+                    contact={mockContact}
+                    referral={undefined}
+                  />
+                </ContactDetailProvider>
               </GqlMockedProvider>
             </ThemeProvider>
           </TestRouter>
@@ -375,17 +362,15 @@ describe('EditContactOtherModal', () => {
         <TestRouter router={router}>
           <ThemeProvider theme={theme}>
             <GqlMockedProvider onCall={mutationSpy}>
-              <ContactsWrapper>
-                <ContactDetailProvider>
-                  <EditContactOtherModal
-                    accountListId={accountListId}
-                    isOpen={true}
-                    handleClose={handleClose}
-                    contact={{ ...mockContact, preferredContactMethod: null }}
-                    referral={undefined}
-                  />
-                </ContactDetailProvider>
-              </ContactsWrapper>
+              <ContactDetailProvider>
+                <EditContactOtherModal
+                  accountListId={accountListId}
+                  isOpen={true}
+                  handleClose={handleClose}
+                  contact={{ ...mockContact, preferredContactMethod: null }}
+                  referral={undefined}
+                />
+              </ContactDetailProvider>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>
@@ -448,17 +433,15 @@ describe('EditContactOtherModal', () => {
                 },
               }}
             >
-              <ContactsWrapper>
-                <ContactDetailProvider>
-                  <EditContactOtherModal
-                    accountListId={accountListId}
-                    isOpen={true}
-                    handleClose={handleClose}
-                    contact={mockContact}
-                    referral={referral}
-                  />
-                </ContactDetailProvider>
-              </ContactsWrapper>
+              <ContactDetailProvider>
+                <EditContactOtherModal
+                  accountListId={accountListId}
+                  isOpen={true}
+                  handleClose={handleClose}
+                  contact={mockContact}
+                  referral={referral}
+                />
+              </ContactDetailProvider>
             </GqlMockedProvider>
           </ThemeProvider>
         </TestRouter>

@@ -27,7 +27,9 @@ describe('PageHeading', () => {
       <ThemeProvider theme={theme}>
         <PageHeading
           heading="test heading"
-          imgSrc={require(`../../images/drawkit/grape/drawkit-grape-pack-illustration-1.svg`)}
+          imgSrc={require(
+            `../../images/drawkit/grape/drawkit-grape-pack-illustration-1.svg`,
+          )}
           overlap={100}
           height={400}
         />

@@ -7,6 +7,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { ContactFiltersQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
 import { ListHeaderCheckBoxState } from 'src/components/Shared/Header/ListHeader';
 import { AppealQuery } from 'src/components/Tool/Appeal/AppealDetails/AppealsMainPanel/AppealInfo.generated';
@@ -23,6 +24,8 @@ import AppealsDetailsPage from './AppealsDetailsPage';
 const accountListId = 'account-list-1';
 
 const defaultRouter = {
+  pathname:
+    '/accountLists/[accountListId]/tools/appeals/appeal/[[...appealId]]',
   query: { accountListId },
   isReady: true,
 };
@@ -95,10 +98,17 @@ const Components = ({ router = defaultRouter }: { router?: object }) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
       <DndProvider backend={HTML5Backend}>
-        <GqlMockedProvider<{ Contacts: ContactsQuery; Appeal: AppealQuery }>
+        <GqlMockedProvider<{
+          Contacts: ContactsQuery;
+          Appeal: AppealQuery;
+          ContactFilters: ContactFiltersQuery;
+        }>
           mocks={{
             Contacts: mockResponse,
             Appeal: mockAppealResponse,
+            ContactFilters: {
+              userOptions: [],
+            },
           }}
         >
           <VirtuosoMockContext.Provider
@@ -182,27 +192,19 @@ describe('AppealsDetailsPage', () => {
         />,
       );
 
-      expect(
-        await findByRole('img', { name: /toggle filter panel/i }),
-      ).toBeInTheDocument();
-
-      expect(
-        queryByRole('heading', { name: /export to csv/i }),
-      ).not.toBeInTheDocument();
-
-      userEvent.click(getByRole('img', { name: /toggle filter panel/i }));
-
-      expect(
-        await findByRole('heading', { name: /export to csv/i }),
-      ).toBeInTheDocument();
-
-      userEvent.click(getByRole('img', { name: 'Close' }));
+      userEvent.click(await findByRole('img', { name: 'Close' }));
 
       await waitFor(() =>
         expect(
           queryByRole('heading', { name: /export to csv/i }),
         ).not.toBeInTheDocument(),
       );
+
+      userEvent.click(getByRole('img', { name: /toggle filter panel/i }));
+
+      expect(
+        await findByRole('heading', { name: /export to csv/i }),
+      ).toBeInTheDocument();
     });
 
     it('should open and close on Flows view', async () => {
@@ -223,20 +225,20 @@ describe('AppealsDetailsPage', () => {
       ).toBeInTheDocument();
 
       expect(
-        queryByRole('heading', { name: /see more filters/i }),
+        queryByRole('complementary', { name: 'Filter' }),
       ).not.toBeInTheDocument();
 
       userEvent.click(getByRole('img', { name: /toggle filter panel/i }));
 
       expect(
-        await findByRole('heading', { name: /see more filters/i }),
+        await findByRole('complementary', { name: 'Filter' }),
       ).toBeInTheDocument();
 
       userEvent.click(getByRole('img', { name: 'Close' }));
 
       await waitFor(() =>
         expect(
-          queryByRole('heading', { name: /see more filters/i }),
+          queryByRole('complementary', { name: 'Filter' }),
         ).not.toBeInTheDocument(),
       );
     });

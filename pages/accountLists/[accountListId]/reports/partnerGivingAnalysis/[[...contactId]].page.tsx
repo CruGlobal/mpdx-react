@@ -1,30 +1,25 @@
 import Head from 'next/head';
-import { useRouter } from 'next/router';
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { sortBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
-import { ReportContactFilterSetInput } from 'pages/api/graphql-rest.page.generated';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
-import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
-import {
-  PartnerGivingAnalysisReport,
-  PartnerGivingAnalysisReportRef,
-} from 'src/components/Reports/PartnerGivingAnalysisReport/PartnerGivingAnalysisReport';
+import { PartnerGivingAnalysisReport } from 'src/components/Reports/PartnerGivingAnalysisReport/PartnerGivingAnalysisReport';
 import { DynamicFilterPanel } from 'src/components/Shared/Filters/DynamicFilterPanel';
 import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import {
+  ContactPanelProvider,
+  useContactPanel,
+} from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
+import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { useContactLinks } from 'src/hooks/useContactLinks';
-import { useDebouncedValue } from 'src/hooks/useDebounce';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { getQueryParam } from 'src/utils/queryParam';
 import { useContactFiltersQuery } from '../../contacts/Contacts.generated';
-import { ContactsWrapper } from '../../contacts/ContactsWrapper';
 import { Panel } from '../helpers';
 
 // The order here is also the sort order and the display order
@@ -37,15 +32,11 @@ const reportFilters = [
   'donation_period_percent_rank',
 ];
 
-const PartnerGivingAnalysisReportPage: React.FC = () => {
+const PageContent: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const { appName } = useGetAppSettings();
+  const { isOpen } = useContactPanel();
   const [panelOpen, setPanelOpen] = useState<Panel | null>(Panel.Filters);
-  const reportRef = useRef<PartnerGivingAnalysisReportRef>(null);
-
-  const router = useRouter();
-  const selectedContactId = getQueryParam(router.query, 'contactId');
 
   const handleNavListToggle = () => {
     setPanelOpen(panelOpen === Panel.Navigation ? null : Panel.Navigation);
@@ -55,12 +46,6 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
     setPanelOpen(panelOpen === Panel.Filters ? null : Panel.Filters);
   };
 
-  const [activeFilters, setActiveFilters] =
-    useState<ReportContactFilterSetInput>({});
-  const { handleCloseContact } = useContactLinks({
-    url: `/accountLists/${accountListId}/reports/partnerGivingAnalysis/`,
-  });
-  const debouncedFilters = useDebouncedValue(activeFilters, 500);
   const { data: filterData, loading: filtersLoading } = useContactFiltersQuery({
     variables: { accountListId: accountListId ?? '' },
     skip: !accountListId,
@@ -90,9 +75,53 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
     return [reportFilterGroup, ...groups];
   }, [filterData, t]);
 
-  const handleClearSearch = () => {
-    reportRef.current?.clearSearchInput();
-  };
+  return accountListId ? (
+    <SidePanelsLayout
+      isScrollBox={true}
+      leftPanel={
+        panelOpen === Panel.Navigation ? (
+          <MultiPageMenu
+            isOpen
+            selectedId="donations"
+            onClose={() => setPanelOpen(null)}
+            navType={NavTypeEnum.Reports}
+          />
+        ) : panelOpen === Panel.Filters ? (
+          filtersLoading ? (
+            <Loading loading />
+          ) : (
+            <DynamicFilterPanel
+              filters={filterGroups}
+              defaultExpandedFilterGroups={new Set(['Report Filters'])}
+              savedFilters={[]}
+              onClose={() => setPanelOpen(null)}
+            />
+          )
+        ) : undefined
+      }
+      leftOpen={panelOpen !== null}
+      leftWidth="290px"
+      mainContent={
+        <PartnerGivingAnalysisReport
+          accountListId={accountListId}
+          panelOpen={panelOpen}
+          onFilterListToggle={handleFilterListToggle}
+          onNavListToggle={handleNavListToggle}
+          title={t('Partner Giving Analysis')}
+        />
+      }
+      rightPanel={isOpen ? <DynamicContactsRightPanel /> : undefined}
+      rightOpen={isOpen}
+      rightWidth="60%"
+    />
+  ) : (
+    <Loading loading />
+  );
+};
+
+const PartnerGivingAnalysisReportPage: React.FC = () => {
+  const { t } = useTranslation();
+  const { appName } = useGetAppSettings();
 
   return (
     <>
@@ -101,75 +130,11 @@ const PartnerGivingAnalysisReportPage: React.FC = () => {
           {`${appName} | ${t('Reports')} | ${t('Partner Giving Analysis')}`}
         </title>
       </Head>
-      {accountListId ? (
-        <SidePanelsLayout
-          isScrollBox={true}
-          leftPanel={
-            panelOpen === Panel.Navigation ? (
-              <MultiPageMenu
-                isOpen
-                selectedId="donations"
-                onClose={() => setPanelOpen(null)}
-                navType={NavTypeEnum.Reports}
-              />
-            ) : panelOpen === Panel.Filters ? (
-              filtersLoading ? (
-                <Loading loading />
-              ) : (
-                <ContactsProvider
-                  activeFilters={{}}
-                  setActiveFilters={() => undefined}
-                  starredFilter={{}}
-                  setStarredFilter={() => undefined}
-                  filterPanelOpen={false}
-                  setFilterPanelOpen={() => undefined}
-                  contactId={undefined}
-                  setContactId={() => undefined}
-                  getContactHrefObject={() => ({ pathname: '', query: {} })}
-                  searchTerm={''}
-                  setSearchTerm={() => {}}
-                >
-                  <DynamicFilterPanel
-                    filters={filterGroups}
-                    defaultExpandedFilterGroups={new Set(['Report Filters'])}
-                    savedFilters={[]}
-                    selectedFilters={activeFilters}
-                    onClose={() => setPanelOpen(null)}
-                    onSelectedFiltersChanged={setActiveFilters}
-                    onHandleClearSearch={handleClearSearch}
-                  />
-                </ContactsProvider>
-              )
-            ) : undefined
-          }
-          leftOpen={panelOpen !== null}
-          leftWidth="290px"
-          mainContent={
-            <PartnerGivingAnalysisReport
-              ref={reportRef}
-              accountListId={accountListId}
-              activeFilters={activeFilters}
-              panelOpen={panelOpen}
-              onFilterListToggle={handleFilterListToggle}
-              onNavListToggle={handleNavListToggle}
-              title={t('Partner Giving Analysis')}
-              contactFilters={debouncedFilters}
-              contactDetailsOpen={!!selectedContactId}
-            />
-          }
-          rightPanel={
-            selectedContactId ? (
-              <ContactsWrapper>
-                <DynamicContactsRightPanel onClose={handleCloseContact} />
-              </ContactsWrapper>
-            ) : undefined
-          }
-          rightOpen={typeof selectedContactId !== 'undefined'}
-          rightWidth="60%"
-        />
-      ) : (
-        <Loading loading />
-      )}
+      <UrlFiltersProvider>
+        <ContactPanelProvider>
+          <PageContent />
+        </ContactPanelProvider>
+      </UrlFiltersProvider>
     </>
   );
 };

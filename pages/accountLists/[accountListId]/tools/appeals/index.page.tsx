@@ -6,14 +6,9 @@ import { ToolsWrapper } from '../ToolsWrapper';
 
 const AppealsPage = (): ReactElement => {
   const { t } = useTranslation();
-  const pageUrl = 'appeals';
 
   return (
-    <ToolsWrapper
-      pageTitle={t('Appeals')}
-      pageUrl={pageUrl}
-      selectedMenuId="appeals"
-    >
+    <ToolsWrapper pageTitle={t('Appeals')} selectedMenuId="appeals">
       <AppealsInitialPage />
     </ToolsWrapper>
   );

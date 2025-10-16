@@ -146,4 +146,30 @@ describe('DesktopTimeField', () => {
 
     expect(getByRole('dialog')).toBeInTheDocument();
   });
+
+  it('calls onChange when Enter is pressed in the field and the time is valid', () => {
+    const { getByRole } = render(<TestComponent value={null} />);
+    userEvent.type(getByRole('textbox'), '6:07 AM{enter}');
+
+    expect(onChange.mock.lastCall[0].toObject()).toMatchObject({
+      hour: 6,
+      minute: 7,
+      second: 0,
+      millisecond: 0,
+    });
+  });
+
+  it('calls onChange with null when Enter is pressed in the field and the time is empty', () => {
+    const { getByRole } = render(<TestComponent value={null} />);
+    userEvent.type(getByRole('textbox'), '{Enter}');
+
+    expect(onChange).toHaveBeenCalledWith(null);
+  });
+
+  it('calls onChange with an invalid time when Enter is pressed in the field and the time is invalid', () => {
+    const { getByRole } = render(<TestComponent value={null} />);
+    userEvent.type(getByRole('textbox'), '25:99{Enter}');
+
+    expect(onChange).toHaveBeenCalledWith(null);
+  });
 });

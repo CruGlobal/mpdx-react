@@ -4,7 +4,6 @@ import { useApolloClient } from '@apollo/client';
 import {
   Box,
   Button,
-  CircularProgress,
   DialogActions,
   DialogContent,
   Typography,
@@ -14,6 +13,8 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useUpdateUserMutation } from 'src/components/Settings/preferences/UpdateUser.generated';
+import { ContactEditContainer } from 'src/components/Shared/styledComponents/ContactStyling';
+import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingStyling';
 import {
   CancelButton,
   DeleteButton,
@@ -60,21 +61,10 @@ const ShowExtraContainer = styled(Box)(({ theme }) => ({
   margin: theme.spacing(1, 0),
 }));
 
-const ContactEditContainer = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  width: '100%',
-  flexDirection: 'column',
-  margin: theme.spacing(1, 0),
-}));
-
 const ShowExtraText = styled(Typography)(({ theme }) => ({
   color: theme.palette.info.main,
   textTransform: 'uppercase',
   fontWeight: 'bold',
-}));
-
-const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
-  margin: theme.spacing(0, 1, 0, 0),
 }));
 
 export type Person = Omit<
@@ -442,8 +432,8 @@ export const PersonModal: React.FC<PersonModalProps> = ({
         userProfile
           ? 'Edit Details'
           : person
-          ? t('Edit Person')
-          : t('Create Person')
+            ? t('Edit Person')
+            : t('Create Person')
       }
       size="md"
       handleClose={handleClose}

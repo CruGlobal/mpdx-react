@@ -5,23 +5,25 @@ import fetchMock from 'jest-fetch-mock';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { twelveMonthReportMock } from 'src/components/Reports/TwelveMonthReports/TwelveMonthReportMock';
+import { fourteenMonthReportMock } from 'src/components/Reports/FourteenMonthReports/FourteenMonthReportMock';
 import theme from 'src/theme';
 import PartnerCurrencyReportPage from './[[...contactId]].page';
 
 const push = jest.fn();
 
 interface TestingComponentProps {
-  routerContactId?: string;
+  routerHasContactId?: boolean;
 }
 
 const TestingComponent: React.FC<TestingComponentProps> = ({
-  routerContactId,
+  routerHasContactId = false,
 }) => {
   const router = {
     query: {
       accountListId: 'account-list-1',
-      contactId: routerContactId ? [routerContactId] : undefined,
+      contactId: routerHasContactId
+        ? ['00000000-0000-0000-0000-000000000000']
+        : undefined,
     },
     isReady: true,
     push,
@@ -45,7 +47,7 @@ describe('partnerCurrency page', () => {
   beforeEach(() => {
     fetchMock.resetMocks();
     fetchMock.mockResponses([
-      JSON.stringify(twelveMonthReportMock),
+      JSON.stringify(fourteenMonthReportMock),
       { status: 200 },
     ]);
     process.env.REST_API_URL = 'https://api.stage.mpdx.org/api/v2/';
@@ -59,9 +61,7 @@ describe('partnerCurrency page', () => {
   });
 
   it('renders contact panel', async () => {
-    const { findByRole } = render(
-      <TestingComponent routerContactId={'contact-1'} />,
-    );
+    const { findByRole } = render(<TestingComponent routerHasContactId />);
 
     expect(await findByRole('tab', { name: 'Tasks' })).toBeInTheDocument();
   });
@@ -91,13 +91,17 @@ describe('partnerCurrency page', () => {
   });
 
   it('closes contact panel', async () => {
-    const { getByTestId } = render(
-      <TestingComponent routerContactId={'contact-1'} />,
-    );
+    const { findByTestId } = render(<TestingComponent routerHasContactId />);
 
-    userEvent.click(getByTestId('ContactDetailsHeaderClose'));
+    userEvent.click(await findByTestId('ContactDetailsHeaderClose'));
     expect(push).toHaveBeenCalledWith(
-      '/accountLists/account-list-1/reports/partnerCurrency/',
+      expect.objectContaining({
+        query: {
+          accountListId: 'account-list-1',
+        },
+      }),
+      undefined,
+      { shallow: true },
     );
   });
 });

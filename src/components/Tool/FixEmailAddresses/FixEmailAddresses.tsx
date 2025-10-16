@@ -121,7 +121,7 @@ export const determineBulkDataToSend = (
               id: emailAddress.id,
               primary: emailAddress.id === primaryEmailAddress.id,
               validValues: true,
-            } as PersonEmailAddressInput),
+            }) as PersonEmailAddressInput,
         ),
       });
     }

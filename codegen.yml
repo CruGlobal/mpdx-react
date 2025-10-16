@@ -53,5 +53,5 @@ generates:
       - ./extractRootFields.js
 hooks:
   afterAllFileWrite:
-    - prettier --write
+    - prettier --write --ignore-path=""
     - node deleteStaleFiles.mjs

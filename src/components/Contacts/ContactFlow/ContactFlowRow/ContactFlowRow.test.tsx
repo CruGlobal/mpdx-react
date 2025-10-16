@@ -3,14 +3,12 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import TestWrapper from '__tests__/util/TestWrapper';
+import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
 import theme from '../../../../theme';
 import { ContactRowFragment } from '../../ContactRow/ContactRow.generated';
-import {
-  ContactsContext,
-  ContactsType,
-} from '../../ContactsContext/ContactsContext';
 import { ContactFlowRow } from './ContactFlowRow';
 
 const accountListId = 'abc';
@@ -26,33 +24,33 @@ const contact = {
   uncompletedTasksCount: 0,
 } as ContactRowFragment;
 
-const getContactHrefObject = jest.fn().mockReturnValue({
-  pathname: '/accountLists/[accountListId]/contacts/[contactId]',
-  query: { accountListId, contactId: contact.id },
-});
+const router = {
+  pathname: '/accountLists/[accountListId]/contacts/[...contactId]',
+  query: {
+    accountListId,
+    contactId: ['00000000-0000-0000-0000-000000000000'],
+  },
+};
 
 const Components = () => (
   <DndProvider backend={HTML5Backend}>
     <ThemeProvider theme={theme}>
-      <TestWrapper>
-        <ContactsContext.Provider
-          value={
-            {
-              getContactHrefObject,
-            } as unknown as ContactsType
-          }
-        >
-          <ContactFlowRow
-            accountListId={accountListId}
-            contact={contact}
-            status={status}
-            contactPhase={PhaseEnum.PartnerCare}
-          />
-        </ContactsContext.Provider>
-      </TestWrapper>
+      <TestRouter router={router}>
+        <GqlMockedProvider>
+          <ContactPanelProvider>
+            <ContactFlowRow
+              accountListId={accountListId}
+              contact={contact}
+              status={status}
+              contactPhase={PhaseEnum.PartnerCare}
+            />
+          </ContactPanelProvider>
+        </GqlMockedProvider>
+      </TestRouter>
     </ThemeProvider>
   </DndProvider>
 );
+
 describe('ContactFlowRow', () => {
   it('should display contact name and status', () => {
     const { getByText, getByTitle } = render(<Components />);
@@ -60,7 +58,7 @@ describe('ContactFlowRow', () => {
     expect(getByTitle('Unstar')).toBeInTheDocument();
   });
 
-  it('should call contact selected function', () => {
+  it('should render a link to the contact', () => {
     const { getByRole } = render(<Components />);
     const contactName = getByRole('link', { name: 'Test Name' });
     expect(contactName).toHaveAttribute(

@@ -1,11 +1,11 @@
 import React, { FC, ReactNode } from 'react';
-import FilterList from '@mui/icons-material/FilterList';
 import MenuIcon from '@mui/icons-material/Menu';
 import { Box, IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useSetupContext } from 'src/components/Setup/SetupProvider';
 import theme from 'src/theme';
+import { NavFilterIcon } from '../styledComponents/NavFilterIcon';
 
 export enum HeaderTypeEnum {
   Report = 'reports',
@@ -46,12 +46,6 @@ const NavListButton = styled(IconButton, {
   padding: '11px',
 }));
 
-const NavFilterIcon = styled(FilterList)(() => ({
-  width: 24,
-  height: 24,
-  color: theme.palette.primary.dark,
-}));
-
 const NavMenuIcon = styled(MenuIcon)(() => ({
   width: 24,
   height: 24,
@@ -67,13 +61,16 @@ export const MultiPageHeader: FC<MultiPageHeaderProps> = ({
 }) => {
   const { t } = useTranslation();
   const { onSetupTour } = useSetupContext();
+  const isReportHeader = headerType === HeaderTypeEnum.Report;
+  const isSettingsHeader = headerType === HeaderTypeEnum.Settings;
+  const isToolsHeader = headerType === HeaderTypeEnum.Tools;
 
   let titleAccess;
-  if (headerType === HeaderTypeEnum.Report) {
+  if (isReportHeader) {
     titleAccess = t('Toggle Navigation Panel');
-  } else if (headerType === HeaderTypeEnum.Settings) {
+  } else if (isSettingsHeader) {
     titleAccess = t('Toggle Preferences Menu');
-  } else if (headerType === HeaderTypeEnum.Tools) {
+  } else if (isToolsHeader) {
     titleAccess = t('Toggle Tools Menu');
   }
 
@@ -85,20 +82,24 @@ export const MultiPageHeader: FC<MultiPageHeaderProps> = ({
         alignItems="center"
         sx={{ lineHeight: 1.1 }}
       >
-        <NavListButton panelOpen={isNavListOpen} onClick={onNavListToggle}>
-          {headerType === HeaderTypeEnum.Report && (
+        <NavListButton
+          panelOpen={isNavListOpen}
+          onClick={onNavListToggle}
+          disabled={onSetupTour && isSettingsHeader}
+        >
+          {isReportHeader && (
             <NavFilterIcon
               titleAccess={titleAccess}
               data-testid="ReportsFilterIcon"
             />
           )}
-          {!onSetupTour && headerType === HeaderTypeEnum.Settings && (
+          {!onSetupTour && isSettingsHeader && (
             <NavMenuIcon
               titleAccess={titleAccess}
               data-testid="SettingsMenuIcon"
             />
           )}
-          {headerType === HeaderTypeEnum.Tools && (
+          {isToolsHeader && (
             <NavMenuIcon
               titleAccess={titleAccess}
               data-testid="ToolsMenuIcon"

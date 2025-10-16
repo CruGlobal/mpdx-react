@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useState } from 'react';
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import {
   useUpdateUserOptionMutation,
   useUserOptionQuery,
@@ -22,7 +28,7 @@ export const useUserPreference = <T>({
   defaultValue,
 }: UseUserPreferenceOptions<T>): [
   T,
-  (value: T) => void,
+  Dispatch<SetStateAction<T>>,
   { loading: boolean },
 ] => {
   const { data, loading, error } = useUserOptionQuery({
@@ -55,7 +61,14 @@ export const useUserPreference = <T>({
   }, [data]);
 
   const changeValue = useCallback(
-    (newValue: T) => {
+    (newValueArg: SetStateAction<T>) => {
+      // The new value can be the value or a function that we call with the old value to get the new
+      // value. This is the same API as useState().
+      const newValue =
+        typeof newValueArg === 'function'
+          ? (newValueArg as (oldValue: T) => T)(value)
+          : newValueArg;
+
       if (newValue === value) {
         return;
       }

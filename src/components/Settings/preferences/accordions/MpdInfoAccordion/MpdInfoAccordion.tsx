@@ -89,8 +89,8 @@ export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
       activeMpdMonthlyGoal && activeMpdMonthlyGoal > 0 && currency && locale
         ? ' (' + currencyFormat(activeMpdMonthlyGoal, currency, locale) + ')'
         : activeMpdMonthlyGoal && activeMpdMonthlyGoal > 0
-        ? ' (' + activeMpdMonthlyGoal + ')'
-        : '';
+          ? ' (' + activeMpdMonthlyGoal + ')'
+          : '';
     const mpdStartDate = activeMpdStartAt
       ? dateFormat(DateTime.fromISO(activeMpdStartAt), locale) + ' - '
       : '';

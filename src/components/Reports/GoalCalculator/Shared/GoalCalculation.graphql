@@ -1,0 +1,68 @@
+fragment GoalCalculationSettings on GoalCalculation {
+  name
+  firstName
+  spouseFirstName
+  lastName
+  geographicLocation
+  ministryLocation
+  role
+  familySize
+  benefitsPlan
+  yearsOnStaff
+  spouseYearsOnStaff
+  age
+  spouseAge
+  childrenNamesAges
+  netPaycheckAmount
+  spouseNetPaycheckAmount
+  taxesPercentage
+  spouseTaxesPercentage
+  secaExempt
+  spouseSecaExempt
+  rothContributionPercentage
+  spouseRothContributionPercentage
+  traditionalContributionPercentage
+  spouseTraditionalContributionPercentage
+  mhaAmount
+  spouseMhaAmount
+}
+
+fragment BudgetFamily on BudgetFamily {
+  id
+  label
+  category
+  directInput
+  updatedAt
+  primaryBudgetCategories {
+    id
+    label
+    category
+    directInput
+    updatedAt
+    subBudgetCategories {
+      id
+      label
+      category
+      amount
+      updatedAt
+    }
+  }
+}
+
+query GoalCalculation($accountListId: ID!, $id: ID!) {
+  goalCalculation(accountListId: $accountListId, id: $id) {
+    id
+    primary
+    ...GoalCalculationSettings
+    updatedAt
+    ministryFamily {
+      ...BudgetFamily
+    }
+    householdFamily {
+      ...BudgetFamily
+    }
+    specialFamily {
+      ...BudgetFamily
+    }
+  }
+}

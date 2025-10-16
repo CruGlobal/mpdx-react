@@ -1,0 +1,55 @@
+query FourteenMonthReport(
+  $accountListId: ID!
+  $designationAccountIds: [ID!]
+  $currencyType: FourteenMonthReportCurrencyType!
+) {
+  fourteenMonthReport(
+    accountListId: $accountListId
+    designationAccountId: $designationAccountIds
+    currencyType: $currencyType
+  ) {
+    currencyType
+    salaryCurrency
+    currencyGroups {
+      currency
+      totals {
+        year
+        months {
+          month
+          total
+        }
+        average
+        minimum
+      }
+      contacts {
+        ...FourteenMonthReportContact
+      }
+    }
+  }
+}
+
+fragment FourteenMonthReportContact on FourteenMonthReportContact {
+  id
+  name
+  total
+  average
+  minimum
+  completeMonthsTotal
+  months {
+    month
+    total
+    donations {
+      amount
+      currency
+      date
+      paymentMethod
+    }
+  }
+  accountNumbers
+  lateBy30Days
+  lateBy60Days
+  pledgeAmount
+  pledgeCurrency
+  pledgeFrequency
+  status
+}

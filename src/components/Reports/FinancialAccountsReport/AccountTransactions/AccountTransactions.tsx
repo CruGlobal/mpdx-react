@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 import React, { useContext, useEffect, useMemo } from 'react';
 import { Box, CircularProgress } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -7,7 +6,8 @@ import { buildURI } from 'react-csv/lib/core';
 import { useTranslation } from 'react-i18next';
 import { Panel } from 'pages/accountLists/[accountListId]/reports/helpers';
 import { headerHeight } from 'src/components/Shared/Header/ListHeader';
-import { useDebouncedValue } from 'src/hooks/useDebounce';
+import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
+import { DateRangeInput } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
@@ -28,6 +28,17 @@ const Container = styled(Box)(() => ({
   overflowY: 'auto',
 }));
 
+export interface DateRangeFilter {
+  min: string;
+  max: string;
+}
+
+export interface FinancialAccountsFilters {
+  dateRange?: DateRangeInput;
+  categoryId?: string;
+  [key: string]: unknown;
+}
+
 const formatDateRange = (startDate?: DateTime, endDate?: DateTime) => {
   const minDate =
     startDate ?? DateTime.local().minus({ months: 1 }).plus({ days: 1 });
@@ -36,47 +47,27 @@ const formatDateRange = (startDate?: DateTime, endDate?: DateTime) => {
 };
 
 export const AccountTransactions: React.FC = () => {
-  const { query } = useRouter();
   const { t } = useTranslation();
   const locale = useLocale();
-  const {
-    accountListId,
-    financialAccountId,
-    activeFilters,
-    setActiveFilters,
-    hasActiveFilters,
-    searchTerm,
-    setPanelOpen,
-  } = useContext(FinancialAccountContext) as FinancialAccountType;
+  const { accountListId, financialAccountId, setPanelOpen } = useContext(
+    FinancialAccountContext,
+  ) as FinancialAccountType;
+
+  const { activeFilters, searchTerm } =
+    useUrlFilters<FinancialAccountsFilters>();
+
   const { appName } = useGetAppSettings();
 
   useEffect(() => {
-    // On loading the transactions page, open the filters panel and reset the active filters.
-    // We need to reset the active filters to ensure the date range is set to the date range in the URL if it exists.
-    const urlFilters =
-      query?.filters && JSON.parse(decodeURI(query.filters as string));
+    // On loading the transactions page, open the filters panel
     setPanelOpen(Panel.Filters);
-    setActiveFilters(urlFilters ?? {});
+
     return () => {
       setPanelOpen(null);
-      setActiveFilters({});
     };
-  }, [query?.filters]);
+  }, []);
 
   const defaultDateRange = useMemo(() => formatDateRange(), []);
-  const defaultStartDate = defaultDateRange.split('..')[0];
-  const defaultEndDate = defaultDateRange.split('..')[1];
-
-  useEffect(() => {
-    if (!hasActiveFilters && !query?.filters) {
-      setActiveFilters({
-        dateRange: {
-          min: defaultStartDate,
-          max: defaultEndDate,
-        },
-      });
-    }
-  }, [hasActiveFilters]);
 
   const dateRange = useMemo(() => {
     if (!activeFilters?.dateRange?.min || !activeFilters?.dateRange?.max) {
@@ -86,12 +77,12 @@ export const AccountTransactions: React.FC = () => {
       DateTime.fromISO(activeFilters.dateRange.min),
       DateTime.fromISO(activeFilters.dateRange.max),
     );
-  }, [activeFilters]);
+  }, [activeFilters?.dateRange, defaultDateRange]);
+
   const categoryId =
     activeFilters?.categoryId && activeFilters?.categoryId !== 'all-categories'
       ? activeFilters?.categoryId
       : '';
-  const wildcardSearch = useDebouncedValue(searchTerm, 500);
 
   const { data, loading } = useFinancialAccountEntriesQuery({
     variables: {
@@ -100,7 +91,7 @@ export const AccountTransactions: React.FC = () => {
         financialAccountId: financialAccountId ?? '',
         dateRange,
         categoryId,
-        wildcardSearch,
+        wildcardSearch: searchTerm,
       },
     },
   });
@@ -172,8 +163,6 @@ export const AccountTransactions: React.FC = () => {
         <Box pl={2} pr={2}>
           <AccountTransactionTable
             financialAccountEntries={data.financialAccountEntries}
-            defaultStartDate={defaultStartDate}
-            defaultEndDate={defaultEndDate}
           />
         </Box>
       )}

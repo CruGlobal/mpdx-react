@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
@@ -8,10 +8,10 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetPartnerGivingAnalysisReportQuery } from 'src/components/Reports/PartnerGivingAnalysisReport/PartnerGivingAnalysisReport.generated';
 import theme from 'src/theme';
 import { ContactFiltersQuery } from '../../contacts/Contacts.generated';
-import { ContactsWrapper } from '../../contacts/ContactsWrapper';
 import PartnerGivingAnalysisPage from './[[...contactId]].page';
 
 const push = jest.fn();
+const replace = jest.fn();
 
 interface Mocks {
   GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
@@ -19,19 +19,25 @@ interface Mocks {
 }
 
 interface TestingComponentProps {
-  routerContactId?: string;
+  routerHasContactId?: boolean;
+  routerHasSearchTerm?: boolean;
 }
 
 const TestingComponent: React.FC<TestingComponentProps> = ({
-  routerContactId,
+  routerHasContactId = false,
+  routerHasSearchTerm = false,
 }) => {
   const router = {
     query: {
       accountListId: 'account-list-1',
-      contactId: routerContactId ? [routerContactId] : undefined,
+      contactId: routerHasContactId
+        ? ['00000000-0000-0000-0000-000000000000']
+        : undefined,
+      searchTerm: routerHasSearchTerm ? 'John' : undefined,
     },
     isReady: true,
     push,
+    replace,
   };
 
   const mocks = {
@@ -59,12 +65,14 @@ const TestingComponent: React.FC<TestingComponentProps> = ({
                 defaultSelection: '',
                 options: [
                   {
-                    name: 'Designation Account 1',
                     __typename: 'FilterOption' as const,
+                    name: 'Designation Account 1',
+                    value: 'designation-account-1',
                   },
                   {
-                    name: 'Designation Account 2',
                     __typename: 'FilterOption' as const,
+                    name: 'Designation Account 2',
+                    value: 'designation-account-2',
                   },
                 ],
               },
@@ -80,9 +88,7 @@ const TestingComponent: React.FC<TestingComponentProps> = ({
       <TestRouter router={router}>
         <GqlMockedProvider<Mocks> mocks={mocks}>
           <SnackbarProvider>
-            <ContactsWrapper>
-              <PartnerGivingAnalysisPage />
-            </ContactsWrapper>
+            <PartnerGivingAnalysisPage />
           </SnackbarProvider>
         </GqlMockedProvider>
       </TestRouter>
@@ -100,9 +106,7 @@ describe('partnerGivingAnalysis page', () => {
   });
 
   it('renders contact panel', async () => {
-    const { findByRole } = render(
-      <TestingComponent routerContactId={'contact-1'} />,
-    );
+    const { findByRole } = render(<TestingComponent routerHasContactId />);
 
     expect(await findByRole('tab', { name: 'Tasks' })).toBeInTheDocument();
   });
@@ -147,19 +151,23 @@ describe('partnerGivingAnalysis page', () => {
   });
 
   it('closes contact panel', async () => {
-    const { getByTestId } = render(
-      <TestingComponent routerContactId={'contact-1'} />,
-    );
+    const { findByTestId } = render(<TestingComponent routerHasContactId />);
 
-    userEvent.click(getByTestId('ContactDetailsHeaderClose'));
+    userEvent.click(await findByTestId('ContactDetailsHeaderClose'));
     expect(push).toHaveBeenCalledWith(
-      '/accountLists/account-list-1/reports/partnerGivingAnalysis/',
+      expect.objectContaining({
+        query: {
+          accountListId: 'account-list-1',
+        },
+      }),
+      undefined,
+      { shallow: true },
     );
   });
 
-  it('calls clearSearchInput', async () => {
+  it('updates filters', async () => {
     const { findByRole, getByRole, getByPlaceholderText } = render(
-      <TestingComponent routerContactId={'contact-1'} />,
+      <TestingComponent routerHasContactId />,
     );
     const searchBar = getByPlaceholderText('Search Contacts');
     userEvent.type(searchBar, 'John');
@@ -167,7 +175,27 @@ describe('partnerGivingAnalysis page', () => {
       await findByRole('combobox', { name: 'Designation Account' }),
     );
     userEvent.click(getByRole('option', { name: 'Designation Account 1' }));
+
+    await waitFor(() =>
+      expect(replace.mock.lastCall[0].query).toEqual(
+        expect.objectContaining({
+          filters: '{"designationAccountId":["designation-account-1"]}',
+          searchTerm: 'John',
+        }),
+      ),
+    );
+  }, 20000);
+
+  it('clears search term', async () => {
+    const { findByRole, getByRole } = render(
+      <TestingComponent routerHasContactId routerHasSearchTerm />,
+    );
+    userEvent.click(
+      await findByRole('combobox', { name: 'Designation Account' }),
+    );
+    userEvent.click(getByRole('option', { name: 'Designation Account 1' }));
     userEvent.click(getByRole('button', { name: 'Clear All' }));
-    expect(searchBar).toHaveValue('');
+
+    expect(replace.mock.lastCall[0].query.searchTerm).toBeUndefined();
   });
 });

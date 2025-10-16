@@ -5,7 +5,6 @@ import { Box, Button, Divider, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { DonationTable } from 'src/components/DonationTable/DonationTable';
-import { useContactLinks } from 'src/hooks/useContactLinks';
 import { useLocale } from 'src/hooks/useLocale';
 import { EmptyDonationsTable } from '../../../common/EmptyDonationsTable/EmptyDonationsTable';
 
@@ -24,9 +23,6 @@ export const DonationsReportTable: React.FC<DonationReportTableProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { getContactUrl } = useContactLinks({
-    url: `/accountLists/${accountListId}/reports/donations/`,
-  });
 
   const startDate = time.toISODate();
   const endDate = time.plus({ months: 1 }).minus({ days: 1 }).toISODate();
@@ -91,7 +87,6 @@ export const DonationsReportTable: React.FC<DonationReportTableProps> = ({
       <DonationTable
         accountListId={accountListId}
         filter={query}
-        getContactUrl={getContactUrl}
         visibleColumnsStorageKey="donations-report-table"
         emptyPlaceholder={
           <EmptyDonationsTable

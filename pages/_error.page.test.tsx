@@ -14,7 +14,7 @@ const createContext = (requestStatusCode, errorStatusCode) =>
     req: { query: 'test' },
     res: { statusCode: requestStatusCode },
     err: { statusCode: errorStatusCode, message: 'Test Message' },
-  } as unknown as NextPageContext);
+  }) as unknown as NextPageContext;
 
 describe('Error Page', () => {
   describe('Status codes', () => {

@@ -51,8 +51,8 @@ export const AppealProgress = ({
           {loading
             ? ' '
             : isPrimary
-            ? t('Primary Appeal ') + currencyFormat(goal, currency, locale)
-            : goalText}
+              ? t('Primary Appeal ') + currencyFormat(goal, currency, locale)
+              : goalText}
         </Typography>
         <Typography>
           <MinimalSpacingTooltip title={t('Received')} placement="top" arrow>

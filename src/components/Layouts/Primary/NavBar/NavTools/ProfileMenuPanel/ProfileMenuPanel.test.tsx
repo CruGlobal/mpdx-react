@@ -11,6 +11,7 @@ import { getTopBarMock } from '../../../TopBar/TopBar.mock';
 import { ProfileMenuPanel } from './ProfileMenuPanel';
 
 const router = {
+  isReady: false,
   pathname: '/accountLists/[accountListId]/test',
   query: { accountListId: '1' },
   push: jest.fn(),

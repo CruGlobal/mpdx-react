@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Grid, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { useTranslation } from 'react-i18next';
@@ -7,6 +7,9 @@ import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import NullState from 'src/components/Shared/Filters/NullState/NullState';
 import { headerHeight } from 'src/components/Shared/Header/ListHeader';
+import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
+import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
+import { ContactFilterSetInput } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import {
   AppealHeaderInfo,
@@ -48,19 +51,16 @@ export const ContactsList: React.FC<ContactsListProps> = ({
 }) => {
   const { t } = useTranslation();
   const { classes } = useStyles();
-  const [nullStateTitle, setNullStateTitle] = React.useState<string>('');
 
   const {
     appealId,
     accountListId,
     tour,
     contactsQueryResult,
-    isFiltered,
-    searchTerm,
-    setActiveFilters,
-    activeFilters,
-    contactDetailsOpen,
+    listAppealStatus: appealStatus,
   } = React.useContext(AppealsContext) as AppealsType;
+  const { isOpen: contactPanelOpen } = useContactPanel();
+  const { activeFilters } = useUrlFilters<ContactFilterSetInput>();
 
   const { data, loading, fetchMore } = contactsQueryResult;
 
@@ -69,58 +69,39 @@ export const ContactsList: React.FC<ContactsListProps> = ({
       appealId: appealId ?? '',
       accountListId: accountListId ?? '',
     },
-    skip: activeFilters.appealStatus !== AppealStatusEnum.Excluded,
+    skip: appealStatus !== AppealStatusEnum.Excluded,
   });
 
-  const appealStatus =
-    (activeFilters.appealStatus as AppealStatusEnum) ?? AppealStatusEnum.Asked;
-
-  useEffect(() => {
-    if (!activeFilters.appealStatus) {
-      return;
+  const nullStateTitle = useMemo(() => {
+    switch (appealStatus) {
+      case AppealStatusEnum.Processed:
+        return t('No donations yet towards this appeal');
+      case AppealStatusEnum.Excluded:
+        return t('No contacts have been excluded from this appeal');
+      case AppealStatusEnum.Asked:
+        return t('All contacts for this appeal have committed to this appeal');
+      case AppealStatusEnum.NotReceived:
+        return t(
+          'There are no contacts for this appeal that have not been received.',
+        );
+      case AppealStatusEnum.ReceivedNotProcessed:
+        return t(
+          'No gifts have been received and not yet processed to this appeal',
+        );
     }
-    switch (activeFilters.appealStatus.toLowerCase()) {
-      case 'processed':
-        setNullStateTitle(t('No donations yet towards this appeal'));
-        break;
-      case 'excluded':
-        setNullStateTitle(t('No contacts have been excluded from this appeal'));
-        break;
-      case 'asked':
-        setNullStateTitle(
-          t('All contacts for this appeal have committed to this appeal'),
-        );
-        break;
-      case 'not_received':
-        setNullStateTitle(
-          t(
-            'There are no contacts for this appeal that have not been received.',
-          ),
-        );
-        break;
-      case 'received_not_processed':
-        setNullStateTitle(
-          t('No gifts have been received and not yet processed to this appeal'),
-        );
-        break;
-      default:
-        setNullStateTitle('');
-        break;
-    }
-  }, [activeFilters]);
+  }, [t, appealStatus]);
 
   const columnName = useMemo(() => {
-    let name = t('Regular Giving');
     if (
-      activeFilters.appealStatus === AppealStatusEnum.NotReceived ||
-      activeFilters.appealStatus === AppealStatusEnum.ReceivedNotProcessed
+      appealStatus === AppealStatusEnum.NotReceived ||
+      appealStatus === AppealStatusEnum.ReceivedNotProcessed
     ) {
-      name = t('Amount Committed');
-    } else if (activeFilters.appealStatus === AppealStatusEnum.Processed) {
-      name = t('Donation(s)');
+      return t('Amount Committed');
+    } else if (appealStatus === AppealStatusEnum.Processed) {
+      return t('Donation(s)');
     }
-    return name;
-  }, [activeFilters]);
+    return t('Regular Giving');
+  }, [t, activeFilters]);
 
   const isExcludedContact = appealStatus === AppealStatusEnum.Excluded;
 
@@ -161,7 +142,7 @@ export const ContactsList: React.FC<ContactsListProps> = ({
           xs={isExcludedContact ? 4 : 6}
           className={classes.givingHeader}
         >
-          <Box justifyContent={contactDetailsOpen ? 'flex-end' : undefined}>
+          <Box justifyContent={contactPanelOpen ? 'flex-end' : undefined}>
             <Box>
               <Typography variant="subtitle1" fontWeight={800}>
                 {columnName}
@@ -202,8 +183,6 @@ export const ContactsList: React.FC<ContactsListProps> = ({
             <NullState
               page="contact"
               totalCount={data?.contacts.totalCount || 0}
-              filtered={isFiltered || !!searchTerm}
-              changeFilters={setActiveFilters}
               title={nullStateTitle}
               paragraph={''}
             />

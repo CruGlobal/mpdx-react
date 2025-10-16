@@ -3,7 +3,6 @@ import React, { useMemo, useState } from 'react';
 import EditIcon from '@mui/icons-material/Edit';
 import {
   Box,
-  CircularProgress,
   LinearProgress,
   Link,
   Table,
@@ -20,6 +19,7 @@ import {
   DataGrid,
   GridColDef,
   GridColumnVisibilityModel,
+  GridPaginationModel,
   GridSortModel,
 } from '@mui/x-data-grid';
 import { DateTime } from 'luxon';
@@ -34,6 +34,11 @@ import {
   preloadEditDonationModal,
 } from '../EditDonationModal/DynamicEditDonationModal';
 import {
+  LoadingBox,
+  LoadingIndicator,
+} from '../Shared/styledComponents/LoadingStyling';
+import { useContactPanel } from '../common/ContactPanelProvider/ContactPanelProvider';
+import {
   DonationTableQueryVariables,
   DonationTableRowFragment,
   useAccountListCurrencyQuery,
@@ -46,7 +51,6 @@ export interface DonationTableProps {
   accountListId: string;
   filter: Partial<DonationTableQueryVariables>;
   loading?: boolean;
-  getContactUrl?: (contactId: string) => string;
   visibleColumnsStorageKey: string;
   emptyPlaceholder: React.ReactElement;
   hideDisplayName?: boolean;
@@ -79,21 +83,6 @@ export const LoadingProgressBar = styled(LinearProgress)(({ theme }) => ({
   ['& .MuiLinearProgress-bar']: {
     borderRadius: theme.shape.borderRadius,
   },
-}));
-
-export const LoadingBox = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.cruGrayLight.main,
-  height: 300,
-  minWidth: 700,
-  margin: 'auto',
-  padding: 4,
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-}));
-
-export const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
-  margin: theme.spacing(0, 1, 0, 0),
 }));
 
 const DashUnderlineTypography = styled(Typography)(() => ({
@@ -142,13 +131,13 @@ export const DonationTable: React.FC<DonationTableProps> = ({
   accountListId,
   filter,
   loading: skipped = false,
-  getContactUrl,
   visibleColumnsStorageKey,
   emptyPlaceholder,
   hideDisplayName = false,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const { buildContactUrl } = useContactPanel();
   const [editingDonation, setEditingDonation] = useState<DonationRow | null>(
     null,
   );
@@ -157,7 +146,10 @@ export const DonationTable: React.FC<DonationTableProps> = ({
     setEditingDonation(null);
   };
 
-  const [pageSize, setPageSize] = useState(25);
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    page: 0,
+    pageSize: 25,
+  });
 
   // pageSize is intentionally omitted from the dependencies array so that the query isn't rerun when the page size changes
   // If all the pages have loaded and the user changes the page size, there's no reason to reload all the pages
@@ -165,7 +157,7 @@ export const DonationTable: React.FC<DonationTableProps> = ({
   const variables: DonationTableQueryVariables = useMemo(
     () => ({
       accountListId,
-      pageSize,
+      pageSize: paginationModel.pageSize,
       ...filter,
     }),
     [accountListId, filter],
@@ -197,21 +189,21 @@ export const DonationTable: React.FC<DonationTableProps> = ({
 
   const date: RenderCell = ({ row }) => dateFormatShort(row.date, locale);
 
-  const donor: RenderCell = ({ row }) => {
-    const contactUrl =
-      getContactUrl && row.contactId && getContactUrl(row.contactId);
-    return (
-      <Tooltip title={row.donorAccountName}>
-        {contactUrl ? (
-          <Link component={NextLink} href={contactUrl}>
-            {row.donorAccountName}
-          </Link>
-        ) : (
-          <span>{row.donorAccountName}</span>
-        )}
-      </Tooltip>
-    );
-  };
+  const donor: RenderCell = ({ row }) => (
+    <Tooltip title={row.donorAccountName}>
+      {row.contactId ? (
+        <Link
+          component={NextLink}
+          href={buildContactUrl(row.contactId)}
+          shallow
+        >
+          {row.donorAccountName}
+        </Link>
+      ) : (
+        <span>{row.donorAccountName}</span>
+      )}
+    </Tooltip>
+  );
 
   const amount: RenderCell = ({ row }) => {
     if (row.currency !== row.foreignCurrency) {
@@ -370,22 +362,32 @@ export const DonationTable: React.FC<DonationTableProps> = ({
       {data?.donations.nodes.length ? (
         <>
           <StyledGrid
-            rows={donations}
+            // If we use paginationMode="client", the data grid won't show the total row count in
+            // the pagination UI because it assumes that the provided rows are all the rows.
+            // If we use paginationMode="server" and pass in all the rows, the data grid won't
+            // automatically limit the rows to the selected page because it assumes that the
+            // provided rows are all the rows for that page.
+            // To work around this, we have to use paginationMode="server" and manually pass in only
+            // the current page's rows.
+            rows={donations.slice(
+              paginationModel.page * paginationModel.pageSize,
+              (paginationModel.page + 1) * paginationModel.pageSize,
+            )}
             rowCount={data?.donations.totalCount}
+            paginationMode="server"
             columns={columns}
             columnVisibilityModel={{
               ...columnVisibility,
               foreignAmount: hasForeignDonations,
             }}
             onColumnVisibilityModelChange={setColumnVisibility}
-            pageSize={pageSize}
-            onPageSizeChange={(pageSize) => setPageSize(pageSize)}
-            rowsPerPageOptions={[25, 50, 100]}
+            paginationModel={paginationModel}
+            onPaginationModelChange={setPaginationModel}
             pagination
             sortModel={sortModel}
             onSortModelChange={(sortModel) => setSortModel(sortModel)}
             autoHeight
-            disableSelectionOnClick
+            disableRowSelectionOnClick
             disableVirtualization
             localeText={localeText}
           />

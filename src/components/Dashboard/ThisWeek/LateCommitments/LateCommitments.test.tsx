@@ -1,20 +1,20 @@
 import React from 'react';
+import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
-import LateCommitments from './LateCommitments';
+import LateCommitments, { LateCommitmentsProps } from './LateCommitments';
 
-jest.mock('next/router', () => ({
-  useRouter: () => {
-    return {
-      query: { accountListId: 'abc' },
-      isReady: true,
-    };
-  },
-}));
+const TestComponent: React.FC<LateCommitmentsProps> = (props) => (
+  <TestRouter>
+    <GqlMockedProvider>
+      <LateCommitments {...props} />
+    </GqlMockedProvider>
+  </TestRouter>
+);
 
 describe('LateCommitments', () => {
   it('default', () => {
-    const { getByTestId, queryByTestId } = render(<LateCommitments />);
+    const { getByTestId, queryByTestId } = render(<TestComponent />);
     expect(getByTestId('LateCommitmentsCardContentEmpty')).toBeInTheDocument();
     expect(queryByTestId('LateCommitmentsDivLoading')).not.toBeInTheDocument();
     expect(
@@ -23,7 +23,7 @@ describe('LateCommitments', () => {
   });
 
   it('loading', () => {
-    const { getByTestId, queryByTestId } = render(<LateCommitments loading />);
+    const { getByTestId, queryByTestId } = render(<TestComponent loading />);
     expect(
       queryByTestId('LateCommitmentsCardContentEmpty'),
     ).not.toBeInTheDocument();
@@ -39,7 +39,7 @@ describe('LateCommitments', () => {
       totalCount: 0,
     };
     const { getByTestId, queryByTestId } = render(
-      <LateCommitments latePledgeContacts={latePledgeContacts} />,
+      <TestComponent latePledgeContacts={latePledgeContacts} />,
     );
     expect(getByTestId('LateCommitmentsCardContentEmpty')).toBeInTheDocument();
     expect(queryByTestId('LateCommitmentsDivLoading')).not.toBeInTheDocument();
@@ -65,9 +65,7 @@ describe('LateCommitments', () => {
       totalCount: 1595,
     };
     const { getByTestId, queryByTestId } = render(
-      <GqlMockedProvider>
-        <LateCommitments latePledgeContacts={latePledgeContacts} />
-      </GqlMockedProvider>,
+      <TestComponent latePledgeContacts={latePledgeContacts} />,
     );
     expect(
       queryByTestId('LateCommitmentsCardContentEmpty'),
@@ -105,9 +103,7 @@ describe('LateCommitments', () => {
       totalCount: 2,
     };
     const { getByTestId, queryByTestId } = render(
-      <GqlMockedProvider>
-        <LateCommitments latePledgeContacts={latePledgeContacts} />
-      </GqlMockedProvider>,
+      <TestComponent latePledgeContacts={latePledgeContacts} />,
     );
     const contact1Element = getByTestId(
       'LateCommitmentsListItemContact-contact1',

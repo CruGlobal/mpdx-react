@@ -22,6 +22,7 @@ const accountListId = 'accountListId';
 const csvFileId = 'csvFileId';
 
 const constants = {
+  pledgeFrequency: [],
   sendAppeals: [
     { id: true, value: 'Yes' },
     { id: false, value: 'No' },

@@ -7,26 +7,24 @@ import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
 import { AccountTransactions } from 'src/components/Reports/FinancialAccountsReport/AccountTransactions/AccountTransactions';
 import {
+  defaultEndDate,
+  defaultStartDate,
+} from 'src/components/Reports/FinancialAccountsReport/AccountTransactions/AccountTransactionsHelper';
+import {
   FinancialAccountContext,
   FinancialAccountType,
 } from 'src/components/Reports/FinancialAccountsReport/Context/FinancialAccountsContext';
 import { DynamicFilterPanel } from 'src/components/Shared/Filters/DynamicFilterPanel';
-import {
-  ContextTypesEnum,
-  FilterInput,
-} from 'src/components/Shared/Filters/FilterPanel';
 import { headerHeight } from 'src/components/Shared/Header/ListHeader';
 import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { Panel } from '../../helpers';
-import {
-  FinancialAccountTransactionFilters,
-  FinancialAccountsWrapper,
-} from './Wrapper';
+import { FinancialAccountsWrapper } from './Wrapper';
 
 const FinancialAccountEntries = (): ReactElement => {
   const { t } = useTranslation();
@@ -39,11 +37,8 @@ const FinancialAccountEntries = (): ReactElement => {
     setDesignationAccounts,
     handleNavListToggle,
     financialAccountQuery,
-    activeFilters,
     panelOpen,
     setPanelOpen,
-    setActiveFilters,
-    setSearchTerm,
   } = useContext(FinancialAccountContext) as FinancialAccountType;
 
   const { data } = financialAccountQuery;
@@ -103,14 +98,6 @@ const FinancialAccountEntries = (): ReactElement => {
     ];
   }, [data]);
 
-  const handleSelectedFiltersChanged = (selectedFilters: FilterInput) => {
-    setActiveFilters(selectedFilters as FinancialAccountTransactionFilters);
-  };
-
-  const handleClearSearch = () => {
-    setSearchTerm('');
-  };
-
   return (
     <>
       <Head>
@@ -144,11 +131,7 @@ const FinancialAccountEntries = (): ReactElement => {
                     new Set(['Transaction Date', 'Category'])
                   }
                   savedFilters={[]}
-                  selectedFilters={activeFilters as FilterInput}
                   onClose={() => setPanelOpen(null)}
-                  onSelectedFiltersChanged={handleSelectedFiltersChanged}
-                  onHandleClearSearch={handleClearSearch}
-                  contextType={ContextTypesEnum.FinancialAccountReport}
                   showSaveButton={false}
                 />
               ) : undefined
@@ -162,11 +145,23 @@ const FinancialAccountEntries = (): ReactElement => {
   );
 };
 
-const FinancialAccountsPage: React.FC = () => (
-  <FinancialAccountsWrapper>
-    <FinancialAccountEntries />
-  </FinancialAccountsWrapper>
-);
+const FinancialAccountsPage: React.FC = () => {
+  const defaultDateRange = useMemo(
+    () => ({
+      min: defaultStartDate(),
+      max: defaultEndDate(),
+    }),
+    [],
+  );
+
+  return (
+    <UrlFiltersProvider defaultFilters={{ dateRange: defaultDateRange }}>
+      <FinancialAccountsWrapper>
+        <FinancialAccountEntries />
+      </FinancialAccountsWrapper>
+    </UrlFiltersProvider>
+  );
+};
 
 export const getServerSideProps = ensureSessionAndAccountList;
 

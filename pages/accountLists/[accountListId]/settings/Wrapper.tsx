@@ -12,7 +12,7 @@ import {
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
-import { PageContentWrapper } from './styledComponents';
+import { PageContentWrapper } from './styledComponents/PageContentWrapper';
 
 interface SettingsWrapperProps {
   pageTitle: string;

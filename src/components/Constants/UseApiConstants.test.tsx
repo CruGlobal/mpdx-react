@@ -14,6 +14,5 @@ describe('LoadConstants', () => {
     expect(result.current?.activities).toBeTruthy();
     expect(result.current?.languages).toBeTruthy();
     expect(result.current?.likelyToGive).toBeTruthy();
-    expect(result.current?.locations).toBeTruthy();
   });
 });

@@ -13,7 +13,6 @@ import { ToolsWrapper } from '../ToolsWrapper';
 const CsvHome: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const pageUrl = 'tools/import/csv';
 
   const { query, replace, pathname, isReady } = useRouter();
   const urlTab = query?.tab as CsvImportViewStepEnum.Upload;
@@ -60,11 +59,7 @@ const CsvHome: React.FC = () => {
   };
 
   return (
-    <ToolsWrapper
-      pageTitle={t('Import from CSV')}
-      pageUrl={pageUrl}
-      selectedMenuId="import/csv"
-    >
+    <ToolsWrapper pageTitle={t('Import from CSV')} selectedMenuId="import/csv">
       <CsvImportProvider csvFileId={csvFileId}>
         <CsvImportWrapper
           accountListId={accountListId}

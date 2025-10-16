@@ -6,19 +6,22 @@ import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
+import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { TypeEnum } from 'src/graphql/types.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import { GetContactDuplicatesQuery } from './GetContactDuplicates.generated';
 import MergeContacts from './MergeContacts';
 import { getContactDuplicatesMocks } from './MergeContactsMock';
 
 const accountListId = '123';
+const router = {
+  pathname:
+    '/accountLists/[accountListId]/tools/merge/contacts/[[...contactId]]',
+  query: { accountListId },
+};
 
 const mockEnqueue = jest.fn();
 
-jest.mock('src/hooks/useAccountListId');
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -43,19 +46,19 @@ const MergeContactsWrapper: React.FC<MergeContactsWrapperProps> = ({
 }) => {
   return (
     <ThemeProvider theme={theme}>
-      <TestRouter>
+      <TestRouter router={router}>
         <GqlMockedProvider<{
           GetContactDuplicates: GetContactDuplicatesQuery;
         }>
           mocks={mocks}
           onCall={mutationSpy}
         >
-          <ContactsWrapper>
+          <ContactPanelProvider>
             <MergeContacts
               accountListId={accountListId}
               contactId={contactId}
             />
-          </ContactsWrapper>
+          </ContactPanelProvider>
         </GqlMockedProvider>
       </TestRouter>
     </ThemeProvider>
@@ -247,8 +250,6 @@ describe('Tools - MergeContacts', () => {
   });
 
   it('should render link with correct href', async () => {
-    (useAccountListId as jest.Mock).mockReturnValue(accountListId);
-
     const { findByRole } = render(<MergeContactsWrapper />);
 
     const contactName = await findByRole('link', {

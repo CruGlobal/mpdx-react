@@ -5,7 +5,6 @@ import {
   Box,
   Button,
   Checkbox,
-  CircularProgress,
   DialogActions,
   DialogContent,
   FormControl,
@@ -26,6 +25,7 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { PledgeFrequencySelect } from 'src/common/Selects/PledgeFrequencySelect';
+import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingStyling';
 import { CurrencyAutocomplete } from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
 import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
 import { LikelyToGiveSelect } from 'src/components/common/LikelyToGiveSelect/LikelyToGiveSelect';
@@ -60,10 +60,6 @@ const ContactInputWrapper = styled(Box)(({ theme }) => ({
   position: 'relative',
   padding: theme.spacing(0, 1),
   margin: theme.spacing(2, 0),
-}));
-
-const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
-  margin: theme.spacing(0, 1, 0, 0),
 }));
 
 const CheckboxLabel = styled(FormControlLabel)({

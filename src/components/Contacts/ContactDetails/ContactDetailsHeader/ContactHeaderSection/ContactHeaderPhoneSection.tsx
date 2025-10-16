@@ -1,10 +1,11 @@
 import React, { ReactElement } from 'react';
 import Phone from '@mui/icons-material/Phone';
-import { Box, Link, Skeleton, Typography } from '@mui/material';
+import { Box, Link, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import theme from '../../../../../theme';
 import { ContactHeaderPhoneFragment } from './ContactHeaderPhone.generated';
 import { ContactHeaderSection } from './ContactHeaderSection';
+import { TextSkeleton } from './styledComponents/TextSkeleton';
 
 interface Props {
   loading: boolean;
@@ -16,12 +17,6 @@ const PhoneIcon = styled(Phone)(({}) => ({
   width: 20,
   height: 20,
   color: theme.palette.text.secondary,
-}));
-const TextSkeleton = styled(Skeleton)(({}) => ({
-  display: 'inline',
-  marginLeft: 18,
-  width: 200,
-  fontSize: 16,
 }));
 
 export const ContactHeaderPhoneSection = ({

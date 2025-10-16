@@ -288,8 +288,8 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
           metadata instanceof Error
             ? metadata
             : metadata?.error instanceof Error
-            ? metadata?.error
-            : code;
+              ? metadata?.error
+              : code;
         const customData = { code, ...metadata };
         if (isRollBarEnabled) {
           rollbar.error(errorMsg, customData);

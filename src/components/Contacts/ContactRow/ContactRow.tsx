@@ -3,7 +3,6 @@ import React from 'react';
 import {
   Box,
   ButtonBase,
-  Checkbox,
   Grid,
   Hidden,
   ListItemIcon,
@@ -17,6 +16,8 @@ import {
   ContactsContext,
   ContactsType,
 } from 'src/components/Contacts/ContactsContext/ContactsContext';
+import { StyledCheckbox } from 'src/components/Shared/styledComponents/StyledCheckbox';
+import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { CelebrationIcons } from '../CelebrationIcons/CelebrationIcons';
 import { ContactPartnershipStatus } from '../ContactPartnershipStatus/ContactPartnershipStatus';
 import { ContactUncompletedTasksCount } from '../ContactUncompletedTasksCount/ContactUncompletedTasksCount';
@@ -44,12 +45,6 @@ export const ListItemButton = styled(ButtonBase)(({ theme }) => ({
   },
 })) as typeof ButtonBase;
 
-export const StyledCheckbox = styled(Checkbox)({
-  '&:hover': {
-    backgroundColor: 'rgba(0, 0, 0, 0.04)',
-  },
-});
-
 interface Props {
   contact: ContactRowFragment;
   useTopMargin?: boolean;
@@ -59,10 +54,9 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
   const {
     accountListId,
     isRowChecked: isChecked,
-    contactDetailsOpen,
-    getContactHrefObject,
     toggleSelectionById: onContactCheckToggle,
   } = React.useContext(ContactsContext) as ContactsType;
+  const { buildContactUrl } = useContactPanel();
 
   const {
     id: contactId,
@@ -79,12 +73,10 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
     uncompletedTasksCount,
   } = contact;
 
-  const contactHrefObject = getContactHrefObject(contactId);
-
   return (
     <ListItemButton
       component={NextLink}
-      href={contactHrefObject}
+      href={buildContactUrl(contactId)}
       scroll={false}
       prefetch={false}
       shallow
@@ -146,7 +138,6 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
         </Grid>
         <Grid item xs={2} md={6}>
           <ContactPartnershipStatus
-            contactDetailsOpen={contactDetailsOpen}
             lateAt={lateAt}
             pledgeStartDate={pledgeStartDate}
             pledgeAmount={pledgeAmount}

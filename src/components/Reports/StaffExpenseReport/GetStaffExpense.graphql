@@ -1,0 +1,37 @@
+query ReportsStaffExpenses($startMonth: ISO8601Date, $endMonth: ISO8601Date) {
+  reportsStaffExpenses(startMonth: $startMonth, endMonth: $endMonth) {
+    startBalance
+    endBalance
+    funds {
+      id
+      fundType
+      total
+      deficitLimit
+      balance
+      categories {
+        total
+        averagePerMonth
+        category
+        subcategories {
+          subCategory
+          total
+          averagePerMonth
+          breakdownByMonth {
+            month
+            total
+            transactions {
+              id
+              amount
+              transactedAt
+              description
+            }
+          }
+        }
+        breakdownByMonth {
+          month
+          total
+        }
+      }
+    }
+  }
+}

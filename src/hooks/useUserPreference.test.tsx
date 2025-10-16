@@ -114,6 +114,25 @@ describe('useUserPreference', () => {
     expect(result.current[0]).toBe('initial');
   });
 
+  it('supports setting the value with a function', async () => {
+    const { result, waitForNextUpdate, rerender } = renderHook(
+      () => useUserPreference({ key, defaultValue }),
+      {
+        wrapper: makeWrapper({ cached: false }),
+      },
+    );
+
+    result.current[1]((oldValue) => oldValue + newValue);
+    rerender();
+    expect(result.current[0]).toBe(defaultValue + newValue);
+
+    await waitForNextUpdate();
+    expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOption', {
+      key,
+      value: defaultValue + newValue,
+    });
+  });
+
   it('setting the value updates the value optimistically then updates to the response value', async () => {
     const { result, waitForNextUpdate, rerender } = renderHook(
       () => useUserPreference({ key, defaultValue }),
@@ -158,7 +177,7 @@ describe('useUserPreference', () => {
     });
   });
 
-  it('uses the default value when json.parse errors', async () => {
+  it('uses the default value when JSON.parse errors', async () => {
     const { result, waitForNextUpdate } = renderHook(
       () => useUserPreference({ key, defaultValue: [defaultValue] }),
       {

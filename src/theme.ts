@@ -24,6 +24,30 @@ const mpdxColors = {
   gray: '#DCDCDC',
 };
 
+const chartColors = {
+  blue: '#00C0D8',
+  green: '#88E4B6',
+  pink: '#EA657F',
+  orange: '#F08020',
+  gray: '#565652',
+  blueLight: '#BBDEFB',
+  black: '#000000',
+  blueDark: '#007890',
+};
+
+const chipColors = {
+  yellowDark: '#FFC107',
+  yellowLight: '#FFF8E1',
+  blueDark: '#2196F3',
+  blueLight: '#E3F2FD',
+  greenDark: '#4CAF50',
+  greenLight: '#E8F5E9',
+  grayDark: '#9E9E9E',
+  grayLight: '#FAFAFA',
+  redDark: '#F44336',
+  redLight: '#FEEBEE',
+};
+
 const progressBarColors = {
   yellow: '#F9B625',
   orange: '#DD7D1A',
@@ -46,6 +70,24 @@ declare module '@mui/material/styles/createPalette' {
     statusSuccess: Palette['primary'];
     statusWarning: Palette['primary'];
     statusDanger: Palette['primary'];
+    chartBlue: Palette['primary'];
+    chartGreen: Palette['primary'];
+    chartPink: Palette['primary'];
+    chartOrange: Palette['primary'];
+    chartGray: Palette['primary'];
+    chartBlueLight: Palette['primary'];
+    chartBlack: Palette['primary'];
+    chartBlueDark: Palette['primary'];
+    chipYellowDark: Palette['primary'];
+    chipYellowLight: Palette['primary'];
+    chipBlueDark: Palette['primary'];
+    chipBlueLight: Palette['primary'];
+    chipGreenDark: Palette['primary'];
+    chipGreenLight: Palette['primary'];
+    chipGrayDark: Palette['primary'];
+    chipGrayLight: Palette['primary'];
+    chipRedDark: Palette['primary'];
+    chipRedLight: Palette['primary'];
   }
   interface PaletteOptions {
     cruYellow: PaletteOptions['primary'];
@@ -62,6 +104,24 @@ declare module '@mui/material/styles/createPalette' {
     statusSuccess: PaletteOptions['primary'];
     statusWarning: PaletteOptions['primary'];
     statusDanger: PaletteOptions['primary'];
+    chartBlue: PaletteOptions['primary'];
+    chartGreen: PaletteOptions['primary'];
+    chartPink: PaletteOptions['primary'];
+    chartOrange: PaletteOptions['primary'];
+    chartGray: PaletteOptions['primary'];
+    chartBlueLight: PaletteOptions['primary'];
+    chartBlack: PaletteOptions['primary'];
+    chartBlueDark: PaletteOptions['primary'];
+    chipYellowDark: PaletteOptions['primary'];
+    chipYellowLight: PaletteOptions['primary'];
+    chipBlueDark: PaletteOptions['primary'];
+    chipBlueLight: PaletteOptions['primary'];
+    chipGreenDark: PaletteOptions['primary'];
+    chipGreenLight: PaletteOptions['primary'];
+    chipGrayDark: PaletteOptions['primary'];
+    chipGrayLight: PaletteOptions['primary'];
+    chipRedDark: PaletteOptions['primary'];
+    chipRedLight: PaletteOptions['primary'];
   }
 }
 
@@ -124,6 +184,60 @@ const theme = createTheme({
     },
     statusDanger: {
       main: statusColors.danger,
+    },
+    chartBlue: {
+      main: chartColors.blue,
+    },
+    chartGreen: {
+      main: chartColors.green,
+    },
+    chartPink: {
+      main: chartColors.pink,
+    },
+    chartOrange: {
+      main: chartColors.orange,
+    },
+    chartGray: {
+      main: chartColors.gray,
+    },
+    chartBlueLight: {
+      main: chartColors.blueLight,
+    },
+    chartBlack: {
+      main: chartColors.black,
+    },
+    chartBlueDark: {
+      main: chartColors.blueDark,
+    },
+    chipYellowDark: {
+      main: chipColors.yellowDark,
+    },
+    chipYellowLight: {
+      main: chipColors.yellowLight,
+    },
+    chipBlueDark: {
+      main: chipColors.blueDark,
+    },
+    chipBlueLight: {
+      main: chipColors.blueLight,
+    },
+    chipGreenDark: {
+      main: chipColors.greenDark,
+    },
+    chipGreenLight: {
+      main: chipColors.greenLight,
+    },
+    chipGrayDark: {
+      main: chipColors.grayDark,
+    },
+    chipGrayLight: {
+      main: chipColors.grayLight,
+    },
+    chipRedDark: {
+      main: chipColors.redDark,
+    },
+    chipRedLight: {
+      main: chipColors.redLight,
     },
   },
   components: {

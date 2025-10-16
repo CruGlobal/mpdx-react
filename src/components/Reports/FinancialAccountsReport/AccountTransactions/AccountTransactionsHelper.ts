@@ -1,3 +1,10 @@
+import { DateTime } from 'luxon';
+
+export const defaultStartDate = (): string =>
+  DateTime.local().minus({ months: 1 }).plus({ days: 1 }).toISODate();
+
+export const defaultEndDate = (): string => DateTime.local().toISODate();
+
 /**
  * Converts the "amount" string to a number to remove ".0"
  * If the value is 0 or isExpense is true, it returns the value as is.

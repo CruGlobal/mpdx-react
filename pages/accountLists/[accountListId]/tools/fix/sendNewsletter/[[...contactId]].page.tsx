@@ -2,18 +2,16 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import FixSendNewsletter from 'src/components/Tool/FixSendNewsletter/FixSendNewsletter';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { ToolsWrapper } from '../../ToolsWrapper';
-import { useToolsHelper } from '../../useToolsHelper';
 
 const FixSendNewsletterPage: React.FC = () => {
   const { t } = useTranslation();
-  const { accountListId } = useToolsHelper();
-  const pageUrl = 'tools/fix/sendNewsletter';
+  const accountListId = useAccountListId();
 
   return (
     <ToolsWrapper
       pageTitle={t('Fix Send Newsletter')}
-      pageUrl={pageUrl}
       selectedMenuId="fixSendNewsletter'"
     >
       <FixSendNewsletter accountListId={accountListId || ''} />

@@ -5,20 +5,14 @@ import TabPanel from '@mui/lab/TabPanel';
 import { Box, Tab } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import {
-  AppealsContext,
-  AppealsType,
-} from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
-import { ContactContextTypesEnum } from 'src/lib/contactContextTypes';
+import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from '../../../theme';
-import {
-  ContactsContext,
-  ContactsType,
-} from '../ContactsContext/ContactsContext';
 import {
   ContactDetailContext,
   ContactDetailsType,
 } from './ContactDetailContext';
+import { ContactDetailTabEnum } from './ContactDetailTab';
 import { ContactDetailsHeader } from './ContactDetailsHeader/ContactDetailsHeader';
 import {
   DynamicContactDetailsTab,
@@ -37,11 +31,6 @@ import {
   preloadContactReferralTab,
 } from './ContactReferralTab/DynamicContactReferralTab';
 import { ContactTasksTab } from './ContactTasksTab/ContactTasksTab';
-
-interface ContactDetailsProps {
-  onClose: () => void;
-  contextType?: ContactContextTypesEnum;
-}
 
 const ContactDetailsWrapper = styled(Box)(({}) => ({
   width: '100%',
@@ -85,25 +74,11 @@ const ContactTab = styled(Tab)(({}) => ({
   '&:hover': { opacity: 1 },
 }));
 
-export enum TabKey {
-  Tasks = 'Tasks',
-  Donations = 'Donations',
-  Referrals = 'Referrals',
-  ContactDetails = 'ContactDetails',
-  Notes = 'Notes',
-}
-
-export const ContactDetails: React.FC<ContactDetailsProps> = ({
-  onClose,
-  contextType = ContactContextTypesEnum.Contacts,
-}) => {
+export const ContactDetails: React.FC = () => {
   const { t } = useTranslation();
   const [contactDetailsLoaded, setContactDetailsLoaded] = useState(false);
-
-  const { accountListId, contactDetailsId: contactId } =
-    contextType === ContactContextTypesEnum.Contacts
-      ? (React.useContext(ContactsContext) as ContactsType)
-      : (React.useContext(AppealsContext) as AppealsType);
+  const accountListId = useAccountListId();
+  const { openContactId: contactId } = useContactPanel();
 
   const { selectedTabKey, handleTabChange: handleChange } = React.useContext(
     ContactDetailContext,
@@ -115,10 +90,8 @@ export const ContactDetails: React.FC<ContactDetailsProps> = ({
         <ContactDetailsHeader
           accountListId={accountListId}
           contactId={contactId}
-          onClose={onClose}
           contactDetailsLoaded={contactDetailsLoaded}
           setContactDetailsLoaded={setContactDetailsLoaded}
-          contextType={contextType}
         />
       )}
       <TabContext value={selectedTabKey}>
@@ -127,30 +100,30 @@ export const ContactDetails: React.FC<ContactDetailsProps> = ({
             onChange={handleChange}
             TabIndicatorProps={{ children: <span /> }}
           >
-            <ContactTab value={TabKey.Tasks} label={t('Tasks')} />
+            <ContactTab value={ContactDetailTabEnum.Tasks} label={t('Tasks')} />
             <ContactTab
-              value={TabKey.Donations}
+              value={ContactDetailTabEnum.Donations}
               label={t('Donations')}
               onMouseEnter={preloadContactDonationsTab}
             />
             <ContactTab
-              value={TabKey.Referrals}
+              value={ContactDetailTabEnum.Referrals}
               label={t('Connections')}
               onMouseEnter={preloadContactReferralTab}
             />
             <ContactTab
-              value={TabKey.ContactDetails}
+              value={ContactDetailTabEnum.ContactDetails}
               label={t('Contact Details')}
               onMouseEnter={preloadContactDetailsTab}
             />
             <ContactTab
-              value={TabKey.Notes}
+              value={ContactDetailTabEnum.Notes}
               label={t('Notes')}
               onMouseEnter={preloadContactNotesTab}
             />
           </ContactTabs>
         </ContactTabsWrapper>
-        <TabPanelNoBottomPadding value={TabKey.Tasks}>
+        <TabPanelNoBottomPadding value={ContactDetailTabEnum.Tasks}>
           {contactId && accountListId && (
             <ContactTasksTab
               accountListId={accountListId}
@@ -159,7 +132,7 @@ export const ContactDetails: React.FC<ContactDetailsProps> = ({
             />
           )}
         </TabPanelNoBottomPadding>
-        <TabPanel value={TabKey.Donations}>
+        <TabPanel value={ContactDetailTabEnum.Donations}>
           {contactId && accountListId && (
             <DynamicContactDonationsTab
               accountListId={accountListId}
@@ -167,7 +140,7 @@ export const ContactDetails: React.FC<ContactDetailsProps> = ({
             />
           )}
         </TabPanel>
-        <TabPanel value={TabKey.Referrals}>
+        <TabPanel value={ContactDetailTabEnum.Referrals}>
           {contactId && accountListId && (
             <DynamicContactReferralTab
               accountListId={accountListId}
@@ -175,7 +148,7 @@ export const ContactDetails: React.FC<ContactDetailsProps> = ({
             />
           )}
         </TabPanel>
-        <TabPanel value={TabKey.ContactDetails}>
+        <TabPanel value={ContactDetailTabEnum.ContactDetails}>
           {contactId && accountListId && (
             <DynamicContactDetailsTab
               accountListId={accountListId}
@@ -183,7 +156,7 @@ export const ContactDetails: React.FC<ContactDetailsProps> = ({
             />
           )}
         </TabPanel>
-        <TabPanel value={TabKey.Notes}>
+        <TabPanel value={ContactDetailTabEnum.Notes}>
           {contactId && accountListId && (
             <DynamicContactNotesTab
               accountListId={accountListId}

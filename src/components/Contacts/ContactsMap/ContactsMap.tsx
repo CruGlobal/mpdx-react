@@ -10,9 +10,8 @@ import {
   useJsApiLoader,
 } from '@react-google-maps/api';
 import { useTranslation } from 'react-i18next';
+import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { StatusEnum } from 'src/graphql/types.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
-import { useContactLinks } from 'src/hooks/useContactLinks';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import theme from 'src/theme';
 import { sourceToStr } from 'src/utils/sourceHelper';
@@ -56,11 +55,7 @@ export const ContactsMap: React.FC = ({}) => {
     setSelected,
   } = React.useContext(ContactsContext) as ContactsType;
   const { contactStatuses } = useContactPartnershipStatuses();
-  const accountListId = useAccountListId();
-  const { getContactUrl } = useContactLinks({
-    url: `/accountLists/${accountListId}/contacts/map/`,
-  });
-  const contactUrl = (selected && getContactUrl(selected.id)) ?? '';
+  const { buildContactUrl } = useContactPanel();
 
   const onMapLoad = useCallback((map: google.maps.Map) => {
     mapRef.current = map;
@@ -178,7 +173,11 @@ export const ContactsMap: React.FC = ({}) => {
               </InlineTypography>
               <InlineTypography>{selected.date}</InlineTypography>
               <Typography>
-                <Link component={NextLink} href={contactUrl} shallow>
+                <Link
+                  component={NextLink}
+                  href={buildContactUrl(selected.id)}
+                  shallow
+                >
                   {t('Show Contact')}
                 </Link>
               </Typography>

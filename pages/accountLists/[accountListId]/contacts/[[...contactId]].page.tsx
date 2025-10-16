@@ -15,19 +15,17 @@ import {
   TableViewModeEnum,
   headerHeight,
 } from 'src/components/Shared/Header/ListHeader';
+import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { ContactsWrapper } from './ContactsWrapper';
 
-const Contacts: React.FC = ({}) => {
+const Contacts: React.FC = () => {
   const { t } = useTranslation();
-  const {
-    accountListId,
-    filterPanelOpen,
-    contactDetailsOpen,
-    viewMode,
-    setContactFocus,
-  } = useContext(ContactsContext) as ContactsType;
+  const { accountListId, filterPanelOpen, viewMode } = useContext(
+    ContactsContext,
+  ) as ContactsType;
   const { appName } = useGetAppSettings();
+  const { isOpen } = useContactPanel();
 
   return (
     <>
@@ -37,8 +35,8 @@ const Contacts: React.FC = ({}) => {
             viewMode === TableViewModeEnum.Flows
               ? t('Contact Flows')
               : viewMode === TableViewModeEnum.Map
-              ? t('Contacts Map')
-              : t('Contacts')
+                ? t('Contacts Map')
+                : t('Contacts')
           }`}
         </title>
       </Head>
@@ -48,12 +46,8 @@ const Contacts: React.FC = ({}) => {
           leftOpen={filterPanelOpen}
           leftWidth="290px"
           mainContent={<ContactsMainPanel />}
-          rightPanel={
-            <DynamicContactsRightPanel
-              onClose={() => setContactFocus(undefined)}
-            />
-          }
-          rightOpen={contactDetailsOpen}
+          rightPanel={<DynamicContactsRightPanel />}
+          rightOpen={isOpen}
           rightWidth="60%"
           headerHeight={headerHeight}
         />
@@ -65,7 +59,7 @@ const Contacts: React.FC = ({}) => {
 };
 
 const ContactsPage: React.FC = () => (
-  <ContactsWrapper addViewMode>
+  <ContactsWrapper>
     <Contacts />
   </ContactsWrapper>
 );

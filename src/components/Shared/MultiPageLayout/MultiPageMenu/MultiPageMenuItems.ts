@@ -16,12 +16,12 @@ export const reportNavItems: NavItems[] = [
   },
   {
     id: 'partnerCurrency',
-    title: i18n.t('12 Month Partner Report'),
+    title: i18n.t('14 Month Partner Report'),
     subTitle: i18n.t('Partner Currency'),
   },
   {
     id: 'salaryCurrency',
-    title: i18n.t('12 Month Salary Report'),
+    title: i18n.t('14 Month Salary Report'),
     subTitle: i18n.t('Salary Currency'),
   },
   {
@@ -44,6 +44,17 @@ export const reportNavItems: NavItems[] = [
     id: 'coaching',
     title: i18n.t('Coaching'),
   },
+  // Goal Calculator
+  // {
+  //   id: 'goalCalculator',
+  //   title: i18n.t('Goal Calculator'),
+  //   subTitle: i18n.t('Reports - Goal Calculation'),
+  // },
+  // {
+  //   id: 'mpgaIncomeExpenses',
+  //   title: i18n.t('MPGA Monthly Report'),
+  //   subTitle: i18n.t('Income & Expenses'),
+  // },
 ];
 
 export const settingsNavItems: NavItems[] = [

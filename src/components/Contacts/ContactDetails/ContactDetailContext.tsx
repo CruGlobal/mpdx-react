@@ -1,12 +1,15 @@
 import { useRouter } from 'next/router';
-import React, { useCallback, useEffect, useState } from 'react';
-import { TabKey } from './ContactDetails';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { ContactDetailTabEnum } from './ContactDetailTab';
 import { DonationTabKey } from './ContactDonationsTab/DonationTabKey';
 
 export type ContactDetailsType = {
-  selectedTabKey: TabKey;
-  setSelectedTabKey: React.Dispatch<React.SetStateAction<TabKey>>;
-  handleTabChange: (event: React.SyntheticEvent, newKey: TabKey) => void;
+  selectedTabKey: ContactDetailTabEnum;
+  setSelectedTabKey: React.Dispatch<React.SetStateAction<ContactDetailTabEnum>>;
+  handleTabChange: (
+    event: React.SyntheticEvent,
+    newKey: ContactDetailTabEnum,
+  ) => void;
   editModalOpen: boolean;
   setEditModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
   editOtherModalOpen: boolean;
@@ -55,11 +58,17 @@ export const ContactDetailProvider: React.FC<Props> = ({ children }) => {
   const [editOtherModalOpen, setEditOtherModalOpen] = useState(false);
   const [editMailingModalOpen, setEditMailingModalOpen] = useState(false);
   const [selectedTabKey, setSelectedTabKey] = React.useState(
-    query?.tab ? TabKey[query.tab.toString()] ?? TabKey.Tasks : TabKey.Tasks,
+    query?.tab
+      ? (ContactDetailTabEnum[query.tab.toString()] ??
+          ContactDetailTabEnum.Tasks)
+      : ContactDetailTabEnum.Tasks,
   );
-  const handleTabChange = (_event: React.SyntheticEvent, newKey: TabKey) => {
-    setSelectedTabKey(newKey);
-  };
+  const handleTabChange = useCallback(
+    (_event: React.SyntheticEvent, newKey: ContactDetailTabEnum) => {
+      setSelectedTabKey(newKey);
+    },
+    [],
+  );
 
   const [editPersonModalOpen, setEditPersonModalOpen] = useState<string>();
   const [createPersonModalOpen, setCreatePersonModalOpen] = useState(false);
@@ -78,7 +87,7 @@ export const ContactDetailProvider: React.FC<Props> = ({ children }) => {
   useEffect(() => {
     const personId = router.query.personId as string;
     if (personId) {
-      setSelectedTabKey(TabKey.ContactDetails);
+      setSelectedTabKey(ContactDetailTabEnum.ContactDetails);
       setEditPersonModalOpen(personId);
     }
   }, [router.query.personId]);
@@ -109,39 +118,59 @@ export const ContactDetailProvider: React.FC<Props> = ({ children }) => {
     setEditPersonModalOpen(undefined);
   }, [router]);
 
+  const contextValue = useMemo(
+    () => ({
+      editingAddressId,
+      setEditingAddressId,
+      addAddressModalOpen,
+      setAddAddressModalOpen,
+      editModalOpen,
+      setEditModalOpen,
+      editOtherModalOpen,
+      setEditOtherModalOpen,
+      editMailingModalOpen,
+      setEditMailingModalOpen,
+      selectedTabKey,
+      setSelectedTabKey,
+      handleTabChange,
+      editPersonModalOpen,
+      openPersonModal,
+      closePersonModal,
+      createPersonModalOpen,
+      setCreatePersonModalOpen,
+      selectedDonationTabKey,
+      setSelectedDonationTabKey,
+      notes,
+      setNotes,
+      referralsModalOpen,
+      setReferralsModalOpen,
+      deleteModalOpen,
+      setDeleteModalOpen,
+      anchorEl,
+      setAnchorEl,
+    }),
+    [
+      editingAddressId,
+      addAddressModalOpen,
+      editModalOpen,
+      editOtherModalOpen,
+      editMailingModalOpen,
+      selectedTabKey,
+      handleTabChange,
+      editPersonModalOpen,
+      openPersonModal,
+      closePersonModal,
+      createPersonModalOpen,
+      selectedDonationTabKey,
+      notes,
+      referralsModalOpen,
+      deleteModalOpen,
+      anchorEl,
+    ],
+  );
+
   return (
-    <ContactDetailContext.Provider
-      value={{
-        editingAddressId: editingAddressId,
-        setEditingAddressId: setEditingAddressId,
-        addAddressModalOpen: addAddressModalOpen,
-        setAddAddressModalOpen: setAddAddressModalOpen,
-        editModalOpen: editModalOpen,
-        setEditModalOpen: setEditModalOpen,
-        editOtherModalOpen: editOtherModalOpen,
-        setEditOtherModalOpen: setEditOtherModalOpen,
-        editMailingModalOpen: editMailingModalOpen,
-        setEditMailingModalOpen: setEditMailingModalOpen,
-        selectedTabKey: selectedTabKey,
-        setSelectedTabKey: setSelectedTabKey,
-        handleTabChange: handleTabChange,
-        editPersonModalOpen: editPersonModalOpen,
-        openPersonModal,
-        closePersonModal,
-        createPersonModalOpen: createPersonModalOpen,
-        setCreatePersonModalOpen: setCreatePersonModalOpen,
-        selectedDonationTabKey: selectedDonationTabKey,
-        setSelectedDonationTabKey: setSelectedDonationTabKey,
-        notes: notes,
-        setNotes: setNotes,
-        referralsModalOpen: referralsModalOpen,
-        setReferralsModalOpen: setReferralsModalOpen,
-        deleteModalOpen: deleteModalOpen,
-        setDeleteModalOpen: setDeleteModalOpen,
-        anchorEl: anchorEl,
-        setAnchorEl: setAnchorEl,
-      }}
-    >
+    <ContactDetailContext.Provider value={contextValue}>
       {children}
     </ContactDetailContext.Provider>
   );

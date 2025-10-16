@@ -1,25 +1,23 @@
 import React, { ReactElement } from 'react';
-import FilterList from '@mui/icons-material/FilterList';
 import ViewList from '@mui/icons-material/ViewList';
 import { Box, Checkbox, Hidden } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import {
-  ContactFilterSetInput,
-  TaskFilterSetInput,
-} from 'src/graphql/types.generated';
+import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
+import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import theme from 'src/theme';
 import { SearchBox } from '../../common/SearchBox/SearchBox';
 import { ContactsMassActionsDropdown } from '../MassActions/ContactsMassActionsDropdown';
 import { TasksMassActionsDropdown } from '../MassActions/TasksMassActionsDropdown';
+import { NavFilterIcon } from '../styledComponents/NavFilterIcon';
 import { StarFilterButton } from './StarFilterButton/StarFilterButton';
 import { FilterButton } from './styledComponents';
 
 export const headerHeight = theme.spacing(12);
 
 const HeaderWrap = styled(Box, {
-  shouldForwardProp: (prop) => prop !== 'contactDetailsOpen',
-})<{ contactDetailsOpen?: boolean }>(({}) => ({
+  shouldForwardProp: (prop) => prop !== 'contactPanelOpen',
+})<{ contactPanelOpen?: boolean }>(({}) => ({
   paddingLeft: theme.spacing(0.5),
   paddingRight: theme.spacing(0.5),
   height: headerHeight,
@@ -42,12 +40,6 @@ const StyledCheckbox = styled(Checkbox)(({ theme }) => ({
   '&:hover': {
     backgroundColor: 'rgba(0, 0, 0, 0.04)',
   },
-}));
-
-const FilterIcon = styled(FilterList)(({ theme }) => ({
-  width: 24,
-  height: 24,
-  color: theme.palette.primary.dark,
 }));
 
 const ItemsShowingText = styled('p')(({ theme }) => ({
@@ -77,22 +69,14 @@ export enum PageEnum {
 
 interface ListHeaderProps {
   page: PageEnum;
-  activeFilters: boolean;
   headerCheckboxState: ListHeaderCheckBoxState;
   filterPanelOpen: boolean;
   contactsView?: TableViewModeEnum;
   toggleFilterPanel: () => void;
-  contactDetailsOpen: boolean;
   onCheckAllItems: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onSearchTermChanged: (searchTerm: string) => void;
-  searchTerm?: string | string[];
   totalItems?: number;
   leftButtonGroup?: ReactElement;
   buttonGroup?: ReactElement;
-  starredFilter?: ContactFilterSetInput | TaskFilterSetInput;
-  toggleStarredFilter?: (
-    filter: ContactFilterSetInput | TaskFilterSetInput,
-  ) => void;
   selectedIds: string[];
   massDeselectAll?: () => void;
   showShowingCount?: boolean;
@@ -101,29 +85,26 @@ interface ListHeaderProps {
 
 export const ListHeader: React.FC<ListHeaderProps> = ({
   page,
-  activeFilters,
   headerCheckboxState,
   filterPanelOpen,
-  contactDetailsOpen,
   toggleFilterPanel,
   onCheckAllItems,
-  onSearchTermChanged,
-  searchTerm,
   totalItems,
   leftButtonGroup,
   buttonGroup,
-  starredFilter,
-  toggleStarredFilter,
   contactsView,
   selectedIds,
   massDeselectAll,
   showShowingCount = false,
   isExcludedAppealPage = false,
 }) => {
+  const { isOpen: contactPanelOpen } = useContactPanel();
+  const { searchTerm, setSearchTerm, starred, setStarred } = useUrlFilters();
+
   const { t } = useTranslation();
 
   return (
-    <HeaderWrap contactDetailsOpen={contactDetailsOpen}>
+    <HeaderWrap contactPanelOpen={contactPanelOpen}>
       <HeaderWrapInner style={{ marginRight: 8 }}>
         {contactsView !== TableViewModeEnum.Map && (
           <Hidden xsDown>
@@ -142,17 +123,17 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         {page === PageEnum.Appeal && leftButtonGroup && (
           <Box>{leftButtonGroup}</Box>
         )}
-        <FilterButton activeFilters={activeFilters} onClick={toggleFilterPanel}>
+        <FilterButton onClick={toggleFilterPanel}>
           {contactsView === TableViewModeEnum.Map ? (
             <ViewList titleAccess={t('Toggle Contact List')} />
           ) : (
-            <FilterIcon titleAccess={t('Toggle Filter Panel')} />
+            <NavFilterIcon titleAccess={t('Toggle Filter Panel')} />
           )}
         </FilterButton>
         <SearchBox
           showContactSearchIcon={page === PageEnum.Task ? false : true}
           searchTerm={searchTerm}
-          onChange={onSearchTermChanged}
+          onChange={setSearchTerm}
           placeholder={
             page === PageEnum.Task ? t('Search Tasks') : t('Search Contacts')
           }
@@ -177,7 +158,6 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         {(page === PageEnum.Contact || page === PageEnum.Appeal) && (
           <ContactsMassActionsDropdown
             filterPanelOpen={filterPanelOpen}
-            contactDetailsOpen={contactDetailsOpen}
             buttonGroup={buttonGroup}
             contactsView={contactsView}
             selectedIds={selectedIds}
@@ -189,7 +169,6 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
           <Box mr={2}>
             <ContactsMassActionsDropdown
               filterPanelOpen={filterPanelOpen}
-              contactDetailsOpen={contactDetailsOpen}
               buttonGroup={buttonGroup}
               contactsView={contactsView}
               selectedIds={selectedIds}
@@ -204,18 +183,18 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
             massDeselectAll={massDeselectAll}
             selectedIdCount={
               headerCheckboxState === ListHeaderCheckBoxState.Checked
-                ? totalItems ?? 0
+                ? (totalItems ?? 0)
                 : selectedIds.length
             }
           />
         )}
 
-        {starredFilter && toggleStarredFilter && (
+        {page !== PageEnum.Report && (
           // This hidden doesn't remove from document
           <Hidden smDown>
             <StarFilterButton
-              starredFilter={starredFilter}
-              toggleStarredFilter={toggleStarredFilter}
+              starredFilter={starred}
+              toggleStarredFilter={setStarred}
             />
           </Hidden>
         )}

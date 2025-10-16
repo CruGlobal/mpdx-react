@@ -8,6 +8,7 @@ import {
   dateFromParts,
   dateTimeFormat,
   dayMonthFormat,
+  formatRelativeTime,
   monthYearFormat,
   numberFormat,
   parseNumberFromCurrencyString,
@@ -74,6 +75,16 @@ describe('intlFormat', () => {
 
     it('handles language', () => {
       expect(currencyFormat(1000.1, 'EUR', 'fr')).toEqual('1 000,10 €');
+    });
+
+    it('strips trailing zeros by default', () => {
+      expect(currencyFormat(1000, 'USD', 'en-US')).toEqual('$1,000');
+    });
+
+    it('showTrailingZeros shows trailing zeros', () => {
+      expect(
+        currencyFormat(1000, 'USD', 'en-US', { showTrailingZeros: true }),
+      ).toEqual('$1,000.00');
     });
 
     describe('value', () => {
@@ -192,55 +203,49 @@ describe('intlFormat', () => {
     });
   });
 
+  const date = DateTime.local(2020, 1, 5);
+
   describe('dateFormat', () => {
     it('formats day and month as date', () => {
-      expect(dateFormat(DateTime.local(2020, 1, 5), 'en-US')).toEqual(
-        'Jan 5, 2020',
+      expect(dateFormat(date, 'en-US')).toEqual('Jan 5, 2020');
+    });
+
+    it('formats full date', () => {
+      expect(dateFormat(date, 'en-US', { fullMonth: true })).toEqual(
+        'January 5, 2020',
       );
     });
 
     it('handles language', () => {
-      expect(dateFormat(DateTime.local(2020, 1, 5), 'fr')).toEqual(
-        '5 janv. 2020',
-      );
+      expect(dateFormat(date, 'fr')).toEqual('5 janv. 2020');
     });
 
     describe('different language', () => {
       it('handles language', () => {
-        expect(dateFormat(DateTime.local(2020, 1, 5), 'es-419')).toEqual(
-          '5 ene 2020',
-        );
+        expect(dateFormat(date, 'es-419')).toEqual('5 ene 2020');
       });
     });
   });
 
   describe('dateFormatWithoutYear', () => {
     it('formats day and month as date', () => {
-      expect(
-        dateFormatWithoutYear(DateTime.local(2020, 1, 5), 'en-US'),
-      ).toEqual('Jan 5');
+      expect(dateFormatWithoutYear(date, 'en-US')).toEqual('Jan 5');
     });
 
     it('handles language', () => {
-      expect(dateFormatWithoutYear(DateTime.local(2020, 1, 5), 'fr')).toEqual(
-        '5 janv.',
-      );
+      expect(dateFormatWithoutYear(date, 'fr')).toEqual('5 janv.');
     });
 
     describe('different language', () => {
       it('handles language', () => {
-        expect(
-          dateFormatWithoutYear(DateTime.local(2020, 1, 5), 'es-419'),
-        ).toEqual('5 ene');
+        expect(dateFormatWithoutYear(date, 'es-419')).toEqual('5 ene');
       });
     });
   });
 
   describe('dateFormatMonthOnly', () => {
     it('format month', () => {
-      expect(dateFormatMonthOnly(DateTime.local(2020, 1, 5), 'en-US')).toEqual(
-        'Jan',
-      );
+      expect(dateFormatMonthOnly(date, 'en-US')).toEqual('Jan');
     });
     it('handles null date', () => {
       expect(dateFormatMonthOnly(null, 'en-US')).toEqual('');
@@ -321,6 +326,65 @@ describe('intlFormat', () => {
       const date = dateTimeFormat(null, locale);
 
       expect(date).toBe('');
+    });
+  });
+
+  describe('formatRelativeTime', () => {
+    const locale = 'en-US';
+
+    it('formats 0 milliseconds', () => {
+      expect(formatRelativeTime(0, locale)).toBe('now');
+    });
+
+    it('formats seconds', () => {
+      expect(formatRelativeTime(1000, locale)).toBe('in 1 second');
+      expect(formatRelativeTime(-5200, locale)).toBe('5 seconds ago');
+    });
+
+    it('formats minutes', () => {
+      expect(formatRelativeTime(60 * 1000, locale)).toBe('in 1 minute');
+      expect(formatRelativeTime(-5.2 * 60 * 1000, locale)).toBe(
+        '5 minutes ago',
+      );
+    });
+
+    it('formats hours', () => {
+      expect(formatRelativeTime(60 * 60 * 1000, locale)).toBe('in 1 hour');
+      expect(formatRelativeTime(-5.2 * 60 * 60 * 1000, locale)).toBe(
+        '5 hours ago',
+      );
+    });
+
+    it('formats days', () => {
+      expect(formatRelativeTime(24 * 60 * 60 * 1000, locale)).toBe('tomorrow');
+      expect(formatRelativeTime(-5.2 * 24 * 60 * 60 * 1000, locale)).toBe(
+        '5 days ago',
+      );
+    });
+
+    it('formats months', () => {
+      expect(formatRelativeTime(30 * 24 * 60 * 60 * 1000, locale)).toBe(
+        'next month',
+      );
+      expect(formatRelativeTime(-5.2 * 30 * 24 * 60 * 60 * 1000, locale)).toBe(
+        '5 months ago',
+      );
+    });
+
+    it('formats years', () => {
+      expect(formatRelativeTime(365.2 * 24 * 60 * 60 * 1000, locale)).toBe(
+        'next year',
+      );
+      expect(
+        formatRelativeTime(-5.2 * 365.2 * 24 * 60 * 60 * 1000, locale),
+      ).toBe('5 years ago');
+    });
+
+    it('formats in different locales', () => {
+      expect(formatRelativeTime(60 * 1000, 'fr')).toBe('dans 1 minute');
+      expect(formatRelativeTime(-60 * 1000, 'fr')).toBe('il y a 1 minute');
+      expect(formatRelativeTime(24 * 60 * 60 * 1000, 'es')).toBe('mañana');
+      expect(formatRelativeTime(-24 * 60 * 60 * 1000, 'es')).toBe('ayer');
     });
   });
 });

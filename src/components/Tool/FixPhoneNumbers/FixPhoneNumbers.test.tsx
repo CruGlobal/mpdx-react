@@ -4,10 +4,10 @@ import userEvent from '@testing-library/user-event';
 import { ErgonoMockShape } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
-import TestWrapper from '__tests__/util/TestWrapper';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
+import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import theme from '../../../theme';
 import FixPhoneNumbers from './FixPhoneNumbers';
 import { GetInvalidPhoneNumbersMocks } from './FixPhoneNumbersMocks';
@@ -19,8 +19,9 @@ const testData =
   GetInvalidPhoneNumbersMocks.GetInvalidPhoneNumbers.people.nodes;
 
 const router = {
+  pathname:
+    '/accountLists/[accountListId]/tools/fix/phoneNumbers/[[...contactId]]',
   query: { accountListId },
-  isReady: true,
 };
 
 const mockEnqueue = jest.fn();
@@ -43,22 +44,22 @@ const Components: React.FC<{
     <ThemeProvider theme={theme}>
       <SnackbarProvider>
         <TestRouter router={router}>
-          <TestWrapper>
-            <GqlMockedProvider<{
-              GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
-            }>
-              mocks={{
-                GetInvalidPhoneNumbers: {
-                  people: {
-                    totalCount: count,
-                    nodes: data,
-                  },
+          <GqlMockedProvider<{
+            GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
+          }>
+            mocks={{
+              GetInvalidPhoneNumbers: {
+                people: {
+                  totalCount: count,
+                  nodes: data,
                 },
-              }}
-            >
+              },
+            }}
+          >
+            <ContactPanelProvider>
               <FixPhoneNumbers accountListId={accountListId} />
-            </GqlMockedProvider>
-          </TestWrapper>
+            </ContactPanelProvider>
+          </GqlMockedProvider>
         </TestRouter>
       </SnackbarProvider>
     </ThemeProvider>

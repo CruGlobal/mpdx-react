@@ -1,17 +1,13 @@
 import '@testing-library/jest-dom/extend-expect';
 import 'isomorphic-fetch';
 import { webcrypto } from 'node:crypto';
+import { TextEncoder } from 'node:util';
 import { Settings } from 'luxon';
 import { type useSession } from 'next-auth/react';
 import { session } from '__tests__/fixtures/session';
-import {
-  LoadConstantsDocument,
-  LoadConstantsQuery,
-} from 'src/components/Constants/LoadConstants.generated';
 import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { toHaveGraphqlOperation } from '../extensions/toHaveGraphqlOperation';
-import { gqlMock } from './graphqlMocking';
 import matchMediaMock from './matchMediaMock';
 
 jest.mock('src/components/Constants/UseApiConstants');
@@ -31,9 +27,7 @@ jest.mock('next-auth/react', () => {
 });
 
 (useApiConstants as jest.MockedFn<typeof useApiConstants>).mockReturnValue(
-  gqlMock<LoadConstantsQuery>(LoadConstantsDocument, {
-    mocks: loadConstantsMockData,
-  }).constant,
+  loadConstantsMockData.constant,
 );
 
 expect.extend({
@@ -44,6 +38,10 @@ Object.defineProperty(window, 'crypto', {
   value: webcrypto,
 });
 
+Object.defineProperty(global, 'TextEncoder', {
+  value: TextEncoder,
+});
+
 window.document.createRange = (): Range =>
   ({
     setStart: jest.fn(),
@@ -52,7 +50,7 @@ window.document.createRange = (): Range =>
       nodeName: 'BODY',
       ownerDocument: document,
     } as unknown as Node,
-  } as unknown as Range);
+  }) as unknown as Range;
 
 Object.defineProperty(window, 'location', {
   value: { ...window.location, assign: jest.fn(), replace: jest.fn() },

@@ -1,14 +1,13 @@
 import React, { useContext } from 'react';
 import {
   Box,
-  CircularProgress,
   DialogActions,
   DialogContent,
   DialogContentText,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingStyling';
 import {
   CancelButton,
   SubmitButton,
@@ -20,10 +19,6 @@ import {
 } from '../../AppealsContext/AppealsContext';
 import { useAssignContactsToAppealMutation } from '../AddContactToAppealModal/AddContactToAppeal.generated';
 import { useAppealContactsQuery } from '../AddContactToAppealModal/AppealContacts.generated';
-
-const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
-  margin: theme.spacing(0, 1, 0, 0),
-}));
 
 export interface AddExcludedContactModalProps {
   contactIds: string[];

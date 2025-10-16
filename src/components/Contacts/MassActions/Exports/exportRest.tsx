@@ -28,8 +28,8 @@ export const exportRest = async (
       fileType === 'csv'
         ? 'text/csv'
         : fileType === 'xlsx'
-        ? 'application/xlsx'
-        : 'text/pdf';
+          ? 'application/xlsx'
+          : 'text/pdf';
 
     const fields: RestExportFields = {
       type: 'export_logs',

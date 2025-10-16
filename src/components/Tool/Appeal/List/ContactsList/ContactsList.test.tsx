@@ -15,12 +15,6 @@ import { appealInfo } from '../../appealMockData';
 import { ContactsList } from './ContactsList';
 
 const accountListId = 'account-list-1';
-const appealId = 'appealId';
-
-const router = {
-  query: { accountListId },
-  isReady: true,
-};
 
 const getContactUrl = jest.fn().mockReturnValue({
   contactUrl: `/contacts/123`,
@@ -40,50 +34,47 @@ const defaultContactsQueryResult = {
 };
 type ComponentsProps = {
   appealInfoLoading?: boolean;
-  tour?: boolean;
   appealStatus?: AppealStatusEnum;
   contactsQueryResult?: object;
 };
 const Components = ({
   appealInfoLoading = false,
-  tour = false,
   appealStatus = AppealStatusEnum.Asked,
   contactsQueryResult = defaultContactsQueryResult,
-}: ComponentsProps) => (
-  <TestRouter router={router}>
-    <GqlMockedProvider>
-      <ThemeProvider theme={theme}>
-        <AppealsWrapper>
-          <AppealsContext.Provider
-            value={
-              {
-                appealId,
-                accountListId,
-                tour,
-                isFiltered: true,
-                searchTerm: '',
-                setActiveFilters: jest.fn(),
-                activeFilters: {
-                  appealStatus,
-                },
-                contactsQueryResult,
-                getContactUrl,
-                isRowChecked,
-                contactDetailsOpen,
-                toggleSelectionById,
-              } as unknown as AppealsType
-            }
-          >
-            <ContactsList
-              appealInfo={defaultAppealQuery}
-              appealInfoLoading={appealInfoLoading}
-            />
-          </AppealsContext.Provider>
-        </AppealsWrapper>
-      </ThemeProvider>
-    </GqlMockedProvider>
-  </TestRouter>
-);
+}: ComponentsProps) => {
+  const activeFilters = { appealStatus };
+  const router = {
+    query: { accountListId, filters: JSON.stringify(activeFilters) },
+    isReady: true,
+  };
+  return (
+    <TestRouter router={router}>
+      <GqlMockedProvider>
+        <ThemeProvider theme={theme}>
+          <AppealsWrapper>
+            <AppealsContext.Provider
+              value={
+                {
+                  contactsQueryResult,
+                  listAppealStatus: appealStatus,
+                  getContactUrl,
+                  isRowChecked,
+                  contactDetailsOpen,
+                  toggleSelectionById,
+                } as unknown as AppealsType
+              }
+            >
+              <ContactsList
+                appealInfo={defaultAppealQuery}
+                appealInfoLoading={appealInfoLoading}
+              />
+            </AppealsContext.Provider>
+          </AppealsWrapper>
+        </ThemeProvider>
+      </GqlMockedProvider>
+    </TestRouter>
+  );
+};
 
 describe('ContactsRow', () => {
   describe('NullState Message', () => {
@@ -141,37 +132,37 @@ describe('ContactsRow', () => {
   });
 
   describe('Layout', () => {
-    it('Given', async () => {
+    it('Given', () => {
       const { queryByText } = render(
         <Components appealStatus={AppealStatusEnum.Processed} />,
       );
-      expect(await queryByText('Reason')).not.toBeInTheDocument();
+      expect(queryByText('Reason')).not.toBeInTheDocument();
     });
 
-    it('Excluded', async () => {
-      const { findByText } = render(
+    it('Excluded', () => {
+      const { getByText } = render(
         <Components appealStatus={AppealStatusEnum.Excluded} />,
       );
-      expect(await findByText('Reason')).toBeInTheDocument();
+      expect(getByText('Reason')).toBeInTheDocument();
     });
 
-    it('Asked', async () => {
+    it('Asked', () => {
       const { queryByText } = render(<Components />);
-      expect(await queryByText('Reason')).not.toBeInTheDocument();
+      expect(queryByText('Reason')).not.toBeInTheDocument();
     });
 
-    it('Committed', async () => {
+    it('Committed', () => {
       const { queryByText } = render(
         <Components appealStatus={AppealStatusEnum.NotReceived} />,
       );
-      expect(await queryByText('Reason')).not.toBeInTheDocument();
+      expect(queryByText('Reason')).not.toBeInTheDocument();
     });
 
-    it('Received', async () => {
+    it('Received', () => {
       const { queryByText } = render(
         <Components appealStatus={AppealStatusEnum.ReceivedNotProcessed} />,
       );
-      expect(await queryByText('Reason')).not.toBeInTheDocument();
+      expect(queryByText('Reason')).not.toBeInTheDocument();
     });
   });
 });

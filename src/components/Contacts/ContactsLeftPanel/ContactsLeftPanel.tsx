@@ -6,15 +6,14 @@ import {
   ContactsType,
 } from '../ContactsContext/ContactsContext';
 import { DynamicContactsMapPanel } from '../ContactsMap/DynamicContactsMapPanel';
+import { preDefinedFilters } from './preDefinedFilters';
 
 export const ContactsLeftPanel: React.FC = () => {
   const {
     filterData,
     filtersLoading,
     savedFilters,
-    activeFilters,
     toggleFilterPanel,
-    setActiveFilters,
     mapData,
     panTo,
     selected,
@@ -33,10 +32,9 @@ export const ContactsLeftPanel: React.FC = () => {
   ) : filterData && !filtersLoading ? (
     <DynamicFilterPanel
       filters={filterData?.accountList?.contactFilterGroups}
+      preDefinedFilters={preDefinedFilters}
       savedFilters={savedFilters}
-      selectedFilters={activeFilters}
       onClose={toggleFilterPanel}
-      onSelectedFiltersChanged={setActiveFilters}
     />
   ) : null;
 };

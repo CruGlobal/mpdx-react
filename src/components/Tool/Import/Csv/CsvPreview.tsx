@@ -61,7 +61,7 @@ const CsvPreview: React.FC<CsvPreviewProps> = ({
 
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
-  const constants = useApiConstants() ?? {};
+  const constants = useApiConstants();
   const supportedHeaders = useSupportedHeaders();
   const { data: contactTagsList, loading: contactTagsListLoading } =
     useGetContactTagListQuery({
@@ -91,7 +91,7 @@ const CsvPreview: React.FC<CsvPreviewProps> = ({
   };
 
   const handleSave = () => {
-    if (!uploadData || !initialData || !accountListId) {
+    if (!uploadData || !initialData || !constants || !accountListId) {
       return;
     }
 
@@ -245,13 +245,11 @@ const CsvPreview: React.FC<CsvPreviewProps> = ({
                     <TableCell>{contact.status}</TableCell>
                     <TableCell>{contact.pledgeAmount}</TableCell>
                     <TableCell>
-                      {constants.pledgeFrequency
-                        ? constants.pledgeFrequency.find(
-                            (element) =>
-                              Number(element.key) ===
-                              Number(contact.pledgeFrequency),
-                          )?.value
-                        : ''}
+                      {constants?.pledgeFrequency.find(
+                        (element) =>
+                          Number(element.key) ===
+                          Number(contact.pledgeFrequency),
+                      )?.value ?? ''}
                     </TableCell>
                     <TableCell>{contact.pledgeCurrency}</TableCell>
                     <LastColumn>{contact.likelyToGive}</LastColumn>
