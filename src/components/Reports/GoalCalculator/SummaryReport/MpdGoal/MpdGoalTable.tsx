@@ -61,8 +61,8 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({
   const valueFormatter = useCallback(
     (value: number, row: MpdGoalRow) =>
       row.percentage
-        ? percentageFormat(value, locale)
-        : currencyFormat(value, 'USD', locale, { showTrailingZeros: true }),
+        ? percentageFormat(value, locale, { fractionDigits: 2 })
+        : currencyFormat(value, 'USD', locale, { fractionDigits: 0 }),
     [locale],
   );
 

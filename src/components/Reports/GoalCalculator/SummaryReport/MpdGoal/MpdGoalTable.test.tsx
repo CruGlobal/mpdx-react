@@ -49,7 +49,7 @@ describe('MpdGoalTable', () => {
       'reference',
     );
     expect(
-      await findByRole('gridcell', { name: '$5,380.95' }, { timeout: 5000 }),
+      await findByRole('gridcell', { name: '$5,381' }, { timeout: 5000 }),
     ).toHaveClass('reference');
   }, 30000);
 });
