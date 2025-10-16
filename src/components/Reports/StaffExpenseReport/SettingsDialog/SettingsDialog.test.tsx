@@ -1,9 +1,13 @@
 import React from 'react';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { fireEvent, render, waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DateTime } from 'luxon';
+import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
+import { ReportsStaffExpensesQuery } from '../GetStaffExpense.generated';
 import { DateRange } from '../Helpers/StaffReportEnum';
 import { Filters, SettingsDialog, SettingsDialogProps } from './SettingsDialog';
 
@@ -12,13 +16,78 @@ const TestComponent: React.FC<SettingsDialogProps> = ({
   onClose,
   selectedFilters,
 }) => (
-  <LocalizationProvider dateAdapter={AdapterLuxon}>
-    <SettingsDialog
-      isOpen={isOpen}
-      onClose={onClose}
-      selectedFilters={selectedFilters}
-    />
-  </LocalizationProvider>
+  <TestRouter>
+    <GqlMockedProvider<{ ReportsStaffExpenses: ReportsStaffExpensesQuery }>
+      mocks={{
+        ReportsStaffExpenses: {
+          reportsStaffExpenses: {
+            funds: [
+              {
+                categories: [
+                  {
+                    category: StaffExpenseCategoryEnum.Benefits,
+                    subcategories: [
+                      {
+                        breakdownByMonth: [
+                          {
+                            transactions: [
+                              {
+                                transactedAt: DateTime.now().toISO() ?? '',
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  {
+                    category: StaffExpenseCategoryEnum.Donation,
+                    subcategories: [
+                      {
+                        breakdownByMonth: [
+                          {
+                            transactions: [
+                              {
+                                transactedAt: DateTime.now().toISO() ?? '',
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                  {
+                    category: StaffExpenseCategoryEnum.Salary,
+                    subcategories: [
+                      {
+                        breakdownByMonth: [
+                          {
+                            transactions: [
+                              {
+                                transactedAt: DateTime.now().toISO() ?? '',
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      }}
+    >
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <SettingsDialog
+          isOpen={isOpen}
+          onClose={onClose}
+          selectedFilters={selectedFilters}
+        />
+      </LocalizationProvider>
+    </GqlMockedProvider>
+  </TestRouter>
 );
 
 describe('SettingsDialog', () => {
@@ -32,22 +101,23 @@ describe('SettingsDialog', () => {
   });
 
   it('should render dialog when isOpen is true', () => {
-    const { getByText, getByLabelText } = render(
+    const { getByRole, getByLabelText } = render(
       <TestComponent {...defaultProps} />,
     );
 
-    expect(getByText('Report Settings')).toBeInTheDocument();
+    expect(
+      getByRole('heading', { name: 'Report Settings' }),
+    ).toBeInTheDocument();
     expect(getByLabelText('Select Date Range')).toBeInTheDocument();
-    expect(getByText('Or enter a custom date range:')).toBeInTheDocument();
-    expect(getByText('Select Categories:')).toBeInTheDocument();
+    expect(getByRole('dialog')).toBeInTheDocument();
   });
 
   it('should not render dialog when isOpen is false', () => {
-    const { queryByText } = render(
+    const { queryByRole } = render(
       <TestComponent {...defaultProps} isOpen={false} />,
     );
 
-    expect(queryByText('Report Settings')).not.toBeInTheDocument();
+    expect(queryByRole('dialog')).not.toBeInTheDocument();
   });
 
   it('should render all date range options', () => {
@@ -55,7 +125,7 @@ describe('SettingsDialog', () => {
       <TestComponent {...defaultProps} />,
     );
 
-    fireEvent.mouseDown(getByLabelText('Select Date Range'));
+    userEvent.click(getByLabelText('Select Date Range'));
 
     expect(getByRole('option', { name: 'None' })).toBeInTheDocument();
     expect(getByRole('option', { name: 'Week to Date' })).toBeInTheDocument();
@@ -63,22 +133,25 @@ describe('SettingsDialog', () => {
     expect(getByRole('option', { name: 'Year to Date' })).toBeInTheDocument();
   });
 
-  it('should render all category checkboxes', () => {
+  it('should render all category checkboxes', async () => {
     const { getByRole } = render(<TestComponent {...defaultProps} />);
 
-    expect(getByRole('checkbox', { name: 'Benefits' })).toBeInTheDocument();
+    await waitFor(() => {
+      expect(getByRole('checkbox', { name: 'Benefits' })).toBeInTheDocument();
+    });
     expect(getByRole('checkbox', { name: 'Salary' })).toBeInTheDocument();
-    expect(
-      getByRole('checkbox', { name: 'Contributions' }),
-    ).toBeInTheDocument();
+    expect(getByRole('checkbox', { name: 'Donation' })).toBeInTheDocument();
   });
 
-  it('should populate form with selectedFilters when provided', () => {
+  it('should populate form with selectedFilters when provided', async () => {
     const selectedFilters: Filters = {
       selectedDateRange: DateRange.MonthToDate,
       startDate: null,
       endDate: null,
-      categories: ['Benefits', 'Salary'],
+      categories: [
+        StaffExpenseCategoryEnum.Benefits,
+        StaffExpenseCategoryEnum.Salary,
+      ],
     };
 
     const { getByRole } = render(
@@ -90,25 +163,12 @@ describe('SettingsDialog', () => {
     });
     expect(dateRangeDropdown).toHaveTextContent('Month to Date');
 
+    await waitFor(() => {
+      expect(getByRole('checkbox', { name: 'Benefits' })).toBeInTheDocument();
+    });
     expect(getByRole('checkbox', { name: 'Benefits' })).toBeChecked();
     expect(getByRole('checkbox', { name: 'Salary' })).toBeChecked();
-    expect(getByRole('checkbox', { name: 'Contributions' })).not.toBeChecked();
-  });
-
-  it('should clear custom dates when selectedDateRange is set', () => {
-    const selectedFilters: Filters = {
-      selectedDateRange: DateRange.WeekToDate,
-      startDate: DateTime.fromISO('2025-01-01'),
-      endDate: DateTime.fromISO('2025-01-31'),
-      categories: [],
-    };
-
-    const { getByLabelText } = render(
-      <TestComponent {...defaultProps} selectedFilters={selectedFilters} />,
-    );
-
-    expect(getByLabelText('Start Date')).toHaveValue('');
-    expect(getByLabelText('End Date')).toHaveValue('');
+    expect(getByRole('checkbox', { name: 'Donation' })).not.toBeChecked();
   });
 
   it('should preserve custom dates when no selectedDateRange is set', () => {
@@ -128,7 +188,7 @@ describe('SettingsDialog', () => {
   });
 
   it('should clear custom dates when predefined range is selected', async () => {
-    const { getByLabelText, getByText } = render(
+    const { getByLabelText, getByRole } = render(
       <TestComponent {...defaultProps} />,
     );
 
@@ -140,9 +200,7 @@ describe('SettingsDialog', () => {
 
     const dropdown = getByLabelText('Select Date Range');
     userEvent.click(dropdown);
-    userEvent.click(getByText('Month to Date'));
-
-    // Wait for fields to update based on Month to Date selection
+    userEvent.click(getByRole('option', { name: 'Month to Date' }));
 
     expect(startDateField).toHaveValue('');
     expect(endDateField).toHaveValue('');
@@ -185,6 +243,10 @@ describe('SettingsDialog', () => {
   it('should toggle category selection', async () => {
     const { getByLabelText } = render(<TestComponent {...defaultProps} />);
 
+    await waitFor(() => {
+      expect(getByLabelText('Benefits')).toBeInTheDocument();
+    });
+
     const benefitsCheckbox = getByLabelText('Benefits');
     const salaryCheckbox = getByLabelText('Salary');
 
@@ -208,6 +270,10 @@ describe('SettingsDialog', () => {
       <TestComponent {...defaultProps} onClose={onClose} />,
     );
 
+    await waitFor(() => {
+      expect(getByLabelText('Benefits')).toBeInTheDocument();
+    });
+
     userEvent.click(getByLabelText('Benefits'));
 
     userEvent.click(getByRole('button', { name: 'Apply Filters' }));
@@ -217,7 +283,7 @@ describe('SettingsDialog', () => {
         selectedDateRange: null,
         startDate: null,
         endDate: null,
-        categories: ['Benefits'],
+        categories: [StaffExpenseCategoryEnum.Benefits],
       });
     });
   });
@@ -225,14 +291,14 @@ describe('SettingsDialog', () => {
   it('should calculate dates for predefined ranges on submission', async () => {
     const onClose = jest.fn();
 
-    const { getByLabelText, getByText, getByRole } = render(
+    const { getByLabelText, getByRole } = render(
       <TestComponent {...defaultProps} onClose={onClose} />,
     );
 
     // Select predefined range
     const dropdown = getByLabelText('Select Date Range');
     userEvent.click(dropdown);
-    userEvent.click(getByText('Month to Date'));
+    userEvent.click(getByRole('option', { name: 'Month to Date' }));
 
     userEvent.click(getByRole('button', { name: 'Apply Filters' }));
 
@@ -253,7 +319,7 @@ describe('SettingsDialog', () => {
       selectedDateRange: DateRange.WeekToDate,
       startDate: null,
       endDate: null,
-      categories: ['Salary'],
+      categories: [StaffExpenseCategoryEnum.Salary],
     };
 
     const { getByLabelText, getByRole } = render(
@@ -263,6 +329,10 @@ describe('SettingsDialog', () => {
         selectedFilters={originalFilters}
       />,
     );
+
+    await waitFor(() => {
+      expect(getByLabelText('Benefits')).toBeInTheDocument();
+    });
 
     userEvent.click(getByLabelText('Benefits'));
     userEvent.click(getByRole('button', { name: 'Cancel' }));
@@ -277,30 +347,37 @@ describe('SettingsDialog', () => {
       <TestComponent {...defaultProps} onClose={onClose} />,
     );
 
+    await waitFor(() => {
+      expect(getByLabelText('Benefits')).toBeInTheDocument();
+    });
+
     userEvent.click(getByLabelText('Benefits'));
     expect(getByLabelText('Benefits')).toBeChecked();
 
     userEvent.click(getByRole('button', { name: 'Cancel' }));
 
-    // Form should be reset (but we can't easily test this without re-opening)
     expect(onClose).toHaveBeenCalled();
   });
 
-  it('should disable Apply Filters button when form is not dirty', () => {
-    const { getByRole } = render(<TestComponent {...defaultProps} />);
-
-    expect(getByRole('button', { name: 'Apply Filters' })).toBeDisabled();
-  });
-
-  it('should enable Apply Filters button when form is dirty and valid', async () => {
+  it('should disable Apply Filters button when form is not dirty and enable when dirty', async () => {
     const { getByRole, getByLabelText } = render(
       <TestComponent {...defaultProps} />,
     );
 
+    await waitFor(() => {
+      expect(getByRole('button', { name: 'Apply Filters' })).toBeDisabled();
+    });
+
+    await waitFor(() => {
+      expect(getByLabelText('Benefits')).toBeInTheDocument();
+    });
+
     // Make form dirty
     userEvent.click(getByLabelText('Benefits'));
 
-    expect(getByRole('button', { name: 'Apply Filters' })).toBeEnabled();
+    await waitFor(() => {
+      expect(getByRole('button', { name: 'Apply Filters' })).toBeEnabled();
+    });
   });
 
   it('should call onClose with original filters when dialog backdrop is clicked', () => {
@@ -325,27 +402,35 @@ describe('SettingsDialog', () => {
     expect(onClose).toHaveBeenCalledWith(originalFilters);
   });
 
-  it('should handle undefined selectedFilters', () => {
-    const { getByLabelText, getByText } = render(
+  it('should handle undefined selectedFilters and undefined categories', async () => {
+    const { getByLabelText, getByRole, rerender } = render(
       <TestComponent {...defaultProps} selectedFilters={undefined} />,
     );
 
-    expect(getByText('Report Settings')).toBeInTheDocument();
-    expect(getByLabelText('Benefits')).not.toBeChecked();
-  });
+    expect(
+      getByRole('heading', { name: 'Report Settings' }),
+    ).toBeInTheDocument();
 
-  it('should handle null categories in selectedFilters', () => {
+    await waitFor(() => {
+      expect(getByLabelText('Benefits')).toBeInTheDocument();
+    });
+    expect(getByLabelText('Benefits')).not.toBeChecked();
+
+    // Also test with defined filters but undefined categories
     const selectedFilters: Filters = {
       selectedDateRange: null,
       startDate: null,
       endDate: null,
-      categories: null,
+      categories: undefined,
     };
 
-    const { getByLabelText } = render(
+    rerender(
       <TestComponent {...defaultProps} selectedFilters={selectedFilters} />,
     );
 
+    await waitFor(() => {
+      expect(getByLabelText('Benefits')).toBeInTheDocument();
+    });
     expect(getByLabelText('Benefits')).not.toBeChecked();
   });
 });

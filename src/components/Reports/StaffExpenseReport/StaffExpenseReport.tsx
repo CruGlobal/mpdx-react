@@ -39,6 +39,7 @@ import { BalanceCardSkeleton } from './BalanceCard/BalanceCardSkeleton';
 import { DownloadButtonGroup } from './DownloadButtonGroup/DownloadButtonGroup';
 import { useReportsStaffExpensesQuery } from './GetStaffExpense.generated';
 import { ReportType } from './Helpers/StaffReportEnum';
+import { filterTransactions } from './Helpers/filterTransactions';
 import {
   dateRangeToString,
   getFormattedDateString,
@@ -47,7 +48,6 @@ import { Filters, SettingsDialog } from './SettingsDialog/SettingsDialog';
 import { EmptyReportTable } from './Tables/EmptyReportTable';
 import { PrintTables } from './Tables/PrintTables';
 import { StaffReportTable } from './Tables/StaffReportTable';
-import { filterTransactions } from './filterTransactions';
 
 const ScreenOnly = styled(Box)({
   '@media print': {
