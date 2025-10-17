@@ -17,6 +17,10 @@ interface NavBarProps {
   openMobile: boolean;
 }
 
+interface ItemProps extends NavPage {
+  icon?: ReactElement;
+}
+
 const makeMdi = (path: string) =>
   function Mdi(props) {
     return <MdiIcon path={path} {...props} />;
@@ -29,7 +33,7 @@ function renderNavItems({
   depth = 0,
 }: {
   accountListId: string | undefined;
-  items: NavPage[];
+  items: ItemProps[];
   pathname: string;
   depth?: number;
 }) {
@@ -60,7 +64,7 @@ function reduceChildRoutes({
   acc: ReactElement[];
   accountListId: string | undefined;
   pathname: string;
-  item: NavPage;
+  item: ItemProps;
   depth: number;
 }) {
   const convertIcon =

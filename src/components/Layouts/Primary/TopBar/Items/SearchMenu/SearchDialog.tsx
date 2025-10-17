@@ -24,11 +24,18 @@ import {
   NavPage,
   getNavPages,
 } from 'src/components/Layouts/Shared/getNavPages';
-import { ContactFilterStatusEnum } from 'src/graphql/types.generated';
+import {
+  ContactFilterStatusEnum,
+  StatusEnum,
+} from 'src/graphql/types.generated';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { useCreateContactMutation } from '../AddMenu/Items/CreateContact/CreateContact.generated';
 import { useGetSearchMenuContactsLazyQuery } from './SearchMenu.generated';
+
+interface ContactSearch extends NavPage {
+  status?: StatusEnum | null;
+}
 
 const StyledDialog = styled(Dialog)(() => ({
   '& .MuiPaper-root': {
@@ -94,7 +101,7 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
 
   const { searchDialogPages: defaultOptions } = getNavPages(undefined, true);
 
-  const options: NavPage[] = [
+  const options: ContactSearch[] = [
     ...(contacts?.nodes.map(({ name, status, id }) => ({
       id,
       title: name,
