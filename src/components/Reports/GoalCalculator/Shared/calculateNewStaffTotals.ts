@@ -211,15 +211,14 @@ export const calculateNewStaffGoalTotals = (
   const netMonthlySalary = (cappedBase + spouseCappedBase) / 12;
 
   const miscConstants = constants.goalMiscConstants;
-  const ministryExpensesTotal =
-    MINISTRY_CATEGORIES.reduce((sum, category) => {
-      const categoryTotal = getNewStaffBudgetCategory(
-        goalCalculation,
-        category,
-        miscConstants,
-      );
-      return sum + categoryTotal;
-    }, 0) ?? 0;
+  const ministryExpensesTotal = MINISTRY_CATEGORIES.reduce((sum, category) => {
+    const categoryTotal = getNewStaffBudgetCategory(
+      goalCalculation,
+      category,
+      miscConstants,
+    );
+    return sum + categoryTotal;
+  }, 0);
 
   return calculateFinalGoalTotals({
     constants,
