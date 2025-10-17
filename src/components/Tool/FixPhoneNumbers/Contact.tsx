@@ -169,7 +169,7 @@ const Contact: React.FC<Props> = ({ person, submitAll, accountListId }) => {
               t('This field is not a valid phone number'),
               (val) => typeof val === 'string' && /\d/.test(val),
             )
-            .required(t('This field is required')),
+            .required(t('Phone Number is required')),
           primary: yup.bool(),
         }),
       )

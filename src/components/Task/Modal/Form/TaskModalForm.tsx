@@ -513,7 +513,9 @@ const TaskModalForm = ({
                   inputProps={{ 'aria-label': t('Subject') }}
                   error={!!errors.subject && touched.subject}
                   helperText={
-                    errors.subject && touched.subject && t('Field is required')
+                    errors.subject &&
+                    touched.subject &&
+                    t('Task Name is required')
                   }
                   required
                 />
