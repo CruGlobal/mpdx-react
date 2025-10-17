@@ -18,9 +18,9 @@ import {
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import { StyledHeaderBox } from '../MPGAIncomeExpensesReport/styledComponents';
+import { AccountInfoBox } from '../Shared/AccountInfoBox/AccountInfoBox';
+import { AccountInfoBoxSkeleton } from '../Shared/AccountInfoBox/AccountInfoBoxSkeleton';
 import { useStaffAccountQuery } from '../StaffAccount.generated';
-import { AccountInfoBox } from '../StaffExpenseReport/AccountInfoBox/AccountInfoBox';
-import { AccountInfoBoxSkeleton } from '../StaffExpenseReport/AccountInfoBox/AccountInfoBoxSkeleton';
 import {
   LoadingBox,
   LoadingIndicator,

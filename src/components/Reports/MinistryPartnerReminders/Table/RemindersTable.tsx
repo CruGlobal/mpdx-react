@@ -1,4 +1,5 @@
 import React, { forwardRef, useMemo } from 'react';
+import { HourglassDisabled } from '@mui/icons-material';
 import {
   Paper,
   Table,
@@ -14,7 +15,7 @@ import { TableVirtuoso, TableVirtuosoProps } from 'react-virtuoso';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { headerHeight } from 'src/components/Shared/Header/ListHeader';
 import theme from 'src/theme';
-import { EmptyTable } from '../../MPGAIncomeExpensesReport/Tables/EmptyTable';
+import { EmptyTable } from '../../Shared/EmptyTable/EmptyTable';
 import { ReminderData, ReminderStatusEnum } from '../mockData';
 import { RemindersTableRow } from './RemindersTableRow';
 
@@ -83,6 +84,7 @@ const TableComponents: TableVirtuosoProps<HeaderProps, unknown>['components'] =
           <EmptyTable
             title={'No ministry partners to display'}
             subtitle={'Add a ministry partner to get started'}
+            icon={HourglassDisabled}
           />
         </TableCell>
       </TableRow>

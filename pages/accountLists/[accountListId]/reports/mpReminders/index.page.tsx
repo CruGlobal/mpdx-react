@@ -7,7 +7,7 @@ import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
 import { MPRemindersReport } from 'src/components/Reports/MinistryPartnerReminders/MPRemindersReport';
-import { NoStaffAccount } from 'src/components/Reports/Shared/NoStaffAccount';
+import { NoStaffAccount } from 'src/components/Reports/Shared/NoStaffAccount/NoStaffAccount';
 import { useStaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
 import {
   MultiPageMenu,
