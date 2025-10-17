@@ -181,10 +181,10 @@ const NavMenu: React.FC = () => {
   };
   const { pathname } = useRouter();
 
-  const { navMenuPages } = getNavPages(coachingAccounts?.totalCount);
+  const { navPages } = getNavPages(coachingAccounts?.totalCount);
   const coachingIndex = process.env.HELP_WHATS_NEW_URL
-    ? navMenuPages.length - 2
-    : navMenuPages.length - 1;
+    ? navPages.length - 2
+    : navPages.length - 1;
 
   function NavMenuDropdown({
     page,
@@ -341,7 +341,7 @@ const NavMenu: React.FC = () => {
 
   return accountListId ? (
     <Grid container item alignItems="center" xs="auto">
-      {navMenuPages.slice(0, 3).map((page) => (
+      {navPages.slice(0, 3).map((page) => (
         <Grid key={page.id} item className={classes.navListItem}>
           <MenuItem
             component={NextLink}
@@ -356,7 +356,7 @@ const NavMenu: React.FC = () => {
       ))}
 
       {NavMenuDropdown({
-        page: navMenuPages[3],
+        page: navPages[3],
         anchorRef,
         menuOpen: reportsMenuOpen,
         handleMenuToggle: handleReportsMenuToggle,
@@ -364,7 +364,7 @@ const NavMenu: React.FC = () => {
         testId: 'ReportMenuToggle',
       })}
       {NavMenuDropdown({
-        page: navMenuPages[4],
+        page: navPages[4],
         anchorRef: anchorRefTools,
         menuOpen: toolsMenuOpen,
         handleMenuToggle: handleToolsMenuToggle,
@@ -377,16 +377,14 @@ const NavMenu: React.FC = () => {
         <Grid item className={classes.navListItem}>
           <MenuItem
             component={NextLink}
-            href={navMenuPages[coachingIndex].href ?? ''}
+            href={navPages[coachingIndex].href ?? ''}
             tabIndex={0}
             className={classes.menuItem}
             aria-current={
-              pathname === navMenuPages[coachingIndex].pathname
-                ? 'page'
-                : undefined
+              pathname === navPages[coachingIndex].pathname ? 'page' : undefined
             }
           >
-            <ListItemText primary={navMenuPages[coachingIndex].title} />
+            <ListItemText primary={navPages[coachingIndex].title} />
           </MenuItem>
         </Grid>
       )}
