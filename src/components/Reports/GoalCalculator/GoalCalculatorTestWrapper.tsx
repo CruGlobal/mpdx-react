@@ -171,6 +171,13 @@ export const constantsMock = gqlMock<
           planDisplayName: 'Select',
           cost: 3219.27,
         },
+        {
+          size: MpdGoalBenefitsConstantSizeEnum.MarriedThreeOrMoreChildren,
+          sizeDisplayName: 'Married with 3+ children',
+          plan: MpdGoalBenefitsConstantPlanEnum.Base,
+          planDisplayName: 'Base',
+          cost: 3286.5,
+        },
       ],
       mpdGoalGeographicConstants: [
         { location: 'Orlando, FL', percentageMultiplier: 0.06 },
