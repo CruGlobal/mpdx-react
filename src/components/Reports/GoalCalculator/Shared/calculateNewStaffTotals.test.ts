@@ -106,6 +106,36 @@ describe('calculateNewStaffTotals', () => {
     });
   });
 
+  it('handles SOSA with dependents', () => {
+    expect(
+      calculateNewStaffGoalTotals(
+        {
+          ...goalCalculationMock,
+          familySize: MpdGoalBenefitsConstantSizeEnum.SosaTwoToThreeDependents,
+        },
+        constants,
+      ),
+    ).toEqual({
+      monthlyBudget: expect.closeTo(3059, 0),
+      netMonthlySalary: expect.closeTo(3059, 0),
+      taxesPercentage: 0.22,
+      taxes: expect.closeTo(673, 0),
+      salaryPreIra: expect.closeTo(3732, 0),
+      rothContributionPercentage: 0.07,
+      traditionalContributionPercentage: 0,
+      rothContribution: expect.closeTo(281, 0),
+      traditionalContribution: 0,
+      grossAnnualSalary: expect.closeTo(48153, 0),
+      grossMonthlySalary: expect.closeTo(4013, 0),
+      ministryExpensesTotal: 560,
+      benefitsCharge: 2350.64,
+      overallSubtotal: expect.closeTo(6923, 0),
+      overallSubtotalWithAdmin: expect.closeTo(7868, 0),
+      attrition: expect.closeTo(472, 0),
+      overallTotal: expect.closeTo(8340, 0),
+    });
+  });
+
   it('handles geographic multiplier', () => {
     expect(
       calculateNewStaffGoalTotals(
