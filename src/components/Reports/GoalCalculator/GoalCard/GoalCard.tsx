@@ -88,16 +88,14 @@ export const GoalCard: React.FC<GoalCardProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
   const accountListId = useAccountListId() ?? '';
-  const { goalBenefitsConstantMap } = useGoalCalculatorConstants();
+  const constants = useGoalCalculatorConstants();
   const [updateGoalCalculation] = useUpdateGoalCalculationMutation();
   const [deleteGoalCalculation] = useDeleteGoalCalculationMutation();
   const [deleting, setDeleting] = useState(false);
 
   const overallTotal = useMemo(
-    () =>
-      calculateGoalTotals(goal, goalBenefitsConstantMap.values().toArray())
-        .overallTotal,
-    [goal, goalBenefitsConstantMap],
+    () => calculateGoalTotals(goal, constants).overallTotal,
+    [goal, constants],
   );
 
   const handleStarClick = async () => {

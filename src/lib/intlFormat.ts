@@ -5,12 +5,23 @@ export const numberFormat = (value: number, locale: string): string =>
     style: 'decimal',
   }).format(Number.isFinite(value) ? value : 0);
 
-export const percentageFormat = (value: number, locale: string): string =>
+interface PercentageFormatOptions {
+  fractionDigits?: number;
+}
+
+export const percentageFormat = (
+  value: number,
+  locale: string,
+  options?: PercentageFormatOptions,
+): string =>
   new Intl.NumberFormat(locale, {
     style: 'percent',
+    minimumFractionDigits: options?.fractionDigits,
+    maximumFractionDigits: options?.fractionDigits,
   }).format(Number.isFinite(value) ? value : 0);
 
 interface CurrencyFormatOptions {
+  fractionDigits?: number;
   showTrailingZeros?: boolean;
 }
 
@@ -30,6 +41,8 @@ export const currencyFormat = (
     return new Intl.NumberFormat(locale, {
       style: 'currency',
       currency: currency,
+      minimumFractionDigits: options?.fractionDigits,
+      maximumFractionDigits: options?.fractionDigits,
       trailingZeroDisplay: showTrailingZeros ? undefined : 'stripIfInteger',
     }).format(Number.isFinite(amount) ? amount : 0);
   } catch (error) {

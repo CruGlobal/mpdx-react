@@ -25,7 +25,11 @@ const TestComponent: React.FC<TestComponentProps> = ({ primary = false }) => (
         GoalCalculatorConstants: GoalCalculatorConstantsQuery;
       }>
         onCall={mutationSpy}
-        mocks={{ GoalCalculatorConstants: constantsMock }}
+        mocks={{
+          GoalCalculatorConstants: {
+            constant: constantsMock,
+          },
+        }}
       >
         <GoalCard
           goal={{ ...goalCalculationMock, id: 'goal-1', primary }}
@@ -92,8 +96,10 @@ describe('GoalCard', () => {
     );
   });
 
-  it('calculates goal total', () => {
+  it('calculates goal total', async () => {
     const { getByTestId } = render(<TestComponent />);
-    expect(getByTestId('goal-amount-value')).toHaveTextContent('$13,837.61');
+    await waitFor(() =>
+      expect(getByTestId('goal-amount-value')).toHaveTextContent('$16,138.94'),
+    );
   });
 });
