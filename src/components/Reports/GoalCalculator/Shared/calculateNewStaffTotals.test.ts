@@ -63,6 +63,37 @@ describe('calculateNewStaffTotals', () => {
     });
   });
 
+  it('handles multiple children', () => {
+    expect(
+      calculateNewStaffGoalTotals(
+        {
+          ...goalCalculationMock,
+          familySize:
+            MpdGoalBenefitsConstantSizeEnum.MarriedThreeOrMoreChildren,
+        },
+        constants,
+      ),
+    ).toEqual({
+      monthlyBudget: expect.closeTo(6738, 0),
+      netMonthlySalary: expect.closeTo(6738, 0),
+      taxesPercentage: 0.22,
+      taxes: expect.closeTo(1482, 0),
+      salaryPreIra: expect.closeTo(8220, 0),
+      rothContributionPercentage: 0.07,
+      traditionalContributionPercentage: 0,
+      rothContribution: expect.closeTo(619, 0),
+      traditionalContribution: 0,
+      grossAnnualSalary: expect.closeTo(106071, 0),
+      grossMonthlySalary: expect.closeTo(8839, 0),
+      ministryExpensesTotal: 1087.5,
+      benefitsCharge: 3286.5,
+      overallSubtotal: expect.closeTo(13213, 0),
+      overallSubtotalWithAdmin: expect.closeTo(15015, 0),
+      attrition: expect.closeTo(901, 0),
+      overallTotal: expect.closeTo(15916, 0),
+    });
+  });
+
   it('handles geographic multiplier', () => {
     expect(
       calculateNewStaffGoalTotals(

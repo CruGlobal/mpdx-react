@@ -169,6 +169,7 @@ const REIMBURSEMENT_AMOUNTS: Record<MpdGoalBenefitsConstantPlanEnum, number> = {
   [MpdGoalBenefitsConstantPlanEnum.Minimum]: 200,
   [MpdGoalBenefitsConstantPlanEnum.Exempt]: 0,
 };
+const CHILD_REIMBURSEMENT_AMOUNT = 35;
 
 const MINISTRY_CATEGORIES = [
   PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage,
@@ -391,7 +392,11 @@ export const getNewStaffBudgetCategory = (
         return 0;
       }
       const spouses = hasStaffSpouse(goalCalculation.familySize) ? 2 : 1;
-      return REIMBURSEMENT_AMOUNTS[goalCalculation.benefitsPlan] * spouses;
+      const dependents = numDependents(goalCalculation.familySize);
+      return (
+        REIMBURSEMENT_AMOUNTS[goalCalculation.benefitsPlan] * spouses +
+        dependents * CHILD_REIMBURSEMENT_AMOUNT
+      );
 
     case PrimaryBudgetCategoryEnum.AccountTransfers:
     case PrimaryBudgetCategoryEnum.InternetServiceProviderFee:
