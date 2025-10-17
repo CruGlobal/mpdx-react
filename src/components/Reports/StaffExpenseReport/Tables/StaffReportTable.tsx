@@ -7,12 +7,12 @@ import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { ReportType } from '../Helpers/StaffReportEnum';
-import { Transaction } from '../StaffExpenseReport';
+import { GroupedTransaction, Transaction } from '../Helpers/filterTransactions';
 
 type RenderCell = GridColDef<StaffReportRow>['renderCell'];
 
 export interface StaffReportTableProps {
-  transactions: Transaction[];
+  transactions: (Transaction | GroupedTransaction)[];
   tableType: ReportType;
   transferTotal: number;
   emptyPlaceholder: React.ReactElement;
