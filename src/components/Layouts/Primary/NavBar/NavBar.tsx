@@ -107,7 +107,7 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
 
   const coachingAccountCount = data?.coachingAccountLists.totalCount;
 
-  const { navBarPages: sections } = getNavPages(coachingAccountCount);
+  const { navPages: sections } = getNavPages(coachingAccountCount);
 
   const drawerHidden = useMediaQuery<Theme>((theme) =>
     theme.breakpoints.up('md'),
