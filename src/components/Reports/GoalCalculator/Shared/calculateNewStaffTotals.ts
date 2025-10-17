@@ -40,7 +40,7 @@ const TENURE_INCREASES = [
 const getTenureIncrease = (tenure: number) =>
   TENURE_INCREASES.findLast(({ years }) => years <= tenure)?.adjustment ?? 0;
 
-const numDependentChildren = (
+const numDependents = (
   familySize: MpdGoalBenefitsConstantSizeEnum | null | undefined,
 ): number => {
   switch (familySize) {
@@ -93,7 +93,7 @@ const getBaseMultiplier = (
 
   let baseSalary = FAMILY_SIZE_BASE_SALARY.single;
   if (!single) {
-    const children = numDependentChildren(goalCalculation?.familySize);
+    const children = numDependents(goalCalculation?.familySize);
     if (children === 0) {
       baseSalary = FAMILY_SIZE_BASE_SALARY.married;
     } else {
@@ -346,7 +346,7 @@ const getExpenseAmount = (
   let amount = SINGLE_EXPENSES[field];
 
   if (hasStaffSpouse(goalCalculation.familySize)) {
-    const children = numDependentChildren(goalCalculation.familySize);
+    const children = numDependents(goalCalculation.familySize);
     const familyMultiplier =
       FAMILY_MULTIPLIERS.findLast(
         (multiplier) => multiplier.children <= children,
@@ -392,7 +392,7 @@ export const getNewStaffBudgetCategory = (
         return 0;
       }
       const spouses = hasStaffSpouse(goalCalculation.familySize) ? 2 : 1;
-      const dependents = numDependentChildren(goalCalculation.familySize);
+      const dependents = numDependents(goalCalculation.familySize);
       return (
         REIMBURSEMENT_AMOUNTS[goalCalculation.benefitsPlan] * spouses +
         dependents * CHILD_REIMBURSEMENT_AMOUNT
