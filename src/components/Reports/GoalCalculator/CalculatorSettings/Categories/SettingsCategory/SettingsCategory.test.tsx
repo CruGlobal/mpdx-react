@@ -1,24 +1,15 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import TestRouter from '__tests__/util/TestRouter';
 import { GoalCalculatorTestWrapper } from '../../../GoalCalculatorTestWrapper';
 import { SettingsCategory } from './SettingsCategory';
 
-const router = {
-  query: {
-    accountListId: 'test-account-list-id',
-    goalCalculationId: 'test-goal-calculation-id',
-  },
-};
 const mutationSpy = jest.fn();
 
 const TestComponent = () => (
-  <TestRouter router={router}>
-    <GoalCalculatorTestWrapper onCall={mutationSpy}>
-      <SettingsCategory />
-    </GoalCalculatorTestWrapper>
-  </TestRouter>
+  <GoalCalculatorTestWrapper onCall={mutationSpy}>
+    <SettingsCategory />
+  </GoalCalculatorTestWrapper>
 );
 
 describe('SettingsCategory', () => {

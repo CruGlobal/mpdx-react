@@ -4,8 +4,7 @@ import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
-import { useGoalLineItems } from '../../../Shared/useGoalLineItems';
-import { Goal } from '../../../Shared/useReportExpenses/useReportExpenses';
+import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   flex: 1,
@@ -27,16 +26,18 @@ const StyledTypography = styled(Typography)(({ theme }) => ({
 }));
 
 interface MpdGoalHeaderCardsProps {
-  goal: Goal;
+  supportRaisedPercentage: number;
 }
 
 export const MpdGoalHeaderCards: React.FC<MpdGoalHeaderCardsProps> = ({
-  goal,
+  supportRaisedPercentage,
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
   const locale = useLocale();
-  const { overallTotal, supportRaisedPercentage } = useGoalLineItems(goal);
+  const {
+    goalTotals: { overallTotal },
+  } = useGoalCalculator();
 
   return (
     <Stack
@@ -44,6 +45,7 @@ export const MpdGoalHeaderCards: React.FC<MpdGoalHeaderCardsProps> = ({
       direction={{ xs: 'column', sm: 'row' }}
       justifyContent="space-between"
       gap={{ xs: theme.spacing(2), sm: theme.spacing(4) }}
+      mb={4}
     >
       <StyledCard>
         <Typography variant="h5">{t('Your Goal')}</Typography>

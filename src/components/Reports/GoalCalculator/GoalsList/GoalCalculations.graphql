@@ -2,11 +2,24 @@ fragment ListGoalCalculation on GoalCalculation {
   id
   name
   primary
+  familySize
+  benefitsPlan
+  netPaycheckAmount
+  spouseNetPaycheckAmount
+  taxesPercentage
+  spouseTaxesPercentage
+  rothContributionPercentage
+  spouseRothContributionPercentage
+  traditionalContributionPercentage
+  spouseTraditionalContributionPercentage
   updatedAt
   householdFamily {
     ...BudgetFamily
   }
   ministryFamily {
+    ...BudgetFamily
+  }
+  specialFamily {
     ...BudgetFamily
   }
 }
