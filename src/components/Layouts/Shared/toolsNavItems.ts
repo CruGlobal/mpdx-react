@@ -28,7 +28,7 @@ interface ToolsGroup {
   items: ToolItem[];
 }
 
-export const ToolsListNav: ToolsGroup[] = [
+export const toolsNavItems: ToolsGroup[] = [
   {
     groupName: i18n.t('Appeals'),
     groupIcon: mdiWrench,

@@ -2,10 +2,16 @@ import { LinkProps } from 'next/link';
 import { ReactElement, useMemo } from 'react';
 import CompassIcon from '@mui/icons-material/Explore';
 import { useTranslation } from 'react-i18next';
-import { reportNavItems } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenuItems';
-import { ToolsListNav } from 'src/components/Tool/Home/ToolsListNav';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { reportNavItems } from './reportNavItems';
+import { settingsNavItems } from './settingsNavItems';
+import { toolsNavItems } from './toolsNavItems';
 
+interface SubItems {
+  id?: string;
+  title?: string;
+  grantedAccess?: string[];
+}
 interface Item {
   id?: string;
   href?: LinkProps['href'];
@@ -13,15 +19,23 @@ interface Item {
   icon?: any;
   items?: Item[];
   title: string;
+  subtitle?: string;
+  desc?: string;
+  // search dialog specific
+  showInSearchDialog?: boolean;
+  searchIcon?: ReactElement;
+  searchName?: string;
+  // settings specific
+  grantedAccess?: string[];
+  subItems?: SubItems[];
+  oauth?: boolean;
 }
 
 export interface NavPage {
   id?: string;
   title: string;
-  subtitle?: string;
   href?: LinkProps['href'];
   pathname?: string;
-  shortPathname?: string;
   searchIcon?: ReactElement;
   items?: Item[];
   whatsNewLink?: boolean;
@@ -40,14 +54,12 @@ export function getNavPages(
   const allNavPages = useMemo<NavPage[]>(() => {
     const navPages: NavPage[] = [
       {
-        id: 'dashboard-page',
         title: t('Dashboard'),
         href: `/accountLists/${accountListId}`,
         pathname: '/accountLists/[accountListId]',
         showInNav: true,
       },
       {
-        id: 'contacts-page',
         title: t('Contacts'),
         searchIcon: <CompassIcon />,
         href: `/accountLists/${accountListId}/contacts`,
@@ -56,7 +68,6 @@ export function getNavPages(
         showInSearchDialog: true,
       },
       {
-        id: 'tasks-page',
         title: t('Tasks'),
         searchIcon: <CompassIcon />,
         href: `/accountLists/${accountListId}/tasks`,
@@ -69,60 +80,19 @@ export function getNavPages(
         title: t('Reports'),
         pathname: '/accountLists/[accountListId]/reports',
         items: reportNavItems.map((item) => ({
-          ...item,
           id: item.id,
           title: item.title,
+          subtitle: item.subTitle,
           href: `/accountLists/${accountListId}/reports/${item.id}`,
+          searchIcon: <CompassIcon />,
+          searchName:
+            item.subTitle === 'Partner Currency' ||
+            item.subTitle === 'Salary Currency'
+              ? `Reports - Monthly Report (${item.subTitle})`
+              : `Reports - ${item.title}`,
+          showInSearchDialog: true,
         })),
         showInNav: true,
-      },
-      {
-        title: t('Reports - Donations'),
-        searchIcon: <CompassIcon />,
-        href: `/accountLists/${accountListId}/reports/donations`,
-        showInSearchDialog: true,
-      },
-      {
-        title: t('Reports - Monthly Report (Partner Currency)'),
-        searchIcon: <CompassIcon />,
-        href: `/accountLists/${accountListId}/reports/partnerCurrency`,
-        showInSearchDialog: true,
-      },
-      {
-        title: t('Reports - Monthly Report (Salary Currency)'),
-        searchIcon: <CompassIcon />,
-        href: `/accountLists/${accountListId}/reports/salaryCurrency`,
-        showInSearchDialog: true,
-      },
-      {
-        title: t('Reports - Designation Accounts'),
-        searchIcon: <CompassIcon />,
-        href: `/accountLists/${accountListId}/reports/designationAccounts`,
-        showInSearchDialog: true,
-      },
-      {
-        title: t('Reports - Responsibility Centers'),
-        searchIcon: <CompassIcon />,
-        href: `/accountLists/${accountListId}/reports/financialAccounts`,
-        showInSearchDialog: true,
-      },
-      {
-        title: t('Reports - Expected Monthly Total'),
-        searchIcon: <CompassIcon />,
-        href: `/accountLists/${accountListId}/reports/expectedMonthlyTotal`,
-        showInSearchDialog: true,
-      },
-      {
-        title: t('Reports - Partner Giving Analysis'),
-        searchIcon: <CompassIcon />,
-        href: `/accountLists/${accountListId}/reports/partnerGivingAnalysis`,
-        showInSearchDialog: true,
-      },
-      {
-        title: t('Reports - Coaching'),
-        searchIcon: <CompassIcon />,
-        href: `/accountLists/${accountListId}/reports/coaching`,
-        showInSearchDialog: true,
       },
       {
         id: 'tools-page',
@@ -130,129 +100,48 @@ export function getNavPages(
         searchIcon: <CompassIcon />,
         href: `/accountLists/${accountListId}/tools`,
         pathname: '/accountLists/[accountListId]/tools',
-        items: ToolsListNav.flatMap((toolsGroup) =>
+        items: toolsNavItems.flatMap((toolsGroup) =>
           toolsGroup.items.map((tool) => ({
             id: tool.id,
             title: tool.tool,
+            desc: tool.desc,
             href: `/accountLists/${accountListId}/tools/${tool.url}`,
             icon: tool.icon,
+            searchIcon: <CompassIcon />,
+            searchName: `Tools - ${tool.tool}`,
+            showInSearchDialog: true,
           })),
         ),
         showInNav: true,
         showInSearchDialog: true,
       },
       {
-        title: t('Tools - Appeals'),
-        searchIcon: <CompassIcon />,
-        href: `/accountLists/${accountListId}/tools/appeals`,
-        showInSearchDialog: true,
-      },
-      {
-        title: t('Tools - Fix Commitment Info'),
-        searchIcon: <CompassIcon />,
-        href: `/accountLists/${accountListId}/tools/fix/commitmentInfo`,
-        showInSearchDialog: true,
-      },
-      {
-        title: t('Tools - Fix Mailing Addresses'),
-        searchIcon: <CompassIcon />,
-        href: `/accountLists/${accountListId}/tools/fix/mailingAddresses`,
-        showInSearchDialog: true,
-      },
-      {
-        title: t('Tools - Fix Send Newsletter'),
-        searchIcon: <CompassIcon />,
-        href: `/accountLists/${accountListId}/tools/fix/sendNewsletter`,
-        showInSearchDialog: true,
-      },
-      {
-        title: t('Tools - Merge Contacts'),
-        searchIcon: <CompassIcon />,
-        href: `/accountLists/${accountListId}/tools/merge/contacts`,
-        showInSearchDialog: true,
-      },
-      {
-        title: t('Tools - Fix Email Addresses'),
-        searchIcon: <CompassIcon />,
-        href: `/accountLists/${accountListId}/tools/fix/emailAddresses`,
-        showInSearchDialog: true,
-      },
-      {
-        title: t('Tools - Fix Phone Numbers'),
-        searchIcon: <CompassIcon />,
-        href: `/accountLists/${accountListId}/tools/fix/phoneNumbers`,
-        showInSearchDialog: true,
-      },
-      {
-        title: t('Tools - Merge People'),
-        searchIcon: <CompassIcon />,
-        href: `/accountLists/${accountListId}/tools/merge/people`,
-        showInSearchDialog: true,
-      },
-      {
-        title: t('Tools - Import from Google'),
-        searchIcon: <CompassIcon />,
-        href: `/accountLists/${accountListId}/tools/import/google`,
-        showInSearchDialog: true,
-      },
-      {
-        title: t('Tools - Import from TntConnect'),
-        searchIcon: <CompassIcon />,
-        href: `/accountLists/${accountListId}/tools/import/tntConnect`,
-        showInSearchDialog: true,
-      },
-      {
-        title: t('Tools - Import from CSV'),
-        searchIcon: <CompassIcon />,
-        href: `/accountLists/${accountListId}/tools/import/csv`,
-        showInSearchDialog: true,
-      },
-      {
-        id: 'preferences-page',
+        id: 'settings-page',
         title: t('Preferences'),
         searchIcon: <CompassIcon />,
         href: `/accountLists/${accountListId}/settings/preferences`,
-        shortPathname: '/settings/preferences',
-        showInSearchDialog: true,
-        showInPanel: true,
-      },
-      {
-        title: t('Preferences - Notifications'),
-        searchIcon: <CompassIcon />,
-        href: `/accountLists/${accountListId}/settings/notifications`,
-        shortPathname: '/settings/notifications',
-        showInSearchDialog: true,
-        showInPanel: true,
-      },
-      {
-        title: t('Preferences - Connect Services'),
-        searchIcon: <CompassIcon />,
-        href: `/accountLists/${accountListId}/settings/integrations`,
-        shortPathname: '/settings/integrations',
-        showInSearchDialog: true,
-        showInPanel: true,
-      },
-      {
-        title: t('Preferences - Manage Accounts'),
-        searchIcon: <CompassIcon />,
-        href: `/accountLists/${accountListId}/settings/manageAccounts`,
-        shortPathname: '/settings/manageAccounts',
-        showInSearchDialog: true,
-        showInPanel: true,
-      },
-      {
-        title: t('Preferences - Manage Coaches'),
-        searchIcon: <CompassIcon />,
-        href: `/accountLists/${accountListId}/settings/manageCoaches`,
-        shortPathname: '/settings/manageCoaches',
-        showInSearchDialog: true,
+        items: settingsNavItems.map((item) => ({
+          id: item.id,
+          title: item.title,
+          subtitle: item.subTitle,
+          href: `/accountLists/${accountListId}/settings/${item.id}`,
+          searchIcon: <CompassIcon />,
+          searchName:
+            item.title === 'Preferences'
+              ? item.title
+              : `Preferences - ${item.title}`,
+          grantedAccess: item.grantedAccess,
+          subItems: item.subItems,
+          oauth: item.oauth,
+          showInSearchDialog: true,
+        })),
+        pathname: '/accountLists/[accountListId]/settings/preferences',
         showInPanel: true,
       },
     ];
 
     if (coachingAccountCount || isSearch) {
       navPages.push({
-        id: 'coaching-page',
         title: t('Coaching'),
         searchIcon: <CompassIcon />,
         href: `/accountLists/${accountListId}/coaching`,
@@ -264,7 +153,6 @@ export function getNavPages(
 
     if (process.env.HELP_WHATS_NEW_URL) {
       navPages.push({
-        id: 'whats-new-page',
         title: t("What's New"),
         href: process.env.HELP_WHATS_NEW_URL,
         whatsNewLink: true,
@@ -280,13 +168,45 @@ export function getNavPages(
     [allNavPages],
   );
 
-  const searchDialogPages = useMemo(
-    () =>
-      allNavPages
-        .filter((page) => page.showInSearchDialog)
-        .map(({ id: _omit, ...rest }) => rest),
-    [allNavPages],
-  );
+  const searchDialogPages = useMemo(() => {
+    const pages: NavPage[] = [];
+
+    for (const page of allNavPages) {
+      // get report sub items
+      if (page.id === 'reports-page' && page.items) {
+        page.items.forEach((item) => {
+          pages.push({ ...item, title: item.searchName ?? item.title });
+        });
+      }
+
+      // get tool sub items and include main page
+      if (page.id === 'tools-page' && page.items) {
+        pages.push(page);
+        if (page.items) {
+          page.items.forEach((item) => {
+            pages.push({ ...item, title: item.searchName ?? item.title });
+          });
+        }
+        continue;
+      }
+
+      // get settings sub items without granted access
+      if (page.id === 'settings-page' && page.items) {
+        page.items
+          .filter((item) => !item.grantedAccess)
+          .forEach((item) => {
+            pages.push({ ...item, title: item.searchName ?? item.title });
+          });
+      }
+
+      // include other search pages
+      if (page.showInSearchDialog) {
+        pages.push(page);
+      }
+    }
+
+    return pages.map(({ id: _omit, ...rest }) => rest);
+  }, [allNavPages]);
 
   const panelPages = useMemo(
     () =>
