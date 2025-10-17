@@ -149,11 +149,11 @@ export const ProfileMenuPanel: React.FC = () => {
       )}
       {!onSetupTour && (
         <>
-          {addProfileContent.map(({ title, shortPathname, onClick }, index) => (
+          {addProfileContent.map(({ title, href, onClick }, index) => (
             <LeafListItem key={index} disableGutters onClick={onClick}>
               <StyledButton
                 LinkComponent={NextLink}
-                href={`/accountLists/${accountListId}${shortPathname}`}
+                href={href?.toString() ?? ''}
               >
                 <Title>{t(title)}</Title>
               </StyledButton>

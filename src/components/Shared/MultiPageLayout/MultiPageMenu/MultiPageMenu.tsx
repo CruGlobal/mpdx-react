@@ -13,17 +13,17 @@ import { Session } from 'next-auth';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { useGetDesignationAccountsQuery } from 'src/components/EditDonationModal/EditDonationModal.generated';
+import { reportNavItems } from 'src/components/Layouts/Shared/reportNavItems';
+import {
+  NavItems,
+  settingsNavItems,
+} from 'src/components/Layouts/Shared/settingsNavItems';
 import { FilterListItemMultiselect } from 'src/components/Shared/Filters/FilterListItemMultiselect';
 import { MultiselectFilter } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { Item } from './Item/Item';
 import { useManageOrganizationsAccessQuery } from './MultiPageMenu.generated';
-import {
-  NavItems,
-  reportNavItems,
-  settingsNavItems,
-} from './MultiPageMenuItems';
 
 export enum NavTypeEnum {
   Reports = 'reports',
