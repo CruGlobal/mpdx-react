@@ -1,10 +1,22 @@
-import { MpdGoalBenefitsConstantSizeEnum } from 'src/graphql/types.generated';
+import { gqlMock } from '__tests__/util/graphqlMocking';
+import {
+  GoalCalculationRole,
+  MpdGoalBenefitsConstantSizeEnum,
+  PrimaryBudgetCategoryEnum,
+} from 'src/graphql/types.generated';
 import { formatConstants } from 'src/hooks/useGoalCalculatorConstants';
 import {
   constantsMock,
   goalCalculationMock,
 } from '../GoalCalculatorTestWrapper';
-import { calculateNewStaffGoalTotals } from './calculateNewStaffTotals';
+import {
+  ListGoalCalculationFragment,
+  ListGoalCalculationFragmentDoc,
+} from '../GoalsList/GoalCalculations.generated';
+import {
+  calculateNewStaffGoalTotals,
+  getNewStaffBudgetCategory,
+} from './calculateNewStaffTotals';
 
 describe('calculateNewStaffTotals', () => {
   const constants = formatConstants(constantsMock);
@@ -121,6 +133,221 @@ describe('calculateNewStaffTotals', () => {
       overallSubtotalWithAdmin: expect.closeTo(11314, 0),
       attrition: expect.closeTo(679, 0),
       overallTotal: expect.closeTo(11993, 0),
+    });
+  });
+});
+
+describe('getNewStaffBudgetCategory', () => {
+  const constants = formatConstants(constantsMock);
+
+  describe('single staff', () => {
+    it.each([
+      {
+        category: PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage,
+        expected: 140,
+      },
+      {
+        category: PrimaryBudgetCategoryEnum.MinistryPartnerDevelopment,
+        expected: 125,
+      },
+      {
+        category: PrimaryBudgetCategoryEnum.SuppliesAndMaterials,
+        expected: 50,
+      },
+      {
+        category: PrimaryBudgetCategoryEnum.ReimbursableMedicalExpense,
+        expected: 165,
+      },
+    ])('calculates $category', ({ category, expected }) => {
+      const goalCalculation = {
+        ...goalCalculationMock,
+        familySize: MpdGoalBenefitsConstantSizeEnum.Single,
+        role: GoalCalculationRole.Field,
+      };
+      expect(
+        getNewStaffBudgetCategory(
+          goalCalculation,
+          category,
+          constants.goalMiscConstants,
+        ),
+      ).toBe(expected);
+    });
+  });
+
+  describe('married staff without children', () => {
+    it.each([
+      {
+        category: PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage,
+        expected: 140,
+      },
+      {
+        category: PrimaryBudgetCategoryEnum.MinistryPartnerDevelopment,
+        expected: 187.5,
+      },
+      {
+        category: PrimaryBudgetCategoryEnum.SuppliesAndMaterials,
+        expected: 75,
+      },
+      {
+        category: PrimaryBudgetCategoryEnum.ReimbursableMedicalExpense,
+        expected: 330,
+      },
+    ])('calculates $category', ({ category, expected }) => {
+      const goalCalculation = {
+        ...goalCalculationMock,
+        familySize: MpdGoalBenefitsConstantSizeEnum.MarriedNoChildren,
+        role: GoalCalculationRole.Field,
+      };
+      expect(
+        getNewStaffBudgetCategory(
+          goalCalculation,
+          category,
+          constants.goalMiscConstants,
+        ),
+      ).toBe(expected);
+    });
+  });
+
+  describe('married staff with children', () => {
+    it.each([
+      {
+        category: PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage,
+        expected: 140,
+      },
+      {
+        category: PrimaryBudgetCategoryEnum.MinistryPartnerDevelopment,
+        expected: 200,
+      },
+      {
+        category: PrimaryBudgetCategoryEnum.SuppliesAndMaterials,
+        expected: 75,
+      },
+      {
+        category: PrimaryBudgetCategoryEnum.ReimbursableMedicalExpense,
+        expected: 365,
+      },
+    ])('calculates $category', ({ category, expected }) => {
+      const goalCalculation = {
+        ...goalCalculationMock,
+        familySize: MpdGoalBenefitsConstantSizeEnum.MarriedOneToTwoChildren,
+        role: GoalCalculationRole.Field,
+      };
+      expect(
+        getNewStaffBudgetCategory(
+          goalCalculation,
+          category,
+          constants.goalMiscConstants,
+        ),
+      ).toBe(expected);
+    });
+  });
+
+  describe('SOSA staff with dependents', () => {
+    it.each([
+      {
+        category: PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage,
+        expected: 140,
+      },
+      {
+        category: PrimaryBudgetCategoryEnum.MinistryPartnerDevelopment,
+        expected: 125,
+      },
+      {
+        category: PrimaryBudgetCategoryEnum.SuppliesAndMaterials,
+        expected: 50,
+      },
+      {
+        category: PrimaryBudgetCategoryEnum.ReimbursableMedicalExpense,
+        expected: 235,
+      },
+    ])('calculates $category', ({ category, expected }) => {
+      const goalCalculation = {
+        ...goalCalculationMock,
+        familySize: MpdGoalBenefitsConstantSizeEnum.SosaTwoToThreeDependents,
+        role: GoalCalculationRole.Field,
+      };
+      expect(
+        getNewStaffBudgetCategory(
+          goalCalculation,
+          category,
+          constants.goalMiscConstants,
+        ),
+      ).toBe(expected);
+    });
+  });
+
+  describe('office staff', () => {
+    it.each([
+      {
+        category: PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage,
+        expected: 70,
+      },
+      {
+        category: PrimaryBudgetCategoryEnum.MinistryPartnerDevelopment,
+        expected: 125,
+      },
+      {
+        category: PrimaryBudgetCategoryEnum.SuppliesAndMaterials,
+        expected: 50,
+      },
+      {
+        category: PrimaryBudgetCategoryEnum.ReimbursableMedicalExpense,
+        expected: 165,
+      },
+    ])('calculates $category', ({ category, expected }) => {
+      const goalCalculation = {
+        ...goalCalculationMock,
+        familySize: MpdGoalBenefitsConstantSizeEnum.Single,
+        role: GoalCalculationRole.Office,
+      };
+      expect(
+        getNewStaffBudgetCategory(
+          goalCalculation,
+          category,
+          constants.goalMiscConstants,
+        ),
+      ).toBe(expected);
+    });
+  });
+
+  describe('other categories use goal calculation totals', () => {
+    const goalCalculation = gqlMock<ListGoalCalculationFragment>(
+      ListGoalCalculationFragmentDoc,
+      {
+        mocks: {
+          ministryFamily: {
+            primaryBudgetCategories: [
+              {
+                category: PrimaryBudgetCategoryEnum.AccountTransfers,
+                directInput: 50,
+              },
+              {
+                category: PrimaryBudgetCategoryEnum.CreditCardProcessingCharges,
+                directInput: 100,
+              },
+            ],
+          },
+        },
+      },
+    );
+
+    it.each([
+      {
+        category: PrimaryBudgetCategoryEnum.AccountTransfers,
+        expected: 50,
+      },
+      {
+        category: PrimaryBudgetCategoryEnum.CreditCardProcessingCharges,
+        expected: 100,
+      },
+    ])('calculates $category', ({ category, expected }) => {
+      expect(
+        getNewStaffBudgetCategory(
+          goalCalculation,
+          category,
+          constants.goalMiscConstants,
+        ),
+      ).toBe(expected);
     });
   });
 });
