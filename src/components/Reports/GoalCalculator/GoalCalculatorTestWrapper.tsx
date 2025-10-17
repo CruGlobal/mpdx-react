@@ -158,6 +158,13 @@ export const constantsMock = gqlMock<
           cost: 1008.6,
         },
         {
+          size: MpdGoalBenefitsConstantSizeEnum.SosaTwoToThreeDependents,
+          sizeDisplayName: 'SOSA with 2-3 dependents',
+          plan: MpdGoalBenefitsConstantPlanEnum.Base,
+          planDisplayName: 'Base',
+          cost: 2350.64,
+        },
+        {
           size: MpdGoalBenefitsConstantSizeEnum.MarriedNoChildren,
           sizeDisplayName: 'Married with no children',
           plan: MpdGoalBenefitsConstantPlanEnum.Base,
