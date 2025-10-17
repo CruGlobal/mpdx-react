@@ -11,7 +11,7 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
-import { Transaction } from '../StaffExpenseReport';
+import { Transaction } from '../Helpers/filterTransactions';
 
 export interface PrintTablesProps {
   transactions: Transaction[];

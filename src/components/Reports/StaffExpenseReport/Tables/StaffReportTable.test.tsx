@@ -21,28 +21,41 @@ interface TestComponentProps {
   tableProps?: Partial<StaffReportTableProps>;
 }
 
+const defaultTransactions = [
+  {
+    id: '1',
+    fundType: 'Primary',
+    category: StaffExpenseCategoryEnum.AdditionalSalary,
+    transactedAt: '2025-01-01',
+    amount: -100,
+    displayCategory: 'Additional Salary',
+  },
+  {
+    id: '2',
+    fundType: 'Primary',
+    category: StaffExpenseCategoryEnum.Transfer,
+    transactedAt: '2025-02-01',
+    amount: -50,
+    displayCategory: 'Transfer',
+  },
+];
+
+const groupedTransaction = {
+  id: 'grouped-2',
+  fundType: 'Primary',
+  category: StaffExpenseCategoryEnum.Benefits,
+  displayCategory: 'Benefits',
+  transactedAt: '2025-01-20',
+  amount: -300,
+  categoryName: 'Benefits',
+  groupedTransactions: [defaultTransactions[1]],
+};
+
 const TestComponent: React.FC<TestComponentProps> = ({ tableProps }) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
       <StaffReportTable
-        transactions={[
-          {
-            id: '1',
-            fundType: 'Primary',
-            category: StaffExpenseCategoryEnum.AdditionalSalary,
-            transactedAt: '2025-01-01',
-            amount: -100,
-            displayCategory: 'Additional Salary',
-          },
-          {
-            id: '2',
-            fundType: 'Primary',
-            category: StaffExpenseCategoryEnum.Transfer,
-            transactedAt: '2025-02-01',
-            amount: -50,
-            displayCategory: 'Transfer',
-          },
-        ]}
+        transactions={defaultTransactions}
         tableType={ReportType.Expense}
         transferTotal={0}
         emptyPlaceholder={<span>Empty Table</span>}
@@ -125,5 +138,55 @@ describe('StaffReportTable', () => {
         pageSize: 10,
       }),
     );
+  });
+
+  it('opens breakdown dialog when info button is clicked for grouped transaction', async () => {
+    const { findByRole, getByRole } = render(
+      <TestComponent
+        tableProps={{
+          transactions: [...defaultTransactions, groupedTransaction],
+        }}
+      />,
+    );
+
+    const infoButton = await findByRole('button', { name: 'View breakdown' });
+    userEvent.click(infoButton);
+
+    await waitFor(() => {
+      expect(getByRole('dialog', { hidden: true })).toBeInTheDocument();
+      expect(
+        getByRole('heading', { name: 'Benefits Breakdown', hidden: true }),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('closes breakdown dialog when close is triggered', async () => {
+    const { findByRole, getByRole, queryByRole } = render(
+      <TestComponent
+        tableProps={{
+          transactions: [...defaultTransactions, groupedTransaction],
+        }}
+      />,
+    );
+
+    userEvent.click(await findByRole('button', { name: 'View breakdown' }));
+    await waitFor(() => {
+      expect(getByRole('dialog', { hidden: true })).toBeInTheDocument();
+    });
+
+    userEvent.click(getByRole('button', { name: 'Close', hidden: true }));
+    await waitFor(() => {
+      expect(queryByRole('dialog', { hidden: true })).not.toBeInTheDocument();
+    });
+  });
+
+  it('does not show info button for non-grouped transactions', async () => {
+    const { findByRole, queryByRole } = render(<TestComponent />);
+
+    await findByRole('columnheader', { name: 'Date' });
+
+    expect(
+      queryByRole('button', { name: 'View breakdown' }),
+    ).not.toBeInTheDocument();
   });
 });

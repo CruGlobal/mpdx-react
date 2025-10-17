@@ -1,18 +1,26 @@
 import React, { useMemo, useState } from 'react';
-import { Box, CircularProgress, Tooltip, Typography } from '@mui/material';
+import { InfoOutlined } from '@mui/icons-material';
+import {
+  Box,
+  CircularProgress,
+  IconButton,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import { styled, useTheme } from '@mui/material/styles';
 import { DataGrid, GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
+import { CategoryBreakdownDialog } from '../CategoryBreakdownDialog/CategoryBreakdownDialog';
 import { ReportType } from '../Helpers/StaffReportEnum';
-import { Transaction } from '../StaffExpenseReport';
+import { GroupedTransaction, Transaction } from '../Helpers/filterTransactions';
 
 type RenderCell = GridColDef<StaffReportRow>['renderCell'];
 
 export interface StaffReportTableProps {
-  transactions: Transaction[];
+  transactions: (Transaction | GroupedTransaction)[];
   tableType: ReportType;
   transferTotal: number;
   emptyPlaceholder: React.ReactElement;
@@ -52,17 +60,24 @@ export interface StaffReportRow {
   date: DateTime;
   description: string;
   amount: number;
+  isGrouped: boolean;
+  groupedTransaction?: GroupedTransaction;
 }
 
 export const createStaffReportRow = (
-  transaction: Transaction,
+  transaction: Transaction | GroupedTransaction,
   index: number,
-): StaffReportRow => ({
-  id: index.toString(),
-  date: DateTime.fromISO(transaction.transactedAt),
-  description: transaction.displayCategory,
-  amount: transaction.amount,
-});
+): StaffReportRow => {
+  const isGrouped = 'groupedTransactions' in transaction;
+  return {
+    id: index.toString(),
+    date: DateTime.fromISO(transaction.transactedAt),
+    description: transaction.displayCategory,
+    amount: transaction.amount,
+    isGrouped,
+    groupedTransaction: isGrouped ? transaction : undefined,
+  };
+};
 
 export const StaffReportTable: React.FC<StaffReportTableProps> = ({
   transactions,
@@ -79,6 +94,36 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
     page: 0,
     pageSize: 10,
   });
+
+  const [breakdownDialog, setBreakdownDialog] = useState<{
+    isOpen: boolean;
+    categoryName: string;
+    transactions: Transaction[];
+    totalAmount: number;
+  }>({
+    isOpen: false,
+    categoryName: '',
+    transactions: [],
+    totalAmount: 0,
+  });
+
+  const handleOpenBreakdown = (groupedTransaction: GroupedTransaction) => {
+    setBreakdownDialog({
+      isOpen: true,
+      categoryName: groupedTransaction.displayCategory,
+      transactions: groupedTransaction.groupedTransactions,
+      totalAmount: groupedTransaction.amount,
+    });
+  };
+
+  const handleCloseBreakdown = () => {
+    setBreakdownDialog({
+      isOpen: false,
+      categoryName: '',
+      transactions: [],
+      totalAmount: 0,
+    });
+  };
 
   const staffReportRows = useMemo(() => {
     return transactions.map((data, index) => createStaffReportRow(data, index));
@@ -104,6 +149,32 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
     );
   };
 
+  const tooltip: RenderCell = ({ row }) => {
+    if (!row.isGrouped || !row.groupedTransaction) {
+      return null;
+    }
+    const grouped = row.groupedTransaction;
+
+    return (
+      <Tooltip title={t('View breakdown')}>
+        <IconButton
+          size="small"
+          onClick={() => handleOpenBreakdown(grouped)}
+          aria-label={t('View breakdown')}
+        >
+          <InfoOutlined />
+        </IconButton>
+      </Tooltip>
+    );
+  };
+
+  const rowsWithSortPriority = useMemo(() => {
+    return staffReportRows.map((row) => ({
+      ...row,
+      sortPriority: row.isGrouped ? 0 : 1,
+    }));
+  }, [staffReportRows]);
+
   const columns: GridColDef[] = [
     {
       field: 'date',
@@ -123,9 +194,17 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
       width: 150,
       renderCell: amount,
     },
+    {
+      field: 'tooltip',
+      headerName: '',
+      width: 60,
+      sortable: false,
+      renderCell: tooltip,
+    },
   ];
 
   const [sortModel, setSortModel] = useState<GridSortModel>([
+    { field: 'sortPriority', sort: 'asc' }, // needed for groups
     { field: 'date', sort: 'desc' },
   ]);
 
@@ -156,7 +235,7 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
         )}
       </Box>
       <StyledGrid
-        rows={staffReportRows || []}
+        rows={rowsWithSortPriority || []}
         columns={columns}
         getRowId={(row) => `${row.date}-${row.description}`}
         sortingOrder={['desc', 'asc']}
@@ -173,19 +252,32 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
         {tableType === ReportType.Income ? (
           <Typography fontWeight="bold">
             {t('Total Income:')}{' '}
-            <span style={{ color: theme.palette.success.main }}>
+            <Typography
+              component="span"
+              sx={{ color: theme.palette.success.main }}
+            >
               {currencyFormat(transferTotal, 'USD', locale)}
-            </span>
+            </Typography>
           </Typography>
         ) : (
           <Typography fontWeight="bold">
             {t('Total Expenses:')}{' '}
-            <span style={{ color: theme.palette.error.main }}>
+            <Typography
+              component="span"
+              sx={{ color: theme.palette.error.main }}
+            >
               {currencyFormat(transferTotal, 'USD', locale)}
-            </span>
+            </Typography>
           </Typography>
         )}
       </Box>
+      <CategoryBreakdownDialog
+        isOpen={breakdownDialog.isOpen}
+        onClose={handleCloseBreakdown}
+        categoryName={breakdownDialog.categoryName}
+        transactions={breakdownDialog.transactions}
+        totalAmount={breakdownDialog.totalAmount}
+      />
     </>
   ) : (
     emptyPlaceholder
