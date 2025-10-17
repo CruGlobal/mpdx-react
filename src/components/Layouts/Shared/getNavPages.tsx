@@ -4,7 +4,6 @@ import CompassIcon from '@mui/icons-material/Explore';
 import { useTranslation } from 'react-i18next';
 import { reportNavItems } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenuItems';
 import { ToolsListNav } from 'src/components/Tool/Home/ToolsListNav';
-import { StatusEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 
 interface Item {
@@ -22,13 +21,13 @@ export interface NavPage {
   subtitle?: string;
   href?: LinkProps['href'];
   pathname?: string;
-  icon?: ReactElement;
+  shortPathname?: string;
   searchIcon?: ReactElement;
-  status?: StatusEnum | null;
   items?: Item[];
   whatsNewLink?: boolean;
   showInNav?: boolean;
   showInSearchDialog?: boolean;
+  showInPanel?: boolean;
 }
 
 export function getNavPages(
@@ -213,31 +212,41 @@ export function getNavPages(
         title: t('Preferences'),
         searchIcon: <CompassIcon />,
         href: `/accountLists/${accountListId}/settings/preferences`,
+        shortPathname: '/settings/preferences',
         showInSearchDialog: true,
+        showInPanel: true,
       },
       {
         title: t('Preferences - Notifications'),
         searchIcon: <CompassIcon />,
         href: `/accountLists/${accountListId}/settings/notifications`,
+        shortPathname: '/settings/notifications',
         showInSearchDialog: true,
+        showInPanel: true,
       },
       {
         title: t('Preferences - Connect Services'),
         searchIcon: <CompassIcon />,
         href: `/accountLists/${accountListId}/settings/integrations`,
+        shortPathname: '/settings/integrations',
         showInSearchDialog: true,
+        showInPanel: true,
       },
       {
         title: t('Preferences - Manage Accounts'),
         searchIcon: <CompassIcon />,
         href: `/accountLists/${accountListId}/settings/manageAccounts`,
+        shortPathname: '/settings/manageAccounts',
         showInSearchDialog: true,
+        showInPanel: true,
       },
       {
         title: t('Preferences - Manage Coaches'),
         searchIcon: <CompassIcon />,
         href: `/accountLists/${accountListId}/settings/manageCoaches`,
+        shortPathname: '/settings/manageCoaches',
         showInSearchDialog: true,
+        showInPanel: true,
       },
     ];
 
@@ -279,5 +288,16 @@ export function getNavPages(
     [allNavPages],
   );
 
-  return { navPages, searchDialogPages };
+  const panelPages = useMemo(
+    () =>
+      allNavPages
+        .filter((page) => page.showInPanel)
+        .map((p) => {
+          const name = p.title.split(' - ')[1];
+          return { ...p, title: name ?? p.title };
+        }),
+    [allNavPages],
+  );
+
+  return { navPages, searchDialogPages, panelPages };
 }
