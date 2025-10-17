@@ -169,8 +169,21 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
                 </p>
               </Trans>
             </Box>
+            <Box mb={2}>
+              <Box mb={2}>
+                <SimpleScreenOnly>
+                  <Button variant="contained" onClick={handleSave}>
+                    {t('Save')}
+                  </Button>
+                </SimpleScreenOnly>
+              </Box>
+              <Typography>
+                <strong>{t('Number of Ministry Partners: ')}</strong>
+                {mockQueryData?.contacts?.totalCount}
+              </Typography>
+            </Box>
           </SimpleScreenOnly>
-          <Box sx={{ mb: 2 }}>
+          <Box sx={{ mb: 4 }}>
             <SimpleScreenOnly>
               {mockLoading && !mockQueryData ? (
                 <LoadingBox>
@@ -195,19 +208,6 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
               <PrintTable data={transformedData} />
             </SimplePrintOnly>
           </Box>
-          <Box sx={{ mb: 3 }}>
-            <Typography>
-              <strong>{t('Number of Ministry Partners: ')}</strong>
-              {mockQueryData?.contacts?.totalCount}
-            </Typography>
-          </Box>
-          <SimpleScreenOnly>
-            <Box sx={{ mb: 4 }}>
-              <Button variant="contained" onClick={handleSave}>
-                {t('Save')}
-              </Button>
-            </Box>
-          </SimpleScreenOnly>
         </Container>
       </Box>
     </Box>

@@ -18,6 +18,9 @@ import { EmptyTable } from '../../MPGAIncomeExpensesReport/Tables/EmptyTable';
 import { ReminderData, ReminderStatusEnum } from '../mockData';
 import { RemindersTableRow } from './RemindersTableRow';
 
+export type RowValues = {
+  status: Record<string, ReminderStatusEnum>;
+};
 interface HeaderProps {
   partner: string;
   lastGift: string;
@@ -115,47 +118,36 @@ export const RemindersTable: React.FC<RemindersTableProps> = ({
   );
 
   return (
-    <Formik initialValues={initialValues} onSubmit={() => {}}>
-      {({ handleChange, handleBlur, values }) => (
-        <TableVirtuoso
-          data={data}
-          style={{
-            height: isEmpty
-              ? 390
-              : `calc(100vh - ${navBarHeight} - ${headerHeight} - 62px)`,
-            scrollbarWidth: 'none',
-          }}
-          components={TableComponents}
-          fixedHeaderContent={() => (
-            <TableRow>
-              <TableCell sx={{ width: '35%' }}>
-                {t('Ministry Partner')}
-              </TableCell>
-              <TableCell sx={{ width: '20%' }}>{t('Last Gift')}</TableCell>
-              <TableCell sx={{ width: '20%' }}>{t('Last Reminder')}</TableCell>
-              <TableCell id="status-col" sx={{ width: '25%' }}>
-                {t('Reminder Status')}
-              </TableCell>
-            </TableRow>
-          )}
-          itemContent={(_, row) => (
-            <RemindersTableRow
-              key={row.id}
-              id={row.id}
-              row={row}
-              handleChange={handleChange}
-              handleBlur={handleBlur}
-              value={values.status[row.id]}
-            />
-          )}
-          endReached={() =>
-            hasNextPage &&
-            fetchMore({
-              variables: { after: endCursor },
-            })
-          }
-        />
-      )}
+    <Formik<RowValues> initialValues={initialValues} onSubmit={() => {}}>
+      <TableVirtuoso
+        data={data}
+        style={{
+          height: isEmpty
+            ? 390
+            : `calc(100vh - ${navBarHeight} - ${headerHeight} - 62px)`,
+          scrollbarWidth: 'none',
+        }}
+        components={TableComponents}
+        fixedHeaderContent={() => (
+          <TableRow>
+            <TableCell sx={{ width: '35%' }}>{t('Ministry Partner')}</TableCell>
+            <TableCell sx={{ width: '20%' }}>{t('Last Gift')}</TableCell>
+            <TableCell sx={{ width: '20%' }}>{t('Last Reminder')}</TableCell>
+            <TableCell id="status-col" sx={{ width: '25%' }}>
+              {t('Reminder Status')}
+            </TableCell>
+          </TableRow>
+        )}
+        itemContent={(_, row) => (
+          <RemindersTableRow key={row.id} id={row.id} row={row} />
+        )}
+        endReached={() =>
+          hasNextPage &&
+          fetchMore({
+            variables: { after: endCursor },
+          })
+        }
+      />
     </Formik>
   );
 };
