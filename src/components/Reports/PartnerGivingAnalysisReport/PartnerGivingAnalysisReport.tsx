@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Box, CircularProgress, TablePagination } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Panel } from 'pages/accountLists/[accountListId]/reports/helpers';
@@ -38,14 +38,19 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   const [orderBy, setOrderBy] = useState<keyof Contact>('name');
   const [limit, setLimit] = useState<number>(10);
   const [page, setPage] = useState<number>(0);
+  const cursorsRef = useRef(new Map<number, string | null>([[0, null]]));
 
-  const { data, previousData, loading } = usePartnerGivingAnalysisQuery({
-    variables: {
-      input: {
-        accountListId,
+  const { data, previousData, loading, refetch } =
+    usePartnerGivingAnalysisQuery({
+      variables: {
+        input: {
+          accountListId,
+        },
+        first: limit,
+        after: cursorsRef.current.get(page) ?? null,
       },
-    },
-  });
+      notifyOnNetworkStatusChange: true,
+    });
 
   const contacts = data?.partnerGivingAnalysis.nodes ?? [];
 
@@ -59,6 +64,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
         },
       },
       skip: contactCount === 0,
+      notifyOnNetworkStatusChange: true,
     });
   // When the next batch of contact ids is loading, use the previous batch of contact ids in the
   // meantime to avoid throwing out the selected contact ids.
@@ -80,6 +86,13 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
 
   const localeText = useTablePaginationLocaleText();
 
+  useEffect(() => {
+    const end = data?.partnerGivingAnalysis?.pageInfo?.endCursor ?? null;
+    if (end !== null) {
+      cursorsRef.current.set(page + 1, end);
+    }
+  }, [data, page]);
+
   const handleRequestSort = (
     _event: React.MouseEvent<unknown>,
     property: string,
@@ -89,11 +102,16 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
     setOrderBy(property as keyof Contact);
   };
 
-  const handlePageChange = (
+  const handlePageChange = async (
     _event: React.MouseEvent<unknown> | null,
     newPage: number,
-  ): void => {
+  ) => {
     setPage(newPage);
+    await refetch({
+      input: { accountListId },
+      first: limit,
+      after: cursorsRef.current.get(newPage) ?? null,
+    });
   };
 
   const handleLimitChange = (
@@ -141,10 +159,9 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
           />
           <TablePagination
             colSpan={3}
-            count={data?.partnerGivingAnalysis.totalPageCount ?? 0}
+            count={contactCount}
             onPageChange={handlePageChange}
             onRowsPerPageChange={handleLimitChange}
-            // Page 0 is the first page for the component
             page={page}
             rowsPerPage={limit}
             rowsPerPageOptions={[10, 25, 50]}

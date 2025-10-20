@@ -53,7 +53,13 @@ const TestComponent: React.FC<TestComponentProps> = ({
                 GetPartnerGivingAnalysis: {
                   partnerGivingAnalysis: {
                     nodes: [],
+                    pageInfo: {
+                      endCursor: null,
+                      hasNextPage: false,
+                    },
+                    edges: [],
                     totalCount: 300,
+                    totalPageCount: 0,
                   },
                 },
               }

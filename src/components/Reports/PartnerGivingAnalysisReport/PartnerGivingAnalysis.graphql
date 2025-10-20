@@ -1,5 +1,9 @@
-query PartnerGivingAnalysis($input: PartnerGivingAnalysisReportInput!) {
-  partnerGivingAnalysis(input: $input) {
+query PartnerGivingAnalysis(
+  $input: PartnerGivingAnalysisReportInput!
+  $first: Int
+  $after: String
+) {
+  partnerGivingAnalysis(input: $input, first: $first, after: $after) {
     nodes {
       id
       name
