@@ -131,7 +131,7 @@ export const PartnerGivingAnalysisReportTable: FC<
               </TableCell>
               <TableCell>
                 {currencyFormat(
-                  contact.donationPeriodSum,
+                  contact.donationPeriodSum ?? 0,
                   contact.pledgeCurrency,
                   locale,
                 )}
@@ -146,7 +146,7 @@ export const PartnerGivingAnalysisReportTable: FC<
               </TableCell>
               <TableCell>
                 {currencyFormat(
-                  contact.lastDonationAmount,
+                  contact.lastDonationAmount ?? 0,
                   contact.lastDonationCurrency,
                   locale,
                 )}
@@ -159,7 +159,7 @@ export const PartnerGivingAnalysisReportTable: FC<
               </TableCell>
               <TableCell>
                 {currencyFormat(
-                  contact.totalDonations,
+                  contact.totalDonations ?? 0,
                   contact.pledgeCurrency,
                   locale,
                 )}
