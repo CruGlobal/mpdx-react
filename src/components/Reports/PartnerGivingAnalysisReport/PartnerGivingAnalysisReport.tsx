@@ -8,7 +8,12 @@ import {
   HeaderTypeEnum,
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
-import { PartnerGivingAnalysis } from 'src/graphql/types.generated';
+import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
+import {
+  PartnerGivingAnalysis,
+  PartnerGivingAnalysisFilterSetInput,
+  PartnerGivingAnalysisSortEnum,
+} from 'src/graphql/types.generated';
 import { useGetPartnerGivingAnalysisIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import { useTablePaginationLocaleText } from 'src/hooks/useMuiLocaleText';
@@ -35,16 +40,28 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
   const [order, setOrder] = useState<Order>('asc');
-  const [orderBy, setOrderBy] = useState<keyof Contact>('name');
+  const [orderBy, setOrderBy] = useState<PartnerGivingAnalysisSortEnum>(
+    PartnerGivingAnalysisSortEnum.NameAsc,
+  );
   const [limit, setLimit] = useState<number>(10);
   const [page, setPage] = useState<number>(0);
+  const { activeFilters, searchTerm } = useUrlFilters();
   const cursorsRef = useRef(new Map<number, string | null>([[0, null]]));
+
+  const contactFilters: PartnerGivingAnalysisFilterSetInput = {
+    ...activeFilters,
+    ...(searchTerm && {
+      nameLike: `%${searchTerm}%`,
+    }),
+  };
 
   const { data, previousData, loading, refetch } =
     usePartnerGivingAnalysisQuery({
       variables: {
         input: {
           accountListId,
+          sortBy: orderBy,
+          filters: contactFilters,
         },
         first: limit,
         after: cursorsRef.current.get(page) ?? null,
@@ -99,7 +116,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   ) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property as keyof Contact);
+    setOrderBy(PartnerGivingAnalysisSortEnum[property]);
   };
 
   const handlePageChange = async (

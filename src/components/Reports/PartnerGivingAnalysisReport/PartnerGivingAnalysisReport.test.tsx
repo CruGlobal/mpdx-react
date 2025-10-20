@@ -229,9 +229,9 @@ const mocks: Mocks = {
         endCursor: 'endCursor',
         hasNextPage: true,
       },
-      edges: [{ cursor: 'cursor' }],
+      edges: [],
       totalCount: 11,
-      totalPageCount: 12,
+      totalPageCount: 2,
     },
   },
   GetPartnerGivingAnalysisIdsForMassSelection: {
