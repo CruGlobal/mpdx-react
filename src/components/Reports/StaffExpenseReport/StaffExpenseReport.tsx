@@ -33,10 +33,6 @@ import {
 } from '../styledComponents';
 import { PrintHeader } from './BalanceCard/PrintHeader';
 import { BalanceCardList } from './BalanceCardList/BalanceCardList';
-import {
-  getIconColorForFundType,
-  getIconForFundType,
-} from './BalanceCardList/fundTypeHelpers';
 import { DownloadButtonGroup } from './DownloadButtonGroup/DownloadButtonGroup';
 import { useReportsStaffExpensesQuery } from './GetStaffExpense.generated';
 import { ReportType } from './Helpers/StaffReportEnum';
@@ -45,6 +41,10 @@ import {
   dateRangeToString,
   getFormattedDateString,
 } from './Helpers/formatDate';
+import {
+  getIconColorForFundType,
+  getIconForFundType,
+} from './Helpers/fundTypeHelpers';
 import { Filters, SettingsDialog } from './SettingsDialog/SettingsDialog';
 import { PrintTables } from './Tables/PrintTables';
 import { StaffReportTable } from './Tables/StaffReportTable';
@@ -97,6 +97,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
 
   const { data, loading } = useReportsStaffExpensesQuery({
     variables: {
+      fundTypes: ['Primary', 'Savings', 'Staff Conference Savings'],
       startMonth:
         filters?.startDate?.startOf('month').toISODate() ??
         filters?.endDate?.startOf('month').toISODate() ??
@@ -119,29 +120,13 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
 
   const hasNext = time.hasSame(DateTime.now(), 'month');
 
-  const allFunds: Fund[] = useMemo(() => {
-    const funds = data?.reportsStaffExpenses?.funds ?? [];
-    const sortedFunds = [...funds].toSorted((a, b) => a.id.localeCompare(b.id));
-
-    // TODO: Remove this temporary code when Staff Conference Savings data is available from the API
-    // START TEMPORARY CODE - Create a Staff Conference Savings fund using Primary fund's data
-    const primaryFund = sortedFunds.find((f) => f.fundType === 'Primary');
-    if (primaryFund) {
-      const conferenceSavingsFund: Fund = {
-        ...primaryFund,
-        id: `${primaryFund.id}-conference-savings`,
-        fundType: 'Staff Conference Savings',
-      };
-
-      // Insert Staff Conference Savings between Savings and Primary
-      const savingsIndex = sortedFunds.findIndex((f) => f.fundType === 'Savings');
-      const insertIndex = savingsIndex >= 0 ? savingsIndex + 1 : sortedFunds.length;
-      sortedFunds.splice(insertIndex, 0, conferenceSavingsFund);
-    }
-    // END TEMPORARY CODE
-
-    return sortedFunds;
-  }, [data]);
+  const allFunds: Fund[] = useMemo(
+    () =>
+      (data?.reportsStaffExpenses?.funds ?? []).toSorted((a, b) =>
+        a.id.localeCompare(b.id),
+      ),
+    [data],
+  );
 
   const defaultFundType: string | null =
     allFunds.find((f) => f.fundType === 'Primary')?.fundType ??
