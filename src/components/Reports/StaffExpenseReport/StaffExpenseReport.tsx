@@ -1,11 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import {
-  FilterListOff,
-  Groups,
-  Savings,
-  Settings,
-  Wallet,
-} from '@mui/icons-material';
+import { FilterListOff, Settings } from '@mui/icons-material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import LocalAtmIcon from '@mui/icons-material/LocalAtm';
@@ -37,9 +31,12 @@ import {
   SimpleScreenOnly,
   StyledPrintButton,
 } from '../styledComponents';
-import { BalanceCard } from './BalanceCard/BalanceCard';
-import { BalanceCardSkeleton } from './BalanceCard/BalanceCardSkeleton';
 import { PrintHeader } from './BalanceCard/PrintHeader';
+import { BalanceCardList } from './BalanceCardList/BalanceCardList';
+import {
+  getIconColorForFundType,
+  getIconForFundType,
+} from './BalanceCardList/fundTypeHelpers';
 import { DownloadButtonGroup } from './DownloadButtonGroup/DownloadButtonGroup';
 import { useReportsStaffExpensesQuery } from './GetStaffExpense.generated';
 import { ReportType } from './Helpers/StaffReportEnum';
@@ -72,13 +69,6 @@ const StyledFilterButton = styled(Button)({
     backgroundColor: theme.palette.cruGrayLight.main,
     borderColor: theme.palette.cruGrayDark.main,
   },
-});
-
-const StyledCardsBox = styled(Box)({
-  flex: 1,
-  minWidth: 250,
-  display: 'flex',
-  gap: theme.spacing(4),
 });
 
 interface StaffExpenseReportProps {
@@ -129,13 +119,29 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
 
   const hasNext = time.hasSame(DateTime.now(), 'month');
 
-  const allFunds: Fund[] = useMemo(
-    () =>
-      (data?.reportsStaffExpenses?.funds ?? []).toSorted((a, b) =>
-        a.id.localeCompare(b.id),
-      ),
-    [data],
-  );
+  const allFunds: Fund[] = useMemo(() => {
+    const funds = data?.reportsStaffExpenses?.funds ?? [];
+    const sortedFunds = [...funds].toSorted((a, b) => a.id.localeCompare(b.id));
+
+    // TODO: Remove this temporary code when Staff Conference Savings data is available from the API
+    // START TEMPORARY CODE - Create a Staff Conference Savings fund using Primary fund's data
+    const primaryFund = sortedFunds.find((f) => f.fundType === 'Primary');
+    if (primaryFund) {
+      const conferenceSavingsFund: Fund = {
+        ...primaryFund,
+        id: `${primaryFund.id}-conference-savings`,
+        fundType: 'Staff Conference Savings',
+      };
+
+      // Insert Staff Conference Savings between Savings and Primary
+      const savingsIndex = sortedFunds.findIndex((f) => f.fundType === 'Savings');
+      const insertIndex = savingsIndex >= 0 ? savingsIndex + 1 : sortedFunds.length;
+      sortedFunds.splice(insertIndex, 0, conferenceSavingsFund);
+    }
+    // END TEMPORARY CODE
+
+    return sortedFunds;
+  }, [data]);
 
   const defaultFundType: string | null =
     allFunds.find((f) => f.fundType === 'Primary')?.fundType ??
@@ -316,65 +322,23 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                   flexDirection: { xs: 'column', sm: 'row' },
                 }}
               >
-                {loading ? (
-                  <StyledCardsBox>
-                    <BalanceCardSkeleton />
-                    <BalanceCardSkeleton />
-                  </StyledCardsBox>
-                ) : (
-                  allFunds.map((fund) => (
-                    <StyledCardsBox key={fund.fundType}>
-                      <BalanceCard
-                        fundType={fund.fundType}
-                        icon={
-                          fund.fundType === 'Primary'
-                            ? Wallet
-                            : fund.fundType === 'Savings'
-                              ? Savings
-                              : Groups
-                        }
-                        iconBgColor={
-                          fund.fundType === 'Primary'
-                            ? theme.palette.chartOrange.main
-                            : fund.fundType === 'Savings'
-                              ? theme.palette.chartBlueDark.main
-                              : theme.palette.chartBlue.main
-                        }
-                        title={fund.fundType}
-                        isSelected={selectedFundType === fund.fundType}
-                        startingBalance={
-                          data?.reportsStaffExpenses.startBalance ?? 0
-                        }
-                        endingBalance={
-                          data?.reportsStaffExpenses.endBalance ?? 0
-                        }
-                        transfersIn={transferTotals[fund.fundType]?.in ?? 0}
-                        transfersOut={transferTotals[fund.fundType]?.out ?? 0}
-                        onClick={handleCardClick}
-                      />
-                    </StyledCardsBox>
-                  ))
-                )}
+                <BalanceCardList
+                  funds={allFunds}
+                  selectedFundType={selectedFundType}
+                  startingBalance={data?.reportsStaffExpenses.startBalance ?? 0}
+                  endingBalance={data?.reportsStaffExpenses.endBalance ?? 0}
+                  transferTotals={transferTotals}
+                  onCardClick={handleCardClick}
+                  loading={loading}
+                />
               </Box>
             </SimpleScreenOnly>
             <SimplePrintOnly>
               <Box>
                 {selectedFundType && (
                   <PrintHeader
-                    icon={
-                      selectedFundType === 'Primary'
-                        ? Wallet
-                        : selectedFundType === 'Savings'
-                          ? Savings
-                          : Groups
-                    }
-                    iconColor={
-                      selectedFundType === 'Primary'
-                        ? theme.palette.chartOrange.main
-                        : selectedFundType === 'Savings'
-                          ? theme.palette.chartBlueDark.main
-                          : theme.palette.chartBlue.main
-                    }
+                    icon={getIconForFundType(selectedFundType)}
+                    iconColor={getIconColorForFundType(selectedFundType, theme)}
                     title={selectedFundType}
                     startBalance={data?.reportsStaffExpenses.startBalance ?? 0}
                     endBalance={data?.reportsStaffExpenses.endBalance ?? 0}
