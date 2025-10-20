@@ -189,4 +189,41 @@ describe('StaffReportTable', () => {
       queryByRole('button', { name: 'View breakdown' }),
     ).not.toBeInTheDocument();
   });
+
+  it('sorts grouped transactions before non-grouped transactions', async () => {
+    const { getAllByRole, findByRole } = render(
+      <TestComponent
+        tableProps={{
+          transactions: [
+            defaultTransactions[0],
+            groupedTransaction,
+            defaultTransactions[1],
+          ],
+        }}
+      />,
+    );
+
+    await findByRole('columnheader', { name: 'Date' });
+
+    const amountCells = getAllByRole('gridcell', { name: /-\$\d+/ });
+
+    // Grouped transaction
+    expect(amountCells[0]).toHaveTextContent('-$300');
+
+    // Ungrouped transactions
+    expect(amountCells[1]).toHaveTextContent('-$50');
+    expect(amountCells[2]).toHaveTextContent('-$100');
+  });
+
+  it('sorts transactions by date descending within each group', async () => {
+    const { getAllByRole, findByRole } = render(<TestComponent />);
+
+    await findByRole('columnheader', { name: 'Date' });
+
+    const amountCells = getAllByRole('gridcell', { name: /-\$\d+/ });
+
+    // Both non-grouped should be sorted by descending date
+    expect(amountCells[0]).toHaveTextContent('-$50');
+    expect(amountCells[1]).toHaveTextContent('-$100');
+  });
 });
