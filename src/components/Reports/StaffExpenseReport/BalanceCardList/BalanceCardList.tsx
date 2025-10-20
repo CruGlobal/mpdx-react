@@ -7,7 +7,7 @@ import { BalanceCardSkeleton } from '../BalanceCard/BalanceCardSkeleton';
 import {
   getIconColorForFundType,
   getIconForFundType,
-} from './fundTypeHelpers';
+} from '../Helpers/fundTypeHelpers';
 
 const StyledCardsBox = styled(Box)(({ theme }) => ({
   flex: 1,
@@ -16,14 +16,14 @@ const StyledCardsBox = styled(Box)(({ theme }) => ({
   gap: theme.spacing(4),
 }));
 
-interface BalanceCardListProps {
+export interface BalanceCardListProps {
   funds: Fund[];
   selectedFundType: string | null;
   startingBalance: number;
   endingBalance: number;
   transferTotals: Record<string, { in: number; out: number }>;
   onCardClick: (fundType: string) => void;
-  loading?: boolean;
+  loading: boolean;
 }
 
 export const BalanceCardList: React.FC<BalanceCardListProps> = ({
@@ -40,6 +40,7 @@ export const BalanceCardList: React.FC<BalanceCardListProps> = ({
   if (loading) {
     return (
       <StyledCardsBox>
+        <BalanceCardSkeleton />
         <BalanceCardSkeleton />
         <BalanceCardSkeleton />
       </StyledCardsBox>
