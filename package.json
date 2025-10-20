@@ -79,7 +79,7 @@
     "react-i18next": "^11.18.6",
     "react-virtuoso": "2.19.0",
     "recharts": "2.3.2",
-    "rollbar": "^2.25.2",
+    "rollbar": "^2.26.5",
     "tslib": "^2.4.0",
     "tss-react": "^4.1.3",
     "yup": "^1.4.0"
