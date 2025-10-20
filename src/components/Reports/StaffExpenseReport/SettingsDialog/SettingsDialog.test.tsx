@@ -15,6 +15,7 @@ const TestComponent: React.FC<SettingsDialogProps> = ({
   isOpen,
   onClose,
   selectedFilters,
+  selectedFundType,
 }) => (
   <TestRouter>
     <GqlMockedProvider<{ ReportsStaffExpenses: ReportsStaffExpensesQuery }>
@@ -82,6 +83,7 @@ const TestComponent: React.FC<SettingsDialogProps> = ({
           isOpen={isOpen}
           onClose={onClose}
           selectedFilters={selectedFilters}
+          selectedFundType={selectedFundType}
         />
       </LocalizationProvider>
     </GqlMockedProvider>
@@ -92,6 +94,7 @@ describe('SettingsDialog', () => {
   const defaultProps = {
     isOpen: true,
     onClose: jest.fn(),
+    selectedFundType: 'Primary',
   };
 
   beforeEach(() => {
