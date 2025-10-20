@@ -59,8 +59,8 @@ export const BalanceCardList: React.FC<BalanceCardListProps> = ({
             isSelected={selectedFundType === fund.fundType}
             startingBalance={startingBalance}
             endingBalance={endingBalance}
-            transfersIn={transferTotals[fund.fundType]?.in ?? 0}
-            transfersOut={transferTotals[fund.fundType]?.out ?? 0}
+            transfersIn={transferTotals[fund.fundType]?.in}
+            transfersOut={transferTotals[fund.fundType]?.out}
             onClick={onCardClick}
           />
         </StyledCardsBox>

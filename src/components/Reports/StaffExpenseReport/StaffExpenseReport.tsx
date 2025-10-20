@@ -327,8 +327,8 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                     title={selectedFundType}
                     startBalance={data?.reportsStaffExpenses.startBalance ?? 0}
                     endBalance={data?.reportsStaffExpenses.endBalance ?? 0}
-                    transfersIn={transferTotals[selectedFundType]?.in ?? 0}
-                    transfersOut={transferTotals[selectedFundType]?.out ?? 0}
+                    transfersIn={transferTotals[selectedFundType]?.in}
+                    transfersOut={transferTotals[selectedFundType]?.out}
                   />
                 )}
               </Box>
