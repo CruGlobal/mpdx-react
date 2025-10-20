@@ -169,7 +169,14 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
   };
 
   const rowsWithSortPriority = useMemo(() => {
-    return staffReportRows.map((row) => ({
+    const sorted = [...staffReportRows].sort((a, b) => {
+      if (a.isGrouped !== b.isGrouped) {
+        return a.isGrouped ? -1 : 1;
+      }
+      return b.date.toMillis() - a.date.toMillis();
+    });
+
+    return sorted.map((row) => ({
       ...row,
       sortPriority: row.isGrouped ? 0 : 1,
     }));
@@ -203,10 +210,7 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
     },
   ];
 
-  const [sortModel, setSortModel] = useState<GridSortModel>([
-    { field: 'sortPriority', sort: 'asc' }, // needed for groups
-    { field: 'date', sort: 'desc' },
-  ]);
+  const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
   return loading ? (
     <LoadingBox>
