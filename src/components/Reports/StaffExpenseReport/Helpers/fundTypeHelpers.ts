@@ -1,5 +1,5 @@
 import {
-  CardGiftcard,
+  Diversity1,
   Groups,
   Savings,
   SvgIconComponent,
@@ -15,7 +15,7 @@ export const getIconForFundType = (fundType: string): SvgIconComponent => {
     return Savings;
   }
   if (fundType === 'Staff Conference Savings') {
-    return CardGiftcard;
+    return Diversity1;
   }
   return Groups;
 };
@@ -31,7 +31,7 @@ export const getIconColorForFundType = (
     return theme.palette.chartBlueDark.main;
   }
   if (fundType === 'Staff Conference Savings') {
-    return theme.palette.chartPink.main;
+    return theme.palette.chartBlueLight.main;
   }
   return theme.palette.chartBlue.main;
 };
