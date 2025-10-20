@@ -237,7 +237,7 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
       <StyledGrid
         rows={rowsWithSortPriority || []}
         columns={columns}
-        getRowId={(row) => `${row.date}-${row.description}`}
+        getRowId={(row) => `${row.id}`}
         sortingOrder={['desc', 'asc']}
         sortModel={sortModel}
         onSortModelChange={(size) => setSortModel(size)}
