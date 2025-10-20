@@ -424,6 +424,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
       <Box>
         <SettingsDialog
           selectedFilters={filters || undefined}
+          selectedFundType={selectedFundType}
           isOpen={isSettingsOpen}
           onClose={(newFilters) => {
             setFilters(newFilters ?? null);
