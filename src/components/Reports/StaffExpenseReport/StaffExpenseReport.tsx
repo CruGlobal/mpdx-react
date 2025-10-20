@@ -25,11 +25,7 @@ import {
   HeaderTypeEnum,
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
-import {
-  Fund,
-  StaffExpenseCategoryEnum,
-  StaffExpensesSubCategoryEnum,
-} from 'src/graphql/types.generated';
+import { Fund } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import theme from 'src/theme';
 import { AccountInfoBox } from '../Shared/AccountInfoBox/AccountInfoBox';
@@ -47,7 +43,7 @@ import { PrintHeader } from './BalanceCard/PrintHeader';
 import { DownloadButtonGroup } from './DownloadButtonGroup/DownloadButtonGroup';
 import { useReportsStaffExpensesQuery } from './GetStaffExpense.generated';
 import { ReportType } from './Helpers/StaffReportEnum';
-import { filterTransactions } from './Helpers/filterTransactions';
+import { Transaction, filterTransactions } from './Helpers/filterTransactions';
 import {
   dateRangeToString,
   getFormattedDateString,
@@ -84,17 +80,6 @@ const StyledCardsBox = styled(Box)({
   display: 'flex',
   gap: theme.spacing(4),
 });
-
-export interface Transaction {
-  id: string;
-  amount: number;
-  transactedAt: string;
-  description?: string | null;
-  fundType: string;
-  category: StaffExpenseCategoryEnum;
-  subcategory?: StaffExpensesSubCategoryEnum;
-  displayCategory: string;
-}
 
 interface StaffExpenseReportProps {
   isNavListOpen: boolean;

@@ -5,7 +5,7 @@ import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { ReportType } from '../Helpers/StaffReportEnum';
-import { Transaction } from '../StaffExpenseReport';
+import { Transaction } from '../Helpers/filterTransactions';
 import { createCsvReport } from './downloadReport';
 
 const StyledButtonGroup = styled(ButtonGroup)(({ theme }) => ({

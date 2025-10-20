@@ -3,7 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { Transaction } from '../StaffExpenseReport';
+import { Transaction } from '../Helpers/filterTransactions';
 import { DownloadButtonGroup } from './DownloadButtonGroup';
 
 interface TestComponentProps {
