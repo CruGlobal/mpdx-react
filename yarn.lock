@@ -14795,7 +14795,7 @@ __metadata:
     luxon: "npm:^3.4.4"
     micro-cors: "npm:^0.1.1"
     next: "npm:^15.0.3"
-    next-auth: "npm:4.24.11"
+    next-auth: "npm:^4.24.11"
     next-compose-plugins: "npm:^2.2.1"
     next-optimized-images: "npm:^2.6.2"
     next-pwa: "npm:^5.6.0"
@@ -14922,7 +14922,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"next-auth@npm:4.24.11":
+"next-auth@npm:^4.24.11":
   version: 4.24.11
   resolution: "next-auth@npm:4.24.11"
   dependencies:
