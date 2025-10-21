@@ -14795,7 +14795,7 @@ __metadata:
     luxon: "npm:^3.4.4"
     micro-cors: "npm:^0.1.1"
     next: "npm:^15.0.3"
-    next-auth: "npm:^4.24.11"
+    next-auth: "npm:^4.20.1"
     next-compose-plugins: "npm:^2.2.1"
     next-optimized-images: "npm:^2.6.2"
     next-pwa: "npm:^5.6.0"
@@ -14922,9 +14922,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"next-auth@npm:^4.24.11":
-  version: 4.24.11
-  resolution: "next-auth@npm:4.24.11"
+"next-auth@npm:^4.20.1":
+  version: 4.24.10
+  resolution: "next-auth@npm:4.24.10"
   dependencies:
     "@babel/runtime": "npm:^7.20.13"
     "@panva/hkdf": "npm:^1.0.2"
@@ -14939,14 +14939,14 @@ __metadata:
     "@auth/core": 0.34.2
     next: ^12.2.5 || ^13 || ^14 || ^15
     nodemailer: ^6.6.5
-    react: ^17.0.2 || ^18 || ^19
-    react-dom: ^17.0.2 || ^18 || ^19
+    react: ^17.0.2 || ^18
+    react-dom: ^17.0.2 || ^18
   peerDependenciesMeta:
     "@auth/core":
       optional: true
     nodemailer:
       optional: true
-  checksum: 10c0/56142678cfb8e751ae24f1396b3659aac7b1831f4f2283bcb2035224ebfd7ae82b62839383cf4029835d511cec339aad9665afcd1e711a631359fe123d970c0d
+  checksum: 10/59ba0c7dc20caf4f0004aa29bae2c15421988a158421435d640b758ef3b27625d556b83b85d3e2a43e1e05bde90e41d84b516ef908423e1e2dfc4a6998c675cc
   languageName: node
   linkType: hard
 
