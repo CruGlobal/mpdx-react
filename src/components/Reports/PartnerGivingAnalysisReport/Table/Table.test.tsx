@@ -75,7 +75,8 @@ const mocks: {
       ],
       pageInfo: {
         hasNextPage: true,
-        endCursor: 'endCursor',
+        hasPreviousPage: false,
+        endCursor: 'cursor',
       },
       edges: [{ cursor: 'cursor' }],
       totalCount: 300,
