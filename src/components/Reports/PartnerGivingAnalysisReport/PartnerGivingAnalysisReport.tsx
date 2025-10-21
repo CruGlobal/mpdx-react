@@ -17,6 +17,11 @@ import {
 import { useGetPartnerGivingAnalysisIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import { useTablePaginationLocaleText } from 'src/hooks/useMuiLocaleText';
+import {
+  AscendingSortEnums,
+  DescendingSortEnums,
+  EnumMap,
+} from './Helper/sortRecords';
 import { usePartnerGivingAnalysisQuery } from './PartnerGivingAnalysis.generated';
 import { PartnerGivingAnalysisReportTable as Table } from './Table/Table';
 import type { Order } from '../Reports.type';
@@ -114,9 +119,16 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
     _event: React.MouseEvent<unknown>,
     property: string,
   ) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(PartnerGivingAnalysisSortEnum[property]);
+    const transformOrderBy = EnumMap[orderBy];
+    const isAsc = transformOrderBy === property && order === 'asc';
+    const newOrder = isAsc ? 'desc' : 'asc';
+
+    setOrder(newOrder);
+    setOrderBy(
+      newOrder === 'asc'
+        ? AscendingSortEnums[property]
+        : DescendingSortEnums[property],
+    );
   };
 
   const handlePageChange = async (

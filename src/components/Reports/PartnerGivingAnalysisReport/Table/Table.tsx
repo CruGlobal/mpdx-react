@@ -17,16 +17,13 @@ import { useContactPanel } from 'src/components/common/ContactPanelProvider/Cont
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import theme from 'src/theme';
+import { Contact } from '../PartnerGivingAnalysisReport';
 import { PartnerGivingAnalysisReportTableHead as TableHead } from './TableHead/TableHead';
 import type { Order } from '../../Reports.type';
-import type { Contact } from '../PartnerGivingAnalysisReport';
 
 interface PartnerGivingAnalysisReportTableProps {
   onSelectOne: (contactId: string) => void;
-  onRequestSort: (
-    event: React.MouseEvent<unknown>,
-    property: keyof Contact,
-  ) => void;
+  onRequestSort: (event: React.MouseEvent<unknown>, property: string) => void;
   contacts: Contact[];
   order: Order;
   orderBy: string | null;

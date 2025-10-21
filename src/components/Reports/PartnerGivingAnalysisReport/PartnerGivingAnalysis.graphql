@@ -23,6 +23,7 @@ query PartnerGivingAnalysis(
     pageInfo {
       endCursor
       hasNextPage
+      hasPreviousPage
     }
     edges {
       cursor
