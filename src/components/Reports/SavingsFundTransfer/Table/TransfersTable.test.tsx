@@ -214,7 +214,9 @@ describe('TransferHistoryTable', () => {
   });
 
   it('opens modal when Clear is clicked and updates when confirmed', async () => {
-    const { getByRole, findByRole, findByText } = render(<TestComponent />);
+    const { getByRole, findByRole, findByText, queryByText } = render(
+      <TestComponent />,
+    );
 
     const iconRow = getByRole('row', {
       name: 'Primary Account Arrow Savings Account $1,200.00 Monthly ongoing Sep 25, 2023 Sep 25, 2025 Long-term savings Stop Transfer',
@@ -232,10 +234,19 @@ describe('TransferHistoryTable', () => {
 
     userEvent.click(within(dialog).getByRole('button', { name: 'Clear' }));
 
+    // Wait for confirmation modal to appear
     expect(await findByText('Confirm Clear')).toBeInTheDocument();
-    await userEvent.click(getByRole('button', { name: 'Yes' }));
 
-    expect(mutationSpy).toHaveBeenCalled();
+    userEvent.click(await findByRole('button', { name: 'Yes' }));
+
+    // Wait for confirmation modal to close
+    await waitFor(() => {
+      expect(queryByText('Confirm Clear')).not.toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(mutationSpy).toHaveBeenCalled();
+    });
 
     await waitFor(() => {
       expect(mockEnqueue).toHaveBeenCalledWith(
@@ -277,12 +288,14 @@ describe('TransferHistoryTable', () => {
     );
     expect(button).toBeTruthy();
 
-    await userEvent.click(button!);
+    userEvent.click(button!);
 
     const acceptButton = within(dialog).getByRole('button', { name: /ok/i });
-    await userEvent.click(acceptButton);
+    userEvent.click(acceptButton);
 
-    expect(mutationSpy).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(mutationSpy).toHaveBeenCalled();
+    });
 
     await waitFor(() => {
       expect(mockEnqueue).toHaveBeenCalledWith(
