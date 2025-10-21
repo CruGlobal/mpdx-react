@@ -6,6 +6,7 @@ import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
+import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetTasksForAddingTagsQuery } from 'src/components/Task/MassActions/AddTags/TasksAddTags.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -56,21 +57,23 @@ interface TaskComponentsProps {
 
 const TaskComponents = ({ ids = selectedIds }: TaskComponentsProps) => {
   return (
-    <I18nextProvider i18n={i18n}>
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <SnackbarProvider>
-              <TasksMassActionsDropdown
-                selectedIdCount={ids?.length ?? 0}
-                selectedIds={ids}
-                massDeselectAll={massDeselectAll}
-              />
-            </SnackbarProvider>
-          </LocalizationProvider>
-        </GqlMockedProvider>
-      </ThemeProvider>
-    </I18nextProvider>
+    <TestRouter>
+      <I18nextProvider i18n={i18n}>
+        <ThemeProvider theme={theme}>
+          <GqlMockedProvider>
+            <LocalizationProvider dateAdapter={AdapterLuxon}>
+              <SnackbarProvider>
+                <TasksMassActionsDropdown
+                  selectedIdCount={ids?.length ?? 0}
+                  selectedIds={ids}
+                  massDeselectAll={massDeselectAll}
+                />
+              </SnackbarProvider>
+            </LocalizationProvider>
+          </GqlMockedProvider>
+        </ThemeProvider>
+      </I18nextProvider>
+    </TestRouter>
   );
 };
 
