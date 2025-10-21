@@ -302,7 +302,7 @@ export const PledgeModal: React.FC<PledgeModalProps> = ({
                       )}
                       {errors.amountCurrency && (
                         <FormHelperText error={true}>
-                          {t('Currency is required')}
+                          {errors.amountCurrency}
                         </FormHelperText>
                       )}
                     </FormControl>

@@ -23,6 +23,7 @@ import { PaddedBox } from 'src/components/Shared/styledComponents/PaddedBox';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import {
   useAccountListQuery,
@@ -45,8 +46,11 @@ type FormikSchema = {
 };
 
 const formikSchema: yup.ObjectSchema<FormikSchema> = yup.object({
-  selectedAccountId: yup.string().required(),
-  accept: yup.boolean().oneOf([true], 'Field must be checked').required(),
+  selectedAccountId: yup.string().required(i18n.t('Account is required')),
+  accept: yup
+    .boolean()
+    .oneOf([true], i18n.t('You must accept before proceeding'))
+    .required(),
 });
 
 type MergeFormProps = {
@@ -65,6 +69,9 @@ export const MergeForm: React.FC<MergeFormProps> = ({ isSpouse }) => {
     },
   });
   const [mergeAccountList] = useMergeAccountListMutation();
+
+  //eslint-disable-next-line no-console
+  console.log({ appName });
 
   const currentAccount = currentAccountList?.accountList;
   const accountLists = data?.accountLists.nodes.filter(
@@ -206,7 +213,7 @@ export const MergeForm: React.FC<MergeFormProps> = ({ isSpouse }) => {
                         </Select>
                         {errors.selectedAccountId && (
                           <FormHelperText error={true}>
-                            {t('Account is required')}
+                            {errors.selectedAccountId}
                           </FormHelperText>
                         )}
                       </FieldWrapper>
@@ -286,7 +293,7 @@ export const MergeForm: React.FC<MergeFormProps> = ({ isSpouse }) => {
                     />
                     {errors.accept && (
                       <FormHelperText error={true}>
-                        {t('You must accept before proceeding')}
+                        {errors.accept}
                       </FormHelperText>
                     )}
                   </FieldWrapper>

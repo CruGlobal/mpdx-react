@@ -21,6 +21,7 @@ import {
   PersonCreateInput,
   StatusEnum,
 } from 'src/graphql/types.generated';
+import i18n from 'src/lib/i18n';
 import { useCreateContactMutation } from './CreateContact.generated';
 
 interface Props {
@@ -35,7 +36,7 @@ interface Person {
 
 const contactSchema: yup.ObjectSchema<Pick<ContactCreateInput, 'name'>> =
   yup.object({
-    name: yup.string().required(),
+    name: yup.string().required(i18n.t('Name is required')),
   });
 
 const CreateContact = ({
@@ -148,9 +149,7 @@ const CreateContact = ({
                     placeholder={t('Last Name, First Name and Spouse Name')}
                     inputProps={{ 'aria-label': t('Name') }}
                     error={!!errors.name && touched.name}
-                    helperText={
-                      errors.name && touched.name && t('Name is required')
-                    }
+                    helperText={errors.name && touched.name && errors.name}
                     variant="outlined"
                     required
                   />

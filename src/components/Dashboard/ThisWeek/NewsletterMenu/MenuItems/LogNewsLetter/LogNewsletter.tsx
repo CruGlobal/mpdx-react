@@ -29,6 +29,7 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
 import { nullableDateTime } from 'src/lib/formikHelpers';
+import i18n from 'src/lib/i18n';
 import { useCreateTasksMutation } from '../../../../../Task/Modal/Form/TaskModal.generated';
 import { CloseButton } from '../styledComponents/CloseButton';
 
@@ -55,7 +56,7 @@ const taskSchema = yup.object({
     .oneOf([...Object.values(ActivityTypeEnum), 'BOTH' as const])
     .defined(),
   completedAt: nullableDateTime(),
-  subject: yup.string().required(),
+  subject: yup.string().required(i18n.t('Subject is required')),
 });
 
 type Attributes = yup.InferType<typeof taskSchema>;
@@ -151,9 +152,7 @@ const LogNewsletter = ({
                     inputProps={{ 'aria-label': t('Subject') }}
                     error={!!errors.subject && touched.subject}
                     helperText={
-                      errors.subject &&
-                      touched.subject &&
-                      t('Subject is required')
+                      errors.subject && touched.subject && errors.subject
                     }
                     variant="outlined"
                     required
