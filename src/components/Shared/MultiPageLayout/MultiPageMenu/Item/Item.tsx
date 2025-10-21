@@ -3,9 +3,9 @@ import React, { useMemo, useState } from 'react';
 import ArrowForwardIos from '@mui/icons-material/ArrowForwardIos';
 import { Collapse, Link, ListItemButton, ListItemText } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { NavItems } from 'src/components/Layouts/Shared/settingsNavItems';
 import { OauthLink } from 'src/components/OauthLink/OauthLink';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { NavItems } from 'src/hooks/useSettingsNavItems';
 import theme from 'src/theme';
 import { NavTypeEnum } from '../MultiPageMenu';
 

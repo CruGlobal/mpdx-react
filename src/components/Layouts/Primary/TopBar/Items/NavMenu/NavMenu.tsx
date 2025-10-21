@@ -1,34 +1,17 @@
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useMemo, useState } from 'react';
-import Icon from '@mdi/react';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
-import {
-  Box,
-  ClickAwayListener,
-  Grid,
-  Grow,
-  ListItemText,
-  MenuItem,
-  MenuList,
-  Paper,
-  Popper,
-  Typography,
-} from '@mui/material';
-import clsx from 'clsx';
+import { Grid, ListItemText, MenuItem } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { useLoadCoachingListQuery } from 'src/components/Coaching/LoadCoachingList.generated';
-import {
-  NavPage,
-  getNavPages,
-} from 'src/components/Layouts/Shared/getNavPages';
+import { useNavPages } from 'src/hooks/useNavPages';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
-import { useCurrentToolId } from '../../../../../../hooks/useCurrentToolId';
 import theme from '../../../../../../theme';
 import { useGetToolNotificationsQuery } from './GetToolNotifcations.generated';
+import { NavMenuDropdown } from './NavMenuDropdown';
 
-const useStyles = makeStyles()(() => ({
+export const useStyles = makeStyles()(() => ({
   navListItem: {
     order: 2,
     [theme.breakpoints.down('md')]: {
@@ -103,21 +86,10 @@ export enum ToolName {
   MergePeople = 'mergePeople',
 }
 
-interface NavDropdown {
-  page: NavPage;
-  anchorRef: React.RefObject<HTMLLIElement>;
-  menuOpen: boolean;
-  handleMenuToggle: () => void;
-  handleMenuClose: () => void;
-  testId: string;
-  isToolDropdown?: boolean;
-}
-
 const NavMenu: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { classes } = useStyles();
-  const currentToolId = useCurrentToolId();
   const { data, loading } = useGetToolNotificationsQuery({
     variables: { accountListId: accountListId ?? '' },
     skip: !accountListId,
@@ -159,8 +131,6 @@ const NavMenu: React.FC = () => {
 
   const [reportsMenuOpen, setReportsMenuOpen] = useState(false);
   const [toolsMenuOpen, setToolsMenuOpen] = useState(false);
-  const anchorRef = React.useRef<HTMLLIElement>(null);
-  const anchorRefTools = React.useRef<HTMLLIElement>(null);
 
   const handleReportsMenuToggle = () => {
     setReportsMenuOpen((prevOpen) => !prevOpen);
@@ -181,199 +151,55 @@ const NavMenu: React.FC = () => {
   };
   const { pathname } = useRouter();
 
-  const { navPages } = getNavPages(coachingAccounts?.totalCount);
-  const coachingIndex = process.env.HELP_WHATS_NEW_URL
-    ? navPages.length - 2
-    : navPages.length - 1;
-
-  function NavMenuDropdown({
-    page,
-    anchorRef,
-    menuOpen,
-    handleMenuToggle,
-    handleMenuClose,
-    testId,
-    isToolDropdown,
-  }: NavDropdown) {
-    return (
-      <Grid key={page.id} item className={classes.navListItem}>
-        <MenuItem
-          tabIndex={0}
-          ref={anchorRef}
-          aria-controls={menuOpen ? 'menu-list-grow' : undefined}
-          aria-haspopup="true"
-          onClick={handleMenuToggle}
-          data-testid={testId}
-          aria-expanded={menuOpen}
-          className={clsx(
-            classes.menuItem,
-            menuOpen && classes.menuItemSelected,
-            pathname.startsWith(page.pathname ?? '') &&
-              classes.menuItemSelected,
-          )}
-        >
-          <ListItemText primary={page.title} />
-          {isToolDropdown && sum > 0 && (
-            <Box
-              className={classes.notificationBox}
-              data-testid="notificationTotal"
-            >
-              <Typography data-testid="notificationTotalText">
-                {sum < 100 ? sum : '99+'}
-              </Typography>
-            </Box>
-          )}
-          <ArrowDropDownIcon
-            className={clsx(classes.expand, {
-              [classes.expandOpen]: menuOpen,
-            })}
-          />
-        </MenuItem>
-        <Popper
-          open={menuOpen}
-          anchorEl={anchorRef.current}
-          role={undefined}
-          transition
-          disablePortal
-        >
-          {({ TransitionProps, placement }) => (
-            <Grow
-              {...TransitionProps}
-              style={{
-                transformOrigin:
-                  placement === 'bottom' ? 'center top' : 'center bottom',
-              }}
-            >
-              {isToolDropdown ? (
-                <Paper className={classes.subMenu}>
-                  <ClickAwayListener onClickAway={handleMenuClose}>
-                    <MenuList autoFocusItem={menuOpen} id="menu-list-grow">
-                      {page.items?.map((tool) => {
-                        const needsAttention = toolData
-                          ? toolData[tool.id!]?.totalCount > 0
-                          : false;
-                        return (
-                          <MenuItem
-                            key={tool.id}
-                            component={NextLink}
-                            href={tool.href ?? ''}
-                            tabIndex={0}
-                            onClick={handleToolsMenuClose}
-                            data-testid={`${tool.id}-${
-                              currentToolId === tool.id
-                            }`}
-                            aria-current={
-                              pathname.startsWith(tool.href?.toString() ?? '')
-                                ? 'page'
-                                : undefined
-                            }
-                            className={clsx(
-                              classes.menuItem,
-                              needsAttention && classes.needsAttention,
-                            )}
-                          >
-                            <Icon
-                              path={tool.icon}
-                              size={1}
-                              className={clsx(
-                                classes.menuIcon,
-                                needsAttention
-                                  ? classes.darkText
-                                  : classes.whiteText,
-                              )}
-                            />
-                            <ListItemText
-                              className={clsx(
-                                needsAttention
-                                  ? classes.darkText
-                                  : classes.whiteText,
-                              )}
-                              primary={tool.title}
-                            />
-                            {!loading && needsAttention && (
-                              <Box
-                                className={classes.notificationBox}
-                                data-testid={`${tool.id}-notifications`}
-                              >
-                                <Typography>
-                                  {toolData[tool.id!].totalCount < 100
-                                    ? toolData[tool.id!].totalCount
-                                    : '99+'}
-                                </Typography>
-                              </Box>
-                            )}
-                          </MenuItem>
-                        );
-                      })}
-                    </MenuList>
-                  </ClickAwayListener>
-                </Paper>
-              ) : (
-                <Paper>
-                  <ClickAwayListener onClickAway={handleMenuClose}>
-                    <MenuList autoFocusItem={menuOpen} id="menu-list-grow">
-                      {page.items?.map(({ id, title, href }) => (
-                        <MenuItem
-                          key={id}
-                          component={NextLink}
-                          href={href ?? ''}
-                          onClick={handleReportsMenuClose}
-                          tabIndex={0}
-                          aria-current={
-                            pathname.startsWith(href?.toString() ?? '')
-                              ? 'page'
-                              : undefined
-                          }
-                        >
-                          <ListItemText primary={t(title)} />
-                        </MenuItem>
-                      ))}
-                    </MenuList>
-                  </ClickAwayListener>
-                </Paper>
-              )}
-            </Grow>
-          )}
-        </Popper>
-      </Grid>
-    );
-  }
+  const isCoaching = !!coachingAccounts?.totalCount;
+  const { navPages } = useNavPages(isCoaching);
+  const coachingIndex = navPages.findIndex(
+    (page) => page.id === 'coaching-page',
+  );
 
   return accountListId ? (
     <Grid container item alignItems="center" xs="auto">
-      {navPages.slice(0, 3).map((page) => (
-        <Grid key={page.id} item className={classes.navListItem}>
-          <MenuItem
-            component={NextLink}
-            href={page.href ?? ''}
-            tabIndex={0}
-            className={classes.menuItem}
-            aria-current={pathname === page.pathname ? 'page' : undefined}
-          >
-            <ListItemText primary={page.title} />
-          </MenuItem>
-        </Grid>
-      ))}
+      {navPages.map(
+        (page) =>
+          page.isDropdown === false && (
+            <Grid key={page.id} item className={classes.navListItem}>
+              <MenuItem
+                component={NextLink}
+                href={page.href ?? ''}
+                tabIndex={0}
+                className={classes.menuItem}
+                aria-current={pathname === page.pathname ? 'page' : undefined}
+              >
+                <ListItemText primary={page.title} />
+              </MenuItem>
+            </Grid>
+          ),
+      )}
 
-      {NavMenuDropdown({
-        page: navPages[3],
-        anchorRef,
-        menuOpen: reportsMenuOpen,
-        handleMenuToggle: handleReportsMenuToggle,
-        handleMenuClose: handleReportsMenuClose,
-        testId: 'ReportMenuToggle',
-      })}
-      {NavMenuDropdown({
-        page: navPages[4],
-        anchorRef: anchorRefTools,
-        menuOpen: toolsMenuOpen,
-        handleMenuToggle: handleToolsMenuToggle,
-        handleMenuClose: handleToolsMenuClose,
-        testId: 'ToolsMenuToggle',
-        isToolDropdown: true,
-      })}
+      <NavMenuDropdown
+        page={navPages[3]}
+        menuOpen={reportsMenuOpen}
+        handleMenuToggle={handleReportsMenuToggle}
+        handleMenuClose={handleReportsMenuClose}
+        testId="ReportMenuToggle"
+        sum={sum}
+        toolData={toolData}
+        loading={loading}
+        isTool={false}
+      />
+      <NavMenuDropdown
+        page={navPages[4]}
+        menuOpen={toolsMenuOpen}
+        handleMenuToggle={handleToolsMenuToggle}
+        handleMenuClose={handleToolsMenuClose}
+        testId="ToolsMenuToggle"
+        sum={sum}
+        toolData={toolData}
+        loading={loading}
+        isTool={true}
+      />
 
-      {!!coachingAccounts?.totalCount && (
+      {isCoaching && (
         <Grid item className={classes.navListItem}>
           <MenuItem
             component={NextLink}

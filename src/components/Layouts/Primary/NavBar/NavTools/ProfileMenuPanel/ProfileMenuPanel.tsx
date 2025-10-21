@@ -8,25 +8,18 @@ import { Box, Button, Drawer, List } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { signOut } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
-import {
-  NavPage,
-  getNavPages,
-} from 'src/components/Layouts/Shared/getNavPages';
 import { OauthLink } from 'src/components/OauthLink/OauthLink';
 import { useSetupContext } from 'src/components/Setup/SetupProvider';
 import {
   PrivacyPolicyLink,
   TermsOfUseLink,
 } from 'src/components/Shared/Links/Links';
+import { useNavPages } from 'src/hooks/useNavPages';
 import { clearDataDogUser } from 'src/lib/dataDog';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import theme from '../../../../../../theme';
 import { useGetTopBarQuery } from '../../../TopBar/GetTopBar.generated';
 import { LeafListItem, Title } from '../../StyledComponents';
-
-interface ProfileMenuContent extends NavPage {
-  onClick?: () => void;
-}
 
 const MobileDrawer = styled(Drawer)(() => ({
   '& .MuiDrawer-paper': {
@@ -78,9 +71,7 @@ export const ProfileMenuPanel: React.FC = () => {
     });
   };
 
-  const {
-    panelPages: addProfileContent,
-  }: { panelPages: ProfileMenuContent[] } = getNavPages(undefined);
+  const { panelPages: addProfileContent } = useNavPages(false);
 
   return (
     <List disablePadding data-testid="ProfileMenuPanelForNavBar">
@@ -149,8 +140,8 @@ export const ProfileMenuPanel: React.FC = () => {
       )}
       {!onSetupTour && (
         <>
-          {addProfileContent.map(({ title, href, onClick }, index) => (
-            <LeafListItem key={index} disableGutters onClick={onClick}>
+          {addProfileContent.map(({ title, href }, index) => (
+            <LeafListItem key={index} disableGutters>
               <StyledButton
                 LinkComponent={NextLink}
                 href={href?.toString() ?? ''}

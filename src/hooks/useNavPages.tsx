@@ -3,9 +3,9 @@ import { ReactElement, useMemo } from 'react';
 import CompassIcon from '@mui/icons-material/Explore';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { reportNavItems } from './reportNavItems';
-import { settingsNavItems } from './settingsNavItems';
-import { toolsNavItems } from './toolsNavItems';
+import { useReportNavItems } from './useReportNavItems';
+import { useSettingsNavItems } from './useSettingsNavItems';
+import { useToolsNavItems } from './useToolsNavItems';
 
 interface SubItems {
   id?: string;
@@ -13,10 +13,9 @@ interface SubItems {
   grantedAccess?: string[];
 }
 interface Item {
-  id?: string;
+  id: string;
   href?: LinkProps['href'];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  icon?: any;
+  icon?: string;
   items?: Item[];
   title: string;
   subtitle?: string;
@@ -42,54 +41,55 @@ export interface NavPage {
   showInNav?: boolean;
   showInSearchDialog?: boolean;
   showInPanel?: boolean;
+  isDropdown?: boolean;
 }
 
-export function getNavPages(
-  coachingAccountCount: number | undefined,
-  isSearch = false,
-) {
+export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
   const accountListId = useAccountListId();
   const { t } = useTranslation();
+  const reportItems = useReportNavItems();
+  const toolsItems = useToolsNavItems();
+  const settingsItems = useSettingsNavItems();
 
   const allNavPages = useMemo<NavPage[]>(() => {
     const navPages: NavPage[] = [
       {
+        id: 'dashboard-page',
         title: t('Dashboard'),
         href: `/accountLists/${accountListId}`,
         pathname: '/accountLists/[accountListId]',
         showInNav: true,
+        isDropdown: false,
       },
       {
+        id: 'contacts-page',
         title: t('Contacts'),
         searchIcon: <CompassIcon />,
         href: `/accountLists/${accountListId}/contacts`,
         pathname: '/accountLists/[accountListId]/contacts/[[...contactId]]',
         showInNav: true,
+        isDropdown: false,
         showInSearchDialog: true,
       },
       {
+        id: 'tasks-page',
         title: t('Tasks'),
         searchIcon: <CompassIcon />,
         href: `/accountLists/${accountListId}/tasks`,
         pathname: '/accountLists/[accountListId]/tasks/[[...contactId]]',
         showInNav: true,
+        isDropdown: false,
         showInSearchDialog: true,
       },
       {
         id: 'reports-page',
         title: t('Reports'),
         pathname: '/accountLists/[accountListId]/reports',
-        items: reportNavItems.map((item) => ({
-          id: item.id,
-          title: item.title,
-          subtitle: item.subTitle,
+        items: reportItems.map((item) => ({
+          ...item,
           href: `/accountLists/${accountListId}/reports/${item.id}`,
           searchIcon: <CompassIcon />,
-          searchName:
-            item.subTitle === 'Partner Currency' ||
-            item.subTitle === 'Salary Currency'
-              ? `Reports - Monthly Report (${item.subTitle})`
-              : `Reports - ${item.title}`,
+          searchName: t(`Reports - {{ title }}`, { title: item.title }),
           showInSearchDialog: true,
         })),
         showInNav: true,
@@ -100,15 +100,13 @@ export function getNavPages(
         searchIcon: <CompassIcon />,
         href: `/accountLists/${accountListId}/tools`,
         pathname: '/accountLists/[accountListId]/tools',
-        items: toolsNavItems.flatMap((toolsGroup) =>
+        items: toolsItems.flatMap((toolsGroup) =>
           toolsGroup.items.map((tool) => ({
-            id: tool.id,
+            ...tool,
             title: tool.tool,
-            desc: tool.desc,
             href: `/accountLists/${accountListId}/tools/${tool.url}`,
-            icon: tool.icon,
             searchIcon: <CompassIcon />,
-            searchName: `Tools - ${tool.tool}`,
+            searchName: t(`Tools - {{ title }}`, { title: tool.tool }),
             showInSearchDialog: true,
           })),
         ),
@@ -120,16 +118,16 @@ export function getNavPages(
         title: t('Preferences'),
         searchIcon: <CompassIcon />,
         href: `/accountLists/${accountListId}/settings/preferences`,
-        items: settingsNavItems.map((item) => ({
+        items: settingsItems.map((item) => ({
           id: item.id,
           title: item.title,
           subtitle: item.subTitle,
           href: `/accountLists/${accountListId}/settings/${item.id}`,
           searchIcon: <CompassIcon />,
           searchName:
-            item.title === 'Preferences'
+            item.id === 'preferences'
               ? item.title
-              : `Preferences - ${item.title}`,
+              : t(`Preferences - {{ title }}`, { title: item.title }),
           grantedAccess: item.grantedAccess,
           subItems: item.subItems,
           oauth: item.oauth,
@@ -142,6 +140,7 @@ export function getNavPages(
 
     if (coachingAccountCount || isSearch) {
       navPages.push({
+        id: 'coaching-page',
         title: t('Coaching'),
         searchIcon: <CompassIcon />,
         href: `/accountLists/${accountListId}/coaching`,
@@ -153,6 +152,7 @@ export function getNavPages(
 
     if (process.env.HELP_WHATS_NEW_URL) {
       navPages.push({
+        id: 'whats-new-page',
         title: t("What's New"),
         href: process.env.HELP_WHATS_NEW_URL,
         whatsNewLink: true,
@@ -172,6 +172,11 @@ export function getNavPages(
     const pages: NavPage[] = [];
 
     for (const page of allNavPages) {
+      // include search pages
+      if (page.showInSearchDialog) {
+        pages.push(page);
+      }
+
       // get report sub items
       if (page.id === 'reports-page' && page.items) {
         page.items.forEach((item) => {
@@ -179,15 +184,13 @@ export function getNavPages(
         });
       }
 
-      // get tool sub items and include main page
+      // get tool sub items
       if (page.id === 'tools-page' && page.items) {
-        pages.push(page);
         if (page.items) {
           page.items.forEach((item) => {
             pages.push({ ...item, title: item.searchName ?? item.title });
           });
         }
-        continue;
       }
 
       // get settings sub items without granted access
@@ -197,11 +200,6 @@ export function getNavPages(
           .forEach((item) => {
             pages.push({ ...item, title: item.searchName ?? item.title });
           });
-      }
-
-      // include other search pages
-      if (page.showInSearchDialog) {
-        pages.push(page);
       }
     }
 

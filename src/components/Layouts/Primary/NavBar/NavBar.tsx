@@ -1,13 +1,12 @@
 import { useRouter } from 'next/router';
 import React, { ReactElement, useEffect } from 'react';
 import type { FC } from 'react';
-import MdiIcon from '@mdi/react';
 import { Box, Drawer, Hidden, List, Theme, useMediaQuery } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
 import { useLoadCoachingListQuery } from 'src/components/Coaching/LoadCoachingList.generated';
 import { useSetupContext } from 'src/components/Setup/SetupProvider';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { NavPage, getNavPages } from '../../Shared/getNavPages';
+import { NavPage, useNavPages } from '../../../../hooks/useNavPages';
 import { LogoLink } from '../LogoLink/LogoLink';
 import { NavItem } from './NavItem/NavItem';
 import { NavTools } from './NavTools/NavTools';
@@ -18,13 +17,8 @@ interface NavBarProps {
 }
 
 interface ItemProps extends NavPage {
-  icon?: ReactElement;
+  icon?: string;
 }
-
-const makeMdi = (path: string) =>
-  function Mdi(props) {
-    return <MdiIcon path={path} {...props} />;
-  };
 
 function renderNavItems({
   accountListId,
@@ -67,11 +61,9 @@ function reduceChildRoutes({
   item: ItemProps;
   depth: number;
 }) {
-  const convertIcon =
-    typeof item.icon === 'string' ? makeMdi(item.icon) : item.icon;
   const sharedProps = {
     depth: depth,
-    icon: convertIcon,
+    icon: item.icon,
     key: item.title + depth,
     title: item.title,
     whatsNewLink: item.whatsNewLink,
@@ -109,9 +101,9 @@ export const NavBar: FC<NavBarProps> = ({ onMobileClose, openMobile }) => {
   const { onSetupTour } = useSetupContext();
   const { data } = useLoadCoachingListQuery();
 
-  const coachingAccountCount = data?.coachingAccountLists.totalCount;
+  const isCoaching = !!data?.coachingAccountLists.totalCount;
 
-  const { navPages: sections } = getNavPages(coachingAccountCount);
+  const { navPages: sections } = useNavPages(isCoaching);
 
   const drawerHidden = useMediaQuery<Theme>((theme) =>
     theme.breakpoints.up('md'),

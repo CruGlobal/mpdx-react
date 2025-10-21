@@ -21,14 +21,11 @@ import { debounce } from 'lodash';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import {
-  NavPage,
-  getNavPages,
-} from 'src/components/Layouts/Shared/getNavPages';
-import {
   ContactFilterStatusEnum,
   StatusEnum,
 } from 'src/graphql/types.generated';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
+import { NavPage, useNavPages } from 'src/hooks/useNavPages';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { useCreateContactMutation } from '../AddMenu/Items/CreateContact/CreateContact.generated';
 import { useGetSearchMenuContactsLazyQuery } from './SearchMenu.generated';
@@ -99,7 +96,7 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
     [accountListId],
   );
 
-  const { searchDialogPages: defaultOptions } = getNavPages(undefined, true);
+  const { searchDialogPages: defaultOptions } = useNavPages(false, true);
 
   const options: ContactSearch[] = [
     ...(contacts?.nodes.map(({ name, status, id }) => ({
@@ -203,9 +200,9 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
 
           if (contacts && contacts.totalCount > contacts.nodes.length) {
             filteredOptions.splice(contacts.nodes.length, 0, {
-              title: t(
-                `And ${contacts.totalCount - contacts.nodes.length} more`,
-              ),
+              title: t('And {{ count }} more', {
+                count: contacts.totalCount - contacts.nodes.length,
+              }),
               searchIcon: <PeopleIcon />,
               href: `/accountLists/${accountListId}/contacts?searchTerm=${encodeURIComponent(
                 wildcardSearch,

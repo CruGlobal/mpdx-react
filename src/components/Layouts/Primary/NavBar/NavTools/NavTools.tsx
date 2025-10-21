@@ -1,9 +1,6 @@
 import React from 'react';
 import type { FC } from 'react';
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import AddIcon from '@mui/icons-material/Add';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import SearchIcon from '@mui/icons-material/Search';
+import { mdiAccountCircle, mdiBellOutline, mdiMagnify, mdiPlus } from '@mdi/js';
 import { List } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useSetupContext } from 'src/components/Setup/SetupProvider';
@@ -23,19 +20,19 @@ export const NavTools: FC = () => {
     <List disablePadding data-testid="NavTools">
       {!onSetupTour && (
         <>
-          <NavItem icon={SearchIcon} title={t('Search')}>
+          <NavItem icon={mdiMagnify} title={t('Search')}>
             <SearchMenuPanel />
           </NavItem>
-          <NavItem icon={AddIcon} title={t('Add')}>
+          <NavItem icon={mdiPlus} title={t('Add')}>
             <AddMenuPanel />
           </NavItem>
-          <NavItem icon={NotificationsIcon} title={t('Notifications')}>
+          <NavItem icon={mdiBellOutline} title={t('Notifications')}>
             <NotificationMenu isInDrawer={true} />
           </NavItem>
         </>
       )}
       <NavItem
-        icon={AccountCircleIcon}
+        icon={mdiAccountCircle}
         title={[data?.user.firstName, data?.user.lastName]
           .filter(Boolean)
           .join(' ')}

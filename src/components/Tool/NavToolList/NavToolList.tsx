@@ -15,8 +15,8 @@ import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useGetToolNotificationsQuery } from 'src/components/Layouts/Primary/TopBar/Items/NavMenu/GetToolNotifcations.generated';
 import { ToolName } from 'src/components/Layouts/Primary/TopBar/Items/NavMenu/NavMenu';
-import { toolsNavItems } from 'src/components/Layouts/Shared/toolsNavItems';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useToolsNavItems } from 'src/hooks/useToolsNavItems';
 import { Item } from './Item/Item';
 
 const ToolNavListContainer = styled('div')(() => ({
@@ -58,6 +58,8 @@ const NavToolList = ({ selectedId, isOpen, toggle }: Props): ReactElement => {
     skip: !accountListId,
   });
 
+  const toolsItems = useToolsNavItems();
+
   const toolDataTotalCount: { [key: string]: number } = {
     [ToolName.FixCommitmentInfo]: data?.fixCommitmentInfo.totalCount ?? 0,
     [ToolName.FixMailingAddresses]: data?.fixMailingAddresses.totalCount ?? 0,
@@ -91,7 +93,7 @@ const NavToolList = ({ selectedId, isOpen, toggle }: Props): ReactElement => {
               </Box>
             </FilterHeader>
             <FilterList dense>
-              {toolsNavItems.map((group) => (
+              {toolsItems.map((group) => (
                 <Fragment key={group.groupName}>
                   <NavListItem data-testid="ToolNavListItem">
                     <ListItemIcon>
