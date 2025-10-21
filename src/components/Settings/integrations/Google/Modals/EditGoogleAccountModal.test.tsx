@@ -3,14 +3,17 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
+import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
 import {
   ActivityTypeEnum,
   GoogleAccountIntegration,
   GoogleAccountIntegrationCalendars,
   Maybe,
 } from 'src/graphql/types.generated';
+import i18n from 'src/lib/i18n';
 import theme from '../../../../../theme';
 import { EditGoogleAccountModal } from './EditGoogleAccountModal';
 import { GoogleAccountIntegrationsQuery } from './googleIntegrations.generated';
@@ -39,11 +42,15 @@ jest.mock('notistack', () => ({
 const handleClose = jest.fn();
 
 const Components = ({ children }: PropsWithChildren) => (
-  <SnackbarProvider>
-    <TestRouter router={router}>
-      <ThemeProvider theme={theme}>{children}</ThemeProvider>
-    </TestRouter>
-  </SnackbarProvider>
+  <AppSettingsProvider>
+    <I18nextProvider i18n={i18n}>
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <ThemeProvider theme={theme}>{children}</ThemeProvider>
+        </TestRouter>
+      </SnackbarProvider>
+    </I18nextProvider>
+  </AppSettingsProvider>
 );
 
 const googleAccount = {
@@ -88,6 +95,7 @@ const standardGoogleIntegration: Pick<
 const oAuth = `https://auth.mpdx.org/urlpath/to/authenicate`;
 describe('EditGoogleAccountModal', () => {
   process.env.OAUTH_URL = 'https://auth.mpdx.org';
+  process.env.APP_NAME = 'MPDX';
   let googleIntegration = { ...standardGoogleIntegration };
 
   beforeEach(() => {
@@ -213,7 +221,7 @@ describe('EditGoogleAccountModal', () => {
 
     await waitFor(() =>
       expect(
-        getByText(/choose a calendar for {{appName}} to push tasks to:/i),
+        getByText(/choose a calendar for MPDX to push tasks to:/i),
       ).toBeInTheDocument(),
     );
 
@@ -285,7 +293,7 @@ describe('EditGoogleAccountModal', () => {
 
     await waitFor(() =>
       expect(
-        getByText(/choose a calendar for {{appName}} to push tasks to:/i),
+        getByText(/choose a calendar for MPDX to push tasks to:/i),
       ).toBeInTheDocument(),
     );
 
@@ -349,7 +357,7 @@ describe('EditGoogleAccountModal', () => {
 
     await waitFor(() =>
       expect(
-        getByText(/choose a calendar for {{appName}} to push tasks to:/i),
+        getByText(/choose a calendar for MPDX to push tasks to:/i),
       ).toBeInTheDocument(),
     );
 
@@ -458,7 +466,7 @@ describe('EditGoogleAccountModal', () => {
 
     await waitFor(() =>
       expect(
-        getByText(/choose a calendar for {{appName}} to push tasks to:/i),
+        getByText(/choose a calendar for MPDX to push tasks to:/i),
       ).toBeInTheDocument(),
     );
 
