@@ -1,11 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import {
-  FilterListOff,
-  Groups,
-  Savings,
-  Settings,
-  Wallet,
-} from '@mui/icons-material';
+import { FilterListOff, Settings } from '@mui/icons-material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import LocalAtmIcon from '@mui/icons-material/LocalAtm';
@@ -37,9 +31,8 @@ import {
   SimpleScreenOnly,
   StyledPrintButton,
 } from '../styledComponents';
-import { BalanceCard } from './BalanceCard/BalanceCard';
-import { BalanceCardSkeleton } from './BalanceCard/BalanceCardSkeleton';
 import { PrintHeader } from './BalanceCard/PrintHeader';
+import { BalanceCardList } from './BalanceCardList/BalanceCardList';
 import { DownloadButtonGroup } from './DownloadButtonGroup/DownloadButtonGroup';
 import { useReportsStaffExpensesQuery } from './GetStaffExpense.generated';
 import { ReportType } from './Helpers/StaffReportEnum';
@@ -48,6 +41,10 @@ import {
   dateRangeToString,
   getFormattedDateString,
 } from './Helpers/formatDate';
+import {
+  getIconColorForFundType,
+  getIconForFundType,
+} from './Helpers/fundTypeHelpers';
 import { Filters, SettingsDialog } from './SettingsDialog/SettingsDialog';
 import { PrintTables } from './Tables/PrintTables';
 import { StaffReportTable } from './Tables/StaffReportTable';
@@ -72,13 +69,6 @@ const StyledFilterButton = styled(Button)({
     backgroundColor: theme.palette.cruGrayLight.main,
     borderColor: theme.palette.cruGrayDark.main,
   },
-});
-
-const StyledCardsBox = styled(Box)({
-  flex: 1,
-  minWidth: 250,
-  display: 'flex',
-  gap: theme.spacing(4),
 });
 
 interface StaffExpenseReportProps {
@@ -107,6 +97,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
 
   const { data, loading } = useReportsStaffExpensesQuery({
     variables: {
+      fundTypes: ['Primary', 'Savings', 'Staff Conference Savings'],
       startMonth:
         filters?.startDate?.startOf('month').toISODate() ??
         filters?.endDate?.startOf('month').toISODate() ??
@@ -316,70 +307,28 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                   flexDirection: { xs: 'column', sm: 'row' },
                 }}
               >
-                {loading ? (
-                  <StyledCardsBox>
-                    <BalanceCardSkeleton />
-                    <BalanceCardSkeleton />
-                  </StyledCardsBox>
-                ) : (
-                  allFunds.map((fund) => (
-                    <StyledCardsBox key={fund.fundType}>
-                      <BalanceCard
-                        fundType={fund.fundType}
-                        icon={
-                          fund.fundType === 'Primary'
-                            ? Wallet
-                            : fund.fundType === 'Savings'
-                              ? Savings
-                              : Groups
-                        }
-                        iconBgColor={
-                          fund.fundType === 'Primary'
-                            ? theme.palette.chartOrange.main
-                            : fund.fundType === 'Savings'
-                              ? theme.palette.chartBlueDark.main
-                              : theme.palette.chartBlue.main
-                        }
-                        title={fund.fundType}
-                        isSelected={selectedFundType === fund.fundType}
-                        startingBalance={
-                          data?.reportsStaffExpenses.startBalance ?? 0
-                        }
-                        endingBalance={
-                          data?.reportsStaffExpenses.endBalance ?? 0
-                        }
-                        transfersIn={transferTotals[fund.fundType]?.in ?? 0}
-                        transfersOut={transferTotals[fund.fundType]?.out ?? 0}
-                        onClick={handleCardClick}
-                      />
-                    </StyledCardsBox>
-                  ))
-                )}
+                <BalanceCardList
+                  funds={allFunds}
+                  selectedFundType={selectedFundType}
+                  startingBalance={data?.reportsStaffExpenses.startBalance ?? 0}
+                  endingBalance={data?.reportsStaffExpenses.endBalance ?? 0}
+                  transferTotals={transferTotals}
+                  onCardClick={handleCardClick}
+                  loading={loading}
+                />
               </Box>
             </SimpleScreenOnly>
             <SimplePrintOnly>
               <Box>
                 {selectedFundType && (
                   <PrintHeader
-                    icon={
-                      selectedFundType === 'Primary'
-                        ? Wallet
-                        : selectedFundType === 'Savings'
-                          ? Savings
-                          : Groups
-                    }
-                    iconColor={
-                      selectedFundType === 'Primary'
-                        ? theme.palette.chartOrange.main
-                        : selectedFundType === 'Savings'
-                          ? theme.palette.chartBlueDark.main
-                          : theme.palette.chartBlue.main
-                    }
+                    icon={getIconForFundType(selectedFundType)}
+                    iconColor={getIconColorForFundType(selectedFundType, theme)}
                     title={selectedFundType}
                     startBalance={data?.reportsStaffExpenses.startBalance ?? 0}
                     endBalance={data?.reportsStaffExpenses.endBalance ?? 0}
-                    transfersIn={transferTotals[selectedFundType]?.in ?? 0}
-                    transfersOut={transferTotals[selectedFundType]?.out ?? 0}
+                    transfersIn={transferTotals[selectedFundType]?.in}
+                    transfersOut={transferTotals[selectedFundType]?.out}
                   />
                 )}
               </Box>
@@ -475,6 +424,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
       <Box>
         <SettingsDialog
           selectedFilters={filters || undefined}
+          selectedFundType={selectedFundType}
           isOpen={isSettingsOpen}
           onClose={(newFilters) => {
             setFilters(newFilters ?? null);
