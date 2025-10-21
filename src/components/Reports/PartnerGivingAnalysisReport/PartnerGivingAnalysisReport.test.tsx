@@ -6,6 +6,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
+import { PartnerGivingAnalysisSortEnum } from 'src/graphql/types.generated';
 import { GetPartnerGivingAnalysisIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import theme from 'src/theme';
 import { PartnerGivingAnalysisQuery } from './PartnerGivingAnalysis.generated';
@@ -45,26 +46,9 @@ const TestComponent: React.FC<TestComponentProps> = ({
   <TestRouter router={router}>
     <ThemeProvider theme={theme}>
       <GqlMockedProvider<{
-        GetPartnerGivingAnalysis: PartnerGivingAnalysisQuery;
+        PartnerGivingAnalysis: PartnerGivingAnalysisQuery;
       }>
-        mocks={
-          noContacts
-            ? {
-                GetPartnerGivingAnalysis: {
-                  partnerGivingAnalysis: {
-                    nodes: [],
-                    pageInfo: {
-                      endCursor: null,
-                      hasNextPage: false,
-                    },
-                    edges: [],
-                    totalCount: 300,
-                    totalPageCount: 0,
-                  },
-                },
-              }
-            : mocks
-        }
+        mocks={noContacts ? emptyMock : mocks}
         onCall={mutationSpy}
       >
         <ContactPanelProvider>
@@ -84,154 +68,167 @@ const TestComponent: React.FC<TestComponentProps> = ({
 );
 
 type Mocks = {
-  GetPartnerGivingAnalysis: PartnerGivingAnalysisQuery;
+  PartnerGivingAnalysis: PartnerGivingAnalysisQuery;
   GetPartnerGivingAnalysisIdsForMassSelection?: GetPartnerGivingAnalysisIdsForMassSelectionQuery;
 };
 
 const mocks: Mocks = {
-  GetPartnerGivingAnalysis: {
+  PartnerGivingAnalysis: {
     partnerGivingAnalysis: {
       nodes: [
         {
-          donationPeriodAverage: 88.468,
-          donationPeriodCount: 176,
-          donationPeriodSum: 15218.42,
-          lastDonationAmount: 150,
-          lastDonationCurrency: 'CAD',
-          lastDonationDate: '2021-07-07',
           id: '01',
-          name: 'Ababa, Aladdin und Jasmine (Princess)',
-          pledgeCurrency: 'CAD',
-          totalDonations: 25218.42,
+          name: 'Flintstone, Fred and Wilma',
+          totalDonations: 49835,
+          pledgeCurrency: 'USD',
+          lastDonationDate: '2022-04-12',
+          lastDonationAmount: 3000,
+          lastDonationCurrency: 'INR',
+          donationPeriodAverage: 1215.4878048780488,
+          donationPeriodCount: 41,
+          donationPeriodSum: 49835,
         },
         {
-          donationPeriodAverage: 71.4,
-          donationPeriodCount: 127,
-          donationPeriodSum: 13118.42,
-          lastDonationAmount: 170.92,
-          lastDonationCurrency: 'CAD',
-          lastDonationDate: '2021-03-07',
           id: '02',
-          name: 'Princess',
-          pledgeCurrency: 'CAD',
-          totalDonations: 13118.42,
+          name: 'Mouse, Mickey and Minnie',
+          totalDonations: 2175,
+          pledgeCurrency: 'USD',
+          lastDonationDate: '2020-12-15',
+          lastDonationAmount: 75,
+          lastDonationCurrency: 'USD',
+          donationPeriodAverage: 80.55555555555556,
+          donationPeriodCount: 27,
+          donationPeriodSum: 2175,
         },
         {
-          donationPeriodAverage: 86.4684354186,
-          donationPeriodCount: 221,
-          donationPeriodSum: 25218.42,
-          lastDonationAmount: 150.92,
-          lastDonationCurrency: 'CAD',
-          lastDonationDate: '2021-08-07',
           id: '03',
-          name: 'Jasmine (Princess)',
-          pledgeCurrency: 'CAD',
-          totalDonations: 25218.42,
+          name: 'Pan, Peter and Wendy',
+          totalDonations: 1045,
+          pledgeCurrency: 'USD',
+          lastDonationDate: '2020-12-15',
+          lastDonationAmount: 30,
+          lastDonationCurrency: 'USD',
+          donationPeriodAverage: 37.32142857142857,
+          donationPeriodCount: 28,
+          donationPeriodSum: 1045,
         },
         {
-          donationPeriodAverage: 86.46,
-          donationPeriodCount: 221,
-          donationPeriodSum: 25218.42,
-          lastDonationAmount: 150.92,
-          lastDonationCurrency: 'CAD',
-          lastDonationDate: '2021-08-07',
           id: '04',
-          name: 'Jasmine (Princess)',
-          pledgeCurrency: 'CAD',
-          totalDonations: 25218.42,
+          name: 'Pooh, Winnie',
+          totalDonations: 255,
+          pledgeCurrency: 'USD',
+          lastDonationDate: '2019-10-05',
+          lastDonationAmount: 10,
+          lastDonationCurrency: 'USD',
+          donationPeriodAverage: 10.625,
+          donationPeriodCount: 24,
+          donationPeriodSum: 255,
         },
         {
-          donationPeriodAverage: 86.46,
-          donationPeriodCount: 221,
-          donationPeriodSum: 25218.42,
-          lastDonationAmount: 150.92,
-          lastDonationCurrency: 'CAD',
-          lastDonationDate: '2021-08-07',
           id: '05',
-          name: 'Jasmine (Princess)',
-          pledgeCurrency: 'CAD',
-          totalDonations: 25218.42,
+          name: 'Dalmation, Pongo and Perdita',
+          totalDonations: 41250,
+          pledgeCurrency: 'USD',
+          lastDonationDate: '2025-07-11',
+          lastDonationAmount: 200,
+          lastDonationCurrency: 'UGX',
+          donationPeriodAverage: 982.1428571428571,
+          donationPeriodCount: 42,
+          donationPeriodSum: 41250,
         },
         {
-          donationPeriodAverage: 86.46,
-          donationPeriodCount: 221,
-          donationPeriodSum: 25218.42,
-          lastDonationAmount: 150.92,
-          lastDonationCurrency: 'CAD',
-          lastDonationDate: '2021-08-07',
           id: '06',
-          name: 'Jasmine (Princess)',
-          pledgeCurrency: 'CAD',
-          totalDonations: 25218.42,
+          name: 'Deer, Bambi and Feline',
+          totalDonations: 24795,
+          pledgeCurrency: 'UGX',
+          lastDonationDate: '2022-01-12',
+          lastDonationAmount: 12000,
+          lastDonationCurrency: 'INR',
+          donationPeriodAverage: 918.3333333333334,
+          donationPeriodCount: 27,
+          donationPeriodSum: 24796,
         },
         {
-          donationPeriodAverage: 86.46,
-          donationPeriodCount: 221,
-          donationPeriodSum: 25218.42,
-          lastDonationAmount: 150.92,
-          lastDonationCurrency: 'CAD',
-          lastDonationDate: '2021-08-07',
           id: '07',
-          name: 'Jasmine (Princess)',
-          pledgeCurrency: 'CAD',
-          totalDonations: 25218.42,
+          name: 'Duck, Daffy and Daphney',
+          totalDonations: 11039,
+          pledgeCurrency: 'USD',
+          lastDonationDate: '2025-07-11',
+          lastDonationAmount: 200,
+          lastDonationCurrency: 'UGX',
+          donationPeriodAverage: 356.0967741935484,
+          donationPeriodCount: 31,
+          donationPeriodSum: 11039,
         },
         {
-          donationPeriodAverage: 86.46,
-          donationPeriodCount: 221,
-          donationPeriodSum: 25218.42,
-          lastDonationAmount: 150.92,
-          lastDonationCurrency: 'CAD',
-          lastDonationDate: '2021-08-07',
           id: '08',
-          name: 'Jasmine (Princess)',
-          pledgeCurrency: 'CAD',
-          totalDonations: 25218.42,
+          name: 'Jetson, George and Jane',
+          totalDonations: 1160,
+          pledgeCurrency: 'USD',
+          lastDonationDate: '2025-07-09',
+          lastDonationAmount: 200,
+          lastDonationCurrency: 'UGX',
+          donationPeriodAverage: 46.422,
+          donationPeriodCount: 25,
+          donationPeriodSum: 1160,
         },
         {
-          donationPeriodAverage: 86.46,
-          donationPeriodCount: 221,
-          donationPeriodSum: 25218.42,
-          lastDonationAmount: 150.92,
-          lastDonationCurrency: 'CAD',
-          lastDonationDate: '2021-08-07',
           id: '09',
-          name: 'Jasmine (Princess)',
-          pledgeCurrency: 'CAD',
-          totalDonations: 25218.42,
+          name: 'Beast, Beast and Belle',
+          totalDonations: 1400,
+          pledgeCurrency: 'ARM',
+          lastDonationDate: '2025-07-22',
+          lastDonationAmount: 200,
+          lastDonationCurrency: 'UGX',
+          donationPeriodAverage: 466.6666666666667,
+          donationPeriodCount: 3,
+          donationPeriodSum: 1400,
         },
         {
-          donationPeriodAverage: 86.46,
-          donationPeriodCount: 221,
-          donationPeriodSum: 25218.42,
-          lastDonationAmount: 150.92,
-          lastDonationCurrency: 'CAD',
-          lastDonationDate: '2021-08-07',
           id: '10',
-          name: 'Jasmine (Princess)',
-          pledgeCurrency: 'CAD',
-          totalDonations: 25218.42,
+          name: 'Duck, Donald and Daisy',
+          totalDonations: 333336588,
+          pledgeCurrency: 'USD',
+          lastDonationDate: '2025-07-02',
+          lastDonationAmount: 1000,
+          lastDonationCurrency: 'USD',
+          donationPeriodAverage: 10752793.161290323,
+          donationPeriodCount: 31,
+          donationPeriodSum: 333336588,
         },
         {
-          donationPeriodAverage: 86.46,
-          donationPeriodCount: 221,
-          donationPeriodSum: 25218.42,
-          lastDonationAmount: 150.92,
-          lastDonationCurrency: 'CAD',
-          lastDonationDate: '2021-08-07',
           id: '11',
-          name: 'Jasmine (Princess)',
-          pledgeCurrency: 'CAD',
-          totalDonations: 25218.42,
+          name: 'First Pedestrian Church',
+          totalDonations: 14733,
+          pledgeCurrency: 'USD',
+          lastDonationDate: '2025-07-16',
+          lastDonationAmount: 200,
+          lastDonationCurrency: 'UGX',
+          donationPeriodAverage: 475.28225806451616,
+          donationPeriodCount: 31,
+          donationPeriodSum: 14733,
         },
       ],
       pageInfo: {
-        endCursor: 'endCursor',
-        hasNextPage: true,
+        endCursor: 'MTg',
+        hasNextPage: false,
+        hasPreviousPage: false,
       },
-      edges: [],
+      edges: [
+        { cursor: 'OA' },
+        { cursor: 'OQ' },
+        { cursor: 'MTA' },
+        { cursor: 'MTE' },
+        { cursor: 'MTI' },
+        { cursor: 'MTM' },
+        { cursor: 'MTQ' },
+        { cursor: 'MTU' },
+        { cursor: 'MTY' },
+        { cursor: 'MTc' },
+        { cursor: 'MTg' },
+      ],
       totalCount: 11,
-      totalPageCount: 2,
+      totalPageCount: 1,
     },
   },
   GetPartnerGivingAnalysisIdsForMassSelection: {
@@ -249,6 +246,20 @@ const mocks: Mocks = {
         { id: '10' },
         { id: '11' },
       ],
+    },
+  },
+};
+
+const emptyMock: Mocks = {
+  PartnerGivingAnalysis: {
+    partnerGivingAnalysis: {
+      nodes: [],
+      pageInfo: {
+        ...mocks.PartnerGivingAnalysis.partnerGivingAnalysis.pageInfo,
+      },
+      edges: [],
+      totalCount: 300,
+      totalPageCount: 1,
     },
   },
 };
@@ -314,11 +325,8 @@ describe('PartnerGivingAnalysisReport', () => {
     });
 
     expect(
-      mutationSpy.mock.calls[2][0].operation.variables.input.sortField,
-    ).toEqual('donationPeriodCount');
-    expect(
-      mutationSpy.mock.calls[2][0].operation.variables.input.sortDirection,
-    ).toEqual('ASCENDING');
+      mutationSpy.mock.calls[2][0].operation.variables.input.sortBy,
+    ).toEqual(PartnerGivingAnalysisSortEnum.DonationPeriodCountAsc);
 
     userEvent.click(getByText('Gift Count'));
     await waitFor(() => {
@@ -328,11 +336,8 @@ describe('PartnerGivingAnalysisReport', () => {
     });
 
     expect(
-      mutationSpy.mock.calls[3][0].operation.variables.input.sortField,
-    ).toEqual('donationPeriodCount');
-    expect(
-      mutationSpy.mock.calls[3][0].operation.variables.input.sortDirection,
-    ).toEqual('DESCENDING');
+      mutationSpy.mock.calls[3][0].operation.variables.input.sortBy,
+    ).toEqual(PartnerGivingAnalysisSortEnum.DonationPeriodCountDesc);
 
     userEvent.click(getByText('Gift Average'));
     await waitFor(() => {
@@ -341,11 +346,8 @@ describe('PartnerGivingAnalysisReport', () => {
       ).not.toBeInTheDocument();
     });
     expect(
-      mutationSpy.mock.calls[4][0].operation.variables.input.sortField,
-    ).toEqual('donationPeriodAverage');
-    expect(
-      mutationSpy.mock.calls[4][0].operation.variables.input.sortDirection,
-    ).toEqual('ASCENDING');
+      mutationSpy.mock.calls[4][0].operation.variables.input.sortBy,
+    ).toEqual(PartnerGivingAnalysisSortEnum.DonationPeriodAverageAsc);
   });
 
   it('filters contacts by name', async () => {
@@ -370,7 +372,7 @@ describe('PartnerGivingAnalysisReport', () => {
     });
 
     expect(
-      mutationSpy.mock.calls[2][0].operation.variables.input.contactFilters,
+      mutationSpy.mock.calls[2][0].operation.variables.input.filters,
     ).toEqual({ nameLike: '%John%' });
   });
 
@@ -392,9 +394,7 @@ describe('PartnerGivingAnalysisReport', () => {
       ).not.toBeInTheDocument();
     });
 
-    expect(
-      mutationSpy.mock.calls[2][0].operation.variables.input.pageSize,
-    ).toBe(50);
+    expect(mutationSpy.mock.calls[2][0].operation.variables.first).toBe(50);
 
     userEvent.selectOptions(getByRole('combobox'), '10');
     userEvent.click(getByTestId('KeyboardArrowRightIcon'));
@@ -404,7 +404,7 @@ describe('PartnerGivingAnalysisReport', () => {
       ).not.toBeInTheDocument();
     });
 
-    expect(getByText('11-20 of 120')).toBeInTheDocument();
+    expect(getByText('11-11 of 11')).toBeInTheDocument();
   });
 
   it('selects and unselects all', async () => {
@@ -471,7 +471,7 @@ describe('PartnerGivingAnalysisReport', () => {
 
     expect(
       getByRole('link', {
-        name: 'Ababa, Aladdin und Jasmine (Princess)',
+        name: 'Flintstone, Fred and Wilma',
       }),
     ).toBeInTheDocument();
   });
@@ -486,12 +486,12 @@ describe('PartnerGivingAnalysisReport', () => {
     });
 
     // Test that it adds commas
-    expect(getByText('CA$15,218.42')).toBeInTheDocument();
+    expect(getByText('UGX 24,795')).toBeInTheDocument();
 
-    expect(getByText('CA$150')).toBeInTheDocument();
+    expect(getByText('$982.14')).toBeInTheDocument();
 
     // Test that it rounds to two decimal points
-    expect(getByText('CA$86.47')).toBeInTheDocument();
+    expect(getByText('ARM 466.67')).toBeInTheDocument();
   });
 
   it('renders nav list icon and onClick triggers onNavListToggle', async () => {
