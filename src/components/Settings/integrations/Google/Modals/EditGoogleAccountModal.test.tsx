@@ -6,7 +6,7 @@ import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
+import { AppSettingsContext } from 'src/components/common/AppSettings/AppSettingsProvider';
 import {
   ActivityTypeEnum,
   GoogleAccountIntegration,
@@ -42,7 +42,7 @@ jest.mock('notistack', () => ({
 const handleClose = jest.fn();
 
 const Components = ({ children }: PropsWithChildren) => (
-  <AppSettingsProvider>
+  <AppSettingsContext.Provider value={{ appName: 'MPDX' }}>
     <I18nextProvider i18n={i18n}>
       <SnackbarProvider>
         <TestRouter router={router}>
@@ -50,7 +50,7 @@ const Components = ({ children }: PropsWithChildren) => (
         </TestRouter>
       </SnackbarProvider>
     </I18nextProvider>
-  </AppSettingsProvider>
+  </AppSettingsContext.Provider>
 );
 
 const googleAccount = {
@@ -95,7 +95,6 @@ const standardGoogleIntegration: Pick<
 const oAuth = `https://auth.mpdx.org/urlpath/to/authenicate`;
 describe('EditGoogleAccountModal', () => {
   process.env.OAUTH_URL = 'https://auth.mpdx.org';
-  process.env.APP_NAME = 'MPDX';
   let googleIntegration = { ...standardGoogleIntegration };
 
   beforeEach(() => {
