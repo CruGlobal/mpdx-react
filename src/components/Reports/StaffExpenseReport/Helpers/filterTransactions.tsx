@@ -1,10 +1,24 @@
 import { TFunction } from 'i18next';
 import { DateTime } from 'luxon';
 import { Filters } from 'src/components/Reports/StaffExpenseReport/SettingsDialog/SettingsDialog';
-import { Transaction } from 'src/components/Reports/StaffExpenseReport/StaffExpenseReport';
-import { Fund, StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
+import {
+  Fund,
+  StaffExpenseCategoryEnum,
+  StaffExpensesSubCategoryEnum,
+} from 'src/graphql/types.generated';
 import { ReportType } from './StaffReportEnum';
 import { getLocalizedCategory } from './useLocalizedCategory';
+
+export interface Transaction {
+  id: string;
+  amount: number;
+  transactedAt: string;
+  description?: string | null;
+  fundType: string;
+  category: StaffExpenseCategoryEnum;
+  subcategory?: StaffExpensesSubCategoryEnum;
+  displayCategory: string;
+}
 
 export interface GroupedTransaction extends Transaction {
   groupedTransactions: Transaction[];
@@ -24,21 +38,16 @@ interface FilterTransactionsParams {
  */
 const groupTransactionsByCategory = (
   transactions: Transaction[],
-  selectedCategories: string[],
+  groupedCategories: string[],
   fundType: string,
   t: TFunction,
 ): (Transaction | GroupedTransaction)[] => {
-  // If no categories are selected for grouping, return all transactions
-  if (selectedCategories.length === 0) {
-    return transactions;
-  }
-
-  // Group transactions by category if the category is in selectedCategories
+  // Group transactions by category if the category is in groupedCategories
   const grouped: Map<string, Transaction[]> = new Map();
   const ungrouped: Transaction[] = [];
 
   transactions.forEach((transaction) => {
-    if (selectedCategories.includes(transaction.category)) {
+    if (groupedCategories.includes(transaction.category)) {
       const key = transaction.category;
       if (!grouped.has(key)) {
         grouped.set(key, []);
@@ -51,7 +60,7 @@ const groupTransactionsByCategory = (
 
   // Create consolidated transactions for grouped categories
   // and sort grouped transactions alphabetically by category name for consistent ordering
-  const consolidatedTransactions: GroupedTransaction[] = Array.from(
+  const groupedTransactions: GroupedTransaction[] = Array.from(
     grouped.entries(),
   )
     .sort(([catA], [catB]) => catA.localeCompare(catB))
@@ -82,7 +91,7 @@ const groupTransactionsByCategory = (
       };
     });
 
-  return [...consolidatedTransactions, ...ungrouped];
+  return [...groupedTransactions, ...ungrouped];
 };
 
 /**
@@ -98,15 +107,22 @@ export const filterTransactions = ({
   const isInDateRange = createDateRangeFilter(filters, targetTime);
   const selectedCategories = filters?.categories ?? [];
 
-  const transactions =
+  const filteredTransactions =
     fund.categories?.flatMap((category) =>
       category.subcategories.flatMap((subcategory) =>
         subcategory.breakdownByMonth?.flatMap(
           (breakdown) =>
             breakdown.transactions
-              ?.filter((transaction) =>
-                isInDateRange(DateTime.fromISO(transaction.transactedAt)),
-              )
+              ?.filter((transaction) => {
+                const isInRange = isInDateRange(
+                  DateTime.fromISO(transaction.transactedAt),
+                );
+                const matchesType =
+                  tableType === ReportType.Income
+                    ? transaction.amount > 0
+                    : transaction.amount < 0;
+                return isInRange && matchesType;
+              })
               .map((transaction) => ({
                 ...transaction,
                 fundType: fund.fundType,
@@ -120,12 +136,6 @@ export const filterTransactions = ({
         ),
       ),
     ) ?? [];
-
-  const filteredTransactions = transactions.filter((transaction) =>
-    tableType === ReportType.Income
-      ? transaction.amount > 0
-      : transaction.amount < 0,
-  );
 
   return groupTransactionsByCategory(
     filteredTransactions,

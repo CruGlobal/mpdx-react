@@ -15,8 +15,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { CategoryBreakdownDialog } from '../CategoryBreakdownDialog/CategoryBreakdownDialog';
 import { ReportType } from '../Helpers/StaffReportEnum';
-import { GroupedTransaction } from '../Helpers/filterTransactions';
-import { Transaction } from '../StaffExpenseReport';
+import { GroupedTransaction, Transaction } from '../Helpers/filterTransactions';
 
 type RenderCell = GridColDef<StaffReportRow>['renderCell'];
 
@@ -170,7 +169,14 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
   };
 
   const rowsWithSortPriority = useMemo(() => {
-    return staffReportRows.map((row) => ({
+    const sorted = [...staffReportRows].sort((a, b) => {
+      if (a.isGrouped !== b.isGrouped) {
+        return a.isGrouped ? -1 : 1;
+      }
+      return b.date.toMillis() - a.date.toMillis();
+    });
+
+    return sorted.map((row) => ({
       ...row,
       sortPriority: row.isGrouped ? 0 : 1,
     }));
@@ -204,10 +210,7 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
     },
   ];
 
-  const [sortModel, setSortModel] = useState<GridSortModel>([
-    { field: 'sortPriority', sort: 'asc' }, // needed for groups
-    { field: 'date', sort: 'desc' },
-  ]);
+  const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
   return loading ? (
     <LoadingBox>
@@ -238,11 +241,11 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
       <StyledGrid
         rows={rowsWithSortPriority || []}
         columns={columns}
-        getRowId={(row) => `${row.date}-${row.description}`}
+        getRowId={(row) => `${row.id}`}
         sortingOrder={['desc', 'asc']}
         sortModel={sortModel}
         onSortModelChange={(size) => setSortModel(size)}
-        pageSizeOptions={[10, 25, 100]}
+        pageSizeOptions={[5, 10, 25, 50]}
         paginationModel={paginationModel}
         onPaginationModelChange={(model) => setPaginationModel(model)}
         disableRowSelectionOnClick

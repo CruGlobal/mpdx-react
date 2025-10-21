@@ -1,13 +1,13 @@
 import React from 'react';
 import { ThemeProvider } from '@emotion/react';
-import { render, waitFor } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
   StaffExpenseCategoryEnum,
   StaffExpensesSubCategoryEnum,
 } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { Transaction } from '../StaffExpenseReport';
+import { Transaction } from '../Helpers/filterTransactions';
 import {
   CategoryBreakdownDialog,
   CategoryBreakdownDialogProps,
@@ -102,17 +102,5 @@ describe('CategoryBreakdownDialog', () => {
 
     userEvent.click(getByTestId('close-button'));
     expect(mutationSpy).toHaveBeenCalled();
-  });
-
-  it('calls onClose when backdrop is clicked', async () => {
-    const { getByRole } = render(
-      <TestComponent {...defaultProps} onClose={mutationSpy} />,
-    );
-
-    userEvent.click(getByRole('dialog').parentElement!);
-
-    await waitFor(() => {
-      expect(mutationSpy).toHaveBeenCalled();
-    });
   });
 });

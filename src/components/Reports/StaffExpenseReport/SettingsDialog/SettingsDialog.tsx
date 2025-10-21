@@ -30,6 +30,7 @@ import { getLocalizedCategory } from '../Helpers/useLocalizedCategory';
 export interface SettingsDialogProps {
   isOpen: boolean;
   selectedFilters?: Filters;
+  selectedFundType: string | null;
   onClose: (filters?: Filters) => void;
 }
 
@@ -118,6 +119,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
   isOpen,
   onClose,
   selectedFilters,
+  selectedFundType,
 }) => {
   const { t } = useTranslation();
   const [previewFilters, setPreviewFilters] = useState<Filters | null>(null);
@@ -130,6 +132,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
   };
 
   const getQueryVariables = (filterParams: Filters | null) => ({
+    fundTypes: selectedFundType ? [selectedFundType] : null,
     startMonth:
       filterParams?.startDate?.startOf('month').toISODate() ??
       filterParams?.endDate?.startOf('month').toISODate() ??
@@ -231,7 +234,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                     }
                     validateAndRefetch(validateForm, {
                       ...values,
-                      selectedDateRange: value as DateRange,
+                      selectedDateRange: value as DateRange | null,
                       ...(value !== null && { startDate: null, endDate: null }),
                     });
                   }}

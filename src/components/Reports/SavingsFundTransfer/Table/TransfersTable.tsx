@@ -277,7 +277,7 @@ export const TransfersTable: React.FC<TransfersTableProps> = ({
         sortingOrder={['desc', 'asc']}
         sortModel={sortModel}
         onSortModelChange={(size) => setSortModel(size)}
-        pageSizeOptions={[5, 10, 25, 100]}
+        pageSizeOptions={[5, 10, 25, 50]}
         paginationMode="server"
         paginationModel={paginationModel}
         onPaginationModelChange={setPaginationModel}

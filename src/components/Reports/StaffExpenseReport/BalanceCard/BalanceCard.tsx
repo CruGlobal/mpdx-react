@@ -4,6 +4,7 @@ import { Box, Card, CardActionArea, Typography, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { StyledIconBox } from '../styledComponents/StyledIconBox';
 
 const StyledCardActionArea = styled(CardActionArea, {
   shouldForwardProp: (prop) => prop !== 'isSelected',
@@ -14,18 +15,6 @@ const StyledCardActionArea = styled(CardActionArea, {
   display: 'flex',
   alignItems: 'center',
   justifyContent: isSelected ? 'center' : 'flex-start',
-}));
-
-const StyledIconBox = styled(Box, {
-  shouldForwardProp: (prop) => prop !== 'iconBgColor',
-})<{ iconBgColor?: string }>(({ theme, iconBgColor }) => ({
-  backgroundColor: iconBgColor || theme.palette.primary.main,
-  color: theme.palette.primary.contrastText,
-  borderRadius: theme.spacing(1),
-  padding: theme.spacing(1),
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
 }));
 
 const StyledCard = styled(Card, {

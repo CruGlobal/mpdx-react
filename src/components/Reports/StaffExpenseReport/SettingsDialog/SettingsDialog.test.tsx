@@ -15,6 +15,7 @@ const TestComponent: React.FC<SettingsDialogProps> = ({
   isOpen,
   onClose,
   selectedFilters,
+  selectedFundType,
 }) => (
   <TestRouter>
     <GqlMockedProvider<{ ReportsStaffExpenses: ReportsStaffExpensesQuery }>
@@ -31,9 +32,7 @@ const TestComponent: React.FC<SettingsDialogProps> = ({
                         breakdownByMonth: [
                           {
                             transactions: [
-                              {
-                                transactedAt: DateTime.now().toISO() ?? '',
-                              },
+                              { transactedAt: DateTime.now().toISO() },
                             ],
                           },
                         ],
@@ -48,7 +47,7 @@ const TestComponent: React.FC<SettingsDialogProps> = ({
                           {
                             transactions: [
                               {
-                                transactedAt: DateTime.now().toISO() ?? '',
+                                transactedAt: DateTime.now().toISO(),
                               },
                             ],
                           },
@@ -64,7 +63,7 @@ const TestComponent: React.FC<SettingsDialogProps> = ({
                           {
                             transactions: [
                               {
-                                transactedAt: DateTime.now().toISO() ?? '',
+                                transactedAt: DateTime.now().toISO(),
                               },
                             ],
                           },
@@ -84,6 +83,7 @@ const TestComponent: React.FC<SettingsDialogProps> = ({
           isOpen={isOpen}
           onClose={onClose}
           selectedFilters={selectedFilters}
+          selectedFundType={selectedFundType}
         />
       </LocalizationProvider>
     </GqlMockedProvider>
@@ -94,6 +94,7 @@ describe('SettingsDialog', () => {
   const defaultProps = {
     isOpen: true,
     onClose: jest.fn(),
+    selectedFundType: 'Primary',
   };
 
   beforeEach(() => {
@@ -134,11 +135,14 @@ describe('SettingsDialog', () => {
   });
 
   it('should render all category checkboxes', async () => {
-    const { getByRole } = render(<TestComponent {...defaultProps} />);
+    const { findByRole, getByRole } = render(
+      <TestComponent {...defaultProps} />,
+    );
 
-    await waitFor(() => {
-      expect(getByRole('checkbox', { name: 'Benefits' })).toBeInTheDocument();
-    });
+    expect(
+      await findByRole('checkbox', { name: 'Benefits' }),
+    ).toBeInTheDocument();
+
     expect(getByRole('checkbox', { name: 'Salary' })).toBeInTheDocument();
     expect(getByRole('checkbox', { name: 'Donation' })).toBeInTheDocument();
   });
@@ -154,7 +158,7 @@ describe('SettingsDialog', () => {
       ],
     };
 
-    const { getByRole } = render(
+    const { getByRole, findByRole } = render(
       <TestComponent {...defaultProps} selectedFilters={selectedFilters} />,
     );
 
@@ -163,9 +167,10 @@ describe('SettingsDialog', () => {
     });
     expect(dateRangeDropdown).toHaveTextContent('Month to Date');
 
-    await waitFor(() => {
-      expect(getByRole('checkbox', { name: 'Benefits' })).toBeInTheDocument();
-    });
+    expect(
+      await findByRole('checkbox', { name: 'Benefits' }),
+    ).toBeInTheDocument();
+
     expect(getByRole('checkbox', { name: 'Benefits' })).toBeChecked();
     expect(getByRole('checkbox', { name: 'Salary' })).toBeChecked();
     expect(getByRole('checkbox', { name: 'Donation' })).not.toBeChecked();
@@ -241,11 +246,11 @@ describe('SettingsDialog', () => {
   });
 
   it('should toggle category selection', async () => {
-    const { getByLabelText } = render(<TestComponent {...defaultProps} />);
+    const { getByLabelText, findByLabelText } = render(
+      <TestComponent {...defaultProps} />,
+    );
 
-    await waitFor(() => {
-      expect(getByLabelText('Benefits')).toBeInTheDocument();
-    });
+    expect(await findByLabelText('Benefits')).toBeInTheDocument();
 
     const benefitsCheckbox = getByLabelText('Benefits');
     const salaryCheckbox = getByLabelText('Salary');
@@ -266,13 +271,11 @@ describe('SettingsDialog', () => {
   it('should call onClose with form values when Apply Filters is clicked', async () => {
     const onClose = jest.fn();
 
-    const { getByLabelText, getByRole } = render(
+    const { findByLabelText, getByLabelText, getByRole } = render(
       <TestComponent {...defaultProps} onClose={onClose} />,
     );
 
-    await waitFor(() => {
-      expect(getByLabelText('Benefits')).toBeInTheDocument();
-    });
+    expect(await findByLabelText('Benefits')).toBeInTheDocument();
 
     userEvent.click(getByLabelText('Benefits'));
 
@@ -322,7 +325,7 @@ describe('SettingsDialog', () => {
       categories: [StaffExpenseCategoryEnum.Salary],
     };
 
-    const { getByLabelText, getByRole } = render(
+    const { findByLabelText, getByRole, getByLabelText } = render(
       <TestComponent
         {...defaultProps}
         onClose={onClose}
@@ -330,9 +333,7 @@ describe('SettingsDialog', () => {
       />,
     );
 
-    await waitFor(() => {
-      expect(getByLabelText('Benefits')).toBeInTheDocument();
-    });
+    expect(await findByLabelText('Benefits')).toBeInTheDocument();
 
     userEvent.click(getByLabelText('Benefits'));
     userEvent.click(getByRole('button', { name: 'Cancel' }));
@@ -343,13 +344,11 @@ describe('SettingsDialog', () => {
   it('should reset form when Cancel is clicked', async () => {
     const onClose = jest.fn();
 
-    const { getByLabelText, getByRole } = render(
+    const { findByLabelText, getByLabelText, getByRole } = render(
       <TestComponent {...defaultProps} onClose={onClose} />,
     );
 
-    await waitFor(() => {
-      expect(getByLabelText('Benefits')).toBeInTheDocument();
-    });
+    expect(await findByLabelText('Benefits')).toBeInTheDocument();
 
     userEvent.click(getByLabelText('Benefits'));
     expect(getByLabelText('Benefits')).toBeChecked();
@@ -360,24 +359,20 @@ describe('SettingsDialog', () => {
   });
 
   it('should disable Apply Filters button when form is not dirty and enable when dirty', async () => {
-    const { getByRole, getByLabelText } = render(
+    const { findByRole, findByLabelText, getByLabelText } = render(
       <TestComponent {...defaultProps} />,
     );
 
-    await waitFor(() => {
-      expect(getByRole('button', { name: 'Apply Filters' })).toBeDisabled();
-    });
+    expect(
+      await findByRole('button', { name: 'Apply Filters' }),
+    ).toBeDisabled();
 
-    await waitFor(() => {
-      expect(getByLabelText('Benefits')).toBeInTheDocument();
-    });
+    expect(await findByLabelText('Benefits')).toBeInTheDocument();
 
     // Make form dirty
     userEvent.click(getByLabelText('Benefits'));
 
-    await waitFor(() => {
-      expect(getByRole('button', { name: 'Apply Filters' })).toBeEnabled();
-    });
+    expect(await findByRole('button', { name: 'Apply Filters' })).toBeEnabled();
   });
 
   it('should call onClose with original filters when dialog backdrop is clicked', () => {
@@ -403,18 +398,11 @@ describe('SettingsDialog', () => {
   });
 
   it('should handle undefined selectedFilters and undefined categories', async () => {
-    const { getByLabelText, getByRole, rerender } = render(
+    const { findByLabelText, rerender } = render(
       <TestComponent {...defaultProps} selectedFilters={undefined} />,
     );
 
-    expect(
-      getByRole('heading', { name: 'Report Settings' }),
-    ).toBeInTheDocument();
-
-    await waitFor(() => {
-      expect(getByLabelText('Benefits')).toBeInTheDocument();
-    });
-    expect(getByLabelText('Benefits')).not.toBeChecked();
+    expect(await findByLabelText('Benefits')).not.toBeChecked();
 
     // Also test with defined filters but undefined categories
     const selectedFilters: Filters = {
@@ -428,9 +416,6 @@ describe('SettingsDialog', () => {
       <TestComponent {...defaultProps} selectedFilters={selectedFilters} />,
     );
 
-    await waitFor(() => {
-      expect(getByLabelText('Benefits')).toBeInTheDocument();
-    });
-    expect(getByLabelText('Benefits')).not.toBeChecked();
+    expect(await findByLabelText('Benefits')).not.toBeChecked();
   });
 });

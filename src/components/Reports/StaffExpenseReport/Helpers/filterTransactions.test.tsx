@@ -197,7 +197,6 @@ describe('filterTransactions', () => {
     // One grouped, one ungrouped
     expect(result).toHaveLength(2);
     const grouped = result[0] as GroupedTransaction;
-    expect(grouped.groupedTransactions).toBeDefined();
     expect(grouped.groupedTransactions).toHaveLength(2);
 
     const ungrouped = result[1];

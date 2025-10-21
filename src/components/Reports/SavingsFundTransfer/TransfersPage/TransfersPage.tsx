@@ -1,4 +1,5 @@
 import React, { useContext, useMemo, useState } from 'react';
+import { HourglassDisabled } from '@mui/icons-material';
 import PrintIcon from '@mui/icons-material/Print';
 import {
   Box,
@@ -16,19 +17,23 @@ import {
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import theme from 'src/theme';
+import { AccountInfoBox } from '../../Shared/AccountInfoBox/AccountInfoBox';
+import { AccountInfoBoxSkeleton } from '../../Shared/AccountInfoBox/AccountInfoBoxSkeleton';
+import { EmptyTable } from '../../Shared/EmptyTable/EmptyTable';
 import { useStaffAccountQuery } from '../../StaffAccount.generated';
 import {
   StaffSavingFundContext,
   StaffSavingFundType,
 } from '../../StaffSavingFund/StaffSavingFundContext';
+import { SimplePrintOnly, SimpleScreenOnly } from '../../styledComponents';
 import { BalanceCard } from '../BalanceCard/BalanceCard';
+import { CardSkeleton } from '../BalanceCard/CardSkeleton';
 import { filteredTransfers } from '../Helper/filterTransfers';
 import { getStatusLabel } from '../Helper/getStatus';
 import {
   useReportsSavingsFundTransferQuery,
   useReportsStaffExpensesQuery,
 } from '../ReportsSavingsFund.generated';
-import { EmptyTable } from '../Table/EmptyTable';
 import { PrintTable } from '../Table/PrintTable';
 import { TransfersTable } from '../Table/TransfersTable';
 import { DynamicTransferModal } from '../TransferModal/DynamicTransferModal';
@@ -41,7 +46,6 @@ import {
   TransferModalData,
   Transfers,
 } from '../mockData';
-import { PrintOnly, ScreenOnly } from '../styledComponents/DisplayStyling';
 
 const StyledPrintButton = styled(Button)({
   border: '1px solid',
@@ -61,6 +65,13 @@ interface TransfersPageProps {
   title: string;
 }
 
+const StyledCardsBox = styled(Box)({
+  flex: 1,
+  minWidth: 250,
+  display: 'flex',
+  gap: theme.spacing(4),
+});
+
 export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
   const { t } = useTranslation();
   const [modalData, setModalData] = useState<TransferModalData | null>(null);
@@ -68,16 +79,16 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
     StaffSavingFundContext,
   ) as StaffSavingFundType;
 
-  const { data: staffAccountData } = useStaffAccountQuery();
+  const { data: staffAccountData, error: staffAccountError } =
+    useStaffAccountQuery();
 
   const { data: reportData, loading: reportLoading } =
     useReportsSavingsFundTransferQuery();
-  const { data: fundsData, loading: fundsLoading } =
-    useReportsStaffExpensesQuery({
-      variables: {
-        fundTypes: [FundTypeEnum.Primary, FundTypeEnum.Savings],
-      },
-    });
+  const { data: fundsData, error: fundsError } = useReportsStaffExpensesQuery({
+    variables: {
+      fundTypes: [FundTypeEnum.Primary, FundTypeEnum.Savings],
+    },
+  });
 
   const funds = useMemo(
     () =>
@@ -197,11 +208,11 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
       <GlobalStyles
         styles={{
           '@media print': {
-            'svg, .MuiSvgIcon-root': {
-              display: 'inline !important',
-              visibility: 'visible !important',
-              width: '24px',
-              height: '24px',
+            '.StyledIconBox-root': {
+              width: '26px',
+              height: '26px',
+              WebkitPrintColorAdjust: 'exact',
+              printColorAdjust: 'exact',
             },
           },
           '@page': {
@@ -210,19 +221,19 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
         }}
       />
       <Box>
-        <ScreenOnly>
+        <SimpleScreenOnly>
           <MultiPageHeader
             isNavListOpen={isNavListOpen}
             onNavListToggle={onNavListToggle}
             headerType={HeaderTypeEnum.Report}
             title={title}
           />
-        </ScreenOnly>
+        </SimpleScreenOnly>
         <Box sx={{ mt: 2 }}>
           <Container>
             <StyledHeaderBox>
               <Typography variant="h4">{t('Fund Transfer')}</Typography>
-              <ScreenOnly
+              <SimpleScreenOnly
                 sx={{
                   display: 'flex',
                   flexDirection: 'column',
@@ -241,20 +252,16 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                 >
                   {t('Print')}
                 </StyledPrintButton>
-              </ScreenOnly>
+              </SimpleScreenOnly>
             </StyledHeaderBox>
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                gap: 3,
-                mb: 2,
-              }}
-            >
-              <Typography>{staffAccountData?.staffAccount?.name}</Typography>
-              <Typography>{staffAccountData?.staffAccount?.id}</Typography>
-            </Box>
+            {!staffAccountData && !staffAccountError ? (
+              <AccountInfoBoxSkeleton />
+            ) : (
+              <AccountInfoBox
+                name={staffAccountData?.staffAccount?.name}
+                accountId={staffAccountData?.staffAccount?.id}
+              />
+            )}
             <Box
               display="flex"
               flexWrap="wrap"
@@ -263,16 +270,22 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                 flexDirection: { xs: 'column', sm: 'row' },
               }}
             >
-              {funds.map((fund) => (
-                <BalanceCard
-                  fund={fund}
-                  key={fund.id}
-                  handleOpenTransferModal={handleOpenTransferModal}
-                  loading={fundsLoading}
-                />
-              ))}
+              {!fundsData && !fundsError ? (
+                <StyledCardsBox>
+                  <CardSkeleton />
+                  <CardSkeleton />
+                </StyledCardsBox>
+              ) : (
+                funds.map((fund) => (
+                  <BalanceCard
+                    fund={fund}
+                    key={fund.id}
+                    handleOpenTransferModal={handleOpenTransferModal}
+                  />
+                ))
+              )}
             </Box>
-            <ScreenOnly sx={{ mt: 2, mb: 3 }}>
+            <SimpleScreenOnly sx={{ mt: 2, mb: 3 }}>
               <Box sx={{ mb: 3 }}>
                 <TransfersTable
                   history={upcomingTransfers}
@@ -282,6 +295,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                     <EmptyTable
                       title={t('Upcoming Transfers not available')}
                       subtitle={t('No data found across any accounts.')}
+                      icon={HourglassDisabled}
                     />
                   }
                   loading={reportLoading}
@@ -295,12 +309,13 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                   <EmptyTable
                     title={t('Transfer History not available')}
                     subtitle={t('No data found across any accounts.')}
+                    icon={HourglassDisabled}
                   />
                 }
                 loading={reportLoading}
               />
-            </ScreenOnly>
-            <PrintOnly>
+            </SimpleScreenOnly>
+            <SimplePrintOnly>
               <Box sx={{ my: 4 }}>
                 <PrintTable
                   transfers={upcomingTransfers}
@@ -311,7 +326,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
                   type={TableTypeEnum.History}
                 />
               </Box>
-            </PrintOnly>
+            </SimplePrintOnly>
           </Container>
         </Box>
         {modalData && (

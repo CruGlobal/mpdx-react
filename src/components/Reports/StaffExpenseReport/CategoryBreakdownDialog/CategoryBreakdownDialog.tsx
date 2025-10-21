@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import {
   Dialog,
   DialogActions,
@@ -18,7 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { CancelButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
-import { Transaction } from '../StaffExpenseReport';
+import { Transaction } from '../Helpers/filterTransactions';
 
 export interface CategoryBreakdownDialogProps {
   isOpen: boolean;
@@ -34,6 +35,14 @@ export const CategoryBreakdownDialog: React.FC<
   const { t } = useTranslation();
   const locale = useLocale();
   const theme = useTheme();
+
+  const transactionsSortedByDate = useMemo(
+    () =>
+      transactions.toSorted((a, b) =>
+        a.transactedAt.localeCompare(b.transactedAt, locale),
+      ),
+    [transactions, locale],
+  );
 
   return (
     <Dialog
@@ -72,24 +81,20 @@ export const CategoryBreakdownDialog: React.FC<
               </TableRow>
             </TableHead>
             <TableBody>
-              {transactions
-                .sort((a, b) =>
-                  a.transactedAt.localeCompare(b.transactedAt, locale),
-                )
-                .map((transaction) => (
-                  <TableRow key={transaction.id}>
-                    <TableCell>
-                      {dateFormat(
-                        DateTime.fromISO(transaction.transactedAt),
-                        locale,
-                      )}
-                    </TableCell>
-                    <TableCell>{transaction.displayCategory}</TableCell>
-                    <TableCell align="right">
-                      {currencyFormat(transaction.amount, 'USD', locale)}
-                    </TableCell>
-                  </TableRow>
-                ))}
+              {transactionsSortedByDate.map((transaction) => (
+                <TableRow key={transaction.id}>
+                  <TableCell>
+                    {dateFormat(
+                      DateTime.fromISO(transaction.transactedAt),
+                      locale,
+                    )}
+                  </TableCell>
+                  <TableCell>{transaction.displayCategory}</TableCell>
+                  <TableCell align="right">
+                    {currencyFormat(transaction.amount, 'USD', locale)}
+                  </TableCell>
+                </TableRow>
+              ))}
             </TableBody>
             <TableFooter
               sx={{

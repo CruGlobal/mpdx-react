@@ -26,6 +26,14 @@ jest.mock('notistack', () => ({
   },
 }));
 
+jest.mock('../DeleteTransferModal/DynamicDeleteTransferModal', () => ({
+  DynamicDeleteTransferModal: () => <div data-testid="delete-modal" />,
+}));
+
+jest.mock('../FailedTransferModal/DynamicFailedTransferModal', () => ({
+  DynamicFailedTransferModal: () => <div data-testid="failed-modal" />,
+}));
+
 const mockHistory: Transfers[] = [
   {
     ...mockData[0],
@@ -66,18 +74,31 @@ describe('TransferHistoryTable', () => {
   it('renders with transfer history data', async () => {
     const { getByRole, findByRole } = render(<TestComponent />);
 
-    const iconRow = getByRole('row', {
-      name: 'Savings Account Arrow Primary Account $2,500.00 One Time pending Sep 26, 2023 Reimbursements Stop Transfer',
-    });
+    const grid = await findByRole('grid');
+    const headers = within(grid)
+      .getAllByRole('columnheader')
+      .map((h) => h.textContent);
+    expect(headers).toEqual(
+      expect.arrayContaining([
+        'Transfers',
+        'Amount',
+        'Schedule',
+        'Status',
+        'Transfer Date',
+        'Stop Date',
+        'Note',
+        'Actions',
+      ]),
+    );
+
+    const rows = within(grid).getAllByRole('row');
+    const iconRow = rows[1];
     const cells = within(iconRow).getAllByRole('gridcell');
 
     const transferIconCell = cells[0];
     const statusCell = cells[3];
     const actionCell = cells[7];
 
-    expect(
-      await findByRole('columnheader', { name: 'Transfers' }),
-    ).toBeInTheDocument();
     expect(
       within(transferIconCell).getByRole('img', { name: 'Primary Account' }),
     ).toBeInTheDocument();
@@ -88,38 +109,20 @@ describe('TransferHistoryTable', () => {
       within(transferIconCell).getByRole('img', { name: 'Arrow' }),
     ).toBeInTheDocument();
 
-    expect(
-      await findByRole('columnheader', { name: 'Amount' }),
-    ).toBeInTheDocument();
     expect(getByRole('gridcell', { name: '$2,500.00' })).toBeInTheDocument();
-    expect(
-      await findByRole('columnheader', { name: 'Schedule' }),
-    ).toBeInTheDocument();
+
     expect(getByRole('gridcell', { name: 'One Time' })).toBeInTheDocument();
 
-    expect(
-      await findByRole('columnheader', { name: 'Status' }),
-    ).toBeInTheDocument();
     expect(within(statusCell).getByText('pending')).toBeInTheDocument();
 
-    expect(
-      await findByRole('columnheader', { name: 'Transfer Date' }),
-    ).toBeInTheDocument();
     expect(getByRole('gridcell', { name: 'Sep 26, 2023' })).toBeInTheDocument();
-    expect(
-      await findByRole('columnheader', { name: 'Stop Date' }),
-    ).toBeInTheDocument();
+
     expect(getByRole('gridcell', { name: '' })).toBeInTheDocument();
-    expect(
-      await findByRole('columnheader', { name: 'Note' }),
-    ).toBeInTheDocument();
+
     expect(
       getByRole('gridcell', { name: 'Reimbursements' }),
     ).toBeInTheDocument();
 
-    expect(
-      await findByRole('columnheader', { name: 'Actions' }),
-    ).toBeInTheDocument();
     expect(
       within(actionCell).getByRole('button', { name: 'Add Stop Date' }),
     ).toBeInTheDocument();
@@ -147,9 +150,9 @@ describe('TransferHistoryTable', () => {
   });
 
   it('updates the sort order', async () => {
-    const { getAllByRole, getByRole, findByRole } = render(<TestComponent />);
+    const { getAllByRole, findByRole } = render(<TestComponent />);
 
-    const amountHeader = getByRole('columnheader', { name: 'Amount' });
+    const amountHeader = await findByRole('columnheader', { name: 'Amount' });
     expect(
       within(amountHeader).getByTestId('ArrowDownwardIcon'),
     ).toBeInTheDocument();

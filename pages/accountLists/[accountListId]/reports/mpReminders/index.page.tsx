@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
-import { MPGAIncomeExpensesReport } from 'src/components/Reports/MPGAIncomeExpensesReport/MPGAIncomeExpensesReport';
+import { MPRemindersReport } from 'src/components/Reports/MinistryPartnerReminders/MPRemindersReport';
 import { NoStaffAccount } from 'src/components/Reports/Shared/NoStaffAccount/NoStaffAccount';
 import { useStaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
 import {
@@ -15,11 +15,11 @@ import {
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
-const MPGAReportPageWrapper = styled(Box)(({ theme }) => ({
+const MPRemindersReportPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
 }));
 
-const MPGAReportPage: React.FC = () => {
+const MPRemindersReportPage: React.FC = () => {
   const { appName } = useGetAppSettings();
   const { t } = useTranslation();
 
@@ -34,18 +34,16 @@ const MPGAReportPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>{`${appName} | ${t('Reports')} - ${t(
-          'MPGA Monthly Report',
-        )}`}</title>
+        <title>{`${appName} | ${t('Reports')} - ${t('Ministry Partner Reminders')}`}</title>
       </Head>
       {staffAccountData?.staffAccount?.id ? (
-        <MPGAReportPageWrapper>
+        <MPRemindersReportPageWrapper>
           <SidePanelsLayout
             isScrollBox={false}
             leftPanel={
               <MultiPageMenu
                 isOpen={isNavListOpen}
-                selectedId="mpgaIncomeExpenses"
+                selectedId="mpReminders"
                 onClose={handleNavListToggle}
                 navType={NavTypeEnum.Reports}
               />
@@ -53,14 +51,14 @@ const MPGAReportPage: React.FC = () => {
             leftOpen={isNavListOpen}
             leftWidth="290px"
             mainContent={
-              <MPGAIncomeExpensesReport
+              <MPRemindersReport
                 isNavListOpen={isNavListOpen}
                 onNavListToggle={handleNavListToggle}
-                title={t('Ministry Partner Giving Analysis')}
+                title={t('Ministry Partner Reminders')}
               />
             }
           />
-        </MPGAReportPageWrapper>
+        </MPRemindersReportPageWrapper>
       ) : loading ? (
         <Loading loading />
       ) : (
@@ -71,4 +69,4 @@ const MPGAReportPage: React.FC = () => {
 };
 
 export const getServerSideProps = ensureSessionAndAccountList;
-export default MPGAReportPage;
+export default MPRemindersReportPage;
