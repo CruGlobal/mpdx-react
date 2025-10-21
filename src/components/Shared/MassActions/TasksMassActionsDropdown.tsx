@@ -95,25 +95,32 @@ export const TasksMassActionsDropdown: React.FC<
   const deleteTasks = async () => {
     setDeleteTasksModalOpen(false);
     setIsDeleting(true);
-    await deleteTasksMutation({
-      variables: {
-        accountListId: accountListId ?? '',
-        ids: selectedIds,
-      },
-      update: (cache) => {
-        selectedIds.forEach((id) => {
-          cache.evict({ id: `Task:${id}` });
-        });
-        cache.gc();
-      },
-      refetchQueries: ['GetWeeklyActivity', 'GetThisWeek'],
-    });
-    enqueueSnackbar(t('Task(s) deleted successfully'), {
-      variant: 'success',
-    });
-    setIsDeleting(false);
-    if (massDeselectAll) {
-      massDeselectAll();
+    try {
+      await deleteTasksMutation({
+        variables: {
+          accountListId: accountListId ?? '',
+          ids: selectedIds,
+        },
+        update: (cache) => {
+          selectedIds.forEach((id) => {
+            cache.evict({ id: `Task:${id}` });
+          });
+          cache.gc();
+        },
+        refetchQueries: ['GetWeeklyActivity', 'GetThisWeek'],
+      });
+      enqueueSnackbar(t('Task(s) deleted successfully'), {
+        variant: 'success',
+      });
+      if (massDeselectAll) {
+        massDeselectAll();
+      }
+    } catch {
+      enqueueSnackbar(t('Error deleting task(s)'), {
+        variant: 'error',
+      });
+    } finally {
+      setIsDeleting(false);
     }
   };
 
