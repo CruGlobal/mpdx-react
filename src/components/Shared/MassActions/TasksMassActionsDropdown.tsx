@@ -3,6 +3,7 @@ import { Hidden, ListItemText, Menu, MenuItem } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import Loading from 'src/components/Loading/Loading';
 import {
   DynamicMassActionsTasksAddTagsModal,
   preloadMassActionsTasksAddTagsModal,
@@ -59,6 +60,7 @@ export const TasksMassActionsDropdown: React.FC<
   const [deleteTasksModalOpen, setDeleteTasksModalOpen] = useState(false);
   const [editTasksModalOpen, setEditTasksModalOpen] = useState(false);
   const [removeTagsModalOpen, setRemoveTagsModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const [updateTasksMutation] = useMassActionsUpdateTasksMutation();
   const [deleteTasksMutation] = useMassActionsDeleteTasksMutation();
@@ -91,6 +93,8 @@ export const TasksMassActionsDropdown: React.FC<
   };
 
   const deleteTasks = async () => {
+    setDeleteTasksModalOpen(false);
+    setIsDeleting(true);
     await deleteTasksMutation({
       variables: {
         accountListId: accountListId ?? '',
@@ -107,7 +111,7 @@ export const TasksMassActionsDropdown: React.FC<
     enqueueSnackbar(t('Task(s) deleted successfully'), {
       variant: 'success',
     });
-    setDeleteTasksModalOpen(false);
+    setIsDeleting(false);
     if (massDeselectAll) {
       massDeselectAll();
     }
@@ -231,6 +235,7 @@ export const TasksMassActionsDropdown: React.FC<
           handleClose={() => setRemoveTagsModalOpen(false)}
         />
       )}
+      {isDeleting && <Loading loading />}
     </>
   );
 };
