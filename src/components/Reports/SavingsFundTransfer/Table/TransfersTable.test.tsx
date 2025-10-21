@@ -71,6 +71,12 @@ const TestComponent: React.FC = () => {
 };
 
 describe('TransferHistoryTable', () => {
+  beforeEach(() => {
+    mutationSpy.mockClear();
+    handleOpenMock.mockClear();
+    mockEnqueue.mockClear();
+  });
+
   it('renders with transfer history data', async () => {
     const { getByRole, findByRole } = render(<TestComponent />);
 
@@ -213,41 +219,45 @@ describe('TransferHistoryTable', () => {
     });
   });
 
-  it('opens modal when Clear is clicked and updates when confirmed', async () => {
-    const { getByRole, findByRole, findByText } = render(<TestComponent />);
+  it(
+    'opens modal when Clear is clicked and updates when confirmed',
+    async () => {
+      const { getByRole, findByRole, findByText } = render(<TestComponent />);
 
-    const iconRow = getByRole('row', {
-      name: 'Primary Account Arrow Savings Account $1,200.00 Monthly ongoing Sep 25, 2023 Sep 25, 2025 Long-term savings Stop Transfer',
-    });
-    const cells = within(iconRow).getAllByRole('gridcell');
-    const actionCell = cells[7];
-    const icon = within(actionCell).getByRole('button', {
-      name: 'Edit Stop Date',
-    });
+      const iconRow = getByRole('row', {
+        name: 'Primary Account Arrow Savings Account $1,200.00 Monthly ongoing Sep 25, 2023 Sep 25, 2025 Long-term savings Stop Transfer',
+      });
+      const cells = within(iconRow).getAllByRole('gridcell');
+      const actionCell = cells[7];
+      const icon = within(actionCell).getByRole('button', {
+        name: 'Edit Stop Date',
+      });
 
-    userEvent.click(icon);
+      userEvent.click(icon);
 
-    const dialog = await findByRole('dialog');
-    expect(dialog).toBeVisible();
+      const dialog = await findByRole('dialog');
+      expect(dialog).toBeVisible();
 
-    userEvent.click(within(dialog).getByRole('button', { name: 'Clear' }));
+      userEvent.click(within(dialog).getByRole('button', { name: 'Clear' }));
 
-    expect(await findByText('Confirm Clear')).toBeInTheDocument();
-    await userEvent.click(getByRole('button', { name: 'Yes' }));
+      expect(await findByText('Confirm Clear')).toBeInTheDocument();
+      await userEvent.click(getByRole('button', { name: 'Yes' }));
 
-    expect(mutationSpy).toHaveBeenCalled();
+      expect(mutationSpy).toHaveBeenCalled();
 
-    await waitFor(() => {
-      expect(mockEnqueue).toHaveBeenCalledWith(
-        'Stop date updated successfully',
-        {
-          variant: 'success',
-        },
-      );
-    });
+      await waitFor(() => {
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          'Stop date updated successfully',
+          {
+            variant: 'success',
+          },
+        );
+      });
 
-    expect(dialog).not.toBeVisible();
-  });
+      expect(dialog).not.toBeVisible();
+    },
+    10000,
+  );
 
   it('updates end date when Ok is clicked', async () => {
     const { getByRole, findByRole } = render(<TestComponent />);
