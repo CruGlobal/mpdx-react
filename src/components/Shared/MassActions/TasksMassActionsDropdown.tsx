@@ -60,10 +60,10 @@ export const TasksMassActionsDropdown: React.FC<
   const [deleteTasksModalOpen, setDeleteTasksModalOpen] = useState(false);
   const [editTasksModalOpen, setEditTasksModalOpen] = useState(false);
   const [removeTagsModalOpen, setRemoveTagsModalOpen] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
 
   const [updateTasksMutation] = useMassActionsUpdateTasksMutation();
-  const [deleteTasksMutation] = useMassActionsDeleteTasksMutation();
+  const [deleteTasksMutation, { loading: isDeleting }] =
+    useMassActionsDeleteTasksMutation();
   const { update } = useUpdateTasksQueries();
 
   const completeTasks = async () => {
@@ -94,7 +94,6 @@ export const TasksMassActionsDropdown: React.FC<
 
   const deleteTasks = async () => {
     setDeleteTasksModalOpen(false);
-    setIsDeleting(true);
     try {
       await deleteTasksMutation({
         variables: {
@@ -119,8 +118,6 @@ export const TasksMassActionsDropdown: React.FC<
       enqueueSnackbar(t('Error deleting task(s)'), {
         variant: 'error',
       });
-    } finally {
-      setIsDeleting(false);
     }
   };
 
