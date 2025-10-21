@@ -3,6 +3,7 @@ import { Hidden, ListItemText, Menu, MenuItem } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import Loading from 'src/components/Loading/Loading';
 import {
   DynamicMassActionsTasksAddTagsModal,
   preloadMassActionsTasksAddTagsModal,
@@ -59,6 +60,7 @@ export const TasksMassActionsDropdown: React.FC<
   const [deleteTasksModalOpen, setDeleteTasksModalOpen] = useState(false);
   const [editTasksModalOpen, setEditTasksModalOpen] = useState(false);
   const [removeTagsModalOpen, setRemoveTagsModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const [updateTasksMutation] = useMassActionsUpdateTasksMutation();
   const [deleteTasksMutation] = useMassActionsDeleteTasksMutation();
@@ -91,25 +93,34 @@ export const TasksMassActionsDropdown: React.FC<
   };
 
   const deleteTasks = async () => {
-    await deleteTasksMutation({
-      variables: {
-        accountListId: accountListId ?? '',
-        ids: selectedIds,
-      },
-      update: (cache) => {
-        selectedIds.forEach((id) => {
-          cache.evict({ id: `Task:${id}` });
-        });
-        cache.gc();
-      },
-      refetchQueries: ['GetWeeklyActivity', 'GetThisWeek'],
-    });
-    enqueueSnackbar(t('Task(s) deleted successfully'), {
-      variant: 'success',
-    });
     setDeleteTasksModalOpen(false);
-    if (massDeselectAll) {
-      massDeselectAll();
+    setIsDeleting(true);
+    try {
+      await deleteTasksMutation({
+        variables: {
+          accountListId: accountListId ?? '',
+          ids: selectedIds,
+        },
+        update: (cache) => {
+          selectedIds.forEach((id) => {
+            cache.evict({ id: `Task:${id}` });
+          });
+          cache.gc();
+        },
+        refetchQueries: ['GetWeeklyActivity', 'GetThisWeek'],
+      });
+      enqueueSnackbar(t('Task(s) deleted successfully'), {
+        variant: 'success',
+      });
+      if (massDeselectAll) {
+        massDeselectAll();
+      }
+    } catch {
+      enqueueSnackbar(t('Error deleting task(s)'), {
+        variant: 'error',
+      });
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -231,6 +242,7 @@ export const TasksMassActionsDropdown: React.FC<
           handleClose={() => setRemoveTagsModalOpen(false)}
         />
       )}
+      {isDeleting && <Loading loading />}
     </>
   );
 };
