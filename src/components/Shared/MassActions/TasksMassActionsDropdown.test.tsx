@@ -9,7 +9,6 @@ import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetTasksForAddingTagsQuery } from 'src/components/Task/MassActions/AddTags/TasksAddTags.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import i18n from 'src/lib/i18n';
 import theme from '../../../theme';
 import { TasksMassActionsDropdown } from './TasksMassActionsDropdown';
@@ -76,11 +75,6 @@ const TaskComponents = ({ ids = selectedIds }: TaskComponentsProps) => {
     </TestRouter>
   );
 };
-
-beforeEach(() => {
-  (useAccountListId as jest.Mock).mockReturnValue('123456789');
-  massDeselectAll.mockClear();
-});
 
 describe('TasksMassActionsDropdown', () => {
   it('opens the more actions menu and clicks the complete tasks action', async () => {
