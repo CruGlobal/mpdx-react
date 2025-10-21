@@ -6,7 +6,7 @@ import { Fund } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { BalanceCardList, BalanceCardListProps } from './BalanceCardList';
 
-const mutationSpy = jest.fn();
+const onCardClick = jest.fn();
 const mockFunds: Fund[] = [
   {
     id: '1',
@@ -41,7 +41,7 @@ const defaultProps = {
     Savings: { in: 300, out: 50 },
     ConferenceSavings: { in: 0, out: 200 },
   },
-  onCardClick: mutationSpy,
+  onCardClick: onCardClick,
   loading: false,
 };
 
@@ -71,7 +71,7 @@ describe('BalanceCardList', () => {
     const { getAllByRole } = render(<TestComponent {...defaultProps} />);
 
     userEvent.click(getAllByRole('button', { name: 'View Account' })[0]);
-    expect(mutationSpy).toHaveBeenCalledWith('Primary');
+    expect(onCardClick).toHaveBeenCalledWith('Primary');
   });
 
   it('displays selected state on correct card', () => {

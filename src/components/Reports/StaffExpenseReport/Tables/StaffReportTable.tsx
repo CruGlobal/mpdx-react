@@ -178,7 +178,6 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
 
     return sorted.map((row) => ({
       ...row,
-      sortPriority: row.isGrouped ? 0 : 1,
     }));
   }, [staffReportRows]);
 
@@ -241,7 +240,7 @@ export const StaffReportTable: React.FC<StaffReportTableProps> = ({
       <StyledGrid
         rows={rowsWithSortPriority || []}
         columns={columns}
-        getRowId={(row) => `${row.id}`}
+        getRowId={(row) => row.id}
         sortingOrder={['desc', 'asc']}
         sortModel={sortModel}
         onSortModelChange={(size) => setSortModel(size)}
