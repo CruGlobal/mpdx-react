@@ -2,7 +2,6 @@ import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import React, { ReactElement, useCallback, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
-import CompassIcon from '@mui/icons-material/Explore';
 import PeopleIcon from '@mui/icons-material/People';
 import PersonIcon from '@mui/icons-material/Person';
 import SearchIcon from '@mui/icons-material/Search';
@@ -26,9 +25,14 @@ import {
   StatusEnum,
 } from 'src/graphql/types.generated';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
+import { NavPage, useNavPages } from 'src/hooks/useNavPages';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { useCreateContactMutation } from '../AddMenu/Items/CreateContact/CreateContact.generated';
 import { useGetSearchMenuContactsLazyQuery } from './SearchMenu.generated';
+
+interface ContactSearch extends NavPage {
+  status?: StatusEnum | null;
+}
 
 const StyledDialog = styled(Dialog)(() => ({
   '& .MuiPaper-root': {
@@ -50,14 +54,6 @@ const SearchPopper = styled(Popper)(({ theme }) => ({
     gap: theme.spacing(1),
   },
 }));
-
-interface Option {
-  id?: string;
-  name: string;
-  status?: StatusEnum | null;
-  icon: ReactElement;
-  link: string;
-}
 
 interface SearchDialogProps {
   handleClose: () => void;
@@ -100,156 +96,15 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
     [accountListId],
   );
 
-  const defaultOptions: Option[] = [
-    {
-      name: t('Contacts'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/contacts`,
-    },
-    {
-      name: t('Tasks'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tasks`,
-    },
-    {
-      name: t('Preferences'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/settings/preferences`,
-    },
-    {
-      name: t('Preferences - Notifications'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/settings/notifications`,
-    },
-    {
-      name: t('Preferences - Connect Services'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/settings/integrations`,
-    },
-    {
-      name: t('Preferences - Manage Accounts'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/settings/manageAccounts`,
-    },
-    {
-      name: t('Preferences - Manage Coaches'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/settings/manageCoaches`,
-    },
-    {
-      name: t('Reports - Donations'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/reports/donations`,
-    },
-    {
-      name: t('Reports - Monthly Report (Partner Currency)'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/reports/partnerCurrency`,
-    },
-    {
-      name: t('Reports - Monthly Report (Salary Currency)'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/reports/salaryCurrency`,
-    },
-    {
-      name: t('Reports - Designation Accounts'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/reports/designationAccounts`,
-    },
-    {
-      name: t('Reports - Responsibility Centers'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/reports/financialAccounts`,
-    },
-    {
-      name: t('Reports - Expected Monthly Total'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/reports/expectedMonthlyTotal`,
-    },
-    {
-      name: t('Reports - Partner Giving Analysis'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/reports/partnerGivingAnalysis`,
-    },
-    {
-      name: t('Reports - Coaching'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/reports/coaching`,
-    },
-    {
-      name: t('Tools'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tools`,
-    },
-    {
-      name: t('Tools - Appeals'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tools/appeals`,
-    },
-    {
-      name: t('Tools - Fix Commitment Info'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tools/fix/commitmentInfo`,
-    },
-    {
-      name: t('Tools - Fix Mailing Addresses'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tools/fix/mailingAddresses`,
-    },
-    {
-      name: t('Tools - Fix Send Newsletter'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tools/fix/sendNewsletter`,
-    },
-    {
-      name: t('Tools - Merge Contacts'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tools/merge/contacts`,
-    },
-    {
-      name: t('Tools - Fix Email Addresses'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tools/fix/emailAddresses`,
-    },
-    {
-      name: t('Tools - Fix Phone Numbers'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tools/fix/phoneNumbers`,
-    },
-    {
-      name: t('Tools - Merge People'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tools/merge/people`,
-    },
-    {
-      name: t('Tools - Import from Google'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tools/import/google`,
-    },
-    {
-      name: t('Tools - Import from TntConnect'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tools/import/tntConnect`,
-    },
-    {
-      name: t('Tools - Import from CSV'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/tools/import/csv`,
-    },
-    {
-      name: t('Coaching'),
-      icon: <CompassIcon />,
-      link: `/accountLists/${accountListId}/coaching`,
-    },
-  ];
+  const { searchDialogPages: defaultOptions } = useNavPages(false, true);
 
-  const options: Option[] = [
+  const options: ContactSearch[] = [
     ...(contacts?.nodes.map(({ name, status, id }) => ({
       id,
-      name,
+      title: name,
       status,
-      icon: <PersonIcon />,
-      link: `/accountLists/${accountListId}/contacts/${id}`,
+      searchIcon: <PersonIcon />,
+      href: `/accountLists/${accountListId}/contacts/${id}`,
     })) ?? []),
     ...defaultOptions,
   ];
@@ -292,22 +147,22 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
         filterSelectedOptions
         onChange={(_event, option) => {
           if (option) {
-            if (option.link === 'createContact') {
+            if (option.href === 'createContact') {
               handleCreateContact();
             } else {
-              push(option.link);
+              push(option.href ?? '');
             }
           }
 
           handleClose();
         }}
-        getOptionLabel={(option) => option.name}
+        getOptionLabel={(option) => option.title}
         renderOption={(props, option) => {
           const content = (
             <>
-              {option.icon}
+              {option.searchIcon}
               <Box display="flex" flexDirection="column">
-                <Typography>{option.name}</Typography>
+                <Typography>{option.title}</Typography>
                 <Typography variant="body2">
                   {getLocalizedContactStatus(option.status)}
                 </Typography>
@@ -316,13 +171,13 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
           );
 
           return (
-            <li {...props} key={option.id ?? option.name}>
-              {option.link === 'createContact' ? (
+            <li {...props} key={option.id ?? option.title}>
+              {option.href === 'createContact' ? (
                 <ButtonBase>{content}</ButtonBase>
               ) : (
                 <Link
                   component={NextLink}
-                  href={option.link}
+                  href={option.href ?? ''}
                   underline="none"
                   color="inherit"
                 >
@@ -338,18 +193,18 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
           const filteredOptions = options.filter((option) =>
             option.id
               ? true
-              : option.name
+              : option.title
                   .toLowerCase()
                   .includes(wildcardSearch.toLowerCase()),
           );
 
           if (contacts && contacts.totalCount > contacts.nodes.length) {
             filteredOptions.splice(contacts.nodes.length, 0, {
-              name: t(
-                `And ${contacts.totalCount - contacts.nodes.length} more`,
-              ),
-              icon: <PeopleIcon />,
-              link: `/accountLists/${accountListId}/contacts?searchTerm=${encodeURIComponent(
+              title: t('And {{ count }} more', {
+                count: contacts.totalCount - contacts.nodes.length,
+              }),
+              searchIcon: <PeopleIcon />,
+              href: `/accountLists/${accountListId}/contacts?searchTerm=${encodeURIComponent(
                 wildcardSearch,
               )}`,
             });
@@ -357,11 +212,11 @@ export const SearchDialog: React.FC<SearchDialogProps> = ({ handleClose }) => {
 
           if (params.inputValue !== '') {
             filteredOptions.push({
-              name: t('Create a new contact for "{{ name }}"', {
+              title: t('Create a new contact for "{{ name }}"', {
                 name: params.inputValue,
               }),
-              icon: <AddIcon />,
-              link: 'createContact',
+              searchIcon: <AddIcon />,
+              href: 'createContact',
             });
           }
 
