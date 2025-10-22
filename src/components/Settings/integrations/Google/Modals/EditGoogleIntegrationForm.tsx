@@ -26,6 +26,7 @@ import {
 } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import i18n from 'src/lib/i18n';
 import { GoogleAccountAttributesSlimmed } from '../GoogleAccordion';
 import {
   GoogleAccountIntegrationsDocument,
@@ -63,7 +64,7 @@ const StyledFormControlLabel = styled(FormControlLabel)(() => ({
 
 const integrationSchema = yup.object({
   id: yup.string().required(),
-  calendarId: yup.string().required(),
+  calendarId: yup.string().required(i18n.t('Calendar is required')),
   calendarIntegrations: yup
     .array()
     .of(
@@ -205,7 +206,7 @@ export const EditGoogleIntegrationForm: React.FC<
                   </Select>
                   {errors.calendarId && (
                     <FormHelperText error={true}>
-                      {t('This field is required')}
+                      {errors.calendarId}
                     </FormHelperText>
                   )}
                 </Box>
