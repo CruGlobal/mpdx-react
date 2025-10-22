@@ -6,11 +6,13 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { IntegrationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import * as Types from 'src/graphql/types.generated';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../../theme';
 import { MailchimpAccordion } from './MailchimpAccordion';
 import { MailchimpAccountQuery } from './MailchimpAccount.generated';
 
 jest.mock('next-auth/react');
+jest.mock('src/hooks/useGetAppSettings');
 
 const accountListId = 'account-list-1';
 const contactId = 'contact-1';
@@ -96,6 +98,13 @@ const standardMailchimpAccount: Types.MailchimpAccount = {
 
 describe('MailchimpAccount', () => {
   process.env.OAUTH_URL = 'https://auth.mpdx.org';
+
+  beforeEach(() => {
+    (useGetAppSettings as jest.Mock).mockReturnValue({
+      appName: 'MPDX',
+    });
+  });
+
   it('should render accordion closed', async () => {
     const { getByText, queryByRole } = render(
       <Components
@@ -190,7 +199,7 @@ describe('MailchimpAccount', () => {
         ).toBeInTheDocument();
         expect(
           queryByText(
-            'You need to create a list on Mailchimp that {{appName}} can use for your newsletter.',
+            'You need to create a list on Mailchimp that MPDX can use for your newsletter.',
           ),
         ).toBeInTheDocument();
         expect(
@@ -216,7 +225,7 @@ describe('MailchimpAccount', () => {
       await waitFor(() => {
         expect(
           queryByText(
-            'You need to create a list on Mailchimp that {{appName}} can use for your newsletter.',
+            'You need to create a list on Mailchimp that MPDX can use for your newsletter.',
           ),
         ).toBeInTheDocument();
       });
@@ -313,7 +322,7 @@ describe('MailchimpAccount', () => {
 
       await waitFor(() => {
         expect(mockEnqueue).toHaveBeenCalledWith(
-          '{{appName}} removed your integration with Mailchimp',
+          'MPDX removed your integration with Mailchimp',
           {
             variant: 'success',
           },
@@ -343,7 +352,7 @@ describe('MailchimpAccount', () => {
       await waitFor(() => {
         expect(
           getByText(
-            'Your contacts are now automatically syncing with Mailchimp. Changes to Mailchimp contacts and tags should only be done in {{appName}}.',
+            'Your contacts are now automatically syncing with Mailchimp. Changes to Mailchimp contacts and tags should only be done in MPDX.',
           ),
         ).toBeInTheDocument();
       });
@@ -365,7 +374,7 @@ describe('MailchimpAccount', () => {
       await waitFor(() => {
         expect(
           getByText(
-            'Your contacts are now automatically syncing with Mailchimp. Changes to Mailchimp contacts and tags should only be done in {{appName}}.',
+            'Your contacts are now automatically syncing with Mailchimp. Changes to Mailchimp contacts and tags should only be done in MPDX.',
           ),
         ).toBeInTheDocument();
       });
@@ -408,7 +417,7 @@ describe('MailchimpAccount', () => {
       await waitFor(() => {
         expect(
           queryByText(
-            'Your contacts are now automatically syncing with Mailchimp. Changes to Mailchimp contacts and tags should only be done in {{appName}}.',
+            'Your contacts are now automatically syncing with Mailchimp. Changes to Mailchimp contacts and tags should only be done in MPDX.',
           ),
         ).toBeInTheDocument();
       });
@@ -424,7 +433,7 @@ describe('MailchimpAccount', () => {
       await waitFor(() => {
         expect(
           queryByText(
-            'Your contacts are now automatically syncing with Mailchimp. Changes to Mailchimp contacts and tags should only be done in {{appName}}.',
+            'Your contacts are now automatically syncing with Mailchimp. Changes to Mailchimp contacts and tags should only be done in MPDX.',
           ),
         ).not.toBeInTheDocument();
         expect(

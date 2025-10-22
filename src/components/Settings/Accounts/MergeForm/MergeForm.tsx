@@ -70,9 +70,6 @@ export const MergeForm: React.FC<MergeFormProps> = ({ isSpouse }) => {
   });
   const [mergeAccountList] = useMergeAccountListMutation();
 
-  //eslint-disable-next-line no-console
-  console.log({ appName });
-
   const currentAccount = currentAccountList?.accountList;
   const accountLists = data?.accountLists.nodes.filter(
     (account) => account.id !== currentAccount?.id,

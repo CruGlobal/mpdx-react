@@ -11,11 +11,13 @@ import {
   GoogleAccountIntegrationCalendars,
   Maybe,
 } from 'src/graphql/types.generated';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../../../theme';
 import { EditGoogleAccountModal } from './EditGoogleAccountModal';
 import { GoogleAccountIntegrationsQuery } from './googleIntegrations.generated';
 
 jest.mock('next-auth/react');
+jest.mock('src/hooks/useGetAppSettings');
 
 const accountListId = 'account-list-1';
 const contactId = 'contact-1';
@@ -93,6 +95,10 @@ describe('EditGoogleAccountModal', () => {
   beforeEach(() => {
     googleIntegration = { ...standardGoogleIntegration };
     handleClose.mockClear();
+
+    (useGetAppSettings as jest.Mock).mockReturnValue({
+      appName: 'MPDX',
+    });
   });
 
   it('should render modal', async () => {
@@ -213,7 +219,7 @@ describe('EditGoogleAccountModal', () => {
 
     await waitFor(() =>
       expect(
-        getByText(/choose a calendar for {{appName}} to push tasks to:/i),
+        getByText(/choose a calendar for MPDX to push tasks to:/i),
       ).toBeInTheDocument(),
     );
 
@@ -285,7 +291,7 @@ describe('EditGoogleAccountModal', () => {
 
     await waitFor(() =>
       expect(
-        getByText(/choose a calendar for {{appName}} to push tasks to:/i),
+        getByText(/choose a calendar for MPDX to push tasks to:/i),
       ).toBeInTheDocument(),
     );
 
@@ -349,7 +355,7 @@ describe('EditGoogleAccountModal', () => {
 
     await waitFor(() =>
       expect(
-        getByText(/choose a calendar for {{appName}} to push tasks to:/i),
+        getByText(/choose a calendar for MPDX to push tasks to:/i),
       ).toBeInTheDocument(),
     );
 
@@ -458,7 +464,7 @@ describe('EditGoogleAccountModal', () => {
 
     await waitFor(() =>
       expect(
-        getByText(/choose a calendar for {{appName}} to push tasks to:/i),
+        getByText(/choose a calendar for MPDX to push tasks to:/i),
       ).toBeInTheDocument(),
     );
 
