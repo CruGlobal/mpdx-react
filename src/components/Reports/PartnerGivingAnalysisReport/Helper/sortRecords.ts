@@ -24,6 +24,10 @@ export const EnumMap: Partial<Record<PartnerGivingAnalysisSortEnum, string>> = {
 
   [PartnerGivingAnalysisSortEnum.TotalDonationsAsc]: 'totalDonations',
   [PartnerGivingAnalysisSortEnum.TotalDonationsDesc]: 'totalDonations',
+
+  [PartnerGivingAnalysisSortEnum.FirstDonationAmountAsc]: 'firstDonationAmount',
+  [PartnerGivingAnalysisSortEnum.FirstDonationAmountDesc]:
+    'firstDonationAmount',
 };
 
 export const AscendingSortEnums: Record<string, PartnerGivingAnalysisSortEnum> =
@@ -36,6 +40,7 @@ export const AscendingSortEnums: Record<string, PartnerGivingAnalysisSortEnum> =
     lastDonationAmount: PartnerGivingAnalysisSortEnum.LastDonationAmountAsc,
     lastDonationDate: PartnerGivingAnalysisSortEnum.LastDonationDateAsc,
     totalDonations: PartnerGivingAnalysisSortEnum.TotalDonationsAsc,
+    firstDonationAmount: PartnerGivingAnalysisSortEnum.FirstDonationAmountAsc,
   };
 
 export const DescendingSortEnums: Record<
@@ -50,4 +55,5 @@ export const DescendingSortEnums: Record<
   lastDonationAmount: PartnerGivingAnalysisSortEnum.LastDonationAmountDesc,
   lastDonationDate: PartnerGivingAnalysisSortEnum.LastDonationDateDesc,
   totalDonations: PartnerGivingAnalysisSortEnum.TotalDonationsDesc,
+  firstDonationAmount: PartnerGivingAnalysisSortEnum.FirstDonationAmountDesc,
 };

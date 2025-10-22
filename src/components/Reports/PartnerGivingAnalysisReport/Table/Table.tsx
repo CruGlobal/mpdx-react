@@ -71,6 +71,16 @@ export const PartnerGivingAnalysisReportTable: FC<
               label: t('Name'),
             },
             {
+              // Temporary table header for partner status
+              id: 'firstDonationAmount',
+              label: t('Status'),
+            },
+            {
+              // Temporary table header for commitment amount
+              id: 'firstDonationAmount',
+              label: t('Commitment Amount'),
+            },
+            {
               id: 'donationPeriodSum',
               label: t('Gift Total'),
             },
@@ -125,6 +135,16 @@ export const PartnerGivingAnalysisReportTable: FC<
                 >
                   {contact.name}
                 </Link>
+              </TableCell>
+              {/* Temporary table cell for partner status */}
+              <TableCell>{contact.firstDonationAmount}</TableCell>
+              {/* Temporary table cell for commitment amount */}
+              <TableCell>
+                {currencyFormat(
+                  contact.firstDonationAmount ?? 0,
+                  contact.pledgeCurrency,
+                  locale,
+                )}
               </TableCell>
               <TableCell>
                 {currencyFormat(
