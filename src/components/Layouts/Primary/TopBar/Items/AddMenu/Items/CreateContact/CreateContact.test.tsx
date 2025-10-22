@@ -74,7 +74,7 @@ describe('CreateContact', () => {
       );
 
       userEvent.click(getByText('Save'));
-      expect(await findByText('Field is required')).toBeInTheDocument();
+      expect(await findByText('Name is required')).toBeInTheDocument();
       userEvent.type(
         getByRole('textbox', { hidden: true, name: 'Name' }),
         name,
@@ -121,7 +121,7 @@ describe('CreateContact', () => {
       );
 
       userEvent.click(getByText('Save'));
-      expect(await findByText('Field is required')).toBeInTheDocument();
+      expect(await findByText('Name is required')).toBeInTheDocument();
       userEvent.type(
         getByRole('textbox', { hidden: true, name: 'Name' }),
         name,

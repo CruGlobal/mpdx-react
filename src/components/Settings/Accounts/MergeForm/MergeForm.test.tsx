@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../../theme';
 import { MergeForm } from './MergeForm';
 import {
@@ -13,6 +14,7 @@ import {
 } from './MergeForm.generated';
 
 jest.mock('next-auth/react');
+jest.mock('src/hooks/useGetAppSettings');
 
 const accountListId = 'account-list-1';
 const contactId = 'contact-1';
@@ -70,6 +72,12 @@ const Components = ({ children }: PropsWithChildren) => (
 );
 
 describe('MergeAccountsAccordion', () => {
+  beforeEach(() => {
+    (useGetAppSettings as jest.Mock).mockReturnValue({
+      appName: 'MPDX',
+    });
+  });
+
   it('should not show the merge form', async () => {
     const { queryByText } = render(
       <Components>
@@ -192,7 +200,7 @@ describe('MergeAccountsAccordion', () => {
 
     await waitFor(() => {
       expect(mockEnqueue).toHaveBeenCalledWith(
-        '{{appName}} merged your account successfully',
+        'MPDX merged your account successfully',
         {
           variant: 'success',
         },

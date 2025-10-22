@@ -26,6 +26,7 @@ import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionBu
 import { MailchimpAccount } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import i18n from 'src/lib/i18n';
 import {
   AccordionProps,
   StyledList,
@@ -46,7 +47,7 @@ const mailchimpSchema: yup.ObjectSchema<
   Pick<MailchimpAccount, 'autoLogCampaigns' | 'primaryListId'>
 > = yup.object({
   autoLogCampaigns: yup.boolean().required(),
-  primaryListId: yup.string().required(),
+  primaryListId: yup.string().required(i18n.t('A list is required')),
 });
 
 const StyledFormControlLabel = styled(FormControlLabel)(() => ({
@@ -271,7 +272,7 @@ export const MailchimpAccordion: React.FC<AccordionProps> = ({
                       </Select>
                       {errors.primaryListId && (
                         <FormHelperText error={true}>
-                          {t('This field is required')}
+                          {errors.primaryListId}
                         </FormHelperText>
                       )}
                       <StyledFormControlLabel
