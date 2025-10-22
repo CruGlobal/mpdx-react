@@ -14,17 +14,12 @@ import {
   PrivacyPolicyLink,
   TermsOfUseLink,
 } from 'src/components/Shared/Links/Links';
+import { useNavPages } from 'src/hooks/useNavPages';
 import { clearDataDogUser } from 'src/lib/dataDog';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import theme from '../../../../../../theme';
 import { useGetTopBarQuery } from '../../../TopBar/GetTopBar.generated';
 import { LeafListItem, Title } from '../../StyledComponents';
-
-type ProfileMenuContent = {
-  text: string;
-  path: string;
-  onClick?: () => void;
-};
 
 const MobileDrawer = styled(Drawer)(() => ({
   '& .MuiDrawer-paper': {
@@ -55,29 +50,6 @@ const StyledButton = styled(Button)(() => ({
   width: '100%',
 })) as typeof Button;
 
-const addProfileContent: ProfileMenuContent[] = [
-  {
-    text: 'Preferences',
-    path: '/settings/preferences',
-  },
-  {
-    text: 'Notifications',
-    path: '/settings/notifications',
-  },
-  {
-    text: 'Connect Services',
-    path: '/settings/integrations',
-  },
-  {
-    text: 'Manage Accounts',
-    path: '/settings/manageAccounts',
-  },
-  {
-    text: 'Manage Coaches',
-    path: '/settings/manageCoaches',
-  },
-];
-
 export const ProfileMenuPanel: React.FC = () => {
   const { t } = useTranslation();
   const { data } = useGetTopBarQuery();
@@ -98,6 +70,8 @@ export const ProfileMenuPanel: React.FC = () => {
       query: { accountListId: id },
     });
   };
+
+  const { panelPages: addProfileContent } = useNavPages(false);
 
   return (
     <List disablePadding data-testid="ProfileMenuPanelForNavBar">
@@ -166,13 +140,13 @@ export const ProfileMenuPanel: React.FC = () => {
       )}
       {!onSetupTour && (
         <>
-          {addProfileContent.map(({ text, path, onClick }, index) => (
-            <LeafListItem key={index} disableGutters onClick={onClick}>
+          {addProfileContent.map(({ title, href }, index) => (
+            <LeafListItem key={index} disableGutters>
               <StyledButton
                 LinkComponent={NextLink}
-                href={`/accountLists/${accountListId}${path}`}
+                href={href?.toString() ?? ''}
               >
-                <Title>{t(text)}</Title>
+                <Title>{t(title)}</Title>
               </StyledButton>
             </LeafListItem>
           ))}
