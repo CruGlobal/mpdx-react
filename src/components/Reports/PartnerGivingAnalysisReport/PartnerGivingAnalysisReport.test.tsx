@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -270,21 +270,10 @@ describe('PartnerGivingAnalysisReport', () => {
   });
 
   it('loaded', async () => {
-    const { getAllByTestId, getByTestId, queryByTestId, getByRole } = render(
-      <TestComponent />,
-    );
+    const { getAllByRole, findByRole } = render(<TestComponent />);
 
-    await waitFor(() => {
-      expect(
-        queryByTestId('LoadingPartnerGivingAnalysisReport'),
-      ).not.toBeInTheDocument();
-    });
-
-    expect(getByRole('table')).toBeInTheDocument();
-    expect(getAllByTestId('PartnerGivingAnalysisReportTableRow').length).toBe(
-      11,
-    );
-    expect(getByTestId('PartnerGivingAnalysisReport')).toBeInTheDocument();
+    expect(await findByRole('grid')).toBeInTheDocument();
+    expect(getAllByRole('row').length).toBe(12); // 11 rows + header
   });
 
   it('shows a placeholder when there are zero contacts', async () => {
@@ -371,34 +360,43 @@ describe('PartnerGivingAnalysisReport', () => {
   });
 
   it('sets the pagination limit', async () => {
-    const { getByRole, queryByTestId, getByTestId, getByText } = render(
-      <TestComponent />,
+    const { getByRole, findByRole } = render(<TestComponent />);
+
+    await waitFor(() => {
+      expect(getByRole('grid')).toBeInTheDocument();
+    });
+
+    const combobox = getByRole('combobox', { name: 'Rows per page:' });
+    userEvent.click(combobox);
+
+    const listbox = await findByRole('listbox');
+    await userEvent.click(within(listbox).getByRole('option', { name: '50' }));
+
+    await waitFor(() =>
+      expect(mutationSpy.mock.calls[2][0].operation.variables.first).toBe(50),
+    );
+  });
+
+  it('should go to next page', async () => {
+    const { getByTestId, queryByTestId, getByRole } = render(<TestComponent />);
+
+    await waitFor(() => {
+      expect(getByRole('grid')).toBeInTheDocument();
+    });
+
+    await waitFor(() =>
+      expect(mutationSpy.mock.calls[0][0].operation.variables.first).toBe(10),
     );
 
+    await userEvent.click(getByTestId('KeyboardArrowRightIcon'));
+
     await waitFor(() => {
       expect(
         queryByTestId('LoadingPartnerGivingAnalysisReport'),
       ).not.toBeInTheDocument();
     });
 
-    userEvent.selectOptions(getByRole('combobox'), '50');
-    await waitFor(() => {
-      expect(
-        queryByTestId('LoadingPartnerGivingAnalysisReport'),
-      ).not.toBeInTheDocument();
-    });
-
-    expect(mutationSpy.mock.calls[2][0].operation.variables.first).toBe(50);
-
-    userEvent.selectOptions(getByRole('combobox'), '10');
-    userEvent.click(getByTestId('KeyboardArrowRightIcon'));
-    await waitFor(() => {
-      expect(
-        queryByTestId('LoadingPartnerGivingAnalysisReport'),
-      ).not.toBeInTheDocument();
-    });
-
-    expect(getByText('11-11 of 11')).toBeInTheDocument();
+    expect(getByRole('button', { name: /go to next page/i })).toBeDisabled();
   });
 
   it('selects and unselects all', async () => {
