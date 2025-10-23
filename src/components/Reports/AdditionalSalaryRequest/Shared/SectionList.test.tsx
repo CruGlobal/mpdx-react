@@ -28,16 +28,18 @@ describe('SectionList', () => {
       </AdditionalSalaryRequestTestWrapper>,
     );
 
-    expect(
-      getByRole('button', { name: '1. About this Form' }),
-    ).toHaveAttribute('aria-current', 'true');
+    expect(getByRole('button', { name: '1. About this Form' })).toHaveAttribute(
+      'aria-current',
+      'true',
+    );
 
     userEvent.click(getByRole('button', { name: '3. Receipt' }));
     expect(
       await findByRole('button', { name: '3. Receipt', current: true }),
     ).toBeInTheDocument();
-    expect(
-      getByRole('button', { name: '1. About this Form' }),
-    ).toHaveAttribute('aria-current', 'false');
+    expect(getByRole('button', { name: '1. About this Form' })).toHaveAttribute(
+      'aria-current',
+      'false',
+    );
   });
 });
