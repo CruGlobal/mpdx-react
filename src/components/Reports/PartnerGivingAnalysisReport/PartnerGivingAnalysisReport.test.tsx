@@ -7,7 +7,6 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { PartnerGivingAnalysisSortEnum } from 'src/graphql/types.generated';
-import { GetPartnerGivingAnalysisIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import theme from 'src/theme';
 import { PartnerGivingAnalysisQuery } from './PartnerGivingAnalysis.generated';
 import { PartnerGivingAnalysisReport } from './PartnerGivingAnalysisReport';
@@ -67,12 +66,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   </TestRouter>
 );
 
-type Mocks = {
-  PartnerGivingAnalysis: PartnerGivingAnalysisQuery;
-  GetPartnerGivingAnalysisIdsForMassSelection?: GetPartnerGivingAnalysisIdsForMassSelectionQuery;
-};
-
-const mocks: Mocks = {
+const mocks = {
   PartnerGivingAnalysis: {
     partnerGivingAnalysis: {
       nodes: [
@@ -250,7 +244,7 @@ const mocks: Mocks = {
   },
 };
 
-const emptyMock: Mocks = {
+const emptyMock = {
   PartnerGivingAnalysis: {
     partnerGivingAnalysis: {
       nodes: [],
