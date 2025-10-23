@@ -4,6 +4,9 @@ export const EnumMap: Partial<Record<PartnerGivingAnalysisSortEnum, string>> = {
   [PartnerGivingAnalysisSortEnum.NameAsc]: 'name',
   [PartnerGivingAnalysisSortEnum.NameDesc]: 'name',
 
+  [PartnerGivingAnalysisSortEnum.StatusAsc]: 'status',
+  [PartnerGivingAnalysisSortEnum.StatusDesc]: 'status',
+
   [PartnerGivingAnalysisSortEnum.DonationPeriodSumAsc]: 'donationPeriodSum',
   [PartnerGivingAnalysisSortEnum.DonationPeriodSumDesc]: 'donationPeriodSum',
 
@@ -25,14 +28,14 @@ export const EnumMap: Partial<Record<PartnerGivingAnalysisSortEnum, string>> = {
   [PartnerGivingAnalysisSortEnum.TotalDonationsAsc]: 'totalDonations',
   [PartnerGivingAnalysisSortEnum.TotalDonationsDesc]: 'totalDonations',
 
-  [PartnerGivingAnalysisSortEnum.FirstDonationAmountAsc]: 'firstDonationAmount',
-  [PartnerGivingAnalysisSortEnum.FirstDonationAmountDesc]:
-    'firstDonationAmount',
+  [PartnerGivingAnalysisSortEnum.PledgeAmountAsc]: 'pledgeAmount',
+  [PartnerGivingAnalysisSortEnum.PledgeAmountDesc]: 'pledgeAmount',
 };
 
 export const AscendingSortEnums: Record<string, PartnerGivingAnalysisSortEnum> =
   {
     name: PartnerGivingAnalysisSortEnum.NameAsc,
+    status: PartnerGivingAnalysisSortEnum.StatusAsc,
     donationPeriodSum: PartnerGivingAnalysisSortEnum.DonationPeriodSumAsc,
     donationPeriodCount: PartnerGivingAnalysisSortEnum.DonationPeriodCountAsc,
     donationPeriodAverage:
@@ -40,7 +43,7 @@ export const AscendingSortEnums: Record<string, PartnerGivingAnalysisSortEnum> =
     lastDonationAmount: PartnerGivingAnalysisSortEnum.LastDonationAmountAsc,
     lastDonationDate: PartnerGivingAnalysisSortEnum.LastDonationDateAsc,
     totalDonations: PartnerGivingAnalysisSortEnum.TotalDonationsAsc,
-    firstDonationAmount: PartnerGivingAnalysisSortEnum.FirstDonationAmountAsc,
+    pledgeAmount: PartnerGivingAnalysisSortEnum.PledgeAmountAsc,
   };
 
 export const DescendingSortEnums: Record<
@@ -48,6 +51,7 @@ export const DescendingSortEnums: Record<
   PartnerGivingAnalysisSortEnum
 > = {
   name: PartnerGivingAnalysisSortEnum.NameDesc,
+  status: PartnerGivingAnalysisSortEnum.StatusDesc,
   donationPeriodSum: PartnerGivingAnalysisSortEnum.DonationPeriodSumDesc,
   donationPeriodCount: PartnerGivingAnalysisSortEnum.DonationPeriodCountDesc,
   donationPeriodAverage:
@@ -55,5 +59,5 @@ export const DescendingSortEnums: Record<
   lastDonationAmount: PartnerGivingAnalysisSortEnum.LastDonationAmountDesc,
   lastDonationDate: PartnerGivingAnalysisSortEnum.LastDonationDateDesc,
   totalDonations: PartnerGivingAnalysisSortEnum.TotalDonationsDesc,
-  firstDonationAmount: PartnerGivingAnalysisSortEnum.FirstDonationAmountDesc,
+  pledgeAmount: PartnerGivingAnalysisSortEnum.PledgeAmountDesc,
 };
