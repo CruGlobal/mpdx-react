@@ -30,11 +30,11 @@ export const SectionList: React.FC = () => {
 
   return (
     <List disablePadding>
-      {sections.map(({ title, section }, index) => {
+      {sections.map(({ title, section }) => {
         const active = selectedSection === section;
         return (
           <StyledListItemButton
-            key={index}
+            key={section}
             aria-current={active}
             selected={active}
             onClick={() => setSelectedSection(section)}

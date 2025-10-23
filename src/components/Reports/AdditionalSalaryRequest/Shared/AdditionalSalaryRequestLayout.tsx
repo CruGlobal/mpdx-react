@@ -2,7 +2,6 @@ import { useRouter } from 'next/router';
 import React from 'react';
 import MenuIcon from '@mui/icons-material/Menu';
 import { useTranslation } from 'react-i18next';
-import Loading from 'src/components/Loading';
 import { IconPanelLayout } from 'src/components/Shared/IconPanelLayout/IconPanelLayout';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 
@@ -17,11 +16,7 @@ export const AdditionalSalaryRequestLayout: React.FC<
   const { t } = useTranslation();
   const router = useRouter();
   const { accountListId } = router.query;
-  const { isDrawerOpen, toggleDrawer, loading } = useAdditionalSalaryRequest();
-
-  if (loading) {
-    return <Loading loading />;
-  }
+  const { isDrawerOpen, toggleDrawer } = useAdditionalSalaryRequest();
 
   const iconPanelItems = [
     {

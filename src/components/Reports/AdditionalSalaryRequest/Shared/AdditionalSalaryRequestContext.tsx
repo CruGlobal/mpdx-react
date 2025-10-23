@@ -1,9 +1,4 @@
-import React, {
-  createContext,
-  useCallback,
-  useMemo,
-  useState,
-} from 'react';
+import React, { createContext, useCallback, useMemo, useState } from 'react';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
 
 export type AdditionalSalaryRequestType = {
@@ -11,8 +6,7 @@ export type AdditionalSalaryRequestType = {
   setSelectedSection: (section: AdditionalSalaryRequestSectionEnum) => void;
   isDrawerOpen: boolean;
   toggleDrawer: () => void;
-  setDrawerOpen: (open: boolean) => void;
-  loading: boolean;
+  setIsDrawerOpen: (open: boolean) => void;
 };
 
 const AdditionalSalaryRequestContext =
@@ -40,7 +34,6 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       AdditionalSalaryRequestSectionEnum.AboutForm,
     );
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [loading] = useState(false);
 
   const setSelectedSection = useCallback(
     (section: AdditionalSalaryRequestSectionEnum) => {
@@ -62,10 +55,9 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       setSelectedSection,
       isDrawerOpen,
       toggleDrawer,
-      setDrawerOpen: setIsDrawerOpen,
-      loading,
+      setIsDrawerOpen,
     }),
-    [selectedSection, setSelectedSection, isDrawerOpen, toggleDrawer, loading],
+    [selectedSection, setSelectedSection, isDrawerOpen, toggleDrawer],
   );
 
   return (
