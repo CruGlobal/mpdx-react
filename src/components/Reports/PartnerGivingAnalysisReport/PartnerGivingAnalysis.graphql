@@ -7,8 +7,10 @@ query PartnerGivingAnalysis(
     nodes {
       id
       name
+      status
       totalDonations
       pledgeCurrency
+      pledgeAmount
       firstDonationDate
       firstDonationAmount
       firstDonationCurrency

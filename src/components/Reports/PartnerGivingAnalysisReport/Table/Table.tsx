@@ -9,7 +9,7 @@ import {
 import { useTranslation } from 'react-i18next';
 import { PartnerGivingAnalysisContact } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
-import { TableData } from '../Helper/tableData';
+import { TableData, getLocalizedStatus } from '../Helper/tableData';
 import { StyledDataGrid } from '../styledComponenets/StyledDataGrid';
 import { populateTableRows } from './Helper/populateTableRows';
 
@@ -19,6 +19,7 @@ type Row = Pick<
   PartnerGivingAnalysisContact,
   | 'id'
   | 'name'
+  | 'status'
   | 'donationPeriodSum'
   | 'donationPeriodCount'
   | 'donationPeriodAverage'
@@ -26,6 +27,7 @@ type Row = Pick<
   | 'lastDonationDate'
   | 'totalDonations'
   | 'pledgeCurrency'
+  | 'pledgeAmount'
   | 'lastDonationCurrency'
 >;
 
@@ -46,8 +48,8 @@ export interface PartnerGivingAnalysisTableProps {
 export const CreateTableRows = (data: Row): TableData => ({
   id: data.id,
   name: data.name ?? '',
-  //status: 'Partner', // Placeholder value; replace with actual status
-  //commitmentAmount: data.firstDonationAmount, // Placeholder value; replace with actual commitment amount
+  status: data.status ? getLocalizedStatus(data.status) : null,
+  pledgeAmount: data.pledgeAmount ?? 0,
   donationPeriodSum: data.donationPeriodSum,
   donationPeriodCount: data.donationPeriodCount,
   donationPeriodAverage: data.donationPeriodAverage,
@@ -91,8 +93,8 @@ export const PartnerGivingAnalysisTable: React.FC<
   const {
     checkbox,
     name,
-    //status,
-    //commitmentAmount,
+    status,
+    pledgeAmount,
     donationPeriodSum,
     donationPeriodCount,
     donationPeriodAverage,
@@ -117,14 +119,14 @@ export const PartnerGivingAnalysisTable: React.FC<
     {
       field: 'status',
       headerName: t('Status'),
-      width: 140,
-      //renderCell: status,
+      width: 180,
+      renderCell: status,
     },
     {
-      field: 'commitmentAmount',
+      field: 'pledgeAmount',
       headerName: t('Commitment Amount'),
-      width: 180,
-      //renderCell: commitmentAmount,
+      width: 160,
+      renderCell: pledgeAmount,
     },
     {
       field: 'donationPeriodSum',
@@ -135,7 +137,7 @@ export const PartnerGivingAnalysisTable: React.FC<
     {
       field: 'donationPeriodCount',
       headerName: t('Gift Count'),
-      width: 110,
+      width: 90,
       renderCell: donationPeriodCount,
     },
     {

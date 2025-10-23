@@ -40,25 +40,21 @@ export const populateTableRows = (
     );
   };
 
-  // const status: RenderCell = ({ row }) => {
-  //   return (
-  //     <Typography variant="body2" noWrap>
-  //       {row.status}
-  //     </Typography>
-  //   );
-  // };
+  const status: RenderCell = ({ row }) => {
+    return (
+      <Typography variant="body2" noWrap>
+        {row.status}
+      </Typography>
+    );
+  };
 
-  // const commitmentAmount: RenderCell = ({ row }) => {
-  //   return (
-  //     <Typography variant="body2" noWrap>
-  //       {currencyFormat(
-  //         row.commitmentAmount ?? 0,
-  //         row.firstDonationCurrency,
-  //         locale,
-  //       )}
-  //     </Typography>
-  //   );
-  // };
+  const pledgeAmount: RenderCell = ({ row }) => {
+    return (
+      <Typography variant="body2" noWrap>
+        {currencyFormat(row.pledgeAmount ?? 0, row.pledgeCurrency, locale)}
+      </Typography>
+    );
+  };
 
   const donationPeriodSum: RenderCell = ({ row }) => {
     return (
@@ -119,8 +115,8 @@ export const populateTableRows = (
   return {
     checkbox,
     name,
-    //status,
-    //commitmentAmount,
+    status,
+    pledgeAmount,
     donationPeriodSum,
     donationPeriodCount,
     donationPeriodAverage,
