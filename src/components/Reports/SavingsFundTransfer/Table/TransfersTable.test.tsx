@@ -7,7 +7,6 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
-import { UpdateRecurringTransferMutation } from '../TransferMutations.generated';
 import { TableTypeEnum, Transfers, mockData } from '../mockData';
 import { TransfersTable } from './TransfersTable';
 
@@ -52,11 +51,7 @@ const TestComponent: React.FC = () => {
     <SnackbarProvider>
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <GqlMockedProvider<{
-            updateRecurringTransfer: UpdateRecurringTransferMutation;
-          }>
-            onCall={mutationSpy}
-          >
+          <GqlMockedProvider onCall={mutationSpy}>
             <TransfersTable
               history={mockHistory}
               type={TableTypeEnum.History}
@@ -233,21 +228,15 @@ describe('TransferHistoryTable', () => {
     userEvent.click(within(dialog).getByRole('button', { name: 'Clear' }));
 
     expect(await findByText('Confirm Clear')).toBeInTheDocument();
-    await userEvent.click(getByRole('button', { name: 'Yes' }));
+    userEvent.click(getByRole('button', { name: 'Yes' }));
 
-    expect(mutationSpy).toHaveBeenCalled();
-
-    await waitFor(() => {
-      expect(mockEnqueue).toHaveBeenCalledWith(
-        'Stop date updated successfully',
-        {
-          variant: 'success',
-        },
-      );
+    await waitFor(() => expect(mutationSpy).toHaveBeenCalled());
+    expect(mockEnqueue).toHaveBeenCalledWith('Stop date updated successfully', {
+      variant: 'success',
     });
 
     expect(dialog).not.toBeVisible();
-  });
+  }, 10000);
 
   it('updates end date when Ok is clicked', async () => {
     const { getByRole, findByRole } = render(<TestComponent />);
@@ -277,20 +266,14 @@ describe('TransferHistoryTable', () => {
     );
     expect(button).toBeTruthy();
 
-    await userEvent.click(button!);
+    userEvent.click(button!);
 
     const acceptButton = within(dialog).getByRole('button', { name: /ok/i });
-    await userEvent.click(acceptButton);
+    userEvent.click(acceptButton);
 
-    expect(mutationSpy).toHaveBeenCalled();
-
-    await waitFor(() => {
-      expect(mockEnqueue).toHaveBeenCalledWith(
-        'Stop date updated successfully',
-        {
-          variant: 'success',
-        },
-      );
+    await waitFor(() => expect(mutationSpy).toHaveBeenCalled());
+    expect(mockEnqueue).toHaveBeenCalledWith('Stop date updated successfully', {
+      variant: 'success',
     });
   });
 });

@@ -1,7 +1,7 @@
 import { TextField, TextFieldProps } from '@mui/material';
 import * as yup from 'yup';
 import { GoalCalculationUpdateInput } from 'src/graphql/types.generated';
-import { useAutoSave } from './useAutosave';
+import { useGoalAutoSave } from './useGoalAutosave';
 
 export interface AutosaveTextFieldProps
   extends Omit<
@@ -17,7 +17,7 @@ export const AutosaveTextField: React.FC<AutosaveTextFieldProps> = ({
   schema,
   ...props
 }) => {
-  const fieldProps = useAutoSave({
+  const fieldProps = useGoalAutoSave({
     fieldName,
     schema,
     // Select boxes should save on change instead of on blur

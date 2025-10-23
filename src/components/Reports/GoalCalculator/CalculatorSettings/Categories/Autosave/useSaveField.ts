@@ -14,7 +14,7 @@ export const useSaveField = () => {
   const [updateGoalCalculation] = useUpdateGoalCalculationMutation();
 
   const saveField = useCallback(
-    (attributes: Partial<GoalCalculationUpdateInput>) => {
+    async (attributes: Partial<GoalCalculationUpdateInput>) => {
       if (!goalCalculation) {
         return;
       }
@@ -26,7 +26,7 @@ export const useSaveField = () => {
         return;
       }
 
-      trackMutation(
+      return trackMutation(
         updateGoalCalculation({
           variables: {
             input: {
