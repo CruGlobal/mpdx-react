@@ -9,11 +9,7 @@ export const SettingsCategory: React.FC = () => {
   const validationSchema = useMemo(
     () =>
       yup.object({
-        name: yup
-          .string()
-          .min(2, t('Goal name must be at least 2 characters'))
-          .max(60, t('Goal name must be at most 60 characters'))
-          .required(t('Goal name is a required field')),
+        name: yup.string().required(t('Goal Name is a required field')),
       }),
     [t],
   );
