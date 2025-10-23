@@ -1,17 +1,22 @@
 import { ThemeProvider } from '@emotion/react';
 import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
 import { SnackbarProvider } from 'notistack';
-import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import {
   GoalCalculationAge,
+  GoalCalculationRole,
   MpdGoalBenefitsConstantPlanEnum,
   MpdGoalBenefitsConstantSizeEnum,
+  MpdGoalMiscConstantCategoryEnum,
+  MpdGoalMiscConstantLabelEnum,
   PrimaryBudgetCategoryEnum,
   SubBudgetCategoryEnum,
 } from 'src/graphql/types.generated';
-import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
+import {
+  GoalCalculatorConstantsDocument,
+  GoalCalculatorConstantsQuery,
+} from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
 import {
   GoalCalculationDocument,
@@ -32,10 +37,14 @@ export const goalCalculationMock = gqlMock<
       firstName: 'John',
       spouseFirstName: 'Jane',
       lastName: 'Doe',
-      age: GoalCalculationAge.UnderThirty,
+      geographicLocation: null,
+      role: GoalCalculationRole.Office,
       familySize: MpdGoalBenefitsConstantSizeEnum.MarriedNoChildren,
       benefitsPlan: MpdGoalBenefitsConstantPlanEnum.Base,
-      yearsOnStaff: 5,
+      yearsOnStaff: 10,
+      spouseYearsOnStaff: 5,
+      age: GoalCalculationAge.ThirtyToThirtyFour,
+      spouseAge: GoalCalculationAge.UnderThirty,
       netPaycheckAmount: 2500,
       spouseNetPaycheckAmount: 2000,
       taxesPercentage: 20,
@@ -127,24 +136,119 @@ export const goalCalculationMock = gqlMock<
   },
 }).goalCalculation;
 
-export const constantsMock = {
-  constant: {
-    mpdGoalBenefitsConstants: [
-      {
-        size: MpdGoalBenefitsConstantSizeEnum.Single,
-        sizeDisplayName: 'Single or spouse not staff',
-        plan: MpdGoalBenefitsConstantPlanEnum.Select,
-        planDisplayName: 'Select',
-      },
-      {
-        size: MpdGoalBenefitsConstantSizeEnum.MarriedNoChildren,
-        sizeDisplayName: 'Married with no children',
-        plan: MpdGoalBenefitsConstantPlanEnum.Base,
-        planDisplayName: 'Base',
-      },
-    ],
+export const constantsMock = gqlMock<
+  GoalCalculatorConstantsQuery,
+  GoalCalculatorConstantsQuery
+>(GoalCalculatorConstantsDocument, {
+  mocks: {
+    constant: {
+      mpdGoalBenefitsConstants: [
+        {
+          size: MpdGoalBenefitsConstantSizeEnum.Single,
+          sizeDisplayName: 'Single or spouse not staff',
+          plan: MpdGoalBenefitsConstantPlanEnum.Select,
+          planDisplayName: 'Select',
+          cost: 1204.45,
+        },
+        {
+          size: MpdGoalBenefitsConstantSizeEnum.Single,
+          sizeDisplayName: 'Single or spouse not staff',
+          plan: MpdGoalBenefitsConstantPlanEnum.Base,
+          planDisplayName: 'Base',
+          cost: 1008.6,
+        },
+        {
+          size: MpdGoalBenefitsConstantSizeEnum.SosaTwoToThreeDependents,
+          sizeDisplayName: 'SOSA with 2-3 dependents',
+          plan: MpdGoalBenefitsConstantPlanEnum.Base,
+          planDisplayName: 'Base',
+          cost: 2350.64,
+        },
+        {
+          size: MpdGoalBenefitsConstantSizeEnum.MarriedNoChildren,
+          sizeDisplayName: 'Married with no children',
+          plan: MpdGoalBenefitsConstantPlanEnum.Base,
+          planDisplayName: 'Base',
+          cost: 1910.54,
+        },
+        {
+          size: MpdGoalBenefitsConstantSizeEnum.MarriedOneToTwoChildren,
+          sizeDisplayName: 'Married with 1-2 children',
+          plan: MpdGoalBenefitsConstantPlanEnum.Select,
+          planDisplayName: 'Select',
+          cost: 3219.27,
+        },
+        {
+          size: MpdGoalBenefitsConstantSizeEnum.MarriedThreeOrMoreChildren,
+          sizeDisplayName: 'Married with 3+ children',
+          plan: MpdGoalBenefitsConstantPlanEnum.Base,
+          planDisplayName: 'Base',
+          cost: 3286.5,
+        },
+      ],
+      mpdGoalGeographicConstants: [
+        { location: 'Orlando, FL', percentageMultiplier: 0.06 },
+      ],
+      mpdGoalMiscConstants: [
+        {
+          category: MpdGoalMiscConstantCategoryEnum.Rates,
+          label: MpdGoalMiscConstantLabelEnum.AdminRate,
+          fee: 0.12,
+        },
+        {
+          category: MpdGoalMiscConstantCategoryEnum.Rates,
+          label: MpdGoalMiscConstantLabelEnum.AttritionRate,
+          fee: 0.06,
+        },
+        {
+          category: MpdGoalMiscConstantCategoryEnum.Rates,
+          label: MpdGoalMiscConstantLabelEnum.Seca,
+          fee: 0.22,
+        },
+        {
+          category: MpdGoalMiscConstantCategoryEnum.Rates,
+          label: MpdGoalMiscConstantLabelEnum.FourOhThreeB,
+          fee: 0.07,
+        },
+        {
+          category: MpdGoalMiscConstantCategoryEnum.MileageRates,
+          label: MpdGoalMiscConstantLabelEnum.General,
+          fee: 0.7,
+        },
+        {
+          category: MpdGoalMiscConstantCategoryEnum.DebtPercentage,
+          label: MpdGoalMiscConstantLabelEnum.Single,
+          fee: 0.24,
+        },
+        {
+          category: MpdGoalMiscConstantCategoryEnum.DebtPercentage,
+          label: MpdGoalMiscConstantLabelEnum.Married,
+          fee: 0.2,
+        },
+        {
+          category: MpdGoalMiscConstantCategoryEnum.BoardApprovedSalaryCalc,
+          label: MpdGoalMiscConstantLabelEnum.SingleOther,
+          fee: 80000,
+        },
+        {
+          category: MpdGoalMiscConstantCategoryEnum.BoardApprovedSalaryCalc,
+          label: MpdGoalMiscConstantLabelEnum.MarriedOther,
+          fee: 125000,
+        },
+        {
+          category: MpdGoalMiscConstantCategoryEnum.BoardApprovedSalaryCalc,
+          label: MpdGoalMiscConstantLabelEnum.SingleNy,
+          fee: 90000,
+        },
+        {
+          category: MpdGoalMiscConstantCategoryEnum.BoardApprovedSalaryCalc,
+          label: MpdGoalMiscConstantLabelEnum.MarriedNy,
+          fee: 140000,
+        },
+      ],
+    },
   },
-} satisfies DeepPartial<GoalCalculatorConstantsQuery>;
+}).constant;
 
 interface GoalCalculatorTestWrapperProps {
   onCall?: MockLinkCallHandler;
@@ -177,6 +281,9 @@ export const GoalCalculatorTestWrapper: React.FC<
               mocks={{
                 GoalCalculation: {
                   goalCalculation: goalCalculationMock,
+                },
+                GoalCalculatorConstants: {
+                  constant: constantsMock,
                 },
               }}
               onCall={onCall}

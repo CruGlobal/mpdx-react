@@ -42,7 +42,7 @@ export const InformationCategoryPersonalForm: React.FC<
     goalCalculationResult: { data },
     setRightPanelContent,
   } = useGoalCalculator();
-  const { goalGeographicConstantMap, goalBenefitsConstantMap } =
+  const { goalGeographicConstantMap, goalBenefitsPlans } =
     useGoalCalculatorConstants();
   const { geographicLocation, familySize, benefitsPlan } =
     data?.goalCalculation || {};
@@ -54,25 +54,25 @@ export const InformationCategoryPersonalForm: React.FC<
 
   const familySizeOptions = useMemo(() => {
     const familySize = new Map<MpdGoalBenefitsConstantSizeEnum, string>();
-    goalBenefitsConstantMap.forEach((benefits) => {
+    goalBenefitsPlans.forEach((benefits) => {
       familySize.set(benefits.size, benefits.sizeDisplayName);
     });
 
     return Array.from(familySize.entries());
-  }, [goalBenefitsConstantMap]);
+  }, [goalBenefitsPlans]);
 
   const saveField = useSaveField();
 
   const planOptions = useMemo(() => {
     const plans = new Map<MpdGoalBenefitsConstantPlanEnum, string>();
-    goalBenefitsConstantMap.forEach((benefits) => {
+    goalBenefitsPlans.forEach((benefits) => {
       // Only include plans that match the selected family size
       if (benefits.size === familySize) {
         plans.set(benefits.plan, benefits.planDisplayName);
       }
     });
     return Array.from(plans.entries());
-  }, [goalBenefitsConstantMap, familySize]);
+  }, [goalBenefitsPlans, familySize]);
 
   useEffect(() => {
     // Clear benefits plan if it's not compatible with selected family size

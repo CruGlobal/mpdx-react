@@ -57,6 +57,12 @@ describe('intlFormat', () => {
       expect(percentageFormat(NaN, 'en-US')).toEqual('0%');
     });
 
+    it('handles fractionDigits', () => {
+      expect(percentageFormat(0.9512, 'en-US', { fractionDigits: 2 })).toEqual(
+        '95.12%',
+      );
+    });
+
     it('handles language', () => {
       expect(percentageFormat(1000.01, 'fr')).toEqual('100 001 %');
     });
@@ -75,6 +81,12 @@ describe('intlFormat', () => {
 
     it('handles language', () => {
       expect(currencyFormat(1000.1, 'EUR', 'fr')).toEqual('1 000,10 €');
+    });
+
+    it('handles fractionDigits', () => {
+      expect(
+        currencyFormat(1234.56, 'USD', 'en-US', { fractionDigits: 0 }),
+      ).toEqual('$1,235');
     });
 
     it('strips trailing zeros by default', () => {

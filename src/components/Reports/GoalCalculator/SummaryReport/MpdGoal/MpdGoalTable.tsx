@@ -3,11 +3,19 @@ import { styled } from '@mui/material/styles';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import { PrimaryBudgetCategoryEnum } from 'src/graphql/types.generated';
+import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import { useLocale } from 'src/hooks/useLocale';
 import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
-import { calculateCategoryEnumTotal } from '../../Shared/calculateTotals';
+import {
+  calculateNewStaffGoalTotals,
+  getNewStaffBudgetCategory,
+} from '../../Shared/calculateNewStaffTotals';
+import {
+  GoalTotals,
+  calculateCategoryEnumTotal,
+} from '../../Shared/calculateTotals';
 import { MpdGoalHeaderCards } from './MpdGoalHeaderCards/MpdGoalHeaderCards';
 
 interface MpdGoalRow {
@@ -47,276 +55,261 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({
   const locale = useLocale();
   const localeText = useDataGridLocaleText();
   const { goalCalculationResult, goalTotals } = useGoalCalculator();
-
-  const supportRemaining = goalTotals.overallTotal - supportRaised;
-  const supportRaisedPercentage = supportRaised / goalTotals.overallTotal;
+  const constants = useGoalCalculatorConstants();
+  const { goalMiscConstants } = constants;
 
   const valueFormatter = useCallback(
     (value: number, row: MpdGoalRow) =>
       row.percentage
-        ? percentageFormat(value, locale)
-        : currencyFormat(value, 'USD', locale, { showTrailingZeros: true }),
+        ? percentageFormat(value, locale, { fractionDigits: 2 })
+        : currencyFormat(value, 'USD', locale, { fractionDigits: 0 }),
     [locale],
   );
 
-  const goalCalculation = goalCalculationResult.data?.goalCalculation;
-  // TODO: Replace mock reference values with real values
-  const rows = useMemo((): MpdGoalRow[] => {
-    const family = goalCalculation?.ministryFamily;
+  const newStaffReference = useMemo(
+    () =>
+      calculateNewStaffGoalTotals(
+        goalCalculationResult.data?.goalCalculation ?? null,
+        constants,
+      ),
+    [goalCalculationResult, constants],
+  );
 
-    const ministryExpenseRows: MpdGoalRow[] = [
+  const goalCalculation = goalCalculationResult.data?.goalCalculation;
+  const rows = useMemo((): MpdGoalRow[] => {
+    const ministryExpenseCategories = [
       {
         line: '3A',
         category: t('Ministry Miles'),
-        amount: calculateCategoryEnumTotal(
-          family,
-          PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage,
-        ),
-        reference: Math.random() * 391 + 10,
+        categories: [PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage],
       },
       {
         line: '3B',
         category: t('Ministry Travel'),
-        amount: calculateCategoryEnumTotal(
-          family,
-          PrimaryBudgetCategoryEnum.MinistryTravel,
-        ),
-        reference: Math.random() * 391 + 10,
+        categories: [PrimaryBudgetCategoryEnum.MinistryTravel],
       },
       {
         line: '3C',
         category: t('Meetings, Retreats, Conferences'),
-        amount:
-          calculateCategoryEnumTotal(
-            family,
-            PrimaryBudgetCategoryEnum.MeetingsRetreatsConferences,
-          ) +
-          calculateCategoryEnumTotal(
-            family,
-            PrimaryBudgetCategoryEnum.UsStaffConference,
-          ),
-        reference: Math.random() * 391 + 10,
+        categories: [
+          PrimaryBudgetCategoryEnum.MeetingsRetreatsConferences,
+          PrimaryBudgetCategoryEnum.UsStaffConference,
+        ],
       },
       {
         line: '3D',
         category: t('Meals and Per Diem'),
-        amount: calculateCategoryEnumTotal(
-          family,
-          PrimaryBudgetCategoryEnum.MealsAndPerDiem,
-        ),
-        reference: Math.random() * 391 + 10,
+        categories: [PrimaryBudgetCategoryEnum.MealsAndPerDiem],
       },
       {
         line: '3E',
         category: t('MPD'),
-        amount: calculateCategoryEnumTotal(
-          family,
-          PrimaryBudgetCategoryEnum.MinistryPartnerDevelopment,
-        ),
-        reference: Math.random() * 391 + 10,
+        categories: [PrimaryBudgetCategoryEnum.MinistryPartnerDevelopment],
       },
       {
         line: '3F',
         category: t('Supplies and Materials'),
-        amount: calculateCategoryEnumTotal(
-          family,
-          PrimaryBudgetCategoryEnum.SuppliesAndMaterials,
-        ),
-        reference: Math.random() * 391 + 10,
+        categories: [PrimaryBudgetCategoryEnum.SuppliesAndMaterials],
       },
       {
         line: '3G',
         category: t('Summer Assignment Expenses'),
-        amount:
-          calculateCategoryEnumTotal(
-            family,
-            PrimaryBudgetCategoryEnum.SummerAssignmentExpenses,
-          ) +
-          calculateCategoryEnumTotal(
-            family,
-            PrimaryBudgetCategoryEnum.SummerAssignmentTravel,
-          ),
-        reference: Math.random() * 391 + 10,
+        categories: [
+          PrimaryBudgetCategoryEnum.SummerAssignmentExpenses,
+          PrimaryBudgetCategoryEnum.SummerAssignmentTravel,
+        ],
       },
       {
         line: '3H',
         category: t('Reimbursable Medical Expenses'),
-        amount: calculateCategoryEnumTotal(
-          family,
-          PrimaryBudgetCategoryEnum.ReimbursableMedicalExpense,
-        ),
-        reference: Math.random() * 391 + 10,
+        categories: [PrimaryBudgetCategoryEnum.ReimbursableMedicalExpense],
       },
       {
         line: '3I',
         category: t(
           'Account transfers to staff members, ministries, projects, etc.',
         ),
-        amount: calculateCategoryEnumTotal(
-          family,
-          PrimaryBudgetCategoryEnum.AccountTransfers,
-        ),
-        reference: Math.random() * 391 + 10,
+        categories: [PrimaryBudgetCategoryEnum.AccountTransfers],
       },
       {
         line: '3J',
         category: t('Other (includes credit card charges)'),
-        amount:
-          calculateCategoryEnumTotal(
-            family,
-            PrimaryBudgetCategoryEnum.InternetServiceProviderFee,
-          ) +
-          calculateCategoryEnumTotal(
-            family,
-            PrimaryBudgetCategoryEnum.CellPhoneWorkLine,
-          ) +
-          calculateCategoryEnumTotal(
-            family,
-            PrimaryBudgetCategoryEnum.CreditCardProcessingCharges,
-          ) +
-          calculateCategoryEnumTotal(
-            family,
-            PrimaryBudgetCategoryEnum.MinistryOther,
-          ),
-        reference: Math.random() * 391 + 10,
+        categories: [
+          PrimaryBudgetCategoryEnum.InternetServiceProviderFee,
+          PrimaryBudgetCategoryEnum.CellPhoneWorkLine,
+          PrimaryBudgetCategoryEnum.CreditCardProcessingCharges,
+          PrimaryBudgetCategoryEnum.MinistryOther,
+        ],
       },
     ];
+    const ministryExpenseRows = ministryExpenseCategories.map(
+      ({ categories, ...rowFields }): MpdGoalRow => ({
+        ...rowFields,
+        amount: categories.reduce(
+          (sum, category) =>
+            sum +
+            calculateCategoryEnumTotal(
+              goalCalculation?.ministryFamily,
+              category,
+            ),
+          0,
+        ),
+        reference: categories.reduce(
+          (sum, category) =>
+            sum +
+            getNewStaffBudgetCategory(
+              goalCalculation,
+              category,
+              goalMiscConstants,
+            ),
+          0,
+        ),
+      }),
+    );
 
-    return [
+    // The rows can have an amount and reference value, or a value function that calculates the
+    // amount and reference value from the goal total and new staff goal total
+    const rows: Array<
+      | MpdGoalRow
+      | (Omit<MpdGoalRow, 'amount' | 'reference'> & {
+          value: (goalTotals: GoalTotals) => number;
+        })
+    > = [
       {
         line: '1A',
         category: t('Net Monthly Combined Salary'),
-        amount: goalTotals.netMonthlySalary,
-        reference: 5511.31,
+        value: (goalTotals) => goalTotals.netMonthlySalary,
       },
       {
         line: '1B',
         category: t('Taxes, SECA, VTL, etc. %'),
-        amount: goalTotals.taxesPercentage,
-        reference: 0.22,
+        value: (goalTotals) => goalTotals.taxesPercentage,
         percentage: true,
       },
       {
         line: '1C',
         category: t('Taxes, SECA, VTL, etc.'),
-        amount: goalTotals.taxes,
-        reference: 1212.49,
+        value: (goalTotals) => goalTotals.taxes,
       },
       {
         line: '1D',
         category: t('Subtotal with Net, Taxes, and SECA'),
-        amount: goalTotals.salaryPreIra,
-        reference: 6723.8,
+        value: (goalTotals) => goalTotals.salaryPreIra,
       },
       {
         line: '1E',
         category: t('Roth 403(b) Contribution %'),
-        amount: goalTotals.rothContributionPercentage,
-        reference: 0.07,
+        value: (goalTotals) => goalTotals.rothContributionPercentage,
         percentage: true,
       },
       {
         line: '1F',
         category: t('Traditional 403(b) Contribution %'),
-        amount: goalTotals.traditionalContributionPercentage,
-        reference: 0,
+        value: (goalTotals) => goalTotals.traditionalContributionPercentage,
         percentage: true,
       },
       {
         line: '1G',
         category: t('100% - (Roth + Traditional 403(b)) %'),
-        amount:
+        value: (goalTotals) =>
           1 -
           goalTotals.rothContributionPercentage -
           goalTotals.traditionalContributionPercentage,
-        reference: 93,
         percentage: true,
       },
       {
         line: '1H',
         category: t('Roth 403(b)'),
-        amount: goalTotals.rothContribution,
-        reference: 506.09,
+        value: (goalTotals) => goalTotals.rothContribution,
       },
       {
         line: '1I',
         category: t('Traditional 403(b)'),
-        amount: goalTotals.traditionalContribution,
-        reference: 0,
+        value: (goalTotals) => goalTotals.traditionalContribution,
       },
       {
         line: '1J',
         category: t('Gross Annual Salary'),
-        amount: goalTotals.grossAnnualSalary,
-        reference: 86758.68,
+        value: (goalTotals) => goalTotals.grossAnnualSalary,
       },
       {
         line: '1',
         category: t('Gross Monthly Salary'),
-        amount: goalTotals.grossMonthlySalary,
-        reference: 7229.89,
+        value: (goalTotals) => goalTotals.grossMonthlySalary,
       },
       {
         line: '2',
         category: t('Benefits'),
-        amount: goalTotals.benefitsCharge,
-        reference: 2302.24,
+        value: (goalTotals) => goalTotals.benefitsCharge,
       },
       ...ministryExpenseRows,
       {
         line: '4',
         category: t('Ministry Expenses Subtotal'),
-        amount: goalTotals.ministryExpensesTotal + goalTotals.benefitsCharge,
-        reference: ministryExpenseRows.reduce(
-          (sum, row) => sum + row.reference,
-          0,
-        ),
+        value: (goalTotals) =>
+          goalTotals.ministryExpensesTotal + goalTotals.benefitsCharge,
       },
       {
         line: '5',
         category: t('Subtotal'),
-        amount: goalTotals.overallSubtotal,
-        reference: 10224.63,
+        value: (goalTotals) => goalTotals.overallSubtotal,
       },
       {
         line: '6',
-        category: t('Subtotal with 12% admin charge'),
-        amount: goalTotals.overallSubtotalWithAdmin,
-        reference: 11618.9,
+        category: t('Subtotal with {{admin}} admin charge', {
+          admin: percentageFormat(
+            goalMiscConstants.RATES?.ADMIN_RATE?.fee ?? 0,
+            locale,
+          ),
+        }),
+        value: (goalTotals) => goalTotals.overallSubtotalWithAdmin,
       },
       {
         line: '7',
-        category: t('Total Goal (line 16 x 1.06 attrition)'),
-        amount: goalTotals.overallTotal,
-        reference: 12316.03,
+        category: t('Total Goal (line 6 with {{attrition}} attrition)', {
+          attrition: percentageFormat(
+            goalMiscConstants.RATES?.ATTRITION_RATE?.fee ?? 0,
+            locale,
+          ),
+        }),
+        value: (goalTotals) => goalTotals.overallTotal,
       },
       {
         line: '8',
         category: t('Solid Monthly Support Developed'),
-        amount: supportRaised,
-        reference: 0,
+        value: () => supportRaised,
       },
       {
         line: '9',
         category: t('Monthly Support to be Developed'),
-        amount: supportRemaining,
-        reference: 12316.03,
+        value: (goalTotals) => goalTotals.overallTotal - supportRaised,
       },
       {
         line: '10',
         category: t('Support Goal Percentage Progress'),
-        amount: supportRaisedPercentage,
-        reference: 0,
+        value: (goalTotals) => supportRaised / goalTotals.overallTotal,
         percentage: true,
       },
     ];
+
+    return rows.map((row) => {
+      if ('value' in row) {
+        return {
+          ...row,
+          amount: row.value(goalTotals),
+          reference: row.value(newStaffReference),
+        };
+      }
+
+      return row;
+    });
   }, [
     t,
     goalCalculation,
     goalTotals,
+    goalMiscConstants,
+    newStaffReference,
     supportRaised,
-    supportRemaining,
-    supportRaisedPercentage,
   ]);
 
   const columns = useMemo(
@@ -337,14 +330,6 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({
         hideable: false,
       },
       {
-        field: 'amount',
-        headerName: t('Amount'),
-        width: 120,
-        sortable: false,
-        hideable: false,
-        valueFormatter,
-      },
-      {
         field: 'reference',
         headerName: t('NS Reference'),
         headerClassName: 'reference',
@@ -353,13 +338,23 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({
         hideable: true,
         valueFormatter,
       },
+      {
+        field: 'amount',
+        headerName: t('Amount'),
+        width: 120,
+        sortable: false,
+        hideable: false,
+        valueFormatter,
+      },
     ],
     [t, valueFormatter],
   );
 
   return (
     <>
-      <MpdGoalHeaderCards supportRaisedPercentage={supportRaisedPercentage} />
+      <MpdGoalHeaderCards
+        supportRaisedPercentage={supportRaised / goalTotals.overallTotal}
+      />
       <StyledDataGrid
         label={t('MPD Goal')}
         getRowId={(row) => row.line}
