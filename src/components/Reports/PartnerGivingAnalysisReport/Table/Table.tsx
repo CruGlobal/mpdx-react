@@ -15,8 +15,22 @@ import { populateTableRows } from './Helper/populateTableRows';
 
 export type RenderCell = GridColDef<PartnerGivingAnalysisContact>['renderCell'];
 
+type Row = Pick<
+  PartnerGivingAnalysisContact,
+  | 'id'
+  | 'name'
+  | 'donationPeriodSum'
+  | 'donationPeriodCount'
+  | 'donationPeriodAverage'
+  | 'lastDonationAmount'
+  | 'lastDonationDate'
+  | 'totalDonations'
+  | 'pledgeCurrency'
+  | 'lastDonationCurrency'
+>;
+
 export interface PartnerGivingAnalysisTableProps {
-  data: PartnerGivingAnalysisContact[];
+  data: Row[];
   totalCount: number;
   onSelectOne: (contactId: string) => void;
   isRowChecked: (id: string) => boolean;
@@ -29,9 +43,7 @@ export interface PartnerGivingAnalysisTableProps {
   handleSortChange?: (model: GridSortModel) => void;
 }
 
-export const CreateTableRows = (
-  data: PartnerGivingAnalysisContact,
-): TableData => ({
+export const CreateTableRows = (data: Row): TableData => ({
   id: data.id,
   name: data.name ?? '',
   //status: 'Partner', // Placeholder value; replace with actual status
