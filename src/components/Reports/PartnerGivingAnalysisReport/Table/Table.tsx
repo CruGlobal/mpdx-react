@@ -1,170 +1,189 @@
-import NextLink from 'next/link';
-import React, { FC } from 'react';
+import React, { useMemo } from 'react';
+import { Box } from '@mui/material';
 import {
-  Checkbox,
-  Link,
-  Table,
-  TableBody,
-  TableCell as TableCellMui,
-  TableContainer,
-  TableRow,
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
-import { DateTime } from 'luxon';
+  GridColDef,
+  GridFooterContainer,
+  GridPagination,
+  GridSortModel,
+} from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
-import { preloadContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
-import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
+import { PartnerGivingAnalysisContact } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
-import theme from 'src/theme';
-import { Contact } from '../PartnerGivingAnalysisReport';
-import { PartnerGivingAnalysisReportTableHead as TableHead } from './TableHead/TableHead';
-import type { Order } from '../../Reports.type';
+import { TableData } from '../Helper/tableData';
+import { StyledDataGrid } from '../styledComponenets/StyledDataGrid';
+import { populateTableRows } from './Helper/populateTableRows';
 
-interface PartnerGivingAnalysisReportTableProps {
+export type RenderCell = GridColDef<PartnerGivingAnalysisContact>['renderCell'];
+
+export interface PartnerGivingAnalysisTableProps {
+  data: PartnerGivingAnalysisContact[];
+  totalCount: number;
   onSelectOne: (contactId: string) => void;
-  onRequestSort: (event: React.MouseEvent<unknown>, property: string) => void;
-  contacts: Contact[];
-  order: Order;
-  orderBy: string | null;
   isRowChecked: (id: string) => boolean;
+  paginationModel?: {
+    page: number;
+    pageSize: number;
+  };
+  handlePageChange?: (model: { page: number; pageSize: number }) => void;
+  sortModel?: GridSortModel;
+  handleSortChange?: (model: GridSortModel) => void;
 }
 
-const StickyTableContainer = styled(TableContainer)(() => ({
-  height: 'calc(100vh - 284px)',
-}));
-
-const StickyTable = styled(Table)(({}) => ({
-  height: 'calc(100vh - 96px)',
-}));
-
-const TableCell = styled(TableCellMui)({
-  fontSize: '1.15em',
-  align: 'left',
+export const CreateTableRows = (
+  data: PartnerGivingAnalysisContact,
+): TableData => ({
+  id: data.id,
+  name: data.name ?? '',
+  //status: 'Partner', // Placeholder value; replace with actual status
+  //commitmentAmount: data.firstDonationAmount, // Placeholder value; replace with actual commitment amount
+  donationPeriodSum: data.donationPeriodSum,
+  donationPeriodCount: data.donationPeriodCount,
+  donationPeriodAverage: data.donationPeriodAverage,
+  lastDonationAmount: data.lastDonationAmount,
+  lastDonationDate: data.lastDonationDate,
+  totalDonations: data.totalDonations,
+  pledgeCurrency: data.pledgeCurrency,
+  lastDonationCurrency: data.lastDonationCurrency,
 });
 
-export const PartnerGivingAnalysisReportTable: FC<
-  PartnerGivingAnalysisReportTableProps
+function CustomFooter() {
+  return (
+    <GridFooterContainer>
+      <Box sx={{ ml: 0 }}>
+        <GridPagination />
+      </Box>
+    </GridFooterContainer>
+  );
+}
+
+export const PartnerGivingAnalysisTable: React.FC<
+  PartnerGivingAnalysisTableProps
 > = ({
-  order,
-  orderBy,
-  contacts,
-  onRequestSort,
+  data,
+  totalCount,
   onSelectOne,
   isRowChecked,
+  paginationModel,
+  handlePageChange,
+  sortModel,
+  handleSortChange,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { buildContactUrl } = useContactPanel();
+
+  const tableRows = useMemo(
+    () => data.map((contact) => CreateTableRows(contact)),
+    [data],
+  );
+
+  const {
+    checkbox,
+    name,
+    //status,
+    //commitmentAmount,
+    donationPeriodSum,
+    donationPeriodCount,
+    donationPeriodAverage,
+    lastDonationAmount,
+    lastDonationDate,
+    totalDonations,
+  } = populateTableRows(locale, onSelectOne, isRowChecked);
+
+  const columns: GridColDef[] = [
+    {
+      field: 'checkbox',
+      headerName: '',
+      width: 40,
+      renderCell: checkbox,
+    },
+    {
+      field: 'name',
+      headerName: t('Name'),
+      width: 240,
+      renderCell: name,
+    },
+    {
+      field: 'status',
+      headerName: t('Status'),
+      width: 140,
+      //renderCell: status,
+    },
+    {
+      field: 'commitmentAmount',
+      headerName: t('Commitment Amount'),
+      width: 180,
+      //renderCell: commitmentAmount,
+    },
+    {
+      field: 'donationPeriodSum',
+      headerName: t('Gift Total'),
+      width: 130,
+      renderCell: donationPeriodSum,
+    },
+    {
+      field: 'donationPeriodCount',
+      headerName: t('Gift Count'),
+      width: 110,
+      renderCell: donationPeriodCount,
+    },
+    {
+      field: 'donationPeriodAverage',
+      headerName: t('Gift Average'),
+      width: 150,
+      renderCell: donationPeriodAverage,
+    },
+    {
+      field: 'lastDonationAmount',
+      headerName: t('Last Gift Amount'),
+      width: 150,
+      renderCell: lastDonationAmount,
+    },
+    {
+      field: 'lastDonationDate',
+      headerName: t('Last Gift Date'),
+      width: 130,
+      renderCell: lastDonationDate,
+    },
+    {
+      field: 'totalDonations',
+      headerName: t('Lifetime Total'),
+      width: 130,
+      renderCell: totalDonations,
+    },
+  ];
 
   return (
-    <StickyTableContainer>
-      <StickyTable
-        stickyHeader={true}
-        aria-label={t('Partner giving analysis report table')}
-        data-testid="PartnerGivingAnalysisReport"
-      >
-        <TableHead
-          items={[
-            {
-              id: 'name',
-              label: t('Name'),
-            },
-            {
-              id: 'donationPeriodSum',
-              label: t('Gift Total'),
-            },
-            {
-              id: 'donationPeriodCount',
-              label: t('Gift Count'),
-            },
-            {
-              id: 'donationPeriodAverage',
-              label: t('Gift Average'),
-            },
-            {
-              id: 'lastDonationAmount',
-              label: t('Last Gift Amount'),
-            },
-            {
-              id: 'lastDonationDate',
-              label: t('Last Gift Date'),
-            },
-            {
-              id: 'totalDonations',
-              label: t('Lifetime Total'),
-            },
-          ]}
-          order={order}
-          orderBy={orderBy}
-          onRequestSort={onRequestSort}
-        />
-        <TableBody>
-          {contacts.map((contact) => (
-            <TableRow
-              key={contact.id}
-              hover
-              data-testid="PartnerGivingAnalysisReportTableRow"
-            >
-              <TableCell padding="checkbox">
-                <Checkbox
-                  checked={isRowChecked(contact.id)}
-                  onChange={() => onSelectOne(contact.id)}
-                  value={contact.id}
-                />
-              </TableCell>
-              <TableCell>
-                <Link
-                  component={NextLink}
-                  href={buildContactUrl(contact.id)}
-                  onMouseEnter={preloadContactsRightPanel}
-                  style={{
-                    whiteSpace: 'nowrap',
-                    marginRight: theme.spacing(0.5),
-                  }}
-                >
-                  {contact.name}
-                </Link>
-              </TableCell>
-              <TableCell>
-                {currencyFormat(
-                  contact.donationPeriodSum ?? 0,
-                  contact.pledgeCurrency,
-                  locale,
-                )}
-              </TableCell>
-              <TableCell>{contact.donationPeriodCount}</TableCell>
-              <TableCell>
-                {currencyFormat(
-                  contact.donationPeriodAverage ?? 0,
-                  contact.pledgeCurrency,
-                  locale,
-                )}
-              </TableCell>
-              <TableCell>
-                {currencyFormat(
-                  contact.lastDonationAmount ?? 0,
-                  contact.lastDonationCurrency,
-                  locale,
-                )}
-              </TableCell>
-              <TableCell>
-                {dateFormatShort(
-                  DateTime.fromISO(contact.lastDonationDate ?? ''),
-                  locale,
-                )}
-              </TableCell>
-              <TableCell>
-                {currencyFormat(
-                  contact.totalDonations ?? 0,
-                  contact.pledgeCurrency,
-                  locale,
-                )}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </StickyTable>
-    </StickyTableContainer>
+    <Box
+      sx={{
+        height: 'calc(100vh - 235px)',
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: 0,
+      }}
+    >
+      <StyledDataGrid
+        rows={tableRows}
+        rowCount={totalCount}
+        columns={columns}
+        getRowId={(row) => row.id}
+        sortingOrder={['asc', 'desc']}
+        sortModel={sortModel}
+        onSortModelChange={handleSortChange}
+        pageSizeOptions={[10, 25, 100]}
+        paginationModel={paginationModel}
+        onPaginationModelChange={handlePageChange}
+        paginationMode="server"
+        sortingMode="server"
+        pagination
+        disableRowSelectionOnClick
+        disableVirtualization
+        disableColumnFilter
+        disableColumnMenu
+        slots={{
+          footer: CustomFooter,
+        }}
+      />
+    </Box>
   );
 };
