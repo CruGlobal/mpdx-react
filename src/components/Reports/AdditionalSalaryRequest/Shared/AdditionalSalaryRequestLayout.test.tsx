@@ -13,7 +13,7 @@ const TestComponent: React.FC = () => (
 );
 
 describe('AdditionalSalaryRequestLayout', () => {
-  it('renders section list and main content', async () => {
+  it('renders section list and main content', () => {
     const { getByRole } = render(<TestComponent />);
 
     expect(getByRole('heading', { name: 'Section List' })).toBeInTheDocument();

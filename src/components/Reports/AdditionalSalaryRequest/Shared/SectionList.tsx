@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { List, ListItemButton, ListItemText, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
@@ -13,20 +13,23 @@ export const SectionList: React.FC = () => {
   const { t } = useTranslation();
   const { selectedSection, setSelectedSection } = useAdditionalSalaryRequest();
 
-  const sections = [
-    {
-      title: t('1. About this Form'),
-      section: AdditionalSalaryRequestSectionEnum.AboutForm,
-    },
-    {
-      title: t('2. Complete Form'),
-      section: AdditionalSalaryRequestSectionEnum.CompleteForm,
-    },
-    {
-      title: t('3. Receipt'),
-      section: AdditionalSalaryRequestSectionEnum.Receipt,
-    },
-  ];
+  const sections = useMemo(
+    () => [
+      {
+        title: `1. ${t('About this Form')}`,
+        section: AdditionalSalaryRequestSectionEnum.AboutForm,
+      },
+      {
+        title: `2. ${t('Complete Form')}`,
+        section: AdditionalSalaryRequestSectionEnum.CompleteForm,
+      },
+      {
+        title: `3. ${t('Receipt')}`,
+        section: AdditionalSalaryRequestSectionEnum.Receipt,
+      },
+    ],
+    [t],
+  );
 
   return (
     <List disablePadding>

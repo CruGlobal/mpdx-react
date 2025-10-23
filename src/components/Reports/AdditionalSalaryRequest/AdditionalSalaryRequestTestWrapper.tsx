@@ -1,5 +1,4 @@
 import { ThemeProvider } from '@emotion/react';
-import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
 import { AdditionalSalaryRequestProvider } from './Shared/AdditionalSalaryRequestContext';
@@ -19,11 +18,9 @@ export const AdditionalSalaryRequestTestWrapper: React.FC<
         },
       }}
     >
-      <SnackbarProvider>
-        <AdditionalSalaryRequestProvider>
-          {children}
-        </AdditionalSalaryRequestProvider>
-      </SnackbarProvider>
+      <AdditionalSalaryRequestProvider>
+        {children}
+      </AdditionalSalaryRequestProvider>
     </TestRouter>
   </ThemeProvider>
 );

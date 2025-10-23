@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { AdditionalSalaryRequestSectionEnum } from './AdditionalSalaryRequestHelper';
 import {
   AdditionalSalaryRequestProvider,
@@ -10,11 +11,16 @@ import { SectionList } from './Shared/SectionList';
 
 const MainContent: React.FC = () => {
   const { selectedSection } = useAdditionalSalaryRequest();
+  const { t } = useTranslation();
 
   const content = {
-    [AdditionalSalaryRequestSectionEnum.AboutForm]: 'About this Form content',
-    [AdditionalSalaryRequestSectionEnum.CompleteForm]: 'Complete Form content',
-    [AdditionalSalaryRequestSectionEnum.Receipt]: 'Receipt content',
+    [AdditionalSalaryRequestSectionEnum.AboutForm]: t(
+      'About this Form content',
+    ),
+    [AdditionalSalaryRequestSectionEnum.CompleteForm]: t(
+      'Complete Form content',
+    ),
+    [AdditionalSalaryRequestSectionEnum.Receipt]: t('Receipt content'),
   };
 
   return (
