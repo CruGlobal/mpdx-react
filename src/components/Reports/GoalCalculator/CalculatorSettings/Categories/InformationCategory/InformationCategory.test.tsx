@@ -33,7 +33,7 @@ const TestComponent: React.FC<TestComponentProps> = ({ single = false }) => (
     mocks={{
       GoalCalculation: {
         goalCalculation: {
-          ...goalCalculationMock.goalCalculation,
+          ...goalCalculationMock,
           familySize: single
             ? MpdGoalBenefitsConstantSizeEnum.Single
             : MpdGoalBenefitsConstantSizeEnum.MarriedNoChildren,
@@ -42,9 +42,6 @@ const TestComponent: React.FC<TestComponentProps> = ({ single = false }) => (
       GoalCalculatorConstants: constantsMock,
       GetUser: {
         user: {
-          id: 'user-id-1',
-          firstName: 'Obi',
-          lastName: 'Wan',
           avatar: 'avatar.jpg',
         },
       },
@@ -68,7 +65,7 @@ describe('InformationCategory', () => {
     expect(queryByTestId('spouse-personal-tab')).not.toBeInTheDocument();
     expect(queryByTestId('spouse-financial-tab')).not.toBeInTheDocument();
 
-    userEvent.click(await findByRole('button', { name: 'View Spouse' }));
+    userEvent.click(await findByRole('button', { name: 'View Jane' }));
 
     expect(getByTestId('spouse-personal-tab')).toBeInTheDocument();
     expect(getByTestId('spouse-financial-tab')).toBeInTheDocument();
@@ -89,14 +86,14 @@ describe('InformationCategory', () => {
     );
 
     expect(
-      queryByRole('button', { name: 'View Spouse' }),
+      queryByRole('button', { name: 'View Jane' }),
     ).not.toBeInTheDocument();
   });
 
   it("renders the user's first name", async () => {
     const { getByTestId } = render(<TestComponent />);
     await waitFor(() => {
-      expect(getByTestId('info-name-typography')).toHaveTextContent('Obi');
+      expect(getByTestId('info-name-typography')).toHaveTextContent('John');
     });
   });
 
@@ -159,7 +156,7 @@ describe('InformationCategory', () => {
       const { getByRole, findByRole } = render(<TestComponent />);
 
       userEvent.click(getByRole('tab', { name: 'Financial' }));
-      userEvent.click(await findByRole('button', { name: 'View Spouse' }));
+      userEvent.click(await findByRole('button', { name: 'View Jane' }));
       const input = getByRole('spinbutton', {
         name: 'Spouse MHA Amount Per Paycheck',
       });
@@ -234,7 +231,7 @@ describe('InformationCategory', () => {
       );
 
       userEvent.click(getByRole('tab', { name: 'Financial' }));
-      userEvent.click(getByRole('button', { name: 'View Spouse' }));
+      userEvent.click(getByRole('button', { name: 'View Jane' }));
       userEvent.click(
         getByRole('combobox', {
           name: 'Spouse SECA (Social Security) Status',

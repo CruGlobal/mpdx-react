@@ -22,6 +22,7 @@ import {
   MpdGoalBenefitsConstantSizeEnum,
 } from 'src/graphql/types.generated';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
+import { hasStaffSpouse } from '../../../Shared/calculateTotals';
 import { InformationCategoryFinancialForm } from './InformationCategoryForm/InformationCategoryFinancialForm';
 import { InformationCategoryPersonalForm } from './InformationCategoryForm/InformationCategoryPersonalForm';
 import { amount, integer, percentage } from './schema';
@@ -143,22 +144,10 @@ export const InformationCategory: React.FC = () => {
     setValue(newValue);
   };
 
-  const familySize = data?.goalCalculation.familySize;
-  const hasSpouse =
-    familySize === MpdGoalBenefitsConstantSizeEnum.MarriedNoChildren ||
-    familySize === MpdGoalBenefitsConstantSizeEnum.MarriedOneToTwoChildren ||
-    familySize === MpdGoalBenefitsConstantSizeEnum.MarriedThreeOrMoreChildren;
-
+  const hasSpouse = hasStaffSpouse(data?.goalCalculation.familySize);
+  const firstName = data?.goalCalculation.firstName;
+  const spouseFirstName = data?.goalCalculation.spouseFirstName;
   const [viewingSpouse, setViewingSpouse] = useState(false);
-  const buttonText = useMemo(() => {
-    if (!viewingSpouse) {
-      return t('View Spouse');
-    }
-    if (userData?.user.firstName) {
-      return t('View {{spouseName}}', { spouseName: userData.user.firstName });
-    }
-    return t('View Your Information');
-  }, [viewingSpouse, userData?.user.firstName, t]);
 
   const onClickSpouseInformation = () => {
     setViewingSpouse(!viewingSpouse);
@@ -174,19 +163,15 @@ export const InformationCategory: React.FC = () => {
         justifyContent="space-between"
       >
         <Box display="flex" alignItems="center" justifyContent="center" gap={1}>
-          {userData?.user ? (
-            <Avatar
-              data-testid="info-avatar"
-              src={userData.user.avatar}
-              alt={userData.user.firstName ?? t('User')}
-              variant="rounded"
-              sx={{ width: 36, height: 36, marginRight: 1 }}
-            />
-          ) : (
-            <Avatar variant="rounded" />
-          )}
+          <Avatar
+            data-testid="info-avatar"
+            src={viewingSpouse ? undefined : userData?.user.avatar}
+            alt={(viewingSpouse ? spouseFirstName : firstName) ?? t('User')}
+            variant="rounded"
+            sx={{ width: 36, height: 36, marginRight: 1 }}
+          />
           <Typography data-testid="info-name-typography">
-            {userData?.user.firstName ?? t('User')}
+            {(viewingSpouse ? spouseFirstName : firstName) ?? t('User')}
           </Typography>
         </Box>
         {hasSpouse && (
@@ -194,7 +179,13 @@ export const InformationCategory: React.FC = () => {
             endIcon={<RightArrowIcon />}
             onClick={onClickSpouseInformation}
           >
-            {buttonText}
+            {viewingSpouse
+              ? t('View {{name}}', {
+                  name: firstName ?? t('Your Information'),
+                })
+              : t('View {{name}}', {
+                  name: spouseFirstName ?? t('Spouse Information'),
+                })}
           </Button>
         )}
       </Box>

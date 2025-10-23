@@ -1,9 +1,8 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { beforeTestResizeObserver } from '__tests__/util/windowResizeObserver';
 import { GetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
-import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   GoalCalculatorTestWrapper,
   goalCalculationMock,
@@ -34,35 +33,17 @@ jest.mock('src/hooks/useOrganizationId', () => ({
   useOrganizationId: jest.fn(() => 'organization-id-1'),
 }));
 
-const goal = {
-  netMonthlySalary: 5000,
-  taxesPercentage: 0.25,
-  rothContributionPercentage: 0.1,
-  traditionalContributionPercentage: 0.5,
-  ministryExpenses: {
-    benefitsCharge: 0,
-    primaryCategories: [],
-  },
-  ministryExpensesTotal: 2080,
-};
-
 const TestComponent: React.FC = () => (
   <GoalCalculatorTestWrapper>
     <GqlMockedProvider<{
       GoalCalculation: GoalCalculationQuery;
-      GetUser: GetUserQuery;
       GetUsersOrganizationsAccounts: GetUsersOrganizationsAccountsQuery;
       GetAccountList: GetAccountListQuery;
       GetOrganizations: GetOrganizationsQuery;
     }>
       mocks={{
-        GoalCalculation: goalCalculationMock,
-        GetUser: {
-          user: {
-            id: 'account-list-id-1',
-            firstName: 'Obiwan',
-            lastName: 'Kenobi',
-          },
+        GoalCalculation: {
+          goalCalculation: goalCalculationMock,
         },
         GetUsersOrganizationsAccounts: {
           userOrganizationAccounts: [
@@ -95,7 +76,7 @@ const TestComponent: React.FC = () => (
         },
       }}
     >
-      <PresentingYourGoal goal={goal} />
+      <PresentingYourGoal supportRaised={1000} />
     </GqlMockedProvider>
   </GoalCalculatorTestWrapper>
 );
@@ -110,14 +91,13 @@ describe('PresentingYourGoal', () => {
     expect(
       getByRole('heading', { name: 'Personal Information' }),
     ).toBeInTheDocument();
-    expect(getByRole('cell', { name: 'User' })).toBeInTheDocument();
     expect(getByRole('cell', { name: 'Mission Agency' })).toBeInTheDocument();
     expect(
       getByRole('heading', { name: 'Monthly Support Needs' }),
     ).toBeInTheDocument();
 
     expect(
-      await findByRole('cell', { name: 'Obiwan Kenobi' }),
+      await findByRole('cell', { name: 'John and Jane Doe' }),
     ).toBeInTheDocument();
     expect(
       getByRole('cell', { name: 'Cru - United States of America' }),
@@ -144,17 +124,12 @@ describe('PresentingYourGoal', () => {
   it('renders the pie chart', async () => {
     const { container } = render(<TestComponent />);
 
-    const chart = container.querySelector('.recharts-pie');
-    expect(chart).toBeInTheDocument();
+    await waitFor(() =>
+      expect(container.querySelector('.recharts-pie')).toBeInTheDocument(),
+    );
 
     const legend = container.querySelector('.recharts-legend-wrapper');
     expect(legend).toBeInTheDocument();
-    expect(legend?.textContent).toMatch('Salary');
-  });
-
-  it('renders the legend with all pie chart categories', async () => {
-    const { container } = render(<TestComponent />);
-    const legend = container.querySelector('.recharts-legend-wrapper');
     expect(legend?.textContent).toMatch('Salary');
     expect(legend?.textContent).toMatch('Ministry Expenses');
     expect(legend?.textContent).toMatch('Benefits');
