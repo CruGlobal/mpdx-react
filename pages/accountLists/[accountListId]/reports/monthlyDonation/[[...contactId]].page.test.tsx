@@ -9,7 +9,7 @@ import {
 } from '__tests__/util/windowResizeObserver';
 import { StaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
 import theme from 'src/theme';
-import MonthlyDonationReportPage from './index.page';
+import MonthlyDonationReportPage from './[[...contactId]].page';
 
 const mutationSpy = jest.fn();
 
@@ -21,21 +21,38 @@ const mockStaffAccount = {
     },
   },
 };
+interface ComponentsProps {
+  routerHasContactId?: boolean;
+  routerHasSearchTerm?: boolean;
+}
 
-const Components = () => (
-  <ThemeProvider theme={theme}>
-    <TestRouter>
-      <GqlMockedProvider<{
-        StaffAccount: StaffAccountQuery;
-      }>
-        mocks={mockStaffAccount}
-        onCall={mutationSpy}
-      >
-        <MonthlyDonationReportPage />
-      </GqlMockedProvider>
-    </TestRouter>
-  </ThemeProvider>
-);
+const Components: React.FC<ComponentsProps> = ({
+  routerHasContactId = false,
+}) => {
+  const router = {
+    query: {
+      contactId: routerHasContactId
+        ? ['00000000-0000-0000-0000-000000000000']
+        : undefined,
+    },
+    isReady: true,
+  };
+
+  return (
+    <ThemeProvider theme={theme}>
+      <TestRouter router={router}>
+        <GqlMockedProvider<{
+          StaffAccount: StaffAccountQuery;
+        }>
+          mocks={mockStaffAccount}
+          onCall={mutationSpy}
+        >
+          <MonthlyDonationReportPage />
+        </GqlMockedProvider>
+      </TestRouter>
+    </ThemeProvider>
+  );
+};
 
 describe('Monthly Donation Report Page', () => {
   beforeEach(() => {
@@ -86,5 +103,11 @@ describe('Monthly Donation Report Page', () => {
     expect(
       await findByText(/access to this feature is limited/i),
     ).toBeInTheDocument();
+  });
+
+  it('renders contact panel', async () => {
+    const { findByRole } = render(<Components routerHasContactId />);
+
+    expect(await findByRole('tab', { name: 'Tasks' })).toBeInTheDocument();
   });
 });

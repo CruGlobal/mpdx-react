@@ -4,6 +4,7 @@ import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
+import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
 import { MonthlyDonationSummaryReport } from 'src/components/Reports/MonthlyDonationSummary/MonthlyDonationSummaryReport';
@@ -13,6 +14,7 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
 const MonthlyDonationReportPageWrapper = styled(Box)(({ theme }) => ({
@@ -22,6 +24,7 @@ const MonthlyDonationReportPageWrapper = styled(Box)(({ theme }) => ({
 const MonthlyDonationReportPage: React.FC = () => {
   const { appName } = useGetAppSettings();
   const { t } = useTranslation();
+  const { isOpen } = useContactPanel();
 
   const { data: staffAccountData, loading } = useStaffAccountQuery();
 
@@ -59,6 +62,9 @@ const MonthlyDonationReportPage: React.FC = () => {
                 title={t('12-Month Donation Summary')}
               />
             }
+            rightPanel={isOpen ? <DynamicContactsRightPanel /> : undefined}
+            rightOpen={isOpen}
+            rightWidth="60%"
           />
         </MonthlyDonationReportPageWrapper>
       ) : loading ? (
