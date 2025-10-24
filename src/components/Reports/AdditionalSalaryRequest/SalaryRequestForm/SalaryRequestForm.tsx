@@ -83,6 +83,7 @@ export const SalaryRequestForm: React.FC = () => {
     contribution403b: yup
       .number()
       .min(0, t('403(b) Contribution amount must be positive'))
+      // Can't be greater than salary (will be pulled from HCM)
       .required(t('403(b) Contribution is required')),
     counseling: yup
       .number()
@@ -122,6 +123,7 @@ export const SalaryRequestForm: React.FC = () => {
     autoPurchase: yup
       .number()
       .min(0, t('Auto Purchase amount must be positive'))
+      // Max will eventually be a constant, no determined value yet
       .required(t('Auto Purchase is required')),
     reimbursableExpenses: yup
       .number()
