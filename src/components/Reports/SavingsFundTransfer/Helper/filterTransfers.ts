@@ -15,14 +15,22 @@ interface Summary {
 // It also identifies any missed transfers and includes them as separate transactions with a failed status.
 export function filteredTransfers(transfers: Transactions[]) {
   const filtered: Transactions[] = [];
+  const upcoming: Transactions[] = [];
   const summary = new Map<string, Summary>();
 
   for (const transfer of transfers) {
-    // A transfer will create a positive and negative transaction. Filter out the negative ones.
-    if (transfer.amount <= 0) {
+    // If there's no transaction, it's an upcoming transfer.
+    if (!transfer.transaction) {
+      upcoming.push(transfer);
       continue;
     }
 
+    // A transfer will create a positive and negative transaction. Filter out the negative ones.
+    if (transfer.transaction.amount <= 0) {
+      continue;
+    }
+
+    // If it's a one-time transfer, just add it to the filtered list.
     if (!transfer.recurringTransfer) {
       filtered.push(transfer);
       continue;
@@ -31,20 +39,21 @@ export function filteredTransfers(transfers: Transactions[]) {
     const key = transfer.recurringTransfer.id;
     const item = summary.get(key);
 
-    const transactedAt = transfer.transactedAt;
+    const transactedAt = transfer.transaction.transactedAt;
 
     if (!item) {
-      filtered.push({ ...transfer });
+      filtered.push({ ...transfer, transaction: { ...transfer.transaction } });
       const idx = filtered.length - 1;
       summary.set(key, {
         index: idx,
         seenMonths: new Set([`${transactedAt.year}-${transactedAt.month}`]),
-        transactions: new Map([[transfer.id, transfer]]),
+        transactions: new Map([[transfer.transaction.id, transfer]]),
       });
     } else {
-      filtered[item.index].amount += transfer.amount;
+      // Already filtered out non-existing transactions, so it is safe to assume the transaction is valid.
+      filtered[item.index].transaction!.amount += transfer.transaction.amount;
       item.seenMonths.add(`${transactedAt.year}-${transactedAt.month}`);
-      item.transactions.set(transfer.id, transfer);
+      item.transactions.set(transfer.transaction.id, transfer);
     }
   }
 
@@ -80,5 +89,5 @@ export function filteredTransfers(transfers: Transactions[]) {
     transferRow.summarizedTransfers = transactions;
   }
 
-  return filtered;
+  return { filtered, upcoming };
 }

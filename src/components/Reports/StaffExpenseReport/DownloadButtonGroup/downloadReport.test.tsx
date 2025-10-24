@@ -1,6 +1,6 @@
 import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import { ReportType } from '../Helpers/StaffReportEnum';
-import { Transaction } from '../StaffExpenseReport';
+import { Transaction } from '../Helpers/filterTransactions';
 import { createCsvReport } from './downloadReport';
 
 const mockData: Transaction[] = [

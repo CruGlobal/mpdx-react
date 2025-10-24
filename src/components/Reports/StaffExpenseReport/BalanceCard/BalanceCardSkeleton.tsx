@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Card, Skeleton, styled } from '@mui/material';
+import { SimpleScreenOnly } from '../../styledComponents';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   padding: theme.spacing(2),
@@ -32,15 +33,9 @@ const StyledCardActionArea = styled(Box)(({ theme }) => ({
   justifyContent: 'flex-start',
 }));
 
-const ScreenOnly = styled(Box)({
-  '@media print': {
-    display: 'none',
-  },
-});
-
 export const BalanceCardSkeleton: React.FC = () => {
   return (
-    <ScreenOnly sx={{ flex: 1, minWidth: 250, display: 'flex' }}>
+    <SimpleScreenOnly sx={{ flex: 1, minWidth: 250, display: 'flex' }}>
       <StyledCard variant="outlined" data-testid="balance-card-skeleton">
         <Box display="flex" flexDirection="row" alignItems="center" gap={1}>
           <StyledIconBox data-testid="icon-skeleton">
@@ -101,6 +96,6 @@ export const BalanceCardSkeleton: React.FC = () => {
           </Box>
         </StyledCardActionArea>
       </StyledCard>
-    </ScreenOnly>
+    </SimpleScreenOnly>
   );
 };

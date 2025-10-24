@@ -1,6 +1,7 @@
 import NextLink, { LinkProps } from 'next/link';
 import React, { useState } from 'react';
 import type { FC, ReactNode } from 'react';
+import Icon from '@mdi/react';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { Button, Collapse, ListItem } from '@mui/material';
@@ -13,8 +14,7 @@ interface NavItemProps {
   className?: string;
   depth?: number;
   href?: LinkProps['href'];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  icon?: any;
+  icon?: string;
   open?: boolean;
   title: string;
   whatsNewLink?: boolean;
@@ -48,7 +48,7 @@ export const NavItem: FC<NavItemProps> = ({
   children,
   depth = 0,
   href = '',
-  icon: Icon,
+  icon,
   open: openProp,
   title,
   whatsNewLink,
@@ -77,7 +77,7 @@ export const NavItem: FC<NavItemProps> = ({
     return (
       <StyledListItem disableGutters key={title} {...rest}>
         <StyledButton onClick={handleToggle} style={style}>
-          {Icon && <Icon style={iconStyle} size="20" />}
+          {icon && <Icon path={icon} style={iconStyle} size="20" />}
           <Title>{title}</Title>
           {open ? (
             <ExpandItemIcon
@@ -107,7 +107,7 @@ export const NavItem: FC<NavItemProps> = ({
       style={style}
       {...rest}
     >
-      {Icon && <Icon style={iconStyle} size="20" />}
+      {icon && <Icon path={icon} style={iconStyle} size="20" />}
       {whatsNewLink && process.env.HELP_WHATS_NEW_IMAGE_URL && (
         <img
           src={process.env.HELP_WHATS_NEW_IMAGE_URL}

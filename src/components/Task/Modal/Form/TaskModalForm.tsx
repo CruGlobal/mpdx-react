@@ -45,6 +45,7 @@ import { ActivityData, usePhaseData } from 'src/hooks/usePhaseData';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { nullableDateTime } from 'src/lib/formikHelpers';
+import i18n from 'src/lib/i18n';
 import {
   getLocalizedNotificationTimeUnit,
   getLocalizedNotificationType,
@@ -122,7 +123,7 @@ const getTaskDetails = (
 const taskSchema = yup.object({
   taskPhase: yup.mixed<PhaseEnum>().required(),
   activityType: yup.mixed<ActivityTypeEnum>().required(),
-  subject: yup.string().required(),
+  subject: yup.string().required(i18n.t('Task Name is required')),
   startAt: nullableDateTime(),
   completedAt: nullableDateTime(),
   displayResult: yup.mixed<DisplayResultEnum>().nullable(),
@@ -512,9 +513,7 @@ const TaskModalForm = ({
                   multiline
                   inputProps={{ 'aria-label': t('Subject') }}
                   error={!!errors.subject && touched.subject}
-                  helperText={
-                    errors.subject && touched.subject && t('Field is required')
-                  }
+                  helperText={touched.subject ? errors.subject : ''}
                   required
                 />
               </Grid>

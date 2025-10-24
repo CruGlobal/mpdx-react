@@ -47,6 +47,7 @@ export interface SubCategory {
 }
 export interface RecurringTransfer {
   id: string;
+  amount: number;
   recurringStart: DateTime;
   recurringEnd: DateTime | null;
   active: boolean;
@@ -57,11 +58,15 @@ export interface Transfer {
   destinationFundTypeName: string;
 }
 
-export interface Transactions {
+export interface Transaction {
   id: string;
   amount: number;
   description?: string | null;
   transactedAt: DateTime;
+}
+
+export interface Transactions {
+  transaction: Transaction | null;
   subCategory: SubCategory | null;
   transfer: Transfer;
   recurringTransfer?: RecurringTransfer | null;

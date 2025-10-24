@@ -33,18 +33,17 @@ const TestComponent: React.FC<TestComponentProps> = ({ single = false }) => (
     mocks={{
       GoalCalculation: {
         goalCalculation: {
-          ...goalCalculationMock.goalCalculation,
+          ...goalCalculationMock,
           familySize: single
             ? MpdGoalBenefitsConstantSizeEnum.Single
             : MpdGoalBenefitsConstantSizeEnum.MarriedNoChildren,
         },
       },
-      GoalCalculatorConstants: constantsMock,
+      GoalCalculatorConstants: {
+        constant: constantsMock,
+      },
       GetUser: {
         user: {
-          id: 'user-id-1',
-          firstName: 'Obi',
-          lastName: 'Wan',
           avatar: 'avatar.jpg',
         },
       },
@@ -68,7 +67,7 @@ describe('InformationCategory', () => {
     expect(queryByTestId('spouse-personal-tab')).not.toBeInTheDocument();
     expect(queryByTestId('spouse-financial-tab')).not.toBeInTheDocument();
 
-    userEvent.click(await findByRole('button', { name: 'View Spouse' }));
+    userEvent.click(await findByRole('button', { name: 'View Jane' }));
 
     expect(getByTestId('spouse-personal-tab')).toBeInTheDocument();
     expect(getByTestId('spouse-financial-tab')).toBeInTheDocument();
@@ -89,14 +88,14 @@ describe('InformationCategory', () => {
     );
 
     expect(
-      queryByRole('button', { name: 'View Spouse' }),
+      queryByRole('button', { name: 'View Jane' }),
     ).not.toBeInTheDocument();
   });
 
   it("renders the user's first name", async () => {
     const { getByTestId } = render(<TestComponent />);
     await waitFor(() => {
-      expect(getByTestId('info-name-typography')).toHaveTextContent('Obi');
+      expect(getByTestId('info-name-typography')).toHaveTextContent('John');
     });
   });
 
@@ -139,7 +138,7 @@ describe('InformationCategory', () => {
 
       userEvent.click(input);
       userEvent.click(
-        getByRole('option', { name: 'Single or spouse not staff' }),
+        getByRole('option', { name: 'Married with 1-2 children' }),
       );
 
       await waitFor(() =>
@@ -159,7 +158,7 @@ describe('InformationCategory', () => {
       const { getByRole, findByRole } = render(<TestComponent />);
 
       userEvent.click(getByRole('tab', { name: 'Financial' }));
-      userEvent.click(await findByRole('button', { name: 'View Spouse' }));
+      userEvent.click(await findByRole('button', { name: 'View Jane' }));
       const input = getByRole('spinbutton', {
         name: 'Spouse MHA Amount Per Paycheck',
       });
@@ -186,9 +185,9 @@ describe('InformationCategory', () => {
       const { getByRole } = render(<TestComponent />);
 
       const input = getByRole('combobox', { name: 'Years on Staff' });
-      await waitFor(() => expect(input).toHaveTextContent('5-9'));
+      await waitFor(() => expect(input).toHaveTextContent('10-14'));
       userEvent.click(input);
-      userEvent.click(getByRole('option', { name: '10-14' }));
+      userEvent.click(getByRole('option', { name: '5-9' }));
 
       await waitFor(() =>
         expect(mutationSpy).toHaveGraphqlOperation('UpdateGoalCalculation', {
@@ -196,7 +195,7 @@ describe('InformationCategory', () => {
             accountListId: 'account-list-1',
             attributes: {
               id: 'goal-calculation-1',
-              yearsOnStaff: 10,
+              yearsOnStaff: 5,
             },
           },
         }),
@@ -207,9 +206,9 @@ describe('InformationCategory', () => {
       const { getByRole } = render(<TestComponent />);
 
       const input = getByRole('combobox', { name: 'Age' });
-      await waitFor(() => expect(input).toHaveTextContent('Under 30'));
+      await waitFor(() => expect(input).toHaveTextContent('30-34'));
       userEvent.click(input);
-      userEvent.click(getByRole('option', { name: '30-34' }));
+      userEvent.click(getByRole('option', { name: 'Under 30' }));
 
       await waitFor(() =>
         expect(mutationSpy).toHaveGraphqlOperation('UpdateGoalCalculation', {
@@ -217,7 +216,7 @@ describe('InformationCategory', () => {
             accountListId: 'account-list-1',
             attributes: {
               id: 'goal-calculation-1',
-              age: GoalCalculationAge.ThirtyToThirtyFour,
+              age: GoalCalculationAge.UnderThirty,
             },
           },
         }),
@@ -234,7 +233,7 @@ describe('InformationCategory', () => {
       );
 
       userEvent.click(getByRole('tab', { name: 'Financial' }));
-      userEvent.click(getByRole('button', { name: 'View Spouse' }));
+      userEvent.click(getByRole('button', { name: 'View Jane' }));
       userEvent.click(
         getByRole('combobox', {
           name: 'Spouse SECA (Social Security) Status',

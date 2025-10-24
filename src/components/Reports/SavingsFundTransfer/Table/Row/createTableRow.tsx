@@ -8,6 +8,7 @@ import {
   Chip,
   Icon,
   IconButton,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { TFunction } from 'react-i18next';
@@ -184,9 +185,11 @@ export function populateTransferRows(options: Options) {
 
   const note: RenderCell = ({ row }) => {
     return (
-      <Typography variant="body2" noWrap>
-        {row.note}
-      </Typography>
+      <Tooltip title={row.note}>
+        <Typography variant="body2" noWrap>
+          {row.note}
+        </Typography>
+      </Tooltip>
     );
   };
 

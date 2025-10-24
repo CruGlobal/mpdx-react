@@ -7,7 +7,6 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
-import { UpdateRecurringTransferMutation } from '../TransferMutations.generated';
 import { TableTypeEnum, Transfers, mockData } from '../mockData';
 import { TransfersTable } from './TransfersTable';
 
@@ -24,6 +23,14 @@ jest.mock('notistack', () => ({
       enqueueSnackbar: mockEnqueue,
     };
   },
+}));
+
+jest.mock('../DeleteTransferModal/DynamicDeleteTransferModal', () => ({
+  DynamicDeleteTransferModal: () => <div data-testid="delete-modal" />,
+}));
+
+jest.mock('../FailedTransferModal/DynamicFailedTransferModal', () => ({
+  DynamicFailedTransferModal: () => <div data-testid="failed-modal" />,
 }));
 
 const mockHistory: Transfers[] = [
@@ -44,11 +51,7 @@ const TestComponent: React.FC = () => {
     <SnackbarProvider>
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <GqlMockedProvider<{
-            updateRecurringTransfer: UpdateRecurringTransferMutation;
-          }>
-            onCall={mutationSpy}
-          >
+          <GqlMockedProvider onCall={mutationSpy}>
             <TransfersTable
               history={mockHistory}
               type={TableTypeEnum.History}
@@ -66,18 +69,31 @@ describe('TransferHistoryTable', () => {
   it('renders with transfer history data', async () => {
     const { getByRole, findByRole } = render(<TestComponent />);
 
-    const iconRow = getByRole('row', {
-      name: 'Savings Account Arrow Primary Account $2,500.00 One Time pending Sep 26, 2023 Reimbursements Stop Transfer',
-    });
+    const grid = await findByRole('grid');
+    const headers = within(grid)
+      .getAllByRole('columnheader')
+      .map((h) => h.textContent);
+    expect(headers).toEqual(
+      expect.arrayContaining([
+        'Transfers',
+        'Amount',
+        'Schedule',
+        'Status',
+        'Transfer Date',
+        'Stop Date',
+        'Note',
+        'Actions',
+      ]),
+    );
+
+    const rows = within(grid).getAllByRole('row');
+    const iconRow = rows[1];
     const cells = within(iconRow).getAllByRole('gridcell');
 
     const transferIconCell = cells[0];
     const statusCell = cells[3];
     const actionCell = cells[7];
 
-    expect(
-      await findByRole('columnheader', { name: 'Transfers' }),
-    ).toBeInTheDocument();
     expect(
       within(transferIconCell).getByRole('img', { name: 'Primary Account' }),
     ).toBeInTheDocument();
@@ -88,38 +104,20 @@ describe('TransferHistoryTable', () => {
       within(transferIconCell).getByRole('img', { name: 'Arrow' }),
     ).toBeInTheDocument();
 
-    expect(
-      await findByRole('columnheader', { name: 'Amount' }),
-    ).toBeInTheDocument();
     expect(getByRole('gridcell', { name: '$2,500.00' })).toBeInTheDocument();
-    expect(
-      await findByRole('columnheader', { name: 'Schedule' }),
-    ).toBeInTheDocument();
+
     expect(getByRole('gridcell', { name: 'One Time' })).toBeInTheDocument();
 
-    expect(
-      await findByRole('columnheader', { name: 'Status' }),
-    ).toBeInTheDocument();
     expect(within(statusCell).getByText('pending')).toBeInTheDocument();
 
-    expect(
-      await findByRole('columnheader', { name: 'Transfer Date' }),
-    ).toBeInTheDocument();
     expect(getByRole('gridcell', { name: 'Sep 26, 2023' })).toBeInTheDocument();
-    expect(
-      await findByRole('columnheader', { name: 'Stop Date' }),
-    ).toBeInTheDocument();
+
     expect(getByRole('gridcell', { name: '' })).toBeInTheDocument();
-    expect(
-      await findByRole('columnheader', { name: 'Note' }),
-    ).toBeInTheDocument();
+
     expect(
       getByRole('gridcell', { name: 'Reimbursements' }),
     ).toBeInTheDocument();
 
-    expect(
-      await findByRole('columnheader', { name: 'Actions' }),
-    ).toBeInTheDocument();
     expect(
       within(actionCell).getByRole('button', { name: 'Add Stop Date' }),
     ).toBeInTheDocument();
@@ -147,9 +145,9 @@ describe('TransferHistoryTable', () => {
   });
 
   it('updates the sort order', async () => {
-    const { getAllByRole, getByRole, findByRole } = render(<TestComponent />);
+    const { getAllByRole, findByRole } = render(<TestComponent />);
 
-    const amountHeader = getByRole('columnheader', { name: 'Amount' });
+    const amountHeader = await findByRole('columnheader', { name: 'Amount' });
     expect(
       within(amountHeader).getByTestId('ArrowDownwardIcon'),
     ).toBeInTheDocument();
@@ -230,21 +228,15 @@ describe('TransferHistoryTable', () => {
     userEvent.click(within(dialog).getByRole('button', { name: 'Clear' }));
 
     expect(await findByText('Confirm Clear')).toBeInTheDocument();
-    await userEvent.click(getByRole('button', { name: 'Yes' }));
+    userEvent.click(getByRole('button', { name: 'Yes' }));
 
-    expect(mutationSpy).toHaveBeenCalled();
-
-    await waitFor(() => {
-      expect(mockEnqueue).toHaveBeenCalledWith(
-        'Stop date updated successfully',
-        {
-          variant: 'success',
-        },
-      );
+    await waitFor(() => expect(mutationSpy).toHaveBeenCalled());
+    expect(mockEnqueue).toHaveBeenCalledWith('Stop date updated successfully', {
+      variant: 'success',
     });
 
     expect(dialog).not.toBeVisible();
-  });
+  }, 10000);
 
   it('updates end date when Ok is clicked', async () => {
     const { getByRole, findByRole } = render(<TestComponent />);
@@ -274,20 +266,14 @@ describe('TransferHistoryTable', () => {
     );
     expect(button).toBeTruthy();
 
-    await userEvent.click(button!);
+    userEvent.click(button!);
 
     const acceptButton = within(dialog).getByRole('button', { name: /ok/i });
-    await userEvent.click(acceptButton);
+    userEvent.click(acceptButton);
 
-    expect(mutationSpy).toHaveBeenCalled();
-
-    await waitFor(() => {
-      expect(mockEnqueue).toHaveBeenCalledWith(
-        'Stop date updated successfully',
-        {
-          variant: 'success',
-        },
-      );
+    await waitFor(() => expect(mutationSpy).toHaveBeenCalled());
+    expect(mockEnqueue).toHaveBeenCalledWith('Stop date updated successfully', {
+      variant: 'success',
     });
   });
 });

@@ -2,11 +2,21 @@ import React, { useCallback, useMemo } from 'react';
 import { styled } from '@mui/material/styles';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
+import { PrimaryBudgetCategoryEnum } from 'src/graphql/types.generated';
+import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import { useLocale } from 'src/hooks/useLocale';
 import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
-import { useGoalLineItems } from '../../Shared/useGoalLineItems';
-import type { Goal } from '../../Shared/useReportExpenses/useReportExpenses';
+import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
+import {
+  calculateNewStaffGoalTotals,
+  getNewStaffBudgetCategory,
+} from '../../Shared/calculateNewStaffTotals';
+import {
+  GoalTotals,
+  calculateCategoryEnumTotal,
+} from '../../Shared/calculateTotals';
+import { MpdGoalHeaderCards } from './MpdGoalHeaderCards/MpdGoalHeaderCards';
 
 interface MpdGoalRow {
   line: string;
@@ -35,166 +45,272 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
 }));
 
 interface MpdGoalTableProps {
-  goal: Goal;
+  supportRaised: number;
 }
 
-export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({ goal }) => {
+export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({
+  supportRaised,
+}) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const localeText = useDataGridLocaleText();
-  const calculations = useGoalLineItems(goal);
+  const { goalCalculationResult, goalTotals } = useGoalCalculator();
+  const constants = useGoalCalculatorConstants();
+  const { goalMiscConstants } = constants;
 
   const valueFormatter = useCallback(
     (value: number, row: MpdGoalRow) =>
       row.percentage
-        ? percentageFormat(value, locale)
-        : currencyFormat(value, 'USD', locale, { showTrailingZeros: true }),
+        ? percentageFormat(value, locale, { fractionDigits: 2 })
+        : currencyFormat(value, 'USD', locale, { fractionDigits: 0 }),
     [locale],
   );
 
-  const ministryExpenses = goal.ministryExpenses;
-  const rows = useMemo((): MpdGoalRow[] => {
-    const ministryExpenseRows: MpdGoalRow[] = [
-      ...ministryExpenses.primaryCategories.map((category, index) => {
-        const lineNumber = String.fromCharCode(65 + index);
-        return {
-          line: `3${lineNumber}`,
-          category: t(category.label),
-          amount: category.amount,
-          reference: Math.random() * 391 + 10,
-        };
-      }),
-    ];
+  const newStaffReference = useMemo(
+    () =>
+      calculateNewStaffGoalTotals(
+        goalCalculationResult.data?.goalCalculation ?? null,
+        constants,
+      ),
+    [goalCalculationResult, constants],
+  );
 
-    return [
+  const goalCalculation = goalCalculationResult.data?.goalCalculation;
+  const rows = useMemo((): MpdGoalRow[] => {
+    const ministryExpenseCategories = [
+      {
+        line: '3A',
+        category: t('Ministry Miles'),
+        categories: [PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage],
+      },
+      {
+        line: '3B',
+        category: t('Ministry Travel'),
+        categories: [PrimaryBudgetCategoryEnum.MinistryTravel],
+      },
+      {
+        line: '3C',
+        category: t('Meetings, Retreats, Conferences'),
+        categories: [
+          PrimaryBudgetCategoryEnum.MeetingsRetreatsConferences,
+          PrimaryBudgetCategoryEnum.UsStaffConference,
+        ],
+      },
+      {
+        line: '3D',
+        category: t('Meals and Per Diem'),
+        categories: [PrimaryBudgetCategoryEnum.MealsAndPerDiem],
+      },
+      {
+        line: '3E',
+        category: t('MPD'),
+        categories: [PrimaryBudgetCategoryEnum.MinistryPartnerDevelopment],
+      },
+      {
+        line: '3F',
+        category: t('Supplies and Materials'),
+        categories: [PrimaryBudgetCategoryEnum.SuppliesAndMaterials],
+      },
+      {
+        line: '3G',
+        category: t('Summer Assignment Expenses'),
+        categories: [
+          PrimaryBudgetCategoryEnum.SummerAssignmentExpenses,
+          PrimaryBudgetCategoryEnum.SummerAssignmentTravel,
+        ],
+      },
+      {
+        line: '3H',
+        category: t('Reimbursable Medical Expenses'),
+        categories: [PrimaryBudgetCategoryEnum.ReimbursableMedicalExpense],
+      },
+      {
+        line: '3I',
+        category: t(
+          'Account transfers to staff members, ministries, projects, etc.',
+        ),
+        categories: [PrimaryBudgetCategoryEnum.AccountTransfers],
+      },
+      {
+        line: '3J',
+        category: t('Other (includes credit card charges)'),
+        categories: [
+          PrimaryBudgetCategoryEnum.InternetServiceProviderFee,
+          PrimaryBudgetCategoryEnum.CellPhoneWorkLine,
+          PrimaryBudgetCategoryEnum.CreditCardProcessingCharges,
+          PrimaryBudgetCategoryEnum.MinistryOther,
+        ],
+      },
+    ];
+    const ministryExpenseRows = ministryExpenseCategories.map(
+      ({ categories, ...rowFields }): MpdGoalRow => ({
+        ...rowFields,
+        amount: categories.reduce(
+          (sum, category) =>
+            sum +
+            calculateCategoryEnumTotal(
+              goalCalculation?.ministryFamily,
+              category,
+            ),
+          0,
+        ),
+        reference: categories.reduce(
+          (sum, category) =>
+            sum +
+            getNewStaffBudgetCategory(
+              goalCalculation,
+              category,
+              goalMiscConstants,
+            ),
+          0,
+        ),
+      }),
+    );
+
+    // The rows can have an amount and reference value, or a value function that calculates the
+    // amount and reference value from the goal total and new staff goal total
+    const rows: Array<
+      | MpdGoalRow
+      | (Omit<MpdGoalRow, 'amount' | 'reference'> & {
+          value: (goalTotals: GoalTotals) => number;
+        })
+    > = [
       {
         line: '1A',
         category: t('Net Monthly Combined Salary'),
-        amount: goal.netMonthlySalary,
-        reference: 5511.31,
+        value: (goalTotals) => goalTotals.netMonthlySalary,
       },
       {
         line: '1B',
         category: t('Taxes, SECA, VTL, etc. %'),
-        amount: goal.taxesPercentage,
-        reference: 0.22,
+        value: (goalTotals) => goalTotals.taxesPercentage,
         percentage: true,
       },
       {
         line: '1C',
         category: t('Taxes, SECA, VTL, etc.'),
-        amount: calculations.taxes,
-        reference: 1212.49,
+        value: (goalTotals) => goalTotals.taxes,
       },
       {
         line: '1D',
         category: t('Subtotal with Net, Taxes, and SECA'),
-        amount: calculations.salaryPreIra,
-        reference: 6723.8,
+        value: (goalTotals) => goalTotals.salaryPreIra,
       },
       {
         line: '1E',
         category: t('Roth 403(b) Contribution %'),
-        amount: goal.rothContributionPercentage,
-        reference: 0.07,
+        value: (goalTotals) => goalTotals.rothContributionPercentage,
         percentage: true,
       },
       {
         line: '1F',
         category: t('Traditional 403(b) Contribution %'),
-        amount: goal.traditionalContributionPercentage,
-        reference: 0,
+        value: (goalTotals) => goalTotals.traditionalContributionPercentage,
         percentage: true,
       },
       {
         line: '1G',
-        category: t('100% - Roth + Traditional 403(b) %'),
-        amount:
+        category: t('100% - (Roth + Traditional 403(b)) %'),
+        value: (goalTotals) =>
           1 -
-          goal.rothContributionPercentage -
-          goal.traditionalContributionPercentage,
-        reference: 93,
+          goalTotals.rothContributionPercentage -
+          goalTotals.traditionalContributionPercentage,
         percentage: true,
       },
       {
         line: '1H',
         category: t('Roth 403(b)'),
-        amount: calculations.rothContribution,
-        reference: 506.09,
+        value: (goalTotals) => goalTotals.rothContribution,
       },
       {
         line: '1I',
         category: t('Traditional 403(b)'),
-        amount: calculations.traditionalContribution,
-        reference: 0,
+        value: (goalTotals) => goalTotals.traditionalContribution,
       },
       {
         line: '1J',
         category: t('Gross Annual Salary'),
-        amount: calculations.grossAnnualSalary,
-        reference: 86758.68,
+        value: (goalTotals) => goalTotals.grossAnnualSalary,
       },
       {
         line: '1',
         category: t('Gross Monthly Salary'),
-        amount: calculations.grossMonthlySalary,
-        reference: 7229.89,
+        value: (goalTotals) => goalTotals.grossMonthlySalary,
       },
       {
         line: '2',
-        category: t('Benefits Charge'),
-        amount: ministryExpenses.benefitsCharge,
-        reference: 2302.24,
+        category: t('Benefits'),
+        value: (goalTotals) => goalTotals.benefitsCharge,
       },
       ...ministryExpenseRows,
       {
         line: '4',
         category: t('Ministry Expenses Subtotal'),
-        amount: calculations.ministryExpensesTotal,
-        reference: ministryExpenseRows.reduce(
-          (sum, row) => sum + row.reference,
-          0,
-        ),
+        value: (goalTotals) =>
+          goalTotals.ministryExpensesTotal + goalTotals.benefitsCharge,
       },
       {
         line: '5',
         category: t('Subtotal'),
-        amount: calculations.overallSubtotal,
-        reference: 10224.63,
+        value: (goalTotals) => goalTotals.overallSubtotal,
       },
       {
         line: '6',
-        category: t('Subtotal with 12% admin charge'),
-        amount: calculations.overallSubtotalWithAdmin,
-        reference: 11618.9,
+        category: t('Subtotal with {{admin}} admin charge', {
+          admin: percentageFormat(
+            goalMiscConstants.RATES?.ADMIN_RATE?.fee ?? 0,
+            locale,
+          ),
+        }),
+        value: (goalTotals) => goalTotals.overallSubtotalWithAdmin,
       },
       {
         line: '7',
-        category: t('Total Goal (line 16 x 1.06 attrition)'),
-        amount: calculations.overallTotal,
-        reference: 12316.03,
+        category: t('Total Goal (line 6 with {{attrition}} attrition)', {
+          attrition: percentageFormat(
+            goalMiscConstants.RATES?.ATTRITION_RATE?.fee ?? 0,
+            locale,
+          ),
+        }),
+        value: (goalTotals) => goalTotals.overallTotal,
       },
       {
         line: '8',
         category: t('Solid Monthly Support Developed'),
-        amount: calculations.supportRaised,
-        reference: 0,
+        value: () => supportRaised,
       },
       {
         line: '9',
         category: t('Monthly Support to be Developed'),
-        amount: calculations.supportRemaining,
-        reference: 12316.03,
+        value: (goalTotals) => goalTotals.overallTotal - supportRaised,
       },
       {
         line: '10',
         category: t('Support Goal Percentage Progress'),
-        amount: calculations.supportRaisedPercentage,
-        reference: 0,
+        value: (goalTotals) => supportRaised / goalTotals.overallTotal,
         percentage: true,
       },
     ];
-  }, [t, goal, calculations, ministryExpenses]);
+
+    return rows.map((row) => {
+      if ('value' in row) {
+        return {
+          ...row,
+          amount: row.value(goalTotals),
+          reference: row.value(newStaffReference),
+        };
+      }
+
+      return row;
+    });
+  }, [
+    t,
+    goalCalculation,
+    goalTotals,
+    goalMiscConstants,
+    newStaffReference,
+    supportRaised,
+  ]);
 
   const columns = useMemo(
     (): GridColDef[] => [
@@ -214,14 +330,6 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({ goal }) => {
         hideable: false,
       },
       {
-        field: 'amount',
-        headerName: t('Amount'),
-        width: 120,
-        sortable: false,
-        hideable: false,
-        valueFormatter,
-      },
-      {
         field: 'reference',
         headerName: t('NS Reference'),
         headerClassName: 'reference',
@@ -230,60 +338,73 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({ goal }) => {
         hideable: true,
         valueFormatter,
       },
+      {
+        field: 'amount',
+        headerName: t('Amount'),
+        width: 120,
+        sortable: false,
+        hideable: false,
+        valueFormatter,
+      },
     ],
     [t, valueFormatter],
   );
 
   return (
-    <StyledDataGrid
-      label={t('MPD Goal')}
-      getRowId={(row) => row.line}
-      getRowClassName={(params) => {
-        const classes: string[] = [];
+    <>
+      <MpdGoalHeaderCards
+        supportRaisedPercentage={supportRaised / goalTotals.overallTotal}
+      />
+      <StyledDataGrid
+        label={t('MPD Goal')}
+        getRowId={(row) => row.line}
+        getRowClassName={(params) => {
+          const classes: string[] = [];
 
-        // Bold subtotal and total lines
-        if (
-          params.row.line === '1J' ||
-          params.row.line === '7' ||
-          params.row.line === '9'
-        ) {
-          classes.push('bold');
-        }
+          // Bold subtotal and total lines
+          if (
+            params.row.line === '1J' ||
+            params.row.line === '7' ||
+            params.row.line === '9'
+          ) {
+            classes.push('bold');
+          }
 
-        // Add a top border to some lines
-        if (params.row.line === '1' || params.row.line === '7') {
-          classes.push('top-border');
-        }
+          // Add a top border to some lines
+          if (params.row.line === '1' || params.row.line === '7') {
+            classes.push('top-border');
+          }
 
-        return classes.join(' ');
-      }}
-      getCellClassName={(params) => {
-        const classes: string[] = [];
+          return classes.join(' ');
+        }}
+        getCellClassName={(params) => {
+          const classes: string[] = [];
 
-        // Indent categories belonging to lines that contain a letter
-        if (
-          params.colDef.field === 'category' &&
-          typeof params.row.line === 'string' &&
-          /[a-z]/i.test(params.row.line)
-        ) {
-          classes.push('indent');
-        }
+          // Indent categories belonging to lines that contain a letter
+          if (
+            params.colDef.field === 'category' &&
+            typeof params.row.line === 'string' &&
+            /[a-z]/i.test(params.row.line)
+          ) {
+            classes.push('indent');
+          }
 
-        // Identify reference cells
-        if (params.colDef.field === 'reference') {
-          classes.push(params.colDef.field);
-        }
+          // Identify reference cells
+          if (params.colDef.field === 'reference') {
+            classes.push(params.colDef.field);
+          }
 
-        return classes.join(' ');
-      }}
-      rows={rows}
-      columns={columns}
-      disableColumnFilter
-      disableRowSelectionOnClick
-      disableVirtualization
-      hideFooter
-      autoHeight
-      localeText={localeText}
-    />
+          return classes.join(' ');
+        }}
+        rows={rows}
+        columns={columns}
+        disableColumnFilter
+        disableRowSelectionOnClick
+        disableVirtualization
+        hideFooter
+        autoHeight
+        localeText={localeText}
+      />
+    </>
   );
 };

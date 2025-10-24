@@ -8,6 +8,7 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { ActionButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import i18n from 'src/lib/i18n';
 import { ContactDetailsTabDocument } from '../ContactDetailsTab.generated';
 import { useUpdateContactOtherMutation } from '../Other/EditContactOtherModal/EditContactOther.generated';
 import { ContactDetailLoadingPlaceHolder } from '../StyledComponents';
@@ -18,7 +19,7 @@ import {
 import { useDeleteDonorAccountMutation } from './DeleteDonorAccount.generated';
 
 const newPartnerAccountSchema = yup.object({
-  accountNumber: yup.string().required(),
+  accountNumber: yup.string().required(i18n.t('Account Number is required')),
 });
 
 type Attributes = yup.InferType<typeof newPartnerAccountSchema>;
@@ -158,11 +159,7 @@ export const ContactDetailsPartnerAccounts: React.FC<
                 onBlur={handleBlur}
                 inputProps={{ 'aria-label': t('Account Number') }}
                 error={!!errors.accountNumber && touched.accountNumber}
-                helperText={
-                  errors.accountNumber &&
-                  touched.accountNumber &&
-                  t('Field is required')
-                }
+                helperText={touched.accountNumber ? errors.accountNumber : ''}
                 required
               />
               <IconButton

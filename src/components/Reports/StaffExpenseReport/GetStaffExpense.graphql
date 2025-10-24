@@ -1,5 +1,13 @@
-query ReportsStaffExpenses($startMonth: ISO8601Date, $endMonth: ISO8601Date) {
-  reportsStaffExpenses(startMonth: $startMonth, endMonth: $endMonth) {
+query ReportsStaffExpenses(
+  $startMonth: ISO8601Date
+  $endMonth: ISO8601Date
+  $fundTypes: [String!]
+) {
+  reportsStaffExpenses(
+    startMonth: $startMonth
+    endMonth: $endMonth
+    fundTypes: $fundTypes
+  ) {
     startBalance
     endBalance
     funds {
