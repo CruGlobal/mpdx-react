@@ -1,5 +1,6 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { AdditionalSalaryRequestSectionEnum } from './AdditionalSalaryRequestHelper';
 import {
@@ -12,6 +13,7 @@ import { SectionList } from './Shared/SectionList';
 const MainContent: React.FC = () => {
   const { selectedSection } = useAdditionalSalaryRequest();
   const { t } = useTranslation();
+  const theme = useTheme();
 
   const content = {
     [AdditionalSalaryRequestSectionEnum.AboutForm]: t(
@@ -24,9 +26,9 @@ const MainContent: React.FC = () => {
   };
 
   return (
-    <Box sx={{ px: 4 }}>
-      <Typography variant="h5">{content[selectedSection]}</Typography>
-    </Box>
+    <Typography sx={{ paddingInline: theme.spacing(4) }} variant="h5">
+      {content[selectedSection]}
+    </Typography>
   );
 };
 
