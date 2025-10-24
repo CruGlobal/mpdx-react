@@ -2,17 +2,18 @@ import NextLink from 'next/link';
 import { Checkbox, Link, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { preloadContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
+import { RenderCell } from 'src/components/Reports/PartnerGivingAnalysisReport/Table/Table';
 import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
+import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { RenderCell } from '../Table';
 
-export const populateTableRows = (
-  locale: string,
+export const usePopulateTableRows = (
   onSelectOne: (contactId: string) => void,
   isRowChecked: (contactId: string) => boolean,
 ) => {
   const { buildContactUrl } = useContactPanel();
+  const locale = useLocale();
 
   const checkbox: RenderCell = ({ row }) => {
     return (
@@ -59,7 +60,7 @@ export const populateTableRows = (
   const donationPeriodSum: RenderCell = ({ row }) => {
     return (
       <Typography variant="body2" noWrap>
-        {currencyFormat(row.donationPeriodSum ?? 0, row.pledgeCurrency, locale)}
+        {currencyFormat(row.donationPeriodSum, row.pledgeCurrency, locale)}
       </Typography>
     );
   };
@@ -75,11 +76,7 @@ export const populateTableRows = (
   const donationPeriodAverage: RenderCell = ({ row }) => {
     return (
       <Typography variant="body2" noWrap>
-        {currencyFormat(
-          row.donationPeriodAverage ?? 0,
-          row.pledgeCurrency,
-          locale,
-        )}
+        {currencyFormat(row.donationPeriodAverage, row.pledgeCurrency, locale)}
       </Typography>
     );
   };
@@ -88,7 +85,7 @@ export const populateTableRows = (
     return (
       <Typography variant="body2" noWrap>
         {currencyFormat(
-          row.lastDonationAmount ?? 0,
+          row.lastDonationAmount,
           row.lastDonationCurrency,
           locale,
         )}
@@ -99,7 +96,8 @@ export const populateTableRows = (
   const lastDonationDate: RenderCell = ({ row }) => {
     return (
       <Typography variant="body2" noWrap>
-        {dateFormatShort(DateTime.fromISO(row.lastDonationDate ?? ''), locale)}
+        {typeof row.lastDonationDate === 'string' &&
+          dateFormatShort(DateTime.fromISO(row.lastDonationDate), locale)}
       </Typography>
     );
   };
@@ -107,7 +105,7 @@ export const populateTableRows = (
   const totalDonations: RenderCell = ({ row }) => {
     return (
       <Typography variant="body2" noWrap>
-        {currencyFormat(row.totalDonations ?? 0, row.pledgeCurrency, locale)}
+        {currencyFormat(row.totalDonations, row.pledgeCurrency, locale)}
       </Typography>
     );
   };

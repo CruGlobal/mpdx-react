@@ -11,26 +11,17 @@ query PartnerGivingAnalysis(
       totalDonations
       pledgeCurrency
       pledgeAmount
-      firstDonationDate
-      firstDonationAmount
-      firstDonationCurrency
       lastDonationDate
       lastDonationAmount
       lastDonationCurrency
       donationPeriodAverage
       donationPeriodCount
       donationPeriodSum
-      donationPeriodPercentRank
     }
     pageInfo {
       endCursor
       hasNextPage
-      hasPreviousPage
-    }
-    edges {
-      cursor
     }
     totalCount
-    totalPageCount
   }
 }

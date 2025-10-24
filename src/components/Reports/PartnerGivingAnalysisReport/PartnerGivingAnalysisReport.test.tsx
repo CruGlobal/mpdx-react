@@ -10,6 +10,7 @@ import { PartnerGivingAnalysisSortEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { PartnerGivingAnalysisQuery } from './PartnerGivingAnalysis.generated';
 import { PartnerGivingAnalysisReport } from './PartnerGivingAnalysisReport';
+import { mocks } from './mockData';
 
 const accountListId = '111';
 const title = 'test title';
@@ -66,184 +67,6 @@ const TestComponent: React.FC<TestComponentProps> = ({
   </TestRouter>
 );
 
-const mocks = {
-  PartnerGivingAnalysis: {
-    partnerGivingAnalysis: {
-      nodes: [
-        {
-          id: '01',
-          name: 'Flintstone, Fred and Wilma',
-          totalDonations: 49835,
-          pledgeCurrency: 'USD',
-          lastDonationDate: '2022-04-12',
-          lastDonationAmount: 3000,
-          lastDonationCurrency: 'INR',
-          donationPeriodAverage: 1215.4878048780488,
-          donationPeriodCount: 41,
-          donationPeriodSum: 49835,
-        },
-        {
-          id: '02',
-          name: 'Mouse, Mickey and Minnie',
-          totalDonations: 2175,
-          pledgeCurrency: 'USD',
-          lastDonationDate: '2020-12-15',
-          lastDonationAmount: 75,
-          lastDonationCurrency: 'USD',
-          donationPeriodAverage: 80.55555555555556,
-          donationPeriodCount: 27,
-          donationPeriodSum: 2175,
-        },
-        {
-          id: '03',
-          name: 'Pan, Peter and Wendy',
-          totalDonations: 1045,
-          pledgeCurrency: 'USD',
-          lastDonationDate: '2020-12-15',
-          lastDonationAmount: 30,
-          lastDonationCurrency: 'USD',
-          donationPeriodAverage: 37.32142857142857,
-          donationPeriodCount: 28,
-          donationPeriodSum: 1045,
-        },
-        {
-          id: '04',
-          name: 'Pooh, Winnie',
-          totalDonations: 255,
-          pledgeCurrency: 'USD',
-          lastDonationDate: '2019-10-05',
-          lastDonationAmount: 10,
-          lastDonationCurrency: 'USD',
-          donationPeriodAverage: 10.625,
-          donationPeriodCount: 24,
-          donationPeriodSum: 255,
-        },
-        {
-          id: '05',
-          name: 'Dalmation, Pongo and Perdita',
-          totalDonations: 41250,
-          pledgeCurrency: 'USD',
-          lastDonationDate: '2025-07-11',
-          lastDonationAmount: 200,
-          lastDonationCurrency: 'UGX',
-          donationPeriodAverage: 982.1428571428571,
-          donationPeriodCount: 42,
-          donationPeriodSum: 41250,
-        },
-        {
-          id: '06',
-          name: 'Deer, Bambi and Feline',
-          totalDonations: 24795,
-          pledgeCurrency: 'UGX',
-          lastDonationDate: '2022-01-12',
-          lastDonationAmount: 12000,
-          lastDonationCurrency: 'INR',
-          donationPeriodAverage: 918.3333333333334,
-          donationPeriodCount: 27,
-          donationPeriodSum: 24796,
-        },
-        {
-          id: '07',
-          name: 'Duck, Daffy and Daphney',
-          totalDonations: 11039,
-          pledgeCurrency: 'USD',
-          lastDonationDate: '2025-07-11',
-          lastDonationAmount: 200,
-          lastDonationCurrency: 'UGX',
-          donationPeriodAverage: 356.0967741935484,
-          donationPeriodCount: 31,
-          donationPeriodSum: 11039,
-        },
-        {
-          id: '08',
-          name: 'Jetson, George and Jane',
-          totalDonations: 1160,
-          pledgeCurrency: 'USD',
-          lastDonationDate: '2025-07-09',
-          lastDonationAmount: 200,
-          lastDonationCurrency: 'UGX',
-          donationPeriodAverage: 46.422,
-          donationPeriodCount: 25,
-          donationPeriodSum: 1160,
-        },
-        {
-          id: '09',
-          name: 'Beast, Beast and Belle',
-          totalDonations: 1400,
-          pledgeCurrency: 'ARM',
-          lastDonationDate: '2025-07-22',
-          lastDonationAmount: 200,
-          lastDonationCurrency: 'UGX',
-          donationPeriodAverage: 466.6666666666667,
-          donationPeriodCount: 3,
-          donationPeriodSum: 1400,
-        },
-        {
-          id: '10',
-          name: 'Duck, Donald and Daisy',
-          totalDonations: 333336588,
-          pledgeCurrency: 'USD',
-          lastDonationDate: '2025-07-02',
-          lastDonationAmount: 1000,
-          lastDonationCurrency: 'USD',
-          donationPeriodAverage: 10752793.161290323,
-          donationPeriodCount: 31,
-          donationPeriodSum: 333336588,
-        },
-        {
-          id: '11',
-          name: 'First Pedestrian Church',
-          totalDonations: 14733,
-          pledgeCurrency: 'USD',
-          lastDonationDate: '2025-07-16',
-          lastDonationAmount: 200,
-          lastDonationCurrency: 'UGX',
-          donationPeriodAverage: 475.28225806451616,
-          donationPeriodCount: 31,
-          donationPeriodSum: 14733,
-        },
-      ],
-      pageInfo: {
-        endCursor: 'MTg',
-        hasNextPage: false,
-        hasPreviousPage: false,
-      },
-      edges: [
-        { cursor: 'OA' },
-        { cursor: 'OQ' },
-        { cursor: 'MTA' },
-        { cursor: 'MTE' },
-        { cursor: 'MTI' },
-        { cursor: 'MTM' },
-        { cursor: 'MTQ' },
-        { cursor: 'MTU' },
-        { cursor: 'MTY' },
-        { cursor: 'MTc' },
-        { cursor: 'MTg' },
-      ],
-      totalCount: 11,
-      totalPageCount: 1,
-    },
-  },
-  GetPartnerGivingAnalysisIdsForMassSelection: {
-    partnerGivingAnalysis: {
-      nodes: [
-        { id: '01' },
-        { id: '02' },
-        { id: '03' },
-        { id: '04' },
-        { id: '05' },
-        { id: '06' },
-        { id: '07' },
-        { id: '08' },
-        { id: '09' },
-        { id: '10' },
-        { id: '11' },
-      ],
-    },
-  },
-};
-
 const emptyMock = {
   PartnerGivingAnalysis: {
     partnerGivingAnalysis: {
@@ -273,7 +96,7 @@ describe('PartnerGivingAnalysisReport', () => {
     const { getAllByRole, findByRole } = render(<TestComponent />);
 
     expect(await findByRole('grid')).toBeInTheDocument();
-    expect(getAllByRole('row').length).toBe(12); // 11 rows + header
+    expect(getAllByRole('row').length).toBe(27); // 26 rows + header
   });
 
   it('shows a placeholder when there are zero contacts', async () => {
@@ -385,7 +208,7 @@ describe('PartnerGivingAnalysisReport', () => {
     });
 
     await waitFor(() =>
-      expect(mutationSpy.mock.calls[0][0].operation.variables.first).toBe(10),
+      expect(mutationSpy.mock.calls[0][0].operation.variables.first).toBe(25),
     );
 
     await userEvent.click(getByTestId('KeyboardArrowRightIcon'));
@@ -432,17 +255,10 @@ describe('PartnerGivingAnalysisReport', () => {
     expect(getAllByRole('checkbox')[3]).not.toBeChecked();
 
     // Select all individually
-    userEvent.click(getAllByRole('checkbox')[1]);
-    userEvent.click(getAllByRole('checkbox')[2]);
-    userEvent.click(getAllByRole('checkbox')[3]);
-    userEvent.click(getAllByRole('checkbox')[4]);
-    userEvent.click(getAllByRole('checkbox')[5]);
-    userEvent.click(getAllByRole('checkbox')[6]);
-    userEvent.click(getAllByRole('checkbox')[7]);
-    userEvent.click(getAllByRole('checkbox')[8]);
-    userEvent.click(getAllByRole('checkbox')[9]);
-    userEvent.click(getAllByRole('checkbox')[10]);
-    userEvent.click(getAllByRole('checkbox')[11]);
+    const checkboxes = getAllByRole('checkbox');
+    for (const checkbox of checkboxes.slice(1)) {
+      await userEvent.click(checkbox);
+    }
     expect(getAllByRole('checkbox')[0]).toBeChecked();
 
     // Deselect all individually

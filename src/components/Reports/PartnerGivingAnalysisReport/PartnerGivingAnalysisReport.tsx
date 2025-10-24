@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Box, CircularProgress } from '@mui/material';
+import { GridPaginationModel } from '@mui/x-data-grid/models/gridPaginationProps';
 import { GridSortModel } from '@mui/x-data-grid/models/gridSortModel';
 import { useTranslation } from 'react-i18next';
 import { Panel } from 'pages/accountLists/[accountListId]/reports/helpers';
@@ -10,19 +11,10 @@ import {
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
-import {
-  PartnerGivingAnalysisContact,
-  PartnerGivingAnalysisFilterSetInput,
-  PartnerGivingAnalysisSortEnum,
-} from 'src/graphql/types.generated';
+import { PartnerGivingAnalysisFilterSetInput } from 'src/graphql/types.generated';
 import { useGetPartnerGivingAnalysisIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useMassSelection } from 'src/hooks/useMassSelection';
-import { Order } from '../Reports.type';
-import {
-  AscendingSortEnums,
-  DescendingSortEnums,
-  EnumMap,
-} from './Helper/sortRecords';
+import { AscendingSortEnums, DescendingSortEnums } from './Helper/sortRecords';
 import { usePartnerGivingAnalysisQuery } from './PartnerGivingAnalysis.generated';
 import { PartnerGivingAnalysisTable as Table } from './Table/Table';
 
@@ -34,8 +26,6 @@ interface Props {
   title: string;
 }
 
-export type Contact = PartnerGivingAnalysisContact;
-
 export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   accountListId,
   panelOpen,
@@ -44,37 +34,40 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   title,
 }) => {
   const { t } = useTranslation();
-  const [order, setOrder] = useState<Order>('asc');
-  const [orderBy, setOrderBy] = useState<PartnerGivingAnalysisSortEnum>(
-    PartnerGivingAnalysisSortEnum.NameAsc,
-  );
   const { activeFilters, searchTerm } = useUrlFilters();
   const cursorsRef = useRef(new Map<number, string | null>([[0, null]]));
 
-  const [paginationModel, setPaginationModel] = useState({
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
-    pageSize: 10,
+    pageSize: 25,
   });
   const [sortModel, setSortModel] = useState<GridSortModel>([
     {
-      field: EnumMap[orderBy] ?? 'name',
-      sort: order,
+      field: 'name',
+      sort: 'asc',
     },
   ]);
 
-  const contactFilters: PartnerGivingAnalysisFilterSetInput = {
-    ...activeFilters,
-    ...(searchTerm && {
-      nameLike: `%${searchTerm}%`,
+  const contactFilters: PartnerGivingAnalysisFilterSetInput = useMemo(
+    () => ({
+      ...activeFilters,
+      ...(searchTerm && {
+        nameLike: `%${searchTerm}%`,
+      }),
     }),
-  };
+    [activeFilters, searchTerm],
+  );
 
   const { data, previousData, loading } = usePartnerGivingAnalysisQuery({
     variables: {
       input: {
         accountListId,
         filters: contactFilters,
-        sortBy: orderBy,
+        sortBy: sortModel[0].sort
+          ? sortModel[0].sort === 'asc'
+            ? AscendingSortEnums[sortModel[0].field]
+            : DescendingSortEnums[sortModel[0].field]
+          : null,
       },
       first: paginationModel.pageSize,
       after: cursorsRef.current.get(paginationModel.page) ?? null,
@@ -93,7 +86,6 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
         },
       },
       skip: contactCount === 0,
-      notifyOnNetworkStatusChange: true,
     });
   // When the next batch of contact ids is loading, use the previous batch of contact ids in the
   // meantime to avoid throwing out the selected contact ids.
@@ -122,7 +114,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
     isRowChecked,
   } = useMassSelection(allContactIds);
 
-  const handlePageChange = (model: { page: number; pageSize: number }) => {
+  const handlePageChange = (model: GridPaginationModel) => {
     if (model.pageSize !== paginationModel.pageSize) {
       cursorsRef.current = new Map([[0, null]]);
       setPaginationModel({ page: 0, pageSize: model.pageSize });
@@ -132,19 +124,14 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   };
 
   const handleSortChange = (model: GridSortModel) => {
-    const property = model[0].field;
-    const transformOrderBy = EnumMap[orderBy];
-    const isAsc = transformOrderBy === property && order === 'asc';
-    const newOrder = isAsc ? 'desc' : 'asc';
-
-    setOrder(newOrder);
-    setOrderBy(
-      newOrder === 'asc'
-        ? AscendingSortEnums[property]
-        : DescendingSortEnums[property],
-    );
-    setSortModel([{ field: property, sort: newOrder }]);
+    setSortModel(model);
   };
+
+  // reset pagination when filters or sort change
+  useEffect(() => {
+    cursorsRef.current = new Map([[0, null]]);
+    setPaginationModel({ page: 0, pageSize: paginationModel.pageSize });
+  }, [contactFilters, sortModel]);
 
   return (
     <Box>
