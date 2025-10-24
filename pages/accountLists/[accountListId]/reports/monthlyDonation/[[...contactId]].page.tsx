@@ -14,15 +14,17 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
-import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
+import {
+  ContactPanelProvider,
+  useContactPanel,
+} from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
 const MonthlyDonationReportPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
 }));
 
-const MonthlyDonationReportPage: React.FC = () => {
-  const { appName } = useGetAppSettings();
+const PageContent: React.FC = () => {
   const { t } = useTranslation();
   const { isOpen } = useContactPanel();
 
@@ -34,6 +36,43 @@ const MonthlyDonationReportPage: React.FC = () => {
     setIsNavListOpen(!isNavListOpen);
   };
 
+  return staffAccountData?.staffAccount?.id ? (
+    <MonthlyDonationReportPageWrapper>
+      <SidePanelsLayout
+        isScrollBox={false}
+        leftPanel={
+          <MultiPageMenu
+            isOpen={isNavListOpen}
+            selectedId="monthlyDonation"
+            onClose={handleNavListToggle}
+            navType={NavTypeEnum.Reports}
+          />
+        }
+        leftOpen={isNavListOpen}
+        leftWidth="290px"
+        mainContent={
+          <MonthlyDonationSummaryReport
+            isNavListOpen={isNavListOpen}
+            onNavListToggle={handleNavListToggle}
+            title={t('12-Month Donation Summary')}
+          />
+        }
+        rightPanel={isOpen ? <DynamicContactsRightPanel /> : undefined}
+        rightOpen={isOpen}
+        rightWidth="60%"
+      />
+    </MonthlyDonationReportPageWrapper>
+  ) : loading ? (
+    <Loading loading />
+  ) : (
+    <NoStaffAccount />
+  );
+};
+
+const MonthlyDonationReportPage: React.FC = () => {
+  const { t } = useTranslation();
+  const { appName } = useGetAppSettings();
+
   return (
     <>
       <Head>
@@ -41,37 +80,9 @@ const MonthlyDonationReportPage: React.FC = () => {
           '12-Month Donation Report',
         )}`}</title>
       </Head>
-      {staffAccountData?.staffAccount?.id ? (
-        <MonthlyDonationReportPageWrapper>
-          <SidePanelsLayout
-            isScrollBox={false}
-            leftPanel={
-              <MultiPageMenu
-                isOpen={isNavListOpen}
-                selectedId="monthlyDonation"
-                onClose={handleNavListToggle}
-                navType={NavTypeEnum.Reports}
-              />
-            }
-            leftOpen={isNavListOpen}
-            leftWidth="290px"
-            mainContent={
-              <MonthlyDonationSummaryReport
-                isNavListOpen={isNavListOpen}
-                onNavListToggle={handleNavListToggle}
-                title={t('12-Month Donation Summary')}
-              />
-            }
-            rightPanel={isOpen ? <DynamicContactsRightPanel /> : undefined}
-            rightOpen={isOpen}
-            rightWidth="60%"
-          />
-        </MonthlyDonationReportPageWrapper>
-      ) : loading ? (
-        <Loading loading />
-      ) : (
-        <NoStaffAccount />
-      )}
+      <ContactPanelProvider>
+        <PageContent />
+      </ContactPanelProvider>
     </>
   );
 };
