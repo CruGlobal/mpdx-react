@@ -1,6 +1,5 @@
 import Head from 'next/head';
 import React, { useState } from 'react';
-import { Box } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
@@ -54,9 +53,8 @@ const AdditionalSalaryRequestPage: React.FC = () => {
               title={t('Additional Salary Request')}
               headerType={HeaderTypeEnum.Report}
             />
-            <Box>
-              <AdditionalSalaryRequest />
-            </Box>
+
+            <AdditionalSalaryRequest />
           </>
         }
       />
