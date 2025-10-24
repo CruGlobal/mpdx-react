@@ -28,7 +28,6 @@ export const AdditionalSalaryRequestLayout: React.FC<
 
   return (
     <IconPanelLayout
-      // modify percent when we have state
       percentComplete={50}
       iconPanelItems={iconPanelItems}
       sidebarContent={sectionListPanel}
