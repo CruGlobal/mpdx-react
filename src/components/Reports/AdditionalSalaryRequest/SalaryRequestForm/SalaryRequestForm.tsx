@@ -65,70 +65,70 @@ export const SalaryRequestForm: React.FC = () => {
     currentYearSalary: yup
       .number()
       .min(0, t("Current Year's Salary amount must be positive"))
-      .required(t("Current Year's Salary is required")),
+      .required(t("Current Year's Salary field is required")),
     previousYearSalary: yup
       .number()
       .min(0, t("Previous Year's Salary amount must be positive"))
-      .required(t("Previous Year's Salary is required")),
+      .required(t("Previous Year's Salary field is required")),
     additionalSalary: yup
       .number()
       .min(0, t('Additional Salary amount must be positive'))
-      .required(t('Additional Salary is required')),
+      .required(t('Additional Salary field is required')),
     adoption: yup
       .number()
       .min(0, t('Adoption amount must be positive'))
       // replace with MpdGoalMiscConstants value when possible
       .max(15000, t('Exceeds $15000 limit'))
-      .required(t('Adoption is required')),
+      .required(t('Adoption field is required')),
     contribution403b: yup
       .number()
       .min(0, t('403(b) Contribution amount must be positive'))
       // Can't be greater than salary (will be pulled from HCM)
-      .required(t('403(b) Contribution is required')),
+      .required(t('403(b) Contribution field is required')),
     counseling: yup
       .number()
       .min(0, t('Counseling amount must be positive'))
-      .required(t('Counseling is required')),
+      .required(t('Counseling field is required')),
     healthcareExpenses: yup
       .number()
       .min(0, t('Healthcare Expenses amount must be positive'))
-      .required(t('Healthcare Expenses is required')),
+      .required(t('Healthcare Expenses field is required')),
     babysitting: yup
       .number()
       .min(0, t('Babysitting amount must be positive'))
-      .required(t('Babysitting is required')),
+      .required(t('Babysitting field is required')),
     childrenMinistryTrip: yup
       .number()
       .min(0, t("Children's Ministry Trip amount must be positive"))
       // Need to pull number of children from HCM and multiply by 21000 for max
-      .required(t("Children's Ministry Trip is required")),
+      .required(t("Children's Ministry Trip field is required")),
     childrenCollege: yup
       .number()
       .min(0, t("Children's College amount must be positive"))
-      .required(t("Children's College is required")),
+      .required(t("Children's College field is required")),
     movingExpense: yup
       .number()
       .min(0, t('Moving Expense amount must be positive'))
-      .required(t('Moving Expense is required')),
+      .required(t('Moving Expense field is required')),
     seminary: yup
       .number()
       .min(0, t('Seminary amount must be positive'))
-      .required(t('Seminary is required')),
+      .required(t('Seminary field is required')),
     housingDownPayment: yup
       .number()
       .min(0, t('Housing Down Payment amount must be positive'))
       // replace with MpdGoalMiscConstants value when possible
       .max(50000, t('Exceeds $50000 limit'))
-      .required(t('Housing Down Payment is required')),
+      .required(t('Housing Down Payment field is required')),
     autoPurchase: yup
       .number()
       .min(0, t('Auto Purchase amount must be positive'))
       // Max will eventually be a constant, no determined value yet
-      .required(t('Auto Purchase is required')),
+      .required(t('Auto Purchase field is required')),
     reimbursableExpenses: yup
       .number()
       .min(0, t('Reimbursable Expenses amount must be positive'))
-      .required(t('Reimbursable Expenses is required')),
+      .required(t('Reimbursable Expenses field is required')),
   });
 
   const handleSubmit = () => {
