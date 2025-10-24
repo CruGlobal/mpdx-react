@@ -71,12 +71,6 @@ const TestComponent: React.FC = () => {
 };
 
 describe('TransferHistoryTable', () => {
-  beforeEach(() => {
-    mutationSpy.mockClear();
-    handleOpenMock.mockClear();
-    mockEnqueue.mockClear();
-  });
-
   it('renders with transfer history data', async () => {
     const { getByRole, findByRole } = render(<TestComponent />);
 
