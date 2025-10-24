@@ -68,10 +68,11 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
       input: {
         accountListId,
         filters: contactFilters,
-        sortBy:
-          sortModel[0].sort === 'asc'
+        sortBy: sortModel[0].sort
+          ? sortModel[0].sort === 'asc'
             ? AscendingSortEnums[sortModel[0].field]
-            : DescendingSortEnums[sortModel[0].field],
+            : DescendingSortEnums[sortModel[0].field]
+          : null,
       },
       first: paginationModel.pageSize,
       after: cursorsRef.current.get(paginationModel.page) ?? null,
@@ -128,13 +129,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   };
 
   const handleSortChange = (model: GridSortModel) => {
-    const nextSort = model[0];
-    const prevSort = sortModel[0];
-
-    const isNewField = prevSort.field !== nextSort.field;
-    const sort = isNewField ? 'desc' : nextSort.sort;
-
-    setSortModel([{ field: nextSort.field, sort }]);
+    setSortModel(model);
 
     // reset pagination and cursors on sort change
     cursorsRef.current = new Map([[0, null]]);
