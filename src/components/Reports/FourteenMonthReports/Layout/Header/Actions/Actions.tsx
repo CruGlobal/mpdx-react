@@ -7,7 +7,7 @@ import { Button, ButtonGroup, SvgIcon } from '@mui/material';
 import { DateTime } from 'luxon';
 import { buildURI } from 'react-csv/lib/core';
 import { useTranslation } from 'react-i18next';
-import { FourteenMonthReportCurrencyType } from 'src/graphql/types.generated';
+import { FourteenMonthReportCurrencyType } from '../../../FourteenMonthReport';
 
 interface FourteenMonthReportActionsProps {
   csvData: (string | number)[][];

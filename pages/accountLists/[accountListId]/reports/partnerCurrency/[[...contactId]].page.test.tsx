@@ -1,11 +1,10 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import fetchMock from 'jest-fetch-mock';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { fourteenMonthReportMock } from 'src/components/Reports/FourteenMonthReports/FourteenMonthReportMock';
+import { GetFourteenMonthReportQuery } from 'src/components/Reports/FourteenMonthReports/GetFourteenMonthReport.generated';
 import theme from 'src/theme';
 import PartnerCurrencyReportPage from './[[...contactId]].page';
 
@@ -32,7 +31,86 @@ const TestingComponent: React.FC<TestingComponentProps> = ({
   return (
     <ThemeProvider theme={theme}>
       <TestRouter router={router}>
-        <GqlMockedProvider>
+        <GqlMockedProvider<{
+          GetFourteenMonthReport: GetFourteenMonthReportQuery;
+        }>
+          mocks={{
+            GetFourteenMonthReport: {
+              reportsSalaryCurrencyDonations: {
+                currencyGroups: {
+                  USD: {
+                    totals: { year: 0, year_converted: 0, months: [] },
+                    donation_infos: [],
+                  },
+                },
+                defaultCurrency: 'USD',
+                donorInfos: [],
+                months: ['2024-01', '2024-02'],
+              },
+              reportsDonorCurrencyDonations: {
+                currencyGroups: {
+                  USD: {
+                    totals: {
+                      year: 200,
+                      year_converted: 200,
+                      months: [100, 100],
+                    },
+                    donation_infos: [
+                      {
+                        contact_id: 'contact-1',
+                        total: '200',
+                        complete_months_total: '200',
+                        average: '100',
+                        minimum: '100',
+                        months: [
+                          {
+                            total: '100',
+                            donations: [
+                              {
+                                amount: '100',
+                                converted_amount: '100',
+                                donation_date: '2024-01-01',
+                                payment_method: 'Check',
+                                currency: 'USD',
+                              },
+                            ],
+                          },
+                          {
+                            total: '100',
+                            donations: [
+                              {
+                                amount: '100',
+                                converted_amount: '100',
+                                donation_date: '2024-02-01',
+                                payment_method: 'Check',
+                                currency: 'USD',
+                              },
+                            ],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                },
+                defaultCurrency: 'USD',
+                donorInfos: [
+                  {
+                    accountNumbers: ['12345'],
+                    contactId: 'contact-1',
+                    contactName: 'John Doe',
+                    lateBy30Days: false,
+                    lateBy60Days: false,
+                    pledgeAmount: '200',
+                    pledgeCurrency: 'USD',
+                    pledgeFrequency: 'Monthly',
+                    status: 'PartnerFinancial',
+                  },
+                ],
+                months: ['2024-01', '2024-02'],
+              },
+            },
+          }}
+        >
           <SnackbarProvider>
             <PartnerCurrencyReportPage />
           </SnackbarProvider>
@@ -43,15 +121,6 @@ const TestingComponent: React.FC<TestingComponentProps> = ({
 };
 
 describe('partnerCurrency page', () => {
-  fetchMock.enableMocks();
-  beforeEach(() => {
-    fetchMock.resetMocks();
-    fetchMock.mockResponses([
-      JSON.stringify(fourteenMonthReportMock),
-      { status: 200 },
-    ]);
-    process.env.REST_API_URL = 'https://api.stage.mpdx.org/api/v2/';
-  });
   it('renders', () => {
     const { getByRole } = render(<TestingComponent />);
 
