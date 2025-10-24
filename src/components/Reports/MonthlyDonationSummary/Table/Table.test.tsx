@@ -17,19 +17,25 @@ const router = {
   push: jest.fn(),
 };
 
-const Components = () => (
-  <ThemeProvider theme={theme}>
-    <TestRouter router={router}>
-      <ContactPanelProvider>
-        <MonthlyDonationTable
-          data={mockData}
-          totalDonations={685}
-          emptyPlaceholder={<div>No Data</div>}
-        />
-      </ContactPanelProvider>
-    </TestRouter>
-  </ThemeProvider>
-);
+interface ComponentsProps {
+  isEmpty?: boolean;
+}
+
+const Components: React.FC<ComponentsProps> = ({ isEmpty = false }) => {
+  return (
+    <ThemeProvider theme={theme}>
+      <TestRouter router={router}>
+        <ContactPanelProvider>
+          <MonthlyDonationTable
+            data={isEmpty ? [] : mockData}
+            totalDonations={685}
+            emptyPlaceholder={<div>No Data</div>}
+          />
+        </ContactPanelProvider>
+      </TestRouter>
+    </ThemeProvider>
+  );
+};
 
 describe('MonthlyDonationTable', () => {
   it('renders correctly', async () => {
@@ -61,5 +67,11 @@ describe('MonthlyDonationTable', () => {
       'href',
       '/accountLists/account-list-1/reports/partnerGivingAnalysis/159486753',
     );
+  });
+
+  it('renders empty state correctly', async () => {
+    const { findByText } = render(<Components isEmpty />);
+
+    expect(await findByText('No Data')).toBeInTheDocument();
   });
 });

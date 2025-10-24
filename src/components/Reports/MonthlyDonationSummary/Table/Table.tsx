@@ -112,7 +112,12 @@ export const MonthlyDonationTable: React.FC<MonthlyDonationTableProps> = ({
         disableRowSelectionOnClick
         pagination
       />
-      <Box mt={2} mb={4}>
+      <Box
+        mt={2}
+        mb={4}
+        mr={2}
+        sx={{ display: 'flex', justifyContent: 'flex-end' }}
+      >
         <Typography>
           {t(`Total Donations (${data.length}):`)}{' '}
           <Typography component="span" sx={{ fontWeight: 'bold' }}>
