@@ -77,6 +77,8 @@ export const SalaryRequestForm: React.FC = () => {
     adoption: yup
       .number()
       .min(0, t('Adoption amount must be positive'))
+      // replace with MpdGoalMiscConstants value when possible
+      .max(15000, t('Exceeds $15000 limit'))
       .required(t('Adoption is required')),
     contribution403b: yup
       .number()
@@ -97,6 +99,7 @@ export const SalaryRequestForm: React.FC = () => {
     childrenMinistryTrip: yup
       .number()
       .min(0, t("Children's Ministry Trip amount must be positive"))
+      // Need to pull number of children from HCM and multiply by 21000 for max
       .required(t("Children's Ministry Trip is required")),
     childrenCollege: yup
       .number()
@@ -113,6 +116,8 @@ export const SalaryRequestForm: React.FC = () => {
     housingDownPayment: yup
       .number()
       .min(0, t('Housing Down Payment amount must be positive'))
+      // replace with MpdGoalMiscConstants value when possible
+      .max(50000, t('Exceeds $50000 limit'))
       .required(t('Housing Down Payment is required')),
     autoPurchase: yup
       .number()
