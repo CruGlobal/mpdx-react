@@ -19,21 +19,21 @@ import { currencyFormat } from 'src/lib/intlFormat';
 import { useCompleteFormCategories } from './useSalaryRequestFormCategories';
 
 interface CompleteFormValues {
-  currentYearSalary: number | string;
-  previousYearSalary: number | string;
-  additionalSalary: number | string;
-  adoption: number | string;
-  contribution403b: number | string;
-  counseling: number | string;
-  healthcareExpenses: number | string;
-  babysitting: number | string;
-  childrenMinistryTrip: number | string;
-  childrenCollege: number | string;
-  movingExpense: number | string;
-  seminary: number | string;
-  housingDownPayment: number | string;
-  autoPurchase: number | string;
-  reimbursableExpenses: number | string;
+  currentYearSalary: string;
+  previousYearSalary: string;
+  additionalSalary: string;
+  adoption: string;
+  contribution403b: string;
+  counseling: string;
+  healthcareExpenses: string;
+  babysitting: string;
+  childrenMinistryTrip: string;
+  childrenCollege: string;
+  movingExpense: string;
+  seminary: string;
+  housingDownPayment: string;
+  autoPurchase: string;
+  reimbursableExpenses: string;
 }
 
 export const SalaryRequestForm: React.FC = () => {
@@ -124,7 +124,7 @@ export const SalaryRequestForm: React.FC = () => {
       .required(t('Reimbursable Expenses is required')),
   });
 
-  const handleSubmit = (_values: CompleteFormValues) => {
+  const handleSubmit = () => {
     // TODO
   };
 
