@@ -309,7 +309,7 @@ describe('PartnerGivingAnalysisReport', () => {
 
     expect(
       mutationSpy.mock.calls[2][0].operation.variables.input.sortBy,
-    ).toEqual(PartnerGivingAnalysisSortEnum.DonationPeriodCountAsc);
+    ).toEqual(PartnerGivingAnalysisSortEnum.DonationPeriodCountDesc);
 
     userEvent.click(getByText('Gift Count'));
     await waitFor(() => {
@@ -320,7 +320,7 @@ describe('PartnerGivingAnalysisReport', () => {
 
     expect(
       mutationSpy.mock.calls[3][0].operation.variables.input.sortBy,
-    ).toEqual(PartnerGivingAnalysisSortEnum.DonationPeriodCountDesc);
+    ).toEqual(PartnerGivingAnalysisSortEnum.DonationPeriodCountAsc);
 
     userEvent.click(getByText('Gift Average'));
     await waitFor(() => {
@@ -330,7 +330,7 @@ describe('PartnerGivingAnalysisReport', () => {
     });
     expect(
       mutationSpy.mock.calls[4][0].operation.variables.input.sortBy,
-    ).toEqual(PartnerGivingAnalysisSortEnum.DonationPeriodAverageAsc);
+    ).toEqual(PartnerGivingAnalysisSortEnum.DonationPeriodAverageDesc);
   });
 
   it('filters contacts by name', async () => {
