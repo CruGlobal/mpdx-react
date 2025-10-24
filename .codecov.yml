@@ -1,7 +1,7 @@
 codecov:
   notify:
-    # Github actions is running 8 test jobs so wait until all those have finished
-    after_n_builds: 8
+    # Github actions is running 12 test jobs so wait until all those have finished
+    after_n_builds: 12
 
 coverage:
   status:
