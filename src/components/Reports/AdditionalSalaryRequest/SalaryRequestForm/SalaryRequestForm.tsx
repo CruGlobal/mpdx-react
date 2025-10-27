@@ -44,91 +44,53 @@ export const SalaryRequestForm: React.FC = () => {
   const categories = useCompleteFormCategories();
 
   const initialValues: CompleteFormValues = {
-    currentYearSalary: '',
-    previousYearSalary: '',
-    additionalSalary: '',
-    adoption: '',
-    contribution403b: '',
-    counseling: '',
-    healthcareExpenses: '',
-    babysitting: '',
-    childrenMinistryTrip: '',
-    childrenCollege: '',
-    movingExpense: '',
-    seminary: '',
-    housingDownPayment: '',
-    autoPurchase: '',
-    reimbursableExpenses: '',
+    currentYearSalary: '0',
+    previousYearSalary: '0',
+    additionalSalary: '0',
+    adoption: '0',
+    contribution403b: '0',
+    counseling: '0',
+    healthcareExpenses: '0',
+    babysitting: '0',
+    childrenMinistryTrip: '0',
+    childrenCollege: '0',
+    movingExpense: '0',
+    seminary: '0',
+    housingDownPayment: '0',
+    autoPurchase: '0',
+    reimbursableExpenses: '0',
+  };
+
+  const createCurrencyValidation = (fieldName: string, max?: number) => {
+    let schema = yup
+      .number()
+      .min(0, t('{{field}} amount must be positive', { field: fieldName }))
+      .required(t('{{field}} field is required', { field: fieldName }));
+    if (max) {
+      schema = schema.max(
+        max,
+        t('Exceeds ${{amount}} limit', { amount: max.toLocaleString() }),
+      );
+    }
+    return schema;
   };
 
   const validationSchema = yup.object({
-    currentYearSalary: yup
-      .number()
-      .min(0, t("Current Year's Salary amount must be positive"))
-      .required(t("Current Year's Salary field is required")),
-    previousYearSalary: yup
-      .number()
-      .min(0, t("Previous Year's Salary amount must be positive"))
-      .required(t("Previous Year's Salary field is required")),
-    additionalSalary: yup
-      .number()
-      .min(0, t('Additional Salary amount must be positive'))
-      .required(t('Additional Salary field is required')),
-    adoption: yup
-      .number()
-      .min(0, t('Adoption amount must be positive'))
-      // replace with MpdGoalMiscConstants value when possible
-      .max(15000, t('Exceeds $15000 limit'))
-      .required(t('Adoption field is required')),
-    contribution403b: yup
-      .number()
-      .min(0, t('403(b) Contribution amount must be positive'))
-      // Can't be greater than salary (will be pulled from HCM)
-      .required(t('403(b) Contribution field is required')),
-    counseling: yup
-      .number()
-      .min(0, t('Counseling amount must be positive'))
-      .required(t('Counseling field is required')),
-    healthcareExpenses: yup
-      .number()
-      .min(0, t('Healthcare Expenses amount must be positive'))
-      .required(t('Healthcare Expenses field is required')),
-    babysitting: yup
-      .number()
-      .min(0, t('Babysitting amount must be positive'))
-      .required(t('Babysitting field is required')),
-    childrenMinistryTrip: yup
-      .number()
-      .min(0, t("Children's Ministry Trip amount must be positive"))
-      // Need to pull number of children from HCM and multiply by 21000 for max
-      .required(t("Children's Ministry Trip field is required")),
-    childrenCollege: yup
-      .number()
-      .min(0, t("Children's College amount must be positive"))
-      .required(t("Children's College field is required")),
-    movingExpense: yup
-      .number()
-      .min(0, t('Moving Expense amount must be positive'))
-      .required(t('Moving Expense field is required')),
-    seminary: yup
-      .number()
-      .min(0, t('Seminary amount must be positive'))
-      .required(t('Seminary field is required')),
-    housingDownPayment: yup
-      .number()
-      .min(0, t('Housing Down Payment amount must be positive'))
-      // replace with MpdGoalMiscConstants value when possible
-      .max(50000, t('Exceeds $50000 limit'))
-      .required(t('Housing Down Payment field is required')),
-    autoPurchase: yup
-      .number()
-      .min(0, t('Auto Purchase amount must be positive'))
-      // Max will eventually be a constant, no determined value yet
-      .required(t('Auto Purchase field is required')),
-    reimbursableExpenses: yup
-      .number()
-      .min(0, t('Reimbursable Expenses amount must be positive'))
-      .required(t('Reimbursable Expenses field is required')),
+    currentYearSalary: createCurrencyValidation("Current Year's Salary"),
+    previousYearSalary: createCurrencyValidation("Previous Year's Salary"),
+    additionalSalary: createCurrencyValidation('Additional Salary'),
+    adoption: createCurrencyValidation('Adoption', 15000), // replace with MpdGoalMiscConstants value when possible
+    contribution403b: createCurrencyValidation('403(b) Contribution'), // Can't be greater than salary (will be pulled from HCM)
+    counseling: createCurrencyValidation('Counseling'),
+    healthcareExpenses: createCurrencyValidation('Healthcare Expenses'),
+    babysitting: createCurrencyValidation('Babysitting'),
+    childrenMinistryTrip: createCurrencyValidation("Children's Ministry Trip"), // Need to pull number of children from HCM and multiply by 21000 for max
+    childrenCollege: createCurrencyValidation("Children's College"),
+    movingExpense: createCurrencyValidation('Moving Expense'),
+    seminary: createCurrencyValidation('Seminary'),
+    housingDownPayment: createCurrencyValidation('Housing Down Payment', 50000), // replace with MpdGoalMiscConstants value when possible
+    autoPurchase: createCurrencyValidation('Auto Purchase'), // Max will eventually be a constant, no determined value yet
+    reimbursableExpenses: createCurrencyValidation('Reimbursable Expenses'),
   });
 
   const handleSubmit = () => {
@@ -145,7 +107,6 @@ export const SalaryRequestForm: React.FC = () => {
         initialValues={initialValues}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
-        enableReinitialize
       >
         {({ values, handleChange, handleBlur, errors, touched }) => {
           const total = Object.values(values).reduce(

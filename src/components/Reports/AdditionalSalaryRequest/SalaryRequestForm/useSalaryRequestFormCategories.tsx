@@ -14,7 +14,10 @@ export const useCompleteFormCategories = (): Category[] => {
   return [
     {
       key: 'currentYearSalary',
-      label: `${t("Current year's")} (${currentYear}) ${t('salary not received due to inadequate support')}`,
+      label: t(
+        "Current year's ({{year}}) salary not received due to inadequate support",
+        { year: currentYear },
+      ),
       description: t(
         'i.e. short paychecks-no approval is needed so section B does not need to be filled out.',
       ),
