@@ -31,8 +31,8 @@ query GetTaskIdsForMassSelection(
 query GetPartnerGivingAnalysisIdsForMassSelection(
   $input: PartnerGivingAnalysisReportInput!
 ) {
-  partnerGivingAnalysisReport(input: $input) {
-    contacts {
+  partnerGivingAnalysis(input: $input) {
+    nodes {
       id
     }
   }

@@ -1,15 +1,16 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
-import { GetPartnerGivingAnalysisIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
+import { PartnerGivingAnalysisSortEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
+import { PartnerGivingAnalysisQuery } from './PartnerGivingAnalysis.generated';
 import { PartnerGivingAnalysisReport } from './PartnerGivingAnalysisReport';
-import { GetPartnerGivingAnalysisReportQuery } from './PartnerGivingAnalysisReport.generated';
+import { mocks } from './mockData';
 
 const accountListId = '111';
 const title = 'test title';
@@ -45,23 +46,9 @@ const TestComponent: React.FC<TestComponentProps> = ({
   <TestRouter router={router}>
     <ThemeProvider theme={theme}>
       <GqlMockedProvider<{
-        GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
+        PartnerGivingAnalysis: PartnerGivingAnalysisQuery;
       }>
-        mocks={
-          noContacts
-            ? {
-                GetPartnerGivingAnalysisReport: {
-                  partnerGivingAnalysisReport: {
-                    contacts: [],
-                    pagination:
-                      mocks.GetPartnerGivingAnalysisReport
-                        .partnerGivingAnalysisReport.pagination,
-                    totalContacts: 300,
-                  },
-                },
-              }
-            : mocks
-        }
+        mocks={noContacts ? emptyMock : mocks}
         onCall={mutationSpy}
       >
         <ContactPanelProvider>
@@ -80,172 +67,16 @@ const TestComponent: React.FC<TestComponentProps> = ({
   </TestRouter>
 );
 
-type Mocks = {
-  GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
-  GetPartnerGivingAnalysisIdsForMassSelection?: GetPartnerGivingAnalysisIdsForMassSelectionQuery;
-};
-
-const mocks: Mocks = {
-  GetPartnerGivingAnalysisReport: {
-    partnerGivingAnalysisReport: {
-      contacts: [
-        {
-          donationPeriodAverage: 88.468,
-          donationPeriodCount: 176,
-          donationPeriodSum: 15218.42,
-          lastDonationAmount: 150,
-          lastDonationCurrency: 'CAD',
-          lastDonationDate: '2021-07-07',
-          id: '01',
-          name: 'Ababa, Aladdin und Jasmine (Princess)',
-          pledgeCurrency: 'CAD',
-          totalDonations: 25218.42,
-        },
-        {
-          donationPeriodAverage: 71.4,
-          donationPeriodCount: 127,
-          donationPeriodSum: 13118.42,
-          lastDonationAmount: 170.92,
-          lastDonationCurrency: 'CAD',
-          lastDonationDate: '2021-03-07',
-          id: '02',
-          name: 'Princess',
-          pledgeCurrency: 'CAD',
-          totalDonations: 13118.42,
-        },
-        {
-          donationPeriodAverage: 86.4684354186,
-          donationPeriodCount: 221,
-          donationPeriodSum: 25218.42,
-          lastDonationAmount: 150.92,
-          lastDonationCurrency: 'CAD',
-          lastDonationDate: '2021-08-07',
-          id: '03',
-          name: 'Jasmine (Princess)',
-          pledgeCurrency: 'CAD',
-          totalDonations: 25218.42,
-        },
-        {
-          donationPeriodAverage: 86.46,
-          donationPeriodCount: 221,
-          donationPeriodSum: 25218.42,
-          lastDonationAmount: 150.92,
-          lastDonationCurrency: 'CAD',
-          lastDonationDate: '2021-08-07',
-          id: '04',
-          name: 'Jasmine (Princess)',
-          pledgeCurrency: 'CAD',
-          totalDonations: 25218.42,
-        },
-        {
-          donationPeriodAverage: 86.46,
-          donationPeriodCount: 221,
-          donationPeriodSum: 25218.42,
-          lastDonationAmount: 150.92,
-          lastDonationCurrency: 'CAD',
-          lastDonationDate: '2021-08-07',
-          id: '05',
-          name: 'Jasmine (Princess)',
-          pledgeCurrency: 'CAD',
-          totalDonations: 25218.42,
-        },
-        {
-          donationPeriodAverage: 86.46,
-          donationPeriodCount: 221,
-          donationPeriodSum: 25218.42,
-          lastDonationAmount: 150.92,
-          lastDonationCurrency: 'CAD',
-          lastDonationDate: '2021-08-07',
-          id: '06',
-          name: 'Jasmine (Princess)',
-          pledgeCurrency: 'CAD',
-          totalDonations: 25218.42,
-        },
-        {
-          donationPeriodAverage: 86.46,
-          donationPeriodCount: 221,
-          donationPeriodSum: 25218.42,
-          lastDonationAmount: 150.92,
-          lastDonationCurrency: 'CAD',
-          lastDonationDate: '2021-08-07',
-          id: '07',
-          name: 'Jasmine (Princess)',
-          pledgeCurrency: 'CAD',
-          totalDonations: 25218.42,
-        },
-        {
-          donationPeriodAverage: 86.46,
-          donationPeriodCount: 221,
-          donationPeriodSum: 25218.42,
-          lastDonationAmount: 150.92,
-          lastDonationCurrency: 'CAD',
-          lastDonationDate: '2021-08-07',
-          id: '08',
-          name: 'Jasmine (Princess)',
-          pledgeCurrency: 'CAD',
-          totalDonations: 25218.42,
-        },
-        {
-          donationPeriodAverage: 86.46,
-          donationPeriodCount: 221,
-          donationPeriodSum: 25218.42,
-          lastDonationAmount: 150.92,
-          lastDonationCurrency: 'CAD',
-          lastDonationDate: '2021-08-07',
-          id: '09',
-          name: 'Jasmine (Princess)',
-          pledgeCurrency: 'CAD',
-          totalDonations: 25218.42,
-        },
-        {
-          donationPeriodAverage: 86.46,
-          donationPeriodCount: 221,
-          donationPeriodSum: 25218.42,
-          lastDonationAmount: 150.92,
-          lastDonationCurrency: 'CAD',
-          lastDonationDate: '2021-08-07',
-          id: '10',
-          name: 'Jasmine (Princess)',
-          pledgeCurrency: 'CAD',
-          totalDonations: 25218.42,
-        },
-        {
-          donationPeriodAverage: 86.46,
-          donationPeriodCount: 221,
-          donationPeriodSum: 25218.42,
-          lastDonationAmount: 150.92,
-          lastDonationCurrency: 'CAD',
-          lastDonationDate: '2021-08-07',
-          id: '11',
-          name: 'Jasmine (Princess)',
-          pledgeCurrency: 'CAD',
-          totalDonations: 25218.42,
-        },
-      ],
-      pagination: {
-        page: 1,
-        pageSize: 10,
-        totalItems: 120,
-        totalPages: 12,
+const emptyMock = {
+  PartnerGivingAnalysis: {
+    partnerGivingAnalysis: {
+      nodes: [],
+      pageInfo: {
+        ...mocks.PartnerGivingAnalysis.partnerGivingAnalysis.pageInfo,
       },
-      totalContacts: 11,
-    },
-  },
-  GetPartnerGivingAnalysisIdsForMassSelection: {
-    partnerGivingAnalysisReport: {
-      contacts: [
-        { id: '01' },
-        { id: '02' },
-        { id: '03' },
-        { id: '04' },
-        { id: '05' },
-        { id: '06' },
-        { id: '07' },
-        { id: '08' },
-        { id: '09' },
-        { id: '10' },
-        { id: '11' },
-      ],
+      edges: [],
+      totalCount: 300,
+      totalPageCount: 1,
     },
   },
 };
@@ -262,21 +93,10 @@ describe('PartnerGivingAnalysisReport', () => {
   });
 
   it('loaded', async () => {
-    const { getAllByTestId, getByTestId, queryByTestId, getByRole } = render(
-      <TestComponent />,
-    );
+    const { getAllByRole, findByRole } = render(<TestComponent />);
 
-    await waitFor(() => {
-      expect(
-        queryByTestId('LoadingPartnerGivingAnalysisReport'),
-      ).not.toBeInTheDocument();
-    });
-
-    expect(getByRole('table')).toBeInTheDocument();
-    expect(getAllByTestId('PartnerGivingAnalysisReportTableRow').length).toBe(
-      11,
-    );
-    expect(getByTestId('PartnerGivingAnalysisReport')).toBeInTheDocument();
+    expect(await findByRole('grid')).toBeInTheDocument();
+    expect(getAllByRole('row').length).toBe(27); // 26 rows + header
   });
 
   it('shows a placeholder when there are zero contacts', async () => {
@@ -311,11 +131,8 @@ describe('PartnerGivingAnalysisReport', () => {
     });
 
     expect(
-      mutationSpy.mock.calls[2][0].operation.variables.input.sortField,
-    ).toEqual('donationPeriodCount');
-    expect(
-      mutationSpy.mock.calls[2][0].operation.variables.input.sortDirection,
-    ).toEqual('ASCENDING');
+      mutationSpy.mock.calls[2][0].operation.variables.input.sortBy,
+    ).toEqual(PartnerGivingAnalysisSortEnum.DonationPeriodCountAsc);
 
     userEvent.click(getByText('Gift Count'));
     await waitFor(() => {
@@ -325,11 +142,8 @@ describe('PartnerGivingAnalysisReport', () => {
     });
 
     expect(
-      mutationSpy.mock.calls[3][0].operation.variables.input.sortField,
-    ).toEqual('donationPeriodCount');
-    expect(
-      mutationSpy.mock.calls[3][0].operation.variables.input.sortDirection,
-    ).toEqual('DESCENDING');
+      mutationSpy.mock.calls[3][0].operation.variables.input.sortBy,
+    ).toEqual(PartnerGivingAnalysisSortEnum.DonationPeriodCountDesc);
 
     userEvent.click(getByText('Gift Average'));
     await waitFor(() => {
@@ -338,11 +152,8 @@ describe('PartnerGivingAnalysisReport', () => {
       ).not.toBeInTheDocument();
     });
     expect(
-      mutationSpy.mock.calls[4][0].operation.variables.input.sortField,
-    ).toEqual('donationPeriodAverage');
-    expect(
-      mutationSpy.mock.calls[4][0].operation.variables.input.sortDirection,
-    ).toEqual('ASCENDING');
+      mutationSpy.mock.calls[4][0].operation.variables.input.sortBy,
+    ).toEqual(PartnerGivingAnalysisSortEnum.DonationPeriodAverageAsc);
   });
 
   it('filters contacts by name', async () => {
@@ -367,41 +178,48 @@ describe('PartnerGivingAnalysisReport', () => {
     });
 
     expect(
-      mutationSpy.mock.calls[2][0].operation.variables.input.contactFilters,
+      mutationSpy.mock.calls[2][0].operation.variables.input.filters,
     ).toEqual({ nameLike: '%John%' });
   });
 
   it('sets the pagination limit', async () => {
-    const { getByRole, queryByTestId, getByTestId, getByText } = render(
-      <TestComponent />,
+    const { getByRole, findByRole } = render(<TestComponent />);
+
+    await waitFor(() => {
+      expect(getByRole('grid')).toBeInTheDocument();
+    });
+
+    const combobox = getByRole('combobox', { name: 'Rows per page:' });
+    userEvent.click(combobox);
+
+    const listbox = await findByRole('listbox');
+    await userEvent.click(within(listbox).getByRole('option', { name: '50' }));
+
+    await waitFor(() =>
+      expect(mutationSpy.mock.calls[2][0].operation.variables.first).toBe(50),
+    );
+  });
+
+  it('should go to next page', async () => {
+    const { getByTestId, queryByTestId, getByRole } = render(<TestComponent />);
+
+    await waitFor(() => {
+      expect(getByRole('grid')).toBeInTheDocument();
+    });
+
+    await waitFor(() =>
+      expect(mutationSpy.mock.calls[0][0].operation.variables.first).toBe(25),
     );
 
+    await userEvent.click(getByTestId('KeyboardArrowRightIcon'));
+
     await waitFor(() => {
       expect(
         queryByTestId('LoadingPartnerGivingAnalysisReport'),
       ).not.toBeInTheDocument();
     });
 
-    userEvent.selectOptions(getByRole('combobox'), '50');
-    await waitFor(() => {
-      expect(
-        queryByTestId('LoadingPartnerGivingAnalysisReport'),
-      ).not.toBeInTheDocument();
-    });
-
-    expect(
-      mutationSpy.mock.calls[2][0].operation.variables.input.pageSize,
-    ).toBe(50);
-
-    userEvent.selectOptions(getByRole('combobox'), '10');
-    userEvent.click(getByTestId('KeyboardArrowRightIcon'));
-    await waitFor(() => {
-      expect(
-        queryByTestId('LoadingPartnerGivingAnalysisReport'),
-      ).not.toBeInTheDocument();
-    });
-
-    expect(getByText('11-20 of 120')).toBeInTheDocument();
+    expect(getByRole('button', { name: /go to next page/i })).toBeDisabled();
   });
 
   it('selects and unselects all', async () => {
@@ -437,17 +255,10 @@ describe('PartnerGivingAnalysisReport', () => {
     expect(getAllByRole('checkbox')[3]).not.toBeChecked();
 
     // Select all individually
-    userEvent.click(getAllByRole('checkbox')[1]);
-    userEvent.click(getAllByRole('checkbox')[2]);
-    userEvent.click(getAllByRole('checkbox')[3]);
-    userEvent.click(getAllByRole('checkbox')[4]);
-    userEvent.click(getAllByRole('checkbox')[5]);
-    userEvent.click(getAllByRole('checkbox')[6]);
-    userEvent.click(getAllByRole('checkbox')[7]);
-    userEvent.click(getAllByRole('checkbox')[8]);
-    userEvent.click(getAllByRole('checkbox')[9]);
-    userEvent.click(getAllByRole('checkbox')[10]);
-    userEvent.click(getAllByRole('checkbox')[11]);
+    const checkboxes = getAllByRole('checkbox');
+    for (const checkbox of checkboxes.slice(1)) {
+      await userEvent.click(checkbox);
+    }
     expect(getAllByRole('checkbox')[0]).toBeChecked();
 
     // Deselect all individually
@@ -468,7 +279,7 @@ describe('PartnerGivingAnalysisReport', () => {
 
     expect(
       getByRole('link', {
-        name: 'Ababa, Aladdin und Jasmine (Princess)',
+        name: 'Flintstone, Fred and Wilma',
       }),
     ).toBeInTheDocument();
   });
@@ -483,12 +294,12 @@ describe('PartnerGivingAnalysisReport', () => {
     });
 
     // Test that it adds commas
-    expect(getByText('CA$15,218.42')).toBeInTheDocument();
+    expect(getByText('UGX 24,795')).toBeInTheDocument();
 
-    expect(getByText('CA$150')).toBeInTheDocument();
+    expect(getByText('$982.14')).toBeInTheDocument();
 
     // Test that it rounds to two decimal points
-    expect(getByText('CA$86.47')).toBeInTheDocument();
+    expect(getByText('ARM 466.67')).toBeInTheDocument();
   });
 
   it('renders nav list icon and onClick triggers onNavListToggle', async () => {

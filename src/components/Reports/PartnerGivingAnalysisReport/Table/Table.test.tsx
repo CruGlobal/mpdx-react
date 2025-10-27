@@ -4,10 +4,9 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
-import { PartnerGivingAnalysisReportContact } from 'src/graphql/types.generated';
+import { PartnerGivingAnalysisContact } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { GetPartnerGivingAnalysisReportQuery } from '../PartnerGivingAnalysisReport.generated';
-import { PartnerGivingAnalysisReportTable } from './Table';
+import { PartnerGivingAnalysisTable } from './Table';
 import type { Order } from '../../Reports.type';
 
 const router = {
@@ -20,7 +19,7 @@ const router = {
   push: jest.fn(),
 };
 
-type Contact = PartnerGivingAnalysisReportContact;
+type Contact = PartnerGivingAnalysisContact;
 
 const order: Order = 'asc';
 const orderBy: keyof Contact = 'name';
@@ -30,12 +29,10 @@ const onRequestSort = jest.fn();
 const onSelectAll = jest.fn();
 const onSelectOne = jest.fn();
 
-const mocks: {
-  GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
-} = {
-  GetPartnerGivingAnalysisReport: {
-    partnerGivingAnalysisReport: {
-      contacts: [
+const mocks = {
+  PartnerGivingAnalysis: {
+    partnerGivingAnalysis: {
+      nodes: [
         {
           donationPeriodAverage: 88.468,
           donationPeriodCount: 176,
@@ -73,19 +70,20 @@ const mocks: {
           totalDonations: 25218.42,
         },
       ],
-      pagination: {
-        page: 1,
-        pageSize: 10,
-        totalItems: 120,
-        totalPages: 12,
+      pageInfo: {
+        endCursor: 'MTA',
+        hasNextPage: false,
+        hasPreviousPage: false,
       },
-      totalContacts: 300,
+      edges: [{ cursor: 'OA' }, { cursor: 'OQ' }, { cursor: 'MTA' }],
+      totalCount: 300,
+      totalPageCount: 12,
     },
   },
 };
 
 const allContactIds =
-  mocks.GetPartnerGivingAnalysisReport.partnerGivingAnalysisReport?.contacts.map(
+  mocks.PartnerGivingAnalysis.partnerGivingAnalysis?.nodes.map(
     (contact) => contact.id,
   ) ?? [];
 
@@ -104,11 +102,11 @@ const Components = () => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
       <ContactPanelProvider>
-        <PartnerGivingAnalysisReportTable
+        <PartnerGivingAnalysisTable
           {...defaultProps}
-          contacts={
-            mocks.GetPartnerGivingAnalysisReport.partnerGivingAnalysisReport
-              .contacts
+          data={mocks.PartnerGivingAnalysis.partnerGivingAnalysis.nodes}
+          totalCount={
+            mocks.PartnerGivingAnalysis.partnerGivingAnalysis.totalCount
           }
         />
       </ContactPanelProvider>
@@ -118,7 +116,7 @@ const Components = () => (
 
 describe('PartnerGivingAnalysisReportTable', () => {
   it('default', async () => {
-    const { getAllByTestId, getByRole, queryByTestId } = render(<Components />);
+    const { getAllByRole, getByRole, queryByTestId } = render(<Components />);
 
     await waitFor(() => {
       expect(
@@ -126,11 +124,8 @@ describe('PartnerGivingAnalysisReportTable', () => {
       ).not.toBeInTheDocument();
     });
 
-    expect(getByRole('table')).toBeInTheDocument();
-    expect(getAllByTestId('PartnerGivingAnalysisReportTableRow').length).toBe(
-      3,
-    );
-    expect(queryByTestId('PartnerGivingAnalysisReport')).toBeInTheDocument();
+    expect(getByRole('grid')).toBeInTheDocument();
+    expect(getAllByRole('row').length).toBe(4); // 3 rows + header
   });
 
   it('check event should happen', async () => {

@@ -3,9 +3,10 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
+import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { GetPartnerGivingAnalysisReportQuery } from 'src/components/Reports/PartnerGivingAnalysisReport/PartnerGivingAnalysisReport.generated';
+import { PartnerGivingAnalysisQuery } from 'src/components/Reports/PartnerGivingAnalysisReport/PartnerGivingAnalysis.generated';
 import theme from 'src/theme';
 import { ContactFiltersQuery } from '../../contacts/Contacts.generated';
 import PartnerGivingAnalysisPage from './[[...contactId]].page';
@@ -14,7 +15,7 @@ const push = jest.fn();
 const replace = jest.fn();
 
 interface Mocks {
-  GetPartnerGivingAnalysisReport: GetPartnerGivingAnalysisReportQuery;
+  PartnerGivingAnalysis: PartnerGivingAnalysisQuery;
   ContactFilters: ContactFiltersQuery;
 }
 
@@ -41,9 +42,9 @@ const TestingComponent: React.FC<TestingComponentProps> = ({
   };
 
   const mocks = {
-    GetPartnerGivingAnalysisReport: {
-      partnerGivingAnalysisReport: {
-        contacts: [
+    PartnerGivingAnalysis: {
+      partnerGivingAnalysis: {
+        nodes: [
           {
             id: 'contact-1',
             name: 'John Doe',
@@ -81,7 +82,7 @@ const TestingComponent: React.FC<TestingComponentProps> = ({
         ],
       },
     },
-  };
+  } satisfies DeepPartial<Mocks>;
 
   return (
     <ThemeProvider theme={theme}>
