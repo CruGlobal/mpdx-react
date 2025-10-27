@@ -56,8 +56,19 @@ export function populateTransferRows(options: Options) {
   }, []);
 
   const transfers: RenderCell = ({ row }) => {
-    const fromIconName = row.transferFrom?.toLowerCase() || 'primary';
-    const toIconName = row.transferTo?.toLowerCase() || 'savings';
+    const fromIconName =
+      row.transferFrom?.toLowerCase() === 'staff conference savings'
+        ? 'conference'
+        : row.transferFrom
+          ? row.transferFrom.toLowerCase()
+          : 'primary';
+    const toIconName =
+      row.transferTo?.toLowerCase() === 'staff conference savings'
+        ? 'conference'
+        : row.transferTo
+          ? row.transferTo.toLowerCase()
+          : 'savings';
+
     const fromIcon = iconMap[fromIconName];
     const toIcon = iconMap[toIconName];
 

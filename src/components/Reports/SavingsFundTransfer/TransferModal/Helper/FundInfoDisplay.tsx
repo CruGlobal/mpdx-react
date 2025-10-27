@@ -2,7 +2,11 @@ import { Box, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
-import { PrimaryAccount, SavingsAccount } from '../../Helper/TransferIcons';
+import {
+  ConferenceSavingsAccount,
+  PrimaryAccount,
+  SavingsAccount,
+} from '../../Helper/TransferIcons';
 import { FundFieldsFragment } from '../../ReportsSavingsFund.generated';
 import { FundTypeEnum } from '../../mockData';
 
@@ -21,25 +25,40 @@ export const FundInfoDisplay: React.FC<FundInfoDisplayProps> = ({ fund }) => {
   }
 
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+    <Box
+      sx={{
+        display: 'flex',
+        alignItems: 'center',
+      }}
+    >
       {fund.fundType === FundTypeEnum.Primary
         ? PrimaryAccount
         : fund.fundType === FundTypeEnum.Savings
           ? SavingsAccount
-          : null}{' '}
-      <Typography>
-        <b>{t('{{type}} Account', { type: fund.fundType })}</b>
-        <b>{' \u00B7 '}</b>
-      </Typography>
-      <Typography
-        sx={{ color: fund.balance < 0 ? 'error.main' : 'text.primary' }}
+          : ConferenceSavingsAccount}{' '}
+      <Box
+        sx={{
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+          minWidth: 0,
+        }}
       >
-        {fund.balance < 0 ? ' (' : ' '}
-        {currencyFormat(Math.abs(fund.balance), 'USD', locale, {
-          showTrailingZeros: true,
-        })}
-        {fund.balance < 0 ? ')' : ' available'}
-      </Typography>
+        <Typography component="span">
+          <b>{t('{{type}}', { type: fund.fundType })}</b>
+          <b>{' \u00B7 '}</b>
+        </Typography>
+        <Typography
+          component="span"
+          sx={{ color: fund.balance < 0 ? 'error.main' : 'text.primary' }}
+        >
+          {fund.balance < 0 ? ' (' : ' '}
+          {currencyFormat(Math.abs(fund.balance), 'USD', locale, {
+            showTrailingZeros: true,
+          })}
+          {fund.balance < 0 ? ')' : ' available'}
+        </Typography>
+      </Box>
     </Box>
   );
 };
