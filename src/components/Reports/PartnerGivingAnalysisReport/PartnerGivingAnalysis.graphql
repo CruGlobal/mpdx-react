@@ -1,0 +1,27 @@
+query PartnerGivingAnalysis(
+  $input: PartnerGivingAnalysisReportInput!
+  $first: Int
+  $after: String
+) {
+  partnerGivingAnalysis(input: $input, first: $first, after: $after) {
+    nodes {
+      id
+      name
+      status
+      totalDonations
+      pledgeCurrency
+      pledgeAmount
+      lastDonationDate
+      lastDonationAmount
+      lastDonationCurrency
+      donationPeriodAverage
+      donationPeriodCount
+      donationPeriodSum
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
+    }
+    totalCount
+  }
+}

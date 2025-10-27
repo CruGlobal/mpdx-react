@@ -1,5 +1,7 @@
-import React, { useMemo, useState } from 'react';
-import { Box, CircularProgress, TablePagination } from '@mui/material';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Box, CircularProgress } from '@mui/material';
+import { GridPaginationModel } from '@mui/x-data-grid/models/gridPaginationProps';
+import { GridSortModel } from '@mui/x-data-grid/models/gridSortModel';
 import { useTranslation } from 'react-i18next';
 import { Panel } from 'pages/accountLists/[accountListId]/reports/helpers';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
@@ -9,17 +11,12 @@ import {
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
-import {
-  PartnerGivingAnalysisReportContact,
-  ReportContactFilterSetInput,
-  SortDirection,
-} from 'src/graphql/types.generated';
+import { PartnerGivingAnalysisFilterSetInput } from 'src/graphql/types.generated';
 import { useGetPartnerGivingAnalysisIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useMassSelection } from 'src/hooks/useMassSelection';
-import { useTablePaginationLocaleText } from 'src/hooks/useMuiLocaleText';
-import { useGetPartnerGivingAnalysisReportQuery } from './PartnerGivingAnalysisReport.generated';
-import { PartnerGivingAnalysisReportTable as Table } from './Table/Table';
-import type { Order } from '../Reports.type';
+import { AscendingSortEnums, DescendingSortEnums } from './Helper/sortRecords';
+import { usePartnerGivingAnalysisQuery } from './PartnerGivingAnalysis.generated';
+import { PartnerGivingAnalysisTable as Table } from './Table/Table';
 
 interface Props {
   accountListId: string;
@@ -29,8 +26,6 @@ interface Props {
   title: string;
 }
 
-export type Contact = PartnerGivingAnalysisReportContact;
-
 export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   accountListId,
   panelOpen,
@@ -39,50 +34,55 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   title,
 }) => {
   const { t } = useTranslation();
-  const [order, setOrder] = useState<Order>('asc');
-  const [orderBy, setOrderBy] = useState<keyof Contact>('name');
-  const [limit, setLimit] = useState<number>(10);
-  const [page, setPage] = useState<number>(0);
   const { activeFilters, searchTerm } = useUrlFilters();
+  const cursorsRef = useRef(new Map<number, string | null>([[0, null]]));
 
-  const contactFilters: ReportContactFilterSetInput = {
-    ...activeFilters,
-    ...(searchTerm && {
-      nameLike: `%${searchTerm}%`,
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    page: 0,
+    pageSize: 25,
+  });
+  const [sortModel, setSortModel] = useState<GridSortModel>([
+    {
+      field: 'name',
+      sort: 'asc',
+    },
+  ]);
+
+  const contactFilters: PartnerGivingAnalysisFilterSetInput = useMemo(
+    () => ({
+      ...activeFilters,
+      ...(searchTerm && {
+        nameLike: `%${searchTerm}%`,
+      }),
     }),
-  };
+    [activeFilters, searchTerm],
+  );
 
-  const { data, previousData, loading } =
-    useGetPartnerGivingAnalysisReportQuery({
-      variables: {
-        input: {
-          accountListId,
-          // Page 1 is the first page for the API
-          page: page + 1,
-          pageSize: limit,
-          sortField: orderBy ?? '',
-          sortDirection:
-            order === 'asc'
-              ? SortDirection.Ascending
-              : SortDirection.Descending,
-          contactFilters,
-        },
+  const { data, previousData, loading } = usePartnerGivingAnalysisQuery({
+    variables: {
+      input: {
+        accountListId,
+        filters: contactFilters,
+        sortBy: sortModel[0].sort
+          ? sortModel[0].sort === 'asc'
+            ? AscendingSortEnums[sortModel[0].field]
+            : DescendingSortEnums[sortModel[0].field]
+          : null,
       },
-    });
-  const contacts = data?.partnerGivingAnalysisReport.contacts ?? [];
+      first: paginationModel.pageSize,
+      after: cursorsRef.current.get(paginationModel.page) ?? null,
+    },
+  });
+
+  const contacts = data?.partnerGivingAnalysis.nodes ?? [];
 
   const contactCount =
-    (data ?? previousData)?.partnerGivingAnalysisReport?.totalContacts ?? 0;
+    (data ?? previousData)?.partnerGivingAnalysis?.totalCount ?? 0;
   const { data: allContacts, previousData: allContactsPrevious } =
     useGetPartnerGivingAnalysisIdsForMassSelectionQuery({
       variables: {
         input: {
           accountListId,
-          page: 1,
-          pageSize: contactCount,
-          sortField: '',
-          sortDirection: SortDirection.Ascending,
-          contactFilters,
         },
       },
       skip: contactCount === 0,
@@ -91,12 +91,20 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   // meantime to avoid throwing out the selected contact ids.
   const allContactIds = useMemo(
     () =>
-      (
-        allContacts ?? allContactsPrevious
-      )?.partnerGivingAnalysisReport?.contacts.map((contact) => contact.id) ??
-      [],
+      (allContacts ?? allContactsPrevious)?.partnerGivingAnalysis?.nodes.map(
+        (contact) => contact.id,
+      ) ?? [],
     [allContacts, allContactsPrevious],
   );
+
+  useEffect(() => {
+    const end = data?.partnerGivingAnalysis.pageInfo.endCursor ?? null;
+    const hasNextPage =
+      data?.partnerGivingAnalysis.pageInfo.hasNextPage ?? false;
+    if (end !== null && hasNextPage) {
+      cursorsRef.current.set(paginationModel.page + 1, end);
+    }
+  }, [data, paginationModel.page]);
 
   const {
     ids,
@@ -106,29 +114,24 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
     isRowChecked,
   } = useMassSelection(allContactIds);
 
-  const localeText = useTablePaginationLocaleText();
-
-  const handleRequestSort = (
-    _event: React.MouseEvent<unknown>,
-    property: string,
-  ) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property as keyof Contact);
+  const handlePageChange = (model: GridPaginationModel) => {
+    if (model.pageSize !== paginationModel.pageSize) {
+      cursorsRef.current = new Map([[0, null]]);
+      setPaginationModel({ page: 0, pageSize: model.pageSize });
+    } else {
+      setPaginationModel(model);
+    }
   };
 
-  const handlePageChange = (
-    _event: React.MouseEvent<unknown> | null,
-    newPage: number,
-  ): void => {
-    setPage(newPage);
+  const handleSortChange = (model: GridSortModel) => {
+    setSortModel(model);
   };
 
-  const handleLimitChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ): void => {
-    setLimit(parseInt(event.target.value));
-  };
+  // reset pagination when filters or sort change
+  useEffect(() => {
+    cursorsRef.current = new Map([[0, null]]);
+    setPaginationModel({ page: 0, pageSize: paginationModel.pageSize });
+  }, [contactFilters, sortModel]);
 
   return (
     <Box>
@@ -158,37 +161,20 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
           <CircularProgress data-testid="LoadingPartnerGivingAnalysisReport" />
         </Box>
       ) : contacts.length ? (
-        <>
-          <Table
-            onRequestSort={handleRequestSort}
-            onSelectOne={toggleSelectionById}
-            order={order}
-            orderBy={orderBy}
-            contacts={contacts}
-            isRowChecked={isRowChecked}
-          />
-          <TablePagination
-            colSpan={3}
-            count={data?.partnerGivingAnalysisReport.pagination.totalItems ?? 0}
-            onPageChange={handlePageChange}
-            onRowsPerPageChange={handleLimitChange}
-            // Page 0 is the first page for the component
-            page={page}
-            rowsPerPage={limit}
-            rowsPerPageOptions={[10, 25, 50]}
-            SelectProps={{
-              inputProps: {
-                'aria-label': t('rows per page'),
-              },
-              native: true,
-            }}
-            {...localeText}
-          />
-        </>
+        <Table
+          data={contacts}
+          totalCount={data?.partnerGivingAnalysis.totalCount ?? 0}
+          onSelectOne={toggleSelectionById}
+          isRowChecked={isRowChecked}
+          paginationModel={paginationModel}
+          handlePageChange={handlePageChange}
+          sortModel={sortModel}
+          handleSortChange={handleSortChange}
+        />
       ) : (
         <EmptyReport
           title={t('You have {{contacts}} total contacts', {
-            contacts: data?.partnerGivingAnalysisReport.totalContacts ?? '?',
+            contacts: data?.partnerGivingAnalysis.totalCount ?? '?',
           })}
           subTitle={t(
             'Unfortunately none of them match your current search or filters.',
