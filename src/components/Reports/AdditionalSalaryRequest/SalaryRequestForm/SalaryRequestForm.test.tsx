@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SalaryRequestForm } from './SalaryRequestForm';
 
@@ -24,10 +24,8 @@ describe('SalaryRequestForm', () => {
     userEvent.clear(inputs[1]);
     userEvent.type(inputs[1], '500');
 
-    await waitFor(() => {
-      expect(inputs[0]).toHaveValue(1000);
-      expect(inputs[1]).toHaveValue(500);
-    });
+    expect(inputs[0]).toHaveValue(1000);
+    expect(inputs[1]).toHaveValue(500);
 
     expect(getByLabelText('Total requested amount')).toHaveTextContent(
       '$1,500',
