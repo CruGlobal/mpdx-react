@@ -17,6 +17,7 @@ export enum StatusEnum {
 export enum FundTypeEnum {
   Primary = 'Primary',
   Savings = 'Savings',
+  ConferenceSavings = 'Staff Conference Savings',
 }
 
 export enum TransferTypeEnum {

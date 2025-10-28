@@ -32,7 +32,7 @@ export const SavingsAccount = (
 );
 export const ConferenceSavingsAccount = (
   <Groups
-    titleAccess="Conference Savings Account"
+    titleAccess="Staff Conference Savings Account"
     sx={{
       backgroundColor: '#00C0D8',
       color: 'primary.contrastText',

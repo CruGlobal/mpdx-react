@@ -96,9 +96,9 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
             variant="body1"
             mb={0}
             sx={{
-              '@media print': { fontSize: '14pt' },
+              '@media print': { fontSize: '12pt' },
               fontWeight: 500,
-              fontSize: '15pt',
+              fontSize: '13pt',
             }}
           >
             {title}

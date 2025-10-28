@@ -86,7 +86,11 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
     useReportsSavingsFundTransferQuery();
   const { data: fundsData, error: fundsError } = useReportsStaffExpensesQuery({
     variables: {
-      fundTypes: [FundTypeEnum.Primary, FundTypeEnum.Savings],
+      fundTypes: [
+        FundTypeEnum.Primary,
+        FundTypeEnum.Savings,
+        FundTypeEnum.ConferenceSavings,
+      ],
     },
   });
 
@@ -272,6 +276,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
             >
               {!fundsData && !fundsError ? (
                 <StyledCardsBox>
+                  <CardSkeleton />
                   <CardSkeleton />
                   <CardSkeleton />
                 </StyledCardsBox>
