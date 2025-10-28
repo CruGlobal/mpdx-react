@@ -1,5 +1,4 @@
 import { Box, Typography } from '@mui/material';
-import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import {
@@ -17,7 +16,6 @@ interface FundInfoDisplayProps {
 }
 
 export const FundInfoDisplay: React.FC<FundInfoDisplayProps> = ({ fund }) => {
-  const { t } = useTranslation();
   const locale = useLocale();
 
   if (!fund) {
@@ -25,27 +23,20 @@ export const FundInfoDisplay: React.FC<FundInfoDisplayProps> = ({ fund }) => {
   }
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        alignItems: 'center',
-      }}
-    >
+    <Box sx={{ display: 'flex', alignItems: 'center' }}>
       {fund.fundType === FundTypeEnum.Primary
         ? PrimaryAccount
         : fund.fundType === FundTypeEnum.Savings
           ? SavingsAccount
-          : ConferenceSavingsAccount}{' '}
+          : ConferenceSavingsAccount}
       <Box
         sx={{
           overflow: 'hidden',
           textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-          minWidth: 0,
         }}
       >
         <Typography component="span">
-          <b>{t('{{type}}', { type: fund.fundType })}</b>
+          <b>{fund.fundType}</b>
           <b>{' \u00B7 '}</b>
         </Typography>
         <Typography

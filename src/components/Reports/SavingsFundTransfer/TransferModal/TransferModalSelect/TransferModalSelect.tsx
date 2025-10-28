@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, MenuItem, Select, SelectProps } from '@mui/material';
+import { MenuItem, Select, SelectProps } from '@mui/material';
 import { FundFieldsFragment } from '../../ReportsSavingsFund.generated';
 import { FundInfoDisplay } from '../Helper/FundInfoDisplay';
 
@@ -20,26 +20,7 @@ export const TransferModalSelect: React.FC<TransferModalSelectProps> = ({
     : funds;
 
   return (
-    <Select
-      {...props}
-      disabled={disabled}
-      renderValue={(selected) => {
-        const fund = filteredFunds.find((f) => f.fundType === selected);
-        return (
-          <Box
-            sx={{
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              width: '100%',
-              minWidth: 0,
-            }}
-          >
-            <FundInfoDisplay fund={fund} />
-          </Box>
-        );
-      }}
-    >
+    <Select {...props} disabled={disabled}>
       {filteredFunds.map((fund) => (
         <MenuItem key={fund.id} value={fund.fundType}>
           <FundInfoDisplay fund={fund} />
