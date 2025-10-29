@@ -16,9 +16,9 @@ import { CircularProgressWithLabel } from 'src/components/Reports/GoalCalculator
 import { multiPageHeaderHeight } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import theme from 'src/theme';
 
-const iconPanelWidth = theme.spacing(5);
+export const iconPanelWidth = theme.spacing(5);
 
-const PrintableStack = styled(Stack)({
+export const PrintableStack = styled(Stack)({
   '@media print': {
     // Hide all children except for the main content
     '> *:not(.main-content)': {
@@ -27,7 +27,7 @@ const PrintableStack = styled(Stack)({
   },
 });
 
-const MainContent = styled('div')(({ theme }) => ({
+export const MainContent = styled('div')(({ theme }) => ({
   paddingBlock: theme.spacing(4),
   width: '100%',
   '@media screen': {
@@ -36,13 +36,13 @@ const MainContent = styled('div')(({ theme }) => ({
   },
 }));
 
-const SidebarTitle = styled(Typography)(({ theme }) => ({
+export const SidebarTitle = styled(Typography)(({ theme }) => ({
   marginBottom: 0,
   marginTop: theme.spacing(1),
   paddingLeft: theme.spacing(2),
 }));
 
-const StyledSidebar = styled('nav', {
+export const StyledSidebar = styled('nav', {
   shouldForwardProp: (prop) => prop !== 'open',
 })<{ open: boolean }>(({ theme, open }) => ({
   width: open ? 240 : 0,
@@ -62,7 +62,7 @@ const StyledSidebar = styled('nav', {
   },
 }));
 
-const StyledBox = styled(Box)(({ theme }) => ({
+export const StyledBox = styled(Box)(({ theme }) => ({
   padding: theme.spacing(1),
   display: 'flex',
   justifyContent: 'center',
