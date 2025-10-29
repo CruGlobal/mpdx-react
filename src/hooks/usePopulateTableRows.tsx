@@ -1,6 +1,7 @@
 import NextLink from 'next/link';
 import { Checkbox, Link, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
+import { ContactDetailTabEnum } from 'src/components/Contacts/ContactDetails/ContactDetailTab';
 import { preloadContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { RenderCell } from 'src/components/Reports/PartnerGivingAnalysisReport/Table/Table';
 import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
@@ -29,7 +30,7 @@ export const usePopulateTableRows = (
     return (
       <Link
         component={NextLink}
-        href={buildContactUrl(row.id)}
+        href={buildContactUrl(row.id, ContactDetailTabEnum.Donations)}
         onMouseEnter={preloadContactsRightPanel}
         style={{
           whiteSpace: 'nowrap',
