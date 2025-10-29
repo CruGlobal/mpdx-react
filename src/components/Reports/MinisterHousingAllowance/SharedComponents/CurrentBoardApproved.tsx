@@ -71,7 +71,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
             </Grid>
             <Grid item xs={6}>
               <Typography variant="body1">
-                {spouseName?.split(' ')[1].toUpperCase()}
+                {spouseName ? spouseName.split(' ')[1].toUpperCase() : ''}
               </Typography>
             </Grid>
           </Grid>
@@ -79,7 +79,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
             <Grid item xs={6}>
               <Typography variant="h6" sx={{ color: 'primary.main' }}>
                 <b>
-                  {currencyFormat(staffSpecific || 0, currency, locale, {
+                  {currencyFormat(staffSpecific ?? 0, currency, locale, {
                     showTrailingZeros: true,
                   })}
                 </b>
@@ -88,9 +88,11 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
             <Grid item xs={6}>
               <Typography variant="h6" sx={{ color: 'primary.main' }}>
                 <b>
-                  {currencyFormat(spouseSpecific || 0, currency, locale, {
-                    showTrailingZeros: true,
-                  })}
+                  {spouseSpecific
+                    ? currencyFormat(spouseSpecific ?? 0, currency, locale, {
+                        showTrailingZeros: true,
+                      })
+                    : ''}
                 </b>
               </Typography>
             </Grid>

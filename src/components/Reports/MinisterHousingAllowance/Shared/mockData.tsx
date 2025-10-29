@@ -214,6 +214,57 @@ export const mocks: Mock[] = [
       grossSalaryAmount: 62000,
     },
   },
+  // single, no mha pending, and approved mha
+  {
+    staffInfo: {
+      id: '000123456',
+      name: 'Doe, John',
+      age: 35,
+      tenure: 10,
+      location: 'Dallas, Texas',
+      children: 2,
+      email: 'john.doe@cru.org',
+      phone: '123-456-7890',
+    },
+    spouseInfo: null,
+    mhaDetails: {
+      staffMHA: {
+        approvedOverallAmount: 19400,
+        lastApprovedDate: '2023-02-15',
+        approvedSpecificAmount: 19400,
+        deadlineDate: null,
+        boardApprovalDate: '2023-03-01',
+        approvedDate: '2024-09-01',
+        memorializationDate: '2023-02-25',
+        availableDate: '2023-03-10',
+      },
+      spouseMHA: null,
+    },
+    retirementDetails: {
+      staff: {
+        taxDeferredPercentage: 6,
+        rothPercentage: 4,
+        maximumContributionLimit: 19500,
+      },
+      spouse: {
+        taxDeferredPercentage: 5,
+        rothPercentage: 5,
+        maximumContributionLimit: 19500,
+      },
+    },
+    salaryCap: {
+      capAmount: 65000,
+      effectiveDate: '2022-07-01',
+      approver: 'Jane Smith',
+    },
+    minimumSalary: 40000,
+    maximumSalary: 80000,
+    currentSalary: {
+      currentGross: 62000,
+      lastUpdated: '2023-05-01',
+      grossSalaryAmount: 62000,
+    },
+  },
   // married, mha pending, and no approved mha
   {
     staffInfo: {
