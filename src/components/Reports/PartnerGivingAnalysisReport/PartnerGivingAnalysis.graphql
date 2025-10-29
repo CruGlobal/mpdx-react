@@ -11,6 +11,7 @@ query PartnerGivingAnalysis(
       totalDonations
       pledgeCurrency
       pledgeAmount
+      firstDonationDate
       lastDonationDate
       lastDonationAmount
       lastDonationCurrency
