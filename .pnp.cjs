@@ -115,7 +115,7 @@ const RAW_RUNTIME_STATE =
           ["luxon", "npm:3.4.4"],\
           ["micro-cors", "npm:0.1.1"],\
           ["next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:15.0.3"],\
-          ["next-auth", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.24.11"],\
+          ["next-auth", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.24.12"],\
           ["next-compose-plugins", "npm:2.2.1"],\
           ["next-optimized-images", "npm:2.6.2"],\
           ["next-pwa", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:5.6.0"],\
@@ -19105,7 +19105,7 @@ const RAW_RUNTIME_STATE =
           ["luxon", "npm:3.4.4"],\
           ["micro-cors", "npm:0.1.1"],\
           ["next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:15.0.3"],\
-          ["next-auth", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.24.11"],\
+          ["next-auth", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.24.12"],\
           ["next-compose-plugins", "npm:2.2.1"],\
           ["next-optimized-images", "npm:2.6.2"],\
           ["next-pwa", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:5.6.0"],\
@@ -19307,17 +19307,17 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["next-auth", [\
-      ["npm:4.24.11", {\
-        "packageLocation": "./.yarn/cache/next-auth-npm-4.24.11-e0e7c6275e-56142678cf.zip/node_modules/next-auth/",\
+      ["npm:4.24.12", {\
+        "packageLocation": "./.yarn/cache/next-auth-npm-4.24.12-e7b788e87a-345346f89c.zip/node_modules/next-auth/",\
         "packageDependencies": [\
-          ["next-auth", "npm:4.24.11"]\
+          ["next-auth", "npm:4.24.12"]\
         ],\
         "linkType": "SOFT"\
       }],\
-      ["virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.24.11", {\
-        "packageLocation": "./.yarn/__virtual__/next-auth-virtual-2f234bc5b4/0/cache/next-auth-npm-4.24.11-e0e7c6275e-56142678cf.zip/node_modules/next-auth/",\
+      ["virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.24.12", {\
+        "packageLocation": "./.yarn/__virtual__/next-auth-virtual-3835211b25/0/cache/next-auth-npm-4.24.12-e7b788e87a-345346f89c.zip/node_modules/next-auth/",\
         "packageDependencies": [\
-          ["next-auth", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.24.11"],\
+          ["next-auth", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:4.24.12"],\
           ["@auth/core", null],\
           ["@babel/runtime", "npm:7.28.2"],\
           ["@panva/hkdf", "npm:1.0.4"],\
@@ -19333,7 +19333,7 @@ const RAW_RUNTIME_STATE =
           ["oauth", "npm:0.9.15"],\
           ["openid-client", "npm:5.4.0"],\
           ["preact", "npm:10.10.5"],\
-          ["preact-render-to-string", "virtual:2f234bc5b4b4b93a0f803adfb2ce3362773eb66db09ecb47324d36c83daaf8606c287d18fb86ff658b10ae9f59d41562a8510e2f78514834902194a7aabf5de7#npm:5.2.2"],\
+          ["preact-render-to-string", "virtual:3835211b254613f7881283611caeb1f8d35a4d05b5f2f13c487893d2fdaf4afd1a3665ad05a375356bbc90bbeb671c41d014c37ef072691ab63fe6de99456ad7#npm:5.2.2"],\
           ["react", "npm:18.2.0"],\
           ["react-dom", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:18.2.0"],\
           ["uuid", "npm:8.3.2"]\
@@ -20581,10 +20581,10 @@ const RAW_RUNTIME_STATE =
         ],\
         "linkType": "SOFT"\
       }],\
-      ["virtual:2f234bc5b4b4b93a0f803adfb2ce3362773eb66db09ecb47324d36c83daaf8606c287d18fb86ff658b10ae9f59d41562a8510e2f78514834902194a7aabf5de7#npm:5.2.2", {\
-        "packageLocation": "./.yarn/__virtual__/preact-render-to-string-virtual-28d2925d0e/0/cache/preact-render-to-string-npm-5.2.2-b8f2c0c74e-05493311bf.zip/node_modules/preact-render-to-string/",\
+      ["virtual:3835211b254613f7881283611caeb1f8d35a4d05b5f2f13c487893d2fdaf4afd1a3665ad05a375356bbc90bbeb671c41d014c37ef072691ab63fe6de99456ad7#npm:5.2.2", {\
+        "packageLocation": "./.yarn/__virtual__/preact-render-to-string-virtual-2c659db752/0/cache/preact-render-to-string-npm-5.2.2-b8f2c0c74e-05493311bf.zip/node_modules/preact-render-to-string/",\
         "packageDependencies": [\
-          ["preact-render-to-string", "virtual:2f234bc5b4b4b93a0f803adfb2ce3362773eb66db09ecb47324d36c83daaf8606c287d18fb86ff658b10ae9f59d41562a8510e2f78514834902194a7aabf5de7#npm:5.2.2"],\
+          ["preact-render-to-string", "virtual:3835211b254613f7881283611caeb1f8d35a4d05b5f2f13c487893d2fdaf4afd1a3665ad05a375356bbc90bbeb671c41d014c37ef072691ab63fe6de99456ad7#npm:5.2.2"],\
           ["@types/preact", null],\
           ["preact", "npm:10.10.5"],\
           ["pretty-format", "npm:3.8.0"]\
