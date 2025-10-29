@@ -5,6 +5,7 @@ import { GridSortModel } from '@mui/x-data-grid/models/gridSortModel';
 import { useTranslation } from 'react-i18next';
 import { Panel } from 'pages/accountLists/[accountListId]/reports/helpers';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
+import { useStaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
 import { ListHeader, PageEnum } from 'src/components/Shared/Header/ListHeader';
 import {
   HeaderTypeEnum,
@@ -14,6 +15,7 @@ import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFilte
 import { PartnerGivingAnalysisFilterSetInput } from 'src/graphql/types.generated';
 import { useGetPartnerGivingAnalysisIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useMassSelection } from 'src/hooks/useMassSelection';
+import { BalanceCard } from './BalanceCard/BalanceCard';
 import { AscendingSortEnums, DescendingSortEnums } from './Helper/sortRecords';
 import { usePartnerGivingAnalysisQuery } from './PartnerGivingAnalysis.generated';
 import { PartnerGivingAnalysisTable as Table } from './Table/Table';
@@ -74,6 +76,11 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
     },
   });
 
+  const { data: staffAccountData, loading: staffAccountLoading } =
+    useStaffAccountQuery();
+
+  // console.log('fundsData', fundsData, fundsError);
+
   const contacts = data?.partnerGivingAnalysis.nodes ?? [];
 
   const contactCount =
@@ -128,11 +135,13 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
     setSortModel(model);
   };
 
-  // reset pagination when filters or sort change
-  useEffect(() => {
-    cursorsRef.current = new Map([[0, null]]);
-    setPaginationModel({ page: 0, pageSize: paginationModel.pageSize });
-  }, [contactFilters, sortModel]);
+  // const funds = useMemo(
+  //   () =>
+  //     (fundsData?.reportsStaffExpenses?.funds ?? []).toSorted((a, b) =>
+  //       a.id.localeCompare(b.id),
+  //     ),
+  //   [fundsData],
+  // );
 
   return (
     <Box>
@@ -162,16 +171,21 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
           <CircularProgress data-testid="LoadingPartnerGivingAnalysisReport" />
         </Box>
       ) : contacts.length ? (
-        <Table
-          data={contacts}
-          totalCount={data?.partnerGivingAnalysis.totalCount ?? 0}
-          onSelectOne={toggleSelectionById}
-          isRowChecked={isRowChecked}
-          paginationModel={paginationModel}
-          handlePageChange={handlePageChange}
-          sortModel={sortModel}
-          handleSortChange={handleSortChange}
-        />
+        <>
+          {!staffAccountLoading && staffAccountData?.staffAccount?.id ? (
+            <BalanceCard />
+          ) : null}
+          <Table
+            data={contacts}
+            totalCount={data?.partnerGivingAnalysis.totalCount ?? 0}
+            onSelectOne={toggleSelectionById}
+            isRowChecked={isRowChecked}
+            paginationModel={paginationModel}
+            handlePageChange={handlePageChange}
+            sortModel={sortModel}
+            handleSortChange={handleSortChange}
+          />
+        </>
       ) : (
         <EmptyReport
           title={t('You have {{contacts}} total contacts', {
