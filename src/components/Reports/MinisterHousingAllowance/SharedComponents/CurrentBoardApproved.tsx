@@ -66,12 +66,12 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <Typography variant="body1">
-                {staffName.split(' ')[1].toUpperCase()}
+                {staffName.split(', ')[1].toUpperCase()}
               </Typography>
             </Grid>
             <Grid item xs={6}>
               <Typography variant="body1">
-                {spouseName ? spouseName.split(' ')[1].toUpperCase() : ''}
+                {spouseName?.split(', ')[1].toUpperCase() ?? ''}
               </Typography>
             </Grid>
           </Grid>

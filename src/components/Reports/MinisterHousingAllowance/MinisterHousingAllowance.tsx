@@ -21,16 +21,13 @@ export const MinisterHousingAllowanceReport: React.FC = () => {
   // mock[2] --> Married, no pending, approved
   // mock[3] --> Single, no pending, approved
   // mock[4] --> Married, pending, no approved
-  const testPerson = mocks[4];
+  const testPerson = mocks[2];
 
   const isMarried = testPerson.spouseInfo !== null;
   const title = t('Your MHA');
 
   // temporary logic for no pending or approved MHA
-  const noMHA =
-    testPerson.mhaDetails.staffMHA === null ||
-    (testPerson.mhaDetails.staffMHA === null &&
-      testPerson.mhaDetails.spouseMHA === null);
+  const noMHA = testPerson.mhaDetails.staffMHA === null;
 
   // temporary logic for no pending MHA
   const noPending =

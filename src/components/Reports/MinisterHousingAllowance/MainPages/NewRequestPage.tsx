@@ -15,8 +15,8 @@ export const NewRequestPage: React.FC<NewRequestPageProps> = ({
   staff,
   spouse,
 }) => {
-  const name = staff.name.split(', ')[1];
-  const spouseName = spouse ? spouse.name.split(', ')[1] : '';
+  const name = staff.name.split(', ')[1] ?? staff.name;
+  const spouseName = spouse ? (spouse.name.split(', ')[1] ?? spouse.name) : '';
 
   return (
     <>
