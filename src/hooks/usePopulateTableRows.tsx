@@ -81,6 +81,20 @@ export const usePopulateTableRows = (
     );
   };
 
+  const donationDate = (
+    dateField: 'firstDonationDate' | 'lastDonationDate',
+  ): RenderCell => {
+    const DonationDate: RenderCell = ({ row }) => (
+      <Typography variant="body2" noWrap>
+        {typeof row[dateField] === 'string' &&
+          dateFormatShort(DateTime.fromISO(row[dateField]), locale)}
+      </Typography>
+    );
+    return DonationDate;
+  };
+
+  const firstDonationDate: RenderCell = donationDate('firstDonationDate');
+
   const lastDonationAmount: RenderCell = ({ row }) => {
     return (
       <Typography variant="body2" noWrap>
@@ -93,14 +107,7 @@ export const usePopulateTableRows = (
     );
   };
 
-  const lastDonationDate: RenderCell = ({ row }) => {
-    return (
-      <Typography variant="body2" noWrap>
-        {typeof row.lastDonationDate === 'string' &&
-          dateFormatShort(DateTime.fromISO(row.lastDonationDate), locale)}
-      </Typography>
-    );
-  };
+  const lastDonationDate: RenderCell = donationDate('lastDonationDate');
 
   const totalDonations: RenderCell = ({ row }) => {
     return (
@@ -118,6 +125,7 @@ export const usePopulateTableRows = (
     donationPeriodSum,
     donationPeriodCount,
     donationPeriodAverage,
+    firstDonationDate,
     lastDonationAmount,
     lastDonationDate,
     totalDonations,
