@@ -24,6 +24,7 @@ export const createCache = () =>
         },
         merge: true,
       },
+
       CoachingAppeal: {
         fields: {
           pledges: paginationFieldPolicy,
@@ -89,6 +90,7 @@ export const createCache = () =>
           contacts: paginationFieldPolicy,
           donations: paginationFieldPolicy,
           financialAccounts: paginationFieldPolicy,
+          partnerGivingAnalysis: paginationFieldPolicy,
           people: paginationFieldPolicy,
           tasks: paginationFieldPolicy,
           userNotifications: paginationFieldPolicy,
