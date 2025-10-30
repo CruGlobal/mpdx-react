@@ -7,6 +7,5 @@ export enum GoalCalculatorStepEnum {
 
 export enum GoalCalculatorReportEnum {
   MpdGoal = 'mpd-goal',
-  SalaryRequest = 'salary-request',
   PresentingYourGoal = 'presenting-your-goal',
 }

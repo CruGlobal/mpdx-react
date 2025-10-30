@@ -42,7 +42,6 @@ describe('ReportSectionList', () => {
     );
 
     expect(getByRole('button', { name: 'MPD Goal' })).toBeInTheDocument();
-    expect(getByRole('button', { name: 'Salary Request' })).toBeInTheDocument();
     expect(
       getByRole('button', { name: 'Presenting Your Goal' }),
     ).toBeInTheDocument();

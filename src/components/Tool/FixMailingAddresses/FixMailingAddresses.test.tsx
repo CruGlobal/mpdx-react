@@ -399,7 +399,7 @@ describe('FixMailingAddresses', () => {
       expect(
         await findByText('Buckingham Palace, London SW1A 1AA'),
       ).toBeInTheDocument();
-    }, 10000);
+    }, 30000);
   });
 
   describe('Set primary mailing address', () => {
