@@ -138,7 +138,16 @@ export const NewRequestPage: React.FC = () => {
             ) : currentStep === NewRequestStepsEnum.RentOrOwn ? (
               <RentOwn handleNext={handleNextStep} />
             ) : currentStep === NewRequestStepsEnum.Calculate ? (
-              <Calculation handleNext={handleNextStep} />
+              <Calculation
+                boardApprovalDate={
+                  mocks[4].mhaDetails.staffMHA?.boardApprovalDate ?? ''
+                }
+                availableDate={
+                  mocks[4].mhaDetails.staffMHA?.availableDate ?? ''
+                }
+                handleNext={handleNextStep}
+                handleBack={handlePreviousStep}
+              />
             ) : null}
           </Stack>
         </Container>
