@@ -15,6 +15,7 @@ import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFilte
 import { PartnerGivingAnalysisFilterSetInput } from 'src/graphql/types.generated';
 import { useGetPartnerGivingAnalysisIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useMassSelection } from 'src/hooks/useMassSelection';
+import { HeaderActions } from './Actions/HeaderActions';
 import { BalanceCard } from './BalanceCard/BalanceCard';
 import { AscendingSortEnums, DescendingSortEnums } from './Helper/sortRecords';
 import { usePartnerGivingAnalysisQuery } from './PartnerGivingAnalysis.generated';
@@ -138,6 +139,11 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
     setSortModel(model);
   };
 
+  const handlePrint = (event: React.MouseEvent<unknown>) => {
+    event.preventDefault();
+    window.print();
+  };
+
   // const funds = useMemo(
   //   () =>
   //     (fundsData?.reportsStaffExpenses?.funds ?? []).toSorted((a, b) =>
@@ -153,6 +159,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
         onNavListToggle={onNavListToggle}
         title={title}
         headerType={HeaderTypeEnum.Report}
+        rightExtra={<HeaderActions onPrint={handlePrint} />}
       />
       <ListHeader
         page={PageEnum.Report}
