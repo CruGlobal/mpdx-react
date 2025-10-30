@@ -1,12 +1,12 @@
 import { Box, Typography } from '@mui/material';
 import { Trans } from 'react-i18next';
 
-interface CurrentPageProps {
+interface EligibleDisplayProps {
   title: string;
   isPending: boolean;
 }
 
-export const CurrentPage: React.FC<CurrentPageProps> = ({
+export const EligibleDisplay: React.FC<EligibleDisplayProps> = ({
   title,
   isPending,
 }) => {
