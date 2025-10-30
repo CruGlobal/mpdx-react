@@ -142,6 +142,12 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   } = useMassSelection(allContactIds);
 
   const handlePageChange = (model: GridPaginationModel) => {
+    // Evict cache when navigating to a different page to clear accumulated data from print
+    apolloClient.cache.evict({
+      fieldName: 'partnerGivingAnalysis',
+    });
+    apolloClient.cache.gc();
+
     if (model.pageSize !== paginationModel.pageSize) {
       cursorsRef.current = new Map([[0, null]]);
       setPaginationModel({ page: 0, pageSize: model.pageSize });
