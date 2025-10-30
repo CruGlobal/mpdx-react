@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { TextFieldProps } from '@mui/material';
 import { prepareDataForValidation } from 'formik';
 import * as yup from 'yup';
+import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
 
 interface UseAutoSaveOptions<Value extends string | number> {
   value: Value | null | undefined;
@@ -17,6 +19,9 @@ export const useAutoSave = <Value extends string | number>({
   schema,
   saveOnChange = false,
 }: UseAutoSaveOptions<Value>) => {
+  const {
+    goalCalculationResult: { data },
+  } = useGoalCalculator();
   const [internalValue, setInternalValue] = useState(value?.toString() ?? '');
 
   useEffect(() => {
@@ -26,7 +31,6 @@ export const useAutoSave = <Value extends string | number>({
   const parseValue = useCallback(
     (valueToValidate: string) => {
       try {
-        // Use the same logic that Formik does to massage data before schema validation: primarily
         // converting empty strings to undefined
         const values = prepareDataForValidation({
           [fieldName]: valueToValidate,
@@ -49,6 +53,8 @@ export const useAutoSave = <Value extends string | number>({
     [parseValue, internalValue],
   );
 
+  const disabled = !data;
+
   return {
     value: internalValue,
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,6 +73,9 @@ export const useAutoSave = <Value extends string | number>({
         saveValue(parsedValue);
       }
     },
-    ...(errorMessage ? { error: true, helperText: errorMessage } : {}),
-  };
+    disabled,
+    ...(!disabled && errorMessage
+      ? { error: true, helperText: errorMessage }
+      : {}),
+  } satisfies Partial<TextFieldProps>;
 };
