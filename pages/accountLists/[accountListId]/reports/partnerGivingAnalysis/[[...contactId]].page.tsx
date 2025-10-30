@@ -21,6 +21,7 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useContactFiltersQuery } from '../../contacts/Contacts.generated';
 import { Panel } from '../helpers';
+import { preDefinedFilters } from './preDefinedFilters';
 
 // The order here is also the sort order and the display order
 const reportFilters = [
@@ -92,6 +93,7 @@ const PageContent: React.FC = () => {
           ) : (
             <DynamicFilterPanel
               filters={filterGroups}
+              preDefinedFilters={preDefinedFilters}
               defaultExpandedFilterGroups={new Set(['Report Filters'])}
               savedFilters={[]}
               onClose={() => setPanelOpen(null)}
