@@ -80,8 +80,6 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   const { data: staffAccountData, loading: staffAccountLoading } =
     useStaffAccountQuery();
 
-  // console.log('fundsData', fundsData, fundsError);
-
   const contacts = data?.partnerGivingAnalysis.nodes ?? [];
 
   const contactCount =
