@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useApolloClient } from '@apollo/client';
 import { Box, CircularProgress } from '@mui/material';
 import { GridPaginationModel } from '@mui/x-data-grid/models/gridPaginationProps';
 import { GridSortModel } from '@mui/x-data-grid/models/gridSortModel';
@@ -14,6 +15,7 @@ import {
 import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { PartnerGivingAnalysisFilterSetInput } from 'src/graphql/types.generated';
 import { useGetPartnerGivingAnalysisIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
+import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import { HeaderActions } from './Actions/HeaderActions';
 import { BalanceCard } from './BalanceCard/BalanceCard';
@@ -42,11 +44,12 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
   const { activeFilters, searchTerm } = useUrlFilters();
+  const apolloClient = useApolloClient();
   const cursorsRef = useRef(new Map<number, string | null>([[0, null]]));
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
-    pageSize: 25,
+    pageSize: 5,
   });
   const [sortModel, setSortModel] = useState<GridSortModel>([
     {
@@ -54,6 +57,8 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
       sort: 'asc',
     },
   ]);
+  const [shouldFetchAllPages, setShouldFetchAllPages] = useState(false);
+  const [isPrinting, setIsPrinting] = useState(false);
 
   const contactFilters: PartnerGivingAnalysisFilterSetInput = useMemo(
     () => ({
@@ -65,26 +70,37 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
     [activeFilters, searchTerm],
   );
 
-  const { data, previousData, loading } = usePartnerGivingAnalysisQuery({
-    variables: {
-      input: {
-        accountListId,
-        filters: contactFilters,
-        sortBy: sortModel[0].sort
-          ? sortModel[0].sort === 'asc'
-            ? AscendingSortEnums[sortModel[0].field]
-            : DescendingSortEnums[sortModel[0].field]
-          : null,
+  const { data, previousData, error, fetchMore, loading } =
+    usePartnerGivingAnalysisQuery({
+      variables: {
+        input: {
+          accountListId,
+          filters: contactFilters,
+          sortBy: sortModel[0].sort
+            ? sortModel[0].sort === 'asc'
+              ? AscendingSortEnums[sortModel[0].field]
+              : DescendingSortEnums[sortModel[0].field]
+            : null,
+        },
+        first: shouldFetchAllPages ? 10000 : paginationModel.pageSize,
+        after: shouldFetchAllPages
+          ? null
+          : (cursorsRef.current.get(paginationModel.page) ?? null),
       },
-      first: paginationModel.pageSize,
-      after: cursorsRef.current.get(paginationModel.page) ?? null,
-    },
-  });
+    });
 
   const { data: staffAccountData, loading: staffAccountLoading } =
     useStaffAccountQuery();
 
   const contacts = data?.partnerGivingAnalysis.nodes ?? [];
+
+  const { loading: fetchingAllPages } = useFetchAllPages({
+    fetchMore,
+    error,
+    pageInfo: shouldFetchAllPages
+      ? (data ?? previousData)?.partnerGivingAnalysis?.pageInfo
+      : undefined,
+  });
 
   const contactCount =
     (data ?? previousData)?.partnerGivingAnalysis?.totalCount ?? 0;
@@ -139,8 +155,46 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
 
   const handlePrint = (event: React.MouseEvent<unknown>) => {
     event.preventDefault();
-    window.print();
+    if (!isPrinting) {
+      setShouldFetchAllPages(true);
+      setIsPrinting(true);
+    }
   };
+
+  useEffect(() => {
+    const hasNextPage =
+      (data ?? previousData)?.partnerGivingAnalysis?.pageInfo?.hasNextPage ??
+      false;
+    if (
+      isPrinting &&
+      shouldFetchAllPages &&
+      !fetchingAllPages &&
+      !hasNextPage
+    ) {
+      // Wait for React to finish rendering all the data before printing
+      setTimeout(() => {
+        window.print();
+      }, 100);
+    }
+  }, [isPrinting, shouldFetchAllPages, fetchingAllPages, data, previousData]);
+
+  // Listen for when printing is done to reset the state
+  useEffect(() => {
+    const handleAfterPrint = () => {
+      setIsPrinting(false);
+      setShouldFetchAllPages(false);
+      // Evict the partnerGivingAnalysis cache to force a refetch of just the current page
+      apolloClient.cache.evict({
+        fieldName: 'partnerGivingAnalysis',
+      });
+      apolloClient.cache.gc();
+    };
+
+    window.addEventListener('afterprint', handleAfterPrint);
+    return () => {
+      window.removeEventListener('afterprint', handleAfterPrint);
+    };
+  }, [apolloClient]);
 
   return (
     <Box>
@@ -161,14 +215,21 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
         headerCheckboxState={selectionType}
         selectedIds={ids}
       />
-      {loading ? (
+      {loading || (shouldFetchAllPages && fetchingAllPages) ? (
         <Box
           display="flex"
           justifyContent="center"
           alignItems="center"
           height="100%"
         >
-          <CircularProgress data-testid="LoadingPartnerGivingAnalysisReport" />
+          <CircularProgress
+            data-testid="LoadingPartnerGivingAnalysisReport"
+            aria-label={
+              shouldFetchAllPages && fetchingAllPages
+                ? t('Preparing print...')
+                : undefined
+            }
+          />
         </Box>
       ) : contacts.length ? (
         <>
@@ -180,8 +241,10 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
             totalCount={data?.partnerGivingAnalysis.totalCount ?? 0}
             onSelectOne={toggleSelectionById}
             isRowChecked={isRowChecked}
-            paginationModel={paginationModel}
-            handlePageChange={handlePageChange}
+            paginationModel={shouldFetchAllPages ? undefined : paginationModel}
+            handlePageChange={
+              shouldFetchAllPages ? undefined : handlePageChange
+            }
             sortModel={sortModel}
             handleSortChange={handleSortChange}
           />

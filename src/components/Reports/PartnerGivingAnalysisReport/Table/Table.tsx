@@ -188,16 +188,20 @@ export const PartnerGivingAnalysisTable: React.FC<
         pageSizeOptions={[25, 50, 100]}
         paginationModel={paginationModel}
         onPaginationModelChange={handlePageChange}
-        paginationMode="server"
+        paginationMode={paginationModel ? 'server' : undefined}
         sortingMode="server"
-        pagination
         disableRowSelectionOnClick
         disableVirtualization
         disableColumnFilter
         disableColumnMenu
-        slots={{
-          footer: CustomFooter,
-        }}
+        slots={
+          paginationModel
+            ? {
+                footer: CustomFooter,
+              }
+            : undefined
+        }
+        {...(paginationModel ? { pagination: true } : {})}
       />
     </Box>
   );
