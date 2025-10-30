@@ -84,8 +84,6 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   const { data: staffAccountData, loading: staffAccountLoading } =
     useStaffAccountQuery();
 
-  // console.log('fundsData', fundsData, fundsError);
-
   const contacts = data?.partnerGivingAnalysis.nodes ?? [];
 
   const contactCount =
@@ -143,14 +141,6 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
     event.preventDefault();
     window.print();
   };
-
-  // const funds = useMemo(
-  //   () =>
-  //     (fundsData?.reportsStaffExpenses?.funds ?? []).toSorted((a, b) =>
-  //       a.id.localeCompare(b.id),
-  //     ),
-  //   [fundsData],
-  // );
 
   return (
     <Box>
