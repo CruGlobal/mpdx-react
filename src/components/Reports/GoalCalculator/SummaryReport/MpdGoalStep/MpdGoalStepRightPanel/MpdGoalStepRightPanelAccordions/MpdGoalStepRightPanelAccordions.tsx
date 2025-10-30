@@ -48,67 +48,109 @@ export const MpdGoalStepRightPanelAccordions: React.FC = () => {
       content: t(
         'Calculation showing subtotal including net salary, taxes, and SECA contributions.',
       ),
-      hasSpace: true,
     },
     {
       line: '1E',
-      title: t('Roth 403(b) Contribution'),
+      title: t('Roth 403(b) Contribution %'),
       content: t(
-        'Information about Roth 403(b) contribution limits and calculations.',
+        'Percentage of salary contributed to Roth 403(b) retirement account.',
       ),
     },
     {
       line: '1F',
-      title: t('100% - Roth + Traditional 403(b) %'),
+      title: t('Traditional 403(b) Contribution %'),
       content: t(
-        'Percentage calculation for combined Roth and Traditional 403(b) contributions.',
+        'Percentage of salary contributed to Traditional 403(b) retirement account.',
       ),
     },
     {
       line: '1G',
-      title: t('Roth 403(b), Traditional 403b'),
+      title: t('100% - (Roth + Traditional 403(b)) %'),
       content: t(
-        'Comparison and details about Roth vs Traditional 403(b) retirement plans.',
+        'Percentage remaining after subtracting Roth and Traditional 403(b) contributions.',
       ),
     },
     {
       line: '1H',
-      title: t('Gross Annual Salary'),
+      title: t('Roth 403(b)'),
       content: t(
-        'Information about gross annual salary calculations and components.',
+        'Dollar amount contributed to Roth 403(b) retirement account.',
       ),
-      hasSpace: true,
     },
     {
       line: '1I',
-      title: t('Gross Monthly Salary'),
-      content: t('Monthly breakdown of gross salary before deductions.'),
+      title: t('Traditional 403(b)'),
+      content: t(
+        'Dollar amount contributed to Traditional 403(b) retirement account.',
+      ),
     },
     {
       line: '1J',
-      title: t('Benefits Charge'),
-      content: t('Details about benefits charges and what they include.'),
+      title: t('Gross Annual Salary'),
+      content: t(
+        'Total annual salary before deductions, including all 403(b) contributions.',
+      ),
       hasSpace: true,
     },
     {
       line: '1',
-      title: t('Ministry Mileage'),
+      title: t('Gross Monthly Salary'),
       content: t(
-        'Information about ministry-related mileage reimbursement and tracking.',
+        'Monthly gross salary calculated from annual salary divided by 12.',
       ),
     },
     {
       line: '2',
-      title: t('Medical Mileage'),
+      title: t('Benefits'),
       content: t(
-        'Details about medical mileage deductions and reimbursement policies.',
+        'Benefits charges including health insurance and other staff benefits.',
       ),
     },
     {
       line: '3',
-      title: t('Medical Expenses'),
+      title: t('Ministry Expenses'),
       content: t(
-        'Information about medical expense deductions and healthcare benefits.',
+        'Various ministry-related expenses including miles, travel, meetings, meals, MPD, supplies, summer assignments, medical expenses, account transfers, and other costs.',
+      ),
+    },
+    {
+      line: '4',
+      title: t('Ministry Expenses Subtotal'),
+      content: t('Sum of all ministry expenses plus benefits.'),
+    },
+    {
+      line: '5',
+      title: t('Subtotal'),
+      content: t('Overall subtotal before admin charge and attrition.'),
+    },
+    {
+      line: '6',
+      title: t('Subtotal with admin charge'),
+      content: t('Subtotal including the administrative charge percentage.'),
+      hasSpace: true,
+    },
+    {
+      line: '7',
+      title: t('Total Goal (with attrition)'),
+      content: t(
+        'Final total goal including attrition rate applied to line 6.',
+      ),
+    },
+    {
+      line: '8',
+      title: t('Solid Monthly Support Developed'),
+      content: t('Amount of monthly support already raised and committed.'),
+    },
+    {
+      line: '9',
+      title: t('Monthly Support to be Developed'),
+      content: t('Remaining monthly support needed to reach the total goal.'),
+    },
+    {
+      line: '10',
+      title: t('Support Goal Percentage Progress'),
+      content: t(
+        'Percentage of the total goal that has been achieved through developed support.',
       ),
     },
   ];
