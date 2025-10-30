@@ -17,6 +17,7 @@ import { PartnerGivingAnalysisFilterSetInput } from 'src/graphql/types.generated
 import { useGetPartnerGivingAnalysisIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useMassSelection } from 'src/hooks/useMassSelection';
+import { SimpleScreenOnly } from '../styledComponents';
 import { HeaderActions } from './Actions/HeaderActions';
 import { BalanceCard } from './BalanceCard/BalanceCard';
 import { AscendingSortEnums, DescendingSortEnums } from './Helper/sortRecords';
@@ -172,9 +173,12 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
       !hasNextPage
     ) {
       // Wait for React to finish rendering all the data before printing
-      setTimeout(() => {
-        window.print();
-      }, 100);
+      // Use double requestAnimationFrame to ensure the DOM is fully painted
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          window.print();
+        });
+      });
     }
   }, [isPrinting, shouldFetchAllPages, fetchingAllPages, data, previousData]);
 
@@ -198,23 +202,25 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
 
   return (
     <Box>
-      <MultiPageHeader
-        isNavListOpen={panelOpen === Panel.Navigation}
-        onNavListToggle={onNavListToggle}
-        title={title}
-        headerType={HeaderTypeEnum.Report}
-        rightExtra={<HeaderActions onPrint={handlePrint} />}
-      />
-      <ListHeader
-        page={PageEnum.Report}
-        filterPanelOpen={panelOpen === Panel.Filters}
-        toggleFilterPanel={onFilterListToggle}
-        onCheckAllItems={toggleSelectAll}
-        showShowingCount={false}
-        totalItems={contactCount}
-        headerCheckboxState={selectionType}
-        selectedIds={ids}
-      />
+      <SimpleScreenOnly>
+        <MultiPageHeader
+          isNavListOpen={panelOpen === Panel.Navigation}
+          onNavListToggle={onNavListToggle}
+          title={title}
+          headerType={HeaderTypeEnum.Report}
+          rightExtra={<HeaderActions onPrint={handlePrint} />}
+        />
+        <ListHeader
+          page={PageEnum.Report}
+          filterPanelOpen={panelOpen === Panel.Filters}
+          toggleFilterPanel={onFilterListToggle}
+          onCheckAllItems={toggleSelectAll}
+          showShowingCount={false}
+          totalItems={contactCount}
+          headerCheckboxState={selectionType}
+          selectedIds={ids}
+        />
+      </SimpleScreenOnly>
       {loading || (shouldFetchAllPages && fetchingAllPages) ? (
         <Box
           display="flex"
