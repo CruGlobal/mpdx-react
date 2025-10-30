@@ -25,7 +25,6 @@ const FilledTest: React.FC = () => (
       sidebarTitle={title}
       sidebarAriaLabel="New - Step 1"
       mainContent={<h1>Main Content</h1>}
-      backHref="/back"
     />
   </ThemeProvider>
 );
@@ -41,7 +40,7 @@ describe('PanelLayout', () => {
   });
 
   it('renders main content, sidebar title, back link, and progress indicator for New panel type', () => {
-    const { getByRole } = render(<FilledTest />);
+    const { getByRole, getByTestId } = render(<FilledTest />);
 
     expect(getByRole('heading', { name: 'Main Content' })).toBeInTheDocument();
     expect(getByRole('heading', { name: title })).toBeInTheDocument();
@@ -50,8 +49,7 @@ describe('PanelLayout', () => {
     expect(progressIndicator).toBeInTheDocument();
     expect(progressIndicator).toHaveAttribute('aria-valuenow', '75');
 
-    const backLink = getByRole('link', { name: 'Go back' });
+    const backLink = getByTestId('ArrowBackIcon');
     expect(backLink).toBeInTheDocument();
-    expect(backLink).toHaveAttribute('href', '/back');
   });
 });

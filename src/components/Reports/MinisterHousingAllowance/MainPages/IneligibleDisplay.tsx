@@ -2,14 +2,14 @@ import { Box, Typography } from '@mui/material';
 import { Trans } from 'react-i18next';
 import { PersonInfo } from '../Shared/mockData';
 
-interface NewRequestPageProps {
+interface IneligibleDisplayProps {
   title: string;
   isMarried: boolean;
   staff: PersonInfo;
   spouse?: PersonInfo | null;
 }
 
-export const NewRequestPage: React.FC<NewRequestPageProps> = ({
+export const IneligibleDisplay: React.FC<IneligibleDisplayProps> = ({
   title,
   isMarried,
   staff,

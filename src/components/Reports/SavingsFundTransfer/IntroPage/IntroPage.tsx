@@ -27,7 +27,7 @@ interface SavingsFundTransferProps {
   title: string;
 }
 
-const StyledListItem = styled(ListItem)({
+export const StyledListItem = styled(ListItem)({
   display: 'list-item',
   listStylePosition: 'outside',
   p: 0,
