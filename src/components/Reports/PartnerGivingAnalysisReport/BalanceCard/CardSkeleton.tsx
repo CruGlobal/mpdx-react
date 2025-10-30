@@ -17,7 +17,7 @@ const StyledCard = styled(Card)(() => ({
 export const CardSkeleton: React.FC = () => {
   return (
     <SimpleScreenOnly sx={{ flex: 1, minWidth: 250, display: 'flex' }}>
-      <StyledCard variant="outlined">
+      <StyledCard variant="outlined" data-testid="CardSkeleton">
         <Box
           sx={{
             display: 'flex',

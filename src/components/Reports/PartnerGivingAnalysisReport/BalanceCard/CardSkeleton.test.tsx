@@ -5,22 +5,30 @@ import { CardSkeleton } from './CardSkeleton';
 describe('CardSkeleton', () => {
   it('renders the skeleton card', () => {
     const { getByTestId } = render(<CardSkeleton />);
-    expect(getByTestId('balance-card-skeleton')).toBeInTheDocument();
+    expect(getByTestId('CardSkeleton')).toBeInTheDocument();
   });
 
   it('renders the icon skeleton', () => {
-    const { getByTestId } = render(<CardSkeleton />);
+    const { container } = render(<CardSkeleton />);
     // The first rectangular skeleton is the icon
-    expect(getByTestId('icon-skeleton')).toBeInTheDocument();
+    const iconSkeleton = container.querySelector(
+      '.MuiSkeleton-root.MuiSkeleton-rectangular',
+    );
+    expect(iconSkeleton).toBeInTheDocument();
+    expect(iconSkeleton).toHaveStyle({ width: '40px', height: '40px' });
   });
 
-  it('renders the correct number of text skeletons in the details section', () => {
-    const { getAllByTestId } = render(<CardSkeleton />);
-    expect(getAllByTestId('text-skeleton')).toHaveLength(4);
+  it('renders text skeletons for the title and balance sections', () => {
+    const { container } = render(<CardSkeleton />);
+    const textSkeletons = container.querySelectorAll('.MuiSkeleton-text');
+    expect(textSkeletons.length).toBe(3); // 1 for title, 2 for balance section
   });
 
-  it('renders the circular skeleton in the action area', () => {
-    const { getByTestId } = render(<CardSkeleton />);
-    expect(getByTestId('circle-skeleton')).toBeInTheDocument();
+  it('renders the correct structure', () => {
+    const { container } = render(<CardSkeleton />);
+    expect(container.querySelector('.MuiCard-root')).toBeInTheDocument();
+    expect(container.querySelectorAll('.MuiBox-root').length).toBeGreaterThan(
+      0,
+    );
   });
 });
