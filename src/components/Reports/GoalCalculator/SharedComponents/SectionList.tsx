@@ -85,10 +85,6 @@ export const ReportSectionList: React.FC = () => {
       report: GoalCalculatorReportEnum.MpdGoal,
     },
     {
-      title: t('Salary Request'),
-      report: GoalCalculatorReportEnum.SalaryRequest,
-    },
-    {
       title: t('Presenting Your Goal'),
       report: GoalCalculatorReportEnum.PresentingYourGoal,
     },
