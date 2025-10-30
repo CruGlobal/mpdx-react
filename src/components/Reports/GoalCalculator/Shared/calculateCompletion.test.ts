@@ -14,15 +14,14 @@ import {
   isSettingsComplete,
 } from './calculateCompletion';
 
+interface CategoryMock {
+  directInput?: number | null;
+  subCategories?: Array<{ amount: number }>;
+}
+
 const createMockGoalCalculation = (
-  ministryCategories: Array<{
-    directInput?: number | null;
-    subCategories?: Array<{ amount: number }>;
-  }> = [],
-  householdCategories: Array<{
-    directInput?: number | null;
-    subCategories?: Array<{ amount: number }>;
-  }> = [],
+  ministryCategories: CategoryMock[] = [],
+  householdCategories: CategoryMock[] = [],
 ): GoalCalculationQuery['goalCalculation'] =>
   gqlMock<GoalCalculationQuery, GoalCalculationQueryVariables>(
     GoalCalculationDocument,
