@@ -175,6 +175,10 @@ export const PartnerGivingAnalysisTable: React.FC<
         display: 'flex',
         flexDirection: 'column',
         minHeight: 0,
+        '@media print': {
+          height: 'auto',
+          overflow: 'visible',
+        },
       }}
     >
       <StyledDataGrid
@@ -202,6 +206,30 @@ export const PartnerGivingAnalysisTable: React.FC<
             : undefined
         }
         {...(paginationModel ? { pagination: true } : {})}
+        sx={{
+          '@media print': {
+            height: 'auto !important',
+            maxHeight: 'none !important',
+            '& .MuiDataGrid-main': {
+              height: 'auto !important',
+              overflow: 'visible !important',
+            },
+            '& .MuiDataGrid-virtualScroller': {
+              height: 'auto !important',
+              overflow: 'visible !important',
+            },
+            '& .MuiDataGrid-virtualScrollerContent': {
+              height: 'auto !important',
+            },
+            '& .MuiDataGrid-virtualScrollerRenderZone': {
+              position: 'relative !important',
+              transform: 'none !important',
+            },
+            '& .MuiDataGrid-row': {
+              maxHeight: 'none !important',
+            },
+          },
+        }}
       />
     </Box>
   );
