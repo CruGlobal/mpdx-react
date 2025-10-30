@@ -1,228 +1,100 @@
 import React from 'react';
-import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { SnackbarProvider } from 'notistack';
-import { I18nextProvider } from 'react-i18next';
-import TestRouter from '__tests__/util/TestRouter';
+import { render, waitFor } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import i18n from 'src/lib/i18n';
-import theme from 'src/theme';
-import { FundFieldsFragment } from '../ReportsSavingsFund.generated';
-import { FundTypeEnum } from '../mockData';
+import { ReportsStaffExpensesQuery } from '../PartnerGivingAnalysis.generated';
 import { BalanceCard } from './BalanceCard';
 
-const accountListId = 'abc';
-const router = {
-  query: { accountListId },
-  isReady: true,
-};
-
 const mutationSpy = jest.fn();
-const mockHandleOpenTransferModal = jest.fn();
 
-const defaultFund = {
-  id: crypto.randomUUID(),
-  fundType: 'Primary',
-  balance: 15000,
-  deficitLimit: 0,
-};
-
-interface ComponentsProps {
-  fund?: FundFieldsFragment;
-  isSelected?: boolean;
+interface ComponentProps {
+  balance?: number;
 }
 
-const Components = ({
-  fund = defaultFund,
-  isSelected = false,
-}: ComponentsProps) => (
-  <SnackbarProvider>
-    <ThemeProvider theme={theme}>
-      <TestRouter router={router}>
-        <I18nextProvider i18n={i18n}>
-          <GqlMockedProvider onCall={mutationSpy}>
-            <BalanceCard
-              fund={fund}
-              handleOpenTransferModal={mockHandleOpenTransferModal}
-              isSelected={isSelected}
-            />
-          </GqlMockedProvider>
-        </I18nextProvider>
-      </TestRouter>
-    </ThemeProvider>
-  </SnackbarProvider>
+const Components = ({ balance = 15000 }: ComponentProps) => (
+  <GqlMockedProvider<{
+    ReportsStaffExpenses: ReportsStaffExpensesQuery;
+  }>
+    mocks={{
+      ReportsStaffExpenses: {
+        reportsStaffExpenses: {
+          funds: [
+            {
+              fundType: 'Primary',
+              balance,
+            },
+          ],
+        },
+      },
+    }}
+    onCall={mutationSpy}
+  >
+    <BalanceCard />
+  </GqlMockedProvider>
 );
 
 describe('BalanceCard', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
+  it('should render loading skeleton while data is loading', () => {
+    const { getByTestId } = render(<Components />);
+    expect(getByTestId('CardSkeleton')).toBeInTheDocument();
   });
 
-  it('should render the card with all required elements', () => {
-    const { getByText, getByRole } = render(<Components />);
+  it('should render the card with all required elements', async () => {
+    const { getByText, queryByTestId } = render(<Components />);
+
+    await waitFor(() => {
+      expect(queryByTestId('CardSkeleton')).not.toBeInTheDocument();
+    });
 
     expect(getByText('Primary Account Balance')).toBeInTheDocument();
     expect(getByText('Current Balance')).toBeInTheDocument();
     expect(getByText('$15,000.00')).toBeInTheDocument();
-    expect(getByRole('button', { name: /transfer from/i })).toBeInTheDocument();
-    expect(getByRole('button', { name: /transfer to/i })).toBeInTheDocument();
   });
 
-  it('should display title correctly', () => {
-    const fundType = 'Custom Title';
-    const { getByText } = render(
-      <Components
-        fund={{
-          ...defaultFund,
-          fundType,
-        }}
-      />,
+  it('should make the correct GraphQL query', async () => {
+    render(<Components />);
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('ReportsStaffExpenses', {
+        fundTypes: ['Primary'],
+      }),
     );
-
-    expect(getByText(`${fundType} Account Balance`)).toBeInTheDocument();
-  });
-
-  describe('Icons', () => {
-    it('should display savings icon', () => {
-      const { getByTestId } = render(
-        <Components
-          fund={{
-            ...defaultFund,
-            fundType: FundTypeEnum.Savings,
-          }}
-        />,
-      );
-
-      expect(getByTestId('SavingsIcon')).toBeInTheDocument();
-    });
-
-    it('should display group icon', () => {
-      const { getByTestId } = render(
-        <Components
-          fund={{
-            ...defaultFund,
-            fundType: 'Conference Savings',
-          }}
-        />,
-      );
-
-      expect(getByTestId('GroupsIcon')).toBeInTheDocument();
-    });
-
-    it('should display staff account icon', () => {
-      const { getByTestId } = render(
-        <Components
-          fund={{
-            ...defaultFund,
-            fundType: FundTypeEnum.Primary,
-          }}
-        />,
-      );
-
-      expect(getByTestId('WalletIcon')).toBeInTheDocument();
-    });
   });
 
   describe('Handle formatting', () => {
-    it('should format balance amount correctly', () => {
-      const { getByText } = render(
-        <Components
-          fund={{
-            ...defaultFund,
-            balance: 1234567.89,
-          }}
-        />,
+    it('should format positive balance amount correctly', async () => {
+      const { getByText, queryByTestId } = render(
+        <Components balance={1234567.89} />,
       );
+
+      await waitFor(() => {
+        expect(queryByTestId('CardSkeleton')).not.toBeInTheDocument();
+      });
 
       expect(getByText('$1,234,567.89')).toBeInTheDocument();
     });
 
-    it('should handle zero balance amount', () => {
-      const { getAllByText } = render(
-        <Components
-          fund={{
-            ...defaultFund,
-            balance: 0,
-          }}
-        />,
+    it('should handle zero balance amount', async () => {
+      const { getByText, queryByTestId } = render(<Components balance={0} />);
+
+      await waitFor(() => {
+        expect(queryByTestId('CardSkeleton')).not.toBeInTheDocument();
+      });
+
+      expect(getByText('$0.00')).toBeInTheDocument();
+    });
+
+    it('should format negative balance amount', async () => {
+      const { getByText, queryByTestId } = render(
+        <Components balance={-500} />,
       );
 
-      expect(getAllByText('$0.00')).toHaveLength(1);
+      await waitFor(() => {
+        expect(queryByTestId('CardSkeleton')).not.toBeInTheDocument();
+      });
+
+      const balanceElement = getByText('($500.00)');
+      expect(balanceElement).toBeInTheDocument();
+      expect(balanceElement).toHaveStyle({ color: 'rgb(211, 47, 47)' });
     });
-
-    it('should handle negative balance amount', () => {
-      const { getByText } = render(
-        <Components
-          fund={{
-            ...defaultFund,
-            balance: -500,
-          }}
-        />,
-      );
-
-      expect(getByText('($500.00)')).toBeInTheDocument();
-      expect(getByText('($500.00)')).toHaveStyle('color: rgb(211, 47, 47)');
-    });
-
-    it('should handle decimal precision correctly', () => {
-      const { getByText } = render(
-        <Components
-          fund={{
-            ...defaultFund,
-            balance: 1234.567,
-          }}
-        />,
-      );
-
-      expect(getByText('$1,234.57')).toBeInTheDocument();
-    });
-  });
-
-  it('should call handleOpenTransferModal with correct parameters when Transfer From is clicked', async () => {
-    const { findByRole } = render(<Components />);
-
-    const transferFromButton = await findByRole('button', {
-      name: /transfer from/i,
-    });
-    userEvent.click(transferFromButton);
-
-    expect(mockHandleOpenTransferModal).toHaveBeenCalledWith({
-      transfer: {
-        transferFrom: expect.any(String),
-      },
-    });
-  });
-
-  it('should call handleOpenTransferModal with correct parameters when Transfer To is clicked', async () => {
-    const { findByRole } = render(<Components />);
-
-    const transferToButton = await findByRole('button', {
-      name: /transfer to/i,
-    });
-    userEvent.click(transferToButton);
-
-    expect(mockHandleOpenTransferModal).toHaveBeenCalledWith({
-      transfer: {
-        transferTo: expect.any(String),
-      },
-    });
-  });
-
-  it('should disable transfer from button when current balance goes beyond deficit limit', async () => {
-    const { findByRole } = render(
-      <Components
-        fund={{
-          ...defaultFund,
-          balance: -100,
-        }}
-      />,
-    );
-
-    const transferFromButton = await findByRole('button', {
-      name: /transfer from/i,
-    });
-
-    expect(transferFromButton).toBeDisabled();
   });
 });
