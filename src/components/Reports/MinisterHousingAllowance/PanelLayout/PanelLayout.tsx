@@ -1,7 +1,6 @@
-import NextLink from 'next/link';
 import React from 'react';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { Divider, IconButton, Link, Stack } from '@mui/material';
+import { Divider, IconButton, Stack } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { CircularProgressWithLabel } from 'src/components/Reports/GoalCalculator/SharedComponents/CircularProgressWithLabel/CircularProgressWithLabel';
 import {
@@ -12,26 +11,28 @@ import {
   StyledSidebar,
   iconPanelWidth,
 } from 'src/components/Shared/IconPanelLayout/IconPanelLayout';
-import { PanelTypeEnum } from '../Shared/sharedTypes';
+import { NewRequestStepsEnum, PanelTypeEnum } from '../Shared/sharedTypes';
 
 interface PanelLayoutProps {
   panelType: PanelTypeEnum;
   percentComplete?: number;
   sidebarContent?: React.ReactNode;
-  backHref?: string;
   sidebarTitle?: string;
   sidebarAriaLabel?: string;
   mainContent?: React.ReactNode;
+  currentStep?: NewRequestStepsEnum;
+  handleBack?: () => void;
 }
 
 export const PanelLayout: React.FC<PanelLayoutProps> = ({
   panelType,
   percentComplete,
   sidebarContent,
-  backHref,
   sidebarTitle,
   sidebarAriaLabel,
   mainContent,
+  currentStep,
+  handleBack,
 }) => {
   const { t } = useTranslation();
 
@@ -57,20 +58,17 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
                 progress={percentComplete ? percentComplete : 0}
               />
             </StyledBox>
-            <Link
-              component={NextLink}
-              href={backHref ? backHref : ''}
-              sx={{ textDecoration: 'none' }}
-              aria-label={t('Go back')}
-            >
+            {currentStep !== NewRequestStepsEnum.AboutForm && (
               <IconButton
+                aria-label={t('Go back')}
+                onClick={handleBack}
                 sx={(theme) => ({
                   color: theme.palette.cruGrayDark.main,
                 })}
               >
                 <ArrowBackIcon />
               </IconButton>
-            </Link>
+            )}
           </Stack>
           <Divider orientation="vertical" flexItem />
           <StyledSidebar
