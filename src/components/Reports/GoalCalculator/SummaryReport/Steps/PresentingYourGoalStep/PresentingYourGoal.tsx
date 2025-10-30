@@ -21,15 +21,12 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from 'recharts';
-import { useGetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
 import { useLocale } from 'src/hooks/useLocale';
-import { useOrganizationId } from 'src/hooks/useOrganizationId';
 import cruLogo from 'src/images/cru/cru-logo.svg';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
 import { hasStaffSpouse } from '../../../Shared/calculateTotals';
-import { useGetOrganizationsQuery } from './GetOrganization.generated';
 
 const ChartContainer = styled(Box)({
   '@media print': {
@@ -94,25 +91,6 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
   } = useGoalCalculator();
   const goalCalculation = data?.goalCalculation;
 
-  /*
-   * We don't want to display ministry location and Cru image if
-   * the user is not part of Cru.
-   */
-  const salaryOrganizationId = useOrganizationId();
-  const { data: salaryOrganization } = useGetUsersOrganizationsAccountsQuery({
-    skip: !salaryOrganizationId,
-  });
-  const { data: organizationTypeData } = useGetOrganizationsQuery();
-  const organizationTypeDataFiltered = organizationTypeData?.organizations.find(
-    (org) => org.id === salaryOrganizationId,
-  );
-  const organizationTypeName = organizationTypeDataFiltered?.organizationType;
-  const isOrganizationTypeCru =
-    organizationTypeName === 'Cru' ||
-    organizationTypeName === 'Cru-International';
-  const organizationName =
-    salaryOrganization?.userOrganizationAccounts[0].organization.name;
-
   const presentationData = useMemo(
     () => [
       { name: 'Salary', value: goalTotals.netMonthlySalary },
@@ -159,23 +137,18 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
       ? `${firstName} ${t('and')} ${spouseFirstName ?? ''} ${lastName}`
       : `${firstName} ${lastName}`;
 
-    const personalRows: PersonalInfoRow[] = [
+    return [
       { label: t('Name'), value: fullName },
       {
         label: t('Mission Agency'),
-        value: organizationName,
+        value: t('Campus Crusade for Christ, Inc.'),
       },
       {
         label: t('Ministry Location'),
         value: goalCalculation?.ministryLocation ?? undefined,
       },
     ];
-    if (!isOrganizationTypeCru) {
-      return personalRows.filter((row) => row.label !== t('Ministry Location'));
-    }
-
-    return personalRows;
-  }, [goalCalculation, t, organizationName, isOrganizationTypeCru]);
+  }, [goalCalculation, t]);
 
   const rows: PresentingYourGoalRow[] = useMemo(
     () => [
@@ -248,7 +221,7 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
                     <StyledTableCell data-testid="value-typography">
                       {item.value}
                     </StyledTableCell>
-                    {index === 0 && isOrganizationTypeCru && (
+                    {index === 0 && (
                       <StyledTableCell sx={{ textAlign: 'center' }} rowSpan={3}>
                         <img
                           data-testid="cru-logo"
