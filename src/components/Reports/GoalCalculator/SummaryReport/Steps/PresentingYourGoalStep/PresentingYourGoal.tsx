@@ -154,42 +154,47 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
     () => [
       {
         title: hasStaffSpouse(goalCalculation?.familySize)
-          ? 'Salary (Combined)'
-          : 'Salary',
-        description:
+          ? t('Salary (Combined)')
+          : t('Salary'),
+        description: t(
           'Salaries are based upon marital status, number of children, tenure with Cru, and adjustments for certain geographic locations.',
+        ),
         amount: presentationData[0].value,
       },
       {
-        title: 'Ministry Expenses',
-        description:
+        title: t('Ministry Expenses'),
+        description: t(
           'Training, conferences, supplies, evangelism & discipleship materials, communication with ministry partners, ministry travel expenses, etc.',
+        ),
         amount: presentationData[1].value,
       },
       {
-        title: 'Benefits',
-        description:
+        title: t('Benefits'),
+        description: t(
           "Includes group medical and dental coverage, life insurance, disability insurance, worker's compensation, and employer contribution to a 403(b) retirement plan.",
+        ),
         amount: presentationData[2].value,
       },
       {
-        title: 'Social Security and Taxes',
-        description:
+        title: t('Social Security and Taxes'),
+        description: t(
           'Since Campus Crusade is a non-profit organization, staff members are responsible for paying the entire amount of Social Security.',
+        ),
         amount: presentationData[3].value,
       },
       {
-        title: 'Voluntary 403b Retirement Plan',
-        description:
+        title: t('Voluntary 403b Retirement Plan'),
+        description: t(
           'Staff members are eligible to contribute to a voluntary retirement program each month.',
+        ),
         amount: presentationData[4].value,
       },
       {
-        title: 'Administrative Charge',
+        title: t('Administrative Charge'),
         amount: presentationData[5].value,
       },
-      { title: 'Total Support Goal', amount: total, bold: true },
-      { title: 'Total Solid Support', amount: supportRaised },
+      { title: t('Total Support Goal'), amount: total, bold: true },
+      { title: t('Total Solid Support'), amount: supportRaised },
     ],
     [presentationData, total, supportRaised, t, goalTotals],
   );
@@ -264,7 +269,7 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
                   >
                     <TableCell>
                       <Typography variant="body1" fontWeight="bold">
-                        {t(item.title)}
+                        {item.title}
                       </Typography>
                       {item.description && (
                         <Typography
@@ -272,7 +277,7 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
                           color={theme.palette.text.secondary}
                           sx={{ mt: 1 }}
                         >
-                          {t(item.description)}
+                          {item.description}
                         </Typography>
                       )}
                     </TableCell>
