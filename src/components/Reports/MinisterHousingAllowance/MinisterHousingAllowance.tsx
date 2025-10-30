@@ -1,9 +1,11 @@
+import NextLink from 'next/link';
 import React from 'react';
 import { Button, Container, Stack } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
-import { CurrentPage } from './MainPages/CurrentPage';
-import { NewRequestPage } from './MainPages/NewRequestPage';
+import { EligibleDisplay } from './MainPages/EligibleDisplay';
+import { IneligibleDisplay } from './MainPages/IneligibleDisplay';
 import { PanelLayout } from './PanelLayout/PanelLayout';
 import { mocks } from './Shared/mockData';
 import { PanelTypeEnum } from './Shared/sharedTypes';
@@ -11,17 +13,20 @@ import { CurrentBoardApproved } from './SharedComponents/CurrentBoardApproved';
 import { CurrentRequest } from './SharedComponents/CurrentRequest';
 import { NameDisplay } from './SharedComponents/NameDisplay';
 
-const mainContentWidth = theme.spacing(85);
+export const mainContentWidth = theme.spacing(85);
 
 export const MinisterHousingAllowanceReport: React.FC = () => {
   const { t } = useTranslation();
+
+  const accountListId = useAccountListId();
+  const requestLink = `/accountLists/${accountListId}/reports/housingAllowance/newRequest`;
 
   // mock[0] --> Single, no pending, no approved
   // mock[1] --> Married, no pending, no approved
   // mock[2] --> Married, no pending, approved
   // mock[3] --> Single, no pending, approved
   // mock[4] --> Married, pending, no approved
-  const testPerson = mocks[2];
+  const testPerson = mocks[1];
 
   const isMarried = testPerson.spouseInfo !== null;
   const title = t('Your MHA');
@@ -49,16 +54,16 @@ export const MinisterHousingAllowanceReport: React.FC = () => {
         <Container>
           <Stack direction="column" width={mainContentWidth}>
             {noMHA ? (
-              <NewRequestPage
+              <IneligibleDisplay
                 title={title}
                 isMarried={isMarried}
                 staff={testPerson.staffInfo}
                 spouse={isMarried ? testPerson.spouseInfo : null}
               />
             ) : noPending ? (
-              <CurrentPage title={title} isPending={false} />
+              <EligibleDisplay title={title} isPending={false} />
             ) : noApproved ? (
-              <CurrentPage title={title} isPending={true} />
+              <EligibleDisplay title={title} isPending={true} />
             ) : null}
             <NameDisplay
               isMarried={isMarried}
@@ -111,7 +116,13 @@ export const MinisterHousingAllowanceReport: React.FC = () => {
             )}
           </Stack>
           {(noPending || noMHA) && (
-            <Button variant="contained" color="primary" sx={{ mt: 2 }}>
+            <Button
+              component={NextLink}
+              href={requestLink}
+              variant="contained"
+              color="primary"
+              sx={{ mt: 2 }}
+            >
               {t('Request New MHA')}
             </Button>
           )}
