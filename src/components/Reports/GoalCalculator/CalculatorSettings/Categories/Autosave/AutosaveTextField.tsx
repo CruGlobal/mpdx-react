@@ -31,6 +31,7 @@ export const AutosaveTextField: React.FC<AutosaveTextFieldProps> = ({
       variant="outlined"
       {...fieldProps}
       {...props}
+      disabled={fieldProps.disabled || props.disabled}
     />
   );
 };

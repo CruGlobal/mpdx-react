@@ -122,6 +122,7 @@ export const InformationCategoryPersonalForm: React.FC<
               onChange={(_, newValue) =>
                 saveField({ geographicLocation: newValue })
               }
+              disabled={!data}
               size="small"
               renderInput={(params) => (
                 <TextField {...params} label={t('Geographic Location')} />

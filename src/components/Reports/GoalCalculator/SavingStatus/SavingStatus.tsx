@@ -10,9 +10,12 @@ import { getGoalLastUpdated } from './helpers';
 export const SavingStatus: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { goalCalculationResult, isMutating } = useGoalCalculator();
+  const {
+    goalCalculationResult: { data, loading },
+    isMutating,
+  } = useGoalCalculator();
 
-  const goalCalculation = goalCalculationResult.data?.goalCalculation;
+  const goalCalculation = data?.goalCalculation;
   const lastSavedAt = useMemo(
     () => (goalCalculation ? getGoalLastUpdated(goalCalculation) : null),
     [goalCalculation],
@@ -24,6 +27,15 @@ export const SavingStatus: React.FC = () => {
     const interval = setInterval(() => setTick((tick) => tick + 1), 5000);
     return () => clearInterval(interval);
   }, []);
+
+  if (loading && !data) {
+    return (
+      <Typography variant="body1" color="textSecondary">
+        {t('Loading')}
+        <CircularProgress size="1rem" sx={{ ml: 1 }} />
+      </Typography>
+    );
+  }
 
   if (!lastSavedAt) {
     return null;
