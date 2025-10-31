@@ -102,7 +102,9 @@ describe('PresentingYourGoal', () => {
     expect(
       getByRole('cell', { name: 'Cru - United States of America' }),
     ).toBeInTheDocument();
-    expect(getByRole('cell', { name: 'Orlando, FL' })).toBeInTheDocument();
+    expect(
+      getByRole('cell', { name: 'University of Central Florida' }),
+    ).toBeInTheDocument();
 
     expect(
       getByRole('heading', { name: 'Monthly Support Breakdown' }),
