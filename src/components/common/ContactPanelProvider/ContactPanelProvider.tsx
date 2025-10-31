@@ -158,15 +158,15 @@ export const ContactPanelProvider: React.FC<ContactPanelProviderProps> = ({
       const newQuery = {
         ...router.query,
         [contactIdParam]: newContactIdParamValue,
+        tab,
       };
       // Remove the contact id from the URL entirely if it is empty
       if (!newContactIdParamValue.length) {
         delete newQuery[contactIdParam];
       }
-
-      // Add the contact detail tab to the query
-      if (typeof tab === 'string') {
-        newQuery.tab = tab;
+      // Remove the contact detail tab from the URL if it is not set
+      if (typeof tab !== 'string') {
+        delete newQuery.tab;
       }
 
       return {
