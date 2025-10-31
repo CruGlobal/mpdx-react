@@ -81,11 +81,11 @@ const emptyMock = {
   },
 };
 
-// Helper function to find GraphQL operations by name
-const findOperationCall = (operationName: string, fromIndex = 0) => {
-  return mutationSpy.mock.calls
-    .slice(fromIndex)
-    .find((call) => call[0]?.operation?.operationName === operationName)?.[0];
+// Helper function to find the most recent GraphQL operation by name
+const findOperationCall = (operationName: string) => {
+  return mutationSpy.mock.calls.findLast(
+    (call) => call[0]?.operation?.operationName === operationName,
+  )?.[0];
 };
 
 describe('PartnerGivingAnalysisReport', () => {
@@ -134,8 +134,6 @@ describe('PartnerGivingAnalysisReport', () => {
       ).not.toBeInTheDocument();
     });
 
-    const initialCallCount = mutationSpy.mock.calls.length;
-
     userEvent.click(getByText('Gift Count'));
     await waitFor(() => {
       expect(
@@ -144,14 +142,12 @@ describe('PartnerGivingAnalysisReport', () => {
     });
 
     await waitFor(() => {
-      const call = findOperationCall('PartnerGivingAnalysis', initialCallCount);
+      const call = findOperationCall('PartnerGivingAnalysis');
       expect(call?.operation.variables.input.sortBy).toEqual(
         PartnerGivingAnalysisSortEnum.DonationPeriodCountAsc,
       );
     });
 
-    const secondCallCount = mutationSpy.mock.calls.length;
-
     userEvent.click(getByText('Gift Count'));
     await waitFor(() => {
       expect(
@@ -160,13 +156,11 @@ describe('PartnerGivingAnalysisReport', () => {
     });
 
     await waitFor(() => {
-      const call = findOperationCall('PartnerGivingAnalysis', secondCallCount);
+      const call = findOperationCall('PartnerGivingAnalysis');
       expect(call?.operation.variables.input.sortBy).toEqual(
         PartnerGivingAnalysisSortEnum.DonationPeriodCountDesc,
       );
     });
-
-    const thirdCallCount = mutationSpy.mock.calls.length;
 
     userEvent.click(getByText('Gift Average'));
     await waitFor(() => {
@@ -176,7 +170,7 @@ describe('PartnerGivingAnalysisReport', () => {
     });
 
     await waitFor(() => {
-      const call = findOperationCall('PartnerGivingAnalysis', thirdCallCount);
+      const call = findOperationCall('PartnerGivingAnalysis');
       expect(call?.operation.variables.input.sortBy).toEqual(
         PartnerGivingAnalysisSortEnum.DonationPeriodAverageAsc,
       );
@@ -192,8 +186,6 @@ describe('PartnerGivingAnalysisReport', () => {
       ).not.toBeInTheDocument();
     });
 
-    const initialCallCount = mutationSpy.mock.calls.length;
-
     userEvent.type(getByPlaceholderText('Search Contacts'), 'John');
     await waitFor(() => {
       expect(
@@ -207,7 +199,7 @@ describe('PartnerGivingAnalysisReport', () => {
     });
 
     await waitFor(() => {
-      const call = findOperationCall('PartnerGivingAnalysis', initialCallCount);
+      const call = findOperationCall('PartnerGivingAnalysis');
       expect(call?.operation.variables.input.filters).toEqual({
         nameLike: '%John%',
       });
@@ -221,8 +213,6 @@ describe('PartnerGivingAnalysisReport', () => {
       expect(getByRole('grid')).toBeInTheDocument();
     });
 
-    const initialCallCount = mutationSpy.mock.calls.length;
-
     const combobox = getByRole('combobox', { name: 'Rows per page:' });
     userEvent.click(combobox);
 
@@ -230,7 +220,7 @@ describe('PartnerGivingAnalysisReport', () => {
     await userEvent.click(within(listbox).getByRole('option', { name: '50' }));
 
     await waitFor(() => {
-      const call = findOperationCall('PartnerGivingAnalysis', initialCallCount);
+      const call = findOperationCall('PartnerGivingAnalysis');
       expect(call?.operation.variables.first).toBe(50);
     });
   });
