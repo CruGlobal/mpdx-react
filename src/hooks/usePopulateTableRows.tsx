@@ -85,13 +85,13 @@ export const usePopulateTableRows = (
   const donationDate = (
     dateField: 'firstDonationDate' | 'lastDonationDate',
   ): RenderCell => {
-    const DonationDate: RenderCell = ({ row }) => (
+    const date: RenderCell = ({ row }) => (
       <Typography variant="body2" noWrap>
         {typeof row[dateField] === 'string' &&
           dateFormatShort(DateTime.fromISO(row[dateField]), locale)}
       </Typography>
     );
-    return DonationDate;
+    return date;
   };
 
   const firstDonationDate: RenderCell = donationDate('firstDonationDate');
