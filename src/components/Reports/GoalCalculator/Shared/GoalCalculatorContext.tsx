@@ -17,7 +17,7 @@ import {
   GoalCalculatorStepEnum,
 } from '../GoalCalculatorHelper';
 import { useGoalCalculationQuery } from './GoalCalculation.generated';
-import { calculatePercentage } from './calculatePercentage';
+import { completionPercentage } from './calculateCompletion';
 import { GoalTotals, calculateGoalTotals } from './calculateTotals';
 import { GoalCalculatorStep, useSteps } from './useSteps';
 
@@ -84,7 +84,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
 
   const steps = useSteps();
   const percentComplete = useMemo(
-    () => calculatePercentage(goalCalculationResult.data?.goalCalculation),
+    () => completionPercentage(goalCalculationResult.data?.goalCalculation),
     [goalCalculationResult.data],
   );
   const goalTotals = useMemo(

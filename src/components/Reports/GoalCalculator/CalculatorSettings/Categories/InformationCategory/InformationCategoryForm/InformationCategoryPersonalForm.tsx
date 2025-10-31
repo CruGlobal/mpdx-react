@@ -154,6 +154,7 @@ export const InformationCategoryPersonalForm: React.FC<
               fieldName="ministryLocation"
               schema={schema}
               label={t('Ministry Location')}
+              helperText={t('For Presenting Your Goal report')}
             />
           </Grid>
         )}
@@ -257,6 +258,7 @@ export const InformationCategoryPersonalForm: React.FC<
               fieldName="childrenNamesAges"
               schema={schema}
               label={t("Children's Names and Ages")}
+              helperText={t('For informational purposes only')}
             />
           </Grid>
         )}
