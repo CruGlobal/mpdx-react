@@ -142,6 +142,30 @@ describe('useContactPanel', () => {
     });
   });
 
+  it('buildContactUrl without a tab should remove the tab from the URL', () => {
+    const routerWithTab = {
+      ...router,
+      query: {
+        ...router.query,
+        tab: ContactDetailTabEnum.Donations,
+      },
+    };
+    const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+      <TestRouter router={routerWithTab}>
+        <ContactPanelProvider>{children}</ContactPanelProvider>
+      </TestRouter>
+    );
+
+    const { result } = renderHook(() => useContactPanel(), {
+      wrapper: Wrapper,
+    });
+
+    expect(result.current.buildContactUrl(newContactId)).toEqual({
+      pathname,
+      query: { contactId: [newContactId] },
+    });
+  });
+
   it('should support customizing contactIdParam', () => {
     const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
       <TestRouter
