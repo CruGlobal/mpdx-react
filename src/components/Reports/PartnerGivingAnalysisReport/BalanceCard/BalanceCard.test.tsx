@@ -10,7 +10,7 @@ interface ComponentProps {
   balance?: number;
 }
 
-const Components = ({ balance = 15000 }: ComponentProps = {}) => (
+const Components = ({ balance = 15000 }: ComponentProps) => (
   <GqlMockedProvider<{
     ReportsStaffExpenses: ReportsStaffExpensesQuery;
   }>
