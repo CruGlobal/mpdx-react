@@ -8,6 +8,7 @@ export const AscendingSortEnums: Record<string, PartnerGivingAnalysisSortEnum> =
     donationPeriodCount: PartnerGivingAnalysisSortEnum.DonationPeriodCountAsc,
     donationPeriodAverage:
       PartnerGivingAnalysisSortEnum.DonationPeriodAverageAsc,
+    firstDonationDate: PartnerGivingAnalysisSortEnum.FirstDonationDateAsc,
     lastDonationAmount: PartnerGivingAnalysisSortEnum.LastDonationAmountAsc,
     lastDonationDate: PartnerGivingAnalysisSortEnum.LastDonationDateAsc,
     totalDonations: PartnerGivingAnalysisSortEnum.TotalDonationsAsc,
@@ -24,6 +25,7 @@ export const DescendingSortEnums: Record<
   donationPeriodCount: PartnerGivingAnalysisSortEnum.DonationPeriodCountDesc,
   donationPeriodAverage:
     PartnerGivingAnalysisSortEnum.DonationPeriodAverageDesc,
+  firstDonationDate: PartnerGivingAnalysisSortEnum.FirstDonationDateDesc,
   lastDonationAmount: PartnerGivingAnalysisSortEnum.LastDonationAmountDesc,
   lastDonationDate: PartnerGivingAnalysisSortEnum.LastDonationDateDesc,
   totalDonations: PartnerGivingAnalysisSortEnum.TotalDonationsDesc,
