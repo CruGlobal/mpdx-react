@@ -18,10 +18,11 @@ export const isInformationComplete = (
   }
 
   const fields = [
-    // Geographic location, ministry location, and children are optional
+    // Geographic location and children are optional
     goalCalculation.firstName,
     goalCalculation.lastName,
     goalCalculation.role,
+    goalCalculation.ministryLocation,
     goalCalculation.familySize,
     goalCalculation.benefitsPlan,
     goalCalculation.yearsOnStaff,

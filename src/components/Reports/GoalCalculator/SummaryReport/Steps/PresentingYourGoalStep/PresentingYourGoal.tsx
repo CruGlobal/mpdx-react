@@ -165,15 +165,17 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
         label: t('Mission Agency'),
         value: organizationName,
       },
-      // change to location user inputs in Information section of calculator
-      { label: t('Ministry Location'), value: t('Orlando, FL') },
+      {
+        label: t('Ministry Location'),
+        value: goalCalculation?.ministryLocation ?? undefined,
+      },
     ];
     if (!isOrganizationTypeCru) {
       return personalRows.filter((row) => row.label !== t('Ministry Location'));
     }
 
     return personalRows;
-  }, [goalCalculation?.firstName, t, organizationName, isOrganizationTypeCru]);
+  }, [goalCalculation, t, organizationName, isOrganizationTypeCru]);
 
   const rows: PresentingYourGoalRow[] = useMemo(
     () => [

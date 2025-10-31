@@ -96,7 +96,6 @@ describe('isInformationComplete', () => {
       isInformationComplete({
         ...goalCalculation,
         geographicLocation: null,
-        ministryLocation: null,
         childrenNamesAges: null,
       }),
     ).toBe(true);
