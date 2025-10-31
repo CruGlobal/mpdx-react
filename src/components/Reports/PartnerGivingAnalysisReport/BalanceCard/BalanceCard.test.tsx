@@ -19,10 +19,8 @@ const Components = ({ balance = 15000 }: ComponentProps = {}) => (
         reportsStaffExpenses: {
           funds: [
             {
-              id: 'fund-1',
               fundType: 'Primary',
               balance,
-              deficitLimit: 0,
             },
           ],
         },
