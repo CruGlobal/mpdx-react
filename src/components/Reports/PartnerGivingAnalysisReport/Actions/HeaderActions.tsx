@@ -11,11 +11,7 @@ export const HeaderActions: React.FC<HeaderActionsProps> = ({ onPrint }) => {
   const { t } = useTranslation();
 
   return (
-    <Button
-      startIcon={<PrintIcon titleAccess={t('Print')} />}
-      onClick={onPrint}
-      variant="outlined"
-    >
+    <Button startIcon={<PrintIcon />} onClick={onPrint} variant="outlined">
       {t('Print')}
     </Button>
   );
