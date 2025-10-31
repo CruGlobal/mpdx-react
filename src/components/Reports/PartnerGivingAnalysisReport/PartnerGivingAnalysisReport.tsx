@@ -21,10 +21,6 @@ import { AscendingSortEnums, DescendingSortEnums } from './Helper/sortRecords';
 import { usePartnerGivingAnalysisQuery } from './PartnerGivingAnalysis.generated';
 import { PartnerGivingAnalysisTable as Table } from './Table/Table';
 
-export enum FundTypeEnum {
-  Primary = 'Primary',
-}
-
 interface Props {
   accountListId: string;
   panelOpen: Panel | null;
