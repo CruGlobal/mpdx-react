@@ -133,8 +133,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
     setSortModel(model);
   };
 
-  const handlePrint = (event: React.MouseEvent<unknown>) => {
-    event.preventDefault();
+  const handlePrint = () => {
     window.print();
   };
 
