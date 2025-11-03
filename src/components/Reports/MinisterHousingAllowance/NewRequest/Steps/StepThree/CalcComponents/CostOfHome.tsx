@@ -33,7 +33,13 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({ rentOrOwn }) => {
       (values.repairCosts ?? 0) +
       (values.avgUtilityTwo ?? 0) +
       (values.unexpectedExpenses ?? 0),
-    [values.mortgagePayment, values.furnitureCostsTwo, values.avgUtilityTwo],
+    [
+      values.mortgagePayment,
+      values.furnitureCostsTwo,
+      values.repairCosts,
+      values.avgUtilityTwo,
+      values.unexpectedExpenses,
+    ],
   );
 
   const totalAnnual = useMemo(() => totalMonthly * 12, [totalMonthly]);
