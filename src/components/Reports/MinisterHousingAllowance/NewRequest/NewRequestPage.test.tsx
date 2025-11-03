@@ -54,5 +54,23 @@ describe('NewRequestPage', () => {
 
     expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '50');
     expect(getByTestId('ArrowBackIcon')).toBeInTheDocument();
+
+    await userEvent.click(getByTestId('ArrowBackIcon'));
+
+    const updatedSteps = getAllByRole('listitem');
+
+    const [updatedFirstStep, updatedSecondStep] = updatedSteps;
+
+    expect(updatedFirstStep).toHaveTextContent('1. About this Form');
+    expect(
+      within(updatedFirstStep).getByTestId('CircleIcon'),
+    ).toBeInTheDocument();
+
+    expect(updatedSecondStep).toHaveTextContent('2. Rent or Own?');
+    expect(
+      within(updatedSecondStep).getByTestId('RadioButtonUncheckedIcon'),
+    ).toBeInTheDocument();
+
+    expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '25');
   });
 });
