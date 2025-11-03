@@ -1,6 +1,7 @@
 import React from 'react';
+import { CheckCircleOutline } from '@mui/icons-material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { Divider, IconButton, Stack } from '@mui/material';
+import { Box, Divider, IconButton, Stack } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { CircularProgressWithLabel } from 'src/components/Reports/GoalCalculator/SharedComponents/CircularProgressWithLabel/CircularProgressWithLabel';
 import {
@@ -53,21 +54,37 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
       ) : (
         <>
           <Stack direction="column" width={iconPanelWidth}>
-            <StyledBox>
-              <CircularProgressWithLabel
-                progress={percentComplete ? percentComplete : 0}
-              />
-            </StyledBox>
-            {currentStep !== NewRequestStepsEnum.AboutForm && (
-              <IconButton
-                aria-label={t('Go back')}
-                onClick={handleBack}
-                sx={(theme) => ({
-                  color: theme.palette.cruGrayDark.main,
-                })}
+            {currentStep === NewRequestStepsEnum.Receipt ? (
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  p: 2,
+                }}
               >
-                <ArrowBackIcon />
-              </IconButton>
+                <CheckCircleOutline
+                  sx={{ color: 'success.main', fontSize: 30 }}
+                />
+              </Box>
+            ) : (
+              <>
+                <StyledBox>
+                  <CircularProgressWithLabel
+                    progress={percentComplete ? percentComplete : 0}
+                  />
+                </StyledBox>
+                {currentStep !== NewRequestStepsEnum.AboutForm && (
+                  <IconButton
+                    aria-label={t('Go back')}
+                    onClick={handleBack}
+                    sx={(theme) => ({
+                      color: theme.palette.cruGrayDark.main,
+                    })}
+                  >
+                    <ArrowBackIcon />
+                  </IconButton>
+                )}
+              </>
             )}
           </Stack>
           <Divider orientation="vertical" flexItem />
