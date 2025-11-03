@@ -38,9 +38,3 @@ query ReportsStaffExpenses($fundTypes: [String!]) {
     }
   }
 }
-
-fragment FundFields on Fund {
-  id
-  fundType
-  balance
-}
