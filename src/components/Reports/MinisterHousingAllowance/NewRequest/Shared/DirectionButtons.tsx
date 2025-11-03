@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
@@ -20,8 +21,8 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
   isCalculate,
 }) => {
   const { t } = useTranslation();
-  const router = useRouter();
   const accountListId = useAccountListId();
+  const router = useRouter();
 
   const { submitForm, validateForm } =
     useFormikContext<CalculationFormValues>();
@@ -39,7 +40,11 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
 
   return (
     <Box sx={{ mt: 5, display: 'flex', justifyContent: 'space-between' }}>
-      <Button sx={{ color: 'error.light' }} onClick={() => setOpenCancel(true)}>
+      <Button
+        sx={{ color: 'error.light' }}
+        component={Link}
+        href={`/accountLists/${accountListId}/reports/housingAllowance`}
+      >
         <b>{t('CANCEL')}</b>
       </Button>
       {openCancel && (

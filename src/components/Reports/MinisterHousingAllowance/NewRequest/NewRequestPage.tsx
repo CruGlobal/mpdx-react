@@ -1,8 +1,6 @@
 import { useMemo, useState } from 'react';
-import { Stack } from '@mui/material';
-import Container from '@mui/material/Container/Container';
+import { Container, Stack } from '@mui/material';
 import { Formik } from 'formik';
-import { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import i18n from 'src/lib/i18n';
@@ -14,11 +12,12 @@ import {
   PanelTypeEnum,
   RentOwnEnum,
 } from '../Shared/sharedTypes';
+import { getStepList } from './Helper/getStepList';
 import { Receipt } from './Steps/StepFour/Receipt';
 import { AboutForm } from './Steps/StepOne/AboutForm';
 import { Calculation } from './Steps/StepThree/Calculation';
 import { RentOwn } from './Steps/StepTwo/RentOwn';
-import { Steps, StepsList } from './StepsList/StepsList';
+import { StepsList } from './StepsList/StepsList';
 
 export interface FormValues {
   rentOrOwn: RentOwnEnum | undefined;
@@ -29,31 +28,6 @@ const validationSchema = yup.object({
     .string()
     .required(i18n.t('Please select one of the options above to continue.')),
 });
-
-function getStepList(t: TFunction): Steps[] {
-  return [
-    {
-      title: t('1. About this Form'),
-      current: true,
-      complete: false,
-    },
-    {
-      title: t('2. Rent or Own?'),
-      current: false,
-      complete: false,
-    },
-    {
-      title: t('3. Calculate Your MHA'),
-      current: false,
-      complete: false,
-    },
-    {
-      title: t('4. Receipt'),
-      current: false,
-      complete: false,
-    },
-  ];
-}
 
 export const NewRequestPage: React.FC = () => {
   const { t } = useTranslation();
