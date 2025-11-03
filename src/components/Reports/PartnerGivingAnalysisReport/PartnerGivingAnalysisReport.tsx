@@ -133,10 +133,6 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
     setSortModel(model);
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
-
   return (
     <Box>
       <MultiPageHeader
@@ -144,7 +140,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
         onNavListToggle={onNavListToggle}
         title={title}
         headerType={HeaderTypeEnum.Report}
-        rightExtra={<HeaderActions onPrint={handlePrint} />}
+        rightExtra={<HeaderActions />}
       />
       <ListHeader
         page={PageEnum.Report}
