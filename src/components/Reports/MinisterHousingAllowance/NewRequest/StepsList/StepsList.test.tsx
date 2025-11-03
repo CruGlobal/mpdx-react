@@ -11,11 +11,7 @@ const steps = [
   { title: 'Step 3', complete: false, current: false },
 ];
 
-interface TestComponentProps {
-  current: number;
-}
-
-const TestComponent: React.FC<TestComponentProps> = () => (
+const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <TestRouter>
       <StepsList steps={steps} />
@@ -25,7 +21,7 @@ const TestComponent: React.FC<TestComponentProps> = () => (
 
 describe('StepsList', () => {
   it('renders steps with correct titles and icons', () => {
-    const { getAllByRole } = render(<TestComponent current={1} />);
+    const { getAllByRole } = render(<TestComponent />);
 
     const steps = getAllByRole('listitem');
     expect(steps).toHaveLength(3);
