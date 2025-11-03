@@ -1,16 +1,20 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
 import { RentOwn } from './RentOwn';
 
-const handleNext = jest.fn();
+const submit = jest.fn();
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <TestRouter>
-      <RentOwn handleNext={handleNext} />
+      <Formik initialValues={{}} onSubmit={submit}>
+        <RentOwn />
+      </Formik>
     </TestRouter>
   </ThemeProvider>
 );
@@ -26,20 +30,21 @@ describe('RentOwn', () => {
   });
 
   it('should show validation error if continue is clicked without selecting an option', async () => {
-    const { getByRole, findByText } = render(<TestComponent />);
+    const { getByRole, findByRole } = render(<TestComponent />);
 
     const continueButton = getByRole('button', { name: 'CONTINUE' });
-    continueButton.click();
+    await userEvent.click(continueButton);
 
-    expect(
-      await findByText('Your form is missing information.'),
-    ).toBeInTheDocument();
+    const alert = await findByRole('alert');
+    expect(alert).toBeInTheDocument();
+
+    expect(alert).toHaveTextContent('Your form is missing information.');
   });
 
   it('renders Cancel and Continue buttons', () => {
     const { getByRole } = render(<TestComponent />);
 
-    expect(getByRole('link', { name: 'CANCEL' })).toBeInTheDocument();
+    expect(getByRole('button', { name: 'CANCEL' })).toBeInTheDocument();
     expect(getByRole('button', { name: 'CONTINUE' })).toBeInTheDocument();
   });
 });
