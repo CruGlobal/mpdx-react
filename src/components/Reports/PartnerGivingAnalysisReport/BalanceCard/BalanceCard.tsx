@@ -7,7 +7,6 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { useReportsStaffExpensesQuery } from '../PartnerGivingAnalysis.generated';
-import { CardSkeleton } from './CardSkeleton';
 
 const StyledCard = styled(Card)(() => ({
   margin: theme.spacing(4),
@@ -55,7 +54,8 @@ export const BalanceCard: React.FC = () => {
   };
 
   if (loading || !fund) {
-    return <CardSkeleton />;
+    // TODO Update with balanceCard skeleton
+    return null;
   }
 
   return (
@@ -65,50 +65,59 @@ export const BalanceCard: React.FC = () => {
           display: 'flex',
           flexDirection: 'row',
           alignItems: 'center',
-          gap: 1,
+          gap: 2,
+          mb: 2,
         }}
       >
-        <IconBox className="StyledIconBox-root">
-          <Wallet
-            sx={{
-              color: 'inherit',
-            }}
-          />
+        <IconBox>
+          <Wallet />
         </IconBox>
-        <Box>
-          <Typography
-            variant="body1"
-            sx={{
-              mb: 0,
-              '@media print': { fontSize: '12pt' },
-              fontWeight: 500,
-              fontSize: '13pt',
-            }}
-          >
-            {t('{{ name }} Account Balance', { name: fund.fundType })}
-          </Typography>
-        </Box>
-      </Box>
-      <Box
-        sx={{
-          mt: 5,
-          '@media print': { mt: 2 },
-        }}
-      >
         <Typography
           variant="body1"
-          sx={{ mb: 0, '@media print': { fontSize: '12pt' } }}
+          sx={{
+            '@media print': { fontSize: '12pt' },
+            fontWeight: 500,
+            fontSize: '13pt',
+          }}
         >
-          {t('Current Balance')}
+          {t('{{ name }} Account Balance', { name: fund.fundType })}
         </Typography>
+      </Box>
 
-        <Typography
-          variant="h5"
-          color={fund.balance < 0 ? 'error.main' : 'text.primary'}
-          sx={{ fontSize: 'inherit' }}
-        >
-          {formatBalance(fund.balance)}
-        </Typography>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'row',
+          gap: 4,
+          justifyContent: 'space-between',
+          alignItems: 'flex-end',
+        }}
+      >
+        <Box sx={{ flex: 1 }}>
+          <Typography
+            variant="body1"
+            sx={{ '@media print': { fontSize: '12pt' } }}
+          >
+            {t('Current Balance')}
+          </Typography>
+
+          <Typography variant="h5" sx={{ fontSize: 'inherit' }}>
+            {formatBalance(fund.balance)}
+          </Typography>
+        </Box>
+        {/* TODO 
+        <Box sx={{ flex: 1 }}>
+          <Typography
+            variant="body1"
+            sx={{ '@media print': { fontSize: '12pt' } }}
+          >
+            {t('Total Donations for this period')}
+          </Typography>
+
+          <Typography variant="h5" sx={{ fontSize: 'inherit' }}>
+            {formatBalance(fund.balance)}
+          </Typography>
+        </Box> */}
       </Box>
     </StyledCard>
   );
