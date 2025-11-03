@@ -14,6 +14,7 @@ import {
   PanelTypeEnum,
   RentOwnEnum,
 } from '../Shared/sharedTypes';
+import { Receipt } from './Steps/StepFour/Receipt';
 import { AboutForm } from './Steps/StepOne/AboutForm';
 import { Calculation } from './Steps/StepThree/Calculation';
 import { RentOwn } from './Steps/StepTwo/RentOwn';
@@ -121,6 +122,10 @@ export const NewRequestPage: React.FC = () => {
     steps[currentIndex].complete = true;
     setCurrentIndex(newIndex);
     steps[newIndex].current = true;
+
+    if (newIndex === steps.length - 1) {
+      steps[newIndex].complete = true;
+    }
   };
 
   const handlePreviousIndexChange = (newIndex: number) => {
@@ -170,6 +175,8 @@ export const NewRequestPage: React.FC = () => {
                   handleNext={handleNextStep}
                   handleBack={handlePreviousStep}
                 />
+              ) : currentStep === NewRequestStepsEnum.Receipt ? (
+                <Receipt />
               ) : null}
             </Stack>
           </Container>
