@@ -1,16 +1,33 @@
 import { useMemo, useState } from 'react';
 import { Stack } from '@mui/material';
 import Container from '@mui/material/Container/Container';
+import { Formik } from 'formik';
 import { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
+import * as yup from 'yup';
+import i18n from 'src/lib/i18n';
 import { mainContentWidth } from '../MinisterHousingAllowance';
 import { PanelLayout } from '../PanelLayout/PanelLayout';
 import { mocks } from '../Shared/mockData';
-import { NewRequestStepsEnum, PanelTypeEnum } from '../Shared/sharedTypes';
+import {
+  NewRequestStepsEnum,
+  PanelTypeEnum,
+  RentOwnEnum,
+} from '../Shared/sharedTypes';
 import { AboutForm } from './Steps/StepOne/AboutForm';
 import { Calculation } from './Steps/StepThree/Calculation';
 import { RentOwn } from './Steps/StepTwo/RentOwn';
 import { Steps, StepsList } from './StepsList/StepsList';
+
+export interface FormValues {
+  rentOrOwn: RentOwnEnum | undefined;
+}
+
+const validationSchema = yup.object({
+  rentOrOwn: yup
+    .string()
+    .required(i18n.t('Please select one of the options above to continue.')),
+});
 
 function getStepList(t: TFunction): Steps[] {
   return [
@@ -123,34 +140,40 @@ export const NewRequestPage: React.FC = () => {
       handleBack={handlePreviousStep}
       currentStep={currentStep}
       mainContent={
-        <Container>
-          <Stack direction="column" width={mainContentWidth}>
-            {currentStep === NewRequestStepsEnum.AboutForm ? (
-              <AboutForm
-                boardApprovalDate={
-                  mocks[4].mhaDetails.staffMHA?.boardApprovalDate ?? ''
-                }
-                availableDate={
-                  mocks[4].mhaDetails.staffMHA?.availableDate ?? ''
-                }
-                handleNext={handleNextStep}
-              />
-            ) : currentStep === NewRequestStepsEnum.RentOrOwn ? (
-              <RentOwn handleNext={handleNextStep} />
-            ) : currentStep === NewRequestStepsEnum.Calculate ? (
-              <Calculation
-                boardApprovalDate={
-                  mocks[4].mhaDetails.staffMHA?.boardApprovalDate ?? ''
-                }
-                availableDate={
-                  mocks[4].mhaDetails.staffMHA?.availableDate ?? ''
-                }
-                handleNext={handleNextStep}
-                handleBack={handlePreviousStep}
-              />
-            ) : null}
-          </Stack>
-        </Container>
+        <Formik<FormValues>
+          initialValues={{ rentOrOwn: undefined }}
+          validationSchema={validationSchema}
+          onSubmit={() => handleNextStep()}
+        >
+          <Container>
+            <Stack direction="column" width={mainContentWidth}>
+              {currentStep === NewRequestStepsEnum.AboutForm ? (
+                <AboutForm
+                  boardApprovalDate={
+                    mocks[4].mhaDetails.staffMHA?.boardApprovalDate ?? ''
+                  }
+                  availableDate={
+                    mocks[4].mhaDetails.staffMHA?.availableDate ?? ''
+                  }
+                  handleNext={handleNextStep}
+                />
+              ) : currentStep === NewRequestStepsEnum.RentOrOwn ? (
+                <RentOwn />
+              ) : currentStep === NewRequestStepsEnum.Calculate ? (
+                <Calculation
+                  boardApprovalDate={
+                    mocks[4].mhaDetails.staffMHA?.boardApprovalDate ?? ''
+                  }
+                  availableDate={
+                    mocks[4].mhaDetails.staffMHA?.availableDate ?? ''
+                  }
+                  handleNext={handleNextStep}
+                  handleBack={handlePreviousStep}
+                />
+              ) : null}
+            </Stack>
+          </Container>
+        </Formik>
       }
     />
   );

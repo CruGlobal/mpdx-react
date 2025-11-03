@@ -1,8 +1,10 @@
 import { useRouter } from 'next/router';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 import { Box, Button } from '@mui/material';
+import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { CalculationFormValues } from '../Steps/StepThree/Calculation';
 
 interface DirectionButtonsProps {
   handleNext?: () => void;
@@ -19,7 +21,7 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
   const router = useRouter();
   const accountListId = useAccountListId();
 
-  //TODO: handle submit logic
+  const { submitForm } = useFormikContext<CalculationFormValues>();
 
   return (
     <Box sx={{ mt: 5, display: 'flex', justifyContent: 'space-between' }}>
@@ -47,7 +49,7 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
             <ChevronLeft sx={{ mr: 1 }} />
             <b>{t('Back')}</b>
           </Button>
-          <Button variant="contained" color="primary" onClick={handleNext}>
+          <Button variant="contained" color="primary" onClick={submitForm}>
             {t('Submit')}
             <ChevronRight sx={{ ml: 1 }} />
           </Button>
