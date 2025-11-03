@@ -8,6 +8,7 @@ export interface TableData {
   donationPeriodSum: number | null;
   donationPeriodCount: number | null;
   donationPeriodAverage: number | null;
+  firstDonationDate: string | null;
   lastDonationAmount: number | null;
   lastDonationDate: string | null;
   totalDonations: number | null;

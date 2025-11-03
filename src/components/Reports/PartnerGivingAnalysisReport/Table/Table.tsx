@@ -38,6 +38,7 @@ export const createTableRow = (data: Row): TableData => ({
   donationPeriodCount: data.donationPeriodCount,
   donationPeriodAverage: data.donationPeriodAverage,
   lastDonationAmount: data.lastDonationAmount,
+  firstDonationDate: data.firstDonationDate,
   lastDonationDate: data.lastDonationDate,
   totalDonations: data.totalDonations,
   pledgeCurrency: data.pledgeCurrency,
@@ -81,6 +82,7 @@ export const PartnerGivingAnalysisTable: React.FC<
     donationPeriodSum,
     donationPeriodCount,
     donationPeriodAverage,
+    firstDonationDate,
     lastDonationAmount,
     lastDonationDate,
     totalDonations,
@@ -136,6 +138,13 @@ export const PartnerGivingAnalysisTable: React.FC<
       renderCell: donationPeriodAverage,
     },
     {
+      field: 'firstDonationDate',
+      headerName: t('First Gift Date'),
+      width: 130,
+      flex: 1,
+      renderCell: firstDonationDate,
+    },
+    {
       field: 'lastDonationAmount',
       headerName: t('Last Gift Amount'),
       width: 150,
@@ -161,7 +170,6 @@ export const PartnerGivingAnalysisTable: React.FC<
   return (
     <Box
       sx={{
-        height: 'calc(100vh - 240px)',
         width: '100%',
         display: 'flex',
         flexDirection: 'column',
