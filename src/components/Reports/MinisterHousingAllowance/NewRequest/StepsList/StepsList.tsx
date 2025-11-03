@@ -39,17 +39,17 @@ const ListItemContent: React.FC<ListItemContentProps> = ({
   <>
     <CategoryListItemIcon
       sx={(theme) => ({
-        color: current
-          ? theme.palette.mpdxBlue.main
-          : complete
-            ? 'success.main'
+        color: complete
+          ? 'success.main'
+          : current
+            ? theme.palette.mpdxBlue.main
             : theme.palette.cruGrayDark.main,
       })}
     >
-      {current ? (
-        <CircleIcon />
-      ) : complete ? (
+      {complete ? (
         <CheckCircleIcon />
+      ) : current ? (
+        <CircleIcon />
       ) : (
         <RadioButtonUncheckedIcon />
       )}

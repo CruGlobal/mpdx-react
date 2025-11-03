@@ -8,7 +8,10 @@ import {
   DialogContent,
   DialogTitle,
 } from '@mui/material';
+import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { useLocale } from 'src/hooks/useLocale';
+import { dateFormatShort } from 'src/lib/intlFormat';
 import { mocks } from '../../Shared/mockData';
 
 interface ConfirmationModalProps {
@@ -23,6 +26,14 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   isCancel,
 }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
+
+  const deadlineDate = dateFormatShort(
+    DateTime.fromISO(
+      mocks[4].mhaDetails.staffMHA?.deadlineDate ?? DateTime.now().toISO(),
+    ),
+    locale,
+  );
 
   return (
     <Dialog open={true} onClose={handleClose} maxWidth="sm" fullWidth>
@@ -42,8 +53,11 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
             {isCancel
               ? t('Your work will not be saved.')
               : t(
-                  `Once submitted, you can return and make edits until {{date}}. After this date, your request will be locked for request will be processed as is.`,
-                  { date: mocks[0].mhaDetails.staffMHA?.deadlineDate },
+                  `Once submitted, you can return and make edits until {{date}}. After this date, your request will be processed as is.`,
+                  {
+                    date: deadlineDate,
+                    interpolation: { escapeValue: false },
+                  },
                 )}
           </Box>
         </Alert>
