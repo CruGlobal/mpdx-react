@@ -1,41 +1,15 @@
 import { useMemo, useState } from 'react';
-import { Stack } from '@mui/material';
-import Container from '@mui/material/Container/Container';
-import { TFunction } from 'i18next';
+import { Container, Stack } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { mainContentWidth } from '../MinisterHousingAllowance';
 import { PanelLayout } from '../PanelLayout/PanelLayout';
 import { mocks } from '../Shared/mockData';
 import { NewRequestStepsEnum, PanelTypeEnum } from '../Shared/sharedTypes';
+import { getStepList } from './Helper/getStepList';
 import { AboutForm } from './Steps/StepOne/AboutForm';
 import { Calculation } from './Steps/StepThree/Calculation';
 import { RentOwn } from './Steps/StepTwo/RentOwn';
-import { Steps, StepsList } from './StepsList/StepsList';
-
-function getStepList(t: TFunction): Steps[] {
-  return [
-    {
-      title: t('1. About this Form'),
-      current: true,
-      complete: false,
-    },
-    {
-      title: t('2. Rent or Own?'),
-      current: false,
-      complete: false,
-    },
-    {
-      title: t('3. Calculate Your MHA'),
-      current: false,
-      complete: false,
-    },
-    {
-      title: t('4. Receipt'),
-      current: false,
-      complete: false,
-    },
-  ];
-}
+import { StepsList } from './StepsList/StepsList';
 
 export const NewRequestPage: React.FC = () => {
   const { t } = useTranslation();

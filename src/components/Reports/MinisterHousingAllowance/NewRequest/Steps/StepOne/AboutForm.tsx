@@ -41,56 +41,58 @@ export const AboutForm: React.FC<AboutFormProps> = ({
       <Box mb={2}>
         <Typography variant="h5">{t('About this Form')}</Typography>
       </Box>
-      <Trans
-        i18nKey="newRequestAboutForm"
-        values={{ nextYear, boardDateFormatted, availableDateFormatted }}
-      >
+      <Trans i18nKey="newRequestAboutFormPartOne" values={{ nextYear }}>
         <p style={{ lineHeight: 1.5 }}>
           A Minister&apos;s Housing Allowance Request is a form ministers
           complete to designate part of their compensation as tax-free housing
           allowance. To complete this form for the {nextYear} tax year,
           you&apos;ll need:
-          <Box sx={{ mt: 2 }}>
-            <List sx={{ listStyleType: 'disc', pl: 4 }}>
-              <StyledListItem>
-                <ListItemText
-                  primary={t(
-                    'The estimated housing expenses for {{year}} (e.g., rent/mortgage, utilities, furnishings, repairs, insurance, property taxes).',
-                    { year: nextYear },
-                  )}
-                />
-              </StyledListItem>
-              <StyledListItem>
-                <ListItemText
-                  primary={t(
-                    'The amount of allowance requested, which cannot exceed the lower of your actual housing expenses, the fair rental value of the home (furnished, plus utilities), or the amount designated by Cru.',
-                  )}
-                />
-              </StyledListItem>
-              <StyledListItem>
-                <ListItemText
-                  primary={t(
-                    'If you own your home, consider getting a written appraisal or rental value estimate for documentation.',
-                  )}
-                />
-              </StyledListItem>
-            </List>
-          </Box>
-          <Box sx={{ mt: 2 }}>
-            The next time the board will approve MHA Requests is after{' '}
-            {boardDateFormatted} and your approved annual MHA amount will appear
-            on your <Link href="">Salary Calculation Form</Link> on{' '}
-            {availableDateFormatted}. Once approved by the board, keep a copy
-            for your tax records.
-          </Box>
-          <Box sx={{ mt: 2 }}>
-            <OpenInNew
-              fontSize="medium"
-              sx={{ verticalAlign: 'middle', opacity: 0.56 }}
-            />{' '}
-            <Link href="">What expenses can I claim on my MHA?</Link>
-          </Box>
         </p>
+      </Trans>
+      <Box sx={{ mt: 2 }}>
+        <List sx={{ listStyleType: 'disc', pl: 4 }}>
+          <StyledListItem>
+            <ListItemText
+              primary={t(
+                'The estimated housing expenses for {{year}} (e.g., rent/mortgage, utilities, furnishings, repairs, insurance, property taxes).',
+                { year: nextYear },
+              )}
+            />
+          </StyledListItem>
+          <StyledListItem>
+            <ListItemText
+              primary={t(
+                'The amount of allowance requested, which cannot exceed the lower of your actual housing expenses, the fair rental value of the home (furnished, plus utilities), or the amount designated by Cru.',
+              )}
+            />
+          </StyledListItem>
+          <StyledListItem>
+            <ListItemText
+              primary={t(
+                'If you own your home, consider getting a written appraisal or rental value estimate for documentation.',
+              )}
+            />
+          </StyledListItem>
+        </List>
+      </Box>
+      <Trans
+        i18nKey="newRequestAboutFormPartTwo"
+        values={{ boardDateFormatted, availableDateFormatted }}
+      >
+        <Box sx={{ mt: 2 }}>
+          The next time the board will approve MHA Requests is after{' '}
+          {boardDateFormatted} and your approved annual MHA amount will appear
+          on your <Link href="">Salary Calculation Form</Link> on{' '}
+          {availableDateFormatted}. Once approved by the board, keep a copy for
+          your tax records.
+        </Box>
+        <Box sx={{ mt: 4 }}>
+          <OpenInNew
+            fontSize="medium"
+            sx={{ verticalAlign: 'middle', opacity: 0.56 }}
+          />{' '}
+          <Link href="">What expenses can I claim on my MHA?</Link>
+        </Box>
       </Trans>
       <DirectionButtons handleNext={handleNext} />
     </>

@@ -1,4 +1,4 @@
-import { useRouter } from 'next/router';
+import Link from 'next/link';
 import { ChevronRight } from '@mui/icons-material';
 import { Box, Button } from '@mui/material';
 import { useTranslation } from 'react-i18next';
@@ -12,16 +12,14 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
   handleNext,
 }) => {
   const { t } = useTranslation();
-  const router = useRouter();
   const accountListId = useAccountListId();
 
   return (
     <Box sx={{ mt: 5, display: 'flex', justifyContent: 'space-between' }}>
       <Button
         sx={{ color: 'error.light' }}
-        onClick={() =>
-          router.push(`/accountLists/${accountListId}/reports/housingAllowance`)
-        }
+        component={Link}
+        href={`/accountLists/${accountListId}/reports/housingAllowance`}
       >
         <b>{t('CANCEL')}</b>
       </Button>
