@@ -14,7 +14,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { RentOwnEnum } from 'src/components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
 
 interface RequestSummaryCardProps {
-  rentOrOwn: RentOwnEnum;
+  rentOrOwn: RentOwnEnum | undefined;
 }
 
 export const RequestSummaryCard: React.FC<RequestSummaryCardProps> = ({

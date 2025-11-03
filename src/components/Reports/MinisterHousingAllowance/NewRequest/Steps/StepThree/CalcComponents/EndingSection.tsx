@@ -1,12 +1,4 @@
-import {
-  Box,
-  Checkbox,
-  FormControl,
-  FormControlLabel,
-  FormHelperText,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { Box, TextField, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { mocks } from 'src/components/Reports/MinisterHousingAllowance/Shared/mockData';
 
@@ -17,23 +9,6 @@ export const EndingSection: React.FC = () => {
 
   return (
     <Box mt={2}>
-      <FormControl>
-        <FormControlLabel
-          sx={{
-            alignItems: 'flex-start',
-            '& .MuiFormControlLabel-label': {
-              mt: 0.5,
-            },
-          }}
-          control={<Checkbox />}
-          label={t(
-            'I understand that my approved Annual MHA will be based on the lower of the Annual Fair Rental Value or the Annual Cost of Providing a Home.',
-          )}
-        />
-        <FormHelperText sx={{ ml: 4 }}>
-          <i>{t('This box must be checked to continue.')}</i>
-        </FormHelperText>
-      </FormControl>
       <Box sx={{ mt: 3 }}>
         <Typography>
           {t(
