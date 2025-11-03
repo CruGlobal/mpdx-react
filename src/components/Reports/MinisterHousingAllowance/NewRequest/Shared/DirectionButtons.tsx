@@ -20,8 +20,8 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
   isCalculate,
 }) => {
   const { t } = useTranslation();
-  const router = useRouter();
   const accountListId = useAccountListId();
+  const router = useRouter();
 
   const { submitForm, validateForm } =
     useFormikContext<CalculationFormValues>();
