@@ -18,12 +18,14 @@ export const CardSkeleton: React.FC = () => {
   return (
     <SimpleScreenOnly sx={{ flex: 1, minWidth: 250, display: 'flex' }}>
       <StyledCard variant="outlined" data-testid="CardSkeleton">
+        {/* Header Section */}
         <Box
           sx={{
             display: 'flex',
             flexDirection: 'row',
             alignItems: 'center',
-            gap: 1,
+            gap: 2,
+            mb: 2,
           }}
         >
           <Skeleton
@@ -32,18 +34,28 @@ export const CardSkeleton: React.FC = () => {
             height={40}
             sx={{ borderRadius: 1 }}
           />
-          <Box sx={{ flex: 1 }}>
-            <Skeleton variant="text" width="60%" height={24} />
-          </Box>
+          <Skeleton variant="text" width="20%" height={28} />
         </Box>
+
+        {/* Data Section - Two Columns */}
         <Box
           sx={{
-            mt: 5,
-            '@media print': { mt: 2 },
+            display: 'flex',
+            flexDirection: 'row',
+            gap: 4,
+            justifyContent: 'space-between',
+            alignItems: 'flex-end',
           }}
         >
-          <Skeleton variant="text" width="40%" height={20} sx={{ mb: 1 }} />
-          <Skeleton variant="text" width="50%" height={32} />
+          <Box sx={{ flex: 1 }}>
+            <Skeleton variant="text" width="30%" height={20} sx={{ mb: 1 }} />
+            <Skeleton variant="text" width="15%" height={36} />
+          </Box>
+
+          <Box sx={{ flex: 1 }}>
+            <Skeleton variant="text" width="30%" height={20} sx={{ mb: 1 }} />
+            <Skeleton variant="text" width="15%" height={36} />
+          </Box>
         </Box>
       </StyledCard>
     </SimpleScreenOnly>

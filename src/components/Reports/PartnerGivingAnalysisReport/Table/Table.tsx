@@ -170,7 +170,6 @@ export const PartnerGivingAnalysisTable: React.FC<
   return (
     <Box
       sx={{
-        height: 'calc(100vh - 240px)',
         width: '100%',
         display: 'flex',
         flexDirection: 'column',
