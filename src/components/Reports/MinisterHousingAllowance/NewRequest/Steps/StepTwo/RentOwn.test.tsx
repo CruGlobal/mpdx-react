@@ -20,31 +20,18 @@ const TestComponent: React.FC = () => (
 );
 
 describe('RentOwn', () => {
-  it('renders form and options', () => {
+  it('renders form and options', async () => {
     const { getByRole, getByText } = render(<TestComponent />);
 
     expect(getByRole('heading', { name: 'Rent or Own?' })).toBeInTheDocument();
 
     expect(getByText('Rent')).toBeInTheDocument();
     expect(getByText('Own')).toBeInTheDocument();
-  });
 
-  it('should show validation error if continue is clicked without selecting an option', async () => {
-    const { getByRole, findByRole } = render(<TestComponent />);
+    await userEvent.click(getByText('Rent'));
+    expect(getByRole('radio', { name: 'Rent' })).toBeChecked();
 
-    const continueButton = getByRole('button', { name: 'CONTINUE' });
-    await userEvent.click(continueButton);
-
-    const alert = await findByRole('alert');
-    expect(alert).toBeInTheDocument();
-
-    expect(alert).toHaveTextContent('Your form is missing information.');
-  });
-
-  it('renders Cancel and Continue buttons', () => {
-    const { getByRole } = render(<TestComponent />);
-
-    expect(getByRole('button', { name: 'CANCEL' })).toBeInTheDocument();
-    expect(getByRole('button', { name: 'CONTINUE' })).toBeInTheDocument();
+    await userEvent.click(getByText('Own'));
+    expect(getByRole('radio', { name: 'Own' })).toBeChecked();
   });
 });

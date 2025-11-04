@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import {
   Alert,
   Box,
@@ -16,7 +15,6 @@ import { DirectionButtons } from '../../Shared/DirectionButtons';
 
 export const RentOwn: React.FC = () => {
   const { t } = useTranslation();
-  const [open, setOpen] = useState(true);
 
   const {
     values,
@@ -29,12 +27,6 @@ export const RentOwn: React.FC = () => {
     submitForm,
     isValid,
   } = useFormikContext<FormValues>();
-
-  useEffect(() => {
-    if (submitCount > 0 && !isValid) {
-      setOpen(true);
-    }
-  }, [submitCount, isValid]);
 
   return (
     <>
@@ -74,12 +66,8 @@ export const RentOwn: React.FC = () => {
           await submitForm();
         }}
       />
-      {submitCount > 0 && !isValid && open && (
-        <Alert
-          severity="error"
-          onClose={() => setOpen(false)}
-          sx={{ mt: 2, '& ul': { m: 0, pl: 3 } }}
-        >
+      {submitCount > 0 && !isValid && (
+        <Alert severity="error" sx={{ mt: 2, '& ul': { m: 0, pl: 3 } }}>
           {t('Your form is missing information.')}
           <ul>{errors.rentOrOwn && <li>{errors.rentOrOwn}</li>}</ul>
         </Alert>

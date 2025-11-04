@@ -71,7 +71,7 @@ export const mocks: Mock[] = [
       location: 'Dallas, Texas',
       children: null,
       email: 'john.doe@cru.org',
-      phone: '123-456-7890',
+      phone: '1234567890',
     },
     spouseInfo: null,
     mhaDetails: {
@@ -107,7 +107,7 @@ export const mocks: Mock[] = [
       location: 'Dallas, Texas',
       children: null,
       email: 'john.doe@cru.org',
-      phone: '123-456-7890',
+      phone: '1234567890',
     },
     spouseInfo: {
       id: '100123456',
@@ -117,7 +117,7 @@ export const mocks: Mock[] = [
       location: 'Dallas, Texas',
       children: 2,
       email: 'jane.doe@cru.org',
-      phone: '123-456-7891',
+      phone: '1234567891',
       eligibleForMHA: false,
     },
     mhaDetails: {
@@ -155,7 +155,7 @@ export const mocks: Mock[] = [
       location: 'Dallas, Texas',
       children: 2,
       email: 'john.doe@cru.org',
-      phone: '123-456-7890',
+      phone: '1234567890',
     },
     spouseInfo: {
       id: '100123456',
@@ -165,7 +165,7 @@ export const mocks: Mock[] = [
       location: 'Dallas, Texas',
       children: 2,
       email: 'jane.doe@cru.org',
-      phone: '123-456-7891',
+      phone: '1234567891',
     },
     mhaDetails: {
       staffMHA: {
@@ -224,7 +224,7 @@ export const mocks: Mock[] = [
       location: 'Dallas, Texas',
       children: 2,
       email: 'john.doe@cru.org',
-      phone: '123-456-7890',
+      phone: '1234567890',
     },
     spouseInfo: null,
     mhaDetails: {
@@ -275,7 +275,7 @@ export const mocks: Mock[] = [
       location: 'Dallas, Texas',
       children: 2,
       email: 'john.doe@cru.org',
-      phone: '123-456-7890',
+      phone: '1234567890',
     },
     spouseInfo: {
       id: '100123456',
@@ -285,7 +285,7 @@ export const mocks: Mock[] = [
       location: 'Dallas, Texas',
       children: 2,
       email: 'jane.doe@cru.org',
-      phone: '123-456-7891',
+      phone: '1234567891',
     },
     mhaDetails: {
       staffMHA: {

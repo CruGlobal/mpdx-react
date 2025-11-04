@@ -1,8 +1,11 @@
-import { TFunction } from 'i18next';
-import { Steps } from '../StepsList/StepsList';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Steps } from '../components/Reports/MinisterHousingAllowance/NewRequest/StepsList/StepsList';
 
-export function getStepList(t: TFunction): Steps[] {
-  return [
+export function useNewStepList(): Steps[] {
+  const { t } = useTranslation();
+
+  const steps = [
     {
       title: t('1. About this Form'),
       current: true,
@@ -24,4 +27,6 @@ export function getStepList(t: TFunction): Steps[] {
       complete: false,
     },
   ];
+
+  return useMemo(() => steps, [t]);
 }

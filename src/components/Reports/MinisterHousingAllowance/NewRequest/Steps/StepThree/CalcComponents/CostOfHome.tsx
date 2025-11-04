@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Box, TableCell, TableRow, TextField, Typography } from '@mui/material';
 import { useFormikContext } from 'formik';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { RentOwnEnum } from 'src/components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
 import { StyledOrderedList } from 'src/components/Reports/MinisterHousingAllowance/styledComponents/StyledOrderedList';
 import { useLocale } from 'src/hooks/useLocale';
@@ -317,12 +317,14 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({ rentOrOwn }) => {
       <TableRow>
         <TableCell sx={{ width: '70%' }}>
           <Typography>
-            <b>{t('Annual Fair Rental Value of your Home')}</b>
+            <b>
+              {rentOrOwn === RentOwnEnum.Rent
+                ? t('Annual Fair Rental Value of your Home')
+                : t('Annual Cost of Providing a Home')}
+            </b>
           </Typography>
           <Box sx={{ color: 'text.secondary' }}>
-            <Trans i18nKey="fairRentalValueQuestion1">
-              {t('Line 6 multiplied by 12 months')}
-            </Trans>
+            {t('Line 6 multiplied by 12 months')}
           </Box>
         </TableCell>
         <TableCell sx={{ width: '30%', fontSize: 16 }}>

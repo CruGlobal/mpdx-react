@@ -73,4 +73,28 @@ describe('NewRequestPage', () => {
 
     expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '25');
   });
+
+  it('should show validation error if continue is clicked without selecting an option', async () => {
+    const { getByRole, findByRole } = render(<TestComponent />);
+
+    const continueButton = getByRole('button', { name: 'CONTINUE' });
+    await userEvent.click(continueButton);
+
+    expect(getByRole('radio', { name: 'Rent' })).not.toBeChecked();
+    expect(getByRole('radio', { name: 'Own' })).not.toBeChecked();
+
+    userEvent.click(getByRole('button', { name: /continue/i }));
+
+    const alert = await findByRole('alert');
+    expect(alert).toBeInTheDocument();
+
+    expect(alert).toHaveTextContent('Your form is missing information.');
+  });
+
+  it('renders Cancel and Continue buttons', () => {
+    const { getByRole } = render(<TestComponent />);
+
+    expect(getByRole('button', { name: /cancel/i })).toBeInTheDocument();
+    expect(getByRole('button', { name: /continue/i })).toBeInTheDocument();
+  });
 });

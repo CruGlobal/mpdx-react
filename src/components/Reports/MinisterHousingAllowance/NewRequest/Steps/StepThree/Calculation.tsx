@@ -17,6 +17,7 @@ import * as yup from 'yup';
 import { useLocale } from 'src/hooks/useLocale';
 import i18n from 'src/lib/i18n';
 import { dateFormatShort } from 'src/lib/intlFormat';
+import { mocks } from '../../../Shared/mockData';
 import { RentOwnEnum } from '../../../Shared/sharedTypes';
 import { FormValues } from '../../NewRequestPage';
 import { DirectionButtons } from '../../Shared/DirectionButtons';
@@ -41,6 +42,8 @@ export interface CalculationFormValues {
   repairCosts?: number | null | undefined;
   avgUtilityTwo?: number | null | undefined;
   unexpectedExpenses?: number | null | undefined;
+  phone?: string;
+  email?: string;
   isChecked?: boolean;
 }
 
@@ -51,6 +54,18 @@ const getValidationSchema = (rentOrOwn?: RentOwnEnum) => {
     repairCosts: yup.number().required(i18n.t('Required field.')),
     avgUtilityTwo: yup.number().required(i18n.t('Required field.')),
     unexpectedExpenses: yup.number().required(i18n.t('Required field.')),
+    phone: yup
+      .string()
+      .test(
+        'is-phone-number',
+        i18n.t('Invalid phone number.'),
+        (val) => typeof val === 'string' && /\d/.test(val),
+      )
+      .required(i18n.t('Phone Number is required.')),
+    email: yup
+      .string()
+      .email(i18n.t('Invalid email address.'))
+      .required(i18n.t('Email is required.')),
     isChecked: yup
       .boolean()
       .oneOf([true], i18n.t('This box must be checked to continue.')),
@@ -90,6 +105,8 @@ export const Calculation: React.FC<CalculationProps> = ({
     repairCosts: undefined,
     avgUtilityTwo: undefined,
     unexpectedExpenses: undefined,
+    phone: mocks[0].staffInfo.phone,
+    email: mocks[0].staffInfo.email,
     isChecked: false,
   };
 

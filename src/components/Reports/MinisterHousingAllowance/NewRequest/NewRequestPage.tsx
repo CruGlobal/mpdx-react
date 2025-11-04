@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Container, Stack } from '@mui/material';
 import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import i18n from 'src/lib/i18n';
+import { useNewStepList } from '../../../../hooks/useNewStepList';
 import { mainContentWidth } from '../MinisterHousingAllowance';
 import { PanelLayout } from '../PanelLayout/PanelLayout';
 import { mocks } from '../Shared/mockData';
@@ -12,7 +13,6 @@ import {
   PanelTypeEnum,
   RentOwnEnum,
 } from '../Shared/sharedTypes';
-import { getStepList } from './Helper/getStepList';
 import { Receipt } from './Steps/StepFour/Receipt';
 import { AboutForm } from './Steps/StepOne/AboutForm';
 import { Calculation } from './Steps/StepThree/Calculation';
@@ -31,7 +31,7 @@ const validationSchema = yup.object({
 
 export const NewRequestPage: React.FC = () => {
   const { t } = useTranslation();
-  const steps = useMemo(() => getStepList(t), [t]);
+  const steps = useNewStepList();
 
   const [currentStep, setCurrentStep] = useState(NewRequestStepsEnum.AboutForm);
   const [percentComplete, setPercentComplete] = useState(25);
