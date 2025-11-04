@@ -1,6 +1,9 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
+import { TextFieldProps } from '@mui/material';
 import { prepareDataForValidation } from 'formik';
 import * as yup from 'yup';
+import { useSyncedState } from 'src/hooks/useSyncedState';
+import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
 
 interface UseAutoSaveOptions<Value extends string | number> {
   value: Value | null | undefined;
@@ -17,11 +20,12 @@ export const useAutoSave = <Value extends string | number>({
   schema,
   saveOnChange = false,
 }: UseAutoSaveOptions<Value>) => {
-  const [internalValue, setInternalValue] = useState(value?.toString() ?? '');
-
-  useEffect(() => {
-    setInternalValue(value?.toString() ?? '');
-  }, [value]);
+  const {
+    goalCalculationResult: { data },
+  } = useGoalCalculator();
+  const [internalValue, setInternalValue] = useSyncedState(
+    value?.toString() ?? '',
+  );
 
   const parseValue = useCallback(
     (valueToValidate: string) => {
@@ -49,6 +53,8 @@ export const useAutoSave = <Value extends string | number>({
     [parseValue, internalValue],
   );
 
+  const disabled = !data;
+
   return {
     value: internalValue,
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,6 +73,9 @@ export const useAutoSave = <Value extends string | number>({
         saveValue(parsedValue);
       }
     },
-    ...(errorMessage ? { error: true, helperText: errorMessage } : {}),
-  };
+    disabled,
+    ...(!disabled && errorMessage
+      ? { error: true, helperText: errorMessage }
+      : {}),
+  } satisfies Partial<TextFieldProps>;
 };
