@@ -10,17 +10,24 @@ import { DirectionButtons } from './DirectionButtons';
 const handleNext = jest.fn();
 const submit = jest.fn();
 const pushMock = jest.fn();
-const accountListId = 'account-list-id';
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
-    <TestRouter router={{ query: { accountListId } }}>
+    <TestRouter
+      router={{
+        query: { accountListId: 'account-list-1' },
+      }}
+    >
       <Formik initialValues={{}} onSubmit={submit}>
         <DirectionButtons handleNext={handleNext} />
       </Formik>
     </TestRouter>
   </ThemeProvider>
 );
+
+jest.mock('src/hooks/useAccountListId', () => ({
+  useAccountListId: () => 'account-list-1',
+}));
 
 jest.mock('next/router', () => ({
   useRouter: () => ({ push: pushMock }),
@@ -44,13 +51,18 @@ describe('DirectionButtons', () => {
   });
 
   it('navigates to the correct URL when Cancel is clicked', async () => {
-    const { getByRole } = render(<TestComponent />);
+    const { getByRole, findByRole, getByText } = render(<TestComponent />);
     const cancelButton = getByRole('button', { name: 'CANCEL' });
 
     await userEvent.click(cancelButton);
 
+    expect(await findByRole('dialog')).toBeInTheDocument();
+    expect(getByText('Do you want to cancel?')).toBeInTheDocument();
+
+    await userEvent.click(getByRole('button', { name: /yes, cancel/i }));
+
     expect(pushMock).toHaveBeenCalledWith(
-      `/accountLists/${accountListId}/reports/housingAllowance`,
+      '/accountLists/account-list-1/reports/housingAllowance',
     );
   });
 });

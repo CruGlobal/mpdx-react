@@ -1,10 +1,12 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
+import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
 import { AboutForm } from './AboutForm';
 
+const submit = jest.fn();
 const handleNext = jest.fn();
 const boardApprovalDate = '2024-09-15';
 const availabilityDate = '2024-10-01';
@@ -12,11 +14,13 @@ const availabilityDate = '2024-10-01';
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <TestRouter>
-      <AboutForm
-        boardApprovalDate={boardApprovalDate}
-        availableDate={availabilityDate}
-        handleNext={handleNext}
-      />
+      <Formik initialValues={{}} onSubmit={submit}>
+        <AboutForm
+          boardApprovalDate={boardApprovalDate}
+          availableDate={availabilityDate}
+          handleNext={handleNext}
+        />
+      </Formik>
     </TestRouter>
   </ThemeProvider>
 );
@@ -40,7 +44,7 @@ describe('AboutForm', () => {
   it('renders Cancel and Continue buttons', () => {
     const { getByRole } = render(<TestComponent />);
 
-    expect(getByRole('link', { name: 'CANCEL' })).toBeInTheDocument();
+    expect(getByRole('button', { name: 'CANCEL' })).toBeInTheDocument();
     expect(getByRole('button', { name: 'CONTINUE' })).toBeInTheDocument();
   });
 });
