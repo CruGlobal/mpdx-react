@@ -1,11 +1,12 @@
 import { Box, TextField, Typography } from '@mui/material';
+import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
-import { mocks } from 'src/components/Reports/MinisterHousingAllowance/Shared/mockData';
+import { CalculationFormValues } from '../Calculation';
 
 export const EndingSection: React.FC = () => {
   const { t } = useTranslation();
-
-  //TODO: add validation to text fields
+  const { values, handleChange, handleBlur, errors, touched } =
+    useFormikContext<CalculationFormValues>();
 
   return (
     <Box mt={2}>
@@ -20,15 +21,25 @@ export const EndingSection: React.FC = () => {
         <TextField
           label={t('Telephone Number')}
           variant="outlined"
-          value={mocks[0].staffInfo.phone}
+          name="phone"
+          value={values.phone}
+          onChange={handleChange}
+          onBlur={handleBlur}
           InputLabelProps={{ shrink: true }}
+          error={touched.phone && Boolean(errors.phone)}
+          helperText={touched.phone && errors.phone}
           sx={{ width: '40%' }}
         />
         <TextField
           label={t('Email')}
           variant="outlined"
-          value={mocks[0].staffInfo.email}
+          name="email"
+          value={values.email}
+          onChange={handleChange}
+          onBlur={handleBlur}
           InputLabelProps={{ shrink: true }}
+          error={touched.email && Boolean(errors.email)}
+          helperText={touched.email && errors.email}
           sx={{ width: '60%' }}
         />
       </Box>

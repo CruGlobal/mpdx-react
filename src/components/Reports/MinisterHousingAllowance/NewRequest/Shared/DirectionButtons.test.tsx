@@ -1,26 +1,36 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
 import { DirectionButtons } from './DirectionButtons';
 
 const handleNext = jest.fn();
+const submit = jest.fn();
+const pushMock = jest.fn();
 const accountListId = 'account-list-id';
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <TestRouter router={{ query: { accountListId } }}>
-      <DirectionButtons handleNext={handleNext} />
+      <Formik initialValues={{}} onSubmit={submit}>
+        <DirectionButtons handleNext={handleNext} />
+      </Formik>
     </TestRouter>
   </ThemeProvider>
 );
+
+jest.mock('next/router', () => ({
+  useRouter: () => ({ push: pushMock }),
+}));
 
 describe('DirectionButtons', () => {
   it('renders Cancel and Continue buttons', () => {
     const { getByRole } = render(<TestComponent />);
 
-    expect(getByRole('link', { name: 'CANCEL' })).toBeInTheDocument();
+    expect(getByRole('button', { name: 'CANCEL' })).toBeInTheDocument();
     expect(getByRole('button', { name: 'CONTINUE' })).toBeInTheDocument();
   });
 
@@ -33,15 +43,14 @@ describe('DirectionButtons', () => {
     expect(handleNext).toHaveBeenCalled();
   });
 
-  it('navigates to the correct URL when Cancel is clicked', () => {
+  it('navigates to the correct URL when Cancel is clicked', async () => {
     const { getByRole } = render(<TestComponent />);
-    const cancelButton = getByRole('link', { name: 'CANCEL' });
+    const cancelButton = getByRole('button', { name: 'CANCEL' });
 
-    expect(cancelButton).toHaveAttribute(
-      'href',
-      expect.stringContaining(
-        `/accountLists/${accountListId}/reports/housingAllowance`,
-      ),
+    await userEvent.click(cancelButton);
+
+    expect(pushMock).toHaveBeenCalledWith(
+      `/accountLists/${accountListId}/reports/housingAllowance`,
     );
   });
 });

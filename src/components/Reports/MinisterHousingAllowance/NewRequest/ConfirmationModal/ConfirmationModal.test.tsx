@@ -1,0 +1,59 @@
+import React from 'react';
+import { ThemeProvider } from '@mui/material/styles';
+import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import TestRouter from '__tests__/util/TestRouter';
+import theme from 'src/theme';
+import { ConfirmationModal } from './ConfirmationModal';
+
+const handleClose = jest.fn();
+const handleConfirm = jest.fn();
+
+interface TestComponentProps {
+  isCancel?: boolean;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({ isCancel }) => (
+  <ThemeProvider theme={theme}>
+    <TestRouter>
+      <ConfirmationModal
+        handleClose={handleClose}
+        handleConfirm={handleConfirm}
+        isCancel={isCancel}
+      />
+    </TestRouter>
+  </ThemeProvider>
+);
+
+describe('ConfirmationModal', () => {
+  it('renders submit confirmation modal correctly', async () => {
+    const { getByText, getByRole } = render(<TestComponent />);
+
+    expect(
+      getByText('Are you ready to submit your MHA request?'),
+    ).toBeInTheDocument();
+    expect(
+      getByText('You are submitting your MHA Request for board approval.'),
+    ).toBeInTheDocument();
+
+    await userEvent.click(getByRole('button', { name: /YES, CONTINUE/i }));
+    expect(handleConfirm).toHaveBeenCalled();
+  });
+
+  it('renders cancel confirmation modal correctly', async () => {
+    const { getByText, getByRole } = render(<TestComponent isCancel={true} />);
+
+    expect(getByText('Do you want to cancel?')).toBeInTheDocument();
+    expect(getByText('Your work will not be saved.')).toBeInTheDocument();
+
+    await userEvent.click(getByRole('button', { name: /YES, CANCEL/i }));
+    expect(handleConfirm).toHaveBeenCalled();
+  });
+
+  it('calls handleClose when modal is closed', async () => {
+    const { getByRole } = render(<TestComponent />);
+
+    await userEvent.click(getByRole('button', { name: /GO BACK/i }));
+    expect(handleClose).toHaveBeenCalled();
+  });
+});
