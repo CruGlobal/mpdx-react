@@ -1,7 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { TextFieldProps } from '@mui/material';
 import { prepareDataForValidation } from 'formik';
 import * as yup from 'yup';
+import { useSyncedState } from 'src/hooks/useSyncedState';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
 
 interface UseAutoSaveOptions<Value extends string | number> {
@@ -22,11 +23,9 @@ export const useAutoSave = <Value extends string | number>({
   const {
     goalCalculationResult: { data },
   } = useGoalCalculator();
-  const [internalValue, setInternalValue] = useState(value?.toString() ?? '');
-
-  useEffect(() => {
-    setInternalValue(value?.toString() ?? '');
-  }, [value]);
+  const [internalValue, setInternalValue] = useSyncedState(
+    value?.toString() ?? '',
+  );
 
   const parseValue = useCallback(
     (valueToValidate: string) => {
