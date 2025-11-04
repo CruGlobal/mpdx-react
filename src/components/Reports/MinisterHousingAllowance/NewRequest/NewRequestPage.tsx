@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Container, Stack } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { mainContentWidth } from '../MinisterHousingAllowance';
@@ -13,7 +13,7 @@ import { StepsList } from './StepsList/StepsList';
 
 export const NewRequestPage: React.FC = () => {
   const { t } = useTranslation();
-  const steps = getStepList(t);
+  const steps = useMemo(() => getStepList(t), [t]);
 
   const [currentStep, setCurrentStep] = useState(NewRequestStepsEnum.AboutForm);
   const [percentComplete, setPercentComplete] = useState(25);
