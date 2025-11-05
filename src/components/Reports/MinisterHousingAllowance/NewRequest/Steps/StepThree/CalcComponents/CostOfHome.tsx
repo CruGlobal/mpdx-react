@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Box, TableCell, TableRow, TextField, Typography } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { RentOwnEnum } from 'src/components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
 import { StyledOrderedList } from 'src/components/Reports/MinisterHousingAllowance/styledComponents/StyledOrderedList';
+import { useAnnualTotal } from 'src/hooks/useAnnualTotal';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { CalculationFormValues } from '../Calculation';
@@ -26,23 +27,7 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({ rentOrOwn }) => {
   const { values, setFieldValue, handleBlur, touched, errors } =
     useFormikContext<CalculationFormValues>();
 
-  const totalMonthly = useMemo(
-    () =>
-      (values.mortgagePayment ?? 0) +
-      (values.furnitureCostsTwo ?? 0) +
-      (values.repairCosts ?? 0) +
-      (values.avgUtilityTwo ?? 0) +
-      (values.unexpectedExpenses ?? 0),
-    [
-      values.mortgagePayment,
-      values.furnitureCostsTwo,
-      values.repairCosts,
-      values.avgUtilityTwo,
-      values.unexpectedExpenses,
-    ],
-  );
-
-  const totalAnnual = useMemo(() => totalMonthly * 12, [totalMonthly]);
+  const { totalCostOfHome, annualCostOfHome } = useAnnualTotal(values);
 
   return (
     <CalculationCardSkeleton title={t('Cost of Providing a Home')}>
@@ -309,7 +294,7 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({ rentOrOwn }) => {
           </StyledOrderedList>
         </TableCell>
         <TableCell sx={{ width: '30%', fontSize: 16 }}>
-          {currencyFormat(totalMonthly, currency, locale, {
+          {currencyFormat(totalCostOfHome, currency, locale, {
             showTrailingZeros: true,
           })}
         </TableCell>
@@ -329,7 +314,7 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({ rentOrOwn }) => {
         </TableCell>
         <TableCell sx={{ width: '30%', fontSize: 16 }}>
           <b>
-            {currencyFormat(totalAnnual, currency, locale, {
+            {currencyFormat(annualCostOfHome, currency, locale, {
               showTrailingZeros: true,
             })}
           </b>

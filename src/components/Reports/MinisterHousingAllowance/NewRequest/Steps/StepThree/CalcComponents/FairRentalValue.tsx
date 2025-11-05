@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Box, TableCell, TableRow, TextField, Typography } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { Trans, useTranslation } from 'react-i18next';
 import { StyledOrderedList } from 'src/components/Reports/MinisterHousingAllowance/styledComponents/StyledOrderedList';
+import { useAnnualTotal } from 'src/hooks/useAnnualTotal';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { CalculationFormValues } from '../Calculation';
@@ -21,15 +22,7 @@ export const FairRentalValue: React.FC = () => {
   const { values, touched, errors, setFieldValue, handleBlur } =
     useFormikContext<CalculationFormValues>();
 
-  const totalMonthly = useMemo(
-    () =>
-      (values.rentalValue ?? 0) +
-      (values.furnitureCostsOne ?? 0) +
-      (values.avgUtilityOne ?? 0),
-    [values.rentalValue, values.furnitureCostsOne, values.avgUtilityOne],
-  );
-
-  const totalAnnual = useMemo(() => totalMonthly * 12, [totalMonthly]);
+  const { totalFairRental, annualFairRental } = useAnnualTotal(values);
 
   return (
     <CalculationCardSkeleton title={t('Fair Rental Value')}>
@@ -202,7 +195,7 @@ export const FairRentalValue: React.FC = () => {
           </StyledOrderedList>
         </TableCell>
         <TableCell sx={{ width: '30%', fontSize: 16 }}>
-          {currencyFormat(totalMonthly, currency, locale, {
+          {currencyFormat(totalFairRental, currency, locale, {
             showTrailingZeros: true,
           })}
         </TableCell>
@@ -218,7 +211,7 @@ export const FairRentalValue: React.FC = () => {
         </TableCell>
         <TableCell sx={{ width: '30%', fontSize: 16 }}>
           <b>
-            {currencyFormat(totalAnnual, currency, locale, {
+            {currencyFormat(annualFairRental, currency, locale, {
               showTrailingZeros: true,
             })}
           </b>
