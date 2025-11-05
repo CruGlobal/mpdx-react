@@ -1,11 +1,11 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Container, Stack } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useNewStepList } from '../../../../hooks/useNewStepList';
 import { mainContentWidth } from '../MinisterHousingAllowance';
 import { PanelLayout } from '../PanelLayout/PanelLayout';
 import { mocks } from '../Shared/mockData';
 import { NewRequestStepsEnum, PanelTypeEnum } from '../Shared/sharedTypes';
-import { getStepList } from './Helper/getStepList';
 import { AboutForm } from './Steps/StepOne/AboutForm';
 import { Calculation } from './Steps/StepThree/Calculation';
 import { RentOwn } from './Steps/StepTwo/RentOwn';
@@ -13,7 +13,7 @@ import { StepsList } from './StepsList/StepsList';
 
 export const NewRequestPage: React.FC = () => {
   const { t } = useTranslation();
-  const steps = useMemo(() => getStepList(t), [t]);
+  const steps = useNewStepList();
 
   const [currentStep, setCurrentStep] = useState(NewRequestStepsEnum.AboutForm);
   const [percentComplete, setPercentComplete] = useState(25);
