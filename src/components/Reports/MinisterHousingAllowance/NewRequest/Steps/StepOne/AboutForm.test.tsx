@@ -1,6 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
@@ -8,6 +9,7 @@ import { AboutForm } from './AboutForm';
 
 const submit = jest.fn();
 const handleNext = jest.fn();
+const onOpen = jest.fn();
 const boardApprovalDate = '2024-09-15';
 const availabilityDate = '2024-10-01';
 
@@ -19,6 +21,7 @@ const TestComponent: React.FC = () => (
           boardApprovalDate={boardApprovalDate}
           availableDate={availabilityDate}
           handleNext={handleNext}
+          onOpen={onOpen}
         />
       </Formik>
     </TestRouter>
@@ -46,5 +49,15 @@ describe('AboutForm', () => {
 
     expect(getByRole('button', { name: 'CANCEL' })).toBeInTheDocument();
     expect(getByRole('button', { name: 'CONTINUE' })).toBeInTheDocument();
+  });
+
+  it('opens panel when link is clicked', () => {
+    const { getByRole } = render(<TestComponent />);
+
+    userEvent.click(
+      getByRole('button', { name: /what expenses can i claim on my mha/i }),
+    );
+
+    expect(onOpen).toHaveBeenCalled();
   });
 });

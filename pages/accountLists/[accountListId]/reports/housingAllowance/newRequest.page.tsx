@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { NewRequestPage } from 'src/components/Reports/MinisterHousingAllowance/NewRequest/NewRequestPage';
+import { ExpensesClaim } from 'src/components/Reports/MinisterHousingAllowance/NewRequest/Steps/StepThree/CalcComponents/ExpensesClaim';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -24,6 +25,15 @@ const HousingAllowanceNewRequestPage: React.FC = () => {
   const title = t("Minister's Housing Allowance");
 
   const [isNavListOpen, setNavListOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleOnOpen = () => {
+    setIsOpen(true);
+  };
+
+  const handleOnClose = () => {
+    setIsOpen(false);
+  };
 
   const handleNavListToggle = () => {
     setNavListOpen(!isNavListOpen);
@@ -55,9 +65,14 @@ const HousingAllowanceNewRequestPage: React.FC = () => {
                 title={t("Minister's Housing Allowance Request")}
                 headerType={HeaderTypeEnum.Report}
               />
-              <NewRequestPage />
+              <NewRequestPage onOpen={handleOnOpen} />
             </>
           }
+          rightPanel={
+            isOpen ? <ExpensesClaim onClose={handleOnClose} /> : undefined
+          }
+          rightOpen={isOpen}
+          rightWidth="40%"
         />
       </NewRequestPageWrapper>
     </>

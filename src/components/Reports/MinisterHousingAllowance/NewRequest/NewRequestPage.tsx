@@ -19,6 +19,10 @@ import { Calculation } from './Steps/StepThree/Calculation';
 import { RentOwn } from './Steps/StepTwo/RentOwn';
 import { StepsList } from './StepsList/StepsList';
 
+interface NewRequestPageProps {
+  onOpen?: () => void;
+}
+
 export interface FormValues {
   rentOrOwn: RentOwnEnum | undefined;
 }
@@ -29,7 +33,7 @@ const validationSchema = yup.object({
     .required(i18n.t('Please select one of the options above to continue.')),
 });
 
-export const NewRequestPage: React.FC = () => {
+export const NewRequestPage: React.FC<NewRequestPageProps> = ({ onOpen }) => {
   const { t } = useTranslation();
   const steps = useNewStepList();
 
@@ -124,7 +128,7 @@ export const NewRequestPage: React.FC = () => {
           validationSchema={validationSchema}
           onSubmit={() => handleNextStep()}
         >
-          <Container>
+          <Container sx={{ ml: 5 }}>
             <Stack direction="column" width={mainContentWidth}>
               {currentStep === NewRequestStepsEnum.AboutForm ? (
                 <AboutForm
@@ -135,6 +139,7 @@ export const NewRequestPage: React.FC = () => {
                     mocks[4].mhaDetails.staffMHA?.availableDate ?? ''
                   }
                   handleNext={handleNextStep}
+                  onOpen={onOpen}
                 />
               ) : currentStep === NewRequestStepsEnum.RentOrOwn ? (
                 <RentOwn />
@@ -148,6 +153,7 @@ export const NewRequestPage: React.FC = () => {
                   }
                   handleNext={handleNextStep}
                   handleBack={handlePreviousStep}
+                  onOpen={onOpen}
                 />
               ) : currentStep === NewRequestStepsEnum.Receipt ? (
                 <Receipt />
