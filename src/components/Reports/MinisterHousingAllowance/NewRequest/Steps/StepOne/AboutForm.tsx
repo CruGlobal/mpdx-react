@@ -11,18 +11,20 @@ interface AboutFormProps {
   boardApprovalDate?: string;
   availableDate?: string;
   handleNext: () => void;
+  onOpen?: () => void;
 }
 
 export const AboutForm: React.FC<AboutFormProps> = ({
   boardApprovalDate,
   availableDate,
   handleNext,
+  onOpen,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
 
   // TODO: "newRequestAboutForm" value needs to be added to translation files to see all values
-  // TODO: Get correct links
+  // TODO: Get correct link fot "Salary Calculation Form"
 
   const nextYear = new Date().getFullYear() + 1;
 
@@ -91,7 +93,9 @@ export const AboutForm: React.FC<AboutFormProps> = ({
             fontSize="medium"
             sx={{ verticalAlign: 'middle', opacity: 0.56 }}
           />{' '}
-          <Link href="">What expenses can I claim on my MHA?</Link>
+          <Link component="button" type="button" onClick={onOpen}>
+            What expenses can I claim on my MHA?
+          </Link>
         </Box>
       </Trans>
       <DirectionButtons handleNext={handleNext} />

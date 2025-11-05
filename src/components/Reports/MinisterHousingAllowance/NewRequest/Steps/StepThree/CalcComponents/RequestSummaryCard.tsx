@@ -34,7 +34,7 @@ export const RequestSummaryCard: React.FC<RequestSummaryCardProps> = ({
           }}
         >
           <TableHead>
-            <TableRow>
+            <TableRow sx={{ '& th': { fontWeight: 400 } }}>
               <TableCell sx={{ width: '70%', fontSize: 16 }}>
                 {t('Rent or Own')}
               </TableCell>

@@ -2,28 +2,11 @@ import React from 'react';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CircleIcon from '@mui/icons-material/Circle';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
+import { List, ListItem, ListItemText } from '@mui/material';
 import {
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  SxProps,
-  Theme,
-  styled,
-} from '@mui/material';
-
-const categoryListItemStyles: SxProps<Theme> = (theme) => ({
-  '.MuiSvgIcon-root': {
-    fontSize: '1rem',
-  },
-  padding: 0,
-  paddingLeft: theme.spacing(3),
-});
-
-const CategoryListItemIcon = styled(ListItemIcon)(({ theme }) => ({
-  minWidth: 'auto',
-  marginRight: theme.spacing(0.5),
-}));
+  CategoryListItemIcon,
+  CategoryListItemStyles,
+} from '../../styledComponents/CategoryListItemStyles';
 
 interface ListItemContentProps {
   title: string;
@@ -75,7 +58,7 @@ export const StepsList: React.FC<StepsListProps> = ({ steps }) => {
   return (
     <List disablePadding>
       {steps.map(({ title, complete, current }, index) => (
-        <ListItem key={index} sx={categoryListItemStyles}>
+        <ListItem key={index} sx={CategoryListItemStyles}>
           <ListItemContent
             title={title}
             complete={complete}

@@ -26,12 +26,12 @@ import { EndingSection } from './CalcComponents/EndingSection';
 import { FairRentalValue } from './CalcComponents/FairRentalValue';
 import { RequestSummaryCard } from './CalcComponents/RequestSummaryCard';
 
-//TODO: Get correct links
 interface CalculationProps {
   boardApprovalDate: string;
   availableDate: string;
   handleBack: () => void;
   handleNext: () => void;
+  onOpen?: () => void;
 }
 export interface CalculationFormValues {
   rentalValue?: number | null | undefined;
@@ -89,6 +89,7 @@ export const Calculation: React.FC<CalculationProps> = ({
   availableDate,
   handleBack,
   handleNext,
+  onOpen,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -171,7 +172,9 @@ export const Calculation: React.FC<CalculationProps> = ({
                 fontSize="medium"
                 sx={{ verticalAlign: 'middle', opacity: 0.56 }}
               />{' '}
-              <Link href="">What expenses can I claim on my MHA?</Link>
+              <Link component="button" type="button" onClick={onOpen}>
+                What expenses can I claim on my MHA?
+              </Link>
             </Box>
             {rentOrOwn === RentOwnEnum.Own && (
               <Box mb={3}>
