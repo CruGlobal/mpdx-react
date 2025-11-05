@@ -9,5 +9,4 @@ export const StyledOrderedList = styled(Box)<StyledOrderedListProps>({
   '& li::marker': {
     content: 'counters(list-item, ".") ".\\00a0\\00a0"',
   },
-  start: (props) => props.start,
 });

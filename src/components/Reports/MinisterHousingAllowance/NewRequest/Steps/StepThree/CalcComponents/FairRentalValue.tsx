@@ -213,9 +213,7 @@ export const FairRentalValue: React.FC = () => {
             <b>{t('Annual Fair Rental Value of your Home')}</b>
           </Typography>
           <Box sx={{ color: 'text.secondary' }}>
-            <Trans i18nKey="fairRentalValueQuestion1">
-              {t('Line 4 multiplied by 12 months')}
-            </Trans>
+            {t('Line 4 multiplied by 12 months')}
           </Box>
         </TableCell>
         <TableCell sx={{ width: '30%', fontSize: 16 }}>
