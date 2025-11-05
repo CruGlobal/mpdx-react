@@ -21,15 +21,12 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from 'recharts';
-import { useGetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
 import { useLocale } from 'src/hooks/useLocale';
-import { useOrganizationId } from 'src/hooks/useOrganizationId';
 import cruLogo from 'src/images/cru/cru-logo.svg';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
 import { hasStaffSpouse } from '../../../Shared/calculateTotals';
-import { useGetOrganizationsQuery } from './GetOrganization.generated';
 
 const ChartContainer = styled(Box)({
   '@media print': {
@@ -94,25 +91,6 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
   } = useGoalCalculator();
   const goalCalculation = data?.goalCalculation;
 
-  /*
-   * We don't want to display ministry location and Cru image if
-   * the user is not part of Cru.
-   */
-  const salaryOrganizationId = useOrganizationId();
-  const { data: salaryOrganization } = useGetUsersOrganizationsAccountsQuery({
-    skip: !salaryOrganizationId,
-  });
-  const { data: organizationTypeData } = useGetOrganizationsQuery();
-  const organizationTypeDataFiltered = organizationTypeData?.organizations.find(
-    (org) => org.id === salaryOrganizationId,
-  );
-  const organizationTypeName = organizationTypeDataFiltered?.organizationType;
-  const isOrganizationTypeCru =
-    organizationTypeName === 'Cru' ||
-    organizationTypeName === 'Cru-International';
-  const organizationName =
-    salaryOrganization?.userOrganizationAccounts[0].organization.name;
-
   const presentationData = useMemo(
     () => [
       { name: 'Salary', value: goalTotals.netMonthlySalary },
@@ -159,64 +137,64 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
       ? `${firstName} ${t('and')} ${spouseFirstName ?? ''} ${lastName}`
       : `${firstName} ${lastName}`;
 
-    const personalRows: PersonalInfoRow[] = [
+    return [
       { label: t('Name'), value: fullName },
       {
         label: t('Mission Agency'),
-        value: organizationName,
+        value: t('Campus Crusade for Christ, Inc.'),
       },
       {
         label: t('Ministry Location'),
         value: goalCalculation?.ministryLocation ?? undefined,
       },
     ];
-    if (!isOrganizationTypeCru) {
-      return personalRows.filter((row) => row.label !== t('Ministry Location'));
-    }
-
-    return personalRows;
-  }, [goalCalculation, t, organizationName, isOrganizationTypeCru]);
+  }, [goalCalculation, t]);
 
   const rows: PresentingYourGoalRow[] = useMemo(
     () => [
       {
         title: hasStaffSpouse(goalCalculation?.familySize)
-          ? 'Salary (Combined)'
-          : 'Salary',
-        description:
+          ? t('Salary (Combined)')
+          : t('Salary'),
+        description: t(
           'Salaries are based upon marital status, number of children, tenure with Cru, and adjustments for certain geographic locations.',
+        ),
         amount: presentationData[0].value,
       },
       {
-        title: 'Ministry Expenses',
-        description:
+        title: t('Ministry Expenses'),
+        description: t(
           'Training, conferences, supplies, evangelism & discipleship materials, communication with ministry partners, ministry travel expenses, etc.',
+        ),
         amount: presentationData[1].value,
       },
       {
-        title: 'Benefits',
-        description:
+        title: t('Benefits'),
+        description: t(
           "Includes group medical and dental coverage, life insurance, disability insurance, worker's compensation, and employer contribution to a 403(b) retirement plan.",
+        ),
         amount: presentationData[2].value,
       },
       {
-        title: 'Social Security and Taxes',
-        description:
+        title: t('Social Security and Taxes'),
+        description: t(
           'Since Campus Crusade is a non-profit organization, staff members are responsible for paying the entire amount of Social Security.',
+        ),
         amount: presentationData[3].value,
       },
       {
-        title: 'Voluntary 403b Retirement Plan',
-        description:
+        title: t('Voluntary 403b Retirement Plan'),
+        description: t(
           'Staff members are eligible to contribute to a voluntary retirement program each month.',
+        ),
         amount: presentationData[4].value,
       },
       {
-        title: 'Administrative Charge',
+        title: t('Administrative Charge'),
         amount: presentationData[5].value,
       },
-      { title: 'Total Support Goal', amount: total, bold: true },
-      { title: 'Total Solid Support', amount: supportRaised },
+      { title: t('Total Support Goal'), amount: total, bold: true },
+      { title: t('Total Solid Support'), amount: supportRaised },
     ],
     [presentationData, total, supportRaised, t, goalTotals],
   );
@@ -248,7 +226,7 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
                     <StyledTableCell data-testid="value-typography">
                       {item.value}
                     </StyledTableCell>
-                    {index === 0 && isOrganizationTypeCru && (
+                    {index === 0 && (
                       <StyledTableCell sx={{ textAlign: 'center' }} rowSpan={3}>
                         <img
                           data-testid="cru-logo"
@@ -291,7 +269,7 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
                   >
                     <TableCell>
                       <Typography variant="body1" fontWeight="bold">
-                        {t(item.title)}
+                        {item.title}
                       </Typography>
                       {item.description && (
                         <Typography
@@ -299,7 +277,7 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
                           color={theme.palette.text.secondary}
                           sx={{ mt: 1 }}
                         >
-                          {t(item.description)}
+                          {item.description}
                         </Typography>
                       )}
                     </TableCell>
