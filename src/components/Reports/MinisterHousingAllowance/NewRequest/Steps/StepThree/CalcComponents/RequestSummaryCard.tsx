@@ -10,8 +10,13 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
+import { useFormikContext } from 'formik';
 import { Trans, useTranslation } from 'react-i18next';
 import { RentOwnEnum } from 'src/components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
+import { useAnnualTotal } from 'src/hooks/useAnnualTotal';
+import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat';
+import { CalculationFormValues } from '../Calculation';
 
 interface RequestSummaryCardProps {
   rentOrOwn: RentOwnEnum | undefined;
@@ -21,6 +26,11 @@ export const RequestSummaryCard: React.FC<RequestSummaryCardProps> = ({
   rentOrOwn = RentOwnEnum.Own,
 }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
+  const currency = 'USD';
+
+  const { values } = useFormikContext<CalculationFormValues>();
+  const { annualTotal } = useAnnualTotal(values);
 
   return (
     <Card>
@@ -57,8 +67,12 @@ export const RequestSummaryCard: React.FC<RequestSummaryCardProps> = ({
                   </Trans>
                 </Box>
               </TableCell>
-              <TableCell sx={{ width: '30%' }}>
-                <b>{t('$0')}</b>
+              <TableCell sx={{ width: '30%', fontSize: 16 }}>
+                <b>
+                  {currencyFormat(annualTotal, currency, locale, {
+                    showTrailingZeros: true,
+                  })}
+                </b>
               </TableCell>
             </TableRow>
           </TableBody>

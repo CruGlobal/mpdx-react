@@ -1,21 +1,23 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
+import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
 import { RentOwnEnum } from 'src/components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
 import theme from 'src/theme';
 import { RequestSummaryCard } from './RequestSummaryCard';
 
+const submit = jest.fn();
 interface TestComponentProps {
   rentOrOwn?: RentOwnEnum;
 }
 
-//TODO: Test main calculation
-
 const TestComponent: React.FC<TestComponentProps> = ({ rentOrOwn }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
-      <RequestSummaryCard rentOrOwn={rentOrOwn} />
+      <Formik initialValues={{}} onSubmit={submit}>
+        <RequestSummaryCard rentOrOwn={rentOrOwn} />
+      </Formik>
     </TestRouter>
   </ThemeProvider>
 );

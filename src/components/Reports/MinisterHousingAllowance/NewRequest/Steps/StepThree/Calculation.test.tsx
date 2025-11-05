@@ -16,14 +16,16 @@ const onOpen = jest.fn();
 const boardApprovalDate = '2024-06-15';
 const availableDate = '2024-07-01';
 
+const initialValues = {
+  phone: '1234567890',
+  email: 'john.doe@cru.org',
+};
+
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <TestRouter>
-        <Formik
-          initialValues={{ phone: '1234567890', email: 'john.doe@cru.org' }}
-          onSubmit={submit}
-        >
+        <Formik initialValues={initialValues} onSubmit={submit}>
           <Calculation
             boardApprovalDate={boardApprovalDate}
             availableDate={availableDate}
