@@ -159,7 +159,7 @@ For EACH changed file from Stage 1, review for:
 
 - **Add comments for non-obvious logic** - Especially for workarounds or complex algorithms
 - **Explain why, not what** - Code shows what, comments explain reasoning
-- **Document assumptions** - Like why `!` non-null assertions are safe
+- **Document assumptions** - Like why ! non-null assertions are safe
 - **Remove outdated comments** - Delete comments that no longer apply
 
 #### Accessibility
