@@ -58,7 +58,7 @@ describe('MultiPageHeader', () => {
     );
 
     expect(getByText('Toggle Navigation Panel')).toBeInTheDocument();
-    expect(getByTestId('ReportsFilterIcon')).toBeInTheDocument();
+    expect(getByTestId('ReportsMenuIcon')).toBeInTheDocument();
   });
 
   it('should render the Settings menu when not on setup tour', async () => {
