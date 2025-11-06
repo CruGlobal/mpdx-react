@@ -34,6 +34,7 @@ export const createTableRow = (data: Row): TableData => ({
   name: data.name ?? '',
   status: data.status ? getLocalizedStatus(data.status) : null,
   pledgeAmount: data.pledgeAmount ?? 0,
+  pledgeFrequency: data.pledgeFrequency ?? null,
   donationPeriodSum: data.donationPeriodSum,
   donationPeriodCount: data.donationPeriodCount,
   donationPeriodAverage: data.donationPeriodAverage,
