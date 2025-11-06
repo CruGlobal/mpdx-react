@@ -34,7 +34,13 @@ enum FundTypeEnum {
   ConferenceSavings = 'Staff Conference Savings',
 }
 
-export const BalanceCard: React.FC = () => {
+interface BalanceCardProps {
+  totalDonationSum?: number;
+}
+
+export const BalanceCard: React.FC<BalanceCardProps> = ({
+  totalDonationSum,
+}) => {
   const { t } = useTranslation();
   const locale = useLocale();
 
@@ -105,19 +111,20 @@ export const BalanceCard: React.FC = () => {
             {formatBalance(fund.balance)}
           </Typography>
         </Box>
-        {/* TODO 
-        <Box sx={{ flex: 1 }}>
-          <Typography
-            variant="body1"
-            sx={{ '@media print': { fontSize: '12pt' } }}
-          >
-            {t('Total Donations for this period')}
-          </Typography>
+        {totalDonationSum && (
+          <Box sx={{ flex: 1 }}>
+            <Typography
+              variant="body1"
+              sx={{ '@media print': { fontSize: '12pt' } }}
+            >
+              {t('Total Donations for this period')}
+            </Typography>
 
-          <Typography variant="h5" sx={{ fontSize: 'inherit' }}>
-            {formatBalance(fund.balance)}
-          </Typography>
-        </Box> */}
+            <Typography variant="h5" sx={{ fontSize: 'inherit' }}>
+              {formatBalance(totalDonationSum || 0)}
+            </Typography>
+          </Box>
+        )}
       </Box>
     </StyledCard>
   );
