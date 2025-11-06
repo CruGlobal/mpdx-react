@@ -166,7 +166,9 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
         <>
           {!staffAccountLoading && staffAccountData?.staffAccount?.id ? (
             <BalanceCard
-              totalDonationSum={data?.partnerGivingAnalysis?.totalDonationSum}
+              donationPeriodTotalSum={
+                data?.partnerGivingAnalysis?.donationPeriodTotalSum
+              }
             />
           ) : null}
           <Table
