@@ -18,7 +18,7 @@ MODE
 - REVIEW ONLY of the current PR diff; do NOT modify existing files or stage/commit changes.
 - All findings will be collected and optionally posted to the PR via GitHub CLI at the end.
 
-=== Stage 0 — Setup Knowledge ===
+### Stage 0 — Setup Knowledge
 First, read the .CLAUDE/CLAUDE.md file to understand project conventions, architecture, and coding standards.
 
 Then use search tools to build context for reuse analysis:
@@ -40,7 +40,7 @@ Repo heuristics to enforce:
 - Tests: prefer central mockData; test print paths; name/intent clear; verify formatting using prod helpers.
 - File types: pure helpers should be .ts, not .tsx.
 
-=== Stage 1 — Get Git Changes ===
+### Stage 1 — Get Git Changes
 
 Use GitHub CLI to get the exact refs for the currently checked-out PR:
 
@@ -69,7 +69,7 @@ List EVERY file changed in this PR (relative path). For each file, include:
 
 Do not skip any file. If any file can't be read, state it and continue.
 
-=== Stage 2 — Deep Review (File-by-File) ===
+### Stage 2 — Deep Review (File-by-File)
 IMPORTANT: Only review files that appear in the git diff from Stage 1. Do not review files that are not part of this PR.
 
 **Issue Severity Guidelines:**
@@ -206,7 +206,7 @@ For each file, document:
 
 RULE: If no issues found for a file, state: "No issues found after deep check" AND explain the checks you ran.
 
-=== Stage 3 — Reuse Sweep (Repo-Wide) ===
+### Stage 3 — Reuse Sweep (Repo-Wide)
 Search for reuse opportunities in the PR changes:
 
 **Global Shared Resources:**
@@ -235,7 +235,7 @@ For each reuse candidate found:
 - Patch: minimal unified diff to adopt existing solution or create shared utility
 - Consolidation opportunity: if creating new shared code, suggest location (src/lib/, src/hooks/, etc.)
 
-=== Stage 4 — Pattern Sweep (Regex-Guided) ===
+### Stage 4 — Pattern Sweep (Regex-Guided)
 Search ONLY the files changed in this PR (from Stage 1 git diff) for these patterns; for each hit, either propose a fix or mark "N/A" with reason. Cite exact lines.
 
 - `toLocaleString.*currency` → replace with intlFormat helpers
@@ -251,7 +251,7 @@ Search ONLY the files changed in this PR (from Stage 1 git diff) for these patte
 - Tests not using central mockData → switch to shared mocks
 - Recharts mocks duplicated → move to shared test util
 
-=== Stage 5 — Generate Review Report ===
+### Stage 5 — Generate Review Report
 
 Print a detailed report grouped by confidence level:
 
@@ -284,31 +284,30 @@ For each issue include:
 
 **Testing Suggestions** (missing tests, test improvements)
 
-=== Stage 6 — Offer to Post Comments ===
+### Stage 6 — Offer to Post Comments
 
 After completing the review report, ask the user:
 
 "Would you like me to post these review comments to the PR via GitHub CLI?
 
-I can create review comments on specific lines using `gh pr review` command.
+I can create review comments on specific lines using `gh pr review` command."
 
 Options:
 1. Post all comments (Must-fix and Nice-to-have)
 2. Post only Must-fix comments
-3. Don't post (review complete)"
+3. Don't post (review complete)
 
 If the user agrees to post comments:
 
 1. Use `gh pr view --json number -q .number` to get the PR number
 2. For each comment, use:
-   ```bash
-   gh pr review [PR_NUMBER] --comment --body "[Must-fix/Nice-to-have] Issue at file:line
+```bash
+gh pr review [PR_NUMBER] --comment --body "[Must-fix/Nice-to-have] Issue at file:line
 
-   Evidence: <code fragment>
-   Impact: <why this matters>
-   Fix: <suggested change>
-   ```
-
+Evidence: <code fragment>
+Impact: <why this matters>
+Fix: <suggested change>"
+```
 3. Keep each comment concise (≤ 220 characters when possible)
 4. Use collaborative, direct phrasing: "Could we..." or "Consider..."
 5. Group related comments when appropriate
