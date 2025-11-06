@@ -5,6 +5,7 @@ export interface TableData {
   name: string;
   status: string | null;
   pledgeAmount: number | null;
+  pledgeFrequency: string | null;
   donationPeriodSum: number | null;
   donationPeriodCount: number | null;
   donationPeriodAverage: number | null;

@@ -51,9 +51,18 @@ export const usePopulateTableRows = (
   };
 
   const pledgeAmount: RenderCell = ({ row }) => {
+    const formattedAmount = currencyFormat(
+      row.pledgeAmount ?? 0,
+      row.pledgeCurrency,
+      locale,
+    );
+    const displayText = row.pledgeFrequency
+      ? `${formattedAmount}/${row.pledgeFrequency}`
+      : formattedAmount;
+
     return (
       <Typography variant="body2" noWrap>
-        {currencyFormat(row.pledgeAmount ?? 0, row.pledgeCurrency, locale)}
+        {displayText}
       </Typography>
     );
   };
