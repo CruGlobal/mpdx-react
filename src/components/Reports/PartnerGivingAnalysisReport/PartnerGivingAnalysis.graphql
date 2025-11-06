@@ -23,6 +23,7 @@ fragment PartnerGivingFields on PartnerGivingAnalysisContact {
   totalDonations
   pledgeCurrency
   pledgeAmount
+  pledgeFrequency
   firstDonationDate
   lastDonationDate
   lastDonationAmount
