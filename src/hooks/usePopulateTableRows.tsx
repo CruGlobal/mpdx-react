@@ -6,6 +6,7 @@ import { preloadContactsRightPanel } from 'src/components/Contacts/ContactsRight
 import { RenderCell } from 'src/components/Reports/PartnerGivingAnalysisReport/Table/Table';
 import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { useLocale } from 'src/hooks/useLocale';
+import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 
@@ -14,6 +15,7 @@ export const usePopulateTableRows = (
   isRowChecked: (contactId: string) => boolean,
 ) => {
   const { buildContactUrl } = useContactPanel();
+  const { getLocalizedPledgeFrequency } = useLocalizedConstants();
   const locale = useLocale();
 
   const checkbox: RenderCell = ({ row }) => {
@@ -57,7 +59,7 @@ export const usePopulateTableRows = (
       locale,
     );
     const displayText = row.pledgeFrequency
-      ? `${formattedAmount}/${row.pledgeFrequency}`
+      ? `${formattedAmount}/${getLocalizedPledgeFrequency(row.pledgeFrequency)}`
       : formattedAmount;
 
     return (
