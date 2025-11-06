@@ -35,11 +35,11 @@ enum FundTypeEnum {
 }
 
 interface BalanceCardProps {
-  totalDonationSum?: number;
+  donationPeriodTotalSum?: number;
 }
 
 export const BalanceCard: React.FC<BalanceCardProps> = ({
-  totalDonationSum,
+  donationPeriodTotalSum,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -111,7 +111,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
             {formatBalance(fund.balance)}
           </Typography>
         </Box>
-        {totalDonationSum && (
+        {donationPeriodTotalSum && (
           <Box sx={{ flex: 1 }}>
             <Typography
               variant="body1"
@@ -121,7 +121,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
             </Typography>
 
             <Typography variant="h5" sx={{ fontSize: 'inherit' }}>
-              {formatBalance(totalDonationSum || 0)}
+              {formatBalance(donationPeriodTotalSum || 0)}
             </Typography>
           </Box>
         )}
