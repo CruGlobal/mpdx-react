@@ -286,7 +286,8 @@ For each issue include:
 
 ### Stage 6 — Offer to Post Comments
 
-After completing the review report, ask the user:
+After completing the review report, get the current branch's PR number with `gh pr view --json number -q .number`.
+If the branch does not have a PR yet, skip this step. If it does have a PR, ask the user:
 
 "Would you like me to post these review comments to the PR via GitHub CLI?
 
@@ -295,12 +296,11 @@ I can create review comments on specific lines using `gh pr review` command."
 Options:
 1. Post all comments (Must-fix and Nice-to-have)
 2. Post only Must-fix comments
-3. Don't post (review complete)
+3. Don't post
 
 If the user agrees to post comments:
 
-1. Use `gh pr view --json number -q .number` to get the PR number
-2. For each comment, use:
+1. For each comment, use:
 ```bash
 gh pr review [PR_NUMBER] --comment --body "[Must-fix/Nice-to-have] Issue at file:line
 
@@ -308,10 +308,10 @@ Evidence: <code fragment>
 Impact: <why this matters>
 Fix: <suggested change>"
 ```
-3. Keep each comment concise (≤ 220 characters when possible)
-4. Use collaborative, direct phrasing: "Could we..." or "Consider..."
-5. Group related comments when appropriate
-6. After posting, confirm: "Posted X review comments to PR #[NUMBER]"
+2. Keep each comment concise (≤ 220 characters when possible)
+3. Use collaborative, direct phrasing: "Could we..." or "Consider..."
+4. Group related comments when appropriate
+5. After posting, confirm: "Posted X review comments to PR #[NUMBER]"
 
 Comment formatting rules:
 - Start with severity: [Must-fix] or [Nice-to-have]
@@ -321,3 +321,16 @@ Comment formatting rules:
 - Explain impact
 - Suggest concrete fix
 - Be kind and collaborative in tone
+
+### Stage 7 — Offer to Fix Issues
+
+If the current branch does not have a PR yet, ask the user:
+
+"Would you like me to the issues?"
+
+Options:
+1. Fix all issues
+2. Fix only Must-fix issues
+3. Don't fix
+
+If the user agrees to fix the issues, make the changes on behalf of the user. You may only modify files in this step.
