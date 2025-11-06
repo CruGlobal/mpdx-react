@@ -469,7 +469,7 @@ const handleLoadMore = () => {
 };
 ```
 
-If you want to load all the pages, use the `useFetchAllPages` hook. As long as your operation accepts an `after` variable, this hook will load all the pages into `data`, and set `loading` to `false` once all pages have loaded. For this to work, the field you are querying needs to have its field policy set to `paginationFieldPolicy` in `src/lib/client.ts` so that Apollo will know to merge the results from the additional pages back into the result from the initial query. Consult the [Apollo docs](https://www.apollographql.com/docs/react/caching/cache-field-behavior/) for more information.
+If you want to load all the pages, use the `useFetchAllPages` hook. As long as your operation accepts an `after` variable, this hook will load all the pages into `data`, and set `loading` to `false` once all pages have loaded. For this to work, the field you are querying needs to have its field policy set to `paginationFieldPolicy` in `src/lib/apollo/cache.ts` so that Apollo will know to merge the results from the additional pages back into the result from the initial query. Consult the [Apollo docs](https://www.apollographql.com/docs/react/caching/cache-field-behavior/) for more information.
 
 ```ts
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';

@@ -1,6 +1,7 @@
 import NextLink from 'next/link';
 import { Checkbox, Link, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
+import { ContactDetailTabEnum } from 'src/components/Contacts/ContactDetails/ContactDetailTab';
 import { preloadContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { RenderCell } from 'src/components/Reports/PartnerGivingAnalysisReport/Table/Table';
 import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
@@ -29,7 +30,7 @@ export const usePopulateTableRows = (
     return (
       <Link
         component={NextLink}
-        href={buildContactUrl(row.id)}
+        href={buildContactUrl(row.id, ContactDetailTabEnum.Donations)}
         onMouseEnter={preloadContactsRightPanel}
         style={{
           whiteSpace: 'nowrap',
@@ -50,9 +51,18 @@ export const usePopulateTableRows = (
   };
 
   const pledgeAmount: RenderCell = ({ row }) => {
+    const formattedAmount = currencyFormat(
+      row.pledgeAmount ?? 0,
+      row.pledgeCurrency,
+      locale,
+    );
+    const displayText = row.pledgeFrequency
+      ? `${formattedAmount}/${row.pledgeFrequency}`
+      : formattedAmount;
+
     return (
       <Typography variant="body2" noWrap>
-        {currencyFormat(row.pledgeAmount ?? 0, row.pledgeCurrency, locale)}
+        {displayText}
       </Typography>
     );
   };
@@ -81,6 +91,20 @@ export const usePopulateTableRows = (
     );
   };
 
+  const donationDate = (
+    dateField: 'firstDonationDate' | 'lastDonationDate',
+  ): RenderCell => {
+    const date: RenderCell = ({ row }) => (
+      <Typography variant="body2" noWrap>
+        {typeof row[dateField] === 'string' &&
+          dateFormatShort(DateTime.fromISO(row[dateField]), locale)}
+      </Typography>
+    );
+    return date;
+  };
+
+  const firstDonationDate: RenderCell = donationDate('firstDonationDate');
+
   const lastDonationAmount: RenderCell = ({ row }) => {
     return (
       <Typography variant="body2" noWrap>
@@ -93,14 +117,7 @@ export const usePopulateTableRows = (
     );
   };
 
-  const lastDonationDate: RenderCell = ({ row }) => {
-    return (
-      <Typography variant="body2" noWrap>
-        {typeof row.lastDonationDate === 'string' &&
-          dateFormatShort(DateTime.fromISO(row.lastDonationDate), locale)}
-      </Typography>
-    );
-  };
+  const lastDonationDate: RenderCell = donationDate('lastDonationDate');
 
   const totalDonations: RenderCell = ({ row }) => {
     return (
@@ -118,6 +135,7 @@ export const usePopulateTableRows = (
     donationPeriodSum,
     donationPeriodCount,
     donationPeriodAverage,
+    firstDonationDate,
     lastDonationAmount,
     lastDonationDate,
     totalDonations,
