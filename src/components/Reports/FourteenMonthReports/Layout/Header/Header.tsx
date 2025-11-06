@@ -1,8 +1,10 @@
 import React, { FC } from 'react';
 import FilterList from '@mui/icons-material/FilterList';
+import MenuIcon from '@mui/icons-material/Menu';
 import { Box, Grid, IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { HeaderTypeEnum } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import theme from 'src/theme';
 import { FourteenMonthReportCurrencyType } from '../../FourteenMonthReport';
 import { FourteenMonthReportActions } from './Actions/Actions';
@@ -17,6 +19,7 @@ interface FourteenMonthReportHeaderProps {
   onNavListToggle: () => void;
   onPrint: (event: React.MouseEvent<unknown>) => void;
   title: string;
+  headerType?: HeaderTypeEnum;
 }
 
 const StickyHeader = styled(Box)(({}) => ({
@@ -55,6 +58,12 @@ const NavListIcon = styled(FilterList)(({ theme }) => ({
   color: theme.palette.primary.dark,
 }));
 
+const NavMenuIcon = styled(MenuIcon)(({}) => ({
+  width: 24,
+  height: 24,
+  color: theme.palette.primary.dark,
+}));
+
 const StyledGrid = styled(Grid)(() => ({
   '@media print': {
     display: 'none',
@@ -65,6 +74,7 @@ export const FourteenMonthReportHeader: FC<FourteenMonthReportHeaderProps> = ({
   csvData,
   currencyType,
   title,
+  headerType,
   isExpanded,
   isMobile,
   isNavListOpen,
@@ -74,6 +84,21 @@ export const FourteenMonthReportHeader: FC<FourteenMonthReportHeaderProps> = ({
   ...rest
 }) => {
   const { t } = useTranslation();
+  const isReportsHeader = headerType === HeaderTypeEnum.Report;
+  const isSettingsHeader = headerType === HeaderTypeEnum.Settings;
+  const isToolsHeader = headerType === HeaderTypeEnum.Tools;
+  const isFiltersHeader = headerType === HeaderTypeEnum.Filters;
+
+  let titleAccess;
+  if (isReportsHeader) {
+    titleAccess = t('Toggle Navigation Panel');
+  } else if (isFiltersHeader) {
+    titleAccess = t('Toggle Filters Panel');
+  } else if (isSettingsHeader) {
+    titleAccess = t('Toggle Preferences Menu');
+  } else if (isToolsHeader) {
+    titleAccess = t('Toggle Tools Menu');
+  }
 
   return (
     <StickyHeader p={2} data-testid="FourteenMonthReportHeader">
@@ -86,7 +111,11 @@ export const FourteenMonthReportHeader: FC<FourteenMonthReportHeaderProps> = ({
         <Grid item>
           <Box display="flex" alignItems="center">
             <NavListButton panelOpen={isNavListOpen} onClick={onNavListToggle}>
-              <NavListIcon titleAccess={t('Toggle Filter Panel')} />
+              {isReportsHeader ? (
+                <NavMenuIcon titleAccess={titleAccess} />
+              ) : (
+                <NavListIcon titleAccess={titleAccess} />
+              )}
             </NavListButton>
             <HeaderTitle variant="h5">{title}</HeaderTitle>
           </Box>
