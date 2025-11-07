@@ -65,6 +65,7 @@ export const PartnerGivingAnalysisTable: React.FC<
   handlePageChange,
   sortModel,
   handleSortChange,
+  apiRef,
 }) => {
   const { t } = useTranslation();
 
@@ -176,6 +177,7 @@ export const PartnerGivingAnalysisTable: React.FC<
       }}
     >
       <StyledDataGrid
+        apiRef={apiRef}
         rows={tableRows}
         columns={columns}
         getRowId={(row) => row.id}

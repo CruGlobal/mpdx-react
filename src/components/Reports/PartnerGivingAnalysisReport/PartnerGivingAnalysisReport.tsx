@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Box, CircularProgress } from '@mui/material';
+import { useGridApiRef } from '@mui/x-data-grid';
 import { GridPaginationModel } from '@mui/x-data-grid/models/gridPaginationProps';
 import { GridSortModel } from '@mui/x-data-grid/models/gridSortModel';
 import { useTranslation } from 'react-i18next';
@@ -39,7 +40,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
   const { activeFilters, searchTerm } = useUrlFilters();
-
+  const apiRef = useGridApiRef();
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
     pageSize: 5,
@@ -125,6 +126,15 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
     setSortModel(model);
   };
 
+  const handlePrint = () => {
+    if (apiRef.current) {
+      apiRef.current.exportDataAsPrint({
+        hideFooter: true,
+        hideToolbar: true,
+      });
+    }
+  };
+
   return (
     <Box>
       <MultiPageHeader
@@ -132,7 +142,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
         onNavListToggle={onNavListToggle}
         title={title}
         headerType={HeaderTypeEnum.Report}
-        rightExtra={<HeaderActions />}
+        rightExtra={<HeaderActions onPrint={handlePrint} />}
       />
       <ListHeader
         page={PageEnum.Report}
@@ -170,6 +180,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
             handlePageChange={handlePageChange}
             sortModel={sortModel}
             handleSortChange={handleSortChange}
+            apiRef={apiRef}
           />
         </>
       ) : (
