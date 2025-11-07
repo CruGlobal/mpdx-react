@@ -5,23 +5,22 @@ import { Trans, useTranslation } from 'react-i18next';
 import { StyledListItem } from 'src/components/Reports/SavingsFundTransfer/IntroPage/IntroPage';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
+import { useMinisterHousingAllowance } from '../../../Shared/MinisterHousingAllowanceContext';
 import { DirectionButtons } from '../../Shared/DirectionButtons';
 
 interface AboutFormProps {
   boardApprovalDate?: string;
   availableDate?: string;
-  handleNext: () => void;
-  onOpen?: () => void;
 }
 
 export const AboutForm: React.FC<AboutFormProps> = ({
   boardApprovalDate,
   availableDate,
-  handleNext,
-  onOpen,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+
+  const { handleRightPanelOpen } = useMinisterHousingAllowance();
 
   // TODO: "newRequestAboutForm" value needs to be added to translation files to see all values
   // TODO: Get correct link fot "Salary Calculation Form"
@@ -93,12 +92,12 @@ export const AboutForm: React.FC<AboutFormProps> = ({
             fontSize="medium"
             sx={{ verticalAlign: 'middle', opacity: 0.56 }}
           />{' '}
-          <Link component="button" type="button" onClick={onOpen}>
+          <Link component="button" type="button" onClick={handleRightPanelOpen}>
             What expenses can I claim on my MHA?
           </Link>
         </Box>
       </Trans>
-      <DirectionButtons handleNext={handleNext} />
+      <DirectionButtons />
     </>
   );
 };

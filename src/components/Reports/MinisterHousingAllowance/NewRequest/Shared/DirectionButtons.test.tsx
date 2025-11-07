@@ -5,11 +5,15 @@ import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
+import {
+  MinisterHousingAllowanceProvider,
+  useMinisterHousingAllowance,
+} from '../../Shared/MinisterHousingAllowanceContext';
 import { DirectionButtons } from './DirectionButtons';
 
-const handleNext = jest.fn();
 const submit = jest.fn();
 const pushMock = jest.fn();
+const handleNextStep = jest.fn();
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
@@ -19,11 +23,22 @@ const TestComponent: React.FC = () => (
       }}
     >
       <Formik initialValues={{}} onSubmit={submit}>
-        <DirectionButtons handleNext={handleNext} />
+        <MinisterHousingAllowanceProvider>
+          <DirectionButtons />
+        </MinisterHousingAllowanceProvider>
       </Formik>
     </TestRouter>
   </ThemeProvider>
 );
+
+jest.mock('../../Shared/MinisterHousingAllowanceContext', () => ({
+  ...jest.requireActual('../../Shared/MinisterHousingAllowanceContext'),
+  useMinisterHousingAllowance: jest.fn(),
+}));
+
+(useMinisterHousingAllowance as jest.Mock).mockReturnValue({
+  handleNextStep,
+});
 
 jest.mock('src/hooks/useAccountListId', () => ({
   useAccountListId: () => 'account-list-1',
@@ -47,7 +62,7 @@ describe('DirectionButtons', () => {
     const continueButton = getByRole('button', { name: 'CONTINUE' });
     continueButton.click();
 
-    expect(handleNext).toHaveBeenCalled();
+    expect(handleNextStep).toHaveBeenCalled();
   });
 
   it('navigates to the correct URL when Cancel is clicked', async () => {

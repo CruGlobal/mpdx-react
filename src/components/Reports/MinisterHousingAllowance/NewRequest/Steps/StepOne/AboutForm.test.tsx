@@ -5,28 +5,40 @@ import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
+import {
+  MinisterHousingAllowanceProvider,
+  useMinisterHousingAllowance,
+} from '../../../Shared/MinisterHousingAllowanceContext';
 import { AboutForm } from './AboutForm';
 
 const submit = jest.fn();
-const handleNext = jest.fn();
-const onOpen = jest.fn();
 const boardApprovalDate = '2024-09-15';
 const availabilityDate = '2024-10-01';
+const handleRightPanelOpen = jest.fn();
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <TestRouter>
       <Formik initialValues={{}} onSubmit={submit}>
-        <AboutForm
-          boardApprovalDate={boardApprovalDate}
-          availableDate={availabilityDate}
-          handleNext={handleNext}
-          onOpen={onOpen}
-        />
+        <MinisterHousingAllowanceProvider>
+          <AboutForm
+            boardApprovalDate={boardApprovalDate}
+            availableDate={availabilityDate}
+          />
+        </MinisterHousingAllowanceProvider>
       </Formik>
     </TestRouter>
   </ThemeProvider>
 );
+
+jest.mock('../../../Shared/MinisterHousingAllowanceContext', () => ({
+  ...jest.requireActual('../../../Shared/MinisterHousingAllowanceContext'),
+  useMinisterHousingAllowance: jest.fn(),
+}));
+
+(useMinisterHousingAllowance as jest.Mock).mockReturnValue({
+  handleRightPanelOpen,
+});
 
 describe('AboutForm', () => {
   it('renders form and formatted dates', () => {
@@ -58,6 +70,6 @@ describe('AboutForm', () => {
       getByRole('button', { name: /what expenses can i claim on my mha/i }),
     );
 
-    expect(onOpen).toHaveBeenCalled();
+    expect(handleRightPanelOpen).toHaveBeenCalled();
   });
 });

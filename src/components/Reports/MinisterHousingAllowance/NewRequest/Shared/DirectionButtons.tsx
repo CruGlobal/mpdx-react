@@ -6,23 +6,24 @@ import { Box, Button } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useMinisterHousingAllowance } from '../../Shared/MinisterHousingAllowanceContext';
 import { ConfirmationModal } from '../ConfirmationModal/ConfirmationModal';
 import { CalculationFormValues } from '../Steps/StepThree/Calculation';
 
 interface DirectionButtonsProps {
   handleNext?: () => void;
-  handleBack?: () => void;
   isCalculate?: boolean;
 }
 
 export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
   handleNext,
-  handleBack,
   isCalculate,
 }) => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const router = useRouter();
+
+  const { handleNextStep, handlePreviousStep } = useMinisterHousingAllowance();
 
   const { submitForm, validateForm } =
     useFormikContext<CalculationFormValues>();
@@ -69,7 +70,7 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
                 bgcolor: 'grey.400',
               },
             }}
-            onClick={handleBack}
+            onClick={handlePreviousStep}
           >
             <ChevronLeft sx={{ mr: 1 }} />
             <b>{t('Back')}</b>
@@ -86,7 +87,11 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
           )}
         </Box>
       ) : (
-        <Button variant="contained" color="primary" onClick={handleNext}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleNext ? handleNext : handleNextStep}
+        >
           {t('CONTINUE')}
           <ChevronRight sx={{ ml: 1 }} />
         </Button>
