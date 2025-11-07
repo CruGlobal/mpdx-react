@@ -1,5 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
+import { GridApi } from '@mui/x-data-grid';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
@@ -19,6 +20,10 @@ const router = {
 
 const isRowChecked = jest.fn();
 const onSelectOne = jest.fn();
+
+const mockApiRef = {
+  current: {} as GridApi,
+};
 
 const mocks = {
   PartnerGivingAnalysis: {
@@ -79,6 +84,7 @@ const mocks = {
 const defaultProps = {
   onSelectOne,
   isRowChecked,
+  apiRef: mockApiRef,
 };
 
 const Components = () => (

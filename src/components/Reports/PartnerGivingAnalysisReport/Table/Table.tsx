@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { Box } from '@mui/material';
 import {
+  GridApi,
   GridColDef,
   GridFooterContainer,
   GridPagination,
@@ -26,6 +27,7 @@ export interface PartnerGivingAnalysisTableProps {
   handlePageChange?: (model: GridPaginationModel) => void;
   sortModel?: GridSortModel;
   handleSortChange?: (model: GridSortModel) => void;
+  apiRef: React.MutableRefObject<GridApi | null>;
 }
 
 export const createTableRow = (data: Row): TableData => ({
