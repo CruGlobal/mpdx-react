@@ -5,9 +5,11 @@ export interface TableData {
   name: string;
   status: string | null;
   pledgeAmount: number | null;
+  pledgeFrequency: string | null;
   donationPeriodSum: number | null;
   donationPeriodCount: number | null;
   donationPeriodAverage: number | null;
+  firstDonationDate: string | null;
   lastDonationAmount: number | null;
   lastDonationDate: string | null;
   totalDonations: number | null;
