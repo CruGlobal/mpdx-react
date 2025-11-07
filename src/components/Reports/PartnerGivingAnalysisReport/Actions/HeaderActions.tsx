@@ -3,12 +3,12 @@ import PrintIcon from '@mui/icons-material/Print';
 import { Button } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
-export const HeaderActions: React.FC = () => {
-  const { t } = useTranslation();
+interface HeaderActionsProps {
+  onPrint: () => void;
+}
 
-  const onPrint = () => {
-    window.print();
-  };
+export const HeaderActions: React.FC<HeaderActionsProps> = ({ onPrint }) => {
+  const { t } = useTranslation();
 
   return (
     <Button startIcon={<PrintIcon />} onClick={onPrint} variant="outlined">

@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import { Box } from '@mui/material';
 import {
+  GridApi,
   GridColDef,
   GridFooterContainer,
   GridPagination,
@@ -20,13 +21,13 @@ type Row = PartnerGivingAnalysisQuery['partnerGivingAnalysis']['nodes'][number];
 
 export interface PartnerGivingAnalysisTableProps {
   data: Row[];
-  totalCount: number;
   onSelectOne: (contactId: string) => void;
   isRowChecked: (id: string) => boolean;
   paginationModel?: GridPaginationModel;
   handlePageChange?: (model: GridPaginationModel) => void;
   sortModel?: GridSortModel;
   handleSortChange?: (model: GridSortModel) => void;
+  apiRef: React.MutableRefObject<GridApi | null>;
 }
 
 export const createTableRow = (data: Row): TableData => ({
@@ -60,13 +61,13 @@ export const PartnerGivingAnalysisTable: React.FC<
   PartnerGivingAnalysisTableProps
 > = ({
   data,
-  totalCount,
   onSelectOne,
   isRowChecked,
   paginationModel,
   handlePageChange,
   sortModel,
   handleSortChange,
+  apiRef,
 }) => {
   const { t } = useTranslation();
 
@@ -178,8 +179,8 @@ export const PartnerGivingAnalysisTable: React.FC<
       }}
     >
       <StyledDataGrid
+        apiRef={apiRef}
         rows={tableRows}
-        rowCount={totalCount}
         columns={columns}
         getRowId={(row) => row.id}
         sortingOrder={['asc', 'desc']}
@@ -188,7 +189,7 @@ export const PartnerGivingAnalysisTable: React.FC<
         pageSizeOptions={[25, 50, 100]}
         paginationModel={paginationModel}
         onPaginationModelChange={handlePageChange}
-        paginationMode="server"
+        paginationMode="client"
         sortingMode="server"
         pagination
         disableRowSelectionOnClick

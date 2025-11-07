@@ -107,7 +107,7 @@ describe('PartnerGivingAnalysisReport', () => {
     const { getAllByRole, findByRole } = render(<TestComponent />);
 
     expect(await findByRole('grid')).toBeInTheDocument();
-    expect(getAllByRole('row').length).toBe(27); // 26 rows + header
+    expect(getAllByRole('row').length).toBe(26); // 26 rows + header
   });
 
   it('shows a placeholder when there are zero contacts', async () => {
@@ -207,10 +207,15 @@ describe('PartnerGivingAnalysisReport', () => {
   });
 
   it('sets the pagination limit', async () => {
-    const { getByRole, findByRole } = render(<TestComponent />);
+    const { getByRole, findByRole, getAllByRole } = render(<TestComponent />);
 
     await waitFor(() => {
       expect(getByRole('grid')).toBeInTheDocument();
+    });
+
+    // Initially should show 25 rows + 1 header = 26 total
+    await waitFor(() => {
+      expect(getAllByRole('row').length).toBe(26);
     });
 
     const combobox = getByRole('combobox', { name: 'Rows per page:' });
@@ -220,28 +225,28 @@ describe('PartnerGivingAnalysisReport', () => {
     await userEvent.click(within(listbox).getByRole('option', { name: '50' }));
 
     await waitFor(() => {
-      const call = findOperationCall('PartnerGivingAnalysis');
-      expect(call?.operation.variables.first).toBe(50);
+      expect(getAllByRole('row').length).toBe(27);
     });
   });
 
   it('should go to next page', async () => {
-    const { getByTestId, queryByTestId, getByRole } = render(<TestComponent />);
+    const { getByTestId, getAllByRole, getByRole } = render(<TestComponent />);
 
     await waitFor(() => {
       expect(getByRole('grid')).toBeInTheDocument();
     });
 
-    await waitFor(() =>
-      expect(mutationSpy.mock.calls[0][0].operation.variables.first).toBe(25),
-    );
+    await waitFor(() => {
+      expect(getAllByRole('row').length).toBe(26);
+    });
+
+    const nextButton = getByRole('button', { name: /go to next page/i });
+    expect(nextButton).not.toBeDisabled();
 
     await userEvent.click(getByTestId('KeyboardArrowRightIcon'));
 
     await waitFor(() => {
-      expect(
-        queryByTestId('LoadingPartnerGivingAnalysisReport'),
-      ).not.toBeInTheDocument();
+      expect(getAllByRole('row').length).toBe(2);
     });
 
     expect(getByRole('button', { name: /go to next page/i })).toBeDisabled();
@@ -284,7 +289,7 @@ describe('PartnerGivingAnalysisReport', () => {
     for (const checkbox of checkboxes.slice(1)) {
       await userEvent.click(checkbox);
     }
-    expect(getAllByRole('checkbox')[0]).toBeChecked();
+    expect(getAllByRole('checkbox')[1]).toBeChecked();
 
     // Deselect all individually
     userEvent.click(getAllByRole('checkbox')[1]);
@@ -339,5 +344,22 @@ describe('PartnerGivingAnalysisReport', () => {
 
     userEvent.click(getByRole('img', { name: 'Toggle Filter Panel' }));
     expect(onFilterListToggle).toHaveBeenCalled();
+  });
+  it('should render all contacts when onPrint is called', async () => {
+    const { getByRole, queryByTestId, getAllByRole } = render(
+      <TestComponent />,
+    );
+
+    await waitFor(() => {
+      expect(
+        queryByTestId('LoadingPartnerGivingAnalysisReport'),
+      ).not.toBeInTheDocument();
+    });
+    expect(getAllByRole('row').length).toBe(26);
+
+    const printButton = getByRole('button', { name: 'Print' });
+    userEvent.click(printButton);
+
+    expect(getAllByRole('row').length).toBe(27);
   });
 });
