@@ -340,4 +340,21 @@ describe('PartnerGivingAnalysisReport', () => {
     userEvent.click(getByRole('img', { name: 'Toggle Filter Panel' }));
     expect(onFilterListToggle).toHaveBeenCalled();
   });
+  it('should render all contacts when onPrint is called', async () => {
+    const { getByRole, queryByTestId, getAllByRole } = render(
+      <TestComponent />,
+    );
+
+    await waitFor(() => {
+      expect(
+        queryByTestId('LoadingPartnerGivingAnalysisReport'),
+      ).not.toBeInTheDocument();
+    });
+    expect(getAllByRole('row').length).toBe(26);
+
+    const printButton = getByRole('button', { name: 'Print' });
+    userEvent.click(printButton);
+
+    expect(getAllByRole('row').length).toBe(27);
+  });
 });

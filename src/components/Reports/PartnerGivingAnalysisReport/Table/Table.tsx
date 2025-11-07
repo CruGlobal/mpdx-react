@@ -186,7 +186,7 @@ export const PartnerGivingAnalysisTable: React.FC<
         sortingOrder={['asc', 'desc']}
         sortModel={sortModel}
         onSortModelChange={handleSortChange}
-        pageSizeOptions={[5, 10, 15]}
+        pageSizeOptions={[25, 50, 100]}
         paginationModel={paginationModel}
         onPaginationModelChange={handlePageChange}
         paginationMode="client"
