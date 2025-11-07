@@ -7,6 +7,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { useReportsStaffExpensesQuery } from '../PartnerGivingAnalysis.generated';
+import { CardSkeleton } from './CardSkeleton';
 
 const StyledCard = styled(Card)(() => ({
   margin: theme.spacing(4),
@@ -60,8 +61,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
   };
 
   if (loading || !fund) {
-    // TODO Update with balanceCard skeleton
-    return null;
+    return <CardSkeleton />;
   }
 
   return (
@@ -107,8 +107,16 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
             {t('Current Balance')}
           </Typography>
 
-          <Typography variant="h5" sx={{ fontSize: 'inherit' }}>
-            {formatBalance(fund.balance)}
+          <Typography
+            variant="h5"
+            color={fund.balance < 0 ? 'error.main' : 'text.primary'}
+            sx={{ fontSize: 'inherit' }}
+          >
+            {fund.balance < 0 ? '(' : ''}
+            {currencyFormat(Math.abs(fund.balance), 'USD', locale, {
+              showTrailingZeros: true,
+            })}
+            {fund.balance < 0 ? ')' : ''}
           </Typography>
         </Box>
         {donationPeriodTotalSum && (
