@@ -12,7 +12,11 @@ import {
   StyledSidebar,
   iconPanelWidth,
 } from 'src/components/Shared/IconPanelLayout/IconPanelLayout';
-import { NewRequestStepsEnum, PanelTypeEnum } from '../Shared/sharedTypes';
+import {
+  EditRequestStepsEnum,
+  NewRequestStepsEnum,
+  PanelTypeEnum,
+} from '../Shared/sharedTypes';
 
 interface PanelLayoutProps {
   panelType: PanelTypeEnum;
@@ -21,7 +25,7 @@ interface PanelLayoutProps {
   sidebarTitle?: string;
   sidebarAriaLabel?: string;
   mainContent?: React.ReactNode;
-  currentStep?: NewRequestStepsEnum;
+  currentStep?: NewRequestStepsEnum | EditRequestStepsEnum;
   handleBack?: () => void;
 }
 
@@ -36,6 +40,14 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
   handleBack,
 }) => {
   const { t } = useTranslation();
+
+  const isReceiptStep =
+    currentStep === NewRequestStepsEnum.Receipt ||
+    currentStep === EditRequestStepsEnum.Receipt;
+
+  const isNotFirstStep =
+    currentStep !== NewRequestStepsEnum.AboutForm &&
+    currentStep !== EditRequestStepsEnum.RentOrOwn;
 
   return (
     <PrintableStack direction="row">
@@ -54,7 +66,7 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
       ) : (
         <>
           <Stack direction="column" width={iconPanelWidth}>
-            {currentStep === NewRequestStepsEnum.Receipt ? (
+            {isReceiptStep ? (
               <Box
                 sx={{
                   display: 'flex',
@@ -73,7 +85,7 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
                     progress={percentComplete ? percentComplete : 0}
                   />
                 </StyledBox>
-                {currentStep !== NewRequestStepsEnum.AboutForm && (
+                {isNotFirstStep && (
                   <IconButton
                     aria-label={t('Go back')}
                     onClick={handleBack}

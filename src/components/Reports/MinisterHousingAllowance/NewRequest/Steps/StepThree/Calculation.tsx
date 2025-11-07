@@ -17,8 +17,8 @@ import * as yup from 'yup';
 import { useLocale } from 'src/hooks/useLocale';
 import i18n from 'src/lib/i18n';
 import { dateFormatShort } from 'src/lib/intlFormat';
-import { mocks } from '../../../Shared/mockData';
-import { RentOwnEnum } from '../../../Shared/sharedTypes';
+import { editOwnMock, mocks } from '../../../Shared/mockData';
+import { PageEnum, RentOwnEnum } from '../../../Shared/sharedTypes';
 import { FormValues } from '../../NewRequestPage';
 import { DirectionButtons } from '../../Shared/DirectionButtons';
 import { CostOfHome } from './CalcComponents/CostOfHome';
@@ -27,6 +27,7 @@ import { FairRentalValue } from './CalcComponents/FairRentalValue';
 import { RequestSummaryCard } from './CalcComponents/RequestSummaryCard';
 
 interface CalculationProps {
+  type: PageEnum;
   boardApprovalDate: string;
   availableDate: string;
   handleBack: () => void;
@@ -85,6 +86,7 @@ const getValidationSchema = (rentOrOwn?: RentOwnEnum) => {
 };
 
 export const Calculation: React.FC<CalculationProps> = ({
+  type,
   boardApprovalDate,
   availableDate,
   handleBack,
@@ -97,18 +99,20 @@ export const Calculation: React.FC<CalculationProps> = ({
   const { values } = useFormikContext<FormValues>();
   const { rentOrOwn } = values;
 
+  const isNew = type === PageEnum.New;
+
   const initialValues: CalculationFormValues = {
-    rentalValue: undefined,
-    furnitureCostsOne: undefined,
-    avgUtilityOne: undefined,
-    mortgagePayment: undefined,
-    furnitureCostsTwo: undefined,
-    repairCosts: undefined,
-    avgUtilityTwo: undefined,
-    unexpectedExpenses: undefined,
+    rentalValue: isNew ? undefined : editOwnMock.rentalValue,
+    furnitureCostsOne: isNew ? undefined : editOwnMock.furnitureCostsOne,
+    avgUtilityOne: isNew ? undefined : editOwnMock.avgUtilityOne,
+    mortgagePayment: isNew ? undefined : editOwnMock.mortgagePayment,
+    furnitureCostsTwo: isNew ? undefined : editOwnMock.furnitureCostsTwo,
+    repairCosts: isNew ? undefined : editOwnMock.repairCosts,
+    avgUtilityTwo: isNew ? undefined : editOwnMock.avgUtilityTwo,
+    unexpectedExpenses: isNew ? undefined : editOwnMock.unexpectedExpenses,
     phone: mocks[0].staffInfo.phone,
     email: mocks[0].staffInfo.email,
-    isChecked: false,
+    isChecked: isNew ? false : true,
   };
 
   const boardDateFormatted = dateFormatShort(
@@ -160,12 +164,22 @@ export const Calculation: React.FC<CalculationProps> = ({
               </Typography>
             </Box>
             <Trans i18nKey="newRequestCalculation">
-              <p style={{ lineHeight: 1.5 }}>
-                Please enter dollar amounts for each category below to calculate
-                your Annual MHA. The board will review this number after{' '}
-                {boardDateFormatted} and you will receive notice of your
-                approval effective {availableDateFormatted}.
-              </p>
+              {type === PageEnum.New ? (
+                <p style={{ lineHeight: 1.5 }}>
+                  Please enter dollar amounts for each category below to
+                  calculate your Annual MHA. The board will review this number
+                  after {boardDateFormatted} and you will receive notice of your
+                  approval effective {availableDateFormatted}.
+                </p>
+              ) : (
+                <p style={{ lineHeight: 1.5 }}>
+                  Please review the Annual MHA Request that you have submitted
+                  for Board approval and make any changes necessary here. The
+                  board will review this number after {boardDateFormatted} and
+                  you will receive notice of your approval effective{' '}
+                  {availableDateFormatted}.
+                </p>
+              )}
             </Trans>
             <Box sx={{ mt: 2, mb: 3 }}>
               <OpenInNew
@@ -234,7 +248,7 @@ export const Calculation: React.FC<CalculationProps> = ({
                 </ul>
               </Alert>
             )}
-            <DirectionButtons handleBack={handleBack} isCalculate />
+            <DirectionButtons type={type} handleBack={handleBack} isCalculate />
           </form>
         );
       }}

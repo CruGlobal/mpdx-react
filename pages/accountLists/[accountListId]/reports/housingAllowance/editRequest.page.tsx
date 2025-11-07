@@ -5,7 +5,7 @@ import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
-import { NewRequestPage } from 'src/components/Reports/MinisterHousingAllowance/NewRequest/NewRequestPage';
+import { EditRequestPage } from 'src/components/Reports/MinisterHousingAllowance/EditRequest/EditRequestPage';
 import { ExpensesClaim } from 'src/components/Reports/MinisterHousingAllowance/NewRequest/Steps/StepThree/CalcComponents/ExpensesClaim';
 import { PageEnum } from 'src/components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
 import {
@@ -17,11 +17,11 @@ import {
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 
-const NewRequestPageWrapper = styled(Box)(({ theme }) => ({
+const EditRequestPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
 }));
 
-const HousingAllowanceNewRequestPage: React.FC = () => {
+const HousingAllowanceEditRequestPage: React.FC = () => {
   const { t } = useTranslation();
   const title = t("Minister's Housing Allowance");
 
@@ -43,15 +43,15 @@ const HousingAllowanceNewRequestPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>{`${title} - New Request`}</title>
+        <title>{`${title} - Edit Request`}</title>
       </Head>
-      <NewRequestPageWrapper>
+      <EditRequestPageWrapper>
         <SidePanelsLayout
           isScrollBox={false}
           leftPanel={
             <MultiPageMenu
               isOpen={isNavListOpen}
-              selectedId={'housingAllowanceNewRequest'}
+              selectedId={'housingAllowanceEditRequest'}
               onClose={handleNavListToggle}
               navType={NavTypeEnum.Reports}
             />
@@ -66,7 +66,7 @@ const HousingAllowanceNewRequestPage: React.FC = () => {
                 title={t("Minister's Housing Allowance Request")}
                 headerType={HeaderTypeEnum.Report}
               />
-              <NewRequestPage type={PageEnum.New} onOpen={handleOnOpen} />
+              <EditRequestPage type={PageEnum.Edit} onOpen={handleOnOpen} />
             </>
           }
           rightPanel={
@@ -75,10 +75,10 @@ const HousingAllowanceNewRequestPage: React.FC = () => {
           rightOpen={isOpen}
           rightWidth="40%"
         />
-      </NewRequestPageWrapper>
+      </EditRequestPageWrapper>
     </>
   );
 };
 
 export const getServerSideProps = ensureSessionAndAccountList;
-export default HousingAllowanceNewRequestPage;
+export default HousingAllowanceEditRequestPage;

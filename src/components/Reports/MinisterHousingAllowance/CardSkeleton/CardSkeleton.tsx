@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import {
   Avatar,
@@ -11,6 +12,7 @@ import {
   IconButton,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 
 interface CardSkeletonProps {
   title: string;
@@ -32,6 +34,9 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
   isRequest,
 }) => {
   const { t } = useTranslation();
+
+  const accountListId = useAccountListId();
+  const editLink = `/accountLists/${accountListId}/reports/housingAllowance/editRequest`;
 
   return (
     <Card sx={{ boxShadow: 1 }}>
@@ -60,7 +65,12 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
         >
           {t(titleOne)}
         </Button>
-        <Button variant="outlined" sx={{ px: 2, py: 1 }}>
+        <Button
+          component={NextLink}
+          href={editLink}
+          variant="outlined"
+          sx={{ px: 2, py: 1 }}
+        >
           {t(titleTwo)}
         </Button>
       </CardActionArea>

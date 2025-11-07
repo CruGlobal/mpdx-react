@@ -9,11 +9,15 @@ import {
 } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
-import { RentOwnEnum } from '../../../Shared/sharedTypes';
+import { PageEnum, RentOwnEnum } from '../../../Shared/sharedTypes';
 import { FormValues } from '../../NewRequestPage';
 import { DirectionButtons } from '../../Shared/DirectionButtons';
 
-export const RentOwn: React.FC = () => {
+interface RentOwnProps {
+  type: PageEnum;
+}
+
+export const RentOwn: React.FC<RentOwnProps> = ({ type }) => {
   const { t } = useTranslation();
 
   const {
@@ -35,6 +39,10 @@ export const RentOwn: React.FC = () => {
       </Box>
       <Typography variant="body1" sx={{ mb: 2 }}>
         {t('Please select the option that applies to you.')}
+        {type === PageEnum.Edit &&
+          t(
+            ' If this has changed from your previous submission, you may need to provide additional information on the next screen.',
+          )}
       </Typography>
       <Box>
         <FormControl
@@ -61,6 +69,7 @@ export const RentOwn: React.FC = () => {
         </FormControl>
       </Box>
       <DirectionButtons
+        type={type}
         handleNext={async () => {
           setTouched({ rentOrOwn: true });
           await submitForm();

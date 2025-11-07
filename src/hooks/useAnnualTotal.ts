@@ -42,15 +42,6 @@ export const useAnnualTotal = (values: CalculationFormValues) => {
         ? annualFairRental
         : Math.min(annualFairRental, annualCostOfHome);
 
-  //eslint-disable-next-line no-console
-  console.log({
-    totalFairRental,
-    annualFairRental,
-    totalCostOfHome,
-    annualCostOfHome,
-    annualTotal,
-  });
-
   return {
     annualTotal,
     totalFairRental,

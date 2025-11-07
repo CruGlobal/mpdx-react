@@ -5,10 +5,15 @@ import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { mocks } from '../../../Shared/mockData';
+import { PageEnum } from '../../../Shared/sharedTypes';
 
 //TODO: Update links and functionality for Edit and Print options
 
-export const Receipt: React.FC = () => {
+interface ReceiptProps {
+  type: PageEnum;
+}
+
+export const Receipt: React.FC<ReceiptProps> = ({ type }) => {
   const { t } = useTranslation();
   const locale = useLocale();
 
@@ -26,15 +31,23 @@ export const Receipt: React.FC = () => {
     locale,
   );
 
+  const isEdit = type === PageEnum.Edit;
+
   return (
     <Box>
       <Typography variant="h5" sx={{ mb: 3 }}>
-        {t('Thank you for Submitting your MHA Request!')}
+        {isEdit
+          ? t('Thank you for updating your MHA Request!')
+          : t('Thank you for Submitting your MHA Request!')}
       </Typography>
       <Alert severity="success">
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
           <Typography>
-            <b>{t("You've successfully submitted your MHA Request!")}</b>
+            <b>
+              {isEdit
+                ? t("You've successfully updated your MHA Request!")
+                : t("You've successfully submitted your MHA Request!")}
+            </b>
           </Typography>
           <Typography>
             {t(

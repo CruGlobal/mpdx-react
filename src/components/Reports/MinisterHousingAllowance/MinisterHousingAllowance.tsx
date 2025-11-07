@@ -26,7 +26,7 @@ export const MinisterHousingAllowanceReport: React.FC = () => {
   // mock[2] --> Married, no pending, approved
   // mock[3] --> Single, no pending, approved
   // mock[4] --> Married, pending, no approved
-  const testPerson = mocks[1];
+  const testPerson = mocks[4];
 
   const isMarried = testPerson.spouseInfo !== null;
   const title = t('Your MHA');
