@@ -7,12 +7,16 @@ import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
+import {
+  MinisterHousingAllowanceProvider,
+  useMinisterHousingAllowance,
+} from '../../../Shared/MinisterHousingAllowanceContext';
 import { Calculation } from './Calculation';
 
 const submit = jest.fn();
-const handleBack = jest.fn();
-const handleNext = jest.fn();
-const onOpen = jest.fn();
+const handlePreviousStep = jest.fn();
+const handleNextStep = jest.fn();
+const handleRightPanelOpen = jest.fn();
 const boardApprovalDate = '2024-06-15';
 const availableDate = '2024-07-01';
 
@@ -26,18 +30,28 @@ const TestComponent: React.FC = () => (
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <TestRouter>
         <Formik initialValues={initialValues} onSubmit={submit}>
-          <Calculation
-            boardApprovalDate={boardApprovalDate}
-            availableDate={availableDate}
-            handleBack={handleBack}
-            handleNext={handleNext}
-            onOpen={onOpen}
-          />
+          <MinisterHousingAllowanceProvider>
+            <Calculation
+              boardApprovalDate={boardApprovalDate}
+              availableDate={availableDate}
+            />
+          </MinisterHousingAllowanceProvider>
         </Formik>
       </TestRouter>
     </LocalizationProvider>
   </ThemeProvider>
 );
+
+jest.mock('../../../Shared/MinisterHousingAllowanceContext', () => ({
+  ...jest.requireActual('../../../Shared/MinisterHousingAllowanceContext'),
+  useMinisterHousingAllowance: jest.fn(),
+}));
+
+(useMinisterHousingAllowance as jest.Mock).mockReturnValue({
+  handleNextStep,
+  handlePreviousStep,
+  handleRightPanelOpen,
+});
 
 describe('Calculation', () => {
   it('renders the component', () => {
@@ -199,6 +213,6 @@ describe('Calculation', () => {
       getByRole('button', { name: /what expenses can i claim on my mha/i }),
     );
 
-    expect(onOpen).toHaveBeenCalled();
+    expect(handleRightPanelOpen).toHaveBeenCalled();
   });
 });

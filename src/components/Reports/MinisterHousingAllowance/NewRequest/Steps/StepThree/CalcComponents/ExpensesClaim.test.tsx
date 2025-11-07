@@ -5,20 +5,40 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
+import {
+  MinisterHousingAllowanceProvider,
+  useMinisterHousingAllowance,
+} from 'src/components/Reports/MinisterHousingAllowance/Shared/MinisterHousingAllowanceContext';
 import theme from 'src/theme';
 import { ExpensesClaim } from './ExpensesClaim';
 
-const onClose = jest.fn();
+const handleRightPanelClose = jest.fn();
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <TestRouter>
-        <ExpensesClaim onClose={onClose} />
+        <MinisterHousingAllowanceProvider>
+          <ExpensesClaim />
+        </MinisterHousingAllowanceProvider>
       </TestRouter>
     </LocalizationProvider>
   </ThemeProvider>
 );
+
+jest.mock(
+  'src/components/Reports/MinisterHousingAllowance/Shared/MinisterHousingAllowanceContext',
+  () => ({
+    ...jest.requireActual(
+      'src/components/Reports/MinisterHousingAllowance/Shared/MinisterHousingAllowanceContext',
+    ),
+    useMinisterHousingAllowance: jest.fn(),
+  }),
+);
+
+(useMinisterHousingAllowance as jest.Mock).mockReturnValue({
+  handleRightPanelClose,
+});
 
 describe('ExpensesClaim', () => {
   it('renders the component', () => {
@@ -37,6 +57,6 @@ describe('ExpensesClaim', () => {
 
     await userEvent.click(getByTestId('CloseIcon'));
 
-    expect(onClose).toHaveBeenCalled();
+    expect(handleRightPanelClose).toHaveBeenCalled();
   });
 });

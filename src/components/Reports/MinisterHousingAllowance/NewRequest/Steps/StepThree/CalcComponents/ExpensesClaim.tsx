@@ -2,14 +2,13 @@ import React from 'react';
 import { Close, RequestPageSharp } from '@mui/icons-material';
 import { Box, IconButton, Typography } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
+import { useMinisterHousingAllowance } from 'src/components/Reports/MinisterHousingAllowance/Shared/MinisterHousingAllowanceContext';
 import theme from 'src/theme';
 
-interface ExpensesClaimProps {
-  onClose?: () => void;
-}
-
-export const ExpensesClaim: React.FC<ExpensesClaimProps> = ({ onClose }) => {
+export const ExpensesClaim: React.FC = () => {
   const { t } = useTranslation();
+
+  const { handleRightPanelClose } = useMinisterHousingAllowance();
 
   return (
     <Box sx={{ p: 3 }}>
@@ -18,7 +17,7 @@ export const ExpensesClaim: React.FC<ExpensesClaimProps> = ({ onClose }) => {
           {t('What Expenses can I claim on my MHA?')}
         </Typography>
         <IconButton>
-          <Close onClick={onClose} />
+          <Close onClick={handleRightPanelClose} />
         </IconButton>
       </Box>
       <Box

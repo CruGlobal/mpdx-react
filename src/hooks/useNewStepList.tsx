@@ -1,11 +1,16 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Steps } from '../components/Reports/MinisterHousingAllowance/NewRequest/StepsList/StepsList';
 
-export function useNewStepList(): Steps[] {
+export interface NewRequestStep {
+  title: string;
+  current: boolean;
+  complete: boolean;
+}
+
+export function useNewStepList(): NewRequestStep[] {
   const { t } = useTranslation();
 
-  const steps = [
+  const steps: NewRequestStep[] = [
     {
       title: t('1. About this Form'),
       current: true,

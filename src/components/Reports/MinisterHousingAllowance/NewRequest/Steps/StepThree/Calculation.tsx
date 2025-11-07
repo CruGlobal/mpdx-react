@@ -17,6 +17,7 @@ import * as yup from 'yup';
 import { useLocale } from 'src/hooks/useLocale';
 import i18n from 'src/lib/i18n';
 import { dateFormatShort } from 'src/lib/intlFormat';
+import { useMinisterHousingAllowance } from '../../../Shared/MinisterHousingAllowanceContext';
 import { mocks } from '../../../Shared/mockData';
 import { RentOwnEnum } from '../../../Shared/sharedTypes';
 import { FormValues } from '../../NewRequestPage';
@@ -29,9 +30,6 @@ import { RequestSummaryCard } from './CalcComponents/RequestSummaryCard';
 interface CalculationProps {
   boardApprovalDate: string;
   availableDate: string;
-  handleBack: () => void;
-  handleNext: () => void;
-  onOpen?: () => void;
 }
 export interface CalculationFormValues {
   rentalValue?: number | null | undefined;
@@ -87,12 +85,12 @@ const getValidationSchema = (rentOrOwn?: RentOwnEnum) => {
 export const Calculation: React.FC<CalculationProps> = ({
   boardApprovalDate,
   availableDate,
-  handleBack,
-  handleNext,
-  onOpen,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+
+  const { handleNextStep, handleRightPanelOpen } =
+    useMinisterHousingAllowance();
 
   const { values } = useFormikContext<FormValues>();
   const { rentOrOwn } = values;
@@ -128,7 +126,7 @@ export const Calculation: React.FC<CalculationProps> = ({
       validateOnChange
       validateOnBlur
       onSubmit={() => {
-        handleNext();
+        handleNextStep();
       }}
     >
       {({
@@ -172,7 +170,11 @@ export const Calculation: React.FC<CalculationProps> = ({
                 fontSize="medium"
                 sx={{ verticalAlign: 'middle', opacity: 0.56 }}
               />{' '}
-              <Link component="button" type="button" onClick={onOpen}>
+              <Link
+                component="button"
+                type="button"
+                onClick={handleRightPanelOpen}
+              >
                 What expenses can I claim on my MHA?
               </Link>
             </Box>
@@ -234,7 +236,7 @@ export const Calculation: React.FC<CalculationProps> = ({
                 </ul>
               </Alert>
             )}
-            <DirectionButtons handleBack={handleBack} isCalculate />
+            <DirectionButtons isCalculate />
           </form>
         );
       }}

@@ -8,6 +8,10 @@ import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { NewRequestPage } from 'src/components/Reports/MinisterHousingAllowance/NewRequest/NewRequestPage';
 import { ExpensesClaim } from 'src/components/Reports/MinisterHousingAllowance/NewRequest/Steps/StepThree/CalcComponents/ExpensesClaim';
 import {
+  MinisterHousingAllowanceProvider,
+  useMinisterHousingAllowance,
+} from 'src/components/Reports/MinisterHousingAllowance/Shared/MinisterHousingAllowanceContext';
+import {
   HeaderTypeEnum,
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
@@ -20,20 +24,13 @@ const NewRequestPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
 }));
 
-const HousingAllowanceNewRequestPage: React.FC = () => {
+const NewRequestContent: React.FC = () => {
   const { t } = useTranslation();
   const title = t("Minister's Housing Allowance");
 
+  const { isRightPanelOpen } = useMinisterHousingAllowance();
+
   const [isNavListOpen, setNavListOpen] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-
-  const handleOnOpen = () => {
-    setIsOpen(true);
-  };
-
-  const handleOnClose = () => {
-    setIsOpen(false);
-  };
 
   const handleNavListToggle = () => {
     setNavListOpen(!isNavListOpen);
@@ -65,13 +62,11 @@ const HousingAllowanceNewRequestPage: React.FC = () => {
                 title={t("Minister's Housing Allowance Request")}
                 headerType={HeaderTypeEnum.Report}
               />
-              <NewRequestPage onOpen={handleOnOpen} />
+              <NewRequestPage />
             </>
           }
-          rightPanel={
-            isOpen ? <ExpensesClaim onClose={handleOnClose} /> : undefined
-          }
-          rightOpen={isOpen}
+          rightPanel={isRightPanelOpen ? <ExpensesClaim /> : undefined}
+          rightOpen={isRightPanelOpen}
           rightWidth="40%"
         />
       </NewRequestPageWrapper>
@@ -80,4 +75,10 @@ const HousingAllowanceNewRequestPage: React.FC = () => {
 };
 
 export const getServerSideProps = ensureSessionAndAccountList;
-export default HousingAllowanceNewRequestPage;
+export default function HousingAllowanceNewRequestPage() {
+  return (
+    <MinisterHousingAllowanceProvider>
+      <NewRequestContent />
+    </MinisterHousingAllowanceProvider>
+  );
+}

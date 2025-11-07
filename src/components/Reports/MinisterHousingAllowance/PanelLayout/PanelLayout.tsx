@@ -12,30 +12,28 @@ import {
   StyledSidebar,
   iconPanelWidth,
 } from 'src/components/Shared/IconPanelLayout/IconPanelLayout';
+import { useMinisterHousingAllowance } from '../Shared/MinisterHousingAllowanceContext';
 import { NewRequestStepsEnum, PanelTypeEnum } from '../Shared/sharedTypes';
 
 interface PanelLayoutProps {
   panelType: PanelTypeEnum;
-  percentComplete?: number;
   sidebarContent?: React.ReactNode;
   sidebarTitle?: string;
   sidebarAriaLabel?: string;
   mainContent?: React.ReactNode;
-  currentStep?: NewRequestStepsEnum;
-  handleBack?: () => void;
 }
 
 export const PanelLayout: React.FC<PanelLayoutProps> = ({
   panelType,
-  percentComplete,
   sidebarContent,
   sidebarTitle,
   sidebarAriaLabel,
   mainContent,
-  currentStep,
-  handleBack,
 }) => {
   const { t } = useTranslation();
+
+  const { handlePreviousStep, currentStep, percentComplete } =
+    useMinisterHousingAllowance();
 
   return (
     <PrintableStack direction="row">
@@ -76,7 +74,7 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
                 {currentStep !== NewRequestStepsEnum.AboutForm && (
                   <IconButton
                     aria-label={t('Go back')}
-                    onClick={handleBack}
+                    onClick={handlePreviousStep}
                     sx={(theme) => ({
                       color: theme.palette.cruGrayDark.main,
                     })}
