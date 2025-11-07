@@ -20,7 +20,6 @@ type Row = PartnerGivingAnalysisQuery['partnerGivingAnalysis']['nodes'][number];
 
 export interface PartnerGivingAnalysisTableProps {
   data: Row[];
-  totalCount: number;
   onSelectOne: (contactId: string) => void;
   isRowChecked: (id: string) => boolean;
   paginationModel?: GridPaginationModel;
@@ -60,7 +59,6 @@ export const PartnerGivingAnalysisTable: React.FC<
   PartnerGivingAnalysisTableProps
 > = ({
   data,
-  totalCount,
   onSelectOne,
   isRowChecked,
   paginationModel,
@@ -179,16 +177,15 @@ export const PartnerGivingAnalysisTable: React.FC<
     >
       <StyledDataGrid
         rows={tableRows}
-        rowCount={totalCount}
         columns={columns}
         getRowId={(row) => row.id}
         sortingOrder={['asc', 'desc']}
         sortModel={sortModel}
         onSortModelChange={handleSortChange}
-        pageSizeOptions={[25, 50, 100]}
+        pageSizeOptions={[5, 10, 15]}
         paginationModel={paginationModel}
         onPaginationModelChange={handlePageChange}
-        paginationMode="server"
+        paginationMode="client"
         sortingMode="server"
         pagination
         disableRowSelectionOnClick
