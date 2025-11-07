@@ -7,6 +7,7 @@ import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
+import { PageEnum } from '../../../Shared/sharedTypes';
 import { Calculation } from './Calculation';
 
 const submit = jest.fn();
@@ -27,6 +28,7 @@ const TestComponent: React.FC = () => (
       <TestRouter>
         <Formik initialValues={initialValues} onSubmit={submit}>
           <Calculation
+            type={PageEnum.New}
             boardApprovalDate={boardApprovalDate}
             availableDate={availableDate}
             handleBack={handleBack}

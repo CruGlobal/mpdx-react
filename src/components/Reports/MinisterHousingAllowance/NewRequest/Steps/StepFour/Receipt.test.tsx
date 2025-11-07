@@ -5,13 +5,14 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, within } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
+import { PageEnum } from '../../../Shared/sharedTypes';
 import { Receipt } from './Receipt';
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <TestRouter>
-        <Receipt />
+        <Receipt type={PageEnum.New} />
       </TestRouter>
     </LocalizationProvider>
   </ThemeProvider>

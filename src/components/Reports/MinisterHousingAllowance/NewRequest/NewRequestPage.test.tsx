@@ -4,12 +4,13 @@ import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
+import { PageEnum } from '../Shared/sharedTypes';
 import { NewRequestPage } from './NewRequestPage';
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <TestRouter>
-      <NewRequestPage />
+      <NewRequestPage type={PageEnum.New} />
     </TestRouter>
   </ThemeProvider>
 );

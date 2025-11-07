@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
+import { PageEnum } from '../../Shared/sharedTypes';
 import { DirectionButtons } from './DirectionButtons';
 
 const handleNext = jest.fn();
@@ -19,7 +20,7 @@ const TestComponent: React.FC = () => (
       }}
     >
       <Formik initialValues={{}} onSubmit={submit}>
-        <DirectionButtons handleNext={handleNext} />
+        <DirectionButtons type={PageEnum.New} handleNext={handleNext} />
       </Formik>
     </TestRouter>
   </ThemeProvider>
