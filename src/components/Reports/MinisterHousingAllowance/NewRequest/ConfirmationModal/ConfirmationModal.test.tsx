@@ -53,7 +53,7 @@ describe('ConfirmationModal', () => {
   it('calls handleClose when modal is closed', async () => {
     const { getByRole } = render(<TestComponent />);
 
-    await userEvent.click(getByRole('button', { name: /GO BACK/i }));
+    await userEvent.click(getByRole('button', { name: /NO/i }));
     expect(handleClose).toHaveBeenCalled();
   });
 });

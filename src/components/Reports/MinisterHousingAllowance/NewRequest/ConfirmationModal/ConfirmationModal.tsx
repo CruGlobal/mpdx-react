@@ -64,7 +64,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose} sx={{ color: 'text.secondary' }}>
-          <b>{t('Go Back')}</b>
+          <b>{t('No')}</b>
         </Button>
         {isCancel ? (
           <Button onClick={handleConfirm} color="error">

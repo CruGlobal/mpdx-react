@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import {
   Avatar,
@@ -11,7 +12,9 @@ import {
   IconButton,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { ConfirmationModal } from '../NewRequest/ConfirmationModal/ConfirmationModal';
 
+//TODO: handle cancel request
 interface CardSkeletonProps {
   title: string;
   icon: React.ElementType;
@@ -32,6 +35,8 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
   isRequest,
 }) => {
   const { t } = useTranslation();
+
+  const [openCancel, setOpenCancel] = useState(false);
 
   return (
     <Card sx={{ boxShadow: 1 }}>
@@ -63,6 +68,23 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
         <Button variant="outlined" sx={{ px: 2, py: 1 }}>
           {t(titleTwo)}
         </Button>
+        {isRequest && (
+          <Box sx={{ float: 'right' }}>
+            <Button
+              sx={{ color: 'error.light', px: 2, py: 1 }}
+              onClick={() => setOpenCancel(true)}
+            >
+              <b>{t('CANCEL REQUEST')}</b>
+            </Button>
+          </Box>
+        )}
+        {openCancel && (
+          <ConfirmationModal
+            handleClose={() => setOpenCancel(false)}
+            handleConfirm={() => setOpenCancel(false)}
+            isCancel={true}
+          />
+        )}
       </CardActionArea>
     </Card>
   );

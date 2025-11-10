@@ -1,10 +1,8 @@
-import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 import { Box, Button } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useMinisterHousingAllowance } from '../../Shared/MinisterHousingAllowanceContext';
 import { ConfirmationModal } from '../ConfirmationModal/ConfirmationModal';
 import { CalculationFormValues } from '../Steps/StepThree/Calculation';
@@ -19,15 +17,12 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
   isCalculate,
 }) => {
   const { t } = useTranslation();
-  const accountListId = useAccountListId();
-  const router = useRouter();
 
   const { handleNextStep, handlePreviousStep } = useMinisterHousingAllowance();
 
   const { submitForm, validateForm, submitCount, isValid } =
     useFormikContext<CalculationFormValues>();
   const [openConfirmation, setOpenConfirmation] = useState(false);
-  const [openCancel, setOpenCancel] = useState(false);
 
   const handleConfirm = async () => {
     const errors = await validateForm();
@@ -39,21 +34,7 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
   };
 
   return (
-    <Box sx={{ mt: 5, display: 'flex', justifyContent: 'space-between' }}>
-      <Button sx={{ color: 'error.light' }} onClick={() => setOpenCancel(true)}>
-        <b>{t('CANCEL')}</b>
-      </Button>
-      {openCancel && (
-        <ConfirmationModal
-          handleClose={() => setOpenCancel(false)}
-          handleConfirm={() =>
-            router.push(
-              `/accountLists/${accountListId}/reports/housingAllowance`,
-            )
-          }
-          isCancel={true}
-        />
-      )}
+    <Box sx={{ mt: 5, display: 'flex', justifyContent: 'flex-end' }}>
       {isCalculate ? (
         <Box sx={{ display: 'flex', gap: 2 }}>
           <Button
