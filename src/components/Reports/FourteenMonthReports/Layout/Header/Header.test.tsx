@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { HeaderTypeEnum } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import theme from 'src/theme';
 import { FourteenMonthReportCurrencyType } from '../../FourteenMonthReport';
 import { FourteenMonthReportHeader } from './Header';
@@ -63,6 +64,7 @@ describe('FourteenMonthReportHeader', () => {
           isExpanded={true}
           isMobile={true}
           isNavListOpen={true}
+          headerType={HeaderTypeEnum.Report}
           title={title}
           onExpandToggle={onExpandToggle}
           onNavListToggle={onNavListToggle}
@@ -72,7 +74,7 @@ describe('FourteenMonthReportHeader', () => {
     );
 
     userEvent.click(
-      getByRole('button', { hidden: true, name: 'Toggle Filter Panel' }),
+      getByRole('button', { hidden: true, name: 'Toggle Navigation Panel' }),
     );
     expect(onNavListToggle).toHaveBeenCalled();
   });

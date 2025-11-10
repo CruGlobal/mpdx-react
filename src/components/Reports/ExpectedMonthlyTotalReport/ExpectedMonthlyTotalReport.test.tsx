@@ -148,8 +148,8 @@ describe('ExpectedMonthlyTotalReport', () => {
   it('renders nav list icon and onclick triggers onNavListToggle', async () => {
     const { getByTestId } = render(<TestComponent />);
 
-    expect(getByTestId('ReportsFilterIcon')).toBeInTheDocument();
-    userEvent.click(getByTestId('ReportsFilterIcon'));
+    expect(getByTestId('ReportsMenuIcon')).toBeInTheDocument();
+    userEvent.click(getByTestId('ReportsMenuIcon'));
     await waitFor(() => expect(onNavListToggle).toHaveBeenCalled());
   });
 });
