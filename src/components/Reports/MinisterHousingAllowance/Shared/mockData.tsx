@@ -19,7 +19,7 @@ interface MHA {
   deadlineDate: string | null;
   boardApprovalDate: string | null;
   approvedDate: string | null;
-  memorializationDate: string | null;
+  submittedDate: string | null;
   availableDate: string | null;
 }
 
@@ -177,7 +177,7 @@ export const mocks: Mock[] = [
         deadlineDate: null,
         boardApprovalDate: '2023-03-01',
         approvedDate: '2024-09-01',
-        memorializationDate: '2023-02-25',
+        submittedDate: '2023-02-20',
         availableDate: '2023-03-10',
       },
       spouseMHA: {
@@ -187,7 +187,7 @@ export const mocks: Mock[] = [
         deadlineDate: null,
         boardApprovalDate: '2023-03-02',
         approvedDate: '2024-09-01',
-        memorializationDate: '2023-02-26',
+        submittedDate: '2023-02-20',
         availableDate: '2023-03-11',
       },
     },
@@ -237,7 +237,7 @@ export const mocks: Mock[] = [
         deadlineDate: null,
         boardApprovalDate: '2023-03-01',
         approvedDate: '2024-09-01',
-        memorializationDate: '2023-02-25',
+        submittedDate: '2023-02-20',
         availableDate: '2023-03-10',
       },
       spouseMHA: null,
@@ -297,7 +297,7 @@ export const mocks: Mock[] = [
         deadlineDate: '2025-09-17',
         boardApprovalDate: '2025-10-01',
         approvedDate: null,
-        memorializationDate: null,
+        submittedDate: '2025-08-20',
         availableDate: '2026-01-01',
       },
       spouseMHA: {
@@ -307,7 +307,7 @@ export const mocks: Mock[] = [
         deadlineDate: '2025-09-17',
         boardApprovalDate: '2025-10-01',
         approvedDate: null,
-        memorializationDate: null,
+        submittedDate: '2025-08-20',
         availableDate: '2026-01-01',
       },
     },

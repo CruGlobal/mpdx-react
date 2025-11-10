@@ -9,15 +9,12 @@ import {
 } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
+import { useMinisterHousingAllowance } from '../../../Shared/MinisterHousingAllowanceContext';
 import { PageEnum, RentOwnEnum } from '../../../Shared/sharedTypes';
 import { FormValues } from '../../NewRequestPage';
 import { DirectionButtons } from '../../Shared/DirectionButtons';
 
-interface RentOwnProps {
-  type: PageEnum;
-}
-
-export const RentOwn: React.FC<RentOwnProps> = ({ type }) => {
+export const RentOwn: React.FC = () => {
   const { t } = useTranslation();
 
   const {
@@ -27,10 +24,15 @@ export const RentOwn: React.FC<RentOwnProps> = ({ type }) => {
     errors,
     handleChange,
     handleBlur,
-    submitCount,
     submitForm,
-    isValid,
   } = useFormikContext<FormValues>();
+
+  const { pageType } = useMinisterHousingAllowance();
+
+  const handleNext = async () => {
+    setTouched({ rentOrOwn: true });
+    await submitForm();
+  };
 
   return (
     <>
@@ -39,7 +41,7 @@ export const RentOwn: React.FC<RentOwnProps> = ({ type }) => {
       </Box>
       <Typography variant="body1" sx={{ mb: 2 }}>
         {t('Please select the option that applies to you.')}
-        {type === PageEnum.Edit &&
+        {pageType === PageEnum.Edit &&
           t(
             ' If this has changed from your previous submission, you may need to provide additional information on the next screen.',
           )}
@@ -68,14 +70,8 @@ export const RentOwn: React.FC<RentOwnProps> = ({ type }) => {
           </RadioGroup>
         </FormControl>
       </Box>
-      <DirectionButtons
-        type={type}
-        handleNext={async () => {
-          setTouched({ rentOrOwn: true });
-          await submitForm();
-        }}
-      />
-      {submitCount > 0 && !isValid && (
+      <DirectionButtons handleNext={handleNext} />
+      {errors.rentOrOwn && (
         <Alert severity="error" sx={{ mt: 2, '& ul': { m: 0, pl: 3 } }}>
           {t('Your form is missing information.')}
           <ul>{errors.rentOrOwn && <li>{errors.rentOrOwn}</li>}</ul>

@@ -4,23 +4,22 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
-import { PageEnum } from '../../Shared/sharedTypes';
 import { ConfirmationModal } from './ConfirmationModal';
 
 const handleClose = jest.fn();
 const handleConfirm = jest.fn();
 
 interface TestComponentProps {
-  type: PageEnum;
+  isCancel?: boolean;
 }
 
-const TestComponent: React.FC<TestComponentProps> = ({ type }) => (
+const TestComponent: React.FC<TestComponentProps> = ({ isCancel }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
       <ConfirmationModal
-        type={type}
         handleClose={handleClose}
         handleConfirm={handleConfirm}
+        isCancel={isCancel}
       />
     </TestRouter>
   </ThemeProvider>
@@ -28,9 +27,7 @@ const TestComponent: React.FC<TestComponentProps> = ({ type }) => (
 
 describe('ConfirmationModal', () => {
   it('renders submit confirmation modal correctly', async () => {
-    const { getByText, getByRole } = render(
-      <TestComponent type={PageEnum.New} />,
-    );
+    const { getByText, getByRole } = render(<TestComponent />);
 
     expect(
       getByText('Are you ready to submit your MHA request?'),
@@ -44,9 +41,7 @@ describe('ConfirmationModal', () => {
   });
 
   it('renders update confirmation modal correctly', async () => {
-    const { getByText, getByRole } = render(
-      <TestComponent type={PageEnum.Edit} />,
-    );
+    const { getByText, getByRole } = render(<TestComponent />);
 
     expect(
       getByText('Are you ready to update your MHA request?'),
@@ -60,9 +55,9 @@ describe('ConfirmationModal', () => {
   });
 
   it('calls handleClose when modal is closed', async () => {
-    const { getByRole } = render(<TestComponent type={PageEnum.New} />);
+    const { getByRole } = render(<TestComponent isCancel={true} />);
 
-    await userEvent.click(getByRole('button', { name: /GO BACK/i }));
+    await userEvent.click(getByRole('button', { name: /NO/i }));
     expect(handleClose).toHaveBeenCalled();
   });
 });

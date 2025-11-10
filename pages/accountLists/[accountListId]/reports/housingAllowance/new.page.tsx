@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { NewRequestPage } from 'src/components/Reports/MinisterHousingAllowance/NewRequest/NewRequestPage';
-import { ExpensesClaim } from 'src/components/Reports/MinisterHousingAllowance/NewRequest/Steps/StepThree/CalcComponents/ExpensesClaim';
+import { MinisterHousingAllowanceProvider } from 'src/components/Reports/MinisterHousingAllowance/Shared/MinisterHousingAllowanceContext';
 import { PageEnum } from 'src/components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
 import {
   HeaderTypeEnum,
@@ -23,18 +23,9 @@ const NewRequestPageWrapper = styled(Box)(({ theme }) => ({
 
 const HousingAllowanceNewRequestPage: React.FC = () => {
   const { t } = useTranslation();
-  const title = t("Minister's Housing Allowance");
+  const title = t("New Minister's Housing Allowance Request");
 
   const [isNavListOpen, setNavListOpen] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-
-  const handleOnOpen = () => {
-    setIsOpen(true);
-  };
-
-  const handleOnClose = () => {
-    setIsOpen(false);
-  };
 
   const handleNavListToggle = () => {
     setNavListOpen(!isNavListOpen);
@@ -43,7 +34,7 @@ const HousingAllowanceNewRequestPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>{`${title} - New Request`}</title>
+        <title>{title}</title>
       </Head>
       <NewRequestPageWrapper>
         <SidePanelsLayout
@@ -51,7 +42,7 @@ const HousingAllowanceNewRequestPage: React.FC = () => {
           leftPanel={
             <MultiPageMenu
               isOpen={isNavListOpen}
-              selectedId={'housingAllowanceNewRequest'}
+              selectedId={'housingAllowanceNew'}
               onClose={handleNavListToggle}
               navType={NavTypeEnum.Reports}
             />
@@ -66,14 +57,11 @@ const HousingAllowanceNewRequestPage: React.FC = () => {
                 title={t("Minister's Housing Allowance Request")}
                 headerType={HeaderTypeEnum.Report}
               />
-              <NewRequestPage type={PageEnum.New} onOpen={handleOnOpen} />
+              <MinisterHousingAllowanceProvider type={PageEnum.New}>
+                <NewRequestPage />
+              </MinisterHousingAllowanceProvider>
             </>
           }
-          rightPanel={
-            isOpen ? <ExpensesClaim onClose={handleOnClose} /> : undefined
-          }
-          rightOpen={isOpen}
-          rightWidth="40%"
         />
       </NewRequestPageWrapper>
     </>

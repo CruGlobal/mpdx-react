@@ -5,6 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
+import { MinisterHousingAllowanceProvider } from '../../../Shared/MinisterHousingAllowanceContext';
 import { PageEnum } from '../../../Shared/sharedTypes';
 import { RentOwn } from './RentOwn';
 
@@ -14,7 +15,9 @@ const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <TestRouter>
       <Formik initialValues={{}} onSubmit={submit}>
-        <RentOwn type={PageEnum.New} />
+        <MinisterHousingAllowanceProvider type={PageEnum.New}>
+          <RentOwn />
+        </MinisterHousingAllowanceProvider>
       </Formik>
     </TestRouter>
   </ThemeProvider>

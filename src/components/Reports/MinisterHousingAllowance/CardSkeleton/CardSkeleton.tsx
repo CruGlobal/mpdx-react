@@ -1,4 +1,5 @@
 import NextLink from 'next/link';
+import { useState } from 'react';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import {
   Avatar,
@@ -13,7 +14,9 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { ConfirmationModal } from '../NewRequest/ConfirmationModal/ConfirmationModal';
 
+//TODO: handle cancel request
 interface CardSkeletonProps {
   title: string;
   icon: React.ElementType;
@@ -37,6 +40,8 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
 
   const accountListId = useAccountListId();
   const editLink = `/accountLists/${accountListId}/reports/housingAllowance/editRequest`;
+
+  const [openCancel, setOpenCancel] = useState(false);
 
   return (
     <Card sx={{ boxShadow: 1 }}>
@@ -73,6 +78,23 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
         >
           {t(titleTwo)}
         </Button>
+        {isRequest && (
+          <Box sx={{ float: 'right' }}>
+            <Button
+              sx={{ color: 'error.light', px: 2, py: 1 }}
+              onClick={() => setOpenCancel(true)}
+            >
+              <b>{t('CANCEL REQUEST')}</b>
+            </Button>
+          </Box>
+        )}
+        {openCancel && (
+          <ConfirmationModal
+            handleClose={() => setOpenCancel(false)}
+            handleConfirm={() => setOpenCancel(false)}
+            isCancel={true}
+          />
+        )}
       </CardActionArea>
     </Card>
   );

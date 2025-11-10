@@ -2,7 +2,11 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import theme from 'src/theme';
-import { PanelTypeEnum } from '../Shared/sharedTypes';
+import {
+  MinisterHousingAllowanceProvider,
+  useMinisterHousingAllowance,
+} from '../Shared/MinisterHousingAllowanceContext';
+import { PageEnum, PanelTypeEnum } from '../Shared/sharedTypes';
 import { PanelLayout } from './PanelLayout';
 
 const title = 'Sidebar Title';
@@ -19,15 +23,25 @@ const EmptyTest: React.FC = () => (
 
 const FilledTest: React.FC = () => (
   <ThemeProvider theme={theme}>
-    <PanelLayout
-      panelType={PanelTypeEnum.New}
-      percentComplete={75}
-      sidebarTitle={title}
-      sidebarAriaLabel="New - Step 1"
-      mainContent={<h1>Main Content</h1>}
-    />
+    <MinisterHousingAllowanceProvider type={PageEnum.New}>
+      <PanelLayout
+        panelType={PanelTypeEnum.New}
+        sidebarTitle={title}
+        sidebarAriaLabel="New - Step 1"
+        mainContent={<h1>Main Content</h1>}
+      />
+    </MinisterHousingAllowanceProvider>
   </ThemeProvider>
 );
+
+jest.mock('../Shared/MinisterHousingAllowanceContext', () => ({
+  ...jest.requireActual('../Shared/MinisterHousingAllowanceContext'),
+  useMinisterHousingAllowance: jest.fn(),
+}));
+
+(useMinisterHousingAllowance as jest.Mock).mockReturnValue({
+  percentComplete: 75,
+});
 
 //TODO: Add more tests for other panel type and functionality
 

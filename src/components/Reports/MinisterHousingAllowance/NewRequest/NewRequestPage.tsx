@@ -1,16 +1,14 @@
-import { useState } from 'react';
 import { Container, Stack } from '@mui/material';
 import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import i18n from 'src/lib/i18n';
-import { useNewStepList } from '../../../../hooks/useNewStepList';
 import { mainContentWidth } from '../MinisterHousingAllowance';
 import { PanelLayout } from '../PanelLayout/PanelLayout';
+import { useMinisterHousingAllowance } from '../Shared/MinisterHousingAllowanceContext';
 import { mocks } from '../Shared/mockData';
 import {
   NewRequestStepsEnum,
-  PageEnum,
   PanelTypeEnum,
   RentOwnEnum,
 } from '../Shared/sharedTypes';
@@ -19,11 +17,6 @@ import { AboutForm } from './Steps/StepOne/AboutForm';
 import { Calculation } from './Steps/StepThree/Calculation';
 import { RentOwn } from './Steps/StepTwo/RentOwn';
 import { StepsList } from './StepsList/StepsList';
-
-interface NewRequestPageProps {
-  type: PageEnum;
-  onOpen?: () => void;
-}
 
 export interface FormValues {
   rentOrOwn: RentOwnEnum | undefined;
@@ -35,98 +28,17 @@ const validationSchema = yup.object({
     .required(i18n.t('Please select one of the options above to continue.')),
 });
 
-export const NewRequestPage: React.FC<NewRequestPageProps> = ({
-  onOpen,
-  type,
-}) => {
+export const NewRequestPage: React.FC = () => {
   const { t } = useTranslation();
-  const steps = useNewStepList(type);
 
-  const [currentStep, setCurrentStep] = useState(NewRequestStepsEnum.AboutForm);
-  const [percentComplete, setPercentComplete] = useState(25);
-
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  const handleNextStep = () => {
-    setCurrentStep((prevStep) => {
-      const next =
-        prevStep === NewRequestStepsEnum.AboutForm
-          ? NewRequestStepsEnum.RentOrOwn
-          : prevStep === NewRequestStepsEnum.RentOrOwn
-            ? NewRequestStepsEnum.Calculate
-            : prevStep === NewRequestStepsEnum.Calculate
-              ? NewRequestStepsEnum.Receipt
-              : prevStep;
-
-      handlePercentComplete(next);
-      handleNextIndexChange(currentIndex + 1);
-      return next;
-    });
-  };
-
-  const handlePreviousStep = () => {
-    setCurrentStep((prevStep) => {
-      const next =
-        prevStep === NewRequestStepsEnum.RentOrOwn
-          ? NewRequestStepsEnum.AboutForm
-          : prevStep === NewRequestStepsEnum.Calculate
-            ? NewRequestStepsEnum.RentOrOwn
-            : prevStep === NewRequestStepsEnum.Receipt
-              ? NewRequestStepsEnum.Calculate
-              : prevStep;
-
-      handlePercentComplete(next);
-      handlePreviousIndexChange(currentIndex - 1);
-      return next;
-    });
-  };
-
-  const handlePercentComplete = (step: NewRequestStepsEnum) => {
-    switch (step) {
-      case NewRequestStepsEnum.AboutForm:
-        setPercentComplete(25);
-        break;
-      case NewRequestStepsEnum.RentOrOwn:
-        setPercentComplete(50);
-        break;
-      case NewRequestStepsEnum.Calculate:
-        setPercentComplete(75);
-        break;
-      case NewRequestStepsEnum.Receipt:
-        setPercentComplete(100);
-        break;
-      default:
-        setPercentComplete(0);
-    }
-  };
-
-  const handleNextIndexChange = (newIndex: number) => {
-    steps[currentIndex].current = false;
-    steps[currentIndex].complete = true;
-    setCurrentIndex(newIndex);
-    steps[newIndex].current = true;
-
-    if (newIndex === steps.length - 1) {
-      steps[newIndex].complete = true;
-    }
-  };
-
-  const handlePreviousIndexChange = (newIndex: number) => {
-    steps[currentIndex].current = false;
-    steps[newIndex].complete = false;
-    setCurrentIndex(newIndex);
-    steps[newIndex].current = true;
-  };
+  const { steps, handleNextStep, currentStep } = useMinisterHousingAllowance();
 
   return (
     <PanelLayout
       panelType={PanelTypeEnum.New}
       sidebarTitle={t('New Request')}
       sidebarAriaLabel={t('MHA New Request')}
-      percentComplete={percentComplete}
       sidebarContent={<StepsList steps={steps} />}
-      handleBack={handlePreviousStep}
-      currentStep={currentStep}
       mainContent={
         <Formik<FormValues>
           initialValues={{ rentOrOwn: undefined }}
@@ -143,26 +55,20 @@ export const NewRequestPage: React.FC<NewRequestPageProps> = ({
                   availableDate={
                     mocks[4].mhaDetails.staffMHA?.availableDate ?? ''
                   }
-                  handleNext={handleNextStep}
-                  onOpen={onOpen}
                 />
               ) : currentStep === NewRequestStepsEnum.RentOrOwn ? (
-                <RentOwn type={type} />
+                <RentOwn />
               ) : currentStep === NewRequestStepsEnum.Calculate ? (
                 <Calculation
-                  type={type}
                   boardApprovalDate={
                     mocks[4].mhaDetails.staffMHA?.boardApprovalDate ?? ''
                   }
                   availableDate={
                     mocks[4].mhaDetails.staffMHA?.availableDate ?? ''
                   }
-                  handleNext={handleNextStep}
-                  handleBack={handlePreviousStep}
-                  onOpen={onOpen}
                 />
               ) : currentStep === NewRequestStepsEnum.Receipt ? (
-                <Receipt type={type} />
+                <Receipt />
               ) : null}
             </Stack>
           </Container>

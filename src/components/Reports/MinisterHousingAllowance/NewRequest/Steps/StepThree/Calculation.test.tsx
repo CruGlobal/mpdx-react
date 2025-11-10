@@ -7,13 +7,16 @@ import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
+import {
+  MinisterHousingAllowanceProvider,
+  useMinisterHousingAllowance,
+} from '../../../Shared/MinisterHousingAllowanceContext';
 import { PageEnum } from '../../../Shared/sharedTypes';
 import { Calculation } from './Calculation';
 
 const submit = jest.fn();
-const handleBack = jest.fn();
-const handleNext = jest.fn();
-const onOpen = jest.fn();
+const handlePreviousStep = jest.fn();
+const handleNextStep = jest.fn();
 const boardApprovalDate = '2024-06-15';
 const availableDate = '2024-07-01';
 
@@ -27,19 +30,27 @@ const TestComponent: React.FC = () => (
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <TestRouter>
         <Formik initialValues={initialValues} onSubmit={submit}>
-          <Calculation
-            type={PageEnum.New}
-            boardApprovalDate={boardApprovalDate}
-            availableDate={availableDate}
-            handleBack={handleBack}
-            handleNext={handleNext}
-            onOpen={onOpen}
-          />
+          <MinisterHousingAllowanceProvider type={PageEnum.New}>
+            <Calculation
+              boardApprovalDate={boardApprovalDate}
+              availableDate={availableDate}
+            />
+          </MinisterHousingAllowanceProvider>
         </Formik>
       </TestRouter>
     </LocalizationProvider>
   </ThemeProvider>
 );
+
+jest.mock('../../../Shared/MinisterHousingAllowanceContext', () => ({
+  ...jest.requireActual('../../../Shared/MinisterHousingAllowanceContext'),
+  useMinisterHousingAllowance: jest.fn(),
+}));
+
+(useMinisterHousingAllowance as jest.Mock).mockReturnValue({
+  handleNextStep,
+  handlePreviousStep,
+});
 
 describe('Calculation', () => {
   it('renders the component', () => {
@@ -56,7 +67,6 @@ describe('Calculation', () => {
       getByRole('checkbox', { name: /i understand that my approved/i }),
     ).toBeInTheDocument();
 
-    expect(getByRole('button', { name: /cancel/i })).toBeInTheDocument();
     expect(getByRole('button', { name: /back/i })).toBeInTheDocument();
     expect(getByRole('button', { name: /submit/i })).toBeInTheDocument();
   });
@@ -192,15 +202,5 @@ describe('Calculation', () => {
 
     expect(getByRole('button', { name: /go back/i })).toBeInTheDocument();
     expect(getByRole('button', { name: /yes, continue/i })).toBeInTheDocument();
-  });
-
-  it('opens panel when link is clicked', () => {
-    const { getByRole } = render(<TestComponent />);
-
-    userEvent.click(
-      getByRole('button', { name: /what expenses can i claim on my mha/i }),
-    );
-
-    expect(onOpen).toHaveBeenCalled();
   });
 });

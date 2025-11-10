@@ -12,42 +12,40 @@ import {
   StyledSidebar,
   iconPanelWidth,
 } from 'src/components/Shared/IconPanelLayout/IconPanelLayout';
-import {
-  EditRequestStepsEnum,
-  NewRequestStepsEnum,
-  PanelTypeEnum,
-} from '../Shared/sharedTypes';
+import { useMinisterHousingAllowance } from '../Shared/MinisterHousingAllowanceContext';
+import { PageEnum, PanelTypeEnum } from '../Shared/sharedTypes';
 
 interface PanelLayoutProps {
   panelType: PanelTypeEnum;
-  percentComplete?: number;
   sidebarContent?: React.ReactNode;
   sidebarTitle?: string;
   sidebarAriaLabel?: string;
   mainContent?: React.ReactNode;
-  currentStep?: NewRequestStepsEnum | EditRequestStepsEnum;
-  handleBack?: () => void;
 }
 
 export const PanelLayout: React.FC<PanelLayoutProps> = ({
   panelType,
-  percentComplete,
   sidebarContent,
   sidebarTitle,
   sidebarAriaLabel,
   mainContent,
-  currentStep,
-  handleBack,
 }) => {
   const { t } = useTranslation();
 
-  const isReceiptStep =
-    currentStep === NewRequestStepsEnum.Receipt ||
-    currentStep === EditRequestStepsEnum.Receipt;
+  const {
+    handlePreviousStep,
+    percentComplete,
+    currentIndex,
+    steps,
+    handleEditPreviousStep,
+    percentEditComplete,
+    pageType,
+  } = useMinisterHousingAllowance();
 
-  const isNotFirstStep =
-    currentStep !== NewRequestStepsEnum.AboutForm &&
-    currentStep !== EditRequestStepsEnum.RentOrOwn;
+  const isLastStep = currentIndex === steps.length - 1;
+  const isNotFirstStep = currentIndex !== 0;
+
+  const isNew = pageType === PageEnum.New;
 
   return (
     <PrintableStack direction="row">
@@ -66,7 +64,7 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
       ) : (
         <>
           <Stack direction="column" width={iconPanelWidth}>
-            {isReceiptStep ? (
+            {isLastStep ? (
               <Box
                 sx={{
                   display: 'flex',
@@ -82,13 +80,15 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
               <>
                 <StyledBox>
                   <CircularProgressWithLabel
-                    progress={percentComplete ? percentComplete : 0}
+                    progress={isNew ? percentComplete : percentEditComplete}
                   />
                 </StyledBox>
                 {isNotFirstStep && (
                   <IconButton
                     aria-label={t('Go back')}
-                    onClick={handleBack}
+                    onClick={
+                      isNew ? handlePreviousStep : handleEditPreviousStep
+                    }
                     sx={(theme) => ({
                       color: theme.palette.cruGrayDark.main,
                     })}

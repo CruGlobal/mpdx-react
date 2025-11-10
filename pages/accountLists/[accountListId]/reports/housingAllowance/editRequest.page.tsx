@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { EditRequestPage } from 'src/components/Reports/MinisterHousingAllowance/EditRequest/EditRequestPage';
-import { ExpensesClaim } from 'src/components/Reports/MinisterHousingAllowance/NewRequest/Steps/StepThree/CalcComponents/ExpensesClaim';
+import { MinisterHousingAllowanceProvider } from 'src/components/Reports/MinisterHousingAllowance/Shared/MinisterHousingAllowanceContext';
 import { PageEnum } from 'src/components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
 import {
   HeaderTypeEnum,
@@ -26,15 +26,6 @@ const HousingAllowanceEditRequestPage: React.FC = () => {
   const title = t("Minister's Housing Allowance");
 
   const [isNavListOpen, setNavListOpen] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-
-  const handleOnOpen = () => {
-    setIsOpen(true);
-  };
-
-  const handleOnClose = () => {
-    setIsOpen(false);
-  };
 
   const handleNavListToggle = () => {
     setNavListOpen(!isNavListOpen);
@@ -66,14 +57,11 @@ const HousingAllowanceEditRequestPage: React.FC = () => {
                 title={t("Minister's Housing Allowance Request")}
                 headerType={HeaderTypeEnum.Report}
               />
-              <EditRequestPage type={PageEnum.Edit} onOpen={handleOnOpen} />
+              <MinisterHousingAllowanceProvider type={PageEnum.Edit}>
+                <EditRequestPage />
+              </MinisterHousingAllowanceProvider>
             </>
           }
-          rightPanel={
-            isOpen ? <ExpensesClaim onClose={handleOnClose} /> : undefined
-          }
-          rightOpen={isOpen}
-          rightWidth="40%"
         />
       </EditRequestPageWrapper>
     </>

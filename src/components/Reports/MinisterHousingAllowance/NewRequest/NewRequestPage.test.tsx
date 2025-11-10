@@ -4,13 +4,16 @@ import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
+import { MinisterHousingAllowanceProvider } from '../Shared/MinisterHousingAllowanceContext';
 import { PageEnum } from '../Shared/sharedTypes';
 import { NewRequestPage } from './NewRequestPage';
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <TestRouter>
-      <NewRequestPage type={PageEnum.New} />
+      <MinisterHousingAllowanceProvider type={PageEnum.New}>
+        <NewRequestPage />
+      </MinisterHousingAllowanceProvider>
     </TestRouter>
   </ThemeProvider>
 );
@@ -90,12 +93,5 @@ describe('NewRequestPage', () => {
     expect(alert).toBeInTheDocument();
 
     expect(alert).toHaveTextContent('Your form is missing information.');
-  });
-
-  it('renders Cancel and Continue buttons', () => {
-    const { getByRole } = render(<TestComponent />);
-
-    expect(getByRole('button', { name: /cancel/i })).toBeInTheDocument();
-    expect(getByRole('button', { name: /continue/i })).toBeInTheDocument();
   });
 });
