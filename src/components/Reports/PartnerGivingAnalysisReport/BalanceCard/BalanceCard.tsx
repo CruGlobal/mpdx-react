@@ -112,11 +112,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
             color={fund.balance < 0 ? 'error.main' : 'text.primary'}
             sx={{ fontSize: 'inherit' }}
           >
-            {fund.balance < 0 ? '(' : ''}
-            {currencyFormat(Math.abs(fund.balance), 'USD', locale, {
-              showTrailingZeros: true,
-            })}
-            {fund.balance < 0 ? ')' : ''}
+            {formatBalance(fund.balance)}
           </Typography>
         </Box>
         {donationPeriodTotalSum && (
