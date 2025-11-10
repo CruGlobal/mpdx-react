@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Box, CircularProgress } from '@mui/material';
 import { useGridApiRef } from '@mui/x-data-grid';
-import { GridPaginationModel } from '@mui/x-data-grid/models/gridPaginationProps';
 import { GridSortModel } from '@mui/x-data-grid/models/gridSortModel';
 import { useTranslation } from 'react-i18next';
 import { Panel } from 'pages/accountLists/[accountListId]/reports/helpers';
@@ -41,10 +40,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   const { t } = useTranslation();
   const { activeFilters, searchTerm } = useUrlFilters();
   const apiRef = useGridApiRef();
-  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
-    page: 0,
-    pageSize: 25,
-  });
+
   const [sortModel, setSortModel] = useState<GridSortModel>([
     {
       field: 'name',
@@ -118,10 +114,6 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
     isRowChecked,
   } = useMassSelection(allContactIds);
 
-  const handlePageChange = (model: GridPaginationModel) => {
-    setPaginationModel(model);
-  };
-
   const handleSortChange = (model: GridSortModel) => {
     setSortModel(model);
   };
@@ -176,8 +168,6 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
             data={contacts}
             onSelectOne={toggleSelectionById}
             isRowChecked={isRowChecked}
-            paginationModel={paginationModel}
-            handlePageChange={handlePageChange}
             sortModel={sortModel}
             handleSortChange={handleSortChange}
             apiRef={apiRef}
