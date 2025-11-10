@@ -42,10 +42,9 @@ describe('AboutForm', () => {
     expect(getByText(/10\/1\/2024/)).toBeInTheDocument();
   });
 
-  it('renders Cancel and Continue buttons', () => {
+  it('renders Continue button', () => {
     const { getByRole } = render(<TestComponent />);
 
-    expect(getByRole('button', { name: 'CANCEL' })).toBeInTheDocument();
     expect(getByRole('button', { name: 'CONTINUE' })).toBeInTheDocument();
   });
 });

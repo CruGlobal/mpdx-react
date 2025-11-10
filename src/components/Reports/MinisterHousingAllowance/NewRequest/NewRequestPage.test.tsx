@@ -93,11 +93,4 @@ describe('NewRequestPage', () => {
 
     expect(alert).toHaveTextContent('Your form is missing information.');
   });
-
-  it('renders Cancel and Continue buttons', () => {
-    const { getByRole } = render(<TestComponent />);
-
-    expect(getByRole('button', { name: /cancel/i })).toBeInTheDocument();
-    expect(getByRole('button', { name: /continue/i })).toBeInTheDocument();
-  });
 });

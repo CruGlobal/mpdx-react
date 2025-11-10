@@ -63,18 +63,25 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         </Alert>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} sx={{ color: 'text.secondary' }}>
-          <b>{t('No')}</b>
-        </Button>
         {isCancel ? (
-          <Button onClick={handleConfirm} color="error">
-            <b>{t('Yes, Cancel')}</b>
-          </Button>
+          <>
+            <Button onClick={handleClose} sx={{ color: 'text.secondary' }}>
+              <b>{t('No')}</b>
+            </Button>
+            <Button onClick={handleConfirm} color="error">
+              <b>{t('Yes, Cancel')}</b>
+            </Button>
+          </>
         ) : (
-          <Button onClick={handleConfirm} color="primary">
-            <b>{t('Yes, Continue')}</b>
-            <ChevronRight sx={{ ml: 1 }} />
-          </Button>
+          <>
+            <Button onClick={handleClose} sx={{ color: 'text.secondary' }}>
+              <b>{t('GO BACK')}</b>
+            </Button>
+            <Button onClick={handleConfirm} color="primary">
+              <b>{t('Yes, Continue')}</b>
+              <ChevronRight sx={{ ml: 1 }} />
+            </Button>
+          </>
         )}
       </DialogActions>
     </Dialog>

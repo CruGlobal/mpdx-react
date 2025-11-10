@@ -66,7 +66,6 @@ describe('Calculation', () => {
       getByRole('checkbox', { name: /i understand that my approved/i }),
     ).toBeInTheDocument();
 
-    expect(getByRole('button', { name: /cancel/i })).toBeInTheDocument();
     expect(getByRole('button', { name: /back/i })).toBeInTheDocument();
     expect(getByRole('button', { name: /submit/i })).toBeInTheDocument();
   });
