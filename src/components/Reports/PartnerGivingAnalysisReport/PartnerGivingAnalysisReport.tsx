@@ -79,7 +79,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   });
 
   // Load remaining pages in background
-  useFetchAllPages({
+  const { loading: loadingAllPages } = useFetchAllPages({
     fetchMore,
     error,
     pageInfo: data?.partnerGivingAnalysis.pageInfo,
@@ -141,7 +141,9 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
         onNavListToggle={onNavListToggle}
         title={title}
         headerType={HeaderTypeEnum.Report}
-        rightExtra={<HeaderActions onPrint={handlePrint} />}
+        rightExtra={
+          <HeaderActions onPrint={handlePrint} loading={loadingAllPages} />
+        }
       />
       <ListHeader
         page={PageEnum.Report}
