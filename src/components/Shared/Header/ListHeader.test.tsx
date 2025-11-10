@@ -325,7 +325,7 @@ describe('ListHeader', () => {
     });
 
     expect(filterButton).toHaveStyle({
-      backgroundColor: theme.palette.cruYellow.main,
+      backgroundColor: theme.palette.secondary.dark,
     });
   });
 
