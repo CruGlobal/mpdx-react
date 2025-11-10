@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useSetupContext } from 'src/components/Setup/SetupProvider';
 import theme from 'src/theme';
 import { NavFilterIcon } from '../styledComponents/NavFilterIcon';
+import { getHeaderTitleAccess } from './helpers';
 
 export enum HeaderTypeEnum {
   Report = 'reports',
@@ -67,16 +68,7 @@ export const MultiPageHeader: FC<MultiPageHeaderProps> = ({
   const isToolsHeader = headerType === HeaderTypeEnum.Tools;
   const isFiltersHeader = headerType === HeaderTypeEnum.Filters;
 
-  let titleAccess;
-  if (isReportsHeader) {
-    titleAccess = t('Toggle Navigation Panel');
-  } else if (isFiltersHeader) {
-    titleAccess = t('Toggle Filters Panel');
-  } else if (isSettingsHeader) {
-    titleAccess = t('Toggle Preferences Menu');
-  } else if (isToolsHeader) {
-    titleAccess = t('Toggle Tools Menu');
-  }
+  const titleAccess = getHeaderTitleAccess(headerType, t);
 
   return (
     <StickyHeader p={2} test-dataid="MultiPageHeader">
