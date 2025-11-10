@@ -58,22 +58,28 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
     [activeFilters, searchTerm],
   );
 
-  const { data, previousData, fetchMore, error } =
-    usePartnerGivingAnalysisQuery({
-      variables: {
-        input: {
-          accountListId,
-          filters: contactFilters,
-          sortBy: sortModel[0].sort
-            ? sortModel[0].sort === 'asc'
-              ? AscendingSortEnums[sortModel[0].field]
-              : DescendingSortEnums[sortModel[0].field]
-            : null,
-        },
+  const {
+    data,
+    previousData,
+    fetchMore,
+    error,
+    loading: firstPageLoading,
+  } = usePartnerGivingAnalysisQuery({
+    variables: {
+      input: {
+        accountListId,
+        filters: contactFilters,
+        sortBy: sortModel[0].sort
+          ? sortModel[0].sort === 'asc'
+            ? AscendingSortEnums[sortModel[0].field]
+            : DescendingSortEnums[sortModel[0].field]
+          : null,
       },
-    });
+    },
+  });
 
-  const { loading } = useFetchAllPages({
+  // Load remaining pages in background
+  useFetchAllPages({
     fetchMore,
     error,
     pageInfo: data?.partnerGivingAnalysis.pageInfo,
@@ -146,16 +152,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
         headerCheckboxState={selectionType}
         selectedIds={ids}
       />
-      {loading ? (
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          height="100%"
-        >
-          <CircularProgress data-testid="LoadingPartnerGivingAnalysisReport" />
-        </Box>
-      ) : contacts.length ? (
+      {contacts.length ? (
         <>
           {!staffAccountLoading && staffAccountData?.staffAccount?.id ? (
             <BalanceCard
@@ -173,6 +170,15 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
             apiRef={apiRef}
           />
         </>
+      ) : firstPageLoading ? (
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          height="100%"
+        >
+          <CircularProgress data-testid="LoadingPartnerGivingAnalysisReport" />
+        </Box>
       ) : (
         <EmptyReport
           title={t('You have {{contacts}} total contacts', {
