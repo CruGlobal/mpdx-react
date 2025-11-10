@@ -317,7 +317,7 @@ export const mocks = {
         },
       ],
       pageInfo: {
-        endCursor: 'MTg',
+        endCursor: 'NQ',
         hasNextPage: false,
         hasPreviousPage: false,
       },
