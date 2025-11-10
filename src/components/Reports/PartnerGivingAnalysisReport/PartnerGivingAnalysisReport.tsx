@@ -43,7 +43,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   const apiRef = useGridApiRef();
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
-    pageSize: 5,
+    pageSize: 25,
   });
 
   const [sortModel, setSortModel] = useState<GridSortModel>([
