@@ -37,6 +37,7 @@ const mocks = {
           donationPeriodAverage: 88.468,
           donationPeriodCount: 176,
           donationPeriodSum: 15218.42,
+          firstDonationDate: '2019-01-01',
           lastDonationAmount: 150.92,
           lastDonationCurrency: 'CAD',
           lastDonationDate: '2021-07-07',
@@ -49,6 +50,7 @@ const mocks = {
           donationPeriodAverage: 71.4,
           donationPeriodCount: 127,
           donationPeriodSum: 13118.42,
+          firstDonationDate: '2020-01-01',
           lastDonationAmount: 170.92,
           lastDonationCurrency: 'CAD',
           lastDonationDate: '2021-03-07',
@@ -61,6 +63,7 @@ const mocks = {
           donationPeriodAverage: 86.4682954545454545,
           donationPeriodCount: 221,
           donationPeriodSum: 25218.42,
+          firstDonationDate: '2018-01-01',
           lastDonationAmount: 150.92,
           lastDonationCurrency: 'CAD',
           lastDonationDate: '2021-08-07',
@@ -155,7 +158,7 @@ describe('PartnerGivingAnalysisReportTable', () => {
       getByRole('link', { name: 'Ababa, Aladdin und Jasmine (Princess)' }),
     ).toHaveAttribute(
       'href',
-      '/accountLists/account-list-1/reports/partnerGivingAnalysis/01',
+      '/accountLists/account-list-1/reports/partnerGivingAnalysis/01?tab=Donations',
     );
   });
 });
