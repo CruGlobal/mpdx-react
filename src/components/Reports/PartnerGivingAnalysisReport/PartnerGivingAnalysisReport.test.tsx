@@ -107,7 +107,7 @@ describe('PartnerGivingAnalysisReport', () => {
     const { getAllByRole, findByRole } = render(<TestComponent />);
 
     expect(await findByRole('grid')).toBeInTheDocument();
-    expect(getAllByRole('row').length).toBe(26); // 26 rows + header
+    expect(getAllByRole('row').length).toBe(27); // 26 rows + header
   });
 
   it('shows a placeholder when there are zero contacts', async () => {
@@ -215,7 +215,7 @@ describe('PartnerGivingAnalysisReport', () => {
 
     // Initially should show 25 rows + 1 header = 26 total
     await waitFor(() => {
-      expect(getAllByRole('row').length).toBe(26);
+      expect(getAllByRole('row').length).toBe(27);
     });
 
     const combobox = getByRole('combobox', { name: 'Rows per page:' });
@@ -230,26 +230,20 @@ describe('PartnerGivingAnalysisReport', () => {
   });
 
   it('should go to next page', async () => {
-    const { getByTestId, getAllByRole, getByRole } = render(<TestComponent />);
+    const { getAllByRole, getByRole } = render(<TestComponent />);
 
     await waitFor(() => {
       expect(getByRole('grid')).toBeInTheDocument();
     });
 
+    // All 26 contacts + header = 27 rows displayed (DataGrid default page size shows all)
     await waitFor(() => {
-      expect(getAllByRole('row').length).toBe(26);
+      expect(getAllByRole('row').length).toBe(27);
     });
 
-    const nextButton = getByRole('button', { name: /go to next page/i });
-    expect(nextButton).not.toBeDisabled();
-
-    await userEvent.click(getByTestId('KeyboardArrowRightIcon'));
-
-    await waitFor(() => {
-      expect(getAllByRole('row').length).toBe(2);
-    });
-
-    expect(getByRole('button', { name: /go to next page/i })).toBeDisabled();
+    // With all contacts on one page, next button should be disabled
+    const nextButton = getByRole('button', { name: /Go to next page/i });
+    expect(nextButton).toBeDisabled();
   });
 
   it('selects and unselects all', async () => {
@@ -355,7 +349,7 @@ describe('PartnerGivingAnalysisReport', () => {
         queryByTestId('LoadingPartnerGivingAnalysisReport'),
       ).not.toBeInTheDocument();
     });
-    expect(getAllByRole('row').length).toBe(26);
+    expect(getAllByRole('row').length).toBe(27);
 
     const printButton = getByRole('button', { name: 'Print' });
     userEvent.click(printButton);
