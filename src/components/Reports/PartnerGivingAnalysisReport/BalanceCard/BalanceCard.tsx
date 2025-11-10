@@ -1,6 +1,6 @@
 import React from 'react';
 import { Wallet } from '@mui/icons-material';
-import { Box, Card, Typography } from '@mui/material';
+import { Box, Card, Typography, useMediaQuery } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
@@ -10,13 +10,11 @@ import { useReportsStaffExpensesQuery } from '../PartnerGivingAnalysis.generated
 import { CardSkeleton } from './CardSkeleton';
 
 const StyledCard = styled(Card)(() => ({
-  margin: theme.spacing(4),
+  margin: theme.spacing(2),
   padding: theme.spacing(2),
   boxShadow: theme.shadows[1],
-  flex: 1,
-  minWidth: 0,
-  maxWidth: 'none',
   fontSize: '1.25rem',
+  display: 'inline-block',
 }));
 
 const IconBox = styled(Box)(() => ({
@@ -44,6 +42,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
 
   const { data, loading } = useReportsStaffExpensesQuery({
     variables: {
@@ -70,57 +69,42 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
         sx={{
           display: 'flex',
           flexDirection: 'row',
-          alignItems: 'center',
-          gap: 2,
-          mb: 2,
+          gap: isMobile ? 4 : 8,
+          justifyContent: 'space-between',
         }}
       >
-        <IconBox>
-          <Wallet />
-        </IconBox>
-        <Typography
-          variant="body1"
+        <Box
           sx={{
-            '@media print': { fontSize: '12pt' },
-            fontWeight: 500,
-            fontSize: '13pt',
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 2,
           }}
         >
-          {t('{{ name }} Account Balance', { name: fund.fundType })}
-        </Typography>
-      </Box>
+          <IconBox>
+            <Wallet />
+          </IconBox>
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="body1">
+              {t('{{ name }} Account Balance', { name: fund.fundType })}
+            </Typography>
 
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: 'row',
-          gap: 4,
-          justifyContent: 'space-between',
-          alignItems: 'flex-end',
-        }}
-      >
-        <Box sx={{ flex: 1 }}>
-          <Typography
-            variant="body1"
-            sx={{ '@media print': { fontSize: '12pt' } }}
-          >
-            {t('Current Balance')}
-          </Typography>
-
-          <Typography
-            variant="h5"
-            color={fund.balance < 0 ? 'error.main' : 'text.primary'}
-            sx={{ fontSize: 'inherit' }}
-          >
-            {formatBalance(fund.balance)}
-          </Typography>
+            <Typography
+              variant="h5"
+              color={fund.balance < 0 ? 'error.main' : 'text.primary'}
+              sx={{ fontSize: 'inherit' }}
+            >
+              {formatBalance(fund.balance)}
+            </Typography>
+          </Box>
         </Box>
         {donationPeriodTotalSum && (
-          <Box sx={{ flex: 1 }}>
-            <Typography
-              variant="body1"
-              sx={{ '@media print': { fontSize: '12pt' } }}
-            >
+          <Box
+            sx={{
+              flex: 1,
+            }}
+          >
+            <Typography variant="body1">
               {t('Total Donations for this period')}
             </Typography>
 
