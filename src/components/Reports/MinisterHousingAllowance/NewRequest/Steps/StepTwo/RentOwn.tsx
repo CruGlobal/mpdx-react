@@ -23,10 +23,13 @@ export const RentOwn: React.FC = () => {
     errors,
     handleChange,
     handleBlur,
-    submitCount,
     submitForm,
-    isValid,
   } = useFormikContext<FormValues>();
+
+  const handleNext = async () => {
+    setTouched({ rentOrOwn: true });
+    await submitForm();
+  };
 
   return (
     <>
@@ -60,13 +63,8 @@ export const RentOwn: React.FC = () => {
           </RadioGroup>
         </FormControl>
       </Box>
-      <DirectionButtons
-        handleNext={async () => {
-          setTouched({ rentOrOwn: true });
-          await submitForm();
-        }}
-      />
-      {submitCount > 0 && !isValid && (
+      <DirectionButtons handleNext={handleNext} />
+      {errors.rentOrOwn && (
         <Alert severity="error" sx={{ mt: 2, '& ul': { m: 0, pl: 3 } }}>
           {t('Your form is missing information.')}
           <ul>{errors.rentOrOwn && <li>{errors.rentOrOwn}</li>}</ul>

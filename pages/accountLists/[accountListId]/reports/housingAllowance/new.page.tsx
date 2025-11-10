@@ -6,11 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { NewRequestPage } from 'src/components/Reports/MinisterHousingAllowance/NewRequest/NewRequestPage';
-import { ExpensesClaim } from 'src/components/Reports/MinisterHousingAllowance/NewRequest/Steps/StepThree/CalcComponents/ExpensesClaim';
-import {
-  MinisterHousingAllowanceProvider,
-  useMinisterHousingAllowance,
-} from 'src/components/Reports/MinisterHousingAllowance/Shared/MinisterHousingAllowanceContext';
+import { MinisterHousingAllowanceProvider } from 'src/components/Reports/MinisterHousingAllowance/Shared/MinisterHousingAllowanceContext';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -24,11 +20,9 @@ const NewRequestPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
 }));
 
-const NewRequestContent: React.FC = () => {
+const HousingAllowanceNewRequestPage: React.FC = () => {
   const { t } = useTranslation();
-  const title = t("Minister's Housing Allowance");
-
-  const { isRightPanelOpen } = useMinisterHousingAllowance();
+  const title = t("New Minister's Housing Allowance Request");
 
   const [isNavListOpen, setNavListOpen] = useState(false);
 
@@ -39,7 +33,7 @@ const NewRequestContent: React.FC = () => {
   return (
     <>
       <Head>
-        <title>{`${title} - New Request`}</title>
+        <title>{title}</title>
       </Head>
       <NewRequestPageWrapper>
         <SidePanelsLayout
@@ -47,7 +41,7 @@ const NewRequestContent: React.FC = () => {
           leftPanel={
             <MultiPageMenu
               isOpen={isNavListOpen}
-              selectedId={'housingAllowanceNewRequest'}
+              selectedId={'housingAllowanceNew'}
               onClose={handleNavListToggle}
               navType={NavTypeEnum.Reports}
             />
@@ -62,12 +56,11 @@ const NewRequestContent: React.FC = () => {
                 title={t("Minister's Housing Allowance Request")}
                 headerType={HeaderTypeEnum.Report}
               />
-              <NewRequestPage />
+              <MinisterHousingAllowanceProvider>
+                <NewRequestPage />
+              </MinisterHousingAllowanceProvider>
             </>
           }
-          rightPanel={isRightPanelOpen ? <ExpensesClaim /> : undefined}
-          rightOpen={isRightPanelOpen}
-          rightWidth="40%"
         />
       </NewRequestPageWrapper>
     </>
@@ -75,10 +68,4 @@ const NewRequestContent: React.FC = () => {
 };
 
 export const getServerSideProps = ensureSessionAndAccountList;
-export default function HousingAllowanceNewRequestPage() {
-  return (
-    <MinisterHousingAllowanceProvider>
-      <NewRequestContent />
-    </MinisterHousingAllowanceProvider>
-  );
-}
+export default HousingAllowanceNewRequestPage;

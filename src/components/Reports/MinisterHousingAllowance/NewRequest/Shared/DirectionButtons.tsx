@@ -24,7 +24,7 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
 
   const { handleNextStep, handlePreviousStep } = useMinisterHousingAllowance();
 
-  const { submitForm, validateForm } =
+  const { submitForm, validateForm, submitCount, isValid } =
     useFormikContext<CalculationFormValues>();
   const [openConfirmation, setOpenConfirmation] = useState(false);
   const [openCancel, setOpenCancel] = useState(false);
@@ -70,7 +70,12 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
             <ChevronLeft sx={{ mr: 1 }} />
             <b>{t('Back')}</b>
           </Button>
-          <Button variant="contained" color="primary" onClick={handleConfirm}>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleConfirm}
+            disabled={submitCount > 0 && !isValid}
+          >
             {t('Submit')}
             <ChevronRight sx={{ ml: 1 }} />
           </Button>

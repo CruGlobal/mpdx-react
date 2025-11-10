@@ -20,7 +20,7 @@ export const MinisterHousingAllowanceReport: React.FC = () => {
   const { t } = useTranslation();
 
   const accountListId = useAccountListId();
-  const requestLink = `/accountLists/${accountListId}/reports/housingAllowance/newRequest`;
+  const requestLink = `/accountLists/${accountListId}/reports/housingAllowance/new`;
 
   // mock[0] --> Single, no pending, no approved
   // mock[1] --> Married, no pending, no approved

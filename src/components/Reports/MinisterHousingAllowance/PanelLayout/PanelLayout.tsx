@@ -67,9 +67,7 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
             ) : (
               <>
                 <StyledBox>
-                  <CircularProgressWithLabel
-                    progress={percentComplete ? percentComplete : 0}
-                  />
+                  <CircularProgressWithLabel progress={percentComplete ?? 0} />
                 </StyledBox>
                 {currentStep !== NewRequestStepsEnum.AboutForm && (
                   <IconButton

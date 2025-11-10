@@ -16,7 +16,6 @@ import { Calculation } from './Calculation';
 const submit = jest.fn();
 const handlePreviousStep = jest.fn();
 const handleNextStep = jest.fn();
-const handleRightPanelOpen = jest.fn();
 const boardApprovalDate = '2024-06-15';
 const availableDate = '2024-07-01';
 
@@ -50,7 +49,6 @@ jest.mock('../../../Shared/MinisterHousingAllowanceContext', () => ({
 (useMinisterHousingAllowance as jest.Mock).mockReturnValue({
   handleNextStep,
   handlePreviousStep,
-  handleRightPanelOpen,
 });
 
 describe('Calculation', () => {
@@ -204,15 +202,5 @@ describe('Calculation', () => {
 
     expect(getByRole('button', { name: /go back/i })).toBeInTheDocument();
     expect(getByRole('button', { name: /yes, continue/i })).toBeInTheDocument();
-  });
-
-  it('opens panel when link is clicked', () => {
-    const { getByRole } = render(<TestComponent />);
-
-    userEvent.click(
-      getByRole('button', { name: /what expenses can i claim on my mha/i }),
-    );
-
-    expect(handleRightPanelOpen).toHaveBeenCalled();
   });
 });
