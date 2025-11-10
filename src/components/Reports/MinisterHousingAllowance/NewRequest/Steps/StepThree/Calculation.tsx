@@ -183,6 +183,10 @@ export const Calculation: React.FC<CalculationProps> = ({
             </Box>
             <FormControl error={Boolean(touched.isChecked && errors.isChecked)}>
               <FormControlLabel
+                sx={{
+                  alignItems: 'flex-start',
+                  '& .MuiFormControlLabel-label': { mt: 1 },
+                }}
                 control={
                   <Checkbox
                     checked={Boolean(values.isChecked)}
