@@ -33,8 +33,8 @@ export const Receipt: React.FC = () => {
       </Typography>
       <Alert severity="success">
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-          <Typography>
-            <b>{t("You've successfully submitted your MHA Request!")}</b>
+          <Typography sx={{ fontWeight: 'bold' }}>
+            {t("You've successfully submitted your MHA Request!")}
           </Typography>
           <Typography>
             {t(

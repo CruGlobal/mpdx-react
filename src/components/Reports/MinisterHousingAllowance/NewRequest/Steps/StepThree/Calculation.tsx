@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { OpenInNew } from '@mui/icons-material';
 import {
   Alert,
@@ -27,19 +26,22 @@ import { EndingSection } from './CalcComponents/EndingSection';
 import { FairRentalValue } from './CalcComponents/FairRentalValue';
 import { RequestSummaryCard } from './CalcComponents/RequestSummaryCard';
 
+// TODO: add warning message if user clicks back after entering data in this form
+// TODO: get correct link for "What expenses can I claim on my MHA?"
+
 interface CalculationProps {
-  boardApprovalDate: string;
-  availableDate: string;
+  boardApprovalDate: string | null;
+  availableDate: string | null;
 }
 export interface CalculationFormValues {
-  rentalValue?: number | null | undefined;
-  furnitureCostsOne?: number | null | undefined;
-  avgUtilityOne?: number | null | undefined;
-  mortgagePayment?: number | null | undefined;
-  furnitureCostsTwo?: number | null | undefined;
-  repairCosts?: number | null | undefined;
-  avgUtilityTwo?: number | null | undefined;
-  unexpectedExpenses?: number | null | undefined;
+  rentalValue?: number | null;
+  furnitureCostsOne?: number | null;
+  avgUtilityOne?: number | null;
+  mortgagePayment?: number | null;
+  furnitureCostsTwo?: number | null;
+  repairCosts?: number | null;
+  avgUtilityTwo?: number | null;
+  unexpectedExpenses?: number | null;
   phone?: string;
   email?: string;
   isChecked?: boolean;
@@ -54,11 +56,13 @@ const getValidationSchema = (rentOrOwn?: RentOwnEnum) => {
     unexpectedExpenses: yup.number().required(i18n.t('Required field.')),
     phone: yup
       .string()
-      .test(
-        'is-phone-number',
-        i18n.t('Invalid phone number.'),
-        (val) => typeof val === 'string' && /\d/.test(val),
-      )
+      .test('is-phone-number', i18n.t('Invalid phone number.'), (val) => {
+        if (!val) {
+          return false;
+        }
+        const cleaned = val.replace(/\D/g, '');
+        return /^1?\d{10}$/.test(cleaned);
+      })
       .required(i18n.t('Phone Number is required.')),
     email: yup
       .string()
@@ -89,35 +93,41 @@ export const Calculation: React.FC<CalculationProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const { handleNextStep, handleRightPanelOpen } =
-    useMinisterHousingAllowance();
+  const { handleNextStep } = useMinisterHousingAllowance();
 
-  const { values } = useFormikContext<FormValues>();
-  const { rentOrOwn } = values;
+  const {
+    values: { rentOrOwn },
+  } = useFormikContext<FormValues>();
 
   const initialValues: CalculationFormValues = {
-    rentalValue: undefined,
-    furnitureCostsOne: undefined,
-    avgUtilityOne: undefined,
-    mortgagePayment: undefined,
-    furnitureCostsTwo: undefined,
-    repairCosts: undefined,
-    avgUtilityTwo: undefined,
-    unexpectedExpenses: undefined,
+    rentalValue: null,
+    furnitureCostsOne: null,
+    avgUtilityOne: null,
+    mortgagePayment: null,
+    furnitureCostsTwo: null,
+    repairCosts: null,
+    avgUtilityTwo: null,
+    unexpectedExpenses: null,
     phone: mocks[0].staffInfo.phone,
     email: mocks[0].staffInfo.email,
     isChecked: false,
   };
 
-  const boardDateFormatted = dateFormatShort(
-    DateTime.fromISO(boardApprovalDate ?? DateTime.now().toISO()),
-    locale,
-  );
+  const boardDateFormatted = boardApprovalDate
+    ? dateFormatShort(DateTime.fromISO(boardApprovalDate), locale)
+    : null;
 
-  const availableDateFormatted = dateFormatShort(
-    DateTime.fromISO(availableDate ?? DateTime.now().toISO()),
-    locale,
-  );
+  const availableDateFormatted = availableDate
+    ? dateFormatShort(DateTime.fromISO(availableDate), locale)
+    : null;
+
+  const after = boardDateFormatted
+    ? t(`number after ${boardDateFormatted}`)
+    : t('number');
+
+  const approval = availableDateFormatted
+    ? t(`approval effective ${availableDateFormatted}`)
+    : t('approval');
 
   return (
     <Formik<CalculationFormValues>
@@ -138,17 +148,7 @@ export const Calculation: React.FC<CalculationProps> = ({
         handleBlur,
         touched,
       }) => {
-        const showAlert = submitCount > 0 && (!isValid || !values.isChecked);
-
-        const [closedAt, setClosedAt] = useState<number | null>(null);
-
-        const open = showAlert && closedAt !== submitCount;
-
-        useEffect(() => {
-          if (!showAlert) {
-            setClosedAt(null);
-          }
-        }, [showAlert]);
+        const showAlert = !!submitCount && (!isValid || !values.isChecked);
 
         return (
           <form noValidate>
@@ -157,12 +157,11 @@ export const Calculation: React.FC<CalculationProps> = ({
                 {t('Calculate Your MHA Request')}
               </Typography>
             </Box>
-            <Trans i18nKey="newRequestCalculation">
+            <Trans i18nKey="newRequestCalculation" values={{ after, approval }}>
               <p style={{ lineHeight: 1.5 }}>
                 Please enter dollar amounts for each category below to calculate
-                your Annual MHA. The board will review this number after{' '}
-                {boardDateFormatted} and you will receive notice of your
-                approval effective {availableDateFormatted}.
+                your Annual MHA. The board will review this {after} and you will
+                receive notice of your {approval}.
               </p>
             </Trans>
             <Box sx={{ mt: 2, mb: 3 }}>
@@ -170,11 +169,7 @@ export const Calculation: React.FC<CalculationProps> = ({
                 fontSize="medium"
                 sx={{ verticalAlign: 'middle', opacity: 0.56 }}
               />{' '}
-              <Link
-                component="button"
-                type="button"
-                onClick={handleRightPanelOpen}
-              >
+              <Link component="button" type="button">
                 What expenses can I claim on my MHA?
               </Link>
             </Box>
@@ -189,6 +184,10 @@ export const Calculation: React.FC<CalculationProps> = ({
             </Box>
             <FormControl error={Boolean(touched.isChecked && errors.isChecked)}>
               <FormControlLabel
+                sx={{
+                  alignItems: 'flex-start',
+                  '& .MuiFormControlLabel-label': { mt: 1 },
+                }}
                 control={
                   <Checkbox
                     checked={Boolean(values.isChecked)}
@@ -212,15 +211,11 @@ export const Calculation: React.FC<CalculationProps> = ({
               </FormHelperText>
             </FormControl>
             <EndingSection />
-            {open && (
-              <Alert
-                severity="error"
-                onClose={() => setClosedAt(submitCount)}
-                sx={{ mt: 2, '& ul': { m: 0, pl: 3 } }}
-              >
+            {showAlert && (
+              <Alert severity="error" sx={{ mt: 2, '& ul': { m: 0, pl: 3 } }}>
                 {t('Your form is missing information.')}
                 <ul>
-                  {submitCount > 0 &&
+                  {!!submitCount &&
                     Object.keys(errors).some((k) => k !== 'isChecked') && (
                       <li>
                         {t('Please enter a value for all required fields.')}

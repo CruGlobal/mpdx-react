@@ -2,15 +2,14 @@ import { OpenInNew } from '@mui/icons-material';
 import { Box, Link, List, ListItemText, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { Trans, useTranslation } from 'react-i18next';
-import { StyledListItem } from 'src/components/Reports/SavingsFundTransfer/IntroPage/IntroPage';
+import { StyledListItem } from 'src/components/Reports/SavingsFundTransfer/styledComponents/StyledListItem';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
-import { useMinisterHousingAllowance } from '../../../Shared/MinisterHousingAllowanceContext';
 import { DirectionButtons } from '../../Shared/DirectionButtons';
 
 interface AboutFormProps {
-  boardApprovalDate?: string;
-  availableDate?: string;
+  boardApprovalDate: string | null;
+  availableDate: string | null;
 }
 
 export const AboutForm: React.FC<AboutFormProps> = ({
@@ -20,29 +19,36 @@ export const AboutForm: React.FC<AboutFormProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const { handleRightPanelOpen } = useMinisterHousingAllowance();
-
   // TODO: "newRequestAboutForm" value needs to be added to translation files to see all values
-  // TODO: Get correct link fot "Salary Calculation Form"
+  // TODO: Get correct link for "Salary Calculation Form" and "What expenses can I claim on my MHA?"
 
   const nextYear = new Date().getFullYear() + 1;
 
-  const boardDateFormatted = dateFormatShort(
-    DateTime.fromISO(boardApprovalDate ?? DateTime.now().toISO()),
-    locale,
-  );
+  const boardDateFormatted = boardApprovalDate
+    ? dateFormatShort(DateTime.fromISO(boardApprovalDate), locale)
+    : null;
 
-  const availableDateFormatted = dateFormatShort(
-    DateTime.fromISO(availableDate ?? DateTime.now().toISO()),
-    locale,
-  );
+  const availableDateFormatted = availableDate
+    ? dateFormatShort(DateTime.fromISO(availableDate), locale)
+    : null;
+
+  const after = boardDateFormatted
+    ? t(`after ${boardDateFormatted}`)
+    : t('unknown at this time');
+
+  const approval = availableDateFormatted
+    ? t(` on ${availableDateFormatted}.`)
+    : '.';
 
   return (
     <>
       <Box mb={2}>
         <Typography variant="h5">{t('About this Form')}</Typography>
       </Box>
-      <Trans i18nKey="newRequestAboutFormPartOne" values={{ nextYear }}>
+      <Trans
+        i18nKey="newRequestAboutFormPartOne"
+        values={{ nextYear, after, approval }}
+      >
         <p style={{ lineHeight: 1.5 }}>
           A Minister&apos;s Housing Allowance Request is a form ministers
           complete to designate part of their compensation as tax-free housing
@@ -81,18 +87,18 @@ export const AboutForm: React.FC<AboutFormProps> = ({
         values={{ boardDateFormatted, availableDateFormatted }}
       >
         <Box sx={{ mt: 2 }}>
-          The next time the board will approve MHA Requests is after{' '}
-          {boardDateFormatted} and your approved annual MHA amount will appear
-          on your <Link href="">Salary Calculation Form</Link> on{' '}
-          {availableDateFormatted}. Once approved by the board, keep a copy for
-          your tax records.
+          The next time the board will approve MHA Requests is {after} and your
+          approved annual MHA amount will appear on your{' '}
+          <Link href="">Salary Calculation Form</Link>
+          {approval} Once approved by the board, keep a copy for your tax
+          records.
         </Box>
         <Box sx={{ mt: 4 }}>
           <OpenInNew
             fontSize="medium"
             sx={{ verticalAlign: 'middle', opacity: 0.56 }}
           />{' '}
-          <Link component="button" type="button" onClick={handleRightPanelOpen}>
+          <Link component="button" type="button">
             What expenses can I claim on my MHA?
           </Link>
         </Box>

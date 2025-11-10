@@ -33,33 +33,32 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
       icon={HomeSharp}
       iconColor="success.main"
       titleOne={t('View Current MHA')}
-      titleTwo={t('Duplicate Last Year’s MHA')}
+      titleTwo={t("Duplicate Last Year's MHA")}
       isRequest={false}
     >
       <Grid container spacing={2}>
         <Grid item xs={6}>
-          <Typography variant="body1">
-            <b>
-              {t(
-                `APPROVAL DATE: ${dateFormatShort(DateTime.fromISO(approvedDate || ''), locale)}`,
-              )}
-            </b>
+          <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+            {t(
+              `APPROVAL DATE: ${dateFormatShort(DateTime.fromISO(approvedDate || ''), locale)}`,
+            )}
           </Typography>
         </Grid>
         <Grid item xs={6}>
-          <Typography variant="body1">
-            <b>{t('CURRENT MHA CLAIMED')}</b>
+          <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+            {t('CURRENT MHA CLAIMED')}
           </Typography>
         </Grid>
       </Grid>
       <Grid container spacing={2}>
         <Grid item xs={6}>
-          <Typography variant="h3" sx={{ color: 'primary.main' }}>
-            <b>
-              {currencyFormat(approvedOverallAmount || 0, currency, locale, {
-                showTrailingZeros: true,
-              })}
-            </b>
+          <Typography
+            variant="h3"
+            sx={{ color: 'primary.main', fontWeight: 'bold' }}
+          >
+            {currencyFormat(approvedOverallAmount || 0, currency, locale, {
+              showTrailingZeros: true,
+            })}
           </Typography>
         </Grid>
         <Grid item xs={6}>
@@ -77,23 +76,25 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
           </Grid>
           <Grid container spacing={2}>
             <Grid item xs={6}>
-              <Typography variant="h6" sx={{ color: 'primary.main' }}>
-                <b>
-                  {currencyFormat(staffSpecific ?? 0, currency, locale, {
-                    showTrailingZeros: true,
-                  })}
-                </b>
+              <Typography
+                variant="h6"
+                sx={{ color: 'primary.main', fontWeight: 'bold' }}
+              >
+                {currencyFormat(staffSpecific ?? 0, currency, locale, {
+                  showTrailingZeros: true,
+                })}
               </Typography>
             </Grid>
             <Grid item xs={6}>
-              <Typography variant="h6" sx={{ color: 'primary.main' }}>
-                <b>
-                  {spouseSpecific
-                    ? currencyFormat(spouseSpecific ?? 0, currency, locale, {
-                        showTrailingZeros: true,
-                      })
-                    : ''}
-                </b>
+              <Typography
+                variant="h6"
+                sx={{ color: 'primary.main', fontWeight: 'bold' }}
+              >
+                {spouseSpecific
+                  ? currencyFormat(spouseSpecific ?? 0, currency, locale, {
+                      showTrailingZeros: true,
+                    })
+                  : ''}
               </Typography>
             </Grid>
           </Grid>

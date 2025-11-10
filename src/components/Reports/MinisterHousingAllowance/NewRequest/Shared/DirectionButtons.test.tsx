@@ -1,7 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
@@ -15,7 +14,11 @@ const submit = jest.fn();
 const pushMock = jest.fn();
 const handleNextStep = jest.fn();
 
-const TestComponent: React.FC = () => (
+interface TestComponentProps {
+  isCalculate?: boolean;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({ isCalculate }) => (
   <ThemeProvider theme={theme}>
     <TestRouter
       router={{
@@ -24,7 +27,7 @@ const TestComponent: React.FC = () => (
     >
       <Formik initialValues={{}} onSubmit={submit}>
         <MinisterHousingAllowanceProvider>
-          <DirectionButtons />
+          <DirectionButtons isCalculate={isCalculate} />
         </MinisterHousingAllowanceProvider>
       </Formik>
     </TestRouter>
@@ -49,35 +52,19 @@ jest.mock('next/router', () => ({
 }));
 
 describe('DirectionButtons', () => {
-  it('renders Cancel and Continue buttons', () => {
-    const { getByRole } = render(<TestComponent />);
+  it('renders Go back and Submit buttons', () => {
+    const { getByRole } = render(<TestComponent isCalculate={true} />);
 
-    expect(getByRole('button', { name: 'CANCEL' })).toBeInTheDocument();
-    expect(getByRole('button', { name: 'CONTINUE' })).toBeInTheDocument();
+    expect(getByRole('button', { name: /back/i })).toBeInTheDocument();
+    expect(getByRole('button', { name: /submit/i })).toBeInTheDocument();
   });
 
   it('calls handleNext when Continue is clicked', () => {
-    const { getByRole } = render(<TestComponent />);
+    const { getByRole } = render(<TestComponent isCalculate={false} />);
 
-    const continueButton = getByRole('button', { name: 'CONTINUE' });
+    const continueButton = getByRole('button', { name: 'Continue' });
     continueButton.click();
 
     expect(handleNextStep).toHaveBeenCalled();
-  });
-
-  it('navigates to the correct URL when Cancel is clicked', async () => {
-    const { getByRole, findByRole, getByText } = render(<TestComponent />);
-    const cancelButton = getByRole('button', { name: 'CANCEL' });
-
-    await userEvent.click(cancelButton);
-
-    expect(await findByRole('dialog')).toBeInTheDocument();
-    expect(getByText('Do you want to cancel?')).toBeInTheDocument();
-
-    await userEvent.click(getByRole('button', { name: /yes, cancel/i }));
-
-    expect(pushMock).toHaveBeenCalledWith(
-      '/accountLists/account-list-1/reports/housingAllowance',
-    );
   });
 });

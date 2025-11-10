@@ -36,7 +36,7 @@ describe('ConfirmationModal', () => {
       getByText('You are submitting your MHA Request for board approval.'),
     ).toBeInTheDocument();
 
-    await userEvent.click(getByRole('button', { name: /YES, CONTINUE/i }));
+    await userEvent.click(getByRole('button', { name: /yes, continue/i }));
     expect(handleConfirm).toHaveBeenCalled();
   });
 
@@ -46,14 +46,14 @@ describe('ConfirmationModal', () => {
     expect(getByText('Do you want to cancel?')).toBeInTheDocument();
     expect(getByText('Your work will not be saved.')).toBeInTheDocument();
 
-    await userEvent.click(getByRole('button', { name: /YES, CANCEL/i }));
+    await userEvent.click(getByRole('button', { name: /yes, cancel/i }));
     expect(handleConfirm).toHaveBeenCalled();
   });
 
   it('calls handleClose when modal is closed', async () => {
-    const { getByRole } = render(<TestComponent />);
+    const { getByRole } = render(<TestComponent isCancel={true} />);
 
-    await userEvent.click(getByRole('button', { name: /GO BACK/i }));
+    await userEvent.click(getByRole('button', { name: /NO/i }));
     expect(handleClose).toHaveBeenCalled();
   });
 });

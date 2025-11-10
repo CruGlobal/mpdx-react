@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { Box, TableCell, TableRow, TextField, Typography } from '@mui/material';
+import { Box, TableCell, TableRow, Typography } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { Trans, useTranslation } from 'react-i18next';
 import { StyledOrderedList } from 'src/components/Reports/MinisterHousingAllowance/styledComponents/StyledOrderedList';
@@ -8,19 +7,14 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { CalculationFormValues } from '../Calculation';
 import { CalculationCardSkeleton } from './CalculationCardSkeleton';
-import { display, parseInput } from './Helper/formatHelper';
+import { CustomTextField } from './Helper/CustomTextField';
 
 export const FairRentalValue: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
   const currency = 'USD';
 
-  const [focused, setFocused] = useState<string | null>(null);
-  const isEditing = (name: keyof CalculationFormValues & string) =>
-    focused === name;
-
-  const { values, touched, errors, setFieldValue, handleBlur } =
-    useFormikContext<CalculationFormValues>();
+  const { values, touched, errors } = useFormikContext<CalculationFormValues>();
 
   const { totalFairRental, annualFairRental } = useAnnualTotal(values);
 
@@ -51,32 +45,7 @@ export const FairRentalValue: React.FC = () => {
               touched.rentalValue && errors.rentalValue ? '2px solid red' : '',
           }}
         >
-          <TextField
-            variant="standard"
-            name="rentalValue"
-            value={display(
-              isEditing,
-              'rentalValue',
-              values.rentalValue,
-              currency,
-              locale,
-            )}
-            onFocus={() => setFocused('rentalValue')}
-            onChange={(e) =>
-              setFieldValue('rentalValue', parseInput(e.target.value))
-            }
-            onBlur={(e) => {
-              if (focused === 'rentalValue') {
-                setFocused(null);
-              }
-              handleBlur(e);
-            }}
-            inputProps={{ inputMode: 'decimal' }}
-            InputProps={{ disableUnderline: true }}
-            error={Boolean(touched.rentalValue && errors.rentalValue)}
-            helperText={touched.rentalValue && errors.rentalValue}
-            placeholder={t('Enter Amount')}
-          />
+          <CustomTextField name="rentalValue" value={values.rentalValue} />
         </TableCell>
       </TableRow>
       <TableRow>
@@ -107,33 +76,9 @@ export const FairRentalValue: React.FC = () => {
                 : '',
           }}
         >
-          <TextField
-            variant="standard"
+          <CustomTextField
             name="furnitureCostsOne"
-            value={display(
-              isEditing,
-              'furnitureCostsOne',
-              values.furnitureCostsOne,
-              currency,
-              locale,
-            )}
-            onFocus={() => setFocused('furnitureCostsOne')}
-            onChange={(e) => {
-              setFieldValue('furnitureCostsOne', parseInput(e.target.value));
-            }}
-            onBlur={(e) => {
-              if (focused === 'furnitureCostsOne') {
-                setFocused(null);
-              }
-              handleBlur(e);
-            }}
-            inputProps={{ inputMode: 'decimal' }}
-            InputProps={{ disableUnderline: true }}
-            error={
-              touched.furnitureCostsOne && Boolean(errors.furnitureCostsOne)
-            }
-            helperText={touched.furnitureCostsOne && errors.furnitureCostsOne}
-            placeholder={t('Enter Amount')}
+            value={values.furnitureCostsOne}
           />
         </TableCell>
       </TableRow>
@@ -155,32 +100,7 @@ export const FairRentalValue: React.FC = () => {
                 : '',
           }}
         >
-          <TextField
-            variant="standard"
-            name="avgUtilityOne"
-            value={display(
-              isEditing,
-              'avgUtilityOne',
-              values.avgUtilityOne,
-              currency,
-              locale,
-            )}
-            onFocus={() => setFocused('avgUtilityOne')}
-            onChange={(e) => {
-              setFieldValue('avgUtilityOne', parseInput(e.target.value));
-            }}
-            onBlur={(e) => {
-              if (focused === 'avgUtilityOne') {
-                setFocused(null);
-              }
-              handleBlur(e);
-            }}
-            inputProps={{ inputMode: 'decimal' }}
-            InputProps={{ disableUnderline: true }}
-            error={touched.avgUtilityOne && Boolean(errors.avgUtilityOne)}
-            helperText={touched.avgUtilityOne && errors.avgUtilityOne}
-            placeholder={t('Enter Amount')}
-          />
+          <CustomTextField name="avgUtilityOne" value={values.avgUtilityOne} />
         </TableCell>
       </TableRow>
       <TableRow>
@@ -202,19 +122,17 @@ export const FairRentalValue: React.FC = () => {
       </TableRow>
       <TableRow>
         <TableCell sx={{ width: '70%' }}>
-          <Typography>
-            <b>{t('Annual Fair Rental Value of your Home')}</b>
+          <Typography sx={{ fontWeight: 'bold' }}>
+            {t('Annual Fair Rental Value of your Home')}
           </Typography>
           <Box sx={{ color: 'text.secondary' }}>
             {t('Line 4 multiplied by 12 months')}
           </Box>
         </TableCell>
-        <TableCell sx={{ width: '30%', fontSize: 16 }}>
-          <b>
-            {currencyFormat(annualFairRental, currency, locale, {
-              showTrailingZeros: true,
-            })}
-          </b>
+        <TableCell sx={{ width: '30%', fontSize: 16, fontWeight: 'bold' }}>
+          {currencyFormat(annualFairRental, currency, locale, {
+            showTrailingZeros: true,
+          })}
         </TableCell>
       </TableRow>
     </CalculationCardSkeleton>

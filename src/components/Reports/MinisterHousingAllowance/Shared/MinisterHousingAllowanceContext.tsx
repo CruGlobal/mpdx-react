@@ -8,10 +8,6 @@ export type ContextType = {
   handleNextStep: () => void;
   handlePreviousStep: () => void;
   percentComplete: number;
-
-  isRightPanelOpen?: boolean;
-  handleRightPanelOpen?: () => void;
-  handleRightPanelClose?: () => void;
 };
 
 const MinisterHousingAllowanceContext = createContext<ContextType | null>(null);
@@ -39,16 +35,6 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   const [percentComplete, setPercentComplete] = useState(25);
 
   const [currentIndex, setCurrentIndex] = useState(0);
-
-  const [isRightPanelOpen, setIsRightPanelOpen] = useState(false);
-
-  const handleRightPanelOpen = () => {
-    setIsRightPanelOpen(true);
-  };
-
-  const handleRightPanelClose = () => {
-    setIsRightPanelOpen(false);
-  };
 
   const handleNextStep = () => {
     setCurrentStep((prevStep) => {
@@ -128,20 +114,8 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       handleNextStep,
       handlePreviousStep,
       percentComplete,
-      isRightPanelOpen,
-      handleRightPanelOpen,
-      handleRightPanelClose,
     }),
-    [
-      steps,
-      currentStep,
-      handleNextStep,
-      handlePreviousStep,
-      percentComplete,
-      isRightPanelOpen,
-      handleRightPanelOpen,
-      handleRightPanelClose,
-    ],
+    [steps, currentStep, handleNextStep, handlePreviousStep, percentComplete],
   );
 
   return (

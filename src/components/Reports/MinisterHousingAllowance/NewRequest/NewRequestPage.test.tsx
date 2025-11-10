@@ -35,7 +35,7 @@ describe('NewRequestPage', () => {
     expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '25');
     expect(queryByTestId('ArrowBackIcon')).not.toBeInTheDocument();
 
-    const continueButton = getByRole('button', { name: 'CONTINUE' });
+    const continueButton = getByRole('button', { name: 'Continue' });
     await userEvent.click(continueButton);
 
     const steps = getAllByRole('listitem');
@@ -80,7 +80,7 @@ describe('NewRequestPage', () => {
   it('should show validation error if continue is clicked without selecting an option', async () => {
     const { getByRole, findByRole } = render(<TestComponent />);
 
-    const continueButton = getByRole('button', { name: 'CONTINUE' });
+    const continueButton = getByRole('button', { name: 'Continue' });
     await userEvent.click(continueButton);
 
     expect(getByRole('radio', { name: 'Rent' })).not.toBeChecked();
@@ -92,12 +92,5 @@ describe('NewRequestPage', () => {
     expect(alert).toBeInTheDocument();
 
     expect(alert).toHaveTextContent('Your form is missing information.');
-  });
-
-  it('renders Cancel and Continue buttons', () => {
-    const { getByRole } = render(<TestComponent />);
-
-    expect(getByRole('button', { name: /cancel/i })).toBeInTheDocument();
-    expect(getByRole('button', { name: /continue/i })).toBeInTheDocument();
   });
 });

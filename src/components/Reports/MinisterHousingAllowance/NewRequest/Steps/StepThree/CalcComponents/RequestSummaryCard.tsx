@@ -56,8 +56,8 @@ export const RequestSummaryCard: React.FC<RequestSummaryCardProps> = ({
           <TableBody>
             <TableRow>
               <TableCell sx={{ width: '70%' }}>
-                <Typography>
-                  <b>{t('Your Annual MHA Total')}</b>
+                <Typography sx={{ fontWeight: 'bold' }}>
+                  {t('Your Annual MHA Total')}
                 </Typography>
                 <Box sx={{ color: 'text.secondary' }}>
                   <Trans i18nKey="requestSummaryCardInfo">
@@ -67,12 +67,12 @@ export const RequestSummaryCard: React.FC<RequestSummaryCardProps> = ({
                   </Trans>
                 </Box>
               </TableCell>
-              <TableCell sx={{ width: '30%', fontSize: 16 }}>
-                <b>
-                  {currencyFormat(annualTotal, currency, locale, {
-                    showTrailingZeros: true,
-                  })}
-                </b>
+              <TableCell
+                sx={{ width: '30%', fontSize: 16, fontWeight: 'bold' }}
+              >
+                {currencyFormat(annualTotal, currency, locale, {
+                  showTrailingZeros: true,
+                })}
               </TableCell>
             </TableRow>
           </TableBody>
