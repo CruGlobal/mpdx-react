@@ -189,7 +189,6 @@ export const PartnerGivingAnalysisTable: React.FC<
         pageSizeOptions={[25, 50, 100]}
         paginationModel={paginationModel}
         onPaginationModelChange={handlePageChange}
-        paginationMode="client"
         sortingMode="server"
         pagination
         disableRowSelectionOnClick
