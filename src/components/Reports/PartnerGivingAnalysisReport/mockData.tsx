@@ -318,7 +318,7 @@ export const mocks = {
       ],
       pageInfo: {
         endCursor: 'NQ',
-        hasNextPage: false,
+        hasNextPage: true,
         hasPreviousPage: false,
       },
       edges: [
