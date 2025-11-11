@@ -88,7 +88,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
     variables,
   });
 
-  // Load remaining pages in background
+  // Load remaining pages in background for printing
   const { loading: loadingAllPages } = useFetchAllPages({
     fetchMore,
     error,
@@ -136,7 +136,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
 
   const handlePrint = useCallback(() => {
     if (apiRef.current?.exportDataAsPrint) {
-      apiRef.current.exportDataAsPrint();
+      apiRef.current.exportDataAsPrint({ hideFooter: true });
     }
   }, [apiRef]);
 
