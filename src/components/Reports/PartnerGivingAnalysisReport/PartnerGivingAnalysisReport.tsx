@@ -75,7 +75,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
       },
       first: pageSize,
     }),
-    [accountListId, contactFilters, pageSize],
+    [accountListId, contactFilters],
   );
 
   const {
@@ -161,25 +161,15 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
         headerCheckboxState={selectionType}
         selectedIds={ids}
       />
-      {contacts.length ? (
-        <>
-          {!staffAccountLoading && staffAccountData?.staffAccount?.id ? (
-            <BalanceCard
-              donationPeriodTotalSum={
-                data?.partnerGivingAnalysis?.donationPeriodTotalSum
-              }
-            />
-          ) : null}
-          <Table
-            data={contacts}
-            onSelectOne={toggleSelectionById}
-            isRowChecked={isRowChecked}
-            sortModel={sortModel}
-            handleSortChange={handleSortChange}
-            apiRef={apiRef}
-          />
-        </>
-      ) : firstPageLoading ? (
+
+      {!staffAccountLoading && staffAccountData?.staffAccount?.id ? (
+        <BalanceCard
+          donationPeriodTotalSum={
+            data?.partnerGivingAnalysis?.donationPeriodTotalSum
+          }
+        />
+      ) : null}
+      {firstPageLoading && !contacts && (
         <Box
           display="flex"
           justifyContent="center"
@@ -188,7 +178,18 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
         >
           <CircularProgress data-testid="LoadingPartnerGivingAnalysisReport" />
         </Box>
-      ) : (
+      )}
+      {contacts.length > 0 && !firstPageLoading && (
+        <Table
+          data={contacts}
+          onSelectOne={toggleSelectionById}
+          isRowChecked={isRowChecked}
+          sortModel={sortModel}
+          handleSortChange={handleSortChange}
+          apiRef={apiRef}
+        />
+      )}
+      {contacts.length === 0 && !firstPageLoading && (
         <EmptyReport
           title={t('You have {{contacts}} total contacts', {
             contacts: data?.partnerGivingAnalysis.totalCount ?? '?',
