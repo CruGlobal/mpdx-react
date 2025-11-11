@@ -21,7 +21,7 @@ describe('CardSkeleton', () => {
   it('renders text skeletons for the title and balance sections', () => {
     const { container } = render(<CardSkeleton />);
     const textSkeletons = container.querySelectorAll('.MuiSkeleton-text');
-    expect(textSkeletons.length).toBe(5); // 1 for title, 2 for balance section
+    expect(textSkeletons.length).toBe(5);
   });
 
   it('renders the correct structure', () => {
