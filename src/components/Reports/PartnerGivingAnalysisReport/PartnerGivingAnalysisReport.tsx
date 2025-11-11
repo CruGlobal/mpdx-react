@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Box, CircularProgress } from '@mui/material';
 import { useGridApiRef } from '@mui/x-data-grid';
 import { GridPaginationModel } from '@mui/x-data-grid/models/gridPaginationProps';
@@ -41,10 +41,9 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   const { t } = useTranslation();
   const { activeFilters, searchTerm } = useUrlFilters();
   const apiRef = useGridApiRef();
-  const [print, setPrint] = useState(false);
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
-    pageSize: 25,
+    pageSize: 5,
   });
 
   const [sortModel, setSortModel] = useState<GridSortModel>([
@@ -81,7 +80,6 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
             : DescendingSortEnums[sortModel[0].field]
           : null,
       },
-      first: paginationModel.pageSize,
     },
   });
 
@@ -132,17 +130,11 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
     setSortModel(model);
   };
 
-  // not all api methods are registered on first render.
-  // So we can't directly call apiRef.current.exportDataAsPrint
-  // in handlePrint
-  useEffect(() => {
-    if (print && apiRef.current?.exportDataAsPrint) {
+  const handlePrint = useCallback(() => {
+    if (apiRef.current?.exportDataAsPrint) {
       apiRef.current.exportDataAsPrint();
-      setPrint(false);
     }
-  }, [print]);
-
-  const handlePrint = useCallback(() => setPrint(true), []);
+  }, []);
 
   const handlePageChange = useCallback((model: GridPaginationModel) => {
     setPaginationModel(model);
