@@ -58,14 +58,12 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
     [activeFilters, searchTerm],
   );
 
-  const {
-    data,
-    previousData,
-    fetchMore,
-    error,
-    loading: firstPageLoading,
-  } = usePartnerGivingAnalysisQuery({
-    variables: {
+  // pageSize is intentionally omitted from the dependencies array so that the query isn't reloaded when the page size changes
+  // If all the pages have loaded and the user changes the page size, there's no reason to reload all the pages
+  const pageSize =
+    apiRef.current?.state.pagination.paginationModel.pageSize ?? null;
+  const variables = useMemo(
+    () => ({
       input: {
         accountListId,
         filters: contactFilters,
@@ -75,26 +73,26 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
             : DescendingSortEnums[sortModel[0].field]
           : null,
       },
-    },
-  });
+      first: pageSize,
+    }),
+    [accountListId, contactFilters, pageSize],
+  );
 
-  // if a user has set pageSize to a higher number then 25 the page will take multiple calls to fill the table
-  // This ensures we expand the page size request when needed
-  const pageSize = useMemo(() => {
-    if (apiRef.current?.state?.pagination?.paginationModel) {
-      return apiRef.current.state.pagination.paginationModel.pageSize > 25
-        ? apiRef.current.state.pagination.paginationModel.pageSize
-        : undefined;
-    }
-    return undefined;
-  }, [apiRef.current?.state?.pagination?.paginationModel]);
+  const {
+    data,
+    previousData,
+    fetchMore,
+    error,
+    loading: firstPageLoading,
+  } = usePartnerGivingAnalysisQuery({
+    variables,
+  });
 
   // Load remaining pages in background
   const { loading: loadingAllPages } = useFetchAllPages({
     fetchMore,
     error,
     pageInfo: data?.partnerGivingAnalysis.pageInfo,
-    pageSize,
   });
 
   const { data: staffAccountData, loading: staffAccountLoading } =
