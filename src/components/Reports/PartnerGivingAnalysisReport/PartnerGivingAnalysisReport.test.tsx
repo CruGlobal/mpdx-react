@@ -6,7 +6,6 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
-import { PartnerGivingAnalysisSortEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { PartnerGivingAnalysisQuery } from './PartnerGivingAnalysis.generated';
 import { PartnerGivingAnalysisReport } from './PartnerGivingAnalysisReport';
@@ -107,7 +106,7 @@ describe('PartnerGivingAnalysisReport', () => {
     const { getAllByRole, findByRole } = render(<TestComponent />);
 
     expect(await findByRole('grid')).toBeInTheDocument();
-    expect(getAllByRole('row').length).toBe(26); // 26 rows + header
+    expect(getAllByRole('row').length).toBe(26); // 25 rows + header (page size is 25)
   });
 
   it('shows a placeholder when there are zero contacts', async () => {
@@ -126,7 +125,9 @@ describe('PartnerGivingAnalysisReport', () => {
   });
 
   it('fields are sortable', async () => {
-    const { getByText, queryByTestId } = render(<TestComponent />);
+    const { getByText, queryByTestId, getAllByRole } = render(
+      <TestComponent />,
+    );
 
     await waitFor(() => {
       expect(
@@ -141,40 +142,19 @@ describe('PartnerGivingAnalysisReport', () => {
       ).not.toBeInTheDocument();
     });
 
-    await waitFor(() => {
-      const call = findOperationCall('PartnerGivingAnalysis');
-      expect(call?.operation.variables.input.sortBy).toEqual(
-        PartnerGivingAnalysisSortEnum.DonationPeriodCountAsc,
-      );
-    });
+    const rows1 = getAllByRole('row');
+    expect(rows1.length).toBe(26);
+    expect(rows1[1]).toHaveTextContent('Beast, Beast and Belle');
 
     userEvent.click(getByText('Gift Count'));
-    await waitFor(() => {
-      expect(
-        queryByTestId('LoadingPartnerGivingAnalysisReport'),
-      ).not.toBeInTheDocument();
-    });
-
-    await waitFor(() => {
-      const call = findOperationCall('PartnerGivingAnalysis');
-      expect(call?.operation.variables.input.sortBy).toEqual(
-        PartnerGivingAnalysisSortEnum.DonationPeriodCountDesc,
-      );
-    });
+    const rows2 = getAllByRole('row');
+    expect(rows2.length).toBe(26);
+    expect(rows2[1]).toHaveTextContent('Dalmation, Pongo and Perdita');
 
     userEvent.click(getByText('Gift Average'));
-    await waitFor(() => {
-      expect(
-        queryByTestId('LoadingPartnerGivingAnalysisReport'),
-      ).not.toBeInTheDocument();
-    });
-
-    await waitFor(() => {
-      const call = findOperationCall('PartnerGivingAnalysis');
-      expect(call?.operation.variables.input.sortBy).toEqual(
-        PartnerGivingAnalysisSortEnum.DonationPeriodAverageAsc,
-      );
-    });
+    const rows3 = getAllByRole('row');
+    expect(rows3.length).toBe(26);
+    expect(rows3[1]).toHaveTextContent('$25524');
   });
 
   it('filters contacts by name', async () => {
@@ -225,7 +205,7 @@ describe('PartnerGivingAnalysisReport', () => {
     await userEvent.click(within(listbox).getByRole('option', { name: '50' }));
 
     await waitFor(() => {
-      expect(getAllByRole('row').length).toBe(27);
+      expect(getAllByRole('row').length).toBe(30);
     });
   });
 
@@ -339,5 +319,23 @@ describe('PartnerGivingAnalysisReport', () => {
 
     userEvent.click(getByRole('img', { name: 'Toggle Filter Panel' }));
     expect(onFilterListToggle).toHaveBeenCalled();
+  });
+
+  it('prints all Contacts', async () => {
+    const { getByRole, getAllByRole, queryByTestId } = render(
+      <TestComponent />,
+    );
+
+    await waitFor(() => {
+      expect(
+        queryByTestId('LoadingPartnerGivingAnalysisReport'),
+      ).not.toBeInTheDocument();
+    });
+
+    // Initially showing 25 rows (default page size) + 1 header = 26 total
+    expect(getAllByRole('row').length).toBe(26);
+
+    userEvent.click(getByRole('button', { name: 'Print' }));
+    expect(getAllByRole('row').length).toBe(30);
   });
 });

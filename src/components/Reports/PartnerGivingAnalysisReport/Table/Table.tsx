@@ -179,7 +179,12 @@ export const PartnerGivingAnalysisTable: React.FC<
         columns={columns}
         getRowId={(row) => row.id}
         sortingOrder={['asc', 'desc']}
-        // pageSizeOptions={[5, 10, 15]}
+        initialState={{
+          // Set initial pagination to first page with 25 rows per page
+          pagination: {
+            paginationModel: { pageSize: 25, page: 0 },
+          },
+        }}
         sortModel={sortModel}
         onSortModelChange={handleSortChange}
         sortingMode="client"
