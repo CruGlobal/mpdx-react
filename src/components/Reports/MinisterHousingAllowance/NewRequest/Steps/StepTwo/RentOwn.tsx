@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import {
   Alert,
   Box,
@@ -11,8 +12,12 @@ import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { useMinisterHousingAllowance } from '../../../Shared/MinisterHousingAllowanceContext';
 import { PageEnum, RentOwnEnum } from '../../../Shared/sharedTypes';
+import { ConfirmationModal } from '../../ConfirmationModal/ConfirmationModal';
 import { FormValues } from '../../NewRequestPage';
 import { DirectionButtons } from '../../Shared/DirectionButtons';
+import { CalculationFormValues } from '../StepThree/Calculation';
+
+//TODO: test conformation modal when calc values change
 
 export const RentOwn: React.FC = () => {
   const { t } = useTranslation();
@@ -25,13 +30,59 @@ export const RentOwn: React.FC = () => {
     handleChange,
     handleBlur,
     submitForm,
+    setFieldValue,
   } = useFormikContext<FormValues>();
 
+  const { values: calculationValues } =
+    useFormikContext<CalculationFormValues>();
+  const hasCalcValues = Object.values(calculationValues).some(
+    (value) => value !== undefined && value !== null && value !== '',
+  );
+
   const { pageType } = useMinisterHousingAllowance();
+
+  const [pendingValue, setPendingValue] = useState<RentOwnEnum | null>(null);
+  const [displayValue, setDisplayValue] = useState<RentOwnEnum | null>(null);
+  const [isRequestingChange, setIsRequestingChange] = useState(false);
+
+  useEffect(() => {
+    setDisplayValue(values.rentOrOwn ?? null);
+  }, [values.rentOrOwn]);
 
   const handleNext = async () => {
     setTouched({ rentOrOwn: true });
     await submitForm();
+  };
+
+  const handleCustomChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (hasCalcValues) {
+      const selectedValue = event.target.value as RentOwnEnum;
+      const previous = values.rentOrOwn;
+
+      if (previous && previous !== selectedValue) {
+        setPendingValue(selectedValue);
+        setIsRequestingChange(true);
+      } else {
+        setFieldValue('rentOrOwn', selectedValue);
+        setDisplayValue(selectedValue);
+      }
+    } else {
+      handleChange(event);
+    }
+  };
+
+  const handleClose = () => {
+    setIsRequestingChange(false);
+    setPendingValue(null);
+  };
+
+  const handleConfirm = () => {
+    if (pendingValue) {
+      setFieldValue('rentOrOwn', pendingValue);
+      setDisplayValue(pendingValue);
+    }
+    setIsRequestingChange(false);
+    setPendingValue(null);
   };
 
   return (
@@ -53,8 +104,8 @@ export const RentOwn: React.FC = () => {
         >
           <RadioGroup
             name="rentOrOwn"
-            value={values.rentOrOwn}
-            onChange={handleChange}
+            value={displayValue}
+            onChange={handleCustomChange}
             onBlur={handleBlur}
           >
             <FormControlLabel
@@ -69,6 +120,13 @@ export const RentOwn: React.FC = () => {
             />
           </RadioGroup>
         </FormControl>
+        {isRequestingChange && (
+          <ConfirmationModal
+            handleClose={handleClose}
+            handleConfirm={handleConfirm}
+            isRequestingChange={true}
+          />
+        )}
       </Box>
       <DirectionButtons handleNext={handleNext} />
       {errors.rentOrOwn && (
