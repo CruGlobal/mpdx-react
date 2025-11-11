@@ -7,7 +7,6 @@ import {
   GridPagination,
   GridSortModel,
 } from '@mui/x-data-grid';
-import { GridPaginationModel } from '@mui/x-data-grid/models/gridPaginationProps';
 import { useTranslation } from 'react-i18next';
 import { PartnerGivingAnalysisContact } from 'src/graphql/types.generated';
 import { usePopulateTableRows } from 'src/hooks/usePopulateTableRows';
@@ -25,8 +24,6 @@ export interface PartnerGivingAnalysisTableProps {
   isRowChecked: (id: string) => boolean;
   sortModel?: GridSortModel;
   handleSortChange?: (model: GridSortModel) => void;
-  paginationModel?: GridPaginationModel;
-  handlePageChange?: (model: GridPaginationModel) => void;
   apiRef: React.MutableRefObject<GridApi | null>;
 }
 
@@ -65,8 +62,6 @@ export const PartnerGivingAnalysisTable: React.FC<
   isRowChecked,
   sortModel,
   handleSortChange,
-  paginationModel,
-  handlePageChange,
   apiRef,
 }) => {
   const { t } = useTranslation();
@@ -188,9 +183,7 @@ export const PartnerGivingAnalysisTable: React.FC<
         sortModel={sortModel}
         onSortModelChange={handleSortChange}
         sortingMode="server"
-        paginationModel={paginationModel}
         pagination
-        onPaginationModelChange={handlePageChange}
         disableRowSelectionOnClick
         disableVirtualization
         disableColumnFilter
