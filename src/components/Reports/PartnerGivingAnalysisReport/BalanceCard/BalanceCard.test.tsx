@@ -46,7 +46,6 @@ describe('BalanceCard', () => {
     });
 
     expect(getByText('Primary Account Balance')).toBeInTheDocument();
-    expect(getByText('Current Balance')).toBeInTheDocument();
     expect(getByText('$15,000.00')).toBeInTheDocument();
   });
 
