@@ -1,12 +1,13 @@
 import React, { useMemo } from 'react';
 import { Box } from '@mui/material';
 import {
+  GridApi,
   GridColDef,
   GridFooterContainer,
   GridPagination,
-  GridPaginationModel,
   GridSortModel,
 } from '@mui/x-data-grid';
+import { GridPaginationModel } from '@mui/x-data-grid/models/gridPaginationProps';
 import { useTranslation } from 'react-i18next';
 import { PartnerGivingAnalysisContact } from 'src/graphql/types.generated';
 import { usePopulateTableRows } from 'src/hooks/usePopulateTableRows';
@@ -20,13 +21,13 @@ type Row = PartnerGivingAnalysisQuery['partnerGivingAnalysis']['nodes'][number];
 
 export interface PartnerGivingAnalysisTableProps {
   data: Row[];
-  totalCount: number;
   onSelectOne: (contactId: string) => void;
   isRowChecked: (id: string) => boolean;
-  paginationModel?: GridPaginationModel;
-  handlePageChange?: (model: GridPaginationModel) => void;
   sortModel?: GridSortModel;
   handleSortChange?: (model: GridSortModel) => void;
+  paginationModel?: GridPaginationModel;
+  handlePageChange?: (model: GridPaginationModel) => void;
+  apiRef: React.MutableRefObject<GridApi | null>;
 }
 
 export const createTableRow = (data: Row): TableData => ({
@@ -60,13 +61,13 @@ export const PartnerGivingAnalysisTable: React.FC<
   PartnerGivingAnalysisTableProps
 > = ({
   data,
-  totalCount,
   onSelectOne,
   isRowChecked,
-  paginationModel,
-  handlePageChange,
   sortModel,
   handleSortChange,
+  paginationModel,
+  handlePageChange,
+  apiRef,
 }) => {
   const { t } = useTranslation();
 
@@ -178,19 +179,18 @@ export const PartnerGivingAnalysisTable: React.FC<
       }}
     >
       <StyledDataGrid
+        apiRef={apiRef}
         rows={tableRows}
-        rowCount={totalCount}
         columns={columns}
         getRowId={(row) => row.id}
         sortingOrder={['asc', 'desc']}
+        pageSizeOptions={[5, 10, 15]}
         sortModel={sortModel}
         onSortModelChange={handleSortChange}
-        pageSizeOptions={[25, 50, 100]}
-        paginationModel={paginationModel}
-        onPaginationModelChange={handlePageChange}
-        paginationMode="server"
         sortingMode="server"
+        paginationModel={paginationModel}
         pagination
+        onPaginationModelChange={handlePageChange}
         disableRowSelectionOnClick
         disableVirtualization
         disableColumnFilter
