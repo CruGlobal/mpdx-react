@@ -184,6 +184,7 @@ export const PartnerGivingAnalysisTable: React.FC<
         columns={columns}
         getRowId={(row) => row.id}
         sortingOrder={['asc', 'desc']}
+        pageSizeOptions={[5, 10, 15]}
         sortModel={sortModel}
         onSortModelChange={handleSortChange}
         sortingMode="server"

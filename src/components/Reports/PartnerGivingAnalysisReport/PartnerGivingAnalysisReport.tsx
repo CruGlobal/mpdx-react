@@ -1,4 +1,10 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Box, CircularProgress } from '@mui/material';
 import { useGridApiRef } from '@mui/x-data-grid';
 import { GridPaginationModel } from '@mui/x-data-grid/models/gridPaginationProps';
@@ -40,10 +46,11 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
   const { activeFilters, searchTerm } = useUrlFilters();
+  const cursorsRef = useRef(new Map<number, string | null>([[0, null]]));
   const apiRef = useGridApiRef();
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
-    pageSize: 25,
+    pageSize: 5,
   });
 
   const [sortModel, setSortModel] = useState<GridSortModel>([
@@ -88,6 +95,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
     fetchMore,
     error,
     pageInfo: data?.partnerGivingAnalysis.pageInfo,
+    pageSize: paginationModel.pageSize,
   });
 
   const { data: staffAccountData, loading: staffAccountLoading } =
@@ -139,6 +147,15 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   const handlePageChange = useCallback((model: GridPaginationModel) => {
     setPaginationModel(model);
   }, []);
+
+  useEffect(() => {
+    const end = data?.partnerGivingAnalysis.pageInfo.endCursor ?? null;
+    const hasNextPage =
+      data?.partnerGivingAnalysis.pageInfo.hasNextPage ?? false;
+    if (end !== null && hasNextPage) {
+      cursorsRef.current.set(paginationModel.page + 1, end);
+    }
+  }, [data, paginationModel.page]);
 
   return (
     <Box>
