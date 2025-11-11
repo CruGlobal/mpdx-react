@@ -1,13 +1,6 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Box, CircularProgress } from '@mui/material';
 import { useGridApiRef } from '@mui/x-data-grid';
-import { GridPaginationModel } from '@mui/x-data-grid/models/gridPaginationProps';
 import { GridSortModel } from '@mui/x-data-grid/models/gridSortModel';
 import { useTranslation } from 'react-i18next';
 import { Panel } from 'pages/accountLists/[accountListId]/reports/helpers';
@@ -46,12 +39,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
   const { activeFilters, searchTerm } = useUrlFilters();
-  const cursorsRef = useRef(new Map<number, string | null>([[0, null]]));
   const apiRef = useGridApiRef();
-  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
-    page: 0,
-    pageSize: 5,
-  });
 
   const [sortModel, setSortModel] = useState<GridSortModel>([
     {
@@ -90,12 +78,23 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
     },
   });
 
+  // if a user has set pageSize to a higher number then 25 the page will take multiple calls to fill the table
+  // This ensures we expand the page size request when needed
+  const pageSize = useMemo(() => {
+    if (apiRef.current?.state?.pagination?.paginationModel) {
+      return apiRef.current.state.pagination.paginationModel.pageSize > 25
+        ? apiRef.current.state.pagination.paginationModel.pageSize
+        : undefined;
+    }
+    return undefined;
+  }, [apiRef.current?.state?.pagination?.paginationModel]);
+
   // Load remaining pages in background
   const { loading: loadingAllPages } = useFetchAllPages({
     fetchMore,
     error,
     pageInfo: data?.partnerGivingAnalysis.pageInfo,
-    pageSize: paginationModel.pageSize,
+    pageSize,
   });
 
   const { data: staffAccountData, loading: staffAccountLoading } =
@@ -142,20 +141,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
     if (apiRef.current?.exportDataAsPrint) {
       apiRef.current.exportDataAsPrint();
     }
-  }, []);
-
-  const handlePageChange = useCallback((model: GridPaginationModel) => {
-    setPaginationModel(model);
-  }, []);
-
-  useEffect(() => {
-    const end = data?.partnerGivingAnalysis.pageInfo.endCursor ?? null;
-    const hasNextPage =
-      data?.partnerGivingAnalysis.pageInfo.hasNextPage ?? false;
-    if (end !== null && hasNextPage) {
-      cursorsRef.current.set(paginationModel.page + 1, end);
-    }
-  }, [data, paginationModel.page]);
+  }, [apiRef]);
 
   return (
     <Box>
@@ -193,8 +179,6 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
             isRowChecked={isRowChecked}
             sortModel={sortModel}
             handleSortChange={handleSortChange}
-            paginationModel={paginationModel}
-            handlePageChange={handlePageChange}
             apiRef={apiRef}
           />
         </>
