@@ -169,7 +169,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
           }
         />
       ) : null}
-      {firstPageLoading && !contacts && (
+      {firstPageLoading && (
         <Box
           display="flex"
           justifyContent="center"
