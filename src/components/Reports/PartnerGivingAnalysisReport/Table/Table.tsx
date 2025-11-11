@@ -5,7 +5,6 @@ import {
   GridColDef,
   GridFooterContainer,
   GridPagination,
-  GridSortModel,
 } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import { PartnerGivingAnalysisContact } from 'src/graphql/types.generated';
@@ -22,8 +21,6 @@ export interface PartnerGivingAnalysisTableProps {
   data: Row[];
   onSelectOne: (contactId: string) => void;
   isRowChecked: (id: string) => boolean;
-  sortModel?: GridSortModel;
-  handleSortChange?: (model: GridSortModel) => void;
   apiRef: React.MutableRefObject<GridApi | null>;
 }
 
@@ -56,14 +53,7 @@ const CustomFooter: React.FC = () => {
 
 export const PartnerGivingAnalysisTable: React.FC<
   PartnerGivingAnalysisTableProps
-> = ({
-  data,
-  onSelectOne,
-  isRowChecked,
-  sortModel,
-  handleSortChange,
-  apiRef,
-}) => {
+> = ({ data, onSelectOne, isRowChecked, apiRef }) => {
   const { t } = useTranslation();
 
   const tableRows = useMemo(
@@ -185,8 +175,6 @@ export const PartnerGivingAnalysisTable: React.FC<
             paginationModel: { pageSize: 25 },
           },
         }}
-        sortModel={sortModel}
-        onSortModelChange={handleSortChange}
         pagination
         disableRowSelectionOnClick
         disableVirtualization

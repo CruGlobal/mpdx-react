@@ -142,19 +142,19 @@ describe('PartnerGivingAnalysisReport', () => {
       ).not.toBeInTheDocument();
     });
 
-    let rows = getAllByRole('row');
-    expect(rows.length).toBe(26);
-    expect(rows[1]).toHaveTextContent('Beast, Beast and Belle');
+    const rows1 = getAllByRole('row');
+    expect(rows1.length).toBe(26);
+    expect(rows1[1]).toHaveTextContent('Beast, Beast and Belle');
 
     userEvent.click(getByText('Gift Count'));
-    rows = getAllByRole('row');
-    expect(rows.length).toBe(26);
-    expect(rows[1]).toHaveTextContent('Dalmation, Pongo and Perdita');
+    const rows2 = getAllByRole('row');
+    expect(rows2.length).toBe(26);
+    expect(rows2[1]).toHaveTextContent('Dalmation, Pongo and Perdita');
 
     userEvent.click(getByText('Gift Average'));
-    rows = getAllByRole('row');
-    expect(rows.length).toBe(26);
-    expect(rows[1]).toHaveTextContent('$25524');
+    const rows3 = getAllByRole('row');
+    expect(rows3.length).toBe(26);
+    expect(rows3[1]).toHaveTextContent('$25524');
   });
 
   it('filters contacts by name', async () => {
@@ -216,7 +216,7 @@ describe('PartnerGivingAnalysisReport', () => {
       expect(getByRole('grid')).toBeInTheDocument();
     });
 
-    // All 25 contacts + header = 26 rows displayed
+    // All 26 contacts + header = 27 rows displayed (DataGrid default page size shows all)
     await waitFor(() => {
       expect(getAllByRole('row').length).toBe(26);
     });
@@ -336,7 +336,6 @@ describe('PartnerGivingAnalysisReport', () => {
     expect(getAllByRole('row').length).toBe(26);
 
     userEvent.click(getByRole('button', { name: 'Print' }));
-    // Should show all 30 contacts 29 rows + 1 header = 30 total
     expect(getAllByRole('row').length).toBe(30);
   });
 });

@@ -1,7 +1,6 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { Box, CircularProgress } from '@mui/material';
 import { useGridApiRef } from '@mui/x-data-grid';
-import { GridSortModel } from '@mui/x-data-grid/models/gridSortModel';
 import { useTranslation } from 'react-i18next';
 import { Panel } from 'pages/accountLists/[accountListId]/reports/helpers';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
@@ -41,13 +40,6 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
   const { activeFilters, searchTerm } = useUrlFilters();
   const apiRef = useGridApiRef();
 
-  const [sortModel, setSortModel] = useState<GridSortModel>([
-    {
-      field: 'name',
-      sort: 'asc',
-    },
-  ]);
-
   const contactFilters: PartnerGivingAnalysisFilterSetInput = useMemo(
     () => ({
       ...activeFilters,
@@ -60,17 +52,20 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
 
   // pageSize is intentionally omitted from the dependencies array so that the query isn't reloaded when the page size changes
   // If all the pages have loaded and the user changes the page size, there's no reason to reload all the pages
-  const pageSize = apiRef.current?.state.pagination.paginationModel.pageSize;
+  const pageSize = apiRef.current?.state?.pagination?.paginationModel?.pageSize;
+  const sortModel = apiRef.current?.state?.sorting?.sortModel;
+
   const variables = useMemo(
     () => ({
       input: {
         accountListId,
         filters: contactFilters,
-        sortBy: sortModel[0].sort
-          ? sortModel[0].sort === 'asc'
-            ? AscendingSortEnums[sortModel[0].field]
-            : DescendingSortEnums[sortModel[0].field]
-          : null,
+        sortBy:
+          sortModel && sortModel.length > 0 && sortModel[0]
+            ? sortModel[0].sort === 'asc'
+              ? AscendingSortEnums[sortModel[0].field]
+              : DescendingSortEnums[sortModel[0].field]
+            : null,
       },
       first: pageSize,
     }),
@@ -124,10 +119,6 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
     isRowChecked,
   } = useMassSelection(allContactIds);
 
-  const handleSortChange = (model: GridSortModel) => {
-    setSortModel(model);
-  };
-
   const handlePrint = () => {
     if (apiRef.current?.exportDataAsPrint) {
       apiRef.current.exportDataAsPrint({ hideFooter: true });
@@ -178,8 +169,6 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
           data={contacts}
           onSelectOne={toggleSelectionById}
           isRowChecked={isRowChecked}
-          sortModel={sortModel}
-          handleSortChange={handleSortChange}
           apiRef={apiRef}
         />
       )}
