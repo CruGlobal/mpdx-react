@@ -1,19 +1,22 @@
 import React from 'react';
 import { ThemeProvider } from '@emotion/react';
 import { render } from '@testing-library/react';
+import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
 import { CurrentRequest } from './CurrentRequest';
 
 const TestComponent: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
-      <CurrentRequest
-        approvedOverallAmount={1500}
-        requestedDate={'2023-08-23'}
-        deadlineDate={'2023-09-17'}
-        boardApprovedDate={'2023-10-01'}
-        availableDate={'2024-01-01'}
-      />
+      <TestRouter>
+        <CurrentRequest
+          approvedOverallAmount={1500}
+          requestedDate={'2023-08-23'}
+          deadlineDate={'2023-09-17'}
+          boardApprovedDate={'2023-10-01'}
+          availableDate={'2024-01-01'}
+        />
+      </TestRouter>
     </ThemeProvider>
   );
 };
@@ -24,7 +27,7 @@ describe('CurrentRequest Component', () => {
   it('should render correctly', () => {
     const { getByText } = render(<TestComponent />);
 
-    expect(getByText('Current Board Approved MHA')).toBeInTheDocument();
+    expect(getByText('Current MHA Request')).toBeInTheDocument();
     expect(getByText('View Request')).toBeInTheDocument();
     expect(getByText('Edit Request')).toBeInTheDocument();
 

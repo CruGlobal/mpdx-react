@@ -59,6 +59,11 @@ describe('FairRentalValue', () => {
     await userEvent.type(input1, '1000');
     await userEvent.type(input2, '200');
     await userEvent.type(input3, '300');
+    userEvent.tab();
+
+    expect(input1).toHaveDisplayValue('$1,000.00');
+    expect(input2).toHaveDisplayValue('$200.00');
+    expect(input3).toHaveDisplayValue('$300.00');
 
     expect(getByText('$1,500.00')).toBeInTheDocument();
     expect(getByText('$18,000.00')).toBeInTheDocument();

@@ -93,7 +93,8 @@ export const Calculation: React.FC<CalculationProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const { handleNextStep, pageType } = useMinisterHousingAllowance();
+  const { handleNextStep, pageType, handleEditNextStep } =
+    useMinisterHousingAllowance();
 
   const { values } = useFormikContext<FormValues>();
   const { rentOrOwn } = values;
@@ -130,6 +131,8 @@ export const Calculation: React.FC<CalculationProps> = ({
     ? t(`approval effective ${availableDateFormatted}`)
     : t('approval');
 
+  const handleNext = isNew ? handleNextStep : handleEditNextStep;
+
   return (
     <Formik<CalculationFormValues>
       initialValues={initialValues}
@@ -137,7 +140,7 @@ export const Calculation: React.FC<CalculationProps> = ({
       validateOnChange
       validateOnBlur
       onSubmit={() => {
-        handleNextStep();
+        handleNext();
       }}
     >
       {({

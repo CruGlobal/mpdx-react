@@ -7,25 +7,26 @@ import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
-import {
-  MinisterHousingAllowanceProvider,
-  useMinisterHousingAllowance,
-} from '../../../Shared/MinisterHousingAllowanceContext';
+import { MinisterHousingAllowanceProvider } from '../../../Shared/MinisterHousingAllowanceContext';
 import { PageEnum } from '../../../Shared/sharedTypes';
 import { Calculation } from './Calculation';
 
 const submit = jest.fn();
-const handlePreviousStep = jest.fn();
-const handleNextStep = jest.fn();
-const boardApprovalDate = '2024-06-15';
-const availableDate = '2024-07-01';
 
 const initialValues = {
   phone: '1234567890',
   email: 'john.doe@cru.org',
 };
 
-const TestComponent: React.FC = () => (
+interface TestComponentProps {
+  boardApprovalDate?: string | null;
+  availableDate?: string | null;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({
+  boardApprovalDate = '2024-06-15',
+  availableDate = '2024-07-01',
+}) => (
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <TestRouter>
@@ -41,16 +42,6 @@ const TestComponent: React.FC = () => (
     </LocalizationProvider>
   </ThemeProvider>
 );
-
-jest.mock('../../../Shared/MinisterHousingAllowanceContext', () => ({
-  ...jest.requireActual('../../../Shared/MinisterHousingAllowanceContext'),
-  useMinisterHousingAllowance: jest.fn(),
-}));
-
-(useMinisterHousingAllowance as jest.Mock).mockReturnValue({
-  handleNextStep,
-  handlePreviousStep,
-});
 
 describe('Calculation', () => {
   it('renders the component', () => {
@@ -193,7 +184,7 @@ describe('Calculation', () => {
 
     expect(
       getByRole('heading', {
-        name: 'Are you ready to submit your MHA request?',
+        name: 'Are you ready to submit your MHA Request?',
       }),
     ).toBeInTheDocument();
     expect(
@@ -202,5 +193,17 @@ describe('Calculation', () => {
 
     expect(getByRole('button', { name: /go back/i })).toBeInTheDocument();
     expect(getByRole('button', { name: /yes, continue/i })).toBeInTheDocument();
+  });
+
+  it('should change text when dates are null', () => {
+    const { getByText } = render(
+      <TestComponent boardApprovalDate={null} availableDate={null} />,
+    );
+
+    expect(
+      getByText(
+        /the board will review this number and you will receive notice of your approval./i,
+      ),
+    ).toBeInTheDocument();
   });
 });

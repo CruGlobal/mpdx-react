@@ -1,6 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
@@ -14,7 +15,9 @@ import { DirectionButtons } from './DirectionButtons';
 const submit = jest.fn();
 const pushMock = jest.fn();
 const handleNextStep = jest.fn();
-
+const handlePreviousStep = jest.fn();
+const handleEditNextStep = jest.fn();
+const handleEditPreviousStep = jest.fn();
 interface TestComponentProps {
   isCalculate?: boolean;
 }
@@ -27,7 +30,7 @@ const TestComponent: React.FC<TestComponentProps> = ({ isCalculate }) => (
       }}
     >
       <Formik initialValues={{}} onSubmit={submit}>
-        <MinisterHousingAllowanceProvider type={PageEnum.New}>
+        <MinisterHousingAllowanceProvider>
           <DirectionButtons isCalculate={isCalculate} />
         </MinisterHousingAllowanceProvider>
       </Formik>
@@ -39,10 +42,7 @@ jest.mock('../../Shared/MinisterHousingAllowanceContext', () => ({
   ...jest.requireActual('../../Shared/MinisterHousingAllowanceContext'),
   useMinisterHousingAllowance: jest.fn(),
 }));
-
-(useMinisterHousingAllowance as jest.Mock).mockReturnValue({
-  handleNextStep,
-});
+const useMock = useMinisterHousingAllowance as jest.Mock;
 
 jest.mock('src/hooks/useAccountListId', () => ({
   useAccountListId: () => 'account-list-1',
@@ -53,19 +53,67 @@ jest.mock('next/router', () => ({
 }));
 
 describe('DirectionButtons', () => {
-  it('renders Go back and Submit buttons', () => {
+  beforeEach(() => useMock.mockReset());
+  it('renders Back and Submit buttons', () => {
+    useMock.mockReturnValue({
+      pageType: PageEnum.New,
+    });
+
     const { getByRole } = render(<TestComponent isCalculate={true} />);
 
     expect(getByRole('button', { name: /back/i })).toBeInTheDocument();
     expect(getByRole('button', { name: /submit/i })).toBeInTheDocument();
   });
 
-  it('calls handleNext when Continue is clicked', () => {
-    const { getByRole } = render(<TestComponent isCalculate={false} />);
+  describe('New Request', () => {
+    beforeEach(() => {
+      useMock.mockReturnValue({
+        handleNextStep,
+        handlePreviousStep,
+        pageType: PageEnum.New,
+      });
+    });
 
-    const continueButton = getByRole('button', { name: 'CONTINUE' });
-    continueButton.click();
+    it('calls handleNext when Continue is clicked', async () => {
+      const { getByRole } = render(<TestComponent isCalculate={false} />);
 
-    expect(handleNextStep).toHaveBeenCalled();
+      await userEvent.click(getByRole('button', { name: 'CONTINUE' }));
+
+      expect(handleNextStep).toHaveBeenCalled();
+    });
+
+    it('calls handlePreviousStep when Back is clicked', async () => {
+      const { getByRole } = render(<TestComponent isCalculate={true} />);
+
+      await userEvent.click(getByRole('button', { name: /back/i }));
+
+      expect(handlePreviousStep).toHaveBeenCalled();
+    });
+  });
+
+  describe('Edit Request', () => {
+    beforeEach(() => {
+      useMock.mockReturnValue({
+        handleEditNextStep,
+        handleEditPreviousStep,
+        pageType: PageEnum.Edit,
+      });
+    });
+
+    it('calls handleNext when Continue is clicked', async () => {
+      const { getByRole } = render(<TestComponent isCalculate={false} />);
+
+      await userEvent.click(getByRole('button', { name: 'CONTINUE' }));
+
+      expect(handleEditNextStep).toHaveBeenCalled();
+    });
+
+    it('calls handlePreviousStep when Back is clicked', async () => {
+      const { getByRole } = render(<TestComponent isCalculate={true} />);
+
+      await userEvent.click(getByRole('button', { name: /back/i }));
+
+      expect(handleEditPreviousStep).toHaveBeenCalled();
+    });
   });
 });

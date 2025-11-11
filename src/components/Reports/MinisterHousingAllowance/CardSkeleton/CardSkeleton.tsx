@@ -17,6 +17,7 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import { ConfirmationModal } from '../NewRequest/ConfirmationModal/ConfirmationModal';
 
 //TODO: handle cancel request
+//TODO: handle duplicate last years mha and view current mha links
 interface CardSkeletonProps {
   title: string;
   icon: React.ElementType;
@@ -39,7 +40,7 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
   const { t } = useTranslation();
 
   const accountListId = useAccountListId();
-  const editLink = `/accountLists/${accountListId}/reports/housingAllowance/editRequest`;
+  const editLink = `/accountLists/${accountListId}/reports/housingAllowance/edit`;
 
   const [openCancel, setOpenCancel] = useState(false);
 
@@ -72,7 +73,7 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
         </Button>
         <Button
           component={NextLink}
-          href={editLink}
+          href={isRequest ? editLink : ''}
           variant="outlined"
           sx={{ px: 2, py: 1 }}
         >

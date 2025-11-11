@@ -21,7 +21,7 @@ export type ContextType = {
   handleEditPreviousStep: () => void;
   percentEditComplete: number;
 
-  pageType: PageEnum;
+  pageType: PageEnum | undefined;
 };
 
 const MinisterHousingAllowanceContext = createContext<ContextType | null>(null);
@@ -37,7 +37,7 @@ export const useMinisterHousingAllowance = (): ContextType => {
 };
 
 interface Props {
-  type: PageEnum;
+  type?: PageEnum;
   children?: React.ReactNode;
 }
 
@@ -46,7 +46,7 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   children,
 }) => {
   const pageType = type;
-  const steps = useNewStepList(type);
+  const steps = type ? useNewStepList(type) : [];
 
   const [currentStep, setCurrentStep] = useState(NewRequestStepsEnum.AboutForm);
   const [percentComplete, setPercentComplete] = useState(25);

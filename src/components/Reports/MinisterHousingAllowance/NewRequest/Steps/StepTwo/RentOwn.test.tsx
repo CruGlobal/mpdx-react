@@ -11,11 +11,15 @@ import { RentOwn } from './RentOwn';
 
 const submit = jest.fn();
 
-const TestComponent: React.FC = () => (
+interface TestComponentProps {
+  pageType?: PageEnum;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({ pageType }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
       <Formik initialValues={{}} onSubmit={submit}>
-        <MinisterHousingAllowanceProvider type={PageEnum.New}>
+        <MinisterHousingAllowanceProvider type={pageType}>
           <RentOwn />
         </MinisterHousingAllowanceProvider>
       </Formik>
@@ -24,8 +28,10 @@ const TestComponent: React.FC = () => (
 );
 
 describe('RentOwn', () => {
-  it('renders form and options', async () => {
-    const { getByRole, getByText } = render(<TestComponent />);
+  it('renders form and options for new page', async () => {
+    const { getByRole, getByText } = render(
+      <TestComponent pageType={PageEnum.New} />,
+    );
 
     expect(getByRole('heading', { name: 'Rent or Own?' })).toBeInTheDocument();
 
@@ -37,5 +43,19 @@ describe('RentOwn', () => {
 
     await userEvent.click(getByText('Own'));
     expect(getByRole('radio', { name: 'Own' })).toBeChecked();
+  });
+
+  it('renders form and options for edit page', async () => {
+    const { getByRole, getByText } = render(
+      <TestComponent pageType={PageEnum.Edit} />,
+    );
+
+    expect(getByRole('heading', { name: 'Rent or Own?' })).toBeInTheDocument();
+    expect(
+      getByText(/if this has changed from your previous submission/i),
+    ).toBeInTheDocument();
+
+    expect(getByRole('radio', { name: 'Rent' })).not.toBeChecked();
+    expect(getByRole('radio', { name: 'Own' })).not.toBeChecked();
   });
 });

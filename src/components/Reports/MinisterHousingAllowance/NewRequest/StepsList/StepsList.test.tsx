@@ -32,13 +32,16 @@ describe('StepsList', () => {
     expect(
       within(firstStep).getByTestId('CheckCircleIcon'),
     ).toBeInTheDocument();
+    expect(firstStep).toHaveStyle({ color: 'success.main' });
 
     expect(secondStep).toHaveTextContent('Step 2');
-    expect(within(secondStep).getByTestId('CircleIcon')).toBeInTheDocument();
+    const icon2 = within(secondStep).getByTestId('CircleIcon');
+    expect(icon2).toBeInTheDocument();
+    expect(icon2).toHaveStyle({ color: 'rgb(5, 105, 155);' });
 
     expect(thirdStep).toHaveTextContent('Step 3');
-    expect(
-      within(thirdStep).getByTestId('RadioButtonUncheckedIcon'),
-    ).toBeInTheDocument();
+    const icon3 = within(thirdStep).getByTestId('RadioButtonUncheckedIcon');
+    expect(icon3).toBeInTheDocument();
+    expect(icon3).toHaveStyle({ color: 'rgb(56, 63, 67);' });
   });
 });

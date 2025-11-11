@@ -41,10 +41,6 @@ describe('AboutForm', () => {
     ).toBeInTheDocument();
     expect(getByText(/9\/15\/2024/)).toBeInTheDocument();
     expect(getByText(/10\/1\/2024/)).toBeInTheDocument();
-  });
-
-  it('renders Continue button', () => {
-    const { getByRole } = render(<TestComponent />);
 
     expect(getByRole('button', { name: 'CONTINUE' })).toBeInTheDocument();
   });

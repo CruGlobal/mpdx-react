@@ -7,10 +7,7 @@ import theme from 'src/theme';
 import { EligibleDisplay } from './MainPages/EligibleDisplay';
 import { IneligibleDisplay } from './MainPages/IneligibleDisplay';
 import { PanelLayout } from './PanelLayout/PanelLayout';
-import {
-  MinisterHousingAllowanceProvider,
-  useMinisterHousingAllowance,
-} from './Shared/MinisterHousingAllowanceContext';
+import { MinisterHousingAllowanceProvider } from './Shared/MinisterHousingAllowanceContext';
 import { mocks } from './Shared/mockData';
 import { PanelTypeEnum } from './Shared/sharedTypes';
 import { CurrentBoardApproved } from './SharedComponents/CurrentBoardApproved';
@@ -21,8 +18,6 @@ export const mainContentWidth = theme.spacing(85);
 
 export const MinisterHousingAllowanceReport: React.FC = () => {
   const { t } = useTranslation();
-
-  const { pageType } = useMinisterHousingAllowance();
 
   const accountListId = useAccountListId();
   const requestLink = `/accountLists/${accountListId}/reports/housingAllowance/new`;
@@ -53,7 +48,7 @@ export const MinisterHousingAllowanceReport: React.FC = () => {
   // TODO: Logic to show both current and new request if pending and approved MHA
 
   return (
-    <MinisterHousingAllowanceProvider type={pageType}>
+    <MinisterHousingAllowanceProvider>
       <PanelLayout
         panelType={PanelTypeEnum.Empty}
         sidebarTitle={title}

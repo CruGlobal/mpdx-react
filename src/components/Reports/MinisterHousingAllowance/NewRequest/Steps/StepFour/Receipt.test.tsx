@@ -5,21 +5,29 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, within } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
+import { MinisterHousingAllowanceProvider } from '../../../Shared/MinisterHousingAllowanceContext';
+import { PageEnum } from '../../../Shared/sharedTypes';
 import { Receipt } from './Receipt';
 
-const TestComponent: React.FC = () => (
+interface TestComponentProps {
+  pageType?: PageEnum;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({ pageType }) => (
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <TestRouter>
-        <Receipt />
+        <MinisterHousingAllowanceProvider type={pageType}>
+          <Receipt />
+        </MinisterHousingAllowanceProvider>
       </TestRouter>
     </LocalizationProvider>
   </ThemeProvider>
 );
 
 describe('Receipt', () => {
-  it('renders the component', () => {
-    const { getByRole } = render(<TestComponent />);
+  it('renders the component in new page', () => {
+    const { getByRole } = render(<TestComponent pageType={PageEnum.New} />);
 
     expect(
       getByRole('heading', {
@@ -31,6 +39,25 @@ describe('Receipt', () => {
     expect(
       within(getByRole('alert')).getByText(
         /you've successfully submitted your mha request!/i,
+      ),
+    ).toBeInTheDocument();
+
+    expect(getByRole('button', { name: /view your mha/i })).toBeInTheDocument();
+  });
+
+  it('renders the component in edit page', () => {
+    const { getByRole } = render(<TestComponent pageType={PageEnum.Edit} />);
+
+    expect(
+      getByRole('heading', {
+        name: 'Thank you for updating your MHA Request!',
+      }),
+    ).toBeInTheDocument();
+
+    expect(getByRole('alert')).toBeInTheDocument();
+    expect(
+      within(getByRole('alert')).getByText(
+        /you've successfully updated your mha request!/i,
       ),
     ).toBeInTheDocument();
 

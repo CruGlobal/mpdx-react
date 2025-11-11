@@ -64,11 +64,11 @@ describe('CostOfHome', () => {
 
   it('should add text fields 1-5 and calculate annual value correctly', async () => {
     const { getByRole, getByText } = render(
-      <TestComponent rentOrOwn={RentOwnEnum.Own} />,
+      <TestComponent rentOrOwn={RentOwnEnum.Rent} />,
     );
 
     const row1 = getByRole('row', {
-      name: /monthly mortgage payment, taxes/i,
+      name: /monthly rent/i,
     });
     const input1 = within(row1).getByPlaceholderText(/enter amount/i);
 
@@ -95,6 +95,13 @@ describe('CostOfHome', () => {
     await userEvent.type(input3, '300');
     await userEvent.type(input4, '400');
     await userEvent.type(input5, '500');
+    userEvent.tab();
+
+    expect(input1).toHaveDisplayValue('$1,000.00');
+    expect(input2).toHaveDisplayValue('$200.00');
+    expect(input3).toHaveDisplayValue('$300.00');
+    expect(input4).toHaveDisplayValue('$400.00');
+    expect(input5).toHaveDisplayValue('$500.00');
 
     expect(getByText('$2,400.00')).toBeInTheDocument();
     expect(getByText('$28,800.00')).toBeInTheDocument();

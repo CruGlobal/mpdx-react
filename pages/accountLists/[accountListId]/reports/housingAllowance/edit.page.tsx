@@ -23,7 +23,7 @@ const EditRequestPageWrapper = styled(Box)(({ theme }) => ({
 
 const HousingAllowanceEditRequestPage: React.FC = () => {
   const { t } = useTranslation();
-  const title = t("Minister's Housing Allowance");
+  const title = t("Edit Minister's Housing Allowance Request");
 
   const [isNavListOpen, setNavListOpen] = useState(false);
 
@@ -34,7 +34,7 @@ const HousingAllowanceEditRequestPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>{`${title} - Edit Request`}</title>
+        <title>{title}</title>
       </Head>
       <EditRequestPageWrapper>
         <SidePanelsLayout
@@ -42,7 +42,7 @@ const HousingAllowanceEditRequestPage: React.FC = () => {
           leftPanel={
             <MultiPageMenu
               isOpen={isNavListOpen}
-              selectedId={'housingAllowanceEditRequest'}
+              selectedId={'housingAllowanceEdit'}
               onClose={handleNavListToggle}
               navType={NavTypeEnum.Reports}
             />

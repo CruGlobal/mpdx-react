@@ -1,0 +1,90 @@
+import React from 'react';
+import { ThemeProvider } from '@mui/material/styles';
+import { render, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import TestRouter from '__tests__/util/TestRouter';
+import theme from 'src/theme';
+import { MinisterHousingAllowanceProvider } from '../Shared/MinisterHousingAllowanceContext';
+import { PageEnum } from '../Shared/sharedTypes';
+import { EditRequestPage } from './EditRequestPage';
+
+const TestComponent: React.FC = () => (
+  <ThemeProvider theme={theme}>
+    <TestRouter>
+      <MinisterHousingAllowanceProvider type={PageEnum.Edit}>
+        <EditRequestPage />
+      </MinisterHousingAllowanceProvider>
+    </TestRouter>
+  </ThemeProvider>
+);
+
+describe('EditRequestPage', () => {
+  it('renders steps list', () => {
+    const { getByText } = render(<TestComponent />);
+
+    expect(getByText(/1. rent or own?/i)).toBeInTheDocument();
+    expect(getByText(/2. edit your mha/i)).toBeInTheDocument();
+    expect(getByText(/3. receipt/i)).toBeInTheDocument();
+  });
+
+  it('updates steps when Continue clicked', async () => {
+    const { getByRole, getAllByRole, getByTestId, queryByTestId } = render(
+      <TestComponent />,
+    );
+
+    expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '33');
+    expect(queryByTestId('ArrowBackIcon')).not.toBeInTheDocument();
+
+    const continueButton = getByRole('button', { name: 'CONTINUE' });
+    await userEvent.click(continueButton);
+
+    await waitFor(() => {
+      expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '66');
+    });
+
+    waitFor(() => {
+      const steps = getAllByRole('listitem');
+
+      const [firstStep, secondStep, thirdStep] = steps;
+
+      expect(firstStep).toHaveTextContent('1. Rent or Own?');
+      expect(
+        within(firstStep).getByTestId('CheckCircleIcon'),
+      ).toBeInTheDocument();
+
+      expect(secondStep).toHaveTextContent('2. Edit Your MHA');
+      expect(within(secondStep).getByTestId('CircleIcon')).toBeInTheDocument();
+
+      expect(thirdStep).toHaveTextContent('3. Receipt');
+      expect(
+        within(thirdStep).getByTestId('RadioButtonUncheckedIcon'),
+      ).toBeInTheDocument();
+    });
+
+    expect(getByTestId('ArrowBackIcon')).toBeInTheDocument();
+
+    await userEvent.click(getByTestId('ArrowBackIcon'));
+
+    const updatedSteps = getAllByRole('listitem');
+
+    const [updatedFirstStep, updatedSecondStep] = updatedSteps;
+
+    expect(updatedFirstStep).toHaveTextContent('1. Rent or Own?');
+    expect(
+      within(updatedFirstStep).getByTestId('CircleIcon'),
+    ).toBeInTheDocument();
+
+    expect(updatedSecondStep).toHaveTextContent('2. Edit Your MHA');
+    expect(
+      within(updatedSecondStep).getByTestId('RadioButtonUncheckedIcon'),
+    ).toBeInTheDocument();
+
+    expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '33');
+  });
+
+  it('should show an option is preselected', async () => {
+    const { getAllByRole } = render(<TestComponent />);
+
+    expect(getAllByRole('radio', { checked: true })).toHaveLength(1);
+  });
+});

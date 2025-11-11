@@ -33,5 +33,11 @@ describe('EndingSection', () => {
       getByRole('textbox', { name: 'Telephone Number' }),
     ).toBeInTheDocument();
     expect(getByRole('textbox', { name: 'Email' })).toBeInTheDocument();
+
+    expect(
+      getByText(
+        /this email address and phone number will be used to contact you regarding this request/i,
+      ),
+    ).toBeInTheDocument();
   });
 });

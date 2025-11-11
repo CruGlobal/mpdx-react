@@ -15,28 +15,30 @@ export const ListItemContent: React.FC<ListItemContentProps> = ({
   title,
   complete,
   current,
-}) => (
-  <>
-    <CategoryListItemIcon
-      sx={(theme) => ({
-        color: complete
-          ? 'success.main'
-          : current
-            ? theme.palette.mpdxBlue.main
-            : theme.palette.cruGrayDark.main,
-      })}
-    >
-      {complete ? (
-        <CheckCircleIcon />
-      ) : current ? (
-        <CircleIcon />
-      ) : (
-        <RadioButtonUncheckedIcon />
-      )}
-    </CategoryListItemIcon>
-    <ListItemText
-      primary={title}
-      primaryTypographyProps={{ variant: 'body2' }}
-    />
-  </>
-);
+}) => {
+  return (
+    <>
+      <CategoryListItemIcon
+        sx={(theme) => ({
+          color: complete
+            ? 'success.main'
+            : current
+              ? theme.palette.mpdxBlue.main
+              : theme.palette.cruGrayDark.main,
+        })}
+      >
+        {complete ? (
+          <CheckCircleIcon />
+        ) : current ? (
+          <CircleIcon />
+        ) : (
+          <RadioButtonUncheckedIcon />
+        )}
+      </CategoryListItemIcon>
+      <ListItemText
+        primary={title}
+        primaryTypographyProps={{ variant: 'body2' }}
+      />
+    </>
+  );
+};

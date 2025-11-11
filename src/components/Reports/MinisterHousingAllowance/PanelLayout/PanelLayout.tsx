@@ -42,7 +42,7 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
     pageType,
   } = useMinisterHousingAllowance();
 
-  const isLastStep = currentIndex === steps.length - 1;
+  const isLastStep = steps ? currentIndex === steps.length - 1 : false;
   const isNotFirstStep = currentIndex !== 0;
 
   const isNew = pageType === PageEnum.New;
