@@ -78,11 +78,23 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
     },
   });
 
+  // if a user has set pageSize to a higher number then 25 the page will take multiple calls to fill the table
+  // This ensures we expand the page size request when needed
+  const pageSize = useMemo(() => {
+    if (apiRef.current?.state?.pagination?.paginationModel) {
+      return apiRef.current.state.pagination.paginationModel.pageSize > 25
+        ? apiRef.current.state.pagination.paginationModel.pageSize
+        : undefined;
+    }
+    return undefined;
+  }, [apiRef.current?.state?.pagination?.paginationModel]);
+
   // Load remaining pages in background
   const { loading: loadingAllPages } = useFetchAllPages({
     fetchMore,
     error,
     pageInfo: data?.partnerGivingAnalysis.pageInfo,
+    pageSize,
   });
 
   const { data: staffAccountData, loading: staffAccountLoading } =
