@@ -255,7 +255,7 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
           <CardActions>
             <Button
               LinkComponent={NextLink}
-              href={`/accountLists/${accountListId}/tools`}
+              href={`/accountLists/${accountListId}/tools/appeals`}
               size="small"
               color="primary"
             >

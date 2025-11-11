@@ -48,7 +48,7 @@ describe('Appeals', () => {
     ).toContain('MuiSkeleton-root');
     expect(getByRole('link', { name: 'View All' })).toHaveAttribute(
       'href',
-      '/accountLists/abc/tools',
+      '/accountLists/abc/tools/appeals',
     );
   });
 
