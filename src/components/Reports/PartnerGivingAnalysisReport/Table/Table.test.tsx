@@ -1,13 +1,12 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
+import { GridApi } from '@mui/x-data-grid';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
-import { PartnerGivingAnalysisContact } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { PartnerGivingAnalysisTable } from './Table';
-import type { Order } from '../../Reports.type';
 
 const router = {
   pathname:
@@ -19,15 +18,12 @@ const router = {
   push: jest.fn(),
 };
 
-type Contact = PartnerGivingAnalysisContact;
-
-const order: Order = 'asc';
-const orderBy: keyof Contact = 'name';
-const ids = [];
 const isRowChecked = jest.fn();
-const onRequestSort = jest.fn();
-const onSelectAll = jest.fn();
 const onSelectOne = jest.fn();
+
+const mockApiRef = {
+  current: {} as GridApi,
+};
 
 const mocks = {
   PartnerGivingAnalysis: {
@@ -85,20 +81,10 @@ const mocks = {
   },
 };
 
-const allContactIds =
-  mocks.PartnerGivingAnalysis.partnerGivingAnalysis?.nodes.map(
-    (contact) => contact.id,
-  ) ?? [];
-
 const defaultProps = {
-  order,
-  orderBy,
-  onRequestSort,
-  onSelectAll,
   onSelectOne,
-  ids,
-  allContactIds,
   isRowChecked,
+  apiRef: mockApiRef,
 };
 
 const Components = () => (
@@ -108,9 +94,6 @@ const Components = () => (
         <PartnerGivingAnalysisTable
           {...defaultProps}
           data={mocks.PartnerGivingAnalysis.partnerGivingAnalysis.nodes}
-          totalCount={
-            mocks.PartnerGivingAnalysis.partnerGivingAnalysis.totalCount
-          }
         />
       </ContactPanelProvider>
     </TestRouter>
