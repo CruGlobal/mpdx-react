@@ -11,14 +11,20 @@ import { Receipt } from './Receipt';
 
 interface TestComponentProps {
   pageType?: PageEnum;
+  availableDate?: string | null;
+  deadlineDate?: string | null;
 }
 
-const TestComponent: React.FC<TestComponentProps> = ({ pageType }) => (
+const TestComponent: React.FC<TestComponentProps> = ({
+  pageType,
+  availableDate = '2024-06-15',
+  deadlineDate = '2024-07-01',
+}) => (
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <TestRouter>
         <MinisterHousingAllowanceProvider type={pageType}>
-          <Receipt />
+          <Receipt availableDate={availableDate} deadlineDate={deadlineDate} />
         </MinisterHousingAllowanceProvider>
       </TestRouter>
     </LocalizationProvider>
@@ -62,5 +68,21 @@ describe('Receipt', () => {
     ).toBeInTheDocument();
 
     expect(getByRole('button', { name: /view your mha/i })).toBeInTheDocument();
+  });
+
+  it('should change text when dates are null', () => {
+    const { getByText } = render(
+      <TestComponent
+        pageType={PageEnum.New}
+        availableDate={null}
+        deadlineDate={null}
+      />,
+    );
+
+    expect(
+      getByText(
+        /we will review your information and you will receive notice for your approval soon./i,
+      ),
+    ).toBeInTheDocument();
   });
 });

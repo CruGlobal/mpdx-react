@@ -5,30 +5,36 @@ import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { useMinisterHousingAllowance } from '../../../Shared/MinisterHousingAllowanceContext';
-import { mocks } from '../../../Shared/mockData';
 import { PageEnum } from '../../../Shared/sharedTypes';
 
 //TODO: Update links and functionality for Edit and Print options
 
-export const Receipt: React.FC = () => {
+interface ReceiptProps {
+  availableDate: string | null;
+  deadlineDate: string | null;
+}
+
+export const Receipt: React.FC<ReceiptProps> = ({
+  availableDate,
+  deadlineDate,
+}) => {
   const { t } = useTranslation();
   const locale = useLocale();
 
   const { pageType } = useMinisterHousingAllowance();
 
-  const availableDate = dateFormatShort(
-    DateTime.fromISO(
-      mocks[4].mhaDetails.staffMHA?.availableDate ?? DateTime.now().toISO(),
-    ),
-    locale,
-  );
+  const available = availableDate
+    ? dateFormatShort(DateTime.fromISO(availableDate), locale)
+    : null;
 
-  const deadlineDate = dateFormatShort(
-    DateTime.fromISO(
-      mocks[4].mhaDetails.staffMHA?.deadlineDate ?? DateTime.now().toISO(),
-    ),
-    locale,
-  );
+  //TODO: Not sure what to write if deadline date is null
+  const deadline = deadlineDate
+    ? dateFormatShort(DateTime.fromISO(deadlineDate), locale)
+    : null;
+
+  const approval = available
+    ? t(`approval effective ${available}`)
+    : t('approval soon');
 
   const isEdit = pageType === PageEnum.Edit;
 
@@ -50,8 +56,8 @@ export const Receipt: React.FC = () => {
           </Typography>
           <Typography>
             {t(
-              'We will review your information and you will receive notice for your approval effective {{date}}.',
-              { date: availableDate, interpolation: { escapeValue: false } },
+              'We will review your information and you will receive notice for your {{approval}}.',
+              { approval, interpolation: { escapeValue: false } },
             )}
           </Typography>
         </Box>
@@ -63,7 +69,7 @@ export const Receipt: React.FC = () => {
         />{' '}
         <Link href="">
           {t('Edit your MHA Request (Not available after {{date}})', {
-            date: deadlineDate,
+            date: deadline,
             interpolation: { escapeValue: false },
           })}
         </Link>

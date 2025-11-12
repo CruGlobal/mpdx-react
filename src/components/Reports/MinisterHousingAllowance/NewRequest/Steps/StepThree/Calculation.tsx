@@ -129,7 +129,7 @@ export const Calculation: React.FC<CalculationProps> = ({
 
   const approval = availableDateFormatted
     ? t(`approval effective ${availableDateFormatted}`)
-    : t('approval');
+    : t('approval soon');
 
   const handleNext = isNew ? handleNextStep : handleEditNextStep;
 

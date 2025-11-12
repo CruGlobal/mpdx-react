@@ -34,12 +34,11 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 
   const { pageType } = useMinisterHousingAllowance();
 
-  const deadlineDate = dateFormatShort(
-    DateTime.fromISO(
-      mocks[4].mhaDetails.staffMHA?.deadlineDate ?? DateTime.now().toISO(),
-    ),
-    locale,
-  );
+  // TODO: Not sure what to write if date is null
+  const date = mocks[4].mhaDetails.staffMHA?.deadlineDate;
+  const deadlineDate = date
+    ? dateFormatShort(DateTime.fromISO(date), locale)
+    : null;
 
   const isEdit = pageType === PageEnum.Edit;
 

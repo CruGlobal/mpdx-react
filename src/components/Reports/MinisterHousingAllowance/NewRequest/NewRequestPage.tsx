@@ -68,7 +68,14 @@ export const NewRequestPage: React.FC = () => {
                   }
                 />
               ) : currentStep === NewRequestStepsEnum.Receipt ? (
-                <Receipt />
+                <Receipt
+                  availableDate={
+                    mocks[4].mhaDetails.staffMHA?.availableDate ?? ''
+                  }
+                  deadlineDate={
+                    mocks[4].mhaDetails.staffMHA?.deadlineDate ?? ''
+                  }
+                />
               ) : null}
             </Stack>
           </Container>
