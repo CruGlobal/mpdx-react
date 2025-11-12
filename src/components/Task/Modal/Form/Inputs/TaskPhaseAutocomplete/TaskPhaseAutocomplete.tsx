@@ -33,12 +33,15 @@ export const TaskPhaseAutocomplete: React.FC<TaskPhaseProps> = ({
   const { t } = useTranslation();
   const { getLocalizedPhase } = useLocalizedConstants();
 
+  const phase = value || contactPhase;
+  const adjustedPhase = phase && options.includes(phase) ? phase : null;
+
   return (
     <Autocomplete<PhaseEnum>
       openOnFocus
       autoHighlight
       autoSelect
-      value={value || contactPhase}
+      value={adjustedPhase}
       options={options}
       getOptionLabel={(phase) => getLocalizedPhase(phase)}
       renderInput={(params) => (

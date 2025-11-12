@@ -2,14 +2,12 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { beforeTestResizeObserver } from '__tests__/util/windowResizeObserver';
-import { GetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
 import {
   GoalCalculatorTestWrapper,
   goalCalculationMock,
 } from '../../../GoalCalculatorTestWrapper';
 import { GoalCalculationQuery } from '../../../Shared/GoalCalculation.generated';
 import { GetAccountListQuery } from './GetAccountList.generated';
-import { GetOrganizationsQuery } from './GetOrganization.generated';
 import { PresentingYourGoal } from './PresentingYourGoal';
 
 /*
@@ -29,50 +27,20 @@ jest.mock('recharts', () => {
   };
 });
 
-jest.mock('src/hooks/useOrganizationId', () => ({
-  useOrganizationId: jest.fn(() => 'organization-id-1'),
-}));
-
 const TestComponent: React.FC = () => (
   <GoalCalculatorTestWrapper>
     <GqlMockedProvider<{
       GoalCalculation: GoalCalculationQuery;
-      GetUsersOrganizationsAccounts: GetUsersOrganizationsAccountsQuery;
       GetAccountList: GetAccountListQuery;
-      GetOrganizations: GetOrganizationsQuery;
     }>
       mocks={{
         GoalCalculation: {
           goalCalculation: goalCalculationMock,
         },
-        GetUsersOrganizationsAccounts: {
-          userOrganizationAccounts: [
-            {
-              id: 'user-org-account-id-1',
-              username: 'obiwan.kenobi',
-              latestDonationDate: '2023-12-01',
-              lastDownloadedAt: '2023-12-15',
-              organization: {
-                id: 'organization-id-1',
-                name: 'Cru - United States of America',
-                apiClass: 'DataSync',
-                oauth: false,
-              },
-            },
-          ],
-        },
         GetAccountList: {
           accountList: {
             receivedPledges: 100,
           },
-        },
-        GetOrganizations: {
-          organizations: [
-            {
-              id: 'organization-id-1',
-              organizationType: 'Cru',
-            },
-          ],
         },
       }}
     >
@@ -100,16 +68,18 @@ describe('PresentingYourGoal', () => {
       await findByRole('cell', { name: 'John and Jane Doe' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('cell', { name: 'Cru - United States of America' }),
+      getByRole('cell', { name: 'Campus Crusade for Christ, Inc.' }),
     ).toBeInTheDocument();
-    expect(getByRole('cell', { name: 'Orlando, FL' })).toBeInTheDocument();
+    expect(
+      getByRole('cell', { name: 'University of Central Florida' }),
+    ).toBeInTheDocument();
 
     expect(
       getByRole('heading', { name: 'Monthly Support Breakdown' }),
     ).toBeInTheDocument();
   });
 
-  it('renders the logo image when the user salary organization is Cru', async () => {
+  it('renders the Cru logo image', async () => {
     const { findAllByRole, getByTestId } = render(<TestComponent />);
     await findAllByRole('img');
     const cruLogo = getByTestId('cru-logo');

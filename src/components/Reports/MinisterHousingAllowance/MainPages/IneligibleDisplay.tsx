@@ -1,4 +1,4 @@
-import { Box, Typography } from '@mui/material';
+import { Box, Link, Typography } from '@mui/material';
 import { Trans } from 'react-i18next';
 import { PersonInfo } from '../Shared/mockData';
 
@@ -17,6 +17,7 @@ export const IneligibleDisplay: React.FC<IneligibleDisplayProps> = ({
 }) => {
   const name = staff.name.split(', ')[1] ?? staff.name;
   const spouseName = spouse ? (spouse.name.split(', ')[1] ?? spouse.name) : '';
+  const email = 'MHA@cru.org';
 
   return (
     <>
@@ -24,14 +25,15 @@ export const IneligibleDisplay: React.FC<IneligibleDisplayProps> = ({
         <Typography variant="h5">{title}</Typography>
       </Box>
       <Box>
-        <Trans
-          i18nKey={isMarried ? 'newMhaRequestMarried' : 'newMhaRequestSingle'}
-        >
+        <Trans i18nKey={'newMhaRequest'}>
           <p style={{ lineHeight: 1.5 }}>
             Our records indicate that you have not applied for Minister&apos;s
             Housing Allowance. If you would like information about applying for
             one, contact Personnel Records at 407-826-2252 or{' '}
-            <a href="mailto:MHA@cru.org">MHA@cru.org</a>.
+            <Link underline="hover" href={`mailto:${email}`} target="_blank">
+              {email}
+            </Link>
+            .
           </p>
         </Trans>
         {isMarried && spouse?.eligibleForMHA === false && (

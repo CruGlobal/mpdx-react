@@ -31,7 +31,10 @@ query GetTaskIdsForMassSelection(
 query GetPartnerGivingAnalysisIdsForMassSelection(
   $input: PartnerGivingAnalysisReportInput!
 ) {
-  partnerGivingAnalysis(input: $input) {
+  partnerGivingAnalysis(
+    input: $input
+    first: 20000 # Maximum allowed by the API
+  ) {
     nodes {
       id
     }

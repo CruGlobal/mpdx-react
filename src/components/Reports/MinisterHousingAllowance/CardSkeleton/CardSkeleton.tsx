@@ -82,10 +82,10 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
         {isRequest && (
           <Box sx={{ float: 'right' }}>
             <Button
-              sx={{ color: 'error.light', px: 2, py: 1 }}
+              sx={{ color: 'error.light', px: 2, py: 1, fontWeight: 'bold' }}
               onClick={() => setOpenCancel(true)}
             >
-              <b>{t('CANCEL REQUEST')}</b>
+              {t('Cancel Request')}
             </Button>
           </Box>
         )}

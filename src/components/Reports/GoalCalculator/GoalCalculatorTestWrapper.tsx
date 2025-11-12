@@ -39,6 +39,7 @@ export const goalCalculationMock = gqlMock<
       lastName: 'Doe',
       geographicLocation: null,
       role: GoalCalculationRole.Office,
+      ministryLocation: 'University of Central Florida',
       familySize: MpdGoalBenefitsConstantSizeEnum.MarriedNoChildren,
       benefitsPlan: MpdGoalBenefitsConstantPlanEnum.Base,
       yearsOnStaff: 10,

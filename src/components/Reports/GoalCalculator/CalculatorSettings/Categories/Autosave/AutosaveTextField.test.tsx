@@ -8,13 +8,19 @@ import { GoalCalculatorTestWrapper } from '../../../GoalCalculatorTestWrapper';
 import { amount } from '../InformationCategory/schema';
 import { AutosaveTextField } from './AutosaveTextField';
 
-const schema = yup.object({
+const defaultSchema = yup.object({
   mhaAmount: amount('MHA Amount', i18n.t),
 });
 
 const mutationSpy = jest.fn();
 
-const TestComponent: React.FC = () => (
+interface TestComponentProps {
+  schema?: yup.Schema;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({
+  schema = defaultSchema,
+}) => (
   <GoalCalculatorTestWrapper onCall={mutationSpy}>
     <AutosaveTextField
       label="MHA Amount"
@@ -29,7 +35,7 @@ const SelectTestComponent: React.FC = () => (
     <AutosaveTextField
       label="MHA Amount"
       fieldName="mhaAmount"
-      schema={schema}
+      schema={defaultSchema}
       select
     >
       <MenuItem value={-100}>-100</MenuItem>
@@ -126,6 +132,17 @@ describe('AutosaveTextField', () => {
     await waitFor(() =>
       expect(mutationSpy).not.toHaveGraphqlOperation('UpdateGoalCalculation'),
     );
+  });
+
+  it('disables the input and pauses validation while loading', async () => {
+    const schema = yup.object({
+      mhaAmount: amount('MHA Amount', i18n.t).required(),
+    });
+    const { getByRole } = render(<TestComponent schema={schema} />);
+
+    const input = getByRole('textbox', { name: 'MHA Amount' });
+    expect(input).toBeDisabled();
+    expect(input).toHaveAccessibleDescription('');
   });
 
   it('shows validation error for invalid type', async () => {

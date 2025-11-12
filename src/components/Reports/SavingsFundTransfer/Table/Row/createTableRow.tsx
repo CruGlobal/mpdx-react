@@ -14,6 +14,7 @@ import {
 import { TFunction } from 'react-i18next';
 import { currencyFormat } from 'src/lib/intlFormat';
 import {
+  FundTypeEnum,
   ScheduleEnum,
   StatusEnum,
   TableTypeEnum,
@@ -56,8 +57,21 @@ export function populateTransferRows(options: Options) {
   }, []);
 
   const transfers: RenderCell = ({ row }) => {
-    const fromIconName = row.transferFrom?.toLowerCase() || 'primary';
-    const toIconName = row.transferTo?.toLowerCase() || 'savings';
+    const fromIconName =
+      row.transferFrom?.toLowerCase() ===
+      FundTypeEnum.ConferenceSavings.toLowerCase()
+        ? 'conference'
+        : row.transferFrom
+          ? row.transferFrom.toLowerCase()
+          : 'primary';
+    const toIconName =
+      row.transferTo?.toLowerCase() ===
+      FundTypeEnum.ConferenceSavings.toLowerCase()
+        ? 'conference'
+        : row.transferTo
+          ? row.transferTo.toLowerCase()
+          : 'savings';
+
     const fromIcon = iconMap[fromIconName];
     const toIcon = iconMap[toIconName];
 

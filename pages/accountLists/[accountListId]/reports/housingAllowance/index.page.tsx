@@ -22,12 +22,12 @@ import useGetAppSettings from 'src/hooks/useGetAppSettings';
 const MinisterHousingAllowancePage: React.FC = () => {
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
-  const [isNavListOpen, setNavListOpen] = useState(false);
+  const [isNavListOpen, setIsNavListOpen] = useState(false);
 
   const { data: staffAccountData, loading } = useStaffAccountQuery();
 
   const handleNavListToggle = () => {
-    setNavListOpen(!isNavListOpen);
+    setIsNavListOpen(!isNavListOpen);
   };
 
   return (

@@ -83,6 +83,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
       variables: {
         input: {
           accountListId,
+          filters: contactFilters,
         },
       },
       skip: contactCount === 0,
