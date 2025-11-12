@@ -99,6 +99,22 @@ describe('DesktopTimeField', () => {
 
   describe('with the locale en-US', () => {
     const locale = 'en-US';
+
+    it('a time without a space calls onChange with the time', () => {
+      const { getByRole } = render(
+        <TestComponent value={null} locale={locale} />,
+      );
+      userEvent.type(getByRole('textbox'), '1:01am');
+      userEvent.tab();
+
+      expect(onChange.mock.lastCall[0].toObject()).toMatchObject({
+        hour: 1,
+        minute: 1,
+        second: 0,
+        millisecond: 0,
+      });
+    });
+
     it('a time without minutes calls onChange with the time', () => {
       const { getByRole } = render(
         <TestComponent value={null} locale={locale} />,
@@ -109,6 +125,21 @@ describe('DesktopTimeField', () => {
       expect(onChange.mock.lastCall[0].toObject()).toMatchObject({
         hour: 1,
         minute: 0,
+        second: 0,
+        millisecond: 0,
+      });
+    });
+
+    it('a time without AM/PM calls onChange with the time', () => {
+      const { getByRole } = render(
+        <TestComponent value={null} locale={locale} />,
+      );
+      userEvent.type(getByRole('textbox'), '1:01');
+      userEvent.tab();
+
+      expect(onChange.mock.lastCall[0].toObject()).toMatchObject({
+        hour: 1,
+        minute: 1,
         second: 0,
         millisecond: 0,
       });
