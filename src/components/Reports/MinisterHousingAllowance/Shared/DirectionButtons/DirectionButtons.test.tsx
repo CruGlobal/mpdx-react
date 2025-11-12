@@ -38,8 +38,8 @@ const TestComponent: React.FC<TestComponentProps> = ({ isCalculate }) => (
   </ThemeProvider>
 );
 
-jest.mock('../../Shared/MinisterHousingAllowanceContext', () => ({
-  ...jest.requireActual('../../Shared/MinisterHousingAllowanceContext'),
+jest.mock('../Context/MinisterHousingAllowanceContext', () => ({
+  ...jest.requireActual('../Context/MinisterHousingAllowanceContext'),
   useMinisterHousingAllowance: jest.fn(),
 }));
 const useMock = useMinisterHousingAllowance as jest.Mock;

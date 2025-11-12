@@ -27,8 +27,8 @@ const TestComponent: React.FC<TestComponentProps> = ({ panelType }) => (
   </ThemeProvider>
 );
 
-jest.mock('../Shared/MinisterHousingAllowanceContext', () => ({
-  ...jest.requireActual('../Shared/MinisterHousingAllowanceContext'),
+jest.mock('../Shared/Context/MinisterHousingAllowanceContext', () => ({
+  ...jest.requireActual('../Shared/Context/MinisterHousingAllowanceContext'),
   useMinisterHousingAllowance: jest.fn(),
 }));
 
