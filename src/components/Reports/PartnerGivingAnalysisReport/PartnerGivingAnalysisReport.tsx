@@ -50,10 +50,8 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
     [activeFilters, searchTerm],
   );
 
-  // pageSize is intentionally omitted from the dependencies array so that the query isn't reloaded when the page size changes
-  // If all the pages have loaded and the user changes the page size, there's no reason to reload all the pages
-  const pageSize = apiRef.current?.state?.pagination?.paginationModel?.pageSize;
-  const sortModel = apiRef.current?.state?.sorting?.sortModel;
+  const pageSize = apiRef.current?.state.pagination.paginationModel.pageSize;
+  const sortModel = apiRef.current?.state.sorting.sortModel;
 
   const variables = useMemo(
     () => ({
@@ -69,6 +67,8 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
       },
       first: pageSize,
     }),
+    // pageSize and sortModel are intentionally omitted from the dependencies array so that the query isn't reloaded when the page size or sort order changes
+    // If all the pages have loaded and the user changes the page size or sort order, there's no reason to reload all the pages
     [accountListId, contactFilters],
   );
 
@@ -164,7 +164,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
           <CircularProgress data-testid="LoadingPartnerGivingAnalysisReport" />
         </Box>
       )}
-      {contacts.length > 0 && !loading && (
+      {contacts.length > 0 && (
         <Table
           data={contacts}
           onSelectOne={toggleSelectionById}
