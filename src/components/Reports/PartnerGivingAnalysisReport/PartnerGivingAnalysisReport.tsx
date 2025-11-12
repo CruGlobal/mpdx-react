@@ -155,7 +155,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
           }
         />
       ) : null}
-      {loading && (
+      {contacts.length === 0 && loading && (
         <Box
           display="flex"
           justifyContent="center"
