@@ -216,7 +216,7 @@ describe('PartnerGivingAnalysisReport', () => {
       expect(getByRole('grid')).toBeInTheDocument();
     });
 
-    // All 26 contacts + header = 27 rows displayed (DataGrid default page size shows all)
+    // All 25 contacts + header = 26 rows displayed (DataGrid default page size shows all)
     await waitFor(() => {
       expect(getAllByRole('row').length).toBe(26);
     });
