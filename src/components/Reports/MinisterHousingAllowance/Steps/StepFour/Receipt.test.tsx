@@ -85,4 +85,17 @@ describe('Receipt', () => {
       ),
     ).toBeInTheDocument();
   });
+
+  it('should go to edit link when clicked', () => {
+    const { getByRole } = render(<TestComponent pageType={PageEnum.New} />);
+
+    const editButton = getByRole('link', {
+      name: /edit your mha request \(not available after/i,
+    });
+
+    expect(editButton).toHaveAttribute(
+      'href',
+      expect.stringContaining('/reports/housingAllowance/edit'),
+    );
+  });
 });

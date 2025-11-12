@@ -54,11 +54,12 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
               '&:hover': {
                 bgcolor: 'grey.400',
               },
+              fontWeight: 'bold',
             }}
             onClick={isNew ? handlePreviousStep : handleEditPreviousStep}
           >
             <ChevronLeft sx={{ mr: 1 }} />
-            <b>{t('Back')}</b>
+            {t('Back')}
           </Button>
           <Button
             variant="contained"
@@ -80,15 +81,9 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
         <Button
           variant="contained"
           color="primary"
-          onClick={
-            handleNext
-              ? handleNext
-              : isNew
-                ? handleNextStep
-                : handleEditNextStep
-          }
+          onClick={handleNext ?? (isNew ? handleNextStep : handleEditNextStep)}
         >
-          {t('CONTINUE')}
+          {t('Continue')}
           <ChevronRight sx={{ ml: 1 }} />
         </Button>
       )}

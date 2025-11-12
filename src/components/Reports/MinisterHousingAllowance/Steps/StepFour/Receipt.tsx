@@ -2,6 +2,7 @@ import { Edit, PrintSharp } from '@mui/icons-material';
 import { Alert, Box, Button, Link, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { useMinisterHousingAllowance } from '../../Shared/Context/MinisterHousingAllowanceContext';
@@ -20,6 +21,9 @@ export const Receipt: React.FC<ReceiptProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+
+  const accountListId = useAccountListId();
+  const editLink = `/accountLists/${accountListId}/reports/housingAllowance/edit`;
 
   const { pageType } = useMinisterHousingAllowance();
 
@@ -47,12 +51,10 @@ export const Receipt: React.FC<ReceiptProps> = ({
       </Typography>
       <Alert severity="success">
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-          <Typography>
-            <b>
-              {isEdit
-                ? t("You've successfully updated your MHA Request!")
-                : t("You've successfully submitted your MHA Request!")}
-            </b>
+          <Typography sx={{ fontWeight: 'bold' }}>
+            {isEdit
+              ? t("You've successfully updated your MHA Request!")
+              : t("You've successfully submitted your MHA Request!")}
           </Typography>
           <Typography>
             {t(
@@ -67,7 +69,7 @@ export const Receipt: React.FC<ReceiptProps> = ({
           fontSize="small"
           sx={{ verticalAlign: 'middle', opacity: 0.56 }}
         />{' '}
-        <Link href="">
+        <Link href={editLink}>
           {t('Edit your MHA Request (Not available after {{date}})', {
             date: deadline,
             interpolation: { escapeValue: false },

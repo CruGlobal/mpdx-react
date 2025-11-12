@@ -35,7 +35,7 @@ describe('EditRequestPage', () => {
     expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '33');
     expect(queryByTestId('ArrowBackIcon')).not.toBeInTheDocument();
 
-    const continueButton = getByRole('button', { name: 'CONTINUE' });
+    const continueButton = getByRole('button', { name: 'Continue' });
     await userEvent.click(continueButton);
 
     await waitFor(() => {

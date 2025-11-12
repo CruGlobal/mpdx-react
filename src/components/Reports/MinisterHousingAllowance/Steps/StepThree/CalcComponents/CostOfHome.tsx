@@ -2,10 +2,10 @@ import { Box, TableCell, TableRow, Typography } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { RentOwnEnum } from 'src/components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
-import { StyledOrderedList } from 'src/components/Reports/MinisterHousingAllowance/styledComponents/StyledOrderedList';
 import { useAnnualTotal } from 'src/hooks/useAnnualTotal';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { StyledOrderedList } from '../../../styledComponents/styledComponents';
 import { CalculationFormValues } from '../Calculation';
 import { CalculationCardSkeleton } from './CalculationCardSkeleton';
 import { CustomTextField } from './Helper/CustomTextField';
@@ -175,23 +175,19 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({ rentOrOwn }) => {
       </TableRow>
       <TableRow>
         <TableCell sx={{ width: '70%' }}>
-          <Typography>
-            <b>
-              {rentOrOwn === RentOwnEnum.Rent
-                ? t('Annual Fair Rental Value of your Home')
-                : t('Annual Cost of Providing a Home')}
-            </b>
+          <Typography sx={{ fontWeight: 'bold' }}>
+            {rentOrOwn === RentOwnEnum.Rent
+              ? t('Annual Fair Rental Value of your Home')
+              : t('Annual Cost of Providing a Home')}
           </Typography>
           <Box sx={{ color: 'text.secondary' }}>
             {t('Line 6 multiplied by 12 months')}
           </Box>
         </TableCell>
-        <TableCell sx={{ width: '30%', fontSize: 16 }}>
-          <b>
-            {currencyFormat(annualCostOfHome, currency, locale, {
-              showTrailingZeros: true,
-            })}
-          </b>
+        <TableCell sx={{ width: '30%', fontSize: 16, fontWeight: 'bold' }}>
+          {currencyFormat(annualCostOfHome, currency, locale, {
+            showTrailingZeros: true,
+          })}
         </TableCell>
       </TableRow>
     </CalculationCardSkeleton>

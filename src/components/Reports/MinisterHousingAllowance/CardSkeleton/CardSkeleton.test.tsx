@@ -83,7 +83,7 @@ describe('CardSkeleton', () => {
     const { getByRole, findByRole, getByText, queryByRole } = render(
       <TestComponent isRequest={true} />,
     );
-    const cancelButton = getByRole('button', { name: 'CANCEL REQUEST' });
+    const cancelButton = getByRole('button', { name: 'Cancel Request' });
 
     await userEvent.click(cancelButton);
 

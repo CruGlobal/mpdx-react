@@ -96,20 +96,21 @@ export const Calculation: React.FC<CalculationProps> = ({
   const { handleNextStep, pageType, handleEditNextStep } =
     useMinisterHousingAllowance();
 
-  const { values } = useFormikContext<FormValues>();
-  const { rentOrOwn } = values;
+  const {
+    values: { rentOrOwn },
+  } = useFormikContext<FormValues>();
 
   const isNew = pageType === PageEnum.New;
 
   const initialValues: CalculationFormValues = {
-    rentalValue: isNew ? undefined : editOwnMock.rentalValue,
-    furnitureCostsOne: isNew ? undefined : editOwnMock.furnitureCostsOne,
-    avgUtilityOne: isNew ? undefined : editOwnMock.avgUtilityOne,
-    mortgagePayment: isNew ? undefined : editOwnMock.mortgagePayment,
-    furnitureCostsTwo: isNew ? undefined : editOwnMock.furnitureCostsTwo,
-    repairCosts: isNew ? undefined : editOwnMock.repairCosts,
-    avgUtilityTwo: isNew ? undefined : editOwnMock.avgUtilityTwo,
-    unexpectedExpenses: isNew ? undefined : editOwnMock.unexpectedExpenses,
+    rentalValue: isNew ? null : editOwnMock.rentalValue,
+    furnitureCostsOne: isNew ? null : editOwnMock.furnitureCostsOne,
+    avgUtilityOne: isNew ? null : editOwnMock.avgUtilityOne,
+    mortgagePayment: isNew ? null : editOwnMock.mortgagePayment,
+    furnitureCostsTwo: isNew ? null : editOwnMock.furnitureCostsTwo,
+    repairCosts: isNew ? null : editOwnMock.repairCosts,
+    avgUtilityTwo: isNew ? null : editOwnMock.avgUtilityTwo,
+    unexpectedExpenses: isNew ? null : editOwnMock.unexpectedExpenses,
     phone: mocks[0].staffInfo.phone,
     email: mocks[0].staffInfo.email,
     isChecked: isNew ? false : true,

@@ -42,6 +42,6 @@ describe('AboutForm', () => {
     expect(getByText(/9\/15\/2024/)).toBeInTheDocument();
     expect(getByText(/10\/1\/2024/)).toBeInTheDocument();
 
-    expect(getByRole('button', { name: 'CONTINUE' })).toBeInTheDocument();
+    expect(getByRole('button', { name: 'Continue' })).toBeInTheDocument();
   });
 });

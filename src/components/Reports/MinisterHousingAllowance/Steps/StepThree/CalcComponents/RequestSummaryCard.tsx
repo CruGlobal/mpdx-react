@@ -67,12 +67,12 @@ export const RequestSummaryCard: React.FC<RequestSummaryCardProps> = ({
                   </Trans>
                 </Box>
               </TableCell>
-              <TableCell sx={{ width: '30%', fontSize: 16 }}>
-                <b>
-                  {currencyFormat(annualTotal, currency, locale, {
-                    showTrailingZeros: true,
-                  })}
-                </b>
+              <TableCell
+                sx={{ width: '30%', fontSize: 16, fontWeight: 'bold' }}
+              >
+                {currencyFormat(annualTotal, currency, locale, {
+                  showTrailingZeros: true,
+                })}
               </TableCell>
             </TableRow>
           </TableBody>

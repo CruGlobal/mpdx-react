@@ -77,7 +77,7 @@ describe('DirectionButtons', () => {
     it('calls handleNext when Continue is clicked', async () => {
       const { getByRole } = render(<TestComponent isCalculate={false} />);
 
-      await userEvent.click(getByRole('button', { name: 'CONTINUE' }));
+      await userEvent.click(getByRole('button', { name: 'Continue' }));
 
       expect(handleNextStep).toHaveBeenCalled();
     });
@@ -103,7 +103,7 @@ describe('DirectionButtons', () => {
     it('calls handleNext when Continue is clicked', async () => {
       const { getByRole } = render(<TestComponent isCalculate={false} />);
 
-      await userEvent.click(getByRole('button', { name: 'CONTINUE' }));
+      await userEvent.click(getByRole('button', { name: 'Continue' }));
 
       expect(handleEditNextStep).toHaveBeenCalled();
     });
