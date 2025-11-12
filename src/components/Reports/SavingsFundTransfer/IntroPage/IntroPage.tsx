@@ -7,11 +7,9 @@ import {
   Container,
   Link,
   List,
-  ListItem,
   ListItemText,
   Typography,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import {
   HeaderTypeEnum,
@@ -22,17 +20,11 @@ import {
   StaffSavingFundContext,
   StaffSavingFundType,
 } from '../../StaffSavingFund/StaffSavingFundContext';
+import { StyledListItem } from '../styledComponents/StyledListItem';
 
 interface SavingsFundTransferProps {
   title: string;
 }
-
-const StyledListItem = styled(ListItem)({
-  display: 'list-item',
-  listStylePosition: 'outside',
-  p: 0,
-  m: 0,
-});
 
 export const SavingsFundTransfer: React.FC<SavingsFundTransferProps> = ({
   title,
