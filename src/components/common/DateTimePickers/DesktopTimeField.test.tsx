@@ -130,6 +130,21 @@ describe('DesktopTimeField', () => {
       });
     });
 
+    it('a time without AM/PM calls onChange with the time', () => {
+      const { getByRole } = render(
+        <TestComponent value={null} locale={locale} />,
+      );
+      userEvent.type(getByRole('textbox'), '1:01');
+      userEvent.tab();
+
+      expect(onChange.mock.lastCall[0].toObject()).toMatchObject({
+        hour: 1,
+        minute: 1,
+        second: 0,
+        millisecond: 0,
+      });
+    });
+
     it('has a placeholder', () => {
       const { getByRole } = render(<TestComponent locale={locale} />);
 
