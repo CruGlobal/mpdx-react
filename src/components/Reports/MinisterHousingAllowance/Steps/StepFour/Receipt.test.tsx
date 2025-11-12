@@ -5,8 +5,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, within } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
-import { MinisterHousingAllowanceProvider } from '../../../Shared/MinisterHousingAllowanceContext';
-import { PageEnum } from '../../../Shared/sharedTypes';
+import { MinisterHousingAllowanceProvider } from '../../Shared/Context/MinisterHousingAllowanceContext';
+import { PageEnum } from '../../Shared/sharedTypes';
 import { Receipt } from './Receipt';
 
 interface TestComponentProps {

@@ -5,7 +5,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { StyledListItem } from 'src/components/Reports/SavingsFundTransfer/styledComponents/StyledListItem';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
-import { DirectionButtons } from '../../Shared/DirectionButtons';
+import { DirectionButtons } from '../../Shared/DirectionButtons/DirectionButtons';
 
 interface AboutFormProps {
   boardApprovalDate: string | null;

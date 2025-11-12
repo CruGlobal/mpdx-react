@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Steps } from '../components/Reports/MinisterHousingAllowance/NewRequest/StepsList/StepsList';
 import { PageEnum } from '../components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
+import { Steps } from '../components/Reports/MinisterHousingAllowance/Steps/StepsList/StepsList';
 
 export function useNewStepList(type: PageEnum): Steps[] {
   const { t } = useTranslation();

@@ -6,14 +6,14 @@ import userEvent from '@testing-library/user-event';
 import { getByRole, render } from '__tests__/util/testingLibraryReactMock';
 import theme from 'src/theme';
 import {
-  MinisterHousingAllowanceProvider,
-  useMinisterHousingAllowance,
-} from './MinisterHousingAllowanceContext';
-import {
   EditRequestStepsEnum,
   NewRequestStepsEnum,
   PageEnum,
-} from './sharedTypes';
+} from '../sharedTypes';
+import {
+  MinisterHousingAllowanceProvider,
+  useMinisterHousingAllowance,
+} from './MinisterHousingAllowanceContext';
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>

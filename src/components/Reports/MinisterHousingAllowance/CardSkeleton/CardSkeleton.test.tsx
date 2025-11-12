@@ -6,7 +6,7 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
-import { MinisterHousingAllowanceProvider } from '../Shared/MinisterHousingAllowanceContext';
+import { MinisterHousingAllowanceProvider } from '../Shared/Context/MinisterHousingAllowanceContext';
 import { CardSkeleton } from './CardSkeleton';
 
 const title = 'Test Title';

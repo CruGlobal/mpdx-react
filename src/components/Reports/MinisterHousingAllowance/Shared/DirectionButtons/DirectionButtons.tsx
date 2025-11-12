@@ -3,10 +3,10 @@ import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 import { Box, Button } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
-import { useMinisterHousingAllowance } from '../../Shared/MinisterHousingAllowanceContext';
-import { PageEnum } from '../../Shared/sharedTypes';
-import { ConfirmationModal } from '../ConfirmationModal/ConfirmationModal';
-import { CalculationFormValues } from '../Steps/StepThree/Calculation';
+import { ConfirmationModal } from '../../ConfirmationModal/ConfirmationModal';
+import { CalculationFormValues } from '../../Steps/StepThree/Calculation';
+import { useMinisterHousingAllowance } from '../Context/MinisterHousingAllowanceContext';
+import { PageEnum } from '../sharedTypes';
 
 interface DirectionButtonsProps {
   handleNext?: () => void;

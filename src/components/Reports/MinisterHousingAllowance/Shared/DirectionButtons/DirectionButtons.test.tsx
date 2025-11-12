@@ -8,8 +8,8 @@ import theme from 'src/theme';
 import {
   MinisterHousingAllowanceProvider,
   useMinisterHousingAllowance,
-} from '../../Shared/MinisterHousingAllowanceContext';
-import { PageEnum } from '../../Shared/sharedTypes';
+} from '../Context/MinisterHousingAllowanceContext';
+import { PageEnum } from '../sharedTypes';
 import { DirectionButtons } from './DirectionButtons';
 
 const submit = jest.fn();

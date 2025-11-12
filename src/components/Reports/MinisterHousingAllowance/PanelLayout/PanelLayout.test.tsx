@@ -5,7 +5,7 @@ import theme from 'src/theme';
 import {
   MinisterHousingAllowanceProvider,
   useMinisterHousingAllowance,
-} from '../Shared/MinisterHousingAllowanceContext';
+} from '../Shared/Context/MinisterHousingAllowanceContext';
 import { PageEnum, PanelTypeEnum } from '../Shared/sharedTypes';
 import { PanelLayout } from './PanelLayout';
 

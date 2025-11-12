@@ -12,9 +12,9 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
-import { useMinisterHousingAllowance } from '../../Shared/MinisterHousingAllowanceContext';
-import { mocks } from '../../Shared/mockData';
-import { PageEnum } from '../../Shared/sharedTypes';
+import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
+import { mocks } from '../Shared/mockData';
+import { PageEnum } from '../Shared/sharedTypes';
 
 interface ConfirmationModalProps {
   handleClose: () => void;
@@ -44,7 +44,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 
   return (
     <Dialog open={true} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle id="confirmation-modal-title">
+      <DialogTitle>
         {isRequestingChange
           ? t('Are you sure you want to change selection?')
           : isCancel
@@ -74,7 +74,9 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                   'Clicking "Yes, Continue" will wipe all inputs you\'ve entered previously. Are you sure you want to continue?',
                 )
               : isCancel
-                ? t('Your work will not be saved.')
+                ? t(
+                    'All information associated with this request will be lost. This action cannot be undone.',
+                  )
                 : isEdit
                   ? t(
                       'This updated request will take the place of your previous request. Once submitted, you can return and make edits until {{date}}. After this date, your request will be processed as is.',
@@ -97,7 +99,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         <Button onClick={handleClose} sx={{ color: 'text.secondary' }}>
           <b>{isCancel || isRequestingChange ? t('NO') : t('GO BACK')}</b>
         </Button>
-        <Button onClick={handleConfirm} color="primary">
+        <Button onClick={handleConfirm} color={isCancel ? 'error' : 'primary'}>
           <b>{isCancel ? t('Yes, Cancel') : t('Yes, Continue')}</b>
           <ChevronRight sx={{ ml: 1 }} />
         </Button>

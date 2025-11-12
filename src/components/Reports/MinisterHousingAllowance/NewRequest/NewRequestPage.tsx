@@ -5,18 +5,18 @@ import * as yup from 'yup';
 import i18n from 'src/lib/i18n';
 import { mainContentWidth } from '../MinisterHousingAllowance';
 import { PanelLayout } from '../PanelLayout/PanelLayout';
-import { useMinisterHousingAllowance } from '../Shared/MinisterHousingAllowanceContext';
+import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
 import { mocks } from '../Shared/mockData';
 import {
   NewRequestStepsEnum,
   PanelTypeEnum,
   RentOwnEnum,
 } from '../Shared/sharedTypes';
-import { Receipt } from './Steps/StepFour/Receipt';
-import { AboutForm } from './Steps/StepOne/AboutForm';
-import { Calculation } from './Steps/StepThree/Calculation';
-import { RentOwn } from './Steps/StepTwo/RentOwn';
-import { StepsList } from './StepsList/StepsList';
+import { Receipt } from '../Steps/StepFour/Receipt';
+import { AboutForm } from '../Steps/StepOne/AboutForm';
+import { Calculation } from '../Steps/StepThree/Calculation';
+import { RentOwn } from '../Steps/StepTwo/RentOwn';
+import { StepsList } from '../Steps/StepsList/StepsList';
 
 export interface FormValues {
   rentOrOwn: RentOwnEnum | undefined;

@@ -1,11 +1,11 @@
 import { createContext, useContext, useMemo, useState } from 'react';
 import { useNewStepList } from 'src/hooks/useNewStepList';
-import { Steps } from '../NewRequest/StepsList/StepsList';
+import { Steps } from '../../Steps/StepsList/StepsList';
 import {
   EditRequestStepsEnum,
   NewRequestStepsEnum,
   PageEnum,
-} from './sharedTypes';
+} from '../sharedTypes';
 
 export type ContextType = {
   steps: Steps[];

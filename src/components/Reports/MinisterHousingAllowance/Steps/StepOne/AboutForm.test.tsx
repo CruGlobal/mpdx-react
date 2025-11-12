@@ -4,8 +4,8 @@ import { render } from '@testing-library/react';
 import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
-import { MinisterHousingAllowanceProvider } from '../../../Shared/MinisterHousingAllowanceContext';
-import { PageEnum } from '../../../Shared/sharedTypes';
+import { MinisterHousingAllowanceProvider } from '../../Shared/Context/MinisterHousingAllowanceContext';
+import { PageEnum } from '../../Shared/sharedTypes';
 import { AboutForm } from './AboutForm';
 
 const submit = jest.fn();

@@ -10,11 +10,11 @@ import {
 } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
-import { useMinisterHousingAllowance } from '../../../Shared/MinisterHousingAllowanceContext';
-import { PageEnum, RentOwnEnum } from '../../../Shared/sharedTypes';
 import { ConfirmationModal } from '../../ConfirmationModal/ConfirmationModal';
-import { FormValues } from '../../NewRequestPage';
-import { DirectionButtons } from '../../Shared/DirectionButtons';
+import { FormValues } from '../../NewRequest/NewRequestPage';
+import { useMinisterHousingAllowance } from '../../Shared/Context/MinisterHousingAllowanceContext';
+import { DirectionButtons } from '../../Shared/DirectionButtons/DirectionButtons';
+import { PageEnum, RentOwnEnum } from '../../Shared/sharedTypes';
 import { CalculationFormValues } from '../StepThree/Calculation';
 
 //TODO: test conformation modal when calc values change

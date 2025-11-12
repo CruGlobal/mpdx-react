@@ -7,7 +7,7 @@ import theme from 'src/theme';
 import { EligibleDisplay } from './MainPages/EligibleDisplay';
 import { IneligibleDisplay } from './MainPages/IneligibleDisplay';
 import { PanelLayout } from './PanelLayout/PanelLayout';
-import { MinisterHousingAllowanceProvider } from './Shared/MinisterHousingAllowanceContext';
+import { MinisterHousingAllowanceProvider } from './Shared/Context/MinisterHousingAllowanceContext';
 import { mocks } from './Shared/mockData';
 import { PanelTypeEnum } from './Shared/sharedTypes';
 import { CurrentBoardApproved } from './SharedComponents/CurrentBoardApproved';

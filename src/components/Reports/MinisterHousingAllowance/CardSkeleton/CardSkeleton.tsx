@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { ConfirmationModal } from '../NewRequest/ConfirmationModal/ConfirmationModal';
+import { ConfirmationModal } from '../ConfirmationModal/ConfirmationModal';
 
 //TODO: handle cancel request
 //TODO: handle duplicate last years mha and view current mha links

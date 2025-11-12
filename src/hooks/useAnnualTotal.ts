@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { CalculationFormValues } from 'src/components/Reports/MinisterHousingAllowance/NewRequest/Steps/StepThree/Calculation';
+import { CalculationFormValues } from 'src/components/Reports/MinisterHousingAllowance/Steps/StepThree/Calculation';
 
 export const useAnnualTotal = (values: CalculationFormValues) => {
   const {

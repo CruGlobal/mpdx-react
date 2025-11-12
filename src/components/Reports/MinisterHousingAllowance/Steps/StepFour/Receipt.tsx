@@ -4,8 +4,8 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
-import { useMinisterHousingAllowance } from '../../../Shared/MinisterHousingAllowanceContext';
-import { PageEnum } from '../../../Shared/sharedTypes';
+import { useMinisterHousingAllowance } from '../../Shared/Context/MinisterHousingAllowanceContext';
+import { PageEnum } from '../../Shared/sharedTypes';
 
 //TODO: Update links and functionality for Edit and Print options
 

@@ -12,7 +12,7 @@ import {
   StyledSidebar,
   iconPanelWidth,
 } from 'src/components/Shared/IconPanelLayout/IconPanelLayout';
-import { useMinisterHousingAllowance } from '../Shared/MinisterHousingAllowanceContext';
+import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
 import { PageEnum, PanelTypeEnum } from '../Shared/sharedTypes';
 
 interface PanelLayoutProps {
