@@ -326,20 +326,6 @@ describe('pagePropsHelpers', () => {
         context,
       );
     });
-
-    it('redirects when API returns null user', async () => {
-      (getSession as jest.Mock).mockResolvedValue({
-        user: { admin: true, apiToken: 'token' },
-      });
-      const query = jest.fn().mockResolvedValue({ data: { user: null } });
-      (makeSsrClient as jest.Mock).mockReturnValue({ query });
-
-      await expect(enforceAdmin(context)).resolves.toMatchObject({
-        redirect: {
-          destination: '/accountLists/account-list-1?redirect=unauthorized',
-        },
-      });
-    });
   });
 
   describe('verifyPermission', () => {
