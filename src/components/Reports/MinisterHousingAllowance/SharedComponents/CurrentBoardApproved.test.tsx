@@ -1,6 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from '@emotion/react';
 import { render } from '@testing-library/react';
+import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
 import { CurrentBoardApproved } from './CurrentBoardApproved';
 
@@ -10,14 +11,16 @@ const spouseName = 'Doe, Jane';
 const TestComponent: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
-      <CurrentBoardApproved
-        approvedDate={'2023-01-15'}
-        approvedOverallAmount={1500}
-        staffName={name}
-        staffSpecific={1000}
-        spouseName={spouseName}
-        spouseSpecific={500}
-      />
+      <TestRouter>
+        <CurrentBoardApproved
+          approvedDate={'2023-01-15'}
+          approvedOverallAmount={1500}
+          staffName={name}
+          staffSpecific={1000}
+          spouseName={spouseName}
+          spouseSpecific={500}
+        />
+      </TestRouter>
     </ThemeProvider>
   );
 };
