@@ -52,22 +52,58 @@ describe('pagePropsHelpers', () => {
   });
 
   describe('enforceAdmin', () => {
-    it('does not return a redirect if the user is an admin', async () => {
-      (getSession as jest.Mock).mockResolvedValue({ user: { admin: true } });
-
-      await expect(enforceAdmin(context)).resolves.not.toMatchObject({
-        redirect: {},
+    it('redirects when token says user is not admin', async () => {
+      (getSession as jest.Mock).mockResolvedValue({
+        user: { admin: false, apiToken: 'token' },
       });
-    });
-
-    it('returns a redirect if the user is not an admin', async () => {
-      (getSession as jest.Mock).mockResolvedValue({ user: { admin: false } });
 
       await expect(enforceAdmin(context)).resolves.toMatchObject({
         redirect: {
           destination: '/accountLists/account-list-1',
         },
       });
+    });
+
+    it('allows access when token says admin and API confirms admin', async () => {
+      (getSession as jest.Mock).mockResolvedValue({
+        user: { admin: true, apiToken: 'token' },
+      });
+      const query = jest.fn().mockResolvedValue({
+        data: {
+          user: {
+            admin: true,
+          },
+        },
+      });
+      (makeSsrClient as jest.Mock).mockReturnValue({ query });
+
+      await expect(enforceAdmin(context)).resolves.toMatchObject({
+        props: {
+          session: { user: { admin: true, apiToken: 'token' } },
+        },
+      });
+      expect(query).toHaveBeenCalled();
+    });
+
+    it('redirects when token says admin but API says not admin', async () => {
+      (getSession as jest.Mock).mockResolvedValue({
+        user: { admin: true, apiToken: 'token' },
+      });
+      const query = jest.fn().mockResolvedValue({
+        data: {
+          user: {
+            admin: false,
+          },
+        },
+      });
+      (makeSsrClient as jest.Mock).mockReturnValue({ query });
+
+      await expect(enforceAdmin(context)).resolves.toMatchObject({
+        redirect: {
+          destination: '/accountLists/account-list-1',
+        },
+      });
+      expect(query).toHaveBeenCalled();
     });
   });
 
