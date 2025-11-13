@@ -55,28 +55,4 @@ describe('RentOwn', () => {
     expect(getByRole('radio', { name: 'Rent' })).not.toBeChecked();
     expect(getByRole('radio', { name: 'Own' })).not.toBeChecked();
   });
-
-  it('opens confirmation modal when changing selection', async () => {
-    const { getByRole, getByText } = render(
-      <TestComponent pageType={PageEnum.New} />,
-    );
-
-    await userEvent.click(getByText('Rent'));
-    expect(getByRole('radio', { name: 'Rent' })).toBeChecked();
-
-    await userEvent.click(getByText('Own'));
-
-    expect(
-      getByText('Are you sure you want to change selection?'),
-    ).toBeInTheDocument();
-
-    await userEvent.click(getByRole('button', { name: /continue/i }));
-
-    expect(getByRole('radio', { name: 'Own' })).toBeChecked();
-
-    await userEvent.click(getByText('Rent'));
-    await userEvent.click(getByRole('button', { name: /no/i }));
-
-    expect(getByRole('radio', { name: 'Own' })).toBeChecked();
-  });
 });

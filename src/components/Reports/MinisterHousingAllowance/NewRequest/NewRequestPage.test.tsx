@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, within } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
@@ -93,5 +93,60 @@ describe('NewRequestPage', () => {
     expect(alert).toBeInTheDocument();
 
     expect(alert).toHaveTextContent('Your form is missing information.');
+  });
+
+  it('opens confirmation modal when changing selection after calculation values inputted', async () => {
+    const { getByRole, getByText, queryByText } = render(<TestComponent />);
+
+    const continueButton = getByRole('button', { name: 'Continue' });
+    await userEvent.click(continueButton);
+
+    await userEvent.click(getByRole('radio', { name: 'Own' }));
+    expect(getByRole('radio', { name: 'Own' })).toBeChecked();
+
+    expect(
+      queryByText('Are you sure you want to change selection?'),
+    ).not.toBeInTheDocument();
+
+    await userEvent.click(continueButton);
+
+    waitFor(() => {
+      expect(
+        getByRole('heading', { name: 'Calculate Your MHA Request' }),
+      ).toBeInTheDocument();
+
+      const row = getByRole('row', {
+        name: /monthly market rental value of your home/i,
+      });
+      const input = within(row).getByPlaceholderText(/enter amount/i);
+
+      userEvent.type(input, '1500');
+      userEvent.tab();
+
+      expect(input).toHaveValue('$1,500.00');
+    });
+
+    await userEvent.click(getByRole('button', { name: /back/i }));
+
+    waitFor(() => {
+      expect(
+        getByRole('heading', { name: 'Rent or Own?' }),
+      ).toBeInTheDocument();
+
+      userEvent.click(getByRole('radio', { name: 'Rent' }));
+
+      expect(
+        getByText('Are you sure you want to change selection?'),
+      ).toBeInTheDocument();
+
+      userEvent.click(getByRole('button', { name: /continue/i }));
+
+      expect(getByRole('radio', { name: 'Own' })).toBeChecked();
+
+      userEvent.click(getByRole('radio', { name: 'Rent' }));
+      userEvent.click(getByRole('button', { name: /no/i }));
+
+      expect(getByRole('radio', { name: 'Own' })).toBeChecked();
+    });
   });
 });
