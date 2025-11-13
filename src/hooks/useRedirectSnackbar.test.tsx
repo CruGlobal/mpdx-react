@@ -34,7 +34,7 @@ describe('useRedirectSnackbar', () => {
     });
 
     expect(enqueueSnackbar).toHaveBeenCalledWith(
-      'You lack the authorization to access that page.  If you need to access that page, please reach out to support.',
+      'You lack the authorization to access that page. If you need to access that page, please reach out to support.',
       {
         variant: 'warning',
         key: `redirect-${RedirectReason.Unauthorized}`,
