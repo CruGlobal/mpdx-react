@@ -39,26 +39,21 @@ export const DesktopTimeField: React.FC<DesktopTimeFieldProps> = ({
       return null;
     }
 
+    const time = DateTime.fromFormat(rawTime, 't', options);
     const timeFormat = DateTime.expandFormat('t', options);
-    const baseFormats = [timeFormat];
-    // Make the minutes and AM/PM optional in locales with AM/PM
-    if (timeFormat.includes('a')) {
-      baseFormats.push(timeFormat.replace(/:m/, ''));
-      baseFormats.push(timeFormat.replace(/ ?a/, ''));
-    }
-
-    // Expand the formats to create an additional format where whitespace is optional
-    const formats = baseFormats.flatMap((format) => [
-      format,
-      format.replaceAll(' ', ''),
-    ]);
-    for (const format of formats) {
-      const time = DateTime.fromFormat(rawTime, format, options);
-      if (time.isValid) {
-        return time;
+    if (!time.isValid && timeFormat.includes('a')) {
+      // Make the minutes optional in locales with AM/PM
+      const fallbackFormat = timeFormat.replace(/:m ?/, '');
+      const fallbackDate = DateTime.fromFormat(
+        rawTime,
+        fallbackFormat,
+        options,
+      );
+      if (fallbackDate.isValid) {
+        return fallbackDate;
       }
     }
-    return DateTime.invalid('unparsable');
+    return time;
   }, [locale, rawTime]);
 
   return (
