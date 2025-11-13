@@ -3,6 +3,8 @@ import { getSession } from 'next-auth/react';
 import { session } from '__tests__/fixtures/session';
 import makeSsrClient from 'src/lib/apollo/ssrClient';
 import {
+  blockImpersonatingNonDevelopers,
+  dashboardRedirect,
   enforceAdmin,
   ensureSessionAndAccountList,
   loginRedirect,
@@ -135,6 +137,90 @@ describe('pagePropsHelpers', () => {
             destination: '/accountLists/defaultAccountList',
           },
         });
+      });
+    });
+  });
+
+  describe('blockImpersonatingNonDevelopers', () => {
+    it('redirects to home page if impersonating and not a developer', async () => {
+      const user = { apiToken: 'token', impersonating: true, developer: false };
+      (getSession as jest.Mock).mockResolvedValue({ user });
+      const query = jest.fn().mockResolvedValue({
+        data: {
+          user: {
+            developer: false,
+          },
+        },
+      });
+      (makeSsrClient as jest.Mock).mockReturnValue({ query });
+
+      await expect(
+        blockImpersonatingNonDevelopers(context),
+      ).resolves.toMatchObject({
+        redirect: {
+          destination: '/accountLists/account-list-1',
+          permanent: false,
+        },
+      });
+    });
+
+    it('allows access if user is not impersonating', async () => {
+      const user = {
+        apiToken: 'token',
+        impersonating: false,
+        developer: false,
+      };
+      (getSession as jest.Mock).mockResolvedValue({ user });
+
+      await expect(
+        blockImpersonatingNonDevelopers(context),
+      ).resolves.toMatchObject({
+        props: {
+          session: { user },
+        },
+      });
+    });
+
+    it('allows access if user  is impersonating and is a developer', async () => {
+      const user = { apiToken: 'token', impersonating: true, developer: true };
+      (getSession as jest.Mock).mockResolvedValue({ user });
+      const query = jest.fn().mockResolvedValue({
+        data: {
+          user: {
+            developer: true,
+          },
+        },
+      });
+      (makeSsrClient as jest.Mock).mockReturnValue({ query });
+
+      await expect(
+        blockImpersonatingNonDevelopers(context),
+      ).resolves.toMatchObject({
+        props: {
+          session: { user },
+        },
+      });
+    });
+
+    it('redirects to dashboard if token says developer but API says not developer', async () => {
+      const user = { apiToken: 'token', impersonating: true, developer: true };
+      (getSession as jest.Mock).mockResolvedValue({ user });
+      const query = jest.fn().mockResolvedValue({
+        data: {
+          user: {
+            developer: false,
+          },
+        },
+      });
+      (makeSsrClient as jest.Mock).mockReturnValue({ query });
+
+      await expect(
+        blockImpersonatingNonDevelopers(context),
+      ).resolves.toMatchObject({
+        redirect: {
+          destination: '/accountLists/account-list-1',
+          permanent: false,
+        },
       });
     });
   });
