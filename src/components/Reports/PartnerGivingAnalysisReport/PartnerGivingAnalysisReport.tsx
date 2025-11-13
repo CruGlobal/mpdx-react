@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Box, CircularProgress } from '@mui/material';
+import { Box } from '@mui/material';
 import { useGridApiRef } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import { Panel } from 'pages/accountLists/[accountListId]/reports/helpers';
@@ -155,16 +155,6 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
           }
         />
       ) : null}
-      {contacts.length === 0 && loading && (
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          height="100%"
-        >
-          <CircularProgress data-testid="LoadingPartnerGivingAnalysisReport" />
-        </Box>
-      )}
       {contacts.length > 0 && (
         <Table
           data={contacts}
