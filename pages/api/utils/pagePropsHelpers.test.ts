@@ -113,7 +113,9 @@ describe('pagePropsHelpers', () => {
       (makeSsrClient as jest.Mock).mockReturnValue({ query });
 
       await expect(enforceAdmin(context)).resolves.toMatchObject({
-        redirect: { destination: '/accountLists/account-list-1?redirect=unauthorized' },
+        redirect: {
+          destination: '/accountLists/account-list-1?redirect=unauthorized',
+        },
       });
     });
   });
@@ -199,7 +201,8 @@ describe('pagePropsHelpers', () => {
         blockImpersonatingNonDevelopers(context),
       ).resolves.toMatchObject({
         redirect: {
-          destination: '/accountLists/account-list-1?redirect=impersonation_blocked',
+          destination:
+            '/accountLists/account-list-1?redirect=impersonation_blocked',
           permanent: false,
         },
       });
@@ -247,7 +250,8 @@ describe('pagePropsHelpers', () => {
         blockImpersonatingNonDevelopers(context),
       ).resolves.toMatchObject({
         redirect: {
-          destination: '/accountLists/account-list-1?redirect=impersonation_blocked',
+          destination:
+            '/accountLists/account-list-1?redirect=impersonation_blocked',
           permanent: false,
         },
       });
@@ -331,7 +335,9 @@ describe('pagePropsHelpers', () => {
       (makeSsrClient as jest.Mock).mockReturnValue({ query });
 
       await expect(enforceAdmin(context)).resolves.toMatchObject({
-        redirect: { destination: '/accountLists/account-list-1?redirect=unauthorized' },
+        redirect: {
+          destination: '/accountLists/account-list-1?redirect=unauthorized',
+        },
       });
     });
   });
