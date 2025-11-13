@@ -91,13 +91,22 @@ export const enforceAdmin: GetServerSideProps<PagePropsWithSession> = async (
   context,
 ) => {
   const session = await getSession(context);
+  if (!session?.user.apiToken) {
+    return loginRedirect(context);
+  }
+
   if (!session?.user.admin) {
-    return {
-      redirect: {
-        destination: `/accountLists/${context.query.accountListId ?? ''}`,
-        permanent: false,
-      },
-    };
+    return dashboardRedirect(context);
+  }
+
+  // Verify with the API that the user is actually an admin
+  const ssrClient = makeSsrClient(session.user.apiToken);
+  const { data } = await ssrClient.query<GetUserPermissionsQuery>({
+    query: GetUserPermissionsDocument,
+  });
+
+  if (!data.user.admin) {
+    return dashboardRedirect(context);
   }
 
   const underscoreRedirect = await handleUnderscoreAccountListRedirect(
