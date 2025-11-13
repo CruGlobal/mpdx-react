@@ -51,10 +51,7 @@ describe('useRedirectSnackbar', () => {
 
   it('should show impersonation blocked snackbar and clean query param', () => {
     renderHook(() => useRedirectSnackbar(), {
-      wrapper: createWrapper(
-        { redirect: RedirectReason.ImpersonationBlocked },
-        '/accountLists/123',
-      ),
+      wrapper: createWrapper({ redirect: RedirectReason.ImpersonationBlocked }),
     });
 
     expect(enqueueSnackbar).toHaveBeenCalledWith(
@@ -67,7 +64,7 @@ describe('useRedirectSnackbar', () => {
     );
 
     expect(replace).toHaveBeenCalledWith(
-      { pathname: '/accountLists/123', query: {} },
+      { pathname: '/somePath', query: {} },
       undefined,
       { shallow: true },
     );
@@ -77,6 +74,7 @@ describe('useRedirectSnackbar', () => {
     renderHook(() => useRedirectSnackbar(), { wrapper: createWrapper({}) });
 
     expect(enqueueSnackbar).not.toHaveBeenCalled();
+    expect(replace).not.toHaveBeenCalled();
   });
 
   it('should not show snackbar for unknown redirect reason', () => {
@@ -85,5 +83,6 @@ describe('useRedirectSnackbar', () => {
     });
 
     expect(enqueueSnackbar).not.toHaveBeenCalled();
+    expect(replace).not.toHaveBeenCalled();
   });
 });
