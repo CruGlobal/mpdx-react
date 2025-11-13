@@ -38,6 +38,17 @@ describe('pagePropsHelpers', () => {
     });
   });
 
+  describe('dashboardRedirect', () => {
+    it('returns redirect to dashboard page', () => {
+      expect(dashboardRedirect(context)).toEqual({
+        redirect: {
+          destination: '/accountLists/account-list-1',
+          permanent: false,
+        },
+      });
+    });
+  });
+
   describe('enforceAdmin', () => {
     it('does not return a redirect if the user is an admin', async () => {
       (getSession as jest.Mock).mockResolvedValue({ user: { admin: true } });
