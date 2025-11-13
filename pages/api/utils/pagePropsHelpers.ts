@@ -11,10 +11,6 @@ import {
   GetDefaultAccountDocument,
   GetDefaultAccountQuery,
 } from '../getDefaultAccount.generated';
-import {
-  GetUserPermissionsDocument,
-  GetUserPermissionsQuery,
-} from './GetUserPermissions.generated';
 
 interface PagePropsWithSession {
   session: Session;
@@ -51,18 +47,13 @@ export const blockImpersonatingNonDevelopers: GetServerSideProps<
   PagePropsWithSession
 > = async (context) => {
   const session = await getSession(context);
-  const apiToken = session?.user.apiToken;
-  if (!apiToken) {
+
+  if (!session?.user.apiToken) {
     return loginRedirect(context);
   }
 
   if (session.user.impersonating) {
     if (!session.user.developer) {
-      return dashboardRedirect(context);
-    }
-
-    const isDeveloper = await verifyPermission(apiToken, 'developer');
-    if (!isDeveloper) {
       return dashboardRedirect(context);
     }
   }
@@ -87,17 +78,12 @@ export const enforceAdmin: GetServerSideProps<PagePropsWithSession> = async (
   context,
 ) => {
   const session = await getSession(context);
-  const apiToken = session?.user.apiToken;
-  if (!apiToken) {
+
+  if (!session?.user.apiToken) {
     return loginRedirect(context);
   }
 
-  if (!session?.user.admin) {
-    return dashboardRedirect(context);
-  }
-
-  const isAdmin = await verifyPermission(apiToken, 'admin');
-  if (!isAdmin) {
+  if (!session.user.admin) {
     return dashboardRedirect(context);
   }
 
@@ -138,23 +124,6 @@ export const ensureSessionAndAccountList: GetServerSideProps<
       session,
     },
   };
-};
-
-// Verify with Rails API that the user is actually an admin or developer
-export const verifyPermission = async (
-  apiToken: string,
-  permission: 'admin' | 'developer',
-): Promise<boolean> => {
-  try {
-    const ssrClient = makeSsrClient(apiToken);
-    const { data } = await ssrClient.query<GetUserPermissionsQuery>({
-      query: GetUserPermissionsDocument,
-    });
-
-    return data?.user?.[permission] ?? false;
-  } catch {
-    return false;
-  }
 };
 
 export const handleUnderscoreAccountListRedirect = async (

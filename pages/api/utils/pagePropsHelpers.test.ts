@@ -9,7 +9,6 @@ import {
   ensureSessionAndAccountList,
   loginRedirect,
   makeGetServerSideProps,
-  verifyPermission,
 } from './pagePropsHelpers';
 
 jest.mock('next-auth/react');
@@ -19,16 +18,6 @@ const context = {
   query: { accountListId: 'account-list-1' },
   resolvedUrl: '/page?param=value',
 } as unknown as GetServerSidePropsContext;
-
-const mockQueryFactory = (type: string, permission: boolean) => {
-  return jest.fn().mockResolvedValue({
-    data: {
-      user: {
-        [type]: permission,
-      },
-    },
-  });
-};
 
 describe('pagePropsHelpers', () => {
   describe('loginRedirect', () => {
@@ -75,45 +64,15 @@ describe('pagePropsHelpers', () => {
       });
     });
 
-    it('allows access when token says admin and API confirms admin', async () => {
+    it('allows access when token says admin', async () => {
       (getSession as jest.Mock).mockResolvedValue({
         user: { admin: true, apiToken: 'token' },
       });
-      const query = mockQueryFactory('admin', true);
-      (makeSsrClient as jest.Mock).mockReturnValue({ query });
 
       await expect(enforceAdmin(context)).resolves.toMatchObject({
         props: {
           session: { user: { admin: true, apiToken: 'token' } },
         },
-      });
-      expect(query).toHaveBeenCalled();
-    });
-
-    it('redirects when token says admin but API says not admin', async () => {
-      (getSession as jest.Mock).mockResolvedValue({
-        user: { admin: true, apiToken: 'token' },
-      });
-      const query = mockQueryFactory('admin', false);
-      (makeSsrClient as jest.Mock).mockReturnValue({ query });
-
-      await expect(enforceAdmin(context)).resolves.toMatchObject({
-        redirect: {
-          destination: '/accountLists/account-list-1',
-        },
-      });
-      expect(query).toHaveBeenCalled();
-    });
-
-    it('redirects when API returns null user', async () => {
-      (getSession as jest.Mock).mockResolvedValue({
-        user: { admin: true, apiToken: 'token' },
-      });
-      const query = jest.fn().mockResolvedValue({ data: { user: null } });
-      (makeSsrClient as jest.Mock).mockReturnValue({ query });
-
-      await expect(enforceAdmin(context)).resolves.toMatchObject({
-        redirect: { destination: '/accountLists/account-list-1' },
       });
     });
   });
@@ -192,8 +151,6 @@ describe('pagePropsHelpers', () => {
     it('redirects to home page if impersonating and not a developer', async () => {
       const user = { apiToken: 'token', impersonating: true, developer: false };
       (getSession as jest.Mock).mockResolvedValue({ user });
-      const query = mockQueryFactory('developer', false);
-      (makeSsrClient as jest.Mock).mockReturnValue({ query });
 
       await expect(
         blockImpersonatingNonDevelopers(context),
@@ -222,33 +179,15 @@ describe('pagePropsHelpers', () => {
       });
     });
 
-    it('allows access if user  is impersonating and is a developer', async () => {
+    it('allows access if user is impersonating and is a developer', async () => {
       const user = { apiToken: 'token', impersonating: true, developer: true };
       (getSession as jest.Mock).mockResolvedValue({ user });
-      const query = mockQueryFactory('developer', true);
-      (makeSsrClient as jest.Mock).mockReturnValue({ query });
 
       await expect(
         blockImpersonatingNonDevelopers(context),
       ).resolves.toMatchObject({
         props: {
           session: { user },
-        },
-      });
-    });
-
-    it('redirects to dashboard if token says developer but API says not developer', async () => {
-      const user = { apiToken: 'token', impersonating: true, developer: true };
-      (getSession as jest.Mock).mockResolvedValue({ user });
-      const query = mockQueryFactory('developer', false);
-      (makeSsrClient as jest.Mock).mockReturnValue({ query });
-
-      await expect(
-        blockImpersonatingNonDevelopers(context),
-      ).resolves.toMatchObject({
-        redirect: {
-          destination: '/accountLists/account-list-1',
-          permanent: false,
         },
       });
     });
@@ -321,46 +260,6 @@ describe('pagePropsHelpers', () => {
         session,
         context,
       );
-    });
-
-    it('redirects when API returns null user', async () => {
-      (getSession as jest.Mock).mockResolvedValue({
-        user: { admin: true, apiToken: 'token' },
-      });
-      const query = jest.fn().mockResolvedValue({ data: { user: null } });
-      (makeSsrClient as jest.Mock).mockReturnValue({ query });
-
-      await expect(enforceAdmin(context)).resolves.toMatchObject({
-        redirect: { destination: '/accountLists/account-list-1' },
-      });
-    });
-  });
-
-  describe('verifyPermission', () => {
-    it('should return false if the user is not an admin or a developer', async () => {
-      const user = { apiToken: 'token', developer: false };
-      (getSession as jest.Mock).mockResolvedValue({ user });
-
-      const query = mockQueryFactory('developer', false);
-      (makeSsrClient as jest.Mock).mockReturnValue({ query });
-
-      expect(await verifyPermission(user.apiToken, 'developer')).toEqual(false);
-    });
-
-    it('should return true if the user is not an admin or a developer', async () => {
-      const user = { apiToken: 'token', developer: false };
-      (getSession as jest.Mock).mockResolvedValue({ user });
-      const query = mockQueryFactory('developer', true);
-      (makeSsrClient as jest.Mock).mockReturnValue({ query });
-
-      expect(await verifyPermission(user.apiToken, 'developer')).toEqual(true);
-    });
-
-    it('should return false when API query fails', async () => {
-      const query = jest.fn().mockRejectedValue(new Error('Network error'));
-      (makeSsrClient as jest.Mock).mockReturnValue({ query });
-
-      expect(await verifyPermission('token', 'admin')).toEqual(false);
     });
   });
 });
