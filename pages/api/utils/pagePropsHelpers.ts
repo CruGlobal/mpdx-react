@@ -6,6 +6,7 @@ import {
 } from 'next';
 import { Session } from 'next-auth';
 import { getSession } from 'next-auth/react';
+import { RedirectReason } from 'pages/api/auth/redirectReasonEnum';
 import makeSsrClient from 'src/lib/apollo/ssrClient';
 import {
   GetDefaultAccountDocument,
@@ -36,9 +37,10 @@ export const loginRedirect = (
 
 export const dashboardRedirect = (
   context: GetServerSidePropsContext,
+  reason: string,
 ): { redirect: Redirect } => ({
   redirect: {
-    destination: `/accountLists/${context.query.accountListId ?? ''}`,
+    destination: `/accountLists/${context.query.accountListId ?? ''}?redirect=${encodeURIComponent(reason)}`,
     permanent: false,
   },
 });
@@ -58,12 +60,12 @@ export const blockImpersonatingNonDevelopers: GetServerSideProps<
 
   if (session.user.impersonating) {
     if (!session.user.developer) {
-      return dashboardRedirect(context);
+      return dashboardRedirect(context, RedirectReason.ImpersonationBlocked);
     }
 
     const isDeveloper = await verifyPermission(apiToken, 'developer');
     if (!isDeveloper) {
-      return dashboardRedirect(context);
+      return dashboardRedirect(context, RedirectReason.ImpersonationBlocked);
     }
   }
 
@@ -93,12 +95,12 @@ export const enforceAdmin: GetServerSideProps<PagePropsWithSession> = async (
   }
 
   if (!session?.user.admin) {
-    return dashboardRedirect(context);
+    return dashboardRedirect(context, RedirectReason.Unauthorized);
   }
 
   const isAdmin = await verifyPermission(apiToken, 'admin');
   if (!isAdmin) {
-    return dashboardRedirect(context);
+    return dashboardRedirect(context, RedirectReason.Unauthorized);
   }
 
   const underscoreRedirect = await handleUnderscoreAccountListRedirect(
