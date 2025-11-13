@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { CalculationFormValues } from 'src/components/Reports/MinisterHousingAllowance/NewRequest/Steps/StepThree/Calculation';
+import { CalculationFormValues } from 'src/components/Reports/MinisterHousingAllowance/Steps/StepThree/Calculation';
 
 export const useAnnualTotal = (values: CalculationFormValues) => {
   const {
@@ -41,15 +41,6 @@ export const useAnnualTotal = (values: CalculationFormValues) => {
       : annualCostOfHome === 0
         ? annualFairRental
         : Math.min(annualFairRental, annualCostOfHome);
-
-  //eslint-disable-next-line no-console
-  console.log({
-    totalFairRental,
-    annualFairRental,
-    totalCostOfHome,
-    annualCostOfHome,
-    annualTotal,
-  });
 
   return {
     annualTotal,

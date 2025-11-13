@@ -7,7 +7,7 @@ import theme from 'src/theme';
 import { EligibleDisplay } from './MainPages/EligibleDisplay';
 import { IneligibleDisplay } from './MainPages/IneligibleDisplay';
 import { PanelLayout } from './PanelLayout/PanelLayout';
-import { MinisterHousingAllowanceProvider } from './Shared/MinisterHousingAllowanceContext';
+import { MinisterHousingAllowanceProvider } from './Shared/Context/MinisterHousingAllowanceContext';
 import { mocks } from './Shared/mockData';
 import { PanelTypeEnum } from './Shared/sharedTypes';
 import { CurrentBoardApproved } from './SharedComponents/CurrentBoardApproved';
@@ -27,7 +27,7 @@ export const MinisterHousingAllowanceReport: React.FC = () => {
   // mock[2] --> Married, no pending, approved
   // mock[3] --> Single, no pending, approved
   // mock[4] --> Married, pending, no approved
-  const testPerson = mocks[1];
+  const testPerson = mocks[4];
 
   const isMarried = testPerson.spouseInfo !== null;
   const title = t('Your MHA');
