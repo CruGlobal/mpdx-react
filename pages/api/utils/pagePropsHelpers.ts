@@ -51,7 +51,8 @@ export const blockImpersonatingNonDevelopers: GetServerSideProps<
   PagePropsWithSession
 > = async (context) => {
   const session = await getSession(context);
-  if (!session?.user.apiToken) {
+  const apiToken = session?.user.apiToken;
+  if (!apiToken) {
     return loginRedirect(context);
   }
 
@@ -60,13 +61,8 @@ export const blockImpersonatingNonDevelopers: GetServerSideProps<
       return dashboardRedirect(context);
     }
 
-    // JWT says they are a developer, but verify with Rails API
-    const ssrClient = makeSsrClient(session.user.apiToken);
-    const { data } = await ssrClient.query<GetUserPermissionsQuery>({
-      query: GetUserPermissionsDocument,
-    });
-
-    if (!data.user.developer) {
+    const isDeveloper = await verifyPermission(apiToken, 'developer');
+    if (!isDeveloper) {
       return dashboardRedirect(context);
     }
   }
@@ -91,7 +87,8 @@ export const enforceAdmin: GetServerSideProps<PagePropsWithSession> = async (
   context,
 ) => {
   const session = await getSession(context);
-  if (!session?.user.apiToken) {
+  const apiToken = session?.user.apiToken;
+  if (!apiToken) {
     return loginRedirect(context);
   }
 
@@ -99,13 +96,8 @@ export const enforceAdmin: GetServerSideProps<PagePropsWithSession> = async (
     return dashboardRedirect(context);
   }
 
-  // Verify with the API that the user is actually an admin
-  const ssrClient = makeSsrClient(session.user.apiToken);
-  const { data } = await ssrClient.query<GetUserPermissionsQuery>({
-    query: GetUserPermissionsDocument,
-  });
-
-  if (!data.user.admin) {
+  const isAdmin = await verifyPermission(apiToken, 'admin');
+  if (!isAdmin) {
     return dashboardRedirect(context);
   }
 
@@ -146,6 +138,23 @@ export const ensureSessionAndAccountList: GetServerSideProps<
       session,
     },
   };
+};
+
+// Verify with Rails API that the user is actually an admin or developer
+export const verifyPermission = async (
+  apiToken: string,
+  permission: 'admin' | 'developer',
+): Promise<boolean> => {
+  try {
+    const ssrClient = makeSsrClient(apiToken);
+    const { data } = await ssrClient.query<GetUserPermissionsQuery>({
+      query: GetUserPermissionsDocument,
+    });
+
+    return data?.user?.[permission] ?? false;
+  } catch {
+    return false;
+  }
 };
 
 export const handleUnderscoreAccountListRedirect = async (
