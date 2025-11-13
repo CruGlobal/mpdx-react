@@ -36,7 +36,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({
   //TODO: Implement real mha status logic
   return (
     <CardSkeleton
-      title={t('Current Board Approved MHA')}
+      title={t('Current MHA Request')}
       icon={AddHomeSharp}
       iconColor="warning.main"
       titleOne={t('View Request')}

@@ -5,7 +5,7 @@ import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
-import { NewRequestPage } from 'src/components/Reports/MinisterHousingAllowance/NewRequest/NewRequestPage';
+import { EditRequestPage } from 'src/components/Reports/MinisterHousingAllowance/EditRequest/EditRequestPage';
 import { MinisterHousingAllowanceProvider } from 'src/components/Reports/MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
 import { PageEnum } from 'src/components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
 import {
@@ -17,13 +17,13 @@ import {
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 
-const NewRequestPageWrapper = styled(Box)(({ theme }) => ({
+const EditRequestPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
 }));
 
-const HousingAllowanceNewRequestPage: React.FC = () => {
+const HousingAllowanceEditRequestPage: React.FC = () => {
   const { t } = useTranslation();
-  const title = t("New Minister's Housing Allowance Request");
+  const title = t("Edit Minister's Housing Allowance Request");
 
   const [isNavListOpen, setNavListOpen] = useState(false);
 
@@ -36,13 +36,13 @@ const HousingAllowanceNewRequestPage: React.FC = () => {
       <Head>
         <title>{title}</title>
       </Head>
-      <NewRequestPageWrapper>
+      <EditRequestPageWrapper>
         <SidePanelsLayout
           isScrollBox={false}
           leftPanel={
             <MultiPageMenu
               isOpen={isNavListOpen}
-              selectedId={'housingAllowanceNew'}
+              selectedId={'housingAllowanceEdit'}
               onClose={handleNavListToggle}
               navType={NavTypeEnum.Reports}
             />
@@ -57,16 +57,16 @@ const HousingAllowanceNewRequestPage: React.FC = () => {
                 title={t("Minister's Housing Allowance Request")}
                 headerType={HeaderTypeEnum.Report}
               />
-              <MinisterHousingAllowanceProvider type={PageEnum.New}>
-                <NewRequestPage />
+              <MinisterHousingAllowanceProvider type={PageEnum.Edit}>
+                <EditRequestPage />
               </MinisterHousingAllowanceProvider>
             </>
           }
         />
-      </NewRequestPageWrapper>
+      </EditRequestPageWrapper>
     </>
   );
 };
 
 export const getServerSideProps = ensureSessionAndAccountList;
-export default HousingAllowanceNewRequestPage;
+export default HousingAllowanceEditRequestPage;

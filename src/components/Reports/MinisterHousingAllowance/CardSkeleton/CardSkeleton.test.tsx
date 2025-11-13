@@ -4,7 +4,9 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
+import { MinisterHousingAllowanceProvider } from '../Shared/Context/MinisterHousingAllowanceContext';
 import { CardSkeleton } from './CardSkeleton';
 
 const title = 'Test Title';
@@ -25,16 +27,20 @@ const TestComponent: React.FC<TestComponentProps> = ({ isRequest }) => {
   return (
     <ThemeProvider theme={theme}>
       <LocalizationProvider dateAdapter={AdapterLuxon}>
-        <CardSkeleton
-          title={title}
-          icon={MockIcon}
-          iconColor="primary"
-          titleOne={titleOne}
-          titleTwo={titleTwo}
-          isRequest={isRequest}
-        >
-          <div>Test Children</div>
-        </CardSkeleton>
+        <TestRouter>
+          <MinisterHousingAllowanceProvider>
+            <CardSkeleton
+              title={title}
+              icon={MockIcon}
+              iconColor="primary"
+              titleOne={titleOne}
+              titleTwo={titleTwo}
+              isRequest={isRequest}
+            >
+              <div>Test Children</div>
+            </CardSkeleton>
+          </MinisterHousingAllowanceProvider>
+        </TestRouter>
       </LocalizationProvider>
     </ThemeProvider>
   );
@@ -42,9 +48,7 @@ const TestComponent: React.FC<TestComponentProps> = ({ isRequest }) => {
 
 describe('CardSkeleton', () => {
   it('should render card header', () => {
-    const { getByText, getByTestId } = render(
-      <TestComponent isRequest={false} />,
-    );
+    const { getByText, getByTestId } = render(<TestComponent />);
 
     expect(getByTestId('mock-icon')).toBeInTheDocument();
     expect(getByText(title)).toBeInTheDocument();
@@ -64,7 +68,18 @@ describe('CardSkeleton', () => {
     expect(getByText(titleTwo)).toBeInTheDocument();
   });
 
-  it('navigates to the correct URL when Cancel is clicked', async () => {
+  it('should go to correct link when Edit button is clicked', () => {
+    const { getByRole } = render(<TestComponent isRequest={true} />);
+
+    const editButton = getByRole('link', { name: titleTwo });
+
+    expect(editButton).toHaveAttribute(
+      'href',
+      expect.stringContaining('/reports/housingAllowance/edit'),
+    );
+  });
+
+  it('closes Cancel modal when clicked', async () => {
     const { getByRole, findByRole, getByText, queryByRole } = render(
       <TestComponent isRequest={true} />,
     );
