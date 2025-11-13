@@ -11,6 +11,10 @@ import {
   GetDefaultAccountDocument,
   GetDefaultAccountQuery,
 } from '../getDefaultAccount.generated';
+import {
+  GetUserPermissionsDocument,
+  GetUserPermissionsQuery,
+} from './GetUserPermissions.generated';
 
 interface PagePropsWithSession {
   session: Session;
@@ -29,6 +33,58 @@ export const loginRedirect = (
     permanent: false,
   },
 });
+
+export const dashboardRedirect = (
+  context: GetServerSidePropsContext,
+): { redirect: Redirect } => ({
+  redirect: {
+    destination: `/accountLists/${context.query.accountListId ?? ''}`,
+    permanent: false,
+  },
+});
+
+/* Block non-developers who are impersonating, allow everyone else
+ * Use case: Pages that regular users can access on their own account,
+ * but should be restricted when admins impersonate (e.g., staff expense data)
+ */
+export const blockImpersonatingNonDevelopers: GetServerSideProps<
+  PagePropsWithSession
+> = async (context) => {
+  const session = await getSession(context);
+  if (!session?.user.apiToken) {
+    return loginRedirect(context);
+  }
+
+  if (session.user.impersonating) {
+    if (!session.user.developer) {
+      return dashboardRedirect(context);
+    }
+
+    // JWT says they are a developer, but verify with Rails API
+    const ssrClient = makeSsrClient(session.user.apiToken);
+    const { data } = await ssrClient.query<GetUserPermissionsQuery>({
+      query: GetUserPermissionsDocument,
+    });
+
+    if (!data.user.developer) {
+      return dashboardRedirect(context);
+    }
+  }
+
+  const underscoreRedirect = await handleUnderscoreAccountListRedirect(
+    session,
+    context.resolvedUrl,
+  );
+  if (underscoreRedirect) {
+    return underscoreRedirect;
+  }
+
+  return {
+    props: {
+      session,
+    },
+  };
+};
 
 // Redirect back to the dashboard if the user isn't an admin
 export const enforceAdmin: GetServerSideProps<PagePropsWithSession> = async (

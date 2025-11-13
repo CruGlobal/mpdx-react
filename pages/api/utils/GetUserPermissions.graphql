@@ -1,0 +1,7 @@
+query GetUserPermissions {
+  user {
+    id
+    admin
+    developer
+  }
+}
