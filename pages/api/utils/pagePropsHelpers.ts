@@ -52,10 +52,8 @@ export const blockImpersonatingNonDevelopers: GetServerSideProps<
     return loginRedirect(context);
   }
 
-  if (session.user.impersonating) {
-    if (!session.user.developer) {
-      return dashboardRedirect(context);
-    }
+  if (session.user.impersonating && !session.user.developer) {
+    return dashboardRedirect(context);
   }
 
   const underscoreRedirect = await handleUnderscoreAccountListRedirect(
