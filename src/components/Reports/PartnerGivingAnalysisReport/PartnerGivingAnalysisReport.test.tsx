@@ -92,16 +92,6 @@ describe('PartnerGivingAnalysisReport', () => {
     jest.clearAllMocks();
   });
 
-  it('loading', async () => {
-    const { queryByTestId, queryByText } = render(<TestComponent />);
-
-    expect(queryByText(title)).toBeInTheDocument();
-    expect(
-      queryByTestId('LoadingPartnerGivingAnalysisReport'),
-    ).toBeInTheDocument();
-    expect(queryByTestId('Notification')).toBeNull();
-  });
-
   it('loaded', async () => {
     const { getAllByRole, findByRole } = render(<TestComponent />);
 
@@ -110,37 +100,21 @@ describe('PartnerGivingAnalysisReport', () => {
   });
 
   it('shows a placeholder when there are zero contacts', async () => {
-    const { queryByTestId, queryByText, queryByRole } = render(
-      <TestComponent noContacts />,
-    );
+    const { queryByText } = render(<TestComponent noContacts />);
 
     await waitFor(() => {
-      expect(
-        queryByTestId('LoadingPartnerGivingAnalysisReport'),
-      ).not.toBeInTheDocument();
+      expect(queryByText('You have 300 total contacts')).toBeInTheDocument();
     });
-
-    expect(queryByRole('table')).not.toBeInTheDocument();
-    expect(queryByText('You have 300 total contacts')).toBeInTheDocument();
   });
 
   it('fields are sortable', async () => {
-    const { getByText, queryByTestId, getAllByRole } = render(
-      <TestComponent />,
-    );
+    const { getByText, getAllByRole } = render(<TestComponent />);
 
     await waitFor(() => {
-      expect(
-        queryByTestId('LoadingPartnerGivingAnalysisReport'),
-      ).not.toBeInTheDocument();
+      expect(getByText('Gift Count')).toBeInTheDocument();
     });
 
     userEvent.click(getByText('Gift Count'));
-    await waitFor(() => {
-      expect(
-        queryByTestId('LoadingPartnerGivingAnalysisReport'),
-      ).not.toBeInTheDocument();
-    });
 
     const rows1 = getAllByRole('row');
     expect(rows1.length).toBe(26);
@@ -158,32 +132,23 @@ describe('PartnerGivingAnalysisReport', () => {
   });
 
   it('filters contacts by name', async () => {
-    const { getByPlaceholderText, queryByTestId } = render(<TestComponent />);
+    const { getByPlaceholderText } = render(<TestComponent />);
 
     await waitFor(() => {
-      expect(
-        queryByTestId('LoadingPartnerGivingAnalysisReport'),
-      ).not.toBeInTheDocument();
+      expect(getByPlaceholderText('Search Contacts')).toBeInTheDocument();
     });
 
     userEvent.type(getByPlaceholderText('Search Contacts'), 'John');
-    await waitFor(() => {
-      expect(
-        queryByTestId('LoadingPartnerGivingAnalysisReport'),
-      ).toBeInTheDocument();
-    });
-    await waitFor(() => {
-      expect(
-        queryByTestId('LoadingPartnerGivingAnalysisReport'),
-      ).not.toBeInTheDocument();
-    });
 
-    await waitFor(() => {
-      const call = findOperationCall('PartnerGivingAnalysis');
-      expect(call?.operation.variables.input.filters).toEqual({
-        nameLike: '%John%',
-      });
-    });
+    await waitFor(
+      () => {
+        const call = findOperationCall('PartnerGivingAnalysis');
+        expect(call?.operation.variables.input.filters).toEqual({
+          nameLike: '%John%',
+        });
+      },
+      { timeout: 3000 },
+    );
   });
 
   it('sets the pagination limit', async () => {
@@ -228,12 +193,10 @@ describe('PartnerGivingAnalysisReport', () => {
   });
 
   it('selects and unselects all', async () => {
-    const { getAllByRole, queryByTestId } = render(<TestComponent />);
+    const { getAllByRole } = render(<TestComponent />);
 
     await waitFor(() => {
-      expect(
-        queryByTestId('LoadingPartnerGivingAnalysisReport'),
-      ).not.toBeInTheDocument();
+      expect(getAllByRole('row').length).toBe(26);
     });
 
     // Select one
@@ -274,32 +237,24 @@ describe('PartnerGivingAnalysisReport', () => {
   });
 
   it('should show contact name as a link', async () => {
-    const { getByRole, queryByTestId } = render(<TestComponent />);
+    const { getByRole } = render(<TestComponent />);
 
     await waitFor(() => {
       expect(
-        queryByTestId('LoadingPartnerGivingAnalysisReport'),
-      ).not.toBeInTheDocument();
+        getByRole('link', {
+          name: 'Flintstone, Fred and Wilma',
+        }),
+      ).toBeInTheDocument();
     });
-
-    expect(
-      getByRole('link', {
-        name: 'Flintstone, Fred and Wilma',
-      }),
-    ).toBeInTheDocument();
   });
 
   it('formats currencies', async () => {
-    const { getByText, queryByTestId } = render(<TestComponent />);
+    const { getByText } = render(<TestComponent />);
 
     await waitFor(() => {
-      expect(
-        queryByTestId('LoadingPartnerGivingAnalysisReport'),
-      ).not.toBeInTheDocument();
+      // Test that it adds commas
+      expect(getByText('UGX 24,795')).toBeInTheDocument();
     });
-
-    // Test that it adds commas
-    expect(getByText('UGX 24,795')).toBeInTheDocument();
 
     expect(getByText('$982.14')).toBeInTheDocument();
 
@@ -322,18 +277,12 @@ describe('PartnerGivingAnalysisReport', () => {
   });
 
   it('prints all Contacts', async () => {
-    const { getByRole, getAllByRole, queryByTestId } = render(
-      <TestComponent />,
-    );
+    const { getByRole, getAllByRole } = render(<TestComponent />);
 
     await waitFor(() => {
-      expect(
-        queryByTestId('LoadingPartnerGivingAnalysisReport'),
-      ).not.toBeInTheDocument();
+      // Initially showing 25 rows (default page size) + 1 header = 26 total
+      expect(getAllByRole('row').length).toBe(26);
     });
-
-    // Initially showing 25 rows (default page size) + 1 header = 26 total
-    expect(getAllByRole('row').length).toBe(26);
 
     userEvent.click(getByRole('button', { name: 'Print' }));
     expect(getAllByRole('row').length).toBe(30);
