@@ -12,8 +12,8 @@ import {
   StyledSidebar,
   iconPanelWidth,
 } from 'src/components/Shared/IconPanelLayout/IconPanelLayout';
-import { useMinisterHousingAllowance } from '../Shared/MinisterHousingAllowanceContext';
-import { NewRequestStepsEnum, PanelTypeEnum } from '../Shared/sharedTypes';
+import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
+import { PageEnum, PanelTypeEnum } from '../Shared/sharedTypes';
 
 interface PanelLayoutProps {
   panelType: PanelTypeEnum;
@@ -32,8 +32,20 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const { handlePreviousStep, currentStep, percentComplete } =
-    useMinisterHousingAllowance();
+  const {
+    handlePreviousStep,
+    percentComplete,
+    currentIndex,
+    steps,
+    handleEditPreviousStep,
+    percentEditComplete,
+    pageType,
+  } = useMinisterHousingAllowance();
+
+  const isLastStep = steps ? currentIndex === steps.length - 1 : false;
+  const isNotFirstStep = currentIndex !== 0;
+
+  const isNew = pageType === PageEnum.New;
 
   return (
     <PrintableStack direction="row">
@@ -52,7 +64,7 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
       ) : (
         <>
           <Stack direction="column" width={iconPanelWidth}>
-            {currentStep === NewRequestStepsEnum.Receipt ? (
+            {isLastStep ? (
               <Box
                 sx={{
                   display: 'flex',
@@ -67,12 +79,16 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
             ) : (
               <>
                 <StyledBox>
-                  <CircularProgressWithLabel progress={percentComplete ?? 0} />
+                  <CircularProgressWithLabel
+                    progress={isNew ? percentComplete : percentEditComplete}
+                  />
                 </StyledBox>
-                {currentStep !== NewRequestStepsEnum.AboutForm && (
+                {isNotFirstStep && (
                   <IconButton
                     aria-label={t('Go back')}
-                    onClick={handlePreviousStep}
+                    onClick={
+                      isNew ? handlePreviousStep : handleEditPreviousStep
+                    }
                     sx={(theme) => ({
                       color: theme.palette.cruGrayDark.main,
                     })}
