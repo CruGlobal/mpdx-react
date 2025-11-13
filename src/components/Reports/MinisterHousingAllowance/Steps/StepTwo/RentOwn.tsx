@@ -15,9 +15,8 @@ import { FormValues } from '../../NewRequest/NewRequestPage';
 import { useMinisterHousingAllowance } from '../../Shared/Context/MinisterHousingAllowanceContext';
 import { DirectionButtons } from '../../Shared/DirectionButtons/DirectionButtons';
 import { PageEnum, RentOwnEnum } from '../../Shared/sharedTypes';
-import { CalculationFormValues } from '../StepThree/Calculation';
 
-//TODO: test conformation modal when calc values change
+//TODO: test confirmation modal when calc values change
 
 export const RentOwn: React.FC = () => {
   const { t } = useTranslation();
@@ -33,13 +32,7 @@ export const RentOwn: React.FC = () => {
     setFieldValue,
   } = useFormikContext<FormValues>();
 
-  const { values: calculationValues } =
-    useFormikContext<CalculationFormValues>();
-  const hasCalcValues = Object.values(calculationValues).some(
-    (value) => value !== undefined && value !== null && value !== '',
-  );
-
-  const { pageType } = useMinisterHousingAllowance();
+  const { pageType, hasCalcValues } = useMinisterHousingAllowance();
 
   const [pendingValue, setPendingValue] = useState<RentOwnEnum | null>(null);
   const [displayValue, setDisplayValue] = useState<RentOwnEnum | null>(null);

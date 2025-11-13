@@ -8,20 +8,28 @@ import {
 } from '../sharedTypes';
 
 export type ContextType = {
+  // list of steps for new or edit request
   steps: Steps[];
   currentIndex: number;
 
+  // new request state and handlers
   currentStep: NewRequestStepsEnum;
   handleNextStep: () => void;
   handlePreviousStep: () => void;
   percentComplete: number;
 
+  // edit request state and handlers
   currentEditStep: EditRequestStepsEnum;
   handleEditNextStep: () => void;
   handleEditPreviousStep: () => void;
   percentEditComplete: number;
 
+  // new or edit page type
   pageType: PageEnum | undefined;
+
+  // calculation values state
+  hasCalcValues: boolean;
+  setHasCalcValues: (value: boolean) => void;
 };
 
 const MinisterHousingAllowanceContext = createContext<ContextType | null>(null);
@@ -48,6 +56,10 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   const pageType = type;
   const steps = type ? useNewStepList(type) : [];
 
+  const [hasCalcValues, setHasCalcValues] = useState(
+    type === PageEnum.Edit ? true : false,
+  );
+
   const [currentStep, setCurrentStep] = useState(NewRequestStepsEnum.AboutForm);
   const [percentComplete, setPercentComplete] = useState(25);
 
@@ -58,7 +70,6 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // New Request Handlers
   const handleNextStep = () => {
     setCurrentStep((prevStep) => {
       const next =
@@ -112,7 +123,6 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
     }
   };
 
-  // Edit Request Handlers
   const handleEditNextStep = () => {
     setCurrentEditStep((prevStep) => {
       const next =
@@ -190,6 +200,8 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       handleEditPreviousStep,
       percentEditComplete,
       pageType,
+      hasCalcValues,
+      setHasCalcValues,
     }),
     [
       steps,
@@ -203,6 +215,8 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       handleEditPreviousStep,
       percentEditComplete,
       pageType,
+      hasCalcValues,
+      setHasCalcValues,
     ],
   );
 

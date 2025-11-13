@@ -87,4 +87,26 @@ describe('EditRequestPage', () => {
 
     expect(getAllByRole('radio', { checked: true })).toHaveLength(1);
   });
+
+  it('opens confirmation modal when changing selection', async () => {
+    const { getByRole, getByText, getAllByRole } = render(<TestComponent />);
+
+    const continueButton = getByRole('button', { name: 'Continue' });
+    await userEvent.click(continueButton);
+
+    const radios = getAllByRole('radio');
+    const unchecked = radios.filter((r) => !(r as HTMLInputElement).checked);
+    const checked = radios.filter((r) => (r as HTMLInputElement).checked);
+
+    await userEvent.click(unchecked[0]);
+    expect(checked[0]).toBeChecked();
+
+    expect(
+      getByText('Are you sure you want to change selection?'),
+    ).toBeInTheDocument();
+
+    userEvent.click(getByRole('button', { name: /continue/i }));
+
+    expect(unchecked[0]).toBeChecked();
+  });
 });

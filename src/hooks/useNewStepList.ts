@@ -48,5 +48,5 @@ export function useNewStepList(type: PageEnum): Steps[] {
           },
         ];
 
-  return useMemo(() => steps, [t]);
+  return useMemo(() => steps, [t, type]);
 }

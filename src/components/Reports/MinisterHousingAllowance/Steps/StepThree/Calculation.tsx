@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { OpenInNew } from '@mui/icons-material';
 import {
   Alert,
@@ -93,7 +94,7 @@ export const Calculation: React.FC<CalculationProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const { handleNextStep, pageType, handleEditNextStep } =
+  const { handleNextStep, pageType, handleEditNextStep, setHasCalcValues } =
     useMinisterHousingAllowance();
 
   const {
@@ -154,6 +155,13 @@ export const Calculation: React.FC<CalculationProps> = ({
         touched,
       }) => {
         const showAlert = !!submitCount && (!isValid || !values.isChecked);
+
+        useEffect(() => {
+          const hasValues = Object.values(values).some(
+            (value) => value !== undefined && value !== null && value !== '',
+          );
+          setHasCalcValues(hasValues);
+        }, [values, setHasCalcValues]);
 
         return (
           <form noValidate>
