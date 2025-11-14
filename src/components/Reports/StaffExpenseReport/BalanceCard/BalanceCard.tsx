@@ -21,6 +21,9 @@ const StyledCard = styled(Card, {
   shouldForwardProp: (prop) => prop !== 'isSelected',
 })<{ isSelected: boolean }>(({ theme, isSelected }) => ({
   padding: theme.spacing(2),
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-between',
   flex: 1,
   minWidth: 0,
   maxWidth: 'none',
