@@ -52,7 +52,8 @@ export const blockImpersonatingNonDevelopers: GetServerSideProps<
     return loginRedirect(context);
   }
 
-  if (session.user.impersonating && !session.user.developer) {
+  // Check if the person doing the impersonating is a developer
+  if (session.user.impersonating && !session.user.impersonatorDeveloper) {
     return dashboardRedirect(context);
   }
 

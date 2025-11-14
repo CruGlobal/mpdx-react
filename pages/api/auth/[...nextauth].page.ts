@@ -32,6 +32,7 @@ declare module 'next-auth' {
       userID: string;
       impersonating?: boolean;
       impersonatorApiToken?: string;
+      impersonatorDeveloper?: boolean;
     };
   }
 
@@ -51,6 +52,7 @@ declare module 'next-auth/jwt' {
     userID?: string;
     impersonating?: boolean;
     impersonatorApiToken?: string;
+    impersonatorDeveloper?: boolean;
   }
 }
 
@@ -148,6 +150,17 @@ if (AUTH_PROVIDER === 'API_OAUTH') {
   });
 }
 
+const getImpersonatorDevStatus = async (impersonatorApiToken: string) => {
+  const impersonatorClient = makeSsrClient(impersonatorApiToken);
+  const { data: impersonatorData } = await impersonatorClient.query<
+    GetUserAccessQuery,
+    GetUserAccessQueryVariables
+  >({
+    query: GetUserAccessDocument,
+  });
+  return impersonatorData.user.developer;
+};
+
 const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
   const options: NextAuthOptions = {
     providers: providersArray,
@@ -233,6 +246,14 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
             query: GetUserAccessDocument,
           });
 
+          let impersonatorDeveloper: boolean | undefined = undefined;
+
+          if (user.impersonating && user.impersonatorApiToken) {
+            impersonatorDeveloper = await getImpersonatorDevStatus(
+              user.impersonatorApiToken,
+            );
+          }
+
           return {
             ...token,
             admin: data.user.admin,
@@ -241,13 +262,21 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
             userID: user.userID,
             impersonating: user.impersonating,
             impersonatorApiToken: user.impersonatorApiToken,
+            impersonatorDeveloper,
           };
         } else {
           return token;
         }
       },
       session: ({ session, token }) => {
-        const { admin, developer, apiToken, userID, impersonating } = token;
+        const {
+          admin,
+          developer,
+          apiToken,
+          userID,
+          impersonating,
+          impersonatorDeveloper,
+        } = token;
 
         // Check the expiration of the API token JWT without verifying its signature
         // Throwing an exception here will cause a redirect to the login page
@@ -264,6 +293,7 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
             apiToken,
             userID,
             impersonating,
+            impersonatorDeveloper,
           },
         };
       },
