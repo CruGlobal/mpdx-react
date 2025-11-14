@@ -149,7 +149,11 @@ describe('pagePropsHelpers', () => {
 
   describe('blockImpersonatingNonDevelopers', () => {
     it('redirects to home page if impersonating and not a developer', async () => {
-      const user = { apiToken: 'token', impersonating: true, developer: false };
+      const user = {
+        apiToken: 'token',
+        impersonating: true,
+        impersonatorDeveloper: false,
+      };
       (getSession as jest.Mock).mockResolvedValue({ user });
 
       await expect(
@@ -166,7 +170,6 @@ describe('pagePropsHelpers', () => {
       const user = {
         apiToken: 'token',
         impersonating: false,
-        developer: false,
       };
       (getSession as jest.Mock).mockResolvedValue({ user });
 
