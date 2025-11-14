@@ -45,40 +45,43 @@ export const NewRequestPage: React.FC = () => {
           validationSchema={validationSchema}
           onSubmit={() => handleNextStep()}
         >
-          <Container sx={{ ml: 5 }}>
-            <Stack direction="column" width={mainContentWidth}>
-              {currentStep === NewRequestStepsEnum.AboutForm ? (
-                <AboutForm
-                  boardApprovalDate={
-                    mocks[4].mhaDetails.staffMHA?.boardApprovalDate ?? ''
-                  }
-                  availableDate={
-                    mocks[4].mhaDetails.staffMHA?.availableDate ?? ''
-                  }
-                />
-              ) : currentStep === NewRequestStepsEnum.RentOrOwn ? (
-                <RentOwn />
-              ) : currentStep === NewRequestStepsEnum.Calculate ? (
-                <Calculation
-                  boardApprovalDate={
-                    mocks[4].mhaDetails.staffMHA?.boardApprovalDate ?? ''
-                  }
-                  availableDate={
-                    mocks[4].mhaDetails.staffMHA?.availableDate ?? ''
-                  }
-                />
-              ) : currentStep === NewRequestStepsEnum.Receipt ? (
-                <Receipt
-                  availableDate={
-                    mocks[4].mhaDetails.staffMHA?.availableDate ?? ''
-                  }
-                  deadlineDate={
-                    mocks[4].mhaDetails.staffMHA?.deadlineDate ?? ''
-                  }
-                />
-              ) : null}
-            </Stack>
-          </Container>
+          {({ values }) => (
+            <Container sx={{ ml: 5 }}>
+              <Stack direction="column" width={mainContentWidth}>
+                {currentStep === NewRequestStepsEnum.AboutForm ? (
+                  <AboutForm
+                    boardApprovalDate={
+                      mocks[4].mhaDetails.staffMHA?.boardApprovalDate ?? ''
+                    }
+                    availableDate={
+                      mocks[4].mhaDetails.staffMHA?.availableDate ?? ''
+                    }
+                  />
+                ) : currentStep === NewRequestStepsEnum.RentOrOwn ? (
+                  <RentOwn />
+                ) : currentStep === NewRequestStepsEnum.Calculate ? (
+                  <Calculation
+                    boardApprovalDate={
+                      mocks[4].mhaDetails.staffMHA?.boardApprovalDate ?? ''
+                    }
+                    availableDate={
+                      mocks[4].mhaDetails.staffMHA?.availableDate ?? ''
+                    }
+                    rentOrOwn={values.rentOrOwn}
+                  />
+                ) : currentStep === NewRequestStepsEnum.Receipt ? (
+                  <Receipt
+                    availableDate={
+                      mocks[4].mhaDetails.staffMHA?.availableDate ?? ''
+                    }
+                    deadlineDate={
+                      mocks[4].mhaDetails.staffMHA?.deadlineDate ?? ''
+                    }
+                  />
+                ) : null}
+              </Stack>
+            </Container>
+          )}
         </Formik>
       }
     />

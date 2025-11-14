@@ -46,31 +46,34 @@ export const EditRequestPage: React.FC = () => {
           validationSchema={validationSchema}
           onSubmit={() => handleEditNextStep()}
         >
-          <Container sx={{ ml: 5 }}>
-            <Stack direction="column" width={mainContentWidth}>
-              {currentEditStep === EditRequestStepsEnum.RentOrOwn ? (
-                <RentOwn />
-              ) : currentEditStep === EditRequestStepsEnum.Edit ? (
-                <Calculation
-                  boardApprovalDate={
-                    mocks[4].mhaDetails.staffMHA?.boardApprovalDate ?? ''
-                  }
-                  availableDate={
-                    mocks[4].mhaDetails.staffMHA?.availableDate ?? ''
-                  }
-                />
-              ) : currentEditStep === EditRequestStepsEnum.Receipt ? (
-                <Receipt
-                  availableDate={
-                    mocks[4].mhaDetails.staffMHA?.availableDate ?? ''
-                  }
-                  deadlineDate={
-                    mocks[4].mhaDetails.staffMHA?.deadlineDate ?? ''
-                  }
-                />
-              ) : null}
-            </Stack>
-          </Container>
+          {({ values }) => (
+            <Container sx={{ ml: 5 }}>
+              <Stack direction="column" width={mainContentWidth}>
+                {currentEditStep === EditRequestStepsEnum.RentOrOwn ? (
+                  <RentOwn />
+                ) : currentEditStep === EditRequestStepsEnum.Edit ? (
+                  <Calculation
+                    boardApprovalDate={
+                      mocks[4].mhaDetails.staffMHA?.boardApprovalDate ?? ''
+                    }
+                    availableDate={
+                      mocks[4].mhaDetails.staffMHA?.availableDate ?? ''
+                    }
+                    rentOrOwn={values.rentOrOwn}
+                  />
+                ) : currentEditStep === EditRequestStepsEnum.Receipt ? (
+                  <Receipt
+                    availableDate={
+                      mocks[4].mhaDetails.staffMHA?.availableDate ?? ''
+                    }
+                    deadlineDate={
+                      mocks[4].mhaDetails.staffMHA?.deadlineDate ?? ''
+                    }
+                  />
+                ) : null}
+              </Stack>
+            </Container>
+          )}
         </Formik>
       }
     />

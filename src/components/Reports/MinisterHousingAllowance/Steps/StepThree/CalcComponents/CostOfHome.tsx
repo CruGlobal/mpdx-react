@@ -28,14 +28,12 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({ rentOrOwn }) => {
       <TableRow>
         <TableCell sx={{ width: '70%' }}>
           <StyledOrderedList component="ol" start={1}>
-            <Typography>
-              <li>
-                {rentOrOwn === RentOwnEnum.Own
-                  ? t(
-                      'Monthly mortgage payment, taxes, insurance, and any extra principal you pay.',
-                    )
-                  : t('Monthly rent.')}
-              </li>
+            <Typography component="li">
+              {rentOrOwn === RentOwnEnum.Own
+                ? t(
+                    'Monthly mortgage payment, taxes, insurance, and any extra principal you pay.',
+                  )
+                : t('Monthly rent.')}
             </Typography>
           </StyledOrderedList>
         </TableCell>
@@ -58,12 +56,10 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({ rentOrOwn }) => {
       <TableRow>
         <TableCell sx={{ width: '70%' }}>
           <StyledOrderedList component="ol" start={2}>
-            <Typography>
-              <li>
-                {t(
-                  'Monthly value for furniture, appliances, decorations, and cleaning.',
-                )}
-              </li>
+            <Typography component="li">
+              {t(
+                'Monthly value for furniture, appliances, decorations, and cleaning.',
+              )}
             </Typography>
           </StyledOrderedList>
         </TableCell>
@@ -86,12 +82,10 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({ rentOrOwn }) => {
       <TableRow>
         <TableCell sx={{ width: '70%' }}>
           <StyledOrderedList component="ol" start={3}>
-            <Typography>
-              <li>
-                {t(
-                  'Estimated monthly cost of repairs and upkeep, include lawn maintenance, pest control, paint, etc.',
-                )}
-              </li>
+            <Typography component="li">
+              {t(
+                'Estimated monthly cost of repairs and upkeep, include lawn maintenance, pest control, paint, etc.',
+              )}
             </Typography>
           </StyledOrderedList>
         </TableCell>
@@ -109,8 +103,8 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({ rentOrOwn }) => {
       <TableRow>
         <TableCell sx={{ width: '70%' }}>
           <StyledOrderedList component="ol" start={4}>
-            <Typography>
-              <li>{t('Average monthly utility costs.')}</li>
+            <Typography component="li">
+              {t('Average monthly utility costs.')}
             </Typography>
             {rentOrOwn === RentOwnEnum.Own && (
               <Box sx={{ color: 'text.secondary' }}>
@@ -135,8 +129,8 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({ rentOrOwn }) => {
       <TableRow>
         <TableCell sx={{ width: '70%' }}>
           <StyledOrderedList component="ol" start={5}>
-            <Typography>
-              <li>{t('Average monthly amount for unexpected expenses.')}</li>
+            <Typography component="li">
+              {t('Average monthly amount for unexpected expenses.')}
             </Typography>
           </StyledOrderedList>
         </TableCell>
@@ -159,8 +153,8 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({ rentOrOwn }) => {
       <TableRow>
         <TableCell sx={{ width: '70%' }}>
           <StyledOrderedList component="ol" start={6}>
-            <Typography>
-              <li>{t('Total Monthly Cost of Providing a Home')}</li>
+            <Typography component="li">
+              {t('Total Monthly Cost of Providing a Home')}
             </Typography>
             <Box sx={{ color: 'text.secondary' }}>
               <Typography variant="body2">{t('Sum of lines 1-5')}</Typography>

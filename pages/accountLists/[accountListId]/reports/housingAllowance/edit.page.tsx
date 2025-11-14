@@ -25,10 +25,10 @@ const HousingAllowanceEditRequestPage: React.FC = () => {
   const { t } = useTranslation();
   const title = t("Edit Minister's Housing Allowance Request");
 
-  const [isNavListOpen, setNavListOpen] = useState(false);
+  const [isNavListOpen, setIsNavListOpen] = useState(false);
 
   const handleNavListToggle = () => {
-    setNavListOpen(!isNavListOpen);
+    setIsNavListOpen(!isNavListOpen);
   };
 
   return (
