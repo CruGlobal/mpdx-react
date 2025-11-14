@@ -142,7 +142,7 @@ describe('partnerCurrency page', () => {
 
     const leftPanel = getByTestId('SidePanelsLayoutLeftPanel');
 
-    userEvent.click(getByRole('button', { name: 'Toggle Filter Panel' }));
+    userEvent.click(getByRole('button', { name: 'Toggle Navigation Panel' }));
     expect(leftPanel).toHaveStyle('transform: none');
 
     userEvent.click(await findByTestId('CloseIcon'));
