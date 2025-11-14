@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { Box, Button, Divider } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { Panel } from 'pages/accountLists/[accountListId]/reports/helpers';
 import { FilterButton } from 'src/components/Shared/Header/styledComponents';
 import { NavFilterIcon } from 'src/components/Shared/styledComponents/NavFilterIcon';
 import { SearchBox } from 'src/components/common/SearchBox/SearchBox';
@@ -48,6 +49,7 @@ export const TransactionsHeader: React.FC<TransactionsHeaderProps> = ({
     financialAccountId,
     handleNavListToggle,
     handleFilterListToggle,
+    panelOpen,
   } = useContext(FinancialAccountContext) as FinancialAccountType;
 
   const { searchTerm, setSearchTerm } = useUrlFilters();
@@ -66,7 +68,10 @@ export const TransactionsHeader: React.FC<TransactionsHeaderProps> = ({
       <Divider />
       <Header>
         <HeaderFilterAction>
-          <FilterButton onClick={handleFilterListToggle}>
+          <FilterButton
+            panelOpen={panelOpen === Panel.Filters}
+            onClick={handleFilterListToggle}
+          >
             <NavFilterIcon titleAccess={t('Toggle Filter Panel')} />
           </FilterButton>
         </HeaderFilterAction>

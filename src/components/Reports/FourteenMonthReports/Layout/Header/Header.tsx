@@ -5,6 +5,7 @@ import { Box, Grid, IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { HeaderTypeEnum } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
+import { getHeaderTitleAccess } from 'src/components/Shared/MultiPageLayout/helpers';
 import theme from 'src/theme';
 import { FourteenMonthReportCurrencyType } from '../../FourteenMonthReport';
 import { FourteenMonthReportActions } from './Actions/Actions';
@@ -44,7 +45,7 @@ const NavListButton = styled(IconButton, {
   display: 'inline-block',
   width: 48,
   height: 48,
-  borderradius: 24,
+  borderRadius: 24,
   margin: theme.spacing(1),
   backgroundColor: panelOpen ? theme.palette.secondary.dark : 'transparent',
   '@media print': {
@@ -85,20 +86,10 @@ export const FourteenMonthReportHeader: FC<FourteenMonthReportHeaderProps> = ({
 }) => {
   const { t } = useTranslation();
   const isReportsHeader = headerType === HeaderTypeEnum.Report;
-  const isSettingsHeader = headerType === HeaderTypeEnum.Settings;
-  const isToolsHeader = headerType === HeaderTypeEnum.Tools;
-  const isFiltersHeader = headerType === HeaderTypeEnum.Filters;
 
-  let titleAccess;
-  if (isReportsHeader) {
-    titleAccess = t('Toggle Navigation Panel');
-  } else if (isFiltersHeader) {
-    titleAccess = t('Toggle Filters Panel');
-  } else if (isSettingsHeader) {
-    titleAccess = t('Toggle Preferences Menu');
-  } else if (isToolsHeader) {
-    titleAccess = t('Toggle Tools Menu');
-  }
+  const titleAccess = headerType
+    ? getHeaderTitleAccess(headerType, t)
+    : undefined;
 
   return (
     <StickyHeader p={2} data-testid="FourteenMonthReportHeader">
