@@ -180,8 +180,14 @@ describe('pagePropsHelpers', () => {
     });
 
     it('allows access if user is impersonating and is a developer', async () => {
-      const user = { apiToken: 'token', impersonating: true, developer: true };
-      (getSession as jest.Mock).mockResolvedValue({ user });
+      const user = {
+        apiToken: 'token',
+        impersonating: true,
+        impersonatorDeveloper: true,
+      };
+      (getSession as jest.Mock).mockResolvedValue({
+        user,
+      });
 
       await expect(
         blockImpersonatingNonDevelopers(context),
