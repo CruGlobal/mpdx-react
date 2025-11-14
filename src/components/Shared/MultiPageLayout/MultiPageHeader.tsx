@@ -6,9 +6,11 @@ import { useTranslation } from 'react-i18next';
 import { useSetupContext } from 'src/components/Setup/SetupProvider';
 import theme from 'src/theme';
 import { NavFilterIcon } from '../styledComponents/NavFilterIcon';
+import { getHeaderTitleAccess } from './helpers';
 
 export enum HeaderTypeEnum {
   Report = 'reports',
+  Filters = 'filters',
   Settings = 'settings',
   Tools = 'tools',
 }
@@ -61,18 +63,12 @@ export const MultiPageHeader: FC<MultiPageHeaderProps> = ({
 }) => {
   const { t } = useTranslation();
   const { onSetupTour } = useSetupContext();
-  const isReportHeader = headerType === HeaderTypeEnum.Report;
+  const isReportsHeader = headerType === HeaderTypeEnum.Report;
   const isSettingsHeader = headerType === HeaderTypeEnum.Settings;
   const isToolsHeader = headerType === HeaderTypeEnum.Tools;
+  const isFiltersHeader = headerType === HeaderTypeEnum.Filters;
 
-  let titleAccess;
-  if (isReportHeader) {
-    titleAccess = t('Toggle Navigation Panel');
-  } else if (isSettingsHeader) {
-    titleAccess = t('Toggle Preferences Menu');
-  } else if (isToolsHeader) {
-    titleAccess = t('Toggle Tools Menu');
-  }
+  const titleAccess = getHeaderTitleAccess(headerType, t);
 
   return (
     <StickyHeader p={2} test-dataid="MultiPageHeader">
@@ -87,11 +83,14 @@ export const MultiPageHeader: FC<MultiPageHeaderProps> = ({
           onClick={onNavListToggle}
           disabled={onSetupTour && isSettingsHeader}
         >
-          {isReportHeader && (
-            <NavFilterIcon
+          {isReportsHeader && (
+            <NavMenuIcon
               titleAccess={titleAccess}
-              data-testid="ReportsFilterIcon"
+              data-testid="ReportsMenuIcon"
             />
+          )}
+          {isFiltersHeader && (
+            <NavFilterIcon titleAccess={titleAccess} data-testid="FilterIcon" />
           )}
           {!onSetupTour && isSettingsHeader && (
             <NavMenuIcon
