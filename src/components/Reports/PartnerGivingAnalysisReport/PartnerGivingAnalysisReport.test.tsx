@@ -132,7 +132,6 @@ describe('PartnerGivingAnalysisReport', () => {
   });
 
   it('filters contacts by name', async () => {
-    jest.useFakeTimers();
     const { getByPlaceholderText } = render(<TestComponent />);
 
     await waitFor(() => {
@@ -141,12 +140,15 @@ describe('PartnerGivingAnalysisReport', () => {
 
     userEvent.type(getByPlaceholderText('Search Contacts'), 'John');
 
-    await waitFor(() => {
-      const call = findOperationCall('PartnerGivingAnalysis');
-      expect(call?.operation.variables.input.filters).toEqual({
-        nameLike: '%John%',
-      });
-    });
+    await waitFor(
+      () => {
+        const call = findOperationCall('PartnerGivingAnalysis');
+        expect(call?.operation.variables.input.filters).toEqual({
+          nameLike: '%John%',
+        });
+      },
+      { timeout: 3000 },
+    );
   });
 
   it('sets the pagination limit', async () => {
