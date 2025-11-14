@@ -11,7 +11,7 @@ import {
 
 const StyledCardsBox = styled(Box)(({ theme }) => ({
   flex: 1,
-  minWidth: 250,
+  minWidth: 240,
   display: 'flex',
   gap: theme.spacing(4),
 }));
