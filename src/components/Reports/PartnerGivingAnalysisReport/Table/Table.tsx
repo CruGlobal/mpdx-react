@@ -1,11 +1,10 @@
 import React, { useMemo } from 'react';
 import { Box } from '@mui/material';
 import {
+  GridApi,
   GridColDef,
   GridFooterContainer,
   GridPagination,
-  GridPaginationModel,
-  GridSortModel,
 } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import { PartnerGivingAnalysisContact } from 'src/graphql/types.generated';
@@ -20,13 +19,9 @@ type Row = PartnerGivingAnalysisQuery['partnerGivingAnalysis']['nodes'][number];
 
 export interface PartnerGivingAnalysisTableProps {
   data: Row[];
-  totalCount: number;
   onSelectOne: (contactId: string) => void;
   isRowChecked: (id: string) => boolean;
-  paginationModel?: GridPaginationModel;
-  handlePageChange?: (model: GridPaginationModel) => void;
-  sortModel?: GridSortModel;
-  handleSortChange?: (model: GridSortModel) => void;
+  apiRef: React.MutableRefObject<GridApi | null>;
 }
 
 export const createTableRow = (data: Row): TableData => ({
@@ -34,10 +29,12 @@ export const createTableRow = (data: Row): TableData => ({
   name: data.name ?? '',
   status: data.status ? getLocalizedStatus(data.status) : null,
   pledgeAmount: data.pledgeAmount ?? 0,
+  pledgeFrequency: data.pledgeFrequency ?? null,
   donationPeriodSum: data.donationPeriodSum,
   donationPeriodCount: data.donationPeriodCount,
   donationPeriodAverage: data.donationPeriodAverage,
   lastDonationAmount: data.lastDonationAmount,
+  firstDonationDate: data.firstDonationDate,
   lastDonationDate: data.lastDonationDate,
   totalDonations: data.totalDonations,
   pledgeCurrency: data.pledgeCurrency,
@@ -56,16 +53,7 @@ const CustomFooter: React.FC = () => {
 
 export const PartnerGivingAnalysisTable: React.FC<
   PartnerGivingAnalysisTableProps
-> = ({
-  data,
-  totalCount,
-  onSelectOne,
-  isRowChecked,
-  paginationModel,
-  handlePageChange,
-  sortModel,
-  handleSortChange,
-}) => {
+> = ({ data, onSelectOne, isRowChecked, apiRef }) => {
   const { t } = useTranslation();
 
   const tableRows = useMemo(
@@ -81,6 +69,7 @@ export const PartnerGivingAnalysisTable: React.FC<
     donationPeriodSum,
     donationPeriodCount,
     donationPeriodAverage,
+    firstDonationDate,
     lastDonationAmount,
     lastDonationDate,
     totalDonations,
@@ -136,6 +125,13 @@ export const PartnerGivingAnalysisTable: React.FC<
       renderCell: donationPeriodAverage,
     },
     {
+      field: 'firstDonationDate',
+      headerName: t('First Gift Date'),
+      width: 130,
+      flex: 1,
+      renderCell: firstDonationDate,
+    },
+    {
       field: 'lastDonationAmount',
       headerName: t('Last Gift Amount'),
       width: 150,
@@ -161,7 +157,6 @@ export const PartnerGivingAnalysisTable: React.FC<
   return (
     <Box
       sx={{
-        height: 'calc(100vh - 240px)',
         width: '100%',
         display: 'flex',
         flexDirection: 'column',
@@ -169,18 +164,17 @@ export const PartnerGivingAnalysisTable: React.FC<
       }}
     >
       <StyledDataGrid
+        apiRef={apiRef}
         rows={tableRows}
-        rowCount={totalCount}
         columns={columns}
         getRowId={(row) => row.id}
         sortingOrder={['asc', 'desc']}
-        sortModel={sortModel}
-        onSortModelChange={handleSortChange}
-        pageSizeOptions={[25, 50, 100]}
-        paginationModel={paginationModel}
-        onPaginationModelChange={handlePageChange}
-        paginationMode="server"
-        sortingMode="server"
+        initialState={{
+          // Set initial pagination to first page with 25 rows per page
+          pagination: {
+            paginationModel: { pageSize: 25 },
+          },
+        }}
         pagination
         disableRowSelectionOnClick
         disableVirtualization
