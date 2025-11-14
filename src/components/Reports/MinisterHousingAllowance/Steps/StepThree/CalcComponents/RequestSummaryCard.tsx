@@ -16,6 +16,7 @@ import { RentOwnEnum } from 'src/components/Reports/MinisterHousingAllowance/Sha
 import { useAnnualTotal } from 'src/hooks/useAnnualTotal';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { useMinisterHousingAllowance } from '../../../Shared/Context/MinisterHousingAllowanceContext';
 import { CalculationFormValues } from '../Calculation';
 
 interface RequestSummaryCardProps {
@@ -31,6 +32,10 @@ export const RequestSummaryCard: React.FC<RequestSummaryCardProps> = ({
 
   const { values } = useFormikContext<CalculationFormValues>();
   const { annualTotal } = useAnnualTotal(values);
+
+  const { isViewPage } = useMinisterHousingAllowance();
+
+  const above = isViewPage ? '' : ' above';
 
   return (
     <Card>
@@ -60,8 +65,8 @@ export const RequestSummaryCard: React.FC<RequestSummaryCardProps> = ({
                   <b>{t('Your Annual MHA Total')}</b>
                 </Typography>
                 <Box sx={{ color: 'text.secondary' }}>
-                  <Trans i18nKey="requestSummaryCardInfo">
-                    This is calculated from your above responses and is the
+                  <Trans i18nKey="requestSummaryCardInfo" values={{ above }}>
+                    This is calculated from your {above} responses and is the
                     lower of the Annual Fair Rental Value or the Annual Cost of
                     Providing a Home.
                   </Trans>

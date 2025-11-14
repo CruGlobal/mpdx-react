@@ -53,7 +53,7 @@ export const MinisterHousingAllowanceReport: React.FC = () => {
         panelType={PanelTypeEnum.Empty}
         sidebarTitle={title}
         mainContent={
-          <Container>
+          <Container sx={{ ml: 5 }}>
             <Stack direction="column" width={mainContentWidth}>
               {noMHA ? (
                 <IneligibleDisplay
