@@ -132,6 +132,7 @@ describe('PartnerGivingAnalysisReport', () => {
   });
 
   it('filters contacts by name', async () => {
+    jest.useFakeTimers();
     const { getByPlaceholderText } = render(<TestComponent />);
 
     await waitFor(() => {
