@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { ConfirmationModal } from '../ConfirmationModal/ConfirmationModal';
+import { SubmitModal } from '../SubmitModal/SubmitModal';
 
 //TODO: handle cancel request
 //TODO: handle duplicate last years mha and view current mha links
@@ -90,7 +90,7 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
           </Box>
         )}
         {openCancel && (
-          <ConfirmationModal
+          <SubmitModal
             handleClose={() => setOpenCancel(false)}
             handleConfirm={() => setOpenCancel(false)}
             isCancel={true}

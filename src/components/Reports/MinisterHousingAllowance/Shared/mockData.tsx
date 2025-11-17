@@ -344,4 +344,5 @@ export const editOwnMock = {
   repairCosts: 350,
   avgUtilityTwo: 385,
   unexpectedExpenses: 100,
+  isChecked: true,
 };

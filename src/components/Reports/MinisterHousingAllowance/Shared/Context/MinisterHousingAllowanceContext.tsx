@@ -1,33 +1,19 @@
 import { createContext, useContext, useMemo, useState } from 'react';
 import { useNewStepList } from 'src/hooks/useNewStepList';
 import { Steps } from '../../Steps/StepsList/StepsList';
-import {
-  EditRequestStepsEnum,
-  NewRequestStepsEnum,
-  PageEnum,
-} from '../sharedTypes';
+import { PageEnum, StepsEnum } from '../sharedTypes';
 
 export type ContextType = {
-  // list of steps for new or edit request
   steps: Steps[];
   currentIndex: number;
-
-  // new request state and handlers
-  currentStep: NewRequestStepsEnum;
-  handleNextStep: () => void;
-  handlePreviousStep: () => void;
   percentComplete: number;
 
-  // edit request state and handlers
-  currentEditStep: EditRequestStepsEnum;
-  handleEditNextStep: () => void;
-  handleEditPreviousStep: () => void;
-  percentEditComplete: number;
+  currentStep: StepsEnum;
+  handleNextStep: () => void;
+  handlePreviousStep: () => void;
 
-  // new or edit page type
   pageType: PageEnum | undefined;
 
-  // calculation values state
   hasCalcValues: boolean;
   setHasCalcValues: (value: boolean) => void;
 };
@@ -55,34 +41,32 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
 }) => {
   const pageType = type;
   const steps = type ? useNewStepList(type) : [];
+  const totalSteps = steps.length;
 
+  const actionRequired = pageType === PageEnum.Edit;
   const [hasCalcValues, setHasCalcValues] = useState(
-    type === PageEnum.Edit ? true : false,
+    actionRequired ? true : false,
   );
 
-  const [currentStep, setCurrentStep] = useState(NewRequestStepsEnum.AboutForm);
+  const [currentStep, setCurrentStep] = useState(StepsEnum.AboutForm);
   const [percentComplete, setPercentComplete] = useState(25);
-
-  const [currentEditStep, setCurrentEditStep] = useState(
-    EditRequestStepsEnum.RentOrOwn,
-  );
-  const [percentEditComplete, setPercentEditComplete] = useState(33);
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const handleNextStep = () => {
     setCurrentStep((prevStep) => {
       const next =
-        prevStep === NewRequestStepsEnum.AboutForm
-          ? NewRequestStepsEnum.RentOrOwn
-          : prevStep === NewRequestStepsEnum.RentOrOwn
-            ? NewRequestStepsEnum.Calculate
-            : prevStep === NewRequestStepsEnum.Calculate
-              ? NewRequestStepsEnum.Receipt
+        prevStep === StepsEnum.AboutForm
+          ? StepsEnum.RentOrOwn
+          : prevStep === StepsEnum.RentOrOwn
+            ? StepsEnum.CalcForm
+            : prevStep === StepsEnum.CalcForm
+              ? StepsEnum.Receipt
               : prevStep;
 
-      handlePercentComplete(next);
-      handleNextIndexChange(currentIndex + 1);
+      const newIndex = currentIndex + 1;
+      handleNextIndexChange(newIndex);
+      handlePercentComplete(newIndex);
       return next;
     });
   };
@@ -90,83 +74,24 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   const handlePreviousStep = () => {
     setCurrentStep((prevStep) => {
       const next =
-        prevStep === NewRequestStepsEnum.RentOrOwn
-          ? NewRequestStepsEnum.AboutForm
-          : prevStep === NewRequestStepsEnum.Calculate
-            ? NewRequestStepsEnum.RentOrOwn
-            : prevStep === NewRequestStepsEnum.Receipt
-              ? NewRequestStepsEnum.Calculate
+        prevStep === StepsEnum.RentOrOwn
+          ? StepsEnum.AboutForm
+          : prevStep === StepsEnum.CalcForm
+            ? StepsEnum.RentOrOwn
+            : prevStep === StepsEnum.Receipt
+              ? StepsEnum.CalcForm
               : prevStep;
 
-      handlePercentComplete(next);
-      handlePreviousIndexChange(currentIndex - 1);
+      const newIndex = currentIndex - 1;
+      handlePreviousIndexChange(newIndex);
+      handlePercentComplete(newIndex);
       return next;
     });
   };
 
-  const handlePercentComplete = (step: NewRequestStepsEnum) => {
-    switch (step) {
-      case NewRequestStepsEnum.AboutForm:
-        setPercentComplete(25);
-        break;
-      case NewRequestStepsEnum.RentOrOwn:
-        setPercentComplete(50);
-        break;
-      case NewRequestStepsEnum.Calculate:
-        setPercentComplete(75);
-        break;
-      case NewRequestStepsEnum.Receipt:
-        setPercentComplete(100);
-        break;
-      default:
-        setPercentComplete(0);
-    }
-  };
-
-  const handleEditNextStep = () => {
-    setCurrentEditStep((prevStep) => {
-      const next =
-        prevStep === EditRequestStepsEnum.RentOrOwn
-          ? EditRequestStepsEnum.Edit
-          : prevStep === EditRequestStepsEnum.Edit
-            ? EditRequestStepsEnum.Receipt
-            : prevStep;
-
-      handleEditPercentComplete(next);
-      handleNextIndexChange(currentIndex + 1);
-      return next;
-    });
-  };
-
-  const handleEditPreviousStep = () => {
-    setCurrentEditStep((prevStep) => {
-      const next =
-        prevStep === EditRequestStepsEnum.Edit
-          ? EditRequestStepsEnum.RentOrOwn
-          : prevStep === EditRequestStepsEnum.Receipt
-            ? EditRequestStepsEnum.Edit
-            : prevStep;
-
-      handleEditPercentComplete(next);
-      handlePreviousIndexChange(currentIndex - 1);
-      return next;
-    });
-  };
-
-  const handleEditPercentComplete = (step: EditRequestStepsEnum) => {
-    switch (step) {
-      case EditRequestStepsEnum.RentOrOwn:
-        setPercentEditComplete(33);
-        break;
-      case EditRequestStepsEnum.Edit:
-        setPercentEditComplete(66);
-        break;
-      case EditRequestStepsEnum.Receipt:
-        setPercentEditComplete(100);
-        break;
-      default:
-        setPercentEditComplete(0);
-    }
+  const handlePercentComplete = (index: number) => {
+    const newPercent = Math.round(((index + 1) / totalSteps) * 100);
+    setPercentComplete(newPercent);
   };
 
   const handleNextIndexChange = (newIndex: number) => {
@@ -192,13 +117,9 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       steps,
       currentIndex,
       currentStep,
+      percentComplete,
       handleNextStep,
       handlePreviousStep,
-      percentComplete,
-      currentEditStep,
-      handleEditNextStep,
-      handleEditPreviousStep,
-      percentEditComplete,
       pageType,
       hasCalcValues,
       setHasCalcValues,
@@ -207,13 +128,9 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       steps,
       currentIndex,
       currentStep,
+      percentComplete,
       handleNextStep,
       handlePreviousStep,
-      percentComplete,
-      currentEditStep,
-      handleEditNextStep,
-      handleEditPreviousStep,
-      percentEditComplete,
       pageType,
       hasCalcValues,
       setHasCalcValues,

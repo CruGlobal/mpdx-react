@@ -13,7 +13,7 @@ import {
   iconPanelWidth,
 } from 'src/components/Shared/IconPanelLayout/IconPanelLayout';
 import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
-import { PageEnum, PanelTypeEnum } from '../Shared/sharedTypes';
+import { PanelTypeEnum } from '../Shared/sharedTypes';
 
 interface PanelLayoutProps {
   panelType: PanelTypeEnum;
@@ -32,20 +32,11 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const {
-    handlePreviousStep,
-    percentComplete,
-    currentIndex,
-    steps,
-    handleEditPreviousStep,
-    percentEditComplete,
-    pageType,
-  } = useMinisterHousingAllowance();
+  const { handlePreviousStep, percentComplete, currentIndex, steps } =
+    useMinisterHousingAllowance();
 
   const isLastStep = steps ? currentIndex === steps.length - 1 : false;
   const isNotFirstStep = currentIndex !== 0;
-
-  const isNew = pageType === PageEnum.New;
 
   return (
     <PrintableStack direction="row">
@@ -79,16 +70,12 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
             ) : (
               <>
                 <StyledBox>
-                  <CircularProgressWithLabel
-                    progress={isNew ? percentComplete : percentEditComplete}
-                  />
+                  <CircularProgressWithLabel progress={percentComplete} />
                 </StyledBox>
                 {isNotFirstStep && (
                   <IconButton
                     aria-label={t('Go back')}
-                    onClick={
-                      isNew ? handlePreviousStep : handleEditPreviousStep
-                    }
+                    onClick={handlePreviousStep}
                     sx={(theme) => ({
                       color: theme.palette.cruGrayDark.main,
                     })}

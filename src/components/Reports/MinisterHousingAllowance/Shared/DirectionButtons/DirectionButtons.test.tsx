@@ -16,8 +16,6 @@ const submit = jest.fn();
 const pushMock = jest.fn();
 const handleNextStep = jest.fn();
 const handlePreviousStep = jest.fn();
-const handleEditNextStep = jest.fn();
-const handleEditPreviousStep = jest.fn();
 interface TestComponentProps {
   isCalculate?: boolean;
 }
@@ -53,67 +51,34 @@ jest.mock('next/router', () => ({
 }));
 
 describe('DirectionButtons', () => {
-  beforeEach(() => useMock.mockReset());
-  it('renders Back and Submit buttons', () => {
+  beforeEach(() => {
     useMock.mockReturnValue({
+      handleNextStep,
+      handlePreviousStep,
       pageType: PageEnum.New,
     });
+  });
 
+  it('renders Back and Submit buttons', () => {
     const { getByRole } = render(<TestComponent isCalculate={true} />);
 
     expect(getByRole('button', { name: /back/i })).toBeInTheDocument();
     expect(getByRole('button', { name: /submit/i })).toBeInTheDocument();
   });
 
-  describe('New Request', () => {
-    beforeEach(() => {
-      useMock.mockReturnValue({
-        handleNextStep,
-        handlePreviousStep,
-        pageType: PageEnum.New,
-      });
-    });
+  it('calls handleNext when Continue is clicked', async () => {
+    const { getByRole } = render(<TestComponent isCalculate={false} />);
 
-    it('calls handleNext when Continue is clicked', async () => {
-      const { getByRole } = render(<TestComponent isCalculate={false} />);
+    await userEvent.click(getByRole('button', { name: 'Continue' }));
 
-      await userEvent.click(getByRole('button', { name: 'Continue' }));
-
-      expect(handleNextStep).toHaveBeenCalled();
-    });
-
-    it('calls handlePreviousStep when Back is clicked', async () => {
-      const { getByRole } = render(<TestComponent isCalculate={true} />);
-
-      await userEvent.click(getByRole('button', { name: /back/i }));
-
-      expect(handlePreviousStep).toHaveBeenCalled();
-    });
+    expect(handleNextStep).toHaveBeenCalled();
   });
 
-  describe('Edit Request', () => {
-    beforeEach(() => {
-      useMock.mockReturnValue({
-        handleEditNextStep,
-        handleEditPreviousStep,
-        pageType: PageEnum.Edit,
-      });
-    });
+  it('calls handlePreviousStep when Back is clicked', async () => {
+    const { getByRole } = render(<TestComponent isCalculate={true} />);
 
-    it('calls handleNext when Continue is clicked', async () => {
-      const { getByRole } = render(<TestComponent isCalculate={false} />);
+    await userEvent.click(getByRole('button', { name: /back/i }));
 
-      await userEvent.click(getByRole('button', { name: 'Continue' }));
-
-      expect(handleEditNextStep).toHaveBeenCalled();
-    });
-
-    it('calls handlePreviousStep when Back is clicked', async () => {
-      const { getByRole } = render(<TestComponent isCalculate={true} />);
-
-      await userEvent.click(getByRole('button', { name: /back/i }));
-
-      expect(handleEditPreviousStep).toHaveBeenCalled();
-    });
+    expect(handlePreviousStep).toHaveBeenCalled();
   });
 });

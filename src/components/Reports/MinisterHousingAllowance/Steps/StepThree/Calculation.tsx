@@ -94,28 +94,42 @@ export const Calculation: React.FC<CalculationProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const { handleNextStep, pageType, handleEditNextStep, setHasCalcValues } =
+  const { handleNextStep, pageType, setHasCalcValues } =
     useMinisterHousingAllowance();
 
   const {
     values: { rentOrOwn },
   } = useFormikContext<FormValues>();
 
-  const isNew = pageType === PageEnum.New;
+  const actionRequired = pageType === PageEnum.Edit;
 
-  const initialValues: CalculationFormValues = {
-    rentalValue: isNew ? null : editOwnMock.rentalValue,
-    furnitureCostsOne: isNew ? null : editOwnMock.furnitureCostsOne,
-    avgUtilityOne: isNew ? null : editOwnMock.avgUtilityOne,
-    mortgagePayment: isNew ? null : editOwnMock.mortgagePayment,
-    furnitureCostsTwo: isNew ? null : editOwnMock.furnitureCostsTwo,
-    repairCosts: isNew ? null : editOwnMock.repairCosts,
-    avgUtilityTwo: isNew ? null : editOwnMock.avgUtilityTwo,
-    unexpectedExpenses: isNew ? null : editOwnMock.unexpectedExpenses,
-    phone: mocks[0].staffInfo.phone,
-    email: mocks[0].staffInfo.email,
-    isChecked: isNew ? false : true,
-  };
+  const initialValues: CalculationFormValues = actionRequired
+    ? {
+        rentalValue: editOwnMock.rentalValue,
+        furnitureCostsOne: editOwnMock.furnitureCostsOne,
+        avgUtilityOne: editOwnMock.avgUtilityOne,
+        mortgagePayment: editOwnMock.mortgagePayment,
+        furnitureCostsTwo: editOwnMock.furnitureCostsTwo,
+        repairCosts: editOwnMock.repairCosts,
+        avgUtilityTwo: editOwnMock.avgUtilityTwo,
+        unexpectedExpenses: editOwnMock.unexpectedExpenses,
+        phone: mocks[0].staffInfo.phone,
+        email: mocks[0].staffInfo.email,
+        isChecked: editOwnMock.isChecked,
+      }
+    : {
+        rentalValue: null,
+        furnitureCostsOne: null,
+        avgUtilityOne: null,
+        mortgagePayment: null,
+        furnitureCostsTwo: null,
+        repairCosts: null,
+        avgUtilityTwo: null,
+        unexpectedExpenses: null,
+        phone: mocks[0].staffInfo.phone,
+        email: mocks[0].staffInfo.email,
+        isChecked: false,
+      };
 
   const boardDateFormatted = boardApprovalDate
     ? dateFormatShort(DateTime.fromISO(boardApprovalDate), locale)
@@ -133,8 +147,6 @@ export const Calculation: React.FC<CalculationProps> = ({
     ? t(`approval effective ${availableDateFormatted}`)
     : t('approval soon');
 
-  const handleNext = isNew ? handleNextStep : handleEditNextStep;
-
   return (
     <Formik<CalculationFormValues>
       initialValues={initialValues}
@@ -142,7 +154,7 @@ export const Calculation: React.FC<CalculationProps> = ({
       validateOnChange
       validateOnBlur
       onSubmit={() => {
-        handleNext();
+        handleNextStep();
       }}
     >
       {({
@@ -171,18 +183,18 @@ export const Calculation: React.FC<CalculationProps> = ({
               </Typography>
             </Box>
             <Trans i18nKey="newRequestCalculation" values={{ after, approval }}>
-              {isNew ? (
-                <p style={{ lineHeight: 1.5 }}>
-                  Please enter dollar amounts for each category below to
-                  calculate your Annual MHA. The board will review this {after}{' '}
-                  and you will receive notice of your {approval}.
-                </p>
-              ) : (
+              {actionRequired ? (
                 <p style={{ lineHeight: 1.5 }}>
                   Please review the Annual MHA Request that you have submitted
                   for Board approval and make any changes necessary here. The
                   board will review this {after} and you will receive notice of
                   your {approval}.
+                </p>
+              ) : (
+                <p style={{ lineHeight: 1.5 }}>
+                  Please enter dollar amounts for each category below to
+                  calculate your Annual MHA. The board will review this {after}{' '}
+                  and you will receive notice of your {approval}.
                 </p>
               )}
             </Trans>

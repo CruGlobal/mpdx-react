@@ -6,7 +6,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
 import { MinisterHousingAllowanceProvider } from '../Shared/Context/MinisterHousingAllowanceContext';
 import { PageEnum } from '../Shared/sharedTypes';
-import { ConfirmationModal } from './ConfirmationModal';
+import { SubmitModal } from './SubmitModal';
 
 const handleClose = jest.fn();
 const handleConfirm = jest.fn();
@@ -23,7 +23,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   <ThemeProvider theme={theme}>
     <TestRouter>
       <MinisterHousingAllowanceProvider type={pageType}>
-        <ConfirmationModal
+        <SubmitModal
           handleClose={handleClose}
           handleConfirm={handleConfirm}
           isCancel={isCancel}
