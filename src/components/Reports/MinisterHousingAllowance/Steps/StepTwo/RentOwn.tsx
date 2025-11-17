@@ -16,8 +16,6 @@ import { useMinisterHousingAllowance } from '../../Shared/Context/MinisterHousin
 import { DirectionButtons } from '../../Shared/DirectionButtons/DirectionButtons';
 import { PageEnum, RentOwnEnum } from '../../Shared/sharedTypes';
 
-//TODO: test confirmation modal when calc values change
-
 export const RentOwn: React.FC = () => {
   const { t } = useTranslation();
 

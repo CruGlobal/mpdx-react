@@ -7,11 +7,7 @@ import { mainContentWidth } from '../MinisterHousingAllowance';
 import { PanelLayout } from '../PanelLayout/PanelLayout';
 import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
 import { mocks } from '../Shared/mockData';
-import {
-  NewRequestStepsEnum,
-  PanelTypeEnum,
-  RentOwnEnum,
-} from '../Shared/sharedTypes';
+import { PanelTypeEnum, RentOwnEnum, StepsEnum } from '../Shared/sharedTypes';
 import { Receipt } from '../Steps/StepFour/Receipt';
 import { AboutForm } from '../Steps/StepOne/AboutForm';
 import { Calculation } from '../Steps/StepThree/Calculation';
@@ -33,6 +29,9 @@ export const NewRequestPage: React.FC = () => {
 
   const { steps, handleNextStep, currentStep } = useMinisterHousingAllowance();
 
+  const boardDate = mocks[4].mhaDetails.staffMHA?.boardApprovalDate ?? '';
+  const availableDate = mocks[4].mhaDetails.staffMHA?.availableDate ?? '';
+
   return (
     <PanelLayout
       panelType={PanelTypeEnum.New}
@@ -47,31 +46,21 @@ export const NewRequestPage: React.FC = () => {
         >
           <Container sx={{ ml: 5 }}>
             <Stack direction="column" width={mainContentWidth}>
-              {currentStep === NewRequestStepsEnum.AboutForm ? (
+              {currentStep === StepsEnum.AboutForm ? (
                 <AboutForm
-                  boardApprovalDate={
-                    mocks[4].mhaDetails.staffMHA?.boardApprovalDate ?? ''
-                  }
-                  availableDate={
-                    mocks[4].mhaDetails.staffMHA?.availableDate ?? ''
-                  }
+                  boardApprovalDate={boardDate}
+                  availableDate={availableDate}
                 />
-              ) : currentStep === NewRequestStepsEnum.RentOrOwn ? (
+              ) : currentStep === StepsEnum.RentOrOwn ? (
                 <RentOwn />
-              ) : currentStep === NewRequestStepsEnum.Calculate ? (
+              ) : currentStep === StepsEnum.CalcForm ? (
                 <Calculation
-                  boardApprovalDate={
-                    mocks[4].mhaDetails.staffMHA?.boardApprovalDate ?? ''
-                  }
-                  availableDate={
-                    mocks[4].mhaDetails.staffMHA?.availableDate ?? ''
-                  }
+                  boardApprovalDate={boardDate}
+                  availableDate={availableDate}
                 />
-              ) : currentStep === NewRequestStepsEnum.Receipt ? (
+              ) : currentStep === StepsEnum.Receipt ? (
                 <Receipt
-                  availableDate={
-                    mocks[4].mhaDetails.staffMHA?.availableDate ?? ''
-                  }
+                  availableDate={availableDate}
                   deadlineDate={
                     mocks[4].mhaDetails.staffMHA?.deadlineDate ?? ''
                   }

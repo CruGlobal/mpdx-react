@@ -34,64 +34,64 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 
   const { pageType } = useMinisterHousingAllowance();
 
-  // TODO: Not sure what to write if date is null
+  // TODO: Not sure what text to display if date is null
   const date = mocks[4].mhaDetails.staffMHA?.deadlineDate;
   const deadlineDate = date
     ? dateFormatShort(DateTime.fromISO(date), locale)
     : null;
 
-  const isEdit = pageType === PageEnum.Edit;
+  const actionRequired = pageType === PageEnum.Edit;
+
+  const title = isRequestingChange
+    ? t('Are you sure you want to change selection?')
+    : isCancel
+      ? t('Do you want to cancel?')
+      : actionRequired
+        ? t('Are you ready to submit your updated MHA Request?')
+        : t('Are you ready to submit your MHA Request?');
+
+  const contentTitle = isRequestingChange
+    ? t('You are changing your MHA Request selection.')
+    : isCancel
+      ? t('You are cancelling this MHA Request.')
+      : actionRequired
+        ? t(
+            'You are submitting changes to your Annual MHA Request for board approval.',
+          )
+        : t('You are submitting your MHA Request for board approval.');
+
+  const contentText = isRequestingChange
+    ? t(
+        'Clicking "Yes, Continue" will wipe all inputs you\'ve entered previously. Are you sure you want to continue?',
+      )
+    : isCancel
+      ? t(
+          'All information associated with this request will be lost. This action cannot be undone.',
+        )
+      : actionRequired
+        ? t(
+            'This updated request will take the place of your previous request. Once submitted, you can return and make edits until {{date}}. After this date, your request will be processed as is.',
+            {
+              date: deadlineDate,
+              interpolation: { escapeValue: false },
+            },
+          )
+        : t(
+            `Once submitted, you can return and make edits until {{date}}. After this date, your request will be processed as is.`,
+            {
+              date: deadlineDate,
+              interpolation: { escapeValue: false },
+            },
+          );
 
   return (
     <Dialog open={true} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle>
-        {isRequestingChange
-          ? t('Are you sure you want to change selection?')
-          : isCancel
-            ? t('Do you want to cancel?')
-            : isEdit
-              ? t('Are you ready to submit your updated MHA Request?')
-              : t('Are you ready to submit your MHA Request?')}
-      </DialogTitle>
+      <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         <Alert severity={isCancel ? 'error' : 'warning'}>
           <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-            <b>
-              {isRequestingChange
-                ? t('You are changing your MHA Request selection.')
-                : isCancel
-                  ? t('You are cancelling this MHA Request.')
-                  : isEdit
-                    ? t(
-                        'You are submitting changes to your Annual MHA Request for board approval.',
-                      )
-                    : t(
-                        'You are submitting your MHA Request for board approval.',
-                      )}
-            </b>
-            {isRequestingChange
-              ? t(
-                  'Clicking "Yes, Continue" will wipe all inputs you\'ve entered previously. Are you sure you want to continue?',
-                )
-              : isCancel
-                ? t(
-                    'All information associated with this request will be lost. This action cannot be undone.',
-                  )
-                : isEdit
-                  ? t(
-                      'This updated request will take the place of your previous request. Once submitted, you can return and make edits until {{date}}. After this date, your request will be processed as is.',
-                      {
-                        date: deadlineDate,
-                        interpolation: { escapeValue: false },
-                      },
-                    )
-                  : t(
-                      `Once submitted, you can return and make edits until {{date}}. After this date, your request will be processed as is.`,
-                      {
-                        date: deadlineDate,
-                        interpolation: { escapeValue: false },
-                      },
-                    )}
+            <b>{contentTitle}</b>
+            {contentText}
           </Box>
         </Alert>
       </DialogContent>

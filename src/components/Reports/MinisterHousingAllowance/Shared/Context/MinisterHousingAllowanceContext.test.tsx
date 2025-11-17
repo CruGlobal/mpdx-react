@@ -5,11 +5,7 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
 import { getByRole, render } from '__tests__/util/testingLibraryReactMock';
 import theme from 'src/theme';
-import {
-  EditRequestStepsEnum,
-  NewRequestStepsEnum,
-  PageEnum,
-} from '../sharedTypes';
+import { PageEnum, StepsEnum } from '../sharedTypes';
 import {
   MinisterHousingAllowanceProvider,
   useMinisterHousingAllowance,
@@ -37,24 +33,16 @@ function TestConsumer() {
     handleNextStep,
     handlePreviousStep,
     percentComplete,
-    currentEditStep,
-    percentEditComplete,
-    handleEditNextStep,
-    handleEditPreviousStep,
   } = useMinisterHousingAllowance();
 
   return (
     <div>
       <div data-testid="steps">{steps.length}</div>
-      <div data-testid="currentStep">{currentStep}</div>
-      <div data-testid="percentCompleteNew">{percentComplete}</div>
-      <button onClick={handleNextStep}>Next (New)</button>
-      <button onClick={handlePreviousStep}>Previous (New)</button>
+      <div data-testid="percentComplete">{percentComplete}</div>
 
-      <div data-testid="currentEditStep">{currentEditStep}</div>
-      <div data-testid="percentCompleteEdit">{percentEditComplete}</div>
-      <button onClick={handleEditNextStep}>Next (Edit)</button>
-      <button onClick={handleEditPreviousStep}>Previous (Edit)</button>
+      <div data-testid="currentStep">{currentStep}</div>
+      <button onClick={handleNextStep}>Next</button>
+      <button onClick={handlePreviousStep}>Previous</button>
     </div>
   );
 }
@@ -80,42 +68,26 @@ describe('MinisterHousingAllowanceContext', () => {
     );
 
     expect(getByTestId('steps')).toHaveTextContent('4');
-    expect(getByTestId('currentStep')).toHaveTextContent(
-      NewRequestStepsEnum.AboutForm,
-    );
-    expect(getByTestId('percentCompleteNew')).toHaveTextContent('25');
+    expect(getByTestId('currentStep')).toHaveTextContent(StepsEnum.AboutForm);
+    expect(getByTestId('percentComplete')).toHaveTextContent('25');
+
+    await userEvent.click(getByRole(document.body, 'button', { name: 'Next' }));
+    expect(getByTestId('currentStep')).toHaveTextContent(StepsEnum.RentOrOwn);
+    expect(getByTestId('percentComplete')).toHaveTextContent('50');
+
+    await userEvent.click(getByRole(document.body, 'button', { name: 'Next' }));
+    expect(getByTestId('currentStep')).toHaveTextContent(StepsEnum.CalcForm);
+    expect(getByTestId('percentComplete')).toHaveTextContent('75');
+
+    await userEvent.click(getByRole(document.body, 'button', { name: 'Next' }));
+    expect(getByTestId('currentStep')).toHaveTextContent(StepsEnum.Receipt);
+    expect(getByTestId('percentComplete')).toHaveTextContent('100');
 
     await userEvent.click(
-      getByRole(document.body, 'button', { name: 'Next (New)' }),
+      getByRole(document.body, 'button', { name: 'Previous' }),
     );
-    expect(getByTestId('currentStep')).toHaveTextContent(
-      NewRequestStepsEnum.RentOrOwn,
-    );
-    expect(getByTestId('percentCompleteNew')).toHaveTextContent('50');
-
-    await userEvent.click(
-      getByRole(document.body, 'button', { name: 'Next (New)' }),
-    );
-    expect(getByTestId('currentStep')).toHaveTextContent(
-      NewRequestStepsEnum.Calculate,
-    );
-    expect(getByTestId('percentCompleteNew')).toHaveTextContent('75');
-
-    await userEvent.click(
-      getByRole(document.body, 'button', { name: 'Next (New)' }),
-    );
-    expect(getByTestId('currentStep')).toHaveTextContent(
-      NewRequestStepsEnum.Receipt,
-    );
-    expect(getByTestId('percentCompleteNew')).toHaveTextContent('100');
-
-    await userEvent.click(
-      getByRole(document.body, 'button', { name: 'Previous (New)' }),
-    );
-    expect(getByTestId('currentStep')).toHaveTextContent(
-      NewRequestStepsEnum.Calculate,
-    );
-    expect(getByTestId('percentCompleteNew')).toHaveTextContent('75');
+    expect(getByTestId('currentStep')).toHaveTextContent(StepsEnum.CalcForm);
+    expect(getByTestId('percentComplete')).toHaveTextContent('75');
   });
 
   it('provides initial state for edit page', async () => {
@@ -129,34 +101,27 @@ describe('MinisterHousingAllowanceContext', () => {
       </ThemeProvider>,
     );
 
-    expect(getByTestId('steps')).toHaveTextContent('3');
-    expect(getByTestId('currentEditStep')).toHaveTextContent(
-      EditRequestStepsEnum.RentOrOwn,
-    );
-    expect(getByTestId('percentCompleteEdit')).toHaveTextContent('33');
+    expect(getByTestId('steps')).toHaveTextContent('4');
+    expect(getByTestId('currentStep')).toHaveTextContent(StepsEnum.AboutForm);
+    expect(getByTestId('percentComplete')).toHaveTextContent('25');
+
+    await userEvent.click(getByRole(document.body, 'button', { name: 'Next' }));
+    expect(getByTestId('currentStep')).toHaveTextContent(StepsEnum.RentOrOwn);
+    expect(getByTestId('percentComplete')).toHaveTextContent('50');
+
+    await userEvent.click(getByRole(document.body, 'button', { name: 'Next' }));
+    expect(getByTestId('currentStep')).toHaveTextContent(StepsEnum.CalcForm);
+    expect(getByTestId('percentComplete')).toHaveTextContent('75');
+
+    await userEvent.click(getByRole(document.body, 'button', { name: 'Next' }));
+    expect(getByTestId('currentStep')).toHaveTextContent(StepsEnum.Receipt);
+    expect(getByTestId('percentComplete')).toHaveTextContent('100');
 
     await userEvent.click(
-      getByRole(document.body, 'button', { name: 'Next (Edit)' }),
+      getByRole(document.body, 'button', { name: 'Previous' }),
     );
-    expect(getByTestId('currentEditStep')).toHaveTextContent(
-      EditRequestStepsEnum.Edit,
-    );
-    expect(getByTestId('percentCompleteEdit')).toHaveTextContent('66');
-    await userEvent.click(
-      getByRole(document.body, 'button', { name: 'Next (Edit)' }),
-    );
-    expect(getByTestId('currentEditStep')).toHaveTextContent(
-      EditRequestStepsEnum.Receipt,
-    );
-    expect(getByTestId('percentCompleteEdit')).toHaveTextContent('100');
-
-    await userEvent.click(
-      getByRole(document.body, 'button', { name: 'Previous (Edit)' }),
-    );
-    expect(getByTestId('currentEditStep')).toHaveTextContent(
-      EditRequestStepsEnum.Edit,
-    );
-    expect(getByTestId('percentCompleteEdit')).toHaveTextContent('66');
+    expect(getByTestId('currentStep')).toHaveTextContent(StepsEnum.CalcForm);
+    expect(getByTestId('percentComplete')).toHaveTextContent('75');
   });
 
   it('renders children correctly', () => {

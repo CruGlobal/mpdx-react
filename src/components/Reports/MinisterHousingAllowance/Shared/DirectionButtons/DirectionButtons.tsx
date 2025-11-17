@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next';
 import { ConfirmationModal } from '../../ConfirmationModal/ConfirmationModal';
 import { CalculationFormValues } from '../../Steps/StepThree/Calculation';
 import { useMinisterHousingAllowance } from '../Context/MinisterHousingAllowanceContext';
-import { PageEnum } from '../sharedTypes';
 
 interface DirectionButtonsProps {
   handleNext?: () => void;
@@ -19,13 +18,7 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const {
-    handleNextStep,
-    handlePreviousStep,
-    pageType,
-    handleEditNextStep,
-    handleEditPreviousStep,
-  } = useMinisterHousingAllowance();
+  const { handleNextStep, handlePreviousStep } = useMinisterHousingAllowance();
 
   const { submitForm, validateForm, submitCount, isValid } =
     useFormikContext<CalculationFormValues>();
@@ -39,8 +32,6 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
       submitForm();
     }
   };
-
-  const isNew = pageType === PageEnum.New;
 
   return (
     <Box sx={{ mt: 5, display: 'flex', justifyContent: 'flex-end' }}>
@@ -56,7 +47,7 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
               },
               fontWeight: 'bold',
             }}
-            onClick={isNew ? handlePreviousStep : handleEditPreviousStep}
+            onClick={handlePreviousStep}
           >
             <ChevronLeft sx={{ mr: 1 }} />
             {t('Back')}
@@ -81,7 +72,7 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
         <Button
           variant="contained"
           color="primary"
-          onClick={handleNext ?? (isNew ? handleNextStep : handleEditNextStep)}
+          onClick={handleNext ?? handleNextStep}
         >
           {t('Continue')}
           <ChevronRight sx={{ ml: 1 }} />

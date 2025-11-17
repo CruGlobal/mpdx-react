@@ -20,8 +20,9 @@ export const CustomTextField: React.FC<CustomTextFieldProps> = ({
   const currency = 'USD';
 
   const [focused, setFocused] = useState<string | null>(null);
-  const isEditing = (name: keyof CalculationFormValues & string) =>
-    focused === name;
+  const isEditing = (name: keyof CalculationFormValues & string) => {
+    return focused === name;
+  };
 
   const { touched, errors, setFieldValue, handleBlur } =
     useFormikContext<CalculationFormValues>();

@@ -22,9 +22,10 @@ describe('EditRequestPage', () => {
   it('renders steps list', () => {
     const { getByText } = render(<TestComponent />);
 
-    expect(getByText(/1. rent or own?/i)).toBeInTheDocument();
-    expect(getByText(/2. edit your mha/i)).toBeInTheDocument();
-    expect(getByText(/3. receipt/i)).toBeInTheDocument();
+    expect(getByText(/1. about this form/i)).toBeInTheDocument();
+    expect(getByText(/2. rent or own?/i)).toBeInTheDocument();
+    expect(getByText(/3. edit your mha/i)).toBeInTheDocument();
+    expect(getByText(/4. receipt/i)).toBeInTheDocument();
   });
 
   it('updates steps when Continue clicked', async () => {
@@ -32,14 +33,14 @@ describe('EditRequestPage', () => {
       <TestComponent />,
     );
 
-    expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '33');
+    expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '25');
     expect(queryByTestId('ArrowBackIcon')).not.toBeInTheDocument();
 
     const continueButton = getByRole('button', { name: 'Continue' });
     await userEvent.click(continueButton);
 
     await waitFor(() => {
-      expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '66');
+      expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '50');
     });
 
     waitFor(() => {
@@ -47,15 +48,15 @@ describe('EditRequestPage', () => {
 
       const [firstStep, secondStep, thirdStep] = steps;
 
-      expect(firstStep).toHaveTextContent('1. Rent or Own?');
+      expect(firstStep).toHaveTextContent('1. About this Form');
       expect(
         within(firstStep).getByTestId('CheckCircleIcon'),
       ).toBeInTheDocument();
 
-      expect(secondStep).toHaveTextContent('2. Edit Your MHA');
+      expect(secondStep).toHaveTextContent('2. Rent or Own?');
       expect(within(secondStep).getByTestId('CircleIcon')).toBeInTheDocument();
 
-      expect(thirdStep).toHaveTextContent('3. Receipt');
+      expect(thirdStep).toHaveTextContent('3. Edit Your MHA');
       expect(
         within(thirdStep).getByTestId('RadioButtonUncheckedIcon'),
       ).toBeInTheDocument();
@@ -69,21 +70,24 @@ describe('EditRequestPage', () => {
 
     const [updatedFirstStep, updatedSecondStep] = updatedSteps;
 
-    expect(updatedFirstStep).toHaveTextContent('1. Rent or Own?');
+    expect(updatedFirstStep).toHaveTextContent('1. About this Form');
     expect(
       within(updatedFirstStep).getByTestId('CircleIcon'),
     ).toBeInTheDocument();
 
-    expect(updatedSecondStep).toHaveTextContent('2. Edit Your MHA');
+    expect(updatedSecondStep).toHaveTextContent('2. Rent or Own?');
     expect(
       within(updatedSecondStep).getByTestId('RadioButtonUncheckedIcon'),
     ).toBeInTheDocument();
 
-    expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '33');
+    expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '25');
   });
 
   it('should show an option is preselected', async () => {
-    const { getAllByRole } = render(<TestComponent />);
+    const { getAllByRole, getByRole } = render(<TestComponent />);
+
+    const continueButton = getByRole('button', { name: 'Continue' });
+    await userEvent.click(continueButton);
 
     expect(getAllByRole('radio', { checked: true })).toHaveLength(1);
   });

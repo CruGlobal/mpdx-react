@@ -8,12 +8,9 @@ import { mainContentWidth } from '../MinisterHousingAllowance';
 import { PanelLayout } from '../PanelLayout/PanelLayout';
 import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
 import { editOwnMock, mocks } from '../Shared/mockData';
-import {
-  EditRequestStepsEnum,
-  PanelTypeEnum,
-  RentOwnEnum,
-} from '../Shared/sharedTypes';
+import { PanelTypeEnum, RentOwnEnum, StepsEnum } from '../Shared/sharedTypes';
 import { Receipt } from '../Steps/StepFour/Receipt';
+import { AboutForm } from '../Steps/StepOne/AboutForm';
 import { Calculation } from '../Steps/StepThree/Calculation';
 import { RentOwn } from '../Steps/StepTwo/RentOwn';
 import { StepsList } from '../Steps/StepsList/StepsList';
@@ -31,8 +28,10 @@ const validationSchema = yup.object({
 export const EditRequestPage: React.FC = () => {
   const { t } = useTranslation();
 
-  const { steps, handleEditNextStep, currentEditStep } =
-    useMinisterHousingAllowance();
+  const { steps, handleNextStep, currentStep } = useMinisterHousingAllowance();
+
+  const boardDate = mocks[4].mhaDetails.staffMHA?.boardApprovalDate ?? '';
+  const availableDate = mocks[4].mhaDetails.staffMHA?.availableDate ?? '';
 
   return (
     <PanelLayout
@@ -44,26 +43,25 @@ export const EditRequestPage: React.FC = () => {
         <Formik<FormValues>
           initialValues={{ rentOrOwn: editOwnMock.rentOrOwn }}
           validationSchema={validationSchema}
-          onSubmit={() => handleEditNextStep()}
+          onSubmit={() => handleNextStep()}
         >
           <Container sx={{ ml: 5 }}>
             <Stack direction="column" width={mainContentWidth}>
-              {currentEditStep === EditRequestStepsEnum.RentOrOwn ? (
-                <RentOwn />
-              ) : currentEditStep === EditRequestStepsEnum.Edit ? (
-                <Calculation
-                  boardApprovalDate={
-                    mocks[4].mhaDetails.staffMHA?.boardApprovalDate ?? ''
-                  }
-                  availableDate={
-                    mocks[4].mhaDetails.staffMHA?.availableDate ?? ''
-                  }
+              {currentStep === StepsEnum.AboutForm ? (
+                <AboutForm
+                  boardApprovalDate={boardDate}
+                  availableDate={availableDate}
                 />
-              ) : currentEditStep === EditRequestStepsEnum.Receipt ? (
+              ) : currentStep === StepsEnum.RentOrOwn ? (
+                <RentOwn />
+              ) : currentStep === StepsEnum.CalcForm ? (
+                <Calculation
+                  boardApprovalDate={boardDate}
+                  availableDate={availableDate}
+                />
+              ) : currentStep === StepsEnum.Receipt ? (
                 <Receipt
-                  availableDate={
-                    mocks[4].mhaDetails.staffMHA?.availableDate ?? ''
-                  }
+                  availableDate={availableDate}
                   deadlineDate={
                     mocks[4].mhaDetails.staffMHA?.deadlineDate ?? ''
                   }

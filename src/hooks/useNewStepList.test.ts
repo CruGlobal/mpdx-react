@@ -35,17 +35,22 @@ describe('useNewStepList', () => {
 
     expect(result.current).toEqual([
       {
-        title: '1. Rent or Own?',
+        title: '1. About this Form',
         current: true,
         complete: false,
       },
       {
-        title: '2. Edit Your MHA',
+        title: '2. Rent or Own?',
         current: false,
         complete: false,
       },
       {
-        title: '3. Receipt',
+        title: '3. Edit Your MHA',
+        current: false,
+        complete: false,
+      },
+      {
+        title: '4. Receipt',
         current: false,
         complete: false,
       },

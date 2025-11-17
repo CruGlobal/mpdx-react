@@ -9,16 +9,10 @@ export const enum PageEnum {
   Edit = 'edit',
 }
 
-export const enum NewRequestStepsEnum {
+export const enum StepsEnum {
   AboutForm = 'about',
   RentOrOwn = 'rentOrOwn',
-  Calculate = 'calculate',
-  Receipt = 'receipt',
-}
-
-export const enum EditRequestStepsEnum {
-  RentOrOwn = 'rentOrOwn',
-  Edit = 'edit',
+  CalcForm = 'calcForm',
   Receipt = 'receipt',
 }
 
