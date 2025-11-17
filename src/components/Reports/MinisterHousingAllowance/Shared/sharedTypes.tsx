@@ -4,10 +4,15 @@ export const enum PanelTypeEnum {
   Edit = 'Edit',
 }
 
-export const enum NewRequestStepsEnum {
+export const enum PageEnum {
+  New = 'new',
+  Edit = 'edit',
+}
+
+export const enum StepsEnum {
   AboutForm = 'about',
   RentOrOwn = 'rentOrOwn',
-  Calculate = 'calculate',
+  CalcForm = 'calcForm',
   Receipt = 'receipt',
 }
 

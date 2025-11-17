@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import { useState } from 'react';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import {
@@ -12,9 +13,11 @@ import {
   IconButton,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { ConfirmationModal } from '../NewRequest/ConfirmationModal/ConfirmationModal';
+import { useAccountListId } from 'src/hooks/useAccountListId';
+import { SubmitModal } from '../SubmitModal/SubmitModal';
 
 //TODO: handle cancel request
+//TODO: handle duplicate last years mha and view current mha links
 interface CardSkeletonProps {
   title: string;
   icon: React.ElementType;
@@ -35,6 +38,9 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
   isRequest,
 }) => {
   const { t } = useTranslation();
+
+  const accountListId = useAccountListId();
+  const editLink = `/accountLists/${accountListId}/reports/housingAllowance/edit`;
 
   const [openCancel, setOpenCancel] = useState(false);
 
@@ -65,7 +71,12 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
         >
           {t(titleOne)}
         </Button>
-        <Button variant="outlined" sx={{ px: 2, py: 1 }}>
+        <Button
+          component={NextLink}
+          href={isRequest ? editLink : ''}
+          variant="outlined"
+          sx={{ px: 2, py: 1 }}
+        >
           {t(titleTwo)}
         </Button>
         {isRequest && (
@@ -79,7 +90,7 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
           </Box>
         )}
         {openCancel && (
-          <ConfirmationModal
+          <SubmitModal
             handleClose={() => setOpenCancel(false)}
             handleConfirm={() => setOpenCancel(false)}
             isCancel={true}

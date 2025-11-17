@@ -1,3 +1,4 @@
+import React from 'react';
 import { Container, Stack } from '@mui/material';
 import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
@@ -6,7 +7,7 @@ import i18n from 'src/lib/i18n';
 import { mainContentWidth } from '../MinisterHousingAllowance';
 import { PanelLayout } from '../PanelLayout/PanelLayout';
 import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
-import { mocks } from '../Shared/mockData';
+import { editOwnMock, mocks } from '../Shared/mockData';
 import { PanelTypeEnum, RentOwnEnum, StepsEnum } from '../Shared/sharedTypes';
 import { Receipt } from '../Steps/StepFour/Receipt';
 import { AboutForm } from '../Steps/StepOne/AboutForm';
@@ -24,7 +25,7 @@ const validationSchema = yup.object({
     .required(i18n.t('Please select one of the options above to continue.')),
 });
 
-export const NewRequestPage: React.FC = () => {
+export const EditRequestPage: React.FC = () => {
   const { t } = useTranslation();
 
   const { steps, handleNextStep, currentStep } = useMinisterHousingAllowance();
@@ -34,13 +35,13 @@ export const NewRequestPage: React.FC = () => {
 
   return (
     <PanelLayout
-      panelType={PanelTypeEnum.New}
-      sidebarTitle={t('New Request')}
-      sidebarAriaLabel={t('MHA New Request')}
+      panelType={PanelTypeEnum.Edit}
+      sidebarTitle={t('Edit Request')}
+      sidebarAriaLabel={t('MHA Edit Request')}
       sidebarContent={<StepsList steps={steps} />}
       mainContent={
         <Formik<FormValues>
-          initialValues={{ rentOrOwn: undefined }}
+          initialValues={{ rentOrOwn: editOwnMock.rentOrOwn }}
           validationSchema={validationSchema}
           onSubmit={() => handleNextStep()}
         >
