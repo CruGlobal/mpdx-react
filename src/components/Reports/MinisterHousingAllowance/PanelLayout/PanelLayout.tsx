@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import React from 'react';
 import { CheckCircleOutline } from '@mui/icons-material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -31,9 +32,15 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
   mainContent,
 }) => {
   const { t } = useTranslation();
+  const router = useRouter();
 
-  const { handlePreviousStep, percentComplete, currentIndex, steps } =
-    useMinisterHousingAllowance();
+  const {
+    handlePreviousStep,
+    percentComplete,
+    currentIndex,
+    steps,
+    isViewPage,
+  } = useMinisterHousingAllowance();
 
   const isLastStep = steps ? currentIndex === steps.length - 1 : false;
   const isNotFirstStep = currentIndex !== 0;
@@ -42,7 +49,21 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
     <PrintableStack direction="row">
       {panelType === PanelTypeEnum.Empty ? (
         <>
-          <Stack direction="column" width={iconPanelWidth}></Stack>
+          <Stack direction="column" width={iconPanelWidth}>
+            {isViewPage && (
+              <IconButton
+                aria-label={t('Go back')}
+                onClick={() => {
+                  router.back();
+                }}
+                sx={(theme) => ({
+                  color: theme.palette.cruGrayDark.main,
+                })}
+              >
+                <ArrowBackIcon />
+              </IconButton>
+            )}
+          </Stack>
           <Divider orientation="vertical" flexItem />
           <StyledSidebar open={true} aria-label={sidebarAriaLabel}>
             {sidebarTitle && (
