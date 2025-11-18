@@ -7,6 +7,7 @@ import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
+import { useMinisterHousingAllowance } from '../../../Shared/Context/MinisterHousingAllowanceContext';
 import { FairRentalValue } from './FairRentalValue';
 
 const submit = jest.fn();
@@ -23,7 +24,21 @@ const TestComponent: React.FC = () => (
   </ThemeProvider>
 );
 
+jest.mock('../../../Shared/Context/MinisterHousingAllowanceContext', () => ({
+  ...jest.requireActual(
+    '../../../Shared/Context/MinisterHousingAllowanceContext',
+  ),
+  useMinisterHousingAllowance: jest.fn(),
+}));
+const useMock = useMinisterHousingAllowance as jest.Mock;
+
 describe('FairRentalValue', () => {
+  beforeEach(() =>
+    useMock.mockReturnValue({
+      isPrint: false,
+    }),
+  );
+
   it('renders the component', () => {
     const { getByText, getByRole } = render(<TestComponent />);
 
@@ -67,5 +82,22 @@ describe('FairRentalValue', () => {
 
     expect(getByText('$1,500.00')).toBeInTheDocument();
     expect(getByText('$18,000.00')).toBeInTheDocument();
+  });
+
+  describe('isPrint behavior', () => {
+    it('should disable text fields when isPrint is true', () => {
+      useMock.mockReturnValue({
+        isPrint: true,
+      });
+
+      const { getByRole } = render(<TestComponent />);
+
+      const row = getByRole('row', {
+        name: /monthly market rental value of your home/i,
+      });
+      const input = within(row).getByRole('textbox');
+
+      expect(input).toBeDisabled();
+    });
   });
 });

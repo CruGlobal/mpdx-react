@@ -2,7 +2,8 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { render, within } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
 import { MinisterHousingAllowanceProvider } from '../../Shared/Context/MinisterHousingAllowanceContext';
@@ -48,7 +49,7 @@ describe('Receipt', () => {
       ),
     ).toBeInTheDocument();
 
-    expect(getByRole('button', { name: /view your mha/i })).toBeInTheDocument();
+    expect(getByRole('link', { name: /view your mha/i })).toBeInTheDocument();
   });
 
   it('renders the component in edit page', () => {
@@ -67,7 +68,7 @@ describe('Receipt', () => {
       ),
     ).toBeInTheDocument();
 
-    expect(getByRole('button', { name: /view your mha/i })).toBeInTheDocument();
+    expect(getByRole('link', { name: /view your mha/i })).toBeInTheDocument();
   });
 
   it('should change text when dates are null', () => {
@@ -97,5 +98,33 @@ describe('Receipt', () => {
       'href',
       expect.stringContaining('/reports/housingAllowance/edit'),
     );
+  });
+
+  it('should go to view link when View clicked', () => {
+    const { getByRole } = render(<TestComponent pageType={PageEnum.New} />);
+
+    const viewButton = getByRole('link', { name: /view your mha/i });
+
+    expect(viewButton).toHaveAttribute(
+      'href',
+      expect.stringContaining('/reports/housingAllowance/view'),
+    );
+  });
+
+  it('should go to view link when Print clicked', async () => {
+    const { getByRole } = render(<TestComponent pageType={PageEnum.New} />);
+
+    const viewButton = getByRole('link', { name: /print a copy/i });
+
+    expect(viewButton).toHaveAttribute(
+      'href',
+      expect.stringContaining('/reports/housingAllowance/view'),
+    );
+
+    await userEvent.click(viewButton);
+
+    waitFor(() => {
+      expect(getByRole('button', { name: /print/i })).toBeInTheDocument();
+    });
   });
 });

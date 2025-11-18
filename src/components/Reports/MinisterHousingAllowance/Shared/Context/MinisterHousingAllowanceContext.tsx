@@ -16,6 +16,12 @@ export type ContextType = {
 
   hasCalcValues: boolean;
   setHasCalcValues: (value: boolean) => void;
+
+  isPrint: boolean;
+  setIsPrint: (value: boolean) => void;
+
+  isViewPage?: boolean;
+  setIsViewPage: (value: boolean) => void;
 };
 
 const MinisterHousingAllowanceContext = createContext<ContextType | null>(null);
@@ -46,6 +52,11 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   const actionRequired = pageType === PageEnum.Edit;
   const [hasCalcValues, setHasCalcValues] = useState(
     actionRequired ? true : false,
+  );
+
+  const [isPrint, setIsPrint] = useState(false);
+  const [isViewPage, setIsViewPage] = useState(
+    type === PageEnum.View ? true : false,
   );
 
   const [currentStep, setCurrentStep] = useState(StepsEnum.AboutForm);
@@ -123,6 +134,10 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       pageType,
       hasCalcValues,
       setHasCalcValues,
+      isPrint,
+      setIsPrint,
+      isViewPage,
+      setIsViewPage,
     }),
     [
       steps,
@@ -134,6 +149,10 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       pageType,
       hasCalcValues,
       setHasCalcValues,
+      isPrint,
+      setIsPrint,
+      isViewPage,
+      setIsViewPage,
     ],
   );
 

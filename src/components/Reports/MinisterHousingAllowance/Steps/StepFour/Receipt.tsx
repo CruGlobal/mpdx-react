@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import { Edit, PrintSharp } from '@mui/icons-material';
 import { Alert, Box, Button, Link, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
@@ -7,8 +8,6 @@ import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { useMinisterHousingAllowance } from '../../Shared/Context/MinisterHousingAllowanceContext';
 import { PageEnum } from '../../Shared/sharedTypes';
-
-//TODO: Update links and functionality for Edit and Print options
 
 interface ReceiptProps {
   availableDate: string | null;
@@ -24,6 +23,7 @@ export const Receipt: React.FC<ReceiptProps> = ({
 
   const accountListId = useAccountListId();
   const editLink = `/accountLists/${accountListId}/reports/housingAllowance/edit`;
+  const viewLink = `/accountLists/${accountListId}/reports/housingAllowance/view`;
 
   const { pageType } = useMinisterHousingAllowance();
 
@@ -81,10 +81,14 @@ export const Receipt: React.FC<ReceiptProps> = ({
           fontSize="small"
           sx={{ verticalAlign: 'middle', opacity: 0.56 }}
         />{' '}
-        <Link href="">{t('Print a copy of your submitted MHA Request')}</Link>
+        <Link href={`${viewLink}?print=true`}>
+          {t('Print a copy of your submitted MHA Request')}
+        </Link>
       </Box>
       <Box sx={{ mt: 4 }}>
-        <Button variant="contained">{t('View Your MHA')}</Button>
+        <Button component={NextLink} href={viewLink} variant="contained">
+          {t('View Your MHA')}
+        </Button>
       </Box>
     </Box>
   );

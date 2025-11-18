@@ -1,11 +1,16 @@
 import { RentOwnEnum } from './sharedTypes';
 
+interface Location {
+  line1: string;
+  line2: string;
+}
+
 export interface PersonInfo {
   id: string;
   name: string;
   age: number;
   tenure: number;
-  location: string;
+  location: Location;
   children: number | null;
   email: string;
   phone: string;
@@ -70,7 +75,10 @@ export const mocks: Mock[] = [
       name: 'Doe, John',
       age: 35,
       tenure: 10,
-      location: 'Dallas, Texas',
+      location: {
+        line1: '100 Lake Heart Dr',
+        line2: 'Orlando, FL 32832',
+      },
       children: null,
       email: 'john.doe@cru.org',
       phone: '1234567890',
@@ -106,7 +114,10 @@ export const mocks: Mock[] = [
       name: 'Doe, John',
       age: 35,
       tenure: 10,
-      location: 'Dallas, Texas',
+      location: {
+        line1: '100 Lake Heart Dr',
+        line2: 'Orlando, FL 32832',
+      },
       children: null,
       email: 'john.doe@cru.org',
       phone: '1234567890',
@@ -116,7 +127,10 @@ export const mocks: Mock[] = [
       name: 'Doe, Jane',
       age: 33,
       tenure: 8,
-      location: 'Dallas, Texas',
+      location: {
+        line1: '100 Lake Heart Dr',
+        line2: 'Orlando, FL 32832',
+      },
       children: 2,
       email: 'jane.doe@cru.org',
       phone: '1234567891',
@@ -154,7 +168,10 @@ export const mocks: Mock[] = [
       name: 'Doe, John',
       age: 35,
       tenure: 10,
-      location: 'Dallas, Texas',
+      location: {
+        line1: '100 Lake Heart Dr',
+        line2: 'Orlando, FL 32832',
+      },
       children: 2,
       email: 'john.doe@cru.org',
       phone: '1234567890',
@@ -164,7 +181,10 @@ export const mocks: Mock[] = [
       name: 'Doe, Jane',
       age: 33,
       tenure: 8,
-      location: 'Dallas, Texas',
+      location: {
+        line1: '100 Lake Heart Dr',
+        line2: 'Orlando, FL 32832',
+      },
       children: 2,
       email: 'jane.doe@cru.org',
       phone: '1234567891',
@@ -223,7 +243,10 @@ export const mocks: Mock[] = [
       name: 'Doe, John',
       age: 35,
       tenure: 10,
-      location: 'Dallas, Texas',
+      location: {
+        line1: '100 Lake Heart Dr',
+        line2: 'Orlando, FL 32832',
+      },
       children: 2,
       email: 'john.doe@cru.org',
       phone: '1234567890',
@@ -274,7 +297,10 @@ export const mocks: Mock[] = [
       name: 'Doe, John',
       age: 35,
       tenure: 10,
-      location: 'Dallas, Texas',
+      location: {
+        line1: '100 Lake Heart Dr',
+        line2: 'Orlando, FL 32832',
+      },
       children: 2,
       email: 'john.doe@cru.org',
       phone: '1234567890',
@@ -284,7 +310,10 @@ export const mocks: Mock[] = [
       name: 'Doe, Jane',
       age: 33,
       tenure: 8,
-      location: 'Dallas, Texas',
+      location: {
+        line1: '100 Lake Heart Dr',
+        line2: 'Orlando, FL 32832',
+      },
       children: 2,
       email: 'jane.doe@cru.org',
       phone: '1234567891',

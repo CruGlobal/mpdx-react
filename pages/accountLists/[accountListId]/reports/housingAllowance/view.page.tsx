@@ -1,15 +1,13 @@
 import Head from 'next/head';
-import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React from 'react';
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
-import { EditRequestPage } from 'src/components/Reports/MinisterHousingAllowance/EditRequest/EditRequestPage';
-import { NewRequestPage } from 'src/components/Reports/MinisterHousingAllowance/NewRequest/NewRequestPage';
 import { MinisterHousingAllowanceProvider } from 'src/components/Reports/MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
 import { PageEnum } from 'src/components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
+import { ViewRequestPage } from 'src/components/Reports/MinisterHousingAllowance/ViewRequest/ViewRequestPage';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -19,27 +17,15 @@ import {
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 
-const RequestPageWrapper = styled(Box)(({ theme }) => ({
+const ViewRequestPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
 }));
 
-const HousingAllowanceRequestPage: React.FC = () => {
+const HousingAllowanceViewRequestPage: React.FC = () => {
   const { t } = useTranslation();
-  const router = useRouter();
-  const { requestId } = router.query;
+  const title = t("View Minister's Housing Allowance Request");
 
-  if (!requestId) {
-    return null;
-  }
-
-  const [mode] = Array.isArray(requestId) ? requestId : [requestId];
-  const type = mode === PageEnum.New ? PageEnum.New : PageEnum.Edit;
-
-  const title = t("{{mode}} Minister's Housing Allowance Request", {
-    mode: type === PageEnum.New ? 'New' : 'Edit',
-  });
-
-  const [isNavListOpen, setIsNavListOpen] = useState(false);
+  const [isNavListOpen, setIsNavListOpen] = React.useState(false);
 
   const handleNavListToggle = () => {
     setIsNavListOpen(!isNavListOpen);
@@ -50,13 +36,13 @@ const HousingAllowanceRequestPage: React.FC = () => {
       <Head>
         <title>{title}</title>
       </Head>
-      <RequestPageWrapper>
+      <ViewRequestPageWrapper>
         <SidePanelsLayout
           isScrollBox={false}
           leftPanel={
             <MultiPageMenu
               isOpen={isNavListOpen}
-              selectedId={'housingAllowance' + type}
+              selectedId={'housingAllowanceView'}
               onClose={handleNavListToggle}
               navType={NavTypeEnum.Reports}
             />
@@ -71,20 +57,16 @@ const HousingAllowanceRequestPage: React.FC = () => {
                 title={t("Minister's Housing Allowance Request")}
                 headerType={HeaderTypeEnum.Report}
               />
-              <MinisterHousingAllowanceProvider type={type}>
-                {type === PageEnum.New ? (
-                  <NewRequestPage />
-                ) : (
-                  <EditRequestPage />
-                )}
+              <MinisterHousingAllowanceProvider type={PageEnum.View}>
+                <ViewRequestPage />
               </MinisterHousingAllowanceProvider>
             </>
           }
         />
-      </RequestPageWrapper>
+      </ViewRequestPageWrapper>
     </>
   );
 };
 
 export const getServerSideProps = ensureSessionAndAccountList;
-export default HousingAllowanceRequestPage;
+export default HousingAllowanceViewRequestPage;

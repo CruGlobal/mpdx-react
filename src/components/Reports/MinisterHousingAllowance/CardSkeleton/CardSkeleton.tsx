@@ -41,6 +41,7 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
 
   const accountListId = useAccountListId();
   const editLink = `/accountLists/${accountListId}/reports/housingAllowance/edit`;
+  const viewLink = `/accountLists/${accountListId}/reports/housingAllowance/view`;
 
   const [openCancel, setOpenCancel] = useState(false);
 
@@ -66,10 +67,12 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
       <Divider />
       <CardActionArea sx={{ p: 2 }}>
         <Button
+          component={NextLink}
+          href={viewLink}
           variant={isRequest ? 'contained' : 'outlined'}
           sx={{ px: 2, py: 1, mr: 1 }}
         >
-          {t(titleOne)}
+          {titleOne}
         </Button>
         <Button
           component={NextLink}
@@ -77,7 +80,7 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
           variant="outlined"
           sx={{ px: 2, py: 1 }}
         >
-          {t(titleTwo)}
+          {titleTwo}
         </Button>
         {isRequest && (
           <Box sx={{ float: 'right' }}>

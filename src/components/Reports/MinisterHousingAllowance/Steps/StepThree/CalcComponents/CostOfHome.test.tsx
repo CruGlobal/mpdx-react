@@ -8,6 +8,7 @@ import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
 import { RentOwnEnum } from 'src/components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
 import theme from 'src/theme';
+import { useMinisterHousingAllowance } from '../../../Shared/Context/MinisterHousingAllowanceContext';
 import { CostOfHome } from './CostOfHome';
 
 const submit = jest.fn();
@@ -28,7 +29,21 @@ const TestComponent: React.FC<TestComponentProps> = ({ rentOrOwn }) => (
   </ThemeProvider>
 );
 
+jest.mock('../../../Shared/Context/MinisterHousingAllowanceContext', () => ({
+  ...jest.requireActual(
+    '../../../Shared/Context/MinisterHousingAllowanceContext',
+  ),
+  useMinisterHousingAllowance: jest.fn(),
+}));
+const useMock = useMinisterHousingAllowance as jest.Mock;
+
 describe('CostOfHome', () => {
+  beforeEach(() => {
+    useMock.mockReturnValue({
+      isPrint: false,
+    });
+  });
+
   it('renders the component for own', () => {
     const { getByText, getByRole } = render(
       <TestComponent rentOrOwn={RentOwnEnum.Own} />,
@@ -105,5 +120,24 @@ describe('CostOfHome', () => {
 
     expect(getByText('$2,400.00')).toBeInTheDocument();
     expect(getByText('$28,800.00')).toBeInTheDocument();
+  });
+
+  describe('isPrint behavior', () => {
+    it('should disable text fields when isPrint is true', () => {
+      useMock.mockReturnValue({
+        isPrint: true,
+      });
+
+      const { getByRole } = render(
+        <TestComponent rentOrOwn={RentOwnEnum.Own} />,
+      );
+
+      const row = getByRole('row', {
+        name: /estimated monthly cost of repairs/i,
+      });
+      const input = within(row).getByRole('textbox');
+
+      expect(input).toBeDisabled();
+    });
   });
 });
