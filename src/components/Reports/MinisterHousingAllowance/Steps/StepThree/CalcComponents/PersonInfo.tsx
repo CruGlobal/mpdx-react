@@ -9,7 +9,7 @@ export const PersonInfo: React.FC = () => {
 
   return (
     <Box sx={{ mb: 3 }}>
-      <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+      <Typography variant="body1" sx={{ fontWeight: 'bold', fontSize: 18 }}>
         {t('Personal Contact Information')}
       </Typography>
       <Grid container spacing={2}>

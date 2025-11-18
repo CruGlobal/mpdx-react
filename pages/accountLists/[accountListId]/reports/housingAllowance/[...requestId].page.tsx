@@ -11,6 +11,7 @@ import { NewRequestPage } from 'src/components/Reports/MinisterHousingAllowance/
 import { MinisterHousingAllowanceProvider } from 'src/components/Reports/MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
 import { PageEnum } from 'src/components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
 import { ViewRequestPage } from 'src/components/Reports/MinisterHousingAllowance/ViewRequest/ViewRequestPage';
+import { SimpleScreenOnly } from 'src/components/Reports/styledComponents';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -72,12 +73,14 @@ const HousingAllowanceRequestPage: React.FC = () => {
           leftWidth="290px"
           mainContent={
             <>
-              <MultiPageHeader
-                isNavListOpen={isNavListOpen}
-                onNavListToggle={handleNavListToggle}
-                title={t("Minister's Housing Allowance Request")}
-                headerType={HeaderTypeEnum.Report}
-              />
+              <SimpleScreenOnly>
+                <MultiPageHeader
+                  isNavListOpen={isNavListOpen}
+                  onNavListToggle={handleNavListToggle}
+                  title={t("Minister's Housing Allowance Request")}
+                  headerType={HeaderTypeEnum.Report}
+                />
+              </SimpleScreenOnly>
               <MinisterHousingAllowanceProvider type={type}>
                 {type === PageEnum.New ? (
                   <NewRequestPage />

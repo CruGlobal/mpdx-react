@@ -16,6 +16,10 @@ import {
   PageEnum,
   RentOwnEnum,
 } from 'src/components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
+import {
+  SimplePrintOnly,
+  SimpleScreenOnly,
+} from 'src/components/Reports/styledComponents';
 import { useAnnualTotal } from 'src/hooks/useAnnualTotal';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
@@ -41,8 +45,23 @@ export const RequestSummaryCard: React.FC<RequestSummaryCardProps> = ({
   const above = pageType === PageEnum.View ? '' : ' above';
 
   return (
-    <Card>
-      <CardHeader title={<b>{t('Your MHA Request Summary')}</b>} />
+    <Card
+      sx={{
+        '@media print': {
+          maxWidth: '100%',
+          boxSizing: 'border-box',
+          boxShadow: 'none',
+        },
+      }}
+    >
+      <SimpleScreenOnly>
+        <CardHeader title={<b>{t('Your MHA Request Summary')}</b>} />
+      </SimpleScreenOnly>
+      <SimplePrintOnly>
+        <Typography variant="h6" sx={{ mb: -3 }}>
+          {t('Request Summary')}
+        </Typography>
+      </SimplePrintOnly>
       <CardContent>
         <Table
           sx={{

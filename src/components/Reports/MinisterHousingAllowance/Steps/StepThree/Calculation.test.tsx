@@ -241,15 +241,13 @@ describe('Calculation', () => {
     });
 
     it('renders view only mode', () => {
-      const { getByRole, queryByRole } = render(<TestComponent />);
+      const { getByRole, queryByRole, getByText } = render(<TestComponent />);
 
       expect(
         getByRole('heading', { name: 'Your MHA Request' }),
       ).toBeInTheDocument();
 
-      expect(
-        getByRole('heading', { name: 'Personal Contact Information' }),
-      ).toBeInTheDocument();
+      expect(getByText('Personal Contact Information')).toBeInTheDocument();
 
       expect(
         queryByRole('button', { name: /continue/i }),

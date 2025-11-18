@@ -44,7 +44,9 @@ describe('FairRentalValue', () => {
     const { getByText, getByRole } = render(<TestComponent />);
 
     expect(getByRole('table')).toBeInTheDocument();
-    expect(getByText('Fair Rental Value')).toBeInTheDocument();
+    expect(
+      getByText('Fair Rental Value', { selector: '.MuiCardHeader-title' }),
+    ).toBeInTheDocument();
 
     expect(getByRole('columnheader', { name: 'Category' })).toBeInTheDocument();
     expect(getByRole('columnheader', { name: 'Amount' })).toBeInTheDocument();

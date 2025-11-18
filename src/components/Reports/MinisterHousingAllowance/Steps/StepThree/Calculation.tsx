@@ -17,7 +17,10 @@ import { Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { Trans, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { StyledPrintButton } from 'src/components/Reports/styledComponents';
+import {
+  SimpleScreenOnly,
+  StyledPrintButton,
+} from 'src/components/Reports/styledComponents';
 import { useLocale } from 'src/hooks/useLocale';
 import i18n from 'src/lib/i18n';
 import { dateFormatShort } from 'src/lib/intlFormat';
@@ -37,6 +40,7 @@ interface CalculationProps {
   boardApprovalDate: string | null;
   availableDate: string | null;
   rentOrOwn: RentOwnEnum | undefined;
+  handlePrint?: () => void;
 }
 export interface CalculationFormValues {
   rentalValue?: number | null;
@@ -95,6 +99,7 @@ export const Calculation: React.FC<CalculationProps> = ({
   boardApprovalDate,
   availableDate,
   rentOrOwn,
+  handlePrint,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -156,10 +161,6 @@ export const Calculation: React.FC<CalculationProps> = ({
     setIsPrint(print);
   }, [print, setIsPrint]);
 
-  const handlePrint = () => {
-    window.print();
-  };
-
   return (
     <Formik<CalculationFormValues>
       initialValues={initialValues}
@@ -198,16 +199,18 @@ export const Calculation: React.FC<CalculationProps> = ({
                     : t('Calculate Your MHA Request')}
                 </Typography>
                 {isPrint && (
-                  <StyledPrintButton
-                    startIcon={
-                      <SvgIcon fontSize="small">
-                        <PrintIcon titleAccess={t('Print')} />
-                      </SvgIcon>
-                    }
-                    onClick={handlePrint}
-                  >
-                    {t('Print')}
-                  </StyledPrintButton>
+                  <SimpleScreenOnly>
+                    <StyledPrintButton
+                      startIcon={
+                        <SvgIcon fontSize="small">
+                          <PrintIcon titleAccess={t('Print')} />
+                        </SvgIcon>
+                      }
+                      onClick={handlePrint}
+                    >
+                      {t('Print')}
+                    </StyledPrintButton>
+                  </SimpleScreenOnly>
                 )}
               </Box>
             </Box>
@@ -234,15 +237,17 @@ export const Calculation: React.FC<CalculationProps> = ({
                 )}
               </Trans>
             )}
-            <Box sx={{ mt: 2, mb: 3 }}>
-              <OpenInNew
-                fontSize="medium"
-                sx={{ verticalAlign: 'middle', opacity: 0.56 }}
-              />{' '}
-              <Link component="button" type="button">
-                What expenses can I claim on my MHA?
-              </Link>
-            </Box>
+            {!isPrint && (
+              <Box sx={{ mt: 2, mb: 3 }}>
+                <OpenInNew
+                  fontSize="medium"
+                  sx={{ verticalAlign: 'middle', opacity: 0.56 }}
+                />{' '}
+                <Link component="button" type="button">
+                  What expenses can I claim on my MHA?
+                </Link>
+              </Box>
+            )}
             {isViewPage && (
               <Box mb={3}>
                 <RequestSummaryCard rentOrOwn={rentOrOwn} />

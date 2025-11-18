@@ -9,6 +9,10 @@ import { Calculation } from '../Steps/StepThree/Calculation';
 export const ViewRequestPage: React.FC = () => {
   const { t } = useTranslation();
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
     <PanelLayout
       panelType={PanelTypeEnum.Empty}
@@ -22,6 +26,7 @@ export const ViewRequestPage: React.FC = () => {
               }
               availableDate={mocks[4].mhaDetails.staffMHA?.availableDate ?? ''}
               rentOrOwn={editOwnMock.rentOrOwn}
+              handlePrint={handlePrint}
             />
           </Stack>
         </Container>

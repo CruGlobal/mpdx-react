@@ -23,11 +23,9 @@ const TestComponent: React.FC = () => (
 
 describe('PersonInfo', () => {
   it('renders personal contact information', () => {
-    const { getByText, getByRole } = render(<TestComponent />);
+    const { getByText } = render(<TestComponent />);
 
-    expect(
-      getByRole('heading', { name: 'Personal Contact Information' }),
-    ).toBeInTheDocument();
+    expect(getByText('Personal Contact Information')).toBeInTheDocument();
 
     expect(getByText(name)).toBeInTheDocument();
     expect(getByText(`Staff Account Number: ${id}`)).toBeInTheDocument();

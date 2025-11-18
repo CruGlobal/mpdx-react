@@ -51,7 +51,11 @@ describe('CostOfHome', () => {
     );
 
     expect(getByRole('table')).toBeInTheDocument();
-    expect(getByText('Cost of Providing a Home')).toBeInTheDocument();
+    expect(
+      getByText('Cost of Providing a Home', {
+        selector: '.MuiCardHeader-title',
+      }),
+    ).toBeInTheDocument();
 
     expect(getByRole('columnheader', { name: 'Category' })).toBeInTheDocument();
     expect(getByRole('columnheader', { name: 'Amount' })).toBeInTheDocument();
@@ -67,7 +71,11 @@ describe('CostOfHome', () => {
     );
 
     expect(getByRole('table')).toBeInTheDocument();
-    expect(getByText('Cost of Providing a Home')).toBeInTheDocument();
+    expect(
+      getByText('Cost of Providing a Home', {
+        selector: '.MuiCardHeader-title',
+      }),
+    ).toBeInTheDocument();
 
     expect(getByRole('columnheader', { name: 'Category' })).toBeInTheDocument();
     expect(getByRole('columnheader', { name: 'Amount' })).toBeInTheDocument();

@@ -68,7 +68,7 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
             )}
           </StyledSidebar>
           <Divider orientation="vertical" flexItem />
-          <MainContent>{mainContent}</MainContent>
+          <MainContent className="main-content">{mainContent}</MainContent>
         </>
       ) : (
         <>
