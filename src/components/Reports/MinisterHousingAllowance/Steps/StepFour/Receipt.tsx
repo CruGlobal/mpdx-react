@@ -25,7 +25,7 @@ export const Receipt: React.FC<ReceiptProps> = ({
   const editLink = `/accountLists/${accountListId}/reports/housingAllowance/edit`;
   const viewLink = `/accountLists/${accountListId}/reports/housingAllowance/view`;
 
-  const { pageType } = useMinisterHousingAllowance();
+  const { pageType, setPreviousPage } = useMinisterHousingAllowance();
 
   const available = availableDate
     ? dateFormatShort(DateTime.fromISO(availableDate), locale)
@@ -41,6 +41,11 @@ export const Receipt: React.FC<ReceiptProps> = ({
     : t('approval soon');
 
   const isEdit = pageType === PageEnum.Edit;
+
+  const handleSetPreviousPage = () => {
+    const page = isEdit ? PageEnum.Edit : PageEnum.New;
+    setPreviousPage(page);
+  };
 
   return (
     <Box>
@@ -81,12 +86,21 @@ export const Receipt: React.FC<ReceiptProps> = ({
           fontSize="small"
           sx={{ verticalAlign: 'middle', opacity: 0.56 }}
         />{' '}
-        <Link href={`${viewLink}?print=true`}>
+        <Link
+          component={NextLink}
+          href={`${viewLink}?print=true`}
+          onClick={handleSetPreviousPage}
+        >
           {t('Print a copy of your submitted MHA Request')}
         </Link>
       </Box>
       <Box sx={{ mt: 4 }}>
-        <Button component={NextLink} href={viewLink} variant="contained">
+        <Button
+          component={NextLink}
+          href={viewLink}
+          onClick={handleSetPreviousPage}
+          variant="contained"
+        >
           {t('View Your MHA')}
         </Button>
       </Box>

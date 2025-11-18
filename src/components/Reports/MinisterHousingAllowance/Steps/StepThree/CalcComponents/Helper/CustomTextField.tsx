@@ -3,6 +3,7 @@ import { TextField } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { useMinisterHousingAllowance } from 'src/components/Reports/MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
+import { PageEnum } from 'src/components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
 import { useLocale } from 'src/hooks/useLocale';
 import { CalculationFormValues } from '../../Calculation';
 import { display, parseInput } from './formatHelper';
@@ -20,7 +21,7 @@ export const CustomTextField: React.FC<CustomTextFieldProps> = ({
   const locale = useLocale();
   const currency = 'USD';
 
-  const { isViewPage } = useMinisterHousingAllowance();
+  const { pageType } = useMinisterHousingAllowance();
 
   const [focused, setFocused] = useState<string | null>(null);
   const isEditing = (name: keyof CalculationFormValues & string) => {
@@ -47,7 +48,7 @@ export const CustomTextField: React.FC<CustomTextFieldProps> = ({
       error={touched[name] && Boolean(errors[name])}
       helperText={touched[name] && errors[name]}
       placeholder={t('Enter Amount')}
-      disabled={isViewPage}
+      disabled={pageType === PageEnum.View}
     />
   );
 };

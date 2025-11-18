@@ -7,9 +7,9 @@ import {
   MinisterHousingAllowanceProvider,
   useMinisterHousingAllowance,
 } from '../Shared/Context/MinisterHousingAllowanceContext';
+import { PageEnum } from '../Shared/sharedTypes';
 import { ViewRequestPage } from './ViewRequestPage';
 
-const setIsViewPage = jest.fn();
 const setHasCalcValues = jest.fn();
 const setIsPrint = jest.fn();
 
@@ -29,19 +29,18 @@ jest.mock('../Shared/Context/MinisterHousingAllowanceContext', () => ({
 }));
 
 (useMinisterHousingAllowance as jest.Mock).mockReturnValue({
-  isViewPage: true,
-  setIsViewPage,
+  pageType: PageEnum.View,
   setHasCalcValues,
   setIsPrint,
 });
 
 describe('ViewRequestPage', () => {
   it('renders empty panel layout,', () => {
-    const { getByText, queryByRole, queryByTestId } = render(<TestComponent />);
+    const { getByText, queryByRole, getByTestId } = render(<TestComponent />);
 
     expect(getByText('Your MHA')).toBeInTheDocument();
     expect(queryByRole('progressbar')).not.toBeInTheDocument();
-    expect(queryByTestId('ArrowBackIcon')).not.toBeInTheDocument();
+    expect(getByTestId('ArrowBackIcon')).toBeInTheDocument();
   });
 
   it('should have disabled text fields', () => {

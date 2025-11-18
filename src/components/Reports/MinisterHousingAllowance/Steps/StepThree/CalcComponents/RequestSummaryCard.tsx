@@ -12,7 +12,10 @@ import {
 } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { Trans, useTranslation } from 'react-i18next';
-import { RentOwnEnum } from 'src/components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
+import {
+  PageEnum,
+  RentOwnEnum,
+} from 'src/components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
 import { useAnnualTotal } from 'src/hooks/useAnnualTotal';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
@@ -33,9 +36,9 @@ export const RequestSummaryCard: React.FC<RequestSummaryCardProps> = ({
   const { values } = useFormikContext<CalculationFormValues>();
   const { annualTotal } = useAnnualTotal(values);
 
-  const { isViewPage } = useMinisterHousingAllowance();
+  const { pageType } = useMinisterHousingAllowance();
 
-  const above = isViewPage ? '' : ' above';
+  const above = pageType === PageEnum.View ? '' : ' above';
 
   return (
     <Card>

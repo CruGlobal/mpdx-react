@@ -14,7 +14,7 @@ import {
   iconPanelWidth,
 } from 'src/components/Shared/IconPanelLayout/IconPanelLayout';
 import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
-import { PanelTypeEnum } from '../Shared/sharedTypes';
+import { PageEnum, PanelTypeEnum } from '../Shared/sharedTypes';
 
 interface PanelLayoutProps {
   panelType: PanelTypeEnum;
@@ -34,13 +34,12 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
   const { t } = useTranslation();
   const router = useRouter();
 
-  const {
-    handlePreviousStep,
-    percentComplete,
-    currentIndex,
-    steps,
-    isViewPage,
-  } = useMinisterHousingAllowance();
+  const { handlePreviousStep, percentComplete, currentIndex, steps, pageType } =
+    useMinisterHousingAllowance();
+
+  const handleGoBack = () => {
+    router.back();
+  };
 
   const isLastStep = steps ? currentIndex === steps.length - 1 : false;
   const isNotFirstStep = currentIndex !== 0;
@@ -50,12 +49,10 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
       {panelType === PanelTypeEnum.Empty ? (
         <>
           <Stack direction="column" width={iconPanelWidth}>
-            {isViewPage && (
+            {pageType === PageEnum.View && (
               <IconButton
                 aria-label={t('Go back')}
-                onClick={() => {
-                  router.back();
-                }}
+                onClick={handleGoBack}
                 sx={(theme) => ({
                   color: theme.palette.cruGrayDark.main,
                 })}

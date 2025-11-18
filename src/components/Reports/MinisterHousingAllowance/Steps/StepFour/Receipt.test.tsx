@@ -6,25 +6,28 @@ import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
-import { MinisterHousingAllowanceProvider } from '../../Shared/Context/MinisterHousingAllowanceContext';
+import {
+  MinisterHousingAllowanceProvider,
+  useMinisterHousingAllowance,
+} from '../../Shared/Context/MinisterHousingAllowanceContext';
 import { PageEnum } from '../../Shared/sharedTypes';
 import { Receipt } from './Receipt';
 
+const setPreviousPage = jest.fn();
+
 interface TestComponentProps {
-  pageType?: PageEnum;
   availableDate?: string | null;
   deadlineDate?: string | null;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
-  pageType,
   availableDate = '2024-06-15',
   deadlineDate = '2024-07-01',
 }) => (
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <TestRouter>
-        <MinisterHousingAllowanceProvider type={pageType}>
+        <MinisterHousingAllowanceProvider>
           <Receipt availableDate={availableDate} deadlineDate={deadlineDate} />
         </MinisterHousingAllowanceProvider>
       </TestRouter>
@@ -32,9 +35,22 @@ const TestComponent: React.FC<TestComponentProps> = ({
   </ThemeProvider>
 );
 
+jest.mock('../../Shared/Context/MinisterHousingAllowanceContext', () => ({
+  ...jest.requireActual('../../Shared/Context/MinisterHousingAllowanceContext'),
+  useMinisterHousingAllowance: jest.fn(),
+}));
+const useMock = useMinisterHousingAllowance as jest.Mock;
+
 describe('Receipt', () => {
+  beforeEach(() => {
+    useMock.mockReturnValue({
+      pageType: PageEnum.New,
+      setPreviousPage,
+    });
+  });
+
   it('renders the component in new page', () => {
-    const { getByRole } = render(<TestComponent pageType={PageEnum.New} />);
+    const { getByRole } = render(<TestComponent />);
 
     expect(
       getByRole('heading', {
@@ -52,32 +68,9 @@ describe('Receipt', () => {
     expect(getByRole('link', { name: /view your mha/i })).toBeInTheDocument();
   });
 
-  it('renders the component in edit page', () => {
-    const { getByRole } = render(<TestComponent pageType={PageEnum.Edit} />);
-
-    expect(
-      getByRole('heading', {
-        name: 'Thank you for updating your MHA Request!',
-      }),
-    ).toBeInTheDocument();
-
-    expect(getByRole('alert')).toBeInTheDocument();
-    expect(
-      within(getByRole('alert')).getByText(
-        /you've successfully updated your mha request!/i,
-      ),
-    ).toBeInTheDocument();
-
-    expect(getByRole('link', { name: /view your mha/i })).toBeInTheDocument();
-  });
-
   it('should change text when dates are null', () => {
     const { getByText } = render(
-      <TestComponent
-        pageType={PageEnum.New}
-        availableDate={null}
-        deadlineDate={null}
-      />,
+      <TestComponent availableDate={null} deadlineDate={null} />,
     );
 
     expect(
@@ -88,7 +81,7 @@ describe('Receipt', () => {
   });
 
   it('should go to edit link when clicked', () => {
-    const { getByRole } = render(<TestComponent pageType={PageEnum.New} />);
+    const { getByRole } = render(<TestComponent />);
 
     const editButton = getByRole('link', {
       name: /edit your mha request \(not available after/i,
@@ -101,7 +94,7 @@ describe('Receipt', () => {
   });
 
   it('should go to view link when View clicked', () => {
-    const { getByRole } = render(<TestComponent pageType={PageEnum.New} />);
+    const { getByRole } = render(<TestComponent />);
 
     const viewButton = getByRole('link', { name: /view your mha/i });
 
@@ -112,7 +105,7 @@ describe('Receipt', () => {
   });
 
   it('should go to view link when Print clicked', async () => {
-    const { getByRole } = render(<TestComponent pageType={PageEnum.New} />);
+    const { getByRole } = render(<TestComponent />);
 
     const viewButton = getByRole('link', { name: /print a copy/i });
 
@@ -124,7 +117,36 @@ describe('Receipt', () => {
     await userEvent.click(viewButton);
 
     waitFor(() => {
+      expect(setPreviousPage).toHaveBeenCalled();
       expect(getByRole('button', { name: /print/i })).toBeInTheDocument();
+    });
+  });
+
+  describe('Edit page type', () => {
+    beforeEach(() => {
+      useMock.mockReturnValue({
+        pageType: PageEnum.Edit,
+        setPreviousPage,
+      });
+    });
+
+    it('renders the component in edit page', () => {
+      const { getByRole } = render(<TestComponent />);
+
+      expect(
+        getByRole('heading', {
+          name: 'Thank you for updating your MHA Request!',
+        }),
+      ).toBeInTheDocument();
+
+      expect(getByRole('alert')).toBeInTheDocument();
+      expect(
+        within(getByRole('alert')).getByText(
+          /you've successfully updated your mha request!/i,
+        ),
+      ).toBeInTheDocument();
+
+      expect(getByRole('link', { name: /view your mha/i })).toBeInTheDocument();
     });
   });
 });

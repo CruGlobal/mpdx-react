@@ -8,6 +8,7 @@ import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
 import { useMinisterHousingAllowance } from '../../../Shared/Context/MinisterHousingAllowanceContext';
+import { PageEnum } from '../../../Shared/sharedTypes';
 import { FairRentalValue } from './FairRentalValue';
 
 const submit = jest.fn();
@@ -35,7 +36,7 @@ const useMock = useMinisterHousingAllowance as jest.Mock;
 describe('FairRentalValue', () => {
   beforeEach(() =>
     useMock.mockReturnValue({
-      isPrint: false,
+      pageType: PageEnum.New,
     }),
   );
 
@@ -85,9 +86,9 @@ describe('FairRentalValue', () => {
   });
 
   describe('isPrint behavior', () => {
-    it('should disable text fields when isPrint is true', () => {
+    it('should disable text fields when on view page', () => {
       useMock.mockReturnValue({
-        isPrint: true,
+        pageType: PageEnum.View,
       });
 
       const { getByRole } = render(<TestComponent />);

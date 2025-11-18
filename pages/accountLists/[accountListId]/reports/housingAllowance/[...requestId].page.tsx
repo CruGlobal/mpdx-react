@@ -10,6 +10,7 @@ import { EditRequestPage } from 'src/components/Reports/MinisterHousingAllowance
 import { NewRequestPage } from 'src/components/Reports/MinisterHousingAllowance/NewRequest/NewRequestPage';
 import { MinisterHousingAllowanceProvider } from 'src/components/Reports/MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
 import { PageEnum } from 'src/components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
+import { ViewRequestPage } from 'src/components/Reports/MinisterHousingAllowance/ViewRequest/ViewRequestPage';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -33,10 +34,16 @@ const HousingAllowanceRequestPage: React.FC = () => {
   }
 
   const [mode] = Array.isArray(requestId) ? requestId : [requestId];
-  const type = mode === PageEnum.New ? PageEnum.New : PageEnum.Edit;
+  const type =
+    mode === PageEnum.New
+      ? PageEnum.New
+      : mode === PageEnum.Edit
+        ? PageEnum.Edit
+        : PageEnum.View;
 
   const title = t("{{mode}} Minister's Housing Allowance Request", {
-    mode: type === PageEnum.New ? 'New' : 'Edit',
+    mode:
+      type === PageEnum.New ? 'New' : type === PageEnum.Edit ? 'Edit' : 'View',
   });
 
   const [isNavListOpen, setIsNavListOpen] = useState(false);
@@ -74,8 +81,10 @@ const HousingAllowanceRequestPage: React.FC = () => {
               <MinisterHousingAllowanceProvider type={type}>
                 {type === PageEnum.New ? (
                   <NewRequestPage />
-                ) : (
+                ) : type === PageEnum.Edit ? (
                   <EditRequestPage />
+                ) : (
+                  <ViewRequestPage />
                 )}
               </MinisterHousingAllowanceProvider>
             </>

@@ -61,7 +61,6 @@ describe('Calculation', () => {
   beforeEach(() => {
     useMock.mockReturnValue({
       pageType: PageEnum.New,
-      isViewPage: false,
       setHasCalcValues,
       setIsPrint,
     });
@@ -235,8 +234,7 @@ describe('Calculation', () => {
   describe('isViewPage behavior', () => {
     beforeEach(() => {
       useMock.mockReturnValue({
-        pageType: PageEnum.New,
-        isViewPage: true,
+        pageType: PageEnum.View,
         setHasCalcValues,
         setIsPrint,
       });

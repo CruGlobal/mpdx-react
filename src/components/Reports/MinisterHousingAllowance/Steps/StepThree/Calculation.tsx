@@ -101,16 +101,12 @@ export const Calculation: React.FC<CalculationProps> = ({
   const { query } = useRouter();
   const print = query.print === 'true';
 
-  const {
-    handleNextStep,
-    pageType,
-    setHasCalcValues,
-    setIsPrint,
-    isPrint,
-    isViewPage,
-  } = useMinisterHousingAllowance();
+  const { handleNextStep, pageType, setHasCalcValues, setIsPrint, isPrint } =
+    useMinisterHousingAllowance();
 
-  const actionRequired = pageType === PageEnum.Edit;
+  const actionRequired =
+    pageType === PageEnum.Edit || pageType === PageEnum.View;
+  const isViewPage = pageType === PageEnum.View;
 
   const initialValues: CalculationFormValues = actionRequired
     ? {

@@ -8,7 +8,7 @@ import { EligibleDisplay } from './MainPages/EligibleDisplay';
 import { IneligibleDisplay } from './MainPages/IneligibleDisplay';
 import { PanelLayout } from './PanelLayout/PanelLayout';
 import { MinisterHousingAllowanceProvider } from './Shared/Context/MinisterHousingAllowanceContext';
-import { mocks } from './Shared/mockData';
+import { Mock } from './Shared/mockData';
 import { PanelTypeEnum } from './Shared/sharedTypes';
 import { CurrentBoardApproved } from './SharedComponents/CurrentBoardApproved';
 import { CurrentRequest } from './SharedComponents/CurrentRequest';
@@ -16,18 +16,17 @@ import { NameDisplay } from './SharedComponents/NameDisplay';
 
 export const mainContentWidth = theme.spacing(85);
 
-export const MinisterHousingAllowanceReport: React.FC = () => {
+interface MinisterHousingAllowanceReportProps {
+  testPerson: Mock;
+}
+
+export const MinisterHousingAllowanceReport: React.FC<
+  MinisterHousingAllowanceReportProps
+> = ({ testPerson }) => {
   const { t } = useTranslation();
 
   const accountListId = useAccountListId();
   const requestLink = `/accountLists/${accountListId}/reports/housingAllowance/new`;
-
-  // mock[0] --> Single, no pending, no approved
-  // mock[1] --> Married, no pending, no approved
-  // mock[2] --> Married, no pending, approved
-  // mock[3] --> Single, no pending, approved
-  // mock[4] --> Married, pending, no approved
-  const testPerson = mocks[4];
 
   const isMarried = testPerson.spouseInfo !== null;
   const title = t('Your MHA');

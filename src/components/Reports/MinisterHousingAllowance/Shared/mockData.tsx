@@ -56,7 +56,7 @@ interface CurrentSalary {
   grossSalaryAmount: number;
 }
 
-interface Mock {
+export interface Mock {
   staffInfo: PersonInfo;
   spouseInfo: PersonInfo | null;
   mhaDetails: MhaDetails;

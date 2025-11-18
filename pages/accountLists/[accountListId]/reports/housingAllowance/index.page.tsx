@@ -5,6 +5,7 @@ import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
 import { MinisterHousingAllowanceReport } from 'src/components/Reports/MinisterHousingAllowance/MinisterHousingAllowance';
+import { mocks } from 'src/components/Reports/MinisterHousingAllowance/Shared/mockData';
 import { NoStaffAccount } from 'src/components/Reports/Shared/NoStaffAccount/NoStaffAccount';
 import { useStaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
 import {
@@ -29,6 +30,12 @@ const MinisterHousingAllowancePage: React.FC = () => {
   const handleNavListToggle = () => {
     setIsNavListOpen(!isNavListOpen);
   };
+
+  // mock[0] --> Single, no pending, no approved
+  // mock[1] --> Married, no pending, no approved
+  // mock[2] --> Married, no pending, approved
+  // mock[3] --> Single, no pending, approved
+  // mock[4] --> Married, pending, no approved
 
   return (
     <>
@@ -58,7 +65,7 @@ const MinisterHousingAllowancePage: React.FC = () => {
                   title={t("Minister's Housing Allowance Request")}
                   headerType={HeaderTypeEnum.Report}
                 />
-                <MinisterHousingAllowanceReport />
+                <MinisterHousingAllowanceReport testPerson={mocks[4]} />
               </>
             }
           />

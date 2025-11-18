@@ -8,6 +8,7 @@ export const enum PageEnum {
   New = 'new',
   Edit = 'edit',
   View = 'view',
+  None = 'none',
 }
 
 export const enum StepsEnum {
