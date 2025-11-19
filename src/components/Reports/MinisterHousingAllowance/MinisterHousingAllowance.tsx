@@ -4,6 +4,7 @@ import { Button, Container, Stack } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
+import { NameDisplay } from '../Shared/CalculationReports/NameDisplay/NameDisplay';
 import { EligibleDisplay } from './MainPages/EligibleDisplay';
 import { IneligibleDisplay } from './MainPages/IneligibleDisplay';
 import { PanelLayout } from './PanelLayout/PanelLayout';
@@ -12,7 +13,6 @@ import { mocks } from './Shared/mockData';
 import { PanelTypeEnum } from './Shared/sharedTypes';
 import { CurrentBoardApproved } from './SharedComponents/CurrentBoardApproved';
 import { CurrentRequest } from './SharedComponents/CurrentRequest';
-import { NameDisplay } from './SharedComponents/NameDisplay';
 
 export const mainContentWidth = theme.spacing(85);
 
@@ -68,9 +68,14 @@ export const MinisterHousingAllowanceReport: React.FC = () => {
                 <EligibleDisplay title={title} isPending={true} />
               ) : null}
               <NameDisplay
-                isMarried={isMarried}
-                staff={testPerson.staffInfo}
-                spouse={isMarried ? testPerson.spouseInfo : null}
+                staffName={testPerson.staffInfo.name}
+                staffId={testPerson.staffInfo.id}
+                spouseName={
+                  isMarried
+                    ? testPerson.spouseInfo?.name.split(', ')[1]
+                    : undefined
+                }
+                spouseId={isMarried ? testPerson.spouseInfo?.id : undefined}
               />
               {noApproved && (
                 <CurrentRequest

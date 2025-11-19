@@ -11,6 +11,7 @@ import {
   CardHeader,
   Divider,
   IconButton,
+  Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -18,6 +19,7 @@ import { SubmitModal } from '../../../MinisterHousingAllowance/SubmitModal/Submi
 
 //TODO: handle cancel request
 //TODO: handle duplicate last years mha and view current mha links
+
 interface CardSkeletonProps {
   title: string;
   subtitle?: string;
@@ -60,10 +62,10 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
             </Avatar>
             {subtitle ? (
               <Box>
-                <Box component="span" sx={{ fontSize: 18 }}>
+                <Typography component="span" sx={{ fontSize: 18 }}>
                   {title}
-                </Box>
-                <Box
+                </Typography>
+                <Typography
                   component="span"
                   sx={{
                     display: 'block',
@@ -72,10 +74,10 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
                   }}
                 >
                   {subtitle}
-                </Box>
+                </Typography>
               </Box>
             ) : (
-              <Box sx={{ fontSize: 24 }}>{title}</Box>
+              <Typography sx={{ fontSize: 24 }}>{title}</Typography>
             )}
             {!hideDownload && (
               <IconButton sx={{ ml: 'auto' }} aria-label={t('Download')}>
