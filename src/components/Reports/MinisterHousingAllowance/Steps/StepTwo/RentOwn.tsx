@@ -10,9 +10,9 @@ import {
 } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
+import { DirectionButtons } from '../../../Shared/CalculationReports/DirectionButtons/DirectionButtons';
 import { FormValues } from '../../NewRequest/NewRequestPage';
 import { useMinisterHousingAllowance } from '../../Shared/Context/MinisterHousingAllowanceContext';
-import { DirectionButtons } from '../../Shared/DirectionButtons/DirectionButtons';
 import { PageEnum, RentOwnEnum } from '../../Shared/sharedTypes';
 import { SubmitModal } from '../../SubmitModal/SubmitModal';
 
@@ -30,7 +30,8 @@ export const RentOwn: React.FC = () => {
     setFieldValue,
   } = useFormikContext<FormValues>();
 
-  const { pageType, hasCalcValues } = useMinisterHousingAllowance();
+  const { pageType, hasCalcValues, handlePreviousStep } =
+    useMinisterHousingAllowance();
 
   const [pendingValue, setPendingValue] = useState<RentOwnEnum | null>(null);
   const [displayValue, setDisplayValue] = useState<RentOwnEnum | null>(null);
@@ -119,7 +120,10 @@ export const RentOwn: React.FC = () => {
           />
         )}
       </Box>
-      <DirectionButtons handleNext={handleNext} />
+      <DirectionButtons
+        overrideNext={handleNext}
+        handlePreviousStep={handlePreviousStep}
+      />
       {errors.rentOrOwn && (
         <Alert severity="error" sx={{ mt: 2, '& ul': { m: 0, pl: 3 } }}>
           {t('Your form is missing information.')}

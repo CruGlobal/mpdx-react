@@ -17,9 +17,9 @@ import * as yup from 'yup';
 import { useLocale } from 'src/hooks/useLocale';
 import i18n from 'src/lib/i18n';
 import { dateFormatShort } from 'src/lib/intlFormat';
+import { DirectionButtons } from '../../../Shared/CalculationReports/DirectionButtons/DirectionButtons';
 import { FormValues } from '../../NewRequest/NewRequestPage';
 import { useMinisterHousingAllowance } from '../../Shared/Context/MinisterHousingAllowanceContext';
-import { DirectionButtons } from '../../Shared/DirectionButtons/DirectionButtons';
 import { editOwnMock, mocks } from '../../Shared/mockData';
 import { PageEnum, RentOwnEnum } from '../../Shared/sharedTypes';
 import { CostOfHome } from './CalcComponents/CostOfHome';
@@ -94,7 +94,7 @@ export const Calculation: React.FC<CalculationProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const { handleNextStep, pageType, setHasCalcValues } =
+  const { handleNextStep, handlePreviousStep, pageType, setHasCalcValues } =
     useMinisterHousingAllowance();
 
   const {
@@ -165,6 +165,8 @@ export const Calculation: React.FC<CalculationProps> = ({
         setFieldValue,
         handleBlur,
         touched,
+        submitForm,
+        validateForm,
       }) => {
         const showAlert = !!submitCount && (!isValid || !values.isChecked);
 
@@ -265,7 +267,16 @@ export const Calculation: React.FC<CalculationProps> = ({
                 </ul>
               </Alert>
             )}
-            <DirectionButtons isCalculate />
+            <DirectionButtons
+              isSubmission
+              showBackButton
+              handleNextStep={handleNextStep}
+              handlePreviousStep={handlePreviousStep}
+              submitForm={submitForm}
+              validateForm={validateForm}
+              submitCount={submitCount}
+              isValid={isValid}
+            />
           </form>
         );
       }}

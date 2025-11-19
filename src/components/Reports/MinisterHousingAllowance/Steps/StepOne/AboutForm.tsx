@@ -5,7 +5,8 @@ import { Trans, useTranslation } from 'react-i18next';
 import { StyledListItem } from 'src/components/Reports/SavingsFundTransfer/styledComponents/StyledListItem';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
-import { DirectionButtons } from '../../Shared/DirectionButtons/DirectionButtons';
+import { DirectionButtons } from '../../../Shared/CalculationReports/DirectionButtons/DirectionButtons';
+import { useMinisterHousingAllowance } from '../../Shared/Context/MinisterHousingAllowanceContext';
 
 interface AboutFormProps {
   boardApprovalDate: string | null;
@@ -18,6 +19,8 @@ export const AboutForm: React.FC<AboutFormProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+
+  const { handleNextStep, handlePreviousStep } = useMinisterHousingAllowance();
 
   // TODO: "newRequestAboutForm" value needs to be added to translation files to see all values
   // TODO: Get correct link for "Salary Calculation Form" and "What expenses can I claim on my MHA?"
@@ -103,7 +106,10 @@ export const AboutForm: React.FC<AboutFormProps> = ({
           </Link>
         </Box>
       </Trans>
-      <DirectionButtons />
+      <DirectionButtons
+        handleNextStep={handleNextStep}
+        handlePreviousStep={handlePreviousStep}
+      />
     </>
   );
 };
