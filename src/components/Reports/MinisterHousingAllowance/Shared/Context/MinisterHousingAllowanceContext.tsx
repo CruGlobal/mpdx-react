@@ -45,16 +45,21 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   children,
 }) => {
   const pageType = type;
-  const steps = type ? useNewStepList(type) : [];
+  const initialSteps = type ? useNewStepList(type) : [];
 
   const [previousPage, setPreviousPage] = useState(PageEnum.None);
-  if (previousPage !== PageEnum.None) {
-    steps.forEach((step) => {
-      step.complete = true;
-      step.current = false;
-    });
-    steps[steps.length - 1].current = true;
-  }
+
+  const steps = useMemo(() => {
+    if (previousPage === PageEnum.None) {
+      return initialSteps;
+    }
+
+    return initialSteps.map((step, index, arr) => ({
+      ...step,
+      complete: true,
+      current: index === arr.length - 1,
+    }));
+  }, [initialSteps, previousPage]);
 
   const totalSteps = steps.length;
 

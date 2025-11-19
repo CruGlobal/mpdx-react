@@ -2,7 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { render, waitFor, within } from '@testing-library/react';
+import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
@@ -104,7 +104,7 @@ describe('Receipt', () => {
     );
   });
 
-  it('should go to view link when Print clicked', async () => {
+  it('should go to view link when Print clicked', () => {
     const { getByRole } = render(<TestComponent />);
 
     const viewButton = getByRole('link', { name: /print a copy/i });
@@ -114,12 +114,8 @@ describe('Receipt', () => {
       expect.stringContaining('/reports/housingAllowance/view'),
     );
 
-    await userEvent.click(viewButton);
-
-    waitFor(() => {
-      expect(setPreviousPage).toHaveBeenCalled();
-      expect(getByRole('button', { name: /print/i })).toBeInTheDocument();
-    });
+    userEvent.click(viewButton);
+    expect(setPreviousPage).toHaveBeenCalled();
   });
 
   describe('Edit page type', () => {

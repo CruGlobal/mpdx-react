@@ -36,7 +36,7 @@ export const CalculationCardSkeleton: React.FC<
       }}
     >
       <SimpleScreenOnly>
-        <CardHeader title={title} />{' '}
+        <CardHeader title={title} />
       </SimpleScreenOnly>
       <SimplePrintOnly>
         <Typography variant="h6" sx={{ mb: -3 }}>
