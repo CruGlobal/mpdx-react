@@ -6,10 +6,11 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
-import { MinisterHousingAllowanceProvider } from '../Shared/Context/MinisterHousingAllowanceContext';
+import { MinisterHousingAllowanceProvider } from '../../../MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
 import { CardSkeleton } from './CardSkeleton';
 
 const title = 'Test Title';
+const subtitle = 'Test Subtitle';
 const titleOne = 'View';
 const titleTwo = 'Edit';
 
@@ -20,10 +21,18 @@ const MockIcon: React.FC<SvgIconProps> = (props) => (
 );
 
 interface TestComponentProps {
+  subtitle?: string;
   isRequest?: boolean;
+  hideDownload?: boolean;
+  hideActions?: boolean;
 }
 
-const TestComponent: React.FC<TestComponentProps> = ({ isRequest }) => {
+const TestComponent: React.FC<TestComponentProps> = ({
+  subtitle,
+  isRequest,
+  hideDownload = false,
+  hideActions = false,
+}) => {
   return (
     <ThemeProvider theme={theme}>
       <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -31,11 +40,14 @@ const TestComponent: React.FC<TestComponentProps> = ({ isRequest }) => {
           <MinisterHousingAllowanceProvider>
             <CardSkeleton
               title={title}
+              subtitle={subtitle}
               icon={MockIcon}
               iconColor="primary"
               titleOne={titleOne}
               titleTwo={titleTwo}
               isRequest={isRequest}
+              hideDownload={hideDownload}
+              hideActions={hideActions}
             >
               <div>Test Children</div>
             </CardSkeleton>
@@ -47,11 +59,23 @@ const TestComponent: React.FC<TestComponentProps> = ({ isRequest }) => {
 };
 
 describe('CardSkeleton', () => {
-  it('should render card header', () => {
-    const { getByText, getByTestId } = render(<TestComponent />);
+  it('should render card header no subtitle', () => {
+    const { getByText, getByTestId, queryByText } = render(<TestComponent />);
 
     expect(getByTestId('mock-icon')).toBeInTheDocument();
     expect(getByText(title)).toBeInTheDocument();
+    expect(queryByText(subtitle)).not.toBeInTheDocument();
+    expect(getByTestId('FileDownloadIcon')).toBeInTheDocument();
+  });
+
+  it('should render card header with subtitle', () => {
+    const { getByText, getByTestId } = render(
+      <TestComponent subtitle={subtitle} />,
+    );
+
+    expect(getByTestId('mock-icon')).toBeInTheDocument();
+    expect(getByText(title)).toBeInTheDocument();
+    expect(getByText(subtitle)).toBeInTheDocument();
     expect(getByTestId('FileDownloadIcon')).toBeInTheDocument();
   });
 
@@ -93,5 +117,18 @@ describe('CardSkeleton', () => {
     await userEvent.click(getByRole('button', { name: /yes, cancel/i }));
 
     expect(queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('hides download icon when hideDownload is true', () => {
+    const { queryByTestId } = render(<TestComponent hideDownload={true} />);
+
+    expect(queryByTestId('FileDownloadIcon')).not.toBeInTheDocument();
+  });
+
+  it('hides action buttons when hideActions is true', () => {
+    const { queryByText } = render(<TestComponent hideActions={true} />);
+
+    expect(queryByText(titleOne)).not.toBeInTheDocument();
+    expect(queryByText(titleTwo)).not.toBeInTheDocument();
   });
 });

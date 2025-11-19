@@ -4,7 +4,7 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
-import { CardSkeleton } from '../CardSkeleton/CardSkeleton';
+import { CardSkeleton } from '../../Shared/CalculationReports/CardSkeleton/CardSkeleton';
 
 interface CurrentBoardApprovedProps {
   approvedDate: string | null;
