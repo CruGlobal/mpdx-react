@@ -1,6 +1,7 @@
 import { GetServerSidePropsContext } from 'next';
 import { getSession } from 'next-auth/react';
 import { session } from '__tests__/fixtures/session';
+import { RedirectReason } from 'pages/api/auth/redirectReasonEnum';
 import makeSsrClient from 'src/lib/apollo/ssrClient';
 import {
   blockImpersonatingNonDevelopers,
@@ -41,10 +42,10 @@ describe('pagePropsHelpers', () => {
   });
 
   describe('dashboardRedirect', () => {
-    it('returns redirect to dashboard page', () => {
-      expect(dashboardRedirect(context)).toEqual({
+    it('returns redirect to dashboard page with reason', () => {
+      expect(dashboardRedirect(context, RedirectReason.Unauthorized)).toEqual({
         redirect: {
-          destination: '/accountLists/account-list-1',
+          destination: '/accountLists/account-list-1?redirect=unauthorized',
           permanent: false,
         },
       });
@@ -69,7 +70,7 @@ describe('pagePropsHelpers', () => {
 
       await expect(enforceAdmin(context)).resolves.toMatchObject({
         redirect: {
-          destination: '/accountLists/account-list-1',
+          destination: '/accountLists/account-list-1?redirect=unauthorized',
         },
       });
     });
@@ -158,7 +159,8 @@ describe('pagePropsHelpers', () => {
         blockImpersonatingNonDevelopers(context),
       ).resolves.toMatchObject({
         redirect: {
-          destination: '/accountLists/account-list-1',
+          destination:
+            '/accountLists/account-list-1?redirect=impersonation-blocked',
           permanent: false,
         },
       });

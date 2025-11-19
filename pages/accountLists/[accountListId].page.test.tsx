@@ -4,6 +4,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { GraphQLError } from 'graphql';
 import { getSession } from 'next-auth/react';
+import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -93,11 +94,13 @@ describe('AccountListsId page', () => {
       const { getByText } = render(
         <ThemeProvider theme={theme}>
           <TestRouter>
-            <GqlMockedProvider>
-              <I18nextProvider i18n={i18n}>
-                <AccountListIdPage {...props} />
-              </I18nextProvider>
-            </GqlMockedProvider>
+            <SnackbarProvider>
+              <GqlMockedProvider>
+                <I18nextProvider i18n={i18n}>
+                  <AccountListIdPage {...props} />
+                </I18nextProvider>
+              </GqlMockedProvider>
+            </SnackbarProvider>
           </TestRouter>
         </ThemeProvider>,
       );
