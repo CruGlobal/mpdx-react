@@ -12,6 +12,10 @@ import {
   useSectionSteps,
 } from '../useSectionSteps';
 import { HcmQuery, useHcmQuery } from './Hcm.generated';
+import {
+  SalaryCalculationQuery,
+  useSalaryCalculationQuery,
+} from './SalaryCalculation.generated';
 
 export interface SalaryCalculatorStep {
   key: SalaryCalculatorSectionEnum;
@@ -28,6 +32,7 @@ export interface SalaryCalculatorContextType {
   stepStatus: { key: string; currentStep: boolean }[];
 
   hcm: HcmQuery['hcm'] | null;
+  calculation: SalaryCalculationQuery['salaryRequest'] | null;
 }
 
 const SalaryCalculatorContext =
@@ -55,6 +60,7 @@ export const SalaryCalculatorProvider: React.FC<
     useState<SalaryCalculatorSectionEnum>(sectionSteps[0].key);
   const [isDrawerOpen, setDrawerOpen] = useState(true);
   const { data: hcmData } = useHcmQuery();
+  const { data: calculationData } = useSalaryCalculationQuery();
 
   const toggleDrawer = useCallback(() => {
     setDrawerOpen((prev) => !prev);
@@ -79,6 +85,7 @@ export const SalaryCalculatorProvider: React.FC<
       toggleDrawer,
       stepStatus,
       hcm: hcmData?.hcm ?? null,
+      calculation: calculationData?.salaryRequest ?? null,
     }),
     [
       sectionSteps,
@@ -87,6 +94,7 @@ export const SalaryCalculatorProvider: React.FC<
       toggleDrawer,
       stepStatus,
       hcmData,
+      calculationData,
     ],
   );
 

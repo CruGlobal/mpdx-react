@@ -30,4 +30,12 @@ describe('SalaryCalculator', () => {
 
     await waitFor(() => expect(mutationSpy).toHaveGraphqlOperation('Hcm'));
   });
+
+  it('loads salary calculation', async () => {
+    render(<TestComponent />);
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('SalaryCalculation'),
+    );
+  });
 });
