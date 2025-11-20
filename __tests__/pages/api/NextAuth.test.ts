@@ -41,7 +41,7 @@ describe('/api/auth/[...nextauth]', () => {
     expect(userInfo.user?.impersonating).toBe(true);
     expect(userInfo.cookies?.length).toBe(1);
     expect(userInfo?.cookies[0]).toBe(
-      `mpdx-handoff.impersonate=; HttpOnly; path=/; Max-Age=0`,
+      `mpdx-handoff.impersonate=; HttpOnly; Secure; path=/; Max-Age=0`,
     );
   });
 
@@ -57,10 +57,10 @@ describe('/api/auth/[...nextauth]', () => {
     expect(userInfo.user?.impersonating).toBe(false);
     expect(userInfo.cookies?.length).toBe(2);
     expect(userInfo?.cookies[0]).toBe(
-      `mpdx-handoff.accountConflictUserId=; HttpOnly; path=/; Max-Age=0`,
+      `mpdx-handoff.accountConflictUserId=; HttpOnly; Secure; path=/; Max-Age=0`,
     );
     expect(userInfo?.cookies[1]).toBe(
-      `mpdx-handoff.token=; HttpOnly; path=/; Max-Age=0`,
+      `mpdx-handoff.token=; HttpOnly; Secure; path=/; Max-Age=0`,
     );
   });
 
@@ -77,10 +77,10 @@ describe('/api/auth/[...nextauth]', () => {
     expect(userInfo.user?.impersonating).toBe(true);
     expect(userInfo.cookies?.length).toBe(2);
     expect(userInfo?.cookies[0]).toBe(
-      `mpdx-handoff.impersonate=; HttpOnly; path=/; Max-Age=0`,
+      `mpdx-handoff.impersonate=; HttpOnly; Secure; path=/; Max-Age=0`,
     );
     expect(userInfo?.cookies[1]).toBe(
-      `mpdx-handoff.token=; HttpOnly; path=/; Max-Age=0`,
+      `mpdx-handoff.token=; HttpOnly; Secure; path=/; Max-Age=0`,
     );
   });
 
@@ -97,13 +97,13 @@ describe('/api/auth/[...nextauth]', () => {
     expect(userInfo.user?.impersonating).toBe(true);
     expect(userInfo.cookies?.length).toBe(3);
     expect(userInfo?.cookies[0]).toBe(
-      `mpdx-handoff.impersonate=; HttpOnly; path=/; Max-Age=0`,
+      `mpdx-handoff.impersonate=; HttpOnly; Secure; path=/; Max-Age=0`,
     );
     expect(userInfo?.cookies[1]).toBe(
-      `mpdx-handoff.accountConflictUserId=; HttpOnly; path=/; Max-Age=0`,
+      `mpdx-handoff.accountConflictUserId=; HttpOnly; Secure; path=/; Max-Age=0`,
     );
     expect(userInfo?.cookies[2]).toBe(
-      `mpdx-handoff.token=; HttpOnly; path=/; Max-Age=0`,
+      `mpdx-handoff.token=; HttpOnly; Secure; path=/; Max-Age=0`,
     );
   });
 });
