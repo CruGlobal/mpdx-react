@@ -4,7 +4,7 @@ import theme from 'src/theme';
 import {
   SalaryCalculatorProvider,
   useSalaryCalculator,
-} from './SalaryCalculatorContext';
+} from './SalaryCalculatorContext/SalaryCalculatorContext';
 import { SalaryCalculatorLayout } from './SalaryCalculatorLayout';
 import { SectionList } from './SectionList/SectionList';
 import { StepNavigation } from './StepNavigation/StepNavigation';
