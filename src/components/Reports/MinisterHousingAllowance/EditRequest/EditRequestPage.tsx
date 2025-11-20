@@ -3,13 +3,19 @@ import { Container, Stack } from '@mui/material';
 import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import i18n from 'src/lib/i18n';
+import { Receipt } from '../../Shared/CalculationReports/ReceiptStep/Receipt';
 import { mainContentWidth } from '../MinisterHousingAllowance';
 import { PanelLayout } from '../PanelLayout/PanelLayout';
 import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
 import { editOwnMock, mocks } from '../Shared/mockData';
-import { PanelTypeEnum, RentOwnEnum, StepsEnum } from '../Shared/sharedTypes';
-import { Receipt } from '../Steps/StepFour/Receipt';
+import {
+  PageEnum,
+  PanelTypeEnum,
+  RentOwnEnum,
+  StepsEnum,
+} from '../Shared/sharedTypes';
 import { AboutForm } from '../Steps/StepOne/AboutForm';
 import { Calculation } from '../Steps/StepThree/Calculation';
 import { RentOwn } from '../Steps/StepTwo/RentOwn';
@@ -28,7 +34,13 @@ const validationSchema = yup.object({
 export const EditRequestPage: React.FC = () => {
   const { t } = useTranslation();
 
-  const { steps, handleNextStep, currentStep } = useMinisterHousingAllowance();
+  const accountListId = useAccountListId();
+  const editLink = `/accountLists/${accountListId}/reports/housingAllowance/edit`;
+
+  const { steps, handleNextStep, currentStep, pageType } =
+    useMinisterHousingAllowance();
+
+  const isEdit = pageType === PageEnum.Edit;
 
   const boardDate = mocks[4].mhaDetails.staffMHA?.boardApprovalDate ?? '';
   const availableDate = mocks[4].mhaDetails.staffMHA?.availableDate ?? '';
@@ -61,6 +73,11 @@ export const EditRequestPage: React.FC = () => {
                 />
               ) : currentStep === StepsEnum.Receipt ? (
                 <Receipt
+                  formTitle={t('MHA Request')}
+                  buttonText={t('View Your MHA')}
+                  isEdit={isEdit}
+                  editLink={editLink}
+                  viewLink=""
                   availableDate={availableDate}
                   deadlineDate={
                     mocks[4].mhaDetails.staffMHA?.deadlineDate ?? ''
