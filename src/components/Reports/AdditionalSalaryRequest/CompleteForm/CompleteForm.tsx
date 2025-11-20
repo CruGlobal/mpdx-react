@@ -16,7 +16,7 @@ import * as yup from 'yup';
 import { CurrencyAdornment } from 'src/components/Reports/GoalCalculator/Shared/Adornments';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
-import { useCompleteFormCategories } from './useSalaryRequestFormCategories';
+import { useCompleteFormCategories } from '../Shared/useCompleteFormCategories';
 
 interface CompleteFormValues {
   currentYearSalary: string;
@@ -36,7 +36,7 @@ interface CompleteFormValues {
   reimbursableExpenses: string;
 }
 
-export const SalaryRequestForm: React.FC = () => {
+export const CompleteForm: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
   const theme = useTheme();
