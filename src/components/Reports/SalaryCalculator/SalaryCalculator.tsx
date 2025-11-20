@@ -1,25 +1,17 @@
-import React, { useCallback, useState } from 'react';
+import React from 'react';
 import { Box, Typography } from '@mui/material';
 import theme from 'src/theme';
+import {
+  SalaryCalculatorProvider,
+  useSalaryCalculator,
+} from './SalaryCalculatorContext';
 import { SalaryCalculatorLayout } from './SalaryCalculatorLayout';
 import { SectionList } from './SectionList/SectionList';
 import { StepNavigation } from './StepNavigation/StepNavigation';
-import {
-  SalaryCalculatorSectionEnum,
-  useSectionSteps,
-} from './useSectionSteps';
-import type { StepStatusItem } from './SectionList/SectionList';
 
-interface MainContentProps {
-  selectedSection: SalaryCalculatorSectionEnum;
-  setSelectedSection: (section: SalaryCalculatorSectionEnum) => void;
-}
-
-const MainContent: React.FC<MainContentProps> = ({
-  selectedSection,
-  setSelectedSection,
-}) => {
-  const sectionSteps = useSectionSteps();
+const MainContent: React.FC = () => {
+  const { sectionSteps, selectedSection, setSelectedSection } =
+    useSalaryCalculator();
   const currentStepIndex = sectionSteps.findIndex(
     (step) => step.key === selectedSection,
   );
@@ -54,21 +46,15 @@ const MainContent: React.FC<MainContentProps> = ({
   );
 };
 
-export const SalaryCalculator: React.FC = () => {
-  const [selectedSection, setSelectedSection] =
-    useState<SalaryCalculatorSectionEnum>(
-      SalaryCalculatorSectionEnum.EffectiveDate,
-    );
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const toggleDrawer = useCallback(() => {
-    setIsDrawerOpen((open) => !open);
-  }, []);
-  const sectionSteps = useSectionSteps();
+export const SalaryCalculator: React.FC = () => (
+  <SalaryCalculatorProvider>
+    <SalaryCalculatorContent />
+  </SalaryCalculatorProvider>
+);
 
-  const stepStatus: StepStatusItem[] = sectionSteps.map((step) => ({
-    key: step.key,
-    currentStep: step.key === selectedSection,
-  }));
+const SalaryCalculatorContent: React.FC = () => {
+  const { selectedSection, stepStatus, isDrawerOpen, toggleDrawer } =
+    useSalaryCalculator();
   return (
     <SalaryCalculatorLayout
       sectionListPanel={
@@ -77,12 +63,7 @@ export const SalaryCalculator: React.FC = () => {
           stepStatus={stepStatus}
         />
       }
-      mainContent={
-        <MainContent
-          selectedSection={selectedSection}
-          setSelectedSection={setSelectedSection}
-        />
-      }
+      mainContent={<MainContent />}
       isDrawerOpen={isDrawerOpen}
       toggleDrawer={toggleDrawer}
     />
