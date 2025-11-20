@@ -11,10 +11,10 @@ import {
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { DirectionButtons } from '../../../Shared/CalculationReports/DirectionButtons/DirectionButtons';
+import { SubmitModal } from '../../../Shared/CalculationReports/SubmitModal/SubmitModal';
 import { FormValues } from '../../NewRequest/NewRequestPage';
 import { useMinisterHousingAllowance } from '../../Shared/Context/MinisterHousingAllowanceContext';
 import { PageEnum, RentOwnEnum } from '../../Shared/sharedTypes';
-import { SubmitModal } from '../../SubmitModal/SubmitModal';
 
 export const RentOwn: React.FC = () => {
   const { t } = useTranslation();
@@ -77,6 +77,12 @@ export const RentOwn: React.FC = () => {
     setPendingValue(null);
   };
 
+  const title = t('Are you sure you want to change selection?');
+  const content = t('You are changing your MHA Request selection.');
+  const subContent = t(
+    'Clicking "Yes, Continue" will wipe all inputs you\'ve entered previously. Are you sure you want to continue?',
+  );
+
   return (
     <>
       <Box mb={3}>
@@ -114,9 +120,12 @@ export const RentOwn: React.FC = () => {
         </FormControl>
         {isRequestingChange && (
           <SubmitModal
+            formTitle={t('MHA Request')}
             handleClose={handleClose}
             handleConfirm={handleConfirm}
-            isRequestingChange={true}
+            overrideTitle={title}
+            overrideContent={content}
+            overrideSubContent={subContent}
           />
         )}
       </Box>

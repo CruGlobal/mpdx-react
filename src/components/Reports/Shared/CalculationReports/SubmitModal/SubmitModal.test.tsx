@@ -4,28 +4,43 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
-import { MinisterHousingAllowanceProvider } from '../Shared/Context/MinisterHousingAllowanceContext';
-import { PageEnum } from '../Shared/sharedTypes';
+import { MinisterHousingAllowanceProvider } from '../../../MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
+import { PageEnum } from '../../../MinisterHousingAllowance/Shared/sharedTypes';
 import { SubmitModal } from './SubmitModal';
+
+const formTitle = 'Main Title';
+const title = 'Test Title';
+const content = 'Test Content';
+const subContent = 'Test Sub Content';
 
 const handleClose = jest.fn();
 const handleConfirm = jest.fn();
 
 interface TestComponentProps {
   pageType?: PageEnum;
+  overrideTitle?: string;
+  overrideContent?: string;
+  overrideSubContent?: string;
   isCancel?: boolean;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   pageType,
+  overrideTitle,
+  overrideContent,
+  overrideSubContent,
   isCancel,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
       <MinisterHousingAllowanceProvider type={pageType}>
         <SubmitModal
+          formTitle={formTitle}
           handleClose={handleClose}
           handleConfirm={handleConfirm}
+          overrideTitle={overrideTitle}
+          overrideContent={overrideContent}
+          overrideSubContent={overrideSubContent}
           isCancel={isCancel}
         />
       </MinisterHousingAllowanceProvider>
@@ -40,10 +55,10 @@ describe('ConfirmationModal', () => {
     );
 
     expect(
-      getByText('Are you ready to submit your MHA Request?'),
+      getByText('Are you ready to submit your Main Title?'),
     ).toBeInTheDocument();
     expect(
-      getByText('You are submitting your MHA Request for board approval.'),
+      getByText('You are submitting your Main Title for board approval.'),
     ).toBeInTheDocument();
 
     await userEvent.click(getByRole('button', { name: /YES, CONTINUE/i }));
@@ -57,7 +72,7 @@ describe('ConfirmationModal', () => {
 
     expect(
       getByRole('heading', {
-        name: 'Are you ready to submit your updated MHA Request?',
+        name: 'Are you ready to submit your updated Main Title?',
       }),
     ).toBeInTheDocument();
 
@@ -78,5 +93,19 @@ describe('ConfirmationModal', () => {
 
     await userEvent.click(getByRole('button', { name: /NO/i }));
     expect(handleClose).toHaveBeenCalled();
+  });
+
+  it('should override title, content, and subcontent when provided', async () => {
+    const { getByText } = render(
+      <TestComponent
+        overrideTitle={title}
+        overrideContent={content}
+        overrideSubContent={subContent}
+      />,
+    );
+
+    expect(getByText(title)).toBeInTheDocument();
+    expect(getByText(content)).toBeInTheDocument();
+    expect(getByText(subContent)).toBeInTheDocument();
   });
 });

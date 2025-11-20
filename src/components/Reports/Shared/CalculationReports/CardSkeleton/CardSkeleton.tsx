@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { SubmitModal } from '../../../MinisterHousingAllowance/SubmitModal/SubmitModal';
+import { SubmitModal } from '../SubmitModal/SubmitModal';
 
 //TODO: handle cancel request
 //TODO: handle duplicate last years mha and view current mha links
@@ -120,6 +120,7 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
           )}
           {openCancel && (
             <SubmitModal
+              formTitle={t('MHA Request')}
               handleClose={() => setOpenCancel(false)}
               handleConfirm={() => setOpenCancel(false)}
               isCancel={true}

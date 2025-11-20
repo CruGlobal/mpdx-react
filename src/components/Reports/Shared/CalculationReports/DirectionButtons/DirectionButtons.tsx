@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 import { Box, Button } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { SubmitModal } from '../../../MinisterHousingAllowance/SubmitModal/SubmitModal';
+import { SubmitModal } from '../SubmitModal/SubmitModal';
 
 interface DirectionButtonsProps {
   handleNextStep?: () => void;
@@ -91,6 +91,7 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
       </Box>
       {openConfirmation && (
         <SubmitModal
+          formTitle={t('MHA Request')}
           handleClose={() => setOpenConfirmation(false)}
           handleConfirm={submitForm ? submitForm : async () => {}}
         />

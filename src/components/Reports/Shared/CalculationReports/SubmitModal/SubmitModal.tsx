@@ -12,22 +12,28 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
-import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
-import { mocks } from '../Shared/mockData';
-import { PageEnum } from '../Shared/sharedTypes';
+import { useMinisterHousingAllowance } from '../../../MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
+import { mocks } from '../../../MinisterHousingAllowance/Shared/mockData';
+import { PageEnum } from '../../../MinisterHousingAllowance/Shared/sharedTypes';
 
 interface SubmitModalProps {
+  formTitle: string;
   handleClose: () => void;
   handleConfirm: () => void;
+  overrideTitle?: string;
+  overrideContent?: string;
+  overrideSubContent?: string;
   isCancel?: boolean;
-  isRequestingChange?: boolean;
 }
 
 export const SubmitModal: React.FC<SubmitModalProps> = ({
+  formTitle,
   handleClose,
   handleConfirm,
+  overrideTitle,
+  overrideContent,
+  overrideSubContent,
   isCancel,
-  isRequestingChange,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -42,32 +48,28 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
 
   const actionRequired = pageType === PageEnum.Edit;
 
-  const title = isRequestingChange
-    ? t('Are you sure you want to change selection?')
+  const title = overrideTitle
+    ? overrideTitle
     : isCancel
       ? t('Do you want to cancel?')
       : actionRequired
-        ? t('Are you ready to submit your updated MHA Request?')
-        : t('Are you ready to submit your MHA Request?');
+        ? t(`Are you ready to submit your updated ${formTitle}?`)
+        : t(`Are you ready to submit your ${formTitle}?`);
 
-  const contentTitle = isRequestingChange
-    ? t('You are changing your MHA Request selection.')
+  const contentTitle = overrideContent
+    ? overrideContent
     : isCancel
-      ? t('You are cancelling this MHA Request.')
+      ? t(`You are cancelling this ${formTitle}.`)
       : actionRequired
         ? t(
-            'You are submitting changes to your Annual MHA Request for board approval.',
+            `You are submitting changes to your Annual ${formTitle} for board approval.`,
           )
-        : t('You are submitting your MHA Request for board approval.');
+        : t(`You are submitting your ${formTitle} for board approval.`);
 
-  const contentText = isRequestingChange
-    ? t(
-        'Clicking "Yes, Continue" will wipe all inputs you\'ve entered previously. Are you sure you want to continue?',
-      )
+  const contentText = overrideSubContent
+    ? overrideSubContent
     : isCancel
-      ? t(
-          'All information associated with this request will be lost. This action cannot be undone.',
-        )
+      ? t('Your work will not be saved.')
       : actionRequired
         ? t(
             'This updated request will take the place of your previous request. Once submitted, you can return and make edits until {{date}}. After this date, your request will be processed as is.',
@@ -97,7 +99,7 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose} sx={{ color: 'text.secondary' }}>
-          <b>{isCancel || isRequestingChange ? t('NO') : t('GO BACK')}</b>
+          <b>{isCancel ? t('NO') : t('GO BACK')}</b>
         </Button>
         <Button onClick={handleConfirm} color={isCancel ? 'error' : 'primary'}>
           <b>{isCancel ? t('Yes, Cancel') : t('Yes, Continue')}</b>
