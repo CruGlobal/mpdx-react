@@ -1,9 +1,9 @@
-import { useRouter } from 'next/router';
 import React from 'react';
 import { MenuOpenSharp, MenuSharp } from '@mui/icons-material';
 import { Box } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { IconPanelLayout } from 'src/components/Shared/IconPanelLayout/IconPanelLayout';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import { CurrentStep } from './CurrentStep';
 import {
@@ -54,10 +54,9 @@ export const SalaryCalculator: React.FC = () => (
 
 export const SalaryCalculatorContent: React.FC = () => {
   const { t } = useTranslation();
-  const router = useRouter();
+  const accountListId = useAccountListId();
   const { selectedSection, stepStatus, isDrawerOpen, toggleDrawer } =
     useSalaryCalculator();
-  const { accountListId } = router.query;
 
   const iconPanelItems = [
     {
