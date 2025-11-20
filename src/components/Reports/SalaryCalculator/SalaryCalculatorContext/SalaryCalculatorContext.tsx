@@ -11,6 +11,7 @@ import {
   SalaryCalculatorSectionEnum,
   useSectionSteps,
 } from '../useSectionSteps';
+import { HcmQuery, useHcmQuery } from './Hcm.generated';
 
 export interface SalaryCalculatorStep {
   key: SalaryCalculatorSectionEnum;
@@ -25,6 +26,8 @@ export interface SalaryCalculatorContextType {
   setDrawerOpen: Dispatch<SetStateAction<boolean>>;
   toggleDrawer: () => void;
   stepStatus: { key: string; currentStep: boolean }[];
+
+  hcm: HcmQuery['hcm'] | null;
 }
 
 const SalaryCalculatorContext =
@@ -51,6 +54,7 @@ export const SalaryCalculatorProvider: React.FC<
   const [selectedSection, setSelectedSection] =
     useState<SalaryCalculatorSectionEnum>(sectionSteps[0].key);
   const [isDrawerOpen, setDrawerOpen] = useState(true);
+  const { data: hcmData } = useHcmQuery();
 
   const toggleDrawer = useCallback(() => {
     setDrawerOpen((prev) => !prev);
@@ -65,7 +69,7 @@ export const SalaryCalculatorProvider: React.FC<
     [sectionSteps, selectedSection],
   );
 
-  const contextValue = useMemo(
+  const contextValue: SalaryCalculatorContextType = useMemo(
     () => ({
       sectionSteps,
       selectedSection,
@@ -74,8 +78,16 @@ export const SalaryCalculatorProvider: React.FC<
       setDrawerOpen,
       toggleDrawer,
       stepStatus,
+      hcm: hcmData?.hcm ?? null,
     }),
-    [sectionSteps, selectedSection, isDrawerOpen, stepStatus, toggleDrawer],
+    [
+      sectionSteps,
+      selectedSection,
+      isDrawerOpen,
+      toggleDrawer,
+      stepStatus,
+      hcmData,
+    ],
   );
 
   return (
