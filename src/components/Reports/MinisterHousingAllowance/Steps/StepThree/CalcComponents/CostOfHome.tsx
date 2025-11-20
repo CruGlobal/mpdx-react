@@ -5,9 +5,9 @@ import { RentOwnEnum } from 'src/components/Reports/MinisterHousingAllowance/Sha
 import { useAnnualTotal } from 'src/hooks/useAnnualTotal';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { FormCardSkeleton } from '../../../../Shared/CalculationReports/FormCardSkeleton/FormCardSkeleton';
 import { StyledOrderedList } from '../../../styledComponents/styledComponents';
 import { CalculationFormValues } from '../Calculation';
-import { CalculationCardSkeleton } from './CalculationCardSkeleton';
 import { CustomTextField } from './Helper/CustomTextField';
 
 interface CostOfHomeProps {
@@ -24,7 +24,7 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({ rentOrOwn }) => {
   const { totalCostOfHome, annualCostOfHome } = useAnnualTotal(values);
 
   return (
-    <CalculationCardSkeleton title={t('Cost of Providing a Home')}>
+    <FormCardSkeleton title={t('Cost of Providing a Home')}>
       <TableRow>
         <TableCell sx={{ width: '70%' }}>
           <StyledOrderedList component="ol" start={1}>
@@ -190,6 +190,6 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({ rentOrOwn }) => {
           })}
         </TableCell>
       </TableRow>
-    </CalculationCardSkeleton>
+    </FormCardSkeleton>
   );
 };

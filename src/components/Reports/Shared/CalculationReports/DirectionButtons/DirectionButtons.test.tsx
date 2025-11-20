@@ -84,9 +84,7 @@ describe('DirectionButtons', () => {
   });
 
   it('calls handlePreviousStep when Back is clicked', async () => {
-    const { getByRole } = render(
-      <TestComponent isSubmission={true} showBackButton={true} />,
-    );
+    const { getByRole } = render(<TestComponent showBackButton={true} />);
 
     await userEvent.click(getByRole('button', { name: /back/i }));
 
