@@ -1,11 +1,15 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material';
+import { MenuOpenSharp, MenuSharp } from '@mui/icons-material';
+import { Box } from '@mui/material';
+import { useTranslation } from 'react-i18next';
+import { IconPanelLayout } from 'src/components/Shared/IconPanelLayout/IconPanelLayout';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
+import { CurrentStep } from './CurrentStep';
 import {
   SalaryCalculatorProvider,
   useSalaryCalculator,
 } from './SalaryCalculatorContext/SalaryCalculatorContext';
-import { SalaryCalculatorLayout } from './SalaryCalculatorLayout';
 import { SectionList } from './SectionList/SectionList';
 import { StepNavigation } from './StepNavigation/StepNavigation';
 
@@ -15,7 +19,6 @@ const MainContent: React.FC = () => {
   const currentStepIndex = sectionSteps.findIndex(
     (step) => step.key === selectedSection,
   );
-  const currentStep = sectionSteps[currentStepIndex];
 
   const handleCancel = () => {};
   const handleBack = () => {
@@ -30,11 +33,8 @@ const MainContent: React.FC = () => {
   };
 
   return (
-    // Temporary content for each step
     <Box px={theme.spacing(3)}>
-      <Typography variant="h5">
-        {currentStep ? currentStep.label : ''}
-      </Typography>
+      <CurrentStep />
       <StepNavigation
         onCancel={handleCancel}
         onBack={handleBack}
@@ -52,20 +52,35 @@ export const SalaryCalculator: React.FC = () => (
   </SalaryCalculatorProvider>
 );
 
-const SalaryCalculatorContent: React.FC = () => {
+export const SalaryCalculatorContent: React.FC = () => {
+  const { t } = useTranslation();
+  const accountListId = useAccountListId();
   const { selectedSection, stepStatus, isDrawerOpen, toggleDrawer } =
     useSalaryCalculator();
+
+  const iconPanelItems = [
+    {
+      icon: isDrawerOpen ? <MenuOpenSharp /> : <MenuSharp />,
+      label: t('Toggle Menu'),
+      onClick: toggleDrawer,
+    },
+  ];
+
   return (
-    <SalaryCalculatorLayout
-      sectionListPanel={
+    <IconPanelLayout
+      percentComplete={50}
+      iconPanelItems={iconPanelItems}
+      sidebarContent={
         <SectionList
           selectedSection={selectedSection}
           stepStatus={stepStatus}
         />
       }
+      sidebarTitle={t('Form Steps')}
+      isSidebarOpen={isDrawerOpen}
+      sidebarAriaLabel={t('Salary Calculator Sections')}
       mainContent={<MainContent />}
-      isDrawerOpen={isDrawerOpen}
-      toggleDrawer={toggleDrawer}
+      backHref={`/accountLists/${accountListId}`}
     />
   );
 };
