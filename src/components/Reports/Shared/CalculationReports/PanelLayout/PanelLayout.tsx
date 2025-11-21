@@ -4,7 +4,7 @@ import { CheckCircleOutline } from '@mui/icons-material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Box, Divider, IconButton, Link, Stack } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { CircularProgressWithLabel } from 'src/components/Reports/GoalCalculator/SharedComponents/CircularProgressWithLabel/CircularProgressWithLabel';
+import { CircularProgressWithLabel } from 'src/components/Reports/Shared/CalculationReports/CircularProgressWithLabel/CircularProgressWithLabel';
 import {
   MainContent,
   PrintableStack,

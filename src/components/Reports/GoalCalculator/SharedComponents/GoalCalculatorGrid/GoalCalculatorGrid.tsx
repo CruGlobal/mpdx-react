@@ -25,11 +25,11 @@ import {
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { useAutoSave } from 'src/components/Shared/Autosave/useAutosave';
 import { SubBudgetCategoryEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
-import { useAutoSave } from '../../CalculatorSettings/Categories/Autosave/useAutosave';
 import {
   getPrimaryCategoryRightPanel,
   getSubCategoryRightPanel,
