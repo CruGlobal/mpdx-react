@@ -31,6 +31,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
 
   return (
     <CardSkeleton
+      formType={t('MHA Request')}
       title={t('Current Board Approved MHA')}
       icon={HomeSharp}
       iconColor="success.main"

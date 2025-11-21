@@ -45,6 +45,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
         <TestRouter>
           <MinisterHousingAllowanceProvider>
             <CardSkeleton
+              formType={'MHA Request'}
               title={title}
               subtitle={subtitle}
               icon={MockIcon}

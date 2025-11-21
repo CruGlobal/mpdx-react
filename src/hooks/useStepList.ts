@@ -104,5 +104,5 @@ export function useStepList(formType: FormEnum, type?: PageEnum): Steps[] {
             ]
           : [];
 
-  return useMemo(() => steps, [t, type]);
+  return useMemo(() => steps, [t, type, formType]);
 }

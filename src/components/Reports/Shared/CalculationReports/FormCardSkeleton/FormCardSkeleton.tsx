@@ -86,7 +86,7 @@ export const FormCardSkeleton: React.FC<FormCardSkeletonProps> = ({
                   <TableCell
                     sx={{ color: 'primary.main', fontSize: 16, width: '30%' }}
                   >
-                    {colThreeHeader ? colThreeHeader : ''}
+                    {colThreeHeader}
                   </TableCell>
                 )}
               </TableRow>

@@ -20,6 +20,7 @@ import { SubmitModal } from '../SubmitModal/SubmitModal';
 //TODO: handle duplicate last years mha and view current mha links
 
 interface CardSkeletonProps {
+  formType: string;
   title: string;
   subtitle?: string;
   icon: React.ElementType;
@@ -35,6 +36,7 @@ interface CardSkeletonProps {
 }
 
 export const CardSkeleton: React.FC<CardSkeletonProps> = ({
+  formType,
   title,
   subtitle,
   icon: Icon,
@@ -122,7 +124,7 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
           )}
           {openCancel && (
             <SubmitModal
-              formTitle={t('MHA Request')}
+              formTitle={formType}
               handleClose={() => setOpenCancel(false)}
               handleConfirm={() => setOpenCancel(false)}
               isCancel={true}

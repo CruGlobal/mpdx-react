@@ -77,7 +77,7 @@ export const Receipt: React.FC<ReceiptProps> = ({
             fontSize="small"
             sx={{ verticalAlign: 'middle', opacity: 0.56 }}
           />{' '}
-          <Link href={editLink ?? ''}>
+          <Link href={editLink}>
             {t('Edit your MHA Request (Not available after {{date}})', {
               date: deadline,
               interpolation: { escapeValue: false },
