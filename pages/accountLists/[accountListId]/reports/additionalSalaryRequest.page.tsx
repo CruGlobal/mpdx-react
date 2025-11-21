@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { AdditionalSalaryRequest } from 'src/components/Reports/AdditionalSalaryRequest/AdditionalSalaryRequest';
+import { AdditionalSalaryRequestProvider } from 'src/components/Reports/AdditionalSalaryRequest/Shared/AdditionalSalaryRequestContext';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -53,8 +54,9 @@ const AdditionalSalaryRequestPage: React.FC = () => {
               title={t('Additional Salary Request')}
               headerType={HeaderTypeEnum.Report}
             />
-
-            <AdditionalSalaryRequest />
+            <AdditionalSalaryRequestProvider>
+              <AdditionalSalaryRequest />
+            </AdditionalSalaryRequestProvider>
           </>
         }
       />

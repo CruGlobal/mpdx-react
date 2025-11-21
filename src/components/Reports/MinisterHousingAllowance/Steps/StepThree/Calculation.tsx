@@ -14,6 +14,7 @@ import { Formik, useFormikContext } from 'formik';
 import { DateTime } from 'luxon';
 import { Trans, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { useLocale } from 'src/hooks/useLocale';
 import i18n from 'src/lib/i18n';
 import { dateFormatShort } from 'src/lib/intlFormat';
@@ -21,7 +22,7 @@ import { DirectionButtons } from '../../../Shared/CalculationReports/DirectionBu
 import { FormValues } from '../../NewRequest/NewRequestPage';
 import { useMinisterHousingAllowance } from '../../Shared/Context/MinisterHousingAllowanceContext';
 import { editOwnMock, mocks } from '../../Shared/mockData';
-import { PageEnum, RentOwnEnum } from '../../Shared/sharedTypes';
+import { RentOwnEnum } from '../../Shared/sharedTypes';
 import { CostOfHome } from './CalcComponents/CostOfHome';
 import { EndingSection } from './CalcComponents/EndingSection';
 import { FairRentalValue } from './CalcComponents/FairRentalValue';

@@ -10,11 +10,12 @@ import {
 } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
+import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { DirectionButtons } from '../../../Shared/CalculationReports/DirectionButtons/DirectionButtons';
 import { SubmitModal } from '../../../Shared/CalculationReports/SubmitModal/SubmitModal';
 import { FormValues } from '../../NewRequest/NewRequestPage';
 import { useMinisterHousingAllowance } from '../../Shared/Context/MinisterHousingAllowanceContext';
-import { PageEnum, RentOwnEnum } from '../../Shared/sharedTypes';
+import { RentOwnEnum } from '../../Shared/sharedTypes';
 
 export const RentOwn: React.FC = () => {
   const { t } = useTranslation();
@@ -132,6 +133,7 @@ export const RentOwn: React.FC = () => {
       <DirectionButtons
         overrideNext={handleNext}
         handlePreviousStep={handlePreviousStep}
+        showBackButton={true}
       />
       {errors.rentOrOwn && (
         <Alert severity="error" sx={{ mt: 2, '& ul': { m: 0, pl: 3 } }}>

@@ -8,15 +8,18 @@ import i18n from 'src/lib/i18n';
 import { PanelLayout } from '../../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { useIconPanelItems } from '../../Shared/CalculationReports/PanelLayout/useIconPanelItems';
 import { Receipt } from '../../Shared/CalculationReports/ReceiptStep/Receipt';
-import { PanelTypeEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
+import {
+  PageEnum,
+  PanelTypeEnum,
+} from '../../Shared/CalculationReports/Shared/sharedTypes';
+import { StepsList } from '../../Shared/CalculationReports/StepsList/StepsList';
 import { mainContentWidth } from '../MinisterHousingAllowance';
 import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
 import { editOwnMock, mocks } from '../Shared/mockData';
-import { PageEnum, RentOwnEnum, StepsEnum } from '../Shared/sharedTypes';
+import { RentOwnEnum, StepsEnum } from '../Shared/sharedTypes';
 import { AboutForm } from '../Steps/StepOne/AboutForm';
 import { Calculation } from '../Steps/StepThree/Calculation';
 import { RentOwn } from '../Steps/StepTwo/RentOwn';
-import { StepsList } from '../Steps/StepsList/StepsList';
 
 export interface FormValues {
   rentOrOwn: RentOwnEnum | undefined;

@@ -3,7 +3,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CircleIcon from '@mui/icons-material/Circle';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import { ListItemText } from '@mui/material';
-import { CategoryListItemIcon } from '../../styledComponents/styledComponents';
+import { CategoryListItemIcon } from 'src/components/Reports/Shared/CalculationReports/Shared/styledComponents/StepsListStyles';
 
 interface ListItemContentProps {
   title: string;

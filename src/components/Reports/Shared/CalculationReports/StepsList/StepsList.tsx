@@ -1,6 +1,6 @@
 import React from 'react';
 import { List, ListItem } from '@mui/material';
-import { CategoryListItemStyles } from '../../styledComponents/styledComponents';
+import { CategoryListItemStyles } from 'src/components/Reports/Shared/CalculationReports/Shared/styledComponents/StepsListStyles';
 import { ListItemContent } from './ListItemContent';
 
 export interface Steps {

@@ -9,7 +9,7 @@ import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { EditRequestPage } from 'src/components/Reports/MinisterHousingAllowance/EditRequest/EditRequestPage';
 import { NewRequestPage } from 'src/components/Reports/MinisterHousingAllowance/NewRequest/NewRequestPage';
 import { MinisterHousingAllowanceProvider } from 'src/components/Reports/MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
-import { PageEnum } from 'src/components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
+import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import {
   HeaderTypeEnum,
   MultiPageHeader,

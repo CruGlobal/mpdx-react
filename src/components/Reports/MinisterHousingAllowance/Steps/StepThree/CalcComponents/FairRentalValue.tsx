@@ -1,11 +1,11 @@
 import { Box, TableCell, TableRow, Typography } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { Trans, useTranslation } from 'react-i18next';
+import { StyledOrderedList } from 'src/components/Reports/Shared/CalculationReports/Shared/styledComponents/StepsListStyles';
 import { useAnnualTotal } from 'src/hooks/useAnnualTotal';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { FormCardSkeleton } from '../../../../Shared/CalculationReports/FormCardSkeleton/FormCardSkeleton';
-import { StyledOrderedList } from '../../../styledComponents/styledComponents';
 import { CalculationFormValues } from '../Calculation';
 import { CustomTextField } from './Helper/CustomTextField';
 

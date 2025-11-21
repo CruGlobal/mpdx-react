@@ -6,7 +6,7 @@ import { render, within } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
 import { MinisterHousingAllowanceProvider } from '../../../MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
-import { PageEnum } from '../../../MinisterHousingAllowance/Shared/sharedTypes';
+import { PageEnum } from '../Shared/sharedTypes';
 import { Receipt } from './Receipt';
 
 const formTitle = 'Test Title';

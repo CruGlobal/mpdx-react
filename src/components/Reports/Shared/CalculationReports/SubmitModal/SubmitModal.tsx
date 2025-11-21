@@ -14,7 +14,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { useMinisterHousingAllowance } from '../../../MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
 import { mocks } from '../../../MinisterHousingAllowance/Shared/mockData';
-import { PageEnum } from '../../../MinisterHousingAllowance/Shared/sharedTypes';
+import { PageEnum } from '../Shared/sharedTypes';
 
 interface SubmitModalProps {
   formTitle: string;

@@ -5,7 +5,6 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Box, Divider, IconButton, Link, Stack } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { CircularProgressWithLabel } from 'src/components/Reports/GoalCalculator/SharedComponents/CircularProgressWithLabel/CircularProgressWithLabel';
-import { Steps } from 'src/components/Reports/MinisterHousingAllowance/Steps/StepsList/StepsList';
 import {
   MainContent,
   PrintableStack,
@@ -14,6 +13,7 @@ import {
   StyledSidebar,
   iconPanelWidth,
 } from 'src/components/Reports/Shared/CalculationReports/Shared/styledComponents/PanelLayoutStyles';
+import { Steps } from 'src/components/Reports/Shared/CalculationReports/StepsList/StepsList';
 import theme from 'src/theme';
 import { PanelTypeEnum } from '../Shared/sharedTypes';
 

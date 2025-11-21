@@ -4,8 +4,8 @@ import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
+import { PageEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { MinisterHousingAllowanceProvider } from '../Shared/Context/MinisterHousingAllowanceContext';
-import { PageEnum } from '../Shared/sharedTypes';
 import { NewRequestPage } from './NewRequestPage';
 
 const TestComponent: React.FC = () => (

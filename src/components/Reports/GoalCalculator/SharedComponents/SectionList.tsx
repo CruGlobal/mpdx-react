@@ -1,32 +1,14 @@
 import React from 'react';
 import CircleIcon from '@mui/icons-material/Circle';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
-import {
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  SxProps,
-  Theme,
-  styled,
-} from '@mui/material';
+import { List, ListItem, ListItemButton, ListItemText } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import {
+  CategoryListItemIcon,
+  CategoryListItemStyles,
+} from 'src/components/Reports/Shared/CalculationReports/Shared/styledComponents/StepsListStyles';
 import { GoalCalculatorReportEnum } from '../GoalCalculatorHelper';
 import { useGoalCalculator } from '../Shared/GoalCalculatorContext';
-
-const categoryListItemStyles: SxProps<Theme> = (theme) => ({
-  '.MuiSvgIcon-root': {
-    fontSize: '1rem',
-  },
-  padding: 0,
-  paddingLeft: theme.spacing(3),
-});
-
-const CategoryListItemIcon = styled(ListItemIcon)(({ theme }) => ({
-  minWidth: 'auto',
-  marginRight: theme.spacing(0.5),
-}));
 
 interface ListItemContentProps {
   title: string;
@@ -67,7 +49,7 @@ export const SectionList: React.FC<SectionListProps> = ({ sections }) => {
   return (
     <List disablePadding>
       {sections.map(({ title, complete }, index) => (
-        <ListItem key={index} sx={categoryListItemStyles}>
+        <ListItem key={index} sx={CategoryListItemStyles}>
           <ListItemContent title={title} complete={complete} />
         </ListItem>
       ))}
@@ -97,7 +79,7 @@ export const ReportSectionList: React.FC = () => {
         return (
           <ListItemButton
             key={index}
-            sx={categoryListItemStyles}
+            sx={CategoryListItemStyles}
             aria-current={active}
             onClick={() => setSelectedReport(report)}
           >

@@ -31,7 +31,7 @@ export const AdditionalSalaryRequestLayout: React.FC<
   return (
     <PanelLayout
       panelType={PanelTypeEnum.Other}
-      percentComplete={50}
+      percentComplete={33}
       icons={iconPanelItems}
       sidebarContent={sectionListPanel}
       sidebarTitle={t('Additional Salary Request')}

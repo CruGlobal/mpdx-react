@@ -1,7 +1,12 @@
 import React, { createContext, useCallback, useMemo, useState } from 'react';
+import { useStepList } from 'src/hooks/useStepList';
+import { FormEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
+import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
 
 export type AdditionalSalaryRequestType = {
+  steps: Steps[];
+
   selectedSection: AdditionalSalaryRequestSectionEnum;
   setSelectedSection: (section: AdditionalSalaryRequestSectionEnum) => void;
   isDrawerOpen: boolean;
@@ -29,11 +34,13 @@ interface Props {
 export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   children,
 }) => {
+  const steps = useStepList(FormEnum.AdditionalSalary);
+
   const [selectedSection, setSelectedSectionState] =
     useState<AdditionalSalaryRequestSectionEnum>(
       AdditionalSalaryRequestSectionEnum.AboutForm,
     );
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(true);
 
   const setSelectedSection = useCallback(
     (section: AdditionalSalaryRequestSectionEnum) => {
@@ -51,13 +58,14 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
 
   const contextValue = useMemo(
     () => ({
+      steps,
       selectedSection,
       setSelectedSection,
       isDrawerOpen,
       toggleDrawer,
       setIsDrawerOpen,
     }),
-    [selectedSection, setSelectedSection, isDrawerOpen, toggleDrawer],
+    [steps, selectedSection, setSelectedSection, isDrawerOpen, toggleDrawer],
   );
 
   return (

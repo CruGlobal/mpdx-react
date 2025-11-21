@@ -1,8 +1,3 @@
-export const enum PageEnum {
-  New = 'new',
-  Edit = 'edit',
-}
-
 export const enum StepsEnum {
   AboutForm = 'about',
   RentOrOwn = 'rentOrOwn',

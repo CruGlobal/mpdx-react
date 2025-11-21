@@ -1,6 +1,7 @@
 import React from 'react';
 import { Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { StepsList } from '../Shared/CalculationReports/StepsList/StepsList';
 import { AdditionalSalaryRequestSectionEnum } from './AdditionalSalaryRequestHelper';
 import { SalaryRequestForm } from './SalaryRequestForm/SalaryRequestForm';
 import {
@@ -8,7 +9,6 @@ import {
   useAdditionalSalaryRequest,
 } from './Shared/AdditionalSalaryRequestContext';
 import { AdditionalSalaryRequestLayout } from './Shared/AdditionalSalaryRequestLayout';
-import { SectionList } from './Shared/SectionList';
 
 const MainContent: React.FC = () => {
   const { selectedSection } = useAdditionalSalaryRequest();
@@ -27,10 +27,12 @@ const MainContent: React.FC = () => {
 };
 
 export const AdditionalSalaryRequest: React.FC = () => {
+  const { steps } = useAdditionalSalaryRequest();
+
   return (
     <AdditionalSalaryRequestProvider>
       <AdditionalSalaryRequestLayout
-        sectionListPanel={<SectionList />}
+        sectionListPanel={<StepsList steps={steps} />}
         mainContent={<MainContent />}
       />
     </AdditionalSalaryRequestProvider>

@@ -4,8 +4,8 @@ import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
+import { PageEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { MinisterHousingAllowanceProvider } from '../Shared/Context/MinisterHousingAllowanceContext';
-import { PageEnum } from '../Shared/sharedTypes';
 import { EditRequestPage } from './EditRequestPage';
 
 const TestComponent: React.FC = () => (
@@ -34,7 +34,7 @@ describe('EditRequestPage', () => {
     );
 
     expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '25');
-    expect(queryByTestId('ArrowBackIcon')).not.toBeInTheDocument();
+    expect(queryByTestId('ArrowBackIcon')).toBeInTheDocument();
 
     const continueButton = getByRole('button', { name: 'Continue' });
     await userEvent.click(continueButton);
@@ -43,7 +43,7 @@ describe('EditRequestPage', () => {
       expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '50');
     });
 
-    waitFor(() => {
+    await waitFor(() => {
       const steps = getAllByRole('listitem');
 
       const [firstStep, secondStep, thirdStep] = steps;

@@ -5,9 +5,13 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { useNewStepList } from 'src/hooks/useNewStepList';
-import { Steps } from '../../Steps/StepsList/StepsList';
-import { PageEnum, StepsEnum } from '../sharedTypes';
+import {
+  FormEnum,
+  PageEnum,
+} from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
+import { useStepList } from 'src/hooks/useStepList';
+import { Steps } from '../../../Shared/CalculationReports/StepsList/StepsList';
+import { StepsEnum } from '../sharedTypes';
 
 export type ContextType = {
   steps: Steps[];
@@ -50,7 +54,7 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   children,
 }) => {
   const pageType = type;
-  const steps = type ? useNewStepList(type) : [];
+  const steps = useStepList(FormEnum.MHA, type);
   const totalSteps = steps.length;
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
