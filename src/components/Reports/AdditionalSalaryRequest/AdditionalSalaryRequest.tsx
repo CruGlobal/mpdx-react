@@ -33,6 +33,7 @@ export const AdditionalSalaryRequest: React.FC = () => {
 
   const iconPanelItems = [
     {
+      key: 'toggle',
       icon: isDrawerOpen ? <MenuOpenSharp /> : <MenuSharp />,
       label: t('Toggle Menu'),
       onClick: toggleDrawer,

@@ -70,7 +70,7 @@ export const StyledBox = styled(Box)(({ theme }) => ({
 }));
 
 export interface IconPanelItem {
-  key?: string;
+  key: string;
   icon: React.ReactNode;
   label: string;
   isActive?: boolean;
