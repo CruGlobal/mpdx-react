@@ -10,6 +10,7 @@ import {
 import { Box, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import { CardSkeleton } from '../../Shared/CalculationReports/CardSkeleton/CardSkeleton';
@@ -31,6 +32,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const accountListId = useAccountListId();
   const currency = 'USD';
 
   //TODO: Implement real mha status logic
@@ -40,7 +42,9 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({
       icon={AddHomeSharp}
       iconColor="warning.main"
       titleOne={t('View Request')}
+      linkOne={`/accountLists/${accountListId}/reports/housingAllowance/view`}
       titleTwo={t('Edit Request')}
+      linkTwo={`/accountLists/${accountListId}/reports/housingAllowance/edit`}
       isRequest={true}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>

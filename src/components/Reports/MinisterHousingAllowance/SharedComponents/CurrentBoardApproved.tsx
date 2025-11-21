@@ -2,6 +2,7 @@ import { HomeSharp } from '@mui/icons-material';
 import { Grid, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import { CardSkeleton } from '../../Shared/CalculationReports/CardSkeleton/CardSkeleton';
@@ -25,6 +26,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const accountListId = useAccountListId();
   const currency = 'USD';
 
   return (
@@ -33,7 +35,9 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
       icon={HomeSharp}
       iconColor="success.main"
       titleOne={t('View Current MHA')}
+      linkOne={`/accountLists/${accountListId}/reports/housingAllowance/view`}
       titleTwo={t("Duplicate Last Year's MHA")}
+      linkTwo=""
       isRequest={false}
     >
       <Grid container spacing={2}>

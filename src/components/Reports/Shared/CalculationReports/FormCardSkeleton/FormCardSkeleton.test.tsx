@@ -8,17 +8,23 @@ import { FormCardSkeleton } from './FormCardSkeleton';
 const title = 'Test Title';
 const colTwoHeader = 'Custom Header';
 const colThreeHeader = 'Column 3 Header';
+const customTextAbove = 'This is custom text above the table.';
+const customTextBelow = 'This is custom text below the table.';
 
 interface TestComponentProps {
   colTwoHeader?: string;
   colThreeHeader?: string;
   hideHeaders?: boolean;
+  customTextAbove?: string;
+  customTextBelow?: string;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   colTwoHeader,
   colThreeHeader,
   hideHeaders,
+  customTextAbove,
+  customTextBelow,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
@@ -27,6 +33,8 @@ const TestComponent: React.FC<TestComponentProps> = ({
         colTwoHeader={colTwoHeader}
         colThreeHeader={colThreeHeader}
         hideHeaders={hideHeaders}
+        customTextAbove={customTextAbove}
+        customTextBelow={customTextBelow}
       >
         <div>Test Child</div>
       </FormCardSkeleton>
@@ -64,5 +72,17 @@ describe('FormCardSkeleton', () => {
 
     expect(queryByText('Category')).not.toBeInTheDocument();
     expect(queryByText('Amount')).not.toBeInTheDocument();
+  });
+
+  it('renders custom text above and below the table when provided', () => {
+    const { getByText } = render(
+      <TestComponent
+        customTextAbove={customTextAbove}
+        customTextBelow={customTextBelow}
+      />,
+    );
+
+    expect(getByText(customTextAbove)).toBeInTheDocument();
+    expect(getByText(customTextBelow)).toBeInTheDocument();
   });
 });

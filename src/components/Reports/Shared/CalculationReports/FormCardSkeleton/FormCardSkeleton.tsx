@@ -17,16 +17,20 @@ import {
 
 interface FormCardSkeletonProps {
   title: string;
+  customTextAbove?: string;
   colTwoHeader?: string;
   colThreeHeader?: string;
+  customTextBelow?: string;
   hideHeaders?: boolean;
   children?: React.ReactNode;
 }
 
 export const FormCardSkeleton: React.FC<FormCardSkeletonProps> = ({
   title,
+  customTextAbove,
   colTwoHeader,
   colThreeHeader,
+  customTextBelow,
   hideHeaders,
   children,
 }) => {
@@ -51,6 +55,9 @@ export const FormCardSkeleton: React.FC<FormCardSkeletonProps> = ({
         </Typography>
       </SimplePrintOnly>
       <CardContent>
+        {customTextAbove && (
+          <Typography sx={{ mb: 2 }}>{customTextAbove}</Typography>
+        )}
         <Table
           sx={{
             '& .MuiTableRow-root:last-child td': {
@@ -87,6 +94,9 @@ export const FormCardSkeleton: React.FC<FormCardSkeletonProps> = ({
           )}
           <TableBody>{children}</TableBody>
         </Table>
+        {customTextBelow && (
+          <Typography sx={{ mt: 2 }}>{customTextBelow}</Typography>
+        )}
       </CardContent>
     </Card>
   );

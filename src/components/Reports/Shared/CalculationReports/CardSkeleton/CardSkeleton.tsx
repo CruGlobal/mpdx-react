@@ -14,7 +14,6 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import { SubmitModal } from '../SubmitModal/SubmitModal';
 
 //TODO: handle cancel request
@@ -27,7 +26,9 @@ interface CardSkeletonProps {
   iconColor?: string;
   children: React.ReactNode;
   titleOne?: string;
+  linkOne?: string;
   titleTwo?: string;
+  linkTwo?: string;
   isRequest?: boolean;
   hideDownload?: boolean;
   hideActions?: boolean;
@@ -40,16 +41,14 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
   iconColor,
   children,
   titleOne,
+  linkOne,
   titleTwo,
+  linkTwo,
   isRequest,
   hideDownload,
   hideActions,
 }) => {
   const { t } = useTranslation();
-
-  const accountListId = useAccountListId();
-  const editLink = `/accountLists/${accountListId}/reports/housingAllowance/edit`;
-  const viewLink = `/accountLists/${accountListId}/reports/housingAllowance/view`;
 
   const [openCancel, setOpenCancel] = useState(false);
 
@@ -97,7 +96,7 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
         <CardActionArea sx={{ p: 2 }}>
           <Button
             component={NextLink}
-            href={viewLink}
+            href={linkOne}
             variant={isRequest ? 'contained' : 'outlined'}
             sx={{ px: 2, py: 1, mr: 1 }}
           >
@@ -105,7 +104,7 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
           </Button>
           <Button
             component={NextLink}
-            href={isRequest ? editLink : ''}
+            href={linkTwo}
             variant="outlined"
             sx={{ px: 2, py: 1 }}
           >
