@@ -26,7 +26,7 @@ import {
 } from 'src/graphql/types.generated';
 import { usePhaseData } from 'src/hooks/usePhaseData';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
-import { nullableDateTime } from 'src/lib/formikHelpers';
+import { nullableDateTime } from 'src/lib/yupHelpers';
 import Modal from '../../../common/Modal/Modal';
 import { ActivityTypeAutocomplete } from '../../Modal/Form/Inputs/ActivityTypeAutocomplete/ActivityTypeAutocomplete';
 import { AssigneeAutocomplete } from '../../Modal/Form/Inputs/ActivityTypeAutocomplete/AssigneeAutocomplete/AssigneeAutocomplete';
