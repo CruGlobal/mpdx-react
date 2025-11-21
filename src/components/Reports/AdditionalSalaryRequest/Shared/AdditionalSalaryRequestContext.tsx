@@ -29,21 +29,10 @@ interface Props {
 export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   children,
 }) => {
-  const [selectedSection, setSelectedSectionState] =
-    useState<AdditionalSalaryRequestSectionEnum>(
-      AdditionalSalaryRequestSectionEnum.AboutForm,
-    );
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
-  const setSelectedSection = useCallback(
-    (section: AdditionalSalaryRequestSectionEnum) => {
-      setSelectedSectionState(section);
-      if (section === AdditionalSalaryRequestSectionEnum.AboutForm) {
-        setIsDrawerOpen(true);
-      }
-    },
-    [],
+  const [selectedSection, setSelectedSection] = useState(
+    AdditionalSalaryRequestSectionEnum.AboutForm,
   );
+  const [isDrawerOpen, setIsDrawerOpen] = useState(true);
 
   const toggleDrawer = useCallback(() => {
     setIsDrawerOpen((prev) => !prev);

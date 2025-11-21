@@ -1,6 +1,8 @@
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 
+// TODO Get these fields from the API when available
+
 interface Category {
   key: string;
   label: string;

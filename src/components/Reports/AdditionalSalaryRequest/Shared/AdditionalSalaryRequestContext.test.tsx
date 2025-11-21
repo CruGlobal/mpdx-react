@@ -61,9 +61,9 @@ describe('AdditionalSalaryRequestContext', () => {
     );
 
     const drawerState = getByLabelText('drawer state');
-    expect(drawerState).toHaveAttribute('data-open', 'false');
+    expect(drawerState).toHaveAttribute('data-open', 'true');
 
     userEvent.click(getByRole('button', { name: 'Toggle Drawer' }));
-    expect(drawerState).toHaveAttribute('data-open', 'true');
+    expect(drawerState).toHaveAttribute('data-open', 'false');
   });
 });

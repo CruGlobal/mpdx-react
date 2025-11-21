@@ -1,22 +1,22 @@
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { SalaryRequestForm } from './SalaryRequestForm';
+import { CompleteForm } from './CompleteForm';
 
 describe('SalaryRequestForm', () => {
   it('renders the form', () => {
-    const { getByRole } = render(<SalaryRequestForm />);
+    const { getByRole } = render(<CompleteForm />);
     expect(getByRole('heading', { name: 'Category' })).toBeInTheDocument();
     expect(getByRole('heading', { name: 'Amount' })).toBeInTheDocument();
   });
 
   it('renders all fifteen input fields', () => {
-    const { getAllByRole } = render(<SalaryRequestForm />);
+    const { getAllByRole } = render(<CompleteForm />);
 
     expect(getAllByRole('spinbutton')).toHaveLength(15);
   });
 
   it('updates amount when user enters value', async () => {
-    const { getAllByRole, getByLabelText } = render(<SalaryRequestForm />);
+    const { getAllByRole, getByLabelText } = render(<CompleteForm />);
 
     const inputs = getAllByRole('spinbutton');
     userEvent.clear(inputs[0]);
