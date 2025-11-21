@@ -1,9 +1,13 @@
 import React, { createContext, useCallback, useMemo, useState } from 'react';
-import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
+import {
+  SectionOrderItem,
+  sectionOrder,
+} from '../AdditionalSalaryRequestHelper';
 
 export type AdditionalSalaryRequestType = {
-  selectedSection: AdditionalSalaryRequestSectionEnum;
-  setSelectedSection: (section: AdditionalSalaryRequestSectionEnum) => void;
+  selectedSection: SectionOrderItem;
+  handleContinue: () => void;
+  setSelectedSection: (section: SectionOrderItem) => void;
   isDrawerOpen: boolean;
   toggleDrawer: () => void;
   setIsDrawerOpen: (open: boolean) => void;
@@ -29,24 +33,38 @@ interface Props {
 export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   children,
 }) => {
-  const [selectedSection, setSelectedSection] = useState(
-    AdditionalSalaryRequestSectionEnum.AboutForm,
-  );
+  const [selectedSection, setSelectedSection] = useState(sectionOrder[0]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
 
   const toggleDrawer = useCallback(() => {
     setIsDrawerOpen((prev) => !prev);
   }, []);
 
+  const handleContinue = useCallback(() => {
+    const currentIndex = sectionOrder.findIndex(
+      (item) => item === selectedSection,
+    );
+    if (currentIndex !== -1 && currentIndex < sectionOrder.length - 1) {
+      setSelectedSection(sectionOrder[currentIndex + 1]);
+    }
+  }, [selectedSection]);
+
   const contextValue = useMemo(
     () => ({
       selectedSection,
+      handleContinue,
       setSelectedSection,
       isDrawerOpen,
       toggleDrawer,
       setIsDrawerOpen,
     }),
-    [selectedSection, setSelectedSection, isDrawerOpen, toggleDrawer],
+    [
+      selectedSection,
+      handleContinue,
+      setSelectedSection,
+      isDrawerOpen,
+      toggleDrawer,
+    ],
   );
 
   return (

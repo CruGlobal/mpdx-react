@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
+import { sectionOrder } from '../AdditionalSalaryRequestHelper';
 import { AdditionalSalaryRequestTestWrapper } from '../AdditionalSalaryRequestTestWrapper';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 
@@ -11,14 +11,12 @@ const TestComponent: React.FC = () => {
 
   return (
     <div>
-      <h2>{selectedSection}</h2>
+      <h2>{selectedSection.title}</h2>
       <div aria-label="drawer state" data-open={isDrawerOpen}>
         Drawer: {isDrawerOpen ? 'open' : 'closed'}
       </div>
       <button
-        onClick={() =>
-          setSelectedSection(AdditionalSalaryRequestSectionEnum.CompleteForm)
-        }
+        onClick={() => setSelectedSection(sectionOrder[1 /* CompleteForm */])}
       >
         Change Section
       </button>
@@ -36,7 +34,7 @@ describe('AdditionalSalaryRequestContext', () => {
     );
 
     expect(
-      await findByRole('heading', { name: 'about-form' }),
+      await findByRole('heading', { name: 'About this Form' }),
     ).toBeInTheDocument();
   });
 
@@ -49,7 +47,7 @@ describe('AdditionalSalaryRequestContext', () => {
 
     userEvent.click(getByRole('button', { name: 'Change Section' }));
     expect(
-      await findByRole('heading', { name: 'complete-form' }),
+      await findByRole('heading', { name: 'Complete Form' }),
     ).toBeInTheDocument();
   });
 
