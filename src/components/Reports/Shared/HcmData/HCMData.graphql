@@ -1,0 +1,48 @@
+query HcmDataMarried($maritalStatus: MaritalStatusEnum!) {
+  hcm(maritalStatus: $maritalStatus) {
+    staffInfo {
+      id
+      personNumber
+      firstName
+      lastName
+      preferredName
+      age
+      tenure
+      location
+      addressLine1
+      addressLine2
+      city
+      state
+      zipCode
+      country
+      dependentChildrenWithHealthcareBenefits
+      secaStatus
+      emailAddress
+      primaryPhoneNumber
+      assignmentId
+      userPersonType
+      peopleGroupSupportType
+      assignmentStatus
+      assignmentCategory
+    }
+    mhaRequest {
+      currentApprovedOverallAmount
+      lastUpdatedDate
+      currentApprovedAmountForStaff
+    }
+    exceptionSalaryCap {
+      amount
+      effectiveDate
+      exceptionApprover
+    }
+    fourOThreeB {
+      currentTaxDeferredContributionPercentage
+      currentRothContributionPercentage
+      maximumContributionLimit
+    }
+    currentSalary {
+      lastUpdated
+      grossSalaryAmount
+    }
+  }
+}

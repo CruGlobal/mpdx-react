@@ -5,6 +5,7 @@ import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
 import { MinisterHousingAllowanceReport } from 'src/components/Reports/MinisterHousingAllowance/MinisterHousingAllowance';
+import { MinisterHousingAllowanceProvider } from 'src/components/Reports/MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
 import { NoStaffAccount } from 'src/components/Reports/Shared/NoStaffAccount/NoStaffAccount';
 import { useStaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
 import {
@@ -58,7 +59,9 @@ const MinisterHousingAllowancePage: React.FC = () => {
                   title={t("Minister's Housing Allowance Request")}
                   headerType={HeaderTypeEnum.Report}
                 />
-                <MinisterHousingAllowanceReport />
+                <MinisterHousingAllowanceProvider>
+                  <MinisterHousingAllowanceReport />
+                </MinisterHousingAllowanceProvider>
               </>
             }
           />

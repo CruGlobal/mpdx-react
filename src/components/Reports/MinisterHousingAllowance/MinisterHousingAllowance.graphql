@@ -1,0 +1,64 @@
+query ministryHousingAllowanceRequests {
+  ministryHousingAllowanceRequests {
+    nodes {
+      id
+      personNumber
+      requestAttributes {
+        rentOrOwn
+        rentalValue
+        furnitureCostsOne
+        avgUtilityOne
+        mortgageOrRentPayment
+        furnitureCostsTwo
+        repairCosts
+        avgUtilityTwo
+        unexpectedExpenses
+        overallAmount
+        phoneNumber
+        emailAddress
+        iUnderstandMhaPolicy
+        approvedDate
+        approvedOverallAmount
+        availableDate
+        boardApprovedDate
+        deadlineDate
+        lastApprovedDate
+        spouseSpecific
+        staffSpecific
+        submittedDate
+      }
+      status
+      user {
+        id
+        firstName
+        lastName
+      }
+      feedback
+    }
+  }
+}
+
+mutation CreateHousingAllowanceRequest(
+  $requestAttributes: MinistryHousingAllowanceRequestAttributesInput
+) {
+  createMinistryHousingAllowanceRequest(
+    input: { requestAttributes: $requestAttributes }
+  ) {
+    ministryHousingAllowanceRequest {
+      id
+      status
+      personNumber
+      requestAttributes {
+        rentOrOwn
+        rentalValue
+        furnitureCostsOne
+        avgUtilityOne
+      }
+      user {
+        id
+        firstName
+        lastName
+      }
+    }
+  }
+}

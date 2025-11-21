@@ -4,49 +4,88 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { render } from '@testing-library/react';
 import theme from 'src/theme';
-import { PersonInfo, mocks } from '../Shared/mockData';
+import {
+  ContextType,
+  HcmData,
+  useMinisterHousingAllowance,
+} from '../Shared/Context/MinisterHousingAllowanceContext';
 import { IneligibleDisplay } from './IneligibleDisplay';
 
-const title = 'Test Title';
+// Mock the context hook
+jest.mock('../Shared/Context/MinisterHousingAllowanceContext', () => ({
+  ...jest.requireActual('../Shared/Context/MinisterHousingAllowanceContext'),
+  useMinisterHousingAllowance: jest.fn(),
+}));
+
+const mockUseMinisterHousingAllowance =
+  useMinisterHousingAllowance as jest.MockedFunction<
+    typeof useMinisterHousingAllowance
+  >;
 
 interface TestComponentProps {
-  isMarried: boolean;
-  spouse?: PersonInfo | null;
+  contextValue: Partial<ContextType>;
 }
 
-const TestComponent: React.FC<TestComponentProps> = ({ isMarried, spouse }) => (
-  <ThemeProvider theme={theme}>
-    <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <IneligibleDisplay
-        title={title}
-        isMarried={isMarried}
-        staff={mocks[1].staffInfo}
-        spouse={spouse}
-      />
-    </LocalizationProvider>
-  </ThemeProvider>
-);
+const TestComponent: React.FC<TestComponentProps> = ({ contextValue }) => {
+  mockUseMinisterHousingAllowance.mockReturnValue(contextValue as ContextType);
+
+  return (
+    <ThemeProvider theme={theme}>
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <IneligibleDisplay />
+      </LocalizationProvider>
+    </ThemeProvider>
+  );
+};
 
 describe('IneligibleDisplay', () => {
   it('should render page with single staff', () => {
     const { getByText, queryByText } = render(
-      <TestComponent isMarried={false} />,
+      <TestComponent
+        contextValue={{
+          isMarried: false,
+          preferredName: 'John',
+          spousePreferredName: '',
+          userHcmData: {
+            staffInfo: {
+              personNumber: '000123456',
+            },
+          } as unknown as HcmData,
+          spouseHcmData: null,
+        }}
+      />,
     );
 
-    expect(getByText(title)).toBeInTheDocument();
+    expect(getByText('Your MHA')).toBeInTheDocument();
     expect(
       getByText(
         /our records indicate that you have not applied for minister's housing allowance/i,
       ),
     ).toBeInTheDocument();
     expect(
-      queryByText(/Jane has not completed the required ibs courses/i),
+      queryByText(/has not completed the required ibs courses/i),
     ).not.toBeInTheDocument();
   });
 
   it('should render page with married staff', () => {
     const { getByText } = render(
-      <TestComponent isMarried={true} spouse={mocks[1].spouseInfo} />,
+      <TestComponent
+        contextValue={{
+          isMarried: true,
+          preferredName: 'John',
+          spousePreferredName: 'Jane',
+          userHcmData: {
+            staffInfo: {
+              personNumber: '000123456',
+            },
+          } as unknown as HcmData,
+          spouseHcmData: {
+            staffInfo: {
+              personNumber: '100123456',
+            },
+          } as unknown as HcmData,
+        }}
+      />,
     );
 
     expect(

@@ -15,7 +15,7 @@ interface TestComponentProps {
 const TestComponent: React.FC<TestComponentProps> = ({ isPending }) => (
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <EligibleDisplay title={title} isPending={isPending} />
+      <EligibleDisplay isPending={isPending} />
     </LocalizationProvider>
   </ThemeProvider>
 );

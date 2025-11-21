@@ -1,7 +1,14 @@
-import { createContext, useContext, useMemo, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  HcmDataMarriedQuery,
+  useHcmDataMarriedQuery,
+} from 'src/components/Reports/Shared/HcmData/HCMData.generated';
+import { MaritalStatusEnum } from 'src/graphql/types.generated';
 import { useNewStepList } from 'src/hooks/useNewStepList';
 import { Steps } from '../../Steps/StepsList/StepsList';
 import { PageEnum, StepsEnum } from '../sharedTypes';
+
+export type HcmData = HcmDataMarriedQuery['hcm'][number];
 
 export type ContextType = {
   // list of steps for new or edit request
@@ -20,6 +27,12 @@ export type ContextType = {
   // calculation values state
   hasCalcValues: boolean;
   setHasCalcValues: (value: boolean) => void;
+
+  isMarried: boolean;
+  userHcmData?: HcmData;
+  spouseHcmData?: HcmData | null;
+  preferredName: string;
+  spousePreferredName: string;
 };
 
 const MinisterHousingAllowanceContext = createContext<ContextType | null>(null);
@@ -47,10 +60,40 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   const steps = type ? useNewStepList(type) : [];
   const totalSteps = steps.length;
 
-  const actionRequired = pageType === PageEnum.Edit;
-  const [hasCalcValues, setHasCalcValues] = useState(
-    actionRequired ? true : false,
+  const { data: hcmData } = useHcmDataMarriedQuery({
+    variables: {
+      maritalStatus: MaritalStatusEnum.Married,
+    },
+  });
+
+  const [userHcmData, setUserHcmData] = useState<HcmData>();
+  const [spouseHcmData, setSpouseHcmData] = useState<HcmData | null>(null);
+  const [isMarried, setIsMarried] = useState(false);
+
+  useEffect(() => {
+    if (!hcmData?.hcm?.length) {
+      setUserHcmData(undefined);
+      setSpouseHcmData(null);
+      setIsMarried(false);
+      return;
+    }
+    const [user, spouse] = hcmData.hcm;
+    setUserHcmData(user);
+    setSpouseHcmData(spouse ?? null);
+    setIsMarried(!!spouse);
+  }, [hcmData]);
+
+  const preferredName = useMemo(
+    () => userHcmData?.staffInfo?.preferredName || '',
+    [userHcmData],
   );
+  const spousePreferredName = useMemo(
+    () => spouseHcmData?.staffInfo?.preferredName || '',
+    [spouseHcmData],
+  );
+
+  const actionRequired = pageType === PageEnum.Edit;
+  const [hasCalcValues, setHasCalcValues] = useState(actionRequired);
 
   const [currentStep, setCurrentStep] = useState(StepsEnum.AboutForm);
   const [percentComplete, setPercentComplete] = useState(25);
@@ -127,6 +170,11 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       pageType,
       hasCalcValues,
       setHasCalcValues,
+      isMarried,
+      userHcmData,
+      spouseHcmData,
+      preferredName,
+      spousePreferredName,
     }),
     [
       steps,
@@ -138,6 +186,11 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       pageType,
       hasCalcValues,
       setHasCalcValues,
+      isMarried,
+      userHcmData,
+      spouseHcmData,
+      preferredName,
+      spousePreferredName,
     ],
   );
 
