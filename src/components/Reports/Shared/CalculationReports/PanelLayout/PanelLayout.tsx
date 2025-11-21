@@ -62,7 +62,19 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
     <PrintableStack direction="row">
       {panelType === PanelTypeEnum.Empty ? (
         <>
-          <Stack direction="column" width={iconPanelWidth}></Stack>
+          <Stack direction="column" width={iconPanelWidth}>
+            {/* {pageType === PageEnum.View && (
+              <IconButton
+                aria-label={t('Go back')}
+                onClick={handleGoBack}
+                sx={(theme) => ({
+                  color: theme.palette.cruGrayDark.main,
+                })}
+              >
+                <ArrowBackIcon />
+              </IconButton>
+            )} */}
+          </Stack>
           <Divider orientation="vertical" flexItem />
           <StyledSidebar open={true} aria-label={sidebarAriaLabel}>
             {sidebarTitle && (
@@ -70,7 +82,7 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
             )}
           </StyledSidebar>
           <Divider orientation="vertical" flexItem />
-          <MainContent>{mainContent}</MainContent>
+          <MainContent className="main-content">{mainContent}</MainContent>
         </>
       ) : (
         <>

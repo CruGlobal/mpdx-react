@@ -6,7 +6,9 @@ import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
+import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import theme from 'src/theme';
+import { useMinisterHousingAllowance } from '../../../Shared/Context/MinisterHousingAllowanceContext';
 import { FairRentalValue } from './FairRentalValue';
 
 const submit = jest.fn();
@@ -23,12 +25,28 @@ const TestComponent: React.FC = () => (
   </ThemeProvider>
 );
 
+jest.mock('../../../Shared/Context/MinisterHousingAllowanceContext', () => ({
+  ...jest.requireActual(
+    '../../../Shared/Context/MinisterHousingAllowanceContext',
+  ),
+  useMinisterHousingAllowance: jest.fn(),
+}));
+const useMock = useMinisterHousingAllowance as jest.Mock;
+
 describe('FairRentalValue', () => {
+  beforeEach(() =>
+    useMock.mockReturnValue({
+      pageType: PageEnum.New,
+    }),
+  );
+
   it('renders the component', () => {
     const { getByText, getByRole } = render(<TestComponent />);
 
     expect(getByRole('table')).toBeInTheDocument();
-    expect(getByText('Fair Rental Value')).toBeInTheDocument();
+    expect(
+      getByText('Fair Rental Value', { selector: '.MuiCardHeader-title' }),
+    ).toBeInTheDocument();
 
     expect(getByRole('columnheader', { name: 'Category' })).toBeInTheDocument();
     expect(getByRole('columnheader', { name: 'Amount' })).toBeInTheDocument();
@@ -67,5 +85,22 @@ describe('FairRentalValue', () => {
 
     expect(getByText('$1,500.00')).toBeInTheDocument();
     expect(getByText('$18,000.00')).toBeInTheDocument();
+  });
+
+  describe('isPrint behavior', () => {
+    it('should disable text fields when on view page', () => {
+      useMock.mockReturnValue({
+        pageType: PageEnum.View,
+      });
+
+      const { getByRole } = render(<TestComponent />);
+
+      const row = getByRole('row', {
+        name: /monthly market rental value of your home/i,
+      });
+      const input = within(row).getByRole('textbox');
+
+      expect(input).toBeDisabled();
+    });
   });
 });

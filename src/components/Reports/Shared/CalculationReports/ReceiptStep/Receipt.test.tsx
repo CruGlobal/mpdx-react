@@ -13,11 +13,13 @@ const formTitle = 'Test Title';
 const buttonText = 'View Form';
 const alertText = 'Override text';
 const editLink = '/test/edit-link';
+const viewLink = '/test/view-link';
 
 interface TestComponentProps {
   pageType?: PageEnum;
   alertText?: string;
   editLink?: string;
+  viewLink?: string;
   isEdit?: boolean;
   availableDate?: string | null;
   deadlineDate?: string | null;
@@ -27,6 +29,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   pageType,
   alertText,
   editLink,
+  viewLink,
   isEdit,
   availableDate = '2024-06-15',
   deadlineDate = '2024-07-01',
@@ -40,7 +43,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
             buttonText={buttonText}
             alertText={alertText}
             editLink={editLink}
-            viewLink=""
+            viewLink={viewLink}
             isEdit={isEdit}
             availableDate={availableDate}
             deadlineDate={deadlineDate}
@@ -152,5 +155,27 @@ describe('Receipt', () => {
 
     expect(editButton).toBeInTheDocument();
     expect(editButton).toHaveAttribute('href', editLink);
+  });
+
+  it('should go to view link when View clicked', () => {
+    const { getByRole } = render(<TestComponent viewLink={viewLink} />);
+
+    const viewButton = getByRole('link', { name: /view your mha/i });
+
+    expect(viewButton).toHaveAttribute(
+      'href',
+      expect.stringContaining('/test/view-link'),
+    );
+  });
+
+  it('should go to view link when Print clicked', () => {
+    const { getByRole } = render(<TestComponent viewLink={viewLink} />);
+
+    const viewButton = getByRole('link', { name: /print a copy/i });
+
+    expect(viewButton).toHaveAttribute(
+      'href',
+      expect.stringContaining('/test/view-link'),
+    );
   });
 });

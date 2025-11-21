@@ -36,6 +36,7 @@ export const EditRequestPage: React.FC = () => {
 
   const accountListId = useAccountListId();
   const editLink = `/accountLists/${accountListId}/reports/housingAllowance/edit`;
+  const viewLink = `/accountLists/${accountListId}/reports/housingAllowance/view`;
 
   const {
     steps,
@@ -71,35 +72,38 @@ export const EditRequestPage: React.FC = () => {
           validationSchema={validationSchema}
           onSubmit={() => handleNextStep()}
         >
-          <Container sx={{ ml: 5 }}>
-            <Stack direction="column" width={mainContentWidth}>
-              {currentStep === StepsEnum.AboutForm ? (
-                <AboutForm
-                  boardApprovalDate={boardDate}
-                  availableDate={availableDate}
-                />
-              ) : currentStep === StepsEnum.RentOrOwn ? (
-                <RentOwn />
-              ) : currentStep === StepsEnum.CalcForm ? (
-                <Calculation
-                  boardApprovalDate={boardDate}
-                  availableDate={availableDate}
-                />
-              ) : currentStep === StepsEnum.Receipt ? (
-                <Receipt
-                  formTitle={t('MHA Request')}
-                  buttonText={t('View Your MHA')}
-                  isEdit={isEdit}
-                  editLink={editLink}
-                  viewLink=""
-                  availableDate={availableDate}
-                  deadlineDate={
-                    mocks[4].mhaDetails.staffMHA?.deadlineDate ?? ''
-                  }
-                />
-              ) : null}
-            </Stack>
-          </Container>
+          {({ values }) => (
+            <Container sx={{ ml: 5 }}>
+              <Stack direction="column" width={mainContentWidth}>
+                {currentStep === StepsEnum.AboutForm ? (
+                  <AboutForm
+                    boardApprovalDate={boardDate}
+                    availableDate={availableDate}
+                  />
+                ) : currentStep === StepsEnum.RentOrOwn ? (
+                  <RentOwn />
+                ) : currentStep === StepsEnum.CalcForm ? (
+                  <Calculation
+                    boardApprovalDate={boardDate}
+                    availableDate={availableDate}
+                    rentOrOwn={values.rentOrOwn}
+                  />
+                ) : currentStep === StepsEnum.Receipt ? (
+                  <Receipt
+                    formTitle={t('MHA Request')}
+                    buttonText={t('View Your MHA')}
+                    isEdit={isEdit}
+                    editLink={editLink}
+                    viewLink={viewLink}
+                    availableDate={availableDate}
+                    deadlineDate={
+                      mocks[4].mhaDetails.staffMHA?.deadlineDate ?? ''
+                    }
+                  />
+                ) : null}
+              </Stack>
+            </Container>
+          )}
         </Formik>
       }
     />

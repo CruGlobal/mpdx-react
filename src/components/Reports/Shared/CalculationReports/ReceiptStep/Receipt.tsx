@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import { Edit, PrintSharp } from '@mui/icons-material';
 import { Alert, Box, Button, Link, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
@@ -5,14 +6,12 @@ import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 
-//TODO: Update links and functionality for Edit and Print options
-
 interface ReceiptProps {
   formTitle: string;
   buttonText: string;
   alertText?: string;
   editLink?: string;
-  viewLink: string;
+  viewLink?: string;
   isEdit?: boolean;
   availableDate?: string | null;
   deadlineDate?: string | null;
@@ -87,12 +86,14 @@ export const Receipt: React.FC<ReceiptProps> = ({
           fontSize="small"
           sx={{ verticalAlign: 'middle', opacity: 0.56 }}
         />{' '}
-        <Link href={viewLink}>
+        <Link component={NextLink} href={`${viewLink}?print=true`}>
           {t(`Print a copy of your submitted ${formTitle}`)}
         </Link>
       </Box>
       <Box sx={{ mt: 4 }}>
-        <Button variant="contained">{buttonText}</Button>
+        <Button component={NextLink} href={viewLink} variant="contained">
+          {buttonText}
+        </Button>
       </Box>
     </Box>
   );

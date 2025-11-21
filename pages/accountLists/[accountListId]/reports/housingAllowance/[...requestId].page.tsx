@@ -9,7 +9,9 @@ import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { EditRequestPage } from 'src/components/Reports/MinisterHousingAllowance/EditRequest/EditRequestPage';
 import { NewRequestPage } from 'src/components/Reports/MinisterHousingAllowance/NewRequest/NewRequestPage';
 import { MinisterHousingAllowanceProvider } from 'src/components/Reports/MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
+import { ViewRequestPage } from 'src/components/Reports/MinisterHousingAllowance/ViewRequest/ViewRequestPage';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
+import { SimpleScreenOnly } from 'src/components/Reports/styledComponents';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -33,16 +35,22 @@ const HousingAllowanceRequestPage: React.FC = () => {
   }
 
   const [mode] = Array.isArray(requestId) ? requestId : [requestId];
-  const type = mode === PageEnum.New ? PageEnum.New : PageEnum.Edit;
+  const type =
+    mode === PageEnum.New
+      ? PageEnum.New
+      : mode === PageEnum.Edit
+        ? PageEnum.Edit
+        : PageEnum.View;
 
   const title = t("{{mode}} Minister's Housing Allowance Request", {
-    mode: type === PageEnum.New ? 'New' : 'Edit',
+    mode:
+      type === PageEnum.New ? 'New' : type === PageEnum.Edit ? 'Edit' : 'View',
   });
 
-  const [isNavListOpen, setNavListOpen] = useState(false);
+  const [isNavListOpen, setIsNavListOpen] = useState(false);
 
   const handleNavListToggle = () => {
-    setNavListOpen(!isNavListOpen);
+    setIsNavListOpen(!isNavListOpen);
   };
 
   return (
@@ -65,17 +73,21 @@ const HousingAllowanceRequestPage: React.FC = () => {
           leftWidth="290px"
           mainContent={
             <>
-              <MultiPageHeader
-                isNavListOpen={isNavListOpen}
-                onNavListToggle={handleNavListToggle}
-                title={t("Minister's Housing Allowance Request")}
-                headerType={HeaderTypeEnum.Report}
-              />
+              <SimpleScreenOnly>
+                <MultiPageHeader
+                  isNavListOpen={isNavListOpen}
+                  onNavListToggle={handleNavListToggle}
+                  title={t("Minister's Housing Allowance Request")}
+                  headerType={HeaderTypeEnum.Report}
+                />
+              </SimpleScreenOnly>
               <MinisterHousingAllowanceProvider type={type}>
                 {type === PageEnum.New ? (
                   <NewRequestPage />
-                ) : (
+                ) : type === PageEnum.Edit ? (
                   <EditRequestPage />
+                ) : (
+                  <ViewRequestPage />
                 )}
               </MinisterHousingAllowanceProvider>
             </>

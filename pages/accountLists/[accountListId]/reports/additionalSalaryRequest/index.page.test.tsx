@@ -4,9 +4,7 @@ import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
-import AdditionalSalaryRequestPage, {
-  getServerSideProps,
-} from './additionalSalaryRequest.page';
+import AdditionalSalaryRequestPage, { getServerSideProps } from './index.page';
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>

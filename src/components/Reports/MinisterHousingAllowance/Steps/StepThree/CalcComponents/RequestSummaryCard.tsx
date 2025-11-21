@@ -13,9 +13,15 @@ import {
 import { useFormikContext } from 'formik';
 import { Trans, useTranslation } from 'react-i18next';
 import { RentOwnEnum } from 'src/components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
+import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
+import {
+  SimplePrintOnly,
+  SimpleScreenOnly,
+} from 'src/components/Reports/styledComponents';
 import { useAnnualTotal } from 'src/hooks/useAnnualTotal';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { useMinisterHousingAllowance } from '../../../Shared/Context/MinisterHousingAllowanceContext';
 import { CalculationFormValues } from '../Calculation';
 
 interface RequestSummaryCardProps {
@@ -32,9 +38,28 @@ export const RequestSummaryCard: React.FC<RequestSummaryCardProps> = ({
   const { values } = useFormikContext<CalculationFormValues>();
   const { annualTotal } = useAnnualTotal(values);
 
+  const { pageType } = useMinisterHousingAllowance();
+
+  const above = pageType === PageEnum.View ? '' : ' above';
+
   return (
-    <Card>
-      <CardHeader title={<b>{t('Your MHA Request Summary')}</b>} />
+    <Card
+      sx={{
+        '@media print': {
+          maxWidth: '100%',
+          boxSizing: 'border-box',
+          boxShadow: 'none',
+        },
+      }}
+    >
+      <SimpleScreenOnly>
+        <CardHeader title={<b>{t('Your MHA Request Summary')}</b>} />
+      </SimpleScreenOnly>
+      <SimplePrintOnly>
+        <Typography variant="h6" sx={{ mb: -3 }}>
+          {t('Request Summary')}
+        </Typography>
+      </SimplePrintOnly>
       <CardContent>
         <Table
           sx={{
@@ -60,8 +85,8 @@ export const RequestSummaryCard: React.FC<RequestSummaryCardProps> = ({
                   <b>{t('Your Annual MHA Total')}</b>
                 </Typography>
                 <Box sx={{ color: 'text.secondary' }}>
-                  <Trans i18nKey="requestSummaryCardInfo">
-                    This is calculated from your above responses and is the
+                  <Trans i18nKey="requestSummaryCardInfo" values={{ above }}>
+                    This is calculated from your {above} responses and is the
                     lower of the Annual Fair Rental Value or the Annual Cost of
                     Providing a Home.
                   </Trans>

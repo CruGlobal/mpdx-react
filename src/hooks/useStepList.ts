@@ -75,7 +75,7 @@ export function useStepList(formType: FormEnum, type?: PageEnum): Steps[] {
             },
             {
               title: t('7b. Additional Information'),
-              current: true,
+              current: false,
               complete: false,
             },
             {

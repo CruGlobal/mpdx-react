@@ -30,6 +30,11 @@ export type ContextType = {
   isDrawerOpen: boolean;
   toggleDrawer: () => void;
   setIsDrawerOpen: (open: boolean) => void;
+
+  isPrint: boolean;
+  setIsPrint: (value: boolean) => void;
+
+  setPreviousPage: (page: PageEnum) => void;
 };
 
 const MinisterHousingAllowanceContext = createContext<ContextType | null>(null);
@@ -54,7 +59,22 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   children,
 }) => {
   const pageType = type;
-  const steps = useStepList(FormEnum.MHA, type);
+  const initialSteps = useStepList(FormEnum.MHA, type);
+
+  const [previousPage, setPreviousPage] = useState(PageEnum.None);
+
+  const steps = useMemo(() => {
+    if (previousPage === PageEnum.None) {
+      return initialSteps;
+    }
+
+    return initialSteps.map((step, index, arr) => ({
+      ...step,
+      complete: true,
+      current: index === arr.length - 1,
+    }));
+  }, [initialSteps, previousPage]);
+
   const totalSteps = steps.length;
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
@@ -66,6 +86,8 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   const [hasCalcValues, setHasCalcValues] = useState(
     actionRequired ? true : false,
   );
+
+  const [isPrint, setIsPrint] = useState(false);
 
   const [currentStep, setCurrentStep] = useState(StepsEnum.AboutForm);
   const [percentComplete, setPercentComplete] = useState(25);
@@ -145,6 +167,9 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       isDrawerOpen,
       toggleDrawer,
       setIsDrawerOpen,
+      isPrint,
+      setIsPrint,
+      setPreviousPage,
     }),
     [
       steps,
@@ -159,6 +184,9 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       isDrawerOpen,
       toggleDrawer,
       setIsDrawerOpen,
+      isPrint,
+      setIsPrint,
+      setPreviousPage,
     ],
   );
 

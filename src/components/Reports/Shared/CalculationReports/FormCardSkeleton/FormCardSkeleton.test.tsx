@@ -36,11 +36,13 @@ const TestComponent: React.FC<TestComponentProps> = ({
 
 describe('FormCardSkeleton', () => {
   it('renders the card with title and children', () => {
-    const { getByText } = render(<TestComponent />);
+    const { getByText, getByRole } = render(<TestComponent />);
 
-    expect(getByText(title)).toBeInTheDocument();
-    expect(getByText('Category')).toBeInTheDocument();
-    expect(getByText('Amount')).toBeInTheDocument();
+    expect(
+      getByText(title, { selector: '.MuiCardHeader-title' }),
+    ).toBeInTheDocument();
+    expect(getByRole('columnheader', { name: 'Category' })).toBeInTheDocument();
+    expect(getByRole('columnheader', { name: 'Amount' })).toBeInTheDocument();
 
     expect(getByText('Test Child')).toBeInTheDocument();
   });

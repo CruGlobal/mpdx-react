@@ -103,6 +103,17 @@ describe('CardSkeleton', () => {
     );
   });
 
+  it('should go to correct link when View button is clicked', () => {
+    const { getByRole } = render(<TestComponent isRequest={true} />);
+
+    const viewButton = getByRole('link', { name: titleOne });
+
+    expect(viewButton).toHaveAttribute(
+      'href',
+      expect.stringContaining('/reports/housingAllowance/view'),
+    );
+  });
+
   it('closes Cancel modal when clicked', async () => {
     const { getByRole, findByRole, getByText, queryByRole } = render(
       <TestComponent isRequest={true} />,

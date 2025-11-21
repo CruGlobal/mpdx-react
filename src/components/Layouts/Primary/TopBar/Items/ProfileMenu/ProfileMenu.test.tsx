@@ -276,7 +276,7 @@ describe('ProfileMenu while Impersonating', () => {
 
     await waitFor(() =>
       expect(window.location.href).toEqual(
-        `${process.env.SITE_URL}/api/stop-impersonating?accountListId=1&userId=user-1&path=%2Flogout`,
+        `${process.env.SITE_URL}/api/stop-impersonating`,
       ),
     );
   });

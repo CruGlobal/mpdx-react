@@ -169,15 +169,7 @@ const ProfileMenu = (): ReactElement => {
       },
     );
     window.localStorage.clear();
-    const url = new URL(
-      `${
-        process.env.SITE_URL || window.location.origin
-      }/api/stop-impersonating`,
-    );
-    url.searchParams.append('accountListId', accountListId ?? '');
-    url.searchParams.append('userId', session.userID);
-    url.searchParams.append('path', '/logout');
-    window.location.href = url.href;
+    window.location.href = `${process.env.SITE_URL || window.location.origin}/api/stop-impersonating`;
   };
 
   const handleAccountListClick = (

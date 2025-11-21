@@ -23,8 +23,8 @@ export const FairRentalValue: React.FC = () => {
       <TableRow>
         <TableCell sx={{ width: '70%' }}>
           <StyledOrderedList component="ol" start={1}>
-            <Typography>
-              <li>{t('Monthly market rental value of your home.')}</li>
+            <Typography component="li">
+              {t('Monthly market rental value of your home.')}
             </Typography>
             <Box sx={{ color: 'text.secondary' }}>
               <Trans i18nKey="fairRentalValueQuestion1">
@@ -51,12 +51,10 @@ export const FairRentalValue: React.FC = () => {
       <TableRow>
         <TableCell sx={{ width: '70%' }}>
           <StyledOrderedList component="ol" start={2}>
-            <Typography>
-              <li>
-                {t(
-                  'Monthly value for furniture, appliances, decorations, and cleaning.',
-                )}
-              </li>
+            <Typography component="li">
+              {t(
+                'Monthly value for furniture, appliances, decorations, and cleaning.',
+              )}
             </Typography>
             <Box sx={{ color: 'text.secondary' }}>
               <Trans i18nKey="fairRentalValueQuestion2">
@@ -85,8 +83,8 @@ export const FairRentalValue: React.FC = () => {
       <TableRow>
         <TableCell sx={{ width: '70%' }}>
           <StyledOrderedList component="ol" start={3}>
-            <Typography>
-              <li>{t('Average monthly utility costs.')}</li>
+            <Typography component="li">
+              {t('Average monthly utility costs.')}
             </Typography>
           </StyledOrderedList>
         </TableCell>
@@ -106,8 +104,8 @@ export const FairRentalValue: React.FC = () => {
       <TableRow>
         <TableCell sx={{ width: '70%' }}>
           <StyledOrderedList component="ol" start={4}>
-            <Typography>
-              <li>{t('Total Monthly Fair Rental Value of your Home')}</li>
+            <Typography component="li">
+              {t('Total Monthly Fair Rental Value of your Home')}
             </Typography>
             <Box sx={{ color: 'text.secondary' }}>
               <Typography variant="body2">{t('Sum of lines 1-3')}</Typography>
