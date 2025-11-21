@@ -59,13 +59,13 @@ export const useAutoSave = <Value extends string | number>({
 
       if (saveOnChange) {
         const { parsedValue, errorMessage } = parseValue(newValue);
-        if (!errorMessage) {
+        if (!errorMessage && parsedValue !== value) {
           saveValue(parsedValue);
         }
       }
     },
     onBlur: () => {
-      if (!saveOnChange && !errorMessage) {
+      if (!saveOnChange && !errorMessage && parsedValue !== value) {
         saveValue(parsedValue);
       }
     },
