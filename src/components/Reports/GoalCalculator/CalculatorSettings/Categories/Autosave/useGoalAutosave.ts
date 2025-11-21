@@ -1,7 +1,7 @@
 import * as yup from 'yup';
 import { useGoalCalculator } from 'src/components/Reports/GoalCalculator/Shared/GoalCalculatorContext';
+import { useAutoSave } from 'src/components/Shared/Autosave/useAutosave';
 import { GoalCalculationUpdateInput } from 'src/graphql/types.generated';
-import { useAutoSave } from './useAutosave';
 import { useSaveField } from './useSaveField';
 
 interface UseAutoSaveOptions {
@@ -23,6 +23,7 @@ export const useGoalAutoSave = ({
     value: data?.goalCalculation[fieldName],
     saveValue: (value) => saveField({ [fieldName]: value }),
     fieldName,
+    disabled: !data,
     ...options,
   });
 };
