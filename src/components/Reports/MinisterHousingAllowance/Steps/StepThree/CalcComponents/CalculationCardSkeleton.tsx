@@ -7,8 +7,13 @@ import {
   TableCell,
   TableHead,
   TableRow,
+  Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import {
+  SimplePrintOnly,
+  SimpleScreenOnly,
+} from 'src/components/Reports/styledComponents';
 
 interface CalculationCardSkeletonProps {
   title: string;
@@ -21,8 +26,23 @@ export const CalculationCardSkeleton: React.FC<
   const { t } = useTranslation();
 
   return (
-    <Card>
-      <CardHeader title={title} />
+    <Card
+      sx={{
+        '@media print': {
+          maxWidth: '100%',
+          boxSizing: 'border-box',
+          boxShadow: 'none',
+        },
+      }}
+    >
+      <SimpleScreenOnly>
+        <CardHeader title={title} />
+      </SimpleScreenOnly>
+      <SimplePrintOnly>
+        <Typography variant="h6" sx={{ mb: -3 }}>
+          {title}
+        </Typography>
+      </SimplePrintOnly>
       <CardContent>
         <Table
           sx={{

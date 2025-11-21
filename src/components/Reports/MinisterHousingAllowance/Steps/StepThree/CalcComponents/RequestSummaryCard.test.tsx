@@ -5,6 +5,7 @@ import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
 import { RentOwnEnum } from 'src/components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
 import theme from 'src/theme';
+import { MinisterHousingAllowanceProvider } from '../../../Shared/Context/MinisterHousingAllowanceContext';
 import { RequestSummaryCard } from './RequestSummaryCard';
 
 const submit = jest.fn();
@@ -15,9 +16,11 @@ interface TestComponentProps {
 const TestComponent: React.FC<TestComponentProps> = ({ rentOrOwn }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
-      <Formik initialValues={{}} onSubmit={submit}>
-        <RequestSummaryCard rentOrOwn={rentOrOwn} />
-      </Formik>
+      <MinisterHousingAllowanceProvider>
+        <Formik initialValues={{}} onSubmit={submit}>
+          <RequestSummaryCard rentOrOwn={rentOrOwn} />
+        </Formik>
+      </MinisterHousingAllowanceProvider>
     </TestRouter>
   </ThemeProvider>
 );

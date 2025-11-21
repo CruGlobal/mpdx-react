@@ -1,6 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
+import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
 import {
   MinisterHousingAllowanceProvider,
@@ -17,13 +18,15 @@ interface TestComponentProps {
 
 const TestComponent: React.FC<TestComponentProps> = ({ panelType }) => (
   <ThemeProvider theme={theme}>
-    <MinisterHousingAllowanceProvider>
-      <PanelLayout
-        panelType={panelType}
-        sidebarTitle={title}
-        mainContent={<h1>Main Content</h1>}
-      />
-    </MinisterHousingAllowanceProvider>
+    <TestRouter>
+      <MinisterHousingAllowanceProvider>
+        <PanelLayout
+          panelType={panelType}
+          sidebarTitle={title}
+          mainContent={<h1>Main Content</h1>}
+        />
+      </MinisterHousingAllowanceProvider>
+    </TestRouter>
   </ThemeProvider>
 );
 

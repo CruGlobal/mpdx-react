@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import React from 'react';
 import { CheckCircleOutline } from '@mui/icons-material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -13,7 +14,7 @@ import {
   iconPanelWidth,
 } from 'src/components/Shared/IconPanelLayout/IconPanelLayout';
 import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
-import { PanelTypeEnum } from '../Shared/sharedTypes';
+import { PageEnum, PanelTypeEnum } from '../Shared/sharedTypes';
 
 interface PanelLayoutProps {
   panelType: PanelTypeEnum;
@@ -31,9 +32,14 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
   mainContent,
 }) => {
   const { t } = useTranslation();
+  const router = useRouter();
 
-  const { handlePreviousStep, percentComplete, currentIndex, steps } =
+  const { handlePreviousStep, percentComplete, currentIndex, steps, pageType } =
     useMinisterHousingAllowance();
+
+  const handleGoBack = () => {
+    router.back();
+  };
 
   const isLastStep = steps ? currentIndex === steps.length - 1 : false;
   const isNotFirstStep = currentIndex !== 0;
@@ -42,7 +48,19 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
     <PrintableStack direction="row">
       {panelType === PanelTypeEnum.Empty ? (
         <>
-          <Stack direction="column" width={iconPanelWidth}></Stack>
+          <Stack direction="column" width={iconPanelWidth}>
+            {pageType === PageEnum.View && (
+              <IconButton
+                aria-label={t('Go back')}
+                onClick={handleGoBack}
+                sx={(theme) => ({
+                  color: theme.palette.cruGrayDark.main,
+                })}
+              >
+                <ArrowBackIcon />
+              </IconButton>
+            )}
+          </Stack>
           <Divider orientation="vertical" flexItem />
           <StyledSidebar open={true} aria-label={sidebarAriaLabel}>
             {sidebarTitle && (
@@ -50,7 +68,7 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
             )}
           </StyledSidebar>
           <Divider orientation="vertical" flexItem />
-          <MainContent>{mainContent}</MainContent>
+          <MainContent className="main-content">{mainContent}</MainContent>
         </>
       ) : (
         <>
