@@ -1,7 +1,7 @@
 import MenuOpenSharp from '@mui/icons-material/MenuOpenSharp';
 import MenuSharp from '@mui/icons-material/MenuSharp';
 import { useTranslation } from 'react-i18next';
-import { IconPanelItem } from 'src/components/Shared/IconPanelLayout/IconPanelLayout';
+import { IconPanelItem } from './PanelLayout';
 
 export const useIconPanelItems = (
   isDrawerOpen: boolean,

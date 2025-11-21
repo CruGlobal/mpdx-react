@@ -3,7 +3,8 @@ import React from 'react';
 import MenuOpenSharp from '@mui/icons-material/MenuOpenSharp';
 import MenuSharp from '@mui/icons-material/MenuSharp';
 import { useTranslation } from 'react-i18next';
-import { IconPanelLayout } from 'src/components/Shared/IconPanelLayout/IconPanelLayout';
+import { PanelLayout } from '../../Shared/CalculationReports/PanelLayout/PanelLayout';
+import { PanelTypeEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 
 interface AdditionalSalaryRequestLayoutProps {
@@ -28,9 +29,10 @@ export const AdditionalSalaryRequestLayout: React.FC<
   ];
 
   return (
-    <IconPanelLayout
+    <PanelLayout
+      panelType={PanelTypeEnum.Other}
       percentComplete={50}
-      iconPanelItems={iconPanelItems}
+      icons={iconPanelItems}
       sidebarContent={sectionListPanel}
       sidebarTitle={t('Additional Salary Request')}
       isSidebarOpen={isDrawerOpen}

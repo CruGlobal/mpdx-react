@@ -5,12 +5,12 @@ import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import { NameDisplay } from '../Shared/CalculationReports/NameDisplay/NameDisplay';
+import { PanelLayout } from '../Shared/CalculationReports/PanelLayout/PanelLayout';
+import { PanelTypeEnum } from '../Shared/CalculationReports/Shared/sharedTypes';
 import { EligibleDisplay } from './MainPages/EligibleDisplay';
 import { IneligibleDisplay } from './MainPages/IneligibleDisplay';
-import { PanelLayout } from './PanelLayout/PanelLayout';
 import { MinisterHousingAllowanceProvider } from './Shared/Context/MinisterHousingAllowanceContext';
 import { mocks } from './Shared/mockData';
-import { PanelTypeEnum } from './Shared/sharedTypes';
 import { CurrentBoardApproved } from './SharedComponents/CurrentBoardApproved';
 import { CurrentRequest } from './SharedComponents/CurrentRequest';
 
@@ -52,6 +52,8 @@ export const MinisterHousingAllowanceReport: React.FC = () => {
       <PanelLayout
         panelType={PanelTypeEnum.Empty}
         sidebarTitle={title}
+        percentComplete={0}
+        backHref={''}
         mainContent={
           <Container>
             <Stack direction="column" width={mainContentWidth}>

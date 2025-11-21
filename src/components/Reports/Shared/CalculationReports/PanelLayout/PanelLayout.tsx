@@ -1,48 +1,62 @@
+import NextLink from 'next/link';
 import React from 'react';
 import { CheckCircleOutline } from '@mui/icons-material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { Box, Divider, IconButton, Stack } from '@mui/material';
+import { Box, Divider, IconButton, Link, Stack } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { CircularProgressWithLabel } from 'src/components/Reports/GoalCalculator/SharedComponents/CircularProgressWithLabel/CircularProgressWithLabel';
+import { Steps } from 'src/components/Reports/MinisterHousingAllowance/Steps/StepsList/StepsList';
 import {
-  IconPanelItem,
   MainContent,
   PrintableStack,
   SidebarTitle,
   StyledBox,
   StyledSidebar,
   iconPanelWidth,
-} from 'src/components/Shared/IconPanelLayout/IconPanelLayout';
+} from 'src/components/Reports/Shared/CalculationReports/Shared/styledComponents/PanelLayoutStyles';
 import theme from 'src/theme';
-import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
 import { PanelTypeEnum } from '../Shared/sharedTypes';
 
-interface PanelLayoutProps {
+export interface IconPanelItem {
+  key?: string;
+  icon: React.ReactNode;
+  label: string;
+  isActive?: boolean;
+  onClick: () => void;
+}
+
+export interface PanelLayoutProps {
   panelType: PanelTypeEnum;
+  percentComplete: number;
+  icons?: IconPanelItem[];
   sidebarContent?: React.ReactNode;
+  backHref: string;
+  backTitle?: string;
   sidebarTitle?: string;
   isSidebarOpen?: boolean;
   sidebarAriaLabel?: string;
   mainContent?: React.ReactNode;
-  icons?: IconPanelItem[];
+  currentIndex?: number;
+  steps?: Steps[];
 }
 
 export const PanelLayout: React.FC<PanelLayoutProps> = ({
   panelType,
+  percentComplete,
+  icons,
   sidebarContent,
+  backHref,
+  backTitle,
   sidebarTitle,
   isSidebarOpen = false,
   sidebarAriaLabel,
   mainContent,
-  icons,
+  currentIndex,
+  steps,
 }) => {
   const { t } = useTranslation();
 
-  const { handlePreviousStep, percentComplete, currentIndex, steps } =
-    useMinisterHousingAllowance();
-
   const isLastStep = steps ? currentIndex === steps.length - 1 : false;
-  const isNotFirstStep = currentIndex !== 0;
 
   return (
     <PrintableStack direction="row">
@@ -82,23 +96,31 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
                   <IconButton
                     key={item.key}
                     aria-label={item.label}
-                    sx={{ color: theme.palette.cruGrayDark.main }}
+                    sx={{
+                      color: item.isActive
+                        ? theme.palette.mpdxBlue.main
+                        : theme.palette.cruGrayDark.main,
+                    }}
                     onClick={item.onClick}
                   >
                     {item.icon}
                   </IconButton>
                 ))}
-                {isNotFirstStep && (
+                <Link
+                  component={NextLink}
+                  href={backHref}
+                  sx={{ textDecoration: 'none' }}
+                  aria-label={backTitle ?? t('Back to dashboard')}
+                >
                   <IconButton
-                    aria-label={t('Go back')}
-                    onClick={handlePreviousStep}
+                    title={backTitle ?? t('Back to dashboard')}
                     sx={(theme) => ({
                       color: theme.palette.cruGrayDark.main,
                     })}
                   >
                     <ArrowBackIcon />
                   </IconButton>
-                )}
+                </Link>
               </>
             )}
           </Stack>

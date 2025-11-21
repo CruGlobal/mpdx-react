@@ -4,18 +4,14 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import i18n from 'src/lib/i18n';
+import { PanelLayout } from '../../Shared/CalculationReports/PanelLayout/PanelLayout';
+import { useIconPanelItems } from '../../Shared/CalculationReports/PanelLayout/useIconPanelItems';
 import { Receipt } from '../../Shared/CalculationReports/ReceiptStep/Receipt';
+import { PanelTypeEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { mainContentWidth } from '../MinisterHousingAllowance';
-import { PanelLayout } from '../PanelLayout/PanelLayout';
-import { useIconPanelItems } from '../PanelLayout/useIconPanelItems';
 import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
 import { mocks } from '../Shared/mockData';
-import {
-  PageEnum,
-  PanelTypeEnum,
-  RentOwnEnum,
-  StepsEnum,
-} from '../Shared/sharedTypes';
+import { PageEnum, RentOwnEnum, StepsEnum } from '../Shared/sharedTypes';
 import { AboutForm } from '../Steps/StepOne/AboutForm';
 import { Calculation } from '../Steps/StepThree/Calculation';
 import { RentOwn } from '../Steps/StepTwo/RentOwn';
@@ -44,6 +40,8 @@ export const NewRequestPage: React.FC = () => {
     pageType,
     isDrawerOpen,
     toggleDrawer,
+    percentComplete,
+    currentIndex,
   } = useMinisterHousingAllowance();
 
   const isEdit = pageType === PageEnum.Edit;
@@ -53,8 +51,12 @@ export const NewRequestPage: React.FC = () => {
 
   return (
     <PanelLayout
-      panelType={PanelTypeEnum.New}
+      panelType={PanelTypeEnum.Other}
       icons={useIconPanelItems(isDrawerOpen, toggleDrawer)}
+      percentComplete={percentComplete}
+      currentIndex={currentIndex}
+      steps={steps}
+      backHref={`/accountLists/${accountListId}/reports/housingAllowance`}
       isSidebarOpen={isDrawerOpen}
       sidebarTitle={t('New Request')}
       sidebarAriaLabel={t('MHA New Request')}

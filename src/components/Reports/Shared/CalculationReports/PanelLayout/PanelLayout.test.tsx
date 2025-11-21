@@ -1,69 +1,96 @@
 import React from 'react';
 import HomeIcon from '@mui/icons-material/Home';
-import SettingsIcon from '@mui/icons-material/Settings';
+import MenuOpenSharp from '@mui/icons-material/MenuOpenSharp';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import theme from 'src/theme';
-import {
-  IconPanelItem,
-  IconPanelLayout,
-  IconPanelLayoutProps,
-} from './IconPanelLayout';
+import { PanelTypeEnum } from '../Shared/sharedTypes';
+import { IconPanelItem, PanelLayout, PanelLayoutProps } from './PanelLayout';
 
-const mockIconPanelItems: IconPanelItem[] = [
+const title = 'Sidebar Title';
+
+const mockIcons: IconPanelItem[] = [
   {
-    key: 'settings',
-    icon: <SettingsIcon />,
-    label: 'Settings',
+    key: 'mock-icon-1',
+    icon: <MenuOpenSharp />,
+    label: 'Mock Icon 1',
     isActive: true,
     onClick: jest.fn(),
   },
   {
-    key: 'home',
+    key: 'mock-icon-2',
     icon: <HomeIcon />,
-    label: 'Home',
+    label: 'Mock Icon 2',
     isActive: false,
     onClick: jest.fn(),
   },
 ];
 
-const TestComponent: React.FC<Partial<IconPanelLayoutProps>> = (props) => (
+interface TestComponentProps extends Partial<PanelLayoutProps> {
+  panelType: PanelTypeEnum;
+}
+
+const TestComponent: React.FC<TestComponentProps> = (props) => (
   <ThemeProvider theme={theme}>
-    <IconPanelLayout
-      percentComplete={0}
-      backHref="/back"
+    <PanelLayout
+      sidebarTitle={title}
       mainContent={<h1>Main Content</h1>}
-      iconPanelItems={mockIconPanelItems}
+      icons={mockIcons}
+      backHref="/back"
+      percentComplete={25}
       {...props}
     />
   </ThemeProvider>
 );
 
-describe('IconPanelLayout', () => {
-  it('renders main content, icon panel items, and back link', () => {
-    const { getByRole } = render(<TestComponent backHref="/test-back-url" />);
+describe('PanelLayout', () => {
+  it('renders main content and sidebar title for Empty panel type', () => {
+    const { getByRole } = render(
+      <TestComponent panelType={PanelTypeEnum.Empty} />,
+    );
 
     expect(getByRole('heading', { name: 'Main Content' })).toBeInTheDocument();
-    expect(getByRole('button', { name: 'Settings' })).toBeInTheDocument();
-    expect(getByRole('button', { name: 'Home' })).toBeInTheDocument();
+    expect(getByRole('heading', { name: title })).toBeInTheDocument();
+  });
 
-    const backLink = getByRole('link', { name: 'Go back' });
+  it('renders main content, sidebar title, back link, and progress indicator for New panel type', async () => {
+    const { getByRole, getByTestId } = render(
+      <TestComponent
+        panelType={PanelTypeEnum.Other}
+        isSidebarOpen={true}
+        backHref="/dashboard"
+      />,
+    );
+
+    expect(getByRole('heading', { name: 'Main Content' })).toBeInTheDocument();
+    expect(getByRole('heading', { name: title })).toBeInTheDocument();
+
+    const progressIndicator = getByRole('progressbar');
+    expect(progressIndicator).toBeInTheDocument();
+    expect(progressIndicator).toHaveAttribute('aria-valuenow', '25');
+
+    expect(getByTestId('MenuOpenSharpIcon')).toBeInTheDocument();
+
+    const backLink = getByRole('link', { name: 'Back to dashboard' });
     expect(backLink).toBeInTheDocument();
-    expect(backLink).toHaveAttribute('href', '/test-back-url');
+    expect(backLink).toHaveAttribute('href', '/dashboard');
   });
 
   it('calls onClick when icon button is clicked', async () => {
-    const { getByRole } = render(<TestComponent />);
+    const { getByRole } = render(
+      <TestComponent panelType={PanelTypeEnum.Other} />,
+    );
 
-    userEvent.click(getByRole('button', { name: 'Settings' }));
+    userEvent.click(getByRole('button', { name: 'Mock Icon 1' }));
 
-    expect(mockIconPanelItems[0].onClick).toHaveBeenCalled();
+    expect(mockIcons[0].onClick).toHaveBeenCalled();
   });
 
   it('renders sidebar when content is provided', () => {
     const { getByTestId } = render(
       <TestComponent
+        panelType={PanelTypeEnum.Other}
         sidebarContent={
           <div data-testid="sidebar-content">Sidebar Content</div>
         }
@@ -76,7 +103,11 @@ describe('IconPanelLayout', () => {
 
   it('renders sidebar title when provided', () => {
     const { getByRole } = render(
-      <TestComponent sidebarTitle="Test Title" isSidebarOpen={true} />,
+      <TestComponent
+        panelType={PanelTypeEnum.Other}
+        sidebarTitle="Test Title"
+        isSidebarOpen={true}
+      />,
     );
 
     expect(getByRole('heading', { name: 'Test Title' })).toBeInTheDocument();
@@ -85,6 +116,7 @@ describe('IconPanelLayout', () => {
   it('hides sidebar when isSidebarOpen is false', () => {
     const { getByRole } = render(
       <TestComponent
+        panelType={PanelTypeEnum.Other}
         sidebarContent={<div>Sidebar Content</div>}
         isSidebarOpen={false}
       />,
@@ -96,6 +128,7 @@ describe('IconPanelLayout', () => {
   it('shows sidebar when isSidebarOpen is true', () => {
     const { getByRole } = render(
       <TestComponent
+        panelType={PanelTypeEnum.Other}
         sidebarContent={<div>Sidebar Content</div>}
         isSidebarOpen={true}
       />,
@@ -107,6 +140,7 @@ describe('IconPanelLayout', () => {
   it('applies correct aria attributes to sidebar', () => {
     const { getByRole } = render(
       <TestComponent
+        panelType={PanelTypeEnum.Other}
         sidebarContent={<div>Sidebar Content</div>}
         isSidebarOpen={true}
         sidebarAriaLabel="Test Sidebar"
@@ -119,15 +153,14 @@ describe('IconPanelLayout', () => {
   });
 
   it('applies correct styling to active icon buttons', () => {
-    const { getByRole } = render(<TestComponent />);
+    const { getByRole } = render(
+      <TestComponent panelType={PanelTypeEnum.Other} />,
+    );
 
-    const activeButton = getByRole('button', { name: 'Settings' });
-    const inactiveButton = getByRole('button', { name: 'Home' });
+    const activeButton = getByRole('button', { name: 'Mock Icon 1' });
+    const inactiveButton = getByRole('button', { name: 'Mock Icon 2' });
 
-    // Active button should be blue
     expect(activeButton).toHaveStyle({ color: theme.palette.mpdxBlue.main });
-
-    // Inactive button should be gray
     expect(inactiveButton).toHaveStyle({
       color: theme.palette.cruGrayDark.main,
     });
@@ -136,13 +169,13 @@ describe('IconPanelLayout', () => {
   it('handles empty icon panel items gracefully', () => {
     const { getByTestId, getAllByRole } = render(
       <TestComponent
-        iconPanelItems={[]}
+        panelType={PanelTypeEnum.Other}
+        icons={[]}
         mainContent={<div data-testid="main-content">Main Content</div>}
       />,
     );
 
     expect(getByTestId('main-content')).toBeInTheDocument();
-    // Only the back link should be present (no icon buttons)
     expect(getAllByRole('button')).toHaveLength(1);
   });
 });
