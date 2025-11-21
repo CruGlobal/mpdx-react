@@ -23,6 +23,7 @@ export const useGoalAutoSave = ({
     value: data?.goalCalculation[fieldName],
     saveValue: (value) => saveField({ [fieldName]: value }),
     fieldName,
+    disabled: !data,
     ...options,
   });
 };
