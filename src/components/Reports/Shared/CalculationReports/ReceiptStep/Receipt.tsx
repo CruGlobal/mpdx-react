@@ -15,6 +15,7 @@ interface ReceiptProps {
   isEdit?: boolean;
   availableDate?: string | null;
   deadlineDate?: string | null;
+  setIsComplete?: (complete: boolean) => void;
 }
 
 export const Receipt: React.FC<ReceiptProps> = ({
@@ -26,6 +27,7 @@ export const Receipt: React.FC<ReceiptProps> = ({
   isEdit,
   availableDate,
   deadlineDate,
+  setIsComplete,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -88,12 +90,21 @@ export const Receipt: React.FC<ReceiptProps> = ({
           fontSize="small"
           sx={{ verticalAlign: 'middle', opacity: 0.56 }}
         />{' '}
-        <Link component={NextLink} href={printLink ?? ''}>
+        <Link
+          component={NextLink}
+          href={printLink ?? ''}
+          onClick={() => setIsComplete && setIsComplete(true)}
+        >
           {t(`Print a copy of your submitted ${formTitle}`)}
         </Link>
       </Box>
       <Box sx={{ mt: 4 }}>
-        <Button component={NextLink} href={viewLink ?? ''} variant="contained">
+        <Button
+          component={NextLink}
+          href={viewLink ?? ''}
+          onClick={() => setIsComplete && setIsComplete(true)}
+          variant="contained"
+        >
           {buttonText}
         </Button>
       </Box>

@@ -46,6 +46,7 @@ export const NewRequestPage: React.FC = () => {
     toggleDrawer,
     percentComplete,
     currentIndex,
+    setIsComplete,
   } = useMinisterHousingAllowance();
 
   const isEdit = pageType === PageEnum.Edit;
@@ -98,6 +99,7 @@ export const NewRequestPage: React.FC = () => {
                     deadlineDate={
                       mocks[4].mhaDetails.staffMHA?.deadlineDate ?? ''
                     }
+                    setIsComplete={setIsComplete}
                   />
                 ) : null}
               </Stack>

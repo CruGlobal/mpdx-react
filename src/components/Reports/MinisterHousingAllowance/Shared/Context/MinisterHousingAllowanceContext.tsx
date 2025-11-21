@@ -34,7 +34,7 @@ export type ContextType = {
   isPrint: boolean;
   setIsPrint: (value: boolean) => void;
 
-  setPreviousPage: (page: PageEnum) => void;
+  setIsComplete: (complete: boolean) => void;
 };
 
 const MinisterHousingAllowanceContext = createContext<ContextType | null>(null);
@@ -61,10 +61,10 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   const pageType = type;
   const initialSteps = useStepList(FormEnum.MHA, type);
 
-  const [previousPage, setPreviousPage] = useState(PageEnum.None);
+  const [isComplete, setIsComplete] = useState(false);
 
   const steps = useMemo(() => {
-    if (previousPage === PageEnum.None) {
+    if (!isComplete) {
       return initialSteps;
     }
 
@@ -73,7 +73,7 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       complete: true,
       current: index === arr.length - 1,
     }));
-  }, [initialSteps, previousPage]);
+  }, [initialSteps, isComplete]);
 
   const totalSteps = steps.length;
 
@@ -169,7 +169,7 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       setIsDrawerOpen,
       isPrint,
       setIsPrint,
-      setPreviousPage,
+      setIsComplete,
     }),
     [
       steps,
@@ -186,7 +186,7 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       setIsDrawerOpen,
       isPrint,
       setIsPrint,
-      setPreviousPage,
+      setIsComplete,
     ],
   );
 
