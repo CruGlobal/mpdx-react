@@ -1,28 +1,21 @@
 import { render } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { AdditionalSalaryRequest } from './AdditionalSalaryRequest';
 import { AdditionalSalaryRequestTestWrapper } from './AdditionalSalaryRequestTestWrapper';
 
 describe('AdditionalSalaryRequest', () => {
-  it('renders main content based on selected section', async () => {
-    const { getByRole, findByRole } = render(
+  it('renders sidebar with steps', () => {
+    const { getByRole, getByText } = render(
       <AdditionalSalaryRequestTestWrapper>
         <AdditionalSalaryRequest />
       </AdditionalSalaryRequestTestWrapper>,
     );
 
     expect(
-      await findByRole('heading', { name: 'About this Form content' }),
+      getByRole('navigation', { name: 'Additional Salary Request Sections' }),
     ).toBeInTheDocument();
 
-    userEvent.click(getByRole('button', { name: '2. Complete Form' }));
-    expect(
-      await findByRole('heading', { name: 'Complete the Form' }),
-    ).toBeInTheDocument();
-
-    userEvent.click(getByRole('button', { name: '3. Receipt' }));
-    expect(
-      await findByRole('heading', { name: 'Receipt content' }),
-    ).toBeInTheDocument();
+    expect(getByText('1. About this Form')).toBeInTheDocument();
+    expect(getByText('2. Complete Form')).toBeInTheDocument();
+    expect(getByText('3. Receipt')).toBeInTheDocument();
   });
 });

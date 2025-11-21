@@ -96,7 +96,7 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
         <CardActionArea sx={{ p: 2 }}>
           <Button
             component={NextLink}
-            href={linkOne}
+            href={linkOne ?? ''}
             variant={isRequest ? 'contained' : 'outlined'}
             sx={{ px: 2, py: 1, mr: 1 }}
           >
@@ -104,7 +104,7 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
           </Button>
           <Button
             component={NextLink}
-            href={linkTwo}
+            href={linkTwo ?? ''}
             variant="outlined"
             sx={{ px: 2, py: 1 }}
           >

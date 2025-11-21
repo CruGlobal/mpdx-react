@@ -43,6 +43,8 @@ export const Receipt: React.FC<ReceiptProps> = ({
     ? t(`approval effective ${available}`)
     : t('approval soon');
 
+  const printLink = `${viewLink}?print=true`;
+
   return (
     <Box>
       <Typography variant="h5" sx={{ mb: 3 }}>
@@ -73,7 +75,7 @@ export const Receipt: React.FC<ReceiptProps> = ({
             fontSize="small"
             sx={{ verticalAlign: 'middle', opacity: 0.56 }}
           />{' '}
-          <Link href={editLink}>
+          <Link href={editLink ?? ''}>
             {t('Edit your MHA Request (Not available after {{date}})', {
               date: deadline,
               interpolation: { escapeValue: false },
@@ -86,12 +88,12 @@ export const Receipt: React.FC<ReceiptProps> = ({
           fontSize="small"
           sx={{ verticalAlign: 'middle', opacity: 0.56 }}
         />{' '}
-        <Link component={NextLink} href={`${viewLink}?print=true`}>
+        <Link component={NextLink} href={printLink ?? ''}>
           {t(`Print a copy of your submitted ${formTitle}`)}
         </Link>
       </Box>
       <Box sx={{ mt: 4 }}>
-        <Button component={NextLink} href={viewLink} variant="contained">
+        <Button component={NextLink} href={viewLink ?? ''} variant="contained">
           {buttonText}
         </Button>
       </Box>

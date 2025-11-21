@@ -29,7 +29,7 @@ describe('EditRequestPage', () => {
   });
 
   it('updates steps when Continue clicked', async () => {
-    const { getByRole, getAllByRole, getByTestId, queryByTestId } = render(
+    const { getByRole, getAllByRole, getByText, queryByTestId } = render(
       <TestComponent />,
     );
 
@@ -62,9 +62,7 @@ describe('EditRequestPage', () => {
       ).toBeInTheDocument();
     });
 
-    expect(getByTestId('ArrowBackIcon')).toBeInTheDocument();
-
-    await userEvent.click(getByTestId('ArrowBackIcon'));
+    await userEvent.click(getByText('Back'));
 
     const updatedSteps = getAllByRole('listitem');
 

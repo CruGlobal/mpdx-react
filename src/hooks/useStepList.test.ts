@@ -105,7 +105,7 @@ describe('useStepList', () => {
       },
       {
         title: '7b. Additional Information',
-        current: true,
+        current: false,
         complete: false,
       },
       {

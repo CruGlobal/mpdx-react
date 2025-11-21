@@ -13,6 +13,8 @@ const title = 'Test Title';
 const subtitle = 'Test Subtitle';
 const titleOne = 'View';
 const titleTwo = 'Edit';
+const linkOne = '/mock-view-link';
+const linkTwo = '/mock-edit-link';
 
 const MockIcon: React.FC<SvgIconProps> = (props) => (
   <svg data-testid="mock-icon" {...props}>
@@ -25,6 +27,8 @@ interface TestComponentProps {
   isRequest?: boolean;
   hideDownload?: boolean;
   hideActions?: boolean;
+  linkOne?: string;
+  linkTwo?: string;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
@@ -32,6 +36,8 @@ const TestComponent: React.FC<TestComponentProps> = ({
   isRequest,
   hideDownload = false,
   hideActions = false,
+  linkOne,
+  linkTwo,
 }) => {
   return (
     <ThemeProvider theme={theme}>
@@ -48,6 +54,8 @@ const TestComponent: React.FC<TestComponentProps> = ({
               isRequest={isRequest}
               hideDownload={hideDownload}
               hideActions={hideActions}
+              linkOne={linkOne}
+              linkTwo={linkTwo}
             >
               <div>Test Children</div>
             </CardSkeleton>
@@ -92,25 +100,29 @@ describe('CardSkeleton', () => {
     expect(getByText(titleTwo)).toBeInTheDocument();
   });
 
-  it('should go to correct link when Edit button is clicked', () => {
-    const { getByRole } = render(<TestComponent isRequest={true} />);
+  it('should go to correct link when first button is clicked', () => {
+    const { getByRole } = render(
+      <TestComponent isRequest={true} linkOne={linkOne} />,
+    );
 
-    const editButton = getByRole('link', { name: titleTwo });
+    const firstButton = getByRole('link', { name: titleOne });
 
-    expect(editButton).toHaveAttribute(
+    expect(firstButton).toHaveAttribute(
       'href',
-      expect.stringContaining('/reports/housingAllowance/edit'),
+      expect.stringContaining('/mock-view-link'),
     );
   });
 
-  it('should go to correct link when View button is clicked', () => {
-    const { getByRole } = render(<TestComponent isRequest={true} />);
+  it('should go to correct link when second button is clicked', () => {
+    const { getByRole } = render(
+      <TestComponent isRequest={true} linkTwo={linkTwo} />,
+    );
 
-    const viewButton = getByRole('link', { name: titleOne });
+    const secondButton = getByRole('link', { name: titleTwo });
 
-    expect(viewButton).toHaveAttribute(
+    expect(secondButton).toHaveAttribute(
       'href',
-      expect.stringContaining('/reports/housingAllowance/view'),
+      expect.stringContaining('/mock-edit-link'),
     );
   });
 

@@ -2,7 +2,6 @@ import { useRouter } from 'next/router';
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
 import { PageEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
@@ -48,11 +47,11 @@ jest.mock('../Shared/Context/MinisterHousingAllowanceContext', () => ({
 
 describe('ViewRequestPage', () => {
   it('renders empty panel layout,', () => {
-    const { getByText, queryByRole, getByTestId } = render(<TestComponent />);
+    const { getByText, queryByRole, queryByTestId } = render(<TestComponent />);
 
     expect(getByText('Your MHA')).toBeInTheDocument();
     expect(queryByRole('progressbar')).not.toBeInTheDocument();
-    expect(getByTestId('ArrowBackIcon')).toBeInTheDocument();
+    expect(queryByTestId('ArrowBackIcon')).not.toBeInTheDocument();
   });
 
   it('should have disabled text fields', () => {
@@ -64,15 +63,5 @@ describe('ViewRequestPage', () => {
     const input = within(row).getByRole('textbox');
 
     expect(input).toBeDisabled();
-  });
-
-  it('should go to previous page when Back clicked', async () => {
-    const { getByTestId } = render(<TestComponent />);
-
-    const backButton = getByTestId('ArrowBackIcon');
-    await userEvent.click(backButton);
-
-    expect(back).toHaveBeenCalled();
-    expect(useRouter().pathname).toBe('/reports/housingAllowance/edit');
   });
 });

@@ -160,7 +160,7 @@ describe('Receipt', () => {
   it('should go to view link when View clicked', () => {
     const { getByRole } = render(<TestComponent viewLink={viewLink} />);
 
-    const viewButton = getByRole('link', { name: /view your mha/i });
+    const viewButton = getByRole('link', { name: /view form/i });
 
     expect(viewButton).toHaveAttribute(
       'href',
