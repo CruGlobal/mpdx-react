@@ -1,4 +1,10 @@
-import { createContext, useContext, useMemo, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from 'react';
 import { useNewStepList } from 'src/hooks/useNewStepList';
 import { Steps } from '../../Steps/StepsList/StepsList';
 import { PageEnum, StepsEnum } from '../sharedTypes';
@@ -16,6 +22,10 @@ export type ContextType = {
 
   hasCalcValues: boolean;
   setHasCalcValues: (value: boolean) => void;
+
+  isDrawerOpen: boolean;
+  toggleDrawer: () => void;
+  setIsDrawerOpen: (open: boolean) => void;
 };
 
 const MinisterHousingAllowanceContext = createContext<ContextType | null>(null);
@@ -42,6 +52,11 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   const pageType = type;
   const steps = type ? useNewStepList(type) : [];
   const totalSteps = steps.length;
+
+  const [isDrawerOpen, setIsDrawerOpen] = useState(true);
+  const toggleDrawer = useCallback(() => {
+    setIsDrawerOpen((prev) => !prev);
+  }, []);
 
   const actionRequired = pageType === PageEnum.Edit;
   const [hasCalcValues, setHasCalcValues] = useState(
@@ -123,6 +138,9 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       pageType,
       hasCalcValues,
       setHasCalcValues,
+      isDrawerOpen,
+      toggleDrawer,
+      setIsDrawerOpen,
     }),
     [
       steps,
@@ -134,6 +152,9 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       pageType,
       hasCalcValues,
       setHasCalcValues,
+      isDrawerOpen,
+      toggleDrawer,
+      setIsDrawerOpen,
     ],
   );
 

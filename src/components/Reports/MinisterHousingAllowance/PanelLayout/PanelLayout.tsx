@@ -5,6 +5,7 @@ import { Box, Divider, IconButton, Stack } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { CircularProgressWithLabel } from 'src/components/Reports/GoalCalculator/SharedComponents/CircularProgressWithLabel/CircularProgressWithLabel';
 import {
+  IconPanelItem,
   MainContent,
   PrintableStack,
   SidebarTitle,
@@ -12,6 +13,7 @@ import {
   StyledSidebar,
   iconPanelWidth,
 } from 'src/components/Shared/IconPanelLayout/IconPanelLayout';
+import theme from 'src/theme';
 import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
 import { PanelTypeEnum } from '../Shared/sharedTypes';
 
@@ -19,16 +21,20 @@ interface PanelLayoutProps {
   panelType: PanelTypeEnum;
   sidebarContent?: React.ReactNode;
   sidebarTitle?: string;
+  isSidebarOpen?: boolean;
   sidebarAriaLabel?: string;
   mainContent?: React.ReactNode;
+  icons?: IconPanelItem[];
 }
 
 export const PanelLayout: React.FC<PanelLayoutProps> = ({
   panelType,
   sidebarContent,
   sidebarTitle,
+  isSidebarOpen = false,
   sidebarAriaLabel,
   mainContent,
+  icons,
 }) => {
   const { t } = useTranslation();
 
@@ -72,6 +78,16 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
                 <StyledBox>
                   <CircularProgressWithLabel progress={percentComplete} />
                 </StyledBox>
+                {icons?.map((item) => (
+                  <IconButton
+                    key={item.key}
+                    aria-label={item.label}
+                    sx={{ color: theme.palette.cruGrayDark.main }}
+                    onClick={item.onClick}
+                  >
+                    {item.icon}
+                  </IconButton>
+                ))}
                 {isNotFirstStep && (
                   <IconButton
                     aria-label={t('Go back')}
@@ -88,9 +104,9 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
           </Stack>
           <Divider orientation="vertical" flexItem />
           <StyledSidebar
-            open={true}
+            open={isSidebarOpen}
             aria-label={sidebarAriaLabel}
-            aria-expanded={true}
+            aria-expanded={isSidebarOpen}
           >
             {sidebarTitle && (
               <SidebarTitle variant="h6">{sidebarTitle}</SidebarTitle>
@@ -99,7 +115,6 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
           </StyledSidebar>
           <Divider orientation="vertical" flexItem />
           <MainContent className="main-content">{mainContent}</MainContent>
-          <Divider orientation="vertical" flexItem />
         </>
       )}
     </PrintableStack>

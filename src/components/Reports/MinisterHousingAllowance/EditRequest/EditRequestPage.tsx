@@ -8,6 +8,7 @@ import i18n from 'src/lib/i18n';
 import { Receipt } from '../../Shared/CalculationReports/ReceiptStep/Receipt';
 import { mainContentWidth } from '../MinisterHousingAllowance';
 import { PanelLayout } from '../PanelLayout/PanelLayout';
+import { useIconPanelItems } from '../PanelLayout/useIconPanelItems';
 import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
 import { editOwnMock, mocks } from '../Shared/mockData';
 import {
@@ -37,8 +38,14 @@ export const EditRequestPage: React.FC = () => {
   const accountListId = useAccountListId();
   const editLink = `/accountLists/${accountListId}/reports/housingAllowance/edit`;
 
-  const { steps, handleNextStep, currentStep, pageType } =
-    useMinisterHousingAllowance();
+  const {
+    steps,
+    handleNextStep,
+    currentStep,
+    pageType,
+    isDrawerOpen,
+    toggleDrawer,
+  } = useMinisterHousingAllowance();
 
   const isEdit = pageType === PageEnum.Edit;
 
@@ -48,6 +55,8 @@ export const EditRequestPage: React.FC = () => {
   return (
     <PanelLayout
       panelType={PanelTypeEnum.Edit}
+      icons={useIconPanelItems(isDrawerOpen, toggleDrawer)}
+      isSidebarOpen={isDrawerOpen}
       sidebarTitle={t('Edit Request')}
       sidebarAriaLabel={t('MHA Edit Request')}
       sidebarContent={<StepsList steps={steps} />}
