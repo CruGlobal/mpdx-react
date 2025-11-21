@@ -1,0 +1,120 @@
+import React from 'react';
+import ImportExportIcon from '@mui/icons-material/ImportExport';
+import {
+  Box,
+  Card,
+  CardContent,
+  Divider,
+  Link,
+  Typography,
+} from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
+import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat';
+
+interface AccountInfoCardProps {
+  userName: string;
+  userCode: string;
+  primaryAccountBalance: number;
+  remainingAllowableSalary: number;
+}
+
+export const AccountInfoCard: React.FC<AccountInfoCardProps> = ({
+  userName,
+  userCode,
+  primaryAccountBalance,
+  remainingAllowableSalary,
+}) => {
+  const { t } = useTranslation();
+  const theme = useTheme();
+  const locale = useLocale();
+
+  return (
+    <Card sx={{ mt: theme.spacing(4), mb: theme.spacing(4) }}>
+      <CardContent
+        sx={{ p: theme.spacing(2), '&:last-child': { pb: theme.spacing(2) } }}
+      >
+        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Box>
+            <Typography variant="h6">{userName}</Typography>
+            <Typography variant="body2" color="text.secondary">
+              {userCode}
+            </Typography>
+          </Box>
+          <Box>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: theme.spacing(1),
+              }}
+            >
+              <ImportExportIcon
+                fontSize="small"
+                color="action"
+                sx={{ transform: 'rotate(90deg)' }}
+              />
+              <Link
+                href="#"
+                variant="body1"
+                underline="hover"
+                onClick={(e) => {
+                  e.preventDefault();
+                  // TODO: Implement navigation or modal
+                }}
+              >
+                {t('Request additional salary from jane')}
+              </Link>
+            </Box>
+            <Typography variant="caption" color="text.secondary">
+              {t('Up to her remaining allowable salary of $12,200')}
+            </Typography>
+          </Box>
+        </Box>
+      </CardContent>
+
+      <Divider />
+
+      <CardContent
+        sx={{ p: theme.spacing(2), '&:last-child': { pb: theme.spacing(2) } }}
+      >
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: theme.spacing(1),
+          }}
+        >
+          <Box>
+            <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+              {t('PRIMARY ACCOUNT BALANCE')}
+            </Typography>
+            <Typography
+              variant="h5"
+              fontWeight="bold"
+              color={theme.palette.primary.main}
+            >
+              {currencyFormat(primaryAccountBalance, 'USD', locale)}
+            </Typography>
+          </Box>
+
+          <Box>
+            <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+              {t('YOUR REMAINING ALLOWABLE SALARY')}
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Typography
+                variant="h5"
+                fontWeight="bold"
+                color={theme.palette.primary.main}
+              >
+                {currencyFormat(remainingAllowableSalary, 'USD', locale)}
+              </Typography>
+            </Box>
+          </Box>
+        </Box>
+      </CardContent>
+    </Card>
+  );
+};
