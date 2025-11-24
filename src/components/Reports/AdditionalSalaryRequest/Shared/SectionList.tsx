@@ -15,7 +15,7 @@ export const SectionList: React.FC = () => {
 
   return (
     <List disablePadding>
-      {sectionOrder.map((section, i) => {
+      {sectionOrder.map((section, index) => {
         const active = selectedSection === section;
         return (
           <StyledListItemButton
@@ -25,7 +25,7 @@ export const SectionList: React.FC = () => {
             onClick={() => setSelectedSection(section)}
           >
             <ListItemText
-              primary={`${i + 1}. ${t(section.title)}`}
+              primary={`${index + 1}. ${t(section.title)}`}
               primaryTypographyProps={{ variant: 'body2' }}
             />
           </StyledListItemButton>
