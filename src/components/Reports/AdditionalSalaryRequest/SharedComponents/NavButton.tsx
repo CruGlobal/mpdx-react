@@ -3,7 +3,7 @@ import { Button, ButtonProps, Tooltip } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 
-type NavButtonType = 'continue' | 'cancel';
+type NavButtonType = 'continue' | 'cancel' | 'back' | 'submit';
 
 interface NavButtonProps {
   type: NavButtonType;
@@ -38,20 +38,33 @@ export const NavButton: React.FC<NavButtonProps> = ({ type, onClick }) => {
       tooltip: t('Cancel and return to the previous page.'),
       color: 'error',
     },
+    back: {
+      text: t('Back'),
+      tooltip: t('Return to the previous section.'),
+      variant: 'outlined',
+    },
+    submit: {
+      text: t('Submit'),
+      tooltip: t('Submit your additional salary request.'),
+      variant: 'contained',
+      color: 'primary',
+    },
   };
 
   const { text, tooltip, color, variant = 'text' } = config[type];
 
   return (
     <Tooltip title={tooltip}>
-      <StyledButton
-        variant={variant}
-        color={color}
-        size="large"
-        onClick={onClick}
-      >
-        {text}
-      </StyledButton>
+      <span>
+        <StyledButton
+          variant={variant}
+          color={color}
+          size="small"
+          onClick={onClick}
+        >
+          {text}
+        </StyledButton>
+      </span>
     </Tooltip>
   );
 };
