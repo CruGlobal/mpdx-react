@@ -1,9 +1,10 @@
 import React from 'react';
-import { Link, List, ListItem, Typography } from '@mui/material';
+import { Box, Link, List, ListItem, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSalaryRequestSection';
+import { CancelButton, ContinueButton } from '../SharedComponents/NavButtons';
 import { AccountInfoCard } from './AccountInfoCard';
 
 export const AboutForm: React.FC = () => {
@@ -93,6 +94,16 @@ export const AboutForm: React.FC = () => {
         primaryAccountBalance={primaryAccountBalance}
         remainingAllowableSalary={remainingAllowableSalary}
       />
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          mt: theme.spacing(4),
+        }}
+      >
+        <CancelButton />
+        <ContinueButton />
+      </Box>
     </AdditionalSalaryRequestSection>
   );
 };
