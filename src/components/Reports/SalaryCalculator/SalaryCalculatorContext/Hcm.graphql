@@ -1,0 +1,12 @@
+query Hcm {
+  hcm(maritalStatus: MARRIED) {
+    currentSalary {
+      grossSalaryAmount
+    }
+    fourOThreeB {
+      currentRothContributionPercentage
+      currentTaxDeferredContributionPercentage
+      maximumContributionLimit
+    }
+  }
+}
