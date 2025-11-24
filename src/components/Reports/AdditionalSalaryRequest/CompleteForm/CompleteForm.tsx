@@ -15,8 +15,11 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { CurrencyAdornment } from 'src/components/Reports/GoalCalculator/Shared/Adornments';
 import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat } from 'src/lib/intlFormat';
+import { currencyFormat, numberFormat } from 'src/lib/intlFormat';
+import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { useCompleteFormCategories } from '../Shared/useCompleteFormCategories';
+import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSalaryRequestSection';
+import { NavButton } from '../SharedComponents/NavButton';
 
 interface CompleteFormValues {
   currentYearSalary: string;
@@ -40,6 +43,8 @@ export const CompleteForm: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
   const theme = useTheme();
+  const { selectedSection, handleBack, handleCancel } =
+    useAdditionalSalaryRequest();
 
   const categories = useCompleteFormCategories();
 
@@ -69,7 +74,7 @@ export const CompleteForm: React.FC = () => {
     if (max) {
       schema = schema.max(
         max,
-        t('Exceeds ${{amount}} limit', { amount: max.toLocaleString() }),
+        t('Exceeds ${{amount}} limit', { amount: numberFormat(max, locale) }),
       );
     }
     return schema;
@@ -98,11 +103,7 @@ export const CompleteForm: React.FC = () => {
   };
 
   return (
-    <Box sx={{ m: theme.spacing(4) }}>
-      <Typography variant="h4" sx={{ mb: theme.spacing(3) }}>
-        {t('Complete the Form')}
-      </Typography>
-
+    <AdditionalSalaryRequestSection title={selectedSection.title}>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
@@ -115,97 +116,112 @@ export const CompleteForm: React.FC = () => {
           );
 
           return (
-            <Form>
-              <Card>
-                <CardHeader title={t('Additional Salary Request')} />
+            <>
+              <Form>
+                <Card>
+                  <CardHeader title={t('Additional Salary Request')} />
 
-                <CardContent>
-                  <Grid
-                    container
-                    spacing={theme.spacing(2)}
-                    alignItems="center"
-                  >
-                    <Grid item xs={9}>
-                      <Typography
-                        variant="subtitle1"
-                        fontWeight="bold"
-                        color={theme.palette.primary.main}
-                      >
-                        {t('Category')}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={3}>
-                      <Typography
-                        variant="subtitle1"
-                        fontWeight="bold"
-                        color={theme.palette.primary.main}
-                      >
-                        {t('Amount')}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12}>
-                      <Divider />
-                    </Grid>
+                  <CardContent>
+                    <Grid
+                      container
+                      spacing={theme.spacing(2)}
+                      alignItems="center"
+                    >
+                      <Grid item xs={9}>
+                        <Typography
+                          variant="subtitle1"
+                          fontWeight="bold"
+                          color={theme.palette.primary.main}
+                        >
+                          {t('Category')}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography
+                          variant="subtitle1"
+                          fontWeight="bold"
+                          color={theme.palette.primary.main}
+                        >
+                          {t('Amount')}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={12}>
+                        <Divider />
+                      </Grid>
 
-                    {categories.map(({ key, label, description }, index) => (
-                      <React.Fragment key={key}>
-                        <Grid item xs={9}>
-                          <Typography>{label}</Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            {description}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={3}>
-                          <TextField
-                            fullWidth
-                            size="small"
-                            name={key}
-                            type="number"
-                            value={values[key]}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            error={touched[key] && Boolean(errors[key])}
-                            helperText={touched[key] && errors[key]}
-                            placeholder={t('Enter amount')}
-                            inputProps={{ min: 0, step: 1 }}
-                            InputProps={{
-                              startAdornment: <CurrencyAdornment />,
-                            }}
-                          />
-                        </Grid>
-                        {index < categories.length - 1 && (
-                          <Grid item xs={12}>
-                            <Divider />
+                      {categories.map(({ key, label, description }, index) => (
+                        <React.Fragment key={key}>
+                          <Grid item xs={9}>
+                            <Typography>{label}</Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              {description}
+                            </Typography>
                           </Grid>
-                        )}
-                      </React.Fragment>
-                    ))}
+                          <Grid item xs={3}>
+                            <TextField
+                              fullWidth
+                              size="small"
+                              name={key}
+                              type="number"
+                              value={values[key]}
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              error={touched[key] && Boolean(errors[key])}
+                              helperText={touched[key] && errors[key]}
+                              placeholder={t('Enter amount')}
+                              inputProps={{ min: 0, step: 1 }}
+                              InputProps={{
+                                startAdornment: <CurrencyAdornment />,
+                              }}
+                            />
+                          </Grid>
+                          {index < categories.length - 1 && (
+                            <Grid item xs={12}>
+                              <Divider />
+                            </Grid>
+                          )}
+                        </React.Fragment>
+                      ))}
 
-                    <Grid item xs={12}>
-                      <Divider />
-                    </Grid>
+                      <Grid item xs={12}>
+                        <Divider />
+                      </Grid>
 
-                    <Grid item xs={9}>
-                      <Typography variant="body1" fontWeight="bold">
-                        {t('Total Additional Salary Requested')}
-                      </Typography>
+                      <Grid item xs={9}>
+                        <Typography variant="body1" fontWeight="bold">
+                          {t('Total Additional Salary Requested')}
+                        </Typography>
+                      </Grid>
+                      <Grid item xs={3}>
+                        <Typography
+                          variant="body1"
+                          fontWeight="bold"
+                          aria-label="Total requested amount"
+                        >
+                          {currencyFormat(total, 'USD', locale)}
+                        </Typography>
+                      </Grid>
                     </Grid>
-                    <Grid item xs={3}>
-                      <Typography
-                        variant="body1"
-                        fontWeight="bold"
-                        aria-label="Total requested amount"
-                      >
-                        {currencyFormat(total, 'USD', locale)}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </CardContent>
-              </Card>
-            </Form>
+                  </CardContent>
+                </Card>
+              </Form>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  mt: theme.spacing(4),
+                }}
+              >
+                <NavButton onClick={handleCancel} type="cancel" />
+                <Box sx={{ display: 'flex', gap: theme.spacing(2) }}>
+                  <NavButton onClick={handleBack} type="back" />
+                  <NavButton onClick={handleSubmit} type="submit" />
+                </Box>
+              </Box>
+            </>
           );
         }}
       </Formik>
-    </Box>
+    </AdditionalSalaryRequestSection>
   );
 };
