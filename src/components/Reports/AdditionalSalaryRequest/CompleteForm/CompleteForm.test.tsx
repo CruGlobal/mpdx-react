@@ -1,22 +1,35 @@
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { AdditionalSalaryRequestProvider } from '../Shared/AdditionalSalaryRequestContext';
 import { CompleteForm } from './CompleteForm';
 
 describe('SalaryRequestForm', () => {
   it('renders the form', () => {
-    const { getByRole } = render(<CompleteForm />);
+    const { getByRole } = render(
+      <AdditionalSalaryRequestProvider>
+        <CompleteForm />
+      </AdditionalSalaryRequestProvider>,
+    );
     expect(getByRole('heading', { name: 'Category' })).toBeInTheDocument();
     expect(getByRole('heading', { name: 'Amount' })).toBeInTheDocument();
   });
 
   it('renders all fifteen input fields', () => {
-    const { getAllByRole } = render(<CompleteForm />);
+    const { getAllByRole } = render(
+      <AdditionalSalaryRequestProvider>
+        <CompleteForm />
+      </AdditionalSalaryRequestProvider>,
+    );
 
     expect(getAllByRole('spinbutton')).toHaveLength(15);
   });
 
   it('updates amount when user enters value', async () => {
-    const { getAllByRole, getByLabelText } = render(<CompleteForm />);
+    const { getAllByRole, getByLabelText } = render(
+      <AdditionalSalaryRequestProvider>
+        <CompleteForm />
+      </AdditionalSalaryRequestProvider>,
+    );
 
     const inputs = getAllByRole('spinbutton');
     userEvent.clear(inputs[0]);
