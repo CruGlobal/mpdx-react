@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Box,
   Card,
   CardContent,
   CardHeader,
@@ -16,7 +15,9 @@ import * as yup from 'yup';
 import { CurrencyAdornment } from 'src/components/Reports/GoalCalculator/Shared/Adornments';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { useCompleteFormCategories } from '../Shared/useCompleteFormCategories';
+import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSalaryRequestSection';
 
 interface CompleteFormValues {
   currentYearSalary: string;
@@ -40,6 +41,7 @@ export const CompleteForm: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
   const theme = useTheme();
+  const { selectedSection } = useAdditionalSalaryRequest();
 
   const categories = useCompleteFormCategories();
 
@@ -98,11 +100,7 @@ export const CompleteForm: React.FC = () => {
   };
 
   return (
-    <Box sx={{ m: theme.spacing(4) }}>
-      <Typography variant="h4" sx={{ mb: theme.spacing(3) }}>
-        {t('Complete the Form')}
-      </Typography>
-
+    <AdditionalSalaryRequestSection title={selectedSection.title}>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
@@ -206,6 +204,6 @@ export const CompleteForm: React.FC = () => {
           );
         }}
       </Formik>
-    </Box>
+    </AdditionalSalaryRequestSection>
   );
 };

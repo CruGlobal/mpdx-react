@@ -1,9 +1,14 @@
 import React, { createContext, useCallback, useMemo, useState } from 'react';
-import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
+import {
+  AdditionalSalaryRequestSectionEnum,
+  SectionOrderItem,
+} from '../AdditionalSalaryRequestHelper';
 
 export type AdditionalSalaryRequestType = {
-  selectedSection: AdditionalSalaryRequestSectionEnum;
-  setSelectedSection: (section: AdditionalSalaryRequestSectionEnum) => void;
+  sectionOrder: SectionOrderItem[];
+  selectedSection: SectionOrderItem;
+  handleContinue: () => void;
+  setSectionIndex: (number) => void;
   isDrawerOpen: boolean;
   toggleDrawer: () => void;
   setIsDrawerOpen: (open: boolean) => void;
@@ -29,24 +34,48 @@ interface Props {
 export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   children,
 }) => {
-  const [selectedSection, setSelectedSection] = useState(
-    AdditionalSalaryRequestSectionEnum.AboutForm,
+  // Translated titles should be used when rendering
+  const sectionOrder = useMemo<SectionOrderItem[]>(
+    () => [
+      {
+        title: 'About this Form',
+        section: AdditionalSalaryRequestSectionEnum.AboutForm,
+      },
+      {
+        title: 'Complete Form',
+        section: AdditionalSalaryRequestSectionEnum.CompleteForm,
+      },
+      {
+        title: 'Receipt',
+        section: AdditionalSalaryRequestSectionEnum.Receipt,
+      },
+    ],
+    [],
   );
+  const [sectionIndex, setSectionIndex] = useState(0);
+  const selectedSection = sectionOrder[sectionIndex];
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
-
   const toggleDrawer = useCallback(() => {
     setIsDrawerOpen((prev) => !prev);
   }, []);
 
-  const contextValue = useMemo(
+  const handleContinue = () => {
+    if (sectionIndex < sectionOrder.length - 1) {
+      setSectionIndex(sectionIndex + 1);
+    }
+  };
+
+  const contextValue = useMemo<AdditionalSalaryRequestType>(
     () => ({
+      sectionOrder,
+      setSectionIndex,
       selectedSection,
-      setSelectedSection,
+      handleContinue,
       isDrawerOpen,
       toggleDrawer,
       setIsDrawerOpen,
     }),
-    [selectedSection, setSelectedSection, isDrawerOpen, toggleDrawer],
+    [sectionOrder, selectedSection, handleContinue, isDrawerOpen, toggleDrawer],
   );
 
   return (
