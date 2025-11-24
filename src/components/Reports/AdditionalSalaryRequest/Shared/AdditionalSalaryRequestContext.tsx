@@ -1,12 +1,20 @@
 import React, { createContext, useCallback, useMemo, useState } from 'react';
-import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
+import { useTranslation } from 'react-i18next';
+import {
+  AdditionalSalaryRequestSectionEnum,
+  SectionOrderItem,
+} from '../AdditionalSalaryRequestHelper';
 
 export type AdditionalSalaryRequestType = {
-  selectedSection: AdditionalSalaryRequestSectionEnum;
-  setSelectedSection: (section: AdditionalSalaryRequestSectionEnum) => void;
+  sectionOrder: SectionOrderItem[];
+  selectedSection: SectionOrderItem;
+  handleContinue: () => void;
+  setSectionIndex: (number) => void;
   isDrawerOpen: boolean;
   toggleDrawer: () => void;
   setIsDrawerOpen: (open: boolean) => void;
+  handleCancel: () => void;
+  handleBack: () => void;
 };
 
 const AdditionalSalaryRequestContext =
@@ -29,24 +37,68 @@ interface Props {
 export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   children,
 }) => {
-  const [selectedSection, setSelectedSection] = useState(
-    AdditionalSalaryRequestSectionEnum.AboutForm,
+  const { t } = useTranslation();
+  // Translated titles should be used when rendering
+  const sectionOrder = useMemo<SectionOrderItem[]>(
+    () => [
+      {
+        title: t('About this Form'),
+        section: AdditionalSalaryRequestSectionEnum.AboutForm,
+      },
+      {
+        title: t('Complete Form'),
+        section: AdditionalSalaryRequestSectionEnum.CompleteForm,
+      },
+      {
+        title: t('Receipt'),
+        section: AdditionalSalaryRequestSectionEnum.Receipt,
+      },
+    ],
+    [t],
   );
+  const [sectionIndex, setSectionIndex] = useState(0);
+  const selectedSection = sectionOrder[sectionIndex];
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
-
   const toggleDrawer = useCallback(() => {
     setIsDrawerOpen((prev) => !prev);
   }, []);
 
-  const contextValue = useMemo(
+  const handleContinue = useCallback(() => {
+    if (sectionIndex < sectionOrder.length - 1) {
+      setSectionIndex(sectionIndex + 1);
+    }
+  }, [sectionIndex, sectionOrder.length]);
+
+  const handleCancel = useCallback(() => {
+    setSectionIndex(0);
+  }, []);
+
+  const handleBack = useCallback(() => {
+    if (sectionIndex > 0) {
+      setSectionIndex(sectionIndex - 1);
+    }
+  }, [sectionIndex]);
+
+  const contextValue = useMemo<AdditionalSalaryRequestType>(
     () => ({
+      sectionOrder,
+      setSectionIndex,
       selectedSection,
-      setSelectedSection,
+      handleContinue,
       isDrawerOpen,
       toggleDrawer,
       setIsDrawerOpen,
+      handleCancel,
+      handleBack,
     }),
-    [selectedSection, setSelectedSection, isDrawerOpen, toggleDrawer],
+    [
+      sectionOrder,
+      selectedSection,
+      handleContinue,
+      handleCancel,
+      isDrawerOpen,
+      toggleDrawer,
+    ],
   );
 
   return (
