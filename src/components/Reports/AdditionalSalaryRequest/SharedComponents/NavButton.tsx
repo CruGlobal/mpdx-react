@@ -55,16 +55,14 @@ export const NavButton: React.FC<NavButtonProps> = ({ type, onClick }) => {
 
   return (
     <Tooltip title={tooltip}>
-      <span>
-        <StyledButton
-          variant={variant}
-          color={color}
-          size="small"
-          onClick={onClick}
-        >
-          {text}
-        </StyledButton>
-      </span>
+      <StyledButton
+        variant={variant}
+        color={color}
+        size="small"
+        onClick={onClick}
+      >
+        {text}
+      </StyledButton>
     </Tooltip>
   );
 };
