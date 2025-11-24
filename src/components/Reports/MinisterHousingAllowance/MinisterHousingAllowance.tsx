@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, Container, Stack } from '@mui/material';
+import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { Notification } from 'src/components/Notification/Notification';
@@ -44,8 +45,8 @@ export const MinisterHousingAllowanceReport = () => {
             variant: 'success',
           },
         );
-        const requestId = newRequest?.ministryHousingAllowanceRequest.id;
-        const requestLink = `/accountLists/${accountListId}/reports/housingAllowance/${requestId}`;
+        const mhaRequestId = newRequest?.ministryHousingAllowanceRequest.id;
+        const requestLink = `/accountLists/${accountListId}/reports/housingAllowance/${mhaRequestId}`;
 
         // Wait 1 second before redirecting
         setTimeout(() => {
@@ -72,7 +73,8 @@ export const MinisterHousingAllowanceReport = () => {
   const isCurrentRequestPending =
     currentRequest.status === MhaStatusEnum.BoardApproved &&
     currentRequest.requestAttributes?.availableDate
-      ? new Date(currentRequest.requestAttributes.availableDate) > new Date()
+      ? DateTime.fromISO(currentRequest.requestAttributes.availableDate) >
+        DateTime.now()
       : true;
 
   const previousApprovedRequest = requests
@@ -88,9 +90,11 @@ export const MinisterHousingAllowanceReport = () => {
       sidebarTitle={t('Your MHA')}
       mainContent={
         <Container sx={{ ml: 5 }}>
-          {error && <Notification type="error" message={error.message} />}
-          {!error && !requests && <MinisterHousingAllowanceReportSkeleton />}
-          {!error && requests && (
+          {error ? (
+            <Notification type="error" message={error.message} />
+          ) : !requests ? (
+            <MinisterHousingAllowanceReportSkeleton />
+          ) : (
             <>
               <Stack direction="column" width={mainContentWidth}>
                 {hasNoRequests ? (
@@ -102,9 +106,9 @@ export const MinisterHousingAllowanceReport = () => {
 
                 {currentRequest &&
                   (isCurrentRequestPending ? (
-                    <CurrentRequest mha={currentRequest} />
+                    <CurrentRequest request={currentRequest} />
                   ) : (
-                    <CurrentBoardApproved mha={currentRequest} />
+                    <CurrentBoardApproved request={currentRequest} />
                   ))}
               </Stack>
               {(!isCurrentRequestPending || hasNoRequests) && (
@@ -122,7 +126,7 @@ export const MinisterHousingAllowanceReport = () => {
 
           {previousApprovedRequest && (
             <Stack direction="column" width={mainContentWidth} mt={4}>
-              <CurrentBoardApproved mha={previousApprovedRequest} />
+              <CurrentBoardApproved request={previousApprovedRequest} />
             </Stack>
           )}
         </Container>

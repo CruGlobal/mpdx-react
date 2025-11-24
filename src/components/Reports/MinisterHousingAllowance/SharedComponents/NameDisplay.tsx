@@ -11,10 +11,12 @@ export const NameDisplay: React.FC = () => {
   } = useMinisterHousingAllowance();
   const personNumber = userHcmData?.staffInfo?.personNumber ?? '';
   const spousePersonNumber = spouseHcmData?.staffInfo?.personNumber ?? '';
+  const lastName = userHcmData?.staffInfo?.lastName ?? '';
+  const spouseLastName = spouseHcmData?.staffInfo?.lastName ?? '';
 
   const names = isMarried
-    ? `${preferredName} and ${spousePreferredName}`
-    : preferredName;
+    ? `${preferredName} ${lastName} and ${spousePreferredName} ${spouseLastName}`
+    : `${preferredName} ${lastName}`;
   const personNumbers = isMarried
     ? `${personNumber} and ${spousePersonNumber}`
     : personNumber;

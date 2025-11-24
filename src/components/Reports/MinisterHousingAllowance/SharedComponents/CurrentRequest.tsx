@@ -14,30 +14,26 @@ import { MhaStatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { CardSkeleton } from '../CardSkeleton/CardSkeleton';
-import { MinistryHousingAllowanceRequestsQuery } from '../MinisterHousingAllowance.generated';
-
-export type MHARequest =
-  MinistryHousingAllowanceRequestsQuery['ministryHousingAllowanceRequests']['nodes'][0];
+import { MHARequest } from './types';
 
 interface CurrentRequestProps {
-  mha: MHARequest;
+  request: MHARequest;
 }
 
-export const CurrentRequest: React.FC<CurrentRequestProps> = ({ mha }) => {
+export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const currency = 'USD';
 
+  const { status, requestAttributes } = request;
+
   const {
-    status,
-    requestAttributes: {
-      boardApprovedDate,
-      deadlineDate,
-      submittedDate,
-      availableDate,
-      approvedOverallAmount,
-    },
-  } = mha;
+    boardApprovedDate,
+    deadlineDate,
+    submittedDate,
+    availableDate,
+    approvedOverallAmount,
+  } = requestAttributes || {};
 
   return (
     <CardSkeleton

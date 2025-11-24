@@ -63,7 +63,7 @@ describe('MinisterHousingAllowanceReport', () => {
     expect(
       await findByText(/our records indicate that you have not applied for/i),
     ).toBeInTheDocument();
-    expect(await findByText('John')).toBeInTheDocument();
+    expect(await findByText('John Doe')).toBeInTheDocument();
   });
 
   it('renders married, no pending, no approved correctly', async () => {
@@ -77,7 +77,7 @@ describe('MinisterHousingAllowanceReport', () => {
     expect(
       await findByText(/will submit the request for john. jane has not/i),
     ).toBeInTheDocument();
-    expect(await findByText('John and Jane')).toBeInTheDocument();
+    expect(await findByText('John Doe and Jane Doe')).toBeInTheDocument();
   });
 
   it('renders married, no pending, approved correctly', async () => {
@@ -101,13 +101,13 @@ describe('MinisterHousingAllowanceReport', () => {
     expect(
       await findByText(/our records indicate that you have an approved/i),
     ).toBeInTheDocument();
-    expect(await findByText('John and Jane')).toBeInTheDocument();
+    expect(await findByText('John Doe and Jane Doe')).toBeInTheDocument();
 
     expect(await findByText('Current Board Approved MHA')).toBeInTheDocument();
   });
 
   it('renders single, no pending, approved correctly', async () => {
-    const { findByText, findAllByText, getByText } = render(
+    const { findByText, getByText } = render(
       <TestComponent
         hcmMock={singleMhaNoException}
         mhaRequestsMock={[
@@ -122,7 +122,7 @@ describe('MinisterHousingAllowanceReport', () => {
     expect(
       await findByText(/our records indicate that you have an approved/i),
     ).toBeInTheDocument();
-    expect(await findAllByText('John')).toHaveLength(2);
+    expect(await findByText('John Doe')).toBeInTheDocument();
 
     expect(getByText('Current Board Approved MHA')).toBeInTheDocument();
   });
@@ -147,7 +147,7 @@ describe('MinisterHousingAllowanceReport', () => {
     expect(
       await findByText(/our records indicate that you have an mha request/i),
     ).toBeInTheDocument();
-    expect(await findByText('John and Jane')).toBeInTheDocument();
+    expect(await findByText('John Doe and Jane Doe')).toBeInTheDocument();
 
     expect(await findByText('Current MHA Request')).toBeInTheDocument();
   });

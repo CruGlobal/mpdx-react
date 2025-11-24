@@ -6,14 +6,14 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import { CardSkeleton } from '../CardSkeleton/CardSkeleton';
 import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
-import { MHARequest } from './CurrentRequest';
+import { MHARequest } from './types';
 
 interface CurrentBoardApprovedProps {
-  mha: MHARequest | null;
+  request: MHARequest | null;
 }
 
 export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
-  mha,
+  request,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -23,7 +23,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
     useMinisterHousingAllowance();
 
   const { approvedDate, approvedOverallAmount, staffSpecific, spouseSpecific } =
-    mha?.requestAttributes || {};
+    request?.requestAttributes || {};
 
   return (
     <CardSkeleton

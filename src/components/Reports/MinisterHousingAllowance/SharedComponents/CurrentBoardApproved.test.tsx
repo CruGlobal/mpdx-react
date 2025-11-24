@@ -6,30 +6,16 @@ import theme from 'src/theme';
 import {
   ContextType,
   HcmData,
-  useMinisterHousingAllowance,
+  MinisterHousingAllowanceContext,
 } from '../Shared/Context/MinisterHousingAllowanceContext';
 import { mockMHARequest } from '../mockData';
 import { CurrentBoardApproved } from './CurrentBoardApproved';
-
-// Mock the context hook
-jest.mock('../Shared/Context/MinisterHousingAllowanceContext', () => ({
-  ...jest.requireActual('../Shared/Context/MinisterHousingAllowanceContext'),
-  useMinisterHousingAllowance: jest.fn(),
-}));
-
-const mockUseMinisterHousingAllowance =
-  useMinisterHousingAllowance as jest.MockedFunction<
-    typeof useMinisterHousingAllowance
-  >;
 
 interface TestComponentProps {
   contextValue: Partial<ContextType>;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({ contextValue }) => {
-  mockUseMinisterHousingAllowance.mockReturnValue(contextValue as ContextType);
-
-  // Create a mock MHA request with approved data
   const approvedMHARequest = {
     ...mockMHARequest,
     requestAttributes: {
@@ -44,7 +30,11 @@ const TestComponent: React.FC<TestComponentProps> = ({ contextValue }) => {
   return (
     <ThemeProvider theme={theme}>
       <TestRouter>
-        <CurrentBoardApproved mha={approvedMHARequest} />
+        <MinisterHousingAllowanceContext.Provider
+          value={contextValue as ContextType}
+        >
+          <CurrentBoardApproved request={approvedMHARequest} />
+        </MinisterHousingAllowanceContext.Provider>
       </TestRouter>
     </ThemeProvider>
   );

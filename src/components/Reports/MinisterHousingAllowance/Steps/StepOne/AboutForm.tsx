@@ -22,7 +22,7 @@ export const AboutForm: React.FC<AboutFormProps> = ({
   // TODO: "newRequestAboutForm" value needs to be added to translation files to see all values
   // TODO: Get correct link for "Salary Calculation Form" and "What expenses can I claim on my MHA?"
 
-  const nextYear = new Date().getFullYear() + 1;
+  const nextYear = DateTime.now().year + 1;
 
   const boardDateFormatted = boardApprovalDate
     ? dateFormatShort(DateTime.fromISO(boardApprovalDate), locale)

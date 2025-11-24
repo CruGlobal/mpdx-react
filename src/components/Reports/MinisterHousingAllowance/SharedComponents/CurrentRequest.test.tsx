@@ -11,7 +11,7 @@ const TestComponent: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <TestRouter>
-        <CurrentRequest mha={mockMHARequest} />
+        <CurrentRequest request={mockMHARequest} />
       </TestRouter>
     </ThemeProvider>
   );
@@ -28,13 +28,13 @@ describe('CurrentRequest Component', () => {
     expect(getByText('$15,000.00')).toBeInTheDocument();
 
     expect(getByText(/Requested on/i)).toBeInTheDocument();
-    expect(getByText(/Oct 1, 2025/i)).toBeInTheDocument();
+    expect(getByText(/Oct 1, 2019/i)).toBeInTheDocument();
     expect(getByText(/Deadline for changes/i)).toBeInTheDocument();
-    expect(getByText(/Oct 23, 2025/i)).toBeInTheDocument();
+    expect(getByText(/Oct 23, 2019/i)).toBeInTheDocument();
     expect(getByText(/Board Approval on/i)).toBeInTheDocument();
-    expect(getByText(/Oct 30, 2025/i)).toBeInTheDocument();
+    expect(getByText(/Oct 30, 2019/i)).toBeInTheDocument();
     expect(getByText(/MHA Available on/i)).toBeInTheDocument();
-    expect(getByText(/Nov 20, 2025/i)).toBeInTheDocument();
+    expect(getByText(/Nov 20, 2019/i)).toBeInTheDocument();
   });
 });
 

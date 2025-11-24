@@ -1,5 +1,5 @@
 import { MhaStatusEnum } from 'src/graphql/types.generated';
-import { MHARequest } from './SharedComponents/CurrentRequest';
+import { MHARequest } from './SharedComponents/types';
 
 export const mockMHARequest: MHARequest = {
   id: '1',
@@ -13,10 +13,10 @@ export const mockMHARequest: MHARequest = {
   },
   requestAttributes: {
     approvedOverallAmount: 15000,
-    submittedDate: '2025-10-01T15:30:45.123Z',
-    deadlineDate: '2025-10-23T15:30:45.123Z',
-    boardApprovedDate: '2025-10-30T15:30:45.123Z',
-    availableDate: '2025-11-20T15:30:45.123Z',
+    submittedDate: '2019-10-01T15:30:45.123Z',
+    deadlineDate: '2019-10-23T15:30:45.123Z',
+    boardApprovedDate: '2019-10-30T15:30:45.123Z',
+    availableDate: '2019-11-20T15:30:45.123Z',
     rentOrOwn: null,
     rentalValue: null,
     furnitureCostsOne: null,
@@ -30,8 +30,8 @@ export const mockMHARequest: MHARequest = {
     phoneNumber: null,
     emailAddress: null,
     iUnderstandMhaPolicy: true,
-    approvedDate: '2025-11-01T15:30:45.123Z',
-    lastApprovedDate: '2025-11-01T15:30:45.123Z',
+    approvedDate: '2019-11-01T15:30:45.123Z',
+    lastApprovedDate: '2019-11-01T15:30:45.123Z',
     spouseSpecific: null,
     staffSpecific: 15000,
   },
