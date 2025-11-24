@@ -16,11 +16,9 @@ export const CancelButton: React.FC<CancelButtonProps> = ({ onClick }) => {
 
   return (
     <Tooltip title={t('Cancel and return to the previous page.')}>
-      <span>
-        <StyledButton size="large" color="error" onClick={onClick}>
-          {t('Cancel')}
-        </StyledButton>
-      </span>
+      <StyledButton size="large" color="error" onClick={onClick}>
+        {t('Cancel')}
+      </StyledButton>
     </Tooltip>
   );
 };

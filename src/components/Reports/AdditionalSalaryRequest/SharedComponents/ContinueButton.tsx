@@ -20,11 +20,9 @@ export const ContinueButton: React.FC<ContinueButtonProps> = ({ onClick }) => {
         'Proceed to the next section. Your progress is automatically saved as you go.',
       )}
     >
-      <span>
-        <StyledButton variant="contained" size="large" onClick={onClick}>
-          {t('Continue')}
-        </StyledButton>
-      </span>
+      <StyledButton variant="contained" size="large" onClick={onClick}>
+        {t('Continue')}
+      </StyledButton>
     </Tooltip>
   );
 };
