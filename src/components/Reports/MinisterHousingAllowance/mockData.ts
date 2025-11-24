@@ -15,7 +15,7 @@ export const mockMHARequest: MinistryHousingAllowanceRequestsQuery['ministryHous
     requestAttributes: {
       approvedOverallAmount: 15000,
       submittedDate: '2025-10-01T15:30:45.123Z',
-      deadlineDate: '2025-10-01T15:30:45.123Z',
+      deadlineDate: '2025-10-23T15:30:45.123Z',
       boardApprovedDate: '2025-10-30T15:30:45.123Z',
       availableDate: '2025-11-20T15:30:45.123Z',
       rentOrOwn: null,

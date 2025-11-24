@@ -107,7 +107,7 @@ describe('MinisterHousingAllowanceReport', () => {
   });
 
   it('renders single, no pending, approved correctly', async () => {
-    const { findByText, getAllByText, getByText } = render(
+    const { findByText, findAllByText, getByText } = render(
       <TestComponent
         hcmMock={singleMhaNoException}
         mhaRequestsMock={[
@@ -122,7 +122,7 @@ describe('MinisterHousingAllowanceReport', () => {
     expect(
       await findByText(/our records indicate that you have an approved/i),
     ).toBeInTheDocument();
-    expect(getAllByText('John').length).toBe(2);
+    expect(await findAllByText('John')).toHaveLength(2);
 
     expect(getByText('Current Board Approved MHA')).toBeInTheDocument();
   });

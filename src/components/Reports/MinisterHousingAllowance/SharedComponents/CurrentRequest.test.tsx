@@ -25,16 +25,16 @@ describe('CurrentRequest Component', () => {
     expect(getByText('View Request')).toBeInTheDocument();
     expect(getByText('Edit Request')).toBeInTheDocument();
 
-    expect(getByText('$1,500.00')).toBeInTheDocument();
+    expect(getByText('$15,000.00')).toBeInTheDocument();
 
     expect(getByText(/Requested on/i)).toBeInTheDocument();
-    expect(getByText(/Aug 23, 2023/i)).toBeInTheDocument();
+    expect(getByText(/Oct 1, 2025/i)).toBeInTheDocument();
     expect(getByText(/Deadline for changes/i)).toBeInTheDocument();
-    expect(getByText(/Sep 17, 2023/i)).toBeInTheDocument();
+    expect(getByText(/Oct 23, 2025/i)).toBeInTheDocument();
     expect(getByText(/Board Approval on/i)).toBeInTheDocument();
-    expect(getByText(/Oct 1, 2023/i)).toBeInTheDocument();
+    expect(getByText(/Oct 30, 2025/i)).toBeInTheDocument();
     expect(getByText(/MHA Available on/i)).toBeInTheDocument();
-    expect(getByText(/Jan 1, 2024/i)).toBeInTheDocument();
+    expect(getByText(/Nov 20, 2025/i)).toBeInTheDocument();
   });
 });
 

@@ -105,14 +105,9 @@ export const marriedMhaAndNoException: HcmDataMarriedQuery['hcm'] = [
   },
 ];
 export const marriedNoMhaNoException: HcmDataMarriedQuery['hcm'] = [
+  noMhaAndNoException,
   {
     ...noMhaAndNoException,
-    staffInfo: {
-      ...noMhaAndNoException.staffInfo,
-      personNumber: '100123456',
-      firstName: 'Jane',
-      lastName: 'Doe',
-      preferredName: 'Jane',
-    },
+    staffInfo: janeDoe,
   },
 ];
