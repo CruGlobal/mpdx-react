@@ -4,18 +4,17 @@ import { useTheme } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSalaryRequestSection';
-import { NavButton } from '../SharedComponents/NavButton';
+import { CancelButton, ContinueButton } from '../SharedComponents/NavButtons';
 import { AccountInfoCard } from './AccountInfoCard';
 
 export const AboutForm: React.FC = () => {
-  const { selectedSection, handleContinue, handleCancel } =
-    useAdditionalSalaryRequest();
+  const { selectedSection } = useAdditionalSalaryRequest();
   const { t } = useTranslation();
   const theme = useTheme();
 
   // TODO: Replace with actual data from API/context
-  const userName = 'Doc, John';
-  const userCode = '00123456';
+  const name = 'Doc, John';
+  const accountNumber = '00123456';
   const primaryAccountBalance = 20307.58;
   const remainingAllowableSalary = 17500.0;
 
@@ -90,8 +89,8 @@ export const AboutForm: React.FC = () => {
       </Trans>
 
       <AccountInfoCard
-        userName={userName}
-        userCode={userCode}
+        name={name}
+        accountNumber={accountNumber}
         primaryAccountBalance={primaryAccountBalance}
         remainingAllowableSalary={remainingAllowableSalary}
       />
@@ -102,10 +101,8 @@ export const AboutForm: React.FC = () => {
           mt: theme.spacing(4),
         }}
       >
-        <NavButton onClick={handleCancel} type="cancel" />
-        <Box sx={{ display: 'flex', gap: theme.spacing(2) }}>
-          <NavButton onClick={handleContinue} type="continue" />
-        </Box>
+        <CancelButton />
+        <ContinueButton />
       </Box>
     </AdditionalSalaryRequestSection>
   );

@@ -1,4 +1,5 @@
 import React, { createContext, useCallback, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   AdditionalSalaryRequestSectionEnum,
   SectionOrderItem,
@@ -8,12 +9,12 @@ export type AdditionalSalaryRequestType = {
   sectionOrder: SectionOrderItem[];
   selectedSection: SectionOrderItem;
   handleContinue: () => void;
-  handleBack: () => void;
-  setSectionIndex: (index: number) => void;
+  setSectionIndex: (number) => void;
   isDrawerOpen: boolean;
   toggleDrawer: () => void;
   setIsDrawerOpen: (open: boolean) => void;
   handleCancel: () => void;
+  handleBack: () => void;
 };
 
 const AdditionalSalaryRequestContext =
@@ -36,23 +37,24 @@ interface Props {
 export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   children,
 }) => {
+  const { t } = useTranslation();
   // Translated titles should be used when rendering
   const sectionOrder = useMemo<SectionOrderItem[]>(
     () => [
       {
-        title: 'About this Form',
+        title: t('About this Form'),
         section: AdditionalSalaryRequestSectionEnum.AboutForm,
       },
       {
-        title: 'Complete Form',
+        title: t('Complete Form'),
         section: AdditionalSalaryRequestSectionEnum.CompleteForm,
       },
       {
-        title: 'Receipt',
+        title: t('Receipt'),
         section: AdditionalSalaryRequestSectionEnum.Receipt,
       },
     ],
-    [],
+    [t],
   );
   const [sectionIndex, setSectionIndex] = useState(0);
   const selectedSection = sectionOrder[sectionIndex];
@@ -67,15 +69,15 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     }
   }, [sectionIndex, sectionOrder.length]);
 
+  const handleCancel = useCallback(() => {
+    setSectionIndex(0);
+  }, []);
+
   const handleBack = useCallback(() => {
     if (sectionIndex > 0) {
       setSectionIndex(sectionIndex - 1);
     }
   }, [sectionIndex]);
-
-  const handleCancel = useCallback(() => {
-    setSectionIndex(0);
-  }, []);
 
   const contextValue = useMemo<AdditionalSalaryRequestType>(
     () => ({
@@ -83,21 +85,19 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       setSectionIndex,
       selectedSection,
       handleContinue,
-      handleBack,
       isDrawerOpen,
       toggleDrawer,
       setIsDrawerOpen,
       handleCancel,
+      handleBack,
     }),
     [
       sectionOrder,
-      setSectionIndex,
       selectedSection,
       handleContinue,
-      handleBack,
+      handleCancel,
       isDrawerOpen,
       toggleDrawer,
-      handleCancel,
     ],
   );
 

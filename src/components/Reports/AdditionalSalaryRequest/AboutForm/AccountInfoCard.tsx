@@ -21,15 +21,15 @@ const StyledCardContent = styled(CardContent)(({ theme }) => ({
 }));
 
 interface AccountInfoCardProps {
-  userName: string;
-  userCode: string;
+  name: string;
+  accountNumber: string;
   primaryAccountBalance: number;
   remainingAllowableSalary: number;
 }
 
 export const AccountInfoCard: React.FC<AccountInfoCardProps> = ({
-  userName,
-  userCode,
+  name,
+  accountNumber,
   primaryAccountBalance,
   remainingAllowableSalary,
 }) => {
@@ -42,9 +42,9 @@ export const AccountInfoCard: React.FC<AccountInfoCardProps> = ({
       <StyledCardContent>
         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Box>
-            <Typography variant="h6">{userName}</Typography>
+            <Typography variant="h6">{name}</Typography>
             <Typography variant="body2" color="text.secondary">
-              {userCode}
+              {accountNumber}
             </Typography>
           </Box>
           <Box>

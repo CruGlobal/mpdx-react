@@ -19,7 +19,11 @@ import { currencyFormat, numberFormat } from 'src/lib/intlFormat';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { useCompleteFormCategories } from '../Shared/useCompleteFormCategories';
 import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSalaryRequestSection';
-import { NavButton } from '../SharedComponents/NavButton';
+import {
+  BackButton,
+  CancelButton,
+  SubmitButton,
+} from '../SharedComponents/NavButtons';
 
 interface CompleteFormValues {
   currentYearSalary: string;
@@ -43,8 +47,7 @@ export const CompleteForm: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
   const theme = useTheme();
-  const { selectedSection, handleBack, handleCancel } =
-    useAdditionalSalaryRequest();
+  const { selectedSection } = useAdditionalSalaryRequest();
 
   const categories = useCompleteFormCategories();
 
@@ -212,10 +215,10 @@ export const CompleteForm: React.FC = () => {
                   mt: theme.spacing(4),
                 }}
               >
-                <NavButton onClick={handleCancel} type="cancel" />
+                <CancelButton />
                 <Box sx={{ display: 'flex', gap: theme.spacing(2) }}>
-                  <NavButton onClick={handleBack} type="back" />
-                  <NavButton onClick={handleSubmit} type="submit" />
+                  <BackButton />
+                  <SubmitButton handleClick={handleSubmit} />
                 </Box>
               </Box>
             </>

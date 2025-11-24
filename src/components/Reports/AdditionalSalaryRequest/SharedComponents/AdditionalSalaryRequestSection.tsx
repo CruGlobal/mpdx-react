@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 
 export interface AdditionalSalaryRequestSectionProps {
   title: string;
-  subtitle?: string;
   rightPanelContent?: JSX.Element;
   printable?: boolean;
   children: React.ReactNode;
@@ -15,7 +14,7 @@ export interface AdditionalSalaryRequestSectionProps {
 
 export const AdditionalSalaryRequestSection: React.FC<
   AdditionalSalaryRequestSectionProps
-> = ({ title, subtitle, printable = false, children, titleExtra }) => {
+> = ({ title, printable = false, children, titleExtra }) => {
   const { t } = useTranslation();
 
   const handlePrint = () => {
@@ -26,7 +25,7 @@ export const AdditionalSalaryRequestSection: React.FC<
     <div>
       <Box pb={4}>
         <Stack direction="row" gap={2} alignItems="center">
-          <Typography variant="h4">{t('{{title}}', title)}</Typography>
+          <Typography variant="h4">{title}</Typography>
           {titleExtra}
           <Box sx={{ flexGrow: 1 }} />
           {printable && (
@@ -40,9 +39,6 @@ export const AdditionalSalaryRequestSection: React.FC<
             </Button>
           )}
         </Stack>
-        {subtitle && (
-          <Typography pt={1}>{t('{{subtitle}}', subtitle)}</Typography>
-        )}
       </Box>
       {children}
     </div>
