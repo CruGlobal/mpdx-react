@@ -8,7 +8,7 @@ export type AdditionalSalaryRequestType = {
   sectionOrder: SectionOrderItem[];
   selectedSection: SectionOrderItem;
   handleContinue: () => void;
-  setSelectedSection: (section: SectionOrderItem) => void;
+  setSectionIndex: (number) => void;
   isDrawerOpen: boolean;
   toggleDrawer: () => void;
   setIsDrawerOpen: (open: boolean) => void;
@@ -52,41 +52,30 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     ],
     [],
   );
-
-  const [selectedSection, setSelectedSection] = useState(sectionOrder[0]);
+  const [sectionIndex, setSectionIndex] = useState(0);
+  const selectedSection = sectionOrder[sectionIndex];
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
-
   const toggleDrawer = useCallback(() => {
     setIsDrawerOpen((prev) => !prev);
   }, []);
 
-  const handleContinue = useCallback(() => {
-    const currentIndex = sectionOrder.findIndex(
-      (item) => item === selectedSection,
-    );
-    if (currentIndex !== -1 && currentIndex < sectionOrder.length - 1) {
-      setSelectedSection(sectionOrder[currentIndex + 1]);
+  const handleContinue = () => {
+    if (sectionIndex < sectionOrder.length - 1) {
+      setSectionIndex(sectionIndex + 1);
     }
-  }, [sectionOrder, selectedSection]);
+  };
 
   const contextValue = useMemo<AdditionalSalaryRequestType>(
     () => ({
       sectionOrder,
+      setSectionIndex,
       selectedSection,
       handleContinue,
-      setSelectedSection,
       isDrawerOpen,
       toggleDrawer,
       setIsDrawerOpen,
     }),
-    [
-      sectionOrder,
-      selectedSection,
-      handleContinue,
-      setSelectedSection,
-      isDrawerOpen,
-      toggleDrawer,
-    ],
+    [sectionOrder, selectedSection, handleContinue, isDrawerOpen, toggleDrawer],
   );
 
   return (

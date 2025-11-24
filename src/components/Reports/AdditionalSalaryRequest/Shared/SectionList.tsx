@@ -9,7 +9,7 @@ const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
 }));
 
 export const SectionList: React.FC = () => {
-  const { sectionOrder, selectedSection, setSelectedSection } =
+  const { sectionOrder, selectedSection, setSectionIndex } =
     useAdditionalSalaryRequest();
   const { t } = useTranslation();
 
@@ -22,7 +22,7 @@ export const SectionList: React.FC = () => {
             key={section.section}
             aria-current={active}
             selected={active}
-            onClick={() => setSelectedSection(section)}
+            onClick={() => setSectionIndex(sectionOrder.indexOf(section))}
           >
             <ListItemText
               primary={`${index + 1}. ${t(section.title)}`}

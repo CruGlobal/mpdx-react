@@ -5,13 +5,8 @@ import { AdditionalSalaryRequestTestWrapper } from '../AdditionalSalaryRequestTe
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 
 const TestComponent: React.FC = () => {
-  const {
-    sectionOrder,
-    selectedSection,
-    setSelectedSection,
-    isDrawerOpen,
-    toggleDrawer,
-  } = useAdditionalSalaryRequest();
+  const { selectedSection, setSectionIndex, isDrawerOpen, toggleDrawer } =
+    useAdditionalSalaryRequest();
 
   return (
     <div>
@@ -19,11 +14,7 @@ const TestComponent: React.FC = () => {
       <div aria-label="drawer state" data-open={isDrawerOpen}>
         Drawer: {isDrawerOpen ? 'open' : 'closed'}
       </div>
-      <button
-        onClick={() => setSelectedSection(sectionOrder[1 /* CompleteForm */])}
-      >
-        Change Section
-      </button>
+      <button onClick={() => setSectionIndex(1)}>Change Section</button>
       <button onClick={toggleDrawer}>Toggle Drawer</button>
     </div>
   );
