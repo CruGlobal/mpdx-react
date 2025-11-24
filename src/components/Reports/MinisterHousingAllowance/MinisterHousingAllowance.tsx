@@ -21,7 +21,7 @@ import { NameDisplay } from './SharedComponents/NameDisplay';
 
 export const mainContentWidth = theme.spacing(85);
 
-export const MinisterHousingAllowanceReport: React.FC = () => {
+export const MinisterHousingAllowanceReport = () => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const accountListId = useAccountListId();
@@ -84,7 +84,7 @@ export const MinisterHousingAllowanceReport: React.FC = () => {
       panelType={PanelTypeEnum.Empty}
       sidebarTitle={t('Your MHA')}
       mainContent={
-        <Container>
+        <Container sx={{ ml: 5 }}>
           {error && <Notification type="error" message={error.message} />}
           {!error && !MHAData && <MinisterHousingAllowanceReportSkeleton />}
           {!error && MHAData && (

@@ -28,8 +28,8 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
 import { PledgeStatusEnum } from 'src/graphql/types.generated';
-import { requiredDateTime } from 'src/lib/formikHelpers';
 import i18n from 'src/lib/i18n';
+import { requiredDateTime } from 'src/lib/yupHelpers';
 import {
   AppealStatusEnum,
   AppealsContext,

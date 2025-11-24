@@ -4,8 +4,8 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as yup from 'yup';
 import i18n from 'src/lib/i18n';
+import { amount } from 'src/lib/yupHelpers';
 import { GoalCalculatorTestWrapper } from '../../../GoalCalculatorTestWrapper';
-import { amount } from '../InformationCategory/schema';
 import { AutosaveTextField } from './AutosaveTextField';
 
 const defaultSchema = yup.object({

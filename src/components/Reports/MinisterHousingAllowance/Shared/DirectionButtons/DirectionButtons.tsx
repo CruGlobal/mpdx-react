@@ -3,8 +3,8 @@ import { ChevronLeft, ChevronRight } from '@mui/icons-material';
 import { Box, Button } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
-import { ConfirmationModal } from '../../ConfirmationModal/ConfirmationModal';
 import { CalculationFormValues } from '../../Steps/StepThree/Calculation';
+import { SubmitModal } from '../../SubmitModal/SubmitModal';
 import { useMinisterHousingAllowance } from '../Context/MinisterHousingAllowanceContext';
 
 interface DirectionButtonsProps {
@@ -62,7 +62,7 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
             <ChevronRight sx={{ ml: 1 }} />
           </Button>
           {openConfirmation && (
-            <ConfirmationModal
+            <SubmitModal
               handleClose={() => setOpenConfirmation(false)}
               handleConfirm={submitForm}
             />

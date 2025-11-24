@@ -46,7 +46,7 @@ describe('EditRequestPage', () => {
       expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '50');
     });
 
-    waitFor(() => {
+    await waitFor(() => {
       const steps = getAllByRole('listitem');
 
       const [firstStep, secondStep, thirdStep] = steps;

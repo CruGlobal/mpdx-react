@@ -10,11 +10,11 @@ import {
 } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
-import { ConfirmationModal } from '../../ConfirmationModal/ConfirmationModal';
 import { FormValues } from '../../NewRequest/NewRequestPage';
 import { useMinisterHousingAllowance } from '../../Shared/Context/MinisterHousingAllowanceContext';
 import { DirectionButtons } from '../../Shared/DirectionButtons/DirectionButtons';
 import { PageEnum, RentOwnEnum } from '../../Shared/sharedTypes';
+import { SubmitModal } from '../../SubmitModal/SubmitModal';
 
 export const RentOwn: React.FC = () => {
   const { t } = useTranslation();
@@ -112,7 +112,7 @@ export const RentOwn: React.FC = () => {
           </RadioGroup>
         </FormControl>
         {isRequestingChange && (
-          <ConfirmationModal
+          <SubmitModal
             handleClose={handleClose}
             handleConfirm={handleConfirm}
             isRequestingChange={true}

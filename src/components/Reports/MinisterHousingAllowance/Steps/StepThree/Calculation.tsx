@@ -1,5 +1,7 @@
+import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { OpenInNew } from '@mui/icons-material';
+import PrintIcon from '@mui/icons-material/Print';
 import {
   Alert,
   Box,
@@ -8,16 +10,20 @@ import {
   FormControlLabel,
   FormHelperText,
   Link,
+  SvgIcon,
   Typography,
 } from '@mui/material';
-import { Formik, useFormikContext } from 'formik';
+import { Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { Trans, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import {
+  SimpleScreenOnly,
+  StyledPrintButton,
+} from 'src/components/Reports/styledComponents';
 import { useLocale } from 'src/hooks/useLocale';
 import i18n from 'src/lib/i18n';
 import { dateFormatShort } from 'src/lib/intlFormat';
-import { FormValues } from '../../NewRequest/NewRequestPage';
 import { useMinisterHousingAllowance } from '../../Shared/Context/MinisterHousingAllowanceContext';
 import { DirectionButtons } from '../../Shared/DirectionButtons/DirectionButtons';
 import { editOwnMock, mocks } from '../../Shared/mockData';
@@ -25,14 +31,16 @@ import { PageEnum, RentOwnEnum } from '../../Shared/sharedTypes';
 import { CostOfHome } from './CalcComponents/CostOfHome';
 import { EndingSection } from './CalcComponents/EndingSection';
 import { FairRentalValue } from './CalcComponents/FairRentalValue';
+import { PersonInfo } from './CalcComponents/PersonInfo';
 import { RequestSummaryCard } from './CalcComponents/RequestSummaryCard';
 
-// TODO: add warning message if user clicks back after entering data in this form
 // TODO: get correct link for "What expenses can I claim on my MHA?"
 
 interface CalculationProps {
   boardApprovalDate: string | null;
   availableDate: string | null;
+  rentOrOwn: RentOwnEnum | undefined;
+  handlePrint?: () => void;
 }
 export interface CalculationFormValues {
   rentalValue?: number | null;
@@ -90,32 +98,48 @@ const getValidationSchema = (rentOrOwn?: RentOwnEnum) => {
 export const Calculation: React.FC<CalculationProps> = ({
   boardApprovalDate,
   availableDate,
+  rentOrOwn,
+  handlePrint,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const { query } = useRouter();
+  const print = query.print === 'true';
 
-  const { handleNextStep, pageType, setHasCalcValues } =
+  const { handleNextStep, pageType, setHasCalcValues, setIsPrint, isPrint } =
     useMinisterHousingAllowance();
 
-  const {
-    values: { rentOrOwn },
-  } = useFormikContext<FormValues>();
+  const actionRequired =
+    pageType === PageEnum.Edit || pageType === PageEnum.View;
+  const isViewPage = pageType === PageEnum.View;
 
-  const actionRequired = pageType === PageEnum.Edit;
-
-  const initialValues: CalculationFormValues = {
-    rentalValue: actionRequired ? editOwnMock.rentalValue : null,
-    furnitureCostsOne: actionRequired ? editOwnMock.furnitureCostsOne : null,
-    avgUtilityOne: actionRequired ? editOwnMock.avgUtilityOne : null,
-    mortgagePayment: actionRequired ? editOwnMock.mortgagePayment : null,
-    furnitureCostsTwo: actionRequired ? editOwnMock.furnitureCostsTwo : null,
-    repairCosts: actionRequired ? editOwnMock.repairCosts : null,
-    avgUtilityTwo: actionRequired ? editOwnMock.avgUtilityTwo : null,
-    unexpectedExpenses: actionRequired ? editOwnMock.unexpectedExpenses : null,
-    phone: mocks[0].staffInfo.phone,
-    email: mocks[0].staffInfo.email,
-    isChecked: actionRequired ? editOwnMock.isChecked : false,
-  };
+  const initialValues: CalculationFormValues = actionRequired
+    ? {
+        rentalValue: editOwnMock.rentalValue,
+        furnitureCostsOne: editOwnMock.furnitureCostsOne,
+        avgUtilityOne: editOwnMock.avgUtilityOne,
+        mortgagePayment: editOwnMock.mortgagePayment,
+        furnitureCostsTwo: editOwnMock.furnitureCostsTwo,
+        repairCosts: editOwnMock.repairCosts,
+        avgUtilityTwo: editOwnMock.avgUtilityTwo,
+        unexpectedExpenses: editOwnMock.unexpectedExpenses,
+        phone: mocks[0].staffInfo.phone,
+        email: mocks[0].staffInfo.email,
+        isChecked: editOwnMock.isChecked,
+      }
+    : {
+        rentalValue: null,
+        furnitureCostsOne: null,
+        avgUtilityOne: null,
+        mortgagePayment: null,
+        furnitureCostsTwo: null,
+        repairCosts: null,
+        avgUtilityTwo: null,
+        unexpectedExpenses: null,
+        phone: mocks[0].staffInfo.phone,
+        email: mocks[0].staffInfo.email,
+        isChecked: false,
+      };
 
   const boardDateFormatted = boardApprovalDate
     ? dateFormatShort(DateTime.fromISO(boardApprovalDate), locale)
@@ -132,6 +156,10 @@ export const Calculation: React.FC<CalculationProps> = ({
   const approval = availableDateFormatted
     ? t(`approval effective ${availableDateFormatted}`)
     : t('approval soon');
+
+  useEffect(() => {
+    setIsPrint(print);
+  }, [print, setIsPrint]);
 
   return (
     <Formik<CalculationFormValues>
@@ -164,73 +192,111 @@ export const Calculation: React.FC<CalculationProps> = ({
         return (
           <form noValidate>
             <Box mb={2}>
-              <Typography variant="h5">
-                {t('Calculate Your MHA Request')}
-              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Typography variant="h5">
+                  {isViewPage
+                    ? t('Your MHA Request')
+                    : t('Calculate Your MHA Request')}
+                </Typography>
+                {isPrint && (
+                  <SimpleScreenOnly>
+                    <StyledPrintButton
+                      startIcon={
+                        <SvgIcon fontSize="small">
+                          <PrintIcon titleAccess={t('Print')} />
+                        </SvgIcon>
+                      }
+                      onClick={handlePrint}
+                    >
+                      {t('Print')}
+                    </StyledPrintButton>
+                  </SimpleScreenOnly>
+                )}
+              </Box>
             </Box>
-            <Trans i18nKey="newRequestCalculation" values={{ after, approval }}>
-              {actionRequired ? (
-                <p style={{ lineHeight: 1.5 }}>
-                  Please review the Annual MHA Request that you have submitted
-                  for Board approval and make any changes necessary here. The
-                  board will review this {after} and you will receive notice of
-                  your {approval}.
-                </p>
-              ) : (
-                <p style={{ lineHeight: 1.5 }}>
-                  Please enter dollar amounts for each category below to
-                  calculate your Annual MHA. The board will review this {after}{' '}
-                  and you will receive notice of your {approval}.
-                </p>
-              )}
-            </Trans>
-            <Box sx={{ mt: 2, mb: 3 }}>
-              <OpenInNew
-                fontSize="medium"
-                sx={{ verticalAlign: 'middle', opacity: 0.56 }}
-              />{' '}
-              <Link component="button" type="button">
-                What expenses can I claim on my MHA?
-              </Link>
-            </Box>
+            {isViewPage ? (
+              <PersonInfo />
+            ) : (
+              <Trans
+                i18nKey="newRequestCalculation"
+                values={{ after, approval }}
+              >
+                {actionRequired ? (
+                  <p style={{ lineHeight: 1.5 }}>
+                    Please review the Annual MHA Request that you have submitted
+                    for Board approval and make any changes necessary here. The
+                    board will review this {after} and you will receive notice
+                    of your {approval}.
+                  </p>
+                ) : (
+                  <p style={{ lineHeight: 1.5 }}>
+                    Please enter dollar amounts for each category below to
+                    calculate your Annual MHA. The board will review this{' '}
+                    {after} and you will receive notice of your {approval}.
+                  </p>
+                )}
+              </Trans>
+            )}
+            {!isPrint && (
+              <Box sx={{ mt: 2, mb: 3 }}>
+                <OpenInNew
+                  fontSize="medium"
+                  sx={{ verticalAlign: 'middle', opacity: 0.56 }}
+                />{' '}
+                <Link component="button" type="button">
+                  What expenses can I claim on my MHA?
+                </Link>
+              </Box>
+            )}
+            {isViewPage && (
+              <Box mb={3}>
+                <RequestSummaryCard rentOrOwn={rentOrOwn} />
+              </Box>
+            )}
             {rentOrOwn === RentOwnEnum.Own && (
               <Box mb={3}>
                 <FairRentalValue />
               </Box>
             )}
             <CostOfHome rentOrOwn={rentOrOwn} />
-            <Box mt={3} mb={3}>
-              <RequestSummaryCard rentOrOwn={rentOrOwn} />
-            </Box>
-            <FormControl error={Boolean(touched.isChecked && errors.isChecked)}>
-              <FormControlLabel
-                sx={{
-                  alignItems: 'flex-start',
-                  '& .MuiFormControlLabel-label': { mt: 1 },
-                }}
-                control={
-                  <Checkbox
-                    checked={Boolean(values.isChecked)}
-                    onChange={(e) =>
-                      setFieldValue('isChecked', e.target.checked)
+            {!isViewPage && (
+              <>
+                <Box mt={3} mb={3}>
+                  <RequestSummaryCard rentOrOwn={rentOrOwn} />
+                </Box>
+                <FormControl
+                  error={Boolean(touched.isChecked && errors.isChecked)}
+                >
+                  <FormControlLabel
+                    sx={{
+                      alignItems: 'flex-start',
+                      '& .MuiFormControlLabel-label': { mt: 1 },
+                    }}
+                    control={
+                      <Checkbox
+                        checked={Boolean(values.isChecked)}
+                        onChange={(e) =>
+                          setFieldValue('isChecked', e.target.checked)
+                        }
+                        onBlur={handleBlur}
+                        name="isChecked"
+                      />
                     }
-                    onBlur={handleBlur}
-                    name="isChecked"
+                    label={t(
+                      'I understand that my approved Annual MHA will be based on the lower of the Annual Fair Rental Value or the Annual Cost of Providing a Home.',
+                    )}
                   />
-                }
-                label={t(
-                  'I understand that my approved Annual MHA will be based on the lower of the Annual Fair Rental Value or the Annual Cost of Providing a Home.',
-                )}
-              />
-              <FormHelperText sx={{ ml: 4 }}>
-                {touched.isChecked && errors.isChecked ? (
-                  <i>{errors.isChecked}</i>
-                ) : (
-                  <i>{t('This box must be checked to continue.')}</i>
-                )}
-              </FormHelperText>
-            </FormControl>
-            <EndingSection />
+                  <FormHelperText sx={{ ml: 4 }}>
+                    {touched.isChecked && errors.isChecked ? (
+                      <i>{errors.isChecked}</i>
+                    ) : (
+                      <i>{t('This box must be checked to continue.')}</i>
+                    )}
+                  </FormHelperText>
+                </FormControl>
+              </>
+            )}
+            {!isViewPage && <EndingSection />}
             {showAlert && (
               <Alert severity="error" sx={{ mt: 2, '& ul': { m: 0, pl: 3 } }}>
                 {t('Your form is missing information.')}
@@ -251,7 +317,7 @@ export const Calculation: React.FC<CalculationProps> = ({
                 </ul>
               </Alert>
             )}
-            <DirectionButtons isCalculate />
+            {!isViewPage && <DirectionButtons isCalculate />}
           </form>
         );
       }}

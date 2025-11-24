@@ -3,13 +3,13 @@ import { TextFieldProps } from '@mui/material';
 import { prepareDataForValidation } from 'formik';
 import * as yup from 'yup';
 import { useSyncedState } from 'src/hooks/useSyncedState';
-import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
 
 interface UseAutoSaveOptions<Value extends string | number> {
   value: Value | null | undefined;
   saveValue: (value: Value | null) => Promise<unknown>;
   fieldName: string;
   schema: yup.Schema;
+  disabled?: boolean;
   saveOnChange?: boolean;
 }
 
@@ -18,11 +18,9 @@ export const useAutoSave = <Value extends string | number>({
   saveValue,
   fieldName,
   schema,
+  disabled = false,
   saveOnChange = false,
 }: UseAutoSaveOptions<Value>) => {
-  const {
-    goalCalculationResult: { data },
-  } = useGoalCalculator();
   const [internalValue, setInternalValue] = useSyncedState(
     value?.toString() ?? '',
   );
@@ -53,8 +51,6 @@ export const useAutoSave = <Value extends string | number>({
     [parseValue, internalValue],
   );
 
-  const disabled = !data;
-
   return {
     value: internalValue,
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,13 +59,13 @@ export const useAutoSave = <Value extends string | number>({
 
       if (saveOnChange) {
         const { parsedValue, errorMessage } = parseValue(newValue);
-        if (!errorMessage) {
+        if (!errorMessage && parsedValue !== value) {
           saveValue(parsedValue);
         }
       }
     },
     onBlur: () => {
-      if (!saveOnChange && !errorMessage) {
+      if (!saveOnChange && !errorMessage && parsedValue !== value) {
         saveValue(parsedValue);
       }
     },

@@ -63,7 +63,7 @@ describe('IneligibleDisplay', () => {
       ),
     ).toBeInTheDocument();
     expect(
-      queryByText(/has not completed the required ibs courses/i),
+      queryByText(/Jane has not completed the required ibs courses/i),
     ).not.toBeInTheDocument();
   });
 

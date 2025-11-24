@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
-import { AdditionalSalaryRequest } from 'src/components/Reports/AdditionalSalaryRequest/AdditionalSalaryRequest';
+import { SalaryCalculator } from 'src/components/Reports/SalaryCalculator/SalaryCalculator';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -14,11 +14,10 @@ import {
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
-const AdditionalSalaryRequestPage: React.FC = () => {
+const SalaryCalculatorPage: React.FC = () => {
   const { appName } = useGetAppSettings();
   const { t } = useTranslation();
-  const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
-  const [isNavListOpen, setIsNavListOpen] = useState<boolean>(false);
+  const [isNavListOpen, setIsNavListOpen] = useState(false);
 
   const handleNavListToggle = () => {
     setIsNavListOpen(!isNavListOpen);
@@ -27,19 +26,15 @@ const AdditionalSalaryRequestPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>
-          {appName} | {t('Additional Salary Request')}
-        </title>
+        <title>{`${appName} | ${t('Salary Calculator')}`}</title>
       </Head>
       <SidePanelsLayout
         isScrollBox={false}
         leftPanel={
           <MultiPageMenu
             isOpen={isNavListOpen}
-            selectedId="salaryRequest"
+            selectedId="salaryCalculator"
             onClose={handleNavListToggle}
-            designationAccounts={designationAccounts}
-            setDesignationAccounts={setDesignationAccounts}
             navType={NavTypeEnum.Reports}
           />
         }
@@ -50,11 +45,11 @@ const AdditionalSalaryRequestPage: React.FC = () => {
             <MultiPageHeader
               isNavListOpen={isNavListOpen}
               onNavListToggle={handleNavListToggle}
-              title={t('Additional Salary Request')}
+              title={t('Salary Calculator')}
               headerType={HeaderTypeEnum.Report}
             />
 
-            <AdditionalSalaryRequest />
+            <SalaryCalculator />
           </>
         }
       />
@@ -64,4 +59,4 @@ const AdditionalSalaryRequestPage: React.FC = () => {
 
 export const getServerSideProps = ensureSessionAndAccountList;
 
-export default AdditionalSalaryRequestPage;
+export default SalaryCalculatorPage;

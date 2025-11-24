@@ -21,6 +21,9 @@ const StyledCard = styled(Card, {
   shouldForwardProp: (prop) => prop !== 'isSelected',
 })<{ isSelected: boolean }>(({ theme, isSelected }) => ({
   padding: theme.spacing(2),
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-between',
   flex: 1,
   minWidth: 0,
   maxWidth: 'none',
@@ -45,6 +48,14 @@ interface BalanceCardProps {
   isSelected?: boolean;
 }
 
+const StyledHeaderBox = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  flex: 1,
+  flexDirection: 'row',
+  alignItems: 'start',
+  gap: theme.spacing(1),
+}));
+
 const ScreenOnly = styled(Box)({
   '@media print': {
     display: 'none',
@@ -68,12 +79,12 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
 
   return (
     <StyledCard variant="outlined" isSelected={isSelected}>
-      <Box display={'flex'} flexDirection="row" alignItems="center" gap={1}>
+      <StyledHeaderBox>
         <StyledIconBox iconBgColor={iconBgColor}>
           <Icon />
         </StyledIconBox>
         <Typography variant="h6">{title}</Typography>
-      </Box>
+      </StyledHeaderBox>
       <Box display="flex" flexDirection="column" mt={3} mb={2}>
         <Typography>
           {t('Starting Balance: ')}

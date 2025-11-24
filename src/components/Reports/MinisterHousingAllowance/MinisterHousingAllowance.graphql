@@ -1,4 +1,4 @@
-query ministryHousingAllowanceRequests {
+query MinistryHousingAllowanceRequests {
   ministryHousingAllowanceRequests {
     nodes {
       id

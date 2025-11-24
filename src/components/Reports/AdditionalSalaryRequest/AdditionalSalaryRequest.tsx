@@ -1,44 +1,55 @@
 import React from 'react';
+import MenuOpenSharp from '@mui/icons-material/MenuOpenSharp';
+import MenuSharp from '@mui/icons-material/MenuSharp';
 import { Typography } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { IconPanelLayout } from 'src/components/Shared/IconPanelLayout/IconPanelLayout';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { AdditionalSalaryRequestSectionEnum } from './AdditionalSalaryRequestHelper';
-import {
-  AdditionalSalaryRequestProvider,
-  useAdditionalSalaryRequest,
-} from './Shared/AdditionalSalaryRequestContext';
-import { AdditionalSalaryRequestLayout } from './Shared/AdditionalSalaryRequestLayout';
+import { CompleteForm } from './CompleteForm/CompleteForm';
+import { useAdditionalSalaryRequest } from './Shared/AdditionalSalaryRequestContext';
 import { SectionList } from './Shared/SectionList';
 
-const MainContent: React.FC = () => {
+export const MainContent: React.FC = () => {
   const { selectedSection } = useAdditionalSalaryRequest();
   const { t } = useTranslation();
-  const theme = useTheme();
 
-  const content = {
-    [AdditionalSalaryRequestSectionEnum.AboutForm]: t(
-      'About this Form content',
-    ),
-    [AdditionalSalaryRequestSectionEnum.CompleteForm]: t(
-      'Complete Form content',
-    ),
-    [AdditionalSalaryRequestSectionEnum.Receipt]: t('Receipt content'),
-  };
-
-  return (
-    <Typography sx={{ paddingInline: theme.spacing(4) }} variant="h5">
-      {content[selectedSection]}
-    </Typography>
-  );
+  switch (selectedSection) {
+    case AdditionalSalaryRequestSectionEnum.AboutForm:
+      return (
+        <Typography variant="h5">{t('About this Form content')}</Typography>
+      );
+    case AdditionalSalaryRequestSectionEnum.CompleteForm:
+      return <CompleteForm />;
+    case AdditionalSalaryRequestSectionEnum.Receipt:
+      return <Typography variant="h5">{t('Receipt content')}</Typography>;
+  }
 };
 
 export const AdditionalSalaryRequest: React.FC = () => {
+  const { t } = useTranslation();
+  const accountListId = useAccountListId();
+  const { isDrawerOpen, toggleDrawer } = useAdditionalSalaryRequest();
+
+  const iconPanelItems = [
+    {
+      key: 'toggle',
+      icon: isDrawerOpen ? <MenuOpenSharp /> : <MenuSharp />,
+      label: t('Toggle Menu'),
+      onClick: toggleDrawer,
+    },
+  ];
+
   return (
-    <AdditionalSalaryRequestProvider>
-      <AdditionalSalaryRequestLayout
-        sectionListPanel={<SectionList />}
-        mainContent={<MainContent />}
-      />
-    </AdditionalSalaryRequestProvider>
+    <IconPanelLayout
+      percentComplete={50}
+      iconPanelItems={iconPanelItems}
+      sidebarContent={<SectionList />}
+      sidebarTitle={t('Additional Salary Request')}
+      isSidebarOpen={isDrawerOpen}
+      sidebarAriaLabel={t('Additional Salary Request Sections')}
+      mainContent={<MainContent />}
+      backHref={`/accountLists/${accountListId}`}
+    />
   );
 };

@@ -8,6 +8,8 @@ import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
 import { RentOwnEnum } from 'src/components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
 import theme from 'src/theme';
+import { useMinisterHousingAllowance } from '../../../Shared/Context/MinisterHousingAllowanceContext';
+import { PageEnum } from '../../../Shared/sharedTypes';
 import { CostOfHome } from './CostOfHome';
 
 const submit = jest.fn();
@@ -28,14 +30,32 @@ const TestComponent: React.FC<TestComponentProps> = ({ rentOrOwn }) => (
   </ThemeProvider>
 );
 
+jest.mock('../../../Shared/Context/MinisterHousingAllowanceContext', () => ({
+  ...jest.requireActual(
+    '../../../Shared/Context/MinisterHousingAllowanceContext',
+  ),
+  useMinisterHousingAllowance: jest.fn(),
+}));
+const useMock = useMinisterHousingAllowance as jest.Mock;
+
 describe('CostOfHome', () => {
+  beforeEach(() => {
+    useMock.mockReturnValue({
+      pageType: PageEnum.New,
+    });
+  });
+
   it('renders the component for own', () => {
     const { getByText, getByRole } = render(
       <TestComponent rentOrOwn={RentOwnEnum.Own} />,
     );
 
     expect(getByRole('table')).toBeInTheDocument();
-    expect(getByText('Cost of Providing a Home')).toBeInTheDocument();
+    expect(
+      getByText('Cost of Providing a Home', {
+        selector: '.MuiCardHeader-title',
+      }),
+    ).toBeInTheDocument();
 
     expect(getByRole('columnheader', { name: 'Category' })).toBeInTheDocument();
     expect(getByRole('columnheader', { name: 'Amount' })).toBeInTheDocument();
@@ -51,7 +71,11 @@ describe('CostOfHome', () => {
     );
 
     expect(getByRole('table')).toBeInTheDocument();
-    expect(getByText('Cost of Providing a Home')).toBeInTheDocument();
+    expect(
+      getByText('Cost of Providing a Home', {
+        selector: '.MuiCardHeader-title',
+      }),
+    ).toBeInTheDocument();
 
     expect(getByRole('columnheader', { name: 'Category' })).toBeInTheDocument();
     expect(getByRole('columnheader', { name: 'Amount' })).toBeInTheDocument();
@@ -105,5 +129,26 @@ describe('CostOfHome', () => {
 
     expect(getByText('$2,400.00')).toBeInTheDocument();
     expect(getByText('$28,800.00')).toBeInTheDocument();
+  });
+
+  describe('isPrint behavior', () => {
+    beforeEach(() => {
+      useMock.mockReturnValue({
+        pageType: PageEnum.View,
+      });
+    });
+
+    it('should disable text fields when on view page', () => {
+      const { getByRole } = render(
+        <TestComponent rentOrOwn={RentOwnEnum.Own} />,
+      );
+
+      const row = getByRole('row', {
+        name: /estimated monthly cost of repairs/i,
+      });
+      const input = within(row).getByRole('textbox');
+
+      expect(input).toBeDisabled();
+    });
   });
 });

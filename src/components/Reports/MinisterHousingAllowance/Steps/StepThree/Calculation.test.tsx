@@ -8,11 +8,16 @@ import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
-import { MinisterHousingAllowanceProvider } from '../../Shared/Context/MinisterHousingAllowanceContext';
-import { PageEnum } from '../../Shared/sharedTypes';
+import {
+  MinisterHousingAllowanceProvider,
+  useMinisterHousingAllowance,
+} from '../../Shared/Context/MinisterHousingAllowanceContext';
+import { PageEnum, RentOwnEnum } from '../../Shared/sharedTypes';
 import { Calculation } from './Calculation';
 
 const submit = jest.fn();
+const setHasCalcValues = jest.fn();
+const setIsPrint = jest.fn();
 
 const initialValues = {
   phone: '1234567890',
@@ -22,21 +27,24 @@ const initialValues = {
 interface TestComponentProps {
   boardApprovalDate?: string | null;
   availableDate?: string | null;
+  rentOrOwn?: RentOwnEnum;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   boardApprovalDate = '2024-06-15',
   availableDate = '2024-07-01',
+  rentOrOwn = RentOwnEnum.Own,
 }) => (
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <TestRouter>
         <GqlMockedProvider>
           <Formik initialValues={initialValues} onSubmit={submit}>
-            <MinisterHousingAllowanceProvider type={PageEnum.New}>
+            <MinisterHousingAllowanceProvider>
               <Calculation
                 boardApprovalDate={boardApprovalDate}
                 availableDate={availableDate}
+                rentOrOwn={rentOrOwn}
               />
             </MinisterHousingAllowanceProvider>
           </Formik>
@@ -46,7 +54,21 @@ const TestComponent: React.FC<TestComponentProps> = ({
   </ThemeProvider>
 );
 
+jest.mock('../../Shared/Context/MinisterHousingAllowanceContext', () => ({
+  ...jest.requireActual('../../Shared/Context/MinisterHousingAllowanceContext'),
+  useMinisterHousingAllowance: jest.fn(),
+}));
+const useMock = useMinisterHousingAllowance as jest.Mock;
+
 describe('Calculation', () => {
+  beforeEach(() => {
+    useMock.mockReturnValue({
+      pageType: PageEnum.New,
+      setHasCalcValues,
+      setIsPrint,
+    });
+  });
+
   it('renders the component', () => {
     const { getByText, getByRole } = render(<TestComponent />);
 
@@ -143,7 +165,9 @@ describe('Calculation', () => {
   });
 
   it('shows confirmation modal when submit is clicked', async () => {
-    const { getByRole, getByText, findByRole } = render(<TestComponent />);
+    const { getByRole, getByText, findByRole } = render(
+      <TestComponent rentOrOwn={RentOwnEnum.Rent} />,
+    );
 
     const row1 = getByRole('row', {
       name: /monthly rent/i,
@@ -208,5 +232,31 @@ describe('Calculation', () => {
         /the board will review this number and you will receive notice of your approval./i,
       ),
     ).toBeInTheDocument();
+  });
+
+  describe('isViewPage behavior', () => {
+    beforeEach(() => {
+      useMock.mockReturnValue({
+        pageType: PageEnum.View,
+        setHasCalcValues,
+        setIsPrint,
+      });
+    });
+
+    it('renders view only mode', () => {
+      const { getByRole, queryByRole, getByText } = render(<TestComponent />);
+
+      expect(
+        getByRole('heading', { name: 'Your MHA Request' }),
+      ).toBeInTheDocument();
+
+      expect(getByText('Personal Contact Information')).toBeInTheDocument();
+
+      expect(
+        queryByRole('button', { name: /continue/i }),
+      ).not.toBeInTheDocument();
+      expect(queryByRole('button', { name: /back/i })).not.toBeInTheDocument();
+      expect(queryByRole('checkbox')).not.toBeInTheDocument();
+    });
   });
 });

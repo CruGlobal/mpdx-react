@@ -11,23 +11,18 @@ import { PageEnum, StepsEnum } from '../sharedTypes';
 export type HcmData = HcmDataMarriedQuery['hcm'][number];
 
 export type ContextType = {
-  // list of steps for new or edit request
   steps: Steps[];
   currentIndex: number;
   percentComplete: number;
-
-  // request page state and handlers
   currentStep: StepsEnum;
   handleNextStep: () => void;
   handlePreviousStep: () => void;
-
-  // new or edit page type
   pageType: PageEnum | undefined;
-
-  // calculation values state
   hasCalcValues: boolean;
   setHasCalcValues: (value: boolean) => void;
-
+  isPrint: boolean;
+  setIsPrint: (value: boolean) => void;
+  setPreviousPage: (page: PageEnum) => void;
   isMarried: boolean;
   userHcmData?: HcmData;
   spouseHcmData?: HcmData | null;
@@ -57,7 +52,22 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   children,
 }) => {
   const pageType = type;
-  const steps = type ? useNewStepList(type) : [];
+  const initialSteps = type ? useNewStepList(type) : [];
+
+  const [previousPage, setPreviousPage] = useState(PageEnum.None);
+
+  const steps = useMemo(() => {
+    if (previousPage === PageEnum.None) {
+      return initialSteps;
+    }
+
+    return initialSteps.map((step, index, arr) => ({
+      ...step,
+      complete: true,
+      current: index === arr.length - 1,
+    }));
+  }, [initialSteps, previousPage]);
+
   const totalSteps = steps.length;
 
   const { data: hcmData } = useHcmDataMarriedQuery({
@@ -94,6 +104,7 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
 
   const actionRequired = pageType === PageEnum.Edit;
   const [hasCalcValues, setHasCalcValues] = useState(actionRequired);
+  const [isPrint, setIsPrint] = useState(false);
 
   const [currentStep, setCurrentStep] = useState(StepsEnum.AboutForm);
   const [percentComplete, setPercentComplete] = useState(25);
@@ -175,6 +186,9 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       spouseHcmData,
       preferredName,
       spousePreferredName,
+      isPrint,
+      setIsPrint,
+      setPreviousPage,
     }),
     [
       steps,
@@ -191,6 +205,9 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       spouseHcmData,
       preferredName,
       spousePreferredName,
+      isPrint,
+      setIsPrint,
+      setPreviousPage,
     ],
   );
 

@@ -45,30 +45,33 @@ export const EditRequestPage: React.FC = () => {
           validationSchema={validationSchema}
           onSubmit={() => handleNextStep()}
         >
-          <Container sx={{ ml: 5 }}>
-            <Stack direction="column" width={mainContentWidth}>
-              {currentStep === StepsEnum.AboutForm ? (
-                <AboutForm
-                  boardApprovalDate={boardDate}
-                  availableDate={availableDate}
-                />
-              ) : currentStep === StepsEnum.RentOrOwn ? (
-                <RentOwn />
-              ) : currentStep === StepsEnum.CalcForm ? (
-                <Calculation
-                  boardApprovalDate={boardDate}
-                  availableDate={availableDate}
-                />
-              ) : currentStep === StepsEnum.Receipt ? (
-                <Receipt
-                  availableDate={availableDate}
-                  deadlineDate={
-                    mocks[4].mhaDetails.staffMHA?.deadlineDate ?? ''
-                  }
-                />
-              ) : null}
-            </Stack>
-          </Container>
+          {({ values }) => (
+            <Container sx={{ ml: 5 }}>
+              <Stack direction="column" width={mainContentWidth}>
+                {currentStep === StepsEnum.AboutForm ? (
+                  <AboutForm
+                    boardApprovalDate={boardDate}
+                    availableDate={availableDate}
+                  />
+                ) : currentStep === StepsEnum.RentOrOwn ? (
+                  <RentOwn />
+                ) : currentStep === StepsEnum.CalcForm ? (
+                  <Calculation
+                    boardApprovalDate={boardDate}
+                    availableDate={availableDate}
+                    rentOrOwn={values.rentOrOwn}
+                  />
+                ) : currentStep === StepsEnum.Receipt ? (
+                  <Receipt
+                    availableDate={availableDate}
+                    deadlineDate={
+                      mocks[4].mhaDetails.staffMHA?.deadlineDate ?? ''
+                    }
+                  />
+                ) : null}
+              </Stack>
+            </Container>
+          )}
         </Formik>
       }
     />
