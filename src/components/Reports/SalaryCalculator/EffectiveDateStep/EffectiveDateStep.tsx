@@ -18,17 +18,19 @@ export const EffectiveDateStep: React.FC = () => {
       <Typography variant="h5" gutterBottom>
         {t('Effective Date')}
       </Typography>
+      <Box mb={theme.spacing(4)} />
       <Typography paragraph>
         {t(
           'Please select the date of the paycheck you would like this change to first occur.',
         )}
       </Typography>
       <Box mb={2} />
-      <Typography variant="body2" gutterBottom>
+      <Typography paragraph>
         {t(
           'The earliest effective date will be the next paycheck date (if no additional approvals are required). Please note that at the end of each calendar year, there may be a period during which effective dates for the new calendar year are not available. In such cases you will need to return later to submit the form.',
         )}
       </Typography>
+      <Box mb={4} />
       <Box>
         <TextField
           select
