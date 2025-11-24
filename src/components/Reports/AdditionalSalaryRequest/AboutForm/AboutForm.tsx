@@ -1,13 +1,15 @@
 import React from 'react';
-import { Link, List, ListItem, Typography } from '@mui/material';
+import { Box, Link, List, ListItem, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSalaryRequestSection';
+import { NavButton } from '../SharedComponents/NavButton';
 import { AccountInfoCard } from './AccountInfoCard';
 
 export const AboutForm: React.FC = () => {
-  const { selectedSection } = useAdditionalSalaryRequest();
+  const { selectedSection, handleContinue, handleCancel } =
+    useAdditionalSalaryRequest();
   const { t } = useTranslation();
   const theme = useTheme();
 
@@ -93,6 +95,18 @@ export const AboutForm: React.FC = () => {
         primaryAccountBalance={primaryAccountBalance}
         remainingAllowableSalary={remainingAllowableSalary}
       />
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          mt: theme.spacing(4),
+        }}
+      >
+        <NavButton onClick={handleCancel} type="cancel" />
+        <Box sx={{ display: 'flex', gap: theme.spacing(2) }}>
+          <NavButton onClick={handleContinue} type="continue" />
+        </Box>
+      </Box>
     </AdditionalSalaryRequestSection>
   );
 };
