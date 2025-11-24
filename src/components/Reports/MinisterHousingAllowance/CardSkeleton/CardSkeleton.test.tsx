@@ -5,6 +5,7 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { MinisterHousingAllowanceProvider } from '../Shared/Context/MinisterHousingAllowanceContext';
 import { CardSkeleton } from './CardSkeleton';
@@ -28,18 +29,20 @@ const TestComponent: React.FC<TestComponentProps> = ({ isRequest }) => {
     <ThemeProvider theme={theme}>
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <TestRouter>
-          <MinisterHousingAllowanceProvider>
-            <CardSkeleton
-              title={title}
-              icon={MockIcon}
-              iconColor="primary"
-              titleOne={titleOne}
-              titleTwo={titleTwo}
-              isRequest={isRequest}
-            >
-              <div>Test Children</div>
-            </CardSkeleton>
-          </MinisterHousingAllowanceProvider>
+          <GqlMockedProvider>
+            <MinisterHousingAllowanceProvider>
+              <CardSkeleton
+                title={title}
+                icon={MockIcon}
+                iconColor="primary"
+                titleOne={titleOne}
+                titleTwo={titleTwo}
+                isRequest={isRequest}
+              >
+                <div>Test Children</div>
+              </CardSkeleton>
+            </MinisterHousingAllowanceProvider>
+          </GqlMockedProvider>
         </TestRouter>
       </LocalizationProvider>
     </ThemeProvider>

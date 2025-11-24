@@ -6,6 +6,7 @@ import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { MinisterHousingAllowanceProvider } from '../../Shared/Context/MinisterHousingAllowanceContext';
 import { PageEnum } from '../../Shared/sharedTypes';
@@ -30,14 +31,16 @@ const TestComponent: React.FC<TestComponentProps> = ({
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <TestRouter>
-        <Formik initialValues={initialValues} onSubmit={submit}>
-          <MinisterHousingAllowanceProvider type={PageEnum.New}>
-            <Calculation
-              boardApprovalDate={boardApprovalDate}
-              availableDate={availableDate}
-            />
-          </MinisterHousingAllowanceProvider>
-        </Formik>
+        <GqlMockedProvider>
+          <Formik initialValues={initialValues} onSubmit={submit}>
+            <MinisterHousingAllowanceProvider type={PageEnum.New}>
+              <Calculation
+                boardApprovalDate={boardApprovalDate}
+                availableDate={availableDate}
+              />
+            </MinisterHousingAllowanceProvider>
+          </Formik>
+        </GqlMockedProvider>
       </TestRouter>
     </LocalizationProvider>
   </ThemeProvider>

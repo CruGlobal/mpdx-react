@@ -4,6 +4,7 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import {
   MinisterHousingAllowanceProvider,
@@ -27,11 +28,13 @@ const TestComponent: React.FC<TestComponentProps> = ({ isCalculate }) => (
         query: { accountListId: 'account-list-1' },
       }}
     >
-      <Formik initialValues={{}} onSubmit={submit}>
-        <MinisterHousingAllowanceProvider>
-          <DirectionButtons isCalculate={isCalculate} />
-        </MinisterHousingAllowanceProvider>
-      </Formik>
+      <GqlMockedProvider>
+        <Formik initialValues={{}} onSubmit={submit}>
+          <MinisterHousingAllowanceProvider>
+            <DirectionButtons isCalculate={isCalculate} />
+          </MinisterHousingAllowanceProvider>
+        </Formik>
+      </GqlMockedProvider>
     </TestRouter>
   </ThemeProvider>
 );

@@ -28,13 +28,13 @@ describe('CurrentRequest Component', () => {
     expect(getByText('$1,500.00')).toBeInTheDocument();
 
     expect(getByText(/Requested on/i)).toBeInTheDocument();
-    expect(getByText(/8\/23\/2023/i)).toBeInTheDocument();
+    expect(getByText(/Aug 23, 2023/i)).toBeInTheDocument();
     expect(getByText(/Deadline for changes/i)).toBeInTheDocument();
-    expect(getByText(/9\/17\/2023/i)).toBeInTheDocument();
+    expect(getByText(/Sep 17, 2023/i)).toBeInTheDocument();
     expect(getByText(/Board Approval on/i)).toBeInTheDocument();
-    expect(getByText(/10\/1\/2023/i)).toBeInTheDocument();
+    expect(getByText(/Oct 1, 2023/i)).toBeInTheDocument();
     expect(getByText(/MHA Available on/i)).toBeInTheDocument();
-    expect(getByText(/1\/1\/2024/i)).toBeInTheDocument();
+    expect(getByText(/Jan 1, 2024/i)).toBeInTheDocument();
   });
 });
 

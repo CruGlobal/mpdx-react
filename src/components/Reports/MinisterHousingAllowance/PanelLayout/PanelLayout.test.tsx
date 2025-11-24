@@ -1,6 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import {
   MinisterHousingAllowanceProvider,
@@ -17,13 +18,15 @@ interface TestComponentProps {
 
 const TestComponent: React.FC<TestComponentProps> = ({ panelType }) => (
   <ThemeProvider theme={theme}>
-    <MinisterHousingAllowanceProvider>
-      <PanelLayout
-        panelType={panelType}
-        sidebarTitle={title}
-        mainContent={<h1>Main Content</h1>}
-      />
-    </MinisterHousingAllowanceProvider>
+    <GqlMockedProvider>
+      <MinisterHousingAllowanceProvider>
+        <PanelLayout
+          panelType={panelType}
+          sidebarTitle={title}
+          mainContent={<h1>Main Content</h1>}
+        />
+      </MinisterHousingAllowanceProvider>
+    </GqlMockedProvider>
   </ThemeProvider>
 );
 
