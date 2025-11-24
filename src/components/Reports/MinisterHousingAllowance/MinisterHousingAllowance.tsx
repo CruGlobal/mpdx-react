@@ -1,6 +1,6 @@
-import NextLink from 'next/link';
 import React from 'react';
 import { Button, Container, Stack } from '@mui/material';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { Notification } from 'src/components/Notification/Notification';
 import { MhaStatusEnum } from 'src/graphql/types.generated';
@@ -9,6 +9,7 @@ import theme from 'src/theme';
 import { EligibleDisplay } from './MainPages/EligibleDisplay';
 import { IneligibleDisplay } from './MainPages/IneligibleDisplay';
 import {
+  useCreateHousingAllowanceRequestMutation,
   useMinistryHousingAllowanceRequestsQuery,
 } from './MinisterHousingAllowance.generated';
 import { MinisterHousingAllowanceReportSkeleton } from './MinisterHousingAllowanceSkeleton';
@@ -22,12 +23,47 @@ export const mainContentWidth = theme.spacing(85);
 
 export const MinisterHousingAllowanceReport = () => {
   const { t } = useTranslation();
-
+  const { enqueueSnackbar } = useSnackbar();
   const accountListId = useAccountListId();
 
   const { data, error } = useMinistryHousingAllowanceRequestsQuery();
   const requests = data?.ministryHousingAllowanceRequests.nodes ?? [];
 
+  const [createMHA] = useCreateHousingAllowanceRequestMutation();
+
+  const onCreateMHARequest = async () => {
+    await createMHA({
+      variables: {
+        requestAttributes: {},
+      },
+      refetchQueries: ['MinistryHousingAllowanceRequests'],
+      onCompleted: ({ createMinistryHousingAllowanceRequest: newRequest }) => {
+        enqueueSnackbar(
+          t("Successfully created MHA Request. You'll be redirected shortly."),
+          {
+            variant: 'success',
+          },
+        );
+        const requestId = newRequest?.ministryHousingAllowanceRequest.id;
+        const requestLink = `/accountLists/${accountListId}/reports/housingAllowance/${requestId}`;
+
+        // Wait 1 second before redirecting
+        setTimeout(() => {
+          window.location.href = requestLink;
+        }, 1000);
+      },
+      onError: (err) => {
+        enqueueSnackbar(
+          t('Error while creating MHA Request - {{error}}', {
+            error: err.message,
+          }),
+          {
+            variant: 'error',
+          },
+        );
+      },
+    });
+  };
 
   const hasNoRequests = !requests.length;
 
@@ -76,6 +112,7 @@ export const MinisterHousingAllowanceReport = () => {
                   variant="contained"
                   color="primary"
                   sx={{ mt: 2 }}
+                  onClick={onCreateMHARequest}
                 >
                   {t('Request New MHA')}
                 </Button>
