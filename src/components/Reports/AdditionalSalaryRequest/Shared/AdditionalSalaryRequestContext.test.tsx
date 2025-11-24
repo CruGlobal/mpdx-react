@@ -1,12 +1,11 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { sectionOrder } from '../AdditionalSalaryRequestHelper';
 import { AdditionalSalaryRequestTestWrapper } from '../AdditionalSalaryRequestTestWrapper';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 
 const TestComponent: React.FC = () => {
-  const { selectedSection, setSelectedSection, isDrawerOpen, toggleDrawer } =
+  const { selectedSection, setSectionIndex, isDrawerOpen, toggleDrawer } =
     useAdditionalSalaryRequest();
 
   return (
@@ -15,11 +14,7 @@ const TestComponent: React.FC = () => {
       <div aria-label="drawer state" data-open={isDrawerOpen}>
         Drawer: {isDrawerOpen ? 'open' : 'closed'}
       </div>
-      <button
-        onClick={() => setSelectedSection(sectionOrder[1 /* CompleteForm */])}
-      >
-        Change Section
-      </button>
+      <button onClick={() => setSectionIndex(1)}>Change Section</button>
       <button onClick={toggleDrawer}>Toggle Drawer</button>
     </div>
   );

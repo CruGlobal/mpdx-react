@@ -1,7 +1,6 @@
 import React from 'react';
 import { List, ListItemButton, ListItemText, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { sectionOrder } from '../AdditionalSalaryRequestHelper';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 
 const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
@@ -10,22 +9,23 @@ const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
 }));
 
 export const SectionList: React.FC = () => {
-  const { selectedSection, setSelectedSection } = useAdditionalSalaryRequest();
+  const { sectionOrder, selectedSection, setSectionIndex } =
+    useAdditionalSalaryRequest();
   const { t } = useTranslation();
 
   return (
     <List disablePadding>
-      {sectionOrder.map((section, i) => {
+      {sectionOrder.map((section, index) => {
         const active = selectedSection === section;
         return (
           <StyledListItemButton
             key={section.section}
             aria-current={active}
             selected={active}
-            onClick={() => setSelectedSection(section)}
+            onClick={() => setSectionIndex(sectionOrder.indexOf(section))}
           >
             <ListItemText
-              primary={`${i + 1}. ${t(section.title)}`}
+              primary={`${index + 1}. ${t(section.title)}`}
               primaryTypographyProps={{ variant: 'body2' }}
             />
           </StyledListItemButton>

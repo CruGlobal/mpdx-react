@@ -7,21 +7,23 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
-import { sectionOrder } from '../AdditionalSalaryRequestHelper';
 import { AdditionalSalaryRequestProvider } from '../Shared/AdditionalSalaryRequestContext';
 import { AboutForm } from './AboutForm';
 
 const mockHandleContinue = jest.fn();
 
-jest.mock('../Shared/AdditionalSalaryRequestContext', () => ({
-  ...jest.requireActual('../Shared/AdditionalSalaryRequestContext'),
-  useAdditionalSalaryRequest: () => ({
-    handleContinue: mockHandleContinue,
-    selectedSection: sectionOrder[0 /* AboutForm */],
-    isDrawerOpen: false,
-    toggleDrawer: jest.fn(),
-  }),
-}));
+jest.mock('../Shared/AdditionalSalaryRequestContext', () => {
+  const originalModule = jest.requireActual(
+    '../Shared/AdditionalSalaryRequestContext',
+  );
+  return {
+    ...originalModule,
+    useAdditionalSalaryRequest: () => ({
+      ...originalModule.useAdditionalSalaryRequest(),
+      handleContinue: mockHandleContinue,
+    }),
+  };
+});
 
 const router = {
   query: { accountListId: 'account-list-1' },
@@ -43,10 +45,6 @@ const TestWrapper: React.FC = () => (
 );
 
 describe('AboutForm', () => {
-  beforeEach(() => {
-    mockHandleContinue.mockClear();
-  });
-
   it('should render the about form content', () => {
     const { getByText } = render(<TestWrapper />);
 
@@ -67,8 +65,8 @@ describe('AboutForm', () => {
 
     expect(getByText('Doc, John')).toBeInTheDocument();
     expect(getByText('00123456')).toBeInTheDocument();
-    expect(getByText('PRIMARY ACCOUNT BALANCE')).toBeInTheDocument();
-    expect(getByText('YOUR REMAINING ALLOWABLE SALARY')).toBeInTheDocument();
+    expect(getByText('Primary Account Balance')).toBeInTheDocument();
+    expect(getByText('Your Remaining Allowable Salary')).toBeInTheDocument();
   });
 
   it('should navigate to Complete Form section when Continue is clicked', async () => {

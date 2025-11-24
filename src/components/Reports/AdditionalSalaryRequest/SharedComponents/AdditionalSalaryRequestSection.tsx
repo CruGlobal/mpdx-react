@@ -34,7 +34,7 @@ export const AdditionalSalaryRequestSection: React.FC<
     <div>
       <Box pb={4}>
         <Stack direction="row" gap={2} alignItems="center">
-          <Typography variant="h4">{t(title)}</Typography>
+          <Typography variant="h4">{t('{{title}}', title)}</Typography>
           {titleExtra}
           <Box sx={{ flexGrow: 1 }} />
           {printable && (
@@ -48,7 +48,9 @@ export const AdditionalSalaryRequestSection: React.FC<
             </Button>
           )}
         </Stack>
-        {subtitle && <Typography pt={1}>{t(subtitle)}</Typography>}
+        {subtitle && (
+          <Typography pt={1}>{t('{{subtitle}}', subtitle)}</Typography>
+        )}
       </Box>
       {children}
       <Box
