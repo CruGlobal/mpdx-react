@@ -90,8 +90,11 @@ export const AccountInfoCard: React.FC<AccountInfoCardProps> = ({
           }}
         >
           <Box>
-            <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-              {t('PRIMARY ACCOUNT BALANCE')}
+            <Typography
+              variant="body2"
+              sx={{ fontWeight: 'bold', textTransform: 'uppercase' }}
+            >
+              {t('Primary Account Balance')}
             </Typography>
             <Typography
               variant="h5"
@@ -103,8 +106,11 @@ export const AccountInfoCard: React.FC<AccountInfoCardProps> = ({
           </Box>
 
           <Box>
-            <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-              {t('YOUR REMAINING ALLOWABLE SALARY')}
+            <Typography
+              variant="body2"
+              sx={{ fontWeight: 'bold', textTransform: 'uppercase' }}
+            >
+              {t('Your Remaining Allowable Salary')}
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <Typography
