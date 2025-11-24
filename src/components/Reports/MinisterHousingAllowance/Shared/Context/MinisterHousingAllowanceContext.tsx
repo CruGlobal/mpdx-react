@@ -30,7 +30,8 @@ export type ContextType = {
   spousePreferredName: string;
 };
 
-const MinisterHousingAllowanceContext = createContext<ContextType | null>(null);
+export const MinisterHousingAllowanceContext =
+  createContext<ContextType | null>(null);
 
 export const useMinisterHousingAllowance = (): ContextType => {
   const context = useContext(MinisterHousingAllowanceContext);

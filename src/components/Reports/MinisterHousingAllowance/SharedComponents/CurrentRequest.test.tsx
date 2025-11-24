@@ -1,27 +1,21 @@
 import React from 'react';
-import { ThemeProvider } from '@emotion/react';
+import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
+import { MhaStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { CurrentRequest } from './CurrentRequest';
+import { mockMHARequest } from '../mockData';
+import { CurrentRequest, getDotColor, getDotVariant } from './CurrentRequest';
 
 const TestComponent: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <TestRouter>
-        <CurrentRequest
-          approvedOverallAmount={1500}
-          requestedDate={'2023-08-23'}
-          deadlineDate={'2023-09-17'}
-          boardApprovedDate={'2023-10-01'}
-          availableDate={'2024-01-01'}
-        />
+        <CurrentRequest mha={mockMHARequest} />
       </TestRouter>
     </ThemeProvider>
   );
 };
-
-//TODO: Update tests when real mha status logic is implemented
 
 describe('CurrentRequest Component', () => {
   it('should render correctly', () => {
@@ -31,11 +25,200 @@ describe('CurrentRequest Component', () => {
     expect(getByText('View Request')).toBeInTheDocument();
     expect(getByText('Edit Request')).toBeInTheDocument();
 
-    expect(getByText('$1,500.00')).toBeInTheDocument();
+    expect(getByText('$15,000.00')).toBeInTheDocument();
 
-    expect(getByText(/Requested on: 8\/23\/2023/i)).toBeInTheDocument();
-    expect(getByText(/Deadline for changes: 9\/17\/2023/i)).toBeInTheDocument();
-    expect(getByText(/Board Approval on: 10\/1\/2023/i)).toBeInTheDocument();
-    expect(getByText(/MHA Available on: 1\/1\/2024/i)).toBeInTheDocument();
+    expect(getByText(/Requested on/i)).toBeInTheDocument();
+    expect(getByText(/Oct 1, 2025/i)).toBeInTheDocument();
+    expect(getByText(/Deadline for changes/i)).toBeInTheDocument();
+    expect(getByText(/Oct 23, 2025/i)).toBeInTheDocument();
+    expect(getByText(/Board Approval on/i)).toBeInTheDocument();
+    expect(getByText(/Oct 30, 2025/i)).toBeInTheDocument();
+    expect(getByText(/MHA Available on/i)).toBeInTheDocument();
+    expect(getByText(/Nov 20, 2025/i)).toBeInTheDocument();
+  });
+});
+
+describe('getDotColor', () => {
+  describe('submitted step', () => {
+    it('returns info.main when status is InProgress', () => {
+      expect(getDotColor(MhaStatusEnum.InProgress, 'submitted')).toBe(
+        'info.main',
+      );
+    });
+
+    it('returns success.main for other statuses', () => {
+      expect(getDotColor(MhaStatusEnum.Pending, 'submitted')).toBe(
+        'success.main',
+      );
+      expect(getDotColor(MhaStatusEnum.ActionRequired, 'submitted')).toBe(
+        'success.main',
+      );
+    });
+  });
+
+  describe('inProcess step', () => {
+    it('returns info.main when status is Pending', () => {
+      expect(getDotColor(MhaStatusEnum.Pending, 'inProcess')).toBe('info.main');
+    });
+
+    it('returns transparent when status is InProgress', () => {
+      expect(getDotColor(MhaStatusEnum.InProgress, 'inProcess')).toBe(
+        'transparent',
+      );
+    });
+
+    it('returns warning.main when status is ActionRequired', () => {
+      expect(getDotColor(MhaStatusEnum.ActionRequired, 'inProcess')).toBe(
+        'warning.main',
+      );
+    });
+
+    it('returns success.main for completed statuses', () => {
+      expect(getDotColor(MhaStatusEnum.HrApproved, 'inProcess')).toBe(
+        'success.main',
+      );
+      expect(getDotColor(MhaStatusEnum.BoardApproved, 'inProcess')).toBe(
+        'success.main',
+      );
+    });
+  });
+
+  describe('deadline step', () => {
+    it('returns info.main when status is Pending', () => {
+      expect(getDotColor(MhaStatusEnum.Pending, 'deadline')).toBe('info.main');
+    });
+
+    it('returns transparent when status is InProgress or ActionRequired', () => {
+      expect(getDotColor(MhaStatusEnum.InProgress, 'deadline')).toBe(
+        'transparent',
+      );
+      expect(getDotColor(MhaStatusEnum.ActionRequired, 'deadline')).toBe(
+        'transparent',
+      );
+    });
+
+    it('returns success.main for completed statuses', () => {
+      expect(getDotColor(MhaStatusEnum.HrApproved, 'deadline')).toBe(
+        'success.main',
+      );
+      expect(getDotColor(MhaStatusEnum.BoardApproved, 'deadline')).toBe(
+        'success.main',
+      );
+    });
+  });
+
+  describe('boardApproval step', () => {
+    it('returns info.main when status is HrApproved', () => {
+      expect(getDotColor(MhaStatusEnum.HrApproved, 'boardApproval')).toBe(
+        'info.main',
+      );
+    });
+
+    it('returns success.main when status is BoardApproved', () => {
+      expect(getDotColor(MhaStatusEnum.BoardApproved, 'boardApproval')).toBe(
+        'success.main',
+      );
+    });
+
+    it('returns transparent for earlier statuses', () => {
+      expect(getDotColor(MhaStatusEnum.Pending, 'boardApproval')).toBe(
+        'transparent',
+      );
+      expect(getDotColor(MhaStatusEnum.InProgress, 'boardApproval')).toBe(
+        'transparent',
+      );
+    });
+  });
+
+  describe('available step', () => {
+    it('always returns transparent', () => {
+      expect(getDotColor(MhaStatusEnum.Pending, 'available')).toBe(
+        'transparent',
+      );
+      expect(getDotColor(MhaStatusEnum.InProgress, 'available')).toBe(
+        'transparent',
+      );
+      expect(getDotColor(MhaStatusEnum.BoardApproved, 'available')).toBe(
+        'transparent',
+      );
+    });
+  });
+});
+
+describe('getDotVariant', () => {
+  describe('submitted step', () => {
+    it('always returns filled', () => {
+      expect(getDotVariant(MhaStatusEnum.InProgress, 'submitted')).toBe(
+        'filled',
+      );
+      expect(getDotVariant(MhaStatusEnum.Pending, 'submitted')).toBe('filled');
+    });
+  });
+
+  describe('inProcess step', () => {
+    it('returns outlined when status is InProgress', () => {
+      expect(getDotVariant(MhaStatusEnum.InProgress, 'inProcess')).toBe(
+        'outlined',
+      );
+    });
+
+    it('returns filled for other statuses', () => {
+      expect(getDotVariant(MhaStatusEnum.Pending, 'inProcess')).toBe('filled');
+      expect(getDotVariant(MhaStatusEnum.ActionRequired, 'inProcess')).toBe(
+        'filled',
+      );
+    });
+  });
+
+  describe('deadline step', () => {
+    it('returns filled when status is Pending, HrApproved, or BoardApproved', () => {
+      expect(getDotVariant(MhaStatusEnum.Pending, 'deadline')).toBe('filled');
+      expect(getDotVariant(MhaStatusEnum.HrApproved, 'deadline')).toBe(
+        'filled',
+      );
+      expect(getDotVariant(MhaStatusEnum.BoardApproved, 'deadline')).toBe(
+        'filled',
+      );
+    });
+
+    it('returns outlined for other statuses', () => {
+      expect(getDotVariant(MhaStatusEnum.InProgress, 'deadline')).toBe(
+        'outlined',
+      );
+      expect(getDotVariant(MhaStatusEnum.ActionRequired, 'deadline')).toBe(
+        'outlined',
+      );
+    });
+  });
+
+  describe('boardApproval step', () => {
+    it('returns filled when status is HrApproved or BoardApproved', () => {
+      expect(getDotVariant(MhaStatusEnum.HrApproved, 'boardApproval')).toBe(
+        'filled',
+      );
+      expect(getDotVariant(MhaStatusEnum.BoardApproved, 'boardApproval')).toBe(
+        'filled',
+      );
+    });
+
+    it('returns outlined for other statuses', () => {
+      expect(getDotVariant(MhaStatusEnum.Pending, 'boardApproval')).toBe(
+        'outlined',
+      );
+      expect(getDotVariant(MhaStatusEnum.InProgress, 'boardApproval')).toBe(
+        'outlined',
+      );
+    });
+  });
+
+  describe('available step', () => {
+    it('always returns outlined', () => {
+      expect(getDotVariant(MhaStatusEnum.Pending, 'available')).toBe(
+        'outlined',
+      );
+      expect(getDotVariant(MhaStatusEnum.BoardApproved, 'available')).toBe(
+        'outlined',
+      );
+    });
   });
 });

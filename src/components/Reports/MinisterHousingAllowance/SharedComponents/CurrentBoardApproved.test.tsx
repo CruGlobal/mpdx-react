@@ -1,42 +1,115 @@
 import React from 'react';
-import { ThemeProvider } from '@emotion/react';
+import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
+import {
+  ContextType,
+  HcmData,
+  useMinisterHousingAllowance,
+} from '../Shared/Context/MinisterHousingAllowanceContext';
+import { mockMHARequest } from '../mockData';
 import { CurrentBoardApproved } from './CurrentBoardApproved';
 
-const name = 'Doe, John';
-const spouseName = 'Doe, Jane';
+// Mock the context hook
+jest.mock('../Shared/Context/MinisterHousingAllowanceContext', () => ({
+  ...jest.requireActual('../Shared/Context/MinisterHousingAllowanceContext'),
+  useMinisterHousingAllowance: jest.fn(),
+}));
 
-const TestComponent: React.FC = () => {
+const mockUseMinisterHousingAllowance =
+  useMinisterHousingAllowance as jest.MockedFunction<
+    typeof useMinisterHousingAllowance
+  >;
+
+interface TestComponentProps {
+  contextValue: Partial<ContextType>;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({ contextValue }) => {
+  mockUseMinisterHousingAllowance.mockReturnValue(contextValue as ContextType);
+
+  // Create a mock MHA request with approved data
+  const approvedMHARequest = {
+    ...mockMHARequest,
+    requestAttributes: {
+      ...mockMHARequest.requestAttributes,
+      approvedDate: '2023-01-15',
+      approvedOverallAmount: 1500,
+      staffSpecific: 1000,
+      spouseSpecific: 500,
+    },
+  };
+
   return (
     <ThemeProvider theme={theme}>
       <TestRouter>
-        <CurrentBoardApproved
-          approvedDate={'2023-01-15'}
-          approvedOverallAmount={1500}
-          staffName={name}
-          staffSpecific={1000}
-          spouseName={spouseName}
-          spouseSpecific={500}
-        />
+        <CurrentBoardApproved mha={approvedMHARequest} />
       </TestRouter>
     </ThemeProvider>
   );
 };
 
 describe('CurrentBoardApproved Component', () => {
-  it('should render correctly', () => {
-    const { getByText } = render(<TestComponent />);
+  it('should render correctly for married person', () => {
+    const { getByText } = render(
+      <TestComponent
+        contextValue={{
+          isMarried: true,
+          preferredName: 'John',
+          spousePreferredName: 'Jane',
+          userHcmData: {
+            staffInfo: {
+              personNumber: '000123456',
+            },
+          } as unknown as HcmData,
+          spouseHcmData: {
+            staffInfo: {
+              personNumber: '100123456',
+            },
+          } as unknown as HcmData,
+        }}
+      />,
+    );
 
     expect(getByText('Current Board Approved MHA')).toBeInTheDocument();
-    expect(getByText('APPROVAL DATE: 1/15/2023')).toBeInTheDocument();
+    expect(getByText(/APPROVAL DATE/i)).toBeInTheDocument();
+    expect(getByText(/1\/15\/2023/i)).toBeInTheDocument();
     expect(getByText('CURRENT MHA CLAIMED')).toBeInTheDocument();
 
     expect(getByText('$1,500.00')).toBeInTheDocument();
-    expect(getByText('JOHN')).toBeInTheDocument();
+    expect(getByText('John')).toBeInTheDocument();
     expect(getByText('$1,000.00')).toBeInTheDocument();
-    expect(getByText('JANE')).toBeInTheDocument();
+    expect(getByText('Jane')).toBeInTheDocument();
     expect(getByText('$500.00')).toBeInTheDocument();
+  });
+
+  it('should render correctly for single person', () => {
+    const { getByText, queryByText } = render(
+      <TestComponent
+        contextValue={{
+          isMarried: false,
+          preferredName: 'John',
+          spousePreferredName: '',
+          userHcmData: {
+            staffInfo: {
+              personNumber: '000123456',
+            },
+          } as unknown as HcmData,
+          spouseHcmData: null,
+        }}
+      />,
+    );
+
+    expect(getByText('Current Board Approved MHA')).toBeInTheDocument();
+    expect(getByText(/APPROVAL DATE/i)).toBeInTheDocument();
+    expect(getByText('CURRENT MHA CLAIMED')).toBeInTheDocument();
+
+    expect(getByText('$1,500.00')).toBeInTheDocument();
+    expect(getByText('John')).toBeInTheDocument();
+    expect(getByText('$1,000.00')).toBeInTheDocument();
+
+    // Spouse data should not be rendered
+    expect(queryByText('Jane')).not.toBeInTheDocument();
   });
 });
