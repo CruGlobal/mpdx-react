@@ -15,7 +15,7 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { CurrencyAdornment } from 'src/components/Reports/GoalCalculator/Shared/Adornments';
 import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat } from 'src/lib/intlFormat';
+import { currencyFormat, numberFormat } from 'src/lib/intlFormat';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { useCompleteFormCategories } from '../Shared/useCompleteFormCategories';
 import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSalaryRequestSection';
@@ -43,7 +43,7 @@ export const CompleteForm: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
   const theme = useTheme();
-  const { selectedSection, handleBack, handleContinue, handleCancel } =
+  const { selectedSection, handleBack, handleCancel } =
     useAdditionalSalaryRequest();
 
   const categories = useCompleteFormCategories();
@@ -74,7 +74,7 @@ export const CompleteForm: React.FC = () => {
     if (max) {
       schema = schema.max(
         max,
-        t('Exceeds ${{amount}} limit', { amount: max.toLocaleString() }),
+        t('Exceeds ${{amount}} limit', { amount: numberFormat(max, locale) }),
       );
     }
     return schema;
@@ -215,7 +215,7 @@ export const CompleteForm: React.FC = () => {
                 <NavButton onClick={handleCancel} type="cancel" />
                 <Box sx={{ display: 'flex', gap: theme.spacing(2) }}>
                   <NavButton onClick={handleBack} type="back" />
-                  <NavButton onClick={handleContinue} type="submit" />
+                  <NavButton onClick={handleSubmit} type="submit" />
                 </Box>
               </Box>
             </>
