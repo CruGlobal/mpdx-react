@@ -65,8 +65,8 @@ describe('AboutForm', () => {
 
     expect(getByText('Doc, John')).toBeInTheDocument();
     expect(getByText('00123456')).toBeInTheDocument();
-    expect(getByText('PRIMARY ACCOUNT BALANCE')).toBeInTheDocument();
-    expect(getByText('YOUR REMAINING ALLOWABLE SALARY')).toBeInTheDocument();
+    expect(getByText('Primary Account Balance')).toBeInTheDocument();
+    expect(getByText('Your Remaining Allowable Salary')).toBeInTheDocument();
   });
 
   it('should navigate to Complete Form section when Continue is clicked', async () => {
