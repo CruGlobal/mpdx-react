@@ -7,19 +7,40 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
-import { sectionOrder } from '../AdditionalSalaryRequestHelper';
-import { AdditionalSalaryRequestProvider } from '../Shared/AdditionalSalaryRequestContext';
+import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
+import {
+  AdditionalSalaryRequestProvider,
+  AdditionalSalaryRequestType,
+} from '../Shared/AdditionalSalaryRequestContext';
 import { AboutForm } from './AboutForm';
 
 const mockHandleContinue = jest.fn();
 
+const mockSectionOrder = [
+  {
+    title: 'About this Form',
+    section: AdditionalSalaryRequestSectionEnum.AboutForm,
+  },
+  {
+    title: 'Complete Form',
+    section: AdditionalSalaryRequestSectionEnum.CompleteForm,
+  },
+  {
+    title: 'Receipt',
+    section: AdditionalSalaryRequestSectionEnum.Receipt,
+  },
+];
+
 jest.mock('../Shared/AdditionalSalaryRequestContext', () => ({
   ...jest.requireActual('../Shared/AdditionalSalaryRequestContext'),
-  useAdditionalSalaryRequest: () => ({
+  useAdditionalSalaryRequest: (): AdditionalSalaryRequestType => ({
+    sectionOrder: mockSectionOrder,
     handleContinue: mockHandleContinue,
-    selectedSection: sectionOrder[0 /* AboutForm */],
+    selectedSection: mockSectionOrder[0 /* AboutForm */],
     isDrawerOpen: false,
     toggleDrawer: jest.fn(),
+    setSelectedSection: jest.fn(),
+    setIsDrawerOpen: jest.fn(),
   }),
 }));
 

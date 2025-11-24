@@ -1,13 +1,17 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { sectionOrder } from '../AdditionalSalaryRequestHelper';
 import { AdditionalSalaryRequestTestWrapper } from '../AdditionalSalaryRequestTestWrapper';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 
 const TestComponent: React.FC = () => {
-  const { selectedSection, setSelectedSection, isDrawerOpen, toggleDrawer } =
-    useAdditionalSalaryRequest();
+  const {
+    sectionOrder,
+    selectedSection,
+    setSelectedSection,
+    isDrawerOpen,
+    toggleDrawer,
+  } = useAdditionalSalaryRequest();
 
   return (
     <div>

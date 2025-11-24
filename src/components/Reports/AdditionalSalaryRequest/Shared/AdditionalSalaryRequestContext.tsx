@@ -1,10 +1,11 @@
 import React, { createContext, useCallback, useMemo, useState } from 'react';
 import {
+  AdditionalSalaryRequestSectionEnum,
   SectionOrderItem,
-  sectionOrder,
 } from '../AdditionalSalaryRequestHelper';
 
 export type AdditionalSalaryRequestType = {
+  sectionOrder: SectionOrderItem[];
   selectedSection: SectionOrderItem;
   handleContinue: () => void;
   setSelectedSection: (section: SectionOrderItem) => void;
@@ -33,6 +34,25 @@ interface Props {
 export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   children,
 }) => {
+  // Translated titles should be used when rendering
+  const sectionOrder = useMemo<SectionOrderItem[]>(
+    () => [
+      {
+        title: 'About this Form',
+        section: AdditionalSalaryRequestSectionEnum.AboutForm,
+      },
+      {
+        title: 'Complete Form',
+        section: AdditionalSalaryRequestSectionEnum.CompleteForm,
+      },
+      {
+        title: 'Receipt',
+        section: AdditionalSalaryRequestSectionEnum.Receipt,
+      },
+    ],
+    [],
+  );
+
   const [selectedSection, setSelectedSection] = useState(sectionOrder[0]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
 
@@ -47,10 +67,11 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     if (currentIndex !== -1 && currentIndex < sectionOrder.length - 1) {
       setSelectedSection(sectionOrder[currentIndex + 1]);
     }
-  }, [selectedSection]);
+  }, [sectionOrder, selectedSection]);
 
-  const contextValue = useMemo(
+  const contextValue = useMemo<AdditionalSalaryRequestType>(
     () => ({
+      sectionOrder,
       selectedSection,
       handleContinue,
       setSelectedSection,
@@ -59,6 +80,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       setIsDrawerOpen,
     }),
     [
+      sectionOrder,
       selectedSection,
       handleContinue,
       setSelectedSection,

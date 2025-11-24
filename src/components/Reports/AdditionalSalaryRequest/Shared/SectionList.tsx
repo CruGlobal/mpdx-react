@@ -1,7 +1,6 @@
 import React from 'react';
 import { List, ListItemButton, ListItemText, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { sectionOrder } from '../AdditionalSalaryRequestHelper';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 
 const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
@@ -10,7 +9,8 @@ const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
 }));
 
 export const SectionList: React.FC = () => {
-  const { selectedSection, setSelectedSection } = useAdditionalSalaryRequest();
+  const { sectionOrder, selectedSection, setSelectedSection } =
+    useAdditionalSalaryRequest();
   const { t } = useTranslation();
 
   return (
