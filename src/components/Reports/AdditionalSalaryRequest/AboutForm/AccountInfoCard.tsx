@@ -8,10 +8,17 @@ import {
   Link,
   Typography,
 } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
+import { styled, useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+
+const StyledCardContent = styled(CardContent)(({ theme }) => ({
+  padding: theme.spacing(2),
+  '&:last-child': {
+    paddingBottom: theme.spacing(2),
+  },
+}));
 
 interface AccountInfoCardProps {
   userName: string;
@@ -32,9 +39,7 @@ export const AccountInfoCard: React.FC<AccountInfoCardProps> = ({
 
   return (
     <Card sx={{ mt: theme.spacing(4), mb: theme.spacing(4) }}>
-      <CardContent
-        sx={{ p: theme.spacing(2), '&:last-child': { pb: theme.spacing(2) } }}
-      >
+      <StyledCardContent>
         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Box>
             <Typography variant="h6">{userName}</Typography>
@@ -72,13 +77,11 @@ export const AccountInfoCard: React.FC<AccountInfoCardProps> = ({
             </Typography>
           </Box>
         </Box>
-      </CardContent>
+      </StyledCardContent>
 
       <Divider />
 
-      <CardContent
-        sx={{ p: theme.spacing(2), '&:last-child': { pb: theme.spacing(2) } }}
-      >
+      <StyledCardContent>
         <Box
           sx={{
             display: 'grid',
@@ -114,7 +117,7 @@ export const AccountInfoCard: React.FC<AccountInfoCardProps> = ({
             </Box>
           </Box>
         </Box>
-      </CardContent>
+      </StyledCardContent>
     </Card>
   );
 };
