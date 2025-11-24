@@ -64,10 +64,6 @@ const TestWrapper: React.FC = () => (
 );
 
 describe('AboutForm', () => {
-  beforeEach(() => {
-    mockHandleContinue.mockClear();
-  });
-
   it('should render the about form content', () => {
     const { getByText } = render(<TestWrapper />);
 
