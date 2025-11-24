@@ -14,6 +14,7 @@ export type AdditionalSalaryRequestType = {
   toggleDrawer: () => void;
   setIsDrawerOpen: (open: boolean) => void;
   handleCancel: () => void;
+  handleBack: () => void;
 };
 
 const AdditionalSalaryRequestContext =
@@ -72,6 +73,12 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     setSectionIndex(0);
   }, []);
 
+  const handleBack = useCallback(() => {
+    if (sectionIndex > 0) {
+      setSectionIndex(sectionIndex - 1);
+    }
+  }, [sectionIndex]);
+
   const contextValue = useMemo<AdditionalSalaryRequestType>(
     () => ({
       sectionOrder,
@@ -82,6 +89,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       toggleDrawer,
       setIsDrawerOpen,
       handleCancel,
+      handleBack,
     }),
     [
       sectionOrder,
