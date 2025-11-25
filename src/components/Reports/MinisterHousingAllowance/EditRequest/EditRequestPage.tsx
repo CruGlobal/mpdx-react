@@ -54,6 +54,7 @@ export const EditRequestPage: React.FC = () => {
 
   const boardDate = mocks[4].mhaDetails.staffMHA?.boardApprovalDate ?? '';
   const availableDate = mocks[4].mhaDetails.staffMHA?.availableDate ?? '';
+  const deadlineDate = mocks[4].mhaDetails.staffMHA?.deadlineDate ?? '';
 
   return (
     <PanelLayout
@@ -87,6 +88,9 @@ export const EditRequestPage: React.FC = () => {
                   <Calculation
                     boardApprovalDate={boardDate}
                     availableDate={availableDate}
+                    deadlineDate={
+                      mocks[4].mhaDetails.staffMHA?.deadlineDate ?? ''
+                    }
                     rentOrOwn={values.rentOrOwn}
                   />
                 ) : currentStep === StepsEnum.Receipt ? (
@@ -97,9 +101,7 @@ export const EditRequestPage: React.FC = () => {
                     editLink={editLink}
                     viewLink={viewLink}
                     availableDate={availableDate}
-                    deadlineDate={
-                      mocks[4].mhaDetails.staffMHA?.deadlineDate ?? ''
-                    }
+                    deadlineDate={deadlineDate}
                     setIsComplete={setIsComplete}
                   />
                 ) : null}

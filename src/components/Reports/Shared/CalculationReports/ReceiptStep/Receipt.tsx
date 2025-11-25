@@ -1,4 +1,5 @@
 import NextLink from 'next/link';
+import { Dispatch, SetStateAction } from 'react';
 import { Edit, PrintSharp } from '@mui/icons-material';
 import { Alert, Box, Button, Link, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
@@ -15,7 +16,7 @@ interface ReceiptProps {
   isEdit?: boolean;
   availableDate?: string | null;
   deadlineDate?: string | null;
-  setIsComplete?: (complete: boolean) => void;
+  setIsComplete?: Dispatch<SetStateAction<boolean>>;
 }
 
 export const Receipt: React.FC<ReceiptProps> = ({

@@ -3,7 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
-import { FormCardSkeleton } from './FormCardSkeleton';
+import { FormCard } from './FormCard';
 
 const title = 'Test Title';
 const colTwoHeader = 'Custom Header';
@@ -28,7 +28,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
-      <FormCardSkeleton
+      <FormCard
         title={title}
         colTwoHeader={colTwoHeader}
         colThreeHeader={colThreeHeader}
@@ -37,12 +37,12 @@ const TestComponent: React.FC<TestComponentProps> = ({
         customTextBelow={customTextBelow}
       >
         <div>Test Child</div>
-      </FormCardSkeleton>
+      </FormCard>
     </TestRouter>
   </ThemeProvider>
 );
 
-describe('FormCardSkeleton', () => {
+describe('FormCard', () => {
   it('renders the card with title and children', () => {
     const { getByText, getByRole } = render(<TestComponent />);
 

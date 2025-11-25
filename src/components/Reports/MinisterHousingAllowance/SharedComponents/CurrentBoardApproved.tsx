@@ -35,11 +35,12 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
       title={t('Current Board Approved MHA')}
       icon={HomeSharp}
       iconColor="success.main"
-      titleOne={t('View Current MHA')}
+      linkOneText={t('View Current MHA')}
       linkOne={`/accountLists/${accountListId}/reports/housingAllowance/view`}
-      titleTwo={t("Duplicate Last Year's MHA")}
+      linkTwoText={t("Duplicate Last Year's MHA")}
       linkTwo=""
       isRequest={false}
+      handleConfirmCancel={() => {}}
     >
       <Grid container spacing={2}>
         <Grid item xs={6}>

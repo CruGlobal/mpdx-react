@@ -53,6 +53,7 @@ export const NewRequestPage: React.FC = () => {
 
   const boardDate = mocks[4].mhaDetails.staffMHA?.boardApprovalDate ?? '';
   const availableDate = mocks[4].mhaDetails.staffMHA?.availableDate ?? '';
+  const deadlineDate = mocks[4].mhaDetails.staffMHA?.deadlineDate ?? '';
 
   return (
     <PanelLayout
@@ -87,6 +88,7 @@ export const NewRequestPage: React.FC = () => {
                     boardApprovalDate={boardDate}
                     availableDate={availableDate}
                     rentOrOwn={values.rentOrOwn}
+                    deadlineDate={deadlineDate}
                   />
                 ) : currentStep === StepsEnum.Receipt ? (
                   <Receipt

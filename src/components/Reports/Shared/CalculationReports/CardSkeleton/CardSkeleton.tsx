@@ -26,13 +26,15 @@ interface CardSkeletonProps {
   icon: React.ElementType;
   iconColor?: string;
   children: React.ReactNode;
-  titleOne?: string;
+  linkOneText?: string;
   linkOne?: string;
-  titleTwo?: string;
+  linkTwoText?: string;
   linkTwo?: string;
   isRequest?: boolean;
   hideDownload?: boolean;
   hideActions?: boolean;
+  handleDownload?: () => void;
+  handleConfirmCancel: () => void;
 }
 
 export const CardSkeleton: React.FC<CardSkeletonProps> = ({
@@ -42,13 +44,15 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
   icon: Icon,
   iconColor,
   children,
-  titleOne,
+  linkOneText,
   linkOne,
-  titleTwo,
+  linkTwoText,
   linkTwo,
   isRequest,
   hideDownload,
   hideActions,
+  handleDownload,
+  handleConfirmCancel,
 }) => {
   const { t } = useTranslation();
 
@@ -86,6 +90,7 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
                 <FileDownloadIcon
                   sx={{ fontSize: '32px' }}
                   titleAccess={t('Download')}
+                  onClick={handleDownload}
                 />
               </IconButton>
             )}
@@ -102,7 +107,7 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
             variant={isRequest ? 'contained' : 'outlined'}
             sx={{ px: 2, py: 1, mr: 1 }}
           >
-            {titleOne}
+            {linkOneText}
           </Button>
           <Button
             component={NextLink}
@@ -110,7 +115,7 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
             variant="outlined"
             sx={{ px: 2, py: 1 }}
           >
-            {titleTwo}
+            {linkTwoText}
           </Button>
           {isRequest && (
             <Box sx={{ float: 'right' }}>
@@ -126,7 +131,10 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
             <SubmitModal
               formTitle={formType}
               handleClose={() => setOpenCancel(false)}
-              handleConfirm={() => setOpenCancel(false)}
+              handleConfirm={() => {
+                setOpenCancel(false);
+                handleConfirmCancel();
+              }}
               isCancel={true}
             />
           )}

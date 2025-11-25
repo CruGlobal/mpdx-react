@@ -12,9 +12,6 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
-import { useMinisterHousingAllowance } from '../../../MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
-import { mocks } from '../../../MinisterHousingAllowance/Shared/mockData';
-import { PageEnum } from '../Shared/sharedTypes';
 
 interface SubmitModalProps {
   formTitle: string;
@@ -24,6 +21,8 @@ interface SubmitModalProps {
   overrideContent?: string;
   overrideSubContent?: string;
   isCancel?: boolean;
+  deadlineDate?: string;
+  actionRequired?: boolean;
 }
 
 export const SubmitModal: React.FC<SubmitModalProps> = ({
@@ -34,19 +33,16 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
   overrideContent,
   overrideSubContent,
   isCancel,
+  deadlineDate,
+  actionRequired,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const { pageType } = useMinisterHousingAllowance();
-
   // TODO: Not sure what text to display if date is null
-  const date = mocks[4].mhaDetails.staffMHA?.deadlineDate;
-  const deadlineDate = date
-    ? dateFormatShort(DateTime.fromISO(date), locale)
+  const formattedDeadlineDate = deadlineDate
+    ? dateFormatShort(DateTime.fromISO(deadlineDate), locale)
     : null;
-
-  const actionRequired = pageType === PageEnum.Edit;
 
   const title = overrideTitle
     ? overrideTitle
@@ -74,14 +70,14 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
         ? t(
             'This updated request will take the place of your previous request. Once submitted, you can return and make edits until {{date}}. After this date, your request will be processed as is.',
             {
-              date: deadlineDate,
+              date: formattedDeadlineDate,
               interpolation: { escapeValue: false },
             },
           )
         : t(
             `Once submitted, you can return and make edits until {{date}}. After this date, your request will be processed as is.`,
             {
-              date: deadlineDate,
+              date: formattedDeadlineDate,
               interpolation: { escapeValue: false },
             },
           );

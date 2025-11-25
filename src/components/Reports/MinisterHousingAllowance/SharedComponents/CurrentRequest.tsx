@@ -42,11 +42,12 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({
       title={t('Current MHA Request')}
       icon={AddHomeSharp}
       iconColor="warning.main"
-      titleOne={t('View Request')}
+      linkOneText={t('View Request')}
       linkOne={`/accountLists/${accountListId}/reports/housingAllowance/view`}
-      titleTwo={t('Edit Request')}
+      linkTwoText={t('Edit Request')}
       linkTwo={`/accountLists/${accountListId}/reports/housingAllowance/edit`}
       isRequest={true}
+      handleConfirmCancel={() => {}}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <Typography variant="h3" sx={{ color: 'primary.main' }}>

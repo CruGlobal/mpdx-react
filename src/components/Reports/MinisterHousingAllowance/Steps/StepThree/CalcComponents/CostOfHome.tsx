@@ -6,7 +6,7 @@ import { StyledOrderedList } from 'src/components/Reports/Shared/CalculationRepo
 import { useAnnualTotal } from 'src/hooks/useAnnualTotal';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
-import { FormCardSkeleton } from '../../../../Shared/CalculationReports/FormCardSkeleton/FormCardSkeleton';
+import { FormCard } from '../../../../Shared/CalculationReports/FormCard/FormCard';
 import { CalculationFormValues } from '../Calculation';
 import { CustomTextField } from './Helper/CustomTextField';
 
@@ -24,7 +24,7 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({ rentOrOwn }) => {
   const { totalCostOfHome, annualCostOfHome } = useAnnualTotal(values);
 
   return (
-    <FormCardSkeleton title={t('Cost of Providing a Home')}>
+    <FormCard title={t('Cost of Providing a Home')}>
       <TableRow>
         <TableCell sx={{ width: '70%' }}>
           <StyledOrderedList component="ol" start={1}>
@@ -184,6 +184,6 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({ rentOrOwn }) => {
           })}
         </TableCell>
       </TableRow>
-    </FormCardSkeleton>
+    </FormCard>
   );
 };

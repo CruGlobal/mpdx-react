@@ -15,7 +15,7 @@ import {
   SimpleScreenOnly,
 } from 'src/components/Reports/styledComponents';
 
-interface FormCardSkeletonProps {
+interface FormCardProps {
   title: string;
   customTextAbove?: string;
   colTwoHeader?: string;
@@ -25,7 +25,7 @@ interface FormCardSkeletonProps {
   children?: React.ReactNode;
 }
 
-export const FormCardSkeleton: React.FC<FormCardSkeletonProps> = ({
+export const FormCard: React.FC<FormCardProps> = ({
   title,
   customTextAbove,
   colTwoHeader,

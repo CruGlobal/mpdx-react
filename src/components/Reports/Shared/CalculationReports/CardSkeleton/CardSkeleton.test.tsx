@@ -16,6 +16,9 @@ const titleTwo = 'Edit';
 const linkOne = '/mock-view-link';
 const linkTwo = '/mock-edit-link';
 
+const handleDownload = jest.fn();
+const handleConfirmCancel = jest.fn();
+
 const MockIcon: React.FC<SvgIconProps> = (props) => (
   <svg data-testid="mock-icon" {...props}>
     Test Icon
@@ -50,13 +53,15 @@ const TestComponent: React.FC<TestComponentProps> = ({
               subtitle={subtitle}
               icon={MockIcon}
               iconColor="primary"
-              titleOne={titleOne}
-              titleTwo={titleTwo}
+              linkOneText={titleOne}
+              linkTwoText={titleTwo}
               isRequest={isRequest}
               hideDownload={hideDownload}
               hideActions={hideActions}
               linkOne={linkOne}
               linkTwo={linkTwo}
+              handleDownload={handleDownload}
+              handleConfirmCancel={handleConfirmCancel}
             >
               <div>Test Children</div>
             </CardSkeleton>
@@ -154,5 +159,33 @@ describe('CardSkeleton', () => {
 
     expect(queryByText(titleOne)).not.toBeInTheDocument();
     expect(queryByText(titleTwo)).not.toBeInTheDocument();
+  });
+
+  it('calls handleDownload when download icon is clicked', async () => {
+    const { getByTestId } = render(<TestComponent />);
+
+    const downloadIcon = getByTestId('FileDownloadIcon');
+
+    await userEvent.click(downloadIcon);
+
+    expect(handleDownload).toHaveBeenCalled();
+  });
+
+  it('calls handleConfirmCancel when confirming cancel', async () => {
+    const { getByRole, findByRole, getByText, queryByRole } = render(
+      <TestComponent isRequest={true} />,
+    );
+    const cancelButton = getByRole('button', { name: 'Cancel Request' });
+
+    await userEvent.click(cancelButton);
+
+    expect(await findByRole('dialog')).toBeInTheDocument();
+    expect(getByText('Do you want to cancel?')).toBeInTheDocument();
+
+    await userEvent.click(getByRole('button', { name: /yes, cancel/i }));
+
+    expect(handleConfirmCancel).toHaveBeenCalled();
+
+    expect(queryByRole('dialog')).not.toBeInTheDocument();
   });
 });

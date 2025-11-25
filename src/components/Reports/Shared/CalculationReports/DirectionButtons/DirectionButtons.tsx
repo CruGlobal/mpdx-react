@@ -8,6 +8,8 @@ interface DirectionButtonsProps {
   handleNextStep?: () => void;
   handlePreviousStep?: () => void;
   buttonTitle?: string;
+  deadlineDate?: string;
+  actionRequired?: boolean;
   overrideNext?: () => void;
   showBackButton?: boolean;
 
@@ -30,10 +32,12 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
   validateForm,
   submitCount,
   isValid,
+  deadlineDate,
+  actionRequired,
 }) => {
   const { t } = useTranslation();
 
-  const [openConfirmation, setOpenConfirmation] = useState(false);
+  const [openSubmitModal, setOpenSubmitModal] = useState(false);
 
   const handleConfirm = async () => {
     if (!submitForm || !validateForm) {
@@ -42,7 +46,7 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
 
     const errors = await validateForm();
     if (Object.keys(errors).length === 0) {
-      setOpenConfirmation(true);
+      setOpenSubmitModal(true);
     } else {
       submitForm();
     }
@@ -73,7 +77,7 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
             variant="contained"
             color="primary"
             onClick={handleConfirm}
-            disabled={submitCount ? submitCount > 0 && !isValid : false}
+            disabled={submitCount ? !isValid : false}
           >
             {t('Submit')}
             <ChevronRight sx={{ ml: 1 }} />
@@ -89,11 +93,15 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
           </Button>
         )}
       </Box>
-      {openConfirmation && (
+      {openSubmitModal && (
         <SubmitModal
           formTitle={t('MHA Request')}
-          handleClose={() => setOpenConfirmation(false)}
-          handleConfirm={submitForm ? submitForm : async () => {}}
+          handleClose={() => setOpenSubmitModal(false)}
+          handleConfirm={
+            submitForm ? submitForm : () => setOpenSubmitModal(false)
+          }
+          deadlineDate={deadlineDate}
+          actionRequired={actionRequired}
         />
       )}
     </Box>

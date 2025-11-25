@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -26,7 +26,7 @@ interface TestComponentProps {
   isEdit?: boolean;
   availableDate?: string | null;
   deadlineDate?: string | null;
-  setIsComplete?: (complete: boolean) => void;
+  setIsComplete?: Dispatch<SetStateAction<boolean>>;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({

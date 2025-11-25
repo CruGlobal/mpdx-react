@@ -1,4 +1,6 @@
 import {
+  Dispatch,
+  SetStateAction,
   createContext,
   useCallback,
   useContext,
@@ -25,16 +27,16 @@ export type ContextType = {
   pageType: PageEnum | undefined;
 
   hasCalcValues: boolean;
-  setHasCalcValues: (value: boolean) => void;
+  setHasCalcValues: Dispatch<SetStateAction<boolean>>;
 
   isDrawerOpen: boolean;
   toggleDrawer: () => void;
-  setIsDrawerOpen: (open: boolean) => void;
+  setIsDrawerOpen: Dispatch<SetStateAction<boolean>>;
 
   isPrint: boolean;
-  setIsPrint: (value: boolean) => void;
+  setIsPrint: Dispatch<SetStateAction<boolean>>;
 
-  setIsComplete: (complete: boolean) => void;
+  setIsComplete: Dispatch<SetStateAction<boolean>>;
 };
 
 const MinisterHousingAllowanceContext = createContext<ContextType | null>(null);

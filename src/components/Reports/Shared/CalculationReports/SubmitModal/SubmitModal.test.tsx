@@ -12,6 +12,7 @@ const formTitle = 'Main Title';
 const title = 'Test Title';
 const content = 'Test Content';
 const subContent = 'Test Sub Content';
+const date = '2024-12-31';
 
 const handleClose = jest.fn();
 const handleConfirm = jest.fn();
@@ -22,6 +23,7 @@ interface TestComponentProps {
   overrideContent?: string;
   overrideSubContent?: string;
   isCancel?: boolean;
+  actionRequired?: boolean;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
@@ -30,6 +32,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   overrideContent,
   overrideSubContent,
   isCancel,
+  actionRequired,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
@@ -42,6 +45,8 @@ const TestComponent: React.FC<TestComponentProps> = ({
           overrideContent={overrideContent}
           overrideSubContent={overrideSubContent}
           isCancel={isCancel}
+          deadlineDate={date}
+          actionRequired={actionRequired}
         />
       </MinisterHousingAllowanceProvider>
     </TestRouter>
@@ -61,13 +66,15 @@ describe('ConfirmationModal', () => {
       getByText('You are submitting your Main Title for board approval.'),
     ).toBeInTheDocument();
 
+    expect(getByText(/12\/31\/2024/)).toBeInTheDocument();
+
     await userEvent.click(getByRole('button', { name: /YES, CONTINUE/i }));
     expect(handleConfirm).toHaveBeenCalled();
   });
 
   it('renders update confirmation modal correctly', async () => {
     const { getByText, getByRole } = render(
-      <TestComponent pageType={PageEnum.Edit} />,
+      <TestComponent pageType={PageEnum.Edit} actionRequired={true} />,
     );
 
     expect(
