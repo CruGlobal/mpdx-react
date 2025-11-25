@@ -1,17 +1,48 @@
-import React, { useState } from 'react';
-import { Box, MenuItem, TextField, Typography } from '@mui/material';
+import React, { useMemo } from 'react';
+import { Box, MenuItem, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import * as yup from 'yup';
 import theme from 'src/theme';
-
-const dateRangeOptions = [
-  { value: 'next_paycheck', label: 'Next Paycheck Date' },
-  { value: 'first_of_month', label: 'First of Next Month' },
-  { value: 'custom_date', label: 'Custom Date' },
-];
+import { AutosaveTextField } from '../Autosave/AutosaveTextField';
+import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 
 export const EffectiveDateStep: React.FC = () => {
   const { t } = useTranslation();
-  const [selected, setSelected] = useState('');
+  const { hcm } = useSalaryCalculator();
+
+  const schema = useMemo(
+    () =>
+      yup.object({
+        effectiveDate: yup
+          .string()
+          .required(t('Please select an effective date')),
+      }),
+    [t],
+  );
+
+  const dateOptions = useMemo(() => {
+    // TODO: Add effectiveDates field to HCM GraphQL query
+    // @ts-expect-error - effectiveDates field doesn't exist yet in HCM type
+    const effectiveDates = hcm?.effectiveDates;
+    if (!effectiveDates) {
+      return [];
+    }
+
+    return effectiveDates.map((dateString: string) => {
+      const date = new Date(dateString);
+      const formattedDate = date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      });
+
+      return {
+        value: dateString,
+        label: formattedDate,
+      };
+    });
+    // @ts-expect-error - effectiveDates field doesn't exist yet in HCM type
+  }, [hcm?.effectiveDates]);
 
   return (
     <Box px={theme.spacing(3)} py={theme.spacing(2)}>
@@ -32,20 +63,19 @@ export const EffectiveDateStep: React.FC = () => {
       </Typography>
       <Box mb={4} />
       <Box>
-        <TextField
+        <AutosaveTextField
           select
+          fieldName="effectiveDate"
+          schema={schema}
           label={t('Select a future date')}
-          value={selected}
-          onChange={(e) => setSelected(e.target.value)}
-          fullWidth
-          variant="outlined"
+          required
         >
-          {dateRangeOptions.map((option) => (
+          {dateOptions.map((option) => (
             <MenuItem key={option.value} value={option.value}>
-              {t(option.label)}
+              {option.label}
             </MenuItem>
           ))}
-        </TextField>
+        </AutosaveTextField>
       </Box>
     </Box>
   );
