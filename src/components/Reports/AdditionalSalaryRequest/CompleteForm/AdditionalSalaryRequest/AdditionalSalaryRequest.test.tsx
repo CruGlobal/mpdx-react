@@ -1,11 +1,8 @@
 import React from 'react';
-import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Form, Formik } from 'formik';
-import { I18nextProvider } from 'react-i18next';
-import i18n from 'src/lib/i18n';
-import theme from 'src/theme';
+import { AdditionalSalaryRequestTestWrapper } from '../../AdditionalSalaryRequestTestWrapper';
 import { CompleteFormValues } from '../CompleteForm';
 import { AdditionalSalaryRequest } from './AdditionalSalaryRequest';
 
@@ -35,21 +32,19 @@ interface TestWrapperProps {
 const TestWrapper: React.FC<TestWrapperProps> = ({
   initialValues = defaultValues,
 }) => (
-  <ThemeProvider theme={theme}>
-    <I18nextProvider i18n={i18n}>
-      <Formik
-        initialValues={initialValues}
-        onSubmit={jest.fn()}
-        enableReinitialize
-      >
-        {(formikProps) => (
-          <Form>
-            <AdditionalSalaryRequest formikProps={formikProps} />
-          </Form>
-        )}
-      </Formik>
-    </I18nextProvider>
-  </ThemeProvider>
+  <AdditionalSalaryRequestTestWrapper>
+    <Formik
+      initialValues={initialValues}
+      onSubmit={jest.fn()}
+      enableReinitialize
+    >
+      {(formikProps) => (
+        <Form>
+          <AdditionalSalaryRequest formikProps={formikProps} />
+        </Form>
+      )}
+    </Formik>
+  </AdditionalSalaryRequestTestWrapper>
 );
 
 describe('AdditionalSalaryRequest', () => {
@@ -85,7 +80,7 @@ describe('AdditionalSalaryRequest', () => {
     expect(getByLabelText('Total requested amount')).toHaveTextContent('$0');
   });
 
-  it('calculates total from a single field', async () => {
+  it('calculates total from a single field', () => {
     const valuesWithAmount: CompleteFormValues = {
       ...defaultValues,
       additionalSalary: '5000',
