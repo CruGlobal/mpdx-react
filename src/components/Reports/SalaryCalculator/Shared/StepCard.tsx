@@ -14,12 +14,14 @@ import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculator
 
 export const StepCard = styled(Card)(({ theme }) => ({
   '.MuiCardHeader-root': {
-    padding: theme.spacing(3),
+    padding: theme.spacing(3, 2),
   },
   '.MuiCardContent-root': {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: theme.spacing(2),
     padding: theme.spacing(2),
     '> .MuiTypography-root': {
-      marginBottom: theme.spacing(2),
       paddingLeft: theme.spacing(1),
     },
   },

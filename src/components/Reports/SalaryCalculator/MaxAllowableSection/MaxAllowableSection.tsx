@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import {
+  Alert,
   CardContent,
   CardHeader,
   Stack,
@@ -36,7 +37,7 @@ export const MaxAllowableStep: React.FC<MaxAllowableStepProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { hcm } = useSalaryCalculator();
+  const { calculation, hcm } = useSalaryCalculator();
   const { goalMiscConstants: miscConstants } = useGoalCalculatorConstants();
 
   const schema = useMemo(
@@ -68,6 +69,15 @@ export const MaxAllowableStep: React.FC<MaxAllowableStepProps> = ({
   const cap =
     self?.exceptionSalaryCap.amount ?? (spouse ? marriedCap : singleCap);
   const overCap = typeof cap === 'number' ? combinedMaxSalary > cap : false;
+  const inputCombinedMaxSalary =
+    (calculation?.salaryCap ?? 0) + (calculation?.spouseSalaryCap ?? 0);
+
+  const formattedCombinedMaxSalary = currencyFormat(
+    combinedMaxSalary,
+    'USD',
+    locale,
+    { showTrailingZeros: true },
+  );
 
   return (
     <StepCard>
@@ -108,7 +118,7 @@ export const MaxAllowableStep: React.FC<MaxAllowableStepProps> = ({
               sx={{ fontWeight: 'bold' }}
             >
               <span>{t('Combined Maximum Allowable Salary')}:</span>
-              <span>{currencyFormat(combinedMaxSalary, 'USD', locale)}</span>
+              <span>{formattedCombinedMaxSalary}</span>
             </Stack>
             <Table>
               <TableHead>
@@ -138,6 +148,15 @@ export const MaxAllowableStep: React.FC<MaxAllowableStepProps> = ({
                 </TableRow>
               </TableBody>
             </Table>
+            {inputCombinedMaxSalary > combinedMaxSalary && (
+              <Alert severity="error">
+                <Trans t={t}>
+                  Your combined maximum allowable salary exceeds your maximum
+                  allowable salary of{' '}
+                  {{ maxSalary: formattedCombinedMaxSalary }}.
+                </Trans>
+              </Alert>
+            )}
           </>
         ) : (
           <Table>
