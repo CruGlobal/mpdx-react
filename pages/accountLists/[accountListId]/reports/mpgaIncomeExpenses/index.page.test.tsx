@@ -7,9 +7,10 @@ import {
   afterTestResizeObserver,
   beforeTestResizeObserver,
 } from '__tests__/util/windowResizeObserver';
+import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { StaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
 import theme from 'src/theme';
-import MPGAReportPage from './index.page';
+import MPGAReportPage, { getServerSideProps } from './index.page';
 
 const mutationSpy = jest.fn();
 
@@ -44,6 +45,10 @@ describe('MPGA Report Page', () => {
 
   afterEach(() => {
     afterTestResizeObserver();
+  });
+
+  it('uses blockImpersonatingNonDevelopers for server-side props', () => {
+    expect(getServerSideProps).toBe(blockImpersonatingNonDevelopers);
   });
 
   it('should show initial mpga report page', async () => {

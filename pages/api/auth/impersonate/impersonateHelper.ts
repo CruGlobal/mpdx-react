@@ -3,6 +3,7 @@ import { getToken } from 'next-auth/jwt';
 import fetch from 'node-fetch';
 import { getErrorMessage } from 'src/lib/getErrorFromCatch';
 import { cookieDefaultInfo } from '../../utils/cookies';
+import { signValue } from '../helpers';
 
 export enum ImpersonationTypeEnum {
   USER = 'user',
@@ -59,7 +60,10 @@ export const impersonate = async (
       throw new Error('Unauthorized');
     }
 
-    const { apiToken, userID } = jwt;
+    const { apiToken, userID, developer } = jwt;
+
+    const isDeveloper = developer === true;
+    const signedDeveloperStatus = signValue(isDeveloper);
 
     if (typeof user !== 'string') {
       status = 400;
@@ -115,6 +119,7 @@ export const impersonate = async (
     const cookies = [
       `mpdx-handoff.accountConflictUserId=${userID}; ${cookieDefaultInfo}`,
       `mpdx-handoff.impersonate=${impersonate}; ${cookieDefaultInfo}`,
+      `mpdx-handoff.isImpersonatorDeveloper=${signedDeveloperStatus}; ${cookieDefaultInfo}`,
       `mpdx-handoff.redirect-url=/; ${cookieDefaultInfo}`,
       `mpdx-handoff.token=${apiToken}; ${cookieDefaultInfo}`,
     ];

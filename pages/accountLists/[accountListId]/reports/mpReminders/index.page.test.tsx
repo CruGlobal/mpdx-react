@@ -8,9 +8,10 @@ import {
   afterTestResizeObserver,
   beforeTestResizeObserver,
 } from '__tests__/util/windowResizeObserver';
+import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { StaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
 import theme from 'src/theme';
-import MPRemindersReportPage from './index.page';
+import MPRemindersReportPage, { getServerSideProps } from './index.page';
 
 const mutationSpy = jest.fn();
 
@@ -91,5 +92,9 @@ describe('MP Reminders Report Page', () => {
     expect(
       await findByText(/access to this feature is limited/i),
     ).toBeInTheDocument();
+  });
+
+  it('uses blockImpersonatingNonDevelopers for server-side props', () => {
+    expect(getServerSideProps).toBe(blockImpersonatingNonDevelopers);
   });
 });

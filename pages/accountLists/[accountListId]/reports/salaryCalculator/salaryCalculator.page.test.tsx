@@ -1,7 +1,8 @@
 import React from 'react';
 import { render } from '@testing-library/react';
+import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { SalaryCalculatorTestWrapper } from 'src/components/Reports/SalaryCalculator/SalaryCalculatorTestWrapper';
-import SalaryCalculatorPage from './index.page';
+import SalaryCalculatorPage, { getServerSideProps } from './index.page';
 
 const TestComponent = () => (
   <SalaryCalculatorTestWrapper>
@@ -15,5 +16,9 @@ describe('SalaryCalculatorPage', () => {
     expect(
       getByRole('heading', { name: /Salary Calculator/i }),
     ).toBeInTheDocument();
+  });
+
+  it('uses blockImpersonatingNonDevelopers for server-side props', () => {
+    expect(getServerSideProps).toBe(blockImpersonatingNonDevelopers);
   });
 });

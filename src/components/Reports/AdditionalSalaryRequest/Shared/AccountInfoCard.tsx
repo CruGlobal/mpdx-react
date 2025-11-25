@@ -25,6 +25,7 @@ interface AccountInfoCardProps {
   accountNumber: string;
   primaryAccountBalance: number;
   remainingAllowableSalary: number;
+  showSpouse?: boolean;
 }
 
 export const AccountInfoCard: React.FC<AccountInfoCardProps> = ({
@@ -32,6 +33,7 @@ export const AccountInfoCard: React.FC<AccountInfoCardProps> = ({
   accountNumber,
   primaryAccountBalance,
   remainingAllowableSalary,
+  showSpouse = false,
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -47,35 +49,37 @@ export const AccountInfoCard: React.FC<AccountInfoCardProps> = ({
               {accountNumber}
             </Typography>
           </Box>
-          <Box>
-            <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: theme.spacing(1),
-              }}
-            >
-              <ImportExportIcon
-                fontSize="small"
-                color="action"
-                sx={{ transform: 'rotate(90deg)' }}
-              />
-              <Link
-                href="#"
-                variant="body1"
-                underline="hover"
-                onClick={(e) => {
-                  e.preventDefault();
-                  // TODO: Implement navigation or modal
+          {showSpouse && (
+            <Box>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: theme.spacing(1),
                 }}
               >
-                {t('Request additional salary from jane')}
-              </Link>
+                <ImportExportIcon
+                  fontSize="small"
+                  color="action"
+                  sx={{ transform: 'rotate(90deg)' }}
+                />
+                <Link
+                  href="#"
+                  variant="body1"
+                  underline="hover"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    // TODO: Implement navigation or modal
+                  }}
+                >
+                  {t('Request additional salary from jane')}
+                </Link>
+              </Box>
+              <Typography variant="caption" color="text.secondary">
+                {t('Up to her remaining allowable salary of $12,200')}
+              </Typography>
             </Box>
-            <Typography variant="caption" color="text.secondary">
-              {t('Up to her remaining allowable salary of $12,200')}
-            </Typography>
-          </Box>
+          )}
         </Box>
       </StyledCardContent>
 

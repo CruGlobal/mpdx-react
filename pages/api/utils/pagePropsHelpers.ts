@@ -6,6 +6,7 @@ import {
 } from 'next';
 import { Session } from 'next-auth';
 import { getSession } from 'next-auth/react';
+import { RedirectReason } from 'pages/api/auth/redirectReasonEnum';
 import makeSsrClient from 'src/lib/apollo/ssrClient';
 import {
   GetDefaultAccountDocument,
@@ -30,18 +31,61 @@ export const loginRedirect = (
   },
 });
 
+export const dashboardRedirect = (
+  context: GetServerSidePropsContext,
+  reason: RedirectReason,
+): { redirect: Redirect } => ({
+  redirect: {
+    destination: `/accountLists/${context.query.accountListId ?? ''}?redirect=${encodeURIComponent(reason)}`,
+    permanent: false,
+  },
+});
+
+/* Block non-developers who are impersonating, allow everyone else
+ * Use case: Pages that regular users can access on their own account,
+ * but should be restricted when admins impersonate (e.g., staff expense data)
+ */
+export const blockImpersonatingNonDevelopers: GetServerSideProps<
+  PagePropsWithSession
+> = async (context) => {
+  const session = await getSession(context);
+
+  if (!session?.user.apiToken) {
+    return loginRedirect(context);
+  }
+
+  // Check if the impersonator is a developer
+  if (session.user.impersonating && !session.user.isImpersonatorDeveloper) {
+    return dashboardRedirect(context, RedirectReason.ImpersonationBlocked);
+  }
+
+  const underscoreRedirect = await handleUnderscoreAccountListRedirect(
+    session,
+    context.resolvedUrl,
+  );
+  if (underscoreRedirect) {
+    return underscoreRedirect;
+  }
+
+  return {
+    props: {
+      session,
+    },
+  };
+};
+
 // Redirect back to the dashboard if the user isn't an admin
 export const enforceAdmin: GetServerSideProps<PagePropsWithSession> = async (
   context,
 ) => {
   const session = await getSession(context);
-  if (!session?.user.admin) {
-    return {
-      redirect: {
-        destination: `/accountLists/${context.query.accountListId ?? ''}`,
-        permanent: false,
-      },
-    };
+
+  if (!session?.user.apiToken) {
+    return loginRedirect(context);
+  }
+
+  if (!session.user.admin) {
+    return dashboardRedirect(context, RedirectReason.Unauthorized);
   }
 
   const underscoreRedirect = await handleUnderscoreAccountListRedirect(

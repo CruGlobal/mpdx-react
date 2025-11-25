@@ -17,6 +17,7 @@ import {
 } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { useRedirectSnackbar } from 'src/hooks/useRedirectSnackbar';
 import useTaskModal from 'src/hooks/useTaskModal';
 import {
   isAccountListNotFoundError,
@@ -43,6 +44,8 @@ const AccountListIdPage = ({
   const [selectedMenuItem, setSelectedMenuItem] =
     useState<AddMenuItemsEnum | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  useRedirectSnackbar();
 
   useEffect(() => {
     if (!modal || dialogOpen) {

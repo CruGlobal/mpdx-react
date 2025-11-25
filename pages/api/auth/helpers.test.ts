@@ -1,4 +1,4 @@
-import { isJwtExpired } from './helpers';
+import { isJwtExpired, signValue, verifySignedValue } from './helpers';
 
 describe('isJwtExpired', () => {
   it('returns true for expired JWTs', () => {
@@ -25,5 +25,30 @@ describe('isJwtExpired', () => {
 
   it('throws for JWTs without a JSON payload', () => {
     expect(() => isJwtExpired('a.b.c')).toThrow();
+  });
+});
+
+describe('signValue and verifySignedValue', () => {
+  it('signs and verifies a boolean value correctly', () => {
+    const signedTrue = signValue(true, 100);
+    const signedFalse = signValue(false, 100);
+
+    expect(verifySignedValue(signedTrue)).toBe('true');
+    expect(verifySignedValue(signedFalse)).toBe('false');
+  });
+
+  it('returns null for expired signed values', async () => {
+    const signedValue = signValue(true, -1);
+
+    expect(verifySignedValue(signedValue)).toBeNull();
+  });
+
+  it('returns null for tampered signed values', () => {
+    const signedValue = signValue(true, 100);
+    const parts = signedValue.split('.');
+
+    const tamperedSignedValue = `false.${parts[1]}.${parts[2]}`;
+
+    expect(verifySignedValue(tamperedSignedValue)).toBeNull();
   });
 });

@@ -248,6 +248,20 @@ describe('ContactsPageContext', () => {
     });
   });
 
+  it('should filter contacts by search term', async () => {
+    render(
+      <AppealStatusFilterTestComponent
+        query={{ appealId: [appealId, 'list'], searchTerm: 'John' }}
+      />,
+    );
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('Contacts', {
+        contactsFilters: { wildcardSearch: 'John' },
+      }),
+    );
+  });
+
   it('Saved filters with correct JSON', async () => {
     const { queryByTestId } = render(
       <ThemeProvider theme={theme}>
