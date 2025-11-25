@@ -29,7 +29,8 @@ export const MainContent: React.FC = () => {
 export const AdditionalSalaryRequest: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const { isDrawerOpen, toggleDrawer } = useAdditionalSalaryRequest();
+  const { isDrawerOpen, toggleDrawer, percentComplete } =
+    useAdditionalSalaryRequest();
 
   const iconPanelItems = [
     {
@@ -42,7 +43,7 @@ export const AdditionalSalaryRequest: React.FC = () => {
 
   return (
     <IconPanelLayout
-      percentComplete={50}
+      percentComplete={percentComplete}
       iconPanelItems={iconPanelItems}
       sidebarContent={<SectionList />}
       sidebarTitle={t('Additional Salary Request')}
