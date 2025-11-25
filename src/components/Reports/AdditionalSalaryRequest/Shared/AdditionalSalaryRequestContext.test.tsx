@@ -20,13 +20,15 @@ const TestComponent: React.FC = () => {
   );
 };
 
+const TestWrapper: React.FC = () => (
+  <AdditionalSalaryRequestTestWrapper>
+    <TestComponent />
+  </AdditionalSalaryRequestTestWrapper>
+);
+
 describe('AdditionalSalaryRequestContext', () => {
   it('provides initial state', async () => {
-    const { findByRole } = render(
-      <AdditionalSalaryRequestTestWrapper>
-        <TestComponent />
-      </AdditionalSalaryRequestTestWrapper>,
-    );
+    const { findByRole } = render(<TestWrapper />);
 
     expect(
       await findByRole('heading', { name: 'About this Form' }),
@@ -34,24 +36,16 @@ describe('AdditionalSalaryRequestContext', () => {
   });
 
   it('handles section change', async () => {
-    const { getByRole, findByRole } = render(
-      <AdditionalSalaryRequestTestWrapper>
-        <TestComponent />
-      </AdditionalSalaryRequestTestWrapper>,
-    );
+    const { getByRole, findByRole } = render(<TestWrapper />);
 
     userEvent.click(getByRole('button', { name: 'Change Section' }));
     expect(
-      await findByRole('heading', { name: 'Complete Form' }),
+      await findByRole('heading', { name: 'Complete the Form' }),
     ).toBeInTheDocument();
   });
 
   it('toggles drawer state', () => {
-    const { getByRole, getByLabelText } = render(
-      <AdditionalSalaryRequestTestWrapper>
-        <TestComponent />
-      </AdditionalSalaryRequestTestWrapper>,
-    );
+    const { getByRole, getByLabelText } = render(<TestWrapper />);
 
     const drawerState = getByLabelText('drawer state');
     expect(drawerState).toHaveAttribute('data-open', 'true');

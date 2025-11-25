@@ -4,29 +4,27 @@ import userEvent from '@testing-library/user-event';
 import { AdditionalSalaryRequestTestWrapper } from '../AdditionalSalaryRequestTestWrapper';
 import { SectionList } from './SectionList';
 
+const TestWrapper: React.FC = () => (
+  <AdditionalSalaryRequestTestWrapper>
+    <SectionList />
+  </AdditionalSalaryRequestTestWrapper>
+);
+
 describe('SectionList', () => {
   it('renders all section buttons', () => {
-    const { getByRole } = render(
-      <AdditionalSalaryRequestTestWrapper>
-        <SectionList />
-      </AdditionalSalaryRequestTestWrapper>,
-    );
+    const { getByRole } = render(<TestWrapper />);
 
     expect(
       getByRole('button', { name: '1. About this Form' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('button', { name: '2. Complete Form' }),
+      getByRole('button', { name: '2. Complete the Form' }),
     ).toBeInTheDocument();
     expect(getByRole('button', { name: '3. Receipt' })).toBeInTheDocument();
   });
 
   it('updates the selected section', async () => {
-    const { getByRole, findByRole } = render(
-      <AdditionalSalaryRequestTestWrapper>
-        <SectionList />
-      </AdditionalSalaryRequestTestWrapper>,
-    );
+    const { getByRole, findByRole } = render(<TestWrapper />);
 
     expect(getByRole('button', { name: '1. About this Form' })).toHaveAttribute(
       'aria-current',
