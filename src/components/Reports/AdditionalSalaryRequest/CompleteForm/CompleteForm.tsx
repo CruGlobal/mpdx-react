@@ -108,7 +108,7 @@ export const CompleteForm: React.FC = () => {
   );
 
   const handleSubmit = (_values: CompleteFormValues) => {
-    // TODO: Implement form submission
+    //TODO: Submit form values
   };
 
   return (
