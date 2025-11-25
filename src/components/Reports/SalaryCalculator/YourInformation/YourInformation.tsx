@@ -2,6 +2,7 @@ import React from 'react';
 import { Typography } from '@mui/material';
 import { Stack } from '@mui/system';
 import { Trans, useTranslation } from 'react-i18next';
+import { FourOhThreeBSection } from '../403bSection/403bSection';
 import { RequestedSalarySection } from '../RequestedSalarySection/RequestedSalarySection';
 
 export const YourInformationStep: React.FC = () => {
@@ -16,6 +17,7 @@ export const YourInformationStep: React.FC = () => {
           request your new salary.
         </Trans>
       </Typography>
+      <FourOhThreeBSection />
       <RequestedSalarySection />
     </Stack>
   );
