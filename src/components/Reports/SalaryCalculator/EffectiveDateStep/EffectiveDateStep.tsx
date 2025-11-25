@@ -6,6 +6,11 @@ import theme from 'src/theme';
 import { AutosaveTextField } from '../Autosave/AutosaveTextField';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 
+interface DateOption {
+  value: string;
+  label: string;
+}
+
 export const EffectiveDateStep: React.FC = () => {
   const { t } = useTranslation();
   const { hcm } = useSalaryCalculator();
@@ -70,7 +75,7 @@ export const EffectiveDateStep: React.FC = () => {
           label={t('Select a future date')}
           required
         >
-          {dateOptions.map((option) => (
+          {dateOptions.map((option: DateOption) => (
             <MenuItem key={option.value} value={option.value}>
               {option.label}
             </MenuItem>
