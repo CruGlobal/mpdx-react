@@ -22,7 +22,7 @@ describe('SalaryRequestForm', () => {
     expect(getAllByRole('spinbutton')).toHaveLength(15);
   });
 
-  it('updates amount when user enters value', async () => {
+  it('updates amount when user enters value', () => {
     const { getAllByRole, getAllByLabelText } = render(<TestWrapper />);
 
     const inputs = getAllByRole('spinbutton');
