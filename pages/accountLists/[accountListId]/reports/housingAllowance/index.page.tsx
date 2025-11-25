@@ -65,7 +65,7 @@ const MinisterHousingAllowancePage: React.FC = () => {
                   title={t("Minister's Housing Allowance Request")}
                   headerType={HeaderTypeEnum.Report}
                 />
-                <MinisterHousingAllowanceReport testPerson={mocks[4]} />
+                <MinisterHousingAllowanceReport testPerson={mocks[2]} />
               </>
             }
           />

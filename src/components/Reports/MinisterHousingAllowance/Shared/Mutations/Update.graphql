@@ -1,0 +1,26 @@
+mutation UpdateMinistryHousingAllowanceRequest(
+  $input: MinistryHousingAllowanceRequestUpdateMutationInput!
+) {
+  updateMinistryHousingAllowanceRequest(input: $input) {
+    ministryHousingAllowanceRequest {
+      id
+      updatedAt
+      requestAttributes {
+        avgUtilityOne
+        avgUtilityTwo
+        emailAddress
+        furnitureCostsOne
+        furnitureCostsTwo
+        iUnderstandMhaPolicy
+        mortgageOrRentPayment
+        overallAmount
+        phoneNumber
+        rentOrOwn
+        rentalValue
+        repairCosts
+        submittedDate
+        unexpectedExpenses
+      }
+    }
+  }
+}
