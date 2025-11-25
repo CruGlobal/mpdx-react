@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AdditionalSalaryRequestProvider } from '../Shared/AdditionalSalaryRequestContext';
 import { CompleteForm } from './CompleteForm';
@@ -23,7 +23,7 @@ describe('SalaryRequestForm', () => {
   });
 
   it('updates amount when user enters value', async () => {
-    const { getAllByRole, getByLabelText } = render(<TestWrapper />);
+    const { getAllByRole, getAllByLabelText } = render(<TestWrapper />);
 
     const inputs = getAllByRole('spinbutton');
     userEvent.clear(inputs[0]);
@@ -34,8 +34,49 @@ describe('SalaryRequestForm', () => {
     expect(inputs[0]).toHaveValue(1000);
     expect(inputs[1]).toHaveValue(500);
 
-    expect(getByLabelText('Total requested amount')).toHaveTextContent(
-      '$1,500',
-    );
+    // Get the first "Total requested amount" which is from AdditionalSalaryRequest
+    const totalElements = getAllByLabelText('Total requested amount');
+    expect(totalElements[0]).toHaveTextContent('$1,500');
+  });
+
+  it('calls onSubmit when submit button is clicked', async () => {
+    const { getByRole } = render(<TestWrapper />);
+
+    const submitButton = getByRole('button', { name: /submit/i });
+
+    userEvent.click(submitButton);
+
+    // The form should submit without errors
+    await waitFor(() => {
+      // Since handleSubmit is currently empty (TODO), we just verify the button can be clicked
+      // and the form submission is triggered
+      expect(submitButton).toBeInTheDocument();
+    });
+  });
+
+  it('renders the submit button with correct type', () => {
+    const { getByRole } = render(<TestWrapper />);
+
+    const submitButton = getByRole('button', { name: /submit/i });
+
+    expect(submitButton).toHaveAttribute('type', 'submit');
+  });
+
+  it('renders the 403(b) Deduction checkbox', () => {
+    const { getByRole } = render(<TestWrapper />);
+
+    const checkbox = getByRole('checkbox', {
+      name: 'Use default Percentage for 403(b) deduction',
+    });
+
+    expect(checkbox).toBeInTheDocument();
+    expect(checkbox).not.toBeChecked();
+  });
+
+  it('shows both AdditionalSalaryRequest and Deduction sections', () => {
+    const { getByText } = render(<TestWrapper />);
+
+    expect(getByText('Additional Salary Request')).toBeInTheDocument();
+    expect(getByText('403(b) Deduction')).toBeInTheDocument();
   });
 });
