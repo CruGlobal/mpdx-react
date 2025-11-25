@@ -16,7 +16,7 @@ describe('SectionList', () => {
       getByRole('button', { name: '1. About this Form' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('button', { name: '2. Complete Form' }),
+      getByRole('button', { name: '2. Complete the Form' }),
     ).toBeInTheDocument();
     expect(getByRole('button', { name: '3. Receipt' })).toBeInTheDocument();
   });

@@ -46,7 +46,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
         section: AdditionalSalaryRequestSectionEnum.AboutForm,
       },
       {
-        title: t('Complete Form'),
+        title: t('Complete the Form'),
         section: AdditionalSalaryRequestSectionEnum.CompleteForm,
       },
       {

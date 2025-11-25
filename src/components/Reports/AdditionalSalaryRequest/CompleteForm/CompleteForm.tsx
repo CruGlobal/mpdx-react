@@ -16,6 +16,7 @@ import * as yup from 'yup';
 import { CurrencyAdornment } from 'src/components/Reports/GoalCalculator/Shared/Adornments';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { AccountInfoCard } from '../Shared/AccountInfoCard';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { useCompleteFormCategories } from '../Shared/useCompleteFormCategories';
 import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSalaryRequestSection';
@@ -50,6 +51,11 @@ export const CompleteForm: React.FC = () => {
   const { selectedSection } = useAdditionalSalaryRequest();
 
   const categories = useCompleteFormCategories();
+
+  const name = 'Doc, John';
+  const accountNumber = '00123456';
+  const primaryAccountBalance = 20307.58;
+  const remainingAllowableSalary = 17500.0;
 
   const initialValues: CompleteFormValues = {
     currentYearSalary: '0',
@@ -107,6 +113,17 @@ export const CompleteForm: React.FC = () => {
 
   return (
     <AdditionalSalaryRequestSection title={selectedSection.title}>
+      <AccountInfoCard
+        name={name}
+        accountNumber={accountNumber}
+        primaryAccountBalance={primaryAccountBalance}
+        remainingAllowableSalary={remainingAllowableSalary}
+      />
+      <Typography variant="body1" paragraph>
+        {t(
+          'Please enter the desired dollar amounts for the appropriate categories and review totals before submitting. Your Net Additional Salary calculated below represents the amount you will receive (before taxes) in additional salary and equals the amount you are requesting minus any amount being contributed to your 403(b).',
+        )}
+      </Typography>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}

@@ -15,7 +15,7 @@ describe('AdditionalSalaryRequest', () => {
       await findByRole('heading', { name: 'About this Form' }),
     ).toBeInTheDocument();
 
-    userEvent.click(getByRole('button', { name: '2. Complete Form' }));
+    userEvent.click(getByRole('button', { name: '2. Complete the Form' }));
     expect(
       await findByRole('heading', { name: 'Complete Form' }),
     ).toBeInTheDocument();

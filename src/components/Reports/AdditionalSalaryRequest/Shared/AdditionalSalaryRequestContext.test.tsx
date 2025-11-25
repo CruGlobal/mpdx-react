@@ -42,7 +42,7 @@ describe('AdditionalSalaryRequestContext', () => {
 
     userEvent.click(getByRole('button', { name: 'Change Section' }));
     expect(
-      await findByRole('heading', { name: 'Complete Form' }),
+      await findByRole('heading', { name: 'Complete the Form' }),
     ).toBeInTheDocument();
   });
 
