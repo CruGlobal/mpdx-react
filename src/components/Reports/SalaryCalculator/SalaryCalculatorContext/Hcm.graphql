@@ -3,6 +3,7 @@ query Hcm {
     staffInfo {
       firstName
       lastName
+      secaStatus
     }
     currentSalary {
       grossSalaryAmount

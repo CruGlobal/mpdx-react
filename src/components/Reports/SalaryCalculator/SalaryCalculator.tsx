@@ -66,8 +66,13 @@ export const SalaryCalculatorContent: React.FC = () => {
     calculation,
   } = useSalaryCalculator();
 
-  if (!calculation && !hasStartedCalculation) {
-    return <NewSalaryCalculatorLanding onStartCalculation={startCalculation} />;
+  if (!hasStartedCalculation) {
+    return (
+      <NewSalaryCalculatorLanding
+        onStartCalculation={startCalculation}
+        hasExistingCalculation={!!calculation}
+      />
+    );
   }
 
   const iconPanelItems = [

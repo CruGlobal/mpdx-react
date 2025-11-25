@@ -16,7 +16,7 @@ describe('SalaryCalculator', () => {
     const { getByRole } = render(<TestComponent />);
 
     expect(
-      getByRole('heading', { name: 'Effective Date' }),
+      getByRole('heading', { name: 'Salary Calculation Form' }),
     ).toBeInTheDocument();
 
     userEvent.click(getByRole('button', { name: 'Continue' }));

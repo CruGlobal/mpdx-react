@@ -36,11 +36,12 @@ const StyledCard = styled(Card)(({ theme }) => ({
 
 interface NewSalaryCalculatorLandingProps {
   onStartCalculation: () => void;
+  hasExistingCalculation: boolean;
 }
 
 export const NewSalaryCalculatorLanding: React.FC<
   NewSalaryCalculatorLandingProps
-> = ({ onStartCalculation }) => {
+> = ({ onStartCalculation, hasExistingCalculation }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const { data: staffAccountData, loading: staffLoading } =
@@ -67,12 +68,16 @@ export const NewSalaryCalculatorLanding: React.FC<
 
   const salaryCategories = [
     {
-      category: t('Salary'),
+      category: t('Gross Salary'),
       user: currentGrossSalary,
       spouse: spouseCurrentGrossSalary,
     },
     { category: t('Taxes'), user: 0, spouse: 0 },
-    { category: t('SECA'), user: 0, spouse: 0 },
+    {
+      category: t('Security (SECA/FICA) Status'),
+      user: self?.staffInfo.secaStatus,
+      spouse: spouse?.staffInfo.secaStatus,
+    },
     { category: t('403(b)'), user: 0, spouse: 0 },
   ];
 
@@ -114,11 +119,6 @@ export const NewSalaryCalculatorLanding: React.FC<
               </Grid>
 
               <Grid item xs={4}>
-                <Typography variant="body1">
-                  {self?.staffInfo.firstName}
-                </Typography>
-              </Grid>
-              <Grid item xs={4}>
                 <Typography variant="body1" align="right">
                   {currencyFormat(currentGrossSalary, 'USD', locale)}
                 </Typography>
@@ -131,11 +131,6 @@ export const NewSalaryCalculatorLanding: React.FC<
 
               {hasSpouse && (
                 <>
-                  <Grid item xs={4}>
-                    <Typography variant="body1">
-                      {spouse?.staffInfo.firstName}
-                    </Typography>
-                  </Grid>
                   <Grid item xs={4}>
                     <Typography variant="body1" align="right">
                       {currencyFormat(spouseCurrentGrossSalary, 'USD', locale)}
@@ -171,13 +166,9 @@ export const NewSalaryCalculatorLanding: React.FC<
                   <TableCell component="th" scope="row">
                     {row.category}
                   </TableCell>
-                  <TableCell align="right">
-                    {currencyFormat(row.user, 'USD', locale)}
-                  </TableCell>
+                  <TableCell align="right">{row.user ?? ''}</TableCell>
                   {hasSpouse && (
-                    <TableCell align="right">
-                      {currencyFormat(row.spouse, 'USD', locale)}
-                    </TableCell>
+                    <TableCell align="right">{row.spouse ?? ''}</TableCell>
                   )}
                 </TableRow>
               ))}
@@ -185,14 +176,16 @@ export const NewSalaryCalculatorLanding: React.FC<
           </Table>
         </TableContainer>
 
-        <Box mt={4} display="flex" justifyContent="center">
+        <Box mt={4} display="flex" justifyContent="center" gap={2}>
           <Button
             variant="contained"
             color="primary"
             size="large"
             onClick={onStartCalculation}
           >
-            {t('Calculate New Salary')}
+            {hasExistingCalculation
+              ? t('Continue Salary Calculation')
+              : t('Calculate New Salary')}
           </Button>
         </Box>
       </Box>
