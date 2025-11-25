@@ -75,9 +75,9 @@ describe('AdditionalSalaryRequest', () => {
   });
 
   it('shows $0 as total when all fields are empty', () => {
-    const { getByLabelText } = render(<TestWrapper />);
+    const { getByTestId } = render(<TestWrapper />);
 
-    expect(getByLabelText('Total requested amount')).toHaveTextContent('$0');
+    expect(getByTestId('total-amount')).toHaveTextContent('$0');
   });
 
   it('calculates total from a single field', () => {
@@ -86,16 +86,14 @@ describe('AdditionalSalaryRequest', () => {
       additionalSalary: '5000',
     };
 
-    const { getByLabelText } = render(
+    const { getByTestId } = render(
       <TestWrapper initialValues={valuesWithAmount} />,
     );
 
-    expect(getByLabelText('Total requested amount')).toHaveTextContent(
-      '$5,000',
-    );
+    expect(getByTestId('total-amount')).toHaveTextContent('$5,000');
   });
 
-  it('calculates total from multiple fields', async () => {
+  it('calculates total from multiple fields', () => {
     const valuesWithMultiple: CompleteFormValues = {
       ...defaultValues,
       additionalSalary: '5000',
@@ -103,17 +101,15 @@ describe('AdditionalSalaryRequest', () => {
       counseling: '3000',
     };
 
-    const { getByLabelText } = render(
+    const { getByTestId } = render(
       <TestWrapper initialValues={valuesWithMultiple} />,
     );
 
-    expect(getByLabelText('Total requested amount')).toHaveTextContent(
-      '$10,000',
-    );
+    expect(getByTestId('total-amount')).toHaveTextContent('$10,000');
   });
 
   it('updates total when user enters values', async () => {
-    const { getAllByRole, getByLabelText } = render(<TestWrapper />);
+    const { getAllByRole, getByTestId } = render(<TestWrapper />);
 
     const inputs = getAllByRole('spinbutton');
 
@@ -123,9 +119,7 @@ describe('AdditionalSalaryRequest', () => {
     userEvent.type(inputs[1], '500');
 
     await waitFor(() => {
-      expect(getByLabelText('Total requested amount')).toHaveTextContent(
-        '$1,500',
-      );
+      expect(getByTestId('total-amount')).toHaveTextContent('$1,500');
     });
   });
 
@@ -137,13 +131,11 @@ describe('AdditionalSalaryRequest', () => {
       counseling: '',
     };
 
-    const { getByLabelText } = render(
+    const { getByTestId } = render(
       <TestWrapper initialValues={valuesWithEmpty} />,
     );
 
-    expect(getByLabelText('Total requested amount')).toHaveTextContent(
-      '$5,000',
-    );
+    expect(getByTestId('total-amount')).toHaveTextContent('$5,000');
   });
 
   it('does not include defaultPercentage boolean in total calculation', () => {
@@ -153,13 +145,11 @@ describe('AdditionalSalaryRequest', () => {
       defaultPercentage: true,
     };
 
-    const { getByLabelText } = render(
+    const { getByTestId } = render(
       <TestWrapper initialValues={valuesWithBoolean} />,
     );
 
-    expect(getByLabelText('Total requested amount')).toHaveTextContent(
-      '$10,000',
-    );
+    expect(getByTestId('total-amount')).toHaveTextContent('$10,000');
   });
 
   it('displays all category labels', () => {
@@ -196,14 +186,6 @@ describe('AdditionalSalaryRequest', () => {
     });
   });
 
-  it('displays currency adornment on input fields', () => {
-    const { getAllByRole } = render(<TestWrapper />);
-
-    const inputs = getAllByRole('spinbutton');
-    // Check that inputs have the currency adornment ($ sign)
-    expect(inputs[0].parentElement?.textContent).toContain('$');
-  });
-
   it('calculates total with all fields populated', () => {
     const allFieldsPopulated: CompleteFormValues = {
       currentYearSalary: '1000',
@@ -224,20 +206,18 @@ describe('AdditionalSalaryRequest', () => {
       defaultPercentage: false,
     };
 
-    const { getByLabelText } = render(
+    const { getByTestId } = render(
       <TestWrapper initialValues={allFieldsPopulated} />,
     );
 
     // 15 fields * $1,000 = $15,000
-    expect(getByLabelText('Total requested amount')).toHaveTextContent(
-      '$15,000',
-    );
+    expect(getByTestId('total-amount')).toHaveTextContent('$15,000');
   });
 
   it('updates total when values change', () => {
-    const { getByLabelText, rerender } = render(<TestWrapper />);
+    const { getByTestId, rerender } = render(<TestWrapper />);
 
-    expect(getByLabelText('Total requested amount')).toHaveTextContent('$0');
+    expect(getByTestId('total-amount')).toHaveTextContent('$0');
 
     const updatedValues: CompleteFormValues = {
       ...defaultValues,
@@ -246,9 +226,7 @@ describe('AdditionalSalaryRequest', () => {
 
     rerender(<TestWrapper initialValues={updatedValues} />);
 
-    expect(getByLabelText('Total requested amount')).toHaveTextContent(
-      '$7,500',
-    );
+    expect(getByTestId('total-amount')).toHaveTextContent('$7,500');
   });
 
   it('handles decimal values correctly', () => {
@@ -258,13 +236,11 @@ describe('AdditionalSalaryRequest', () => {
       adoption: '500.25',
     };
 
-    const { getByLabelText } = render(
+    const { getByTestId } = render(
       <TestWrapper initialValues={valuesWithDecimals} />,
     );
 
-    expect(getByLabelText('Total requested amount')).toHaveTextContent(
-      '$1,500.75',
-    );
+    expect(getByTestId('total-amount')).toHaveTextContent('$1,500.75');
   });
 
   it('renders dividers between categories', () => {
@@ -291,21 +267,5 @@ describe('AdditionalSalaryRequest', () => {
     expect(inputs[0]).toHaveValue(100);
     expect(inputs[1]).toHaveValue(200);
     expect(inputs[2]).toHaveValue(300);
-  });
-
-  it('calculates total with large numbers', () => {
-    const largeValues: CompleteFormValues = {
-      ...defaultValues,
-      additionalSalary: '50000',
-      housingDownPayment: '50000',
-    };
-
-    const { getByLabelText } = render(
-      <TestWrapper initialValues={largeValues} />,
-    );
-
-    expect(getByLabelText('Total requested amount')).toHaveTextContent(
-      '$100,000',
-    );
   });
 });

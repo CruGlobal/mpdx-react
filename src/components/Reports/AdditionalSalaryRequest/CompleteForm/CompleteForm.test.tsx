@@ -1,12 +1,12 @@
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { AdditionalSalaryRequestProvider } from '../Shared/AdditionalSalaryRequestContext';
+import { AdditionalSalaryRequestTestWrapper } from '../AdditionalSalaryRequestTestWrapper';
 import { CompleteForm } from './CompleteForm';
 
 const TestWrapper: React.FC = () => (
-  <AdditionalSalaryRequestProvider>
+  <AdditionalSalaryRequestTestWrapper>
     <CompleteForm />
-  </AdditionalSalaryRequestProvider>
+  </AdditionalSalaryRequestTestWrapper>
 );
 
 describe('SalaryRequestForm', () => {
@@ -22,7 +22,7 @@ describe('SalaryRequestForm', () => {
     expect(getAllByRole('spinbutton')).toHaveLength(15);
   });
 
-  it('updates amount when user enters value', async () => {
+  it('updates amount when user enters value', () => {
     const { getAllByRole, getAllByLabelText } = render(<TestWrapper />);
 
     const inputs = getAllByRole('spinbutton');
@@ -65,12 +65,11 @@ describe('SalaryRequestForm', () => {
   it('renders the 403(b) Deduction checkbox', () => {
     const { getByRole } = render(<TestWrapper />);
 
-    const checkbox = getByRole('checkbox', {
-      name: 'Use default Percentage for 403(b) deduction',
-    });
-
-    expect(checkbox).toBeInTheDocument();
-    expect(checkbox).not.toBeChecked();
+    expect(
+      getByRole('checkbox', {
+        name: 'Use default Percentage for 403(b) deduction',
+      }),
+    ).not.toBeChecked();
   });
 
   it('shows both AdditionalSalaryRequest and Deduction sections', () => {

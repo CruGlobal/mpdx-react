@@ -15,6 +15,7 @@ import { Field, FormikProps } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { useTotalSalaryRequest } from '../../Shared/useTotalSalaryRequest';
 import { CompleteFormValues } from '../CompleteForm';
 
 interface DeductionProps {
@@ -28,15 +29,10 @@ export const Deduction: React.FC<DeductionProps> = ({ formikProps }) => {
 
   const { values } = formikProps;
 
-  // Calculate 12% of total additional salary if checkbox is checked
-  const calculatedDeduction = values.defaultPercentage
-    ? Object.entries(values).reduce((sum, [key, val]) => {
-        if (key === 'defaultPercentage') {
-          return sum;
-        }
-        return sum + Number(val || 0);
-      }, 0) * 0.12
-    : 0;
+  const total = useTotalSalaryRequest(values);
+
+  // TODO: Pull the 12% from the admin rate goal calculator misc constant
+  const calculatedDeduction = values.defaultPercentage ? total * 0.12 : 0;
 
   // Get the contribution403b value from the form
   const contribution403b = Number(values.contribution403b || 0);
