@@ -95,7 +95,7 @@ describe('AdditionalSalaryRequest', () => {
     );
   });
 
-  it('calculates total from multiple fields', async () => {
+  it('calculates total from multiple fields', () => {
     const valuesWithMultiple: CompleteFormValues = {
       ...defaultValues,
       additionalSalary: '5000',

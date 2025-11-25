@@ -15,6 +15,7 @@ import { CurrencyAdornment } from 'src/components/Reports/GoalCalculator/Shared/
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { useCompleteFormCategories } from '../../Shared/useCompleteFormCategories';
+import { useTotalSalaryRequest } from '../../Shared/useTotalSalaryRequest';
 import { CompleteFormValues } from '../CompleteForm';
 
 interface AdditionalSalaryRequestProps {
@@ -33,12 +34,7 @@ export const AdditionalSalaryRequest: React.FC<
   const { values, handleChange, handleBlur, errors, touched } = formikProps;
 
   // Calculate total excluding the defaultPercentage boolean
-  const total = Object.entries(values).reduce((sum, [key, val]) => {
-    if (key === 'defaultPercentage') {
-      return sum;
-    }
-    return sum + Number(val || 0);
-  }, 0);
+  const total = useTotalSalaryRequest(values);
 
   return (
     <Card>
