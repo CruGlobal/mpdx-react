@@ -5,6 +5,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
+import * as yup from 'yup';
 import TestRouter from '__tests__/util/TestRouter';
 import { RentOwnEnum } from 'src/components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
 import theme from 'src/theme';
@@ -13,6 +14,12 @@ import { PageEnum } from '../../../Shared/sharedTypes';
 import { CostOfHome } from './CostOfHome';
 
 const submit = jest.fn();
+
+const mockSchema = {
+  validateSyncAt: jest.fn((_fieldName, _values) => {
+    return null;
+  }),
+} as unknown as yup.Schema;
 
 interface TestComponentProps {
   rentOrOwn?: RentOwnEnum;
@@ -23,7 +30,7 @@ const TestComponent: React.FC<TestComponentProps> = ({ rentOrOwn }) => (
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <TestRouter>
         <Formik initialValues={{}} onSubmit={submit}>
-          <CostOfHome rentOrOwn={rentOrOwn} />
+          <CostOfHome schema={mockSchema} rentOrOwn={rentOrOwn} />
         </Formik>
       </TestRouter>
     </LocalizationProvider>
