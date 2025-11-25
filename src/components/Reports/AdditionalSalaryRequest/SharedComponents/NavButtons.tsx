@@ -9,15 +9,24 @@ const StyledButton = styled(Button)(({ theme }) => ({
 }));
 
 interface SubmitButtonProps {
-  handleClick: () => void;
+  handleClick?: () => void;
+  type?: 'button' | 'submit' | 'reset';
 }
 
-export const SubmitButton: React.FC<SubmitButtonProps> = ({ handleClick }) => {
+export const SubmitButton: React.FC<SubmitButtonProps> = ({
+  handleClick,
+  type = 'button',
+}) => {
   const { t } = useTranslation();
 
   return (
     <Tooltip title={t('Submit your additional salary request.')}>
-      <StyledButton variant="contained" size="small" onClick={handleClick}>
+      <StyledButton
+        variant="contained"
+        size="small"
+        onClick={handleClick}
+        type={type}
+      >
         {t('Submit')}
       </StyledButton>
     </Tooltip>
