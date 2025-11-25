@@ -4,8 +4,8 @@ import { useGoalCalculator } from '../Shared/GoalCalculatorContext';
 import { ContinueButton } from './ContinueButton';
 
 const StyledStack = styled(Stack)(({ theme }) => ({
-  '> *:not(.MuiDivider-root)': {
-    paddingInline: theme.spacing(4),
+  '> .MuiDivider-root': {
+    marginInline: theme.spacing(-4),
   },
 }));
 
