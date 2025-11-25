@@ -37,7 +37,6 @@ export const RequestedSalaryStep: React.FC = () => {
   );
 
   const [self, spouse] = hcm ?? [];
-  const hasSpouse = hcm?.length === 2;
 
   // TODO: Use real minimum salary values when they are available in the API
   const minimumSalary = 55081.96;
@@ -57,7 +56,7 @@ export const RequestedSalaryStep: React.FC = () => {
           Minister&apos;s Housing Allowance. It does not include either Social
           Security (SECA) or 403b. They will be added in later.{' '}
         </Trans>
-        {hasSpouse ? (
+        {spouse ? (
           <Trans t={t}>
             Because of IRS and Cru requirements, the lowest salary you can
             request is {{ minimumSalary: formatSalary(minimumSalary) }}{' '}
@@ -92,9 +91,9 @@ export const RequestedSalaryStep: React.FC = () => {
                 <FormattedTableCell
                   value={self?.currentSalary.grossSalaryAmount}
                 />
-                {hasSpouse && (
+                {spouse && (
                   <FormattedTableCell
-                    value={spouse?.currentSalary.grossSalaryAmount}
+                    value={spouse.currentSalary.grossSalaryAmount}
                   />
                 )}
               </TableRow>
@@ -106,9 +105,7 @@ export const RequestedSalaryStep: React.FC = () => {
                   value={t('Salary Minimum')}
                 />
                 <FormattedTableCell value={minimumSalary} />
-                {hasSpouse && (
-                  <FormattedTableCell value={spouseMinimumSalary} />
-                )}
+                {spouse && <FormattedTableCell value={spouseMinimumSalary} />}
               </TableRow>
 
               <TableRow>
@@ -125,7 +122,7 @@ export const RequestedSalaryStep: React.FC = () => {
                     required
                   />
                 </TableCell>
-                {hasSpouse && (
+                {spouse && (
                   <TableCell>
                     <AutosaveTextField
                       fieldName="spouseSalary"
