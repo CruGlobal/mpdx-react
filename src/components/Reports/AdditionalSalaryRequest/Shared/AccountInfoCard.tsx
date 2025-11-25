@@ -40,7 +40,7 @@ export const AccountInfoCard: React.FC<AccountInfoCardProps> = ({
   const locale = useLocale();
 
   return (
-    <Card sx={{ my: theme.spacing(4) }}>
+    <Card>
       <StyledCardContent>
         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Box>
