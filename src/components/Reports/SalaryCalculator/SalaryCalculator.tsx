@@ -1,10 +1,9 @@
 import React from 'react';
 import { MenuOpenSharp, MenuSharp } from '@mui/icons-material';
-import { Box } from '@mui/material';
+import { Stack } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { IconPanelLayout } from 'src/components/Shared/IconPanelLayout/IconPanelLayout';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import theme from 'src/theme';
 import { CurrentStep } from './CurrentStep';
 import {
   SalaryCalculatorProvider,
@@ -33,7 +32,7 @@ const MainContent: React.FC = () => {
   };
 
   return (
-    <Box px={theme.spacing(3)}>
+    <Stack gap={4} maxWidth={800}>
       <CurrentStep />
       <StepNavigation
         onCancel={handleCancel}
@@ -42,7 +41,7 @@ const MainContent: React.FC = () => {
         isBackDisabled={currentStepIndex === 0}
         isContinueDisabled={currentStepIndex === sectionSteps.length - 1}
       />
-    </Box>
+    </Stack>
   );
 };
 
