@@ -24,7 +24,12 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
   const theme = useTheme();
 
   return (
-    <Box display="flex" justifyContent="space-between" alignItems="center">
+    <Box
+      display="flex"
+      justifyContent="space-between"
+      alignItems="center"
+      padding={theme.spacing(3)}
+    >
       <Button variant="text" onClick={onCancel} color="error">
         <Typography fontWeight="bold">Cancel</Typography>
       </Button>
