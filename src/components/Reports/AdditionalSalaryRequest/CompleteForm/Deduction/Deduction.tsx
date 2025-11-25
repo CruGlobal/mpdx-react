@@ -105,46 +105,63 @@ export const Deduction: React.FC = () => {
                       {currencyFormat(0, 'USD', locale)}
                     </Typography>
                   </Grid>
+                  <Grid item xs={12}>
+                    <Divider />
+                  </Grid>
+                  <Grid item xs={9}>
+                    <Typography variant="body1">
+                      {t('403(b) Contribution Requested as Additional Salary')}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {t(
+                        'This is the sum of the Roth and Traditional amount you entered in the request above.',
+                      )}
+                    </Typography>
+                  </Grid>
+                  <Grid
+                    item
+                    xs={3}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography variant="body1" align="right">
+                      {currencyFormat(0, 'USD', locale)}
+                    </Typography>
+                  </Grid>
+                  <Grid item xs={12}>
+                    <Divider />
+                  </Grid>
+                  <Grid item xs={9}>
+                    <Typography variant="body1" fontWeight="bold">
+                      {t('Total 403(b) Deduction')}
+                    </Typography>
+                  </Grid>
+                  <Grid
+                    item
+                    xs={3}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Typography
+                      variant="body1"
+                      fontWeight="bold"
+                      aria-label="Total requested amount"
+                    >
+                      {currencyFormat(0, 'USD', locale)}
+                    </Typography>
+                  </Grid>
                 </Grid>
               </Form>
             </Formik>
           </Grid>
         </Grid>
       </CardContent>
-
-      <Divider />
-
-      <Box
-        sx={{
-          px: 2,
-          py: 2,
-        }}
-      >
-        <Grid container spacing={theme.spacing(2)} alignItems="center">
-          <Grid item xs={9}>
-            <Typography variant="body1" fontWeight="bold">
-              {t('Total 403(b) Deduction')}
-            </Typography>
-          </Grid>
-          <Grid
-            item
-            xs={3}
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <Typography
-              variant="body1"
-              fontWeight="bold"
-              aria-label="Total requested amount"
-            >
-              {currencyFormat(0, 'USD', locale)}
-            </Typography>
-          </Grid>
-        </Grid>
-      </Box>
     </Card>
   );
 };

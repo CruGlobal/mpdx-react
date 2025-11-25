@@ -183,18 +183,9 @@ export const AdditionalSalaryRequest: React.FC = () => {
                       )}
                     </React.Fragment>
                   ))}
-                </Grid>
-              </CardContent>
-
-              <Divider />
-
-              <Box
-                sx={{
-                  px: 2,
-                  py: 2,
-                }}
-              >
-                <Grid container spacing={theme.spacing(2)} alignItems="center">
+                  <Grid item xs={12}>
+                    <Divider />
+                  </Grid>
                   <Grid item xs={9}>
                     <Typography variant="body1" fontWeight="bold">
                       {t('Total Additional Salary Requested')}
@@ -218,7 +209,7 @@ export const AdditionalSalaryRequest: React.FC = () => {
                     </Typography>
                   </Grid>
                 </Grid>
-              </Box>
+              </CardContent>
             </Card>
           </Form>
         );
