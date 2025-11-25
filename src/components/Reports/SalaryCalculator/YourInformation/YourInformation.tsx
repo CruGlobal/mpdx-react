@@ -2,6 +2,7 @@ import React from 'react';
 import { Typography } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { FourOhThreeBSection } from '../403bSection/403bSection';
+import { MaxAllowableStep } from '../MaxAllowableSection/MaxAllowableSection';
 import { PersonalInformationSection } from '../PersonalInformationSection/PersonalInformationSection';
 import { RequestedSalarySection } from '../RequestedSalarySection/RequestedSalarySection';
 
@@ -18,6 +19,7 @@ export const YourInformationStep: React.FC = () => {
         </Trans>
       </Typography>
       <PersonalInformationSection />
+      <MaxAllowableStep />
       <FourOhThreeBSection />
       <RequestedSalarySection />
     </>

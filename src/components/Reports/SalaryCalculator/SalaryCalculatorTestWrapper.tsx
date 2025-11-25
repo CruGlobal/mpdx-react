@@ -2,7 +2,9 @@ import { ThemeProvider } from '@emotion/react';
 import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
+import { constantsMock } from '../GoalCalculator/GoalCalculatorTestWrapper';
 import { HcmQuery } from './SalaryCalculatorContext/Hcm.generated';
 import { SalaryCalculatorProvider } from './SalaryCalculatorContext/SalaryCalculatorContext';
 
@@ -19,6 +21,7 @@ export const SalaryCalculatorTestWrapper: React.FC<
     <TestRouter>
       <GqlMockedProvider<{
         Hcm: HcmQuery;
+        GoalCalculatorConstants: GoalCalculatorConstantsQuery;
       }>
         mocks={{
           Hcm: {
@@ -38,6 +41,9 @@ export const SalaryCalculatorTestWrapper: React.FC<
                   currentTaxDeferredContributionPercentage: 5,
                   maximumContributionLimit: 45,
                 },
+                exceptionSalaryCap: {
+                  amount: null,
+                },
               },
               ...(hasSpouse
                 ? [
@@ -56,6 +62,9 @@ export const SalaryCalculatorTestWrapper: React.FC<
                   ]
                 : []),
             ],
+          },
+          GoalCalculatorConstants: {
+            constant: constantsMock,
           },
         }}
         onCall={onCall}
