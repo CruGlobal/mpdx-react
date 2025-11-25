@@ -74,42 +74,22 @@ describe('useStepList', () => {
         complete: false,
       },
       {
-        title: '2. Personal Information',
+        title: '2. Your Information',
         current: false,
         complete: false,
       },
       {
-        title: '3. MHA Request',
+        title: '3. Salary Calculation',
         current: false,
         complete: false,
       },
       {
-        title: '4. 403(b) Contribution',
+        title: '4. Summary',
         current: false,
         complete: false,
       },
       {
-        title: '5. Max Allowable Salary',
-        current: false,
-        complete: false,
-      },
-      {
-        title: '6. Requested Salary',
-        current: false,
-        complete: false,
-      },
-      {
-        title: '7. Summary',
-        current: false,
-        complete: false,
-      },
-      {
-        title: '7b. Additional Information',
-        current: false,
-        complete: false,
-      },
-      {
-        title: '8. Receipt',
+        title: '5. Receipt',
         current: false,
         complete: false,
       },

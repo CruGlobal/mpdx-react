@@ -44,42 +44,22 @@ export function useStepList(formType: FormEnum, type?: PageEnum): Steps[] {
               complete: false,
             },
             {
-              title: t('2. Personal Information'),
+              title: t('2. Your Information'),
               current: false,
               complete: false,
             },
             {
-              title: t('3. MHA Request'),
+              title: t('3. Salary Calculation'),
               current: false,
               complete: false,
             },
             {
-              title: t('4. 403(b) Contribution'),
+              title: t('4. Summary'),
               current: false,
               complete: false,
             },
             {
-              title: t('5. Max Allowable Salary'),
-              current: false,
-              complete: false,
-            },
-            {
-              title: t('6. Requested Salary'),
-              current: false,
-              complete: false,
-            },
-            {
-              title: t('7. Summary'),
-              current: false,
-              complete: false,
-            },
-            {
-              title: t('7b. Additional Information'),
-              current: false,
-              complete: false,
-            },
-            {
-              title: t('8. Receipt'),
+              title: t('5. Receipt'),
               current: false,
               complete: false,
             },
