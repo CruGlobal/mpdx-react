@@ -4,16 +4,11 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import theme from 'src/theme';
 import { AutosaveTextField } from '../Autosave/AutosaveTextField';
-import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
-
-interface DateOption {
-  value: string;
-  label: string;
-}
+import { DateOption, useEffectiveDateOptions } from './useEffectiveDateOptions';
 
 export const EffectiveDateStep: React.FC = () => {
   const { t } = useTranslation();
-  const { hcm } = useSalaryCalculator();
+  const dateOptions = useEffectiveDateOptions();
 
   const schema = useMemo(
     () =>
@@ -24,30 +19,6 @@ export const EffectiveDateStep: React.FC = () => {
       }),
     [t],
   );
-
-  const dateOptions = useMemo(() => {
-    // TODO: Add effectiveDates field to HCM GraphQL query
-    // @ts-expect-error - effectiveDates field doesn't exist yet in HCM type
-    const effectiveDates = hcm?.effectiveDates;
-    if (!effectiveDates) {
-      return [];
-    }
-
-    return effectiveDates.map((dateString: string) => {
-      const date = new Date(dateString);
-      const formattedDate = date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      });
-
-      return {
-        value: dateString,
-        label: formattedDate,
-      };
-    });
-    // @ts-expect-error - effectiveDates field doesn't exist yet in HCM type
-  }, [hcm?.effectiveDates]);
 
   return (
     <Box px={theme.spacing(3)} py={theme.spacing(2)}>
