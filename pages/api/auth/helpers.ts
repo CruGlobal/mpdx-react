@@ -1,3 +1,4 @@
+import { createHmac, timingSafeEqual } from 'crypto';
 import { DateTime } from 'luxon';
 import { extractCookie } from 'src/lib/extractCookie';
 import { expireCookieDefaultInfo } from '../utils/cookies';
@@ -7,6 +8,7 @@ interface User {
   userID?: string;
   impersonating?: boolean;
   impersonatorApiToken?: string;
+  isImpersonatorDeveloper?: boolean;
 }
 interface SetUserInfoReturn {
   user: User;
@@ -32,6 +34,18 @@ export const setUserInfo = (
   user.impersonating = !!impersonateJWT;
   user.impersonatorApiToken = impersonateJWT ? token || access_token : '';
 
+  const isImpersonatorDeveloperSigned = extractCookie(
+    reqCookies,
+    'mpdx-handoff.isImpersonatorDeveloper',
+  );
+
+  if (impersonateJWT && isImpersonatorDeveloperSigned) {
+    const unsignedDeveloperValue = verifySignedValue(
+      isImpersonatorDeveloperSigned,
+    );
+    user.isImpersonatorDeveloper = unsignedDeveloperValue === 'true';
+  }
+
   const cookies: string[] = [];
   if (impersonateJWT) {
     cookies.push(`mpdx-handoff.impersonate=; ${expireCookieDefaultInfo}`);
@@ -39,6 +53,11 @@ export const setUserInfo = (
   if (impersonateUserId) {
     cookies.push(
       `mpdx-handoff.accountConflictUserId=; ${expireCookieDefaultInfo}`,
+    );
+  }
+  if (isImpersonatorDeveloperSigned) {
+    cookies.push(
+      `mpdx-handoff.isImpersonatorDeveloper=; ${expireCookieDefaultInfo}`,
     );
   }
   if (token) {
@@ -49,6 +68,55 @@ export const setUserInfo = (
     cookies,
   };
 };
+
+/* Sign a boolean with an expiration time */
+export function signValue(input: boolean, expiresInSeconds = 300): string {
+  const value = input.toString();
+  const signatureExpiresAt = Math.floor(Date.now() / 1000) + expiresInSeconds;
+  const payload = `${value}.${signatureExpiresAt}`;
+
+  const signature = createHmac('sha256', process.env.JWT_SECRET || '')
+    .update(payload)
+    .digest('base64');
+  return `${payload}.${signature}`;
+}
+
+export function verifySignedValue(signedValue: string): string | null {
+  try {
+    const parts = signedValue.split('.');
+    if (parts.length !== 3) {
+      return null;
+    }
+    const [value, expiresAt, providedSignature] = parts;
+    const nowInSeconds = Math.floor(Date.now() / 1000);
+
+    const expiresAtParsed = parseInt(expiresAt, 10);
+    if (!Number.isInteger(expiresAtParsed)) {
+      return null;
+    }
+
+    if (expiresAtParsed < nowInSeconds) {
+      return null;
+    }
+
+    const expectedSignature = createHmac('sha256', process.env.JWT_SECRET || '')
+      .update(`${value}.${expiresAt}`)
+      .digest('base64');
+
+    const providedBuffer = Buffer.from(providedSignature);
+    const expectedBuffer = Buffer.from(expectedSignature);
+
+    if (providedBuffer.length !== expectedBuffer.length) {
+      return null;
+    }
+    if (timingSafeEqual(providedBuffer, expectedBuffer)) {
+      return value;
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
 
 // Determinate whether a JWT is expired without validating its signature
 export const isJwtExpired = (jwt: string): boolean => {

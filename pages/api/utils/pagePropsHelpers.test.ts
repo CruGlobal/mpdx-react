@@ -3,6 +3,8 @@ import { getSession } from 'next-auth/react';
 import { session } from '__tests__/fixtures/session';
 import makeSsrClient from 'src/lib/apollo/ssrClient';
 import {
+  blockImpersonatingNonDevelopers,
+  dashboardRedirect,
   enforceAdmin,
   ensureSessionAndAccountList,
   loginRedirect,
@@ -38,9 +40,22 @@ describe('pagePropsHelpers', () => {
     });
   });
 
+  describe('dashboardRedirect', () => {
+    it('returns redirect to dashboard page', () => {
+      expect(dashboardRedirect(context)).toEqual({
+        redirect: {
+          destination: '/accountLists/account-list-1',
+          permanent: false,
+        },
+      });
+    });
+  });
+
   describe('enforceAdmin', () => {
     it('does not return a redirect if the user is an admin', async () => {
-      (getSession as jest.Mock).mockResolvedValue({ user: { admin: true } });
+      (getSession as jest.Mock).mockResolvedValue({
+        user: { apiToken: 'token', admin: true },
+      });
 
       await expect(enforceAdmin(context)).resolves.not.toMatchObject({
         redirect: {},
@@ -48,7 +63,9 @@ describe('pagePropsHelpers', () => {
     });
 
     it('returns a redirect if the user is not an admin', async () => {
-      (getSession as jest.Mock).mockResolvedValue({ user: { admin: false } });
+      (getSession as jest.Mock).mockResolvedValue({
+        user: { apiToken: 'token', admin: false },
+      });
 
       await expect(enforceAdmin(context)).resolves.toMatchObject({
         redirect: {
@@ -124,6 +141,61 @@ describe('pagePropsHelpers', () => {
             destination: '/accountLists/defaultAccountList',
           },
         });
+      });
+    });
+  });
+
+  describe('blockImpersonatingNonDevelopers', () => {
+    it('redirects to home page if impersonating and not a developer', async () => {
+      const user = {
+        apiToken: 'token',
+        impersonating: true,
+        isImpersonatorDeveloper: false,
+      };
+      (getSession as jest.Mock).mockResolvedValue({ user });
+
+      await expect(
+        blockImpersonatingNonDevelopers(context),
+      ).resolves.toMatchObject({
+        redirect: {
+          destination: '/accountLists/account-list-1',
+          permanent: false,
+        },
+      });
+    });
+
+    it('allows access if user is not impersonating', async () => {
+      const user = {
+        apiToken: 'token',
+        impersonating: false,
+      };
+      (getSession as jest.Mock).mockResolvedValue({ user });
+
+      await expect(
+        blockImpersonatingNonDevelopers(context),
+      ).resolves.toMatchObject({
+        props: {
+          session: { user },
+        },
+      });
+    });
+
+    it('allows access if user is impersonating and is a developer', async () => {
+      const user = {
+        apiToken: 'token',
+        impersonating: true,
+        isImpersonatorDeveloper: true,
+      };
+      (getSession as jest.Mock).mockResolvedValue({
+        user,
+      });
+
+      await expect(
+        blockImpersonatingNonDevelopers(context),
+      ).resolves.toMatchObject({
+        props: {
+          session: { user },
+        },
       });
     });
   });

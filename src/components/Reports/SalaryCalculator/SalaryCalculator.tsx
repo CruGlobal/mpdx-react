@@ -56,6 +56,7 @@ export const SalaryCalculator: React.FC = () => (
 export const SalaryCalculatorContent: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
+
   const { isDrawerOpen, toggleDrawer, steps } = useSalaryCalculator();
 
   return (

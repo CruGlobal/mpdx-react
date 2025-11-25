@@ -21,11 +21,11 @@ import {
   MpdGoalBenefitsConstantPlanEnum,
   MpdGoalBenefitsConstantSizeEnum,
 } from 'src/graphql/types.generated';
+import { amount, integer, percentage } from 'src/lib/yupHelpers';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
 import { hasStaffSpouse } from '../../../Shared/calculateTotals';
 import { InformationCategoryFinancialForm } from './InformationCategoryForm/InformationCategoryFinancialForm';
 import { InformationCategoryPersonalForm } from './InformationCategoryForm/InformationCategoryPersonalForm';
-import { amount, integer, percentage } from './schema';
 
 const StyledInfoBox = styled(Box)({
   borderBottom: 1,

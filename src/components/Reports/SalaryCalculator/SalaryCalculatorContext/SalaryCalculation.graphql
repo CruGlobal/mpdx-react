@@ -1,0 +1,13 @@
+query SalaryCalculation {
+  salaryRequest: latestSalaryRequest(status: [IN_PROGRESS]) {
+    id
+    effectiveDate
+    location
+    mhaAmount
+    spouseMhaAmount
+    salaryCap
+    spouseSalaryCap
+    salary
+    spouseSalary
+  }
+}

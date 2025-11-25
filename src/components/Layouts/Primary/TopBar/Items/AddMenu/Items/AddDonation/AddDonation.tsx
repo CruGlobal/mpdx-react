@@ -27,8 +27,8 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { requiredDateTime } from 'src/lib/formikHelpers';
 import i18n from 'src/lib/i18n';
+import { requiredDateTime } from 'src/lib/yupHelpers';
 import {
   useAddDonationMutation,
   useGetDonationModalQuery,
