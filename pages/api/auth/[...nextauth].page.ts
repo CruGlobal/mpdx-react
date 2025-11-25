@@ -32,6 +32,7 @@ declare module 'next-auth' {
       userID: string;
       impersonating?: boolean;
       impersonatorApiToken?: string;
+      isImpersonatorDeveloper?: boolean;
     };
   }
 
@@ -40,6 +41,7 @@ declare module 'next-auth' {
     userID?: string;
     impersonating?: boolean;
     impersonatorApiToken?: string;
+    isImpersonatorDeveloper?: boolean;
   }
 }
 
@@ -51,6 +53,7 @@ declare module 'next-auth/jwt' {
     userID?: string;
     impersonating?: boolean;
     impersonatorApiToken?: string;
+    isImpersonatorDeveloper?: boolean;
   }
 }
 
@@ -175,6 +178,8 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
           user.userID = userInfo.userID;
           user.impersonating = userInfo.impersonating;
           user.impersonatorApiToken = userInfo.impersonatorApiToken;
+          user.isImpersonatorDeveloper = userInfo.isImpersonatorDeveloper;
+
           if (cookies) {
             res.setHeader('Set-Cookie', cookies);
           }
@@ -241,13 +246,21 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
             userID: user.userID,
             impersonating: user.impersonating,
             impersonatorApiToken: user.impersonatorApiToken,
+            isImpersonatorDeveloper: user.isImpersonatorDeveloper,
           };
         } else {
           return token;
         }
       },
       session: ({ session, token }) => {
-        const { admin, developer, apiToken, userID, impersonating } = token;
+        const {
+          admin,
+          developer,
+          apiToken,
+          userID,
+          impersonating,
+          isImpersonatorDeveloper,
+        } = token;
 
         // Check the expiration of the API token JWT without verifying its signature
         // Throwing an exception here will cause a redirect to the login page
@@ -264,6 +277,7 @@ const Auth = (req: NextApiRequest, res: NextApiResponse): Promise<void> => {
             apiToken,
             userID,
             impersonating,
+            isImpersonatorDeveloper,
           },
         };
       },
