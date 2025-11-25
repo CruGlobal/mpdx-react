@@ -58,4 +58,28 @@ describe('MaxAllowableSection', () => {
       );
     });
   });
+
+  it('warns when input total exceeds the cap', async () => {
+    const { findByRole } = render(
+      <TestComponent maxSalary={75000} spouseMaxSalary={75000} />,
+    );
+
+    const input = await findByRole('textbox', {
+      name: 'Maximum Allowable Salary',
+    });
+    userEvent.clear(input);
+    userEvent.type(input, '85000');
+    input.blur();
+
+    const spouseInput = await findByRole('textbox', {
+      name: 'Spouse Maximum Allowable Salary',
+    });
+    userEvent.clear(spouseInput);
+    userEvent.type(spouseInput, '85000');
+    spouseInput.blur();
+
+    expect(await findByRole('alert')).toHaveTextContent(
+      'Your combined maximum allowable salary exceeds your maximum allowable salary of $150,000.00',
+    );
+  });
 });
