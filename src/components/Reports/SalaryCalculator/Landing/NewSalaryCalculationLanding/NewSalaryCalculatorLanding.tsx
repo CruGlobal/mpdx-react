@@ -5,9 +5,9 @@ import { useTranslation } from 'react-i18next';
 import Loading from 'src/components/Loading/Loading';
 import { NoStaffAccount } from 'src/components/Reports/Shared/NoStaffAccount/NoStaffAccount';
 // import { PartTimeInfo } from './PartTimeInfo';
-import { SalaryInformationCard } from './SalaryInformationCard';
+import { SalaryInformationCard } from '../SalaryInformationCard';
+import { useLandingData } from '../useLandingData';
 import { SalaryOverviewCard } from './SalaryOverviewCard';
-import { useLandingData } from './useLandingData';
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   paddingTop: theme.spacing(4),

@@ -6,7 +6,7 @@ import { IconPanelLayout } from 'src/components/Shared/IconPanelLayout/IconPanel
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import { CurrentStep } from './CurrentStep';
-import { NewSalaryCalculatorLanding } from './Landing/NewSalaryCalculatorLanding';
+import { NewSalaryCalculatorLanding } from './Landing/NewSalaryCalculationLanding/NewSalaryCalculatorLanding';
 import {
   SalaryCalculatorProvider,
   useSalaryCalculator,

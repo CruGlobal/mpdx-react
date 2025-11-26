@@ -11,7 +11,7 @@ import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
-import { useLandingData } from './useLandingData';
+import { useLandingData } from '../useLandingData';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   marginTop: theme.spacing(3),
