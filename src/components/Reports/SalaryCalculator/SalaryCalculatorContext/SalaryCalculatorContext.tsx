@@ -34,7 +34,7 @@ export interface SalaryCalculatorContextType {
   startCalculation: () => void;
 
   hcm: HcmQuery['hcm'] | null;
-  calculation: SalaryCalculationQuery['latestSalaryRequest'] | null;
+  calculation: SalaryCalculationQuery['salaryRequest'] | null;
 }
 
 const SalaryCalculatorContext =
@@ -95,7 +95,7 @@ export const SalaryCalculatorProvider: React.FC<
       hasStartedCalculation,
       startCalculation,
       hcm: hcmData?.hcm ?? null,
-      calculation: calculationData?.latestSalaryRequest ?? null,
+      calculation: calculationData?.salaryRequest ?? null,
     }),
     [
       sectionSteps,
