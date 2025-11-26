@@ -4,6 +4,7 @@ import { useTheme } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
 import { AccountInfoCard } from '../Shared/AccountInfoCard';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
+import { getHeader } from '../Shared/Helper/getHeader';
 import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSalaryRequestSection';
 import { CancelButton, ContinueButton } from '../SharedComponents/NavButtons';
 
@@ -19,7 +20,7 @@ export const AboutForm: React.FC = () => {
   const remainingAllowableSalary = 17500.0;
 
   return (
-    <AdditionalSalaryRequestSection title={currentStep}>
+    <AdditionalSalaryRequestSection title={getHeader(t, currentStep)}>
       <Trans t={t}>
         <Typography variant="body1" paragraph>
           You can use this form to electronically submit additional salary

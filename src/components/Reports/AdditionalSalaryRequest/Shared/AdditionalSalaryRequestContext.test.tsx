@@ -31,7 +31,7 @@ describe('AdditionalSalaryRequestContext', () => {
     const { findByRole } = render(<TestWrapper />);
 
     expect(
-      await findByRole('heading', { name: 'about-form' }),
+      await findByRole('heading', { name: 'About the Form' }),
     ).toBeInTheDocument();
   });
 
@@ -40,7 +40,7 @@ describe('AdditionalSalaryRequestContext', () => {
 
     userEvent.click(getByRole('button', { name: 'Change Section' }));
     expect(
-      await findByRole('heading', { name: 'complete-form' }),
+      await findByRole('heading', { name: 'Complete the Form' }),
     ).toBeInTheDocument();
   });
 

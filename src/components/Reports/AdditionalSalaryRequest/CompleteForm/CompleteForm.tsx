@@ -18,6 +18,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { AccountInfoCard } from '../Shared/AccountInfoCard';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
+import { getHeader } from '../Shared/Helper/getHeader';
 import { useCompleteFormCategories } from '../Shared/useCompleteFormCategories';
 import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSalaryRequestSection';
 import {
@@ -112,7 +113,7 @@ export const CompleteForm: React.FC = () => {
   };
 
   return (
-    <AdditionalSalaryRequestSection title={currentStep}>
+    <AdditionalSalaryRequestSection title={getHeader(t, currentStep)}>
       <AccountInfoCard
         name={name}
         accountNumber={accountNumber}

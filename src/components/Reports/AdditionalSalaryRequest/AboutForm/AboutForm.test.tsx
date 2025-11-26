@@ -20,7 +20,7 @@ jest.mock('../Shared/AdditionalSalaryRequestContext', () => {
     ...originalModule,
     useAdditionalSalaryRequest: () => ({
       ...originalModule.useAdditionalSalaryRequest(),
-      handleContinue: mockHandleContinue,
+      handleNextStep: mockHandleContinue,
     }),
   };
 });
@@ -48,7 +48,7 @@ describe('AboutForm', () => {
   it('should render the about form content', () => {
     const { getByText } = render(<TestWrapper />);
 
-    expect(getByText('About this Form')).toBeInTheDocument();
+    expect(getByText('About the Form')).toBeInTheDocument();
     expect(
       getByText(
         'You can use this form to electronically submit additional salary requests. Please note:',

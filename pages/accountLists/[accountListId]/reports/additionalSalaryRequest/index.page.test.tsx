@@ -26,7 +26,7 @@ describe('AdditionalSalaryRequest page', () => {
     const { findByRole } = render(<TestComponent />);
 
     expect(
-      await findByRole('heading', { name: 'About this Form' }),
+      await findByRole('heading', { name: 'About the Form' }),
     ).toBeInTheDocument();
   });
 
