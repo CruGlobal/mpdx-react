@@ -2,28 +2,22 @@ import Link from 'next/link';
 import React from 'react';
 import { WorkspacePremiumSharp } from '@mui/icons-material';
 import {
+  Avatar,
   Box,
-  Card,
   CardContent,
   CardHeader,
   Grid,
   Table,
   TableBody,
   TableCell,
-  TableContainer,
   TableHead,
   TableRow,
   Typography,
 } from '@mui/material';
-import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { StepCard } from '../Shared/StepCard';
 import { useLandingData } from './useLandingData';
-
-const StyledCard = styled(Card)(({ theme }) => ({
-  marginTop: theme.spacing(3),
-  marginBottom: theme.spacing(3),
-}));
 
 export const SalaryInformationCard: React.FC = () => {
   const { t } = useTranslation();
@@ -31,10 +25,12 @@ export const SalaryInformationCard: React.FC = () => {
   const { self, spouse, hasSpouse, salaryCategories } = useLandingData();
 
   return (
-    <StyledCard>
+    <StepCard sx={{ my: 3 }}>
       <CardHeader
         avatar={
-          <WorkspacePremiumSharp color="success" sx={{ fontSize: 48 }} />
+          <Avatar sx={{ bgcolor: 'success.main' }}>
+            <WorkspacePremiumSharp sx={{ fontSize: 32, color: 'white' }} />
+          </Avatar>
         }
         title={
           <Grid container direction="column" spacing={0}>
@@ -51,105 +47,54 @@ export const SalaryInformationCard: React.FC = () => {
           </Grid>
         }
       />
-      <CardContent sx={{ p: 0 }}>
-        <TableContainer sx={(theme) => ({ px: theme.spacing(3) })}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell sx={(theme) => ({ paddingLeft: theme.spacing(3) })}>
-                  <Typography color="primary" fontWeight="bold">
-                    {t('Category')}
-                  </Typography>
+      <CardContent>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell scope="col">{t('Category')}</TableCell>
+              <TableCell scope="col">{self?.staffInfo.firstName}</TableCell>
+              {hasSpouse && (
+                <TableCell scope="col">{spouse?.staffInfo.firstName}</TableCell>
+              )}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {salaryCategories.map((row) => (
+              <TableRow key={row.category}>
+                <TableCell component="th" scope="row">
+                  {row.category}
                 </TableCell>
-                <TableCell
-                  align="left"
-                  sx={(theme) => ({ paddingLeft: theme.spacing(3) })}
-                >
-                  <Typography color="primary" fontWeight="bold">
-                    {self?.staffInfo.firstName}
-                  </Typography>
-                </TableCell>
-                {hasSpouse && (
-                  <TableCell
-                    align="left"
-                    sx={(theme) => ({ paddingLeft: theme.spacing(3) })}
-                  >
-                    <Typography color="primary" fontWeight="bold">
-                      {spouse?.staffInfo.firstName}
-                    </Typography>
-                  </TableCell>
-                )}
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {salaryCategories.map((row, index) => (
-                <TableRow key={row.category}>
-                  <TableCell
-                    component="th"
-                    scope="row"
-                    sx={(theme) => ({
-                      paddingLeft: theme.spacing(3),
-                      ...(index === salaryCategories.length - 1 && {
-                        borderBottom: 'none',
-                      }),
-                    })}
-                  >
-                    <Typography>{row.category}</Typography>
-                  </TableCell>
-                  <TableCell
-                    align="left"
-                    sx={(theme) => ({
-                      paddingLeft: theme.spacing(3),
-                      ...(index === salaryCategories.length - 1 && {
-                        borderBottom: 'none',
-                      }),
-                    })}
-                  >
-                    {row.category === t('Current MHA') ? (
-                      <Box
-                        sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+                <TableCell>
+                  {row.category === t('Current MHA') ? (
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      {row.user ?? ''}
+                      <Link
+                        href={`/accountLists/${accountListId}/reports/housingAllowance`}
+                        passHref
+                        legacyBehavior
                       >
-                        <Typography>{row.user ?? ''}</Typography>
-                        <Link
-                          href={`/accountLists/${accountListId}/reports/housingAllowance`}
-                          passHref
-                          legacyBehavior
+                        <Typography
+                          component="a"
+                          sx={{
+                            color: 'primary.main',
+                            textDecoration: 'underline',
+                            cursor: 'pointer',
+                          }}
                         >
-                          <Typography
-                            component="a"
-                            sx={{
-                              color: 'primary.main',
-                              textDecoration: 'underline',
-                              cursor: 'pointer',
-                            }}
-                          >
-                            {t('View')}
-                          </Typography>
-                        </Link>
-                      </Box>
-                    ) : (
-                      <Typography>{row.user ?? ''}</Typography>
-                    )}
-                  </TableCell>
-                  {hasSpouse && (
-                    <TableCell
-                      align="left"
-                      sx={(theme) => ({
-                        paddingLeft: theme.spacing(3),
-                        ...(index === salaryCategories.length - 1 && {
-                          borderBottom: 'none',
-                        }),
-                      })}
-                    >
-                      <Typography>{row.spouse ?? ''}</Typography>
-                    </TableCell>
+                          {t('View')}
+                        </Typography>
+                      </Link>
+                    </Box>
+                  ) : (
+                    row.user ?? ''
                   )}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                </TableCell>
+                {hasSpouse && <TableCell>{row.spouse ?? ''}</TableCell>}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </CardContent>
-    </StyledCard>
+    </StepCard>
   );
 };
