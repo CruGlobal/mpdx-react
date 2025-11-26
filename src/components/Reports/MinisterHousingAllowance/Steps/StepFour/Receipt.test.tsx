@@ -5,6 +5,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import {
   MinisterHousingAllowanceProvider,
@@ -27,9 +28,14 @@ const TestComponent: React.FC<TestComponentProps> = ({
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <TestRouter>
-        <MinisterHousingAllowanceProvider>
-          <Receipt availableDate={availableDate} deadlineDate={deadlineDate} />
-        </MinisterHousingAllowanceProvider>
+        <GqlMockedProvider>
+          <MinisterHousingAllowanceProvider>
+            <Receipt
+              availableDate={availableDate}
+              deadlineDate={deadlineDate}
+            />
+          </MinisterHousingAllowanceProvider>
+        </GqlMockedProvider>
       </TestRouter>
     </LocalizationProvider>
   </ThemeProvider>

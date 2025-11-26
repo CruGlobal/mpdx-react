@@ -1,19 +1,18 @@
 import { Box, Typography } from '@mui/material';
-import { Trans } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 
 interface EligibleDisplayProps {
-  title: string;
   isPending: boolean;
 }
 
 export const EligibleDisplay: React.FC<EligibleDisplayProps> = ({
-  title,
   isPending,
 }) => {
+  const { t } = useTranslation();
   return (
     <>
       <Box mb={2}>
-        <Typography variant="h5">{title}</Typography>
+        <Typography variant="h5">{t('Your MHA')}</Typography>
       </Box>
       <Box>
         {isPending ? (

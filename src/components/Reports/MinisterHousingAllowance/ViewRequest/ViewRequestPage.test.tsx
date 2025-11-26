@@ -4,6 +4,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import {
   MinisterHousingAllowanceProvider,
@@ -19,9 +20,11 @@ const setIsPrint = jest.fn();
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <TestRouter>
-      <MinisterHousingAllowanceProvider>
-        <ViewRequestPage />
-      </MinisterHousingAllowanceProvider>
+      <GqlMockedProvider>
+        <MinisterHousingAllowanceProvider>
+          <ViewRequestPage />
+        </MinisterHousingAllowanceProvider>
+      </GqlMockedProvider>
     </TestRouter>
   </ThemeProvider>
 );

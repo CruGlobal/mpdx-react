@@ -3,6 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { MinisterHousingAllowanceProvider } from '../Shared/Context/MinisterHousingAllowanceContext';
 import { PageEnum } from '../Shared/sharedTypes';
@@ -11,9 +12,11 @@ import { EditRequestPage } from './EditRequestPage';
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <TestRouter>
-      <MinisterHousingAllowanceProvider type={PageEnum.Edit}>
-        <EditRequestPage />
-      </MinisterHousingAllowanceProvider>
+      <GqlMockedProvider>
+        <MinisterHousingAllowanceProvider type={PageEnum.Edit}>
+          <EditRequestPage />
+        </MinisterHousingAllowanceProvider>
+      </GqlMockedProvider>
     </TestRouter>
   </ThemeProvider>
 );

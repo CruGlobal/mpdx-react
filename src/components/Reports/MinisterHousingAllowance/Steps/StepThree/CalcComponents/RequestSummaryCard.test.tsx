@@ -3,6 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { RentOwnEnum } from 'src/components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
 import theme from 'src/theme';
 import { MinisterHousingAllowanceProvider } from '../../../Shared/Context/MinisterHousingAllowanceContext';
@@ -16,11 +17,13 @@ interface TestComponentProps {
 const TestComponent: React.FC<TestComponentProps> = ({ rentOrOwn }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
-      <MinisterHousingAllowanceProvider>
-        <Formik initialValues={{}} onSubmit={submit}>
-          <RequestSummaryCard rentOrOwn={rentOrOwn} />
-        </Formik>
-      </MinisterHousingAllowanceProvider>
+      <GqlMockedProvider>
+        <MinisterHousingAllowanceProvider>
+          <Formik initialValues={{}} onSubmit={submit}>
+            <RequestSummaryCard rentOrOwn={rentOrOwn} />
+          </Formik>
+        </MinisterHousingAllowanceProvider>
+      </GqlMockedProvider>
     </TestRouter>
   </ThemeProvider>
 );

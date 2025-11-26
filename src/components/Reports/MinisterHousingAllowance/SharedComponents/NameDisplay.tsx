@@ -1,21 +1,25 @@
 import { Box, Card, Typography } from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import { PersonInfo } from '../Shared/mockData';
+import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
 
-interface NameDisplayProps {
-  isMarried: boolean;
-  staff: PersonInfo;
-  spouse?: PersonInfo | null;
-}
+export const NameDisplay: React.FC = () => {
+  const {
+    isMarried,
+    preferredName,
+    spousePreferredName,
+    userHcmData,
+    spouseHcmData,
+  } = useMinisterHousingAllowance();
+  const personNumber = userHcmData?.staffInfo?.personNumber ?? '';
+  const spousePersonNumber = spouseHcmData?.staffInfo?.personNumber ?? '';
+  const lastName = userHcmData?.staffInfo?.lastName ?? '';
+  const spouseLastName = spouseHcmData?.staffInfo?.lastName ?? '';
 
-export const NameDisplay: React.FC<NameDisplayProps> = ({
-  isMarried,
-  staff,
-  spouse,
-}) => {
-  const { t } = useTranslation();
-  const spouseName = spouse ? spouse.name.split(', ')[1] : '';
-  const spouseId = spouse ? spouse.id : t('N/A');
+  const names = isMarried
+    ? `${preferredName} ${lastName} and ${spousePreferredName} ${spouseLastName}`
+    : `${preferredName} ${lastName}`;
+  const personNumbers = isMarried
+    ? `${personNumber} and ${spousePersonNumber}`
+    : personNumber;
 
   return (
     <Box sx={{ mt: 2 }}>
@@ -23,23 +27,12 @@ export const NameDisplay: React.FC<NameDisplayProps> = ({
         variant="outlined"
         sx={{ padding: 2, marginBottom: 2, boxShadow: 1 }}
       >
-        {isMarried ? (
-          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-            <Typography variant="h6">{`${staff.name} and ${spouseName}`}</Typography>
-            <Typography
-              variant="subtitle1"
-              sx={{ color: 'text.secondary' }}
-            >{`${staff.id} and ${spouseId}`}</Typography>
-          </Box>
-        ) : (
-          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-            <Typography variant="h5">{staff.name}</Typography>
-            <Typography
-              variant="subtitle1"
-              sx={{ color: 'text.secondary' }}
-            >{`(${staff.id})`}</Typography>
-          </Box>
-        )}
+        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+          <Typography variant="h6">{names}</Typography>
+          <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
+            {personNumbers}
+          </Typography>
+        </Box>
       </Card>
     </Box>
   );
