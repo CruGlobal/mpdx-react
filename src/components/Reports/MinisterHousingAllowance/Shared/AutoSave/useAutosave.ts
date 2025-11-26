@@ -42,7 +42,6 @@ export const useAutoSave = <Value extends string | number | boolean>({
   const isEditing = (name: string) => {
     return focused === name;
   };
-
   const [hasInteracted, setHasInteracted] = useState(false);
 
   const [internalValue, setInternalValue] = useSyncedState(
