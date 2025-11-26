@@ -46,6 +46,7 @@ export const useLandingData = () => {
 
   const salaryData = useMemo(() => {
     const currentGrossSalary = self?.currentSalary.grossSalaryAmount ?? 0;
+    const lastUpdated = self?.currentSalary.lastUpdated ?? '';
     const spouseCurrentGrossSalary =
       spouse?.currentSalary.grossSalaryAmount ?? 0;
 
@@ -61,6 +62,7 @@ export const useLandingData = () => {
 
     return {
       currentGrossSalary,
+      lastUpdated,
       spouseCurrentGrossSalary,
       rothContribution,
       spouseRothContribution,
@@ -143,6 +145,7 @@ export const useLandingData = () => {
     self,
     spouse,
     hasSpouse,
+    lastUpdated: salaryData.lastUpdated,
     // supportStatus,
     currentGrossSalary: salaryData.currentGrossSalary,
     spouseCurrentGrossSalary: salaryData.spouseCurrentGrossSalary,
