@@ -6,6 +6,7 @@ import { IconPanelLayout } from 'src/components/Shared/IconPanelLayout/IconPanel
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import { CurrentStep } from './CurrentStep';
+import { NewSalaryCalculatorLanding } from './Landing/NewSalaryCalculationLanding/NewSalaryCalculatorLanding';
 import {
   SalaryCalculatorProvider,
   useSalaryCalculator,
@@ -55,8 +56,24 @@ export const SalaryCalculator: React.FC = () => (
 export const SalaryCalculatorContent: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const { selectedSection, stepStatus, isDrawerOpen, toggleDrawer } =
-    useSalaryCalculator();
+  const {
+    selectedSection,
+    stepStatus,
+    isDrawerOpen,
+    toggleDrawer,
+    hasStartedCalculation,
+    startCalculation,
+    calculation,
+  } = useSalaryCalculator();
+
+  if (!hasStartedCalculation) {
+    return (
+      <NewSalaryCalculatorLanding
+        onStartCalculation={startCalculation}
+        hasExistingCalculation={!!calculation}
+      />
+    );
+  }
 
   const iconPanelItems = [
     {
