@@ -1,5 +1,6 @@
 import React from 'react';
 import { Card, CardContent, Typography } from '@mui/material';
+import theme from 'src/theme';
 import { useLandingData } from '../useLandingData';
 
 export const StaffNameCard: React.FC = () => {
@@ -9,7 +10,7 @@ export const StaffNameCard: React.FC = () => {
   const spouseFirstName = hasSpouse ? spouse?.staffInfo.firstName || '' : '';
 
   return (
-    <Card sx={{ my: 3 }}>
+    <Card sx={{ marginBlock: theme.spacing(3) }}>
       <CardContent>
         <Typography variant="h5">
           {lastName}, {firstName}

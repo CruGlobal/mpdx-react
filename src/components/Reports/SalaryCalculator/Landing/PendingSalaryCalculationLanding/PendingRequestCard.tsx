@@ -17,9 +17,17 @@ import {
   CardHeader,
   IconButton,
   Typography,
+  styled,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import theme from 'src/theme';
 import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
+
+const StyledTimelineItem = styled(TimelineItem)({
+  '&::before': {
+    content: 'none',
+  },
+});
 
 export const PendingRequestCard: React.FC = () => {
   const { t } = useTranslation();
@@ -30,18 +38,15 @@ export const PendingRequestCard: React.FC = () => {
     : t('N/A');
 
   return (
-    <Card sx={{ my: 3 }}>
+    <Card sx={{ my: theme.spacing(3) }}>
       <CardHeader
         avatar={
           <Avatar sx={{ bgcolor: 'orange' }}>
             <PriceCheckSharp />
           </Avatar>
         }
-        title={
-          <Typography variant="h6">
-            {t('Pending Salary Calculation Form')}
-          </Typography>
-        }
+        title={t('Pending Salary Calculation Form')}
+        titleTypographyProps={{ variant: 'h6' }}
         action={
           <IconButton aria-label={t('Download')}>
             <Download />
@@ -52,17 +57,11 @@ export const PendingRequestCard: React.FC = () => {
         <Timeline
           position="right"
           sx={{
-            padding: 0,
-            margin: 0,
+            padding: theme.spacing(0),
+            margin: theme.spacing(0),
           }}
         >
-          <TimelineItem
-            sx={{
-              '&::before': {
-                content: 'none',
-              },
-            }}
-          >
+          <StyledTimelineItem>
             <TimelineSeparator>
               <TimelineDot color="success" />
               <TimelineConnector />
@@ -72,15 +71,9 @@ export const PendingRequestCard: React.FC = () => {
                 {t('Requested on')}: {requestDate}
               </Typography>
             </TimelineContent>
-          </TimelineItem>
+          </StyledTimelineItem>
 
-          <TimelineItem
-            sx={{
-              '&::before': {
-                content: 'none',
-              },
-            }}
-          >
+          <StyledTimelineItem>
             <TimelineSeparator>
               <TimelineDot color="primary" />
               <TimelineConnector />
@@ -93,15 +86,9 @@ export const PendingRequestCard: React.FC = () => {
                 {t('Your request is being reviewed')}
               </Typography>
             </TimelineContent>
-          </TimelineItem>
+          </StyledTimelineItem>
 
-          <TimelineItem
-            sx={{
-              '&::before': {
-                content: 'none',
-              },
-            }}
-          >
+          <StyledTimelineItem>
             <TimelineSeparator>
               <TimelineDot color="grey" />
             </TimelineSeparator>
@@ -114,10 +101,16 @@ export const PendingRequestCard: React.FC = () => {
                 {t('Request complete')}
               </Typography>
             </TimelineContent>
-          </TimelineItem>
+          </StyledTimelineItem>
         </Timeline>
       </CardContent>
-      <CardActions sx={{ justifyContent: 'space-between', px: 2, pb: 2 }}>
+      <CardActions
+        sx={{
+          justifyContent: 'space-between',
+          paddingInline: theme.spacing(2),
+          paddingBottom: theme.spacing(2),
+        }}
+      >
         <Button variant="contained">{t('View Request')}</Button>
         <IconButton aria-label={t('Delete')} color="error">
           <Delete />
