@@ -90,10 +90,14 @@ export const useLandingData = () => {
       {
         category: t('Maximum Allowable Salary'),
         user: calculation?.salaryCap
-          ? currencyFormat(calculation.salaryCap, 'USD', locale)
+          ? currencyFormat(calculation.salaryCap, 'USD', locale, {
+              showTrailingZeros: true,
+            })
           : '-',
         spouse: calculation?.spouseSalaryCap
-          ? currencyFormat(calculation.spouseSalaryCap, 'USD', locale)
+          ? currencyFormat(calculation.spouseSalaryCap, 'USD', locale, {
+              showTrailingZeros: true,
+            })
           : '-',
       },
       {
@@ -122,19 +126,27 @@ export const useLandingData = () => {
       {
         category: t('Gross Salary'),
         user: salaryData.currentGrossSalary
-          ? currencyFormat(salaryData.currentGrossSalary, 'USD', locale)
+          ? currencyFormat(salaryData.currentGrossSalary, 'USD', locale, {
+              showTrailingZeros: true,
+            })
           : '-',
         spouse: salaryData.spouseCurrentGrossSalary
-          ? currencyFormat(salaryData.spouseCurrentGrossSalary, 'USD', locale)
+          ? currencyFormat(salaryData.spouseCurrentGrossSalary, 'USD', locale, {
+              showTrailingZeros: true,
+            })
           : '-',
       },
       {
         category: t('Current MHA'),
         user: calculation?.mhaAmount
-          ? currencyFormat(calculation.mhaAmount, 'USD', locale)
+          ? currencyFormat(calculation.mhaAmount, 'USD', locale, {
+              showTrailingZeros: true,
+            })
           : '-',
         spouse: calculation?.spouseMhaAmount
-          ? currencyFormat(calculation.spouseMhaAmount, 'USD', locale)
+          ? currencyFormat(calculation.spouseMhaAmount, 'USD', locale, {
+              showTrailingZeros: true,
+            })
           : '-',
       },
     ],
@@ -151,13 +163,20 @@ export const useLandingData = () => {
     hasSpouse,
     lastUpdated: salaryData.lastUpdated,
     // supportStatus,
-    currentGrossSalary: salaryData.currentGrossSalary,
+    currentGrossSalary: currencyFormat(
+      salaryData.currentGrossSalary,
+      'USD',
+      locale,
+      { showTrailingZeros: true },
+    ),
     spouseCurrentGrossSalary: salaryData.spouseCurrentGrossSalary,
     rothContribution: salaryData.rothContribution,
     spouseRothContribution: salaryData.spouseRothContribution,
     taxDeferredContribution: salaryData.taxDeferredContribution,
     spouseTaxDeferredContribution: salaryData.spouseTaxDeferredContribution,
     salaryCategories,
-    accountBalance,
+    accountBalance: currencyFormat(accountBalance, 'USD', locale, {
+      showTrailingZeros: true,
+    }),
   };
 };
