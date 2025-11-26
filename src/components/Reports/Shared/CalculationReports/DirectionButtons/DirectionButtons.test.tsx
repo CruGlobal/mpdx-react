@@ -4,6 +4,8 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { MinisterHousingAllowanceProvider } from 'src/components/Reports/MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
 import theme from 'src/theme';
 import { DirectionButtons } from './DirectionButtons';
 
@@ -34,16 +36,20 @@ const TestComponent: React.FC<TestComponentProps> = ({
         query: { accountListId: 'account-list-1' },
       }}
     >
-      <Formik initialValues={{}} onSubmit={submit}>
-        <DirectionButtons
-          isSubmission={isSubmission}
-          handleNextStep={handleNextStep}
-          handlePreviousStep={handlePreviousStep}
-          overrideNext={overrideNext}
-          showBackButton={showBackButton}
-          buttonTitle={buttonTitle}
-        />
-      </Formik>
+      <GqlMockedProvider>
+        <Formik initialValues={{}} onSubmit={submit}>
+          <MinisterHousingAllowanceProvider>
+            <DirectionButtons
+              isSubmission={isSubmission}
+              handleNextStep={handleNextStep}
+              handlePreviousStep={handlePreviousStep}
+              overrideNext={overrideNext}
+              showBackButton={showBackButton}
+              buttonTitle={buttonTitle}
+            />
+          </MinisterHousingAllowanceProvider>
+        </Formik>
+      </GqlMockedProvider>
     </TestRouter>
   </ThemeProvider>
 );

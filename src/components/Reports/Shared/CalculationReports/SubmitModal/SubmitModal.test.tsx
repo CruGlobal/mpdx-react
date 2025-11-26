@@ -3,6 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { MinisterHousingAllowanceProvider } from '../../../MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
 import { PageEnum } from '../Shared/sharedTypes';
@@ -36,19 +37,21 @@ const TestComponent: React.FC<TestComponentProps> = ({
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
-      <MinisterHousingAllowanceProvider type={pageType}>
-        <SubmitModal
-          formTitle={formTitle}
-          handleClose={handleClose}
-          handleConfirm={handleConfirm}
-          overrideTitle={overrideTitle}
-          overrideContent={overrideContent}
-          overrideSubContent={overrideSubContent}
-          isCancel={isCancel}
-          deadlineDate={date}
-          actionRequired={actionRequired}
-        />
-      </MinisterHousingAllowanceProvider>
+      <GqlMockedProvider>
+        <MinisterHousingAllowanceProvider type={pageType}>
+          <SubmitModal
+            formTitle={formTitle}
+            handleClose={handleClose}
+            handleConfirm={handleConfirm}
+            overrideTitle={overrideTitle}
+            overrideContent={overrideContent}
+            overrideSubContent={overrideSubContent}
+            isCancel={isCancel}
+            deadlineDate={date}
+            actionRequired={actionRequired}
+          />
+        </MinisterHousingAllowanceProvider>
+      </GqlMockedProvider>
     </TestRouter>
   </ThemeProvider>
 );

@@ -5,6 +5,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { PanelTypeEnum } from '../Shared/sharedTypes';
 import { IconPanelItem, PanelLayout, PanelLayoutProps } from './PanelLayout';
@@ -35,14 +36,16 @@ interface TestComponentProps extends Partial<PanelLayoutProps> {
 const TestComponent: React.FC<TestComponentProps> = (props) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
-      <PanelLayout
-        sidebarTitle={title}
-        mainContent={<h1>Main Content</h1>}
-        icons={mockIcons}
-        backHref="/back"
-        percentComplete={25}
-        {...props}
-      />
+      <GqlMockedProvider>
+        <PanelLayout
+          sidebarTitle={title}
+          mainContent={<h1>Main Content</h1>}
+          icons={mockIcons}
+          backHref="/back"
+          percentComplete={25}
+          {...props}
+        />
+      </GqlMockedProvider>
     </TestRouter>
   </ThemeProvider>
 );

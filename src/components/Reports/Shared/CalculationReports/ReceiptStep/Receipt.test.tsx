@@ -5,6 +5,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { MinisterHousingAllowanceProvider } from '../../../MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
 import { PageEnum } from '../Shared/sharedTypes';
@@ -42,19 +43,21 @@ const TestComponent: React.FC<TestComponentProps> = ({
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <TestRouter>
-        <MinisterHousingAllowanceProvider type={pageType}>
-          <Receipt
-            formTitle={formTitle}
-            buttonText={buttonText}
-            alertText={alertText}
-            editLink={editLink}
-            viewLink={viewLink}
-            isEdit={isEdit}
-            availableDate={availableDate}
-            deadlineDate={deadlineDate}
-            setIsComplete={setIsComplete}
-          />
-        </MinisterHousingAllowanceProvider>
+        <GqlMockedProvider>
+          <MinisterHousingAllowanceProvider type={pageType}>
+            <Receipt
+              formTitle={formTitle}
+              buttonText={buttonText}
+              alertText={alertText}
+              editLink={editLink}
+              viewLink={viewLink}
+              isEdit={isEdit}
+              availableDate={availableDate}
+              deadlineDate={deadlineDate}
+              setIsComplete={setIsComplete}
+            />
+          </MinisterHousingAllowanceProvider>
+        </GqlMockedProvider>
       </TestRouter>
     </LocalizationProvider>
   </ThemeProvider>

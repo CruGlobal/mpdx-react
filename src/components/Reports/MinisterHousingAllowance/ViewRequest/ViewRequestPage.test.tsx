@@ -3,6 +3,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, within } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { PageEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import {
@@ -18,9 +19,11 @@ const setIsPrint = jest.fn();
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <TestRouter>
-      <MinisterHousingAllowanceProvider>
-        <ViewRequestPage />
-      </MinisterHousingAllowanceProvider>
+      <GqlMockedProvider>
+        <MinisterHousingAllowanceProvider>
+          <ViewRequestPage />
+        </MinisterHousingAllowanceProvider>
+      </GqlMockedProvider>
     </TestRouter>
   </ThemeProvider>
 );

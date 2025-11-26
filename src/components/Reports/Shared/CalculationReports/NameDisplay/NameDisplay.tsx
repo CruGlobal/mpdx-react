@@ -10,10 +10,8 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 
 interface NameDisplayProps {
-  staffName: string;
-  staffId: string;
-  spouseName?: string | undefined;
-  spouseId?: string | undefined;
+  names: string;
+  personNumbers: string;
   showContent?: boolean;
   titleOne?: string;
   titleTwo?: string;
@@ -22,10 +20,8 @@ interface NameDisplayProps {
 }
 
 export const NameDisplay: React.FC<NameDisplayProps> = ({
-  staffName,
-  staffId,
-  spouseName,
-  spouseId,
+  names,
+  personNumbers,
   showContent,
   titleOne,
   titleTwo,
@@ -37,11 +33,9 @@ export const NameDisplay: React.FC<NameDisplayProps> = ({
 
   const title = (
     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-      <Typography component="span" sx={{ fontSize: 24 }}>
-        {spouseName ? `${staffName} and ${spouseName}` : staffName}
-      </Typography>
-      <Typography component="span" sx={{ color: 'text.secondary' }}>
-        {spouseId ? `${staffId} and ${spouseId}` : `(${staffId})`}
+      <Typography variant="h6">{names}</Typography>
+      <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
+        {personNumbers}
       </Typography>
     </Box>
   );

@@ -5,6 +5,7 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { MinisterHousingAllowanceProvider } from '../../../MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
 import { StatusCard } from './StatusCard';
@@ -46,26 +47,28 @@ const TestComponent: React.FC<TestComponentProps> = ({
     <ThemeProvider theme={theme}>
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <TestRouter>
-          <MinisterHousingAllowanceProvider>
-            <StatusCard
-              formType={'MHA Request'}
-              title={title}
-              subtitle={subtitle}
-              icon={MockIcon}
-              iconColor="primary"
-              linkOneText={titleOne}
-              linkTwoText={titleTwo}
-              isRequest={isRequest}
-              hideDownload={hideDownload}
-              hideActions={hideActions}
-              linkOne={linkOne}
-              linkTwo={linkTwo}
-              handleDownload={handleDownload}
-              handleConfirmCancel={handleConfirmCancel}
-            >
-              <div>Test Children</div>
-            </StatusCard>
-          </MinisterHousingAllowanceProvider>
+          <GqlMockedProvider>
+            <MinisterHousingAllowanceProvider>
+              <StatusCard
+                formType={'MHA Request'}
+                title={title}
+                subtitle={subtitle}
+                icon={MockIcon}
+                iconColor="primary"
+                linkOneText={titleOne}
+                linkTwoText={titleTwo}
+                isRequest={isRequest}
+                hideDownload={hideDownload}
+                hideActions={hideActions}
+                linkOne={linkOne}
+                linkTwo={linkTwo}
+                handleDownload={handleDownload}
+                handleConfirmCancel={handleConfirmCancel}
+              >
+                <div>Test Children</div>
+              </StatusCard>
+            </MinisterHousingAllowanceProvider>
+          </GqlMockedProvider>
         </TestRouter>
       </LocalizationProvider>
     </ThemeProvider>

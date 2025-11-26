@@ -3,7 +3,8 @@ import { ThemeProvider } from '@emotion/react';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
-import { getByRole, render } from '__tests__/util/testingLibraryReactMock';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { render } from '__tests__/util/testingLibraryReactMock';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import theme from 'src/theme';
 import { StepsEnum } from '../sharedTypes';
@@ -12,12 +13,19 @@ import {
   useMinisterHousingAllowance,
 } from './MinisterHousingAllowanceContext';
 
-const TestComponent: React.FC = () => (
+interface TestComponentProps {
+  type?: PageEnum;
+}
+const TestComponent: React.FC<TestComponentProps> = ({
+  type = PageEnum.New,
+}) => (
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <MinisterHousingAllowanceProvider type={PageEnum.New}>
-        {<div>Test Children</div>}
-      </MinisterHousingAllowanceProvider>
+      <GqlMockedProvider>
+        <MinisterHousingAllowanceProvider type={type}>
+          <TestConsumer />
+        </MinisterHousingAllowanceProvider>
+      </GqlMockedProvider>
     </LocalizationProvider>
   </ThemeProvider>
 );
@@ -58,76 +66,59 @@ describe('MinisterHousingAllowanceContext', () => {
   });
 
   it('provides initial state for new page', async () => {
-    const { getByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <MinisterHousingAllowanceProvider type={PageEnum.New}>
-            <TestConsumer />
-          </MinisterHousingAllowanceProvider>
-        </LocalizationProvider>
-      </ThemeProvider>,
-    );
+    const { getByTestId, getByRole } = render(<TestComponent />);
 
     expect(getByTestId('steps')).toHaveTextContent('4');
     expect(getByTestId('currentStep')).toHaveTextContent(StepsEnum.AboutForm);
     expect(getByTestId('percentComplete')).toHaveTextContent('25');
 
-    await userEvent.click(getByRole(document.body, 'button', { name: 'Next' }));
+    await userEvent.click(getByRole('button', { name: 'Next' }));
     expect(getByTestId('currentStep')).toHaveTextContent(StepsEnum.RentOrOwn);
     expect(getByTestId('percentComplete')).toHaveTextContent('50');
 
-    await userEvent.click(getByRole(document.body, 'button', { name: 'Next' }));
+    await userEvent.click(getByRole('button', { name: 'Next' }));
     expect(getByTestId('currentStep')).toHaveTextContent(StepsEnum.CalcForm);
     expect(getByTestId('percentComplete')).toHaveTextContent('75');
 
-    await userEvent.click(getByRole(document.body, 'button', { name: 'Next' }));
+    await userEvent.click(getByRole('button', { name: 'Next' }));
     expect(getByTestId('currentStep')).toHaveTextContent(StepsEnum.Receipt);
     expect(getByTestId('percentComplete')).toHaveTextContent('100');
 
-    await userEvent.click(
-      getByRole(document.body, 'button', { name: 'Previous' }),
-    );
+    await userEvent.click(getByRole('button', { name: 'Previous' }));
     expect(getByTestId('currentStep')).toHaveTextContent(StepsEnum.CalcForm);
     expect(getByTestId('percentComplete')).toHaveTextContent('75');
   });
 
   it('provides initial state for edit page', async () => {
-    const { getByTestId } = render(
-      <ThemeProvider theme={theme}>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <MinisterHousingAllowanceProvider type={PageEnum.Edit}>
-            <TestConsumer />
-          </MinisterHousingAllowanceProvider>
-        </LocalizationProvider>
-      </ThemeProvider>,
+    const { getByTestId, getByRole } = render(
+      <TestComponent type={PageEnum.Edit} />,
     );
 
     expect(getByTestId('steps')).toHaveTextContent('4');
     expect(getByTestId('currentStep')).toHaveTextContent(StepsEnum.AboutForm);
     expect(getByTestId('percentComplete')).toHaveTextContent('25');
 
-    await userEvent.click(getByRole(document.body, 'button', { name: 'Next' }));
+    await userEvent.click(getByRole('button', { name: 'Next' }));
     expect(getByTestId('currentStep')).toHaveTextContent(StepsEnum.RentOrOwn);
     expect(getByTestId('percentComplete')).toHaveTextContent('50');
 
-    await userEvent.click(getByRole(document.body, 'button', { name: 'Next' }));
+    await userEvent.click(getByRole('button', { name: 'Next' }));
     expect(getByTestId('currentStep')).toHaveTextContent(StepsEnum.CalcForm);
     expect(getByTestId('percentComplete')).toHaveTextContent('75');
 
-    await userEvent.click(getByRole(document.body, 'button', { name: 'Next' }));
+    await userEvent.click(getByRole('button', { name: 'Next' }));
     expect(getByTestId('currentStep')).toHaveTextContent(StepsEnum.Receipt);
     expect(getByTestId('percentComplete')).toHaveTextContent('100');
 
-    await userEvent.click(
-      getByRole(document.body, 'button', { name: 'Previous' }),
-    );
+    await userEvent.click(getByRole('button', { name: 'Previous' }));
     expect(getByTestId('currentStep')).toHaveTextContent(StepsEnum.CalcForm);
     expect(getByTestId('percentComplete')).toHaveTextContent('75');
   });
 
   it('renders children correctly', () => {
-    const { getByText } = render(<TestComponent />);
+    const { getByRole } = render(<TestComponent />);
 
-    expect(getByText('Test Children')).toBeInTheDocument();
+    expect(getByRole('button', { name: 'Previous' })).toBeInTheDocument();
+    expect(getByRole('button', { name: 'Next' })).toBeInTheDocument();
   });
 });
