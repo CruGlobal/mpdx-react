@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import theme from 'src/theme';
 import { useLandingData } from '../Landing/useLandingData';
 import { StepCard } from './StepCard';
 
@@ -37,7 +38,7 @@ export const SalaryInformationCard: React.FC = () => {
   const { self, spouse, hasSpouse, salaryCategories } = useLandingData();
 
   return (
-    <StepCard sx={(theme) => ({ my: theme.spacing(3) })}>
+    <StepCard sx={{ marginBlock: theme.spacing(3) }}>
       <CardHeader
         avatar={
           <Avatar sx={{ bgcolor: 'success.main' }}>
@@ -66,7 +67,13 @@ export const SalaryInformationCard: React.FC = () => {
               )}
             </TableRow>
           </TableHead>
-          <TableBody>
+          <TableBody
+            sx={{
+              'tr:last-child td': {
+                borderBottom: 'none',
+              },
+            }}
+          >
             {salaryCategories.map((row) => (
               <TableRow key={row.category}>
                 <TableCell>{row.category}</TableCell>
@@ -82,7 +89,7 @@ export const SalaryInformationCard: React.FC = () => {
                       </Link>
                     </FlexBox>
                   ) : (
-                    row.user ?? ''
+                    (row.user ?? '')
                   )}
                 </TableCell>
                 {hasSpouse && <TableCell>{row.spouse ?? ''}</TableCell>}
