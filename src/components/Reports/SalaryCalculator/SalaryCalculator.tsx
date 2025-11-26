@@ -15,33 +15,20 @@ import {
 import { StepNavigation } from './StepNavigation/StepNavigation';
 
 const MainContent: React.FC = () => {
-  const { sectionSteps, selectedSection, setSelectedSection } =
+  const { steps, handlePreviousStep, handleNextStep, currentIndex } =
     useSalaryCalculator();
-  const currentStepIndex = sectionSteps.findIndex(
-    (step) => step.key === selectedSection,
-  );
 
   const handleCancel = () => {};
-  const handleBack = () => {
-    if (currentStepIndex > 0) {
-      setSelectedSection(sectionSteps[currentStepIndex - 1].key);
-    }
-  };
-  const handleContinue = () => {
-    if (currentStepIndex < sectionSteps.length - 1) {
-      setSelectedSection(sectionSteps[currentStepIndex + 1].key);
-    }
-  };
 
   return (
     <Box px={theme.spacing(3)}>
       <CurrentStep />
       <StepNavigation
         onCancel={handleCancel}
-        onBack={handleBack}
-        onContinue={handleContinue}
-        isBackDisabled={currentStepIndex === 0}
-        isContinueDisabled={currentStepIndex === sectionSteps.length - 1}
+        onBack={handlePreviousStep}
+        onContinue={handleNextStep}
+        isBackDisabled={currentIndex === 0}
+        isContinueDisabled={currentIndex === steps.length - 1}
       />
     </Box>
   );
@@ -57,12 +44,15 @@ export const SalaryCalculatorContent: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
 
-  const { isDrawerOpen, toggleDrawer, steps } = useSalaryCalculator();
+  const { isDrawerOpen, toggleDrawer, steps, percentComplete, currentIndex } =
+    useSalaryCalculator();
 
   return (
     <PanelLayout
       panelType={PanelTypeEnum.Other}
-      percentComplete={50}
+      percentComplete={percentComplete}
+      steps={steps}
+      currentIndex={currentIndex}
       icons={useIconPanelItems(isDrawerOpen, toggleDrawer)}
       sidebarContent={<StepsList steps={steps} />}
       sidebarTitle={t('Form Steps')}
