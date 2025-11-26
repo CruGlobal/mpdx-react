@@ -48,7 +48,7 @@ describe('AboutForm', () => {
   it('should render the about form content', () => {
     const { getByText } = render(<TestWrapper />);
 
-    expect(getByText('About the Form')).toBeInTheDocument();
+    expect(getByText('About this Form')).toBeInTheDocument();
     expect(
       getByText(
         'You can use this form to electronically submit additional salary requests. Please note:',
