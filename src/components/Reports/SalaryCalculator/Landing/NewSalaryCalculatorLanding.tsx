@@ -23,6 +23,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { useStaffAccountQuery } from '../../StaffAccount.generated';
 import { useHcmQuery } from '../SalaryCalculatorContext/Hcm.generated';
+import { useAccountBalanceQuery } from './AccountBalance.generated';
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   paddingTop: theme.spacing(4),
@@ -47,8 +48,10 @@ export const NewSalaryCalculatorLanding: React.FC<
   const { data: staffAccountData, loading: staffLoading } =
     useStaffAccountQuery();
   const { data: hcmData, loading: hcmLoading } = useHcmQuery();
+  const { data: accountBalanceData, loading: accountBalanceLoading } =
+    useAccountBalanceQuery();
 
-  if (staffLoading || hcmLoading) {
+  if (staffLoading || hcmLoading || accountBalanceLoading) {
     return <Loading loading />;
   }
 
@@ -64,7 +67,11 @@ export const NewSalaryCalculatorLanding: React.FC<
   const currentGrossSalary = self?.currentSalary.grossSalaryAmount ?? 0;
   const spouseCurrentGrossSalary = spouse?.currentSalary.grossSalaryAmount ?? 0;
 
-  const accountBalance = 0;
+  const accountBalance =
+    accountBalanceData?.reportsStaffExpenses?.funds?.reduce(
+      (sum, fund) => sum + (fund.total ?? 0),
+      0,
+    ) ?? 0;
 
   const salaryCategories = [
     {
