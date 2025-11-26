@@ -143,7 +143,7 @@ export const useLandingData = () => {
     self,
     spouse,
     hasSpouse,
-    supportStatus,
+    // supportStatus,
     currentGrossSalary: salaryData.currentGrossSalary,
     spouseCurrentGrossSalary: salaryData.spouseCurrentGrossSalary,
     rothContribution: salaryData.rothContribution,
