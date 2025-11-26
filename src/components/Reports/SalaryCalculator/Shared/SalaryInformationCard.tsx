@@ -35,7 +35,8 @@ const LinkTypography = styled(Typography)(({ theme }) => ({
 export const SalaryInformationCard: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const { self, spouse, hasSpouse, salaryCategories } = useLandingData();
+  const { self, spouse, hasSpouse, salaryCategories, lastUpdated } =
+    useLandingData();
 
   return (
     <StepCard sx={{ marginBlock: theme.spacing(3) }}>
@@ -51,7 +52,7 @@ export const SalaryInformationCard: React.FC = () => {
               {t('Current Salary Information')}
             </Typography>
             <Typography variant="body2" color="textSecondary">
-              {t('Last updated: ')}
+              {t('Last updated:')} {lastUpdated}
             </Typography>
           </Box>
         }
@@ -89,7 +90,7 @@ export const SalaryInformationCard: React.FC = () => {
                       </Link>
                     </FlexBox>
                   ) : (
-                    (row.user ?? '')
+                    row.user ?? ''
                   )}
                 </TableCell>
                 {hasSpouse && <TableCell>{row.spouse ?? ''}</TableCell>}

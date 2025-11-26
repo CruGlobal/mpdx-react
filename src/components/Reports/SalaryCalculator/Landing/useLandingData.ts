@@ -88,14 +88,13 @@ export const useLandingData = () => {
   const salaryCategories = useMemo(
     () => [
       {
-        category: t('Gross Salary'),
-        user: salaryData.currentGrossSalary,
-        spouse: salaryData.spouseCurrentGrossSalary,
-      },
-      {
-        category: t('Security (SECA/FICA) Status'),
-        user: self?.staffInfo.secaStatus,
-        spouse: spouse?.staffInfo.secaStatus,
+        category: t('Maximum Allowable Salary'),
+        user: calculation?.salaryCap
+          ? currencyFormat(calculation.salaryCap, 'USD', locale)
+          : '-',
+        spouse: calculation?.spouseSalaryCap
+          ? currencyFormat(calculation.spouseSalaryCap, 'USD', locale)
+          : '-',
       },
       {
         category: t('Tax-deferred 403(b) Contribution'),
@@ -116,12 +115,17 @@ export const useLandingData = () => {
           : '0%',
       },
       {
-        category: t('Maximum Allowable Salary (CAP)'),
-        user: calculation?.salaryCap
-          ? currencyFormat(calculation.salaryCap, 'USD', locale)
+        category: t('Security (SECA/FICA) Status'),
+        user: self?.staffInfo.secaStatus,
+        spouse: spouse?.staffInfo.secaStatus,
+      },
+      {
+        category: t('Gross Salary'),
+        user: salaryData.currentGrossSalary
+          ? currencyFormat(salaryData.currentGrossSalary, 'USD', locale)
           : '-',
-        spouse: calculation?.spouseSalaryCap
-          ? currencyFormat(calculation.spouseSalaryCap, 'USD', locale)
+        spouse: salaryData.spouseCurrentGrossSalary
+          ? currencyFormat(salaryData.spouseCurrentGrossSalary, 'USD', locale)
           : '-',
       },
       {
