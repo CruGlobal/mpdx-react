@@ -104,7 +104,6 @@ export const MinisterHousingAllowanceReport = () => {
         request.status === MhaStatusEnum.BoardApproved &&
         isCurrentRequestPending,
     );
-
   return (
     <PanelLayout
       panelType={PanelTypeEnum.Empty}
