@@ -2,12 +2,12 @@ import { Box, TableCell, TableRow, Typography } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { RentOwnEnum } from 'src/components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
+import { StyledOrderedList } from 'src/components/Reports/Shared/CalculationReports/Shared/styledComponents/StepsListStyles';
 import { useAnnualTotal } from 'src/hooks/useAnnualTotal';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
-import { StyledOrderedList } from '../../../styledComponents/styledComponents';
+import { FormCard } from '../../../../Shared/CalculationReports/FormCard/FormCard';
 import { CalculationFormValues } from '../Calculation';
-import { CalculationCardSkeleton } from './CalculationCardSkeleton';
 import { CustomTextField } from './Helper/CustomTextField';
 
 interface CostOfHomeProps {
@@ -24,7 +24,7 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({ rentOrOwn }) => {
   const { totalCostOfHome, annualCostOfHome } = useAnnualTotal(values);
 
   return (
-    <CalculationCardSkeleton title={t('Cost of Providing a Home')}>
+    <FormCard title={t('Cost of Providing a Home')}>
       <TableRow>
         <TableCell sx={{ width: '70%' }}>
           <StyledOrderedList component="ol" start={1}>
@@ -184,6 +184,6 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({ rentOrOwn }) => {
           })}
         </TableCell>
       </TableRow>
-    </CalculationCardSkeleton>
+    </FormCard>
   );
 };

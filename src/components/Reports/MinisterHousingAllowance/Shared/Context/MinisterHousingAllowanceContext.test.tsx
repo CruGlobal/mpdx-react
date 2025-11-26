@@ -5,8 +5,9 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
+import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import theme from 'src/theme';
-import { PageEnum, StepsEnum } from '../sharedTypes';
+import { StepsEnum } from '../sharedTypes';
 import {
   MinisterHousingAllowanceProvider,
   useMinisterHousingAllowance,

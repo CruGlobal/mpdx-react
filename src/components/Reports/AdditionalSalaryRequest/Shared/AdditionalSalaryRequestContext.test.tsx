@@ -1,20 +1,23 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { useTranslation } from 'react-i18next';
 import { AdditionalSalaryRequestTestWrapper } from '../AdditionalSalaryRequestTestWrapper';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
+import { getHeader } from './Helper/getHeader';
 
 const TestComponent: React.FC = () => {
-  const { selectedSection, setSectionIndex, isDrawerOpen, toggleDrawer } =
+  const { currentStep, handleNextStep, isDrawerOpen, toggleDrawer } =
     useAdditionalSalaryRequest();
+  const { t } = useTranslation();
 
   return (
     <div>
-      <h2>{selectedSection.title}</h2>
+      <h2>{getHeader(t, currentStep)}</h2>
       <div aria-label="drawer state" data-open={isDrawerOpen}>
         Drawer: {isDrawerOpen ? 'open' : 'closed'}
       </div>
-      <button onClick={() => setSectionIndex(1)}>Change Section</button>
+      <button onClick={handleNextStep}>Change Section</button>
       <button onClick={toggleDrawer}>Toggle Drawer</button>
     </div>
   );

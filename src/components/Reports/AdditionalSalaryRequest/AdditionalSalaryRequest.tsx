@@ -1,22 +1,22 @@
 import React from 'react';
-import MenuOpenSharp from '@mui/icons-material/MenuOpenSharp';
-import MenuSharp from '@mui/icons-material/MenuSharp';
 import { Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { IconPanelLayout } from 'src/components/Shared/IconPanelLayout/IconPanelLayout';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { PanelLayout } from '../Shared/CalculationReports/PanelLayout/PanelLayout';
+import { useIconPanelItems } from '../Shared/CalculationReports/PanelLayout/useIconPanelItems';
+import { PanelTypeEnum } from '../Shared/CalculationReports/Shared/sharedTypes';
+import { StepsList } from '../Shared/CalculationReports/StepsList/StepsList';
 import { AboutForm } from './AboutForm/AboutForm';
 import { AdditionalSalaryRequestSectionEnum } from './AdditionalSalaryRequestHelper';
 import { CompleteForm } from './CompleteForm/CompleteForm';
 import { useAdditionalSalaryRequest } from './Shared/AdditionalSalaryRequestContext';
-import { SectionList } from './Shared/SectionList';
 import { SectionPage } from './SharedComponents/SectionPage';
 
 export const MainContent: React.FC = () => {
-  const { selectedSection } = useAdditionalSalaryRequest();
+  const { currentStep } = useAdditionalSalaryRequest();
   const { t } = useTranslation();
 
-  switch (selectedSection.section) {
+  switch (currentStep) {
     case AdditionalSalaryRequestSectionEnum.AboutForm:
       return <AboutForm />;
     case AdditionalSalaryRequestSectionEnum.CompleteForm:
@@ -29,22 +29,17 @@ export const MainContent: React.FC = () => {
 export const AdditionalSalaryRequest: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const { isDrawerOpen, toggleDrawer } = useAdditionalSalaryRequest();
-
-  const iconPanelItems = [
-    {
-      key: 'toggle',
-      icon: isDrawerOpen ? <MenuOpenSharp /> : <MenuSharp />,
-      label: t('Toggle Menu'),
-      onClick: toggleDrawer,
-    },
-  ];
+  const { isDrawerOpen, toggleDrawer, steps, currentIndex, percentComplete } =
+    useAdditionalSalaryRequest();
 
   return (
-    <IconPanelLayout
-      percentComplete={50}
-      iconPanelItems={iconPanelItems}
-      sidebarContent={<SectionList />}
+    <PanelLayout
+      panelType={PanelTypeEnum.Other}
+      percentComplete={percentComplete}
+      steps={steps}
+      currentIndex={currentIndex}
+      icons={useIconPanelItems(isDrawerOpen, toggleDrawer)}
+      sidebarContent={<StepsList steps={steps} />}
       sidebarTitle={t('Additional Salary Request')}
       isSidebarOpen={isDrawerOpen}
       sidebarAriaLabel={t('Additional Salary Request Sections')}

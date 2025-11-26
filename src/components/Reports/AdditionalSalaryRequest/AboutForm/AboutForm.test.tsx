@@ -20,7 +20,7 @@ jest.mock('../Shared/AdditionalSalaryRequestContext', () => {
     ...originalModule,
     useAdditionalSalaryRequest: () => ({
       ...originalModule.useAdditionalSalaryRequest(),
-      handleContinue: mockHandleContinue,
+      handleNextStep: mockHandleContinue,
     }),
   };
 });

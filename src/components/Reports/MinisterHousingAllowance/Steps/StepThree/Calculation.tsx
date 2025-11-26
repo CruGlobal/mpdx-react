@@ -17,6 +17,7 @@ import { Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { Trans, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import {
   SimpleScreenOnly,
   StyledPrintButton,
@@ -24,10 +25,10 @@ import {
 import { useLocale } from 'src/hooks/useLocale';
 import i18n from 'src/lib/i18n';
 import { dateFormatShort } from 'src/lib/intlFormat';
+import { DirectionButtons } from '../../../Shared/CalculationReports/DirectionButtons/DirectionButtons';
 import { useMinisterHousingAllowance } from '../../Shared/Context/MinisterHousingAllowanceContext';
-import { DirectionButtons } from '../../Shared/DirectionButtons/DirectionButtons';
 import { editOwnMock, mocks } from '../../Shared/mockData';
-import { PageEnum, RentOwnEnum } from '../../Shared/sharedTypes';
+import { RentOwnEnum } from '../../Shared/sharedTypes';
 import { CostOfHome } from './CalcComponents/CostOfHome';
 import { EndingSection } from './CalcComponents/EndingSection';
 import { FairRentalValue } from './CalcComponents/FairRentalValue';
@@ -39,6 +40,7 @@ import { RequestSummaryCard } from './CalcComponents/RequestSummaryCard';
 interface CalculationProps {
   boardApprovalDate: string | null;
   availableDate: string | null;
+  deadlineDate?: string | null;
   rentOrOwn: RentOwnEnum | undefined;
   handlePrint?: () => void;
 }
@@ -98,6 +100,7 @@ const getValidationSchema = (rentOrOwn?: RentOwnEnum) => {
 export const Calculation: React.FC<CalculationProps> = ({
   boardApprovalDate,
   availableDate,
+  deadlineDate,
   rentOrOwn,
   handlePrint,
 }) => {
@@ -106,8 +109,14 @@ export const Calculation: React.FC<CalculationProps> = ({
   const { query } = useRouter();
   const print = query.print === 'true';
 
-  const { handleNextStep, pageType, setHasCalcValues, setIsPrint, isPrint } =
-    useMinisterHousingAllowance();
+  const {
+    handleNextStep,
+    handlePreviousStep,
+    pageType,
+    setHasCalcValues,
+    setIsPrint,
+    isPrint,
+  } = useMinisterHousingAllowance();
 
   const actionRequired =
     pageType === PageEnum.Edit || pageType === PageEnum.View;
@@ -179,6 +188,8 @@ export const Calculation: React.FC<CalculationProps> = ({
         setFieldValue,
         handleBlur,
         touched,
+        submitForm,
+        validateForm,
       }) => {
         const showAlert = !!submitCount && (!isValid || !values.isChecked);
 
@@ -317,7 +328,20 @@ export const Calculation: React.FC<CalculationProps> = ({
                 </ul>
               </Alert>
             )}
-            {!isViewPage && <DirectionButtons isCalculate />}
+            {!isViewPage && (
+              <DirectionButtons
+                isSubmission
+                showBackButton
+                handleNextStep={handleNextStep}
+                handlePreviousStep={handlePreviousStep}
+                submitForm={submitForm}
+                validateForm={validateForm}
+                submitCount={submitCount}
+                isValid={isValid}
+                deadlineDate={deadlineDate ?? ''}
+                actionRequired={actionRequired}
+              />
+            )}
           </form>
         );
       }}

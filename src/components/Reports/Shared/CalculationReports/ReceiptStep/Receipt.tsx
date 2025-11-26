@@ -1,0 +1,114 @@
+import NextLink from 'next/link';
+import { Dispatch, SetStateAction } from 'react';
+import { Edit, PrintSharp } from '@mui/icons-material';
+import { Alert, Box, Button, Link, Typography } from '@mui/material';
+import { DateTime } from 'luxon';
+import { useTranslation } from 'react-i18next';
+import { useLocale } from 'src/hooks/useLocale';
+import { dateFormatShort } from 'src/lib/intlFormat';
+
+interface ReceiptProps {
+  formTitle: string;
+  buttonText: string;
+  alertText?: string;
+  editLink?: string;
+  viewLink?: string;
+  isEdit?: boolean;
+  availableDate?: string | null;
+  deadlineDate?: string | null;
+  setIsComplete?: Dispatch<SetStateAction<boolean>>;
+}
+
+export const Receipt: React.FC<ReceiptProps> = ({
+  formTitle,
+  buttonText,
+  alertText,
+  editLink,
+  viewLink,
+  isEdit,
+  availableDate,
+  deadlineDate,
+  setIsComplete,
+}) => {
+  const { t } = useTranslation();
+  const locale = useLocale();
+
+  const available = availableDate
+    ? dateFormatShort(DateTime.fromISO(availableDate), locale)
+    : null;
+
+  //TODO: Not sure what to write if deadline date is null
+  const deadline = deadlineDate
+    ? dateFormatShort(DateTime.fromISO(deadlineDate), locale)
+    : null;
+
+  const approval = available
+    ? t(`approval effective ${available}`)
+    : t('approval soon');
+
+  const printLink = `${viewLink}?print=true`;
+
+  return (
+    <Box>
+      <Typography variant="h5" sx={{ mb: 3 }}>
+        {isEdit
+          ? t(`Thank you for updating your ${formTitle}!`)
+          : t(`Thank you for Submitting your ${formTitle}!`)}
+      </Typography>
+      <Alert severity="success">
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          <Typography sx={{ fontWeight: 'bold' }}>
+            {isEdit
+              ? t(`You've successfully updated your ${formTitle}!`)
+              : t(`You've successfully submitted your ${formTitle}!`)}
+          </Typography>
+          <Typography>
+            {alertText
+              ? alertText
+              : t(
+                  'We will review your information and you will receive notice for your {{approval}}.',
+                  { approval, interpolation: { escapeValue: false } },
+                )}
+          </Typography>
+        </Box>
+      </Alert>
+      {editLink && (
+        <Box sx={{ mt: 4 }}>
+          <Edit
+            fontSize="small"
+            sx={{ verticalAlign: 'middle', opacity: 0.56 }}
+          />{' '}
+          <Link href={editLink}>
+            {t('Edit your MHA Request (Not available after {{date}})', {
+              date: deadline,
+              interpolation: { escapeValue: false },
+            })}
+          </Link>
+        </Box>
+      )}
+      <Box sx={{ mt: 4 }}>
+        <PrintSharp
+          fontSize="small"
+          sx={{ verticalAlign: 'middle', opacity: 0.56 }}
+        />{' '}
+        <Link
+          component={NextLink}
+          href={printLink ?? ''}
+          onClick={() => setIsComplete && setIsComplete(true)}
+        >
+          {t(`Print a copy of your submitted ${formTitle}`)}
+        </Link>
+      </Box>
+      <Box sx={{ mt: 4 }}>
+        <Button
+          component={NextLink}
+          href={viewLink ?? ''}
+          onClick={() => setIsComplete && setIsComplete(true)}
+          variant="contained"
+        >
+          {buttonText}
+        </Button>
+      </Box>
+    </Box>
+  );
+};

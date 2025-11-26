@@ -2,9 +2,10 @@ import { HomeSharp } from '@mui/icons-material';
 import { Grid, Skeleton, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
-import { CardSkeleton } from '../CardSkeleton/CardSkeleton';
+import { StatusCard } from '../../Shared/CalculationReports/StatusCard/StatusCard';
 import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
 import { MHARequest } from './types';
 
@@ -17,6 +18,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const accountListId = useAccountListId();
   const currency = 'USD';
 
   const { isMarried, preferredName, spousePreferredName } =
@@ -26,13 +28,17 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
     request?.requestAttributes || {};
 
   return (
-    <CardSkeleton
+    <StatusCard
+      formType={t('MHA Request')}
       title={t('Current Board Approved MHA')}
       icon={HomeSharp}
       iconColor="success.main"
-      titleOne={t('View Current MHA')}
-      titleTwo={t("Duplicate Last Year's MHA")}
+      linkOneText={t('View Current MHA')}
+      linkOne={`/accountLists/${accountListId}/reports/housingAllowance/view`}
+      linkTwoText={t("Duplicate Last Year's MHA")}
+      linkTwo=""
       isRequest={false}
+      handleConfirmCancel={() => {}}
     >
       <Grid container spacing={2}>
         <Grid item xs={6}>
@@ -104,6 +110,6 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
           </Grid>
         </Grid>
       </Grid>
-    </CardSkeleton>
+    </StatusCard>
   );
 };

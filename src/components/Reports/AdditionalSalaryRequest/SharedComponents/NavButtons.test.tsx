@@ -13,9 +13,9 @@ import {
   SubmitButton,
 } from './NavButtons';
 
-const handleBack = jest.fn();
+const handlePreviousStep = jest.fn();
 const handleCancel = jest.fn();
-const handleContinue = jest.fn();
+const handleNextStep = jest.fn();
 
 jest.mock('../Shared/AdditionalSalaryRequestContext', () => {
   const originalModule = jest.requireActual(
@@ -25,9 +25,9 @@ jest.mock('../Shared/AdditionalSalaryRequestContext', () => {
     ...originalModule,
     useAdditionalSalaryRequest: () => ({
       ...originalModule.useAdditionalSalaryRequest(),
-      handleBack,
+      handlePreviousStep,
       handleCancel,
-      handleContinue,
+      handleNextStep,
     }),
   };
 });
@@ -102,7 +102,7 @@ describe('NavButtons', () => {
       const button = getByText('Back');
       expect(button).toBeInTheDocument();
       userEvent.click(button);
-      expect(handleBack).toHaveBeenCalledTimes(1);
+      expect(handlePreviousStep).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -133,7 +133,7 @@ describe('NavButtons', () => {
 
       const button = getByText('Continue');
       userEvent.click(button);
-      expect(handleContinue).toHaveBeenCalledTimes(1);
+      expect(handleNextStep).toHaveBeenCalledTimes(1);
     });
   });
 

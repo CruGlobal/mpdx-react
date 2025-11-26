@@ -6,9 +6,9 @@ import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
+import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import theme from 'src/theme';
 import { useMinisterHousingAllowance } from '../../../Shared/Context/MinisterHousingAllowanceContext';
-import { PageEnum } from '../../../Shared/sharedTypes';
 import { FairRentalValue } from './FairRentalValue';
 
 const submit = jest.fn();
