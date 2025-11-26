@@ -4,16 +4,12 @@ import { StepNavigation } from './StepNavigation';
 
 const TestComponent: React.FC = () => (
   <SalaryCalculatorTestWrapper>
-    <StepNavigation
-      onCancel={() => {}}
-      onBack={() => {}}
-      onContinue={() => {}}
-    />
+    <StepNavigation onBack={() => {}} onContinue={() => {}} />
   </SalaryCalculatorTestWrapper>
 );
 
 describe('StepNavigation', () => {
-  it('renders without crashing', () => {
+  it('renders back and continue buttons', () => {
     const { getByText } = render(<TestComponent />);
     expect(getByText('Back')).toBeInTheDocument();
     expect(getByText('Continue')).toBeInTheDocument();

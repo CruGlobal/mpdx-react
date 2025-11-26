@@ -6,7 +6,6 @@ import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 
 export interface StepNavigationProps {
-  onCancel: () => void;
   onBack: () => void;
   onContinue: () => void;
   isBackDisabled?: boolean;
@@ -14,7 +13,6 @@ export interface StepNavigationProps {
 }
 
 export const StepNavigation: React.FC<StepNavigationProps> = ({
-  onCancel,
   onBack,
   onContinue,
   isBackDisabled = false,
@@ -24,31 +22,26 @@ export const StepNavigation: React.FC<StepNavigationProps> = ({
   const theme = useTheme();
 
   return (
-    <Box display="flex" justifyContent="space-between" alignItems="center">
-      <Button variant="text" onClick={onCancel} color="error">
-        <Typography fontWeight="bold">Cancel</Typography>
-      </Button>
-      <Box>
-        <Stack direction="row" spacing={theme.spacing(1)}>
-          <Button
-            variant="contained"
-            startIcon={<ChevronLeftIcon />}
-            onClick={onBack}
-            disabled={isBackDisabled}
-            color="inherit"
-          >
-            <Typography fontWeight="bold">{t('Back')}</Typography>
-          </Button>
-          <Button
-            variant="contained"
-            endIcon={<ChevronRightIcon />}
-            onClick={onContinue}
-            disabled={isContinueDisabled}
-          >
-            <Typography fontWeight="bold">{t('Continue')}</Typography>
-          </Button>
-        </Stack>
-      </Box>
+    <Box display="flex" justifyContent="flex-end">
+      <Stack direction="row" spacing={theme.spacing(1)}>
+        <Button
+          variant="contained"
+          startIcon={<ChevronLeftIcon />}
+          onClick={onBack}
+          disabled={isBackDisabled}
+          color="inherit"
+        >
+          <Typography fontWeight="bold">{t('Back')}</Typography>
+        </Button>
+        <Button
+          variant="contained"
+          endIcon={<ChevronRightIcon />}
+          onClick={onContinue}
+          disabled={isContinueDisabled}
+        >
+          <Typography fontWeight="bold">{t('Continue')}</Typography>
+        </Button>
+      </Stack>
     </Box>
   );
 };
