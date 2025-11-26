@@ -11,6 +11,7 @@ import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import theme from 'src/theme';
 import { useLandingData } from '../useLandingData';
 
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -33,17 +34,18 @@ export const SalaryOverviewCard: React.FC = () => {
   return (
     <StyledCard>
       <CardHeader
-        title={<Typography variant="h4">{name}</Typography>}
+        title={<Typography variant="h5">{name}</Typography>}
         subheader={
-          <Typography variant="h6" color="textSecondary">
+          <Typography variant="body1" color="textSecondary">
             {t(`${staffAccountId}`)}
           </Typography>
         }
+        sx={{ px: theme.spacing(3) }}
       />
       <CardContent>
-        <Grid container spacing={3}>
+        <Grid container spacing={theme.spacing(3)}>
           <Grid item xs={6}>
-            <Stack spacing={1}>
+            <Stack spacing={theme.spacing(1)}>
               <Typography variant="h5" fontWeight="bold">
                 {t('Current Gross Salary')}
               </Typography>
@@ -53,7 +55,7 @@ export const SalaryOverviewCard: React.FC = () => {
             </Stack>
           </Grid>
           <Grid item xs={6}>
-            <Stack spacing={1}>
+            <Stack spacing={theme.spacing(1)}>
               <Typography variant="h5" fontWeight="bold">
                 {t('Account Balance')}
               </Typography>

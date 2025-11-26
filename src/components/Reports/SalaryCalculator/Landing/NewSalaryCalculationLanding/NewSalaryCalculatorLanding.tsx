@@ -4,8 +4,9 @@ import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import Loading from 'src/components/Loading/Loading';
 import { NoStaffAccount } from 'src/components/Reports/Shared/NoStaffAccount/NoStaffAccount';
+import theme from 'src/theme';
 // import { PartTimeInfo } from './PartTimeInfo';
-import { SalaryInformationCard } from '../SalaryInformationCard';
+import { SalaryInformationCard } from '../../Shared/SalaryInformationCard';
 import { useLandingData } from '../useLandingData';
 import { SalaryOverviewCard } from './SalaryOverviewCard';
 
@@ -43,24 +44,19 @@ export const NewSalaryCalculatorLanding: React.FC<
         <Typography variant="h4" component="h1" gutterBottom>
           {t('Salary Calculation Form')}
         </Typography>
-
         <Typography variant="body1" paragraph>
           {t(
             'Using this form will enable you to make adjustments to your salary. Your current salary information is displayed below. To begin a new salary calculation, click on "Calculate New Salary." Your Maximum Allowable Salary includes your salary, taxes, SECA, and 403(b).',
           )}
         </Typography>
-
         <Typography variant="body1" paragraph>
           {t(
             'Your 403(b) contribution election percentage(s) are shown below. If you would like to make changes you may do so by logging into your Principal account. Please wait to complete your Salary Calculation Form until those changes are reflected here.',
           )}
         </Typography>
-
         <SalaryOverviewCard />
-
         <SalaryInformationCard />
-
-        <Box sx={(theme) => ({ mt: theme.spacing(4) })}>
+        <Box sx={{ marginTop: theme.spacing(4) }}>
           <Button
             variant="contained"
             color="primary"
