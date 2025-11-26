@@ -10,30 +10,31 @@ import {
 import { Box, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { MhaStatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
+import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { CardSkeleton } from '../CardSkeleton/CardSkeleton';
+import { MHARequest } from './types';
 
 interface CurrentRequestProps {
-  approvedOverallAmount: number | null;
-  requestedDate?: string | null;
-  deadlineDate?: string | null;
-  boardApprovedDate?: string | null;
-  availableDate?: string | null;
+  request: MHARequest;
 }
 
-export const CurrentRequest: React.FC<CurrentRequestProps> = ({
-  approvedOverallAmount,
-  requestedDate,
-  deadlineDate,
-  boardApprovedDate,
-  availableDate,
-}) => {
+export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const currency = 'USD';
 
-  //TODO: Implement real mha status logic
+  const { status, requestAttributes } = request;
+
+  const {
+    boardApprovedDate,
+    deadlineDate,
+    submittedDate,
+    availableDate,
+    approvedOverallAmount,
+  } = requestAttributes || {};
+
   return (
     <CardSkeleton
       title={t('Current MHA Request')}
@@ -66,68 +67,170 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({
         >
           <TimelineItem>
             <TimelineSeparator>
-              <TimelineDot sx={{ bgcolor: 'success.main' }} />
+              <TimelineDot
+                sx={{ bgcolor: getDotColor(status, 'submitted') }}
+                variant={getDotVariant(status, 'submitted')}
+              />
               <TimelineConnector />
             </TimelineSeparator>
             <TimelineContent>
               <b>
-                {t('Requested on: ')}
-                {dateFormatShort(
-                  DateTime.fromISO(requestedDate ?? DateTime.now().toISO()),
-                  locale,
+                {status === MhaStatusEnum.InProgress ? (
+                  t('Currently Editing')
+                ) : (
+                  <>
+                    {t('Requested on')}
+                    {submittedDate &&
+                      `: ${dateFormat(DateTime.fromISO(submittedDate), locale)}`}
+                  </>
                 )}
               </b>
             </TimelineContent>
           </TimelineItem>
           <TimelineItem>
             <TimelineSeparator>
-              <TimelineDot sx={{ bgcolor: 'info.main' }} />
+              <TimelineDot
+                sx={{ bgcolor: getDotColor(status, 'inProcess') }}
+                variant={getDotVariant(status, 'inProcess')}
+              />
               <TimelineConnector />
             </TimelineSeparator>
             <TimelineContent>
-              <b>{t('Request in Process')}</b>
+              <b>
+                {status === MhaStatusEnum.ActionRequired
+                  ? t('Action Required')
+                  : t('Request in Process')}
+              </b>
             </TimelineContent>
           </TimelineItem>
           <TimelineItem>
             <TimelineSeparator>
-              <TimelineDot variant="outlined" />
+              <TimelineDot
+                sx={{ bgcolor: getDotColor(status, 'deadline') }}
+                variant={getDotVariant(status, 'deadline')}
+              />
               <TimelineConnector />
             </TimelineSeparator>
             <TimelineContent>
-              {t('Deadline for changes: ')}
-              {dateFormatShort(
-                DateTime.fromISO(deadlineDate ?? DateTime.now().toISO()),
-                locale,
-              )}
+              <b>
+                {t('Deadline for changes')}
+                {deadlineDate &&
+                  `: ${dateFormat(DateTime.fromISO(deadlineDate), locale)}`}
+              </b>
             </TimelineContent>
           </TimelineItem>
           <TimelineItem>
             <TimelineSeparator>
-              <TimelineDot variant="outlined" />
+              <TimelineDot
+                sx={{ bgcolor: getDotColor(status, 'boardApproval') }}
+                variant={getDotVariant(status, 'boardApproval')}
+              />
               <TimelineConnector />
             </TimelineSeparator>
             <TimelineContent>
-              {t('Board Approval on: ')}
-              {dateFormatShort(
-                DateTime.fromISO(boardApprovedDate ?? DateTime.now().toISO()),
-                locale,
-              )}
+              <b>
+                {t('Board Approval on')}
+                {boardApprovedDate &&
+                  `: ${dateFormat(DateTime.fromISO(boardApprovedDate), locale)}`}
+              </b>
             </TimelineContent>
           </TimelineItem>
           <TimelineItem>
             <TimelineSeparator>
-              <TimelineDot variant="outlined" />
+              <TimelineDot
+                sx={{ bgcolor: getDotColor(status, 'available') }}
+                variant={getDotVariant(status, 'available')}
+              />
             </TimelineSeparator>
             <TimelineContent>
-              {t('MHA Available on: ')}
-              {dateFormatShort(
-                DateTime.fromISO(availableDate ?? DateTime.now().toISO()),
-                locale,
-              )}
+              <b>
+                {t('MHA Available on')}
+                {availableDate &&
+                  `: ${dateFormat(DateTime.fromISO(availableDate), locale)}`}
+              </b>
             </TimelineContent>
           </TimelineItem>
         </Timeline>
       </Box>
     </CardSkeleton>
   );
+};
+
+// Helper to get timeline dot color based on current status and step
+export const getDotColor = (
+  status: MhaStatusEnum,
+  step: 'submitted' | 'inProcess' | 'deadline' | 'boardApproval' | 'available',
+): string => {
+  switch (step) {
+    case 'submitted':
+      return status === MhaStatusEnum.InProgress ? 'info.main' : 'success.main';
+
+    case 'inProcess':
+      if (status === MhaStatusEnum.Pending) {
+        return 'info.main';
+      }
+      if (status === MhaStatusEnum.InProgress) {
+        return 'transparent';
+      }
+      if (status === MhaStatusEnum.ActionRequired) {
+        return 'warning.main';
+      }
+      return 'success.main';
+
+    case 'deadline':
+      if (status === MhaStatusEnum.Pending) {
+        return 'info.main';
+      }
+      if (
+        status === MhaStatusEnum.InProgress ||
+        status === MhaStatusEnum.ActionRequired
+      ) {
+        return 'transparent';
+      }
+      return 'success.main';
+
+    case 'boardApproval':
+      if (status === MhaStatusEnum.HrApproved) {
+        return 'info.main';
+      }
+      if (status === MhaStatusEnum.BoardApproved) {
+        return 'success.main';
+      }
+      return 'transparent';
+
+    case 'available':
+    default:
+      return 'transparent';
+  }
+};
+
+// Helper to determine if dot should be filled or outlined
+export const getDotVariant = (
+  status: MhaStatusEnum,
+  step: 'submitted' | 'inProcess' | 'deadline' | 'boardApproval' | 'available',
+): 'filled' | 'outlined' => {
+  switch (step) {
+    case 'submitted':
+      return 'filled';
+
+    case 'inProcess':
+      return status === MhaStatusEnum.InProgress ? 'outlined' : 'filled';
+
+    case 'deadline':
+      return status === MhaStatusEnum.Pending ||
+        status === MhaStatusEnum.HrApproved ||
+        status === MhaStatusEnum.BoardApproved
+        ? 'filled'
+        : 'outlined';
+
+    case 'boardApproval':
+      return status === MhaStatusEnum.HrApproved ||
+        status === MhaStatusEnum.BoardApproved
+        ? 'filled'
+        : 'outlined';
+
+    case 'available':
+    default:
+      return 'outlined';
+  }
 };
