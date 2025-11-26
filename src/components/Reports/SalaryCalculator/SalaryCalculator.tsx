@@ -18,13 +18,10 @@ const MainContent: React.FC = () => {
   const { steps, handlePreviousStep, handleNextStep, currentIndex } =
     useSalaryCalculator();
 
-  const handleCancel = () => {};
-
   return (
     <Box px={theme.spacing(3)}>
       <CurrentStep />
       <StepNavigation
-        onCancel={handleCancel}
         onBack={handlePreviousStep}
         onContinue={handleNextStep}
         isBackDisabled={currentIndex === 0}

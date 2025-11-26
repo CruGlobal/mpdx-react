@@ -6,6 +6,7 @@ import {
 } from 'next';
 import { Session } from 'next-auth';
 import { getSession } from 'next-auth/react';
+import { RedirectReason } from 'pages/api/auth/redirectReasonEnum';
 import makeSsrClient from 'src/lib/apollo/ssrClient';
 import {
   GetDefaultAccountDocument,
@@ -32,9 +33,10 @@ export const loginRedirect = (
 
 export const dashboardRedirect = (
   context: GetServerSidePropsContext,
+  reason: RedirectReason,
 ): { redirect: Redirect } => ({
   redirect: {
-    destination: `/accountLists/${context.query.accountListId ?? ''}`,
+    destination: `/accountLists/${context.query.accountListId ?? ''}?redirect=${encodeURIComponent(reason)}`,
     permanent: false,
   },
 });
@@ -54,7 +56,7 @@ export const blockImpersonatingNonDevelopers: GetServerSideProps<
 
   // Check if the impersonator is a developer
   if (session.user.impersonating && !session.user.isImpersonatorDeveloper) {
-    return dashboardRedirect(context);
+    return dashboardRedirect(context, RedirectReason.ImpersonationBlocked);
   }
 
   const underscoreRedirect = await handleUnderscoreAccountListRedirect(
@@ -83,7 +85,7 @@ export const enforceAdmin: GetServerSideProps<PagePropsWithSession> = async (
   }
 
   if (!session.user.admin) {
-    return dashboardRedirect(context);
+    return dashboardRedirect(context, RedirectReason.Unauthorized);
   }
 
   const underscoreRedirect = await handleUnderscoreAccountListRedirect(

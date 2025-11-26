@@ -2,10 +2,10 @@ import React from 'react';
 import { Box, Link, List, ListItem, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
+import { AccountInfoCard } from '../Shared/AccountInfoCard';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSalaryRequestSection';
 import { CancelButton, ContinueButton } from '../SharedComponents/NavButtons';
-import { AccountInfoCard } from './AccountInfoCard';
 
 export const AboutForm: React.FC = () => {
   const { currentStep } = useAdditionalSalaryRequest();
@@ -93,6 +93,7 @@ export const AboutForm: React.FC = () => {
         accountNumber={accountNumber}
         primaryAccountBalance={primaryAccountBalance}
         remainingAllowableSalary={remainingAllowableSalary}
+        showSpouse={true}
       />
       <Box
         sx={{
