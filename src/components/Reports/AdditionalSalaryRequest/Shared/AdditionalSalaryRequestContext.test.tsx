@@ -1,16 +1,19 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { useTranslation } from 'react-i18next';
 import { AdditionalSalaryRequestTestWrapper } from '../AdditionalSalaryRequestTestWrapper';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
+import { getHeader } from './Helper/getHeader';
 
 const TestComponent: React.FC = () => {
   const { currentStep, handleNextStep, isDrawerOpen, toggleDrawer } =
     useAdditionalSalaryRequest();
+  const { t } = useTranslation();
 
   return (
     <div>
-      <h2>{currentStep}</h2>
+      <h2>{getHeader(t, currentStep)}</h2>
       <div aria-label="drawer state" data-open={isDrawerOpen}>
         Drawer: {isDrawerOpen ? 'open' : 'closed'}
       </div>
@@ -31,7 +34,7 @@ describe('AdditionalSalaryRequestContext', () => {
     const { findByRole } = render(<TestWrapper />);
 
     expect(
-      await findByRole('heading', { name: 'About the Form' }),
+      await findByRole('heading', { name: 'About this Form' }),
     ).toBeInTheDocument();
   });
 
