@@ -12,8 +12,8 @@ import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
 import { useLocale } from 'src/hooks/useLocale';
-import { nullableDateTime } from 'src/lib/formikHelpers';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
+import { nullableDateTime } from 'src/lib/yupHelpers';
 import { AccordionProps } from '../../../accordionHelper';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
 

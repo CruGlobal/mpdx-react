@@ -1,10 +1,12 @@
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SalaryCalculatorContent } from '../SalaryCalculator';
 import { SalaryCalculatorTestWrapper } from '../SalaryCalculatorTestWrapper';
 
+const mutationSpy = jest.fn();
+
 const TestComponent: React.FC = () => (
-  <SalaryCalculatorTestWrapper>
+  <SalaryCalculatorTestWrapper onCall={mutationSpy}>
     <SalaryCalculatorContent />
   </SalaryCalculatorTestWrapper>
 );
@@ -21,5 +23,19 @@ describe('SalaryCalculator', () => {
     expect(
       getByRole('heading', { name: 'Personal Information' }),
     ).toBeInTheDocument();
+  });
+
+  it('loads HCM data', async () => {
+    render(<TestComponent />);
+
+    await waitFor(() => expect(mutationSpy).toHaveGraphqlOperation('Hcm'));
+  });
+
+  it('loads salary calculation', async () => {
+    render(<TestComponent />);
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('SalaryCalculation'),
+    );
   });
 });

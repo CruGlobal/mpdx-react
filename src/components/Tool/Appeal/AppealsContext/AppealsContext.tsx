@@ -14,6 +14,7 @@ import {
 } from 'src/components/Contacts/ContactsContext/ContactsContext';
 import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
 import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
+import { ContactFilterSetInput } from 'src/graphql/types.generated';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useMassSelection } from 'src/hooks/useMassSelection';
@@ -125,16 +126,23 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
     }
   }, [viewMode]);
 
-  const contactsFilters = useMemo(
+  const defaultFilters = useMemo(
+    () => ({
+      appeal: [appealId || ''],
+      ...(searchTerm ? { wildcardSearch: searchTerm } : {}),
+    }),
+    [appealId, searchTerm],
+  );
+  const contactsFilters: ContactFilterSetInput = useMemo(
     () => ({
       // In list mode, always filter by the selected appeal status
       // In flows mode, filter by the filters the user selected
       ...(viewMode === TableViewModeEnum.List
         ? { appealStatus: listAppealStatus }
         : combinedFilters),
-      appeal: [appealId || ''],
+      ...defaultFilters,
     }),
-    [viewMode, listAppealStatus, combinedFilters, appealId],
+    [viewMode, listAppealStatus, combinedFilters, defaultFilters],
   );
 
   const contactsQueryResult = useContactsQuery({
@@ -210,10 +218,6 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
     },
   });
 
-  const defaultFilters = {
-    appeal: [appealId || ''],
-    ...(searchTerm ? { wildcardSearch: searchTerm } : {}),
-  };
   const skip = shouldSkipContactCount(tour, filterPanelOpen, viewMode);
 
   const askedCountQueryResult = useContactsCountQuery({

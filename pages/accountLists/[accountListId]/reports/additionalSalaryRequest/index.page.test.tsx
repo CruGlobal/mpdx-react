@@ -3,6 +3,7 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import theme from 'src/theme';
 import AdditionalSalaryRequestPage, { getServerSideProps } from './index.page';
 
@@ -17,11 +18,15 @@ const TestComponent: React.FC = () => (
 );
 
 describe('AdditionalSalaryRequest page', () => {
+  it('uses blockImpersonatingNonDevelopers for server-side props', () => {
+    expect(getServerSideProps).toBe(blockImpersonatingNonDevelopers);
+  });
+
   it('renders page', async () => {
     const { findByRole } = render(<TestComponent />);
 
     expect(
-      await findByRole('heading', { name: 'About this Form content' }),
+      await findByRole('heading', { name: 'About this Form' }),
     ).toBeInTheDocument();
   });
 

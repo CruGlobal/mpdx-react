@@ -20,7 +20,6 @@ const MainContent: React.FC = () => {
     (step) => step.key === selectedSection,
   );
 
-  const handleCancel = () => {};
   const handleBack = () => {
     if (currentStepIndex > 0) {
       setSelectedSection(sectionSteps[currentStepIndex - 1].key);
@@ -36,7 +35,6 @@ const MainContent: React.FC = () => {
     <Box px={theme.spacing(3)}>
       <CurrentStep />
       <StepNavigation
-        onCancel={handleCancel}
         onBack={handleBack}
         onContinue={handleContinue}
         isBackDisabled={currentStepIndex === 0}
@@ -60,6 +58,7 @@ export const SalaryCalculatorContent: React.FC = () => {
 
   const iconPanelItems = [
     {
+      key: 'toggle',
       icon: isDrawerOpen ? <MenuOpenSharp /> : <MenuSharp />,
       label: t('Toggle Menu'),
       onClick: toggleDrawer,

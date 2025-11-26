@@ -28,8 +28,8 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
-import { nullableDateTime } from 'src/lib/formikHelpers';
 import i18n from 'src/lib/i18n';
+import { nullableDateTime } from 'src/lib/yupHelpers';
 import { useCreateTasksMutation } from '../../../../../Task/Modal/Form/TaskModal.generated';
 import { CloseButton } from '../styledComponents/CloseButton';
 

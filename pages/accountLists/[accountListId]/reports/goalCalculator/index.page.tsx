@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
+import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
 import { GoalsList } from 'src/components/Reports/GoalCalculator/GoalsList/GoalsList';
@@ -71,6 +71,5 @@ const GoalCalculatorPage: React.FC = () => {
   );
 };
 
-export const getServerSideProps = ensureSessionAndAccountList;
-
+export const getServerSideProps = blockImpersonatingNonDevelopers;
 export default GoalCalculatorPage;

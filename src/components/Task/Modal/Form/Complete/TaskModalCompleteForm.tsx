@@ -29,7 +29,7 @@ import {
 import { usePhaseData } from 'src/hooks/usePhaseData';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { dispatch } from 'src/lib/analytics';
-import { nullableDateTime } from 'src/lib/formikHelpers';
+import { nullableDateTime } from 'src/lib/yupHelpers';
 import { getValueFromIdValue } from 'src/utils/phases/getValueFromIdValue';
 import {
   getPhaseByActivityType,

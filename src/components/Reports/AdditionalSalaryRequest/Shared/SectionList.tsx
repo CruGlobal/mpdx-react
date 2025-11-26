@@ -1,7 +1,5 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { List, ListItemButton, ListItemText, styled } from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 
 const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
@@ -10,40 +8,22 @@ const StyledListItemButton = styled(ListItemButton)(({ theme }) => ({
 }));
 
 export const SectionList: React.FC = () => {
-  const { t } = useTranslation();
-  const { selectedSection, setSelectedSection } = useAdditionalSalaryRequest();
-
-  const sections = useMemo(
-    () => [
-      {
-        title: `1. ${t('About this Form')}`,
-        section: AdditionalSalaryRequestSectionEnum.AboutForm,
-      },
-      {
-        title: `2. ${t('Complete Form')}`,
-        section: AdditionalSalaryRequestSectionEnum.CompleteForm,
-      },
-      {
-        title: `3. ${t('Receipt')}`,
-        section: AdditionalSalaryRequestSectionEnum.Receipt,
-      },
-    ],
-    [t],
-  );
+  const { sectionOrder, selectedSection, setSectionIndex } =
+    useAdditionalSalaryRequest();
 
   return (
     <List disablePadding>
-      {sections.map(({ title, section }) => {
+      {sectionOrder.map((section, index) => {
         const active = selectedSection === section;
         return (
           <StyledListItemButton
-            key={section}
+            key={section.section}
             aria-current={active}
             selected={active}
-            onClick={() => setSelectedSection(section)}
+            onClick={() => setSectionIndex(index)}
           >
             <ListItemText
-              primary={title}
+              primary={`${index + 1}. ${section.title}`}
               primaryTypographyProps={{ variant: 'body2' }}
             />
           </StyledListItemButton>

@@ -1,14 +1,20 @@
-import NextLink from 'next/link';
 import React from 'react';
 import { Button, Container, Stack } from '@mui/material';
+import { DateTime } from 'luxon';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { Notification } from 'src/components/Notification/Notification';
+import { MhaStatusEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import { EligibleDisplay } from './MainPages/EligibleDisplay';
 import { IneligibleDisplay } from './MainPages/IneligibleDisplay';
+import {
+  useCreateHousingAllowanceRequestMutation,
+  useMinistryHousingAllowanceRequestsQuery,
+} from './MinisterHousingAllowance.generated';
+import { MinisterHousingAllowanceReportSkeleton } from './MinisterHousingAllowanceSkeleton';
 import { PanelLayout } from './PanelLayout/PanelLayout';
-import { MinisterHousingAllowanceProvider } from './Shared/Context/MinisterHousingAllowanceContext';
-import { Mock } from './Shared/mockData';
 import { PanelTypeEnum } from './Shared/sharedTypes';
 import { CurrentBoardApproved } from './SharedComponents/CurrentBoardApproved';
 import { CurrentRequest } from './SharedComponents/CurrentRequest';
@@ -16,123 +22,115 @@ import { NameDisplay } from './SharedComponents/NameDisplay';
 
 export const mainContentWidth = theme.spacing(85);
 
-interface MinisterHousingAllowanceReportProps {
-  testPerson: Mock;
-}
-
-export const MinisterHousingAllowanceReport: React.FC<
-  MinisterHousingAllowanceReportProps
-> = ({ testPerson }) => {
+export const MinisterHousingAllowanceReport = () => {
   const { t } = useTranslation();
-
+  const { enqueueSnackbar } = useSnackbar();
   const accountListId = useAccountListId();
-  const requestLink = `/accountLists/${accountListId}/reports/housingAllowance/new`;
 
-  const isMarried = testPerson.spouseInfo !== null;
-  const title = t('Your MHA');
+  const { data, error } = useMinistryHousingAllowanceRequestsQuery();
+  const requests = data?.ministryHousingAllowanceRequests.nodes ?? [];
 
-  // temporary logic for no pending or approved MHA
-  const noMHA = testPerson.mhaDetails.staffMHA === null;
+  const [createMHA] = useCreateHousingAllowanceRequestMutation();
 
-  // temporary logic for no pending MHA
-  const noPending =
-    testPerson.mhaDetails.staffMHA !== null &&
-    testPerson.mhaDetails.staffMHA.deadlineDate === null;
+  const onCreateMHARequest = async () => {
+    await createMHA({
+      variables: {
+        requestAttributes: {},
+      },
+      refetchQueries: ['MinistryHousingAllowanceRequests'],
+      onCompleted: ({ createMinistryHousingAllowanceRequest: newRequest }) => {
+        enqueueSnackbar(
+          t("Successfully created MHA Request. You'll be redirected shortly."),
+          {
+            variant: 'success',
+          },
+        );
+        const mhaRequestId = newRequest?.ministryHousingAllowanceRequest.id;
+        const requestLink = `/accountLists/${accountListId}/reports/housingAllowance/${mhaRequestId}`;
 
-  // temporary logic for no approved MHA
-  const noApproved =
-    testPerson.mhaDetails.staffMHA !== null &&
-    testPerson.mhaDetails.staffMHA.deadlineDate !== null;
+        // Wait 1 second before redirecting
+        setTimeout(() => {
+          window.location.href = requestLink;
+        }, 1000);
+      },
+      onError: (err) => {
+        enqueueSnackbar(
+          t('Error while creating MHA Request - {{error}}', {
+            error: err.message,
+          }),
+          {
+            variant: 'error',
+          },
+        );
+      },
+    });
+  };
 
-  // TODO: Logic to show both current and new request if pending and approved MHA
+  const hasNoRequests = !requests.length;
 
+  const currentRequest = requests[0] || {};
+  // It default to true when no availableDate as the request is likely still being processed
+  const isCurrentRequestPending =
+    currentRequest.status === MhaStatusEnum.BoardApproved &&
+    currentRequest.requestAttributes?.availableDate
+      ? DateTime.fromISO(currentRequest.requestAttributes.availableDate) >
+        DateTime.now()
+      : true;
+
+  const previousApprovedRequest = requests
+    .slice(1)
+    ?.find(
+      (request) =>
+        request.status === MhaStatusEnum.BoardApproved &&
+        isCurrentRequestPending,
+    );
   return (
-    <MinisterHousingAllowanceProvider>
-      <PanelLayout
-        panelType={PanelTypeEnum.Empty}
-        sidebarTitle={title}
-        mainContent={
-          <Container sx={{ ml: 5 }}>
-            <Stack direction="column" width={mainContentWidth}>
-              {noMHA ? (
-                <IneligibleDisplay
-                  title={title}
-                  isMarried={isMarried}
-                  staff={testPerson.staffInfo}
-                  spouse={isMarried ? testPerson.spouseInfo : null}
-                />
-              ) : noPending ? (
-                <EligibleDisplay title={title} isPending={false} />
-              ) : noApproved ? (
-                <EligibleDisplay title={title} isPending={true} />
-              ) : null}
-              <NameDisplay
-                isMarried={isMarried}
-                staff={testPerson.staffInfo}
-                spouse={isMarried ? testPerson.spouseInfo : null}
-              />
-              {noApproved && (
-                <CurrentRequest
-                  approvedOverallAmount={
-                    testPerson.mhaDetails.staffMHA?.approvedOverallAmount ??
-                    null
-                  }
-                  requestedDate={
-                    testPerson.mhaDetails.staffMHA?.lastApprovedDate ?? null
-                  }
-                  deadlineDate={
-                    testPerson.mhaDetails.staffMHA?.deadlineDate ?? null
-                  }
-                  boardApprovedDate={
-                    testPerson.mhaDetails.staffMHA?.boardApprovalDate ?? null
-                  }
-                  availableDate={
-                    testPerson.mhaDetails.staffMHA?.availableDate ?? null
-                  }
-                />
+    <PanelLayout
+      panelType={PanelTypeEnum.Empty}
+      sidebarTitle={t('Your MHA')}
+      mainContent={
+        <Container sx={{ ml: 5 }}>
+          {error ? (
+            <Notification type="error" message={error.message} />
+          ) : !requests ? (
+            <MinisterHousingAllowanceReportSkeleton />
+          ) : (
+            <>
+              <Stack direction="column" width={mainContentWidth}>
+                {hasNoRequests ? (
+                  <IneligibleDisplay />
+                ) : (
+                  <EligibleDisplay isPending={isCurrentRequestPending} />
+                )}
+                <NameDisplay />
+
+                {currentRequest &&
+                  (isCurrentRequestPending ? (
+                    <CurrentRequest request={currentRequest} />
+                  ) : (
+                    <CurrentBoardApproved request={currentRequest} />
+                  ))}
+              </Stack>
+              {(!isCurrentRequestPending || hasNoRequests) && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{ mt: 2 }}
+                  onClick={onCreateMHARequest}
+                >
+                  {t('Request New MHA')}
+                </Button>
               )}
-              {noPending && (
-                <CurrentBoardApproved
-                  approvedDate={
-                    testPerson.mhaDetails.staffMHA?.approvedDate ?? null
-                  }
-                  approvedOverallAmount={
-                    testPerson.mhaDetails.staffMHA?.approvedOverallAmount ??
-                    null
-                  }
-                  staffName={testPerson.staffInfo.name}
-                  staffSpecific={
-                    testPerson.mhaDetails.staffMHA?.approvedSpecificAmount ??
-                    null
-                  }
-                  spouseName={
-                    isMarried && testPerson.spouseInfo
-                      ? testPerson.spouseInfo.name
-                      : undefined
-                  }
-                  spouseSpecific={
-                    isMarried
-                      ? (testPerson.mhaDetails.spouseMHA
-                          ?.approvedSpecificAmount ?? null)
-                      : null
-                  }
-                />
-              )}
+            </>
+          )}
+
+          {previousApprovedRequest && (
+            <Stack direction="column" width={mainContentWidth} mt={4}>
+              <CurrentBoardApproved request={previousApprovedRequest} />
             </Stack>
-            {(noPending || noMHA) && (
-              <Button
-                component={NextLink}
-                href={requestLink}
-                variant="contained"
-                color="primary"
-                sx={{ mt: 2 }}
-              >
-                {t('Request New MHA')}
-              </Button>
-            )}
-          </Container>
-        }
-      />
-    </MinisterHousingAllowanceProvider>
+          )}
+        </Container>
+      }
+    />
   );
 };

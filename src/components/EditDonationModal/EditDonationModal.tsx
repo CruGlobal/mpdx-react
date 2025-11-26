@@ -27,8 +27,8 @@ import {
 import Modal from 'src/components/common/Modal/Modal';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
-import { requiredDateTime } from 'src/lib/formikHelpers';
 import i18n from 'src/lib/i18n';
+import { requiredDateTime } from 'src/lib/yupHelpers';
 import { SmallLoadingSpinner } from '../Settings/Organization/LoadingSpinner';
 import { CustomDateField } from '../common/DateTimePickers/CustomDateField';
 import { DeleteConfirmation } from '../common/Modal/DeleteConfirmation/DeleteConfirmation';
