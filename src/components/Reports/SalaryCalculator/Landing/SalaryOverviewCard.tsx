@@ -21,7 +21,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
 const StyledValueTypography = styled(Typography)(({ theme }) => ({
   fontWeight: 'bold',
   color: theme.palette.primary.main,
-  fontSize: theme.typography.h2.fontSize,
+  fontSize: theme.typography.h3.fontSize,
 }));
 
 export const SalaryOverviewCard: React.FC = () => {
