@@ -8,7 +8,7 @@ import { CancelButton, ContinueButton } from '../SharedComponents/NavButtons';
 import { AccountInfoCard } from './AccountInfoCard';
 
 export const AboutForm: React.FC = () => {
-  const { selectedSection } = useAdditionalSalaryRequest();
+  const { currentStep } = useAdditionalSalaryRequest();
   const { t } = useTranslation();
   const theme = useTheme();
 
@@ -19,7 +19,7 @@ export const AboutForm: React.FC = () => {
   const remainingAllowableSalary = 17500.0;
 
   return (
-    <AdditionalSalaryRequestSection title={selectedSection.title}>
+    <AdditionalSalaryRequestSection title={currentStep}>
       <Trans t={t}>
         <Typography variant="body1" paragraph>
           You can use this form to electronically submit additional salary

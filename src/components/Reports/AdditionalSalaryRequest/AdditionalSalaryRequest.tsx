@@ -13,10 +13,10 @@ import { useAdditionalSalaryRequest } from './Shared/AdditionalSalaryRequestCont
 import { SectionPage } from './SharedComponents/SectionPage';
 
 export const MainContent: React.FC = () => {
-  const { selectedSection } = useAdditionalSalaryRequest();
+  const { currentStep } = useAdditionalSalaryRequest();
   const { t } = useTranslation();
 
-  switch (selectedSection.section) {
+  switch (currentStep) {
     case AdditionalSalaryRequestSectionEnum.AboutForm:
       return <AboutForm />;
     case AdditionalSalaryRequestSectionEnum.CompleteForm:
@@ -29,14 +29,15 @@ export const MainContent: React.FC = () => {
 export const AdditionalSalaryRequest: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const { isDrawerOpen, toggleDrawer } = useAdditionalSalaryRequest();
-
-  const { steps } = useAdditionalSalaryRequest();
+  const { isDrawerOpen, toggleDrawer, steps, currentIndex, percentComplete } =
+    useAdditionalSalaryRequest();
 
   return (
     <PanelLayout
       panelType={PanelTypeEnum.Other}
-      percentComplete={50}
+      percentComplete={percentComplete}
+      steps={steps}
+      currentIndex={currentIndex}
       icons={useIconPanelItems(isDrawerOpen, toggleDrawer)}
       sidebarContent={<StepsList steps={steps} />}
       sidebarTitle={t('Additional Salary Request')}

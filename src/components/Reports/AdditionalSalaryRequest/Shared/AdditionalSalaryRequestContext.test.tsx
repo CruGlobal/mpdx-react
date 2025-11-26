@@ -5,16 +5,16 @@ import { AdditionalSalaryRequestTestWrapper } from '../AdditionalSalaryRequestTe
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 
 const TestComponent: React.FC = () => {
-  const { selectedSection, setSectionIndex, isDrawerOpen, toggleDrawer } =
+  const { currentStep, handleNextStep, isDrawerOpen, toggleDrawer } =
     useAdditionalSalaryRequest();
 
   return (
     <div>
-      <h2>{selectedSection.title}</h2>
+      <h2>{currentStep}</h2>
       <div aria-label="drawer state" data-open={isDrawerOpen}>
         Drawer: {isDrawerOpen ? 'open' : 'closed'}
       </div>
-      <button onClick={() => setSectionIndex(1)}>Change Section</button>
+      <button onClick={handleNextStep}>Change Section</button>
       <button onClick={toggleDrawer}>Toggle Drawer</button>
     </div>
   );
@@ -29,7 +29,7 @@ describe('AdditionalSalaryRequestContext', () => {
     );
 
     expect(
-      await findByRole('heading', { name: 'About this Form' }),
+      await findByRole('heading', { name: 'about-form' }),
     ).toBeInTheDocument();
   });
 
@@ -42,7 +42,7 @@ describe('AdditionalSalaryRequestContext', () => {
 
     userEvent.click(getByRole('button', { name: 'Change Section' }));
     expect(
-      await findByRole('heading', { name: 'Complete Form' }),
+      await findByRole('heading', { name: 'complete-form' }),
     ).toBeInTheDocument();
   });
 

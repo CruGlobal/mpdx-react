@@ -47,7 +47,7 @@ export const CompleteForm: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
   const theme = useTheme();
-  const { selectedSection } = useAdditionalSalaryRequest();
+  const { currentStep } = useAdditionalSalaryRequest();
 
   const categories = useCompleteFormCategories();
 
@@ -106,7 +106,7 @@ export const CompleteForm: React.FC = () => {
   };
 
   return (
-    <AdditionalSalaryRequestSection title={selectedSection.title}>
+    <AdditionalSalaryRequestSection title={currentStep}>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}

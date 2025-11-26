@@ -26,11 +26,15 @@ export const SubmitButton: React.FC<SubmitButtonProps> = ({ handleClick }) => {
 
 export const BackButton: React.FC = () => {
   const { t } = useTranslation();
-  const { handleBack } = useAdditionalSalaryRequest();
+  const { handlePreviousStep } = useAdditionalSalaryRequest();
 
   return (
     <Tooltip title={t('Return to the previous section.')}>
-      <StyledButton variant="outlined" size="small" onClick={handleBack}>
+      <StyledButton
+        variant="outlined"
+        size="small"
+        onClick={handlePreviousStep}
+      >
         {t('Back')}
       </StyledButton>
     </Tooltip>
@@ -39,7 +43,7 @@ export const BackButton: React.FC = () => {
 
 export const ContinueButton: React.FC = () => {
   const { t } = useTranslation();
-  const { handleContinue } = useAdditionalSalaryRequest();
+  const { handleNextStep } = useAdditionalSalaryRequest();
 
   return (
     <Tooltip
@@ -47,7 +51,7 @@ export const ContinueButton: React.FC = () => {
         'Proceed to the next section. Your progress is automatically saved as you go.',
       )}
     >
-      <StyledButton variant="contained" size="small" onClick={handleContinue}>
+      <StyledButton variant="contained" size="small" onClick={handleNextStep}>
         {t('Continue')}
       </StyledButton>
     </Tooltip>
