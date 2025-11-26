@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
-import { CardSkeleton } from '../../Shared/CalculationReports/CardSkeleton/CardSkeleton';
+import { StatusCard } from '../../Shared/CalculationReports/StatusCard/StatusCard';
 
 interface CurrentRequestProps {
   approvedOverallAmount: number | null;
@@ -37,7 +37,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({
 
   //TODO: Implement real mha status logic
   return (
-    <CardSkeleton
+    <StatusCard
       formType={t('MHA Request')}
       title={t('Current MHA Request')}
       icon={AddHomeSharp}
@@ -134,6 +134,6 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({
           </TimelineItem>
         </Timeline>
       </Box>
-    </CardSkeleton>
+    </StatusCard>
   );
 };

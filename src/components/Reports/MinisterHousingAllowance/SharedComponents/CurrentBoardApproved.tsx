@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
-import { CardSkeleton } from '../../Shared/CalculationReports/CardSkeleton/CardSkeleton';
+import { StatusCard } from '../../Shared/CalculationReports/StatusCard/StatusCard';
 
 interface CurrentBoardApprovedProps {
   approvedDate: string | null;
@@ -30,7 +30,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
   const currency = 'USD';
 
   return (
-    <CardSkeleton
+    <StatusCard
       formType={t('MHA Request')}
       title={t('Current Board Approved MHA')}
       icon={HomeSharp}
@@ -106,6 +106,6 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
           </Grid>
         </Grid>
       </Grid>
-    </CardSkeleton>
+    </StatusCard>
   );
 };

@@ -19,7 +19,7 @@ import { SubmitModal } from '../SubmitModal/SubmitModal';
 //TODO: handle cancel request
 //TODO: handle duplicate last years mha and view current mha links
 
-interface CardSkeletonProps {
+interface StatusCardProps {
   formType: string;
   title: string;
   subtitle?: string;
@@ -37,7 +37,7 @@ interface CardSkeletonProps {
   handleConfirmCancel: () => void;
 }
 
-export const CardSkeleton: React.FC<CardSkeletonProps> = ({
+export const StatusCard: React.FC<StatusCardProps> = ({
   formType,
   title,
   subtitle,
@@ -57,6 +57,11 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
   const { t } = useTranslation();
 
   const [openCancel, setOpenCancel] = useState(false);
+
+  const handleCancel = () => {
+    setOpenCancel(false);
+    handleConfirmCancel();
+  };
 
   return (
     <Card sx={{ boxShadow: 1 }}>
@@ -131,10 +136,7 @@ export const CardSkeleton: React.FC<CardSkeletonProps> = ({
             <SubmitModal
               formTitle={formType}
               handleClose={() => setOpenCancel(false)}
-              handleConfirm={() => {
-                setOpenCancel(false);
-                handleConfirmCancel();
-              }}
+              handleConfirm={handleCancel}
               isCancel={true}
             />
           )}

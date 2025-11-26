@@ -7,7 +7,7 @@ import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
 import { MinisterHousingAllowanceProvider } from '../../../MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
-import { CardSkeleton } from './CardSkeleton';
+import { StatusCard } from './StatusCard';
 
 const title = 'Test Title';
 const subtitle = 'Test Subtitle';
@@ -47,7 +47,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <TestRouter>
           <MinisterHousingAllowanceProvider>
-            <CardSkeleton
+            <StatusCard
               formType={'MHA Request'}
               title={title}
               subtitle={subtitle}
@@ -64,7 +64,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
               handleConfirmCancel={handleConfirmCancel}
             >
               <div>Test Children</div>
-            </CardSkeleton>
+            </StatusCard>
           </MinisterHousingAllowanceProvider>
         </TestRouter>
       </LocalizationProvider>

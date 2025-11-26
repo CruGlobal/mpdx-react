@@ -39,7 +39,7 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
 
   const [openSubmitModal, setOpenSubmitModal] = useState(false);
 
-  const handleConfirm = async () => {
+  const handleSubmit = async () => {
     if (!submitForm || !validateForm) {
       return;
     }
@@ -50,6 +50,13 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
     } else {
       submitForm();
     }
+  };
+
+  const handleConfirm = () => {
+    if (submitForm) {
+      submitForm();
+    }
+    setOpenSubmitModal(false);
   };
 
   return (
@@ -76,7 +83,7 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
           <Button
             variant="contained"
             color="primary"
-            onClick={handleConfirm}
+            onClick={handleSubmit}
             disabled={submitCount ? !isValid : false}
           >
             {t('Submit')}
@@ -97,9 +104,7 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
         <SubmitModal
           formTitle={t('MHA Request')}
           handleClose={() => setOpenSubmitModal(false)}
-          handleConfirm={
-            submitForm ? submitForm : () => setOpenSubmitModal(false)
-          }
+          handleConfirm={handleConfirm}
           deadlineDate={deadlineDate}
           actionRequired={actionRequired}
         />
