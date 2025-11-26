@@ -6,10 +6,10 @@ import {
   Grid,
   Stack,
   Typography,
+  useTheme,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import theme from 'src/theme';
 import { useLandingData } from '../useLandingData';
 
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -25,6 +25,7 @@ const StyledValueTypography = styled(Typography)(({ theme }) => ({
 
 export const SalaryOverviewCard: React.FC = () => {
   const { t } = useTranslation();
+  const theme = useTheme();
   const { name, staffAccountId, currentGrossSalary, accountBalance } =
     useLandingData();
 

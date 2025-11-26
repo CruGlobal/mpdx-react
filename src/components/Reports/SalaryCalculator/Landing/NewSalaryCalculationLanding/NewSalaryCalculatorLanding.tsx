@@ -1,10 +1,9 @@
 import React from 'react';
-import { Box, Button, Container, Typography } from '@mui/material';
+import { Box, Button, Container, Typography, useTheme } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import Loading from 'src/components/Loading/Loading';
 import { NoStaffAccount } from 'src/components/Reports/Shared/NoStaffAccount/NoStaffAccount';
-import theme from 'src/theme';
 // import { PartTimeInfo } from './PartTimeInfo';
 import { SalaryInformationCard } from '../../Shared/SalaryInformationCard';
 import { useLandingData } from '../useLandingData';
@@ -24,6 +23,7 @@ export const NewSalaryCalculatorLanding: React.FC<
   NewSalaryCalculatorLandingProps
 > = ({ onStartCalculation, hasExistingCalculation }) => {
   const { t } = useTranslation();
+  const theme = useTheme();
   // const { supportStatus, loading, staffAccountId } = useLandingData();
   const { loading, staffAccountId } = useLandingData();
   if (loading) {

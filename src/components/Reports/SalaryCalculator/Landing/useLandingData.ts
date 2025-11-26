@@ -148,6 +148,7 @@ export const useLandingData = () => {
               showTrailingZeros: true,
             })
           : '-',
+        link: '/reports/housingAllowance',
       },
     ],
     [t, salaryData, self, spouse, calculation, locale],

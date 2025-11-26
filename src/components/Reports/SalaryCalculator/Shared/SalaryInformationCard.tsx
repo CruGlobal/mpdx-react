@@ -13,10 +13,10 @@ import {
   TableRow,
   Typography,
   styled,
+  useTheme,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import theme from 'src/theme';
 import { useLandingData } from '../Landing/useLandingData';
 import { StepCard } from './StepCard';
 
@@ -34,6 +34,7 @@ const LinkTypography = styled(Typography)(({ theme }) => ({
 
 export const SalaryInformationCard: React.FC = () => {
   const { t } = useTranslation();
+  const theme = useTheme();
   const accountListId = useAccountListId();
   const { self, spouse, hasSpouse, salaryCategories, lastUpdated } =
     useLandingData();
@@ -79,11 +80,11 @@ export const SalaryInformationCard: React.FC = () => {
               <TableRow key={row.category}>
                 <TableCell>{row.category}</TableCell>
                 <TableCell>
-                  {row.category === t('Current MHA') ? (
+                  {row.link ? (
                     <FlexBox>
                       {row.user ?? ''}
                       <Link
-                        href={`/accountLists/${accountListId}/reports/housingAllowance`}
+                        href={`/accountLists/${accountListId}${row.link}`}
                         passHref
                       >
                         <LinkTypography>{t('View')}</LinkTypography>
