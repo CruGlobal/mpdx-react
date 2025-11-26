@@ -1,5 +1,9 @@
 query Hcm {
   hcm(maritalStatus: MARRIED) {
+    staffInfo {
+      firstName
+      lastName
+    }
     currentSalary {
       grossSalaryAmount
     }
