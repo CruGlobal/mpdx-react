@@ -5,9 +5,9 @@ import { useLandingData } from '../useLandingData';
 
 export const StaffNameCard: React.FC = () => {
   const { self, spouse, hasSpouse, staffAccountId } = useLandingData();
-  const lastName = self?.staffInfo.lastName || '';
-  const firstName = self?.staffInfo.firstName || '';
-  const spouseFirstName = hasSpouse ? spouse?.staffInfo.firstName || '' : '';
+  const lastName = self?.staffInfo.lastName ?? '';
+  const firstName = self?.staffInfo.firstName ?? '';
+  const spouseFirstName = hasSpouse ? (spouse?.staffInfo.firstName ?? '') : '';
 
   return (
     <Card sx={{ marginBlock: theme.spacing(3) }}>
