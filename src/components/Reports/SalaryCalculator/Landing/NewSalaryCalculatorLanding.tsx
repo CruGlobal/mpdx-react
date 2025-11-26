@@ -3,6 +3,8 @@ import { Box, Button, Container, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import Loading from 'src/components/Loading/Loading';
+import { NoStaffAccount } from 'src/components/Reports/Shared/NoStaffAccount/NoStaffAccount';
+// import { PartTimeInfo } from './PartTimeInfo';
 import { SalaryInformationCard } from './SalaryInformationCard';
 import { SalaryOverviewCard } from './SalaryOverviewCard';
 import { useLandingData } from './useLandingData';
@@ -21,11 +23,19 @@ export const NewSalaryCalculatorLanding: React.FC<
   NewSalaryCalculatorLandingProps
 > = ({ onStartCalculation, hasExistingCalculation }) => {
   const { t } = useTranslation();
-  const { loading } = useLandingData();
-
+  // const { supportStatus, loading, staffAccountId } = useLandingData();
+  const { loading, staffAccountId } = useLandingData();
   if (loading) {
     return <Loading loading />;
   }
+
+  if (!staffAccountId) {
+    return <NoStaffAccount />;
+  }
+
+  // if (supportStatus && supportStatus === 'full_time') {
+  //   return <PartTimeInfo />;
+  // }
 
   return (
     <StyledContainer maxWidth="lg">

@@ -39,6 +39,11 @@ export const useLandingData = () => {
     return '';
   }, [self]);
 
+  // const supportStatus = useMemo(() => {
+  //   return self?.staffInfo.peopleGroupSupportType;
+  // }, [self]);
+  // console.log('supportStatus', supportStatus);
+
   const salaryData = useMemo(() => {
     const currentGrossSalary = self?.currentSalary.grossSalaryAmount ?? 0;
     const spouseCurrentGrossSalary =
@@ -138,6 +143,7 @@ export const useLandingData = () => {
     self,
     spouse,
     hasSpouse,
+    supportStatus,
     currentGrossSalary: salaryData.currentGrossSalary,
     spouseCurrentGrossSalary: salaryData.spouseCurrentGrossSalary,
     rothContribution: salaryData.rothContribution,
