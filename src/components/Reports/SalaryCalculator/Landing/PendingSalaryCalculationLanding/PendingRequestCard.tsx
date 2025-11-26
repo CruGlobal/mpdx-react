@@ -38,7 +38,7 @@ export const PendingRequestCard: React.FC = () => {
     : t('N/A');
 
   return (
-    <Card sx={{ my: theme.spacing(3) }}>
+    <Card sx={{ marginBlock: theme.spacing(3) }}>
       <CardHeader
         avatar={
           <Avatar sx={{ bgcolor: 'orange' }}>
