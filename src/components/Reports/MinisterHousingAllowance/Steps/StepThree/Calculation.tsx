@@ -161,10 +161,12 @@ export const Calculation: React.FC<CalculationProps> = ({
     setIsPrint(print);
   }, [print, setIsPrint]);
 
+  const schema = getValidationSchema(rentOrOwn);
+
   return (
     <Formik<CalculationFormValues>
       initialValues={initialValues}
-      validationSchema={getValidationSchema(rentOrOwn)}
+      validationSchema={schema}
       validateOnChange
       validateOnBlur
       onSubmit={() => {
@@ -255,10 +257,10 @@ export const Calculation: React.FC<CalculationProps> = ({
             )}
             {rentOrOwn === RentOwnEnum.Own && (
               <Box mb={3}>
-                <FairRentalValue />
+                <FairRentalValue schema={schema} />
               </Box>
             )}
-            <CostOfHome rentOrOwn={rentOrOwn} />
+            <CostOfHome schema={schema} rentOrOwn={rentOrOwn} />
             {!isViewPage && (
               <>
                 <Box mt={3} mb={3}>

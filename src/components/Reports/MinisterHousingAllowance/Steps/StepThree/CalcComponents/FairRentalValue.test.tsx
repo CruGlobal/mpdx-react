@@ -5,6 +5,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
+import * as yup from 'yup';
 import TestRouter from '__tests__/util/TestRouter';
 import theme from 'src/theme';
 import { useMinisterHousingAllowance } from '../../../Shared/Context/MinisterHousingAllowanceContext';
@@ -13,12 +14,18 @@ import { FairRentalValue } from './FairRentalValue';
 
 const submit = jest.fn();
 
+const mockSchema = {
+  validateSyncAt: jest.fn((_fieldName, _values) => {
+    return null;
+  }),
+} as unknown as yup.Schema;
+
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <TestRouter>
         <Formik initialValues={{}} onSubmit={submit}>
-          <FairRentalValue />
+          <FairRentalValue schema={mockSchema} />
         </Formik>
       </TestRouter>
     </LocalizationProvider>

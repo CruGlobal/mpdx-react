@@ -1,15 +1,20 @@
 import { Box, TableCell, TableRow, Typography } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { Trans, useTranslation } from 'react-i18next';
+import * as yup from 'yup';
 import { useAnnualTotal } from 'src/hooks/useAnnualTotal';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { AutosaveCustomTextField } from '../../../Shared/AutoSave/AutosaveCustomTextField';
 import { StyledOrderedList } from '../../../styledComponents/styledComponents';
 import { CalculationFormValues } from '../Calculation';
 import { CalculationCardSkeleton } from './CalculationCardSkeleton';
-import { CustomTextField } from './Helper/CustomTextField';
 
-export const FairRentalValue: React.FC = () => {
+interface FairRentalValueProps {
+  schema: yup.Schema;
+}
+
+export const FairRentalValue: React.FC<FairRentalValueProps> = ({ schema }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const currency = 'USD';
@@ -45,7 +50,7 @@ export const FairRentalValue: React.FC = () => {
               touched.rentalValue && errors.rentalValue ? '2px solid red' : '',
           }}
         >
-          <CustomTextField name="rentalValue" value={values.rentalValue} />
+          <AutosaveCustomTextField fieldName="rentalValue" schema={schema} />
         </TableCell>
       </TableRow>
       <TableRow>
@@ -74,9 +79,9 @@ export const FairRentalValue: React.FC = () => {
                 : '',
           }}
         >
-          <CustomTextField
-            name="furnitureCostsOne"
-            value={values.furnitureCostsOne}
+          <AutosaveCustomTextField
+            fieldName="furnitureCostsOne"
+            schema={schema}
           />
         </TableCell>
       </TableRow>
@@ -98,7 +103,7 @@ export const FairRentalValue: React.FC = () => {
                 : '',
           }}
         >
-          <CustomTextField name="avgUtilityOne" value={values.avgUtilityOne} />
+          <AutosaveCustomTextField fieldName="avgUtilityOne" schema={schema} />
         </TableCell>
       </TableRow>
       <TableRow>

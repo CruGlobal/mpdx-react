@@ -1,20 +1,25 @@
 import { Box, TableCell, TableRow, Typography } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
+import * as yup from 'yup';
 import { RentOwnEnum } from 'src/components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
 import { useAnnualTotal } from 'src/hooks/useAnnualTotal';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { AutosaveCustomTextField } from '../../../Shared/AutoSave/AutosaveCustomTextField';
 import { StyledOrderedList } from '../../../styledComponents/styledComponents';
 import { CalculationFormValues } from '../Calculation';
 import { CalculationCardSkeleton } from './CalculationCardSkeleton';
-import { CustomTextField } from './Helper/CustomTextField';
 
 interface CostOfHomeProps {
+  schema: yup.Schema;
   rentOrOwn?: RentOwnEnum;
 }
 
-export const CostOfHome: React.FC<CostOfHomeProps> = ({ rentOrOwn }) => {
+export const CostOfHome: React.FC<CostOfHomeProps> = ({
+  rentOrOwn,
+  schema,
+}) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const currency = 'USD';
@@ -47,9 +52,9 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({ rentOrOwn }) => {
                 : '',
           }}
         >
-          <CustomTextField
-            name="mortgagePayment"
-            value={values.mortgagePayment}
+          <AutosaveCustomTextField
+            fieldName="mortgagePayment"
+            schema={schema}
           />
         </TableCell>
       </TableRow>
@@ -73,9 +78,9 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({ rentOrOwn }) => {
                 : '',
           }}
         >
-          <CustomTextField
-            name="furnitureCostsTwo"
-            value={values.furnitureCostsTwo}
+          <AutosaveCustomTextField
+            fieldName="furnitureCostsTwo"
+            schema={schema}
           />
         </TableCell>
       </TableRow>
@@ -97,7 +102,7 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({ rentOrOwn }) => {
               touched.repairCosts && errors.repairCosts ? '2px solid red' : '',
           }}
         >
-          <CustomTextField name="repairCosts" value={values.repairCosts} />
+          <AutosaveCustomTextField fieldName="repairCosts" schema={schema} />
         </TableCell>
       </TableRow>
       <TableRow>
@@ -123,7 +128,7 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({ rentOrOwn }) => {
                 : '',
           }}
         >
-          <CustomTextField name="avgUtilityTwo" value={values.avgUtilityTwo} />
+          <AutosaveCustomTextField fieldName="avgUtilityTwo" schema={schema} />
         </TableCell>
       </TableRow>
       <TableRow>
@@ -144,9 +149,9 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({ rentOrOwn }) => {
                 : '',
           }}
         >
-          <CustomTextField
-            name="unexpectedExpenses"
-            value={values.unexpectedExpenses}
+          <AutosaveCustomTextField
+            fieldName="unexpectedExpenses"
+            schema={schema}
           />
         </TableCell>
       </TableRow>
