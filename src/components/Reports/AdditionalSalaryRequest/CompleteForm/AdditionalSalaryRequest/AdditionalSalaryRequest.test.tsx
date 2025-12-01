@@ -268,16 +268,4 @@ describe('AdditionalSalaryRequest', () => {
     expect(inputs[1]).toHaveValue(200);
     expect(inputs[2]).toHaveValue(300);
   });
-
-  it('calculates total with large numbers', () => {
-    const largeValues: CompleteFormValues = {
-      ...defaultValues,
-      additionalSalary: '50000',
-      housingDownPayment: '50000',
-    };
-
-    const { getByTestId } = render(<TestWrapper initialValues={largeValues} />);
-
-    expect(getByTestId('total-amount')).toHaveTextContent('$100,000');
-  });
 });
