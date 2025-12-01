@@ -149,7 +149,7 @@ export const CompleteForm: React.FC = () => {
                 <CancelButton />
                 <Box sx={{ display: 'flex', gap: theme.spacing(2) }}>
                   <BackButton />
-                  <SubmitButton type="submit" />
+                  <SubmitButton />
                 </Box>
               </Box>
             </Box>
