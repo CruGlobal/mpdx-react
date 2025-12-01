@@ -38,11 +38,9 @@ const TestWrapper: React.FC<TestWrapperProps> = ({
       onSubmit={jest.fn()}
       enableReinitialize
     >
-      {(formikProps) => (
-        <Form>
-          <Deduction formikProps={formikProps} />
-        </Form>
-      )}
+      <Form>
+        <Deduction />
+      </Form>
     </Formik>
   </AdditionalSalaryRequestTestWrapper>
 );

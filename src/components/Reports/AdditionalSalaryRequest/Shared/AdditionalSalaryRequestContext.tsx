@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useMemo, useState } from 'react';
-import { FormikProps, useFormik } from 'formik';
+import { FormikProvider, useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useLocale } from 'src/hooks/useLocale';
@@ -23,7 +23,6 @@ export type AdditionalSalaryRequestType = {
   handleCancel: () => void;
   handleBack: () => void;
   percentComplete: number;
-  formik: FormikProps<CompleteFormValues>;
 };
 
 const AdditionalSalaryRequestContext =
@@ -186,7 +185,6 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       handleCancel,
       handleBack,
       percentComplete,
-      formik,
     }),
     [
       sectionOrder,
@@ -197,13 +195,14 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       isDrawerOpen,
       toggleDrawer,
       percentComplete,
-      formik,
     ],
   );
 
   return (
-    <AdditionalSalaryRequestContext.Provider value={contextValue}>
-      {children}
-    </AdditionalSalaryRequestContext.Provider>
+    <FormikProvider value={formik}>
+      <AdditionalSalaryRequestContext.Provider value={contextValue}>
+        {children}
+      </AdditionalSalaryRequestContext.Provider>
+    </FormikProvider>
   );
 };

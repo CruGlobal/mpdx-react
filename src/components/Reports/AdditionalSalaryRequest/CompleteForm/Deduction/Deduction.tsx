@@ -11,23 +11,19 @@ import {
   Typography,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { Field, FormikProps } from 'formik';
+import { Field, useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { useTotalSalaryRequest } from '../../Shared/useTotalSalaryRequest';
 import { CompleteFormValues } from '../CompleteForm';
 
-interface DeductionProps {
-  formikProps: FormikProps<CompleteFormValues>;
-}
-
-export const Deduction: React.FC<DeductionProps> = ({ formikProps }) => {
+export const Deduction: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
   const locale = useLocale();
 
-  const { values } = formikProps;
+  const { values } = useFormikContext<CompleteFormValues>();
 
   const total = useTotalSalaryRequest(values);
 
