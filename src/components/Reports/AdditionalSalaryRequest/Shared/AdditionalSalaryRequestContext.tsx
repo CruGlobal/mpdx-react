@@ -10,7 +10,7 @@ import {
   SectionOrderItem,
 } from '../AdditionalSalaryRequestHelper';
 import { CompleteFormValues } from '../CompleteForm/CompleteForm';
-import { useFormCompletionPercentage } from './useFormCompletionPercentage';
+import { formCompletionPercentageHelper } from './formCompletionPercentageHelper';
 
 export type AdditionalSalaryRequestType = {
   sectionOrder: SectionOrderItem[];
@@ -153,7 +153,10 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     onSubmit: handleSubmit,
   });
 
-  const percentComplete = useFormCompletionPercentage(formik.values);
+  const percentComplete = useMemo(
+    () => formCompletionPercentageHelper(formik.values),
+    [formik.values],
+  );
 
   const handleContinue = useCallback(() => {
     if (sectionIndex < sectionOrder.length - 1) {
