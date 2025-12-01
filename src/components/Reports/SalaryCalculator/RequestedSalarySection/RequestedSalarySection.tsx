@@ -38,12 +38,17 @@ export const RequestedSalarySection: React.FC = () => {
   const [self, spouse] = hcm ?? [];
 
   // TODO: Use real minimum salary values when they are available in the API
-  const minimumSalary = 55081.96;
-  const spouseMinimumSalary = 45081.96;
+  const minimumSalaryValue = 55081.96;
+  const spouseMinimumSalaryValue = 45081.96;
 
   const formula = t('MHA + $8,400 - SECA');
-  const formatSalary = (salary: number) =>
-    currencyFormat(salary, 'USD', locale);
+
+  const minimumSalary = currencyFormat(minimumSalaryValue, 'USD', locale);
+  const spouseMinimumSalary = currencyFormat(
+    spouseMinimumSalaryValue,
+    'USD',
+    locale,
+  );
 
   return (
     <StepCard>
@@ -59,16 +64,14 @@ export const RequestedSalarySection: React.FC = () => {
           {spouse ? (
             <Trans t={t}>
               Because of IRS and Cru requirements, the lowest salary you can
-              request is {{ minimumSalary: formatSalary(minimumSalary) }}{' '}
-              {formula} for {{ name: self.staffInfo.firstName }} and{' '}
-              {{ spouseMinimumSalary: formatSalary(spouseMinimumSalary) }}{' '}
+              request is {{ minimumSalary }} {formula} for{' '}
+              {{ name: self.staffInfo.firstName }} and {{ spouseMinimumSalary }}{' '}
               {formula} for {{ spouseName: spouse.staffInfo.firstName }}.
             </Trans>
           ) : (
             <Trans t={t}>
               Because of IRS and Cru requirements, the lowest salary you can
-              request is {{ minimumSalary: formatSalary(minimumSalary) }}{' '}
-              {formula}.
+              request is {{ minimumSalary }} {formula}.
             </Trans>
           )}{' '}
           <Trans t={t}>
@@ -98,8 +101,10 @@ export const RequestedSalarySection: React.FC = () => {
               <TableCell component="th" scope="row">
                 {t('Salary Minimum')}
               </TableCell>
-              <FormattedTableCell value={minimumSalary} />
-              {spouse && <FormattedTableCell value={spouseMinimumSalary} />}
+              <FormattedTableCell value={minimumSalaryValue} />
+              {spouse && (
+                <FormattedTableCell value={spouseMinimumSalaryValue} />
+              )}
             </TableRow>
 
             <TableRow>
