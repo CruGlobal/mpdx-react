@@ -64,14 +64,14 @@ export const RequestedSalarySection: React.FC = () => {
           {spouse ? (
             <Trans t={t}>
               Because of IRS and Cru requirements, the lowest salary you can
-              request is {{ minimumSalary }} {formula} for{' '}
+              request is {{ minimumSalary }} ({formula}) for{' '}
               {{ name: self.staffInfo.firstName }} and {{ spouseMinimumSalary }}{' '}
-              {formula} for {{ spouseName: spouse.staffInfo.firstName }}.
+              ({formula}) for {{ spouseName: spouse.staffInfo.firstName }}.
             </Trans>
           ) : (
             <Trans t={t}>
               Because of IRS and Cru requirements, the lowest salary you can
-              request is {{ minimumSalary }} {formula}.
+              request is {{ minimumSalary }} ({formula}).
             </Trans>
           )}{' '}
           <Trans t={t}>
