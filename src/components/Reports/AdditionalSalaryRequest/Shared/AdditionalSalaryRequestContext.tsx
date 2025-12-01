@@ -2,6 +2,7 @@ import React, { createContext, useCallback, useMemo, useState } from 'react';
 import { FormikProps, useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { amount } from 'src/lib/yupHelpers';
 import {
   AdditionalSalaryRequestSectionEnum,
   SectionOrderItem,
@@ -72,10 +73,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
 
   const createCurrencyValidation = useCallback(
     (fieldName: string, max?: number) => {
-      let schema = yup
-        .number()
-        .min(0, t('{{field}} amount must be positive', { field: fieldName }))
-        .required(t('{{field}} field is required', { field: fieldName }));
+      let schema = amount(fieldName, t);
       if (max) {
         schema = schema.max(
           max,
