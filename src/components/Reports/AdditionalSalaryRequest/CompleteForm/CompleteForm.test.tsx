@@ -22,8 +22,8 @@ describe('SalaryRequestForm', () => {
     expect(getAllByRole('spinbutton')).toHaveLength(15);
   });
 
-  it('updates amount when user enters value', () => {
-    const { getAllByRole, getAllByLabelText } = render(<TestWrapper />);
+  it('updates amount when user enters value', async () => {
+    const { getAllByRole, getByTestId } = render(<TestWrapper />);
 
     const inputs = getAllByRole('spinbutton');
     userEvent.clear(inputs[0]);
@@ -31,12 +31,15 @@ describe('SalaryRequestForm', () => {
     userEvent.clear(inputs[1]);
     userEvent.type(inputs[1], '500');
 
-    expect(inputs[0]).toHaveValue(1000);
-    expect(inputs[1]).toHaveValue(500);
+    await waitFor(() => {
+      expect(inputs[0]).toHaveValue(1000);
+      expect(inputs[1]).toHaveValue(500);
+    });
 
-    // Get the first "Total requested amount" which is from AdditionalSalaryRequest
-    const totalElements = getAllByLabelText('Total requested amount');
-    expect(totalElements[0]).toHaveTextContent('$1,500');
+    // Check the total from AdditionalSalaryRequest component
+    await waitFor(() => {
+      expect(getByTestId('total-amount')).toHaveTextContent('$1,500');
+    });
   });
 
   it('calls onSubmit when submit button is clicked', async () => {
