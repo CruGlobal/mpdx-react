@@ -31,7 +31,7 @@ export const Deduction: React.FC<DeductionProps> = ({ formikProps }) => {
 
   const total = useTotalSalaryRequest(values);
 
-  // Calculate 12% of total additional salary if checkbox is checked
+  // TODO: Pull the 12% from the admin rate goal calculator misc constant
   const calculatedDeduction = values.defaultPercentage ? total * 0.12 : 0;
 
   // Get the contribution403b value from the form
