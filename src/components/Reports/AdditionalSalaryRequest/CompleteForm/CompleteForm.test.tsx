@@ -36,7 +36,6 @@ describe('SalaryRequestForm', () => {
       expect(inputs[1]).toHaveValue(500);
     });
 
-    // Check the total from AdditionalSalaryRequest component
     await waitFor(() => {
       expect(getByTestId('total-amount')).toHaveTextContent('$1,500');
     });
