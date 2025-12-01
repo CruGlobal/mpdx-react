@@ -4,6 +4,7 @@ import { useTheme } from '@mui/material/styles';
 import { Form, Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { amount } from 'src/lib/yupHelpers';
 import { AccountInfoCard } from '../Shared/AccountInfoCard';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSalaryRequestSection';
@@ -45,10 +46,7 @@ export const CompleteForm: React.FC = () => {
 
   const createCurrencyValidation = useCallback(
     (fieldName: string, max?: number) => {
-      let schema = yup
-        .number()
-        .min(0, t('{{field}} amount must be positive', { field: fieldName }))
-        .required(t('{{field}} field is required', { field: fieldName }));
+      let schema = amount(fieldName);
       if (max) {
         schema = schema.max(
           max,
