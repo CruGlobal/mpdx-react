@@ -1,9 +1,9 @@
 import { Container, Stack } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { PanelLayout } from '../../Shared/CalculationReports/PanelLayout/PanelLayout';
+import { PanelTypeEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { mainContentWidth } from '../MinisterHousingAllowance';
-import { PanelLayout } from '../PanelLayout/PanelLayout';
 import { editOwnMock, mocks } from '../Shared/mockData';
-import { PanelTypeEnum } from '../Shared/sharedTypes';
 import { Calculation } from '../Steps/StepThree/Calculation';
 
 export const ViewRequestPage: React.FC = () => {
@@ -17,6 +17,8 @@ export const ViewRequestPage: React.FC = () => {
     <PanelLayout
       panelType={PanelTypeEnum.Empty}
       sidebarTitle={t('Your MHA')}
+      percentComplete={0}
+      backHref=""
       mainContent={
         <Container sx={{ ml: 5 }}>
           <Stack direction="column" width={mainContentWidth}>

@@ -12,10 +12,8 @@ import {
 } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { Trans, useTranslation } from 'react-i18next';
-import {
-  PageEnum,
-  RentOwnEnum,
-} from 'src/components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
+import { RentOwnEnum } from 'src/components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
+import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import {
   SimplePrintOnly,
   SimpleScreenOnly,

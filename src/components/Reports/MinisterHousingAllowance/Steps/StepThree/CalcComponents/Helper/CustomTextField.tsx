@@ -3,7 +3,7 @@ import { TextField } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { useMinisterHousingAllowance } from 'src/components/Reports/MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
-import { PageEnum } from 'src/components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
+import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { useLocale } from 'src/hooks/useLocale';
 import { CalculationFormValues } from '../../Calculation';
 import { display, parseInput } from './formatHelper';
