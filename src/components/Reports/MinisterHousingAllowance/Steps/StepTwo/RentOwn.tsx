@@ -10,11 +10,12 @@ import {
 } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
+import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
+import { DirectionButtons } from '../../../Shared/CalculationReports/DirectionButtons/DirectionButtons';
+import { SubmitModal } from '../../../Shared/CalculationReports/SubmitModal/SubmitModal';
 import { FormValues } from '../../NewRequest/NewRequestPage';
 import { useMinisterHousingAllowance } from '../../Shared/Context/MinisterHousingAllowanceContext';
-import { DirectionButtons } from '../../Shared/DirectionButtons/DirectionButtons';
-import { PageEnum, RentOwnEnum } from '../../Shared/sharedTypes';
-import { SubmitModal } from '../../SubmitModal/SubmitModal';
+import { RentOwnEnum } from '../../Shared/sharedTypes';
 
 export const RentOwn: React.FC = () => {
   const { t } = useTranslation();
@@ -30,7 +31,8 @@ export const RentOwn: React.FC = () => {
     setFieldValue,
   } = useFormikContext<FormValues>();
 
-  const { pageType, hasCalcValues } = useMinisterHousingAllowance();
+  const { pageType, hasCalcValues, handlePreviousStep } =
+    useMinisterHousingAllowance();
 
   const [pendingValue, setPendingValue] = useState<RentOwnEnum | null>(null);
   const [displayValue, setDisplayValue] = useState<RentOwnEnum | null>(null);
@@ -76,6 +78,12 @@ export const RentOwn: React.FC = () => {
     setPendingValue(null);
   };
 
+  const title = t('Are you sure you want to change selection?');
+  const content = t('You are changing your MHA Request selection.');
+  const subContent = t(
+    'Clicking "Yes, Continue" will wipe all inputs you\'ve entered previously. Are you sure you want to continue?',
+  );
+
   return (
     <>
       <Box mb={3}>
@@ -113,13 +121,20 @@ export const RentOwn: React.FC = () => {
         </FormControl>
         {isRequestingChange && (
           <SubmitModal
+            formTitle={t('MHA Request')}
             handleClose={handleClose}
             handleConfirm={handleConfirm}
-            isRequestingChange={true}
+            overrideTitle={title}
+            overrideContent={content}
+            overrideSubContent={subContent}
           />
         )}
       </Box>
-      <DirectionButtons handleNext={handleNext} />
+      <DirectionButtons
+        overrideNext={handleNext}
+        handlePreviousStep={handlePreviousStep}
+        showBackButton={true}
+      />
       {errors.rentOrOwn && (
         <Alert severity="error" sx={{ mt: 2, '& ul': { m: 0, pl: 3 } }}>
           {t('Your form is missing information.')}

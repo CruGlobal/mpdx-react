@@ -11,9 +11,10 @@ import { Box, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { MhaStatusEnum } from 'src/graphql/types.generated';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
-import { CardSkeleton } from '../CardSkeleton/CardSkeleton';
+import { StatusCard } from '../../Shared/CalculationReports/StatusCard/StatusCard';
 import { MHARequest } from './types';
 
 interface CurrentRequestProps {
@@ -23,6 +24,7 @@ interface CurrentRequestProps {
 export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const accountListId = useAccountListId();
   const currency = 'USD';
 
   const { status, requestAttributes } = request;
@@ -36,13 +38,17 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
   } = requestAttributes || {};
 
   return (
-    <CardSkeleton
+    <StatusCard
+      formType={t('MHA Request')}
       title={t('Current MHA Request')}
       icon={AddHomeSharp}
       iconColor="warning.main"
-      titleOne={t('View Request')}
-      titleTwo={t('Edit Request')}
+      linkOneText={t('View Request')}
+      linkOne={`/accountLists/${accountListId}/reports/housingAllowance/view`}
+      linkTwoText={t('Edit Request')}
+      linkTwo={`/accountLists/${accountListId}/reports/housingAllowance/edit`}
       isRequest={true}
+      handleConfirmCancel={() => {}}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <Typography variant="h3" sx={{ color: 'primary.main' }}>
@@ -152,7 +158,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
           </TimelineItem>
         </Timeline>
       </Box>
-    </CardSkeleton>
+    </StatusCard>
   );
 };
 

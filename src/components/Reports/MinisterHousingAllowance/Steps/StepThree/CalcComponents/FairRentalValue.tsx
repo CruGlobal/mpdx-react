@@ -1,12 +1,12 @@
 import { Box, TableCell, TableRow, Typography } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { Trans, useTranslation } from 'react-i18next';
+import { StyledOrderedList } from 'src/components/Reports/Shared/CalculationReports/Shared/styledComponents/StepsListStyles';
 import { useAnnualTotal } from 'src/hooks/useAnnualTotal';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
-import { StyledOrderedList } from '../../../styledComponents/styledComponents';
+import { FormCard } from '../../../../Shared/CalculationReports/FormCard/FormCard';
 import { CalculationFormValues } from '../Calculation';
-import { CalculationCardSkeleton } from './CalculationCardSkeleton';
 import { CustomTextField } from './Helper/CustomTextField';
 
 export const FairRentalValue: React.FC = () => {
@@ -19,7 +19,7 @@ export const FairRentalValue: React.FC = () => {
   const { totalFairRental, annualFairRental } = useAnnualTotal(values);
 
   return (
-    <CalculationCardSkeleton title={t('Fair Rental Value')}>
+    <FormCard title={t('Fair Rental Value')}>
       <TableRow>
         <TableCell sx={{ width: '70%' }}>
           <StyledOrderedList component="ol" start={1}>
@@ -133,6 +133,6 @@ export const FairRentalValue: React.FC = () => {
           })}
         </TableCell>
       </TableRow>
-    </CalculationCardSkeleton>
+    </FormCard>
   );
 };

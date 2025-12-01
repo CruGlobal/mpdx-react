@@ -7,6 +7,9 @@ import { Notification } from 'src/components/Notification/Notification';
 import { MhaStatusEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
+import { NameDisplay } from '../Shared/CalculationReports/NameDisplay/NameDisplay';
+import { PanelLayout } from '../Shared/CalculationReports/PanelLayout/PanelLayout';
+import { PanelTypeEnum } from '../Shared/CalculationReports/Shared/sharedTypes';
 import { EligibleDisplay } from './MainPages/EligibleDisplay';
 import { IneligibleDisplay } from './MainPages/IneligibleDisplay';
 import {
@@ -14,11 +17,9 @@ import {
   useMinistryHousingAllowanceRequestsQuery,
 } from './MinisterHousingAllowance.generated';
 import { MinisterHousingAllowanceReportSkeleton } from './MinisterHousingAllowanceSkeleton';
-import { PanelLayout } from './PanelLayout/PanelLayout';
-import { PanelTypeEnum } from './Shared/sharedTypes';
+import { useMinisterHousingAllowance } from './Shared/Context/MinisterHousingAllowanceContext';
 import { CurrentBoardApproved } from './SharedComponents/CurrentBoardApproved';
 import { CurrentRequest } from './SharedComponents/CurrentRequest';
-import { NameDisplay } from './SharedComponents/NameDisplay';
 
 export const mainContentWidth = theme.spacing(85);
 
@@ -26,6 +27,25 @@ export const MinisterHousingAllowanceReport = () => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const accountListId = useAccountListId();
+
+  const {
+    isMarried,
+    preferredName,
+    spousePreferredName,
+    userHcmData,
+    spouseHcmData,
+  } = useMinisterHousingAllowance();
+  const personNumber = userHcmData?.staffInfo?.personNumber ?? '';
+  const spousePersonNumber = spouseHcmData?.staffInfo?.personNumber ?? '';
+  const lastName = userHcmData?.staffInfo?.lastName ?? '';
+  const spouseLastName = spouseHcmData?.staffInfo?.lastName ?? '';
+
+  const names = isMarried
+    ? `${preferredName} ${lastName} and ${spousePreferredName} ${spouseLastName}`
+    : `${preferredName} ${lastName}`;
+  const personNumbers = isMarried
+    ? `${personNumber} and ${spousePersonNumber}`
+    : personNumber;
 
   const { data, error } = useMinistryHousingAllowanceRequestsQuery();
   const requests = data?.ministryHousingAllowanceRequests.nodes ?? [];
@@ -87,6 +107,8 @@ export const MinisterHousingAllowanceReport = () => {
   return (
     <PanelLayout
       panelType={PanelTypeEnum.Empty}
+      percentComplete={0}
+      backHref={''}
       sidebarTitle={t('Your MHA')}
       mainContent={
         <Container sx={{ ml: 5 }}>
@@ -102,7 +124,7 @@ export const MinisterHousingAllowanceReport = () => {
                 ) : (
                   <EligibleDisplay isPending={isCurrentRequestPending} />
                 )}
-                <NameDisplay />
+                <NameDisplay names={names} personNumbers={personNumbers} />
 
                 {currentRequest &&
                   (isCurrentRequestPending ? (
