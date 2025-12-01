@@ -5,7 +5,7 @@ export const formCompletionPercentageHelper = (
 ): number => {
   // Get all fields except defaultPercentage (checkbox doesn't count toward completion)
   const fields = Object.entries(values).filter(
-    ([key]) => key !== 'defaultPercentage',
+    ([, value]) => typeof value === 'string' || typeof value === 'number',
   );
 
   const totalFields = fields.length;
