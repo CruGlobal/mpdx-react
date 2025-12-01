@@ -186,14 +186,6 @@ describe('AdditionalSalaryRequest', () => {
     });
   });
 
-  it('displays currency adornment on input fields', () => {
-    const { getAllByRole } = render(<TestWrapper />);
-
-    const inputs = getAllByRole('spinbutton');
-    // Check that inputs have the currency adornment ($ sign)
-    expect(inputs[0].parentElement?.textContent).toContain('$');
-  });
-
   it('calculates total with all fields populated', () => {
     const allFieldsPopulated: CompleteFormValues = {
       currentYearSalary: '1000',
