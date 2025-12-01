@@ -8,7 +8,6 @@ query HcmData($maritalStatus: MaritalStatusEnum!) {
       preferredName
       age
       tenure
-      location
       addressLine1
       addressLine2
       city
