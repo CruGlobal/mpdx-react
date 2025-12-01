@@ -1,5 +1,6 @@
 import { Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { RequestedSalaryStep } from './RequestedSalaryStep/RequestedSalaryStep';
 import { SalaryCalculatorSectionEnum } from './SalaryCalculatorContext/Helper/sharedTypes';
 import { useSalaryCalculator } from './SalaryCalculatorContext/SalaryCalculatorContext';
 
@@ -19,7 +20,7 @@ export const CurrentStep: React.FC = () => {
     case SalaryCalculatorSectionEnum.MaxAllowableSalary:
       return <Typography variant="h5">{t('Max Allowable Salary')}</Typography>;
     case SalaryCalculatorSectionEnum.RequestedSalary:
-      return <Typography variant="h5">{t('Requested Salary')}</Typography>;
+      return <RequestedSalaryStep />;
     case SalaryCalculatorSectionEnum.Summary:
       return <Typography variant="h5">{t('Summary')}</Typography>;
     case SalaryCalculatorSectionEnum.AdditionalInformation:

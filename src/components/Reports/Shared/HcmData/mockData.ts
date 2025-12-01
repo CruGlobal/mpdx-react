@@ -9,7 +9,7 @@ const johnDoe: StaffInfo = {
   preferredName: `John`,
   age: 35,
   tenure: 10,
-  addressLine1: '100 Lake Heart Dr',
+  addressLine1: '100 Lake Hart Dr',
   addressLine2: '',
   city: 'Orlando',
   state: 'FL',
