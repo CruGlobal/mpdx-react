@@ -45,7 +45,7 @@ export const NameDisplay: React.FC<NameDisplayProps> = ({
   return (
     <Box sx={{ mt: theme.spacing(2) }}>
       <Card sx={{ marginBottom: theme.spacing(2), boxShadow: 1 }}>
-        <CardHeader title={title} />
+        <CardHeader title={title} sx={{ paddingInline: theme.spacing(4) }} />
         {showContent && (
           <CardContent>
             <Grid container spacing={theme.spacing(2)}>
