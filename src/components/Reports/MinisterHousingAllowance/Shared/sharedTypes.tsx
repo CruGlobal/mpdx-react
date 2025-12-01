@@ -1,11 +1,11 @@
-export const enum StepsEnum {
+export enum StepsEnum {
   AboutForm = 'about',
   RentOrOwn = 'rentOrOwn',
   CalcForm = 'calcForm',
   Receipt = 'receipt',
 }
 
-export const enum RentOwnEnum {
+export enum RentOwnEnum {
   Rent = 'rent',
   Own = 'own',
 }

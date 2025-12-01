@@ -4,6 +4,7 @@ import React, {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -11,7 +12,6 @@ import { useStepList } from 'src/hooks/useStepList';
 import { FormEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
 import { HcmQuery, useHcmQuery } from './Hcm.generated';
-import { nextStep, previousStep } from './Helper/StepsRecord';
 import { SalaryCalculatorSectionEnum } from './Helper/sharedTypes';
 import {
   SalaryCalculationQuery,
@@ -61,60 +61,60 @@ export const SalaryCalculatorProvider: React.FC<
   SalaryCalculatorContextProps
 > = ({ children }) => {
   const steps = useStepList(FormEnum.SalaryCalc);
-  const totalSteps = steps.length;
+  const objects = useMemo(() => Object.values(SalaryCalculatorSectionEnum), []);
 
   // Step Handlers
   const [currentStep, setCurrentStep] = useState(
     SalaryCalculatorSectionEnum.EffectiveDate,
   );
-  const [percentComplete, setPercentComplete] = useState(20);
-
+  const [percentComplete, setPercentComplete] = useState(11);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const handleNextStep = () => {
-    setCurrentStep((prevStep) => {
-      const next = nextStep[prevStep];
+  useEffect(() => {
+    setPercentComplete(
+      ((objects.indexOf(currentStep) + 1) / objects.length) * 100,
+    );
+  }, [currentStep]);
 
-      const newIndex = currentIndex + 1;
-      handleNextIndexChange(newIndex);
-      handlePercentComplete(newIndex);
-      return next;
-    });
-  };
+  const handleNextIndexChange = useCallback(
+    (newIndex: number) => {
+      steps[currentIndex].current = false;
+      steps[currentIndex].complete = true;
+      setCurrentIndex(newIndex);
+      steps[newIndex].current = true;
 
-  const handlePreviousStep = () => {
-    setCurrentStep((prevStep) => {
-      const next = previousStep[prevStep];
+      if (newIndex === steps.length - 1) {
+        steps[newIndex].complete = true;
+      }
+    },
+    [currentIndex, steps],
+  );
 
-      const newIndex = currentIndex - 1;
-      handlePreviousIndexChange(newIndex);
-      handlePercentComplete(newIndex);
-      return next;
-    });
-  };
+  const handlePreviousIndexChange = useCallback(
+    (newIndex: number) => {
+      steps[currentIndex].current = false;
+      steps[newIndex].complete = false;
+      setCurrentIndex(newIndex);
+      steps[newIndex].current = true;
+    },
+    [currentIndex, steps],
+  );
 
-  const handlePercentComplete = (index: number) => {
-    const newPercent = Math.round(((index + 1) / totalSteps) * 100);
-    setPercentComplete(newPercent);
-  };
+  const handleNextStep = useCallback(() => {
+    const newIndex = currentIndex + 1;
+    const next = objects[newIndex];
+    handleNextIndexChange(newIndex);
 
-  const handleNextIndexChange = (newIndex: number) => {
-    steps[currentIndex].current = false;
-    steps[currentIndex].complete = true;
-    setCurrentIndex(newIndex);
-    steps[newIndex].current = true;
+    setCurrentStep(next);
+  }, [currentIndex, steps, objects, handleNextIndexChange]);
 
-    if (newIndex === steps.length - 1) {
-      steps[newIndex].complete = true;
-    }
-  };
+  const handlePreviousStep = useCallback(() => {
+    const newIndex = currentIndex - 1;
+    const next = objects[newIndex];
+    handlePreviousIndexChange(newIndex);
 
-  const handlePreviousIndexChange = (newIndex: number) => {
-    steps[currentIndex].current = false;
-    steps[newIndex].complete = false;
-    setCurrentIndex(newIndex);
-    steps[newIndex].current = true;
-  };
+    setCurrentStep(next);
+  }, [currentIndex, steps, objects, handlePreviousIndexChange]);
   // End Step Handlers
 
   const [isDrawerOpen, setDrawerOpen] = useState(true);

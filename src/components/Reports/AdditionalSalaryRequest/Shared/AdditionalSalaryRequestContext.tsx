@@ -48,15 +48,12 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   initialValues: providedInitialValues,
 }) => {
   const { t } = useTranslation();
-  const steps = useStepList(FormEnum.AdditionalSalary);
   const locale = useLocale();
-
-  // Step Handlers
-  const [currentStep, setCurrentStep] = useState(
-    AdditionalSalaryRequestSectionEnum.AboutForm,
+  const steps = useStepList(FormEnum.AdditionalSalary);
+  const objects = useMemo(
+    () => Object.values(AdditionalSalaryRequestSectionEnum),
+    [],
   );
-
-  const [currentIndex, setCurrentIndex] = useState(0);
 
   const createCurrencyValidation = useCallback(
     (fieldName: string, max?: number) => {
@@ -127,53 +124,50 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     //TODO: Submit form values
   }, []);
 
-  const handleNextStep = () => {
-    setCurrentStep((prevStep) => {
-      const next =
-        prevStep === AdditionalSalaryRequestSectionEnum.AboutForm
-          ? AdditionalSalaryRequestSectionEnum.CompleteForm
-          : prevStep === AdditionalSalaryRequestSectionEnum.CompleteForm
-            ? AdditionalSalaryRequestSectionEnum.Receipt
-            : prevStep;
+  // Step Handlers
+  const [currentStep, setCurrentStep] = useState(
+    AdditionalSalaryRequestSectionEnum.AboutForm,
+  );
 
-      const newIndex = currentIndex + 1;
-      handleNextIndexChange(newIndex);
-      return next;
-    });
-  };
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-  const handlePreviousStep = () => {
-    setCurrentStep((prevStep) => {
-      const next =
-        prevStep === AdditionalSalaryRequestSectionEnum.CompleteForm
-          ? AdditionalSalaryRequestSectionEnum.AboutForm
-          : prevStep === AdditionalSalaryRequestSectionEnum.Receipt
-            ? AdditionalSalaryRequestSectionEnum.CompleteForm
-            : prevStep;
+  const handleNextIndexChange = useCallback(
+    (newIndex: number) => {
+      steps[currentIndex].current = false;
+      steps[currentIndex].complete = true;
+      setCurrentIndex(newIndex);
+      steps[newIndex].current = true;
+      if (newIndex === steps.length - 1) {
+        steps[newIndex].complete = true;
+      }
+    },
+    [currentIndex, steps],
+  );
+  const handlePreviousIndexChange = useCallback(
+    (newIndex: number) => {
+      steps[currentIndex].current = false;
+      steps[newIndex].complete = false;
+      setCurrentIndex(newIndex);
+      steps[newIndex].current = true;
+    },
+    [currentIndex, steps],
+  );
 
-      const newIndex = currentIndex - 1;
-      handlePreviousIndexChange(newIndex);
-      return next;
-    });
-  };
+  const handleNextStep = useCallback(() => {
+    const newIndex = currentIndex + 1;
+    const next = objects[newIndex];
+    handleNextIndexChange(newIndex);
 
-  const handleNextIndexChange = (newIndex: number) => {
-    steps[currentIndex].current = false;
-    steps[currentIndex].complete = true;
-    setCurrentIndex(newIndex);
-    steps[newIndex].current = true;
+    setCurrentStep(next);
+  }, [currentIndex, steps, objects, handleNextIndexChange]);
 
-    if (newIndex === steps.length - 1) {
-      steps[newIndex].complete = true;
-    }
-  };
+  const handlePreviousStep = useCallback(() => {
+    const newIndex = currentIndex - 1;
+    const next = objects[newIndex];
+    handlePreviousIndexChange(newIndex);
 
-  const handlePreviousIndexChange = (newIndex: number) => {
-    steps[currentIndex].current = false;
-    steps[newIndex].complete = false;
-    setCurrentIndex(newIndex);
-    steps[newIndex].current = true;
-  };
+    setCurrentStep(next);
+  }, [currentIndex, steps, objects, handlePreviousIndexChange]);
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
   const toggleDrawer = useCallback(() => {
