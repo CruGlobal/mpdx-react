@@ -2,9 +2,9 @@ import { TextField, TextFieldProps } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { CalculationFormValues } from '../../Steps/StepThree/Calculation';
 import { useMinisterHousingAllowance } from '../Context/MinisterHousingAllowanceContext';
-import { PageEnum } from '../sharedTypes';
 import { useAutoSave } from './useAutosave';
 import { useSaveField } from './useSaveField';
 
