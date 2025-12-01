@@ -117,7 +117,7 @@ export const AdditionalSalaryRequest: React.FC<
             <Typography
               variant="body1"
               fontWeight="bold"
-              aria-label="Total requested amount"
+              data-testid="total-amount"
             >
               {currencyFormat(total, 'USD', locale)}
             </Typography>
