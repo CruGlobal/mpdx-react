@@ -2,6 +2,8 @@ import React, { createContext, useCallback, useMemo, useState } from 'react';
 import { FormikProps, useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat';
 import { amount } from 'src/lib/yupHelpers';
 import {
   AdditionalSalaryRequestSectionEnum,
@@ -14,7 +16,7 @@ export type AdditionalSalaryRequestType = {
   sectionOrder: SectionOrderItem[];
   selectedSection: SectionOrderItem;
   handleContinue: () => void;
-  setSectionIndex: (number) => void;
+  setSectionIndex: (index: number) => void;
   isDrawerOpen: boolean;
   toggleDrawer: () => void;
   setIsDrawerOpen: (open: boolean) => void;
@@ -45,6 +47,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   children,
 }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
+
   // Translated titles should be used when rendering
   const sectionOrder = useMemo<SectionOrderItem[]>(
     () => [
@@ -77,7 +81,11 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       if (max) {
         schema = schema.max(
           max,
-          t('Exceeds ${{amount}} limit', { amount: max.toLocaleString() }),
+          t('Exceeds ${{amount}} limit', {
+            amount: currencyFormat(max, 'USD', locale, {
+              showTrailingZeros: true,
+            }),
+          }),
         );
       }
       return schema;
