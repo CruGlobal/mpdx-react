@@ -46,7 +46,7 @@ export const CompleteForm: React.FC = () => {
 
   const createCurrencyValidation = useCallback(
     (fieldName: string, max?: number) => {
-      let schema = amount(fieldName);
+      let schema = amount(fieldName, t);
       if (max) {
         schema = schema.max(
           max,
