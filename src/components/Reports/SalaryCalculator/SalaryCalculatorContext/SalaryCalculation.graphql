@@ -1,6 +1,7 @@
 query SalaryCalculation {
   salaryRequest: latestSalaryRequest(status: [IN_PROGRESS]) {
     id
+    status
     effectiveDate
     location
     mhaAmount
