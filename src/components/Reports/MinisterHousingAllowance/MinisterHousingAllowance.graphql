@@ -38,6 +38,44 @@ query MinistryHousingAllowanceRequests {
   }
 }
 
+query MinistryHousingAllowanceRequest($ministryHousingAllowanceRequestId: ID!) {
+  ministryHousingAllowanceRequest(id: $ministryHousingAllowanceRequestId) {
+    id
+    personNumber
+    requestAttributes {
+      rentOrOwn
+      rentalValue
+      furnitureCostsOne
+      avgUtilityOne
+      mortgageOrRentPayment
+      furnitureCostsTwo
+      repairCosts
+      avgUtilityTwo
+      unexpectedExpenses
+      overallAmount
+      phoneNumber
+      emailAddress
+      iUnderstandMhaPolicy
+      approvedDate
+      approvedOverallAmount
+      availableDate
+      boardApprovedDate
+      deadlineDate
+      lastApprovedDate
+      spouseSpecific
+      staffSpecific
+      submittedDate
+    }
+    status
+    user {
+      id
+      firstName
+      lastName
+    }
+    feedback
+  }
+}
+
 mutation CreateHousingAllowanceRequest(
   $requestAttributes: MinistryHousingAllowanceRequestAttributesInput
 ) {
@@ -58,6 +96,31 @@ mutation CreateHousingAllowanceRequest(
         id
         firstName
         lastName
+      }
+    }
+  }
+}
+
+mutation UpdateMinistryHousingAllowanceRequest(
+  $input: MinistryHousingAllowanceRequestUpdateMutationInput!
+) {
+  updateMinistryHousingAllowanceRequest(input: $input) {
+    ministryHousingAllowanceRequest {
+      id
+      requestAttributes {
+        rentOrOwn
+        rentalValue
+        furnitureCostsOne
+        avgUtilityOne
+        mortgageOrRentPayment
+        furnitureCostsTwo
+        repairCosts
+        avgUtilityTwo
+        unexpectedExpenses
+        overallAmount
+        phoneNumber
+        emailAddress
+        iUnderstandMhaPolicy
       }
     }
   }

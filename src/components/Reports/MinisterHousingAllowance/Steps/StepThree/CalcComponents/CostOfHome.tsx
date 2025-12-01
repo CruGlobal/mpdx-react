@@ -2,8 +2,8 @@ import { Box, TableCell, TableRow, Typography } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { RentOwnEnum } from 'src/components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
 import { StyledOrderedList } from 'src/components/Reports/Shared/CalculationReports/Shared/styledComponents/StepsListStyles';
+import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
 import { useAnnualTotal } from 'src/hooks/useAnnualTotal';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
@@ -13,7 +13,7 @@ import { CalculationFormValues } from '../Calculation';
 
 interface CostOfHomeProps {
   schema: yup.Schema;
-  rentOrOwn?: RentOwnEnum;
+  rentOrOwn?: MhaRentOrOwnEnum;
 }
 
 export const CostOfHome: React.FC<CostOfHomeProps> = ({
@@ -34,7 +34,7 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({
         <TableCell sx={{ width: '70%' }}>
           <StyledOrderedList component="ol" start={1}>
             <Typography component="li">
-              {rentOrOwn === RentOwnEnum.Own
+              {rentOrOwn === MhaRentOrOwnEnum.Own
                 ? t(
                     'Monthly mortgage payment, taxes, insurance, and any extra principal you pay.',
                   )
@@ -47,13 +47,13 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({
             width: '30%',
             color: 'text.secondary',
             border:
-              touched.mortgagePayment && errors.mortgagePayment
+              touched.mortgageOrRentPayment && errors.mortgageOrRentPayment
                 ? '2px solid red'
                 : '',
           }}
         >
           <AutosaveCustomTextField
-            fieldName="mortgagePayment"
+            fieldName="mortgageOrRentPayment"
             schema={schema}
           />
         </TableCell>
@@ -111,7 +111,7 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({
             <Typography component="li">
               {t('Average monthly utility costs.')}
             </Typography>
-            {rentOrOwn === RentOwnEnum.Own && (
+            {rentOrOwn === MhaRentOrOwnEnum.Own && (
               <Box sx={{ color: 'text.secondary' }}>
                 {t('Entered in the previous section.')}
               </Box>
@@ -175,7 +175,7 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({
       <TableRow>
         <TableCell sx={{ width: '70%' }}>
           <Typography sx={{ fontWeight: 'bold' }}>
-            {rentOrOwn === RentOwnEnum.Rent
+            {rentOrOwn === MhaRentOrOwnEnum.Rent
               ? t('Annual Fair Rental Value of your Home')
               : t('Annual Cost of Providing a Home')}
           </Typography>

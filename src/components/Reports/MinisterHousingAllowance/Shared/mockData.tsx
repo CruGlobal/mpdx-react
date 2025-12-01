@@ -1,5 +1,3 @@
-import { RentOwnEnum } from './sharedTypes';
-
 interface Location {
   line1: string;
   line2: string;
@@ -362,16 +360,3 @@ export const mocks: Mock[] = [
     },
   },
 ];
-
-export const editOwnMock = {
-  rentOrOwn: RentOwnEnum.Own,
-  rentalValue: 2200,
-  furnitureCostsOne: 1000,
-  avgUtilityOne: 385,
-  mortgagePayment: 1823,
-  furnitureCostsTwo: 275,
-  repairCosts: 350,
-  avgUtilityTwo: 385,
-  unexpectedExpenses: 100,
-  isChecked: true,
-};

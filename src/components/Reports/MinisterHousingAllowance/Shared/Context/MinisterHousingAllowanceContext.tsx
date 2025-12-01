@@ -8,6 +8,7 @@ import {
   useMemo,
   useState,
 } from 'react';
+import { ApolloError } from '@apollo/client';
 import {
   FormEnum,
   PageEnum,
@@ -19,6 +20,12 @@ import {
 import { MaritalStatusEnum } from 'src/graphql/types.generated';
 import { useStepList } from 'src/hooks/useStepList';
 import { Steps } from '../../../Shared/CalculationReports/StepsList/StepsList';
+import {
+  MinistryHousingAllowanceRequestQuery,
+  MinistryHousingAllowanceRequestsQuery,
+  useMinistryHousingAllowanceRequestQuery,
+  useMinistryHousingAllowanceRequestsQuery,
+} from '../../MinisterHousingAllowance.generated';
 import { StepsEnum } from '../sharedTypes';
 
 export type HcmData = HcmDataQuery['hcm'][number];
@@ -44,6 +51,17 @@ export type ContextType = {
   spouseHcmData?: HcmData | null;
   preferredName: string;
   spousePreferredName: string;
+
+  requestData?:
+    | MinistryHousingAllowanceRequestQuery['ministryHousingAllowanceRequest']
+    | null;
+  requestError?: ApolloError;
+
+  requestsData?:
+    | MinistryHousingAllowanceRequestsQuery['ministryHousingAllowanceRequests']['nodes']
+    | null;
+  requestsError?: ApolloError;
+  requestId?: string;
 };
 
 export const MinisterHousingAllowanceContext =
@@ -68,7 +86,21 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   type,
   children,
 }) => {
+  const { data: requestsData, error: requestsError } =
+    useMinistryHousingAllowanceRequestsQuery();
+
+  const requestId = requestsData?.ministryHousingAllowanceRequests.nodes[0]?.id;
+
+  const { data: requestData, error: requestError } =
+    useMinistryHousingAllowanceRequestQuery({
+      variables: {
+        ministryHousingAllowanceRequestId: requestId ?? '',
+      },
+    });
+
   const pageType = type;
+  //eslint-disable-next-line no-console
+  console.log('pageType', pageType);
   const initialSteps = useStepList(FormEnum.MHA, type);
 
   const [isComplete, setIsComplete] = useState(false);
@@ -216,6 +248,12 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       isPrint,
       setIsPrint,
       setIsComplete,
+      requestData: requestData?.ministryHousingAllowanceRequest ?? null,
+      requestError,
+      requestsData:
+        requestsData?.ministryHousingAllowanceRequests.nodes ?? null,
+      requestsError,
+      requestId,
     }),
     [
       steps,
@@ -238,6 +276,11 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       isPrint,
       setIsPrint,
       setIsComplete,
+      requestData,
+      requestError,
+      requestsData,
+      requestsError,
+      requestId,
     ],
   );
 

@@ -4,8 +4,3 @@ export const enum StepsEnum {
   CalcForm = 'calcForm',
   Receipt = 'receipt',
 }
-
-export const enum RentOwnEnum {
-  Rent = 'rent',
-  Own = 'own',
-}

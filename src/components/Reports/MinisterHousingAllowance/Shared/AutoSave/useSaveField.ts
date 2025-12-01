@@ -1,39 +1,51 @@
 import { useCallback } from 'react';
-import { useFormikContext } from 'formik';
-import { CalculationFormValues } from '../../Steps/StepThree/Calculation';
-
-// Created temporarily to test autosave without query and mutation logic
+import { MinistryHousingAllowanceRequestAttributesInput } from 'pages/api/graphql-rest.page.generated';
+import { useUpdateMinistryHousingAllowanceRequestMutation } from '../../MinisterHousingAllowance.generated';
+import { useMinisterHousingAllowance } from '../Context/MinisterHousingAllowanceContext';
 
 export const useSaveField = () => {
-  const { values } = useFormikContext<CalculationFormValues>();
+  const { requestData } = useMinisterHousingAllowance();
+  const [updateMinistryHousingAllowanceRequest] =
+    useUpdateMinistryHousingAllowanceRequestMutation();
+  const values = requestData?.requestAttributes;
 
   const saveField = useCallback(
-    async (attributes: Partial<CalculationFormValues>) => {
-      if (!values) {
+    async (
+      attributes: Partial<MinistryHousingAllowanceRequestAttributesInput>,
+    ) => {
+      if (!values || !requestData?.id) {
         return;
       }
 
-      const unchanged = Object.keys(attributes).every((key) => {
-        const k = key as keyof CalculationFormValues;
-        return values[k] === attributes[k];
-      });
+      const unchanged = Object.keys(attributes).every(
+        (key, value) => value[key] === values,
+      );
       if (unchanged) {
         return;
       }
 
-      const updated: CalculationFormValues = {
-        ...values,
-        ...attributes,
-      };
-
-      if (typeof window !== 'undefined') {
-        window.localStorage.setItem(
-          'calculationFormValues',
-          JSON.stringify(updated),
-        );
-      }
+      return updateMinistryHousingAllowanceRequest({
+        variables: {
+          input: {
+            requestId: requestData.id,
+            requestAttributes: attributes,
+          },
+        },
+        optimisticResponse: {
+          updateMinistryHousingAllowanceRequest: {
+            __typename: 'MinistryHousingAllowanceRequestUpdateMutationPayload',
+            ministryHousingAllowanceRequest: {
+              ...requestData,
+              requestAttributes: {
+                ...values,
+                ...attributes,
+              },
+            },
+          },
+        },
+      });
     },
-    [values],
+    [values, updateMinistryHousingAllowanceRequest],
   );
 
   return saveField;

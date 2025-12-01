@@ -15,6 +15,7 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { StatusCard } from '../../Shared/CalculationReports/StatusCard/StatusCard';
+import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
 import { MHARequest } from './types';
 
 interface CurrentRequestProps {
@@ -26,6 +27,8 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
   const locale = useLocale();
   const accountListId = useAccountListId();
   const currency = 'USD';
+
+  const { requestId } = useMinisterHousingAllowance();
 
   const { status, requestAttributes } = request;
 
@@ -44,9 +47,9 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
       icon={AddHomeSharp}
       iconColor="warning.main"
       linkOneText={t('View Request')}
-      linkOne={`/accountLists/${accountListId}/reports/housingAllowance/view`}
+      linkOne={`/accountLists/${accountListId}/reports/housingAllowance/${requestId}/view`}
       linkTwoText={t('Edit Request')}
-      linkTwo={`/accountLists/${accountListId}/reports/housingAllowance/edit`}
+      linkTwo={`/accountLists/${accountListId}/reports/housingAllowance/${requestId}/edit`}
       isRequest={true}
       handleConfirmCancel={() => {}}
     >

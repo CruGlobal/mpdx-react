@@ -22,13 +22,12 @@ import {
   SimpleScreenOnly,
   StyledPrintButton,
 } from 'src/components/Reports/styledComponents';
+import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import i18n from 'src/lib/i18n';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { DirectionButtons } from '../../../Shared/CalculationReports/DirectionButtons/DirectionButtons';
 import { useMinisterHousingAllowance } from '../../Shared/Context/MinisterHousingAllowanceContext';
-import { editOwnMock, mocks } from '../../Shared/mockData';
-import { RentOwnEnum } from '../../Shared/sharedTypes';
 import { CostOfHome } from './CalcComponents/CostOfHome';
 import { EndingSection } from './CalcComponents/EndingSection';
 import { FairRentalValue } from './CalcComponents/FairRentalValue';
@@ -41,14 +40,14 @@ interface CalculationProps {
   boardApprovalDate: string | null;
   availableDate: string | null;
   deadlineDate?: string | null;
-  rentOrOwn: RentOwnEnum | undefined;
+  rentOrOwn: MhaRentOrOwnEnum | undefined;
   handlePrint?: () => void;
 }
 export interface CalculationFormValues {
   rentalValue?: number | null;
   furnitureCostsOne?: number | null;
   avgUtilityOne?: number | null;
-  mortgagePayment?: number | null;
+  mortgageOrRentPayment?: number | null;
   furnitureCostsTwo?: number | null;
   repairCosts?: number | null;
   avgUtilityTwo?: number | null;
@@ -58,9 +57,9 @@ export interface CalculationFormValues {
   isChecked?: boolean;
 }
 
-const getValidationSchema = (rentOrOwn?: RentOwnEnum) => {
+const getValidationSchema = (rentOrOwn?: MhaRentOrOwnEnum) => {
   const baseSchema = {
-    mortgagePayment: yup.number().required(i18n.t('Required field.')),
+    mortgageOrRentPayment: yup.number().required(i18n.t('Required field.')),
     furnitureCostsTwo: yup.number().required(i18n.t('Required field.')),
     repairCosts: yup.number().required(i18n.t('Required field.')),
     avgUtilityTwo: yup.number().required(i18n.t('Required field.')),
@@ -85,7 +84,7 @@ const getValidationSchema = (rentOrOwn?: RentOwnEnum) => {
   };
 
   // extra fields for OWN
-  if (rentOrOwn === RentOwnEnum.Own) {
+  if (rentOrOwn === MhaRentOrOwnEnum.Own) {
     return yup.object({
       ...baseSchema,
       rentalValue: yup.number().required(i18n.t('Required field.')),
@@ -116,7 +115,11 @@ export const Calculation: React.FC<CalculationProps> = ({
     setHasCalcValues,
     setIsPrint,
     isPrint,
+    requestData,
+    userHcmData,
   } = useMinisterHousingAllowance();
+
+  const request = requestData ? requestData.requestAttributes : null;
 
   const actionRequired =
     pageType === PageEnum.Edit || pageType === PageEnum.View;
@@ -124,29 +127,29 @@ export const Calculation: React.FC<CalculationProps> = ({
 
   const initialValues: CalculationFormValues = actionRequired
     ? {
-        rentalValue: editOwnMock.rentalValue,
-        furnitureCostsOne: editOwnMock.furnitureCostsOne,
-        avgUtilityOne: editOwnMock.avgUtilityOne,
-        mortgagePayment: editOwnMock.mortgagePayment,
-        furnitureCostsTwo: editOwnMock.furnitureCostsTwo,
-        repairCosts: editOwnMock.repairCosts,
-        avgUtilityTwo: editOwnMock.avgUtilityTwo,
-        unexpectedExpenses: editOwnMock.unexpectedExpenses,
-        phone: mocks[0].staffInfo.phone,
-        email: mocks[0].staffInfo.email,
-        isChecked: editOwnMock.isChecked,
+        rentalValue: request?.rentalValue,
+        furnitureCostsOne: request?.furnitureCostsOne,
+        avgUtilityOne: request?.avgUtilityOne,
+        mortgageOrRentPayment: request?.mortgageOrRentPayment,
+        furnitureCostsTwo: request?.furnitureCostsTwo,
+        repairCosts: request?.repairCosts,
+        avgUtilityTwo: request?.avgUtilityTwo,
+        unexpectedExpenses: request?.unexpectedExpenses,
+        phone: userHcmData?.staffInfo.primaryPhoneNumber ?? undefined,
+        email: userHcmData?.staffInfo.emailAddress ?? undefined,
+        isChecked: request?.iUnderstandMhaPolicy ?? false,
       }
     : {
         rentalValue: null,
         furnitureCostsOne: null,
         avgUtilityOne: null,
-        mortgagePayment: null,
+        mortgageOrRentPayment: null,
         furnitureCostsTwo: null,
         repairCosts: null,
         avgUtilityTwo: null,
         unexpectedExpenses: null,
-        phone: mocks[0].staffInfo.phone,
-        email: mocks[0].staffInfo.email,
+        phone: userHcmData?.staffInfo.primaryPhoneNumber ?? undefined,
+        email: userHcmData?.staffInfo.emailAddress ?? undefined,
         isChecked: false,
       };
 
@@ -266,7 +269,7 @@ export const Calculation: React.FC<CalculationProps> = ({
                 <RequestSummaryCard rentOrOwn={rentOrOwn} />
               </Box>
             )}
-            {rentOrOwn === RentOwnEnum.Own && (
+            {rentOrOwn === MhaRentOrOwnEnum.Own && (
               <Box mb={3}>
                 <FairRentalValue schema={schema} />
               </Box>

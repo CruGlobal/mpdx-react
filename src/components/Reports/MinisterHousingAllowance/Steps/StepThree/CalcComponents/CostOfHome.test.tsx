@@ -7,8 +7,8 @@ import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import TestRouter from '__tests__/util/TestRouter';
-import { RentOwnEnum } from 'src/components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
+import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { useMinisterHousingAllowance } from '../../../Shared/Context/MinisterHousingAllowanceContext';
 import { CostOfHome } from './CostOfHome';
@@ -22,7 +22,7 @@ const mockSchema = {
 } as unknown as yup.Schema;
 
 interface TestComponentProps {
-  rentOrOwn?: RentOwnEnum;
+  rentOrOwn?: MhaRentOrOwnEnum;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({ rentOrOwn }) => (
@@ -54,7 +54,7 @@ describe('CostOfHome', () => {
 
   it('renders the component for own', () => {
     const { getByText, getByRole } = render(
-      <TestComponent rentOrOwn={RentOwnEnum.Own} />,
+      <TestComponent rentOrOwn={MhaRentOrOwnEnum.Own} />,
     );
 
     expect(getByRole('table')).toBeInTheDocument();
@@ -74,7 +74,7 @@ describe('CostOfHome', () => {
 
   it('renders the component for rent', () => {
     const { getByText, getByRole, queryByText } = render(
-      <TestComponent rentOrOwn={RentOwnEnum.Rent} />,
+      <TestComponent rentOrOwn={MhaRentOrOwnEnum.Rent} />,
     );
 
     expect(getByRole('table')).toBeInTheDocument();
@@ -95,7 +95,7 @@ describe('CostOfHome', () => {
 
   it('should add text fields 1-5 and calculate annual value correctly', async () => {
     const { getByRole, getByText } = render(
-      <TestComponent rentOrOwn={RentOwnEnum.Rent} />,
+      <TestComponent rentOrOwn={MhaRentOrOwnEnum.Rent} />,
     );
 
     const row1 = getByRole('row', {
@@ -147,7 +147,7 @@ describe('CostOfHome', () => {
 
     it('should disable text fields when on view page', () => {
       const { getByRole } = render(
-        <TestComponent rentOrOwn={RentOwnEnum.Own} />,
+        <TestComponent rentOrOwn={MhaRentOrOwnEnum.Own} />,
       );
 
       const row = getByRole('row', {

@@ -21,23 +21,23 @@ export const AutosaveCustomTextField: React.FC<
   AutosaveCustomTextFieldProps
 > = ({ fieldName, schema, ...props }) => {
   const { t } = useTranslation();
-  const { pageType } = useMinisterHousingAllowance();
+  const { pageType, requestData } = useMinisterHousingAllowance();
+  const request = requestData?.requestAttributes;
 
-  // temporary use formik context to get values
-  const { values, setFieldValue, setFieldTouched, submitCount } =
+  const { setFieldValue, setFieldTouched, submitCount } =
     useFormikContext<CalculationFormValues>();
 
   const saveField = useSaveField();
 
   const fieldProps = useAutoSave({
-    value: values[fieldName],
+    value: request?.[fieldName],
     saveValue: (value) => saveField({ [fieldName]: value }),
     fieldName,
     schema,
     setFieldValue,
     setFieldTouched,
     submitCount,
-    disabled: !values || pageType === PageEnum.View,
+    disabled: !request || pageType === PageEnum.View,
   });
 
   return (

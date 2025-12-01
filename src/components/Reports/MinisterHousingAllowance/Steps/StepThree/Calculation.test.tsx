@@ -8,12 +8,12 @@ import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
+import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import {
   MinisterHousingAllowanceProvider,
   useMinisterHousingAllowance,
 } from '../../Shared/Context/MinisterHousingAllowanceContext';
-import { RentOwnEnum } from '../../Shared/sharedTypes';
 import { Calculation } from './Calculation';
 
 const submit = jest.fn();
@@ -28,13 +28,13 @@ const initialValues = {
 interface TestComponentProps {
   boardApprovalDate?: string | null;
   availableDate?: string | null;
-  rentOrOwn?: RentOwnEnum;
+  rentOrOwn?: MhaRentOrOwnEnum;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   boardApprovalDate = '2024-06-15',
   availableDate = '2024-07-01',
-  rentOrOwn = RentOwnEnum.Own,
+  rentOrOwn = MhaRentOrOwnEnum.Own,
 }) => (
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -167,7 +167,7 @@ describe('Calculation', () => {
 
   it('shows confirmation modal when submit is clicked', async () => {
     const { getByRole, getByText, findByRole } = render(
-      <TestComponent rentOrOwn={RentOwnEnum.Rent} />,
+      <TestComponent rentOrOwn={MhaRentOrOwnEnum.Rent} />,
     );
 
     const row1 = getByRole('row', {

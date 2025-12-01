@@ -6,7 +6,7 @@ export const useAnnualTotal = (values: CalculationFormValues) => {
     rentalValue,
     furnitureCostsOne,
     avgUtilityOne,
-    mortgagePayment,
+    mortgageOrRentPayment,
     furnitureCostsTwo,
     repairCosts,
     avgUtilityTwo,
@@ -20,13 +20,13 @@ export const useAnnualTotal = (values: CalculationFormValues) => {
   const annualFairRental = totalFairRental * 12;
   const totalCostOfHome = useMemo(
     () =>
-      (mortgagePayment ?? 0) +
+      (mortgageOrRentPayment ?? 0) +
       (furnitureCostsTwo ?? 0) +
       (repairCosts ?? 0) +
       (avgUtilityTwo ?? 0) +
       (unexpectedExpenses ?? 0),
     [
-      mortgagePayment,
+      mortgageOrRentPayment,
       furnitureCostsTwo,
       repairCosts,
       avgUtilityTwo,
