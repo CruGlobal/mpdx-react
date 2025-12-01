@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { FormikProvider } from 'formik';
+import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { AccountInfoCard } from '../Shared/AccountInfoCard';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
@@ -35,7 +35,8 @@ export interface CompleteFormValues {
 
 export const CompleteForm: React.FC = () => {
   const { t } = useTranslation();
-  const { selectedSection, formik } = useAdditionalSalaryRequest();
+  const { selectedSection } = useAdditionalSalaryRequest();
+  const { handleSubmit } = useFormikContext<CompleteFormValues>();
   const theme = useTheme();
   const name = 'Doc, John';
   const accountNumber = '00123456';
@@ -44,43 +45,41 @@ export const CompleteForm: React.FC = () => {
 
   return (
     <AdditionalSalaryRequestSection title={selectedSection.title}>
-      <FormikProvider value={formik}>
-        <form onSubmit={formik.handleSubmit}>
+      <form onSubmit={handleSubmit}>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: theme.spacing(4),
+          }}
+        >
+          <AccountInfoCard
+            name={name}
+            accountNumber={accountNumber}
+            primaryAccountBalance={primaryAccountBalance}
+            remainingAllowableSalary={remainingAllowableSalary}
+          />
+          <Typography variant="body1" paragraph>
+            {t(
+              'Please enter the desired dollar amounts for the appropriate categories and review totals before submitting. Your Net Additional Salary calculated below represents the amount you will receive (before taxes) in additional salary and equals the amount you are requesting minus any amount being contributed to your 403(b).',
+            )}
+          </Typography>
+          <AdditionalSalaryRequest />
+          <Deduction />
           <Box
             sx={{
               display: 'flex',
-              flexDirection: 'column',
-              gap: theme.spacing(4),
+              justifyContent: 'space-between',
             }}
           >
-            <AccountInfoCard
-              name={name}
-              accountNumber={accountNumber}
-              primaryAccountBalance={primaryAccountBalance}
-              remainingAllowableSalary={remainingAllowableSalary}
-            />
-            <Typography variant="body1" paragraph>
-              {t(
-                'Please enter the desired dollar amounts for the appropriate categories and review totals before submitting. Your Net Additional Salary calculated below represents the amount you will receive (before taxes) in additional salary and equals the amount you are requesting minus any amount being contributed to your 403(b).',
-              )}
-            </Typography>
-            <AdditionalSalaryRequest formikProps={formik} />
-            <Deduction formikProps={formik} />
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'space-between',
-              }}
-            >
-              <CancelButton />
-              <Box sx={{ display: 'flex', gap: theme.spacing(2) }}>
-                <BackButton />
-                <SubmitButton />
-              </Box>
+            <CancelButton />
+            <Box sx={{ display: 'flex', gap: theme.spacing(2) }}>
+              <BackButton />
+              <SubmitButton />
             </Box>
           </Box>
-        </form>
-      </FormikProvider>
+        </Box>
+      </form>
     </AdditionalSalaryRequestSection>
   );
 };

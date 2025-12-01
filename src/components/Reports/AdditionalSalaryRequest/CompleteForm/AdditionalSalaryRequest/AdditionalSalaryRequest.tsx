@@ -9,7 +9,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { FormikProps } from 'formik';
+import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { CurrencyAdornment } from 'src/components/Reports/GoalCalculator/Shared/Adornments';
 import { useLocale } from 'src/hooks/useLocale';
@@ -18,20 +18,15 @@ import { useCompleteFormCategories } from '../../Shared/useCompleteFormCategorie
 import { useTotalSalaryRequest } from '../../Shared/useTotalSalaryRequest';
 import { CompleteFormValues } from '../CompleteForm';
 
-interface AdditionalSalaryRequestProps {
-  formikProps: FormikProps<CompleteFormValues>;
-}
-
-export const AdditionalSalaryRequest: React.FC<
-  AdditionalSalaryRequestProps
-> = ({ formikProps }) => {
+export const AdditionalSalaryRequest: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
   const theme = useTheme();
 
   const categories = useCompleteFormCategories();
 
-  const { values, handleChange, handleBlur, errors, touched } = formikProps;
+  const { values, handleChange, handleBlur, errors, touched } =
+    useFormikContext<CompleteFormValues>();
 
   // Calculate total excluding the defaultPercentage boolean
   const total = useTotalSalaryRequest(values);
