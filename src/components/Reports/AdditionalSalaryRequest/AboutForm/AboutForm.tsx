@@ -2,11 +2,12 @@ import React from 'react';
 import { Box, Link, List, ListItem, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
-import { AccountInfoCard } from '../Shared/AccountInfoCard';
+import { NameDisplay } from '../../Shared/CalculationReports/NameDisplay/NameDisplay';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { getHeader } from '../Shared/Helper/getHeader';
 import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSalaryRequestSection';
 import { CancelButton, ContinueButton } from '../SharedComponents/NavButtons';
+import { SpouseComponent } from '../SharedComponents/SpouseComponent';
 
 export const AboutForm: React.FC = () => {
   const { currentStep } = useAdditionalSalaryRequest();
@@ -88,14 +89,17 @@ export const AboutForm: React.FC = () => {
           of the Additional Salary request if you prefer.
         </Typography>
       </Trans>
-
-      <AccountInfoCard
-        name={name}
-        accountNumber={accountNumber}
-        primaryAccountBalance={primaryAccountBalance}
-        remainingAllowableSalary={remainingAllowableSalary}
-        showSpouse={true}
+      <NameDisplay
+        names={name}
+        personNumbers={accountNumber}
+        showContent={true}
+        titleOne={t('Primary Account Balance')}
+        amountOne={primaryAccountBalance}
+        titleTwo={t('Your Remaining Allowable Salary')}
+        amountTwo={remainingAllowableSalary}
+        spouseComponent={<SpouseComponent />}
       />
+
       <Box
         sx={{
           display: 'flex',

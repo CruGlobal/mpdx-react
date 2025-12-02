@@ -17,6 +17,7 @@ interface NameDisplayProps {
   titleTwo?: string;
   amountOne?: number | null;
   amountTwo?: number | null;
+  spouseComponent?: React.ReactNode;
 }
 
 export const NameDisplay: React.FC<NameDisplayProps> = ({
@@ -27,16 +28,19 @@ export const NameDisplay: React.FC<NameDisplayProps> = ({
   titleTwo,
   amountOne,
   amountTwo,
+  spouseComponent,
 }) => {
   const locale = useLocale();
   const currency = 'USD';
-
   const title = (
-    <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-      <Typography variant="h6">{names}</Typography>
-      <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
-        {personNumbers}
-      </Typography>
+    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+        <Typography variant="h6">{names}</Typography>
+        <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
+          {personNumbers}
+        </Typography>
+      </Box>
+      {spouseComponent}
     </Box>
   );
 
