@@ -3,9 +3,13 @@ query Hcm {
     staffInfo {
       firstName
       lastName
+      secaStatus
+      assignmentCategory
+      peopleGroupSupportType
     }
     currentSalary {
       grossSalaryAmount
+      lastUpdated
     }
     fourOThreeB {
       currentRothContributionPercentage
