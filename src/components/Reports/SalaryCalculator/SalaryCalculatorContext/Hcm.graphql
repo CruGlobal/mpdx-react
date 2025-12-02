@@ -5,6 +5,7 @@ query Hcm {
       lastName
       secaStatus
       assignmentCategory
+      peopleGroupSupportType
     }
     currentSalary {
       grossSalaryAmount

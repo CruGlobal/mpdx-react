@@ -4,6 +4,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import {
   AssignmentCategoryEnum,
+  PeopleGroupSupportTypeEnum,
   SalaryRequestStatusEnum,
 } from 'src/graphql/types.generated';
 import theme from 'src/theme';
@@ -37,6 +38,7 @@ export const SalaryCalculatorTestWrapper: React.FC<
                   firstName: 'John',
                   lastName: 'Doe',
                   assignmentCategory: AssignmentCategoryEnum.FullTimeRegular,
+                  peopleGroupSupportType: PeopleGroupSupportTypeEnum.SupportedRmo,
                 },
                 fourOThreeB: {
                   currentRothContributionPercentage: 12,

@@ -8,6 +8,7 @@ import { NameDisplay } from 'src/components/Reports/Shared/CalculationReports/Na
 import { NoStaffAccount } from 'src/components/Reports/Shared/NoStaffAccount/NoStaffAccount';
 import {
   AssignmentCategoryEnum,
+  PeopleGroupSupportTypeEnum,
   SalaryRequestStatusEnum,
 } from 'src/graphql/types.generated';
 import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
@@ -27,6 +28,7 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
     staffAccountId,
     name,
     self,
+    spouse,
     isNewStaff,
     salaryData: { currentGrossSalary },
     accountBalance,
@@ -40,6 +42,14 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
   const isFullTime =
     assignmentCategory === AssignmentCategoryEnum.FullTimeRegular ||
     assignmentCategory === AssignmentCategoryEnum.FullTimeTemporary;
+
+  const isSelfSupportedRmo =
+    self?.staffInfo.peopleGroupSupportType ===
+    PeopleGroupSupportTypeEnum.SupportedRmo;
+  const isSpouseSupportedRmo =
+    spouse?.staffInfo.peopleGroupSupportType ===
+    PeopleGroupSupportTypeEnum.SupportedRmo;
+  const isSupportedRmo = isSelfSupportedRmo || isSpouseSupportedRmo;
 
   if (loading) {
     return <Loading loading />;
@@ -89,7 +99,7 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
           amountTwo={accountBalance}
         />
         <SalaryInformationCard />
-        {isFullTime && !isNewStaff && (
+        {(isFullTime || isSupportedRmo) && !isNewStaff && (
           <Box sx={{ marginTop: theme.spacing(4) }}>
             <Button
               variant="contained"
