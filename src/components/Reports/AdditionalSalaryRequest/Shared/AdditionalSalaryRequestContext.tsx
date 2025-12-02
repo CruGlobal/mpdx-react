@@ -1,18 +1,24 @@
 import React, { createContext, useCallback, useMemo, useState } from 'react';
+import { FormikProvider, useFormik } from 'formik';
+import { useTranslation } from 'react-i18next';
+import * as yup from 'yup';
+import { useLocale } from 'src/hooks/useLocale';
 import { useStepList } from 'src/hooks/useStepList';
+import { currencyFormat } from 'src/lib/intlFormat';
+import { amount } from 'src/lib/yupHelpers';
 import { FormEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
+import { CompleteFormValues } from '../CompleteForm/CompleteForm';
+import { calculateCompletionPercentage } from './calculateCompletionPercentage';
 
 export type AdditionalSalaryRequestType = {
   steps: Steps[];
   currentIndex: number;
   percentComplete: number;
-
   currentStep: AdditionalSalaryRequestSectionEnum;
   handleNextStep: () => void;
   handlePreviousStep: () => void;
-
   isDrawerOpen: boolean;
   toggleDrawer: () => void;
   setIsDrawerOpen: (open: boolean) => void;
@@ -34,21 +40,92 @@ export const useAdditionalSalaryRequest = (): AdditionalSalaryRequestType => {
 
 interface Props {
   children?: React.ReactNode;
+  initialValues?: CompleteFormValues;
 }
 
 export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   children,
+  initialValues: providedInitialValues,
 }) => {
+  const { t } = useTranslation();
   const steps = useStepList(FormEnum.AdditionalSalary);
-  const totalSteps = steps.length;
+  const locale = useLocale();
 
   // Step Handlers
   const [currentStep, setCurrentStep] = useState(
     AdditionalSalaryRequestSectionEnum.AboutForm,
   );
-  const [percentComplete, setPercentComplete] = useState(33);
 
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  const createCurrencyValidation = useCallback(
+    (fieldName: string, max?: number) => {
+      let schema = amount(fieldName, t);
+      if (max) {
+        schema = schema.max(
+          max,
+          t('Exceeds {{amount}} limit', {
+            amount: currencyFormat(max, 'USD', locale, {
+              showTrailingZeros: true,
+            }),
+          }),
+        );
+      }
+      return schema;
+    },
+    [t],
+  );
+
+  const initialValues: CompleteFormValues = {
+    currentYearSalary: '0',
+    previousYearSalary: '0',
+    additionalSalary: '0',
+    adoption: '0',
+    contribution403b: '0',
+    counseling: '0',
+    healthcareExpenses: '0',
+    babysitting: '0',
+    childrenMinistryTrip: '0',
+    childrenCollege: '0',
+    movingExpense: '0',
+    seminary: '0',
+    housingDownPayment: '0',
+    autoPurchase: '0',
+    reimbursableExpenses: '0',
+    defaultPercentage: false,
+  };
+
+  const validationSchema = useMemo(
+    () =>
+      yup.object({
+        currentYearSalary: createCurrencyValidation("Current Year's Salary"),
+        previousYearSalary: createCurrencyValidation("Previous Year's Salary"),
+        additionalSalary: createCurrencyValidation('Additional Salary'),
+        adoption: createCurrencyValidation('Adoption', 15000), // replace with MpdGoalMiscConstants value when possible
+        contribution403b: createCurrencyValidation('403(b) Contribution'), // Can't be greater than salary (will be pulled from HCM)
+        counseling: createCurrencyValidation('Counseling'),
+        healthcareExpenses: createCurrencyValidation('Healthcare Expenses'),
+        babysitting: createCurrencyValidation('Babysitting'),
+        childrenMinistryTrip: createCurrencyValidation(
+          "Children's Ministry Trip",
+        ), // Need to pull number of children from HCM and multiply by 21000 for max
+        childrenCollege: createCurrencyValidation("Children's College"),
+        movingExpense: createCurrencyValidation('Moving Expense'),
+        seminary: createCurrencyValidation('Seminary'),
+        housingDownPayment: createCurrencyValidation(
+          'Housing Down Payment',
+          50000,
+        ), // replace with MpdGoalMiscConstants value when possible
+        autoPurchase: createCurrencyValidation('Auto Purchase'), // Max will eventually be a constant, no determined value yet
+        reimbursableExpenses: createCurrencyValidation('Reimbursable Expenses'),
+        defaultPercentage: yup.boolean(),
+      }),
+    [createCurrencyValidation],
+  );
+
+  const handleSubmit = useCallback((_values: CompleteFormValues) => {
+    //TODO: Submit form values
+  }, []);
 
   const handleNextStep = () => {
     setCurrentStep((prevStep) => {
@@ -61,7 +138,6 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
 
       const newIndex = currentIndex + 1;
       handleNextIndexChange(newIndex);
-      handlePercentComplete(newIndex);
       return next;
     });
   };
@@ -77,14 +153,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
 
       const newIndex = currentIndex - 1;
       handlePreviousIndexChange(newIndex);
-      handlePercentComplete(newIndex);
       return next;
     });
-  };
-
-  const handlePercentComplete = (index: number) => {
-    const newPercent = Math.round(((index + 1) / totalSteps) * 100);
-    setPercentComplete(newPercent);
   };
 
   const handleNextIndexChange = (newIndex: number) => {
@@ -114,6 +184,18 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     // Implement cancel logic here
   };
 
+  const formik = useFormik<CompleteFormValues>({
+    initialValues: providedInitialValues || initialValues,
+    validationSchema,
+    onSubmit: handleSubmit,
+    enableReinitialize: true,
+  });
+
+  const percentComplete = useMemo(
+    () => calculateCompletionPercentage(formik.values),
+    [formik.values],
+  );
+
   const contextValue = useMemo<AdditionalSalaryRequestType>(
     () => ({
       steps,
@@ -140,8 +222,10 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   );
 
   return (
-    <AdditionalSalaryRequestContext.Provider value={contextValue}>
-      {children}
-    </AdditionalSalaryRequestContext.Provider>
+    <FormikProvider value={formik}>
+      <AdditionalSalaryRequestContext.Provider value={contextValue}>
+        {children}
+      </AdditionalSalaryRequestContext.Provider>
+    </FormikProvider>
   );
 };
