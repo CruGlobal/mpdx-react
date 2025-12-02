@@ -38,6 +38,9 @@ export interface SalaryCalculatorContextType {
 
   hcm: HcmQuery['hcm'] | null;
   calculation: SalaryCalculationQuery['salaryRequest'] | null;
+
+  hasStartedCalculation: boolean;
+  startCalculation: () => void;
 }
 
 const SalaryCalculatorContext =
@@ -118,11 +121,19 @@ export const SalaryCalculatorProvider: React.FC<
   // End Step Handlers
 
   const [isDrawerOpen, setDrawerOpen] = useState(true);
+  const [hasStartedCalculation, setHasStartedCalculation] = useState(false);
   const { data: hcmData } = useHcmQuery();
   const { data: calculationData } = useSalaryCalculationQuery();
 
   const toggleDrawer = useCallback(() => {
     setDrawerOpen((prev) => !prev);
+  }, []);
+
+  const startCalculation = useCallback(() => {
+    setHasStartedCalculation(true);
+    setCurrentStep(SalaryCalculatorSectionEnum.EffectiveDate);
+    setCurrentIndex(0);
+    setPercentComplete(11);
   }, []);
 
   const contextValue: SalaryCalculatorContextType = useMemo(
@@ -138,6 +149,8 @@ export const SalaryCalculatorProvider: React.FC<
       toggleDrawer,
       hcm: hcmData?.hcm ?? null,
       calculation: calculationData?.salaryRequest ?? null,
+      hasStartedCalculation,
+      startCalculation,
     }),
     [
       steps,
@@ -150,6 +163,8 @@ export const SalaryCalculatorProvider: React.FC<
       toggleDrawer,
       hcmData,
       calculationData,
+      hasStartedCalculation,
+      startCalculation,
     ],
   );
 

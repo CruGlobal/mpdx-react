@@ -160,5 +160,6 @@ export const useLandingData = () => {
     salaryData,
     salaryCategories,
     accountBalance,
+    isNewStaff: false,
   };
 };

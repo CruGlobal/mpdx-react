@@ -8,6 +8,7 @@ import { useIconPanelItems } from '../Shared/CalculationReports/PanelLayout/useI
 import { PanelTypeEnum } from '../Shared/CalculationReports/Shared/sharedTypes';
 import { StepsList } from '../Shared/CalculationReports/StepsList/StepsList';
 import { CurrentStep } from './CurrentStep';
+import { NewSalaryCalculatorLanding } from './Landing/NewSalaryCalculationLanding/NewSalaryCalculatorLanding';
 import {
   SalaryCalculatorProvider,
   useSalaryCalculator,
@@ -40,9 +41,20 @@ export const SalaryCalculator: React.FC = () => (
 export const SalaryCalculatorContent: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
+  const {
+    steps,
+    currentIndex,
+    percentComplete,
+    isDrawerOpen,
+    toggleDrawer,
+    hasStartedCalculation,
+  } = useSalaryCalculator();
 
-  const { isDrawerOpen, toggleDrawer, steps, percentComplete, currentIndex } =
-    useSalaryCalculator();
+  const iconPanelItems = useIconPanelItems(isDrawerOpen, toggleDrawer);
+
+  if (!hasStartedCalculation) {
+    return <NewSalaryCalculatorLanding />;
+  }
 
   return (
     <PanelLayout
@@ -50,7 +62,7 @@ export const SalaryCalculatorContent: React.FC = () => {
       percentComplete={percentComplete}
       steps={steps}
       currentIndex={currentIndex}
-      icons={useIconPanelItems(isDrawerOpen, toggleDrawer)}
+      icons={iconPanelItems}
       sidebarContent={<StepsList steps={steps} />}
       sidebarTitle={t('Form Steps')}
       isSidebarOpen={isDrawerOpen}
