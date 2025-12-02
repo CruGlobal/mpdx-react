@@ -61,12 +61,12 @@ describe('AboutForm', () => {
   });
 
   it('should display user information and financial data', () => {
-    const { getByText } = render(<TestWrapper />);
+    const { getByText, getAllByText } = render(<TestWrapper />);
 
     expect(getByText('Doc, John')).toBeInTheDocument();
     expect(getByText('00123456')).toBeInTheDocument();
-    expect(getByText('Primary Account Balance')).toBeInTheDocument();
-    expect(getByText('Your Remaining Allowable Salary')).toBeInTheDocument();
+    expect(getByText(/Primary Account Balance/i)).toBeInTheDocument();
+    expect(getAllByText(/Your Remaining Allowable Salary/i)).toHaveLength(2);
   });
 
   it('should navigate to Complete Form section when Continue is clicked', async () => {
