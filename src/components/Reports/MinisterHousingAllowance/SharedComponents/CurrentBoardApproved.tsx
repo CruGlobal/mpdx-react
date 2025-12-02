@@ -1,46 +1,58 @@
 import { HomeSharp } from '@mui/icons-material';
-import { Grid, Typography } from '@mui/material';
+import { Grid, Skeleton, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
-import { CardSkeleton } from '../CardSkeleton/CardSkeleton';
+import { StatusCard } from '../../Shared/CalculationReports/StatusCard/StatusCard';
+import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
+import { MHARequest } from './types';
 
 interface CurrentBoardApprovedProps {
-  approvedDate: string | null;
-  approvedOverallAmount: number | null;
-  staffName: string;
-  staffSpecific: number | null;
-  spouseName?: string;
-  spouseSpecific?: number | null;
+  request: MHARequest | null;
 }
 
 export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
-  approvedDate,
-  approvedOverallAmount,
-  staffName,
-  staffSpecific,
-  spouseName,
-  spouseSpecific,
+  request,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const accountListId = useAccountListId();
   const currency = 'USD';
 
+  const { isMarried, preferredName, spousePreferredName } =
+    useMinisterHousingAllowance();
+
+  const { approvedDate, approvedOverallAmount, staffSpecific, spouseSpecific } =
+    request?.requestAttributes || {};
+
   return (
-    <CardSkeleton
+    <StatusCard
+      formType={t('MHA Request')}
       title={t('Current Board Approved MHA')}
       icon={HomeSharp}
       iconColor="success.main"
-      titleOne={t('View Current MHA')}
-      titleTwo={t("Duplicate Last Year's MHA")}
+      linkOneText={t('View Current MHA')}
+      linkOne={`/accountLists/${accountListId}/reports/housingAllowance/view`}
+      linkTwoText={t("Duplicate Last Year's MHA")}
+      linkTwo=""
       isRequest={false}
+      handleConfirmCancel={() => {}}
     >
       <Grid container spacing={2}>
         <Grid item xs={6}>
           <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-            {t(
-              `APPROVAL DATE: ${dateFormatShort(DateTime.fromISO(approvedDate || ''), locale)}`,
+            {t('APPROVAL DATE')}:{' '}
+            {approvedDate ? (
+              dateFormatShort(DateTime.fromISO(approvedDate), locale)
+            ) : (
+              <Skeleton
+                width={100}
+                variant="text"
+                sx={{ ml: 1 }}
+                style={{ display: 'inline-block' }}
+              />
             )}
           </Typography>
         </Grid>
@@ -64,14 +76,12 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
         <Grid item xs={6}>
           <Grid container spacing={2}>
             <Grid item xs={6}>
-              <Typography variant="body1">
-                {staffName.split(', ')[1].toUpperCase()}
-              </Typography>
+              <Typography variant="body1">{preferredName}</Typography>
             </Grid>
             <Grid item xs={6}>
-              <Typography variant="body1">
-                {spouseName?.split(', ')[1].toUpperCase() ?? ''}
-              </Typography>
+              {isMarried && (
+                <Typography variant="body1">{spousePreferredName}</Typography>
+              )}
             </Grid>
           </Grid>
           <Grid container spacing={2}>
@@ -86,20 +96,20 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
               </Typography>
             </Grid>
             <Grid item xs={6}>
-              <Typography
-                variant="h6"
-                sx={{ color: 'primary.main', fontWeight: 'bold' }}
-              >
-                {spouseSpecific
-                  ? currencyFormat(spouseSpecific ?? 0, currency, locale, {
-                      showTrailingZeros: true,
-                    })
-                  : ''}
-              </Typography>
+              {isMarried && (
+                <Typography
+                  variant="h6"
+                  sx={{ color: 'primary.main', fontWeight: 'bold' }}
+                >
+                  {currencyFormat(spouseSpecific ?? 0, currency, locale, {
+                    showTrailingZeros: true,
+                  })}
+                </Typography>
+              )}
             </Grid>
           </Grid>
         </Grid>
       </Grid>
-    </CardSkeleton>
+    </StatusCard>
   );
 };

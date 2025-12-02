@@ -1,29 +1,53 @@
-import { createContext, useContext, useMemo, useState } from 'react';
-import { useNewStepList } from 'src/hooks/useNewStepList';
-import { Steps } from '../../Steps/StepsList/StepsList';
-import { PageEnum, StepsEnum } from '../sharedTypes';
+import {
+  Dispatch,
+  SetStateAction,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import {
+  FormEnum,
+  PageEnum,
+} from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
+import {
+  HcmDataQuery,
+  useHcmDataQuery,
+} from 'src/components/Reports/Shared/HcmData/HCMData.generated';
+import { MaritalStatusEnum } from 'src/graphql/types.generated';
+import { useStepList } from 'src/hooks/useStepList';
+import { Steps } from '../../../Shared/CalculationReports/StepsList/StepsList';
+import { StepsEnum } from '../sharedTypes';
+
+export type HcmData = HcmDataQuery['hcm'][number];
 
 export type ContextType = {
   steps: Steps[];
   currentIndex: number;
   percentComplete: number;
-
   currentStep: StepsEnum;
   handleNextStep: () => void;
   handlePreviousStep: () => void;
-
   pageType: PageEnum | undefined;
-
   hasCalcValues: boolean;
-  setHasCalcValues: (value: boolean) => void;
-
+  setHasCalcValues: Dispatch<SetStateAction<boolean>>;
+  isDrawerOpen: boolean;
+  toggleDrawer: () => void;
+  setIsDrawerOpen: Dispatch<SetStateAction<boolean>>;
   isPrint: boolean;
-  setIsPrint: (value: boolean) => void;
-
-  setPreviousPage: (page: PageEnum) => void;
+  setIsPrint: Dispatch<SetStateAction<boolean>>;
+  setIsComplete: Dispatch<SetStateAction<boolean>>;
+  isMarried: boolean;
+  userHcmData?: HcmData;
+  spouseHcmData?: HcmData | null;
+  preferredName: string;
+  spousePreferredName: string;
 };
 
-const MinisterHousingAllowanceContext = createContext<ContextType | null>(null);
+export const MinisterHousingAllowanceContext =
+  createContext<ContextType | null>(null);
 
 export const useMinisterHousingAllowance = (): ContextType => {
   const context = useContext(MinisterHousingAllowanceContext);
@@ -45,12 +69,12 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   children,
 }) => {
   const pageType = type;
-  const initialSteps = type ? useNewStepList(type) : [];
+  const initialSteps = useStepList(FormEnum.MHA, type);
 
-  const [previousPage, setPreviousPage] = useState(PageEnum.None);
+  const [isComplete, setIsComplete] = useState(false);
 
   const steps = useMemo(() => {
-    if (previousPage === PageEnum.None) {
+    if (!isComplete) {
       return initialSteps;
     }
 
@@ -59,15 +83,51 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       complete: true,
       current: index === arr.length - 1,
     }));
-  }, [initialSteps, previousPage]);
+  }, [initialSteps, isComplete]);
 
   const totalSteps = steps.length;
+
+  const { data: hcmData } = useHcmDataQuery({
+    variables: {
+      maritalStatus: MaritalStatusEnum.Married,
+    },
+  });
+
+  const [userHcmData, setUserHcmData] = useState<HcmData>();
+  const [spouseHcmData, setSpouseHcmData] = useState<HcmData | null>(null);
+  const [isMarried, setIsMarried] = useState(false);
+
+  useEffect(() => {
+    if (!hcmData?.hcm?.length) {
+      setUserHcmData(undefined);
+      setSpouseHcmData(null);
+      setIsMarried(false);
+      return;
+    }
+    const [user, spouse] = hcmData.hcm;
+    setUserHcmData(user);
+    setSpouseHcmData(spouse ?? null);
+    setIsMarried(!!spouse);
+  }, [hcmData]);
+
+  const preferredName = useMemo(
+    () => userHcmData?.staffInfo?.preferredName || '',
+    [userHcmData],
+  );
+  const spousePreferredName = useMemo(
+    () => spouseHcmData?.staffInfo?.preferredName || '',
+    [spouseHcmData],
+  );
+
+  const [isDrawerOpen, setIsDrawerOpen] = useState(true);
+  const toggleDrawer = useCallback(() => {
+    setIsDrawerOpen((prev) => !prev);
+  }, []);
 
   const actionRequired = pageType === PageEnum.Edit;
   const [hasCalcValues, setHasCalcValues] = useState(
     actionRequired ? true : false,
   );
-
   const [isPrint, setIsPrint] = useState(false);
 
   const [currentStep, setCurrentStep] = useState(StepsEnum.AboutForm);
@@ -145,9 +205,17 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       pageType,
       hasCalcValues,
       setHasCalcValues,
+      isDrawerOpen,
+      toggleDrawer,
+      setIsDrawerOpen,
+      isMarried,
+      userHcmData,
+      spouseHcmData,
+      preferredName,
+      spousePreferredName,
       isPrint,
       setIsPrint,
-      setPreviousPage,
+      setIsComplete,
     }),
     [
       steps,
@@ -159,9 +227,17 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       pageType,
       hasCalcValues,
       setHasCalcValues,
+      isDrawerOpen,
+      toggleDrawer,
+      setIsDrawerOpen,
+      isMarried,
+      userHcmData,
+      spouseHcmData,
+      preferredName,
+      spousePreferredName,
       isPrint,
       setIsPrint,
-      setPreviousPage,
+      setIsComplete,
     ],
   );
 

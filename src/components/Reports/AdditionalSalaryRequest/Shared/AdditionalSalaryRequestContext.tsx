@@ -68,8 +68,65 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     ],
     [t],
   );
-  const [sectionIndex, setSectionIndex] = useState(0);
-  const selectedSection = sectionOrder[sectionIndex];
+  const [percentComplete, setPercentComplete] = useState(33);
+
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const handleNextStep = () => {
+    setCurrentStep((prevStep) => {
+      const next =
+        prevStep === AdditionalSalaryRequestSectionEnum.AboutForm
+          ? AdditionalSalaryRequestSectionEnum.CompleteForm
+          : prevStep === AdditionalSalaryRequestSectionEnum.CompleteForm
+            ? AdditionalSalaryRequestSectionEnum.Receipt
+            : prevStep;
+
+      const newIndex = currentIndex + 1;
+      handleNextIndexChange(newIndex);
+      handlePercentComplete(newIndex);
+      return next;
+    });
+  };
+
+  const handlePreviousStep = () => {
+    setCurrentStep((prevStep) => {
+      const next =
+        prevStep === AdditionalSalaryRequestSectionEnum.CompleteForm
+          ? AdditionalSalaryRequestSectionEnum.AboutForm
+          : prevStep === AdditionalSalaryRequestSectionEnum.Receipt
+            ? AdditionalSalaryRequestSectionEnum.CompleteForm
+            : prevStep;
+
+      const newIndex = currentIndex - 1;
+      handlePreviousIndexChange(newIndex);
+      handlePercentComplete(newIndex);
+      return next;
+    });
+  };
+
+  const handlePercentComplete = (index: number) => {
+    const newPercent = Math.round(((index + 1) / totalSteps) * 100);
+    setPercentComplete(newPercent);
+  };
+
+  const handleNextIndexChange = (newIndex: number) => {
+    steps[currentIndex].current = false;
+    steps[currentIndex].complete = true;
+    setCurrentIndex(newIndex);
+    steps[newIndex].current = true;
+
+    if (newIndex === steps.length - 1) {
+      steps[newIndex].complete = true;
+    }
+  };
+
+  const handlePreviousIndexChange = (newIndex: number) => {
+    steps[currentIndex].current = false;
+    steps[newIndex].complete = false;
+    setCurrentIndex(newIndex);
+    steps[newIndex].current = true;
+  };
+
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
 
   const toggleDrawer = useCallback(() => {
@@ -175,10 +232,12 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
 
   const contextValue = useMemo<AdditionalSalaryRequestType>(
     () => ({
-      sectionOrder,
-      setSectionIndex,
-      selectedSection,
-      handleContinue,
+      steps,
+      currentIndex,
+      percentComplete,
+      currentStep,
+      handleNextStep,
+      handlePreviousStep,
       isDrawerOpen,
       toggleDrawer,
       setIsDrawerOpen,

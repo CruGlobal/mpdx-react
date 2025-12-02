@@ -31,7 +31,7 @@ const makeClient = (apiToken: string) => {
       makeAuthLink(apiToken),
       onError(({ graphQLErrors, networkError }) => {
         graphQLErrors?.forEach((graphQLError) => {
-          if (graphQLError.extensions.code === 'AUTHENTICATION_ERROR') {
+          if (graphQLError?.extensions?.code === 'AUTHENTICATION_ERROR') {
             signOut({ redirect: true, callbackUrl: 'signOut' }).then(() => {
               clearDataDogUser();
               client.clearStore();

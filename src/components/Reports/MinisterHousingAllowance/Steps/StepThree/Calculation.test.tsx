@@ -6,12 +6,14 @@ import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import theme from 'src/theme';
 import {
   MinisterHousingAllowanceProvider,
   useMinisterHousingAllowance,
 } from '../../Shared/Context/MinisterHousingAllowanceContext';
-import { PageEnum, RentOwnEnum } from '../../Shared/sharedTypes';
+import { RentOwnEnum } from '../../Shared/sharedTypes';
 import { Calculation } from './Calculation';
 
 const submit = jest.fn();
@@ -37,15 +39,17 @@ const TestComponent: React.FC<TestComponentProps> = ({
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <TestRouter>
-        <Formik initialValues={initialValues} onSubmit={submit}>
-          <MinisterHousingAllowanceProvider>
-            <Calculation
-              boardApprovalDate={boardApprovalDate}
-              availableDate={availableDate}
-              rentOrOwn={rentOrOwn}
-            />
-          </MinisterHousingAllowanceProvider>
-        </Formik>
+        <GqlMockedProvider>
+          <Formik initialValues={initialValues} onSubmit={submit}>
+            <MinisterHousingAllowanceProvider>
+              <Calculation
+                boardApprovalDate={boardApprovalDate}
+                availableDate={availableDate}
+                rentOrOwn={rentOrOwn}
+              />
+            </MinisterHousingAllowanceProvider>
+          </Formik>
+        </GqlMockedProvider>
       </TestRouter>
     </LocalizationProvider>
   </ThemeProvider>

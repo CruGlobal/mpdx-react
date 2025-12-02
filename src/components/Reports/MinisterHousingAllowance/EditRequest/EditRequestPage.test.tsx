@@ -3,17 +3,20 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
+import { PageEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { MinisterHousingAllowanceProvider } from '../Shared/Context/MinisterHousingAllowanceContext';
-import { PageEnum } from '../Shared/sharedTypes';
 import { EditRequestPage } from './EditRequestPage';
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <TestRouter>
-      <MinisterHousingAllowanceProvider type={PageEnum.Edit}>
-        <EditRequestPage />
-      </MinisterHousingAllowanceProvider>
+      <GqlMockedProvider>
+        <MinisterHousingAllowanceProvider type={PageEnum.Edit}>
+          <EditRequestPage />
+        </MinisterHousingAllowanceProvider>
+      </GqlMockedProvider>
     </TestRouter>
   </ThemeProvider>
 );
@@ -29,12 +32,12 @@ describe('EditRequestPage', () => {
   });
 
   it('updates steps when Continue clicked', async () => {
-    const { getByRole, getAllByRole, getByTestId, queryByTestId } = render(
+    const { getByRole, getAllByRole, getByText, queryByTestId } = render(
       <TestComponent />,
     );
 
     expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '25');
-    expect(queryByTestId('ArrowBackIcon')).not.toBeInTheDocument();
+    expect(queryByTestId('ArrowBackIcon')).toBeInTheDocument();
 
     const continueButton = getByRole('button', { name: 'Continue' });
     await userEvent.click(continueButton);
@@ -62,9 +65,7 @@ describe('EditRequestPage', () => {
       ).toBeInTheDocument();
     });
 
-    expect(getByTestId('ArrowBackIcon')).toBeInTheDocument();
-
-    await userEvent.click(getByTestId('ArrowBackIcon'));
+    await userEvent.click(getByText('Back'));
 
     const updatedSteps = getAllByRole('listitem');
 

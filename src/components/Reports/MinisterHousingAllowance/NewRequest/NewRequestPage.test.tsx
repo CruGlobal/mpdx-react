@@ -3,17 +3,20 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
+import { PageEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { MinisterHousingAllowanceProvider } from '../Shared/Context/MinisterHousingAllowanceContext';
-import { PageEnum } from '../Shared/sharedTypes';
 import { NewRequestPage } from './NewRequestPage';
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <TestRouter>
-      <MinisterHousingAllowanceProvider type={PageEnum.New}>
-        <NewRequestPage />
-      </MinisterHousingAllowanceProvider>
+      <GqlMockedProvider>
+        <MinisterHousingAllowanceProvider type={PageEnum.New}>
+          <NewRequestPage />
+        </MinisterHousingAllowanceProvider>
+      </GqlMockedProvider>
     </TestRouter>
   </ThemeProvider>
 );
@@ -29,12 +32,12 @@ describe('NewRequestPage', () => {
   });
 
   it('updates steps when Continue clicked', async () => {
-    const { getByRole, getAllByRole, getByTestId, queryByTestId } = render(
+    const { getByRole, getAllByRole, getByText, queryByTestId } = render(
       <TestComponent />,
     );
 
     expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '25');
-    expect(queryByTestId('ArrowBackIcon')).not.toBeInTheDocument();
+    expect(queryByTestId('ArrowBackIcon')).toBeInTheDocument();
 
     const continueButton = getByRole('button', { name: 'Continue' });
     await userEvent.click(continueButton);
@@ -57,9 +60,8 @@ describe('NewRequestPage', () => {
     ).toBeInTheDocument();
 
     expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '50');
-    expect(getByTestId('ArrowBackIcon')).toBeInTheDocument();
 
-    await userEvent.click(getByTestId('ArrowBackIcon'));
+    await userEvent.click(getByText('Back'));
 
     const updatedSteps = getAllByRole('listitem');
 
@@ -142,7 +144,7 @@ describe('NewRequestPage', () => {
     expect(getByRole('radio', { name: 'Own' })).toBeChecked();
 
     userEvent.click(getByRole('radio', { name: 'Rent' }));
-    userEvent.click(getByRole('button', { name: /no/i }));
+    userEvent.click(getByRole('button', { name: /go back/i }));
 
     expect(getByRole('radio', { name: 'Own' })).toBeChecked();
   });

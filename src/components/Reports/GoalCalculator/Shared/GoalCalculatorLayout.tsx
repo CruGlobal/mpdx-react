@@ -1,7 +1,8 @@
 import { useRouter } from 'next/router';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { IconPanelLayout } from 'src/components/Shared/IconPanelLayout/IconPanelLayout';
+import { PanelLayout } from '../../Shared/CalculationReports/PanelLayout/PanelLayout';
+import { PanelTypeEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { GoalCalculatorStepEnum } from '../GoalCalculatorHelper';
 import { useGoalCalculator } from './GoalCalculatorContext';
 
@@ -50,15 +51,17 @@ export const GoalCalculatorLayout: React.FC<GoalCalculatorLayoutProps> = ({
   }));
 
   return (
-    <IconPanelLayout
+    <PanelLayout
+      panelType={PanelTypeEnum.Other}
       percentComplete={percentComplete}
-      iconPanelItems={iconPanelItems}
+      icons={iconPanelItems}
       sidebarContent={sectionListPanel}
       sidebarTitle={currentStep.title}
       isSidebarOpen={isDrawerOpen}
       sidebarAriaLabel={t('{{step}} Sections', { step: currentStep.title })}
       mainContent={mainContent}
       backHref={`/accountLists/${accountListId}/reports/goalCalculator`}
+      backTitle={t('Go Back')}
     />
   );
 };
