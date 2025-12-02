@@ -3,15 +3,11 @@ import { Box, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
+import { DirectionButtons } from 'src/components/Reports/Shared/CalculationReports/DirectionButtons/DirectionButtons';
 import { NameDisplay } from 'src/components/Reports/Shared/CalculationReports/NameDisplay/NameDisplay';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { getHeader } from '../Shared/Helper/getHeader';
 import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSalaryRequestSection';
-import {
-  BackButton,
-  CancelButton,
-  SubmitButton,
-} from '../SharedComponents/NavButtons';
 import { AdditionalSalaryRequest } from './AdditionalSalaryRequest/AdditionalSalaryRequest';
 import { Deduction } from './Deduction/Deduction';
 
@@ -36,8 +32,10 @@ export interface CompleteFormValues {
 
 export const CompleteForm: React.FC = () => {
   const { t } = useTranslation();
-  const { currentStep } = useAdditionalSalaryRequest();
-  const { handleSubmit } = useFormikContext<CompleteFormValues>();
+  const { currentStep, handlePreviousStep, handleNextStep, handleCancel } =
+    useAdditionalSalaryRequest();
+  const { handleSubmit, submitForm, validateForm, submitCount, isValid } =
+    useFormikContext<CompleteFormValues>();
   const theme = useTheme();
   const name = 'Doc, John';
   const accountNumber = '00123456';
@@ -71,18 +69,18 @@ export const CompleteForm: React.FC = () => {
           </Typography>
           <AdditionalSalaryRequest />
           <Deduction />
-          <Box
-            sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-            }}
-          >
-            <CancelButton />
-            <Box sx={{ display: 'flex', gap: theme.spacing(2) }}>
-              <BackButton />
-              <SubmitButton />
-            </Box>
-          </Box>
+          <DirectionButtons
+            handleNextStep={handleNextStep}
+            handlePreviousStep={handlePreviousStep}
+            showBackButton={true}
+            showCancelButton={true}
+            handleCancel={handleCancel}
+            isSubmission={true}
+            submitForm={submitForm}
+            validateForm={validateForm}
+            submitCount={submitCount}
+            isValid={isValid}
+          />
         </Box>
       </form>
     </AdditionalSalaryRequestSection>

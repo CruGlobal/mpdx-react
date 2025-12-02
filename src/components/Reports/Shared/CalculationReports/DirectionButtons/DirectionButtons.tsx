@@ -7,12 +7,13 @@ import { SubmitModal } from '../SubmitModal/SubmitModal';
 interface DirectionButtonsProps {
   handleNextStep?: () => void;
   handlePreviousStep?: () => void;
+  handleCancel?: () => void;
   buttonTitle?: string;
   deadlineDate?: string;
   actionRequired?: boolean;
   overrideNext?: () => void;
   showBackButton?: boolean;
-
+  showCancelButton?: boolean;
   //Formik validation for submit modal
   isSubmission?: boolean;
   submitForm?: () => Promise<void>;
@@ -24,10 +25,12 @@ interface DirectionButtonsProps {
 export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
   handleNextStep,
   handlePreviousStep,
+  handleCancel,
   buttonTitle,
   isSubmission,
   overrideNext,
   showBackButton,
+  showCancelButton,
   submitForm,
   validateForm,
   submitCount,
@@ -60,7 +63,23 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
   };
 
   return (
-    <Box sx={{ mt: 5, display: 'flex', justifyContent: 'flex-end' }}>
+    <Box
+      sx={{
+        mt: 5,
+        display: 'flex',
+        justifyContent: showCancelButton ? 'space-between' : 'flex-end',
+      }}
+    >
+      {showCancelButton && (
+        <Button
+          variant="text"
+          color="error"
+          size="small"
+          onClick={handleCancel}
+        >
+          {t('Cancel')}
+        </Button>
+      )}
       <Box sx={{ display: 'flex', gap: 2 }}>
         {showBackButton && (
           <Button
