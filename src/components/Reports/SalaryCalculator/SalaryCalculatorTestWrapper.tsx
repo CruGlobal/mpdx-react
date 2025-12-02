@@ -17,11 +17,13 @@ import { SalaryCalculatorProvider } from './SalaryCalculatorContext/SalaryCalcul
 interface SalaryCalculatorTestWrapperProps {
   onCall?: MockLinkCallHandler;
   children?: React.ReactNode;
+  assignmentCategory?: AssignmentCategoryEnum;
+  peopleGroupSupportType?: PeopleGroupSupportTypeEnum;
 }
 
 export const SalaryCalculatorTestWrapper: React.FC<
   SalaryCalculatorTestWrapperProps
-> = ({ onCall, children }) => (
+> = ({ onCall, children, assignmentCategory, peopleGroupSupportType }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
       <GqlMockedProvider<{
@@ -37,8 +39,11 @@ export const SalaryCalculatorTestWrapper: React.FC<
                 staffInfo: {
                   firstName: 'John',
                   lastName: 'Doe',
-                  assignmentCategory: AssignmentCategoryEnum.FullTimeRegular,
-                  peopleGroupSupportType: PeopleGroupSupportTypeEnum.SupportedRmo,
+                  assignmentCategory:
+                    assignmentCategory ?? AssignmentCategoryEnum.FullTimeRegular,
+                  peopleGroupSupportType:
+                    peopleGroupSupportType ??
+                    PeopleGroupSupportTypeEnum.SupportedRmo,
                 },
                 fourOThreeB: {
                   currentRothContributionPercentage: 12,
