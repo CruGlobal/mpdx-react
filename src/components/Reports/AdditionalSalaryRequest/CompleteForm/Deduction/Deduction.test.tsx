@@ -1,7 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Form, Formik } from 'formik';
 import { AdditionalSalaryRequestTestWrapper } from '../../AdditionalSalaryRequestTestWrapper';
 import { CompleteFormValues } from '../CompleteForm';
 import { Deduction } from './Deduction';
@@ -32,16 +31,8 @@ interface TestWrapperProps {
 const TestWrapper: React.FC<TestWrapperProps> = ({
   initialValues = defaultValues,
 }) => (
-  <AdditionalSalaryRequestTestWrapper>
-    <Formik
-      initialValues={initialValues}
-      onSubmit={jest.fn()}
-      enableReinitialize
-    >
-      <Form>
-        <Deduction />
-      </Form>
-    </Formik>
+  <AdditionalSalaryRequestTestWrapper initialValues={initialValues}>
+    <Deduction />
   </AdditionalSalaryRequestTestWrapper>
 );
 

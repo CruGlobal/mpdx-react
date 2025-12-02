@@ -1,7 +1,7 @@
 import { CompleteFormValues } from '../CompleteForm/CompleteForm';
-import { formCompletionPercentageHelper } from './formCompletionPercentageHelper';
+import { calculateCompletionPercentage } from './calculateCompletionPercentage';
 
-describe('formCompletionPercentageHelper', () => {
+describe('calculateCompletionPercentage', () => {
   const createFormValues = (
     overrides: Partial<CompleteFormValues> = {},
   ): CompleteFormValues => ({
@@ -26,7 +26,7 @@ describe('formCompletionPercentageHelper', () => {
 
   it('should return 0 when all fields are empty', () => {
     const values = createFormValues();
-    expect(formCompletionPercentageHelper(values)).toBe(0);
+    expect(calculateCompletionPercentage(values)).toBe(0);
   });
 
   it('should return 100 when all fields are filled', () => {
@@ -47,7 +47,7 @@ describe('formCompletionPercentageHelper', () => {
       autoPurchase: '5000',
       reimbursableExpenses: '750',
     });
-    expect(formCompletionPercentageHelper(values)).toBe(100);
+    expect(calculateCompletionPercentage(values)).toBe(100);
   });
 
   it('should exclude defaultPercentage from calculation', () => {
@@ -55,7 +55,7 @@ describe('formCompletionPercentageHelper', () => {
       currentYearSalary: '50000',
       defaultPercentage: true,
     });
-    expect(formCompletionPercentageHelper(values)).toBe(7);
+    expect(calculateCompletionPercentage(values)).toBe(7);
   });
 
   it('should treat zero values as unfilled', () => {
@@ -64,7 +64,7 @@ describe('formCompletionPercentageHelper', () => {
       previousYearSalary: '0',
       additionalSalary: '50000',
     });
-    expect(formCompletionPercentageHelper(values)).toBe(7);
+    expect(calculateCompletionPercentage(values)).toBe(7);
   });
 
   it('should handle decimal values correctly', () => {
@@ -72,6 +72,6 @@ describe('formCompletionPercentageHelper', () => {
       currentYearSalary: '50000.50',
       previousYearSalary: '48000.75',
     });
-    expect(formCompletionPercentageHelper(values)).toBe(13);
+    expect(calculateCompletionPercentage(values)).toBe(13);
   });
 });

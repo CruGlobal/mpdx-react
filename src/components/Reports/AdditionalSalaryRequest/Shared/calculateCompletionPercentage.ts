@@ -1,16 +1,16 @@
 import { CompleteFormValues } from '../CompleteForm/CompleteForm';
 
-export const formCompletionPercentageHelper = (
+export const calculateCompletionPercentage = (
   values: CompleteFormValues,
 ): number => {
   // Get all fields except defaultPercentage (checkbox doesn't count toward completion)
-  const fields = Object.entries(values).filter(
-    ([, value]) => typeof value === 'string' || typeof value === 'number',
+  const fields = Object.values(values).filter(
+    (value) => typeof value === 'string' || typeof value === 'number',
   );
 
   const totalFields = fields.length;
 
-  const filledFields = fields.filter(([, value]) => {
+  const filledFields = fields.filter((value) => {
     const numValue = Number(value || 0);
     return numValue > 0;
   }).length;

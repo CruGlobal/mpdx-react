@@ -10,7 +10,7 @@ import {
   SectionOrderItem,
 } from '../AdditionalSalaryRequestHelper';
 import { CompleteFormValues } from '../CompleteForm/CompleteForm';
-import { formCompletionPercentageHelper } from './formCompletionPercentageHelper';
+import { calculateCompletionPercentage } from './calculateCompletionPercentage';
 
 export type AdditionalSalaryRequestType = {
   sectionOrder: SectionOrderItem[];
@@ -40,10 +40,12 @@ export const useAdditionalSalaryRequest = (): AdditionalSalaryRequestType => {
 
 interface Props {
   children?: React.ReactNode;
+  initialValues?: CompleteFormValues;
 }
 
 export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   children,
+  initialValues: providedInitialValues,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -80,7 +82,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       if (max) {
         schema = schema.max(
           max,
-          t('Exceeds ${{amount}} limit', {
+          t('Exceeds {{amount}} limit', {
             amount: currencyFormat(max, 'USD', locale, {
               showTrailingZeros: true,
             }),
@@ -92,27 +94,24 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     [t],
   );
 
-  const initialValues: CompleteFormValues = useMemo(
-    () => ({
-      currentYearSalary: '0',
-      previousYearSalary: '0',
-      additionalSalary: '0',
-      adoption: '0',
-      contribution403b: '0',
-      counseling: '0',
-      healthcareExpenses: '0',
-      babysitting: '0',
-      childrenMinistryTrip: '0',
-      childrenCollege: '0',
-      movingExpense: '0',
-      seminary: '0',
-      housingDownPayment: '0',
-      autoPurchase: '0',
-      reimbursableExpenses: '0',
-      defaultPercentage: false,
-    }),
-    [],
-  );
+  const initialValues: CompleteFormValues = {
+    currentYearSalary: '0',
+    previousYearSalary: '0',
+    additionalSalary: '0',
+    adoption: '0',
+    contribution403b: '0',
+    counseling: '0',
+    healthcareExpenses: '0',
+    babysitting: '0',
+    childrenMinistryTrip: '0',
+    childrenCollege: '0',
+    movingExpense: '0',
+    seminary: '0',
+    housingDownPayment: '0',
+    autoPurchase: '0',
+    reimbursableExpenses: '0',
+    defaultPercentage: false,
+  };
 
   const validationSchema = useMemo(
     () =>
@@ -147,13 +146,14 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   }, []);
 
   const formik = useFormik<CompleteFormValues>({
-    initialValues,
+    initialValues: providedInitialValues || initialValues,
     validationSchema,
     onSubmit: handleSubmit,
+    enableReinitialize: true,
   });
 
   const percentComplete = useMemo(
-    () => formCompletionPercentageHelper(formik.values),
+    () => calculateCompletionPercentage(formik.values),
     [formik.values],
   );
 
