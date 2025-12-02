@@ -1,20 +1,25 @@
 import React from 'react';
-import { Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { PanelLayout } from '../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { useIconPanelItems } from '../Shared/CalculationReports/PanelLayout/useIconPanelItems';
+import { Receipt } from '../Shared/CalculationReports/ReceiptStep/Receipt';
 import { PanelTypeEnum } from '../Shared/CalculationReports/Shared/sharedTypes';
 import { StepsList } from '../Shared/CalculationReports/StepsList/StepsList';
 import { AboutForm } from './AboutForm/AboutForm';
 import { AdditionalSalaryRequestSectionEnum } from './AdditionalSalaryRequestHelper';
 import { CompleteForm } from './CompleteForm/CompleteForm';
 import { useAdditionalSalaryRequest } from './Shared/AdditionalSalaryRequestContext';
+import { AdditionalSalaryRequestSection } from './SharedComponents/AdditionalSalaryRequestSection';
 import { SectionPage } from './SharedComponents/SectionPage';
 
 export const MainContent: React.FC = () => {
   const { currentStep } = useAdditionalSalaryRequest();
   const { t } = useTranslation();
+  const accountListId = useAccountListId();
+
+  const viewLink = `/accountLists/${accountListId}/reports/additionalSalaryRequest/view`;
+  const editLink = `/accountLists/${accountListId}/reports/additionalSalaryRequest/edit`;
 
   switch (currentStep) {
     case AdditionalSalaryRequestSectionEnum.AboutForm:
@@ -22,7 +27,17 @@ export const MainContent: React.FC = () => {
     case AdditionalSalaryRequestSectionEnum.CompleteForm:
       return <CompleteForm />;
     case AdditionalSalaryRequestSectionEnum.Receipt:
-      return <Typography variant="h5">{t('Receipt content')}</Typography>;
+      return (
+        <AdditionalSalaryRequestSection>
+          <Receipt
+            formTitle={t('Additional Salary Request')}
+            buttonText={t('View Your Additional Salary Request')}
+            editLink={editLink}
+            viewLink={viewLink}
+            isEdit={false}
+          />
+        </AdditionalSalaryRequestSection>
+      );
   }
 };
 

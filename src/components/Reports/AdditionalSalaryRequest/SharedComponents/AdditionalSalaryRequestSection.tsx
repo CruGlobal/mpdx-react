@@ -4,7 +4,7 @@ import { Box, Button, Stack, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 export interface AdditionalSalaryRequestSectionProps {
-  title: string;
+  title?: string;
   rightPanelContent?: JSX.Element;
   printable?: boolean;
   children: React.ReactNode;
@@ -24,7 +24,7 @@ export const AdditionalSalaryRequestSection: React.FC<
     <div>
       <Box pb={4}>
         <Stack direction="row" gap={2} alignItems="center">
-          <Typography variant="h4">{title}</Typography>
+          {title && <Typography variant="h4">{title}</Typography>}
           {titleExtra}
           <Box sx={{ flexGrow: 1 }} />
           {printable && (
