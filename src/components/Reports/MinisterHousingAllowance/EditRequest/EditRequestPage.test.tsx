@@ -85,21 +85,23 @@ describe('EditRequestPage', () => {
   });
 
   it('should show an option is preselected', async () => {
-    const { getAllByRole, getByRole } = render(<TestComponent />);
+    const { findAllByRole, getByRole } = render(<TestComponent />);
 
     const continueButton = getByRole('button', { name: 'Continue' });
     await userEvent.click(continueButton);
 
-    expect(getAllByRole('radio', { checked: true })).toHaveLength(1);
+    expect(await findAllByRole('radio', { checked: true })).toHaveLength(1);
   });
 
   it('opens confirmation modal when changing selection', async () => {
-    const { getByRole, getByText, getAllByRole } = render(<TestComponent />);
+    const { getByRole, getByText, findAllByRole } = render(<TestComponent />);
 
     const continueButton = getByRole('button', { name: 'Continue' });
     await userEvent.click(continueButton);
 
-    const radios = getAllByRole('radio');
+    const radios = await findAllByRole('radio');
+    expect(await findAllByRole('radio', { checked: true })).toHaveLength(1);
+
     const unchecked = radios.filter((r) => !(r as HTMLInputElement).checked);
     const checked = radios.filter((r) => (r as HTMLInputElement).checked);
 

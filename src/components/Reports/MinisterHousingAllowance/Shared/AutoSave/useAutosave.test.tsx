@@ -46,10 +46,6 @@ const TestComponent: React.FC<TestComponentProps> = ({
 };
 
 describe('useAutoSave', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   it('initializes with value and no errors', () => {
     const { getByRole } = render(<TestComponent />);
 
@@ -66,7 +62,7 @@ describe('useAutoSave', () => {
     await userEvent.tab();
 
     expect(await findByText('Field is required')).toBeInTheDocument();
-    expect(setFieldValue).toHaveBeenCalledWith('rentalValue', null, true);
+    expect(setFieldValue).toHaveBeenCalledWith('rentalValue', null);
     expect(setFieldTouched).toHaveBeenCalledWith('rentalValue', true, true);
   });
 
@@ -78,8 +74,10 @@ describe('useAutoSave', () => {
     await userEvent.type(input, '75');
     await userEvent.tab();
 
+    expect(input).toHaveValue('$75.00');
+
     expect(saveValue).toHaveBeenCalledWith(75);
-    expect(setFieldValue).toHaveBeenCalledWith('rentalValue', 75, true);
+    expect(setFieldValue).toHaveBeenCalledWith('rentalValue', 75);
     expect(setFieldTouched).toHaveBeenCalledWith('rentalValue', true, true);
   });
 
@@ -90,8 +88,10 @@ describe('useAutoSave', () => {
     await userEvent.clear(input);
     input.blur();
 
+    expect(input).toHaveValue('');
+
     expect(saveValue).toHaveBeenCalledWith(null);
-    expect(setFieldValue).toHaveBeenCalledWith('rentalValue', null, true);
+    expect(setFieldValue).toHaveBeenCalledWith('rentalValue', null);
     expect(setFieldTouched).toHaveBeenCalledWith('rentalValue', true, true);
   });
 

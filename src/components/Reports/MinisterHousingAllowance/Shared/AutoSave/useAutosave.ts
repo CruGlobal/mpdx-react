@@ -80,8 +80,19 @@ export const useAutoSave = <Value extends string | number | boolean>({
       setHasInteracted(true);
 
       const newValue = event.target.value;
+
+      if (newValue === '') {
+        setInternalValue('');
+        setFieldValue(fieldName, null);
+
+        if (saveOnChange) {
+          saveValue(null);
+        }
+        return;
+      }
+
       const parsed = parseInput(newValue);
-      const displayValue = newValue === '' ? '' : String(parsed ?? '');
+      const displayValue = String(parsed ?? '');
 
       setInternalValue(displayValue);
       setFieldValue(fieldName, parsed);
@@ -101,8 +112,15 @@ export const useAutoSave = <Value extends string | number | boolean>({
         setFocused(null);
       }
 
-      if (!saveOnChange && !errorMessage && parsedValue !== value) {
-        saveValue(parsedValue);
+      if (!saveOnChange) {
+        if (internalValue === '') {
+          saveValue(null);
+          return;
+        }
+
+        if (!errorMessage && parsedValue !== value) {
+          saveValue(parsedValue);
+        }
       }
     },
     onFocus: () => setFocused(fieldName),

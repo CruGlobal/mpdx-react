@@ -98,14 +98,18 @@ describe('NewRequestPage', () => {
   });
 
   it('opens confirmation modal when changing selection after calculation values inputted', async () => {
-    const { getByRole, getByText, queryByText, findByRole } = render(
-      <TestComponent />,
-    );
+    const { getByRole, getByText, queryByText, findByRole, findAllByRole } =
+      render(<TestComponent />);
 
     await userEvent.click(getByRole('button', { name: 'Continue' }));
 
-    await userEvent.click(getByRole('radio', { name: 'Rent' }));
-    expect(getByRole('radio', { name: 'Rent' })).toBeChecked();
+    expect(await findAllByRole('radio', { checked: false })).toHaveLength(2);
+
+    const rentRadio = await findByRole('radio', { name: 'Rent' });
+    await userEvent.click(rentRadio);
+
+    expect(await findAllByRole('radio', { checked: false })).toHaveLength(1);
+    expect(rentRadio).toBeChecked();
 
     await userEvent.click(getByRole('button', { name: 'Continue' }));
 

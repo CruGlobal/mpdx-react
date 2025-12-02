@@ -7,13 +7,19 @@ import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { useMinisterHousingAllowance } from '../../../Shared/Context/MinisterHousingAllowanceContext';
+import { UpdateMinistryHousingAllowanceRequestMutation } from '../../../MinisterHousingAllowance.generated';
+import {
+  ContextType,
+  MinisterHousingAllowanceContext,
+} from '../../../Shared/Context/MinisterHousingAllowanceContext';
 import { CostOfHome } from './CostOfHome';
 
 const submit = jest.fn();
+const mutationSpy = jest.fn();
 
 const mockSchema = {
   validateSyncAt: jest.fn((_fieldName, _values) => {
@@ -22,39 +28,42 @@ const mockSchema = {
 } as unknown as yup.Schema;
 
 interface TestComponentProps {
+  contextValue: Partial<ContextType>;
   rentOrOwn?: MhaRentOrOwnEnum;
 }
 
-const TestComponent: React.FC<TestComponentProps> = ({ rentOrOwn }) => (
+const TestComponent: React.FC<TestComponentProps> = ({
+  rentOrOwn,
+  contextValue,
+}) => (
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <TestRouter>
-        <Formik initialValues={{}} onSubmit={submit}>
-          <CostOfHome schema={mockSchema} rentOrOwn={rentOrOwn} />
-        </Formik>
-      </TestRouter>
+      <GqlMockedProvider<{
+        UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
+      }>
+        onCall={mutationSpy}
+      >
+        <TestRouter>
+          <MinisterHousingAllowanceContext.Provider
+            value={contextValue as ContextType}
+          >
+            <Formik initialValues={{}} onSubmit={submit}>
+              <CostOfHome schema={mockSchema} rentOrOwn={rentOrOwn} />
+            </Formik>
+          </MinisterHousingAllowanceContext.Provider>
+        </TestRouter>
+      </GqlMockedProvider>
     </LocalizationProvider>
   </ThemeProvider>
 );
 
-jest.mock('../../../Shared/Context/MinisterHousingAllowanceContext', () => ({
-  ...jest.requireActual(
-    '../../../Shared/Context/MinisterHousingAllowanceContext',
-  ),
-  useMinisterHousingAllowance: jest.fn(),
-}));
-const useMock = useMinisterHousingAllowance as jest.Mock;
-
 describe('CostOfHome', () => {
-  beforeEach(() => {
-    useMock.mockReturnValue({
-      pageType: PageEnum.New,
-    });
-  });
-
   it('renders the component for own', () => {
     const { getByText, getByRole } = render(
-      <TestComponent rentOrOwn={MhaRentOrOwnEnum.Own} />,
+      <TestComponent
+        rentOrOwn={MhaRentOrOwnEnum.Own}
+        contextValue={{ pageType: PageEnum.New }}
+      />,
     );
 
     expect(getByRole('table')).toBeInTheDocument();
@@ -74,7 +83,10 @@ describe('CostOfHome', () => {
 
   it('renders the component for rent', () => {
     const { getByText, getByRole, queryByText } = render(
-      <TestComponent rentOrOwn={MhaRentOrOwnEnum.Rent} />,
+      <TestComponent
+        rentOrOwn={MhaRentOrOwnEnum.Rent}
+        contextValue={{ pageType: PageEnum.New }}
+      />,
     );
 
     expect(getByRole('table')).toBeInTheDocument();
@@ -95,7 +107,24 @@ describe('CostOfHome', () => {
 
   it('should add text fields 1-5 and calculate annual value correctly', async () => {
     const { getByRole, getByText } = render(
-      <TestComponent rentOrOwn={MhaRentOrOwnEnum.Rent} />,
+      <TestComponent
+        rentOrOwn={MhaRentOrOwnEnum.Rent}
+        contextValue={
+          {
+            pageType: PageEnum.New,
+            requestData: {
+              id: 'request-id',
+              requestAttributes: {
+                mortgageOrRentPayment: null,
+                furnitureCostsTwo: null,
+                repairCosts: null,
+                avgUtilityTwo: null,
+                unexpectedCosts: null,
+              },
+            },
+          } as unknown as ContextType
+        }
+      />,
     );
 
     const row1 = getByRole('row', {
@@ -122,6 +151,8 @@ describe('CostOfHome', () => {
     const input5 = within(row5).getByPlaceholderText(/enter amount/i);
 
     await userEvent.type(input1, '1000');
+    userEvent.tab();
+
     await userEvent.type(input2, '200');
     await userEvent.type(input3, '300');
     await userEvent.type(input4, '400');
@@ -139,15 +170,12 @@ describe('CostOfHome', () => {
   });
 
   describe('isPrint behavior', () => {
-    beforeEach(() => {
-      useMock.mockReturnValue({
-        pageType: PageEnum.View,
-      });
-    });
-
     it('should disable text fields when on view page', () => {
       const { getByRole } = render(
-        <TestComponent rentOrOwn={MhaRentOrOwnEnum.Own} />,
+        <TestComponent
+          rentOrOwn={MhaRentOrOwnEnum.Own}
+          contextValue={{ pageType: PageEnum.View }}
+        />,
       );
 
       const row = getByRole('row', {

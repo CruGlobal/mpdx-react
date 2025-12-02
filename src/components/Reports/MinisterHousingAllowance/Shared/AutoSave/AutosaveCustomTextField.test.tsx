@@ -4,11 +4,18 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
 import * as yup from 'yup';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import theme from 'src/theme';
-import { MinisterHousingAllowanceProvider } from '../Context/MinisterHousingAllowanceContext';
+import { UpdateMinistryHousingAllowanceRequestMutation } from '../../MinisterHousingAllowance.generated';
+import {
+  ContextType,
+  MinisterHousingAllowanceContext,
+} from '../Context/MinisterHousingAllowanceContext';
 import { AutosaveCustomTextField } from './AutosaveCustomTextField';
 
 const submit = jest.fn();
+const mutationSpy = jest.fn();
 
 const defaultSchema = yup.object({
   mortgageOrRentPayment: yup.number().required('Mortgage Payment is required'),
@@ -16,14 +23,30 @@ const defaultSchema = yup.object({
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
-    <MinisterHousingAllowanceProvider>
-      <Formik initialValues={{}} onSubmit={submit}>
-        <AutosaveCustomTextField
-          fieldName="mortgageOrRentPayment"
-          schema={defaultSchema}
-        />
-      </Formik>
-    </MinisterHousingAllowanceProvider>
+    <GqlMockedProvider<{
+      UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
+    }>
+      onCall={mutationSpy}
+    >
+      <MinisterHousingAllowanceContext.Provider
+        value={
+          {
+            pageType: PageEnum.New,
+            requestData: {
+              id: 'request-id',
+              requestAttributes: { mortgageOrRentPayment: null },
+            },
+          } as unknown as ContextType
+        }
+      >
+        <Formik initialValues={{}} onSubmit={submit}>
+          <AutosaveCustomTextField
+            fieldName="mortgageOrRentPayment"
+            schema={defaultSchema}
+          />
+        </Formik>
+      </MinisterHousingAllowanceContext.Provider>
+    </GqlMockedProvider>
   </ThemeProvider>
 );
 
@@ -54,7 +77,21 @@ describe('AutosaveCustomTextField', () => {
 
     const input = getByRole('textbox');
     await userEvent.type(input, '1500');
-    await userEvent.tab();
+    input.blur();
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'UpdateMinistryHousingAllowanceRequest',
+        {
+          input: {
+            requestId: 'request-id',
+            requestAttributes: {
+              mortgageOrRentPayment: 1500,
+            },
+          },
+        },
+      ),
+    );
 
     await waitFor(() => expect(input).toHaveValue('$1,500.00'));
   });

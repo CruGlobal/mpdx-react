@@ -17,8 +17,8 @@ export const useSaveField = () => {
         return;
       }
 
-      const unchanged = Object.keys(attributes).every(
-        (key, value) => value[key] === values,
+      const unchanged = Object.entries(attributes).every(
+        ([key, newValue]) => newValue === values[key],
       );
       if (unchanged) {
         return;

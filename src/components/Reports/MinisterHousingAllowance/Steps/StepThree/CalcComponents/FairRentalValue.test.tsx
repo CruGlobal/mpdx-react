@@ -7,12 +7,18 @@ import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
 import * as yup from 'yup';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import theme from 'src/theme';
-import { useMinisterHousingAllowance } from '../../../Shared/Context/MinisterHousingAllowanceContext';
+import { UpdateMinistryHousingAllowanceRequestMutation } from '../../../MinisterHousingAllowance.generated';
+import {
+  ContextType,
+  MinisterHousingAllowanceContext,
+} from '../../../Shared/Context/MinisterHousingAllowanceContext';
 import { FairRentalValue } from './FairRentalValue';
 
 const submit = jest.fn();
+const mutationSpy = jest.fn();
 
 const mockSchema = {
   validateSyncAt: jest.fn((_fieldName, _values) => {
@@ -20,35 +26,37 @@ const mockSchema = {
   }),
 } as unknown as yup.Schema;
 
-const TestComponent: React.FC = () => (
+interface TestComponentProps {
+  contextValue: Partial<ContextType>;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({ contextValue }) => (
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <TestRouter>
-        <Formik initialValues={{}} onSubmit={submit}>
-          <FairRentalValue schema={mockSchema} />
-        </Formik>
-      </TestRouter>
+      <GqlMockedProvider<{
+        UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
+      }>
+        onCall={mutationSpy}
+      >
+        <TestRouter>
+          <MinisterHousingAllowanceContext.Provider
+            value={contextValue as ContextType}
+          >
+            <Formik initialValues={{}} onSubmit={submit}>
+              <FairRentalValue schema={mockSchema} />
+            </Formik>
+          </MinisterHousingAllowanceContext.Provider>
+        </TestRouter>
+      </GqlMockedProvider>
     </LocalizationProvider>
   </ThemeProvider>
 );
 
-jest.mock('../../../Shared/Context/MinisterHousingAllowanceContext', () => ({
-  ...jest.requireActual(
-    '../../../Shared/Context/MinisterHousingAllowanceContext',
-  ),
-  useMinisterHousingAllowance: jest.fn(),
-}));
-const useMock = useMinisterHousingAllowance as jest.Mock;
-
 describe('FairRentalValue', () => {
-  beforeEach(() =>
-    useMock.mockReturnValue({
-      pageType: PageEnum.New,
-    }),
-  );
-
   it('renders the component', () => {
-    const { getByText, getByRole } = render(<TestComponent />);
+    const { getByText, getByRole } = render(
+      <TestComponent contextValue={{ pageType: PageEnum.New }} />,
+    );
 
     expect(getByRole('table')).toBeInTheDocument();
     expect(
@@ -66,7 +74,23 @@ describe('FairRentalValue', () => {
   });
 
   it('should add text fields 1-3 and calculate annual value correctly', async () => {
-    const { getByRole, getByText } = render(<TestComponent />);
+    const { getByRole, getByText } = render(
+      <TestComponent
+        contextValue={
+          {
+            pageType: PageEnum.New,
+            requestData: {
+              id: 'request-id',
+              requestAttributes: {
+                rentalValue: null,
+                furnitureCostsOne: null,
+                avgUtilityOne: null,
+              },
+            },
+          } as unknown as ContextType
+        }
+      />,
+    );
 
     const row1 = getByRole('row', {
       name: /monthly market rental value of your home/i,
@@ -96,11 +120,9 @@ describe('FairRentalValue', () => {
 
   describe('isPrint behavior', () => {
     it('should disable text fields when on view page', () => {
-      useMock.mockReturnValue({
-        pageType: PageEnum.View,
-      });
-
-      const { getByRole } = render(<TestComponent />);
+      const { getByRole } = render(
+        <TestComponent contextValue={{ pageType: PageEnum.View }} />,
+      );
 
       const row = getByRole('row', {
         name: /monthly market rental value of your home/i,

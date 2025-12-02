@@ -52,8 +52,8 @@ export interface CalculationFormValues {
   repairCosts?: number | null;
   avgUtilityTwo?: number | null;
   unexpectedExpenses?: number | null;
-  phone?: string;
-  email?: string;
+  phone?: string | null;
+  email?: string | null;
   isChecked?: boolean;
 }
 
@@ -135,8 +135,8 @@ export const Calculation: React.FC<CalculationProps> = ({
         repairCosts: request?.repairCosts,
         avgUtilityTwo: request?.avgUtilityTwo,
         unexpectedExpenses: request?.unexpectedExpenses,
-        phone: userHcmData?.staffInfo.primaryPhoneNumber ?? undefined,
-        email: userHcmData?.staffInfo.emailAddress ?? undefined,
+        phone: userHcmData?.staffInfo.primaryPhoneNumber ?? null,
+        email: userHcmData?.staffInfo.emailAddress ?? null,
         isChecked: request?.iUnderstandMhaPolicy ?? false,
       }
     : {
@@ -148,8 +148,8 @@ export const Calculation: React.FC<CalculationProps> = ({
         repairCosts: null,
         avgUtilityTwo: null,
         unexpectedExpenses: null,
-        phone: userHcmData?.staffInfo.primaryPhoneNumber ?? undefined,
-        email: userHcmData?.staffInfo.emailAddress ?? undefined,
+        phone: userHcmData?.staffInfo.primaryPhoneNumber ?? null,
+        email: userHcmData?.staffInfo.emailAddress ?? null,
         isChecked: false,
       };
 

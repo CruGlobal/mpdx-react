@@ -91,16 +91,18 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
 
   const requestId = requestsData?.ministryHousingAllowanceRequests.nodes[0]?.id;
 
+  //eslint-disable-next-line no-console
+  console.log('requestId:', requestId);
+
   const { data: requestData, error: requestError } =
     useMinistryHousingAllowanceRequestQuery({
       variables: {
         ministryHousingAllowanceRequestId: requestId ?? '',
       },
+      skip: !requestId,
     });
 
   const pageType = type;
-  //eslint-disable-next-line no-console
-  console.log('pageType', pageType);
   const initialSteps = useStepList(FormEnum.MHA, type);
 
   const [isComplete, setIsComplete] = useState(false);
