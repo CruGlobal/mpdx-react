@@ -40,7 +40,8 @@ export const SalaryCalculatorTestWrapper: React.FC<
                   firstName: 'John',
                   lastName: 'Doe',
                   assignmentCategory:
-                    assignmentCategory ?? AssignmentCategoryEnum.FullTimeRegular,
+                    assignmentCategory ??
+                    AssignmentCategoryEnum.FullTimeRegular,
                   peopleGroupSupportType:
                     peopleGroupSupportType ??
                     PeopleGroupSupportTypeEnum.SupportedRmo,
