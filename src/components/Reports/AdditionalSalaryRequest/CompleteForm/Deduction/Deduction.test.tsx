@@ -40,7 +40,9 @@ describe('Deduction', () => {
   it('renders the 403(b) Deduction section', () => {
     const { getByText } = render(<TestWrapper />);
 
-    expect(getByText('403(b) Deduction')).toBeInTheDocument();
+    expect(
+      getByText('403(b) Deduction', { selector: '.MuiCardHeader-title' }),
+    ).toBeInTheDocument();
   });
 
   it('renders the default percentage checkbox', () => {
