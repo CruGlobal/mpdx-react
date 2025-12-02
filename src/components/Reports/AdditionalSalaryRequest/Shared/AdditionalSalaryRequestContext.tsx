@@ -123,10 +123,6 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     [createCurrencyValidation],
   );
 
-  const handleSubmit = useCallback((_values: CompleteFormValues) => {
-    //TODO: Submit form values
-  }, []);
-
   const handleNextStep = () => {
     setCurrentStep((prevStep) => {
       const next =
@@ -141,6 +137,14 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       return next;
     });
   };
+
+  const handleSubmit = useCallback(
+    (_values: CompleteFormValues) => {
+      //TODO: Submit form values
+      handleNextStep();
+    },
+    [handleNextStep],
+  );
 
   const handlePreviousStep = () => {
     setCurrentStep((prevStep) => {
