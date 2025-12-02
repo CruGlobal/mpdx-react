@@ -29,23 +29,17 @@ export const MainContent: React.FC = () => {
 export const AdditionalSalaryRequest: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const { isDrawerOpen, toggleDrawer, percentComplete } =
+  const { isDrawerOpen, toggleDrawer, steps, currentIndex, percentComplete } =
     useAdditionalSalaryRequest();
 
-  const iconPanelItems = [
-    {
-      key: 'toggle',
-      icon: isDrawerOpen ? <MenuOpenSharp /> : <MenuSharp />,
-      label: t('Toggle Menu'),
-      onClick: toggleDrawer,
-    },
-  ];
-
   return (
-    <IconPanelLayout
+    <PanelLayout
+      panelType={PanelTypeEnum.Other}
       percentComplete={percentComplete}
-      iconPanelItems={iconPanelItems}
-      sidebarContent={<SectionList />}
+      steps={steps}
+      currentIndex={currentIndex}
+      icons={useIconPanelItems(isDrawerOpen, toggleDrawer)}
+      sidebarContent={<StepsList steps={steps} />}
       sidebarTitle={t('Additional Salary Request')}
       isSidebarOpen={isDrawerOpen}
       sidebarAriaLabel={t('Additional Salary Request Sections')}

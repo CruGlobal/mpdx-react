@@ -3,26 +3,26 @@ import { FormikProvider, useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useLocale } from 'src/hooks/useLocale';
+import { useStepList } from 'src/hooks/useStepList';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { amount } from 'src/lib/yupHelpers';
-import {
-  AdditionalSalaryRequestSectionEnum,
-  SectionOrderItem,
-} from '../AdditionalSalaryRequestHelper';
+import { FormEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
+import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
+import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
 import { CompleteFormValues } from '../CompleteForm/CompleteForm';
 import { calculateCompletionPercentage } from './calculateCompletionPercentage';
 
 export type AdditionalSalaryRequestType = {
-  sectionOrder: SectionOrderItem[];
-  selectedSection: SectionOrderItem;
-  handleContinue: () => void;
-  setSectionIndex: (index: number) => void;
+  steps: Steps[];
+  currentIndex: number;
+  percentComplete: number;
+  currentStep: AdditionalSalaryRequestSectionEnum;
+  handleNextStep: () => void;
+  handlePreviousStep: () => void;
   isDrawerOpen: boolean;
   toggleDrawer: () => void;
   setIsDrawerOpen: (open: boolean) => void;
   handleCancel: () => void;
-  handleBack: () => void;
-  percentComplete: number;
 };
 
 const AdditionalSalaryRequestContext =
@@ -48,90 +48,15 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   initialValues: providedInitialValues,
 }) => {
   const { t } = useTranslation();
+  const steps = useStepList(FormEnum.AdditionalSalary);
   const locale = useLocale();
 
-  // Translated titles should be used when rendering
-  const sectionOrder = useMemo<SectionOrderItem[]>(
-    () => [
-      {
-        title: t('About this Form'),
-        section: AdditionalSalaryRequestSectionEnum.AboutForm,
-      },
-      {
-        title: t('Complete the Form'),
-        section: AdditionalSalaryRequestSectionEnum.CompleteForm,
-      },
-      {
-        title: t('Receipt'),
-        section: AdditionalSalaryRequestSectionEnum.Receipt,
-      },
-    ],
-    [t],
+  // Step Handlers
+  const [currentStep, setCurrentStep] = useState(
+    AdditionalSalaryRequestSectionEnum.AboutForm,
   );
-  const [percentComplete, setPercentComplete] = useState(33);
 
   const [currentIndex, setCurrentIndex] = useState(0);
-
-  const handleNextStep = () => {
-    setCurrentStep((prevStep) => {
-      const next =
-        prevStep === AdditionalSalaryRequestSectionEnum.AboutForm
-          ? AdditionalSalaryRequestSectionEnum.CompleteForm
-          : prevStep === AdditionalSalaryRequestSectionEnum.CompleteForm
-            ? AdditionalSalaryRequestSectionEnum.Receipt
-            : prevStep;
-
-      const newIndex = currentIndex + 1;
-      handleNextIndexChange(newIndex);
-      handlePercentComplete(newIndex);
-      return next;
-    });
-  };
-
-  const handlePreviousStep = () => {
-    setCurrentStep((prevStep) => {
-      const next =
-        prevStep === AdditionalSalaryRequestSectionEnum.CompleteForm
-          ? AdditionalSalaryRequestSectionEnum.AboutForm
-          : prevStep === AdditionalSalaryRequestSectionEnum.Receipt
-            ? AdditionalSalaryRequestSectionEnum.CompleteForm
-            : prevStep;
-
-      const newIndex = currentIndex - 1;
-      handlePreviousIndexChange(newIndex);
-      handlePercentComplete(newIndex);
-      return next;
-    });
-  };
-
-  const handlePercentComplete = (index: number) => {
-    const newPercent = Math.round(((index + 1) / totalSteps) * 100);
-    setPercentComplete(newPercent);
-  };
-
-  const handleNextIndexChange = (newIndex: number) => {
-    steps[currentIndex].current = false;
-    steps[currentIndex].complete = true;
-    setCurrentIndex(newIndex);
-    steps[newIndex].current = true;
-
-    if (newIndex === steps.length - 1) {
-      steps[newIndex].complete = true;
-    }
-  };
-
-  const handlePreviousIndexChange = (newIndex: number) => {
-    steps[currentIndex].current = false;
-    steps[newIndex].complete = false;
-    setCurrentIndex(newIndex);
-    steps[newIndex].current = true;
-  };
-
-  const [isDrawerOpen, setIsDrawerOpen] = useState(true);
-
-  const toggleDrawer = useCallback(() => {
-    setIsDrawerOpen((prev) => !prev);
-  }, []);
 
   const createCurrencyValidation = useCallback(
     (fieldName: string, max?: number) => {
@@ -202,6 +127,63 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     //TODO: Submit form values
   }, []);
 
+  const handleNextStep = () => {
+    setCurrentStep((prevStep) => {
+      const next =
+        prevStep === AdditionalSalaryRequestSectionEnum.AboutForm
+          ? AdditionalSalaryRequestSectionEnum.CompleteForm
+          : prevStep === AdditionalSalaryRequestSectionEnum.CompleteForm
+            ? AdditionalSalaryRequestSectionEnum.Receipt
+            : prevStep;
+
+      const newIndex = currentIndex + 1;
+      handleNextIndexChange(newIndex);
+      return next;
+    });
+  };
+
+  const handlePreviousStep = () => {
+    setCurrentStep((prevStep) => {
+      const next =
+        prevStep === AdditionalSalaryRequestSectionEnum.CompleteForm
+          ? AdditionalSalaryRequestSectionEnum.AboutForm
+          : prevStep === AdditionalSalaryRequestSectionEnum.Receipt
+            ? AdditionalSalaryRequestSectionEnum.CompleteForm
+            : prevStep;
+
+      const newIndex = currentIndex - 1;
+      handlePreviousIndexChange(newIndex);
+      return next;
+    });
+  };
+
+  const handleNextIndexChange = (newIndex: number) => {
+    steps[currentIndex].current = false;
+    steps[currentIndex].complete = true;
+    setCurrentIndex(newIndex);
+    steps[newIndex].current = true;
+
+    if (newIndex === steps.length - 1) {
+      steps[newIndex].complete = true;
+    }
+  };
+
+  const handlePreviousIndexChange = (newIndex: number) => {
+    steps[currentIndex].current = false;
+    steps[newIndex].complete = false;
+    setCurrentIndex(newIndex);
+    steps[newIndex].current = true;
+  };
+
+  const [isDrawerOpen, setIsDrawerOpen] = useState(true);
+  const toggleDrawer = useCallback(() => {
+    setIsDrawerOpen((prev) => !prev);
+  }, []);
+
+  const handleCancel = () => {
+    // Implement cancel logic here
+  };
+
   const formik = useFormik<CompleteFormValues>({
     initialValues: providedInitialValues || initialValues,
     validationSchema,
@@ -213,22 +195,6 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     () => calculateCompletionPercentage(formik.values),
     [formik.values],
   );
-
-  const handleContinue = useCallback(() => {
-    if (sectionIndex < sectionOrder.length - 1) {
-      setSectionIndex(sectionIndex + 1);
-    }
-  }, [sectionIndex, sectionOrder.length]);
-
-  const handleCancel = useCallback(() => {
-    setSectionIndex(0);
-  }, []);
-
-  const handleBack = useCallback(() => {
-    if (sectionIndex > 0) {
-      setSectionIndex(sectionIndex - 1);
-    }
-  }, [sectionIndex]);
 
   const contextValue = useMemo<AdditionalSalaryRequestType>(
     () => ({
@@ -242,18 +208,16 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       toggleDrawer,
       setIsDrawerOpen,
       handleCancel,
-      handleBack,
-      percentComplete,
     }),
     [
-      sectionOrder,
-      selectedSection,
-      handleContinue,
-      handleCancel,
-      handleBack,
+      steps,
+      currentIndex,
+      percentComplete,
+      currentStep,
+      handleNextStep,
+      handlePreviousStep,
       isDrawerOpen,
       toggleDrawer,
-      percentComplete,
     ],
   );
 

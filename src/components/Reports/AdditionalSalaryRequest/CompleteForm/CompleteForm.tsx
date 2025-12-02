@@ -5,6 +5,7 @@ import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { AccountInfoCard } from '../Shared/AccountInfoCard';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
+import { getHeader } from '../Shared/Helper/getHeader';
 import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSalaryRequestSection';
 import {
   BackButton,
@@ -35,7 +36,7 @@ export interface CompleteFormValues {
 
 export const CompleteForm: React.FC = () => {
   const { t } = useTranslation();
-  const { selectedSection } = useAdditionalSalaryRequest();
+  const { currentStep } = useAdditionalSalaryRequest();
   const { handleSubmit } = useFormikContext<CompleteFormValues>();
   const theme = useTheme();
   const name = 'Doc, John';
@@ -44,7 +45,7 @@ export const CompleteForm: React.FC = () => {
   const remainingAllowableSalary = 17500.0;
 
   return (
-    <AdditionalSalaryRequestSection title={selectedSection.title}>
+    <AdditionalSalaryRequestSection title={getHeader(t, currentStep)}>
       <form onSubmit={handleSubmit}>
         <Box
           sx={{
