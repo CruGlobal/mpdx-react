@@ -38,8 +38,8 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
 
   const assignmentCategory = self?.staffInfo.assignmentCategory;
   const isFullTime =
-    assignmentCategory === AssignmentCategoryEnum.FulltimeRegular ||
-    assignmentCategory === AssignmentCategoryEnum.FulltimeTemporary;
+    assignmentCategory === AssignmentCategoryEnum.FullTimeRegular ||
+    assignmentCategory === AssignmentCategoryEnum.FullTimeTemporary;
 
   if (loading) {
     return <Loading loading />;
