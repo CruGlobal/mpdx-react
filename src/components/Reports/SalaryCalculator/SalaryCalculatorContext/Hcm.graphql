@@ -4,6 +4,7 @@ query Hcm {
       firstName
       lastName
       secaStatus
+      assignmentCategory
     }
     currentSalary {
       grossSalaryAmount
