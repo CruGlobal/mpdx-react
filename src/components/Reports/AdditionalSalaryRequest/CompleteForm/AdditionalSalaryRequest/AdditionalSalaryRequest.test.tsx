@@ -179,6 +179,7 @@ describe('AdditionalSalaryRequest', () => {
       autoPurchase: '1000',
       reimbursableExpenses: '1000',
       defaultPercentage: false,
+      telephoneNumber: '157-234-4291',
     };
 
     const { getByTestId } = render(
