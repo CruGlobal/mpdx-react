@@ -85,21 +85,19 @@ export const SalaryInformationCard: React.FC = () => {
               <TableRow key={row.category}>
                 <TableCell>{row.category}</TableCell>
                 <TableCell>
-                  {row.link ? (
-                    <FlexBox>
-                      {row.user ?? ''}
+                  <FlexBox>
+                    {row.user}
+                    {row.link && (
                       <Link
                         href={`/accountLists/${accountListId}${row.link}`}
                         passHref
                       >
                         <LinkTypography>{t('View')}</LinkTypography>
                       </Link>
-                    </FlexBox>
-                  ) : (
-                    (row.user ?? '')
-                  )}
+                    )}
+                  </FlexBox>
                 </TableCell>
-                {hasSpouse && <TableCell>{row.spouse ?? ''}</TableCell>}
+                {hasSpouse && <TableCell>{row.spouse}</TableCell>}
               </TableRow>
             ))}
           </TableBody>
