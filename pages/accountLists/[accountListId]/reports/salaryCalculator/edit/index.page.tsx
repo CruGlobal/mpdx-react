@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { SalaryCalculator } from 'src/components/Reports/SalaryCalculator/SalaryCalculator';
-import { SalaryCalculatorProvider } from 'src/components/Reports/SalaryCalculator/SalaryCalculatorContext/SalaryCalculatorContext';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -50,9 +49,7 @@ const SalaryCalculatorEditPage: React.FC = () => {
               headerType={HeaderTypeEnum.Report}
             />
 
-            <SalaryCalculatorProvider>
-              <SalaryCalculator />
-            </SalaryCalculatorProvider>
+            <SalaryCalculator />
           </>
         }
       />
