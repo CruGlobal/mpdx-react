@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat } from 'src/lib/intlFormat';
+import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import { useStaffAccountQuery } from '../../StaffAccount.generated';
 import { useHcmQuery } from '../SalaryCalculatorContext/Hcm.generated';
 import { useSalaryCalculationQuery } from '../SalaryCalculatorContext/SalaryCalculation.generated';
@@ -98,20 +98,23 @@ export const useLandingData = () => {
       {
         category: t('Tax-deferred 403(b) Contribution'),
         user: salaryData.taxDeferredContribution
-          ? `${salaryData.taxDeferredContribution}%`
-          : '0%',
+          ? percentageFormat(salaryData.taxDeferredContribution / 100, locale)
+          : '-',
         spouse: salaryData.spouseTaxDeferredContribution
-          ? `${salaryData.spouseTaxDeferredContribution}%`
-          : '0%',
+          ? percentageFormat(
+              salaryData.spouseTaxDeferredContribution / 100,
+              locale,
+            )
+          : '-',
       },
       {
         category: t('Roth 403(b) Contribution'),
         user: salaryData.rothContribution
-          ? `${salaryData.rothContribution}%`
-          : '0%',
+          ? percentageFormat(salaryData.rothContribution / 100, locale)
+          : '-',
         spouse: salaryData.spouseRothContribution
-          ? `${salaryData.spouseRothContribution}%`
-          : '0%',
+          ? percentageFormat(salaryData.spouseRothContribution / 100, locale)
+          : '-',
       },
       {
         category: t('Security (SECA/FICA) Status'),
