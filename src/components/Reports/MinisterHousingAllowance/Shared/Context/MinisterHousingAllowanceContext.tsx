@@ -64,9 +64,9 @@ export type ContextType = {
   requestsError?: ApolloError;
   requestId?: string;
 
-  updateMutation?: ReturnType<
+  updateMutation: ReturnType<
     typeof useUpdateMinistryHousingAllowanceRequestMutation
-  >;
+  >[0];
 };
 
 export const MinisterHousingAllowanceContext =
@@ -105,8 +105,7 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       skip: !requestId,
     });
 
-  const [updateMinistryHousingAllowanceRequest] =
-    useUpdateMinistryHousingAllowanceRequestMutation();
+  const [updateMutation] = useUpdateMinistryHousingAllowanceRequestMutation();
 
   const pageType = type;
   const initialSteps = useStepList(FormEnum.MHA, type);
@@ -172,7 +171,7 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       return;
     }
 
-    updateMinistryHousingAllowanceRequest({
+    updateMutation({
       variables: {
         input: {
           requestId: requestId ?? '',
@@ -190,7 +189,7 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
     userHcmData,
     requestId,
     canUpdate,
-    updateMinistryHousingAllowanceRequest,
+    updateMutation,
   ]);
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
@@ -296,6 +295,7 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
         requestsData?.ministryHousingAllowanceRequests.nodes ?? null,
       requestsError,
       requestId,
+      updateMutation,
     }),
     [
       steps,
@@ -323,6 +323,7 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       requestsData,
       requestsError,
       requestId,
+      updateMutation,
     ],
   );
 

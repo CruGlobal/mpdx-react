@@ -2,7 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { render, within } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
@@ -21,6 +21,7 @@ const submit = jest.fn();
 const mutationSpy = jest.fn();
 const setHasCalcValues = jest.fn();
 const setIsPrint = jest.fn();
+const updateMutation = jest.fn();
 
 interface TestComponentProps {
   contextValue: Partial<ContextType>;
@@ -213,6 +214,7 @@ describe('Calculation', () => {
             pageType: PageEnum.New,
             setHasCalcValues,
             setIsPrint,
+            updateMutation,
             requestData: {
               id: 'request-id',
               requestAttributes: {
@@ -305,6 +307,48 @@ describe('Calculation', () => {
         /the board will review this number and you will receive notice of your approval./i,
       ),
     ).toBeInTheDocument();
+  });
+
+  it('should update checkbox value when clicked', async () => {
+    const { getByRole } = render(
+      <TestComponent
+        contextValue={
+          {
+            pageType: PageEnum.New,
+            setHasCalcValues,
+            setIsPrint,
+            updateMutation,
+            requestData: {
+              id: 'request-id',
+              requestAttributes: {
+                iUnderstandMhaPolicy: false,
+              },
+            },
+          } as unknown as ContextType
+        }
+      />,
+    );
+
+    const checkbox = getByRole('checkbox', {
+      name: /i understand that my approved/i,
+    });
+    expect(checkbox).not.toBeChecked();
+
+    await userEvent.click(checkbox);
+    expect(checkbox).toBeChecked();
+
+    await waitFor(() =>
+      expect(updateMutation).toHaveBeenCalledWith({
+        variables: {
+          input: {
+            requestId: 'request-id',
+            requestAttributes: {
+              iUnderstandMhaPolicy: true,
+            },
+          },
+        },
+      }),
+    );
   });
 
   describe('isViewPage behavior', () => {

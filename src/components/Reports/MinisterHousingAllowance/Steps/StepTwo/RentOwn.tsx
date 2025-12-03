@@ -14,28 +14,11 @@ import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Share
 import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
 import { DirectionButtons } from '../../../Shared/CalculationReports/DirectionButtons/DirectionButtons';
 import { SubmitModal } from '../../../Shared/CalculationReports/SubmitModal/SubmitModal';
-import { useUpdateMinistryHousingAllowanceRequestMutation } from '../../MinisterHousingAllowance.generated';
 import { FormValues } from '../../NewRequest/NewRequestPage';
 import { useMinisterHousingAllowance } from '../../Shared/Context/MinisterHousingAllowanceContext';
 
 export const RentOwn: React.FC = () => {
   const { t } = useTranslation();
-
-  const [updateMinistryHousingAllowanceRequest] =
-    useUpdateMinistryHousingAllowanceRequestMutation();
-
-  const updateRequest = (id: string, rentOrOwn: MhaRentOrOwnEnum) => {
-    updateMinistryHousingAllowanceRequest({
-      variables: {
-        input: {
-          requestId: id,
-          requestAttributes: {
-            rentOrOwn,
-          },
-        },
-      },
-    });
-  };
 
   const {
     values,
@@ -48,8 +31,26 @@ export const RentOwn: React.FC = () => {
     setFieldValue,
   } = useFormikContext<FormValues>();
 
-  const { pageType, hasCalcValues, handlePreviousStep, requestData } =
-    useMinisterHousingAllowance();
+  const {
+    pageType,
+    hasCalcValues,
+    handlePreviousStep,
+    requestData,
+    updateMutation,
+  } = useMinisterHousingAllowance();
+
+  const updateRequest = (id: string, rentOrOwn: MhaRentOrOwnEnum) => {
+    updateMutation({
+      variables: {
+        input: {
+          requestId: id,
+          requestAttributes: {
+            rentOrOwn,
+          },
+        },
+      },
+    });
+  };
 
   const [pendingValue, setPendingValue] = useState<MhaRentOrOwnEnum | null>(
     null,

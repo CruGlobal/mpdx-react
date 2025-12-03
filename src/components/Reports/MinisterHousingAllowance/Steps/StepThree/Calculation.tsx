@@ -54,7 +54,7 @@ export interface CalculationFormValues {
   unexpectedExpenses?: number | null;
   phoneNumber?: string | null;
   emailAddress?: string | null;
-  isChecked?: boolean;
+  iUnderstandMhaPolicy?: boolean;
 }
 
 const getValidationSchema = (rentOrOwn?: MhaRentOrOwnEnum) => {
@@ -116,7 +116,20 @@ export const Calculation: React.FC<CalculationProps> = ({
     setIsPrint,
     isPrint,
     requestData,
+    updateMutation,
   } = useMinisterHousingAllowance();
+
+  const update = (value: boolean) =>
+    updateMutation({
+      variables: {
+        input: {
+          requestId: requestData?.id ?? '',
+          requestAttributes: {
+            iUnderstandMhaPolicy: value,
+          },
+        },
+      },
+    });
 
   const request = requestData ? requestData.requestAttributes : null;
 
@@ -136,7 +149,7 @@ export const Calculation: React.FC<CalculationProps> = ({
         unexpectedExpenses: request?.unexpectedExpenses,
         phoneNumber: request?.phoneNumber ?? null,
         emailAddress: request?.emailAddress ?? null,
-        isChecked: request?.iUnderstandMhaPolicy ?? false,
+        iUnderstandMhaPolicy: request?.iUnderstandMhaPolicy ?? false,
       }
     : {
         rentalValue: null,
@@ -149,7 +162,7 @@ export const Calculation: React.FC<CalculationProps> = ({
         unexpectedExpenses: null,
         phoneNumber: request?.phoneNumber ?? null,
         emailAddress: request?.emailAddress ?? null,
-        isChecked: false,
+        iUnderstandMhaPolicy: false,
       };
 
   const boardDateFormatted = boardApprovalDate
@@ -195,7 +208,8 @@ export const Calculation: React.FC<CalculationProps> = ({
         submitForm,
         validateForm,
       }) => {
-        const showAlert = !!submitCount && (!isValid || !values.isChecked);
+        const showAlert =
+          !!submitCount && (!isValid || !values.iUnderstandMhaPolicy);
 
         useEffect(() => {
           const hasValues = Object.values(values).some(
@@ -203,6 +217,11 @@ export const Calculation: React.FC<CalculationProps> = ({
           );
           setHasCalcValues(hasValues);
         }, [values, setHasCalcValues]);
+
+        const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+          setFieldValue('iUnderstandMhaPolicy', e.target.checked);
+          update(e.target.checked);
+        };
 
         return (
           <form noValidate>
@@ -280,7 +299,9 @@ export const Calculation: React.FC<CalculationProps> = ({
                   <RequestSummaryCard rentOrOwn={rentOrOwn} />
                 </Box>
                 <FormControl
-                  error={Boolean(touched.isChecked && errors.isChecked)}
+                  error={Boolean(
+                    touched.iUnderstandMhaPolicy && errors.iUnderstandMhaPolicy,
+                  )}
                 >
                   <FormControlLabel
                     sx={{
@@ -289,12 +310,10 @@ export const Calculation: React.FC<CalculationProps> = ({
                     }}
                     control={
                       <Checkbox
-                        checked={Boolean(values.isChecked)}
-                        onChange={(e) =>
-                          setFieldValue('isChecked', e.target.checked)
-                        }
+                        checked={Boolean(values.iUnderstandMhaPolicy)}
+                        onChange={handleOnChange}
                         onBlur={handleBlur}
-                        name="isChecked"
+                        name="iUnderstandMhaPolicy"
                       />
                     }
                     label={t(
@@ -302,8 +321,9 @@ export const Calculation: React.FC<CalculationProps> = ({
                     )}
                   />
                   <FormHelperText sx={{ ml: 4 }}>
-                    {touched.isChecked && errors.isChecked ? (
-                      <i>{errors.isChecked}</i>
+                    {touched.iUnderstandMhaPolicy &&
+                    errors.iUnderstandMhaPolicy ? (
+                      <i>{errors.iUnderstandMhaPolicy}</i>
                     ) : (
                       <i>{t('This box must be checked to continue.')}</i>
                     )}
@@ -322,7 +342,7 @@ export const Calculation: React.FC<CalculationProps> = ({
                         {t('Please enter a value for all required fields.')}
                       </li>
                     )}
-                  {!values.isChecked && (
+                  {!values.iUnderstandMhaPolicy && (
                     <li>
                       {t(
                         'Please check the box above if you understand how this was calculated.',

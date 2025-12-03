@@ -16,6 +16,7 @@ import { RentOwn } from './RentOwn';
 
 const submit = jest.fn();
 const mutationSpy = jest.fn();
+const updateMutation = jest.fn();
 
 interface TestComponentProps {
   contextValue: Partial<ContextType>;
@@ -48,6 +49,7 @@ describe('RentOwn', () => {
         contextValue={
           {
             pageType: PageEnum.New,
+            updateMutation,
             requestData: { id: 'request-id' },
           } as unknown as ContextType
         }
@@ -63,9 +65,8 @@ describe('RentOwn', () => {
     await userEvent.click(getByText('Rent'));
 
     await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation(
-        'UpdateMinistryHousingAllowanceRequest',
-        {
+      expect(updateMutation).toHaveBeenCalledWith({
+        variables: {
           input: {
             requestAttributes: {
               rentOrOwn: 'RENT',
@@ -73,7 +74,7 @@ describe('RentOwn', () => {
             requestId: 'request-id',
           },
         },
-      ),
+      }),
     );
 
     expect(getByRole('radio', { name: 'Rent' })).toBeChecked();
