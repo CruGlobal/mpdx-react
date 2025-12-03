@@ -46,10 +46,20 @@ export const SalaryCalculatorTestWrapper: React.FC<
                     peopleGroupSupportType ??
                     PeopleGroupSupportTypeEnum.SupportedRmo,
                 },
+                currentSalary: {
+                  grossSalaryAmount: 55000,
+                  lastUpdated: '2024-03-01',
+                },
                 fourOThreeB: {
                   currentRothContributionPercentage: 12,
                   currentTaxDeferredContributionPercentage: 5,
                   maximumContributionLimit: 45,
+                },
+              },
+              {
+                staffInfo: {
+                  firstName: 'Jane',
+                  lastName: 'Doe',
                 },
               },
             ],
@@ -57,6 +67,18 @@ export const SalaryCalculatorTestWrapper: React.FC<
           SalaryCalculation: {
             salaryRequest: {
               status: SalaryRequestStatusEnum.InProgress,
+              salaryCap: 80000,
+              mhaAmount: 18000,
+            },
+          },
+          StaffAccount: {
+            staffAccount: {
+              id: 'staff-123',
+            },
+          },
+          AccountBalance: {
+            reportsStaffExpenses: {
+              funds: [{ total: 10000 }],
             },
           },
         }}

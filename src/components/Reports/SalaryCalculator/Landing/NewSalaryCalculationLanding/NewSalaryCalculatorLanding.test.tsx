@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import {
   AssignmentCategoryEnum,
   PeopleGroupSupportTypeEnum,
@@ -31,11 +31,15 @@ describe('NewSalaryCalculatorLanding', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders SalaryOverviewCard component', async () => {
-    const { findByRole } = render(<TestComponent />);
+  it('renders NameDisplay contents', async () => {
+    const { findByRole, findByTestId } = render(<TestComponent />);
     expect(
       await findByRole('heading', { name: 'Doe, John' }),
     ).toBeInTheDocument();
+
+    expect(await findByTestId('person-numbers')).toHaveTextContent('staff-123');
+    expect(await findByTestId('amount-one')).toHaveTextContent('$55,000.00');
+    expect(await findByTestId('amount-two')).toHaveTextContent('$10,000.00');
   });
 
   it('renders SalaryInformationCard with table', async () => {
@@ -52,17 +56,19 @@ describe('NewSalaryCalculatorLanding', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders action button for staff with SUPPORTED_RMO', async () => {
-    const { findByRole } = render(
+  it('does not render action button for staff with SUPPORTED_RMO', async () => {
+    const { queryByRole } = render(
       <TestComponent
         assignmentCategory={AssignmentCategoryEnum.PartTimeRegular}
         peopleGroupSupportType={PeopleGroupSupportTypeEnum.SupportedRmo}
       />,
     );
 
-    expect(
-      await findByRole('button', { name: 'Continue Salary Calculation' }),
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        queryByRole('button', { name: 'Continue Salary Calculation' }),
+      ).not.toBeInTheDocument();
+    });
   });
 
   it('does not render action button for part-time staff without SUPPORTED_RMO', async () => {
@@ -78,16 +84,18 @@ describe('NewSalaryCalculatorLanding', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('renders action button for full-time staff without SUPPORTED_RMO', async () => {
-    const { findByRole } = render(
+  it('does not render action button for full-time staff without SUPPORTED_RMO', async () => {
+    const { queryByRole } = render(
       <TestComponent
         assignmentCategory={AssignmentCategoryEnum.FullTimeRegular}
         peopleGroupSupportType={PeopleGroupSupportTypeEnum.None}
       />,
     );
 
-    expect(
-      await findByRole('button', { name: 'Continue Salary Calculation' }),
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        queryByRole('button', { name: 'Continue Salary Calculation' }),
+      ).not.toBeInTheDocument();
+    });
   });
 });

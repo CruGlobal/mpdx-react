@@ -36,7 +36,11 @@ export const NameDisplay: React.FC<NameDisplayProps> = ({
   const title = (
     <Box sx={{ display: 'flex', flexDirection: 'column' }}>
       <Typography variant="h6">{names}</Typography>
-      <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
+      <Typography
+        variant="subtitle1"
+        sx={{ color: 'text.secondary' }}
+        data-testid="person-numbers"
+      >
         {personNumbers}
       </Typography>
     </Box>
@@ -66,6 +70,7 @@ export const NameDisplay: React.FC<NameDisplayProps> = ({
                   variant="h3"
                   fontWeight="bold"
                   sx={{ color: 'primary.main' }}
+                  data-testid="amount-one"
                 >
                   {currencyFormat(amountOne || 0, currency, locale, {
                     showTrailingZeros: true,
@@ -77,6 +82,7 @@ export const NameDisplay: React.FC<NameDisplayProps> = ({
                   variant="h3"
                   fontWeight="bold"
                   sx={{ color: 'primary.main' }}
+                  data-testid="amount-two"
                 >
                   {currencyFormat(amountTwo || 0, currency, locale, {
                     showTrailingZeros: true,

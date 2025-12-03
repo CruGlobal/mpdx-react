@@ -15,23 +15,69 @@ describe('SalaryInformationCard', () => {
     expect(table).toBeInTheDocument();
   });
 
-  it('renders table headers', () => {
-    const { getAllByRole } = render(<TestComponent />);
-    const columnHeaders = getAllByRole('columnheader');
-    expect(columnHeaders.length).toBeGreaterThan(0);
+  it('renders card title', () => {
+    const { getByRole } = render(<TestComponent />);
+    expect(
+      getByRole('heading', { name: 'Current Salary Information' }),
+    ).toBeInTheDocument();
   });
 
-  it('renders table rows for salary categories', () => {
-    const { getAllByRole } = render(<TestComponent />);
-    const rows = getAllByRole('row');
-
-    expect(rows).toHaveLength(7);
+  it('renders last updated date', async () => {
+    const { findByTestId } = render(<TestComponent />);
+    expect(await findByTestId('last-updated')).toBeInTheDocument();
   });
 
-  it('renders the link for MHA category', () => {
-    const { getAllByRole } = render(<TestComponent />);
-    const links = getAllByRole('link');
-    expect(links).toHaveLength(1);
+  it('renders category column headers', async () => {
+    const { getByRole, findByRole } = render(<TestComponent />);
+    expect(getByRole('columnheader', { name: 'Category' })).toBeInTheDocument();
+    expect(
+      await findByRole('columnheader', { name: 'John' }),
+    ).toBeInTheDocument();
+    expect(
+      await findByRole('columnheader', { name: 'Jane' }),
+    ).toBeInTheDocument();
+  });
+
+  it('renders salary category names', () => {
+    const { getByRole } = render(<TestComponent />);
+
+    expect(
+      getByRole('cell', { name: 'Maximum Allowable Salary' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('cell', { name: 'Tax-deferred 403(b) Contribution' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('cell', { name: 'Roth 403(b) Contribution' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('cell', { name: 'Security (SECA/FICA) Status' }),
+    ).toBeInTheDocument();
+    expect(getByRole('cell', { name: 'Gross Salary' })).toBeInTheDocument();
+    expect(getByRole('cell', { name: 'Current MHA' })).toBeInTheDocument();
+  });
+
+  it('renders table rows for salary categories', async () => {
+    const { findByRole } = render(<TestComponent />);
+
+    expect(
+      await findByRole('cell', { name: '$80,000.00' }),
+    ).toBeInTheDocument();
+    expect(
+      await findByRole('cell', { name: '$55,000.00' }),
+    ).toBeInTheDocument();
+    expect(await findByRole('cell', { name: '5%' })).toBeInTheDocument();
+    expect(await findByRole('cell', { name: '12%' })).toBeInTheDocument();
+  });
+
+  it('renders the View link for MHA category', () => {
+    const { getByRole } = render(<TestComponent />);
+    const link = getByRole('link', { name: 'View' });
+    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute(
+      'href',
+      expect.stringContaining('/reports/housingAllowance'),
+    );
   });
 
   it('renders card header with avatar', () => {

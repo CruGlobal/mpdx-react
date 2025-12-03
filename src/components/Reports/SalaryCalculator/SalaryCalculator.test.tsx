@@ -12,7 +12,7 @@ describe('SalaryCalculator', () => {
   it('renders correctly', async () => {
     const { findByRole } = render(<TestComponent />);
     expect(
-      await findByRole('heading', { name: 'Salary Calculation Form' }),
+      await findByRole('heading', { name: 'Form Steps' }),
     ).toBeInTheDocument();
   });
 });

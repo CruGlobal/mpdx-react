@@ -57,7 +57,11 @@ export const SalaryInformationCard: React.FC = () => {
             <Typography variant="h6">
               {t('Current Salary Information')}
             </Typography>
-            <Typography variant="body2" color="textSecondary">
+            <Typography
+              variant="body2"
+              color="textSecondary"
+              data-testid="last-updated"
+            >
               {t('Last updated:')} {lastUpdated}
             </Typography>
           </Box>

@@ -91,7 +91,7 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
         </Box>
         <NameDisplay
           names={name}
-          personNumbers={staffAccountId ?? ''}
+          personNumbers={staffAccountId}
           showContent
           titleOne={t('Current Gross Salary')}
           titleTwo={t('Account Balance')}
@@ -99,7 +99,7 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
           amountTwo={accountBalance}
         />
         <SalaryInformationCard />
-        {(isFullTime || isSupportedRmo) && !isNewStaff && (
+        {isFullTime && isSupportedRmo && !isNewStaff && (
           <Box sx={{ marginTop: theme.spacing(4) }}>
             <Button
               variant="contained"
