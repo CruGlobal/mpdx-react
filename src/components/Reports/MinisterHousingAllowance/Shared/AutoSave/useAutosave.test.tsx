@@ -3,6 +3,12 @@ import { TextField } from '@mui/material';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as yup from 'yup';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
+import {
+  ContextType,
+  MinisterHousingAllowanceContext,
+} from '../Context/MinisterHousingAllowanceContext';
 import { useAutoSave } from './useAutosave';
 
 const setFieldValue = jest.fn();
@@ -123,5 +129,34 @@ describe('useAutoSave', () => {
 
     rerender(<TestComponent submitCount={1} />);
     expect(await findByText('Field is required')).toBeInTheDocument();
+  });
+
+  it('does not update when no attributes changed', async () => {
+    const mutationSpy = jest.fn().mockResolvedValue(undefined);
+
+    const { getByRole } = render(
+      <GqlMockedProvider onCall={mutationSpy}>
+        <MinisterHousingAllowanceContext.Provider
+          value={
+            {
+              pageType: PageEnum.New,
+              requestData: {
+                id: 'request-id',
+                requestAttributes: { rentalValue: 50 },
+              },
+            } as unknown as ContextType
+          }
+        >
+          <TestComponent />
+        </MinisterHousingAllowanceContext.Provider>
+      </GqlMockedProvider>,
+    );
+
+    const input = getByRole('textbox', { name: /rental value/i });
+    await userEvent.clear(input);
+    await userEvent.type(input, '50');
+    await userEvent.tab();
+
+    expect(mutationSpy).not.toHaveBeenCalled();
   });
 });

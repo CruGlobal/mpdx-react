@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { TextFieldProps } from '@mui/material';
 import { prepareDataForValidation } from 'formik';
 import * as yup from 'yup';
@@ -46,6 +46,13 @@ export const useAutoSave = <Value extends string | number | boolean>({
   const [internalValue, setInternalValue] = useSyncedState(
     value?.toString() ?? '',
   );
+
+  // Keep track of last saved value
+  const [lastSaved, setLastSaved] = useState<Value | null>(value ?? null);
+
+  useEffect(() => {
+    setLastSaved(value ?? null);
+  }, [value]);
 
   const parseValue = useCallback(
     (valueToValidate: string) => {
@@ -106,12 +113,16 @@ export const useAutoSave = <Value extends string | number | boolean>({
       }
 
       if (internalValue === '') {
-        saveValue(null);
+        if (lastSaved !== null) {
+          saveValue(null);
+          setLastSaved(null);
+        }
         return;
       }
 
-      if (!errorMessage && parsedValue !== value) {
+      if (!errorMessage && parsedValue !== lastSaved) {
         saveValue(parsedValue);
+        setLastSaved(parsedValue);
       }
     },
     onFocus: () => setFocused(fieldName),

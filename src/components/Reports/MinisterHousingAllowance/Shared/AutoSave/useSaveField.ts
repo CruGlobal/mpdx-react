@@ -17,13 +17,6 @@ export const useSaveField = () => {
         return;
       }
 
-      const unchanged = Object.entries(attributes).every(
-        ([key]) => values[key] === attributes[key],
-      );
-      if (unchanged) {
-        return;
-      }
-
       return updateMinistryHousingAllowanceRequest({
         variables: {
           input: {

@@ -64,19 +64,4 @@ describe('useSaveField', () => {
       ),
     );
   });
-
-  it('should not update ministry housing allowance request when no attributes changed', async () => {
-    const { result } = renderHook(() => useSaveField(), {
-      wrapper: TestComponent,
-    });
-
-    result.current({ rentalValue: 50 });
-
-    await Promise.resolve();
-    await waitFor(() => {
-      expect(mutationSpy).not.toHaveGraphqlOperation(
-        'UpdateMinistryHousingAllowanceRequest',
-      );
-    });
-  });
 });
