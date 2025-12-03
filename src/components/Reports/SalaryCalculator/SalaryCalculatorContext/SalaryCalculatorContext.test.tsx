@@ -21,7 +21,7 @@ describe('SalaryCalculator', () => {
 
     userEvent.click(getByRole('button', { name: 'Continue' }));
     expect(
-      getByRole('heading', { name: 'Personal Information' }),
+      getByRole('heading', { name: 'Your Information' }),
     ).toBeInTheDocument();
   });
 

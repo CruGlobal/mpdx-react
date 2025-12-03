@@ -18,6 +18,9 @@ export const StepCard = styled(Card)(({ theme }) => ({
   },
   '.MuiCardContent-root': {
     padding: theme.spacing(2),
+    '.MuiTypography-root': {
+      marginBottom: theme.spacing(2),
+    },
   },
   '.MuiTableCell-head.MuiTableCell-root': {
     fontWeight: 'bold',

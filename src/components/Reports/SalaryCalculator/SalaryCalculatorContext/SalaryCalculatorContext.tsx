@@ -67,7 +67,7 @@ export const SalaryCalculatorProvider: React.FC<
   const [currentStep, setCurrentStep] = useState(
     SalaryCalculatorSectionEnum.EffectiveDate,
   );
-  const [percentComplete, setPercentComplete] = useState(11);
+  const [percentComplete, setPercentComplete] = useState(20);
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
