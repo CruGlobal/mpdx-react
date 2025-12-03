@@ -12,7 +12,7 @@ export interface AutosaveCustomTextFieldProps
     TextFieldProps<'outlined' | 'standard'>,
     keyof ReturnType<typeof useAutoSave> | 'variant'
   > {
-  variant: 'standard' | 'outlined';
+  variant?: 'standard' | 'outlined';
   fieldName: keyof CalculationFormValues & string;
   schema: yup.Schema;
 }
