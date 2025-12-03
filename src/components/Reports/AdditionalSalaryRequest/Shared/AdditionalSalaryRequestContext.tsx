@@ -43,17 +43,17 @@ interface Props {
   initialValues?: CompleteFormValues;
 }
 
+const objects = Object.values(AdditionalSalaryRequestSectionEnum);
+
 export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   children,
   initialValues: providedInitialValues,
 }) => {
   const { t } = useTranslation();
-  const locale = useLocale();
-  const steps = useStepList(FormEnum.AdditionalSalary);
-  const objects = useMemo(
-    () => Object.values(AdditionalSalaryRequestSectionEnum),
-    [],
+  const { steps, nextStep, previousStep, currentIndex } = useStepList(
+    FormEnum.AdditionalSalary,
   );
+  const locale = useLocale();
 
   const createCurrencyValidation = useCallback(
     (fieldName: string, max?: number) => {
@@ -129,45 +129,19 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     AdditionalSalaryRequestSectionEnum.AboutForm,
   );
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  const handleNextIndexChange = useCallback(
-    (newIndex: number) => {
-      steps[currentIndex].current = false;
-      steps[currentIndex].complete = true;
-      setCurrentIndex(newIndex);
-      steps[newIndex].current = true;
-      if (newIndex === steps.length - 1) {
-        steps[newIndex].complete = true;
-      }
-    },
-    [currentIndex, steps],
-  );
-  const handlePreviousIndexChange = useCallback(
-    (newIndex: number) => {
-      steps[currentIndex].current = false;
-      steps[newIndex].complete = false;
-      setCurrentIndex(newIndex);
-      steps[newIndex].current = true;
-    },
-    [currentIndex, steps],
-  );
-
   const handleNextStep = useCallback(() => {
-    const newIndex = currentIndex + 1;
-    const next = objects[newIndex];
-    handleNextIndexChange(newIndex);
+    const next = objects[currentIndex + 1];
+    nextStep();
 
     setCurrentStep(next);
-  }, [currentIndex, steps, objects, handleNextIndexChange]);
+  }, [currentIndex, objects, nextStep]);
 
   const handlePreviousStep = useCallback(() => {
-    const newIndex = currentIndex - 1;
-    const next = objects[newIndex];
-    handlePreviousIndexChange(newIndex);
+    const next = objects[currentIndex - 1];
+    previousStep();
 
     setCurrentStep(next);
-  }, [currentIndex, steps, objects, handlePreviousIndexChange]);
+  }, [currentIndex, objects, previousStep]);
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
   const toggleDrawer = useCallback(() => {

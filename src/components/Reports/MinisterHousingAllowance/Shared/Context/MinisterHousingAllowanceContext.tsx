@@ -64,12 +64,20 @@ interface Props {
   children?: React.ReactNode;
 }
 
+const objects = Object.values(StepsEnum);
+
 export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   type,
   children,
 }) => {
   const pageType = type;
-  const initialSteps = useStepList(FormEnum.MHA, type);
+  const {
+    steps: initialSteps,
+    nextStep,
+    previousStep,
+    currentIndex,
+    percentComplete,
+  } = useStepList(FormEnum.MHA, type);
 
   const [isComplete, setIsComplete] = useState(false);
 
@@ -84,8 +92,6 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       current: index === arr.length - 1,
     }));
   }, [initialSteps, isComplete]);
-
-  const objects = useMemo(() => Object.values(StepsEnum), []);
 
   const { data: hcmData } = useHcmDataQuery({
     variables: {
@@ -131,54 +137,20 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   const [isPrint, setIsPrint] = useState(false);
 
   const [currentStep, setCurrentStep] = useState(StepsEnum.AboutForm);
-  const [percentComplete, setPercentComplete] = useState(25);
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    setPercentComplete(
-      ((objects.indexOf(currentStep) + 1) / objects.length) * 100,
-    );
-  }, [currentStep]);
-
-  const handleNextIndexChange = useCallback(
-    (newIndex: number) => {
-      steps[currentIndex].current = false;
-      steps[currentIndex].complete = true;
-      setCurrentIndex(newIndex);
-      steps[newIndex].current = true;
-
-      if (newIndex === steps.length - 1) {
-        steps[newIndex].complete = true;
-      }
-    },
-    [currentIndex, steps],
-  );
-
-  const handlePreviousIndexChange = useCallback(
-    (newIndex: number) => {
-      steps[currentIndex].current = false;
-      steps[newIndex].complete = false;
-      setCurrentIndex(newIndex);
-      steps[newIndex].current = true;
-    },
-    [currentIndex, steps],
-  );
 
   const handleNextStep = useCallback(() => {
-    const newIndex = currentIndex + 1;
-    const next = objects[newIndex];
-    handleNextIndexChange(newIndex);
+    const next = objects[currentIndex + 1];
+    nextStep();
 
     setCurrentStep(next);
-  }, [currentIndex, steps, objects, handleNextIndexChange]);
+  }, [currentIndex, objects, nextStep]);
 
   const handlePreviousStep = useCallback(() => {
-    const newIndex = currentIndex - 1;
-    const next = objects[newIndex];
-    handlePreviousIndexChange(newIndex);
+    const next = objects[currentIndex - 1];
+    previousStep();
 
     setCurrentStep(next);
-  }, [currentIndex, steps, objects, handlePreviousIndexChange]);
+  }, [currentIndex, objects, previousStep]);
 
   const contextValue = useMemo(
     () => ({
