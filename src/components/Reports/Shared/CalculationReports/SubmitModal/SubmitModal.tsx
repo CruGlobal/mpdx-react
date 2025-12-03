@@ -7,6 +7,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  useTheme,
 } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
@@ -17,9 +18,9 @@ interface SubmitModalProps {
   formTitle: string;
   handleClose: () => void;
   handleConfirm: () => void;
-  overrideTitle?: string;
-  overrideContent?: string;
-  overrideSubContent?: string;
+  overrideTitle?: string | React.ReactNode;
+  overrideContent?: string | React.ReactNode;
+  overrideSubContent?: string | React.ReactNode;
   isCancel?: boolean;
   deadlineDate?: string;
   actionRequired?: boolean;
@@ -38,6 +39,7 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const theme = useTheme();
 
   // TODO: Not sure what text to display if date is null
   const formattedDeadlineDate = deadlineDate
@@ -99,7 +101,7 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
         </Button>
         <Button onClick={handleConfirm} color={isCancel ? 'error' : 'primary'}>
           <b>{isCancel ? t('Yes, Cancel') : t('Yes, Continue')}</b>
-          <ChevronRight sx={{ ml: 1 }} />
+          <ChevronRight sx={{ ml: theme.spacing(1) }} />
         </Button>
       </DialogActions>
     </Dialog>
