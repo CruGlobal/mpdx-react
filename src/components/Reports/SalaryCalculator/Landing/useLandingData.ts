@@ -163,6 +163,7 @@ export const useLandingData = () => {
     salaryData,
     salaryCategories,
     accountBalance,
+    // TODO: replace isNewStaff with value from API when available
     isNewStaff: false,
   };
 };
