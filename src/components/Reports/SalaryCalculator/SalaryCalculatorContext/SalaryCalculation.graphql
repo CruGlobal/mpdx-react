@@ -1,5 +1,6 @@
 query SalaryCalculation {
   salaryRequest: latestSalaryRequest(status: [IN_PROGRESS]) {
+    id
     ...SalaryRequestFields
   }
 }
