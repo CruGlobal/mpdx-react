@@ -48,7 +48,7 @@ describe('NewSalaryCalculatorLanding', () => {
     expect(await findByRole('table')).toBeInTheDocument();
   });
 
-  it('renders action button', async () => {
+  it('renders action button for full time staff with SUPPORTED_RMO', async () => {
     const { findByRole } = render(<TestComponent />);
 
     expect(
@@ -56,7 +56,7 @@ describe('NewSalaryCalculatorLanding', () => {
     ).toBeInTheDocument();
   });
 
-  it('does not render action button for staff with SUPPORTED_RMO', async () => {
+  it('does not render action button for part time staff with SUPPORTED_RMO', async () => {
     const { queryByRole } = render(
       <TestComponent
         assignmentCategory={AssignmentCategoryEnum.PartTimeRegular}
