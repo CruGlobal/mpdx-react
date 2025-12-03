@@ -1,0 +1,106 @@
+import React from 'react';
+import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { CompleteFormValues } from '../../AdditionalSalaryRequest';
+import { AdditionalSalaryRequestTestWrapper } from '../../AdditionalSalaryRequestTestWrapper';
+import { defaultCompleteFormValues } from '../CompleteForm.mock';
+import { ContactInformation } from './ContactInformation';
+
+interface TestWrapperProps {
+  initialValues?: CompleteFormValues;
+  email?: string;
+}
+
+const TestWrapper: React.FC<TestWrapperProps> = ({
+  initialValues = defaultCompleteFormValues,
+  email = '',
+}) => (
+  <AdditionalSalaryRequestTestWrapper initialValues={initialValues}>
+    <ContactInformation email={email} />
+  </AdditionalSalaryRequestTestWrapper>
+);
+
+describe('ContactInformation', () => {
+  it('renders telephone number field', () => {
+    const { getByLabelText } = render(<TestWrapper />);
+
+    expect(getByLabelText('Telephone Number')).toBeInTheDocument();
+  });
+
+  it('renders email address label', () => {
+    const { getByText } = render(<TestWrapper />);
+
+    expect(getByText('Email Address')).toBeInTheDocument();
+  });
+
+  it('displays placeholder text when email is not provided', () => {
+    const { getByText } = render(<TestWrapper />);
+
+    expect(getByText('email address')).toBeInTheDocument();
+  });
+
+  it('displays email address when provided', () => {
+    const { getByText, queryByText } = render(
+      <TestWrapper email="test@example.com" />,
+    );
+
+    expect(getByText('test@example.com')).toBeInTheDocument();
+    expect(queryByText('email address')).not.toBeInTheDocument();
+  });
+
+  it('displays telephone number from initial values', () => {
+    const valuesWithPhone: CompleteFormValues = {
+      ...defaultCompleteFormValues,
+      telephoneNumber: '555-1234',
+    };
+
+    const { getByLabelText } = render(
+      <TestWrapper initialValues={valuesWithPhone} />,
+    );
+
+    expect(getByLabelText('Telephone Number')).toHaveValue('555-1234');
+  });
+
+  it('allows user to enter telephone number', async () => {
+    const { getByLabelText } = render(<TestWrapper />);
+    const phoneInput = getByLabelText('Telephone Number');
+
+    userEvent.type(phoneInput, '555-5678');
+
+    await waitFor(() => {
+      expect(phoneInput).toHaveValue('555-5678');
+    });
+  });
+
+  it('shows validation error when telephone number is empty and touched', async () => {
+    const { getByLabelText, findByText } = render(<TestWrapper />);
+    const phoneInput = getByLabelText('Telephone Number');
+
+    userEvent.click(phoneInput);
+    userEvent.tab();
+
+    expect(
+      await findByText('Telephone number is required'),
+    ).toBeInTheDocument();
+  });
+
+  it('clears validation error when telephone number is entered', async () => {
+    const { getByLabelText, queryByText, findByText } = render(<TestWrapper />);
+    const phoneInput = getByLabelText('Telephone Number');
+
+    userEvent.click(phoneInput);
+    userEvent.tab();
+
+    expect(
+      await findByText('Telephone number is required'),
+    ).toBeInTheDocument();
+
+    userEvent.type(phoneInput, '555-9999');
+
+    await waitFor(() => {
+      expect(
+        queryByText('Telephone number is required'),
+      ).not.toBeInTheDocument();
+    });
+  });
+});

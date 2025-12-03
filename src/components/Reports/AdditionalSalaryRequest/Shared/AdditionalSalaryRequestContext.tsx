@@ -90,34 +90,46 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     autoPurchase: '0',
     reimbursableExpenses: '0',
     defaultPercentage: false,
+    telephoneNumber: '',
   };
 
   const validationSchema = useMemo(
     () =>
       yup.object({
-        currentYearSalary: createCurrencyValidation("Current Year's Salary"),
-        previousYearSalary: createCurrencyValidation("Previous Year's Salary"),
-        additionalSalary: createCurrencyValidation('Additional Salary'),
-        adoption: createCurrencyValidation('Adoption', 15000), // replace with MpdGoalMiscConstants value when possible
-        contribution403b: createCurrencyValidation('403(b) Contribution'), // Can't be greater than salary (will be pulled from HCM)
-        counseling: createCurrencyValidation('Counseling'),
-        healthcareExpenses: createCurrencyValidation('Healthcare Expenses'),
-        babysitting: createCurrencyValidation('Babysitting'),
+        currentYearSalary: createCurrencyValidation(t("Current Year's Salary")),
+        previousYearSalary: createCurrencyValidation(
+          t("Previous Year's Salary"),
+        ),
+        additionalSalary: createCurrencyValidation(t('Additional Salary')),
+        adoption: createCurrencyValidation(t('Adoption'), 15000), // replace with MpdGoalMiscConstants value when possible
+        contribution403b: createCurrencyValidation(t('403(b) Contribution')), // Can't be greater than salary (will be pulled from HCM)
+        counseling: createCurrencyValidation(t('Counseling')),
+        healthcareExpenses: createCurrencyValidation(t('Healthcare Expenses')),
+        babysitting: createCurrencyValidation(t('Babysitting')),
         childrenMinistryTrip: createCurrencyValidation(
-          "Children's Ministry Trip",
+          t("Children's Ministry Trip"),
         ), // Need to pull number of children from HCM and multiply by 21000 for max
-        childrenCollege: createCurrencyValidation("Children's College"),
-        movingExpense: createCurrencyValidation('Moving Expense'),
-        seminary: createCurrencyValidation('Seminary'),
+        childrenCollege: createCurrencyValidation(t("Children's College")),
+        movingExpense: createCurrencyValidation(t('Moving Expense')),
+        seminary: createCurrencyValidation(t('Seminary')),
         housingDownPayment: createCurrencyValidation(
-          'Housing Down Payment',
+          t('Housing Down Payment'),
           50000,
         ), // replace with MpdGoalMiscConstants value when possible
-        autoPurchase: createCurrencyValidation('Auto Purchase'), // Max will eventually be a constant, no determined value yet
-        reimbursableExpenses: createCurrencyValidation('Reimbursable Expenses'),
+        autoPurchase: createCurrencyValidation(t('Auto Purchase')), // Max will eventually be a constant, no determined value yet
+        reimbursableExpenses: createCurrencyValidation(
+          t('Reimbursable Expenses'),
+        ),
         defaultPercentage: yup.boolean(),
+        telephoneNumber: yup
+          .string()
+          .required(t('Telephone number is required'))
+          .matches(
+            /^[\d\s\-\(\)\+]+$/,
+            t('Please enter a valid telephone number'),
+          ),
       }),
-    [createCurrencyValidation],
+    [createCurrencyValidation, t],
   );
 
   // Step Handlers

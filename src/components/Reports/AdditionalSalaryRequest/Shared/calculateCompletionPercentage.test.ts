@@ -1,10 +1,12 @@
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
+import { defaultCompleteFormValues } from '../CompleteForm/CompleteForm.mock';
 import { calculateCompletionPercentage } from './calculateCompletionPercentage';
 
 describe('calculateCompletionPercentage', () => {
   const createFormValues = (
     overrides: Partial<CompleteFormValues> = {},
   ): CompleteFormValues => ({
+    ...defaultCompleteFormValues,
     currentYearSalary: '',
     previousYearSalary: '',
     additionalSalary: '',
@@ -20,7 +22,6 @@ describe('calculateCompletionPercentage', () => {
     housingDownPayment: '',
     autoPurchase: '',
     reimbursableExpenses: '',
-    defaultPercentage: false,
     ...overrides,
   });
 
@@ -46,6 +47,7 @@ describe('calculateCompletionPercentage', () => {
       housingDownPayment: '10000',
       autoPurchase: '5000',
       reimbursableExpenses: '750',
+      telephoneNumber: '555-1234',
     });
     expect(calculateCompletionPercentage(values)).toBe(100);
   });
@@ -55,7 +57,7 @@ describe('calculateCompletionPercentage', () => {
       currentYearSalary: '50000',
       defaultPercentage: true,
     });
-    expect(calculateCompletionPercentage(values)).toBe(7);
+    expect(calculateCompletionPercentage(values)).toBe(6);
   });
 
   it('should treat zero values as unfilled', () => {
@@ -64,7 +66,7 @@ describe('calculateCompletionPercentage', () => {
       previousYearSalary: '0',
       additionalSalary: '50000',
     });
-    expect(calculateCompletionPercentage(values)).toBe(7);
+    expect(calculateCompletionPercentage(values)).toBe(6);
   });
 
   it('should handle decimal values correctly', () => {
