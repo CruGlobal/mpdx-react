@@ -1,14 +1,5 @@
 query SalaryCalculation {
   salaryRequest: latestSalaryRequest(status: [IN_PROGRESS]) {
-    id
-    status
-    effectiveDate
-    location
-    mhaAmount
-    spouseMhaAmount
-    salaryCap
-    spouseSalaryCap
-    salary
-    spouseSalary
+    ...SalaryRequestFields
   }
 }
