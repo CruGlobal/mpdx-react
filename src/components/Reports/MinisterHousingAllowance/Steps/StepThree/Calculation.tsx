@@ -52,8 +52,8 @@ export interface CalculationFormValues {
   repairCosts?: number | null;
   avgUtilityTwo?: number | null;
   unexpectedExpenses?: number | null;
-  phone?: string | null;
-  email?: string | null;
+  phoneNumber?: string | null;
+  emailAddress?: string | null;
   isChecked?: boolean;
 }
 
@@ -64,7 +64,7 @@ const getValidationSchema = (rentOrOwn?: MhaRentOrOwnEnum) => {
     repairCosts: yup.number().required(i18n.t('Required field.')),
     avgUtilityTwo: yup.number().required(i18n.t('Required field.')),
     unexpectedExpenses: yup.number().required(i18n.t('Required field.')),
-    phone: yup
+    phoneNumber: yup
       .string()
       .test('is-phone-number', i18n.t('Invalid phone number.'), (val) => {
         if (!val) {
@@ -74,7 +74,7 @@ const getValidationSchema = (rentOrOwn?: MhaRentOrOwnEnum) => {
         return /^1?\d{10}$/.test(cleaned);
       })
       .required(i18n.t('Phone Number is required.')),
-    email: yup
+    emailAddress: yup
       .string()
       .email(i18n.t('Invalid email address.'))
       .required(i18n.t('Email is required.')),
@@ -116,7 +116,6 @@ export const Calculation: React.FC<CalculationProps> = ({
     setIsPrint,
     isPrint,
     requestData,
-    userHcmData,
   } = useMinisterHousingAllowance();
 
   const request = requestData ? requestData.requestAttributes : null;
@@ -135,8 +134,8 @@ export const Calculation: React.FC<CalculationProps> = ({
         repairCosts: request?.repairCosts,
         avgUtilityTwo: request?.avgUtilityTwo,
         unexpectedExpenses: request?.unexpectedExpenses,
-        phone: userHcmData?.staffInfo.primaryPhoneNumber ?? null,
-        email: userHcmData?.staffInfo.emailAddress ?? null,
+        phoneNumber: request?.phoneNumber ?? null,
+        emailAddress: request?.emailAddress ?? null,
         isChecked: request?.iUnderstandMhaPolicy ?? false,
       }
     : {
@@ -148,8 +147,8 @@ export const Calculation: React.FC<CalculationProps> = ({
         repairCosts: null,
         avgUtilityTwo: null,
         unexpectedExpenses: null,
-        phone: userHcmData?.staffInfo.primaryPhoneNumber ?? null,
-        email: userHcmData?.staffInfo.emailAddress ?? null,
+        phoneNumber: request?.phoneNumber ?? null,
+        emailAddress: request?.emailAddress ?? null,
         isChecked: false,
       };
 
@@ -312,7 +311,7 @@ export const Calculation: React.FC<CalculationProps> = ({
                 </FormControl>
               </>
             )}
-            {!isViewPage && <EndingSection />}
+            {!isViewPage && <EndingSection schema={schema} />}
             {showAlert && (
               <Alert severity="error" sx={{ mt: 2, '& ul': { m: 0, pl: 3 } }}>
                 {t('Your form is missing information.')}

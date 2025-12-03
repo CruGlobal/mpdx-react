@@ -21,7 +21,6 @@ interface UseAutoSaveOptions<Value extends string | number | boolean> {
   ) => void;
   submitCount?: number;
   disabled?: boolean;
-  saveOnChange?: boolean;
 }
 
 export const useAutoSave = <Value extends string | number | boolean>({
@@ -33,10 +32,10 @@ export const useAutoSave = <Value extends string | number | boolean>({
   setFieldTouched,
   submitCount,
   disabled = false,
-  saveOnChange = false,
 }: UseAutoSaveOptions<Value>) => {
   const locale = useLocale();
   const currency = 'USD';
+  const isString = fieldName === 'phoneNumber' || fieldName === 'emailAddress';
 
   const [focused, setFocused] = useState<string | null>(null);
   const isEditing = (name: string) => {
@@ -75,33 +74,21 @@ export const useAutoSave = <Value extends string | number | boolean>({
   );
 
   return {
-    value: display(isEditing, fieldName, internalValue, currency, locale),
+    value: isString
+      ? internalValue
+      : display(isEditing, fieldName, internalValue, currency, locale),
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
       setHasInteracted(true);
-
       const newValue = event.target.value;
 
-      if (newValue === '') {
-        setInternalValue('');
-        setFieldValue(fieldName, null);
-
-        if (saveOnChange) {
-          saveValue(null);
-        }
-        return;
-      }
-
-      const parsed = parseInput(newValue);
-      const displayValue = String(parsed ?? '');
-
-      setInternalValue(displayValue);
-      setFieldValue(fieldName, parsed);
-
-      if (saveOnChange) {
-        const { parsedValue, errorMessage } = parseValue(newValue);
-        if (!errorMessage && parsedValue !== value) {
-          saveValue(parsedValue);
-        }
+      if (isString) {
+        setInternalValue(newValue);
+        setFieldValue(fieldName, newValue);
+      } else {
+        const parsed = parseInput(newValue);
+        const displayValue = String(parsed ?? '');
+        setInternalValue(displayValue);
+        setFieldValue(fieldName, parsed);
       }
     },
     onBlur: () => {
@@ -112,15 +99,15 @@ export const useAutoSave = <Value extends string | number | boolean>({
         setFocused(null);
       }
 
-      if (!saveOnChange) {
-        if (internalValue === '') {
+      if (internalValue === '') {
+        if (value !== null) {
           saveValue(null);
-          return;
         }
+        return;
+      }
 
-        if (!errorMessage && parsedValue !== value) {
-          saveValue(parsedValue);
-        }
+      if (!errorMessage && parsedValue !== value) {
+        saveValue(parsedValue);
       }
     },
     onFocus: () => setFocused(fieldName),

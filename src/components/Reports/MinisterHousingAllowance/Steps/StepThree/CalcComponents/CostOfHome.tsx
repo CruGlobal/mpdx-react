@@ -53,6 +53,11 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({
           }}
         >
           <AutosaveCustomTextField
+            fullWidth
+            size="small"
+            variant="standard"
+            placeholder={t('Enter Amount')}
+            InputProps={{ disableUnderline: true, inputMode: 'decimal' }}
             fieldName="mortgageOrRentPayment"
             schema={schema}
           />
@@ -79,6 +84,11 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({
           }}
         >
           <AutosaveCustomTextField
+            fullWidth
+            size="small"
+            variant="standard"
+            placeholder={t('Enter Amount')}
+            InputProps={{ disableUnderline: true, inputMode: 'decimal' }}
             fieldName="furnitureCostsTwo"
             schema={schema}
           />
@@ -102,7 +112,15 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({
               touched.repairCosts && errors.repairCosts ? '2px solid red' : '',
           }}
         >
-          <AutosaveCustomTextField fieldName="repairCosts" schema={schema} />
+          <AutosaveCustomTextField
+            fullWidth
+            size="small"
+            variant="standard"
+            placeholder={t('Enter Amount')}
+            InputProps={{ disableUnderline: true, inputMode: 'decimal' }}
+            fieldName="repairCosts"
+            schema={schema}
+          />
         </TableCell>
       </TableRow>
       <TableRow>
@@ -128,7 +146,15 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({
                 : '',
           }}
         >
-          <AutosaveCustomTextField fieldName="avgUtilityTwo" schema={schema} />
+          <AutosaveCustomTextField
+            fullWidth
+            size="small"
+            variant="standard"
+            placeholder={t('Enter Amount')}
+            InputProps={{ disableUnderline: true, inputMode: 'decimal' }}
+            fieldName="avgUtilityTwo"
+            schema={schema}
+          />
         </TableCell>
       </TableRow>
       <TableRow>
@@ -150,6 +176,11 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({
           }}
         >
           <AutosaveCustomTextField
+            fullWidth
+            size="small"
+            variant="standard"
+            placeholder={t('Enter Amount')}
+            InputProps={{ disableUnderline: true, inputMode: 'decimal' }}
             fieldName="unexpectedExpenses"
             schema={schema}
           />

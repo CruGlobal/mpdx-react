@@ -18,7 +18,7 @@ export const useSaveField = () => {
       }
 
       const unchanged = Object.entries(attributes).every(
-        ([key, newValue]) => newValue === values[key],
+        ([key]) => values[key] === attributes[key],
       );
       if (unchanged) {
         return;
@@ -45,7 +45,7 @@ export const useSaveField = () => {
         },
       });
     },
-    [values, updateMinistryHousingAllowanceRequest],
+    [values, updateMinistryHousingAllowanceRequest, requestData],
   );
 
   return saveField;

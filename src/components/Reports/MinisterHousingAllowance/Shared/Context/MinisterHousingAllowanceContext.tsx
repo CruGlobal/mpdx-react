@@ -17,7 +17,7 @@ import {
   HcmDataQuery,
   useHcmDataQuery,
 } from 'src/components/Reports/Shared/HcmData/HCMData.generated';
-import { MaritalStatusEnum } from 'src/graphql/types.generated';
+import { MaritalStatusEnum, MhaStatusEnum } from 'src/graphql/types.generated';
 import { useStepList } from 'src/hooks/useStepList';
 import { Steps } from '../../../Shared/CalculationReports/StepsList/StepsList';
 import {
@@ -25,6 +25,7 @@ import {
   MinistryHousingAllowanceRequestsQuery,
   useMinistryHousingAllowanceRequestQuery,
   useMinistryHousingAllowanceRequestsQuery,
+  useUpdateMinistryHousingAllowanceRequestMutation,
 } from '../../MinisterHousingAllowance.generated';
 import { StepsEnum } from '../sharedTypes';
 
@@ -89,10 +90,8 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   const { data: requestsData, error: requestsError } =
     useMinistryHousingAllowanceRequestsQuery();
 
-  const requestId = requestsData?.ministryHousingAllowanceRequests.nodes[0]?.id;
-
-  //eslint-disable-next-line no-console
-  console.log('requestId:', requestId);
+  //const requestId = requestsData?.ministryHousingAllowanceRequests.nodes[1]?.id;
+  const requestId = 'c1a68821-5fb6-4e5e-b308-9263539af9d8';
 
   const { data: requestData, error: requestError } =
     useMinistryHousingAllowanceRequestQuery({
@@ -101,6 +100,9 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       },
       skip: !requestId,
     });
+
+  const [updateMinistryHousingAllowanceRequest] =
+    useUpdateMinistryHousingAllowanceRequestMutation();
 
   const pageType = type;
   const initialSteps = useStepList(FormEnum.MHA, type);
@@ -152,6 +154,40 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
     () => spouseHcmData?.staffInfo?.preferredName || '',
     [spouseHcmData],
   );
+
+  // Set hcm email & phone to request contact info once
+  const [hasUpdatedContactInfo, setHasUpdatedContactInfo] = useState(false);
+  const canUpdate =
+    requestData?.ministryHousingAllowanceRequest?.status ===
+      MhaStatusEnum.InProgress ||
+    requestData?.ministryHousingAllowanceRequest?.status ===
+      MhaStatusEnum.ActionRequired;
+
+  useEffect(() => {
+    if (hasUpdatedContactInfo || !userHcmData || !requestId || !canUpdate) {
+      return;
+    }
+
+    updateMinistryHousingAllowanceRequest({
+      variables: {
+        input: {
+          requestId: requestId ?? '',
+          requestAttributes: {
+            phoneNumber: userHcmData.staffInfo.primaryPhoneNumber ?? '',
+            emailAddress: userHcmData.staffInfo.emailAddress ?? '',
+          },
+        },
+      },
+    }).finally(() => {
+      setHasUpdatedContactInfo(true);
+    });
+  }, [
+    hasUpdatedContactInfo,
+    userHcmData,
+    requestId,
+    canUpdate,
+    updateMinistryHousingAllowanceRequest,
+  ]);
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
   const toggleDrawer = useCallback(() => {

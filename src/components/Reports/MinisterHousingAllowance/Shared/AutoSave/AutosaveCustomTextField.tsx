@@ -1,6 +1,5 @@
 import { TextField, TextFieldProps } from '@mui/material';
 import { useFormikContext } from 'formik';
-import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { CalculationFormValues } from '../../Steps/StepThree/Calculation';
@@ -10,17 +9,17 @@ import { useSaveField } from './useSaveField';
 
 export interface AutosaveCustomTextFieldProps
   extends Omit<
-    TextFieldProps<'outlined'>,
+    TextFieldProps<'outlined' | 'standard'>,
     keyof ReturnType<typeof useAutoSave> | 'variant'
   > {
+  variant: 'standard' | 'outlined';
   fieldName: keyof CalculationFormValues & string;
   schema: yup.Schema;
 }
 
 export const AutosaveCustomTextField: React.FC<
   AutosaveCustomTextFieldProps
-> = ({ fieldName, schema, ...props }) => {
-  const { t } = useTranslation();
+> = ({ variant, fieldName, schema, ...props }) => {
   const { pageType, requestData } = useMinisterHousingAllowance();
   const request = requestData?.requestAttributes;
 
@@ -40,15 +39,5 @@ export const AutosaveCustomTextField: React.FC<
     disabled: !request || pageType === PageEnum.View,
   });
 
-  return (
-    <TextField
-      fullWidth
-      size="small"
-      variant="standard"
-      placeholder={t('Enter Amount')}
-      InputProps={{ disableUnderline: true, inputMode: 'decimal' }}
-      {...fieldProps}
-      {...props}
-    />
-  );
+  return <TextField variant={variant} {...fieldProps} {...props} />;
 };

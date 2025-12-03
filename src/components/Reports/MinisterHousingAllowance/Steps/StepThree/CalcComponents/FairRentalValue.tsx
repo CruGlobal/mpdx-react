@@ -50,7 +50,15 @@ export const FairRentalValue: React.FC<FairRentalValueProps> = ({ schema }) => {
               touched.rentalValue && errors.rentalValue ? '2px solid red' : '',
           }}
         >
-          <AutosaveCustomTextField fieldName="rentalValue" schema={schema} />
+          <AutosaveCustomTextField
+            fullWidth
+            size="small"
+            variant="standard"
+            placeholder={t('Enter Amount')}
+            InputProps={{ disableUnderline: true, inputMode: 'decimal' }}
+            fieldName="rentalValue"
+            schema={schema}
+          />
         </TableCell>
       </TableRow>
       <TableRow>
@@ -80,6 +88,11 @@ export const FairRentalValue: React.FC<FairRentalValueProps> = ({ schema }) => {
           }}
         >
           <AutosaveCustomTextField
+            fullWidth
+            size="small"
+            variant="standard"
+            placeholder={t('Enter Amount')}
+            InputProps={{ disableUnderline: true, inputMode: 'decimal' }}
             fieldName="furnitureCostsOne"
             schema={schema}
           />
@@ -103,7 +116,15 @@ export const FairRentalValue: React.FC<FairRentalValueProps> = ({ schema }) => {
                 : '',
           }}
         >
-          <AutosaveCustomTextField fieldName="avgUtilityOne" schema={schema} />
+          <AutosaveCustomTextField
+            fullWidth
+            size="small"
+            variant="standard"
+            placeholder={t('Enter Amount')}
+            InputProps={{ disableUnderline: true, inputMode: 'decimal' }}
+            fieldName="avgUtilityOne"
+            schema={schema}
+          />
         </TableCell>
       </TableRow>
       <TableRow>
