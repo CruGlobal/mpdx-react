@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import React, {
   Dispatch,
   SetStateAction,
@@ -7,6 +8,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useStepList } from 'src/hooks/useStepList';
 import { FormEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
@@ -63,6 +65,8 @@ interface SalaryCalculatorContextProps {
 export const SalaryCalculatorProvider: React.FC<
   SalaryCalculatorContextProps
 > = ({ children }) => {
+  const router = useRouter();
+  const accountListId = useAccountListId();
   const steps = useStepList(FormEnum.SalaryCalc);
   const totalSteps = steps.length;
 
@@ -134,7 +138,8 @@ export const SalaryCalculatorProvider: React.FC<
     setCurrentStep(SalaryCalculatorSectionEnum.EffectiveDate);
     setCurrentIndex(0);
     setPercentComplete(11);
-  }, []);
+    router.push(`/accountLists/${accountListId}/reports/salaryCalculator/edit`);
+  }, [router, accountListId]);
 
   const contextValue: SalaryCalculatorContextType = useMemo(
     () => ({
