@@ -19,6 +19,7 @@ describe('calculateDeductions', () => {
     autoPurchase: '0',
     reimbursableExpenses: '0',
     defaultPercentage: false,
+    telephoneNumber: '',
   };
 
   it('calculates deductions with default percentage enabled', () => {
