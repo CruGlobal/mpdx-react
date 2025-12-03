@@ -63,6 +63,10 @@ export type ContextType = {
     | null;
   requestsError?: ApolloError;
   requestId?: string;
+
+  updateMutation?: ReturnType<
+    typeof useUpdateMinistryHousingAllowanceRequestMutation
+  >;
 };
 
 export const MinisterHousingAllowanceContext =

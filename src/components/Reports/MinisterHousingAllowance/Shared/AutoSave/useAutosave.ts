@@ -81,6 +81,12 @@ export const useAutoSave = <Value extends string | number | boolean>({
       setHasInteracted(true);
       const newValue = event.target.value;
 
+      if (newValue === '') {
+        setInternalValue('');
+        setFieldValue(fieldName, null);
+        return;
+      }
+
       if (isString) {
         setInternalValue(newValue);
         setFieldValue(fieldName, newValue);
@@ -100,9 +106,7 @@ export const useAutoSave = <Value extends string | number | boolean>({
       }
 
       if (internalValue === '') {
-        if (value !== null) {
-          saveValue(null);
-        }
+        saveValue(null);
         return;
       }
 

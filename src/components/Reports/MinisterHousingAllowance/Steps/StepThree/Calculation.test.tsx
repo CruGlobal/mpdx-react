@@ -8,8 +8,6 @@ import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
-import { HcmDataQuery } from 'src/components/Reports/Shared/HcmData/HCMData.generated';
-import { singleNoMhaNoException } from 'src/components/Reports/Shared/HcmData/mockData';
 import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { UpdateMinistryHousingAllowanceRequestMutation } from '../../MinisterHousingAllowance.generated';
@@ -42,13 +40,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
       <TestRouter>
         <GqlMockedProvider<{
           UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
-          HcmData: HcmDataQuery;
         }>
-          mocks={{
-            HcmData: {
-              hcm: singleNoMhaNoException,
-            },
-          }}
           onCall={mutationSpy}
         >
           <Formik initialValues={{}} onSubmit={submit}>
@@ -178,9 +170,10 @@ describe('Calculation', () => {
             pageType: PageEnum.New,
             setHasCalcValues,
             setIsPrint,
-            userHcmData: {
-              staffInfo: {
-                primaryPhoneNumber: '1234567890',
+            requestData: {
+              id: 'request-id',
+              requestAttributes: {
+                phoneNumber: '1234567890',
                 emailAddress: 'john.doe@cru.org',
               },
             },
@@ -229,11 +222,7 @@ describe('Calculation', () => {
                 utilityCosts: null,
                 unexpectedCosts: null,
                 iUnderstandMhaPolicy: false,
-              },
-            },
-            userHcmData: {
-              staffInfo: {
-                primaryPhoneNumber: '1234567890',
+                phoneNumber: '1234567890',
                 emailAddress: 'john.doe@cru.org',
               },
             },
