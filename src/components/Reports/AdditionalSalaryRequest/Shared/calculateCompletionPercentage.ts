@@ -3,7 +3,6 @@ import { CompleteFormValues } from '../AdditionalSalaryRequest';
 export const calculateCompletionPercentage = (
   values: CompleteFormValues,
 ): number => {
-  // Get all fields except defaultPercentage (checkbox doesn't count toward completion)
   const fields = Object.values(values).filter(
     (value) => typeof value === 'string' || typeof value === 'number',
   );
@@ -11,8 +10,22 @@ export const calculateCompletionPercentage = (
   const totalFields = fields.length;
 
   const filledFields = fields.filter((value) => {
-    const numValue = Number(value || 0);
-    return numValue > 0;
+    if (typeof value === 'string') {
+      const trimmedValue = value.trim();
+
+      if (trimmedValue === '' || trimmedValue === '0') {
+        return false;
+      }
+
+      const numValue = Number(trimmedValue);
+
+      if (!isNaN(numValue)) {
+        return numValue > 0;
+      }
+
+      return trimmedValue.length > 0;
+    }
+    return value > 0;
   }).length;
 
   return totalFields > 0 ? Math.round((filledFields / totalFields) * 100) : 0;

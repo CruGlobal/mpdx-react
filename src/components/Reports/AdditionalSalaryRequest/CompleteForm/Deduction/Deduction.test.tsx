@@ -3,33 +3,15 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { AdditionalSalaryRequestTestWrapper } from '../../AdditionalSalaryRequestTestWrapper';
+import { defaultCompleteFormValues } from '../CompleteForm.mock';
 import { Deduction } from './Deduction';
-
-const defaultValues: CompleteFormValues = {
-  currentYearSalary: '0',
-  previousYearSalary: '0',
-  additionalSalary: '0',
-  adoption: '0',
-  contribution403b: '0',
-  counseling: '0',
-  healthcareExpenses: '0',
-  babysitting: '0',
-  childrenMinistryTrip: '0',
-  childrenCollege: '0',
-  movingExpense: '0',
-  seminary: '0',
-  housingDownPayment: '0',
-  autoPurchase: '0',
-  reimbursableExpenses: '0',
-  defaultPercentage: false,
-};
 
 interface TestWrapperProps {
   initialValues?: CompleteFormValues;
 }
 
 const TestWrapper: React.FC<TestWrapperProps> = ({
-  initialValues = defaultValues,
+  initialValues = defaultCompleteFormValues,
 }) => (
   <AdditionalSalaryRequestTestWrapper initialValues={initialValues}>
     <Deduction />
@@ -88,7 +70,7 @@ describe('Deduction', () => {
 
   it('calculates 12% deduction when checkbox is checked', async () => {
     const valuesWithSalary: CompleteFormValues = {
-      ...defaultValues,
+      ...defaultCompleteFormValues,
       additionalSalary: '10000',
     };
 
@@ -116,7 +98,7 @@ describe('Deduction', () => {
 
   it('does not calculate deduction when checkbox is unchecked', () => {
     const valuesWithSalary: CompleteFormValues = {
-      ...defaultValues,
+      ...defaultCompleteFormValues,
       additionalSalary: '10000',
     };
 
@@ -131,7 +113,7 @@ describe('Deduction', () => {
 
   it('displays contribution403b amount from form values', () => {
     const valuesWithContribution: CompleteFormValues = {
-      ...defaultValues,
+      ...defaultCompleteFormValues,
       contribution403b: '5000',
     };
 
@@ -145,7 +127,7 @@ describe('Deduction', () => {
 
   it('calculates total deduction as sum of calculated and contribution403b', async () => {
     const valuesWithBoth: CompleteFormValues = {
-      ...defaultValues,
+      ...defaultCompleteFormValues,
       additionalSalary: '10000',
       contribution403b: '3000',
       defaultPercentage: true,
@@ -172,7 +154,7 @@ describe('Deduction', () => {
 
   it('calculates 12% based on total of all salary fields', async () => {
     const valuesWithMultiple: CompleteFormValues = {
-      ...defaultValues,
+      ...defaultCompleteFormValues,
       additionalSalary: '5000',
       adoption: '2000',
       counseling: '3000',
@@ -193,7 +175,7 @@ describe('Deduction', () => {
 
   it('does not include defaultPercentage boolean in calculation', async () => {
     const valuesWithBoolean: CompleteFormValues = {
-      ...defaultValues,
+      ...defaultCompleteFormValues,
       additionalSalary: '10000',
       defaultPercentage: true,
     };
@@ -212,7 +194,7 @@ describe('Deduction', () => {
 
   it('handles empty string values in calculation', async () => {
     const valuesWithEmpty: CompleteFormValues = {
-      ...defaultValues,
+      ...defaultCompleteFormValues,
       additionalSalary: '5000',
       adoption: '',
       counseling: '',
@@ -237,7 +219,7 @@ describe('Deduction', () => {
     expect(getByLabelText('Total requested amount')).toHaveTextContent('$0');
 
     const updatedValues: CompleteFormValues = {
-      ...defaultValues,
+      ...defaultCompleteFormValues,
       contribution403b: '2500',
     };
 

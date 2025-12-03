@@ -7,6 +7,7 @@ import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestCon
 import { getHeader } from '../Shared/Helper/getHeader';
 import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSalaryRequestSection';
 import { AdditionalSalaryRequest } from './AdditionalSalaryRequest/AdditionalSalaryRequest';
+import { ContactInformation } from './ContactInformation/ContactInformation';
 import { Deduction } from './Deduction/Deduction';
 import { NetAdditionalSalary } from './NetAdditionalSalary/NetAdditionalSalary';
 
@@ -66,6 +67,7 @@ export const CompleteForm: React.FC = () => {
             this form.
           </Typography>
         </Trans>
+        <ContactInformation />
       </Box>
     </AdditionalSalaryRequestSection>
   );

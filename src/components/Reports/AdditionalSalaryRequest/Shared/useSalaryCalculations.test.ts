@@ -35,6 +35,7 @@ describe('useSalaryCalculations', () => {
     autoPurchase: '0',
     reimbursableExpenses: '0',
     defaultPercentage: false,
+    telephoneNumber: '',
   };
 
   it('calculates all salary values correctly with default percentage enabled', () => {
@@ -130,6 +131,7 @@ describe('useSalaryCalculations', () => {
       autoPurchase: '1000',
       reimbursableExpenses: '1000',
       defaultPercentage: false,
+      telephoneNumber: '',
     };
 
     const { result } = renderHook(() => useSalaryCalculations(), {
