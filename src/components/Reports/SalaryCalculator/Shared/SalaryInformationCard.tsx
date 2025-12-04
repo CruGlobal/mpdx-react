@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import NextLink from 'next/link';
 import React from 'react';
 import { WorkspacePremiumSharp } from '@mui/icons-material';
 import {
@@ -6,6 +6,7 @@ import {
   Box,
   CardContent,
   CardHeader,
+  Link,
   Table,
   TableBody,
   TableCell,
@@ -24,12 +25,6 @@ const FlexBox = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   gap: theme.spacing(1),
-}));
-
-const LinkTypography = styled(Typography)(({ theme }) => ({
-  color: theme.palette.primary.main,
-  textDecoration: 'underline',
-  cursor: 'pointer',
 }));
 
 export const SalaryInformationCard: React.FC = () => {
@@ -93,10 +88,10 @@ export const SalaryInformationCard: React.FC = () => {
                     {row.user}
                     {row.link && (
                       <Link
+                        component={NextLink}
                         href={`/accountLists/${accountListId}${row.link}`}
-                        passHref
                       >
-                        <LinkTypography>{t('View')}</LinkTypography>
+                        {t('View')}
                       </Link>
                     )}
                   </FlexBox>
