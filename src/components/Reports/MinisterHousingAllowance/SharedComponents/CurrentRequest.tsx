@@ -9,12 +9,14 @@ import {
 } from '@mui/lab';
 import { Box, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { MhaStatusEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { StatusCard } from '../../Shared/CalculationReports/StatusCard/StatusCard';
+import { useDeleteMinistryHousingAllowanceRequestMutation } from '../MinisterHousingAllowance.generated';
 import { getRequestUrl } from '../Shared/Helper/getRequestUrl';
 import { MHARequest } from './types';
 
@@ -27,6 +29,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
   const locale = useLocale();
   const accountListId = useAccountListId();
   const currency = 'USD';
+  const { enqueueSnackbar } = useSnackbar();
 
   const requestId = request.id;
 
@@ -40,6 +43,25 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
     approvedOverallAmount,
   } = requestAttributes || {};
 
+  const [deleteRequestMutation] =
+    useDeleteMinistryHousingAllowanceRequestMutation();
+
+  const handleCancelRequest = async () => {
+    try {
+      await deleteRequestMutation({
+        variables: {
+          input: {
+            requestId: requestId ?? '',
+          },
+        },
+      });
+    } catch (error) {
+      enqueueSnackbar(t('Failed to cancel your MHA request.'), {
+        variant: 'error',
+      });
+    }
+  };
+
   return (
     <StatusCard
       formType={t('MHA Request')}
@@ -51,7 +73,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
       linkTwoText={t('Edit Request')}
       linkTwo={getRequestUrl(accountListId, requestId, 'edit')}
       isRequest={true}
-      handleConfirmCancel={() => {}}
+      handleConfirmCancel={handleCancelRequest}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <Typography variant="h3" sx={{ color: 'primary.main' }}>

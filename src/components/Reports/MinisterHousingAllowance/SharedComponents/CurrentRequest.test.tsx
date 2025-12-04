@@ -1,24 +1,43 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { MhaStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { MinisterHousingAllowanceProvider } from '../Shared/Context/MinisterHousingAllowanceContext';
+import { DeleteMinistryHousingAllowanceRequestMutation } from '../MinisterHousingAllowance.generated';
+import {
+  ContextType,
+  MinisterHousingAllowanceContext,
+} from '../Shared/Context/MinisterHousingAllowanceContext';
 import { mockMHARequest } from '../mockData';
 import { CurrentRequest, getDotColor, getDotVariant } from './CurrentRequest';
+
+const mutationSpy = jest.fn();
 
 const TestComponent: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
-      <GqlMockedProvider>
-        <MinisterHousingAllowanceProvider>
-          <TestRouter>
-            <CurrentRequest request={mockMHARequest} />
-          </TestRouter>
-        </MinisterHousingAllowanceProvider>
-      </GqlMockedProvider>
+      <SnackbarProvider>
+        <GqlMockedProvider<{
+          DeleteMinistryHousingAllowanceRequest: DeleteMinistryHousingAllowanceRequestMutation;
+        }>
+          onCall={mutationSpy}
+        >
+          <MinisterHousingAllowanceContext.Provider
+            value={
+              {
+                requestId: 'request-id',
+              } as unknown as ContextType
+            }
+          >
+            <TestRouter>
+              <CurrentRequest request={mockMHARequest} />
+            </TestRouter>
+          </MinisterHousingAllowanceContext.Provider>
+        </GqlMockedProvider>
+      </SnackbarProvider>
     </ThemeProvider>
   );
 };
@@ -41,6 +60,31 @@ describe('CurrentRequest Component', () => {
     expect(getByText(/Oct 30, 2019/i)).toBeInTheDocument();
     expect(getByText(/MHA Available on/i)).toBeInTheDocument();
     expect(getByText(/Nov 20, 2019/i)).toBeInTheDocument();
+  });
+
+  it('should call delete mutation on cancel request', async () => {
+    const { getByText, findByText } = render(<TestComponent />);
+
+    const cancelButton = getByText('Cancel Request');
+    cancelButton.click();
+
+    const confirmButton = await findByText('Yes, Cancel');
+    confirmButton.click();
+
+    await waitFor(() => {
+      expect(mutationSpy).toHaveBeenCalledWith(
+        expect.objectContaining({
+          operation: expect.objectContaining({
+            operationName: 'DeleteMinistryHousingAllowanceRequest',
+            variables: {
+              input: {
+                requestId: 'request-id',
+              },
+            },
+          }),
+        }),
+      );
+    });
   });
 });
 
