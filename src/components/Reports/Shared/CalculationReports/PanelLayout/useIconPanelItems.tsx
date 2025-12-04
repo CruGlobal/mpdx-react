@@ -11,6 +11,7 @@ export const useIconPanelItems = (
 
   const iconPanelItems: IconPanelItem[] = [
     {
+      key: 'toggle-menu',
       icon: isDrawerOpen ? <MenuOpenSharp /> : <MenuSharp />,
       label: t('Toggle Menu'),
       onClick: toggleDrawer,
