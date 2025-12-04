@@ -3,6 +3,7 @@ import { Typography } from '@mui/material';
 import { Stack } from '@mui/system';
 import { Trans, useTranslation } from 'react-i18next';
 import { FourOhThreeBSection } from '../403bSection/403bSection';
+import { MhaRequestSection } from '../MhaRequestSection/MhaRequestSection';
 import { RequestedSalarySection } from '../RequestedSalarySection/RequestedSalarySection';
 
 export const YourInformationStep: React.FC = () => {
@@ -18,6 +19,7 @@ export const YourInformationStep: React.FC = () => {
         </Trans>
       </Typography>
       <FourOhThreeBSection />
+      <MhaRequestSection />
       <RequestedSalarySection />
     </Stack>
   );
