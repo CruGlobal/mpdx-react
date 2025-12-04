@@ -18,7 +18,7 @@ import theme from 'src/theme';
 import { PanelTypeEnum } from '../Shared/sharedTypes';
 
 export interface IconPanelItem {
-  key?: string;
+  key: string;
   icon: React.ReactNode;
   label: string;
   isActive?: boolean;
