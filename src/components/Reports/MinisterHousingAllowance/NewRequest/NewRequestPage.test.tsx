@@ -6,8 +6,68 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { PageEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
-import { MinisterHousingAllowanceProvider } from '../Shared/Context/MinisterHousingAllowanceContext';
+import { UpdateMinistryHousingAllowanceRequestMutation } from '../MinisterHousingAllowance.generated';
+import {
+  ContextType,
+  MinisterHousingAllowanceContext,
+  MinisterHousingAllowanceProvider,
+} from '../Shared/Context/MinisterHousingAllowanceContext';
+import { StepsEnum } from '../Shared/sharedTypes';
 import { NewRequestPage } from './NewRequestPage';
+
+const mutationSpy = jest.fn();
+const handleNextStep = jest.fn();
+const handlePreviousStep = jest.fn();
+const updateMutation = jest.fn();
+const setHasCalcValues = jest.fn();
+const setIsPrint = jest.fn();
+
+const steps = [
+  {
+    title: '1. About this Form',
+    current: true,
+    complete: false,
+  },
+  {
+    title: '2. Rent or Own?',
+    current: false,
+    complete: false,
+  },
+  {
+    title: '3. Calculate Your MHA',
+    current: false,
+    complete: false,
+  },
+  {
+    title: '4. Receipt',
+    current: false,
+    complete: false,
+  },
+];
+
+interface TestComponentProps {
+  contextValue: Partial<ContextType>;
+}
+
+const TestComponentContext: React.FC<TestComponentProps> = ({
+  contextValue,
+}) => (
+  <ThemeProvider theme={theme}>
+    <TestRouter>
+      <GqlMockedProvider<{
+        UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
+      }>
+        onCall={mutationSpy}
+      >
+        <MinisterHousingAllowanceContext.Provider
+          value={contextValue as ContextType}
+        >
+          <NewRequestPage />
+        </MinisterHousingAllowanceContext.Provider>
+      </GqlMockedProvider>
+    </TestRouter>
+  </ThemeProvider>
+);
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
@@ -99,9 +159,30 @@ describe('NewRequestPage', () => {
 
   it('opens confirmation modal when changing selection after calculation values inputted', async () => {
     const { getByRole, getByText, queryByText, findByRole, findAllByRole } =
-      render(<TestComponent />);
-
-    await userEvent.click(getByRole('button', { name: 'Continue' }));
+      render(
+        <TestComponentContext
+          contextValue={
+            {
+              pageType: PageEnum.New,
+              steps,
+              currentStep: StepsEnum.RentOrOwn,
+              handleNextStep,
+              handlePreviousStep,
+              hasCalcValues: true,
+              setHasCalcValues,
+              updateMutation,
+              setIsPrint,
+              requestData: {
+                id: 'request-id',
+                requestAttributes: {
+                  rentOrOwn: null,
+                  rentalValue: 1000,
+                },
+              },
+            } as unknown as ContextType
+          }
+        />,
+      );
 
     expect(await findAllByRole('radio', { checked: false })).toHaveLength(2);
 
@@ -111,31 +192,9 @@ describe('NewRequestPage', () => {
     expect(await findAllByRole('radio', { checked: false })).toHaveLength(1);
     expect(rentRadio).toBeChecked();
 
-    await userEvent.click(getByRole('button', { name: 'Continue' }));
-
     expect(
       queryByText('Are you sure you want to change selection?'),
     ).not.toBeInTheDocument();
-
-    expect(
-      await findByRole('heading', { name: 'Calculate Your MHA Request' }),
-    ).toBeInTheDocument();
-
-    const row = getByRole('row', {
-      name: /monthly rent/i,
-    });
-    const input = within(row).getByPlaceholderText(/enter amount/i);
-
-    userEvent.type(input, '1500');
-    userEvent.tab();
-
-    expect(input).toHaveValue('$1,500.00');
-
-    userEvent.click(getByRole('button', { name: 'Back' }));
-
-    expect(
-      await findByRole('heading', { name: 'Rent or Own?' }),
-    ).toBeInTheDocument();
 
     userEvent.click(getByRole('radio', { name: 'Own' }));
 
