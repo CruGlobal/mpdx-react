@@ -17,6 +17,7 @@ import { RentOwn } from './RentOwn';
 const submit = jest.fn();
 const mutationSpy = jest.fn();
 const updateMutation = jest.fn();
+const setHasCalcValues = jest.fn();
 
 interface TestComponentProps {
   contextValue: Partial<ContextType>;
@@ -50,6 +51,7 @@ describe('RentOwn', () => {
           {
             pageType: PageEnum.New,
             updateMutation,
+            setHasCalcValues,
             requestData: { id: 'request-id' },
           } as unknown as ContextType
         }
@@ -70,6 +72,16 @@ describe('RentOwn', () => {
           input: {
             requestAttributes: {
               rentOrOwn: 'RENT',
+              rentalValue: null,
+              furnitureCostsOne: null,
+              avgUtilityOne: null,
+              mortgageOrRentPayment: null,
+              furnitureCostsTwo: null,
+              repairCosts: null,
+              avgUtilityTwo: null,
+              unexpectedExpenses: null,
+              overallAmount: null,
+              iUnderstandMhaPolicy: null,
             },
             requestId: 'request-id',
           },

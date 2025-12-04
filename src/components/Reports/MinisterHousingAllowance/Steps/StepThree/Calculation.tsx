@@ -27,6 +27,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import i18n from 'src/lib/i18n';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { DirectionButtons } from '../../../Shared/CalculationReports/DirectionButtons/DirectionButtons';
+import { hasPopulatedValues } from '../../Shared/Context/Helper/hasPopulatedValues';
 import { useMinisterHousingAllowance } from '../../Shared/Context/MinisterHousingAllowanceContext';
 import { CostOfHome } from './CalcComponents/CostOfHome';
 import { EndingSection } from './CalcComponents/EndingSection';
@@ -221,9 +222,7 @@ export const Calculation: React.FC<CalculationProps> = ({
           !!submitCount && (!isValid || !values.iUnderstandMhaPolicy);
 
         useEffect(() => {
-          const hasValues = Object.values(values).some(
-            (value) => value !== undefined && value !== null && value !== '',
-          );
+          const hasValues = hasPopulatedValues(values);
           setHasCalcValues(hasValues);
         }, [values, setHasCalcValues]);
 

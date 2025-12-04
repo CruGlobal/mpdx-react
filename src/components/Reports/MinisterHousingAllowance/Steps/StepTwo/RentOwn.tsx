@@ -34,6 +34,7 @@ export const RentOwn: React.FC = () => {
   const {
     pageType,
     hasCalcValues,
+    setHasCalcValues,
     handlePreviousStep,
     requestData,
     updateMutation,
@@ -46,10 +47,21 @@ export const RentOwn: React.FC = () => {
           requestId: id,
           requestAttributes: {
             rentOrOwn,
+            rentalValue: null,
+            furnitureCostsOne: null,
+            avgUtilityOne: null,
+            mortgageOrRentPayment: null,
+            furnitureCostsTwo: null,
+            repairCosts: null,
+            avgUtilityTwo: null,
+            unexpectedExpenses: null,
+            overallAmount: null,
+            iUnderstandMhaPolicy: null,
           },
         },
       },
     });
+    setHasCalcValues(false);
   };
 
   const [pendingValue, setPendingValue] = useState<MhaRentOrOwnEnum | null>(

@@ -28,6 +28,7 @@ import {
   useUpdateMinistryHousingAllowanceRequestMutation,
 } from '../../MinisterHousingAllowance.generated';
 import { StepsEnum } from '../sharedTypes';
+import { hasPopulatedValues } from './Helper/hasPopulatedValues';
 
 export type HcmData = HcmDataQuery['hcm'][number];
 
@@ -105,6 +106,10 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       skip: !requestId,
     });
 
+  const hasValues = hasPopulatedValues(
+    requestData?.ministryHousingAllowanceRequest?.requestAttributes ?? null,
+  );
+
   const [updateMutation] = useUpdateMinistryHousingAllowanceRequestMutation();
 
   const pageType = type;
@@ -163,10 +168,7 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
     setIsDrawerOpen((prev) => !prev);
   }, []);
 
-  const actionRequired = pageType === PageEnum.Edit;
-  const [hasCalcValues, setHasCalcValues] = useState(
-    actionRequired ? true : false,
-  );
+  const [hasCalcValues, setHasCalcValues] = useState(hasValues ? true : false);
   const [isPrint, setIsPrint] = useState(false);
 
   const [currentStep, setCurrentStep] = useState(StepsEnum.AboutForm);
