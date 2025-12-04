@@ -17,26 +17,29 @@ export const useSaveField = () => {
         return;
       }
 
-      return updateMinistryHousingAllowanceRequest({
-        variables: {
-          input: {
-            requestId: requestData.id,
-            requestAttributes: attributes,
+      try {
+        await updateMinistryHousingAllowanceRequest({
+          variables: {
+            input: {
+              requestId: requestData.id,
+              requestAttributes: attributes,
+            },
           },
-        },
-        optimisticResponse: {
-          updateMinistryHousingAllowanceRequest: {
-            __typename: 'MinistryHousingAllowanceRequestUpdateMutationPayload',
-            ministryHousingAllowanceRequest: {
-              ...requestData,
-              requestAttributes: {
-                ...values,
-                ...attributes,
+          optimisticResponse: {
+            updateMinistryHousingAllowanceRequest: {
+              __typename:
+                'MinistryHousingAllowanceRequestUpdateMutationPayload',
+              ministryHousingAllowanceRequest: {
+                ...requestData,
+                requestAttributes: {
+                  ...values,
+                  ...attributes,
+                },
               },
             },
           },
-        },
-      });
+        });
+      } catch (error) {}
     },
     [values, updateMinistryHousingAllowanceRequest, requestData],
   );

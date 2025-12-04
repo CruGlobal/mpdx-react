@@ -117,6 +117,7 @@ export const Calculation: React.FC<CalculationProps> = ({
     isPrint,
     requestData,
     updateMutation,
+    userHcmData,
   } = useMinisterHousingAllowance();
 
   const update = (value: boolean) =>
@@ -147,8 +148,12 @@ export const Calculation: React.FC<CalculationProps> = ({
         repairCosts: request?.repairCosts,
         avgUtilityTwo: request?.avgUtilityTwo,
         unexpectedExpenses: request?.unexpectedExpenses,
-        phoneNumber: request?.phoneNumber ?? null,
-        emailAddress: request?.emailAddress ?? null,
+        phoneNumber:
+          request?.phoneNumber ??
+          userHcmData?.staffInfo.primaryPhoneNumber ??
+          null,
+        emailAddress:
+          request?.emailAddress ?? userHcmData?.staffInfo.emailAddress ?? null,
         iUnderstandMhaPolicy: request?.iUnderstandMhaPolicy ?? false,
       }
     : {
@@ -160,8 +165,12 @@ export const Calculation: React.FC<CalculationProps> = ({
         repairCosts: null,
         avgUtilityTwo: null,
         unexpectedExpenses: null,
-        phoneNumber: request?.phoneNumber ?? null,
-        emailAddress: request?.emailAddress ?? null,
+        phoneNumber:
+          request?.phoneNumber ??
+          userHcmData?.staffInfo.primaryPhoneNumber ??
+          null,
+        emailAddress:
+          request?.emailAddress ?? userHcmData?.staffInfo.emailAddress ?? null,
         iUnderstandMhaPolicy: false,
       };
 

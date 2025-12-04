@@ -17,7 +17,7 @@ import {
   HcmDataQuery,
   useHcmDataQuery,
 } from 'src/components/Reports/Shared/HcmData/HCMData.generated';
-import { MaritalStatusEnum, MhaStatusEnum } from 'src/graphql/types.generated';
+import { MaritalStatusEnum } from 'src/graphql/types.generated';
 import { useStepList } from 'src/hooks/useStepList';
 import { Steps } from '../../../Shared/CalculationReports/StepsList/StepsList';
 import {
@@ -94,7 +94,7 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   const { data: requestsData, error: requestsError } =
     useMinistryHousingAllowanceRequestsQuery();
 
-  //const requestId = requestsData?.ministryHousingAllowanceRequests.nodes[1]?.id;
+  //const requestId = requestsData?.ministryHousingAllowanceRequests.nodes[0]?.id;
   const requestId = 'c1a68821-5fb6-4e5e-b308-9263539af9d8';
 
   const { data: requestData, error: requestError } =
@@ -157,40 +157,6 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
     () => spouseHcmData?.staffInfo?.preferredName || '',
     [spouseHcmData],
   );
-
-  // Set hcm email & phone to request contact info once
-  const [hasUpdatedContactInfo, setHasUpdatedContactInfo] = useState(false);
-  const canUpdate =
-    requestData?.ministryHousingAllowanceRequest?.status ===
-      MhaStatusEnum.InProgress ||
-    requestData?.ministryHousingAllowanceRequest?.status ===
-      MhaStatusEnum.ActionRequired;
-
-  useEffect(() => {
-    if (hasUpdatedContactInfo || !userHcmData || !requestId || !canUpdate) {
-      return;
-    }
-
-    updateMutation({
-      variables: {
-        input: {
-          requestId: requestId ?? '',
-          requestAttributes: {
-            phoneNumber: userHcmData.staffInfo.primaryPhoneNumber ?? '',
-            emailAddress: userHcmData.staffInfo.emailAddress ?? '',
-          },
-        },
-      },
-    }).finally(() => {
-      setHasUpdatedContactInfo(true);
-    });
-  }, [
-    hasUpdatedContactInfo,
-    userHcmData,
-    requestId,
-    canUpdate,
-    updateMutation,
-  ]);
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
   const toggleDrawer = useCallback(() => {
