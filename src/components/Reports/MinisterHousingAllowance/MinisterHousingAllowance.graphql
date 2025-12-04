@@ -125,3 +125,11 @@ mutation UpdateMinistryHousingAllowanceRequest(
     }
   }
 }
+
+mutation DeleteMinistryHousingAllowanceRequest(
+  $input: MinistryHousingAllowanceRequestDeleteMutationInput!
+) {
+  deleteMinistryHousingAllowanceRequest(input: $input) {
+    id
+  }
+}
