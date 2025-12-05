@@ -1,7 +1,7 @@
 import React from 'react';
 import { Grid, Hidden, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { ContactPledgeReceivedIcon } from '../ContactPartnershipStatus/ContactPledgeReceivedIcon/ContactPledgeReceivedIcon';
+import { ContactPledgeReceivedIcon } from 'src/components/Shared/Icons/ContactPledgeReceivedIcon/ContactPledgeReceivedIcon';
 
 interface ContactPledgeReceivedStatusProps {
   pledgeReceived: boolean;
