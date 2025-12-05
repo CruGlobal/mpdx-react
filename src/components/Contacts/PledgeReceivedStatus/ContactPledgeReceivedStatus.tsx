@@ -1,8 +1,7 @@
 import React from 'react';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import ErrorIcon from '@mui/icons-material/Error';
 import { Grid, Hidden, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { ContactPledgeReceivedIcon } from '../ContactPartnershipStatus/ContactPledgeReceivedIcon/ContactPledgeReceivedIcon';
 
 interface ContactPledgeReceivedStatusProps {
   pledgeReceived: boolean;
@@ -17,17 +16,11 @@ export const ContactPledgeReceivedStatus: React.FC<
     ? t('Commitment Received')
     : t('Commitment Not Received');
 
-  const CommitmentIcon = pledgeReceived ? CheckCircleIcon : ErrorIcon;
-  const commitmentIconColor = pledgeReceived ? 'success' : 'error';
-
   return (
     <Hidden smDown>
       <Grid container alignItems="center" spacing={1} wrap="nowrap">
         <Grid item>
-          <CommitmentIcon
-            color={commitmentIconColor}
-            titleAccess={commitmentStatus}
-          />
+          <ContactPledgeReceivedIcon pledgeReceived={pledgeReceived} />
         </Grid>
         <Grid item>
           <Typography variant="body2" color="textSecondary">
