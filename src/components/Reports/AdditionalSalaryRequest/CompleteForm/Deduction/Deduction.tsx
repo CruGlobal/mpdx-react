@@ -12,8 +12,8 @@ import { useTranslation } from 'react-i18next';
 import { FormCard } from 'src/components/Reports/Shared/CalculationReports/FormCard/FormCard';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { useTotalSalaryRequest } from '../../Shared/useTotalSalaryRequest';
-import { CompleteFormValues } from '../CompleteForm';
 
 export const Deduction: React.FC = () => {
   const { t } = useTranslation();
