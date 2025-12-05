@@ -2,7 +2,7 @@ import React from 'react';
 import { Box, TextField, Typography } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
-import { CompleteFormValues } from '../CompleteForm';
+import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 
 interface ContactInformationProps {
   email?: string;

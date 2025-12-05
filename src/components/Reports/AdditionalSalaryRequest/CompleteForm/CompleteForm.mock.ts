@@ -1,4 +1,4 @@
-import { CompleteFormValues } from './CompleteForm';
+import { CompleteFormValues } from '../AdditionalSalaryRequest';
 
 export const defaultCompleteFormValues: CompleteFormValues = {
   currentYearSalary: '0',
