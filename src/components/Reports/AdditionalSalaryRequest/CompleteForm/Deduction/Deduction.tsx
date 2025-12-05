@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   Box,
   Checkbox,
@@ -13,6 +13,7 @@ import { FormCard } from 'src/components/Reports/Shared/CalculationReports/FormC
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
+import { calculateDeductions } from '../../Shared/calculateDeductions';
 import { useTotalSalaryRequest } from '../../Shared/useTotalSalaryRequest';
 
 export const Deduction: React.FC = () => {
@@ -22,15 +23,10 @@ export const Deduction: React.FC = () => {
   const { values } = useFormikContext<CompleteFormValues>();
 
   const total = useTotalSalaryRequest(values);
-
-  // TODO: Pull the 12% from the admin rate goal calculator misc constant
-  const calculatedDeduction = values.defaultPercentage ? total * 0.12 : 0;
-
-  // Get the contribution403b value from the form
-  const contribution403b = Number(values.contribution403b || 0);
-
-  // Total deduction is the sum of calculated deduction and contribution403b
-  const totalDeduction = calculatedDeduction + contribution403b;
+  const { calculatedDeduction, contribution403b, totalDeduction } = useMemo(
+    () => calculateDeductions(values, total),
+    [values.defaultPercentage, values.contribution403b, total],
+  );
 
   return (
     <FormCard title={t('403(b) Deduction')}>
