@@ -1,29 +1,70 @@
 import React from 'react';
-import { Typography } from '@mui/material';
+import { Box } from '@mui/material';
+import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
+import { DirectionButtons } from 'src/components/Reports/Shared/CalculationReports/DirectionButtons/DirectionButtons';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import theme from 'src/theme';
 import { PanelLayout } from '../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { useIconPanelItems } from '../Shared/CalculationReports/PanelLayout/useIconPanelItems';
 import { PanelTypeEnum } from '../Shared/CalculationReports/Shared/sharedTypes';
 import { StepsList } from '../Shared/CalculationReports/StepsList/StepsList';
-import { AboutForm } from './AboutForm/AboutForm';
-import { AdditionalSalaryRequestSectionEnum } from './AdditionalSalaryRequestHelper';
-import { CompleteForm } from './CompleteForm/CompleteForm';
+import { CurrentStep } from './CurrentStep';
 import { useAdditionalSalaryRequest } from './Shared/AdditionalSalaryRequestContext';
 import { SectionPage } from './SharedComponents/SectionPage';
 
-export const MainContent: React.FC = () => {
-  const { currentStep } = useAdditionalSalaryRequest();
-  const { t } = useTranslation();
+export interface CompleteFormValues {
+  currentYearSalary: string;
+  previousYearSalary: string;
+  additionalSalary: string;
+  adoption: string;
+  contribution403b: string;
+  counseling: string;
+  healthcareExpenses: string;
+  babysitting: string;
+  childrenMinistryTrip: string;
+  childrenCollege: string;
+  movingExpense: string;
+  seminary: string;
+  housingDownPayment: string;
+  autoPurchase: string;
+  reimbursableExpenses: string;
+  defaultPercentage: boolean;
+}
 
-  switch (currentStep) {
-    case AdditionalSalaryRequestSectionEnum.AboutForm:
-      return <AboutForm />;
-    case AdditionalSalaryRequestSectionEnum.CompleteForm:
-      return <CompleteForm />;
-    case AdditionalSalaryRequestSectionEnum.Receipt:
-      return <Typography variant="h5">{t('Receipt content')}</Typography>;
-  }
+const MainContent: React.FC = () => {
+  const {
+    handleCancel,
+    handlePreviousStep,
+    handleNextStep,
+    currentIndex,
+    steps,
+  } = useAdditionalSalaryRequest();
+  const { submitForm, validateForm, submitCount, isValid } =
+    useFormikContext<CompleteFormValues>();
+
+  const isFirstFormPage = currentIndex === 0;
+  const isLastFormPage = currentIndex === steps.length - 2;
+  const reviewPage = currentIndex === steps.length - 1;
+
+  return (
+    <Box px={theme.spacing(3)}>
+      <CurrentStep />
+      {!reviewPage && (
+        <DirectionButtons
+          handleNextStep={handleNextStep}
+          handlePreviousStep={handlePreviousStep}
+          showBackButton={!isFirstFormPage}
+          handleCancel={isFirstFormPage ? undefined : handleCancel}
+          isSubmission={isLastFormPage}
+          submitForm={submitForm}
+          validateForm={validateForm}
+          submitCount={submitCount}
+          isValid={isValid}
+        />
+      )}
+    </Box>
+  );
 };
 
 export const AdditionalSalaryRequest: React.FC = () => {
