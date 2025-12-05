@@ -33,25 +33,36 @@ export interface CompleteFormValues {
 }
 
 const MainContent: React.FC = () => {
-  const { handleCancel, handlePreviousStep, handleNextStep, currentIndex } =
-    useAdditionalSalaryRequest();
+  const {
+    handleCancel,
+    handlePreviousStep,
+    handleNextStep,
+    currentIndex,
+    steps,
+  } = useAdditionalSalaryRequest();
   const { submitForm, validateForm, submitCount, isValid } =
     useFormikContext<CompleteFormValues>();
+
+  const isFirstFormPage = currentIndex === 0;
+  const isLastFormPage = currentIndex === steps.length - 2;
+  const reviewPage = currentIndex === steps.length - 1;
 
   return (
     <Box px={theme.spacing(3)}>
       <CurrentStep />
-      <DirectionButtons
-        handleNextStep={handleNextStep}
-        handlePreviousStep={handlePreviousStep}
-        showBackButton={currentIndex !== 0}
-        handleCancel={handleCancel}
-        isSubmission={true}
-        submitForm={submitForm}
-        validateForm={validateForm}
-        submitCount={submitCount}
-        isValid={isValid}
-      />
+      {!reviewPage && (
+        <DirectionButtons
+          handleNextStep={handleNextStep}
+          handlePreviousStep={handlePreviousStep}
+          showBackButton={!isFirstFormPage}
+          handleCancel={isFirstFormPage ? undefined : handleCancel}
+          isSubmission={isLastFormPage}
+          submitForm={submitForm}
+          validateForm={validateForm}
+          submitCount={submitCount}
+          isValid={isValid}
+        />
+      )}
     </Box>
   );
 };

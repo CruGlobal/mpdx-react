@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { CompleteFormValues } from '../CompleteForm/CompleteForm';
+import { CompleteFormValues } from '../AdditionalSalaryRequest';
 
 export const useTotalSalaryRequest = (values: CompleteFormValues): number => {
   return useMemo(() => {
