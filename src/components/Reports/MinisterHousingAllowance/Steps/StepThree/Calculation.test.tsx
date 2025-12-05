@@ -10,7 +10,10 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { UpdateMinistryHousingAllowanceRequestMutation } from '../../MinisterHousingAllowance.generated';
+import {
+  SubmitMinistryHousingAllowanceRequestMutation,
+  UpdateMinistryHousingAllowanceRequestMutation,
+} from '../../MinisterHousingAllowance.generated';
 import {
   ContextType,
   MinisterHousingAllowanceContext,
@@ -22,6 +25,7 @@ const mutationSpy = jest.fn();
 const setHasCalcValues = jest.fn();
 const setIsPrint = jest.fn();
 const updateMutation = jest.fn();
+const handleNextStep = jest.fn();
 
 interface TestComponentProps {
   contextValue: Partial<ContextType>;
@@ -41,6 +45,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
       <TestRouter>
         <GqlMockedProvider<{
           UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
+          SubmitMinistryHousingAllowanceRequest: SubmitMinistryHousingAllowanceRequestMutation;
         }>
           onCall={mutationSpy}
         >
@@ -101,7 +106,7 @@ describe('Calculation', () => {
             requestData: {
               id: 'request-id',
               requestAttributes: {
-                unexpectedCosts: null,
+                unexpectedExpenses: null,
               },
             },
           } as unknown as ContextType
@@ -163,7 +168,7 @@ describe('Calculation', () => {
     ).toBeInTheDocument();
   });
 
-  it('shows validation errors when inputs are invalid', async () => {
+  it('shows validation errors when email and phone are invalid', async () => {
     const { getByRole, findByText } = render(
       <TestComponent
         contextValue={
@@ -215,6 +220,7 @@ describe('Calculation', () => {
             setHasCalcValues,
             setIsPrint,
             updateMutation,
+            handleNextStep,
             requestData: {
               id: 'request-id',
               requestAttributes: {
@@ -222,7 +228,7 @@ describe('Calculation', () => {
                 furnitureValue: null,
                 repairCosts: null,
                 utilityCosts: null,
-                unexpectedCosts: null,
+                unexpectedExpenses: null,
                 iUnderstandMhaPolicy: false,
                 phoneNumber: '1234567890',
                 emailAddress: 'john.doe@cru.org',
@@ -285,6 +291,27 @@ describe('Calculation', () => {
 
     expect(getByRole('button', { name: /go back/i })).toBeInTheDocument();
     expect(getByRole('button', { name: /yes, continue/i })).toBeInTheDocument();
+
+    expect(mutationSpy).not.toHaveGraphqlOperation(
+      'SubmitMinistryHousingAllowanceRequest',
+    );
+
+    const confirmButton = getByRole('button', { name: /yes, continue/i });
+
+    await userEvent.click(confirmButton);
+
+    await waitFor(() => {
+      expect(mutationSpy).toHaveBeenCalledTimes(6);
+    });
+
+    expect(mutationSpy).toHaveGraphqlOperation(
+      'SubmitMinistryHousingAllowanceRequest',
+      {
+        input: {
+          requestId: 'request-id',
+        },
+      },
+    );
   });
 
   it('should change text when dates are null', () => {

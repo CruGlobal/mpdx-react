@@ -119,7 +119,7 @@ describe('CostOfHome', () => {
                 furnitureCostsTwo: null,
                 repairCosts: null,
                 avgUtilityTwo: null,
-                unexpectedCosts: null,
+                unexpectedExpenses: null,
               },
             },
           } as unknown as ContextType
