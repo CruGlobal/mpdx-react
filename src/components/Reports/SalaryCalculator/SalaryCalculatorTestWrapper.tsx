@@ -23,17 +23,31 @@ export const SalaryCalculatorTestWrapper: React.FC<
           Hcm: {
             hcm: [
               {
+                staffInfo: {
+                  firstName: 'John',
+                  lastName: 'Doe',
+                },
                 fourOThreeB: {
                   currentRothContributionPercentage: 12,
                   currentTaxDeferredContributionPercentage: 5,
                   maximumContributionLimit: 45,
                 },
+                mhaRequest: {
+                  currentApprovedOverallAmount: 10000,
+                },
               },
               {
+                staffInfo: {
+                  firstName: 'Jane',
+                  lastName: 'Doe',
+                },
                 fourOThreeB: {
                   currentRothContributionPercentage: 10,
                   currentTaxDeferredContributionPercentage: 8,
                   maximumContributionLimit: 47,
+                },
+                mhaRequest: {
+                  currentApprovedOverallAmount: 12000,
                 },
               },
             ],
