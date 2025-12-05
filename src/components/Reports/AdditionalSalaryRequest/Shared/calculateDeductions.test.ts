@@ -1,4 +1,4 @@
-import { CompleteFormValues } from '../CompleteForm/CompleteForm';
+import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { calculateDeductions } from './calculateDeductions';
 
 describe('calculateDeductions', () => {
