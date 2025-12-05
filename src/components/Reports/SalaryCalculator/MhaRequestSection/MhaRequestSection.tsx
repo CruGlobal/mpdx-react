@@ -30,11 +30,17 @@ const StyledFieldGridBox = styled(Box)<{ hasSpouse?: boolean }>(
   }),
 );
 
-const StyledProgressHeaderBox = styled(Box)(({ theme }) => ({
+const StyledProgressHeaderBox = styled(Box)({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
-  marginBottom: theme.spacing(1),
+});
+
+const StyledRemainingBox = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginTop: theme.spacing(1),
 }));
 
 export const MhaRequestSection: React.FC = () => {
@@ -44,9 +50,10 @@ export const MhaRequestSection: React.FC = () => {
     hasSpouse,
     boardApprovedAmount,
     schema,
-    currentMhaValue,
-    currentSpouseMhaValue,
+    currentMhaFormatted,
+    currentSpouseMhaFormatted,
     totalRequestedMhaValue,
+    differenceFormatted,
     boardApprovedAmountFormatted,
     progressPercentage,
     self,
@@ -101,14 +108,14 @@ export const MhaRequestSection: React.FC = () => {
             <TextField
               size="small"
               fullWidth
-              value={currentMhaValue}
+              value={currentMhaFormatted}
               disabled
             />
             {hasSpouse && (
               <TextField
                 size="small"
                 fullWidth
-                value={currentSpouseMhaValue}
+                value={currentSpouseMhaFormatted}
                 disabled
               />
             )}
@@ -130,9 +137,7 @@ export const MhaRequestSection: React.FC = () => {
         <Box>
           <StyledProgressHeaderBox>
             <Typography variant="body2">
-              {hasSpouse
-                ? t('Combined New MHA Requested')
-                : t('New MHA Requested')}
+              {hasSpouse ? t('Combined MHA Requested') : t('New MHA Requested')}
             </Typography>
             <Typography variant="body2">
               {totalRequestedMhaValue} / {boardApprovedAmountFormatted}
@@ -143,9 +148,14 @@ export const MhaRequestSection: React.FC = () => {
             value={progressPercentage}
             color="success"
           />
-          <Typography variant="body2" color="textSecondary">
-            {t('Remaining in approved MHA Amount')}
-          </Typography>
+          <StyledRemainingBox>
+            <Typography variant="body2" color="textSecondary">
+              {t('Remaining in approved MHA Amount')}
+            </Typography>
+            <Typography variant="body2" color="textSecondary">
+              {differenceFormatted}
+            </Typography>
+          </StyledRemainingBox>
         </Box>
       </CardContent>
     </StepCard>

@@ -11,78 +11,109 @@ export const useMhaRequestData = () => {
   const locale = useLocale();
   const { calculation, hcm } = useSalaryCalculator();
 
+  const self = useMemo(() => hcm?.[0], [hcm]);
+  const spouse = useMemo(() => hcm?.[1], [hcm]);
   const hasSpouse = hcm?.length === 2;
 
-  // TODO: Get actual values from API
-  const boardApprovedAmount = hasSpouse ? 20000 : 12000;
+  const selfApprovedAmount =
+    self?.mhaRequest?.currentApprovedOverallAmount ?? 0;
+  const spouseApprovedAmount =
+    spouse?.mhaRequest?.currentApprovedOverallAmount ?? 0;
 
-  const schema = useMemo(
-    () =>
-      yup.object({
-        mhaAmount: amount(t('New Requested MHA'), t).max(
-          boardApprovedAmount,
-          t(
-            'New Requested MHA cannot exceed Board Approved MHA Amount of ${{boardApprovedAmount}}',
-            { boardApprovedAmount },
-          ),
-        ),
-        spouseMhaAmount: amount(t('Spouse New Requested MHA'), t).max(
-          boardApprovedAmount,
-          t(
-            'New Requested MHA cannot exceed Board Approved MHA Amount of ${{boardApprovedAmount}}',
-            { boardApprovedAmount },
-          ),
-        ),
-      }),
-    [t, boardApprovedAmount],
-  );
+  const boardApprovedAmount = hasSpouse
+    ? selfApprovedAmount + spouseApprovedAmount
+    : selfApprovedAmount;
 
-  // TODO: Add mhaAmount field to HCM query and use: hcm?.[0]?.currentSalary?.mhaAmount ?? 0
+  const schema = useMemo(() => {
+    const baseSchema = {
+      mhaAmount: amount(t('New Requested MHA'), t)
+        .max(
+          selfApprovedAmount,
+          t(
+            'New Requested MHA cannot exceed Board Approved MHA Amount of ${{selfApprovedAmount}}',
+            { selfApprovedAmount },
+          ),
+        )
+        .required(t('MHA Amount is required')),
+    };
+
+    if (hasSpouse) {
+      return yup.object({
+        ...baseSchema,
+        spouseMhaAmount: amount(t('Spouse New Requested MHA'), t)
+          .max(
+            spouseApprovedAmount,
+            t(
+              'New Requested MHA cannot exceed Board Approved MHA Amount of ${{spouseApprovedAmount}}',
+              { spouseApprovedAmount },
+            ),
+          )
+          .required(t('Spouse MHA Amount is required')),
+      });
+    }
+
+    return yup.object(baseSchema);
+  }, [t, hasSpouse, selfApprovedAmount, spouseApprovedAmount]);
+
+  //TODO: Pull MHA values from HCM that are based off the most recent paycheck (not the approved amount)
   const currentMhaValue = 0;
   const currentSpouseMhaValue = 0;
+
   const newRequestedMhaValue = calculation?.mhaAmount ?? 0;
   const newRequestedSpouseMhaValue = calculation?.spouseMhaAmount ?? 0;
-  const totalRequestedMhaValue = hasSpouse
-    ? newRequestedMhaValue + newRequestedSpouseMhaValue
-    : newRequestedMhaValue;
-  const progressPercentage =
-    boardApprovedAmount > 0
-      ? Math.min((totalRequestedMhaValue / boardApprovedAmount) * 100, 100)
-      : 0;
 
-  const self = hcm?.[0];
-  const spouse = hcm?.[1];
+  const totalRequestedMhaValue = useMemo(
+    () =>
+      hasSpouse
+        ? newRequestedMhaValue + newRequestedSpouseMhaValue
+        : newRequestedMhaValue,
+    [hasSpouse, newRequestedMhaValue, newRequestedSpouseMhaValue],
+  );
 
-  // Formatted values with trailing zeroes
-  const currentMhaFormatted = currencyFormat(currentMhaValue, 'USD', locale);
-  const currentSpouseMhaFormatted = currencyFormat(
-    currentSpouseMhaValue,
-    'USD',
-    locale,
+  const progressPercentage = useMemo(
+    () => (totalRequestedMhaValue / boardApprovedAmount) * 100,
+    [totalRequestedMhaValue, boardApprovedAmount],
   );
-  const totalRequestedMhaFormatted = currencyFormat(
-    totalRequestedMhaValue,
-    'USD',
-    locale,
+
+  const difference = useMemo(
+    () => boardApprovedAmount - totalRequestedMhaValue,
+    [boardApprovedAmount, totalRequestedMhaValue],
   );
-  const boardApprovedAmountFormatted = currencyFormat(
-    boardApprovedAmount,
-    'USD',
-    locale,
+
+  const currentMhaFormatted = useMemo(
+    () => currencyFormat(currentMhaValue, 'USD', locale),
+    [currentMhaValue, locale],
+  );
+  const currentSpouseMhaFormatted = useMemo(
+    () => currencyFormat(currentSpouseMhaValue, 'USD', locale),
+    [currentSpouseMhaValue, locale],
+  );
+  const totalRequestedMhaFormatted = useMemo(
+    () => currencyFormat(totalRequestedMhaValue, 'USD', locale),
+    [totalRequestedMhaValue, locale],
+  );
+  const boardApprovedAmountFormatted = useMemo(
+    () => currencyFormat(boardApprovedAmount, 'USD', locale),
+    [boardApprovedAmount, locale],
+  );
+  const differenceFormatted = useMemo(
+    () => currencyFormat(difference, 'USD', locale),
+    [difference, locale],
   );
 
   return {
+    self,
+    spouse,
     hasSpouse,
-    boardApprovedAmount,
     schema,
-    currentMhaValue: currentMhaFormatted,
-    currentSpouseMhaValue: currentSpouseMhaFormatted,
+    boardApprovedAmount,
+    currentMhaFormatted,
+    currentSpouseMhaFormatted,
     newRequestedMhaValue,
     newRequestedSpouseMhaValue,
     totalRequestedMhaValue: totalRequestedMhaFormatted,
+    differenceFormatted,
     boardApprovedAmountFormatted,
     progressPercentage,
-    self,
-    spouse,
   };
 };
