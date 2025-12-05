@@ -6,9 +6,9 @@ import { CurrencyAdornment } from 'src/components/Reports/GoalCalculator/Shared/
 import { FormCard } from 'src/components/Reports/Shared/CalculationReports/FormCard/FormCard';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { useCompleteFormCategories } from '../../Shared/useCompleteFormCategories';
 import { useTotalSalaryRequest } from '../../Shared/useTotalSalaryRequest';
-import { CompleteFormValues } from '../CompleteForm';
 
 export const AdditionalSalaryRequest: React.FC = () => {
   const { t } = useTranslation();

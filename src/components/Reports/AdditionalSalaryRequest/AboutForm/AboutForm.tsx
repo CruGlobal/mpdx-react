@@ -2,7 +2,6 @@ import React from 'react';
 import { Link, List, ListItem, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
-import { DirectionButtons } from 'src/components/Reports/Shared/CalculationReports/DirectionButtons/DirectionButtons';
 import { NameDisplay } from '../../Shared/CalculationReports/NameDisplay/NameDisplay';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { getHeader } from '../Shared/Helper/getHeader';
@@ -10,8 +9,7 @@ import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSa
 import { SpouseComponent } from '../SharedComponents/SpouseComponent';
 
 export const AboutForm: React.FC = () => {
-  const { currentStep, handlePreviousStep, handleNextStep, handleCancel } =
-    useAdditionalSalaryRequest();
+  const { currentStep } = useAdditionalSalaryRequest();
   const { t } = useTranslation();
   const theme = useTheme();
 
@@ -99,11 +97,6 @@ export const AboutForm: React.FC = () => {
         titleTwo={t('Your Remaining Allowable Salary')}
         amountTwo={remainingAllowableSalary}
         spouseComponent={<SpouseComponent />}
-      />
-      <DirectionButtons
-        handleNextStep={handleNextStep}
-        handlePreviousStep={handlePreviousStep}
-        handleCancel={handleCancel}
       />
     </AdditionalSalaryRequestSection>
   );
