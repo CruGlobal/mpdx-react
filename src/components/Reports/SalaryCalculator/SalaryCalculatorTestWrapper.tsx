@@ -3,6 +3,7 @@ import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
+import { PayrollDatesQuery } from './EffectiveDateStep/PayrollDates.generated';
 import { HcmQuery } from './SalaryCalculatorContext/Hcm.generated';
 import { SalaryCalculatorProvider } from './SalaryCalculatorContext/SalaryCalculatorContext';
 
@@ -19,8 +20,22 @@ export const SalaryCalculatorTestWrapper: React.FC<
     <TestRouter>
       <GqlMockedProvider<{
         Hcm: HcmQuery;
+        PayrollDates: PayrollDatesQuery;
       }>
         mocks={{
+          PayrollDates: {
+            payrollDates: [
+              {
+                regularProcessDate: '2025-01-15T00:00:00.000Z',
+              },
+              {
+                regularProcessDate: '2025-02-01T00:00:00.000Z',
+              },
+              {
+                regularProcessDate: '2025-02-15T00:00:00.000Z',
+              },
+            ],
+          },
           Hcm: {
             hcm: [
               {
