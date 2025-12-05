@@ -18,8 +18,7 @@ export const MainContent: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
 
-  const viewLink = `/accountLists/${accountListId}/reports/additionalSalaryRequest/view`;
-  const editLink = `/accountLists/${accountListId}/reports/additionalSalaryRequest/edit`;
+  const pageLink = `/accountLists/${accountListId}/reports/additionalSalaryRequest`;
 
   switch (currentStep) {
     case AdditionalSalaryRequestSectionEnum.AboutForm:
@@ -32,8 +31,7 @@ export const MainContent: React.FC = () => {
           <Receipt
             formTitle={t('Additional Salary Request')}
             buttonText={t('View Your Additional Salary Request')}
-            editLink={editLink}
-            viewLink={viewLink}
+            viewLink={pageLink}
             isEdit={false}
           />
         </AdditionalSalaryRequestSection>
