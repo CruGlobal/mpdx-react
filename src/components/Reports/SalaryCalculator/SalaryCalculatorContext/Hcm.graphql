@@ -3,6 +3,11 @@ query Hcm {
     staffInfo {
       firstName
       lastName
+      city
+      state
+      tenure
+      age
+      dependentChildrenWithHealthcareBenefits
     }
     currentSalary {
       grossSalaryAmount
