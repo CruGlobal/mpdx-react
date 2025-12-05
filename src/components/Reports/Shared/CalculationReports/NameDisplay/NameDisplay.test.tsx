@@ -62,7 +62,9 @@ const TestComponentWithSpouse: React.FC<TestComponentProps> = ({
           titleTwo={titleTwo}
           amountOne={1000}
           amountTwo={20000}
-          spouseComponent={<div data-testid="spouse-component">Spouse Info</div>}
+          spouseComponent={
+            <div data-testid="spouse-component">Spouse Info</div>
+          }
         />
       </MinisterHousingAllowanceContext.Provider>
     </ThemeProvider>
