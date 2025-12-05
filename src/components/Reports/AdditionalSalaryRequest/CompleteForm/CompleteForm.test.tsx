@@ -11,9 +11,10 @@ const TestWrapper: React.FC = () => (
 
 describe('SalaryRequestForm', () => {
   it('renders the form', () => {
-    const { getByRole } = render(<TestWrapper />);
-    expect(getByRole('heading', { name: 'Category' })).toBeInTheDocument();
-    expect(getByRole('heading', { name: 'Amount' })).toBeInTheDocument();
+    const { getAllByRole } = render(<TestWrapper />);
+
+    expect(getAllByRole('columnheader', { name: 'Category' })).toHaveLength(2);
+    expect(getAllByRole('columnheader', { name: 'Amount' })).toHaveLength(2);
   });
 
   it('renders all fifteen input fields', () => {
@@ -41,29 +42,6 @@ describe('SalaryRequestForm', () => {
     });
   });
 
-  it('calls onSubmit when submit button is clicked', async () => {
-    const { getByRole } = render(<TestWrapper />);
-
-    const submitButton = getByRole('button', { name: /submit/i });
-
-    userEvent.click(submitButton);
-
-    // The form should submit without errors
-    await waitFor(() => {
-      // Since handleSubmit is currently empty (TODO), we just verify the button can be clicked
-      // and the form submission is triggered
-      expect(submitButton).toBeInTheDocument();
-    });
-  });
-
-  it('renders the submit button with correct type', () => {
-    const { getByRole } = render(<TestWrapper />);
-
-    const submitButton = getByRole('button', { name: /submit/i });
-
-    expect(submitButton).toHaveAttribute('type', 'submit');
-  });
-
   it('renders the 403(b) Deduction checkbox', () => {
     const { getByRole } = render(<TestWrapper />);
 
@@ -77,7 +55,13 @@ describe('SalaryRequestForm', () => {
   it('shows both AdditionalSalaryRequest and Deduction sections', () => {
     const { getByText } = render(<TestWrapper />);
 
-    expect(getByText('Additional Salary Request')).toBeInTheDocument();
-    expect(getByText('403(b) Deduction')).toBeInTheDocument();
+    expect(
+      getByText('Additional Salary Request', {
+        selector: '.MuiCardHeader-title',
+      }),
+    ).toBeInTheDocument();
+    expect(
+      getByText('403(b) Deduction', { selector: '.MuiCardHeader-title' }),
+    ).toBeInTheDocument();
   });
 });
