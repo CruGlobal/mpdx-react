@@ -43,20 +43,17 @@ interface Props {
   initialValues?: CompleteFormValues;
 }
 
+const objects = Object.values(AdditionalSalaryRequestSectionEnum);
+
 export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   children,
   initialValues: providedInitialValues,
 }) => {
   const { t } = useTranslation();
-  const steps = useStepList(FormEnum.AdditionalSalary);
-  const locale = useLocale();
-
-  // Step Handlers
-  const [currentStep, setCurrentStep] = useState(
-    AdditionalSalaryRequestSectionEnum.AboutForm,
+  const { steps, nextStep, previousStep, currentIndex } = useStepList(
+    FormEnum.AdditionalSalary,
   );
-
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const locale = useLocale();
 
   const createCurrencyValidation = useCallback(
     (fieldName: string, max?: number) => {
@@ -123,61 +120,24 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     [createCurrencyValidation],
   );
 
-  const handleNextStep = () => {
-    setCurrentStep((prevStep) => {
-      const next =
-        prevStep === AdditionalSalaryRequestSectionEnum.AboutForm
-          ? AdditionalSalaryRequestSectionEnum.CompleteForm
-          : prevStep === AdditionalSalaryRequestSectionEnum.CompleteForm
-            ? AdditionalSalaryRequestSectionEnum.Receipt
-            : prevStep;
-
-      const newIndex = currentIndex + 1;
-      handleNextIndexChange(newIndex);
-      return next;
-    });
-  };
-
-  const handleSubmit = useCallback(
-    (_values: CompleteFormValues) => {
-      //TODO: Submit form values
-      handleNextStep();
-    },
-    [handleNextStep],
+  // Step Handlers
+  const [currentStep, setCurrentStep] = useState(
+    AdditionalSalaryRequestSectionEnum.AboutForm,
   );
 
-  const handlePreviousStep = () => {
-    setCurrentStep((prevStep) => {
-      const next =
-        prevStep === AdditionalSalaryRequestSectionEnum.CompleteForm
-          ? AdditionalSalaryRequestSectionEnum.AboutForm
-          : prevStep === AdditionalSalaryRequestSectionEnum.Receipt
-            ? AdditionalSalaryRequestSectionEnum.CompleteForm
-            : prevStep;
+  const handleNextStep = useCallback(() => {
+    const next = objects[currentIndex + 1];
+    nextStep();
 
-      const newIndex = currentIndex - 1;
-      handlePreviousIndexChange(newIndex);
-      return next;
-    });
-  };
+    setCurrentStep(next);
+  }, [currentIndex, objects, nextStep]);
 
-  const handleNextIndexChange = (newIndex: number) => {
-    steps[currentIndex].current = false;
-    steps[currentIndex].complete = true;
-    setCurrentIndex(newIndex);
-    steps[newIndex].current = true;
+  const handlePreviousStep = useCallback(() => {
+    const next = objects[currentIndex - 1];
+    previousStep();
 
-    if (newIndex === steps.length - 1) {
-      steps[newIndex].complete = true;
-    }
-  };
-
-  const handlePreviousIndexChange = (newIndex: number) => {
-    steps[currentIndex].current = false;
-    steps[newIndex].complete = false;
-    setCurrentIndex(newIndex);
-    steps[newIndex].current = true;
-  };
+    setCurrentStep(next);
+  }, [currentIndex, objects, previousStep]);
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
   const toggleDrawer = useCallback(() => {
@@ -187,6 +147,14 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   const handleCancel = () => {
     // Implement cancel logic here
   };
+
+  const handleSubmit = useCallback(
+    (_values: CompleteFormValues) => {
+      //TODO: Submit form values
+      handleNextStep();
+    },
+    [handleNextStep],
+  );
 
   const formik = useFormik<CompleteFormValues>({
     initialValues: providedInitialValues || initialValues,
