@@ -36,7 +36,6 @@ const TestComponent: React.FC<TestComponentProps> = ({
                 pledgeAmount={pledgeAmount}
                 pledgeCurrency={pledgeCurrency}
                 pledgeFrequency={null}
-                pledgeReceived={false}
                 status={status}
               />
             </ContactPanelProvider>

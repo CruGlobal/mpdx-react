@@ -8,7 +8,6 @@ import { currencyFormat } from 'src/lib/intlFormat';
 import { ContactRowFragment } from '../ContactRow/ContactRow.generated';
 import { ContactLateStatusLabel } from './ContactLateStatusLabel/ContactLateStatusLabel';
 import { ContactPartnershipStatusLabel } from './ContactPartnershipStatusLabel/ContactPartnershipStatusLabel';
-import { ContactPledgeReceivedIcon } from './ContactPledgeReceivedIcon/ContactPledgeReceivedIcon';
 
 interface ContactPartnershipStatusProps {
   lateAt: ContactRowFragment['lateAt'];
@@ -16,7 +15,6 @@ interface ContactPartnershipStatusProps {
   pledgeAmount: ContactRowFragment['pledgeAmount'];
   pledgeCurrency: ContactRowFragment['pledgeCurrency'];
   pledgeFrequency: ContactRowFragment['pledgeFrequency'];
-  pledgeReceived: ContactRowFragment['pledgeReceived'];
   status: ContactRowFragment['status'];
 }
 
@@ -28,7 +26,7 @@ export const ContactPartnershipStatus: React.FC<
   pledgeAmount,
   pledgeCurrency,
   pledgeFrequency,
-  pledgeReceived,
+
   status,
 }) => {
   const locale = useLocale();
@@ -36,16 +34,7 @@ export const ContactPartnershipStatus: React.FC<
   const { getLocalizedPledgeFrequency } = useLocalizedConstants();
 
   return (
-    <Box
-      display="flex"
-      alignItems="center"
-      justifyContent={contactPanelOpen ? 'flex-end' : undefined}
-    >
-      <Box display="flex" alignItems="center" width={32}>
-        {status === ContactPartnershipStatusEnum.PartnerFinancial && (
-          <ContactPledgeReceivedIcon pledgeReceived={pledgeReceived} />
-        )}
-      </Box>
+    <Box justifyContent={contactPanelOpen ? 'flex-end' : undefined}>
       <Hidden smDown>
         <Box display="flex" flexDirection="column" justifyContent="center">
           {status && <ContactPartnershipStatusLabel status={status} />}
