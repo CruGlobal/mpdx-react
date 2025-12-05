@@ -103,7 +103,6 @@ export const AboutForm: React.FC = () => {
       <DirectionButtons
         handleNextStep={handleNextStep}
         handlePreviousStep={handlePreviousStep}
-        showCancelButton={true}
         handleCancel={handleCancel}
       />
     </AdditionalSalaryRequestSection>

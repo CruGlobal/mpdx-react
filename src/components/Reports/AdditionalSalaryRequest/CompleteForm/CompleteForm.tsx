@@ -73,7 +73,6 @@ export const CompleteForm: React.FC = () => {
             handleNextStep={handleNextStep}
             handlePreviousStep={handlePreviousStep}
             showBackButton={true}
-            showCancelButton={true}
             handleCancel={handleCancel}
             isSubmission={true}
             submitForm={submitForm}
