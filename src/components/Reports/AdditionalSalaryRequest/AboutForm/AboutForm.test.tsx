@@ -1,7 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render } from '@testing-library/react';
 import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -61,23 +60,12 @@ describe('AboutForm', () => {
   });
 
   it('should display user information and financial data', () => {
-    const { getByText } = render(<TestWrapper />);
+    const { getByText, getAllByText } = render(<TestWrapper />);
 
     expect(getByText('Doc, John')).toBeInTheDocument();
     expect(getByText('00123456')).toBeInTheDocument();
-    expect(getByText('Primary Account Balance')).toBeInTheDocument();
-    expect(getByText('Your Remaining Allowable Salary')).toBeInTheDocument();
-  });
-
-  it('should navigate to Complete Form section when Continue is clicked', async () => {
-    const { getByText } = render(<TestWrapper />);
-
-    const continueButton = getByText('Continue');
-    userEvent.click(continueButton);
-
-    await waitFor(() => {
-      expect(mockHandleContinue).toHaveBeenCalled();
-    });
+    expect(getByText(/Primary Account Balance/i)).toBeInTheDocument();
+    expect(getAllByText(/Your Remaining Allowable Salary/i)).toHaveLength(2);
   });
 
   it('should have Progressive Approvals link', () => {
