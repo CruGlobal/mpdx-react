@@ -22,6 +22,7 @@ import { CelebrationIcons } from '../CelebrationIcons/CelebrationIcons';
 import { ContactPartnershipStatus } from '../ContactPartnershipStatus/ContactPartnershipStatus';
 import { ContactUncompletedTasksCount } from '../ContactUncompletedTasksCount/ContactUncompletedTasksCount';
 import { preloadContactsRightPanel } from '../ContactsRightPanel/DynamicContactsRightPanel';
+import { ContactPledgeReceivedStatus } from '../PledgeReceivedStatus/ContactPledgeReceivedStatus';
 import { StarContactIconButton } from '../StarContactIconButton/StarContactIconButton';
 import { ContactRowFragment } from './ContactRow.generated';
 
@@ -99,7 +100,7 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
         </ListItemIcon>
       </Hidden>
       <Grid container alignItems="center">
-        <Grid item xs={10} md={6} style={{ paddingRight: 16 }}>
+        <Grid item xs={6} md={6} style={{ paddingRight: 16 }}>
           <ListItemText
             primary={
               <Typography component="span" variant="h6" noWrap>
@@ -136,16 +137,18 @@ export const ContactRow: React.FC<Props> = ({ contact, useTopMargin }) => {
             }
           />
         </Grid>
-        <Grid item xs={2} md={6}>
+        <Grid item xs={3} md={3}>
           <ContactPartnershipStatus
             lateAt={lateAt}
             pledgeStartDate={pledgeStartDate}
             pledgeAmount={pledgeAmount}
             pledgeCurrency={pledgeCurrency}
             pledgeFrequency={pledgeFrequency}
-            pledgeReceived={pledgeReceived}
             status={status}
           />
+        </Grid>
+        <Grid item xs={3} md={3}>
+          <ContactPledgeReceivedStatus pledgeReceived={pledgeReceived} />
         </Grid>
       </Grid>
       <Hidden xsDown>
