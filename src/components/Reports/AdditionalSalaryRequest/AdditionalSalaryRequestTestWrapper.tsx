@@ -3,7 +3,7 @@ import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
-import { CompleteFormValues } from './CompleteForm/CompleteForm';
+import { CompleteFormValues } from './AdditionalSalaryRequest';
 import { AdditionalSalaryRequestProvider } from './Shared/AdditionalSalaryRequestContext';
 
 interface AdditionalSalaryRequestTestWrapperProps {
