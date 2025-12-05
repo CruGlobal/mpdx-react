@@ -90,6 +90,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     autoPurchase: '0',
     reimbursableExpenses: '0',
     defaultPercentage: false,
+    telephoneNumber: '',
   };
 
   const validationSchema = useMemo(
@@ -116,8 +117,11 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
         autoPurchase: createCurrencyValidation('Auto Purchase'), // Max will eventually be a constant, no determined value yet
         reimbursableExpenses: createCurrencyValidation('Reimbursable Expenses'),
         defaultPercentage: yup.boolean(),
+        telephoneNumber: yup
+          .string()
+          .required(t('Telephone number is required')),
       }),
-    [createCurrencyValidation],
+    [createCurrencyValidation, t],
   );
 
   // Step Handlers
