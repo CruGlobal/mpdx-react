@@ -1,42 +1,59 @@
 import React from 'react';
+import { Box } from '@mui/material';
+import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
+import { DirectionButtons } from 'src/components/Reports/Shared/CalculationReports/DirectionButtons/DirectionButtons';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import theme from 'src/theme';
 import { PanelLayout } from '../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { useIconPanelItems } from '../Shared/CalculationReports/PanelLayout/useIconPanelItems';
-import { Receipt } from '../Shared/CalculationReports/ReceiptStep/Receipt';
 import { PanelTypeEnum } from '../Shared/CalculationReports/Shared/sharedTypes';
 import { StepsList } from '../Shared/CalculationReports/StepsList/StepsList';
-import { AboutForm } from './AboutForm/AboutForm';
-import { AdditionalSalaryRequestSectionEnum } from './AdditionalSalaryRequestHelper';
-import { CompleteForm } from './CompleteForm/CompleteForm';
+import { CurrentStep } from './CurrentStep';
 import { useAdditionalSalaryRequest } from './Shared/AdditionalSalaryRequestContext';
-import { AdditionalSalaryRequestSection } from './SharedComponents/AdditionalSalaryRequestSection';
 import { SectionPage } from './SharedComponents/SectionPage';
 
-export const MainContent: React.FC = () => {
-  const { currentStep } = useAdditionalSalaryRequest();
-  const { t } = useTranslation();
-  const accountListId = useAccountListId();
+export interface CompleteFormValues {
+  currentYearSalary: string;
+  previousYearSalary: string;
+  additionalSalary: string;
+  adoption: string;
+  contribution403b: string;
+  counseling: string;
+  healthcareExpenses: string;
+  babysitting: string;
+  childrenMinistryTrip: string;
+  childrenCollege: string;
+  movingExpense: string;
+  seminary: string;
+  housingDownPayment: string;
+  autoPurchase: string;
+  reimbursableExpenses: string;
+  defaultPercentage: boolean;
+}
 
-  const pageLink = `/accountLists/${accountListId}/reports/additionalSalaryRequest`;
+const MainContent: React.FC = () => {
+  const { handleCancel, handlePreviousStep, handleNextStep, currentIndex } =
+    useAdditionalSalaryRequest();
+  const { submitForm, validateForm, submitCount, isValid } =
+    useFormikContext<CompleteFormValues>();
 
-  switch (currentStep) {
-    case AdditionalSalaryRequestSectionEnum.AboutForm:
-      return <AboutForm />;
-    case AdditionalSalaryRequestSectionEnum.CompleteForm:
-      return <CompleteForm />;
-    case AdditionalSalaryRequestSectionEnum.Receipt:
-      return (
-        <AdditionalSalaryRequestSection>
-          <Receipt
-            formTitle={t('Additional Salary Request')}
-            buttonText={t('View Your Additional Salary Request')}
-            viewLink={pageLink}
-            isEdit={false}
-          />
-        </AdditionalSalaryRequestSection>
-      );
-  }
+  return (
+    <Box px={theme.spacing(3)}>
+      <CurrentStep />
+      <DirectionButtons
+        handleNextStep={handleNextStep}
+        handlePreviousStep={handlePreviousStep}
+        showBackButton={currentIndex !== 0}
+        handleCancel={handleCancel}
+        isSubmission={true}
+        submitForm={submitForm}
+        validateForm={validateForm}
+        submitCount={submitCount}
+        isValid={isValid}
+      />
+    </Box>
+  );
 };
 
 export const AdditionalSalaryRequest: React.FC = () => {

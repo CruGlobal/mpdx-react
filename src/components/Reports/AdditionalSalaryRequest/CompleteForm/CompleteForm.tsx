@@ -1,9 +1,7 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
-import { DirectionButtons } from 'src/components/Reports/Shared/CalculationReports/DirectionButtons/DirectionButtons';
 import { NameDisplay } from 'src/components/Reports/Shared/CalculationReports/NameDisplay/NameDisplay';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { getHeader } from '../Shared/Helper/getHeader';
@@ -11,31 +9,10 @@ import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSa
 import { AdditionalSalaryRequest } from './AdditionalSalaryRequest/AdditionalSalaryRequest';
 import { Deduction } from './Deduction/Deduction';
 
-export interface CompleteFormValues {
-  currentYearSalary: string;
-  previousYearSalary: string;
-  additionalSalary: string;
-  adoption: string;
-  contribution403b: string;
-  counseling: string;
-  healthcareExpenses: string;
-  babysitting: string;
-  childrenMinistryTrip: string;
-  childrenCollege: string;
-  movingExpense: string;
-  seminary: string;
-  housingDownPayment: string;
-  autoPurchase: string;
-  reimbursableExpenses: string;
-  defaultPercentage: boolean;
-}
-
 export const CompleteForm: React.FC = () => {
   const { t } = useTranslation();
-  const { currentStep, handlePreviousStep, handleNextStep, handleCancel } =
-    useAdditionalSalaryRequest();
-  const { handleSubmit, submitForm, validateForm, submitCount, isValid } =
-    useFormikContext<CompleteFormValues>();
+  const { currentStep } = useAdditionalSalaryRequest();
+
   const theme = useTheme();
   const name = 'Doc, John';
   const accountNumber = '00123456';
@@ -44,44 +21,31 @@ export const CompleteForm: React.FC = () => {
 
   return (
     <AdditionalSalaryRequestSection title={getHeader(t, currentStep)}>
-      <form onSubmit={handleSubmit}>
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: theme.spacing(4),
-          }}
-        >
-          <NameDisplay
-            names={name}
-            personNumbers={accountNumber}
-            showContent={true}
-            titleOne={t('Primary Account Balance')}
-            amountOne={primaryAccountBalance}
-            titleTwo={t('Your Remaining Allowable Salary')}
-            amountTwo={remainingAllowableSalary}
-          />
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: theme.spacing(4),
+        }}
+      >
+        <NameDisplay
+          names={name}
+          personNumbers={accountNumber}
+          showContent={true}
+          titleOne={t('Primary Account Balance')}
+          amountOne={primaryAccountBalance}
+          titleTwo={t('Your Remaining Allowable Salary')}
+          amountTwo={remainingAllowableSalary}
+        />
 
-          <Typography variant="body1" paragraph>
-            {t(
-              'Please enter the desired dollar amounts for the appropriate categories and review totals before submitting. Your Net Additional Salary calculated below represents the amount you will receive (before taxes) in additional salary and equals the amount you are requesting minus any amount being contributed to your 403(b).',
-            )}
-          </Typography>
-          <AdditionalSalaryRequest />
-          <Deduction />
-          <DirectionButtons
-            handleNextStep={handleNextStep}
-            handlePreviousStep={handlePreviousStep}
-            showBackButton={true}
-            handleCancel={handleCancel}
-            isSubmission={true}
-            submitForm={submitForm}
-            validateForm={validateForm}
-            submitCount={submitCount}
-            isValid={isValid}
-          />
-        </Box>
-      </form>
+        <Typography variant="body1" paragraph>
+          {t(
+            'Please enter the desired dollar amounts for the appropriate categories and review totals before submitting. Your Net Additional Salary calculated below represents the amount you will receive (before taxes) in additional salary and equals the amount you are requesting minus any amount being contributed to your 403(b).',
+          )}
+        </Typography>
+        <AdditionalSalaryRequest />
+        <Deduction />
+      </Box>
     </AdditionalSalaryRequestSection>
   );
 };
