@@ -133,3 +133,28 @@ mutation DeleteMinistryHousingAllowanceRequest(
     id
   }
 }
+
+mutation SubmitMinistryHousingAllowanceRequest(
+  $input: MinistryHousingAllowanceRequestSubmitMutationInput!
+) {
+  submitMinistryHousingAllowanceRequest(input: $input) {
+    ministryHousingAllowanceRequest {
+      requestAttributes {
+        rentOrOwn
+        rentalValue
+        furnitureCostsOne
+        avgUtilityOne
+        mortgageOrRentPayment
+        furnitureCostsTwo
+        repairCosts
+        avgUtilityTwo
+        unexpectedExpenses
+        overallAmount
+        phoneNumber
+        emailAddress
+        iUnderstandMhaPolicy
+        submittedDate
+      }
+    }
+  }
+}

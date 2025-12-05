@@ -28,6 +28,7 @@ import i18n from 'src/lib/i18n';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { phoneNumber } from 'src/lib/yupHelpers';
 import { DirectionButtons } from '../../../Shared/CalculationReports/DirectionButtons/DirectionButtons';
+import { useSubmitMinistryHousingAllowanceRequestMutation } from '../../MinisterHousingAllowance.generated';
 import { hasPopulatedValues } from '../../Shared/Context/Helper/hasPopulatedValues';
 import { useMinisterHousingAllowance } from '../../Shared/Context/MinisterHousingAllowanceContext';
 import { CostOfHome } from './CalcComponents/CostOfHome';
@@ -102,6 +103,8 @@ export const Calculation: React.FC<CalculationProps> = ({
   const locale = useLocale();
   const { query } = useRouter();
   const print = query.print === 'true';
+
+  const [submitMutation] = useSubmitMinistryHousingAllowanceRequestMutation();
 
   const {
     handleNextStep,
@@ -198,6 +201,9 @@ export const Calculation: React.FC<CalculationProps> = ({
       validateOnChange
       validateOnBlur
       onSubmit={() => {
+        submitMutation({
+          variables: { input: { requestId: requestData?.id ?? '' } },
+        });
         handleNextStep();
       }}
     >
