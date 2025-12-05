@@ -3,33 +3,15 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { AdditionalSalaryRequestTestWrapper } from '../../AdditionalSalaryRequestTestWrapper';
+import { defaultCompleteFormValues } from '../CompleteForm.mock';
 import { AdditionalSalaryRequest } from './AdditionalSalaryRequest';
-
-const defaultValues: CompleteFormValues = {
-  currentYearSalary: '0',
-  previousYearSalary: '0',
-  additionalSalary: '0',
-  adoption: '0',
-  contribution403b: '0',
-  counseling: '0',
-  healthcareExpenses: '0',
-  babysitting: '0',
-  childrenMinistryTrip: '0',
-  childrenCollege: '0',
-  movingExpense: '0',
-  seminary: '0',
-  housingDownPayment: '0',
-  autoPurchase: '0',
-  reimbursableExpenses: '0',
-  defaultPercentage: false,
-};
 
 interface TestWrapperProps {
   initialValues?: CompleteFormValues;
 }
 
 const TestWrapper: React.FC<TestWrapperProps> = ({
-  initialValues = defaultValues,
+  initialValues = defaultCompleteFormValues,
 }) => (
   <AdditionalSalaryRequestTestWrapper initialValues={initialValues}>
     <AdditionalSalaryRequest />
@@ -75,7 +57,7 @@ describe('AdditionalSalaryRequest', () => {
 
   it('calculates total from a single field', () => {
     const valuesWithAmount: CompleteFormValues = {
-      ...defaultValues,
+      ...defaultCompleteFormValues,
       additionalSalary: '5000',
     };
 
@@ -88,7 +70,7 @@ describe('AdditionalSalaryRequest', () => {
 
   it('calculates total from multiple fields', () => {
     const valuesWithMultiple: CompleteFormValues = {
-      ...defaultValues,
+      ...defaultCompleteFormValues,
       additionalSalary: '5000',
       adoption: '2000',
       counseling: '3000',
@@ -118,7 +100,7 @@ describe('AdditionalSalaryRequest', () => {
 
   it('handles empty string values in calculation', () => {
     const valuesWithEmpty: CompleteFormValues = {
-      ...defaultValues,
+      ...defaultCompleteFormValues,
       additionalSalary: '5000',
       adoption: '',
       counseling: '',
@@ -133,7 +115,7 @@ describe('AdditionalSalaryRequest', () => {
 
   it('does not include defaultPercentage boolean in total calculation', () => {
     const valuesWithBoolean: CompleteFormValues = {
-      ...defaultValues,
+      ...defaultCompleteFormValues,
       additionalSalary: '10000',
       defaultPercentage: true,
     };
@@ -197,6 +179,7 @@ describe('AdditionalSalaryRequest', () => {
       autoPurchase: '1000',
       reimbursableExpenses: '1000',
       defaultPercentage: false,
+      telephoneNumber: '157-234-4291',
     };
 
     const { getByTestId } = render(
@@ -213,7 +196,7 @@ describe('AdditionalSalaryRequest', () => {
     expect(getByTestId('total-amount')).toHaveTextContent('$0');
 
     const updatedValues: CompleteFormValues = {
-      ...defaultValues,
+      ...defaultCompleteFormValues,
       additionalSalary: '7500',
     };
 
@@ -224,7 +207,7 @@ describe('AdditionalSalaryRequest', () => {
 
   it('handles decimal values correctly', () => {
     const valuesWithDecimals: CompleteFormValues = {
-      ...defaultValues,
+      ...defaultCompleteFormValues,
       additionalSalary: '1000.50',
       adoption: '500.25',
     };
@@ -238,7 +221,7 @@ describe('AdditionalSalaryRequest', () => {
 
   it('displays all values from formik props', () => {
     const customValues: CompleteFormValues = {
-      ...defaultValues,
+      ...defaultCompleteFormValues,
       currentYearSalary: '100',
       previousYearSalary: '200',
       additionalSalary: '300',
