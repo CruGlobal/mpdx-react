@@ -22,7 +22,7 @@ export const EffectiveDateStep: React.FC = () => {
 
   return (
     <Box py={theme.spacing(2)}>
-      <Typography variant="h5" gutterBottom>
+      <Typography variant="h4" gutterBottom>
         {t('Effective Date')}
       </Typography>
       <Box mb={theme.spacing(4)} />
