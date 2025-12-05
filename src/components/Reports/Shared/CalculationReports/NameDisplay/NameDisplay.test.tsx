@@ -43,6 +43,32 @@ const TestComponent: React.FC<TestComponentProps> = ({
   );
 };
 
+const TestComponentWithSpouse: React.FC<TestComponentProps> = ({
+  names,
+  personNumbers,
+  showContent,
+  contextValue,
+}) => {
+  return (
+    <ThemeProvider theme={theme}>
+      <MinisterHousingAllowanceContext.Provider
+        value={contextValue as ContextType}
+      >
+        <NameDisplay
+          names={names}
+          personNumbers={personNumbers}
+          showContent={showContent}
+          titleOne={titleOne}
+          titleTwo={titleTwo}
+          amountOne={1000}
+          amountTwo={20000}
+          spouseComponent={<div data-testid="spouse-component">Spouse Info</div>}
+        />
+      </MinisterHousingAllowanceContext.Provider>
+    </ThemeProvider>
+  );
+};
+
 describe('NameDisplay', () => {
   it('renders correctly for a single person', () => {
     const { getByText } = render(
@@ -118,5 +144,29 @@ describe('NameDisplay', () => {
     expect(getByText('TITLE TWO')).toBeInTheDocument();
     expect(getByText('$1,000.00')).toBeInTheDocument();
     expect(getByText('$20,000.00')).toBeInTheDocument();
+  });
+
+  it('renders spouseComponent when provided', () => {
+    const { getByTestId, getByText } = render(
+      <TestComponentWithSpouse
+        names="Doe, John"
+        personNumbers="000123456"
+        contextValue={{
+          isMarried: false,
+          preferredName: 'John',
+          spousePreferredName: '',
+          userHcmData: {
+            staffInfo: {
+              personNumber: '000123456',
+            },
+          } as unknown as HcmData,
+          spouseHcmData: null,
+        }}
+      />,
+    );
+
+    expect(getByText('Doe, John')).toBeInTheDocument();
+    expect(getByTestId('spouse-component')).toBeInTheDocument();
+    expect(getByText('Spouse Info')).toBeInTheDocument();
   });
 });

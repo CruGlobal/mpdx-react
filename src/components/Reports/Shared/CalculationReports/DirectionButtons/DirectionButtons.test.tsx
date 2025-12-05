@@ -16,12 +16,14 @@ const pushMock = jest.fn();
 const handleNextStep = jest.fn();
 const handlePreviousStep = jest.fn();
 const overrideNext = jest.fn();
+const handleCancel = jest.fn();
 
 interface TestComponentProps {
   isSubmission?: boolean;
   overrideNext?: () => void;
   showBackButton?: boolean;
   buttonTitle?: string;
+  handleCancel?: () => void;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
@@ -29,6 +31,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   overrideNext,
   showBackButton = false,
   buttonTitle,
+  handleCancel: handleCancelProp,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter
@@ -46,6 +49,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
               overrideNext={overrideNext}
               showBackButton={showBackButton}
               buttonTitle={buttonTitle}
+              handleCancel={handleCancelProp}
             />
           </MinisterHousingAllowanceProvider>
         </Formik>
@@ -101,5 +105,25 @@ describe('DirectionButtons', () => {
     const { getByRole } = render(<TestComponent buttonTitle={title} />);
 
     expect(getByRole('button', { name: title })).toBeInTheDocument();
+  });
+
+  it('renders Cancel button when handleCancel is provided', () => {
+    const { getByRole } = render(<TestComponent handleCancel={handleCancel} />);
+
+    expect(getByRole('button', { name: /cancel/i })).toBeInTheDocument();
+  });
+
+  it('does not render Cancel button when handleCancel is not provided', () => {
+    const { queryByRole } = render(<TestComponent />);
+
+    expect(queryByRole('button', { name: /cancel/i })).not.toBeInTheDocument();
+  });
+
+  it('calls handleCancel when Cancel button is clicked', async () => {
+    const { getByRole } = render(<TestComponent handleCancel={handleCancel} />);
+
+    userEvent.click(getByRole('button', { name: /cancel/i }));
+
+    expect(handleCancel).toHaveBeenCalled();
   });
 });

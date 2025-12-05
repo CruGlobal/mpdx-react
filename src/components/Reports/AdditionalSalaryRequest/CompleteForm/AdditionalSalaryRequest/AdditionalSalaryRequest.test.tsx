@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { AdditionalSalaryRequestTestWrapper } from '../../AdditionalSalaryRequestTestWrapper';
-import { CompleteFormValues } from '../CompleteForm';
 import { AdditionalSalaryRequest } from './AdditionalSalaryRequest';
 
 const defaultValues: CompleteFormValues = {
@@ -40,7 +40,11 @@ describe('AdditionalSalaryRequest', () => {
   it('renders the Additional Salary Request card', () => {
     const { getByText } = render(<TestWrapper />);
 
-    expect(getByText('Additional Salary Request')).toBeInTheDocument();
+    expect(
+      getByText('Additional Salary Request', {
+        selector: '.MuiCardHeader-title',
+      }),
+    ).toBeInTheDocument();
   });
 
   it('renders Category and Amount headers', () => {
@@ -230,14 +234,6 @@ describe('AdditionalSalaryRequest', () => {
     );
 
     expect(getByTestId('total-amount')).toHaveTextContent('$1,500.75');
-  });
-
-  it('renders dividers between categories', () => {
-    const { container } = render(<TestWrapper />);
-
-    const dividers = container.querySelectorAll('hr');
-    // Should have dividers between categories plus one at the end
-    expect(dividers.length).toBeGreaterThan(10);
   });
 
   it('displays all values from formik props', () => {

@@ -8,8 +8,8 @@ import { currencyFormat } from 'src/lib/intlFormat';
 import { amount } from 'src/lib/yupHelpers';
 import { FormEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
+import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
-import { CompleteFormValues } from '../CompleteForm/CompleteForm';
 import { calculateCompletionPercentage } from './calculateCompletionPercentage';
 
 export type AdditionalSalaryRequestType = {
@@ -123,10 +123,6 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     [createCurrencyValidation],
   );
 
-  const handleSubmit = useCallback((_values: CompleteFormValues) => {
-    //TODO: Submit form values
-  }, []);
-
   const handleNextStep = () => {
     setCurrentStep((prevStep) => {
       const next =
@@ -141,6 +137,14 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       return next;
     });
   };
+
+  const handleSubmit = useCallback(
+    (_values: CompleteFormValues) => {
+      //TODO: Submit form values
+      handleNextStep();
+    },
+    [handleNextStep],
+  );
 
   const handlePreviousStep = () => {
     setCurrentStep((prevStep) => {
