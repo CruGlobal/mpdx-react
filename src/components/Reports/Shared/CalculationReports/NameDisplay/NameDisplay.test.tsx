@@ -16,6 +16,7 @@ interface TestComponentProps {
   personNumbers: string;
   showContent?: boolean;
   contextValue?: Partial<ContextType>;
+  spouseComponent?: React.ReactNode;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
@@ -23,6 +24,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   personNumbers,
   showContent,
   contextValue,
+  spouseComponent,
 }) => {
   return (
     <ThemeProvider theme={theme}>
@@ -37,32 +39,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
           titleTwo={titleTwo}
           amountOne={1000}
           amountTwo={20000}
-        />
-      </MinisterHousingAllowanceContext.Provider>
-    </ThemeProvider>
-  );
-};
-
-const TestComponentWithSpouse: React.FC<TestComponentProps> = ({
-  names,
-  personNumbers,
-  showContent,
-  contextValue,
-}) => {
-  return (
-    <ThemeProvider theme={theme}>
-      <MinisterHousingAllowanceContext.Provider
-        value={contextValue as ContextType}
-      >
-        <NameDisplay
-          names={names}
-          personNumbers={personNumbers}
-          showContent={showContent}
-          titleOne={titleOne}
-          titleTwo={titleTwo}
-          amountOne={1000}
-          amountTwo={20000}
-          spouseComponent={<div data-testid="spouse-component">Spouse Info</div>}
+          spouseComponent={spouseComponent}
         />
       </MinisterHousingAllowanceContext.Provider>
     </ThemeProvider>
@@ -148,7 +125,7 @@ describe('NameDisplay', () => {
 
   it('renders spouseComponent when provided', () => {
     const { getByTestId, getByText } = render(
-      <TestComponentWithSpouse
+      <TestComponent
         names="Doe, John"
         personNumbers="000123456"
         contextValue={{
@@ -162,6 +139,7 @@ describe('NameDisplay', () => {
           } as unknown as HcmData,
           spouseHcmData: null,
         }}
+        spouseComponent={<div data-testid="spouse-component">Spouse Info</div>}
       />,
     );
 
