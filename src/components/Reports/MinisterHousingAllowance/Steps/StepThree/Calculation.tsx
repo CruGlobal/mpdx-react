@@ -79,7 +79,7 @@ const getValidationSchema = (rentOrOwn?: MhaRentOrOwnEnum) => {
       .string()
       .email(i18n.t('Invalid email address.'))
       .required(i18n.t('Email is required.')),
-    isChecked: yup
+    iUnderstandMhaPolicy: yup
       .boolean()
       .oneOf([true], i18n.t('This box must be checked to continue.')),
   };
@@ -227,8 +227,10 @@ export const Calculation: React.FC<CalculationProps> = ({
         }, [values, setHasCalcValues]);
 
         const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-          setFieldValue('iUnderstandMhaPolicy', e.target.checked);
-          update(e.target.checked);
+          const checked = e.target.checked;
+
+          setFieldValue('iUnderstandMhaPolicy', checked);
+          update(checked);
         };
 
         return (
@@ -345,7 +347,9 @@ export const Calculation: React.FC<CalculationProps> = ({
                 {t('Your form is missing information.')}
                 <ul>
                   {!!submitCount &&
-                    Object.keys(errors).some((k) => k !== 'isChecked') && (
+                    Object.keys(errors).some(
+                      (k) => k !== 'iUnderstandMhaPolicy',
+                    ) && (
                       <li>
                         {t('Please enter a value for all required fields.')}
                       </li>
