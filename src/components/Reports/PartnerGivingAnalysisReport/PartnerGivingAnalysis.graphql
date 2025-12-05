@@ -5,23 +5,38 @@ query PartnerGivingAnalysis(
 ) {
   partnerGivingAnalysis(input: $input, first: $first, after: $after) {
     nodes {
-      id
-      name
-      status
-      totalDonations
-      pledgeCurrency
-      pledgeAmount
-      lastDonationDate
-      lastDonationAmount
-      lastDonationCurrency
-      donationPeriodAverage
-      donationPeriodCount
-      donationPeriodSum
+      ...PartnerGivingFields
     }
     pageInfo {
       endCursor
       hasNextPage
     }
     totalCount
+    donationPeriodTotalSum
+  }
+}
+
+fragment PartnerGivingFields on PartnerGivingAnalysisContact {
+  id
+  name
+  status
+  totalDonations
+  pledgeCurrency
+  pledgeAmount
+  pledgeFrequency
+  firstDonationDate
+  lastDonationDate
+  lastDonationAmount
+  lastDonationCurrency
+  donationPeriodAverage
+  donationPeriodCount
+  donationPeriodSum
+}
+
+query ReportsStaffExpenses($fundTypes: [String!]) {
+  reportsStaffExpenses(fundTypes: $fundTypes) {
+    funds {
+      ...FundFields
+    }
   }
 }
