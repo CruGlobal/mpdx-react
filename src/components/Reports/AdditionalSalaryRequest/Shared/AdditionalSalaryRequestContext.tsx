@@ -148,6 +148,14 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     // Implement cancel logic here
   };
 
+  const handleSubmit = useCallback(
+    (_values: CompleteFormValues) => {
+      //TODO: Submit form values
+      handleNextStep();
+    },
+    [handleNextStep],
+  );
+
   const formik = useFormik<CompleteFormValues>({
     initialValues: providedInitialValues || initialValues,
     validationSchema,
