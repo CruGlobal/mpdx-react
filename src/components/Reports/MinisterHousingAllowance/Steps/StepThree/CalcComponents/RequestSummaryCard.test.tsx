@@ -4,14 +4,14 @@ import { render } from '@testing-library/react';
 import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { RentOwnEnum } from 'src/components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
+import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { MinisterHousingAllowanceProvider } from '../../../Shared/Context/MinisterHousingAllowanceContext';
 import { RequestSummaryCard } from './RequestSummaryCard';
 
 const submit = jest.fn();
 interface TestComponentProps {
-  rentOrOwn?: RentOwnEnum;
+  rentOrOwn?: MhaRentOrOwnEnum;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({ rentOrOwn }) => (
@@ -30,7 +30,9 @@ const TestComponent: React.FC<TestComponentProps> = ({ rentOrOwn }) => (
 
 describe('RequestSummaryCard', () => {
   it('renders the card for own', () => {
-    const { getByText } = render(<TestComponent rentOrOwn={RentOwnEnum.Own} />);
+    const { getByText } = render(
+      <TestComponent rentOrOwn={MhaRentOrOwnEnum.Own} />,
+    );
 
     expect(getByText('Your MHA Request Summary')).toBeInTheDocument();
     expect(getByText('Own')).toBeInTheDocument();
@@ -42,7 +44,7 @@ describe('RequestSummaryCard', () => {
 
   it('renders the card for rent', () => {
     const { getByText } = render(
-      <TestComponent rentOrOwn={RentOwnEnum.Rent} />,
+      <TestComponent rentOrOwn={MhaRentOrOwnEnum.Rent} />,
     );
 
     expect(getByText('Your MHA Request Summary')).toBeInTheDocument();

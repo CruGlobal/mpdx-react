@@ -2,6 +2,7 @@ import { Container, Stack } from '@mui/material';
 import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import i18n from 'src/lib/i18n';
 import { PanelLayout } from '../../Shared/CalculationReports/PanelLayout/PanelLayout';
@@ -15,13 +16,13 @@ import { StepsList } from '../../Shared/CalculationReports/StepsList/StepsList';
 import { mainContentWidth } from '../MinisterHousingAllowance';
 import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
 import { mocks } from '../Shared/mockData';
-import { RentOwnEnum, StepsEnum } from '../Shared/sharedTypes';
+import { StepsEnum } from '../Shared/sharedTypes';
 import { AboutForm } from '../Steps/StepOne/AboutForm';
 import { Calculation } from '../Steps/StepThree/Calculation';
 import { RentOwn } from '../Steps/StepTwo/RentOwn';
 
 export interface FormValues {
-  rentOrOwn: RentOwnEnum | undefined;
+  rentOrOwn: MhaRentOrOwnEnum | undefined;
 }
 
 const validationSchema = yup.object({
@@ -33,11 +34,8 @@ const validationSchema = yup.object({
 export const NewRequestPage: React.FC = () => {
   const { t } = useTranslation();
 
-  const accountListId = useAccountListId();
-  const editLink = `/accountLists/${accountListId}/reports/housingAllowance/edit`;
-  const viewLink = `/accountLists/${accountListId}/reports/housingAllowance/view`;
-
   const {
+    requestId,
     steps,
     handleNextStep,
     currentStep,
@@ -48,6 +46,10 @@ export const NewRequestPage: React.FC = () => {
     currentIndex,
     setIsComplete,
   } = useMinisterHousingAllowance();
+
+  const accountListId = useAccountListId();
+  const editLink = `/accountLists/${accountListId}/reports/housingAllowance/${requestId}/edit`;
+  const viewLink = `/accountLists/${accountListId}/reports/housingAllowance/${requestId}/view`;
 
   const isEdit = pageType === PageEnum.Edit;
 

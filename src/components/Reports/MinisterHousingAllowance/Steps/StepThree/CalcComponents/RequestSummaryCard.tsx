@@ -12,12 +12,12 @@ import {
 } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { Trans, useTranslation } from 'react-i18next';
-import { RentOwnEnum } from 'src/components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import {
   SimplePrintOnly,
   SimpleScreenOnly,
 } from 'src/components/Reports/styledComponents';
+import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
 import { useAnnualTotal } from 'src/hooks/useAnnualTotal';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
@@ -25,11 +25,11 @@ import { useMinisterHousingAllowance } from '../../../Shared/Context/MinisterHou
 import { CalculationFormValues } from '../Calculation';
 
 interface RequestSummaryCardProps {
-  rentOrOwn: RentOwnEnum | undefined;
+  rentOrOwn: MhaRentOrOwnEnum | undefined;
 }
 
 export const RequestSummaryCard: React.FC<RequestSummaryCardProps> = ({
-  rentOrOwn = RentOwnEnum.Own,
+  rentOrOwn = MhaRentOrOwnEnum.Own,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -74,7 +74,7 @@ export const RequestSummaryCard: React.FC<RequestSummaryCardProps> = ({
                 {t('Rent or Own')}
               </TableCell>
               <TableCell sx={{ width: '30%', fontSize: 16 }}>
-                {rentOrOwn === RentOwnEnum.Own ? t('Own') : t('Rent')}
+                {rentOrOwn === MhaRentOrOwnEnum.Own ? t('Own') : t('Rent')}
               </TableCell>
             </TableRow>
           </TableHead>

@@ -1,12 +1,14 @@
-import { Box, TextField, Typography } from '@mui/material';
-import { useFormikContext } from 'formik';
+import { Box, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { CalculationFormValues } from '../Calculation';
+import * as yup from 'yup';
+import { AutosaveCustomTextField } from '../../../Shared/AutoSave/AutosaveCustomTextField';
 
-export const EndingSection: React.FC = () => {
+interface EndingSectionProps {
+  schema: yup.Schema;
+}
+
+export const EndingSection: React.FC<EndingSectionProps> = ({ schema }) => {
   const { t } = useTranslation();
-  const { values, handleChange, handleBlur, errors, touched } =
-    useFormikContext<CalculationFormValues>();
 
   return (
     <Box mt={2}>
@@ -18,29 +20,21 @@ export const EndingSection: React.FC = () => {
         </Typography>
       </Box>
       <Box sx={{ mt: 3, display: 'flex', justifyContent: 'row', gap: 2 }}>
-        <TextField
+        <AutosaveCustomTextField
           label={t('Telephone Number')}
           variant="outlined"
-          name="phone"
-          value={values.phone}
-          onChange={handleChange}
-          onBlur={handleBlur}
           InputLabelProps={{ shrink: true }}
-          error={touched.phone && Boolean(errors.phone)}
-          helperText={touched.phone && errors.phone}
           sx={{ width: '40%' }}
+          fieldName="phoneNumber"
+          schema={schema}
         />
-        <TextField
+        <AutosaveCustomTextField
           label={t('Email')}
           variant="outlined"
-          name="email"
-          value={values.email}
-          onChange={handleChange}
-          onBlur={handleBlur}
           InputLabelProps={{ shrink: true }}
-          error={touched.email && Boolean(errors.email)}
-          helperText={touched.email && errors.email}
           sx={{ width: '60%' }}
+          fieldName="emailAddress"
+          schema={schema}
         />
       </Box>
       <Box mt={1}>

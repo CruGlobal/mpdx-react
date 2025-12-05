@@ -1,20 +1,25 @@
 import { Box, TableCell, TableRow, Typography } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
-import { RentOwnEnum } from 'src/components/Reports/MinisterHousingAllowance/Shared/sharedTypes';
+import * as yup from 'yup';
 import { StyledOrderedList } from 'src/components/Reports/Shared/CalculationReports/Shared/styledComponents/StepsListStyles';
+import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
 import { useAnnualTotal } from 'src/hooks/useAnnualTotal';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { FormCard } from '../../../../Shared/CalculationReports/FormCard/FormCard';
+import { AutosaveCustomTextField } from '../../../Shared/AutoSave/AutosaveCustomTextField';
 import { CalculationFormValues } from '../Calculation';
-import { CustomTextField } from './Helper/CustomTextField';
 
 interface CostOfHomeProps {
-  rentOrOwn?: RentOwnEnum;
+  schema: yup.Schema;
+  rentOrOwn?: MhaRentOrOwnEnum;
 }
 
-export const CostOfHome: React.FC<CostOfHomeProps> = ({ rentOrOwn }) => {
+export const CostOfHome: React.FC<CostOfHomeProps> = ({
+  rentOrOwn,
+  schema,
+}) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const currency = 'USD';
@@ -29,7 +34,7 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({ rentOrOwn }) => {
         <TableCell sx={{ width: '70%' }}>
           <StyledOrderedList component="ol" start={1}>
             <Typography component="li">
-              {rentOrOwn === RentOwnEnum.Own
+              {rentOrOwn === MhaRentOrOwnEnum.Own
                 ? t(
                     'Monthly mortgage payment, taxes, insurance, and any extra principal you pay.',
                   )
@@ -42,14 +47,19 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({ rentOrOwn }) => {
             width: '30%',
             color: 'text.secondary',
             border:
-              touched.mortgagePayment && errors.mortgagePayment
+              touched.mortgageOrRentPayment && errors.mortgageOrRentPayment
                 ? '2px solid red'
                 : '',
           }}
         >
-          <CustomTextField
-            name="mortgagePayment"
-            value={values.mortgagePayment}
+          <AutosaveCustomTextField
+            fullWidth
+            size="small"
+            variant="standard"
+            placeholder={t('Enter Amount')}
+            InputProps={{ disableUnderline: true, inputMode: 'decimal' }}
+            fieldName="mortgageOrRentPayment"
+            schema={schema}
           />
         </TableCell>
       </TableRow>
@@ -73,9 +83,14 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({ rentOrOwn }) => {
                 : '',
           }}
         >
-          <CustomTextField
-            name="furnitureCostsTwo"
-            value={values.furnitureCostsTwo}
+          <AutosaveCustomTextField
+            fullWidth
+            size="small"
+            variant="standard"
+            placeholder={t('Enter Amount')}
+            InputProps={{ disableUnderline: true, inputMode: 'decimal' }}
+            fieldName="furnitureCostsTwo"
+            schema={schema}
           />
         </TableCell>
       </TableRow>
@@ -97,7 +112,15 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({ rentOrOwn }) => {
               touched.repairCosts && errors.repairCosts ? '2px solid red' : '',
           }}
         >
-          <CustomTextField name="repairCosts" value={values.repairCosts} />
+          <AutosaveCustomTextField
+            fullWidth
+            size="small"
+            variant="standard"
+            placeholder={t('Enter Amount')}
+            InputProps={{ disableUnderline: true, inputMode: 'decimal' }}
+            fieldName="repairCosts"
+            schema={schema}
+          />
         </TableCell>
       </TableRow>
       <TableRow>
@@ -106,7 +129,7 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({ rentOrOwn }) => {
             <Typography component="li">
               {t('Average monthly utility costs.')}
             </Typography>
-            {rentOrOwn === RentOwnEnum.Own && (
+            {rentOrOwn === MhaRentOrOwnEnum.Own && (
               <Box sx={{ color: 'text.secondary' }}>
                 {t('Entered in the previous section.')}
               </Box>
@@ -123,7 +146,15 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({ rentOrOwn }) => {
                 : '',
           }}
         >
-          <CustomTextField name="avgUtilityTwo" value={values.avgUtilityTwo} />
+          <AutosaveCustomTextField
+            fullWidth
+            size="small"
+            variant="standard"
+            placeholder={t('Enter Amount')}
+            InputProps={{ disableUnderline: true, inputMode: 'decimal' }}
+            fieldName="avgUtilityTwo"
+            schema={schema}
+          />
         </TableCell>
       </TableRow>
       <TableRow>
@@ -144,9 +175,14 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({ rentOrOwn }) => {
                 : '',
           }}
         >
-          <CustomTextField
-            name="unexpectedExpenses"
-            value={values.unexpectedExpenses}
+          <AutosaveCustomTextField
+            fullWidth
+            size="small"
+            variant="standard"
+            placeholder={t('Enter Amount')}
+            InputProps={{ disableUnderline: true, inputMode: 'decimal' }}
+            fieldName="unexpectedExpenses"
+            schema={schema}
           />
         </TableCell>
       </TableRow>
@@ -170,7 +206,7 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({ rentOrOwn }) => {
       <TableRow>
         <TableCell sx={{ width: '70%' }}>
           <Typography sx={{ fontWeight: 'bold' }}>
-            {rentOrOwn === RentOwnEnum.Rent
+            {rentOrOwn === MhaRentOrOwnEnum.Rent
               ? t('Annual Fair Rental Value of your Home')
               : t('Annual Cost of Providing a Home')}
           </Typography>
