@@ -23,10 +23,14 @@ export const AutosaveCustomTextField: React.FC<
   const { pageType, requestData } = useMinisterHousingAllowance();
   const request = requestData?.requestAttributes;
 
-  const { setFieldValue, setFieldTouched, submitCount } =
-    useFormikContext<CalculationFormValues>();
+  const {
+    setFieldValue,
+    setFieldTouched,
+    submitCount,
+    values: formValues,
+  } = useFormikContext<CalculationFormValues>();
 
-  const saveField = useSaveField();
+  const saveField = useSaveField({ formValues });
 
   const fieldProps = useAutoSave({
     value: request?.[fieldName],

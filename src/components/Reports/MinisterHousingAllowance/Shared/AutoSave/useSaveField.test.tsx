@@ -44,9 +44,15 @@ const TestComponent: React.FC<TestComponentProps> = ({ children }) => {
 
 describe('useSaveField', () => {
   it('should update ministry housing allowance request', async () => {
-    const { result } = renderHook(() => useSaveField(), {
-      wrapper: TestComponent,
-    });
+    const { result } = renderHook(
+      () =>
+        useSaveField({
+          formValues: { rentalValue: 50 },
+        }),
+      {
+        wrapper: TestComponent,
+      },
+    );
 
     result.current({ rentalValue: 100 });
 

@@ -1,9 +1,15 @@
 import { useCallback } from 'react';
 import { MinistryHousingAllowanceRequestAttributesInput } from 'pages/api/graphql-rest.page.generated';
+import { calculateAnnualTotals } from 'src/hooks/useAnnualTotal';
 import { useUpdateMinistryHousingAllowanceRequestMutation } from '../../MinisterHousingAllowance.generated';
+import { CalculationFormValues } from '../../Steps/StepThree/Calculation';
 import { useMinisterHousingAllowance } from '../Context/MinisterHousingAllowanceContext';
 
-export const useSaveField = () => {
+interface UseSaveFieldOptions {
+  formValues?: CalculationFormValues;
+}
+
+export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
   const { requestData } = useMinisterHousingAllowance();
   const [updateMinistryHousingAllowanceRequest] =
     useUpdateMinistryHousingAllowanceRequestMutation();
@@ -13,16 +19,26 @@ export const useSaveField = () => {
     async (
       attributes: Partial<MinistryHousingAllowanceRequestAttributesInput>,
     ) => {
-      if (!values || !requestData?.id) {
+      if (!requestData?.id) {
         return;
       }
+
+      const updatedValues = {
+        ...formValues,
+        ...attributes,
+      } as CalculationFormValues;
+      const { annualTotal: overallAmount } =
+        calculateAnnualTotals(updatedValues);
 
       try {
         await updateMinistryHousingAllowanceRequest({
           variables: {
             input: {
               requestId: requestData.id,
-              requestAttributes: attributes,
+              requestAttributes: {
+                ...attributes,
+                overallAmount,
+              },
             },
           },
           optimisticResponse: {
@@ -34,6 +50,7 @@ export const useSaveField = () => {
                 requestAttributes: {
                   ...values,
                   ...attributes,
+                  overallAmount,
                 },
               },
             },
@@ -41,7 +58,7 @@ export const useSaveField = () => {
         });
       } catch (error) {}
     },
-    [values, updateMinistryHousingAllowanceRequest, requestData],
+    [formValues, updateMinistryHousingAllowanceRequest, requestData],
   );
 
   return saveField;

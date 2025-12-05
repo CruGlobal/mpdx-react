@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { CalculationFormValues } from 'src/components/Reports/MinisterHousingAllowance/Steps/StepThree/Calculation';
 
-export const useAnnualTotal = (values: CalculationFormValues) => {
+export const calculateAnnualTotals = (values: CalculationFormValues) => {
   const {
     rentalValue,
     furnitureCostsOne,
@@ -13,26 +13,18 @@ export const useAnnualTotal = (values: CalculationFormValues) => {
     unexpectedExpenses,
   } = values;
 
-  const totalFairRental = useMemo(
-    () => (rentalValue ?? 0) + (furnitureCostsOne ?? 0) + (avgUtilityOne ?? 0),
-    [rentalValue, furnitureCostsOne, avgUtilityOne],
-  );
+  const totalFairRental =
+    (rentalValue ?? 0) + (furnitureCostsOne ?? 0) + (avgUtilityOne ?? 0);
+
   const annualFairRental = totalFairRental * 12;
-  const totalCostOfHome = useMemo(
-    () =>
-      (mortgageOrRentPayment ?? 0) +
-      (furnitureCostsTwo ?? 0) +
-      (repairCosts ?? 0) +
-      (avgUtilityTwo ?? 0) +
-      (unexpectedExpenses ?? 0),
-    [
-      mortgageOrRentPayment,
-      furnitureCostsTwo,
-      repairCosts,
-      avgUtilityTwo,
-      unexpectedExpenses,
-    ],
-  );
+
+  const totalCostOfHome =
+    (mortgageOrRentPayment ?? 0) +
+    (furnitureCostsTwo ?? 0) +
+    (repairCosts ?? 0) +
+    (avgUtilityTwo ?? 0) +
+    (unexpectedExpenses ?? 0);
+
   const annualCostOfHome = totalCostOfHome * 12;
 
   const annualTotal =
@@ -49,4 +41,20 @@ export const useAnnualTotal = (values: CalculationFormValues) => {
     totalCostOfHome,
     annualCostOfHome,
   };
+};
+
+export const useAnnualTotal = (values: CalculationFormValues) => {
+  return useMemo(
+    () => calculateAnnualTotals(values),
+    [
+      values.rentalValue,
+      values.furnitureCostsOne,
+      values.avgUtilityOne,
+      values.mortgageOrRentPayment,
+      values.furnitureCostsTwo,
+      values.repairCosts,
+      values.avgUtilityTwo,
+      values.unexpectedExpenses,
+    ],
+  );
 };
