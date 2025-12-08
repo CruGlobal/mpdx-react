@@ -10,6 +10,7 @@ import {
 import theme from 'src/theme';
 import { StaffAccountQuery } from '../StaffAccount.generated';
 import { AccountBalanceQuery } from './Landing/AccountBalance.generated';
+import { LandingSalaryCalculationsQuery } from './Landing/NewSalaryCalculationLanding/LandingSalaryCalculations.generated';
 import { HcmQuery } from './SalaryCalculatorContext/Hcm.generated';
 import { SalaryCalculationQuery } from './SalaryCalculatorContext/SalaryCalculation.generated';
 import { SalaryCalculatorProvider } from './SalaryCalculatorContext/SalaryCalculatorContext';
@@ -19,11 +20,20 @@ interface SalaryCalculatorTestWrapperProps {
   children?: React.ReactNode;
   assignmentCategory?: AssignmentCategoryEnum;
   peopleGroupSupportType?: PeopleGroupSupportTypeEnum;
+  hasInProgressCalculation?: boolean;
+  hasApprovedCalculation?: boolean;
 }
 
 export const SalaryCalculatorTestWrapper: React.FC<
   SalaryCalculatorTestWrapperProps
-> = ({ onCall, children, assignmentCategory, peopleGroupSupportType }) => (
+> = ({
+  onCall,
+  children,
+  assignmentCategory,
+  peopleGroupSupportType,
+  hasInProgressCalculation = false,
+  hasApprovedCalculation = false,
+}) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
       <GqlMockedProvider<{
@@ -31,6 +41,7 @@ export const SalaryCalculatorTestWrapper: React.FC<
         StaffAccount: StaffAccountQuery;
         AccountBalance: AccountBalanceQuery;
         SalaryCalculation: SalaryCalculationQuery;
+        LandingSalaryCalculations: LandingSalaryCalculationsQuery;
       }>
         mocks={{
           Hcm: {
@@ -39,6 +50,7 @@ export const SalaryCalculatorTestWrapper: React.FC<
                 staffInfo: {
                   firstName: 'John',
                   lastName: 'Doe',
+                  id: 'staff-123',
                   assignmentCategory:
                     assignmentCategory ??
                     AssignmentCategoryEnum.FullTimeRegular,
@@ -60,6 +72,22 @@ export const SalaryCalculatorTestWrapper: React.FC<
                 staffInfo: {
                   firstName: 'Jane',
                   lastName: 'Doe',
+                  id: 'staff-456',
+                  assignmentCategory:
+                    assignmentCategory ??
+                    AssignmentCategoryEnum.FullTimeRegular,
+                  peopleGroupSupportType:
+                    peopleGroupSupportType ??
+                    PeopleGroupSupportTypeEnum.SupportedRmo,
+                },
+                currentSalary: {
+                  grossSalaryAmount: 10000,
+                  lastUpdated: '2024-03-01',
+                },
+                fourOThreeB: {
+                  currentRothContributionPercentage: 10,
+                  currentTaxDeferredContributionPercentage: 6,
+                  maximumContributionLimit: 45,
                 },
               },
             ],
@@ -70,6 +98,24 @@ export const SalaryCalculatorTestWrapper: React.FC<
               salaryCap: 80000,
               mhaAmount: 18000,
             },
+          },
+          LandingSalaryCalculations: {
+            inProgressCalculation: hasInProgressCalculation
+              ? {
+                  status: SalaryRequestStatusEnum.InProgress,
+                  salaryCap: 80000,
+                  mhaAmount: 18000,
+                  createdAt: '2024-03-15T10:00:00Z',
+                }
+              : null,
+            approvedCalculation: hasApprovedCalculation
+              ? {
+                  status: SalaryRequestStatusEnum.Approved,
+                  salaryCap: 75000,
+                  mhaAmount: 17000,
+                  createdAt: '2024-03-01T10:00:00Z',
+                }
+              : null,
           },
           StaffAccount: {
             staffAccount: {

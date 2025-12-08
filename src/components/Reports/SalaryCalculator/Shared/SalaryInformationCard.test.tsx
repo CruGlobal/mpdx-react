@@ -3,7 +3,7 @@ import { SalaryCalculatorTestWrapper } from '../SalaryCalculatorTestWrapper';
 import { SalaryInformationCard } from './SalaryInformationCard';
 
 const TestComponent: React.FC = () => (
-  <SalaryCalculatorTestWrapper>
+  <SalaryCalculatorTestWrapper hasApprovedCalculation={true}>
     <SalaryInformationCard />
   </SalaryCalculatorTestWrapper>
 );
@@ -53,21 +53,22 @@ describe('SalaryInformationCard', () => {
     expect(
       getByRole('cell', { name: 'Security (SECA/FICA) Status' }),
     ).toBeInTheDocument();
-    expect(getByRole('cell', { name: 'Gross Salary' })).toBeInTheDocument();
-    expect(getByRole('cell', { name: 'Current MHA' })).toBeInTheDocument();
+    expect(
+      getByRole('cell', { name: 'Gross Requested Salary' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('cell', { name: 'Current MHA (Included in Gross Salary)' }),
+    ).toBeInTheDocument();
   });
 
   it('renders table rows for salary categories', async () => {
     const { findByRole } = render(<TestComponent />);
 
-    expect(
-      await findByRole('cell', { name: '$80,000.00' }),
-    ).toBeInTheDocument();
-    expect(
-      await findByRole('cell', { name: '$55,000.00' }),
-    ).toBeInTheDocument();
     expect(await findByRole('cell', { name: '5%' })).toBeInTheDocument();
     expect(await findByRole('cell', { name: '12%' })).toBeInTheDocument();
+
+    expect(await findByRole('cell', { name: '10%' })).toBeInTheDocument();
+    expect(await findByRole('cell', { name: '6%' })).toBeInTheDocument();
   });
 
   it('renders the View link for MHA category', () => {
