@@ -14,6 +14,7 @@ import {
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { SalaryInformationCard } from '../../Shared/SalaryInformationCard';
 import { useLandingData } from '../useLandingData';
+import { useCreateSalaryCalculationMutation } from './LandingSalaryCalculations.generated';
 
 const StyledContainer = styled(Container)(({ theme }) => ({
   paddingTop: theme.spacing(4),
@@ -36,6 +37,24 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
     accountBalance,
     hasInProgressCalculation,
   } = useLandingData();
+
+  const [createSalaryCalculation, { loading: creatingCalculation }] =
+    useCreateSalaryCalculationMutation();
+
+  const handleStartCalculation = async () => {
+    if (!hasInProgressCalculation) {
+      await createSalaryCalculation({
+        variables: {
+          input: {
+            attributes: {},
+          },
+        },
+      });
+    }
+    router.push(
+      `/accountLists/${accountListId}/reports/salaryCalculator/edit`,
+    );
+  };
 
   const assignmentCategory = self?.staffInfo.assignmentCategory;
   const isFullTime =
@@ -121,11 +140,8 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
             <Button
               variant="contained"
               color="primary"
-              onClick={() =>
-                router.push(
-                  `/accountLists/${accountListId}/reports/salaryCalculator/edit`,
-                )
-              }
+              onClick={handleStartCalculation}
+              disabled={creatingCalculation}
             >
               {hasInProgressCalculation
                 ? t('Continue Salary Calculation')

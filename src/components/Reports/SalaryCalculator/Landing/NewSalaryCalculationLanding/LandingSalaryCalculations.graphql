@@ -8,3 +8,12 @@ query LandingSalaryCalculations {
     ...SalaryRequestFields
   }
 }
+
+mutation CreateSalaryCalculation($input: SalaryRequestCreateMutationInput!) {
+  createSalaryRequest(input: $input) {
+    salaryRequest {
+      id
+      ...SalaryRequestFields
+    }
+  }
+}
