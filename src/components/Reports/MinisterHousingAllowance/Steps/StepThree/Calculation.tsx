@@ -41,7 +41,7 @@ interface CalculationProps {
   boardApprovalDate: string | null;
   availableDate: string | null;
   deadlineDate?: string | null;
-  rentOrOwn: MhaRentOrOwnEnum | undefined;
+  rentOrOwn?: MhaRentOrOwnEnum;
   handlePrint?: () => void;
 }
 export interface CalculationFormValues {
@@ -121,7 +121,7 @@ export const Calculation: React.FC<CalculationProps> = ({
     userHcmData,
   } = useMinisterHousingAllowance();
 
-  const update = (value: boolean) =>
+  const updateCheckbox = (value: boolean) =>
     updateMutation({
       variables: {
         input: {
@@ -230,7 +230,7 @@ export const Calculation: React.FC<CalculationProps> = ({
           const checked = e.target.checked;
 
           setFieldValue('iUnderstandMhaPolicy', checked);
-          update(checked);
+          updateCheckbox(checked);
         };
 
         return (

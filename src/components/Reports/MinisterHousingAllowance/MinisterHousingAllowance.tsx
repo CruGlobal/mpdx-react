@@ -31,7 +31,10 @@ export const MinisterHousingAllowanceReport = () => {
     spousePreferredName,
     userHcmData,
     spouseHcmData,
+    requestsData,
+    requestsError,
   } = useMinisterHousingAllowance();
+
   const personNumber = userHcmData?.staffInfo?.personNumber ?? '';
   const spousePersonNumber = spouseHcmData?.staffInfo?.personNumber ?? '';
   const lastName = userHcmData?.staffInfo?.lastName ?? '';
@@ -44,7 +47,6 @@ export const MinisterHousingAllowanceReport = () => {
     ? `${personNumber} and ${spousePersonNumber}`
     : personNumber;
 
-  const { requestsData, requestsError } = useMinisterHousingAllowance();
   const requests = requestsData ?? [];
 
   const [createMHA] = useCreateHousingAllowanceRequestMutation();

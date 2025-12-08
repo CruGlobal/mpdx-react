@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -109,8 +109,6 @@ describe('EditRequestPage', () => {
     await waitFor(() => {
       expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '50');
     });
-
-    screen.logTestingPlaygroundURL();
 
     await waitFor(() => {
       const editSteps = getAllByRole('listitem');
