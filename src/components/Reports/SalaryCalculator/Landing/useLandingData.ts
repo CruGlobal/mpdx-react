@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { Maybe, SecaStatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
-import { useStaffAccountQuery } from '../../StaffAccount.generated';
 import { useHcmQuery } from '../SalaryCalculatorContext/Hcm.generated';
 import { useSalaryCalculationQuery } from '../SalaryCalculatorContext/SalaryCalculation.generated';
 import { useAccountBalanceQuery } from './AccountBalance.generated';
@@ -19,18 +18,12 @@ interface SalaryCategory {
 export const useLandingData = () => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { data: staffAccountData, loading: staffLoading } =
-    useStaffAccountQuery();
+
   const { data: hcmData, loading: hcmLoading } = useHcmQuery();
   const { data: calculationData, loading: calculationLoading } =
     useSalaryCalculationQuery();
   const { data: accountBalanceData, loading: accountBalanceLoading } =
     useAccountBalanceQuery();
-
-  const staffAccountId = useMemo(
-    () => staffAccountData?.staffAccount?.id,
-    [staffAccountData],
-  );
 
   const { self, spouse, hasSpouse } = useMemo(() => {
     const [selfData, spouseData] = hcmData?.hcm ?? [];
@@ -41,12 +34,26 @@ export const useLandingData = () => {
     };
   }, [hcmData]);
 
-  const name = useMemo(() => {
-    if (self?.staffInfo.firstName && self?.staffInfo.lastName) {
-      return `${self.staffInfo.lastName}, ${self.staffInfo.firstName}`;
+  const staffAccountIds = useMemo(() => {
+    if (!self?.staffInfo?.id) {
+      return '';
     }
-    return '';
-  }, [self]);
+    if (!hasSpouse || !spouse?.staffInfo?.id) {
+      return self.staffInfo.id;
+    }
+    return `${self.staffInfo.id} and ${spouse.staffInfo.id}`;
+  }, [self, spouse, hasSpouse]);
+
+  const names = useMemo(() => {
+    if (!self?.staffInfo?.firstName || !self?.staffInfo?.lastName) {
+      return '';
+    }
+    const selfName = `${self.staffInfo.lastName}, ${self.staffInfo.firstName}`;
+    if (!hasSpouse || !spouse?.staffInfo?.firstName) {
+      return selfName;
+    }
+    return `${selfName} and ${spouse.staffInfo.firstName}`;
+  }, [self, spouse, hasSpouse]);
 
   const salaryData = useMemo(() => {
     const currentGrossSalary = self?.currentSalary.grossSalaryAmount ?? 0;
@@ -181,10 +188,9 @@ export const useLandingData = () => {
   );
 
   return {
-    loading:
-      staffLoading || hcmLoading || calculationLoading || accountBalanceLoading,
-    staffAccountId,
-    name,
+    loading: hcmLoading || calculationLoading || accountBalanceLoading,
+    staffAccountIds,
+    names,
     self,
     spouse,
     hasSpouse,

@@ -25,8 +25,8 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
   const theme = useTheme();
   const {
     loading,
-    staffAccountId,
-    name,
+    staffAccountIds,
+    names,
     self,
     spouse,
     isNewStaff,
@@ -55,7 +55,7 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
     return <Loading loading />;
   }
 
-  if (!staffAccountId) {
+  if (!staffAccountIds) {
     return <NoStaffAccount />;
   }
 
@@ -108,8 +108,8 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
           </Typography>
         </Box>
         <NameDisplay
-          names={name}
-          personNumbers={staffAccountId}
+          names={names}
+          personNumbers={staffAccountIds}
           showContent
           titleOne={t('Current Gross Salary')}
           titleTwo={t('Account Balance')}
