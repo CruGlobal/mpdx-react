@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   FormEnum,
@@ -6,10 +6,12 @@ import {
 } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { Steps } from '../components/Reports/Shared/CalculationReports/StepsList/StepsList';
 
-export function useStepList(formType: FormEnum, type?: PageEnum): Steps[] {
+export function useStepList(formType: FormEnum, type?: PageEnum) {
   const { t } = useTranslation();
 
-  const steps =
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  const [steps, setSteps] = useState<Steps[]>(() =>
     formType === FormEnum.MHA
       ? [
           {
@@ -44,42 +46,22 @@ export function useStepList(formType: FormEnum, type?: PageEnum): Steps[] {
               complete: false,
             },
             {
-              title: t('2. Personal Information'),
+              title: t('2. Your Information'),
               current: false,
               complete: false,
             },
             {
-              title: t('3. MHA Request'),
+              title: t('3. Salary Calculation'),
               current: false,
               complete: false,
             },
             {
-              title: t('4. 403(b) Contribution'),
+              title: t('4. Summary'),
               current: false,
               complete: false,
             },
             {
-              title: t('5. Max Allowable Salary'),
-              current: false,
-              complete: false,
-            },
-            {
-              title: t('6. Requested Salary'),
-              current: false,
-              complete: false,
-            },
-            {
-              title: t('7. Summary'),
-              current: false,
-              complete: false,
-            },
-            {
-              title: t('7b. Additional Information'),
-              current: false,
-              complete: false,
-            },
-            {
-              title: t('8. Receipt'),
+              title: t('5. Receipt'),
               current: false,
               complete: false,
             },
@@ -102,7 +84,62 @@ export function useStepList(formType: FormEnum, type?: PageEnum): Steps[] {
                 complete: false,
               },
             ]
-          : [];
+          : [],
+  );
 
-  return useMemo(() => steps, [t, type, formType]);
+  const percentComplete = ((currentIndex + 1) / steps.length) * 100;
+
+  const nextStep = useCallback(() => {
+    const newIndex = currentIndex + 1;
+    setSteps((prevSteps) =>
+      prevSteps.map((step, index) => {
+        if (index === currentIndex) {
+          return {
+            ...step,
+            current: false,
+            complete: true,
+          };
+        }
+
+        if (index === newIndex) {
+          return {
+            ...step,
+            current: true,
+            complete: newIndex === prevSteps.length - 1 ? true : step.complete,
+          };
+        }
+        return step;
+      }),
+    );
+    setCurrentIndex(newIndex);
+  }, [currentIndex, setSteps]);
+
+  const previousStep = useCallback(() => {
+    const newIndex = currentIndex - 1;
+    setSteps((prevSteps) =>
+      prevSteps.map((step, index) => {
+        if (index === currentIndex) {
+          return { ...step, current: false };
+        }
+
+        if (index === newIndex) {
+          return {
+            ...step,
+            current: true,
+            complete: false,
+          };
+        }
+        return step;
+      }),
+    );
+    setCurrentIndex(newIndex);
+  }, [currentIndex, setSteps]);
+
+  return {
+    steps,
+    nextStep,
+    previousStep,
+    currentIndex,
+    percentComplete,
+  };
 }

@@ -1,19 +1,20 @@
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { AdditionalSalaryRequestProvider } from '../Shared/AdditionalSalaryRequestContext';
+import { AdditionalSalaryRequestTestWrapper } from '../AdditionalSalaryRequestTestWrapper';
 import { CompleteForm } from './CompleteForm';
 
 const TestWrapper: React.FC = () => (
-  <AdditionalSalaryRequestProvider>
+  <AdditionalSalaryRequestTestWrapper>
     <CompleteForm />
-  </AdditionalSalaryRequestProvider>
+  </AdditionalSalaryRequestTestWrapper>
 );
 
 describe('SalaryRequestForm', () => {
   it('renders the form', () => {
-    const { getByRole } = render(<TestWrapper />);
-    expect(getByRole('heading', { name: 'Category' })).toBeInTheDocument();
-    expect(getByRole('heading', { name: 'Amount' })).toBeInTheDocument();
+    const { getAllByRole } = render(<TestWrapper />);
+
+    expect(getAllByRole('columnheader', { name: 'Category' })).toHaveLength(2);
+    expect(getAllByRole('columnheader', { name: 'Amount' })).toHaveLength(2);
   });
 
   it('renders all fifteen input fields', () => {
@@ -23,7 +24,7 @@ describe('SalaryRequestForm', () => {
   });
 
   it('updates amount when user enters value', async () => {
-    const { getAllByRole, getByLabelText } = render(<TestWrapper />);
+    const { getAllByRole, getByTestId } = render(<TestWrapper />);
 
     const inputs = getAllByRole('spinbutton');
     userEvent.clear(inputs[0]);
@@ -31,11 +32,36 @@ describe('SalaryRequestForm', () => {
     userEvent.clear(inputs[1]);
     userEvent.type(inputs[1], '500');
 
-    expect(inputs[0]).toHaveValue(1000);
-    expect(inputs[1]).toHaveValue(500);
+    await waitFor(() => {
+      expect(inputs[0]).toHaveValue(1000);
+      expect(inputs[1]).toHaveValue(500);
+    });
 
-    expect(getByLabelText('Total requested amount')).toHaveTextContent(
-      '$1,500',
-    );
+    await waitFor(() => {
+      expect(getByTestId('total-amount')).toHaveTextContent('$1,500');
+    });
+  });
+
+  it('renders the 403(b) Deduction checkbox', () => {
+    const { getByRole } = render(<TestWrapper />);
+
+    expect(
+      getByRole('checkbox', {
+        name: 'Use default Percentage for 403(b) deduction',
+      }),
+    ).not.toBeChecked();
+  });
+
+  it('shows both AdditionalSalaryRequest and Deduction sections', () => {
+    const { getByText } = render(<TestWrapper />);
+
+    expect(
+      getByText('Additional Salary Request', {
+        selector: '.MuiCardHeader-title',
+      }),
+    ).toBeInTheDocument();
+    expect(
+      getByText('403(b) Deduction', { selector: '.MuiCardHeader-title' }),
+    ).toBeInTheDocument();
   });
 });

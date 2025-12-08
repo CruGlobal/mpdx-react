@@ -88,6 +88,8 @@ interface Props {
   children?: React.ReactNode;
 }
 
+const objects = Object.values(StepsEnum);
+
 export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   type,
   children,
@@ -113,7 +115,13 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   const [updateMutation] = useUpdateMinistryHousingAllowanceRequestMutation();
 
   const pageType = type;
-  const initialSteps = useStepList(FormEnum.MHA, type);
+  const {
+    steps: initialSteps,
+    nextStep,
+    previousStep,
+    currentIndex,
+    percentComplete,
+  } = useStepList(FormEnum.MHA, type);
 
   const [isComplete, setIsComplete] = useState(false);
 
@@ -128,8 +136,6 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       current: index === arr.length - 1,
     }));
   }, [initialSteps, isComplete]);
-
-  const totalSteps = steps.length;
 
   const { data: hcmData } = useHcmDataQuery({
     variables: {
@@ -172,68 +178,20 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   const [isPrint, setIsPrint] = useState(false);
 
   const [currentStep, setCurrentStep] = useState(StepsEnum.AboutForm);
-  const [percentComplete, setPercentComplete] = useState(25);
 
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const handleNextStep = useCallback(() => {
+    const next = objects[currentIndex + 1];
+    nextStep();
 
-  const handleNextStep = () => {
-    setCurrentStep((prevStep) => {
-      const next =
-        prevStep === StepsEnum.AboutForm
-          ? StepsEnum.RentOrOwn
-          : prevStep === StepsEnum.RentOrOwn
-            ? StepsEnum.CalcForm
-            : prevStep === StepsEnum.CalcForm
-              ? StepsEnum.Receipt
-              : prevStep;
+    setCurrentStep(next);
+  }, [currentIndex, objects, nextStep]);
 
-      const newIndex = currentIndex + 1;
-      handleNextIndexChange(newIndex);
-      handlePercentComplete(newIndex);
-      return next;
-    });
-  };
+  const handlePreviousStep = useCallback(() => {
+    const next = objects[currentIndex - 1];
+    previousStep();
 
-  const handlePreviousStep = () => {
-    setCurrentStep((prevStep) => {
-      const next =
-        prevStep === StepsEnum.RentOrOwn
-          ? StepsEnum.AboutForm
-          : prevStep === StepsEnum.CalcForm
-            ? StepsEnum.RentOrOwn
-            : prevStep === StepsEnum.Receipt
-              ? StepsEnum.CalcForm
-              : prevStep;
-
-      const newIndex = currentIndex - 1;
-      handlePreviousIndexChange(newIndex);
-      handlePercentComplete(newIndex);
-      return next;
-    });
-  };
-
-  const handlePercentComplete = (index: number) => {
-    const newPercent = Math.round(((index + 1) / totalSteps) * 100);
-    setPercentComplete(newPercent);
-  };
-
-  const handleNextIndexChange = (newIndex: number) => {
-    steps[currentIndex].current = false;
-    steps[currentIndex].complete = true;
-    setCurrentIndex(newIndex);
-    steps[newIndex].current = true;
-
-    if (newIndex === steps.length - 1) {
-      steps[newIndex].complete = true;
-    }
-  };
-
-  const handlePreviousIndexChange = (newIndex: number) => {
-    steps[currentIndex].current = false;
-    steps[newIndex].complete = false;
-    setCurrentIndex(newIndex);
-    steps[newIndex].current = true;
-  };
+    setCurrentStep(next);
+  }, [currentIndex, objects, previousStep]);
 
   const contextValue = useMemo(
     () => ({

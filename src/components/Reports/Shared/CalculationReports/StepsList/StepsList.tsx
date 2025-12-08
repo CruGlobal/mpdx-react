@@ -11,6 +11,7 @@ export interface Steps {
 
 interface StepsListProps {
   steps: Steps[];
+  handleStepChange?: () => void;
 }
 
 export const StepsList: React.FC<StepsListProps> = ({ steps }) => {

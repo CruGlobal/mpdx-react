@@ -2,9 +2,12 @@ import React from 'react';
 import PrintIcon from '@mui/icons-material/Print';
 import { Box, Button, Stack, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import theme from 'src/theme';
+
+export const mainContentWidth = theme.spacing(85);
 
 export interface AdditionalSalaryRequestSectionProps {
-  title: string;
+  title?: string;
   rightPanelContent?: JSX.Element;
   printable?: boolean;
   children: React.ReactNode;
@@ -21,10 +24,10 @@ export const AdditionalSalaryRequestSection: React.FC<
   };
 
   return (
-    <div>
+    <Stack direction="column" width={mainContentWidth}>
       <Box pb={4}>
         <Stack direction="row" gap={2} alignItems="center">
-          <Typography variant="h4">{title}</Typography>
+          {title && <Typography variant="h4">{title}</Typography>}
           {titleExtra}
           <Box sx={{ flexGrow: 1 }} />
           {printable && (
@@ -40,6 +43,6 @@ export const AdditionalSalaryRequestSection: React.FC<
         </Stack>
       </Box>
       {children}
-    </div>
+    </Stack>
   );
 };

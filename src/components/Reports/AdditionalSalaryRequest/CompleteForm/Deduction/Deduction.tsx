@@ -1,0 +1,111 @@
+import React from 'react';
+import {
+  Box,
+  Checkbox,
+  FormControlLabel,
+  TableCell,
+  TableRow,
+  Typography,
+} from '@mui/material';
+import { Field, useFormikContext } from 'formik';
+import { useTranslation } from 'react-i18next';
+import { FormCard } from 'src/components/Reports/Shared/CalculationReports/FormCard/FormCard';
+import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat';
+import { CompleteFormValues } from '../../AdditionalSalaryRequest';
+import { useTotalSalaryRequest } from '../../Shared/useTotalSalaryRequest';
+
+export const Deduction: React.FC = () => {
+  const { t } = useTranslation();
+  const locale = useLocale();
+
+  const { values } = useFormikContext<CompleteFormValues>();
+
+  const total = useTotalSalaryRequest(values);
+
+  // TODO: Pull the 12% from the admin rate goal calculator misc constant
+  const calculatedDeduction = values.defaultPercentage ? total * 0.12 : 0;
+
+  // Get the contribution403b value from the form
+  const contribution403b = Number(values.contribution403b || 0);
+
+  // Total deduction is the sum of calculated deduction and contribution403b
+  const totalDeduction = calculatedDeduction + contribution403b;
+
+  return (
+    <FormCard title={t('403(b) Deduction')}>
+      <TableRow>
+        <TableCell sx={{ width: '70%' }}>
+          <FormControlLabel
+            sx={{ alignItems: 'flex-start', ml: 0 }}
+            control={
+              <Field
+                type="checkbox"
+                name="defaultPercentage"
+                as={Checkbox}
+                sx={{ mt: -0.5 }}
+                inputProps={{
+                  'aria-label': t(
+                    'Use default Percentage for 403(b) deduction',
+                  ),
+                }}
+              />
+            }
+            label={
+              <Box>
+                <Typography variant="body1">
+                  {t(
+                    'Check this box if you would like 12% of the amount requested above deducted from this Additional Salary Request.',
+                  )}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ mt: 0.5 }}
+                >
+                  {t(
+                    'This is your regular 403(b) percentage contribution as selected on your latest Salary Calculation Form.',
+                  )}
+                </Typography>
+              </Box>
+            }
+          />
+        </TableCell>
+        <TableCell
+          sx={{ width: '30%', fontSize: 16 }}
+          aria-label="Calculated deduction amount"
+        >
+          {currencyFormat(calculatedDeduction, 'USD', locale)}
+        </TableCell>
+      </TableRow>
+      <TableRow>
+        <TableCell sx={{ width: '70%' }}>
+          <Typography variant="body1">
+            {t('403(b) Contribution Requested as Additional Salary')}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {t(
+              'This is the sum of the Roth and Traditional amount you entered in the request above.',
+            )}
+          </Typography>
+        </TableCell>
+        <TableCell sx={{ width: '30%', fontSize: 16 }}>
+          {currencyFormat(contribution403b, 'USD', locale)}
+        </TableCell>
+      </TableRow>
+      <TableRow>
+        <TableCell sx={{ width: '70%' }}>
+          <Typography variant="body1" fontWeight="bold">
+            {t('Total 403(b) Deduction')}
+          </Typography>
+        </TableCell>
+        <TableCell
+          sx={{ width: '30%', fontSize: 16, fontWeight: 'bold' }}
+          aria-label="Total requested amount"
+        >
+          {currencyFormat(totalDeduction, 'USD', locale)}
+        </TableCell>
+      </TableRow>
+    </FormCard>
+  );
+};

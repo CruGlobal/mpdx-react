@@ -9,11 +9,12 @@ import { SalaryCalculatorProvider } from './SalaryCalculatorContext/SalaryCalcul
 interface SalaryCalculatorTestWrapperProps {
   onCall?: MockLinkCallHandler;
   children?: React.ReactNode;
+  hasSpouse?: boolean;
 }
 
 export const SalaryCalculatorTestWrapper: React.FC<
   SalaryCalculatorTestWrapperProps
-> = ({ onCall, children }) => (
+> = ({ onCall, children, hasSpouse = true }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
       <GqlMockedProvider<{
@@ -23,19 +24,37 @@ export const SalaryCalculatorTestWrapper: React.FC<
           Hcm: {
             hcm: [
               {
+                staffInfo: {
+                  firstName: 'John',
+                  lastName: 'Doe',
+                  city: 'Tampa',
+                  state: 'FL',
+                  tenure: 4,
+                  age: 34,
+                  dependentChildrenWithHealthcareBenefits: 2,
+                },
                 fourOThreeB: {
                   currentRothContributionPercentage: 12,
                   currentTaxDeferredContributionPercentage: 5,
                   maximumContributionLimit: 45,
                 },
               },
-              {
-                fourOThreeB: {
-                  currentRothContributionPercentage: 10,
-                  currentTaxDeferredContributionPercentage: 8,
-                  maximumContributionLimit: 47,
-                },
-              },
+              ...(hasSpouse
+                ? [
+                    {
+                      staffInfo: {
+                        firstName: 'Jane',
+                        lastName: 'Doe',
+                        tenure: 1000,
+                      },
+                      fourOThreeB: {
+                        currentRothContributionPercentage: 10,
+                        currentTaxDeferredContributionPercentage: 8,
+                        maximumContributionLimit: 47,
+                      },
+                    },
+                  ]
+                : []),
             ],
           },
         }}

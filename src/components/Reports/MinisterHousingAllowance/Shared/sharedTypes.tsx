@@ -1,4 +1,4 @@
-export const enum StepsEnum {
+export enum StepsEnum {
   AboutForm = 'about',
   RentOrOwn = 'rentOrOwn',
   CalcForm = 'calcForm',
