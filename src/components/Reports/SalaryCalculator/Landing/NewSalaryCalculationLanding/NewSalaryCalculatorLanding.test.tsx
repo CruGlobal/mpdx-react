@@ -4,7 +4,7 @@ import {
   AssignmentCategoryEnum,
   PeopleGroupSupportTypeEnum,
 } from 'src/graphql/types.generated';
-import { SalaryCalculatorTestWrapper } from '../../SalaryCalculatorTestWrapper';
+import { LandingTestWrapper } from './LandingTestWrapper';
 import { NewSalaryCalculatorLanding } from './NewSalaryCalculatorLanding';
 
 interface TestComponentProps {
@@ -22,7 +22,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   hasApprovedCalculation = false,
   onCall,
 }) => (
-  <SalaryCalculatorTestWrapper
+  <LandingTestWrapper
     assignmentCategory={assignmentCategory}
     peopleGroupSupportType={peopleGroupSupportType}
     hasInProgressCalculation={hasInProgressCalculation}
@@ -30,7 +30,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
     onCall={onCall}
   >
     <NewSalaryCalculatorLanding />
-  </SalaryCalculatorTestWrapper>
+  </LandingTestWrapper>
 );
 
 describe('NewSalaryCalculatorLanding', () => {
@@ -72,7 +72,7 @@ describe('NewSalaryCalculatorLanding', () => {
     const { findByRole } = render(<TestComponent />);
 
     expect(
-      await findByRole('button', { name: 'Continue Salary Calculation' }),
+      await findByRole('button', { name: 'Calculate New Salary' }),
     ).toBeInTheDocument();
   });
 
