@@ -3,6 +3,7 @@ query MinistryHousingAllowanceRequests {
     nodes {
       id
       personNumber
+      updatedAt
       requestAttributes {
         rentOrOwn
         rentalValue
@@ -42,6 +43,7 @@ query MinistryHousingAllowanceRequest($ministryHousingAllowanceRequestId: ID!) {
   ministryHousingAllowanceRequest(id: $ministryHousingAllowanceRequestId) {
     id
     personNumber
+    updatedAt
     requestAttributes {
       rentOrOwn
       rentalValue
