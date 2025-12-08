@@ -12,10 +12,7 @@ import { PanelLayout } from '../Shared/CalculationReports/PanelLayout/PanelLayou
 import { PanelTypeEnum } from '../Shared/CalculationReports/Shared/sharedTypes';
 import { EligibleDisplay } from './MainPages/EligibleDisplay';
 import { IneligibleDisplay } from './MainPages/IneligibleDisplay';
-import {
-  useCreateHousingAllowanceRequestMutation,
-  useMinistryHousingAllowanceRequestsQuery,
-} from './MinisterHousingAllowance.generated';
+import { useCreateHousingAllowanceRequestMutation } from './MinisterHousingAllowance.generated';
 import { MinisterHousingAllowanceReportSkeleton } from './MinisterHousingAllowanceSkeleton';
 import { useMinisterHousingAllowance } from './Shared/Context/MinisterHousingAllowanceContext';
 import { CurrentBoardApproved } from './SharedComponents/CurrentBoardApproved';
@@ -34,7 +31,10 @@ export const MinisterHousingAllowanceReport = () => {
     spousePreferredName,
     userHcmData,
     spouseHcmData,
+    requestsData,
+    requestsError,
   } = useMinisterHousingAllowance();
+
   const personNumber = userHcmData?.staffInfo?.personNumber ?? '';
   const spousePersonNumber = spouseHcmData?.staffInfo?.personNumber ?? '';
   const lastName = userHcmData?.staffInfo?.lastName ?? '';
@@ -47,8 +47,7 @@ export const MinisterHousingAllowanceReport = () => {
     ? `${personNumber} and ${spousePersonNumber}`
     : personNumber;
 
-  const { data, error } = useMinistryHousingAllowanceRequestsQuery();
-  const requests = data?.ministryHousingAllowanceRequests.nodes ?? [];
+  const requests = requestsData ?? [];
 
   const [createMHA] = useCreateHousingAllowanceRequestMutation();
 
@@ -66,7 +65,7 @@ export const MinisterHousingAllowanceReport = () => {
           },
         );
         const mhaRequestId = newRequest?.ministryHousingAllowanceRequest.id;
-        const requestLink = `/accountLists/${accountListId}/reports/housingAllowance/${mhaRequestId}`;
+        const requestLink = `/accountLists/${accountListId}/reports/housingAllowance/${mhaRequestId}/new`;
 
         // Wait 1 second before redirecting
         setTimeout(() => {
@@ -112,8 +111,8 @@ export const MinisterHousingAllowanceReport = () => {
       sidebarTitle={t('Your MHA')}
       mainContent={
         <Container sx={{ ml: 5 }}>
-          {error ? (
-            <Notification type="error" message={error.message} />
+          {requestsError ? (
+            <Notification type="error" message={requestsError.message} />
           ) : !requests ? (
             <MinisterHousingAllowanceReportSkeleton />
           ) : (

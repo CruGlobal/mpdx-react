@@ -4,15 +4,79 @@ import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { PageEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
-import { MinisterHousingAllowanceProvider } from '../Shared/Context/MinisterHousingAllowanceContext';
+import { UpdateMinistryHousingAllowanceRequestMutation } from '../MinisterHousingAllowance.generated';
+import {
+  ContextType,
+  MinisterHousingAllowanceContext,
+  MinisterHousingAllowanceProvider,
+} from '../Shared/Context/MinisterHousingAllowanceContext';
+import { StepsEnum } from '../Shared/sharedTypes';
 import { EditRequestPage } from './EditRequestPage';
+
+const mutationSpy = jest.fn();
+const handleNextStep = jest.fn();
+const handlePreviousStep = jest.fn();
+const updateMutation = jest.fn();
+const setHasCalcValues = jest.fn();
+
+const steps = [
+  {
+    title: '1. About this Form',
+    current: true,
+    complete: false,
+  },
+  {
+    title: '2. Rent or Own?',
+    current: false,
+    complete: false,
+  },
+  {
+    title: '3. Edit Your MHA',
+    current: false,
+    complete: false,
+  },
+  {
+    title: '4. Receipt',
+    current: false,
+    complete: false,
+  },
+];
+
+interface TestComponentProps {
+  contextValue: Partial<ContextType>;
+}
+
+const TestComponentContext: React.FC<TestComponentProps> = ({
+  contextValue,
+}) => (
+  <ThemeProvider theme={theme}>
+    <TestRouter>
+      <GqlMockedProvider<{
+        UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
+      }>
+        onCall={mutationSpy}
+      >
+        <MinisterHousingAllowanceContext.Provider
+          value={contextValue as ContextType}
+        >
+          <EditRequestPage />
+        </MinisterHousingAllowanceContext.Provider>
+      </GqlMockedProvider>
+    </TestRouter>
+  </ThemeProvider>
+);
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <TestRouter>
-      <GqlMockedProvider>
+      <GqlMockedProvider<{
+        UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
+      }>
+        onCall={mutationSpy}
+      >
         <MinisterHousingAllowanceProvider type={PageEnum.Edit}>
           <EditRequestPage />
         </MinisterHousingAllowanceProvider>
@@ -47,9 +111,9 @@ describe('EditRequestPage', () => {
     });
 
     await waitFor(() => {
-      const steps = getAllByRole('listitem');
+      const editSteps = getAllByRole('listitem');
 
-      const [firstStep, secondStep, thirdStep] = steps;
+      const [firstStep, secondStep, thirdStep] = editSteps;
 
       expect(firstStep).toHaveTextContent('1. About this Form');
       expect(
@@ -85,33 +149,74 @@ describe('EditRequestPage', () => {
   });
 
   it('should show an option is preselected', async () => {
-    const { getAllByRole, getByRole } = render(<TestComponent />);
+    const { findAllByRole, getByRole, findByRole } = render(
+      <TestComponentContext
+        contextValue={
+          {
+            pageType: PageEnum.Edit,
+            currentStep: StepsEnum.RentOrOwn,
+            steps,
+            handleNextStep,
+            handlePreviousStep,
+            requestData: {
+              id: 'request-id',
+              requestAttributes: {
+                rentOrOwn: MhaRentOrOwnEnum.Rent,
+              },
+            },
+          } as unknown as ContextType
+        }
+      />,
+    );
 
     const continueButton = getByRole('button', { name: 'Continue' });
     await userEvent.click(continueButton);
 
-    expect(getAllByRole('radio', { checked: true })).toHaveLength(1);
+    expect(await findByRole('radio', { name: 'Rent' })).toBeChecked();
+    expect(await findAllByRole('radio', { checked: true })).toHaveLength(1);
   });
 
   it('opens confirmation modal when changing selection', async () => {
-    const { getByRole, getByText, getAllByRole } = render(<TestComponent />);
+    const { getByRole, getByText, queryByText } = render(
+      <TestComponentContext
+        contextValue={
+          {
+            pageType: PageEnum.Edit,
+            steps,
+            currentStep: StepsEnum.RentOrOwn,
+            handleNextStep,
+            handlePreviousStep,
+            hasCalcValues: true,
+            setHasCalcValues,
+            updateMutation,
+            requestData: {
+              id: 'request-id',
+              requestAttributes: {
+                rentOrOwn: MhaRentOrOwnEnum.Rent,
+                rentalValue: 1000,
+              },
+            },
+          } as unknown as ContextType
+        }
+      />,
+    );
 
-    const continueButton = getByRole('button', { name: 'Continue' });
-    await userEvent.click(continueButton);
-
-    const radios = getAllByRole('radio');
-    const unchecked = radios.filter((r) => !(r as HTMLInputElement).checked);
-    const checked = radios.filter((r) => (r as HTMLInputElement).checked);
-
-    await userEvent.click(unchecked[0]);
-    expect(checked[0]).toBeChecked();
+    const ownRadio = getByRole('radio', { name: 'Own' });
+    await userEvent.click(ownRadio);
+    expect(ownRadio).not.toBeChecked();
 
     expect(
       getByText('Are you sure you want to change selection?'),
     ).toBeInTheDocument();
 
-    userEvent.click(getByRole('button', { name: /continue/i }));
+    await userEvent.click(getByRole('button', { name: 'Yes, Continue' }));
 
-    expect(unchecked[0]).toBeChecked();
+    await waitFor(() =>
+      expect(
+        queryByText('Are you sure you want to change selection?'),
+      ).not.toBeInTheDocument(),
+    );
+
+    expect(ownRadio).toBeChecked();
   });
 });

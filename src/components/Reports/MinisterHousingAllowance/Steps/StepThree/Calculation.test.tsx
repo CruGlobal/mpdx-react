@@ -2,52 +2,58 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { render, within } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
+import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
+import { UpdateMinistryHousingAllowanceRequestMutation } from '../../MinisterHousingAllowance.generated';
 import {
-  MinisterHousingAllowanceProvider,
-  useMinisterHousingAllowance,
+  ContextType,
+  MinisterHousingAllowanceContext,
 } from '../../Shared/Context/MinisterHousingAllowanceContext';
-import { RentOwnEnum } from '../../Shared/sharedTypes';
 import { Calculation } from './Calculation';
 
 const submit = jest.fn();
+const mutationSpy = jest.fn();
 const setHasCalcValues = jest.fn();
 const setIsPrint = jest.fn();
-
-const initialValues = {
-  phone: '1234567890',
-  email: 'john.doe@cru.org',
-};
+const updateMutation = jest.fn();
 
 interface TestComponentProps {
+  contextValue: Partial<ContextType>;
   boardApprovalDate?: string | null;
   availableDate?: string | null;
-  rentOrOwn?: RentOwnEnum;
+  rentOrOwn?: MhaRentOrOwnEnum;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
+  contextValue,
   boardApprovalDate = '2024-06-15',
   availableDate = '2024-07-01',
-  rentOrOwn = RentOwnEnum.Own,
+  rentOrOwn = MhaRentOrOwnEnum.Own,
 }) => (
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <TestRouter>
-        <GqlMockedProvider>
-          <Formik initialValues={initialValues} onSubmit={submit}>
-            <MinisterHousingAllowanceProvider>
+        <GqlMockedProvider<{
+          UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
+        }>
+          onCall={mutationSpy}
+        >
+          <Formik initialValues={{}} onSubmit={submit}>
+            <MinisterHousingAllowanceContext.Provider
+              value={contextValue as ContextType}
+            >
               <Calculation
                 boardApprovalDate={boardApprovalDate}
                 availableDate={availableDate}
                 rentOrOwn={rentOrOwn}
               />
-            </MinisterHousingAllowanceProvider>
+            </MinisterHousingAllowanceContext.Provider>
           </Formik>
         </GqlMockedProvider>
       </TestRouter>
@@ -55,23 +61,19 @@ const TestComponent: React.FC<TestComponentProps> = ({
   </ThemeProvider>
 );
 
-jest.mock('../../Shared/Context/MinisterHousingAllowanceContext', () => ({
-  ...jest.requireActual('../../Shared/Context/MinisterHousingAllowanceContext'),
-  useMinisterHousingAllowance: jest.fn(),
-}));
-const useMock = useMinisterHousingAllowance as jest.Mock;
-
 describe('Calculation', () => {
-  beforeEach(() => {
-    useMock.mockReturnValue({
-      pageType: PageEnum.New,
-      setHasCalcValues,
-      setIsPrint,
-    });
-  });
-
   it('renders the component', () => {
-    const { getByText, getByRole } = render(<TestComponent />);
+    const { getByText, getByRole } = render(
+      <TestComponent
+        contextValue={
+          {
+            pageType: PageEnum.New,
+            setHasCalcValues,
+            setIsPrint,
+          } as unknown as ContextType
+        }
+      />,
+    );
 
     expect(
       getByRole('heading', { name: 'Calculate Your MHA Request' }),
@@ -90,7 +92,21 @@ describe('Calculation', () => {
 
   it('should show validation error when inputs are invalid', async () => {
     const { findByText, getByRole, findByRole, getByText } = render(
-      <TestComponent />,
+      <TestComponent
+        contextValue={
+          {
+            pageType: PageEnum.New,
+            setHasCalcValues,
+            setIsPrint,
+            requestData: {
+              id: 'request-id',
+              requestAttributes: {
+                unexpectedCosts: null,
+              },
+            },
+          } as unknown as ContextType
+        }
+      />,
     );
 
     const row = getByRole('row', {
@@ -120,7 +136,15 @@ describe('Calculation', () => {
 
   it('should show validation error when checkbox is not checked', async () => {
     const { findByText, getByRole, getByText, findByRole } = render(
-      <TestComponent />,
+      <TestComponent
+        contextValue={
+          {
+            pageType: PageEnum.New,
+            setHasCalcValues,
+            setIsPrint,
+          } as unknown as ContextType
+        }
+      />,
     );
 
     const submitButton = getByRole('button', { name: /submit/i });
@@ -140,7 +164,24 @@ describe('Calculation', () => {
   });
 
   it('shows validation errors when inputs are invalid', async () => {
-    const { getByRole, findByText } = render(<TestComponent />);
+    const { getByRole, findByText } = render(
+      <TestComponent
+        contextValue={
+          {
+            pageType: PageEnum.New,
+            setHasCalcValues,
+            setIsPrint,
+            requestData: {
+              id: 'request-id',
+              requestAttributes: {
+                phoneNumber: '1234567890',
+                emailAddress: 'john.doe@cru.org',
+              },
+            },
+          } as unknown as ContextType
+        }
+      />,
+    );
 
     const phone = getByRole('textbox', { name: 'Telephone Number' });
     const email = getByRole('textbox', { name: 'Email' });
@@ -167,7 +208,30 @@ describe('Calculation', () => {
 
   it('shows confirmation modal when submit is clicked', async () => {
     const { getByRole, getByText, findByRole } = render(
-      <TestComponent rentOrOwn={RentOwnEnum.Rent} />,
+      <TestComponent
+        contextValue={
+          {
+            pageType: PageEnum.New,
+            setHasCalcValues,
+            setIsPrint,
+            updateMutation,
+            requestData: {
+              id: 'request-id',
+              requestAttributes: {
+                mortgageOrRentPayment: null,
+                furnitureValue: null,
+                repairCosts: null,
+                utilityCosts: null,
+                unexpectedCosts: null,
+                iUnderstandMhaPolicy: false,
+                phoneNumber: '1234567890',
+                emailAddress: 'john.doe@cru.org',
+              },
+            },
+          } as unknown as ContextType
+        }
+        rentOrOwn={MhaRentOrOwnEnum.Rent}
+      />,
     );
 
     const row1 = getByRole('row', {
@@ -225,7 +289,17 @@ describe('Calculation', () => {
 
   it('should change text when dates are null', () => {
     const { getByText } = render(
-      <TestComponent boardApprovalDate={null} availableDate={null} />,
+      <TestComponent
+        contextValue={
+          {
+            pageType: PageEnum.New,
+            setHasCalcValues,
+            setIsPrint,
+          } as unknown as ContextType
+        }
+        boardApprovalDate={null}
+        availableDate={null}
+      />,
     );
 
     expect(
@@ -235,17 +309,61 @@ describe('Calculation', () => {
     ).toBeInTheDocument();
   });
 
-  describe('isViewPage behavior', () => {
-    beforeEach(() => {
-      useMock.mockReturnValue({
-        pageType: PageEnum.View,
-        setHasCalcValues,
-        setIsPrint,
-      });
-    });
+  it('should update checkbox value when clicked', async () => {
+    const { getByRole } = render(
+      <TestComponent
+        contextValue={
+          {
+            pageType: PageEnum.New,
+            setHasCalcValues,
+            setIsPrint,
+            updateMutation,
+            requestData: {
+              id: 'request-id',
+              requestAttributes: {
+                iUnderstandMhaPolicy: false,
+              },
+            },
+          } as unknown as ContextType
+        }
+      />,
+    );
 
+    const checkbox = getByRole('checkbox', {
+      name: /i understand that my approved/i,
+    });
+    expect(checkbox).not.toBeChecked();
+
+    await userEvent.click(checkbox);
+    expect(checkbox).toBeChecked();
+
+    await waitFor(() =>
+      expect(updateMutation).toHaveBeenCalledWith({
+        variables: {
+          input: {
+            requestId: 'request-id',
+            requestAttributes: {
+              iUnderstandMhaPolicy: true,
+            },
+          },
+        },
+      }),
+    );
+  });
+
+  describe('isViewPage behavior', () => {
     it('renders view only mode', () => {
-      const { getByRole, queryByRole, getByText } = render(<TestComponent />);
+      const { getByRole, queryByRole, getByText } = render(
+        <TestComponent
+          contextValue={
+            {
+              pageType: PageEnum.View,
+              setHasCalcValues,
+              setIsPrint,
+            } as unknown as ContextType
+          }
+        />,
+      );
 
       expect(
         getByRole('heading', { name: 'Your MHA Request' }),
