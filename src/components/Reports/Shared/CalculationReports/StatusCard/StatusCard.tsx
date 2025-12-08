@@ -37,6 +37,7 @@ interface StatusCardProps {
   hideActions?: boolean;
   handleDownload?: () => void;
   handleConfirmCancel: () => void;
+  handleLinkTwo?: () => void;
   styling?: SxProps<Theme>;
 }
 
@@ -56,6 +57,7 @@ export const StatusCard: React.FC<StatusCardProps> = ({
   hideActions,
   handleDownload,
   handleConfirmCancel,
+  handleLinkTwo,
   styling,
 }) => {
   const { t } = useTranslation();
@@ -119,8 +121,9 @@ export const StatusCard: React.FC<StatusCardProps> = ({
             {linkOneText}
           </Button>
           <Button
-            component={NextLink}
-            href={linkTwo ?? ''}
+            component={linkTwo ? NextLink : 'button'}
+            href={linkTwo ?? undefined}
+            onClick={handleLinkTwo}
             variant={isRequest ? 'outlined' : 'contained'}
             sx={{ px: 2, py: 1 }}
           >

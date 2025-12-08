@@ -160,3 +160,28 @@ mutation SubmitMinistryHousingAllowanceRequest(
     }
   }
 }
+
+mutation DuplicateMinistryHousingAllowanceRequest(
+  $input: DuplicateMinistryHousingAllowanceRequestMutationInput!
+) {
+  duplicateMinistryHousingAllowanceRequest(input: $input) {
+    ministryHousingAllowanceRequest {
+      id
+      requestAttributes {
+        rentOrOwn
+        rentalValue
+        furnitureCostsOne
+        avgUtilityOne
+        mortgageOrRentPayment
+        furnitureCostsTwo
+        repairCosts
+        avgUtilityTwo
+        unexpectedExpenses
+        overallAmount
+        phoneNumber
+        emailAddress
+        iUnderstandMhaPolicy
+      }
+    }
+  }
+}
