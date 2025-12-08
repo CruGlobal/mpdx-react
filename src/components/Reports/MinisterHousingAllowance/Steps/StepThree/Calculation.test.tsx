@@ -117,7 +117,7 @@ describe('Calculation', () => {
     const row = getByRole('row', {
       name: /average monthly amount for unexpected/i,
     });
-    const input = within(row).getByPlaceholderText(/enter amount/i);
+    const input = within(row).getByPlaceholderText(/\$0/i);
 
     await userEvent.type(input, '100');
     expect(input).toHaveValue('100');
@@ -243,25 +243,25 @@ describe('Calculation', () => {
     const row1 = getByRole('row', {
       name: /monthly rent/i,
     });
-    const input1 = within(row1).getByPlaceholderText(/enter amount/i);
+    const input1 = within(row1).getByPlaceholderText(/\$0/i);
 
     const row2 = getByRole('row', { name: /monthly value for furniture/i });
-    const input2 = within(row2).getByPlaceholderText(/enter amount/i);
+    const input2 = within(row2).getByPlaceholderText(/\$0/i);
 
     const row3 = getByRole('row', {
       name: /estimated monthly cost of repairs/i,
     });
-    const input3 = within(row3).getByPlaceholderText(/enter amount/i);
+    const input3 = within(row3).getByPlaceholderText(/\$0/i);
 
     const row4 = getByRole('row', {
       name: /average monthly utility costs/i,
     });
-    const input4 = within(row4).getByPlaceholderText(/enter amount/i);
+    const input4 = within(row4).getByPlaceholderText(/\$0/i);
 
     const row5 = getByRole('row', {
       name: /average monthly amount for unexpected/i,
     });
-    const input5 = within(row5).getByPlaceholderText(/enter amount/i);
+    const input5 = within(row5).getByPlaceholderText(/\$0/i);
 
     await userEvent.type(input1, '1000');
     await userEvent.type(input2, '200');
