@@ -25,10 +25,8 @@ export const useLandingData = () => {
   const { data: accountBalanceData, loading: accountBalanceLoading } =
     useAccountBalanceQuery();
 
-  const approvedCalculation = calculationData?.approvedCalculation ?? null;
-  const inProgressCalculation = calculationData?.inProgressCalculation;
-
-  const hasInProgressCalculation = !!inProgressCalculation;
+  const approvedCalculation = calculationData?.approvedCalculation;
+  const hasInProgressCalculation = !!calculationData?.inProgressCalculation;
 
   const { self, spouse, hasSpouse } = useMemo(() => {
     const [selfData, spouseData] = hcmData?.hcm ?? [];

@@ -51,9 +51,7 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
         },
       });
     }
-    router.push(
-      `/accountLists/${accountListId}/reports/salaryCalculator/edit`,
-    );
+    router.push(`/accountLists/${accountListId}/reports/salaryCalculator/edit`);
   };
 
   const assignmentCategory = self?.staffInfo.assignmentCategory;
