@@ -37,3 +37,15 @@ query SalaryCalculation {
     }
   }
 }
+
+query ApprovedSalaryCalculation {
+  salaryRequest: latestSalaryRequest(status: [APPROVED]) {
+    id
+    mhaAmount
+    spouseMhaAmount
+    salaryCap
+    spouseSalaryCap
+    salary
+    spouseSalary
+  }
+}

@@ -2,6 +2,7 @@ import NextLink from 'next/link';
 import { Link, Stack, Typography } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { SalarySummaryCard } from './SalarySummaryCard';
 
 export const SummaryStep: React.FC = () => {
   const accountListId = useAccountListId();
@@ -37,6 +38,7 @@ export const SummaryStep: React.FC = () => {
           .
         </Typography>
       </Trans>
+      <SalarySummaryCard />
     </Stack>
   );
 };
