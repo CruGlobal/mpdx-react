@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import React from 'react';
 import { Box, Button, Container, Typography, useTheme } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -9,9 +10,8 @@ import { NoStaffAccount } from 'src/components/Reports/Shared/NoStaffAccount/NoS
 import {
   AssignmentCategoryEnum,
   PeopleGroupSupportTypeEnum,
-  SalaryRequestStatusEnum,
 } from 'src/graphql/types.generated';
-import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { SalaryInformationCard } from '../../Shared/SalaryInformationCard';
 import { useLandingData } from '../useLandingData';
 
@@ -23,6 +23,8 @@ const StyledContainer = styled(Container)(({ theme }) => ({
 export const NewSalaryCalculatorLanding: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
+  const router = useRouter();
+  const accountListId = useAccountListId();
   const {
     loading,
     staffAccountIds,
@@ -32,11 +34,8 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
     isNewStaff,
     salaryData: { currentGrossSalary },
     accountBalance,
+    hasInProgressCalculation,
   } = useLandingData();
-
-  const { startCalculation, calculation } = useSalaryCalculator();
-  const hasInProgressCalculation =
-    calculation?.status === SalaryRequestStatusEnum.InProgress;
 
   const assignmentCategory = self?.staffInfo.assignmentCategory;
   const isFullTime =
@@ -84,8 +83,8 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
               >
                 your Principal account
               </Link>
-              . Please wait to complete your Salary Calculation Form until
-              those changes are reflected here on the next business day.
+              . Please wait to complete your Salary Calculation Form until those
+              changes are reflected here on the next business day.
             </Trans>
           </Typography>
           <Typography variant="body1" paragraph fontWeight="bold">
@@ -122,7 +121,11 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
             <Button
               variant="contained"
               color="primary"
-              onClick={startCalculation}
+              onClick={() =>
+                router.push(
+                  `/accountLists/${accountListId}/reports/salaryCalculator/edit`,
+                )
+              }
             >
               {hasInProgressCalculation
                 ? t('Continue Salary Calculation')

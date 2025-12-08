@@ -1,11 +1,15 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Maybe, SecaStatusEnum } from 'src/graphql/types.generated';
+import {
+  Maybe,
+  SalaryRequestStatusEnum,
+  SecaStatusEnum,
+} from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import { useHcmQuery } from '../SalaryCalculatorContext/Hcm.generated';
-import { useSalaryCalculationQuery } from '../SalaryCalculatorContext/SalaryCalculation.generated';
 import { useAccountBalanceQuery } from './AccountBalance.generated';
+import { useLandingSalaryCalculationsQuery } from './NewSalaryCalculationLanding/LandingSalaryCalculations.generated';
 
 interface SalaryCategory {
   category: string;
@@ -21,7 +25,7 @@ export const useLandingData = () => {
 
   const { data: hcmData, loading: hcmLoading } = useHcmQuery();
   const { data: calculationData, loading: calculationLoading } =
-    useSalaryCalculationQuery();
+    useLandingSalaryCalculationsQuery();
   const { data: accountBalanceData, loading: accountBalanceLoading } =
     useAccountBalanceQuery();
 
@@ -91,35 +95,52 @@ export const useLandingData = () => {
     [accountBalanceData],
   );
 
-  const calculation = useMemo(
-    () => calculationData?.salaryRequest,
-    [calculationData],
-  );
+  const { approvedCalculation, mostRecentCalculation } = useMemo(() => {
+    const inProgress = calculationData?.inProgressCalculation ?? null;
+    const approved = calculationData?.approvedCalculation ?? null;
+
+    // Determine which calculation is most recent based on createdAt
+    let mostRecent: typeof inProgress | typeof approved | null = null;
+    if (inProgress && approved) {
+      mostRecent =
+        inProgress.createdAt > approved.createdAt ? inProgress : approved;
+    } else {
+      mostRecent = inProgress ?? approved;
+    }
+
+    return {
+      approvedCalculation: approved,
+      mostRecentCalculation: mostRecent,
+    };
+  }, [calculationData]);
+
+  const hasInProgressCalculation =
+    mostRecentCalculation?.status === SalaryRequestStatusEnum.InProgress;
 
   const salaryCategories = useMemo<SalaryCategory[]>(
     () => [
       {
         category: t('Maximum Allowable Salary'),
-        user: calculation?.salaryCap
-          ? currencyFormat(calculation.salaryCap, 'USD', locale, {
+        user: approvedCalculation?.salaryCap
+          ? currencyFormat(approvedCalculation.salaryCap, 'USD', locale, {
               showTrailingZeros: true,
             })
           : '-',
-        spouse: calculation?.spouseSalaryCap
-          ? currencyFormat(calculation.spouseSalaryCap, 'USD', locale, {
+        spouse: approvedCalculation?.spouseSalaryCap
+          ? currencyFormat(approvedCalculation.spouseSalaryCap, 'USD', locale, {
               showTrailingZeros: true,
             })
           : '-',
       },
       {
         category: t('Requested Salary'),
-        user: calculation?.salary
-          ? currencyFormat(calculation.salary, 'USD', locale, {
+        user: approvedCalculation?.salary
+          ? currencyFormat(approvedCalculation.salary, 'USD', locale, {
               showTrailingZeros: true,
             })
           : '-',
-        spouse: calculation?.spouseSalary
-          ? currencyFormat(calculation.spouseSalary, 'USD', locale, {
+        spouse: approvedCalculation?.spouseSalary
+          ? currencyFormat(approvedCalculation.spouseSalary, 'USD', locale, {
               showTrailingZeros: true,
             })
           : '-',
@@ -155,13 +176,13 @@ export const useLandingData = () => {
       },
       {
         category: t('Gross Requested Salary'),
-        user: calculation?.salary
-          ? currencyFormat(calculation.salary, 'USD', locale, {
+        user: approvedCalculation?.salary
+          ? currencyFormat(approvedCalculation.salary, 'USD', locale, {
               showTrailingZeros: true,
             })
           : '-',
-        spouse: calculation?.spouseSalary
-          ? currencyFormat(calculation.spouseSalary, 'USD', locale, {
+        spouse: approvedCalculation?.spouseSalary
+          ? currencyFormat(approvedCalculation.spouseSalary, 'USD', locale, {
               showTrailingZeros: true,
             })
           : '-',
@@ -171,20 +192,28 @@ export const useLandingData = () => {
       },
       {
         category: t('Current MHA (Included in Gross Salary)'),
-        user: calculation?.mhaAmount
-          ? currencyFormat(calculation.mhaAmount, 'USD', locale, {
+        user: approvedCalculation?.mhaAmount
+          ? currencyFormat(approvedCalculation.mhaAmount, 'USD', locale, {
               showTrailingZeros: true,
             })
           : '-',
-        spouse: calculation?.spouseMhaAmount
-          ? currencyFormat(calculation.spouseMhaAmount, 'USD', locale, {
+        spouse: approvedCalculation?.spouseMhaAmount
+          ? currencyFormat(approvedCalculation.spouseMhaAmount, 'USD', locale, {
               showTrailingZeros: true,
             })
           : '-',
         link: '/reports/housingAllowance',
       },
     ],
-    [t, salaryData, self, spouse, calculation, locale],
+    [
+      t,
+      salaryData,
+      self,
+      spouse,
+      mostRecentCalculation,
+      approvedCalculation,
+      locale,
+    ],
   );
 
   return {
@@ -197,6 +226,7 @@ export const useLandingData = () => {
     salaryData,
     salaryCategories,
     accountBalance,
+    hasInProgressCalculation,
     // TODO: replace isNewStaff with value from API when available
     isNewStaff: false,
   };
