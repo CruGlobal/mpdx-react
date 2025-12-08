@@ -95,15 +95,15 @@ describe('FairRentalValue', () => {
     const row1 = getByRole('row', {
       name: /monthly market rental value of your home/i,
     });
-    const input1 = within(row1).getByPlaceholderText(/enter amount/i);
+    const input1 = within(row1).getByPlaceholderText(/\$0/i);
 
     const row2 = getByRole('row', { name: /monthly value for furniture/i });
-    const input2 = within(row2).getByPlaceholderText(/enter amount/i);
+    const input2 = within(row2).getByPlaceholderText(/\$0/i);
 
     const row3 = getByRole('row', {
       name: /average monthly utility costs/i,
     });
-    const input3 = within(row3).getByPlaceholderText(/enter amount/i);
+    const input3 = within(row3).getByPlaceholderText(/\$0/i);
 
     await userEvent.type(input1, '1000');
     await userEvent.type(input2, '200');

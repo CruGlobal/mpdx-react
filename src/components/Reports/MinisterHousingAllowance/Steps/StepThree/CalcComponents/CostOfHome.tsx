@@ -56,7 +56,7 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({
             fullWidth
             size="small"
             variant="standard"
-            placeholder={t('Enter Amount')}
+            placeholder={t('$0')}
             InputProps={{ disableUnderline: true, inputMode: 'decimal' }}
             fieldName="mortgageOrRentPayment"
             schema={schema}
@@ -87,7 +87,7 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({
             fullWidth
             size="small"
             variant="standard"
-            placeholder={t('Enter Amount')}
+            placeholder={t('$0')}
             InputProps={{ disableUnderline: true, inputMode: 'decimal' }}
             fieldName="furnitureCostsTwo"
             schema={schema}
@@ -116,7 +116,7 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({
             fullWidth
             size="small"
             variant="standard"
-            placeholder={t('Enter Amount')}
+            placeholder={t('$0')}
             InputProps={{ disableUnderline: true, inputMode: 'decimal' }}
             fieldName="repairCosts"
             schema={schema}
@@ -150,7 +150,7 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({
             fullWidth
             size="small"
             variant="standard"
-            placeholder={t('Enter Amount')}
+            placeholder={t('$0')}
             InputProps={{ disableUnderline: true, inputMode: 'decimal' }}
             fieldName="avgUtilityTwo"
             schema={schema}
@@ -179,7 +179,7 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({
             fullWidth
             size="small"
             variant="standard"
-            placeholder={t('Enter Amount')}
+            placeholder={t('$0')}
             InputProps={{ disableUnderline: true, inputMode: 'decimal' }}
             fieldName="unexpectedExpenses"
             schema={schema}

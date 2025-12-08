@@ -19,6 +19,7 @@ interface TestComponentProps {
 const TestComponent: React.FC<TestComponentProps> = ({ contextValue }) => {
   const approvedMHARequest = {
     ...mockMHARequest,
+    updatedAt: '2022-12-01',
     requestAttributes: {
       ...mockMHARequest.requestAttributes,
       hrApprovedAt: '2023-01-15',
@@ -45,7 +46,7 @@ const TestComponent: React.FC<TestComponentProps> = ({ contextValue }) => {
 
 describe('CurrentBoardApproved Component', () => {
   it('should render correctly for married person', () => {
-    const { getByText } = render(
+    const { getByText, getByRole, getAllByText } = render(
       <TestComponent
         contextValue={{
           isMarried: true,
@@ -66,19 +67,26 @@ describe('CurrentBoardApproved Component', () => {
     );
 
     expect(getByText('Current Board Approved MHA')).toBeInTheDocument();
-    expect(getByText(/APPROVAL DATE/i)).toBeInTheDocument();
-    expect(getByText(/1\/15\/2023/i)).toBeInTheDocument();
-    expect(getByText('CURRENT MHA CLAIMED')).toBeInTheDocument();
+    expect(getByRole('columnheader', { name: /spouse/i })).toBeInTheDocument();
+    expect(
+      getByRole('columnheader', { name: /mha approved by board/i }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('columnheader', { name: /mha claimed in salary/i }),
+    ).toBeInTheDocument();
 
-    expect(getByText('$1,500.00')).toBeInTheDocument();
-    expect(getByText('John')).toBeInTheDocument();
+    expect(getByRole('cell', { name: 'John' })).toBeInTheDocument();
+    expect(getAllByText('$1,500.00')).toHaveLength(2);
+    expect(getAllByText('Approved on: 1/15/2023')).toHaveLength(2);
     expect(getByText('$1,000.00')).toBeInTheDocument();
-    expect(getByText('Jane')).toBeInTheDocument();
+    expect(getAllByText('Last updated: 12/1/2022')).toHaveLength(2);
+
+    expect(getByRole('cell', { name: 'Jane' })).toBeInTheDocument();
     expect(getByText('$500.00')).toBeInTheDocument();
   });
 
   it('should render correctly for single person', () => {
-    const { getByText, queryByText } = render(
+    const { getByText, queryByText, getByRole, getAllByText } = render(
       <TestComponent
         contextValue={{
           isMarried: false,
@@ -95,11 +103,16 @@ describe('CurrentBoardApproved Component', () => {
     );
 
     expect(getByText('Current Board Approved MHA')).toBeInTheDocument();
-    expect(getByText(/APPROVAL DATE/i)).toBeInTheDocument();
-    expect(getByText('CURRENT MHA CLAIMED')).toBeInTheDocument();
+    expect(getByRole('columnheader', { name: /spouse/i })).toBeInTheDocument();
+    expect(
+      getByRole('columnheader', { name: /mha approved by board/i }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('columnheader', { name: /mha claimed in salary/i }),
+    ).toBeInTheDocument();
 
-    expect(getByText('$1,500.00')).toBeInTheDocument();
-    expect(getByText('John')).toBeInTheDocument();
+    expect(getByRole('cell', { name: 'John' })).toBeInTheDocument();
+    expect(getAllByText('$1,500.00')).toHaveLength(1);
     expect(getByText('$1,000.00')).toBeInTheDocument();
 
     // Spouse data should not be rendered

@@ -72,7 +72,7 @@ export const AboutForm: React.FC<AboutFormProps> = ({
           <StyledListItem>
             <ListItemText
               primary={t(
-                'The amount of allowance requested, which cannot exceed the lower of your actual housing expenses, the fair rental value of the home (furnished, plus utilities), or the amount designated by Cru.',
+                'The fair market rental value of the home (furnished, plus utilities)',
               )}
             />
           </StyledListItem>
