@@ -1,10 +1,6 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Maybe,
-  SalaryRequestStatusEnum,
-  SecaStatusEnum,
-} from 'src/graphql/types.generated';
+import { Maybe, SecaStatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import { useHcmQuery } from '../SalaryCalculatorContext/Hcm.generated';
@@ -28,6 +24,11 @@ export const useLandingData = () => {
     useLandingSalaryCalculationsQuery();
   const { data: accountBalanceData, loading: accountBalanceLoading } =
     useAccountBalanceQuery();
+
+  const approvedCalculation = calculationData?.approvedCalculation ?? null;
+  const inProgressCalculation = calculationData?.inProgressCalculation;
+
+  const hasInProgressCalculation = !!inProgressCalculation;
 
   const { self, spouse, hasSpouse } = useMemo(() => {
     const [selfData, spouseData] = hcmData?.hcm ?? [];
@@ -94,28 +95,6 @@ export const useLandingData = () => {
       ) ?? 0,
     [accountBalanceData],
   );
-
-  const { approvedCalculation, mostRecentCalculation } = useMemo(() => {
-    const inProgress = calculationData?.inProgressCalculation ?? null;
-    const approved = calculationData?.approvedCalculation ?? null;
-
-    // Determine which calculation is most recent based on createdAt
-    let mostRecent: typeof inProgress | typeof approved | null = null;
-    if (inProgress && approved) {
-      mostRecent =
-        inProgress.createdAt > approved.createdAt ? inProgress : approved;
-    } else {
-      mostRecent = inProgress ?? approved;
-    }
-
-    return {
-      approvedCalculation: approved,
-      mostRecentCalculation: mostRecent,
-    };
-  }, [calculationData]);
-
-  const hasInProgressCalculation =
-    mostRecentCalculation?.status === SalaryRequestStatusEnum.InProgress;
 
   const salaryCategories = useMemo<SalaryCategory[]>(
     () => [
@@ -205,15 +184,7 @@ export const useLandingData = () => {
         link: '/reports/housingAllowance',
       },
     ],
-    [
-      t,
-      salaryData,
-      self,
-      spouse,
-      mostRecentCalculation,
-      approvedCalculation,
-      locale,
-    ],
+    [t, salaryData, self, spouse, spouse, approvedCalculation, locale],
   );
 
   return {
