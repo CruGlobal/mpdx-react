@@ -22,13 +22,13 @@ import {
   SimpleScreenOnly,
   StyledPrintButton,
 } from 'src/components/Reports/styledComponents';
+import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import i18n from 'src/lib/i18n';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { DirectionButtons } from '../../../Shared/CalculationReports/DirectionButtons/DirectionButtons';
+import { hasPopulatedValues } from '../../Shared/Context/Helper/hasPopulatedValues';
 import { useMinisterHousingAllowance } from '../../Shared/Context/MinisterHousingAllowanceContext';
-import { editOwnMock, mocks } from '../../Shared/mockData';
-import { RentOwnEnum } from '../../Shared/sharedTypes';
 import { CostOfHome } from './CalcComponents/CostOfHome';
 import { EndingSection } from './CalcComponents/EndingSection';
 import { FairRentalValue } from './CalcComponents/FairRentalValue';
@@ -41,31 +41,31 @@ interface CalculationProps {
   boardApprovalDate: string | null;
   availableDate: string | null;
   deadlineDate?: string | null;
-  rentOrOwn: RentOwnEnum | undefined;
+  rentOrOwn?: MhaRentOrOwnEnum;
   handlePrint?: () => void;
 }
 export interface CalculationFormValues {
   rentalValue?: number | null;
   furnitureCostsOne?: number | null;
   avgUtilityOne?: number | null;
-  mortgagePayment?: number | null;
+  mortgageOrRentPayment?: number | null;
   furnitureCostsTwo?: number | null;
   repairCosts?: number | null;
   avgUtilityTwo?: number | null;
   unexpectedExpenses?: number | null;
-  phone?: string;
-  email?: string;
-  isChecked?: boolean;
+  phoneNumber?: string | null;
+  emailAddress?: string | null;
+  iUnderstandMhaPolicy?: boolean;
 }
 
-const getValidationSchema = (rentOrOwn?: RentOwnEnum) => {
+const getValidationSchema = (rentOrOwn?: MhaRentOrOwnEnum) => {
   const baseSchema = {
-    mortgagePayment: yup.number().required(i18n.t('Required field.')),
+    mortgageOrRentPayment: yup.number().required(i18n.t('Required field.')),
     furnitureCostsTwo: yup.number().required(i18n.t('Required field.')),
     repairCosts: yup.number().required(i18n.t('Required field.')),
     avgUtilityTwo: yup.number().required(i18n.t('Required field.')),
     unexpectedExpenses: yup.number().required(i18n.t('Required field.')),
-    phone: yup
+    phoneNumber: yup
       .string()
       .test('is-phone-number', i18n.t('Invalid phone number.'), (val) => {
         if (!val) {
@@ -75,17 +75,17 @@ const getValidationSchema = (rentOrOwn?: RentOwnEnum) => {
         return /^1?\d{10}$/.test(cleaned);
       })
       .required(i18n.t('Phone Number is required.')),
-    email: yup
+    emailAddress: yup
       .string()
       .email(i18n.t('Invalid email address.'))
       .required(i18n.t('Email is required.')),
-    isChecked: yup
+    iUnderstandMhaPolicy: yup
       .boolean()
       .oneOf([true], i18n.t('This box must be checked to continue.')),
   };
 
   // extra fields for OWN
-  if (rentOrOwn === RentOwnEnum.Own) {
+  if (rentOrOwn === MhaRentOrOwnEnum.Own) {
     return yup.object({
       ...baseSchema,
       rentalValue: yup.number().required(i18n.t('Required field.')),
@@ -116,7 +116,24 @@ export const Calculation: React.FC<CalculationProps> = ({
     setHasCalcValues,
     setIsPrint,
     isPrint,
+    requestData,
+    updateMutation,
+    userHcmData,
   } = useMinisterHousingAllowance();
+
+  const updateCheckbox = (value: boolean) =>
+    updateMutation({
+      variables: {
+        input: {
+          requestId: requestData?.id ?? '',
+          requestAttributes: {
+            iUnderstandMhaPolicy: value,
+          },
+        },
+      },
+    });
+
+  const request = requestData ? requestData.requestAttributes : null;
 
   const actionRequired =
     pageType === PageEnum.Edit || pageType === PageEnum.View;
@@ -124,30 +141,38 @@ export const Calculation: React.FC<CalculationProps> = ({
 
   const initialValues: CalculationFormValues = actionRequired
     ? {
-        rentalValue: editOwnMock.rentalValue,
-        furnitureCostsOne: editOwnMock.furnitureCostsOne,
-        avgUtilityOne: editOwnMock.avgUtilityOne,
-        mortgagePayment: editOwnMock.mortgagePayment,
-        furnitureCostsTwo: editOwnMock.furnitureCostsTwo,
-        repairCosts: editOwnMock.repairCosts,
-        avgUtilityTwo: editOwnMock.avgUtilityTwo,
-        unexpectedExpenses: editOwnMock.unexpectedExpenses,
-        phone: mocks[0].staffInfo.phone,
-        email: mocks[0].staffInfo.email,
-        isChecked: editOwnMock.isChecked,
+        rentalValue: request?.rentalValue,
+        furnitureCostsOne: request?.furnitureCostsOne,
+        avgUtilityOne: request?.avgUtilityOne,
+        mortgageOrRentPayment: request?.mortgageOrRentPayment,
+        furnitureCostsTwo: request?.furnitureCostsTwo,
+        repairCosts: request?.repairCosts,
+        avgUtilityTwo: request?.avgUtilityTwo,
+        unexpectedExpenses: request?.unexpectedExpenses,
+        phoneNumber:
+          request?.phoneNumber ??
+          userHcmData?.staffInfo.primaryPhoneNumber ??
+          null,
+        emailAddress:
+          request?.emailAddress ?? userHcmData?.staffInfo.emailAddress ?? null,
+        iUnderstandMhaPolicy: request?.iUnderstandMhaPolicy ?? false,
       }
     : {
         rentalValue: null,
         furnitureCostsOne: null,
         avgUtilityOne: null,
-        mortgagePayment: null,
+        mortgageOrRentPayment: null,
         furnitureCostsTwo: null,
         repairCosts: null,
         avgUtilityTwo: null,
         unexpectedExpenses: null,
-        phone: mocks[0].staffInfo.phone,
-        email: mocks[0].staffInfo.email,
-        isChecked: false,
+        phoneNumber:
+          request?.phoneNumber ??
+          userHcmData?.staffInfo.primaryPhoneNumber ??
+          null,
+        emailAddress:
+          request?.emailAddress ?? userHcmData?.staffInfo.emailAddress ?? null,
+        iUnderstandMhaPolicy: false,
       };
 
   const boardDateFormatted = boardApprovalDate
@@ -170,10 +195,12 @@ export const Calculation: React.FC<CalculationProps> = ({
     setIsPrint(print);
   }, [print, setIsPrint]);
 
+  const schema = getValidationSchema(rentOrOwn);
+
   return (
     <Formik<CalculationFormValues>
       initialValues={initialValues}
-      validationSchema={getValidationSchema(rentOrOwn)}
+      validationSchema={schema}
       validateOnChange
       validateOnBlur
       onSubmit={() => {
@@ -191,14 +218,20 @@ export const Calculation: React.FC<CalculationProps> = ({
         submitForm,
         validateForm,
       }) => {
-        const showAlert = !!submitCount && (!isValid || !values.isChecked);
+        const showAlert =
+          !!submitCount && (!isValid || !values.iUnderstandMhaPolicy);
 
         useEffect(() => {
-          const hasValues = Object.values(values).some(
-            (value) => value !== undefined && value !== null && value !== '',
-          );
+          const hasValues = hasPopulatedValues(values);
           setHasCalcValues(hasValues);
         }, [values, setHasCalcValues]);
+
+        const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+          const checked = e.target.checked;
+
+          setFieldValue('iUnderstandMhaPolicy', checked);
+          updateCheckbox(checked);
+        };
 
         return (
           <form noValidate>
@@ -264,19 +297,21 @@ export const Calculation: React.FC<CalculationProps> = ({
                 <RequestSummaryCard rentOrOwn={rentOrOwn} />
               </Box>
             )}
-            {rentOrOwn === RentOwnEnum.Own && (
+            {rentOrOwn === MhaRentOrOwnEnum.Own && (
               <Box mb={3}>
-                <FairRentalValue />
+                <FairRentalValue schema={schema} />
               </Box>
             )}
-            <CostOfHome rentOrOwn={rentOrOwn} />
+            <CostOfHome schema={schema} rentOrOwn={rentOrOwn} />
             {!isViewPage && (
               <>
                 <Box mt={3} mb={3}>
                   <RequestSummaryCard rentOrOwn={rentOrOwn} />
                 </Box>
                 <FormControl
-                  error={Boolean(touched.isChecked && errors.isChecked)}
+                  error={Boolean(
+                    touched.iUnderstandMhaPolicy && errors.iUnderstandMhaPolicy,
+                  )}
                 >
                   <FormControlLabel
                     sx={{
@@ -285,12 +320,10 @@ export const Calculation: React.FC<CalculationProps> = ({
                     }}
                     control={
                       <Checkbox
-                        checked={Boolean(values.isChecked)}
-                        onChange={(e) =>
-                          setFieldValue('isChecked', e.target.checked)
-                        }
+                        checked={Boolean(values.iUnderstandMhaPolicy)}
+                        onChange={handleOnChange}
                         onBlur={handleBlur}
-                        name="isChecked"
+                        name="iUnderstandMhaPolicy"
                       />
                     }
                     label={t(
@@ -298,8 +331,9 @@ export const Calculation: React.FC<CalculationProps> = ({
                     )}
                   />
                   <FormHelperText sx={{ ml: 4 }}>
-                    {touched.isChecked && errors.isChecked ? (
-                      <i>{errors.isChecked}</i>
+                    {touched.iUnderstandMhaPolicy &&
+                    errors.iUnderstandMhaPolicy ? (
+                      <i>{errors.iUnderstandMhaPolicy}</i>
                     ) : (
                       <i>{t('This box must be checked to continue.')}</i>
                     )}
@@ -307,18 +341,20 @@ export const Calculation: React.FC<CalculationProps> = ({
                 </FormControl>
               </>
             )}
-            {!isViewPage && <EndingSection />}
+            {!isViewPage && <EndingSection schema={schema} />}
             {showAlert && (
               <Alert severity="error" sx={{ mt: 2, '& ul': { m: 0, pl: 3 } }}>
                 {t('Your form is missing information.')}
                 <ul>
                   {!!submitCount &&
-                    Object.keys(errors).some((k) => k !== 'isChecked') && (
+                    Object.keys(errors).some(
+                      (k) => k !== 'iUnderstandMhaPolicy',
+                    ) && (
                       <li>
                         {t('Please enter a value for all required fields.')}
                       </li>
                     )}
-                  {!values.isChecked && (
+                  {!values.iUnderstandMhaPolicy && (
                     <li>
                       {t(
                         'Please check the box above if you understand how this was calculated.',

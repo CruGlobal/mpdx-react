@@ -8,6 +8,7 @@ import {
   useMemo,
   useState,
 } from 'react';
+import { ApolloError } from '@apollo/client';
 import {
   FormEnum,
   PageEnum,
@@ -19,7 +20,15 @@ import {
 import { MaritalStatusEnum } from 'src/graphql/types.generated';
 import { useStepList } from 'src/hooks/useStepList';
 import { Steps } from '../../../Shared/CalculationReports/StepsList/StepsList';
+import {
+  MinistryHousingAllowanceRequestQuery,
+  MinistryHousingAllowanceRequestsQuery,
+  useMinistryHousingAllowanceRequestQuery,
+  useMinistryHousingAllowanceRequestsQuery,
+  useUpdateMinistryHousingAllowanceRequestMutation,
+} from '../../MinisterHousingAllowance.generated';
 import { StepsEnum } from '../sharedTypes';
+import { hasPopulatedValues } from './Helper/hasPopulatedValues';
 
 export type HcmData = HcmDataQuery['hcm'][number];
 
@@ -44,6 +53,21 @@ export type ContextType = {
   spouseHcmData?: HcmData | null;
   preferredName: string;
   spousePreferredName: string;
+
+  requestData?:
+    | MinistryHousingAllowanceRequestQuery['ministryHousingAllowanceRequest']
+    | null;
+  requestError?: ApolloError;
+
+  requestsData?:
+    | MinistryHousingAllowanceRequestsQuery['ministryHousingAllowanceRequests']['nodes']
+    | null;
+  requestsError?: ApolloError;
+  requestId?: string;
+
+  updateMutation: ReturnType<
+    typeof useUpdateMinistryHousingAllowanceRequestMutation
+  >[0];
 };
 
 export const MinisterHousingAllowanceContext =
@@ -70,6 +94,26 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   type,
   children,
 }) => {
+  const { data: requestsData, error: requestsError } =
+    useMinistryHousingAllowanceRequestsQuery();
+
+  //const requestId = requestsData?.ministryHousingAllowanceRequests.nodes[0]?.id;
+  const requestId = 'c1a68821-5fb6-4e5e-b308-9263539af9d8';
+
+  const { data: requestData, error: requestError } =
+    useMinistryHousingAllowanceRequestQuery({
+      variables: {
+        ministryHousingAllowanceRequestId: requestId ?? '',
+      },
+      skip: !requestId,
+    });
+
+  const hasValues = hasPopulatedValues(
+    requestData?.ministryHousingAllowanceRequest?.requestAttributes ?? null,
+  );
+
+  const [updateMutation] = useUpdateMinistryHousingAllowanceRequestMutation();
+
   const pageType = type;
   const {
     steps: initialSteps,
@@ -130,10 +174,7 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
     setIsDrawerOpen((prev) => !prev);
   }, []);
 
-  const actionRequired = pageType === PageEnum.Edit;
-  const [hasCalcValues, setHasCalcValues] = useState(
-    actionRequired ? true : false,
-  );
+  const [hasCalcValues, setHasCalcValues] = useState(hasValues ? true : false);
   const [isPrint, setIsPrint] = useState(false);
 
   const [currentStep, setCurrentStep] = useState(StepsEnum.AboutForm);
@@ -174,6 +215,13 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       isPrint,
       setIsPrint,
       setIsComplete,
+      requestData: requestData?.ministryHousingAllowanceRequest ?? null,
+      requestError,
+      requestsData:
+        requestsData?.ministryHousingAllowanceRequests.nodes ?? null,
+      requestsError,
+      requestId,
+      updateMutation,
     }),
     [
       steps,
@@ -196,6 +244,12 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       isPrint,
       setIsPrint,
       setIsComplete,
+      requestData,
+      requestError,
+      requestsData,
+      requestsError,
+      requestId,
+      updateMutation,
     ],
   );
 

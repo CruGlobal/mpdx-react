@@ -1,15 +1,20 @@
 import { Box, TableCell, TableRow, Typography } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { Trans, useTranslation } from 'react-i18next';
+import * as yup from 'yup';
 import { StyledOrderedList } from 'src/components/Reports/Shared/CalculationReports/Shared/styledComponents/StepsListStyles';
 import { useAnnualTotal } from 'src/hooks/useAnnualTotal';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { FormCard } from '../../../../Shared/CalculationReports/FormCard/FormCard';
+import { AutosaveCustomTextField } from '../../../Shared/AutoSave/AutosaveCustomTextField';
 import { CalculationFormValues } from '../Calculation';
-import { CustomTextField } from './Helper/CustomTextField';
 
-export const FairRentalValue: React.FC = () => {
+interface FairRentalValueProps {
+  schema: yup.Schema;
+}
+
+export const FairRentalValue: React.FC<FairRentalValueProps> = ({ schema }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const currency = 'USD';
@@ -45,7 +50,15 @@ export const FairRentalValue: React.FC = () => {
               touched.rentalValue && errors.rentalValue ? '2px solid red' : '',
           }}
         >
-          <CustomTextField name="rentalValue" value={values.rentalValue} />
+          <AutosaveCustomTextField
+            fullWidth
+            size="small"
+            variant="standard"
+            placeholder={t('Enter Amount')}
+            InputProps={{ disableUnderline: true, inputMode: 'decimal' }}
+            fieldName="rentalValue"
+            schema={schema}
+          />
         </TableCell>
       </TableRow>
       <TableRow>
@@ -74,9 +87,14 @@ export const FairRentalValue: React.FC = () => {
                 : '',
           }}
         >
-          <CustomTextField
-            name="furnitureCostsOne"
-            value={values.furnitureCostsOne}
+          <AutosaveCustomTextField
+            fullWidth
+            size="small"
+            variant="standard"
+            placeholder={t('Enter Amount')}
+            InputProps={{ disableUnderline: true, inputMode: 'decimal' }}
+            fieldName="furnitureCostsOne"
+            schema={schema}
           />
         </TableCell>
       </TableRow>
@@ -98,7 +116,15 @@ export const FairRentalValue: React.FC = () => {
                 : '',
           }}
         >
-          <CustomTextField name="avgUtilityOne" value={values.avgUtilityOne} />
+          <AutosaveCustomTextField
+            fullWidth
+            size="small"
+            variant="standard"
+            placeholder={t('Enter Amount')}
+            InputProps={{ disableUnderline: true, inputMode: 'decimal' }}
+            fieldName="avgUtilityOne"
+            schema={schema}
+          />
         </TableCell>
       </TableRow>
       <TableRow>

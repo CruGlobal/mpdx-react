@@ -21,7 +21,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
   const accountListId = useAccountListId();
   const currency = 'USD';
 
-  const { isMarried, preferredName, spousePreferredName } =
+  const { isMarried, preferredName, spousePreferredName, requestId } =
     useMinisterHousingAllowance();
 
   const { approvedDate, approvedOverallAmount, staffSpecific, spouseSpecific } =
@@ -34,7 +34,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
       icon={HomeSharp}
       iconColor="success.main"
       linkOneText={t('View Current MHA')}
-      linkOne={`/accountLists/${accountListId}/reports/housingAllowance/view`}
+      linkOne={`/accountLists/${accountListId}/reports/housingAllowance/${requestId}/view`}
       linkTwoText={t("Duplicate Last Year's MHA")}
       linkTwo=""
       isRequest={false}

@@ -11,11 +11,11 @@ import {
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
+import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
 import { DirectionButtons } from '../../../Shared/CalculationReports/DirectionButtons/DirectionButtons';
 import { SubmitModal } from '../../../Shared/CalculationReports/SubmitModal/SubmitModal';
 import { FormValues } from '../../NewRequest/NewRequestPage';
 import { useMinisterHousingAllowance } from '../../Shared/Context/MinisterHousingAllowanceContext';
-import { RentOwnEnum } from '../../Shared/sharedTypes';
 
 export const RentOwn: React.FC = () => {
   const { t } = useTranslation();
@@ -31,11 +31,45 @@ export const RentOwn: React.FC = () => {
     setFieldValue,
   } = useFormikContext<FormValues>();
 
-  const { pageType, hasCalcValues, handlePreviousStep } =
-    useMinisterHousingAllowance();
+  const {
+    pageType,
+    hasCalcValues,
+    setHasCalcValues,
+    handlePreviousStep,
+    requestData,
+    updateMutation,
+  } = useMinisterHousingAllowance();
 
-  const [pendingValue, setPendingValue] = useState<RentOwnEnum | null>(null);
-  const [displayValue, setDisplayValue] = useState<RentOwnEnum | null>(null);
+  const updateRequest = (id: string, rentOrOwn: MhaRentOrOwnEnum) => {
+    updateMutation({
+      variables: {
+        input: {
+          requestId: id,
+          requestAttributes: {
+            rentOrOwn,
+            rentalValue: null,
+            furnitureCostsOne: null,
+            avgUtilityOne: null,
+            mortgageOrRentPayment: null,
+            furnitureCostsTwo: null,
+            repairCosts: null,
+            avgUtilityTwo: null,
+            unexpectedExpenses: null,
+            overallAmount: null,
+            iUnderstandMhaPolicy: null,
+          },
+        },
+      },
+    });
+    setHasCalcValues(false);
+  };
+
+  const [pendingValue, setPendingValue] = useState<MhaRentOrOwnEnum | null>(
+    null,
+  );
+  const [displayValue, setDisplayValue] = useState<MhaRentOrOwnEnum | null>(
+    null,
+  );
   const [isRequestingChange, setIsRequestingChange] = useState(false);
 
   useEffect(() => {
@@ -48,19 +82,25 @@ export const RentOwn: React.FC = () => {
   };
 
   const handleCustomChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (hasCalcValues) {
-      const selectedValue = event.target.value as RentOwnEnum;
-      const previous = values.rentOrOwn;
+    if (!requestData?.id) {
+      return;
+    }
 
+    const selectedValue = event.target.value as MhaRentOrOwnEnum;
+    const previous = values.rentOrOwn;
+
+    if (hasCalcValues) {
       if (previous && previous !== selectedValue) {
         setPendingValue(selectedValue);
         setIsRequestingChange(true);
       } else {
         setFieldValue('rentOrOwn', selectedValue);
+        updateRequest(requestData.id, selectedValue);
         setDisplayValue(selectedValue);
       }
     } else {
       handleChange(event);
+      updateRequest(requestData.id, selectedValue);
     }
   };
 
@@ -72,6 +112,7 @@ export const RentOwn: React.FC = () => {
   const handleConfirm = () => {
     if (pendingValue) {
       setFieldValue('rentOrOwn', pendingValue);
+      updateRequest(requestData?.id ?? '', pendingValue);
       setDisplayValue(pendingValue);
     }
     setIsRequestingChange(false);
@@ -108,12 +149,12 @@ export const RentOwn: React.FC = () => {
             onBlur={handleBlur}
           >
             <FormControlLabel
-              value={RentOwnEnum.Rent}
+              value={MhaRentOrOwnEnum.Rent}
               control={<Radio />}
               label={t('Rent')}
             />
             <FormControlLabel
-              value={RentOwnEnum.Own}
+              value={MhaRentOrOwnEnum.Own}
               control={<Radio />}
               label={t('Own')}
             />

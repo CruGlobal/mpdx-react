@@ -35,7 +35,9 @@ export const IneligibleDisplay: React.FC = () => {
                 request for {preferredName}. {spousePreferredName} has not
                 completed the required IBS courses to meet eligibility criteria.
                 When you calculate your salary, you will see the approved amount
-                that can be applied to {preferredName}&apos;s salary.
+                that can be applied to {preferredName}&apos;s salary. If you
+                believe this is incorrect, please contact Personnel Records at
+                407-826-2252 or <a href="mailto:MHA@cru.org">MHA@cru.org</a>.
               </p>
             </Trans>
           </Box>

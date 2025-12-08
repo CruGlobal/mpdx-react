@@ -4,8 +4,3 @@ export enum StepsEnum {
   CalcForm = 'calcForm',
   Receipt = 'receipt',
 }
-
-export enum RentOwnEnum {
-  Rent = 'rent',
-  Own = 'own',
-}

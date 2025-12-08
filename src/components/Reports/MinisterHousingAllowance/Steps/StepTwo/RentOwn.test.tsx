@@ -1,29 +1,42 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import theme from 'src/theme';
-import { MinisterHousingAllowanceProvider } from '../../Shared/Context/MinisterHousingAllowanceContext';
+import { UpdateMinistryHousingAllowanceRequestMutation } from '../../MinisterHousingAllowance.generated';
+import {
+  ContextType,
+  MinisterHousingAllowanceContext,
+} from '../../Shared/Context/MinisterHousingAllowanceContext';
 import { RentOwn } from './RentOwn';
 
 const submit = jest.fn();
+const mutationSpy = jest.fn();
+const updateMutation = jest.fn();
+const setHasCalcValues = jest.fn();
 
 interface TestComponentProps {
-  pageType?: PageEnum;
+  contextValue: Partial<ContextType>;
 }
 
-const TestComponent: React.FC<TestComponentProps> = ({ pageType }) => (
+const TestComponent: React.FC<TestComponentProps> = ({ contextValue }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
-      <GqlMockedProvider>
+      <GqlMockedProvider<{
+        UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
+      }>
+        onCall={mutationSpy}
+      >
         <Formik initialValues={{}} onSubmit={submit}>
-          <MinisterHousingAllowanceProvider type={pageType}>
+          <MinisterHousingAllowanceContext.Provider
+            value={contextValue as ContextType}
+          >
             <RentOwn />
-          </MinisterHousingAllowanceProvider>
+          </MinisterHousingAllowanceContext.Provider>
         </Formik>
       </GqlMockedProvider>
     </TestRouter>
@@ -32,8 +45,17 @@ const TestComponent: React.FC<TestComponentProps> = ({ pageType }) => (
 
 describe('RentOwn', () => {
   it('renders form and options for new page', async () => {
-    const { getByRole, getByText } = render(
-      <TestComponent pageType={PageEnum.New} />,
+    const { getByRole, getByText, findAllByRole } = render(
+      <TestComponent
+        contextValue={
+          {
+            pageType: PageEnum.New,
+            updateMutation,
+            setHasCalcValues,
+            requestData: { id: 'request-id' },
+          } as unknown as ContextType
+        }
+      />,
     );
 
     expect(getByRole('heading', { name: 'Rent or Own?' })).toBeInTheDocument();
@@ -41,13 +63,45 @@ describe('RentOwn', () => {
     expect(getByText('Rent')).toBeInTheDocument();
     expect(getByText('Own')).toBeInTheDocument();
 
+    expect(await findAllByRole('radio', { checked: false })).toHaveLength(2);
     await userEvent.click(getByText('Rent'));
+
+    await waitFor(() =>
+      expect(updateMutation).toHaveBeenCalledWith({
+        variables: {
+          input: {
+            requestAttributes: {
+              rentOrOwn: 'RENT',
+              rentalValue: null,
+              furnitureCostsOne: null,
+              avgUtilityOne: null,
+              mortgageOrRentPayment: null,
+              furnitureCostsTwo: null,
+              repairCosts: null,
+              avgUtilityTwo: null,
+              unexpectedExpenses: null,
+              overallAmount: null,
+              iUnderstandMhaPolicy: null,
+            },
+            requestId: 'request-id',
+          },
+        },
+      }),
+    );
+
     expect(getByRole('radio', { name: 'Rent' })).toBeChecked();
   });
 
   it('renders form and options for edit page', async () => {
     const { getByRole, getByText } = render(
-      <TestComponent pageType={PageEnum.Edit} />,
+      <TestComponent
+        contextValue={
+          {
+            pageType: PageEnum.Edit,
+            requestData: { id: 'request-id' },
+          } as unknown as ContextType
+        }
+      />,
     );
 
     expect(getByRole('heading', { name: 'Rent or Own?' })).toBeInTheDocument();

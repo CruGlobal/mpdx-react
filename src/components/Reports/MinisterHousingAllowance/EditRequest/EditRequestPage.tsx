@@ -3,6 +3,7 @@ import { Container, Stack } from '@mui/material';
 import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import i18n from 'src/lib/i18n';
 import { PanelLayout } from '../../Shared/CalculationReports/PanelLayout/PanelLayout';
@@ -15,14 +16,14 @@ import {
 import { StepsList } from '../../Shared/CalculationReports/StepsList/StepsList';
 import { mainContentWidth } from '../MinisterHousingAllowance';
 import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
-import { editOwnMock, mocks } from '../Shared/mockData';
-import { RentOwnEnum, StepsEnum } from '../Shared/sharedTypes';
+import { mocks } from '../Shared/mockData';
+import { StepsEnum } from '../Shared/sharedTypes';
 import { AboutForm } from '../Steps/StepOne/AboutForm';
 import { Calculation } from '../Steps/StepThree/Calculation';
 import { RentOwn } from '../Steps/StepTwo/RentOwn';
 
 export interface FormValues {
-  rentOrOwn: RentOwnEnum | undefined;
+  rentOrOwn: MhaRentOrOwnEnum | undefined;
 }
 
 const validationSchema = yup.object({
@@ -34,11 +35,8 @@ const validationSchema = yup.object({
 export const EditRequestPage: React.FC = () => {
   const { t } = useTranslation();
 
-  const accountListId = useAccountListId();
-  const editLink = `/accountLists/${accountListId}/reports/housingAllowance/edit`;
-  const viewLink = `/accountLists/${accountListId}/reports/housingAllowance/view`;
-
   const {
+    requestId,
     steps,
     handleNextStep,
     currentStep,
@@ -48,7 +46,14 @@ export const EditRequestPage: React.FC = () => {
     percentComplete,
     currentIndex,
     setIsComplete,
+    requestData,
   } = useMinisterHousingAllowance();
+
+  const request = requestData?.requestAttributes;
+
+  const accountListId = useAccountListId();
+  const editLink = `/accountLists/${accountListId}/reports/housingAllowance/${requestId}/edit`;
+  const viewLink = `/accountLists/${accountListId}/reports/housingAllowance/${requestId}/view`;
 
   const isEdit = pageType === PageEnum.Edit;
 
@@ -70,7 +75,8 @@ export const EditRequestPage: React.FC = () => {
       sidebarContent={<StepsList steps={steps} />}
       mainContent={
         <Formik<FormValues>
-          initialValues={{ rentOrOwn: editOwnMock.rentOrOwn }}
+          enableReinitialize
+          initialValues={{ rentOrOwn: request?.rentOrOwn ?? undefined }}
           validationSchema={validationSchema}
           onSubmit={() => handleNextStep()}
         >

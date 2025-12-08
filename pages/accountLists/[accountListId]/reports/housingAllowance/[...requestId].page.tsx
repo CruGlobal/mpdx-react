@@ -34,11 +34,12 @@ const HousingAllowanceRequestPage: React.FC = () => {
     return null;
   }
 
-  const [mode] = Array.isArray(requestId) ? requestId : [requestId];
+  const mode = Array.isArray(requestId) ? requestId : [requestId];
+
   const type =
-    mode === PageEnum.New
+    mode[1] === PageEnum.New
       ? PageEnum.New
-      : mode === PageEnum.Edit
+      : mode[1] === PageEnum.Edit
         ? PageEnum.Edit
         : PageEnum.View;
 

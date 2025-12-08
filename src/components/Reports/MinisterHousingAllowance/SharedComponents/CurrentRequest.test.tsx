@@ -2,17 +2,23 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { MhaStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
+import { MinisterHousingAllowanceProvider } from '../Shared/Context/MinisterHousingAllowanceContext';
 import { mockMHARequest } from '../mockData';
 import { CurrentRequest, getDotColor, getDotVariant } from './CurrentRequest';
 
 const TestComponent: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
-      <TestRouter>
-        <CurrentRequest request={mockMHARequest} />
-      </TestRouter>
+      <GqlMockedProvider>
+        <MinisterHousingAllowanceProvider>
+          <TestRouter>
+            <CurrentRequest request={mockMHARequest} />
+          </TestRouter>
+        </MinisterHousingAllowanceProvider>
+      </GqlMockedProvider>
     </ThemeProvider>
   );
 };
