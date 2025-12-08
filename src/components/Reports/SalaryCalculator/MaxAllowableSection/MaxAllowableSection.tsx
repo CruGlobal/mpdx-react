@@ -1,8 +1,11 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Alert,
   CardContent,
   CardHeader,
+  Checkbox,
+  Divider,
+  FormControlLabel,
   Stack,
   Table,
   TableBody,
@@ -26,19 +29,20 @@ import {
 } from '../Shared/StepCard';
 
 export interface MaxAllowableStepProps {
-  maxSalary?: number;
-  spouseMaxSalary?: number;
+  personalFactorsCap?: number;
+  spousePersonalFactorsCap?: number;
 }
 
 export const MaxAllowableStep: React.FC<MaxAllowableStepProps> = ({
   // TODO: Get the maximum values for this salary calculation from the MPDX API once they exist
-  maxSalary = 58602,
-  spouseMaxSalary = 48602,
+  personalFactorsCap = 98602,
+  spousePersonalFactorsCap = 48602,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const { calculation, hcm } = useSalaryCalculator();
   const { goalMiscConstants: miscConstants } = useGoalCalculatorConstants();
+  const [splitting, setSplitting] = useState(false);
 
   const schema = useMemo(
     () =>
@@ -61,23 +65,31 @@ export const MaxAllowableStep: React.FC<MaxAllowableStepProps> = ({
 
   const singleCap =
     miscConstants?.BOARD_APPROVED_SALARY_CALC?.SINGLE_OTHER?.fee;
-  const marriedCap =
+  const familyCap =
     miscConstants?.BOARD_APPROVED_SALARY_CALC?.MARRIED_OTHER?.fee;
+  const formattedSingleCap = formatCap(singleCap);
+  const formattedFamilyCap = formatCap(familyCap);
 
   const [self, spouse] = hcm ?? [];
-  const combinedMaxSalary = maxSalary + spouseMaxSalary;
-  const cap =
-    self?.exceptionSalaryCap.amount ?? (spouse ? marriedCap : singleCap);
-  const overCap = typeof cap === 'number' ? combinedMaxSalary > cap : false;
+  const combinedPersonalFactorsCap =
+    personalFactorsCap + spousePersonalFactorsCap;
+  const exceptionCap = self?.exceptionSalaryCap.amount ?? 0;
+  const cap = Math.max(exceptionCap, (spouse ? familyCap : singleCap) ?? 0);
+  // If the user and their spouse's combined personal factors cap exceeds their allowed cap as a
+  // family (taking into account an exception they might have), then they will need to split their
+  // family cap between the two of them
+  const overCap =
+    typeof cap === 'number'
+      ? spouse && combinedPersonalFactorsCap > cap
+      : false;
+  const formattedCap = currencyFormat(cap, 'USD', locale, {
+    showTrailingZeros: true,
+  });
   const inputCombinedMaxSalary =
     (calculation?.salaryCap ?? 0) + (calculation?.spouseSalaryCap ?? 0);
 
-  const formattedCombinedMaxSalary = currencyFormat(
-    combinedMaxSalary,
-    'USD',
-    locale,
-    { showTrailingZeros: true },
-  );
+  const name = self?.staffInfo.firstName;
+  const spouseName = spouse?.staffInfo.firstName;
 
   return (
     <StepCard>
@@ -85,7 +97,7 @@ export const MaxAllowableStep: React.FC<MaxAllowableStepProps> = ({
       <CardContent>
         <Typography variant="body1">
           <Trans t={t}>
-            Your Maximum Allowable Salary (cap) includes SECA, 403(b), MHA, and
+            Your Maximum Allowable Salary (CAP) includes SECA, 403(b), MHA, and
             any taxes (if applicable). It is calculated using your personal
             information above.
           </Trans>
@@ -94,68 +106,102 @@ export const MaxAllowableStep: React.FC<MaxAllowableStepProps> = ({
         <Typography variant="body1">
           <Trans t={t}>
             Maximum Allowable Salary may not exceed{' '}
-            {{ singleCap: formatCap(singleCap) }} for an individual and{' '}
-            {{ marriedCap: formatCap(marriedCap) }} combined for a couple or a
+            {{ singleCap: formattedSingleCap }} for an individual and{' '}
+            {{ familyCap: formattedFamilyCap }} combined for a couple or a
             widow(er).
           </Trans>
         </Typography>
 
-        {overCap && (
-          <Typography variant="body1">
-            <Trans t={t}>
-              Please select how you would like to distribute your combined
-              Maximum Allowable Salary between you and{' '}
-              {{ spouse: spouse.staffInfo.firstName }}:
-            </Trans>
-          </Typography>
-        )}
-
         {overCap ? (
           <>
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              sx={{ fontWeight: 'bold' }}
-            >
-              <span>{t('Combined Maximum Allowable Salary')}:</span>
-              <span>{formattedCombinedMaxSalary}</span>
-            </Stack>
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>{self.staffInfo.firstName}</TableCell>
-                  <TableCell>{spouse.staffInfo.firstName}</TableCell>
+                  <TableCell>{t('Category')}</TableCell>
+                  <TableCell>
+                    {t('{{ name }} & {{ spouseName }} Combined', {
+                      name,
+                      spouseName,
+                    })}
+                  </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 <TableRow>
+                  <TableCell>{t('Maximum Allowable Salary')}</TableCell>
                   <TableCell>
-                    <AutosaveTextField
-                      fieldName="salaryCap"
-                      schema={schema}
-                      label={t('Maximum Allowable Salary')}
-                      required
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <AutosaveTextField
-                      fieldName="spouseSalaryCap"
-                      schema={schema}
-                      label={t('Spouse Maximum Allowable Salary')}
-                      required
-                    />
+                    {t(
+                      '{{ familyCap }} (with neither exceeding {{ singleCap }})',
+                      {
+                        familyCap: formattedFamilyCap,
+                        singleCap: formattedSingleCap,
+                      },
+                    )}
                   </TableCell>
                 </TableRow>
               </TableBody>
             </Table>
-            {inputCombinedMaxSalary > combinedMaxSalary && (
-              <Alert severity="error">
-                <Trans t={t}>
-                  Your combined maximum allowable salary exceeds your maximum
-                  allowable salary of{' '}
-                  {{ maxSalary: formattedCombinedMaxSalary }}.
-                </Trans>
-              </Alert>
+
+            <FormControlLabel
+              control={
+                <Checkbox
+                  value={splitting}
+                  onChange={(event) => setSplitting(event.target.checked)}
+                />
+              }
+              label={t(
+                'Check if you prefer to split your Combined Maximum Allowable Salary between you and {{ spouseName }} here before requesting your new salary.',
+                { spouseName },
+              )}
+            />
+
+            {splitting && (
+              <>
+                <Divider />
+                <Typography variant="body1">
+                  <Trans t={t}>
+                    Please select how you would like to distribute your combined
+                    Maximum Allowable Salary between you and{' '}
+                    {{ spouse: spouseName }}:
+                  </Trans>
+                </Typography>
+
+                <Stack
+                  component={Typography}
+                  direction="row"
+                  justifyContent="space-between"
+                  sx={{ fontWeight: 'bold' }}
+                >
+                  <span>{t('Combined Maximum Allowable Salary')}:</span>
+                  <span>{formattedCap}</span>
+                </Stack>
+
+                <Stack direction="row" gap={4}>
+                  <AutosaveTextField
+                    fieldName="salaryCap"
+                    schema={schema}
+                    label={t('{{ name }} Maximum Allowable Salary', { name })}
+                    required
+                  />
+                  <AutosaveTextField
+                    fieldName="spouseSalaryCap"
+                    schema={schema}
+                    label={t('{{ spouseName }} Maximum Allowable Salary', {
+                      spouseName,
+                    })}
+                    required
+                  />
+                </Stack>
+
+                {inputCombinedMaxSalary > cap && (
+                  <Alert severity="error">
+                    <Trans t={t}>
+                      Your combined maximum allowable salary exceeds your
+                      maximum allowable salary of {{ maxSalary: formattedCap }}.
+                    </Trans>
+                  </Alert>
+                )}
+              </>
             )}
           </>
         ) : (
@@ -164,8 +210,10 @@ export const MaxAllowableStep: React.FC<MaxAllowableStepProps> = ({
             <TableBody>
               <TableRow>
                 <FormattedTableCell value={t('Maximum Allowable Salary')} />
-                <FormattedTableCell value={maxSalary} />
-                {spouse && <FormattedTableCell value={spouseMaxSalary} />}
+                <FormattedTableCell value={personalFactorsCap} />
+                {spouse && (
+                  <FormattedTableCell value={spousePersonalFactorsCap} />
+                )}
               </TableRow>
             </TableBody>
           </Table>
