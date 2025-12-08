@@ -1,4 +1,5 @@
 import React, { createContext, useCallback, useMemo, useState } from 'react';
+import { Box, CircularProgress } from '@mui/material';
 import { FormikProvider, useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -9,14 +10,12 @@ import { amount } from 'src/lib/yupHelpers';
 import { FormEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
-import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
 import { calculateCompletionPercentage } from './calculateCompletionPercentage';
 
 export type AdditionalSalaryRequestType = {
   steps: Steps[];
   currentIndex: number;
   percentComplete: number;
-  currentStep: AdditionalSalaryRequestSectionEnum;
   handleNextStep: () => void;
   handlePreviousStep: () => void;
   isDrawerOpen: boolean;
@@ -43,16 +42,13 @@ interface Props {
   initialValues?: CompleteFormValues;
 }
 
-const objects = Object.values(AdditionalSalaryRequestSectionEnum);
-
 export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   children,
   initialValues: providedInitialValues,
 }) => {
   const { t } = useTranslation();
-  const { steps, nextStep, previousStep, currentIndex } = useStepList(
-    FormEnum.AdditionalSalary,
-  );
+  const { steps, nextStep, previousStep, currentIndex, isLoading } =
+    useStepList(FormEnum.AdditionalSalary);
   const locale = useLocale();
 
   const createCurrencyValidation = useCallback(
@@ -132,25 +128,6 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     [createCurrencyValidation, t],
   );
 
-  // Step Handlers
-  const [currentStep, setCurrentStep] = useState(
-    AdditionalSalaryRequestSectionEnum.AboutForm,
-  );
-
-  const handleNextStep = useCallback(() => {
-    const next = objects[currentIndex + 1];
-    nextStep();
-
-    setCurrentStep(next);
-  }, [currentIndex, objects, nextStep]);
-
-  const handlePreviousStep = useCallback(() => {
-    const next = objects[currentIndex - 1];
-    previousStep();
-
-    setCurrentStep(next);
-  }, [currentIndex, objects, previousStep]);
-
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
   const toggleDrawer = useCallback(() => {
     setIsDrawerOpen((prev) => !prev);
@@ -163,9 +140,9 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   const handleSubmit = useCallback(
     (_values: CompleteFormValues) => {
       //TODO: Submit form values
-      handleNextStep();
+      nextStep();
     },
-    [handleNextStep],
+    [nextStep],
   );
 
   const formik = useFormik<CompleteFormValues>({
@@ -185,25 +162,28 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       steps,
       currentIndex,
       percentComplete,
-      currentStep,
-      handleNextStep,
-      handlePreviousStep,
+      handleNextStep: nextStep,
+      handlePreviousStep: previousStep,
       isDrawerOpen,
       toggleDrawer,
       setIsDrawerOpen,
       handleCancel,
     }),
-    [
-      steps,
-      currentIndex,
-      percentComplete,
-      currentStep,
-      handleNextStep,
-      handlePreviousStep,
-      isDrawerOpen,
-      toggleDrawer,
-    ],
+    [steps, currentIndex, percentComplete, isDrawerOpen, toggleDrawer],
   );
+
+  if (isLoading) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100%"
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <FormikProvider value={formik}>

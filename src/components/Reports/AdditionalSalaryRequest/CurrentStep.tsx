@@ -3,24 +3,23 @@ import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { Receipt } from '../Shared/CalculationReports/ReceiptStep/Receipt';
 import { AboutForm } from './AboutForm/AboutForm';
-import { AdditionalSalaryRequestSectionEnum } from './AdditionalSalaryRequestHelper';
 import { CompleteForm } from './CompleteForm/CompleteForm';
 import { useAdditionalSalaryRequest } from './Shared/AdditionalSalaryRequestContext';
 import { AdditionalSalaryRequestSection } from './SharedComponents/AdditionalSalaryRequestSection';
 
 export const CurrentStep: React.FC = () => {
-  const { currentStep } = useAdditionalSalaryRequest();
+  const { currentIndex } = useAdditionalSalaryRequest();
   const { t } = useTranslation();
   const accountListId = useAccountListId();
 
   const pageLink = `/accountLists/${accountListId}/reports/additionalSalaryRequest`;
 
-  switch (currentStep) {
-    case AdditionalSalaryRequestSectionEnum.AboutForm:
+  switch (currentIndex) {
+    case 0:
       return <AboutForm />;
-    case AdditionalSalaryRequestSectionEnum.CompleteForm:
+    case 1:
       return <CompleteForm />;
-    case AdditionalSalaryRequestSectionEnum.Receipt:
+    case 2:
       return (
         <AdditionalSalaryRequestSection>
           <Receipt
@@ -31,5 +30,7 @@ export const CurrentStep: React.FC = () => {
           />
         </AdditionalSalaryRequestSection>
       );
+    default:
+      return null;
   }
 };

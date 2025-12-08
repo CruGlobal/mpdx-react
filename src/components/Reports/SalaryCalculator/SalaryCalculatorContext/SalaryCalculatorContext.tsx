@@ -7,6 +7,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { Box, CircularProgress } from '@mui/material';
 import { useStepList } from 'src/hooks/useStepList';
 import { FormEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
@@ -27,7 +28,6 @@ export interface SalaryCalculatorContextType {
   currentIndex: number;
   percentComplete: number;
 
-  currentStep: SalaryCalculatorSectionEnum;
   handleNextStep: () => void;
   handlePreviousStep: () => void;
 
@@ -58,33 +58,17 @@ interface SalaryCalculatorContextProps {
   children?: React.ReactNode;
 }
 
-const objects = Object.values(SalaryCalculatorSectionEnum);
-
 export const SalaryCalculatorProvider: React.FC<
   SalaryCalculatorContextProps
 > = ({ children }) => {
-  const { steps, nextStep, previousStep, currentIndex, percentComplete } =
-    useStepList(FormEnum.SalaryCalc);
-
-  // Step Handlers
-  const [currentStep, setCurrentStep] = useState(
-    SalaryCalculatorSectionEnum.EffectiveDate,
-  );
-
-  const handleNextStep = useCallback(() => {
-    const next = objects[currentIndex + 1];
-    nextStep();
-
-    setCurrentStep(next);
-  }, [currentIndex, objects, nextStep]);
-
-  const handlePreviousStep = useCallback(() => {
-    const next = objects[currentIndex - 1];
-    previousStep();
-
-    setCurrentStep(next);
-  }, [currentIndex, objects, previousStep]);
-  // End Step Handlers
+  const {
+    steps,
+    nextStep,
+    previousStep,
+    currentIndex,
+    percentComplete,
+    isLoading,
+  } = useStepList(FormEnum.SalaryCalc);
 
   const [isDrawerOpen, setDrawerOpen] = useState(true);
   const { data: hcmData } = useHcmQuery();
@@ -99,9 +83,8 @@ export const SalaryCalculatorProvider: React.FC<
       steps,
       currentIndex,
       percentComplete,
-      currentStep,
-      handleNextStep,
-      handlePreviousStep,
+      handleNextStep: nextStep,
+      handlePreviousStep: previousStep,
       isDrawerOpen,
       setDrawerOpen,
       toggleDrawer,
@@ -114,15 +97,27 @@ export const SalaryCalculatorProvider: React.FC<
       steps,
       currentIndex,
       percentComplete,
-      currentStep,
-      handleNextStep,
-      handlePreviousStep,
+      nextStep,
+      previousStep,
       isDrawerOpen,
       toggleDrawer,
       hcmData,
       calculationData,
     ],
   );
+
+  if (isLoading || !calculationData) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100%"
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <SalaryCalculatorContext.Provider value={contextValue}>

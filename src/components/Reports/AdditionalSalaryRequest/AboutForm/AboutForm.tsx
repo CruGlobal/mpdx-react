@@ -9,7 +9,7 @@ import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSa
 import { SpouseComponent } from '../SharedComponents/SpouseComponent';
 
 export const AboutForm: React.FC = () => {
-  const { currentStep } = useAdditionalSalaryRequest();
+  const { currentIndex } = useAdditionalSalaryRequest();
   const { t } = useTranslation();
   const theme = useTheme();
 
@@ -20,7 +20,7 @@ export const AboutForm: React.FC = () => {
   const remainingAllowableSalary = 17500.0;
 
   return (
-    <AdditionalSalaryRequestSection title={getHeader(t, currentStep)}>
+    <AdditionalSalaryRequestSection title={getHeader(t, currentIndex)}>
       <Trans t={t}>
         <Typography variant="body1" paragraph>
           You can use this form to electronically submit additional salary

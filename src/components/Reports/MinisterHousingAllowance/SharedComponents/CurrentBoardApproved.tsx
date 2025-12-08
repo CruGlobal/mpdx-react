@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import { HomeSharp } from '@mui/icons-material';
 import {
   Grid,
@@ -16,6 +17,7 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import { StatusCard } from '../../Shared/CalculationReports/StatusCard/StatusCard';
+import { useDuplicateMinistryHousingAllowanceRequestMutation } from '../MinisterHousingAllowance.generated';
 import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
 import { getRequestUrl } from '../Shared/Helper/getRequestUrl';
 import { MHARequest } from './types';
@@ -30,7 +32,15 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
   const accountListId = useAccountListId();
+  const router = useRouter();
   const currency = 'USD';
+
+  const [duplicateMHA] = useDuplicateMinistryHousingAllowanceRequestMutation({
+    refetchQueries: [
+      'MinistryHousingAllowanceRequests',
+      'MinistryHousingAllowanceRequest',
+    ],
+  });
 
   const { isMarried, preferredName, spousePreferredName } =
     useMinisterHousingAllowance();
@@ -40,6 +50,32 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
     request?.requestAttributes || {};
 
   const lastUpdated = request?.updatedAt ?? null;
+
+  const handleDuplicateRequest = async () => {
+    if (!requestId) {
+      return;
+    }
+
+    try {
+      const result = await duplicateMHA({
+        variables: {
+          input: {
+            requestId: requestId,
+          },
+        },
+      });
+
+      const newRequestId =
+        result.data?.duplicateMinistryHousingAllowanceRequest
+          ?.ministryHousingAllowanceRequest?.id;
+
+      if (newRequestId) {
+        router.push(
+          `/accountLists/${accountListId}/reports/housingAllowance/${newRequestId}/edit`,
+        );
+      }
+    } catch (error) {}
+  };
 
   return (
     <StatusCard
@@ -51,7 +87,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
       linkOneText={t('View Current MHA')}
       linkOne={getRequestUrl(accountListId, requestId, 'view')}
       linkTwoText={t('Update Current MHA')}
-      linkTwo=""
+      handleLinkTwo={handleDuplicateRequest}
       isRequest={false}
       handleConfirmCancel={() => {}}
       styling={{ p: 0 }}

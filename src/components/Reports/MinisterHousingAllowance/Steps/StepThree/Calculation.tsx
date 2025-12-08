@@ -62,11 +62,26 @@ export interface CalculationFormValues {
 
 const getValidationSchema = (rentOrOwn?: MhaRentOrOwnEnum) => {
   const baseSchema = {
-    mortgageOrRentPayment: yup.number().required(i18n.t('Required field.')),
-    furnitureCostsTwo: yup.number().required(i18n.t('Required field.')),
-    repairCosts: yup.number().required(i18n.t('Required field.')),
-    avgUtilityTwo: yup.number().required(i18n.t('Required field.')),
-    unexpectedExpenses: yup.number().required(i18n.t('Required field.')),
+    mortgageOrRentPayment: yup
+      .number()
+      .moreThan(0, i18n.t('Must be greater than $0.'))
+      .required(i18n.t('Required field.')),
+    furnitureCostsTwo: yup
+      .number()
+      .moreThan(0, i18n.t('Must be greater than $0.'))
+      .required(i18n.t('Required field.')),
+    repairCosts: yup
+      .number()
+      .moreThan(0, i18n.t('Must be greater than $0.'))
+      .required(i18n.t('Required field.')),
+    avgUtilityTwo: yup
+      .number()
+      .moreThan(0, i18n.t('Must be greater than $0.'))
+      .required(i18n.t('Required field.')),
+    unexpectedExpenses: yup
+      .number()
+      .moreThan(0, i18n.t('Must be greater than $0.'))
+      .required(i18n.t('Required field.')),
     phoneNumber: phoneNumber(i18n.t).required(
       i18n.t('Phone Number is required.'),
     ),
@@ -83,9 +98,18 @@ const getValidationSchema = (rentOrOwn?: MhaRentOrOwnEnum) => {
   if (rentOrOwn === MhaRentOrOwnEnum.Own) {
     return yup.object({
       ...baseSchema,
-      rentalValue: yup.number().required(i18n.t('Required field.')),
-      furnitureCostsOne: yup.number().required(i18n.t('Required field.')),
-      avgUtilityOne: yup.number().required(i18n.t('Required field.')),
+      rentalValue: yup
+        .number()
+        .moreThan(0, i18n.t('Must be greater than $0.'))
+        .required(i18n.t('Required field.')),
+      furnitureCostsOne: yup
+        .number()
+        .moreThan(0, i18n.t('Must be greater than $0.'))
+        .required(i18n.t('Required field.')),
+      avgUtilityOne: yup
+        .number()
+        .moreThan(0, i18n.t('Must be greater than $0.'))
+        .required(i18n.t('Required field.')),
     });
   }
 

@@ -1,9 +1,11 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
+import { DuplicateMinistryHousingAllowanceRequestMutation } from '../MinisterHousingAllowance.generated';
 import {
   ContextType,
   HcmData,
@@ -12,11 +14,21 @@ import {
 import { mockMHARequest } from '../mockData';
 import { CurrentBoardApproved } from './CurrentBoardApproved';
 
+const newRequestId = 'new-request-id';
+const mutationSpy = jest.fn();
+const mockPush = jest.fn();
 interface TestComponentProps {
   contextValue: Partial<ContextType>;
+  router?: {
+    push?: jest.Mock;
+    query?: { accountListId?: string };
+  };
 }
 
-const TestComponent: React.FC<TestComponentProps> = ({ contextValue }) => {
+const TestComponent: React.FC<TestComponentProps> = ({
+  contextValue,
+  router = {},
+}) => {
   const approvedMHARequest = {
     ...mockMHARequest,
     updatedAt: '2022-12-01',
@@ -31,8 +43,12 @@ const TestComponent: React.FC<TestComponentProps> = ({ contextValue }) => {
 
   return (
     <ThemeProvider theme={theme}>
-      <TestRouter>
-        <GqlMockedProvider>
+      <TestRouter router={router}>
+        <GqlMockedProvider<{
+          DuplicateMinistryHousingAllowanceRequest: DuplicateMinistryHousingAllowanceRequestMutation;
+        }>
+          onCall={mutationSpy}
+        >
           <MinisterHousingAllowanceContext.Provider
             value={contextValue as ContextType}
           >
@@ -117,5 +133,67 @@ describe('CurrentBoardApproved Component', () => {
 
     // Spouse data should not be rendered
     expect(queryByText('Jane')).not.toBeInTheDocument();
+  });
+
+  it('should navigate to edit page with new requestId after duplicate mutation', async () => {
+    const { getByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={{ push: mockPush }}>
+          <GqlMockedProvider<{
+            DuplicateMinistryHousingAllowanceRequest: DuplicateMinistryHousingAllowanceRequestMutation;
+          }>
+            mocks={{
+              DuplicateMinistryHousingAllowanceRequest: {
+                duplicateMinistryHousingAllowanceRequest: {
+                  ministryHousingAllowanceRequest: {
+                    id: newRequestId,
+                  },
+                },
+              },
+            }}
+            onCall={mutationSpy}
+          >
+            <MinisterHousingAllowanceContext.Provider
+              value={
+                {
+                  isMarried: false,
+                  preferredName: 'John',
+                  spousePreferredName: '',
+                  requestId: 'old-request-id',
+                  userHcmData: {
+                    staffInfo: {
+                      personNumber: '000123456',
+                    },
+                  } as unknown as HcmData,
+                  spouseHcmData: null,
+                } as ContextType
+              }
+            >
+              <CurrentBoardApproved request={mockMHARequest} />
+            </MinisterHousingAllowanceContext.Provider>
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    const updateButton = getByText('Update Current MHA');
+    userEvent.click(updateButton);
+
+    await waitFor(() => {
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'DuplicateMinistryHousingAllowanceRequest',
+        {
+          input: {
+            requestId: 'old-request-id',
+          },
+        },
+      );
+    });
+
+    await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith(
+        `/accountLists/account-list-1/reports/housingAllowance/${newRequestId}/edit`,
+      );
+    });
   });
 });
