@@ -1,11 +1,20 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Maybe, SecaStatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import { useStaffAccountQuery } from '../../StaffAccount.generated';
 import { useHcmQuery } from '../SalaryCalculatorContext/Hcm.generated';
 import { useSalaryCalculationQuery } from '../SalaryCalculatorContext/SalaryCalculation.generated';
 import { useAccountBalanceQuery } from './AccountBalance.generated';
+
+interface SalaryCategory {
+  category: string;
+  user: string | Maybe<SecaStatusEnum> | undefined;
+  spouse: string | Maybe<SecaStatusEnum> | undefined;
+  link?: string;
+  tooltip?: string;
+}
 
 export const useLandingData = () => {
   const { t } = useTranslation();
@@ -80,7 +89,7 @@ export const useLandingData = () => {
     [calculationData],
   );
 
-  const salaryCategories = useMemo(
+  const salaryCategories = useMemo<SalaryCategory[]>(
     () => [
       {
         category: t('Maximum Allowable Salary'),
@@ -94,6 +103,22 @@ export const useLandingData = () => {
               showTrailingZeros: true,
             })
           : '-',
+      },
+      {
+        category: t('Requested Salary'),
+        user: calculation?.salary
+          ? currencyFormat(calculation.salary, 'USD', locale, {
+              showTrailingZeros: true,
+            })
+          : '-',
+        spouse: calculation?.spouseSalary
+          ? currencyFormat(calculation.spouseSalary, 'USD', locale, {
+              showTrailingZeros: true,
+            })
+          : '-',
+        tooltip: t(
+          'Requested Salary includes MHA and taxes if applicable. It does not include 403(b) Contributions and SECA.',
+        ),
       },
       {
         category: t('Tax-deferred 403(b) Contribution'),
@@ -122,20 +147,23 @@ export const useLandingData = () => {
         spouse: spouse?.staffInfo.secaStatus,
       },
       {
-        category: t('Gross Salary'),
-        user: salaryData.currentGrossSalary
-          ? currencyFormat(salaryData.currentGrossSalary, 'USD', locale, {
+        category: t('Gross Requested Salary'),
+        user: calculation?.salary
+          ? currencyFormat(calculation.salary, 'USD', locale, {
               showTrailingZeros: true,
             })
           : '-',
-        spouse: salaryData.spouseCurrentGrossSalary
-          ? currencyFormat(salaryData.spouseCurrentGrossSalary, 'USD', locale, {
+        spouse: calculation?.spouseSalary
+          ? currencyFormat(calculation.spouseSalary, 'USD', locale, {
               showTrailingZeros: true,
             })
           : '-',
+        tooltip: t(
+          'Gross Requested Salary includes MHA, 403(b), SECA, and taxes if applicable.',
+        ),
       },
       {
-        category: t('Current MHA'),
+        category: t('Current MHA (Included in Gross Salary)'),
         user: calculation?.mhaAmount
           ? currencyFormat(calculation.mhaAmount, 'USD', locale, {
               showTrailingZeros: true,

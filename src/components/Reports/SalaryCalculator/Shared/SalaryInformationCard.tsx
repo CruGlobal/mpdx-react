@@ -1,17 +1,19 @@
 import NextLink from 'next/link';
 import React from 'react';
-import { WorkspacePremiumSharp } from '@mui/icons-material';
+import { Info, WorkspacePremiumSharp } from '@mui/icons-material';
 import {
   Avatar,
   Box,
   CardContent,
   CardHeader,
+  IconButton,
   Link,
   Table,
   TableBody,
   TableCell,
   TableHead,
   TableRow,
+  Tooltip,
   Typography,
   styled,
   useTheme,
@@ -82,7 +84,18 @@ export const SalaryInformationCard: React.FC = () => {
           >
             {salaryCategories.map((row) => (
               <TableRow key={row.category}>
-                <TableCell>{row.category}</TableCell>
+                <TableCell>
+                  <FlexBox>
+                    {row.category}
+                    {row.tooltip && (
+                      <Tooltip placement="top" title={row.tooltip} arrow>
+                        <IconButton sx={{ padding: 0.5 }}>
+                          <Info fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    )}
+                  </FlexBox>
+                </TableCell>
                 <TableCell>
                   <FlexBox>
                     {row.user}
