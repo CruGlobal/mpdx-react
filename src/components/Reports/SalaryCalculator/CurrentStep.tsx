@@ -1,23 +1,24 @@
 import { Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { SalaryCalculatorSectionEnum } from './SalaryCalculatorContext/Helper/sharedTypes';
 import { useSalaryCalculator } from './SalaryCalculatorContext/SalaryCalculatorContext';
 import { YourInformationStep } from './YourInformation/YourInformation';
 
 export const CurrentStep: React.FC = () => {
-  const { currentStep } = useSalaryCalculator();
+  const { currentIndex } = useSalaryCalculator();
   const { t } = useTranslation();
 
-  switch (currentStep) {
-    case SalaryCalculatorSectionEnum.EffectiveDate:
+  switch (currentIndex) {
+    case 0:
       return <Typography variant="h5">{t('Effective Date')}</Typography>;
-    case SalaryCalculatorSectionEnum.YourInformation:
+    case 1:
       return <YourInformationStep />;
-    case SalaryCalculatorSectionEnum.SalaryCalculation:
+    case 2:
       return <Typography variant="h5">{t('Salary Calculation')}</Typography>;
-    case SalaryCalculatorSectionEnum.Summary:
+    case 3:
       return <Typography variant="h5">{t('Summary')}</Typography>;
-    case SalaryCalculatorSectionEnum.Receipt:
+    case 4:
       return <Typography variant="h5">{t('Receipt')}</Typography>;
+    default:
+      return null;
   }
 };

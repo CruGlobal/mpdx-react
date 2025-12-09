@@ -211,6 +211,40 @@ describe('Calculation', () => {
     expect(await findByText('Invalid email address.')).toBeInTheDocument();
   });
 
+  it('shows validation error when input is 0', async () => {
+    const { getByRole, findByText } = render(
+      <TestComponent
+        contextValue={
+          {
+            pageType: PageEnum.New,
+            setHasCalcValues,
+            setIsPrint,
+            requestData: {
+              id: 'request-id',
+              requestAttributes: {
+                unexpectedExpenses: null,
+              },
+            },
+          } as unknown as ContextType
+        }
+      />,
+    );
+
+    const row = getByRole('row', {
+      name: /average monthly amount for unexpected/i,
+    });
+    const input = within(row).getByPlaceholderText(/\$0/i);
+
+    await userEvent.type(input, '0');
+
+    input.focus();
+    await userEvent.tab();
+
+    expect(input).toHaveValue('$0.00');
+
+    expect(await findByText('Must be greater than $0.')).toBeInTheDocument();
+  });
+
   it('shows confirmation modal when submit is clicked', async () => {
     const { getByRole, getByText, findByRole } = render(
       <TestComponent

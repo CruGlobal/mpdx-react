@@ -11,7 +11,7 @@ import { Deduction } from './Deduction/Deduction';
 
 export const CompleteForm: React.FC = () => {
   const { t } = useTranslation();
-  const { currentStep } = useAdditionalSalaryRequest();
+  const { currentIndex } = useAdditionalSalaryRequest();
 
   const theme = useTheme();
   const name = 'Doc, John';
@@ -20,7 +20,7 @@ export const CompleteForm: React.FC = () => {
   const remainingAllowableSalary = 17500.0;
 
   return (
-    <AdditionalSalaryRequestSection title={getHeader(t, currentStep)}>
+    <AdditionalSalaryRequestSection title={getHeader(t, currentIndex)}>
       <Box
         sx={{
           display: 'flex',

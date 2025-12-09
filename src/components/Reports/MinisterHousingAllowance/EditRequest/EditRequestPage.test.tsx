@@ -13,7 +13,6 @@ import {
   MinisterHousingAllowanceContext,
   MinisterHousingAllowanceProvider,
 } from '../Shared/Context/MinisterHousingAllowanceContext';
-import { StepsEnum } from '../Shared/sharedTypes';
 import { EditRequestPage } from './EditRequestPage';
 
 const mutationSpy = jest.fn();
@@ -154,7 +153,7 @@ describe('EditRequestPage', () => {
         contextValue={
           {
             pageType: PageEnum.Edit,
-            currentStep: StepsEnum.RentOrOwn,
+            currentIndex: 1,
             steps,
             handleNextStep,
             handlePreviousStep,
@@ -183,7 +182,7 @@ describe('EditRequestPage', () => {
           {
             pageType: PageEnum.Edit,
             steps,
-            currentStep: StepsEnum.RentOrOwn,
+            currentIndex: 1,
             handleNextStep,
             handlePreviousStep,
             hasCalcValues: true,
