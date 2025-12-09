@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import { Formik } from 'formik';
 import { DateTime } from 'luxon';
+import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
@@ -131,7 +132,9 @@ export const Calculation: React.FC<CalculationProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { query } = useRouter();
+  const { enqueueSnackbar } = useSnackbar();
+  const router = useRouter();
+  const { query } = router;
   const print = query.print === 'true';
 
   const [submitMutation] = useSubmitMinistryHousingAllowanceRequestMutation();
@@ -231,10 +234,15 @@ export const Calculation: React.FC<CalculationProps> = ({
       validateOnChange
       validateOnBlur
       onSubmit={() => {
-        submitMutation({
-          variables: { input: { requestId: requestData?.id ?? '' } },
-        });
-        handleNextStep();
+        try {
+          submitMutation({
+            variables: { input: { requestId: requestData?.id ?? '' } },
+          });
+          enqueueSnackbar(t('MHA request submitted successfully.'), {
+            variant: 'success',
+          });
+          handleNextStep();
+        } catch (error) {}
       }}
     >
       {({

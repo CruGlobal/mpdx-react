@@ -5,6 +5,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
@@ -26,6 +27,18 @@ const setHasCalcValues = jest.fn();
 const setIsPrint = jest.fn();
 const updateMutation = jest.fn();
 const handleNextStep = jest.fn();
+const mockEnqueue = jest.fn();
+
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
 
 interface TestComponentProps {
   contextValue: Partial<ContextType>;
@@ -43,24 +56,26 @@ const TestComponent: React.FC<TestComponentProps> = ({
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <TestRouter>
-        <GqlMockedProvider<{
-          UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
-          SubmitMinistryHousingAllowanceRequest: SubmitMinistryHousingAllowanceRequestMutation;
-        }>
-          onCall={mutationSpy}
-        >
-          <Formik initialValues={{}} onSubmit={submit}>
-            <MinisterHousingAllowanceContext.Provider
-              value={contextValue as ContextType}
-            >
-              <Calculation
-                boardApprovalDate={boardApprovalDate}
-                availableDate={availableDate}
-                rentOrOwn={rentOrOwn}
-              />
-            </MinisterHousingAllowanceContext.Provider>
-          </Formik>
-        </GqlMockedProvider>
+        <SnackbarProvider>
+          <GqlMockedProvider<{
+            UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
+            SubmitMinistryHousingAllowanceRequest: SubmitMinistryHousingAllowanceRequestMutation;
+          }>
+            onCall={mutationSpy}
+          >
+            <Formik initialValues={{}} onSubmit={submit}>
+              <MinisterHousingAllowanceContext.Provider
+                value={contextValue as ContextType}
+              >
+                <Calculation
+                  boardApprovalDate={boardApprovalDate}
+                  availableDate={availableDate}
+                  rentOrOwn={rentOrOwn}
+                />
+              </MinisterHousingAllowanceContext.Provider>
+            </Formik>
+          </GqlMockedProvider>
+        </SnackbarProvider>
       </TestRouter>
     </LocalizationProvider>
   </ThemeProvider>
@@ -346,6 +361,13 @@ describe('Calculation', () => {
         },
       },
     );
+
+    await waitFor(() => {
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        expect.stringContaining('MHA request submitted successfully.'),
+        { variant: 'success' },
+      );
+    });
   });
 
   it('should change text when dates are null', () => {
