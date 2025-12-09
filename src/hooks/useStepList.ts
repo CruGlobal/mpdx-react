@@ -1,26 +1,15 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   FormEnum,
   PageEnum,
 } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { Steps } from '../components/Reports/Shared/CalculationReports/StepsList/StepsList';
-import { useLocalStorage } from './useLocalStorage';
 
 export function useStepList(formType: FormEnum, type?: PageEnum) {
   const { t } = useTranslation();
 
-  const [hasMounted, setHasMounted] = useState(false);
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
-
-  const [currentIndex, setCurrentIndex] = useLocalStorage<number>(
-    `steps-${formType}-${type ?? 'none'}`,
-    0,
-  );
-
-  const effectiveIndex = hasMounted ? currentIndex : 0;
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const [steps, setSteps] = useState<Steps[]>(() => {
     return formType === FormEnum.MHA
@@ -98,26 +87,16 @@ export function useStepList(formType: FormEnum, type?: PageEnum) {
           : [];
   });
 
-  useEffect(() => {
-    setSteps((prevSteps) =>
-      prevSteps.map((step, index) => ({
-        ...step,
-        current: index === effectiveIndex,
-        complete: index < effectiveIndex,
-      })),
-    );
-  }, [effectiveIndex]);
-
   const percentComplete = useMemo(
-    () => ((effectiveIndex + 1) / steps.length) * 100,
-    [effectiveIndex, steps.length],
+    () => ((currentIndex + 1) / steps.length) * 100,
+    [currentIndex, steps.length],
   );
 
   const nextStep = useCallback(() => {
-    const newIndex = effectiveIndex + 1;
+    const newIndex = currentIndex + 1;
     setSteps((prevSteps) =>
       prevSteps.map((step, index) => {
-        if (index === effectiveIndex) {
+        if (index === currentIndex) {
           return {
             ...step,
             current: false,
@@ -136,13 +115,13 @@ export function useStepList(formType: FormEnum, type?: PageEnum) {
       }),
     );
     setCurrentIndex(newIndex);
-  }, [effectiveIndex]);
+  }, [currentIndex]);
 
   const previousStep = useCallback(() => {
-    const newIndex = effectiveIndex - 1;
+    const newIndex = currentIndex - 1;
     setSteps((prevSteps) =>
       prevSteps.map((step, index) => {
-        if (index === effectiveIndex) {
+        if (index === currentIndex) {
           return { ...step, current: false };
         }
 
@@ -157,14 +136,13 @@ export function useStepList(formType: FormEnum, type?: PageEnum) {
       }),
     );
     setCurrentIndex(newIndex);
-  }, [effectiveIndex]);
+  }, [currentIndex]);
 
   return {
     steps,
     nextStep,
     previousStep,
-    currentIndex: effectiveIndex,
+    currentIndex,
     percentComplete,
-    isLoading: !hasMounted,
   };
 }

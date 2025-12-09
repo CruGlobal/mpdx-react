@@ -107,7 +107,17 @@ export const RentOwn: React.FC = () => {
       }
     } else {
       handleChange(event);
-      updateRequest(requestData.id, selectedValue);
+
+      updateMutation({
+        variables: {
+          input: {
+            requestId: requestData.id,
+            requestAttributes: {
+              rentOrOwn: selectedValue,
+            },
+          },
+        },
+      });
     }
   };
 

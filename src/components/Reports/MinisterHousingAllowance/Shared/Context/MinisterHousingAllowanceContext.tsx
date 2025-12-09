@@ -95,7 +95,7 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
     useMinistryHousingAllowanceRequestsQuery();
 
   //const requestId = requestsData?.ministryHousingAllowanceRequests.nodes[0]?.id;
-  const requestId = 'c1a68821-5fb6-4e5e-b308-9263539af9d8';
+  const requestId = '2018e74b-3bc7-4d19-9d72-089f60feb6d6';
 
   const { data: requestData, error: requestError } =
     useMinistryHousingAllowanceRequestQuery({
@@ -118,7 +118,6 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
     previousStep,
     currentIndex,
     percentComplete,
-    isLoading,
   } = useStepList(FormEnum.MHA, type);
 
   const [isComplete, setIsComplete] = useState(false);
@@ -233,7 +232,7 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
     ],
   );
 
-  if (isLoading || !requestsData) {
+  if (!requestsData) {
     return (
       <Box
         display="flex"

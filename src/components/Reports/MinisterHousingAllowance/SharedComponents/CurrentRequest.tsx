@@ -44,7 +44,12 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
   } = requestAttributes || {};
 
   const [deleteRequestMutation] =
-    useDeleteMinistryHousingAllowanceRequestMutation();
+    useDeleteMinistryHousingAllowanceRequestMutation({
+      refetchQueries: [
+        'GetMinistryHousingAllowanceRequests',
+        'GetMinistryHousingAllowanceRequest',
+      ],
+    });
 
   const handleCancelRequest = async () => {
     try {
