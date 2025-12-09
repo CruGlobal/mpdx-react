@@ -1,25 +1,16 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { TableCell, TableRow, Typography } from '@mui/material';
-import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { FormCard } from 'src/components/Reports/Shared/CalculationReports/FormCard/FormCard';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
-import { CompleteFormValues } from '../../AdditionalSalaryRequest';
-import { calculateDeductions } from '../../Shared/calculateDeductions';
-import { useTotalSalaryRequest } from '../../Shared/useTotalSalaryRequest';
+import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 
 export const NetAdditionalSalary: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const { values } = useFormikContext<CompleteFormValues>();
-
-  const total = useTotalSalaryRequest(values);
-  const { totalDeduction } = useMemo(
-    () => calculateDeductions(values, total),
-    [values.defaultPercentage, values.contribution403b, total],
-  );
+  const { netSalary } = useSalaryCalculations();
 
   return (
     <FormCard title={t('Net Additional Salary')} hideHeaders={true}>
@@ -33,7 +24,7 @@ export const NetAdditionalSalary: React.FC = () => {
           </Typography>
         </TableCell>
         <TableCell sx={{ width: '30%', fontSize: 16 }}>
-          {currencyFormat(total - totalDeduction, 'USD', locale)}
+          {currencyFormat(netSalary, 'USD', locale)}
         </TableCell>
       </TableRow>
     </FormCard>
