@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import {
   Box,
   Checkbox,
@@ -13,8 +13,7 @@ import { FormCard } from 'src/components/Reports/Shared/CalculationReports/FormC
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
-import { calculateDeductions } from '../../Shared/calculateDeductions';
-import { useTotalSalaryRequest } from '../../Shared/useTotalSalaryRequest';
+import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 
 export const Deduction: React.FC = () => {
   const { t } = useTranslation();
@@ -22,11 +21,8 @@ export const Deduction: React.FC = () => {
 
   const { values } = useFormikContext<CompleteFormValues>();
 
-  const total = useTotalSalaryRequest(values);
-  const { calculatedDeduction, contribution403b, totalDeduction } = useMemo(
-    () => calculateDeductions(values, total),
-    [values.defaultPercentage, values.contribution403b, total],
-  );
+  const { calculatedDeduction, contribution403b, totalDeduction } =
+    useSalaryCalculations(values);
 
   return (
     <FormCard title={t('403(b) Deduction')}>

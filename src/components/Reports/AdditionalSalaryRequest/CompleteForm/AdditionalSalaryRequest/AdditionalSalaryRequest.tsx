@@ -8,7 +8,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { useCompleteFormCategories } from '../../Shared/useCompleteFormCategories';
-import { useTotalSalaryRequest } from '../../Shared/useTotalSalaryRequest';
+import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 
 export const AdditionalSalaryRequest: React.FC = () => {
   const { t } = useTranslation();
@@ -19,8 +19,7 @@ export const AdditionalSalaryRequest: React.FC = () => {
   const { values, handleChange, handleBlur, errors, touched } =
     useFormikContext<CompleteFormValues>();
 
-  // Calculate total excluding the defaultPercentage boolean
-  const total = useTotalSalaryRequest(values);
+  const { total } = useSalaryCalculations(values);
 
   return (
     <FormCard title={t('Additional Salary Request')}>
