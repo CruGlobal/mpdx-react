@@ -19,7 +19,7 @@ export const AdditionalSalaryRequest: React.FC = () => {
   const { values, handleChange, handleBlur, errors, touched } =
     useFormikContext<CompleteFormValues>();
 
-  const { total } = useSalaryCalculations(values);
+  const { total } = useSalaryCalculations();
 
   return (
     <FormCard title={t('Additional Salary Request')}>

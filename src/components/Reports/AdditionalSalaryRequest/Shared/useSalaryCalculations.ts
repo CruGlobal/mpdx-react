@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { useFormikContext } from 'formik';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 
 export interface SalaryCalculations {
@@ -9,9 +10,9 @@ export interface SalaryCalculations {
   netSalary: number;
 }
 
-export const useSalaryCalculations = (
-  values: CompleteFormValues,
-): SalaryCalculations => {
+export const useSalaryCalculations = (): SalaryCalculations => {
+  const { values } = useFormikContext<CompleteFormValues>();
+
   return useMemo(() => {
     // Calculate total excluding the defaultPercentage boolean
     const total = Object.entries(values).reduce((sum, [key, val]) => {

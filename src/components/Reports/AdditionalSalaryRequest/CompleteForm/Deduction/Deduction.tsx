@@ -7,22 +7,19 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { Field, useFormikContext } from 'formik';
+import { Field } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { FormCard } from 'src/components/Reports/Shared/CalculationReports/FormCard/FormCard';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
-import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 
 export const Deduction: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const { values } = useFormikContext<CompleteFormValues>();
-
   const { calculatedDeduction, contribution403b, totalDeduction } =
-    useSalaryCalculations(values);
+    useSalaryCalculations();
 
   return (
     <FormCard title={t('403(b) Deduction')}>

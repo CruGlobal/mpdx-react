@@ -1,6 +1,21 @@
+import React, { createElement } from 'react';
 import { renderHook } from '@testing-library/react';
+import { Formik } from 'formik';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { useSalaryCalculations } from './useSalaryCalculations';
+
+const FormikWrapper = ({
+  children,
+  values,
+}: {
+  children: React.ReactNode;
+  values: CompleteFormValues;
+}) =>
+  createElement(
+    Formik,
+    { initialValues: values, onSubmit: () => {} },
+    children,
+  );
 
 describe('useSalaryCalculations', () => {
   const baseValues: CompleteFormValues = {
@@ -32,7 +47,9 @@ describe('useSalaryCalculations', () => {
       defaultPercentage: true,
     };
 
-    const { result } = renderHook(() => useSalaryCalculations(values));
+    const { result } = renderHook(() => useSalaryCalculations(), {
+      wrapper: ({ children }) => FormikWrapper({ children, values }),
+    });
 
     expect(result.current.total).toBe(11000); // 5000 + 3000 + 2000 + 1000
     expect(result.current.calculatedDeduction).toBe(1320); // 11000 * 0.12
@@ -49,7 +66,9 @@ describe('useSalaryCalculations', () => {
       defaultPercentage: false,
     };
 
-    const { result } = renderHook(() => useSalaryCalculations(values));
+    const { result } = renderHook(() => useSalaryCalculations(), {
+      wrapper: ({ children }) => FormikWrapper({ children, values }),
+    });
 
     expect(result.current.total).toBe(10500); // 10000 + 500
     expect(result.current.calculatedDeduction).toBe(0);
@@ -66,7 +85,9 @@ describe('useSalaryCalculations', () => {
       contribution403b: '',
     };
 
-    const { result } = renderHook(() => useSalaryCalculations(values));
+    const { result } = renderHook(() => useSalaryCalculations(), {
+      wrapper: ({ children }) => FormikWrapper({ children, values }),
+    });
 
     expect(result.current.total).toBe(5000);
     expect(result.current.calculatedDeduction).toBe(600); // 5000 * 0.12
@@ -83,7 +104,9 @@ describe('useSalaryCalculations', () => {
       defaultPercentage: true,
     };
 
-    const { result } = renderHook(() => useSalaryCalculations(values));
+    const { result } = renderHook(() => useSalaryCalculations(), {
+      wrapper: ({ children }) => FormikWrapper({ children, values }),
+    });
 
     // Should not include defaultPercentage boolean in total
     expect(result.current.total).toBe(3000); // 1000 + 2000
@@ -109,7 +132,9 @@ describe('useSalaryCalculations', () => {
       defaultPercentage: false,
     };
 
-    const { result } = renderHook(() => useSalaryCalculations(values));
+    const { result } = renderHook(() => useSalaryCalculations(), {
+      wrapper: ({ children }) => FormikWrapper({ children, values }),
+    });
 
     expect(result.current.total).toBe(15000); // 15 fields * 1000
     expect(result.current.calculatedDeduction).toBe(0); // defaultPercentage is false
@@ -124,7 +149,9 @@ describe('useSalaryCalculations', () => {
       defaultPercentage: false,
     };
 
-    const { result } = renderHook(() => useSalaryCalculations(values));
+    const { result } = renderHook(() => useSalaryCalculations(), {
+      wrapper: ({ children }) => FormikWrapper({ children, values }),
+    });
 
     expect(result.current.total).toBe(0);
     expect(result.current.calculatedDeduction).toBe(0);
