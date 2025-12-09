@@ -30,6 +30,7 @@ export interface CompleteFormValues {
   autoPurchase: string;
   reimbursableExpenses: string;
   defaultPercentage: boolean;
+  telephoneNumber: string;
 }
 
 const MainContent: React.FC = () => {

@@ -14,9 +14,9 @@ export const useSalaryCalculations = (): SalaryCalculations => {
   const { values } = useFormikContext<CompleteFormValues>();
 
   return useMemo(() => {
-    // Calculate total excluding the defaultPercentage boolean
+    // Calculate total excluding the defaultPercentage boolean and telephoneNumber string
     const total = Object.entries(values).reduce((sum, [key, val]) => {
-      if (key === 'defaultPercentage') {
+      if (key === 'defaultPercentage' || key === 'telephoneNumber') {
         return sum;
       }
       return sum + Number(val || 0);

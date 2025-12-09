@@ -1,12 +1,13 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { NameDisplay } from 'src/components/Reports/Shared/CalculationReports/NameDisplay/NameDisplay';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { getHeader } from '../Shared/Helper/getHeader';
 import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSalaryRequestSection';
 import { AdditionalSalaryRequest } from './AdditionalSalaryRequest/AdditionalSalaryRequest';
+import { ContactInformation } from './ContactInformation/ContactInformation';
 import { Deduction } from './Deduction/Deduction';
 import { NetAdditionalSalary } from './NetAdditionalSalary/NetAdditionalSalary';
 
@@ -45,8 +46,28 @@ export const CompleteForm: React.FC = () => {
           )}
         </Typography>
         <AdditionalSalaryRequest />
+        <NetAdditionalSalary />
         <Deduction />
         <NetAdditionalSalary />
+        <Trans t={t}>
+          <Typography variant="body2" paragraph>
+            <Typography fontWeight="bold" component="span" variant="body2">
+              Note:{' '}
+            </Typography>
+            Taxes and any requested 403(b) amount will be subtracted from the
+            amount of additional salary that you are requesting. The percentage
+            of taxes on this request should be similar to that of your
+            paychecks, but may be more if you have chosen to have an additional
+            amount of withholding on your paychecks. If you have any questions
+            about this, please call 1(888)278-7233 (option 2, 2)
+          </Typography>
+          <Typography variant="body1" paragraph>
+            If the above information is correct, please confirm your telephone
+            number and email address and click &quot;Submit&quot; to process
+            this form.
+          </Typography>
+        </Trans>
+        <ContactInformation />
       </Box>
     </AdditionalSalaryRequestSection>
   );
