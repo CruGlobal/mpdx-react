@@ -93,7 +93,7 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
               below. If you would like to make changes you may do so by logging
               into{' '}
               <Link
-                href="https://accounts.principal.com/app/bookmark/0oadm2qe1orihoKha5d7/login"
+                href="https://www.principal.com/"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: theme.palette.primary.main }}
@@ -109,7 +109,7 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
               Note: You may be enrolled in our automatic annual 1% increase to
               your 403(b). To verify this or update it, you can go to{' '}
               <Link
-                href="https://accounts.principal.com/app/bookmark/0oadm2qe1orihoKha5d7/login"
+                href="https://www.principal.com/"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: theme.palette.primary.main }}

@@ -152,6 +152,7 @@ export const useLandingData = () => {
         spouse: spouse?.staffInfo.secaStatus,
       },
       {
+        // TODO: replace approvedCalculation.salary with correct value
         category: t('Gross Requested Salary'),
         user: approvedCalculation?.salary
           ? currencyFormat(approvedCalculation.salary, 'USD', locale, {
@@ -182,7 +183,7 @@ export const useLandingData = () => {
         link: '/reports/housingAllowance',
       },
     ],
-    [t, salaryData, self, spouse, spouse, approvedCalculation, locale],
+    [t, salaryData, self, spouse, approvedCalculation, locale],
   );
 
   return {
