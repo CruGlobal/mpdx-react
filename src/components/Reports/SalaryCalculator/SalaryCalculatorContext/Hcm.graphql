@@ -17,5 +17,8 @@ query Hcm {
       currentTaxDeferredContributionPercentage
       maximumContributionLimit
     }
+    exceptionSalaryCap {
+      amount
+    }
   }
 }
