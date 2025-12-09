@@ -25,3 +25,4 @@ Example:
 - [ ] I have run the Claude Code `/pr-review` command locally and fixed any relevant suggestions
 - [ ] I have requested a review from another person on the project
 - [ ] I have tested my changes in preview or in staging
+- [ ] I have cleaned up my commit history
