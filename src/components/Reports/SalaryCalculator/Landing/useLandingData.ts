@@ -154,13 +154,13 @@ export const useLandingData = () => {
       {
         // TODO: replace approvedCalculation.salary with correct value
         category: t('Gross Requested Salary'),
-        user: approvedCalculation?.salary
-          ? currencyFormat(approvedCalculation.salary, 'USD', locale, {
+        user: salaryData.currentGrossSalary
+          ? currencyFormat(salaryData.currentGrossSalary, 'USD', locale, {
               showTrailingZeros: true,
             })
           : '-',
-        spouse: approvedCalculation?.spouseSalary
-          ? currencyFormat(approvedCalculation.spouseSalary, 'USD', locale, {
+        spouse: salaryData.spouseCurrentGrossSalary
+          ? currencyFormat(salaryData.spouseCurrentGrossSalary, 'USD', locale, {
               showTrailingZeros: true,
             })
           : '-',
