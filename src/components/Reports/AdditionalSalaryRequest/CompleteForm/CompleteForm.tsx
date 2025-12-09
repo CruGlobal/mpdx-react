@@ -8,6 +8,7 @@ import { getHeader } from '../Shared/Helper/getHeader';
 import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSalaryRequestSection';
 import { AdditionalSalaryRequest } from './AdditionalSalaryRequest/AdditionalSalaryRequest';
 import { Deduction } from './Deduction/Deduction';
+import { NetAdditionalSalary } from './NetAdditionalSalary/NetAdditionalSalary';
 
 export const CompleteForm: React.FC = () => {
   const { t } = useTranslation();
@@ -45,6 +46,7 @@ export const CompleteForm: React.FC = () => {
         </Typography>
         <AdditionalSalaryRequest />
         <Deduction />
+        <NetAdditionalSalary />
       </Box>
     </AdditionalSalaryRequestSection>
   );
