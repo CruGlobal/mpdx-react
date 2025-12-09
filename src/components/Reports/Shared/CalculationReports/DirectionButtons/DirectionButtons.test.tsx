@@ -67,50 +67,54 @@ jest.mock('next/router', () => ({
 }));
 
 describe('DirectionButtons', () => {
-  it('renders Back and Submit buttons', () => {
-    const { getByRole } = render(
+  it('renders Back and Submit buttons', async () => {
+    const { getByRole, findByRole } = render(
       <TestComponent isSubmission={true} showBackButton={true} />,
     );
 
-    expect(getByRole('button', { name: /back/i })).toBeInTheDocument();
+    expect(await findByRole('button', { name: /back/i })).toBeInTheDocument();
     expect(getByRole('button', { name: /submit/i })).toBeInTheDocument();
   });
 
   it('calls handleNext when Continue is clicked', async () => {
-    const { getByRole } = render(<TestComponent />);
+    const { findByRole } = render(<TestComponent />);
 
-    await userEvent.click(getByRole('button', { name: 'Continue' }));
+    await userEvent.click(await findByRole('button', { name: 'Continue' }));
 
     expect(handleNextStep).toHaveBeenCalled();
   });
 
   it('calls overrideNext when provided and Continue is clicked', async () => {
-    const { getByRole } = render(<TestComponent overrideNext={overrideNext} />);
+    const { findByRole } = render(
+      <TestComponent overrideNext={overrideNext} />,
+    );
 
-    await userEvent.click(getByRole('button', { name: 'Continue' }));
+    await userEvent.click(await findByRole('button', { name: 'Continue' }));
 
     expect(handleNextStep).not.toHaveBeenCalled();
     expect(overrideNext).toHaveBeenCalled();
   });
 
   it('calls handlePreviousStep when Back is clicked', async () => {
-    const { getByRole } = render(<TestComponent showBackButton={true} />);
+    const { findByRole } = render(<TestComponent showBackButton={true} />);
 
-    await userEvent.click(getByRole('button', { name: /back/i }));
+    await userEvent.click(await findByRole('button', { name: /back/i }));
 
     expect(handlePreviousStep).toHaveBeenCalled();
   });
 
-  it('renders custom button title when provided', () => {
-    const { getByRole } = render(<TestComponent buttonTitle={title} />);
+  it('renders custom button title when provided', async () => {
+    const { findByRole } = render(<TestComponent buttonTitle={title} />);
 
-    expect(getByRole('button', { name: title })).toBeInTheDocument();
+    expect(await findByRole('button', { name: title })).toBeInTheDocument();
   });
 
-  it('renders Cancel button when handleCancel is provided', () => {
-    const { getByRole } = render(<TestComponent handleCancel={handleCancel} />);
+  it('renders Cancel button when handleCancel is provided', async () => {
+    const { findByRole } = render(
+      <TestComponent handleCancel={handleCancel} />,
+    );
 
-    expect(getByRole('button', { name: /cancel/i })).toBeInTheDocument();
+    expect(await findByRole('button', { name: /cancel/i })).toBeInTheDocument();
   });
 
   it('does not render Cancel button when handleCancel is not provided', () => {
@@ -120,9 +124,11 @@ describe('DirectionButtons', () => {
   });
 
   it('calls handleCancel when Cancel button is clicked', async () => {
-    const { getByRole } = render(<TestComponent handleCancel={handleCancel} />);
+    const { findByRole } = render(
+      <TestComponent handleCancel={handleCancel} />,
+    );
 
-    userEvent.click(getByRole('button', { name: /cancel/i }));
+    userEvent.click(await findByRole('button', { name: /cancel/i }));
 
     expect(handleCancel).toHaveBeenCalled();
   });

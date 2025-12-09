@@ -65,9 +65,9 @@ describe('MinisterHousingAllowanceContext', () => {
   });
 
   it('provides initial state for new page', async () => {
-    const { getByTestId, getByRole } = render(<TestComponent />);
+    const { findByTestId, getByTestId, getByRole } = render(<TestComponent />);
 
-    expect(getByTestId('steps')).toHaveTextContent('4');
+    expect(await findByTestId('steps')).toHaveTextContent('4');
     expect(getByTestId('currentIndex')).toHaveTextContent('0');
     expect(getByTestId('percentComplete')).toHaveTextContent('25');
 
@@ -89,11 +89,11 @@ describe('MinisterHousingAllowanceContext', () => {
   });
 
   it('provides initial state for edit page', async () => {
-    const { getByTestId, getByRole } = render(
+    const { findByTestId, getByTestId, getByRole } = render(
       <TestComponent type={PageEnum.Edit} />,
     );
 
-    expect(getByTestId('steps')).toHaveTextContent('4');
+    expect(await findByTestId('steps')).toHaveTextContent('4');
     expect(getByTestId('currentIndex')).toHaveTextContent('0');
     expect(getByTestId('percentComplete')).toHaveTextContent('25');
 
@@ -122,10 +122,12 @@ describe('MinisterHousingAllowanceContext', () => {
     expect(getByTestId('percentComplete')).toHaveTextContent('25');
   });
 
-  it('renders children correctly', () => {
-    const { getByRole } = render(<TestComponent />);
+  it('renders children correctly', async () => {
+    const { getByRole, findByRole } = render(<TestComponent />);
 
-    expect(getByRole('button', { name: 'Previous' })).toBeInTheDocument();
+    expect(
+      await findByRole('button', { name: 'Previous' }),
+    ).toBeInTheDocument();
     expect(getByRole('button', { name: 'Next' })).toBeInTheDocument();
   });
 });

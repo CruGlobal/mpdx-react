@@ -1,5 +1,4 @@
 import React, { createContext, useCallback, useMemo, useState } from 'react';
-import { Box, CircularProgress } from '@mui/material';
 import { FormikProvider, useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -47,8 +46,9 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   initialValues: providedInitialValues,
 }) => {
   const { t } = useTranslation();
-  const { steps, nextStep, previousStep, currentIndex, isLoading } =
-    useStepList(FormEnum.AdditionalSalary);
+  const { steps, nextStep, previousStep, currentIndex } = useStepList(
+    FormEnum.AdditionalSalary,
+  );
   const locale = useLocale();
 
   const createCurrencyValidation = useCallback(
@@ -169,21 +169,18 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       setIsDrawerOpen,
       handleCancel,
     }),
-    [steps, currentIndex, percentComplete, isDrawerOpen, toggleDrawer],
+    [
+      steps,
+      currentIndex,
+      percentComplete,
+      nextStep,
+      previousStep,
+      isDrawerOpen,
+      toggleDrawer,
+      setIsDrawerOpen,
+      handleCancel,
+    ],
   );
-
-  if (isLoading) {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="100%"
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
 
   return (
     <FormikProvider value={formik}>

@@ -58,7 +58,10 @@ export const MinisterHousingAllowanceReport = () => {
   const onCreateMHARequest = async () => {
     await createMHA({
       variables: {
-        requestAttributes: {},
+        requestAttributes: {
+          phoneNumber: userHcmData?.staffInfo.primaryPhoneNumber,
+          emailAddress: userHcmData?.staffInfo.emailAddress,
+        },
       },
       refetchQueries: ['MinistryHousingAllowanceRequests'],
       onCompleted: ({ createMinistryHousingAllowanceRequest: newRequest }) => {

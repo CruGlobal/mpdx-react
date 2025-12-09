@@ -15,6 +15,18 @@ import { mockMHARequest } from '../mockData';
 import { CurrentRequest, getDotColor, getDotVariant } from './CurrentRequest';
 
 const mutationSpy = jest.fn();
+const mockEnqueue = jest.fn();
+
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
 
 const TestComponent: React.FC = () => {
   return (
@@ -83,6 +95,13 @@ describe('CurrentRequest Component', () => {
             },
           }),
         }),
+      );
+    });
+
+    await waitFor(() => {
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        expect.stringContaining('MHA request cancelled successfully.'),
+        { variant: 'success' },
       );
     });
   });

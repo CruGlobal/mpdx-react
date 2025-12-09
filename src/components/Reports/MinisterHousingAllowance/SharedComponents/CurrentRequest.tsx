@@ -44,7 +44,12 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
   } = requestAttributes || {};
 
   const [deleteRequestMutation] =
-    useDeleteMinistryHousingAllowanceRequestMutation();
+    useDeleteMinistryHousingAllowanceRequestMutation({
+      refetchQueries: [
+        'GetMinistryHousingAllowanceRequests',
+        'GetMinistryHousingAllowanceRequest',
+      ],
+    });
 
   const handleCancelRequest = async () => {
     try {
@@ -54,6 +59,9 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
             requestId: requestId ?? '',
           },
         },
+      });
+      enqueueSnackbar(t('MHA request cancelled successfully.'), {
+        variant: 'success',
       });
     } catch (error) {
       enqueueSnackbar(t('Failed to cancel your MHA request.'), {

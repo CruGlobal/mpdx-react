@@ -9,6 +9,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useFormikContext } from 'formik';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
@@ -19,6 +20,7 @@ import { useMinisterHousingAllowance } from '../../Shared/Context/MinisterHousin
 
 export const RentOwn: React.FC = () => {
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
 
   const {
     values,
@@ -41,27 +43,32 @@ export const RentOwn: React.FC = () => {
   } = useMinisterHousingAllowance();
 
   const updateRequest = (id: string, rentOrOwn: MhaRentOrOwnEnum) => {
-    updateMutation({
-      variables: {
-        input: {
-          requestId: id,
-          requestAttributes: {
-            rentOrOwn,
-            rentalValue: null,
-            furnitureCostsOne: null,
-            avgUtilityOne: null,
-            mortgageOrRentPayment: null,
-            furnitureCostsTwo: null,
-            repairCosts: null,
-            avgUtilityTwo: null,
-            unexpectedExpenses: null,
-            overallAmount: null,
-            iUnderstandMhaPolicy: null,
+    try {
+      updateMutation({
+        variables: {
+          input: {
+            requestId: id,
+            requestAttributes: {
+              rentOrOwn,
+              rentalValue: null,
+              furnitureCostsOne: null,
+              avgUtilityOne: null,
+              mortgageOrRentPayment: null,
+              furnitureCostsTwo: null,
+              repairCosts: null,
+              avgUtilityTwo: null,
+              unexpectedExpenses: null,
+              overallAmount: null,
+              iUnderstandMhaPolicy: null,
+            },
           },
         },
-      },
-    });
-    setHasCalcValues(false);
+      });
+      enqueueSnackbar(t('All inputs have been cleared successfully'), {
+        variant: 'success',
+      });
+      setHasCalcValues(false);
+    } catch (error) {}
   };
 
   const [pendingValue, setPendingValue] = useState<MhaRentOrOwnEnum | null>(
@@ -100,7 +107,17 @@ export const RentOwn: React.FC = () => {
       }
     } else {
       handleChange(event);
-      updateRequest(requestData.id, selectedValue);
+
+      updateMutation({
+        variables: {
+          input: {
+            requestId: requestData.id,
+            requestAttributes: {
+              rentOrOwn: selectedValue,
+            },
+          },
+        },
+      });
     }
   };
 

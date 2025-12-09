@@ -28,11 +28,13 @@ describe('PersonalInformationSection', () => {
     ).toBeInTheDocument();
   });
 
-  it('should display category row headers', () => {
-    const { getByRole } = render(<TestComponent />);
+  it('should display category row headers', async () => {
+    const { getByRole, findByRole } = render(<TestComponent />);
 
     expect(
-      getByRole('combobox', { name: 'Nearest Geographic Multiplier Location' }),
+      await findByRole('combobox', {
+        name: 'Nearest Geographic Multiplier Location',
+      }),
     ).toBeInTheDocument();
     expect(getByRole('cell', { name: 'Tenure' })).toBeInTheDocument();
     expect(getByRole('cell', { name: 'Age' })).toBeInTheDocument();

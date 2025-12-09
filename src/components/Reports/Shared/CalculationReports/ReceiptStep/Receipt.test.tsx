@@ -64,11 +64,13 @@ const TestComponent: React.FC<TestComponentProps> = ({
 );
 
 describe('Receipt', () => {
-  it('renders the component in new page', () => {
-    const { getByRole } = render(<TestComponent pageType={PageEnum.New} />);
+  it('renders the component in new page', async () => {
+    const { getByRole, findByRole } = render(
+      <TestComponent pageType={PageEnum.New} />,
+    );
 
     expect(
-      getByRole('heading', {
+      await findByRole('heading', {
         name: 'Thank you for Submitting your Test Title!',
       }),
     ).toBeInTheDocument();
@@ -83,13 +85,13 @@ describe('Receipt', () => {
     expect(getByRole('button', { name: /view form/i })).toBeInTheDocument();
   });
 
-  it('renders the component in edit page', () => {
-    const { getByRole } = render(
+  it('renders the component in edit page', async () => {
+    const { getByRole, findByRole } = render(
       <TestComponent pageType={PageEnum.Edit} isEdit={true} />,
     );
 
     expect(
-      getByRole('heading', {
+      await findByRole('heading', {
         name: 'Thank you for updating your Test Title!',
       }),
     ).toBeInTheDocument();
@@ -104,8 +106,8 @@ describe('Receipt', () => {
     expect(getByRole('button', { name: /view form/i })).toBeInTheDocument();
   });
 
-  it('should change text when dates are null', () => {
-    const { getByText } = render(
+  it('should change text when dates are null', async () => {
+    const { findByText } = render(
       <TestComponent
         pageType={PageEnum.New}
         availableDate={null}
@@ -114,18 +116,18 @@ describe('Receipt', () => {
     );
 
     expect(
-      getByText(
+      await findByText(
         /we will review your information and you will receive notice for your approval soon./i,
       ),
     ).toBeInTheDocument();
   });
 
-  it('should go to edit link when clicked', () => {
-    const { getByRole } = render(
+  it('should go to edit link when clicked', async () => {
+    const { findByRole } = render(
       <TestComponent pageType={PageEnum.New} editLink={editLink} />,
     );
 
-    const editButton = getByRole('link', {
+    const editButton = await findByRole('link', {
       name: /edit your mha request \(not available after/i,
     });
 
@@ -135,12 +137,12 @@ describe('Receipt', () => {
     );
   });
 
-  it('should render custom alert text when provided', () => {
-    const { getByText } = render(
+  it('should render custom alert text when provided', async () => {
+    const { findByText } = render(
       <TestComponent pageType={PageEnum.New} alertText={alertText} />,
     );
 
-    expect(getByText(alertText)).toBeInTheDocument();
+    expect(await findByText(alertText)).toBeInTheDocument();
   });
 
   it('should not render edit link when not provided', () => {
@@ -153,12 +155,12 @@ describe('Receipt', () => {
     expect(editButton).not.toBeInTheDocument();
   });
 
-  it('should render edit link when provided', () => {
-    const { getByRole } = render(
+  it('should render edit link when provided', async () => {
+    const { findByRole } = render(
       <TestComponent pageType={PageEnum.New} editLink={editLink} />,
     );
 
-    const editButton = getByRole('link', {
+    const editButton = await findByRole('link', {
       name: /edit your mha request \(not available after/i,
     });
 
@@ -167,11 +169,11 @@ describe('Receipt', () => {
   });
 
   it('should go to view link when View clicked', async () => {
-    const { getByRole } = render(
+    const { findByRole } = render(
       <TestComponent viewLink={viewLink} setIsComplete={setIsComplete} />,
     );
 
-    const viewButton = getByRole('link', { name: /view form/i });
+    const viewButton = await findByRole('link', { name: /view form/i });
 
     expect(viewButton).toHaveAttribute(
       'href',
@@ -183,11 +185,11 @@ describe('Receipt', () => {
   });
 
   it('should go to view link when Print clicked', async () => {
-    const { getByRole } = render(
+    const { findByRole } = render(
       <TestComponent viewLink={viewLink} setIsComplete={setIsComplete} />,
     );
 
-    const viewButton = getByRole('link', { name: /print a copy/i });
+    const viewButton = await findByRole('link', { name: /print a copy/i });
 
     expect(viewButton).toHaveAttribute(
       'href',

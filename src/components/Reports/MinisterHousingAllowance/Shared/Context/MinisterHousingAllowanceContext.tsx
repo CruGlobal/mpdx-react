@@ -9,7 +9,6 @@ import {
   useState,
 } from 'react';
 import { ApolloError } from '@apollo/client';
-import { Box, CircularProgress } from '@mui/material';
 import {
   FormEnum,
   PageEnum,
@@ -106,7 +105,6 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
     previousStep,
     currentIndex,
     percentComplete,
-    isLoading,
   } = useStepList(FormEnum.MHA, type);
 
   const [isComplete, setIsComplete] = useState(false);
@@ -211,19 +209,6 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       updateMutation,
     ],
   );
-
-  if (isLoading) {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="100%"
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
 
   return (
     <MinisterHousingAllowanceContext.Provider value={contextValue}>

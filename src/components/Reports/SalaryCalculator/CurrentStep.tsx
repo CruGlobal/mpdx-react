@@ -10,18 +10,15 @@ export const CurrentStep: React.FC = () => {
   const { currentIndex } = useSalaryCalculator();
   const { t } = useTranslation();
 
-  switch (currentIndex) {
-    case 0:
-      return <EffectiveDateStep />;
-    case 1:
-      return <YourInformationStep />;
-    case 2:
-      return <Typography variant="h5">{t('Salary Calculation')}</Typography>;
-    case 3:
-      return <SummaryStep />;
-    case 4:
-      return <ReceiptStep />;
-    default:
-      return null;
-  }
+  const steps = [
+    <EffectiveDateStep key="effective-date" />,
+    <YourInformationStep key="your-information" />,
+    <Typography variant="h5" key="salary-calculation">
+      {t('Salary Calculation')}
+    </Typography>,
+    <SummaryStep key="summary" />,
+    <ReceiptStep key="receipt" />,
+  ];
+
+  return steps[currentIndex] ?? null;
 };
