@@ -5,11 +5,12 @@ import { useTranslation } from 'react-i18next';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 
 interface ContactInformationProps {
+  // TODO once we have users email make this argument required and remove default argument
   email?: string;
 }
 
 export const ContactInformation: React.FC<ContactInformationProps> = ({
-  email = '',
+  email = 'email address',
 }) => {
   const { t } = useTranslation();
 
@@ -57,7 +58,7 @@ export const ContactInformation: React.FC<ContactInformationProps> = ({
               pb: 1,
             }}
           >
-            {email || t('Enter email address')}
+            {email}
           </Typography>
         </Box>
       </Box>

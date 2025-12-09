@@ -46,6 +46,7 @@ export const CompleteForm: React.FC = () => {
           )}
         </Typography>
         <AdditionalSalaryRequest />
+        <NetAdditionalSalary />
         <Deduction />
         <NetAdditionalSalary />
         <Trans t={t}>
