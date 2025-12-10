@@ -48,6 +48,8 @@ export type ContextType = {
   isPrint: boolean;
   setIsPrint: Dispatch<SetStateAction<boolean>>;
   setIsComplete: Dispatch<SetStateAction<boolean>>;
+  resetSteps: () => void;
+  mounted: boolean;
   isMarried: boolean;
   userHcmData?: HcmData;
   spouseHcmData?: HcmData | null;
@@ -98,7 +100,7 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
     useMinistryHousingAllowanceRequestsQuery();
 
   //const requestId = requestsData?.ministryHousingAllowanceRequests.nodes[0]?.id;
-  const requestId = 'c1a68821-5fb6-4e5e-b308-9263539af9d8';
+  const requestId = '2018e74b-3bc7-4d19-9d72-089f60feb6d6';
 
   const { data: requestData, error: requestError } =
     useMinistryHousingAllowanceRequestQuery({
@@ -114,14 +116,32 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
 
   const [updateMutation] = useUpdateMinistryHousingAllowanceRequestMutation();
 
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const pageType = type;
+  const storageKey = useMemo(() => {
+    return `mha-steps-${requestId}-${pageType ?? 'default'}`;
+  }, [requestId, pageType]);
+
   const {
     steps: initialSteps,
     nextStep,
     previousStep,
     currentIndex,
     percentComplete,
-  } = useStepList(FormEnum.MHA, type);
+    resetSteps,
+  } = useStepList(FormEnum.MHA, type, storageKey);
+
+  useEffect(() => {
+    const step = objects[currentIndex];
+    if (step) {
+      setCurrentStep(step);
+    }
+  }, [currentIndex]);
 
   const [isComplete, setIsComplete] = useState(false);
 
@@ -215,6 +235,8 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       isPrint,
       setIsPrint,
       setIsComplete,
+      resetSteps,
+      mounted,
       requestData: requestData?.ministryHousingAllowanceRequest ?? null,
       requestError,
       requestsData:
@@ -244,6 +266,8 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       isPrint,
       setIsPrint,
       setIsComplete,
+      resetSteps,
+      mounted,
       requestData,
       requestError,
       requestsData,
@@ -252,6 +276,10 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       updateMutation,
     ],
   );
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <MinisterHousingAllowanceContext.Provider value={contextValue}>
