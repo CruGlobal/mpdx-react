@@ -41,6 +41,10 @@ export const SalaryCalculatorTestWrapper: React.FC<
                   currentTaxDeferredContributionPercentage: 5,
                   maximumContributionLimit: 45,
                 },
+                mhaRequest: {
+                  currentApprovedOverallAmount: 10000,
+                  currentApprovedAmountForStaff: 500,
+                },
                 exceptionSalaryCap: {
                   amount: null,
                 },
@@ -57,6 +61,10 @@ export const SalaryCalculatorTestWrapper: React.FC<
                         currentRothContributionPercentage: 10,
                         currentTaxDeferredContributionPercentage: 8,
                         maximumContributionLimit: 47,
+                      },
+                      mhaRequest: {
+                        currentApprovedOverallAmount: 12000,
+                        currentApprovedAmountForStaff: 800,
                       },
                     },
                   ]

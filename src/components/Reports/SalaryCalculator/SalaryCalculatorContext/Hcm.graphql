@@ -17,6 +17,10 @@ query Hcm {
       currentTaxDeferredContributionPercentage
       maximumContributionLimit
     }
+    mhaRequest {
+      currentApprovedOverallAmount
+      currentApprovedAmountForStaff
+    }
     exceptionSalaryCap {
       amount
     }
