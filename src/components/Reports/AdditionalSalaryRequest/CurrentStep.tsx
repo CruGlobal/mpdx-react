@@ -14,23 +14,18 @@ export const CurrentStep: React.FC = () => {
 
   const pageLink = `/accountLists/${accountListId}/reports/additionalSalaryRequest`;
 
-  switch (currentIndex) {
-    case 0:
-      return <AboutForm />;
-    case 1:
-      return <CompleteForm />;
-    case 2:
-      return (
-        <AdditionalSalaryRequestSection>
-          <Receipt
-            formTitle={t('Additional Salary Request')}
-            buttonText={t('View Your Additional Salary Request')}
-            viewLink={pageLink}
-            isEdit={false}
-          />
-        </AdditionalSalaryRequestSection>
-      );
-    default:
-      return null;
-  }
+  const steps = [
+    <AboutForm key="about-form" />,
+    <CompleteForm key="complete-form" />,
+    <AdditionalSalaryRequestSection key="receipt-section">
+      <Receipt
+        formTitle={t('Additional Salary Request')}
+        buttonText={t('View Your Additional Salary Request')}
+        viewLink={pageLink}
+        isEdit={false}
+      />
+    </AdditionalSalaryRequestSection>,
+  ];
+
+  return steps[currentIndex] ?? null;
 };

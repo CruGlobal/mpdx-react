@@ -157,7 +157,17 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       setIsDrawerOpen,
       handleCancel,
     }),
-    [steps, currentIndex, percentComplete, isDrawerOpen, toggleDrawer],
+    [
+      steps,
+      currentIndex,
+      percentComplete,
+      nextStep,
+      previousStep,
+      isDrawerOpen,
+      toggleDrawer,
+      setIsDrawerOpen,
+      handleCancel,
+    ],
   );
 
   return (

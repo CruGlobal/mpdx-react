@@ -24,7 +24,7 @@ export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
     async (
       attributes: Partial<MinistryHousingAllowanceRequestAttributesInput>,
     ) => {
-      if (!requestData?.id) {
+      if (!requestData || !requestData.id) {
         return;
       }
 
@@ -53,6 +53,7 @@ export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
               ministryHousingAllowanceRequest: {
                 ...requestData,
                 requestAttributes: {
+                  __typename: 'MhaRequestAttributes',
                   ...values,
                   ...attributes,
                   overallAmount,
@@ -62,7 +63,9 @@ export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
           },
         });
         enqueueSnackbar(t('Saved successfully'), { variant: 'success' });
-      } catch (error) {}
+      } catch (error) {
+        // If failed, snackbar is already handled elsewhere
+      }
     },
     [formValues, updateMinistryHousingAllowanceRequest, requestData],
   );
