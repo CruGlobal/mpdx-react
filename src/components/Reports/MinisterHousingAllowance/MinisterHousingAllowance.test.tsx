@@ -9,7 +9,7 @@ import theme from 'src/theme';
 import { HcmDataQuery } from '../Shared/HcmData/HCMData.generated';
 import {
   marriedMhaAndNoException,
-  marriedNoMhaNoException,
+  marriedSpouseIneligible,
   singleMhaNoException,
   singleNoMhaNoException,
 } from '../Shared/HcmData/mockData';
@@ -66,9 +66,9 @@ describe('MinisterHousingAllowanceReport', () => {
     expect(await findByText('John Doe')).toBeInTheDocument();
   });
 
-  it('renders married, no pending, no approved correctly', async () => {
+  it('renders married with ineligible spouse, no approved requests', async () => {
     const { findByText } = render(
-      <TestComponent hcmMock={marriedNoMhaNoException} mhaRequestsMock={[]} />,
+      <TestComponent hcmMock={marriedSpouseIneligible} mhaRequestsMock={[]} />,
     );
 
     expect(
