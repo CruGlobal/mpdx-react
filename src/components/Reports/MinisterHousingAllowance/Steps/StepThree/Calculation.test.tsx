@@ -82,8 +82,8 @@ const TestComponent: React.FC<TestComponentProps> = ({
 );
 
 describe('Calculation', () => {
-  it('renders the component', () => {
-    const { getByText, getByRole } = render(
+  it('renders the component', async () => {
+    const { getByText, getByRole, findByRole } = render(
       <TestComponent
         contextValue={
           {
@@ -96,7 +96,7 @@ describe('Calculation', () => {
     );
 
     expect(
-      getByRole('heading', { name: 'Calculate Your MHA Request' }),
+      await findByRole('heading', { name: 'Calculate Your MHA Request' }),
     ).toBeInTheDocument();
     expect(
       getByText(/please enter dollar amounts for each category below/i),
@@ -129,7 +129,7 @@ describe('Calculation', () => {
       />,
     );
 
-    const row = getByRole('row', {
+    const row = await findByRole('row', {
       name: /average monthly amount for unexpected/i,
     });
     const input = within(row).getByPlaceholderText(/\$0/i);
@@ -155,7 +155,7 @@ describe('Calculation', () => {
   });
 
   it('should show validation error when checkbox is not checked', async () => {
-    const { findByText, getByRole, getByText, findByRole } = render(
+    const { findByText, findByRole, getByText } = render(
       <TestComponent
         contextValue={
           {
@@ -167,7 +167,7 @@ describe('Calculation', () => {
       />,
     );
 
-    const submitButton = getByRole('button', { name: /submit/i });
+    const submitButton = await findByRole('button', { name: /submit/i });
 
     await userEvent.click(submitButton);
 
@@ -184,7 +184,7 @@ describe('Calculation', () => {
   });
 
   it('shows validation errors when email and phone are invalid', async () => {
-    const { getByRole, findByText } = render(
+    const { getByRole, findByText, findByRole } = render(
       <TestComponent
         contextValue={
           {
@@ -203,7 +203,7 @@ describe('Calculation', () => {
       />,
     );
 
-    const phone = getByRole('textbox', { name: 'Telephone Number' });
+    const phone = await findByRole('textbox', { name: 'Telephone Number' });
     const email = getByRole('textbox', { name: 'Email' });
 
     expect(phone).toHaveValue('1234567890');
@@ -227,7 +227,7 @@ describe('Calculation', () => {
   });
 
   it('shows validation error when input is 0', async () => {
-    const { getByRole, findByText } = render(
+    const { findByRole, findByText } = render(
       <TestComponent
         contextValue={
           {
@@ -245,7 +245,7 @@ describe('Calculation', () => {
       />,
     );
 
-    const row = getByRole('row', {
+    const row = await findByRole('row', {
       name: /average monthly amount for unexpected/i,
     });
     const input = within(row).getByPlaceholderText(/\$0/i);
@@ -289,7 +289,7 @@ describe('Calculation', () => {
       />,
     );
 
-    const row1 = getByRole('row', {
+    const row1 = await findByRole('row', {
       name: /monthly rent/i,
     });
     const input1 = within(row1).getByPlaceholderText(/\$0/i);
@@ -393,7 +393,7 @@ describe('Calculation', () => {
   });
 
   it('should update checkbox value when clicked', async () => {
-    const { getByRole } = render(
+    const { findByRole } = render(
       <TestComponent
         contextValue={
           {
@@ -412,7 +412,7 @@ describe('Calculation', () => {
       />,
     );
 
-    const checkbox = getByRole('checkbox', {
+    const checkbox = await findByRole('checkbox', {
       name: /i understand that my approved/i,
     });
     expect(checkbox).not.toBeChecked();
@@ -435,8 +435,8 @@ describe('Calculation', () => {
   });
 
   describe('isViewPage behavior', () => {
-    it('renders view only mode', () => {
-      const { getByRole, queryByRole, getByText } = render(
+    it('renders view only mode', async () => {
+      const { findByRole, queryByRole, getByText } = render(
         <TestComponent
           contextValue={
             {
@@ -449,7 +449,7 @@ describe('Calculation', () => {
       );
 
       expect(
-        getByRole('heading', { name: 'Your MHA Request' }),
+        await findByRole('heading', { name: 'Your MHA Request' }),
       ).toBeInTheDocument();
 
       expect(getByText('Personal Contact Information')).toBeInTheDocument();

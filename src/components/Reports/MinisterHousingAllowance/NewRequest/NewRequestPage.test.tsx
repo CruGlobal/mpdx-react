@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
@@ -53,17 +54,19 @@ const TestComponentContext: React.FC<TestComponentProps> = ({
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
-      <GqlMockedProvider<{
-        UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
-      }>
-        onCall={mutationSpy}
-      >
-        <MinisterHousingAllowanceContext.Provider
-          value={contextValue as ContextType}
+      <SnackbarProvider>
+        <GqlMockedProvider<{
+          UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
+        }>
+          onCall={mutationSpy}
         >
-          <NewRequestPage />
-        </MinisterHousingAllowanceContext.Provider>
-      </GqlMockedProvider>
+          <MinisterHousingAllowanceContext.Provider
+            value={contextValue as ContextType}
+          >
+            <NewRequestPage />
+          </MinisterHousingAllowanceContext.Provider>
+        </GqlMockedProvider>
+      </SnackbarProvider>
     </TestRouter>
   </ThemeProvider>
 );
@@ -71,29 +74,32 @@ const TestComponentContext: React.FC<TestComponentProps> = ({
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <TestRouter>
-      <GqlMockedProvider>
-        <MinisterHousingAllowanceProvider type={PageEnum.New}>
-          <NewRequestPage />
-        </MinisterHousingAllowanceProvider>
-      </GqlMockedProvider>
+      <SnackbarProvider>
+        <GqlMockedProvider>
+          <MinisterHousingAllowanceProvider type={PageEnum.New}>
+            <NewRequestPage />
+          </MinisterHousingAllowanceProvider>
+        </GqlMockedProvider>
+      </SnackbarProvider>
     </TestRouter>
   </ThemeProvider>
 );
 
 describe('NewRequestPage', () => {
-  it('renders steps list', () => {
-    const { getByText } = render(<TestComponent />);
+  it('renders steps list', async () => {
+    const { getByText, findByText } = render(<TestComponent />);
 
-    expect(getByText(/1. about this form/i)).toBeInTheDocument();
+    expect(await findByText(/1. about this form/i)).toBeInTheDocument();
     expect(getByText(/2. rent or own?/i)).toBeInTheDocument();
     expect(getByText(/3. calculate your mha/i)).toBeInTheDocument();
     expect(getByText(/4. receipt/i)).toBeInTheDocument();
   });
 
   it('updates steps when Continue clicked', async () => {
-    const { getByRole, getAllByRole, getByText, queryByTestId } = render(
-      <TestComponent />,
-    );
+    const { getByRole, getAllByRole, getByText, queryByTestId, findByText } =
+      render(<TestComponent />);
+
+    await findByText(/1. about this form/i);
 
     expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '25');
     expect(queryByTestId('ArrowBackIcon')).toBeInTheDocument();
@@ -142,7 +148,7 @@ describe('NewRequestPage', () => {
   it('should show validation error if continue is clicked without selecting an option', async () => {
     const { getByRole, findByRole } = render(<TestComponent />);
 
-    const continueButton = getByRole('button', { name: 'Continue' });
+    const continueButton = await findByRole('button', { name: 'Continue' });
     await userEvent.click(continueButton);
 
     expect(getByRole('radio', { name: 'Rent' })).not.toBeChecked();

@@ -7,6 +7,7 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
+import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { UpdateMinistryHousingAllowanceRequestMutation } from '../../MinisterHousingAllowance.generated';
 import {
@@ -60,20 +61,23 @@ const TestComponent: React.FC<TestComponentProps> = ({ contextValue }) => (
 
 describe('RentOwn', () => {
   it('renders form and options for new page', async () => {
-    const { getByRole, getByText, findAllByRole } = render(
+    const { getByRole, getByText, findAllByRole, findByRole } = render(
       <TestComponent
         contextValue={
           {
             pageType: PageEnum.New,
             updateMutation,
             setHasCalcValues,
+            hasCalcValues: true,
             requestData: { id: 'request-id' },
           } as unknown as ContextType
         }
       />,
     );
 
-    expect(getByRole('heading', { name: 'Rent or Own?' })).toBeInTheDocument();
+    expect(
+      await findByRole('heading', { name: 'Rent or Own?' }),
+    ).toBeInTheDocument();
 
     expect(getByText('Rent')).toBeInTheDocument();
     expect(getByText('Own')).toBeInTheDocument();
@@ -86,7 +90,7 @@ describe('RentOwn', () => {
         variables: {
           input: {
             requestAttributes: {
-              rentOrOwn: 'RENT',
+              rentOrOwn: MhaRentOrOwnEnum.Rent,
               rentalValue: null,
               furnitureCostsOne: null,
               avgUtilityOne: null,
