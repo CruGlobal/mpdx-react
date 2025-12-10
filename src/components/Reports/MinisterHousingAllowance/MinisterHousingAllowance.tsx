@@ -31,9 +31,13 @@ export const MinisterHousingAllowanceReport = () => {
     spousePreferredName,
     userHcmData,
     spouseHcmData,
+    userEligibleForMHA,
+    spouseEligibleForMHA,
     requestsData,
     requestsError,
   } = useMinisterHousingAllowance();
+
+  const canAccessMHA = userEligibleForMHA || spouseEligibleForMHA;
 
   const personNumber = userHcmData?.staffInfo?.personNumber ?? '';
   const spousePersonNumber = spouseHcmData?.staffInfo?.personNumber ?? '';
@@ -118,7 +122,7 @@ export const MinisterHousingAllowanceReport = () => {
           ) : (
             <>
               <Stack direction="column" width={mainContentWidth}>
-                {hasNoRequests ? (
+                {hasNoRequests || !canAccessMHA ? (
                   <IneligibleDisplay />
                 ) : (
                   <EligibleDisplay isPending={isCurrentRequestPending} />
@@ -138,6 +142,7 @@ export const MinisterHousingAllowanceReport = () => {
                   color="primary"
                   sx={{ mt: 2 }}
                   onClick={onCreateMHARequest}
+                  disabled={!canAccessMHA}
                 >
                   {t('Request New MHA')}
                 </Button>
@@ -145,7 +150,7 @@ export const MinisterHousingAllowanceReport = () => {
             </>
           )}
 
-          {previousApprovedRequest && (
+          {canAccessMHA && previousApprovedRequest && (
             <Stack direction="column" width={mainContentWidth} mt={4}>
               <CurrentBoardApproved request={previousApprovedRequest} />
             </Stack>

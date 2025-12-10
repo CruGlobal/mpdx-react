@@ -4,12 +4,13 @@ import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAl
 
 export const IneligibleDisplay: React.FC = () => {
   const { t } = useTranslation();
-  const { isMarried, preferredName, spousePreferredName } =
-    useMinisterHousingAllowance();
-
-  // TODO - Add spouse to API and check eligibility
-  // We will get this from HCM data in the future
-  const spouseEligibleForMHA = false;
+  const {
+    isMarried,
+    preferredName,
+    spousePreferredName,
+    userEligibleForMHA,
+    spouseEligibleForMHA,
+  } = useMinisterHousingAllowance();
 
   return (
     <>
@@ -27,7 +28,7 @@ export const IneligibleDisplay: React.FC = () => {
             <a href="mailto:MHA@cru.org">MHA@cru.org</a>.
           </p>
         </Trans>
-        {isMarried && spouseEligibleForMHA === false && (
+        {userEligibleForMHA === true && spouseEligibleForMHA === false && (
           <Box mt={2}>
             <Trans i18nKey="spouseNotEligibleMha">
               <p style={{ lineHeight: 1.5 }}>
