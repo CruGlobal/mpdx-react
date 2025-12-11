@@ -54,7 +54,7 @@ export const FairRentalValue: React.FC<FairRentalValueProps> = ({ schema }) => {
             fullWidth
             size="small"
             variant="standard"
-            placeholder={t('Enter Amount')}
+            placeholder={t('$0')}
             InputProps={{ disableUnderline: true, inputMode: 'decimal' }}
             fieldName="rentalValue"
             schema={schema}
@@ -91,7 +91,7 @@ export const FairRentalValue: React.FC<FairRentalValueProps> = ({ schema }) => {
             fullWidth
             size="small"
             variant="standard"
-            placeholder={t('Enter Amount')}
+            placeholder={t('$0')}
             InputProps={{ disableUnderline: true, inputMode: 'decimal' }}
             fieldName="furnitureCostsOne"
             schema={schema}
@@ -120,7 +120,7 @@ export const FairRentalValue: React.FC<FairRentalValueProps> = ({ schema }) => {
             fullWidth
             size="small"
             variant="standard"
-            placeholder={t('Enter Amount')}
+            placeholder={t('$0')}
             InputProps={{ disableUnderline: true, inputMode: 'decimal' }}
             fieldName="avgUtilityOne"
             schema={schema}

@@ -1,4 +1,6 @@
 import { useCallback } from 'react';
+import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
 import { MinistryHousingAllowanceRequestAttributesInput } from 'pages/api/graphql-rest.page.generated';
 import { calculateAnnualTotals } from 'src/hooks/useAnnualTotal';
 import { useUpdateMinistryHousingAllowanceRequestMutation } from '../../MinisterHousingAllowance.generated';
@@ -10,6 +12,9 @@ interface UseSaveFieldOptions {
 }
 
 export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
+  const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
+
   const { requestData } = useMinisterHousingAllowance();
   const [updateMinistryHousingAllowanceRequest] =
     useUpdateMinistryHousingAllowanceRequestMutation();
@@ -19,7 +24,7 @@ export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
     async (
       attributes: Partial<MinistryHousingAllowanceRequestAttributesInput>,
     ) => {
-      if (!requestData?.id) {
+      if (!requestData || !requestData.id) {
         return;
       }
 
@@ -48,6 +53,7 @@ export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
               ministryHousingAllowanceRequest: {
                 ...requestData,
                 requestAttributes: {
+                  __typename: 'MhaRequestAttributes',
                   ...values,
                   ...attributes,
                   overallAmount,
@@ -56,7 +62,10 @@ export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
             },
           },
         });
-      } catch (error) {}
+        enqueueSnackbar(t('Saved successfully'), { variant: 'success' });
+      } catch (error) {
+        // If failed, snackbar is already handled elsewhere
+      }
     },
     [formValues, updateMinistryHousingAllowanceRequest, requestData],
   );

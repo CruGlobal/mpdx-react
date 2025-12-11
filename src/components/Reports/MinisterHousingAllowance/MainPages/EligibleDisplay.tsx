@@ -30,9 +30,8 @@ export const EligibleDisplay: React.FC<EligibleDisplayProps> = ({
             <p style={{ lineHeight: 1.5 }}>
               Our records indicate that you have an approved MHA amount. To view
               your MHA amount, click on the &quot;View Current MHA&quot; button
-              below. If you would like to apply for a new MHA, click on the
-              &quot;Duplicate Last Year&apos;s MHA&quot; button below or
-              &quot;Request New MHA&quot; below.
+              below. If you would like to apply for a new MHA, click
+              &quot;Update Current MHA&quot;.
             </p>
           </Trans>
         )}

@@ -54,7 +54,10 @@ export const MinisterHousingAllowanceReport = () => {
   const onCreateMHARequest = async () => {
     await createMHA({
       variables: {
-        requestAttributes: {},
+        requestAttributes: {
+          phoneNumber: userHcmData?.staffInfo.primaryPhoneNumber,
+          emailAddress: userHcmData?.staffInfo.emailAddress,
+        },
       },
       refetchQueries: ['MinistryHousingAllowanceRequests'],
       onCompleted: ({ createMinistryHousingAllowanceRequest: newRequest }) => {
@@ -103,6 +106,7 @@ export const MinisterHousingAllowanceReport = () => {
         request.status === MhaStatusEnum.BoardApproved &&
         isCurrentRequestPending,
     );
+
   return (
     <PanelLayout
       panelType={PanelTypeEnum.Empty}

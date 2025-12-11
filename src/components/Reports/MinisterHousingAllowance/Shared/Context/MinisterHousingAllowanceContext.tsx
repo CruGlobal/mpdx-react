@@ -9,6 +9,7 @@ import {
   useState,
 } from 'react';
 import { ApolloError } from '@apollo/client';
+import { Box, CircularProgress } from '@mui/material';
 import {
   FormEnum,
   PageEnum,
@@ -27,7 +28,6 @@ import {
   useMinistryHousingAllowanceRequestsQuery,
   useUpdateMinistryHousingAllowanceRequestMutation,
 } from '../../MinisterHousingAllowance.generated';
-import { StepsEnum } from '../sharedTypes';
 import { hasPopulatedValues } from './Helper/hasPopulatedValues';
 
 export type HcmData = HcmDataQuery['hcm'][number];
@@ -36,7 +36,6 @@ export type ContextType = {
   steps: Steps[];
   currentIndex: number;
   percentComplete: number;
-  currentStep: StepsEnum;
   handleNextStep: () => void;
   handlePreviousStep: () => void;
   pageType: PageEnum | undefined;
@@ -88,8 +87,6 @@ interface Props {
   children?: React.ReactNode;
 }
 
-const objects = Object.values(StepsEnum);
-
 export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   type,
   children,
@@ -98,7 +95,7 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
     useMinistryHousingAllowanceRequestsQuery();
 
   //const requestId = requestsData?.ministryHousingAllowanceRequests.nodes[0]?.id;
-  const requestId = 'c1a68821-5fb6-4e5e-b308-9263539af9d8';
+  const requestId = '2018e74b-3bc7-4d19-9d72-089f60feb6d6';
 
   const { data: requestData, error: requestError } =
     useMinistryHousingAllowanceRequestQuery({
@@ -177,30 +174,13 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   const [hasCalcValues, setHasCalcValues] = useState(hasValues ? true : false);
   const [isPrint, setIsPrint] = useState(false);
 
-  const [currentStep, setCurrentStep] = useState(StepsEnum.AboutForm);
-
-  const handleNextStep = useCallback(() => {
-    const next = objects[currentIndex + 1];
-    nextStep();
-
-    setCurrentStep(next);
-  }, [currentIndex, objects, nextStep]);
-
-  const handlePreviousStep = useCallback(() => {
-    const next = objects[currentIndex - 1];
-    previousStep();
-
-    setCurrentStep(next);
-  }, [currentIndex, objects, previousStep]);
-
   const contextValue = useMemo(
     () => ({
       steps,
       currentIndex,
-      currentStep,
       percentComplete,
-      handleNextStep,
-      handlePreviousStep,
+      handleNextStep: nextStep,
+      handlePreviousStep: previousStep,
       pageType,
       hasCalcValues,
       setHasCalcValues,
@@ -226,10 +206,9 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
     [
       steps,
       currentIndex,
-      currentStep,
       percentComplete,
-      handleNextStep,
-      handlePreviousStep,
+      nextStep,
+      previousStep,
       pageType,
       hasCalcValues,
       setHasCalcValues,
@@ -252,6 +231,19 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       updateMutation,
     ],
   );
+
+  if (!requestsData) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100%"
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <MinisterHousingAllowanceContext.Provider value={contextValue}>

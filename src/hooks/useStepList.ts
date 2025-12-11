@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   FormEnum,
@@ -11,8 +11,8 @@ export function useStepList(formType: FormEnum, type?: PageEnum) {
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const [steps, setSteps] = useState<Steps[]>(() =>
-    formType === FormEnum.MHA
+  const [steps, setSteps] = useState<Steps[]>(() => {
+    return formType === FormEnum.MHA
       ? [
           {
             title: t('1. About this Form'),
@@ -84,10 +84,13 @@ export function useStepList(formType: FormEnum, type?: PageEnum) {
                 complete: false,
               },
             ]
-          : [],
-  );
+          : [];
+  });
 
-  const percentComplete = ((currentIndex + 1) / steps.length) * 100;
+  const percentComplete = useMemo(
+    () => ((currentIndex + 1) / steps.length) * 100,
+    [currentIndex, steps.length],
+  );
 
   const nextStep = useCallback(() => {
     const newIndex = currentIndex + 1;
@@ -112,7 +115,7 @@ export function useStepList(formType: FormEnum, type?: PageEnum) {
       }),
     );
     setCurrentIndex(newIndex);
-  }, [currentIndex, setSteps]);
+  }, [currentIndex]);
 
   const previousStep = useCallback(() => {
     const newIndex = currentIndex - 1;
@@ -133,7 +136,7 @@ export function useStepList(formType: FormEnum, type?: PageEnum) {
       }),
     );
     setCurrentIndex(newIndex);
-  }, [currentIndex, setSteps]);
+  }, [currentIndex]);
 
   return {
     steps,
