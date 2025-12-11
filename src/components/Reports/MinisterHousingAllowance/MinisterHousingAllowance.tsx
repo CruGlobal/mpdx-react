@@ -56,6 +56,10 @@ export const MinisterHousingAllowanceReport = () => {
   const [createMHA] = useCreateHousingAllowanceRequestMutation();
 
   const onCreateMHARequest = async () => {
+    if (!canAccessMHA) {
+      return;
+    }
+
     await createMHA({
       variables: {
         requestAttributes: {},
