@@ -1,5 +1,6 @@
 import { Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { EffectiveDateStep } from './EffectiveDateStep/EffectiveDateStep';
 import { SalaryCalculatorSectionEnum } from './SalaryCalculatorContext/Helper/sharedTypes';
 import { useSalaryCalculator } from './SalaryCalculatorContext/SalaryCalculatorContext';
 import { YourInformationStep } from './YourInformation/YourInformation';
@@ -10,7 +11,7 @@ export const CurrentStep: React.FC = () => {
 
   switch (currentStep) {
     case SalaryCalculatorSectionEnum.EffectiveDate:
-      return <Typography variant="h5">{t('Effective Date')}</Typography>;
+      return <EffectiveDateStep />;
     case SalaryCalculatorSectionEnum.YourInformation:
       return <YourInformationStep />;
     case SalaryCalculatorSectionEnum.SalaryCalculation:
