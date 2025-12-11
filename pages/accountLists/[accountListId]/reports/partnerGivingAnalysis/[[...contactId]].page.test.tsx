@@ -142,11 +142,12 @@ describe('partnerGivingAnalysis page', () => {
   });
 
   it('changes the URL when a contact is selected', async () => {
-    const { findByRole } = render(<TestingComponent />);
+    const { findAllByRole } = render(<TestingComponent />);
 
     expect(push).not.toHaveBeenCalled();
 
-    userEvent.click(await findByRole('link', { name: 'John Doe' }));
+    const links = await findAllByRole('link', { name: 'John Doe' });
+    userEvent.click(links[0]);
 
     expect(push).toHaveBeenCalled();
   });
