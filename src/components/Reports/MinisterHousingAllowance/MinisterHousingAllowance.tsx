@@ -65,7 +65,7 @@ export const MinisterHousingAllowanceReport = () => {
           },
         );
         const mhaRequestId = newRequest?.ministryHousingAllowanceRequest.id;
-        const requestLink = `/accountLists/${accountListId}/reports/housingAllowance/${mhaRequestId}/new`;
+        const requestLink = `/accountLists/${accountListId}/reports/housingAllowance/${mhaRequestId}?mode=new`;
 
         // Wait 1 second before redirecting
         setTimeout(() => {

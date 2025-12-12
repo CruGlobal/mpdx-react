@@ -83,6 +83,7 @@ export const useMinisterHousingAllowance = (): ContextType => {
 };
 
 interface Props {
+  requestId?: string;
   type?: PageEnum;
   children?: React.ReactNode;
 }
@@ -90,14 +91,12 @@ interface Props {
 const objects = Object.values(StepsEnum);
 
 export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
+  requestId,
   type,
   children,
 }) => {
   const { data: requestsData, error: requestsError } =
     useMinistryHousingAllowanceRequestsQuery();
-
-  //const requestId = requestsData?.ministryHousingAllowanceRequests.nodes[0]?.id;
-  const requestId = 'c1a68821-5fb6-4e5e-b308-9263539af9d8';
 
   const { data: requestData, error: requestError } =
     useMinistryHousingAllowanceRequestQuery({

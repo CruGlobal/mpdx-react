@@ -6,10 +6,8 @@ import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
-import { EditRequestPage } from 'src/components/Reports/MinisterHousingAllowance/EditRequest/EditRequestPage';
-import { NewRequestPage } from 'src/components/Reports/MinisterHousingAllowance/NewRequest/NewRequestPage';
+import { RequestPage } from 'src/components/Reports/MinisterHousingAllowance/RequestPage/RequestPage';
 import { MinisterHousingAllowanceProvider } from 'src/components/Reports/MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
-import { ViewRequestPage } from 'src/components/Reports/MinisterHousingAllowance/ViewRequest/ViewRequestPage';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { SimpleScreenOnly } from 'src/components/Reports/styledComponents';
 import {
@@ -28,20 +26,20 @@ const RequestPageWrapper = styled(Box)(({ theme }) => ({
 const HousingAllowanceRequestPage: React.FC = () => {
   const { t } = useTranslation();
   const router = useRouter();
-  const { requestId } = router.query;
+  const { requestId, mode } = router.query;
 
   if (!requestId) {
     return null;
   }
 
-  const mode = Array.isArray(requestId) ? requestId : [requestId];
-
   const type =
-    mode[1] === PageEnum.New
+    mode === 'new'
       ? PageEnum.New
-      : mode[1] === PageEnum.Edit
+      : mode === 'edit'
         ? PageEnum.Edit
-        : PageEnum.View;
+        : mode === 'view'
+          ? PageEnum.View
+          : undefined;
 
   const title = t("{{mode}} Minister's Housing Allowance Request", {
     mode:
@@ -82,14 +80,11 @@ const HousingAllowanceRequestPage: React.FC = () => {
                   headerType={HeaderTypeEnum.Report}
                 />
               </SimpleScreenOnly>
-              <MinisterHousingAllowanceProvider type={type}>
-                {type === PageEnum.New ? (
-                  <NewRequestPage />
-                ) : type === PageEnum.Edit ? (
-                  <EditRequestPage />
-                ) : (
-                  <ViewRequestPage />
-                )}
+              <MinisterHousingAllowanceProvider
+                type={type}
+                requestId={requestId as string}
+              >
+                <RequestPage />
               </MinisterHousingAllowanceProvider>
             </>
           }
