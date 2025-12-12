@@ -7,6 +7,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import { StatusCard } from '../../Shared/CalculationReports/StatusCard/StatusCard';
 import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
+import { getRequestUrl } from '../Shared/Helper/getRequestUrl';
 import { MHARequest } from './types';
 
 interface CurrentBoardApprovedProps {
@@ -21,9 +22,9 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
   const accountListId = useAccountListId();
   const currency = 'USD';
 
-  const { isMarried, preferredName, spousePreferredName, requestsData } =
+  const { isMarried, preferredName, spousePreferredName } =
     useMinisterHousingAllowance();
-  const requestId = requestsData?.[1]?.id;
+  const requestId = request?.id;
 
   const { approvedDate, approvedOverallAmount, staffSpecific, spouseSpecific } =
     request?.requestAttributes || {};
@@ -35,7 +36,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
       icon={HomeSharp}
       iconColor="success.main"
       linkOneText={t('View Current MHA')}
-      linkOne={`/accountLists/${accountListId}/reports/housingAllowance/${requestId}?mode=view`}
+      linkOne={getRequestUrl(accountListId, requestId, 'view')}
       linkTwoText={t("Duplicate Last Year's MHA")}
       linkTwo=""
       isRequest={false}

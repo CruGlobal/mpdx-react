@@ -47,64 +47,54 @@ const steps = [
 ];
 
 interface TestComponentProps {
-  contextValue: Partial<ContextType>;
+  type?: PageEnum;
+  contextValue?: Partial<ContextType>;
 }
 
-const TestComponentContext: React.FC<TestComponentProps> = ({
+const TestComponent: React.FC<TestComponentProps> = ({
+  type,
   contextValue,
-}) => (
-  <ThemeProvider theme={theme}>
-    <TestRouter>
-      <GqlMockedProvider<{
-        UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
-      }>
-        onCall={mutationSpy}
-      >
-        <MinisterHousingAllowanceContext.Provider
-          value={contextValue as ContextType}
+}) => {
+  if (contextValue) {
+    return (
+      <ThemeProvider theme={theme}>
+        <TestRouter>
+          <GqlMockedProvider<{
+            UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
+          }>
+            onCall={mutationSpy}
+          >
+            <MinisterHousingAllowanceContext.Provider
+              value={contextValue as ContextType}
+            >
+              <RequestPage />
+            </MinisterHousingAllowanceContext.Provider>
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>
+    );
+  }
+
+  return (
+    <ThemeProvider theme={theme}>
+      <TestRouter>
+        <GqlMockedProvider<{
+          UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
+        }>
+          onCall={mutationSpy}
         >
-          <RequestPage />
-        </MinisterHousingAllowanceContext.Provider>
-      </GqlMockedProvider>
-    </TestRouter>
-  </ThemeProvider>
-);
-
-const EditTestComponent: React.FC = () => (
-  <ThemeProvider theme={theme}>
-    <TestRouter>
-      <GqlMockedProvider<{
-        UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
-      }>
-        onCall={mutationSpy}
-      >
-        <MinisterHousingAllowanceProvider type={PageEnum.Edit}>
-          <RequestPage />
-        </MinisterHousingAllowanceProvider>
-      </GqlMockedProvider>
-    </TestRouter>
-  </ThemeProvider>
-);
-
-const NewTestComponent: React.FC = () => (
-  <ThemeProvider theme={theme}>
-    <TestRouter>
-      <GqlMockedProvider<{
-        UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
-      }>
-        onCall={mutationSpy}
-      >
-        <MinisterHousingAllowanceProvider type={PageEnum.New}>
-          <RequestPage />
-        </MinisterHousingAllowanceProvider>
-      </GqlMockedProvider>
-    </TestRouter>
-  </ThemeProvider>
-);
+          <MinisterHousingAllowanceProvider type={type}>
+            <RequestPage />
+          </MinisterHousingAllowanceProvider>
+        </GqlMockedProvider>
+      </TestRouter>
+    </ThemeProvider>
+  );
+};
 
 describe('RequestPage', () => {
   it('renders steps list', () => {
-    const { getByText } = render(<EditTestComponent />);
+    const { getByText } = render(<TestComponent type={PageEnum.Edit} />);
 
     expect(getByText(/1. about this form/i)).toBeInTheDocument();
     expect(getByText(/2. rent or own?/i)).toBeInTheDocument();
@@ -115,7 +105,7 @@ describe('RequestPage', () => {
   describe('Edit Page', () => {
     it('starts on step 2 and updates steps when Continue clicked', async () => {
       const { getByRole, getAllByRole, getByText, queryByTestId } = render(
-        <EditTestComponent />,
+        <TestComponent type={PageEnum.Edit} />,
       );
 
       expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '50');
@@ -162,7 +152,7 @@ describe('RequestPage', () => {
 
     it('should show an option is preselected', async () => {
       const { findAllByRole, getByRole, findByRole } = render(
-        <TestComponentContext
+        <TestComponent
           contextValue={
             {
               pageType: PageEnum.Edit,
@@ -190,7 +180,7 @@ describe('RequestPage', () => {
 
     it('opens confirmation modal when changing selection', async () => {
       const { getByRole, getByText, queryByText } = render(
-        <TestComponentContext
+        <TestComponent
           contextValue={
             {
               pageType: PageEnum.Edit,
@@ -236,7 +226,7 @@ describe('RequestPage', () => {
   describe('New Page', () => {
     it('updates steps when Continue clicked', async () => {
       const { getByRole, getAllByRole, getByText, queryByTestId } = render(
-        <NewTestComponent />,
+        <TestComponent type={PageEnum.New} />,
       );
 
       expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '25');
@@ -291,7 +281,7 @@ describe('RequestPage', () => {
 
     it('should show validation error if continue is clicked without selecting an option', async () => {
       const { getByRole, findByRole } = render(
-        <TestComponentContext
+        <TestComponent
           contextValue={{
             steps,
             currentStep: StepsEnum.RentOrOwn,
@@ -314,7 +304,7 @@ describe('RequestPage', () => {
     it('opens confirmation modal when changing selection after calculation values inputted', async () => {
       const { getByRole, getByText, queryByText, findByRole, findAllByRole } =
         render(
-          <TestComponentContext
+          <TestComponent
             contextValue={
               {
                 pageType: PageEnum.New,
@@ -370,7 +360,7 @@ describe('RequestPage', () => {
   describe('View Page', () => {
     it('renders empty panel layout,', () => {
       const { getByText, queryByRole, queryByTestId } = render(
-        <TestComponentContext
+        <TestComponent
           contextValue={{
             pageType: PageEnum.View,
             setHasCalcValues,
@@ -386,7 +376,7 @@ describe('RequestPage', () => {
 
     it('should have disabled text fields', () => {
       const { getByRole } = render(
-        <TestComponentContext
+        <TestComponent
           contextValue={{
             pageType: PageEnum.View,
             setHasCalcValues,

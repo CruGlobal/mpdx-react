@@ -15,7 +15,7 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { StatusCard } from '../../Shared/CalculationReports/StatusCard/StatusCard';
-import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
+import { getRequestUrl } from '../Shared/Helper/getRequestUrl';
 import { MHARequest } from './types';
 
 interface CurrentRequestProps {
@@ -28,8 +28,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
   const accountListId = useAccountListId();
   const currency = 'USD';
 
-  const { requestsData } = useMinisterHousingAllowance();
-  const requestId = requestsData?.[1]?.id;
+  const requestId = request.id;
 
   const { status, requestAttributes } = request;
 
@@ -48,9 +47,9 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
       icon={AddHomeSharp}
       iconColor="warning.main"
       linkOneText={t('View Request')}
-      linkOne={`/accountLists/${accountListId}/reports/housingAllowance/${requestId}?mode=view`}
+      linkOne={getRequestUrl(accountListId, requestId, 'view')}
       linkTwoText={t('Edit Request')}
-      linkTwo={`/accountLists/${accountListId}/reports/housingAllowance/${requestId}?mode=edit`}
+      linkTwo={getRequestUrl(accountListId, requestId, 'edit')}
       isRequest={true}
       handleConfirmCancel={() => {}}
     >

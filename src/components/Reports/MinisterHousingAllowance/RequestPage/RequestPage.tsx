@@ -15,6 +15,7 @@ import {
 import { StepsList } from '../../Shared/CalculationReports/StepsList/StepsList';
 import { mainContentWidth } from '../MinisterHousingAllowance';
 import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
+import { getRequestUrl } from '../Shared/Helper/getRequestUrl';
 import { mocks } from '../Shared/mockData';
 import { StepsEnum } from '../Shared/sharedTypes';
 import { AboutForm } from '../Steps/StepOne/AboutForm';
@@ -52,7 +53,6 @@ export const RequestPage: React.FC = () => {
   const value = request?.rentOrOwn ?? undefined;
 
   const accountListId = useAccountListId();
-  const link = `/accountLists/${accountListId}/reports/housingAllowance/${requestId}`;
 
   const isView = pageType === PageEnum.View;
   const isEdit = pageType === PageEnum.Edit;
@@ -101,7 +101,11 @@ export const RequestPage: React.FC = () => {
       mainContent={
         <Formik<FormValues>
           enableReinitialize
-          initialValues={{ rentOrOwn: request?.rentOrOwn ?? undefined }}
+          initialValues={
+            isEdit
+              ? { rentOrOwn: request?.rentOrOwn ?? undefined }
+              : { rentOrOwn: undefined }
+          }
           validationSchema={validationSchema}
           onSubmit={() => handleNextStep()}
         >
@@ -126,9 +130,9 @@ export const RequestPage: React.FC = () => {
                   <Receipt
                     formTitle={t('MHA Request')}
                     buttonText={t('View Your MHA')}
-                    editLink={`${link}?mode=edit`}
+                    editLink={`${getRequestUrl(accountListId, requestId, 'edit')}`}
                     isEdit={isEdit}
-                    viewLink={`${link}?mode=view`}
+                    viewLink={`${getRequestUrl(accountListId, requestId, 'view')}`}
                     availableDate={availableDate}
                     deadlineDate={deadlineDate}
                     setIsComplete={setIsComplete}
