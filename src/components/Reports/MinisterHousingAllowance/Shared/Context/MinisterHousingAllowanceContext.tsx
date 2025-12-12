@@ -173,6 +173,12 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
 
   const [currentStep, setCurrentStep] = useState(StepsEnum.AboutForm);
 
+  useEffect(() => {
+    if (type === PageEnum.Edit) {
+      setCurrentStep(StepsEnum.RentOrOwn);
+    }
+  }, [type]);
+
   const handleNextStep = useCallback(() => {
     const next = objects[currentIndex + 1];
     nextStep();

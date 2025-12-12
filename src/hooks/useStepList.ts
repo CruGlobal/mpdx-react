@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   FormEnum,
@@ -8,36 +8,57 @@ import { Steps } from '../components/Reports/Shared/CalculationReports/StepsList
 
 export function useStepList(formType: FormEnum, type?: PageEnum) {
   const { t } = useTranslation();
+  const isEdit = type === PageEnum.Edit;
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const [steps, setSteps] = useState<Steps[]>(() =>
     formType === FormEnum.MHA
-      ? [
-          {
-            title: t('1. About this Form'),
-            current: true,
-            complete: false,
-          },
-          {
-            title: t('2. Rent or Own?'),
-            current: false,
-            complete: false,
-          },
-          {
-            title:
-              type === PageEnum.New
-                ? t('3. Calculate Your MHA')
-                : t('3. Edit Your MHA'),
-            current: false,
-            complete: false,
-          },
-          {
-            title: t('4. Receipt'),
-            current: false,
-            complete: false,
-          },
-        ]
+      ? isEdit
+        ? [
+            {
+              title: t('1. About this Form'),
+              current: true,
+              complete: true,
+            },
+            {
+              title: t('2. Rent or Own?'),
+              current: true,
+              complete: false,
+            },
+            {
+              title: t('3. Edit Your MHA'),
+              current: false,
+              complete: false,
+            },
+            {
+              title: t('4. Receipt'),
+              current: false,
+              complete: false,
+            },
+          ]
+        : [
+            {
+              title: t('1. About this Form'),
+              current: true,
+              complete: false,
+            },
+            {
+              title: t('2. Rent or Own?'),
+              current: false,
+              complete: false,
+            },
+            {
+              title: t('3. Calculate Your MHA'),
+              current: false,
+              complete: false,
+            },
+            {
+              title: t('4. Receipt'),
+              current: false,
+              complete: false,
+            },
+          ]
       : formType === FormEnum.SalaryCalc
         ? [
             {
@@ -134,6 +155,12 @@ export function useStepList(formType: FormEnum, type?: PageEnum) {
     );
     setCurrentIndex(newIndex);
   }, [currentIndex, setSteps]);
+
+  useEffect(() => {
+    if (isEdit) {
+      nextStep();
+    }
+  }, [isEdit]);
 
   return {
     steps,

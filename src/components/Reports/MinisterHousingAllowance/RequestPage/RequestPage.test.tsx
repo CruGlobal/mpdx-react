@@ -70,7 +70,7 @@ const TestComponentContext: React.FC<TestComponentProps> = ({
   </ThemeProvider>
 );
 
-const TestComponent: React.FC = () => (
+const EditTestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
     <TestRouter>
       <GqlMockedProvider<{
@@ -86,9 +86,25 @@ const TestComponent: React.FC = () => (
   </ThemeProvider>
 );
 
+const NewTestComponent: React.FC = () => (
+  <ThemeProvider theme={theme}>
+    <TestRouter>
+      <GqlMockedProvider<{
+        UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
+      }>
+        onCall={mutationSpy}
+      >
+        <MinisterHousingAllowanceProvider type={PageEnum.New}>
+          <RequestPage />
+        </MinisterHousingAllowanceProvider>
+      </GqlMockedProvider>
+    </TestRouter>
+  </ThemeProvider>
+);
+
 describe('RequestPage', () => {
   it('renders steps list', () => {
-    const { getByText } = render(<TestComponent />);
+    const { getByText } = render(<EditTestComponent />);
 
     expect(getByText(/1. about this form/i)).toBeInTheDocument();
     expect(getByText(/2. rent or own?/i)).toBeInTheDocument();
@@ -96,25 +112,21 @@ describe('RequestPage', () => {
     expect(getByText(/4. receipt/i)).toBeInTheDocument();
   });
 
-  it('updates steps when Continue clicked', async () => {
-    const { getByRole, getAllByRole, getByText, queryByTestId } = render(
-      <TestComponent />,
-    );
+  describe('Edit Page', () => {
+    it('starts on step 2 and updates steps when Continue clicked', async () => {
+      const { getByRole, getAllByRole, getByText, queryByTestId } = render(
+        <EditTestComponent />,
+      );
 
-    expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '25');
-    expect(queryByTestId('ArrowBackIcon')).toBeInTheDocument();
-
-    const continueButton = getByRole('button', { name: 'Continue' });
-    await userEvent.click(continueButton);
-
-    await waitFor(() => {
       expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '50');
-    });
+      expect(queryByTestId('ArrowBackIcon')).toBeInTheDocument();
 
-    await waitFor(() => {
-      const editSteps = getAllByRole('listitem');
+      const continueButton = getByRole('button', { name: 'Continue' });
+      await userEvent.click(continueButton);
 
-      const [firstStep, secondStep, thirdStep] = editSteps;
+      const steps = getAllByRole('listitem');
+
+      const [firstStep, secondStep, thirdStep] = steps;
 
       expect(firstStep).toHaveTextContent('1. About this Form');
       expect(
@@ -128,28 +140,26 @@ describe('RequestPage', () => {
       expect(
         within(thirdStep).getByTestId('RadioButtonUncheckedIcon'),
       ).toBeInTheDocument();
+
+      await userEvent.click(getByText('Back'));
+
+      const updatedSteps = getAllByRole('listitem');
+
+      const [updatedFirstStep, updatedSecondStep] = updatedSteps;
+
+      expect(updatedFirstStep).toHaveTextContent('1. About this Form');
+      expect(
+        within(updatedFirstStep).getByTestId('CircleIcon'),
+      ).toBeInTheDocument();
+
+      expect(updatedSecondStep).toHaveTextContent('2. Rent or Own?');
+      expect(
+        within(updatedSecondStep).getByTestId('RadioButtonUncheckedIcon'),
+      ).toBeInTheDocument();
+
+      expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '25');
     });
 
-    await userEvent.click(getByText('Back'));
-
-    const updatedSteps = getAllByRole('listitem');
-
-    const [updatedFirstStep, updatedSecondStep] = updatedSteps;
-
-    expect(updatedFirstStep).toHaveTextContent('1. About this Form');
-    expect(
-      within(updatedFirstStep).getByTestId('CircleIcon'),
-    ).toBeInTheDocument();
-
-    expect(updatedSecondStep).toHaveTextContent('2. Rent or Own?');
-    expect(
-      within(updatedSecondStep).getByTestId('RadioButtonUncheckedIcon'),
-    ).toBeInTheDocument();
-
-    expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '25');
-  });
-
-  describe('Edit Page', () => {
     it('should show an option is preselected', async () => {
       const { findAllByRole, getByRole, findByRole } = render(
         <TestComponentContext
@@ -224,6 +234,61 @@ describe('RequestPage', () => {
   });
 
   describe('New Page', () => {
+    it('updates steps when Continue clicked', async () => {
+      const { getByRole, getAllByRole, getByText, queryByTestId } = render(
+        <NewTestComponent />,
+      );
+
+      expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '25');
+      expect(queryByTestId('ArrowBackIcon')).toBeInTheDocument();
+
+      const continueButton = getByRole('button', { name: 'Continue' });
+      await userEvent.click(continueButton);
+
+      await waitFor(() => {
+        expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '50');
+      });
+
+      await waitFor(() => {
+        const newSteps = getAllByRole('listitem');
+
+        const [firstStep, secondStep, thirdStep] = newSteps;
+
+        expect(firstStep).toHaveTextContent('1. About this Form');
+        expect(
+          within(firstStep).getByTestId('CheckCircleIcon'),
+        ).toBeInTheDocument();
+
+        expect(secondStep).toHaveTextContent('2. Rent or Own?');
+        expect(
+          within(secondStep).getByTestId('CircleIcon'),
+        ).toBeInTheDocument();
+
+        expect(thirdStep).toHaveTextContent('3. Calculate Your MHA');
+        expect(
+          within(thirdStep).getByTestId('RadioButtonUncheckedIcon'),
+        ).toBeInTheDocument();
+      });
+
+      await userEvent.click(getByText('Back'));
+
+      const updatedSteps = getAllByRole('listitem');
+
+      const [updatedFirstStep, updatedSecondStep] = updatedSteps;
+
+      expect(updatedFirstStep).toHaveTextContent('1. About this Form');
+      expect(
+        within(updatedFirstStep).getByTestId('CircleIcon'),
+      ).toBeInTheDocument();
+
+      expect(updatedSecondStep).toHaveTextContent('2. Rent or Own?');
+      expect(
+        within(updatedSecondStep).getByTestId('RadioButtonUncheckedIcon'),
+      ).toBeInTheDocument();
+
+      expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '25');
+    });
+
     it('should show validation error if continue is clicked without selecting an option', async () => {
       const { getByRole, findByRole } = render(
         <TestComponentContext
