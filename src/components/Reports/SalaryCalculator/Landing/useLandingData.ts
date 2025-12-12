@@ -152,7 +152,6 @@ export const useLandingData = () => {
         spouse: spouse?.staffInfo.secaStatus,
       },
       {
-        // TODO: replace approvedCalculation.salary with correct value
         category: t('Gross Requested Salary'),
         user: salaryData.currentGrossSalary
           ? currencyFormat(salaryData.currentGrossSalary, 'USD', locale, {

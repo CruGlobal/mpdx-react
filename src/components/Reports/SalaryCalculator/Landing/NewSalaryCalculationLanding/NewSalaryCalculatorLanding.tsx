@@ -31,7 +31,6 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
     staffAccountIds,
     names,
     self,
-    spouse,
     isNewStaff,
     salaryData: { currentGrossSalary },
     accountBalance,
@@ -62,10 +61,6 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
   const isSelfSupportedRmo =
     self?.staffInfo.peopleGroupSupportType ===
     PeopleGroupSupportTypeEnum.SupportedRmo;
-  const isSpouseSupportedRmo =
-    spouse?.staffInfo.peopleGroupSupportType ===
-    PeopleGroupSupportTypeEnum.SupportedRmo;
-  const isSupportedRmo = isSelfSupportedRmo || isSpouseSupportedRmo;
 
   if (loading) {
     return <Loading loading />;
@@ -133,7 +128,7 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
           amountTwo={accountBalance}
         />
         <SalaryInformationCard />
-        {isFullTime && isSupportedRmo && !isNewStaff && (
+        {isFullTime && isSelfSupportedRmo && !isNewStaff && (
           <Box sx={{ marginTop: theme.spacing(4) }}>
             <Button
               variant="contained"
