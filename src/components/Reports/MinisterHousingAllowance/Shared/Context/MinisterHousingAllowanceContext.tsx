@@ -22,9 +22,7 @@ import { useStepList } from 'src/hooks/useStepList';
 import { Steps } from '../../../Shared/CalculationReports/StepsList/StepsList';
 import {
   MinistryHousingAllowanceRequestQuery,
-  MinistryHousingAllowanceRequestsQuery,
   useMinistryHousingAllowanceRequestQuery,
-  useMinistryHousingAllowanceRequestsQuery,
   useUpdateMinistryHousingAllowanceRequestMutation,
 } from '../../MinisterHousingAllowance.generated';
 import { StepsEnum } from '../sharedTypes';
@@ -58,11 +56,6 @@ export type ContextType = {
     | MinistryHousingAllowanceRequestQuery['ministryHousingAllowanceRequest']
     | null;
   requestError?: ApolloError;
-
-  requestsData?:
-    | MinistryHousingAllowanceRequestsQuery['ministryHousingAllowanceRequests']['nodes']
-    | null;
-  requestsError?: ApolloError;
   requestId?: string;
 
   updateMutation: ReturnType<
@@ -96,9 +89,6 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   type,
   children,
 }) => {
-  const { data: requestsData, error: requestsError } =
-    useMinistryHousingAllowanceRequestsQuery();
-
   const { data: requestData, error: requestError } =
     useMinistryHousingAllowanceRequestQuery({
       variables: {
@@ -222,9 +212,6 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       setIsComplete,
       requestData: requestData?.ministryHousingAllowanceRequest ?? null,
       requestError,
-      requestsData:
-        requestsData?.ministryHousingAllowanceRequests.nodes ?? null,
-      requestsError,
       requestId,
       updateMutation,
     }),
@@ -251,8 +238,6 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       setIsComplete,
       requestData,
       requestError,
-      requestsData,
-      requestsError,
       requestId,
       updateMutation,
     ],

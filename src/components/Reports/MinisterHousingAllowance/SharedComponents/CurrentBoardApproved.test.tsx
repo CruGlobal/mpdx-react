@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import {
   ContextType,
@@ -30,11 +31,13 @@ const TestComponent: React.FC<TestComponentProps> = ({ contextValue }) => {
   return (
     <ThemeProvider theme={theme}>
       <TestRouter>
-        <MinisterHousingAllowanceContext.Provider
-          value={contextValue as ContextType}
-        >
-          <CurrentBoardApproved request={approvedMHARequest} />
-        </MinisterHousingAllowanceContext.Provider>
+        <GqlMockedProvider>
+          <MinisterHousingAllowanceContext.Provider
+            value={contextValue as ContextType}
+          >
+            <CurrentBoardApproved request={approvedMHARequest} />
+          </MinisterHousingAllowanceContext.Provider>
+        </GqlMockedProvider>
       </TestRouter>
     </ThemeProvider>
   );

@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
-import { Box } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
@@ -29,21 +29,31 @@ const HousingAllowanceRequestPage: React.FC = () => {
   const { requestId, mode } = router.query;
 
   if (!requestId) {
+    return <CircularProgress />;
+  }
+
+  const getPageType = (mode: string | string[] | undefined) => {
+    switch (mode) {
+      case 'new':
+        return PageEnum.New;
+      case 'edit':
+        return PageEnum.Edit;
+      case 'view':
+        return PageEnum.View;
+      default:
+        return undefined;
+    }
+  };
+
+  const type = getPageType(mode);
+  if (!type) {
     return null;
   }
 
-  const type =
-    mode === 'new'
-      ? PageEnum.New
-      : mode === 'edit'
-        ? PageEnum.Edit
-        : mode === 'view'
-          ? PageEnum.View
-          : undefined;
-
+  const modeLabel =
+    type === PageEnum.New ? 'New' : type === PageEnum.Edit ? 'Edit' : 'View';
   const title = t("{{mode}} Minister's Housing Allowance Request", {
-    mode:
-      type === PageEnum.New ? 'New' : type === PageEnum.Edit ? 'Edit' : 'View',
+    mode: modeLabel,
   });
 
   const [isNavListOpen, setIsNavListOpen] = useState(false);
