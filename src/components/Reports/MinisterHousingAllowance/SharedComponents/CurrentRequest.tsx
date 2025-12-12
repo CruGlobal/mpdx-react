@@ -28,7 +28,8 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
   const accountListId = useAccountListId();
   const currency = 'USD';
 
-  const { requestId } = useMinisterHousingAllowance();
+  const { requestsData } = useMinisterHousingAllowance();
+  const requestId = requestsData?.[1]?.id;
 
   const { status, requestAttributes } = request;
 
@@ -47,9 +48,9 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
       icon={AddHomeSharp}
       iconColor="warning.main"
       linkOneText={t('View Request')}
-      linkOne={`/accountLists/${accountListId}/reports/housingAllowance/${requestId}/view`}
+      linkOne={`/accountLists/${accountListId}/reports/housingAllowance/${requestId}?mode=view`}
       linkTwoText={t('Edit Request')}
-      linkTwo={`/accountLists/${accountListId}/reports/housingAllowance/${requestId}/edit`}
+      linkTwo={`/accountLists/${accountListId}/reports/housingAllowance/${requestId}?mode=edit`}
       isRequest={true}
       handleConfirmCancel={() => {}}
     >
