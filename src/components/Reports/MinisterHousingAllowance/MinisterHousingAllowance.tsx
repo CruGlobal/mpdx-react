@@ -93,7 +93,7 @@ export const MinisterHousingAllowanceReport = () => {
 
   const hasNoRequests = !requests.length;
 
-  const currentRequest = requests[1] || {};
+  const currentRequest = requests[0] || {};
   // It default to true when no availableDate as the request is likely still being processed
   const isCurrentRequestPending =
     currentRequest.status === MhaStatusEnum.BoardApproved &&
