@@ -15,7 +15,6 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { StatusCard } from '../../Shared/CalculationReports/StatusCard/StatusCard';
-import { useMinistryHousingAllowanceRequestsQuery } from '../MinisterHousingAllowance.generated';
 import { getRequestUrl } from '../Shared/Helper/getRequestUrl';
 import { MHARequest } from './types';
 
@@ -29,9 +28,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
   const accountListId = useAccountListId();
   const currency = 'USD';
 
-  const { data: requestsData } = useMinistryHousingAllowanceRequestsQuery();
-
-  const requestId = requestsData?.[1]?.id;
+  const requestId = request.id;
 
   const { status, requestAttributes } = request;
 

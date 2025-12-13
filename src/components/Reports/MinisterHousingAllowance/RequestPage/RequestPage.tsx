@@ -53,7 +53,6 @@ export const RequestPage: React.FC = () => {
   const value = request?.rentOrOwn ?? undefined;
 
   const accountListId = useAccountListId();
-  const link = getRequestUrl(accountListId, requestId);
 
   const isView = pageType === PageEnum.View;
   const isEdit = pageType === PageEnum.Edit;
@@ -131,9 +130,9 @@ export const RequestPage: React.FC = () => {
                   <Receipt
                     formTitle={t('MHA Request')}
                     buttonText={t('View Your MHA')}
-                    editLink={`${link}?mode=edit`}
+                    editLink={`${getRequestUrl(accountListId, requestId, 'edit')}`}
                     isEdit={isEdit}
-                    viewLink={`${link}?mode=view`}
+                    viewLink={`${getRequestUrl(accountListId, requestId, 'view')}`}
                     availableDate={availableDate}
                     deadlineDate={deadlineDate}
                     setIsComplete={setIsComplete}

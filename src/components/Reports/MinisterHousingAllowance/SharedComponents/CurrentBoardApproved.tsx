@@ -6,7 +6,6 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import { StatusCard } from '../../Shared/CalculationReports/StatusCard/StatusCard';
-import { useMinistryHousingAllowanceRequestsQuery } from '../MinisterHousingAllowance.generated';
 import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
 import { getRequestUrl } from '../Shared/Helper/getRequestUrl';
 import { MHARequest } from './types';
@@ -23,11 +22,9 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
   const accountListId = useAccountListId();
   const currency = 'USD';
 
-  const { data: requestsData } = useMinistryHousingAllowanceRequestsQuery();
-
   const { isMarried, preferredName, spousePreferredName } =
     useMinisterHousingAllowance();
-  const requestId = requestsData?.[1]?.id;
+  const requestId = request?.id;
 
   const { approvedDate, approvedOverallAmount, staffSpecific, spouseSpecific } =
     request?.requestAttributes || {};
