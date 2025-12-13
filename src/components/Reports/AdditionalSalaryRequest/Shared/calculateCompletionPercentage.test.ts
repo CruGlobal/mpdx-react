@@ -58,6 +58,30 @@ describe('calculateCompletionPercentage', () => {
     expect(calculateCompletionPercentage(values, 1, totalSteps)).toBe(95);
   });
 
+  it('should return 100 when all fields are filled and all steps completed', () => {
+    const values = createFormValues({
+      currentYearSalary: '50000',
+      previousYearSalary: '48000',
+      additionalSalary: '5000',
+      adoption: '1000',
+      contribution403b: '2000',
+      counseling: '500',
+      healthcareExpenses: '1500',
+      babysitting: '800',
+      childrenMinistryTrip: '1200',
+      childrenCollege: '3000',
+      movingExpense: '2500',
+      seminary: '1000',
+      housingDownPayment: '10000',
+      autoPurchase: '5000',
+      reimbursableExpenses: '750',
+      telephoneNumber: '555-1234',
+    });
+
+    // Steps 1, 2, & 3 complete + all fields filled --> 18/18 = 100%
+    expect(calculateCompletionPercentage(values, 2, totalSteps)).toBe(100);
+  });
+
   it('should exclude defaultPercentage from calculation', () => {
     const values = createFormValues({
       currentYearSalary: '50000',

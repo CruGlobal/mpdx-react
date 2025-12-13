@@ -8,7 +8,7 @@ export const calculateCompletionPercentage = (
   const fields = Object.values(values).filter(
     (value) => typeof value === 'string' || typeof value === 'number',
   );
-  const index = currentIndex + 1;
+  const stepsCompleted = currentIndex + 1;
   const totalFields = fields.length;
 
   const filledFields = fields.filter((value) => {
@@ -31,6 +31,8 @@ export const calculateCompletionPercentage = (
   }).length;
 
   return totalFields > 0
-    ? Math.round(((index + filledFields) / (totalSteps + totalFields)) * 100)
+    ? Math.round(
+        ((stepsCompleted + filledFields) / (totalSteps + totalFields)) * 100,
+      )
     : 0;
 };
