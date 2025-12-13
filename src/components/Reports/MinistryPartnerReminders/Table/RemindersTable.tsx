@@ -92,17 +92,9 @@ const TableComponents: TableVirtuosoProps<HeaderProps, unknown>['components'] =
   };
 interface RemindersTableProps {
   data: ReminderData[];
-  hasNextPage: boolean;
-  endCursor: string;
-  fetchMore: (args: { variables: { after: string } }) => void;
 }
 
-export const RemindersTable: React.FC<RemindersTableProps> = ({
-  data,
-  hasNextPage,
-  endCursor,
-  fetchMore,
-}) => {
+export const RemindersTable: React.FC<RemindersTableProps> = ({ data }) => {
   const { t } = useTranslation();
 
   const isEmpty = !data.length;
@@ -143,12 +135,6 @@ export const RemindersTable: React.FC<RemindersTableProps> = ({
         itemContent={(_, row) => (
           <RemindersTableRow key={row.id} id={row.id} row={row} />
         )}
-        endReached={() =>
-          hasNextPage &&
-          fetchMore({
-            variables: { after: endCursor },
-          })
-        }
       />
     </Formik>
   );
