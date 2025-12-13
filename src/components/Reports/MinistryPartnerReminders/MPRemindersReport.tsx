@@ -29,7 +29,10 @@ import {
   StyledPrintButton,
 } from '../styledComponents';
 import { getReminderStatus } from './Helper/getReminderStatus';
-import { useMockQueryQuery } from './MockQuery.generated';
+import {
+  useDesignationAccountsQuery,
+  useMinistryPartnerRemindersQuery,
+} from './MinistryPartnerRemindersQuery.generated';
 import { PrintTable } from './Table/PrintTable';
 import { RemindersTable } from './Table/RemindersTable';
 import { ReminderData, ReminderStatusEnum } from './mockData';
@@ -49,15 +52,27 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
   const accountListId = useAccountListId();
   const { enqueueSnackbar } = useSnackbar();
 
+  const { data: designationAccountsData, loading: designationLoading } =
+    useDesignationAccountsQuery({
+      variables: { accountListId: accountListId ?? '' },
+    });
+
   const { data: staffAccountData, loading: staffLoading } =
     useStaffAccountQuery({});
-  const {
-    data: mockQueryData,
-    loading: mockLoading,
-    fetchMore,
-  } = useMockQueryQuery({
-    variables: { accountListId: accountListId ?? '' },
+
+  const designationNumber =
+    designationAccountsData?.accountList?.designationAccounts[0]
+      ?.accountNumber ?? '';
+
+  const { data, loading } = useMinistryPartnerRemindersQuery({
+    variables: {
+      accountListId: accountListId ?? '',
+      designationNumber,
+    },
+    skip: !designationNumber,
   });
+
+  const reminders = data?.ministryPartnerReminders ?? [];
 
   const handlePrint = () => {
     window.print();
@@ -70,11 +85,8 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
   };
 
   const sortedData = useMemo(
-    () =>
-      mockQueryData?.contacts?.nodes.toSorted((a, b) =>
-        a.name.localeCompare(b.name),
-      ),
-    [mockQueryData],
+    () => reminders.toSorted((a, b) => a.donorName.localeCompare(b.donorName)),
+    [reminders],
   );
 
   const transformedData: ReminderData[] = useMemo(
@@ -83,20 +95,20 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
         return {
           ...contact,
           id: contact.id,
-          partner: contact.name,
-          partnerId: contact.churchName ?? '',
-          lastGift: contact.pledgeStartDate
-            ? DateTime.fromISO(contact.pledgeStartDate)
+          partner: contact.donorName ?? '',
+          partnerId: contact.donorAccountNumber ?? '',
+          lastGift: contact.lastGiftDate
+            ? DateTime.fromISO(contact.lastGiftDate)
             : null,
-          lastReminder: contact.lastDonation?.donationDate
-            ? DateTime.fromISO(contact.lastDonation.donationDate)
+          lastReminder: contact.lastReminderDate
+            ? DateTime.fromISO(contact.lastReminderDate)
             : null,
-          status: contact.pledgeFrequency
-            ? getReminderStatus(contact.pledgeFrequency)
+          status: contact.frequency
+            ? getReminderStatus(contact.frequency)
             : ReminderStatusEnum.NotReminded,
         };
       }),
-    [mockQueryData],
+    [sortedData],
   );
 
   return (
@@ -179,13 +191,13 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
               </Box>
               <Typography>
                 <strong>{t('Number of Ministry Partners: ')}</strong>
-                {mockQueryData?.contacts?.totalCount}
+                {reminders.length}
               </Typography>
             </Box>
           </SimpleScreenOnly>
           <Box sx={{ mb: 4 }}>
             <SimpleScreenOnly>
-              {mockLoading && !mockQueryData ? (
+              {(loading || designationLoading) && !data ? (
                 <LoadingBox>
                   <LoadingIndicator
                     data-testid="loading-spinner"
@@ -194,14 +206,7 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
                   />
                 </LoadingBox>
               ) : (
-                <RemindersTable
-                  data={transformedData}
-                  hasNextPage={
-                    mockQueryData?.contacts?.pageInfo?.hasNextPage ?? false
-                  }
-                  endCursor={mockQueryData?.contacts?.pageInfo?.endCursor ?? ''}
-                  fetchMore={fetchMore}
-                />
+                <RemindersTable data={transformedData} />
               )}
             </SimpleScreenOnly>
             <SimplePrintOnly>

@@ -22,7 +22,6 @@ const MPRemindersReportPageWrapper = styled(Box)(({ theme }) => ({
 const MPRemindersReportPage: React.FC = () => {
   const { appName } = useGetAppSettings();
   const { t } = useTranslation();
-
   const { data: staffAccountData, loading } = useStaffAccountQuery();
 
   const [isNavListOpen, setIsNavListOpen] = useState<boolean>(false);
