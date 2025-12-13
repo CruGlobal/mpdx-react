@@ -10,7 +10,6 @@ import { mockData } from '../mockData';
 import { RemindersTable } from './RemindersTable';
 
 const mutationSpy = jest.fn();
-const mockFetchMore = jest.fn();
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
@@ -19,12 +18,7 @@ const TestComponent: React.FC = () => (
     >
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <GqlMockedProvider onCall={mutationSpy}>
-          <RemindersTable
-            data={mockData}
-            hasNextPage={true}
-            endCursor=""
-            fetchMore={mockFetchMore}
-          />
+          <RemindersTable data={mockData} />
         </GqlMockedProvider>
       </LocalizationProvider>
     </VirtuosoMockContext.Provider>
@@ -85,12 +79,7 @@ describe('RemindersTable', () => {
         >
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <GqlMockedProvider onCall={mutationSpy}>
-              <RemindersTable
-                data={[]}
-                hasNextPage={false}
-                endCursor=""
-                fetchMore={mockFetchMore}
-              />
+              <RemindersTable data={[]} />
             </GqlMockedProvider>
           </LocalizationProvider>
         </VirtuosoMockContext.Provider>

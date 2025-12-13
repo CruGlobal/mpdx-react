@@ -2,6 +2,7 @@ import { DateTime } from 'luxon';
 
 export enum ReminderStatusEnum {
   NotReminded = 'Not Reminded',
+  DoNotRemind = 'Do Not Remind',
   Monthly = 'Monthly',
   BiMonthly = 'Bi-Monthly',
   Quarterly = 'Quarterly',
