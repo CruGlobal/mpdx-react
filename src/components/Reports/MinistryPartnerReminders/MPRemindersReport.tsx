@@ -61,15 +61,15 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
     useStaffAccountQuery({});
 
   const designationNumber =
-    designationAccountsData?.designationAccounts[0]?.designationAccounts[0]
-      ?.designationNumber ?? '';
+    designationAccountsData?.accountList?.designationAccounts[0]
+      ?.accountNumber ?? '';
 
   const { data, loading } = useMinistryPartnerRemindersQuery({
     variables: {
       accountListId: accountListId ?? '',
       designationNumber,
     },
-    skip: !designationNumber || !accountListId,
+    skip: !designationNumber,
   });
 
   const reminders = data?.ministryPartnerReminders ?? [];
@@ -96,7 +96,7 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
           ...contact,
           id: contact.id,
           partner: contact.donorName ?? '',
-          partnerId: contact.donorId ?? '',
+          partnerId: contact.donorAccountNumber ?? '',
           lastGift: contact.lastGiftDate
             ? DateTime.fromISO(contact.lastGiftDate)
             : null,
@@ -108,7 +108,7 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
             : ReminderStatusEnum.NotReminded,
         };
       }),
-    [reminders],
+    [sortedData],
   );
 
   return (

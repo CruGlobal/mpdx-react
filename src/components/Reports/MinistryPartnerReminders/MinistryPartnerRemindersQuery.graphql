@@ -18,10 +18,9 @@ query MinistryPartnerReminders(
 }
 
 query DesignationAccounts($accountListId: ID!) {
-  designationAccounts(accountListId: $accountListId) {
-    organizationName
+  accountList(id: $accountListId) {
     designationAccounts {
-      designationNumber
+      accountNumber
       id
       name
     }
