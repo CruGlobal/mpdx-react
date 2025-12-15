@@ -26,3 +26,11 @@ query DesignationAccounts($accountListId: ID!) {
     }
   }
 }
+
+mutation UpdateMinistryPartnerReminders(
+  $input: UpdateMinistryPartnerRemindersInput!
+) {
+  updateMinistryPartnerReminders(input: $input) {
+    updatedCount
+  }
+}
