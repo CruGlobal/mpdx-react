@@ -1,4 +1,4 @@
-import React, { forwardRef, useMemo } from 'react';
+import React, { forwardRef } from 'react';
 import { HourglassDisabled } from '@mui/icons-material';
 import {
   Paper,
@@ -9,18 +9,18 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { TableVirtuoso, TableVirtuosoProps } from 'react-virtuoso';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { headerHeight } from 'src/components/Shared/Header/ListHeader';
+import { MinistryPartnerReminderFrequencyEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { EmptyTable } from '../../Shared/EmptyTable/EmptyTable';
-import { ReminderData, ReminderStatusEnum } from '../mockData';
+import { ReminderData } from '../mockData';
 import { RemindersTableRow } from './RemindersTableRow';
 
 export type RowValues = {
-  status: Record<string, ReminderStatusEnum>;
+  status: Record<string, MinistryPartnerReminderFrequencyEnum>;
 };
 interface HeaderProps {
   partner: string;
@@ -99,43 +99,29 @@ export const RemindersTable: React.FC<RemindersTableProps> = ({ data }) => {
 
   const isEmpty = !data.length;
 
-  const initialValues = useMemo(
-    () => ({
-      status: Object.fromEntries(
-        data.map((row) => [
-          row.id,
-          row.status ?? ReminderStatusEnum.NotReminded,
-        ]),
-      ),
-    }),
-    [data],
-  );
-
   return (
-    <Formik<RowValues> initialValues={initialValues} onSubmit={() => {}}>
-      <TableVirtuoso
-        data={data}
-        style={{
-          height: isEmpty
-            ? 390
-            : `calc(100vh - ${navBarHeight} - ${headerHeight} - 62px)`,
-          scrollbarWidth: 'none',
-        }}
-        components={TableComponents}
-        fixedHeaderContent={() => (
-          <TableRow>
-            <TableCell sx={{ width: '35%' }}>{t('Ministry Partner')}</TableCell>
-            <TableCell sx={{ width: '20%' }}>{t('Last Gift')}</TableCell>
-            <TableCell sx={{ width: '20%' }}>{t('Last Reminder')}</TableCell>
-            <TableCell id="status-col" sx={{ width: '25%' }}>
-              {t('Reminder Status')}
-            </TableCell>
-          </TableRow>
-        )}
-        itemContent={(_, row) => (
-          <RemindersTableRow key={row.id} id={row.id} row={row} />
-        )}
-      />
-    </Formik>
+    <TableVirtuoso
+      data={data}
+      style={{
+        height: isEmpty
+          ? 390
+          : `calc(100vh - ${navBarHeight} - ${headerHeight} - 62px)`,
+        scrollbarWidth: 'none',
+      }}
+      components={TableComponents}
+      fixedHeaderContent={() => (
+        <TableRow>
+          <TableCell sx={{ width: '35%' }}>{t('Ministry Partner')}</TableCell>
+          <TableCell sx={{ width: '20%' }}>{t('Last Gift')}</TableCell>
+          <TableCell sx={{ width: '20%' }}>{t('Last Reminder')}</TableCell>
+          <TableCell id="status-col" sx={{ width: '25%' }}>
+            {t('Reminder Status')}
+          </TableCell>
+        </TableRow>
+      )}
+      itemContent={(_, row) => (
+        <RemindersTableRow key={row.id} id={row.id} row={row} />
+      )}
+    />
   );
 };

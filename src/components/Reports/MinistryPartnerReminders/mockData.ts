@@ -1,4 +1,5 @@
 import { DateTime } from 'luxon';
+import { MinistryPartnerReminderFrequencyEnum } from 'src/graphql/types.generated';
 
 export enum ReminderStatusEnum {
   NotReminded = 'Not Reminded',
@@ -6,8 +7,8 @@ export enum ReminderStatusEnum {
   Monthly = 'Monthly',
   BiMonthly = 'Bi-Monthly',
   Quarterly = 'Quarterly',
-  SemiAnnual = 'Semi-Annual',
-  Annual = 'Annual',
+  SemiAnnual = 'Semi-Annually',
+  Annual = 'Annually',
 }
 export interface ReminderData {
   id: string;
@@ -15,7 +16,7 @@ export interface ReminderData {
   partnerId: string;
   lastGift: DateTime | null;
   lastReminder: DateTime | null;
-  status: ReminderStatusEnum;
+  status: MinistryPartnerReminderFrequencyEnum;
 }
 
 export const mockData: ReminderData[] = [
@@ -25,7 +26,7 @@ export const mockData: ReminderData[] = [
     partnerId: '000107504',
     lastGift: DateTime.fromISO('2025-08-13'),
     lastReminder: null,
-    status: ReminderStatusEnum.NotReminded,
+    status: MinistryPartnerReminderFrequencyEnum.NotReminded,
   },
   {
     id: '2',
@@ -33,7 +34,7 @@ export const mockData: ReminderData[] = [
     partnerId: '330756985',
     lastGift: DateTime.fromISO('2025-08-01'),
     lastReminder: null,
-    status: ReminderStatusEnum.NotReminded,
+    status: MinistryPartnerReminderFrequencyEnum.NotReminded,
   },
   {
     id: '3',
@@ -41,7 +42,7 @@ export const mockData: ReminderData[] = [
     partnerId: '000393913',
     lastGift: DateTime.fromISO('2025-08-10'),
     lastReminder: null,
-    status: ReminderStatusEnum.NotReminded,
+    status: MinistryPartnerReminderFrequencyEnum.NotReminded,
   },
   {
     id: '4',
@@ -49,7 +50,7 @@ export const mockData: ReminderData[] = [
     partnerId: '417972694',
     lastGift: DateTime.fromISO('2025-08-05'),
     lastReminder: null,
-    status: ReminderStatusEnum.NotReminded,
+    status: MinistryPartnerReminderFrequencyEnum.NotReminded,
   },
   {
     id: '5',
@@ -57,7 +58,7 @@ export const mockData: ReminderData[] = [
     partnerId: '415742207',
     lastGift: DateTime.fromISO('2025-08-08'),
     lastReminder: null,
-    status: ReminderStatusEnum.NotReminded,
+    status: MinistryPartnerReminderFrequencyEnum.NotReminded,
   },
   {
     id: '6',
@@ -65,7 +66,7 @@ export const mockData: ReminderData[] = [
     partnerId: '291412318',
     lastGift: DateTime.fromISO('2025-08-15'),
     lastReminder: null,
-    status: ReminderStatusEnum.NotReminded,
+    status: MinistryPartnerReminderFrequencyEnum.NotReminded,
   },
   {
     id: '7',
@@ -73,7 +74,7 @@ export const mockData: ReminderData[] = [
     partnerId: '296338310',
     lastGift: DateTime.fromISO('2025-08-22'),
     lastReminder: null,
-    status: ReminderStatusEnum.NotReminded,
+    status: MinistryPartnerReminderFrequencyEnum.NotReminded,
   },
   {
     id: '8',
@@ -81,7 +82,7 @@ export const mockData: ReminderData[] = [
     partnerId: '427386313',
     lastGift: DateTime.fromISO('2025-09-02'),
     lastReminder: null,
-    status: ReminderStatusEnum.NotReminded,
+    status: MinistryPartnerReminderFrequencyEnum.NotReminded,
   },
   {
     id: '9',
@@ -89,7 +90,7 @@ export const mockData: ReminderData[] = [
     partnerId: '427386313',
     lastGift: DateTime.fromISO('2025-08-15'),
     lastReminder: null,
-    status: ReminderStatusEnum.NotReminded,
+    status: MinistryPartnerReminderFrequencyEnum.NotReminded,
   },
   {
     id: '10',
@@ -97,7 +98,7 @@ export const mockData: ReminderData[] = [
     partnerId: '467452212',
     lastGift: DateTime.fromISO('2025-08-18'),
     lastReminder: null,
-    status: ReminderStatusEnum.NotReminded,
+    status: MinistryPartnerReminderFrequencyEnum.NotReminded,
   },
   {
     id: '11',
@@ -105,7 +106,7 @@ export const mockData: ReminderData[] = [
     partnerId: '474035895',
     lastGift: DateTime.fromISO('2025-08-18'),
     lastReminder: null,
-    status: ReminderStatusEnum.NotReminded,
+    status: MinistryPartnerReminderFrequencyEnum.NotReminded,
   },
   {
     id: '12',
@@ -113,7 +114,7 @@ export const mockData: ReminderData[] = [
     partnerId: '317690780',
     lastGift: DateTime.fromISO('2025-08-10'),
     lastReminder: null,
-    status: ReminderStatusEnum.NotReminded,
+    status: MinistryPartnerReminderFrequencyEnum.NotReminded,
   },
   {
     id: '13',
@@ -121,7 +122,7 @@ export const mockData: ReminderData[] = [
     partnerId: '000048486',
     lastGift: DateTime.fromISO('2025-08-15'),
     lastReminder: null,
-    status: ReminderStatusEnum.NotReminded,
+    status: MinistryPartnerReminderFrequencyEnum.NotReminded,
   },
   {
     id: '14',
@@ -129,7 +130,7 @@ export const mockData: ReminderData[] = [
     partnerId: '000401460',
     lastGift: DateTime.fromISO('2025-08-10'),
     lastReminder: null,
-    status: ReminderStatusEnum.NotReminded,
+    status: MinistryPartnerReminderFrequencyEnum.NotReminded,
   },
   {
     id: '15',
@@ -137,7 +138,7 @@ export const mockData: ReminderData[] = [
     partnerId: '000451569',
     lastGift: DateTime.fromISO('2025-08-15'),
     lastReminder: null,
-    status: ReminderStatusEnum.NotReminded,
+    status: MinistryPartnerReminderFrequencyEnum.NotReminded,
   },
   {
     id: '16',
@@ -145,7 +146,7 @@ export const mockData: ReminderData[] = [
     partnerId: '000556075',
     lastGift: DateTime.fromISO('2025-08-15'),
     lastReminder: null,
-    status: ReminderStatusEnum.NotReminded,
+    status: MinistryPartnerReminderFrequencyEnum.NotReminded,
   },
   {
     id: '17',
@@ -153,7 +154,7 @@ export const mockData: ReminderData[] = [
     partnerId: '444778932',
     lastGift: DateTime.fromISO('2025-08-15'),
     lastReminder: null,
-    status: ReminderStatusEnum.NotReminded,
+    status: MinistryPartnerReminderFrequencyEnum.NotReminded,
   },
   {
     id: '18',
@@ -161,7 +162,7 @@ export const mockData: ReminderData[] = [
     partnerId: '427358560',
     lastGift: DateTime.fromISO('2025-08-15'),
     lastReminder: null,
-    status: ReminderStatusEnum.NotReminded,
+    status: MinistryPartnerReminderFrequencyEnum.NotReminded,
   },
   {
     id: '19',
@@ -169,6 +170,6 @@ export const mockData: ReminderData[] = [
     partnerId: '427358560',
     lastGift: DateTime.fromISO('2025-08-11'),
     lastReminder: null,
-    status: ReminderStatusEnum.NotReminded,
+    status: MinistryPartnerReminderFrequencyEnum.NotReminded,
   },
 ];

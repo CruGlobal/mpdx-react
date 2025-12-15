@@ -1,23 +1,21 @@
 import { FormControl, MenuItem, Select, SelectProps } from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import { ReminderStatusEnum } from '../../mockData';
+import { MinistryPartnerReminderFrequencyEnum } from 'src/graphql/types.generated';
+import { getReminderStatus } from '../../Helper/getReminderStatus';
 
 type StatusSelectProps = Partial<SelectProps> & {
-  value: string;
+  value: MinistryPartnerReminderFrequencyEnum;
 };
 
 export const StatusSelect: React.FC<StatusSelectProps> = ({
   value,
   ...props
 }) => {
-  const { t } = useTranslation();
-
   return (
     <FormControl size={'small'} sx={{ width: 150 }}>
       <Select {...props} value={value} sx={{ backgroundColor: 'common.white' }}>
-        {Object.values(ReminderStatusEnum).map((status) => (
+        {Object.values(MinistryPartnerReminderFrequencyEnum).map((status) => (
           <MenuItem key={status} value={status}>
-            {t(status)}
+            {getReminderStatus(status)}
           </MenuItem>
         ))}
       </Select>
