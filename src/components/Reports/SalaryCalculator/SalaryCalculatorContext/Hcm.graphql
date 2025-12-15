@@ -8,6 +8,8 @@ query Hcm {
       tenure
       age
       dependentChildrenWithHealthcareBenefits
+      primaryPhoneNumber
+      emailAddress
     }
     currentSalary {
       grossSalaryAmount
