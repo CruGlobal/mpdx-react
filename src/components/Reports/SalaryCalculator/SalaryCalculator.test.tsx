@@ -9,9 +9,10 @@ const TestComponent: React.FC = () => (
 );
 
 describe('SalaryCalculator', () => {
-  it('renders without crashing', () => {
-    const { getAllByRole } = render(<TestComponent />);
-    // Should render at least one heading (main step label)
-    expect(getAllByRole('heading').length).toBeGreaterThan(0);
+  it('renders correctly', async () => {
+    const { findByRole } = render(<TestComponent />);
+    expect(
+      await findByRole('heading', { name: 'Form Steps' }),
+    ).toBeInTheDocument();
   });
 });
