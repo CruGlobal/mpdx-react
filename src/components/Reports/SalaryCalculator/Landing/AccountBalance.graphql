@@ -1,0 +1,8 @@
+query AccountBalance {
+  reportsStaffExpenses {
+    funds {
+      id
+      total
+    }
+  }
+}
