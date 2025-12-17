@@ -1,0 +1,114 @@
+import { ThemeProvider } from '@emotion/react';
+import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
+import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  AssignmentCategoryEnum,
+  AssignmentStatusEnum,
+  PeopleGroupSupportTypeEnum,
+  UserPersonTypeEnum,
+} from 'src/graphql/types.generated';
+import theme from 'src/theme';
+import { HcmQuery } from '../../SalaryCalculatorContext/Hcm.generated';
+import { AccountBalanceQuery } from '../AccountBalance.generated';
+import { StaffAccountIdQuery } from '../StaffAccountId.generated';
+import { LandingSalaryCalculationsQuery } from './LandingSalaryCalculations.generated';
+
+interface LandingTestWrapperProps {
+  onCall?: MockLinkCallHandler;
+  children?: React.ReactNode;
+  assignmentCategory?: AssignmentCategoryEnum;
+  peopleGroupSupportType?: PeopleGroupSupportTypeEnum;
+  hasInProgressCalculation?: boolean;
+  hasApprovedCalculation?: boolean;
+}
+
+export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
+  onCall,
+  children,
+  assignmentCategory,
+  peopleGroupSupportType,
+  hasInProgressCalculation = false,
+  hasApprovedCalculation = false,
+}) => (
+  <ThemeProvider theme={theme}>
+    <TestRouter>
+      <GqlMockedProvider<{
+        Hcm: HcmQuery;
+        StaffAccountId: StaffAccountIdQuery;
+        AccountBalance: AccountBalanceQuery;
+        LandingSalaryCalculations: LandingSalaryCalculationsQuery;
+      }>
+        mocks={{
+          Hcm: {
+            hcm: [
+              {
+                staffInfo: {
+                  firstName: 'John',
+                  lastName: 'Doe',
+                  userPersonType: UserPersonTypeEnum.EmployeeStaff,
+                  assignmentStatus: AssignmentStatusEnum.ActivePayrollEligible,
+                  assignmentCategory:
+                    assignmentCategory ??
+                    AssignmentCategoryEnum.FullTimeRegular,
+                  peopleGroupSupportType:
+                    peopleGroupSupportType ??
+                    PeopleGroupSupportTypeEnum.SupportedRmo,
+                },
+                currentSalary: {
+                  grossSalaryAmount: 55000,
+                  lastUpdated: '2024-03-01',
+                },
+                fourOThreeB: {
+                  currentRothContributionPercentage: 12,
+                  currentTaxDeferredContributionPercentage: 5,
+                  maximumContributionLimit: 45,
+                },
+              },
+              {
+                staffInfo: {
+                  firstName: 'Jane',
+                  lastName: 'Doe',
+                  userPersonType: UserPersonTypeEnum.EmployeeStaff,
+                  assignmentStatus: AssignmentStatusEnum.ActivePayrollEligible,
+                  assignmentCategory:
+                    assignmentCategory ??
+                    AssignmentCategoryEnum.FullTimeRegular,
+                  peopleGroupSupportType:
+                    peopleGroupSupportType ??
+                    PeopleGroupSupportTypeEnum.SupportedRmo,
+                },
+                currentSalary: {
+                  grossSalaryAmount: 10000,
+                  lastUpdated: '2024-03-01',
+                },
+                fourOThreeB: {
+                  currentRothContributionPercentage: 10,
+                  currentTaxDeferredContributionPercentage: 6,
+                  maximumContributionLimit: 45,
+                },
+              },
+            ],
+          },
+          LandingSalaryCalculations: {
+            inProgressCalculation: hasInProgressCalculation ? {} : null,
+            approvedCalculation: hasApprovedCalculation ? {} : null,
+          },
+          StaffAccountId: {
+            user: {
+              staffAccountId: '111111111',
+            },
+          },
+          AccountBalance: {
+            reportsStaffExpenses: {
+              funds: [{ total: 10000 }],
+            },
+          },
+        }}
+        onCall={onCall}
+      >
+        {children as React.ReactElement}
+      </GqlMockedProvider>
+    </TestRouter>
+  </ThemeProvider>
+);

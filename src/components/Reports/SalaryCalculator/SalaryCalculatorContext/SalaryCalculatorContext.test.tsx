@@ -1,5 +1,4 @@
 import { render, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { SalaryCalculatorContent } from '../SalaryCalculator';
 import { SalaryCalculatorTestWrapper } from '../SalaryCalculatorTestWrapper';
 
@@ -12,19 +11,6 @@ const TestComponent: React.FC = () => (
 );
 
 describe('SalaryCalculator', () => {
-  it('renders main content based on selected section', () => {
-    const { getByRole } = render(<TestComponent />);
-
-    expect(
-      getByRole('heading', { name: 'Effective Date' }),
-    ).toBeInTheDocument();
-
-    userEvent.click(getByRole('button', { name: 'Continue' }));
-    expect(
-      getByRole('heading', { name: 'Your Information' }),
-    ).toBeInTheDocument();
-  });
-
   it('loads HCM data', async () => {
     render(<TestComponent />);
 
@@ -37,5 +23,11 @@ describe('SalaryCalculator', () => {
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('SalaryCalculation'),
     );
+  });
+
+  it('renders individual step items', async () => {
+    const { getAllByRole } = render(<TestComponent />);
+
+    expect(getAllByRole('listitem')).toHaveLength(9);
   });
 });
