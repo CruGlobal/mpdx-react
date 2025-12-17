@@ -5,6 +5,7 @@ import {
   CardHeader,
   Grid,
   Typography,
+  useTheme,
 } from '@mui/material';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
@@ -31,12 +32,17 @@ export const NameDisplay: React.FC<NameDisplayProps> = ({
   spouseComponent,
 }) => {
   const locale = useLocale();
+  const theme = useTheme();
   const currency = 'USD';
   const title = (
     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <Typography variant="h6">{names}</Typography>
-        <Typography variant="subtitle1" sx={{ color: 'text.secondary' }}>
+        <Typography
+          variant="subtitle1"
+          sx={{ color: 'text.secondary' }}
+          data-testid="person-numbers"
+        >
           {personNumbers}
         </Typography>
       </Box>
@@ -45,12 +51,12 @@ export const NameDisplay: React.FC<NameDisplayProps> = ({
   );
 
   return (
-    <Box sx={{ mt: 2 }}>
-      <Card sx={{ marginBottom: 2, boxShadow: 1 }}>
-        <CardHeader title={title} />
+    <Box sx={{ mt: theme.spacing(2) }}>
+      <Card sx={{ marginBottom: theme.spacing(2), boxShadow: 1 }}>
+        <CardHeader title={title} sx={{ paddingInline: theme.spacing(4) }} />
         {showContent && (
           <CardContent>
-            <Grid container spacing={2}>
+            <Grid container spacing={theme.spacing(2)}>
               <Grid item xs={6}>
                 <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
                   {titleOne?.toUpperCase()}
@@ -62,23 +68,29 @@ export const NameDisplay: React.FC<NameDisplayProps> = ({
                 </Typography>
               </Grid>
             </Grid>
-            <Grid container spacing={2}>
+            <Grid container spacing={theme.spacing(2)}>
               <Grid item xs={6}>
-                <Typography variant="h3" sx={{ color: 'primary.main' }}>
-                  <b>
-                    {currencyFormat(amountOne || 0, currency, locale, {
-                      showTrailingZeros: true,
-                    })}
-                  </b>
+                <Typography
+                  variant="h3"
+                  fontWeight="bold"
+                  sx={{ color: 'primary.main' }}
+                  data-testid="amount-one"
+                >
+                  {currencyFormat(amountOne || 0, currency, locale, {
+                    showTrailingZeros: true,
+                  })}
                 </Typography>
               </Grid>
               <Grid item xs={6}>
-                <Typography variant="h3" sx={{ color: 'primary.main' }}>
-                  <b>
-                    {currencyFormat(amountTwo || 0, currency, locale, {
-                      showTrailingZeros: true,
-                    })}
-                  </b>
+                <Typography
+                  variant="h3"
+                  fontWeight="bold"
+                  sx={{ color: 'primary.main' }}
+                  data-testid="amount-two"
+                >
+                  {currencyFormat(amountTwo || 0, currency, locale, {
+                    showTrailingZeros: true,
+                  })}
                 </Typography>
               </Grid>
             </Grid>
