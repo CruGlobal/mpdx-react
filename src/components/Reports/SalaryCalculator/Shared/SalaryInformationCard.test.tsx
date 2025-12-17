@@ -1,11 +1,11 @@
 import { render } from '@testing-library/react';
-import { SalaryCalculatorTestWrapper } from '../SalaryCalculatorTestWrapper';
+import { LandingTestWrapper } from '../Landing/NewSalaryCalculationLanding/LandingTestWrapper';
 import { SalaryInformationCard } from './SalaryInformationCard';
 
 const TestComponent: React.FC = () => (
-  <SalaryCalculatorTestWrapper hasApprovedCalculation={true}>
+  <LandingTestWrapper>
     <SalaryInformationCard />
-  </SalaryCalculatorTestWrapper>
+  </LandingTestWrapper>
 );
 
 describe('SalaryInformationCard', () => {
