@@ -78,6 +78,7 @@ export const SalaryCalculatorTestWrapper: React.FC<
               calculations: {
                 individualCap: 80000,
                 familyCap: 125000,
+                hardCap: 80000,
               },
             }),
           },
