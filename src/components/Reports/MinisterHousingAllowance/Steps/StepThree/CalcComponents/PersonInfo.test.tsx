@@ -31,9 +31,11 @@ const TestComponent: React.FC = () => (
 
 describe('PersonInfo', () => {
   it('renders personal contact information', async () => {
-    const { findByText, getByText } = render(<TestComponent />);
+    const { findByText } = render(<TestComponent />);
 
-    expect(getByText('Personal Contact Information')).toBeInTheDocument();
+    expect(
+      await findByText('Personal Contact Information'),
+    ).toBeInTheDocument();
 
     expect(await findByText('John Doe')).toBeInTheDocument();
     expect(

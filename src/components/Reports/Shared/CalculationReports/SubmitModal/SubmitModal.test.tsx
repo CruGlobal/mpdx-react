@@ -58,12 +58,12 @@ const TestComponent: React.FC<TestComponentProps> = ({
 
 describe('ConfirmationModal', () => {
   it('renders submit confirmation modal correctly', async () => {
-    const { getByText, getByRole } = render(
+    const { getByText, getByRole, findByText } = render(
       <TestComponent pageType={PageEnum.New} />,
     );
 
     expect(
-      getByText('Are you ready to submit your Main Title?'),
+      await findByText('Are you ready to submit your Main Title?'),
     ).toBeInTheDocument();
     expect(
       getByText('You are submitting your Main Title for board approval.'),
@@ -76,12 +76,12 @@ describe('ConfirmationModal', () => {
   });
 
   it('renders update confirmation modal correctly', async () => {
-    const { getByText, getByRole } = render(
+    const { getByText, getByRole, findByRole } = render(
       <TestComponent pageType={PageEnum.Edit} actionRequired={true} />,
     );
 
     expect(
-      getByRole('heading', {
+      await findByRole('heading', {
         name: 'Are you ready to submit your updated Main Title?',
       }),
     ).toBeInTheDocument();
@@ -95,10 +95,10 @@ describe('ConfirmationModal', () => {
   });
 
   it('calls handleClose when modal is closed', async () => {
-    const { getByRole } = render(<TestComponent isCancel={true} />);
+    const { getByRole, findByRole } = render(<TestComponent isCancel={true} />);
 
     expect(
-      getByRole('heading', { name: 'Do you want to cancel?' }),
+      await findByRole('heading', { name: 'Do you want to cancel?' }),
     ).toBeInTheDocument();
 
     await userEvent.click(getByRole('button', { name: /NO/i }));
@@ -106,7 +106,7 @@ describe('ConfirmationModal', () => {
   });
 
   it('should override title, content, and subcontent when provided', async () => {
-    const { getByText } = render(
+    const { getByText, findByText } = render(
       <TestComponent
         overrideTitle={title}
         overrideContent={content}
@@ -114,7 +114,7 @@ describe('ConfirmationModal', () => {
       />,
     );
 
-    expect(getByText(title)).toBeInTheDocument();
+    expect(await findByText(title)).toBeInTheDocument();
     expect(getByText(content)).toBeInTheDocument();
     expect(getByText(subContent)).toBeInTheDocument();
   });

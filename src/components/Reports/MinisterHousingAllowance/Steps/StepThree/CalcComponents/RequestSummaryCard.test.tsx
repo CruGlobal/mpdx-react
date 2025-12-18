@@ -29,12 +29,12 @@ const TestComponent: React.FC<TestComponentProps> = ({ rentOrOwn }) => (
 );
 
 describe('RequestSummaryCard', () => {
-  it('renders the card for own', () => {
-    const { getByText } = render(
+  it('renders the card for own', async () => {
+    const { getByText, findByText } = render(
       <TestComponent rentOrOwn={MhaRentOrOwnEnum.Own} />,
     );
 
-    expect(getByText('Your MHA Request Summary')).toBeInTheDocument();
+    expect(await findByText('Your MHA Request Summary')).toBeInTheDocument();
     expect(getByText('Own')).toBeInTheDocument();
     expect(getByText('Your Annual MHA Total')).toBeInTheDocument();
     expect(
@@ -42,12 +42,12 @@ describe('RequestSummaryCard', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders the card for rent', () => {
-    const { getByText } = render(
+  it('renders the card for rent', async () => {
+    const { getByText, findByText } = render(
       <TestComponent rentOrOwn={MhaRentOrOwnEnum.Rent} />,
     );
 
-    expect(getByText('Your MHA Request Summary')).toBeInTheDocument();
+    expect(await findByText('Your MHA Request Summary')).toBeInTheDocument();
     expect(getByText('Rent')).toBeInTheDocument();
   });
 });

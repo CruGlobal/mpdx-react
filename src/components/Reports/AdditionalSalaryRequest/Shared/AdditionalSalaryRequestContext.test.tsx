@@ -7,13 +7,13 @@ import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 import { getHeader } from './Helper/getHeader';
 
 const TestComponent: React.FC = () => {
-  const { currentStep, handleNextStep, isDrawerOpen, toggleDrawer } =
+  const { currentIndex, handleNextStep, isDrawerOpen, toggleDrawer } =
     useAdditionalSalaryRequest();
   const { t } = useTranslation();
 
   return (
     <div>
-      <h2>{getHeader(t, currentStep)}</h2>
+      <h2>{getHeader(t, currentIndex)}</h2>
       <div aria-label="drawer state" data-open={isDrawerOpen}>
         Drawer: {isDrawerOpen ? 'open' : 'closed'}
       </div>

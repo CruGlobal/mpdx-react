@@ -16,7 +16,6 @@ import { StepsList } from '../../Shared/CalculationReports/StepsList/StepsList';
 import { mainContentWidth } from '../MinisterHousingAllowance';
 import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
 import { mocks } from '../Shared/mockData';
-import { StepsEnum } from '../Shared/sharedTypes';
 import { AboutForm } from '../Steps/StepOne/AboutForm';
 import { Calculation } from '../Steps/StepThree/Calculation';
 import { RentOwn } from '../Steps/StepTwo/RentOwn';
@@ -38,7 +37,6 @@ export const NewRequestPage: React.FC = () => {
     requestId,
     steps,
     handleNextStep,
-    currentStep,
     pageType,
     isDrawerOpen,
     toggleDrawer,
@@ -78,21 +76,21 @@ export const NewRequestPage: React.FC = () => {
           {({ values }) => (
             <Container sx={{ ml: 5 }}>
               <Stack direction="column" width={mainContentWidth}>
-                {currentStep === StepsEnum.AboutForm ? (
+                {currentIndex === 0 ? (
                   <AboutForm
                     boardApprovalDate={boardDate}
                     availableDate={availableDate}
                   />
-                ) : currentStep === StepsEnum.RentOrOwn ? (
+                ) : currentIndex === 1 ? (
                   <RentOwn />
-                ) : currentStep === StepsEnum.CalcForm ? (
+                ) : currentIndex === 2 ? (
                   <Calculation
                     boardApprovalDate={boardDate}
                     availableDate={availableDate}
                     rentOrOwn={values.rentOrOwn}
                     deadlineDate={deadlineDate}
                   />
-                ) : currentStep === StepsEnum.Receipt ? (
+                ) : currentIndex === 3 ? (
                   <Receipt
                     formTitle={t('MHA Request')}
                     buttonText={t('View Your MHA')}

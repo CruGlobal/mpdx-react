@@ -12,11 +12,11 @@ const TestComponent: React.FC = () => (
 );
 
 describe('SalaryCalculator', () => {
-  it('renders main content based on selected section', () => {
-    const { getByRole } = render(<TestComponent />);
+  it('renders main content based on selected section', async () => {
+    const { findByRole, getByRole } = render(<TestComponent />);
 
     expect(
-      getByRole('heading', { name: 'Effective Date' }),
+      await findByRole('heading', { name: 'Effective Date' }),
     ).toBeInTheDocument();
 
     userEvent.click(getByRole('button', { name: 'Continue' }));

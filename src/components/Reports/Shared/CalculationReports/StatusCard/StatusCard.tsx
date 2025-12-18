@@ -11,6 +11,8 @@ import {
   CardHeader,
   Divider,
   IconButton,
+  SxProps,
+  Theme,
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
@@ -35,6 +37,8 @@ interface StatusCardProps {
   hideActions?: boolean;
   handleDownload?: () => void;
   handleConfirmCancel: () => void;
+  handleLinkTwo?: () => void;
+  styling?: SxProps<Theme>;
 }
 
 export const StatusCard: React.FC<StatusCardProps> = ({
@@ -53,6 +57,8 @@ export const StatusCard: React.FC<StatusCardProps> = ({
   hideActions,
   handleDownload,
   handleConfirmCancel,
+  handleLinkTwo,
+  styling,
 }) => {
   const { t } = useTranslation();
 
@@ -73,14 +79,14 @@ export const StatusCard: React.FC<StatusCardProps> = ({
             </Avatar>
             {subtitle ? (
               <Box>
-                <Typography component="span" sx={{ fontSize: 18 }}>
+                <Typography component="span" sx={{ fontSize: 22 }}>
                   {title}
                 </Typography>
                 <Typography
                   component="span"
                   sx={{
                     display: 'block',
-                    fontSize: 14,
+                    fontSize: 16,
                     color: 'text.secondary',
                   }}
                 >
@@ -102,7 +108,7 @@ export const StatusCard: React.FC<StatusCardProps> = ({
           </Box>
         }
       />
-      <CardContent>{children}</CardContent>
+      <CardContent sx={{ ...styling }}>{children}</CardContent>
       <Divider />
       {!hideActions && (
         <CardActionArea sx={{ p: 2 }}>
@@ -115,9 +121,10 @@ export const StatusCard: React.FC<StatusCardProps> = ({
             {linkOneText}
           </Button>
           <Button
-            component={NextLink}
-            href={linkTwo ?? ''}
-            variant="outlined"
+            component={linkTwo ? NextLink : 'button'}
+            href={linkTwo ?? undefined}
+            onClick={handleLinkTwo}
+            variant={isRequest ? 'outlined' : 'contained'}
             sx={{ px: 2, py: 1 }}
           >
             {linkTwoText}

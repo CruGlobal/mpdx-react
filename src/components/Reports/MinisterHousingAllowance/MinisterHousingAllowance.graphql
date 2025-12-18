@@ -3,6 +3,7 @@ query MinistryHousingAllowanceRequests {
     nodes {
       id
       personNumber
+      updatedAt
       requestAttributes {
         rentOrOwn
         rentalValue
@@ -42,6 +43,7 @@ query MinistryHousingAllowanceRequest($ministryHousingAllowanceRequestId: ID!) {
   ministryHousingAllowanceRequest(id: $ministryHousingAllowanceRequestId) {
     id
     personNumber
+    updatedAt
     requestAttributes {
       rentOrOwn
       rentalValue
@@ -105,6 +107,64 @@ mutation UpdateMinistryHousingAllowanceRequest(
   $input: MinistryHousingAllowanceRequestUpdateMutationInput!
 ) {
   updateMinistryHousingAllowanceRequest(input: $input) {
+    ministryHousingAllowanceRequest {
+      id
+      requestAttributes {
+        rentOrOwn
+        rentalValue
+        furnitureCostsOne
+        avgUtilityOne
+        mortgageOrRentPayment
+        furnitureCostsTwo
+        repairCosts
+        avgUtilityTwo
+        unexpectedExpenses
+        overallAmount
+        phoneNumber
+        emailAddress
+        iUnderstandMhaPolicy
+      }
+    }
+  }
+}
+
+mutation DeleteMinistryHousingAllowanceRequest(
+  $input: MinistryHousingAllowanceRequestDeleteMutationInput!
+) {
+  deleteMinistryHousingAllowanceRequest(input: $input) {
+    id
+  }
+}
+
+mutation SubmitMinistryHousingAllowanceRequest(
+  $input: MinistryHousingAllowanceRequestSubmitMutationInput!
+) {
+  submitMinistryHousingAllowanceRequest(input: $input) {
+    ministryHousingAllowanceRequest {
+      requestAttributes {
+        rentOrOwn
+        rentalValue
+        furnitureCostsOne
+        avgUtilityOne
+        mortgageOrRentPayment
+        furnitureCostsTwo
+        repairCosts
+        avgUtilityTwo
+        unexpectedExpenses
+        overallAmount
+        phoneNumber
+        emailAddress
+        iUnderstandMhaPolicy
+        submittedDate
+      }
+    }
+  }
+}
+
+mutation DuplicateMinistryHousingAllowanceRequest(
+  $input: DuplicateMinistryHousingAllowanceRequestMutationInput!
+) {
+  duplicateMinistryHousingAllowanceRequest(input: $input) {
     ministryHousingAllowanceRequest {
       id
       requestAttributes {

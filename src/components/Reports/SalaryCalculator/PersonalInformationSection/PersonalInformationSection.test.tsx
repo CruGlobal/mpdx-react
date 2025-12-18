@@ -18,10 +18,10 @@ describe('PersonalInformationSection', () => {
     ).toBeInTheDocument();
   });
 
-  it('should display all category row headers', () => {
-    const { getByRole } = render(<TestComponent />);
+  it('should display all category row headers', async () => {
+    const { getByRole, findByRole } = render(<TestComponent />);
 
-    expect(getByRole('cell', { name: 'Location' })).toBeInTheDocument();
+    expect(await findByRole('cell', { name: 'Location' })).toBeInTheDocument();
     expect(getByRole('cell', { name: 'Tenure' })).toBeInTheDocument();
     expect(getByRole('cell', { name: 'Age' })).toBeInTheDocument();
     expect(getByRole('cell', { name: 'Children' })).toBeInTheDocument();
