@@ -1,3 +1,23 @@
+fragment CalculationFields on SalaryRequestCalculations {
+  annualBase
+  additionalSalary
+  individualMultiplier
+  geographicAdjustment
+  geographicMultiplier
+  tenureAdjustment
+  oldSalaryCap
+  oldSecaAmount
+  secaEstimatedFraction
+  capWithSeca
+  contributing403bFraction
+  non403bFraction
+  calculatedCap
+  effectiveCap
+  individualCap
+  familyCap
+  hardCap
+}
+
 query SalaryCalculation {
   salaryRequest: latestSalaryRequest(status: [IN_PROGRESS]) {
     id
@@ -9,5 +29,11 @@ query SalaryCalculation {
     spouseSalaryCap
     salary
     spouseSalary
+    calculations {
+      ...CalculationFields
+    }
+    spouseCalculations {
+      ...CalculationFields
+    }
   }
 }

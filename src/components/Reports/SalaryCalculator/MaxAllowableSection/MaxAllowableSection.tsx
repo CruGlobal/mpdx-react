@@ -16,7 +16,6 @@ import {
 } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { amount } from 'src/lib/yupHelpers';
@@ -28,20 +27,11 @@ import {
   StepTableHead,
 } from '../Shared/StepCard';
 
-export interface MaxAllowableStepProps {
-  personalFactorsCap?: number;
-  spousePersonalFactorsCap?: number;
-}
-
-export const MaxAllowableStep: React.FC<MaxAllowableStepProps> = ({
-  // TODO: Get the maximum values for this salary calculation from the MPDX API once they exist
-  personalFactorsCap = 98602,
-  spousePersonalFactorsCap = 48602,
-}) => {
+export const MaxAllowableStep: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { calculation, hcm } = useSalaryCalculator();
-  const { goalMiscConstants: miscConstants } = useGoalCalculatorConstants();
+  const { calculation: salaryCalculation, hcm } = useSalaryCalculator();
+  const { calculations, spouseCalculations } = salaryCalculation ?? {};
   const [splitting, setSplitting] = useState(false);
 
   const schema = useMemo(
@@ -63,30 +53,28 @@ export const MaxAllowableStep: React.FC<MaxAllowableStepProps> = ({
     });
   };
 
-  const singleCap =
-    miscConstants?.BOARD_APPROVED_SALARY_CALC?.SINGLE_OTHER?.fee;
-  const familyCap =
-    miscConstants?.BOARD_APPROVED_SALARY_CALC?.MARRIED_OTHER?.fee;
-  const formattedSingleCap = formatCap(singleCap);
-  const formattedFamilyCap = formatCap(familyCap);
+  const formattedSingleCap = formatCap(calculations?.individualCap);
+  const formattedFamilyCap = formatCap(calculations?.familyCap);
 
   const [self, spouse] = hcm ?? [];
-  const combinedPersonalFactorsCap =
-    personalFactorsCap + spousePersonalFactorsCap;
+  const calculatedCap = calculations?.calculatedCap ?? 0;
+  const spouseCalculatedCap = spouseCalculations?.calculatedCap ?? 0;
+  const combinedCalculatedCap = calculatedCap + spouseCalculatedCap;
   const exceptionCap = self?.exceptionSalaryCap.amount ?? 0;
-  const cap = Math.max(exceptionCap, (spouse ? familyCap : singleCap) ?? 0);
-  // If the user and their spouse's combined personal factors cap exceeds their allowed cap as a
+  const cap = Math.max(
+    exceptionCap,
+    (spouse ? calculations?.familyCap : calculations?.individualCap) ?? 0,
+  );
+  // If the user and their spouse's combined calculated cap exceeds their allowed cap as a
   // family (taking into account an exception they might have), then they will need to split their
   // family cap between the two of them
-  const overCap =
-    typeof cap === 'number'
-      ? spouse && combinedPersonalFactorsCap > cap
-      : false;
+  const overCap = spouse && combinedCalculatedCap > cap;
   const formattedCap = currencyFormat(cap, 'USD', locale, {
     showTrailingZeros: true,
   });
   const inputCombinedMaxSalary =
-    (calculation?.salaryCap ?? 0) + (calculation?.spouseSalaryCap ?? 0);
+    (salaryCalculation?.salaryCap ?? 0) +
+    (salaryCalculation?.spouseSalaryCap ?? 0);
 
   const name = self?.staffInfo.firstName;
   const spouseName = spouse?.staffInfo.firstName;
@@ -210,10 +198,8 @@ export const MaxAllowableStep: React.FC<MaxAllowableStepProps> = ({
             <TableBody>
               <TableRow>
                 <FormattedTableCell value={t('Maximum Allowable Salary')} />
-                <FormattedTableCell value={personalFactorsCap} />
-                {spouse && (
-                  <FormattedTableCell value={spousePersonalFactorsCap} />
-                )}
+                <FormattedTableCell value={calculatedCap} />
+                {spouse && <FormattedTableCell value={spouseCalculatedCap} />}
               </TableRow>
             </TableBody>
           </Table>
