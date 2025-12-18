@@ -1,5 +1,5 @@
 query Hcm {
-  hcm(maritalStatus: MARRIED) {
+  hcm {
     staffInfo {
       firstName
       lastName
