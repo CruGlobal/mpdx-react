@@ -17,7 +17,6 @@ import {
   HcmDataQuery,
   useHcmDataQuery,
 } from 'src/components/Reports/Shared/HcmData/HCMData.generated';
-import { MaritalStatusEnum } from 'src/graphql/types.generated';
 import { useStepList } from 'src/hooks/useStepList';
 import { Steps } from '../../../Shared/CalculationReports/StepsList/StepsList';
 import {
@@ -137,11 +136,7 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
     }));
   }, [initialSteps, isComplete]);
 
-  const { data: hcmData } = useHcmDataQuery({
-    variables: {
-      maritalStatus: MaritalStatusEnum.Married,
-    },
-  });
+  const { data: hcmData } = useHcmDataQuery();
 
   const [userHcmData, setUserHcmData] = useState<HcmData>();
   const [spouseHcmData, setSpouseHcmData] = useState<HcmData | null>(null);
