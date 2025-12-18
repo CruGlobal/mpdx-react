@@ -1,13 +1,12 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
+import { GridApi } from '@mui/x-data-grid';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
-import { PartnerGivingAnalysisContact } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { PartnerGivingAnalysisTable } from './Table';
-import type { Order } from '../../Reports.type';
 
 const router = {
   pathname:
@@ -19,15 +18,12 @@ const router = {
   push: jest.fn(),
 };
 
-type Contact = PartnerGivingAnalysisContact;
-
-const order: Order = 'asc';
-const orderBy: keyof Contact = 'name';
-const ids = [];
 const isRowChecked = jest.fn();
-const onRequestSort = jest.fn();
-const onSelectAll = jest.fn();
 const onSelectOne = jest.fn();
+
+const mockApiRef = {
+  current: {} as GridApi,
+};
 
 const mocks = {
   PartnerGivingAnalysis: {
@@ -37,6 +33,7 @@ const mocks = {
           donationPeriodAverage: 88.468,
           donationPeriodCount: 176,
           donationPeriodSum: 15218.42,
+          firstDonationDate: '2019-01-01',
           lastDonationAmount: 150.92,
           lastDonationCurrency: 'CAD',
           lastDonationDate: '2021-07-07',
@@ -49,6 +46,7 @@ const mocks = {
           donationPeriodAverage: 71.4,
           donationPeriodCount: 127,
           donationPeriodSum: 13118.42,
+          firstDonationDate: '2020-01-01',
           lastDonationAmount: 170.92,
           lastDonationCurrency: 'CAD',
           lastDonationDate: '2021-03-07',
@@ -61,6 +59,7 @@ const mocks = {
           donationPeriodAverage: 86.4682954545454545,
           donationPeriodCount: 221,
           donationPeriodSum: 25218.42,
+          firstDonationDate: '2018-01-01',
           lastDonationAmount: 150.92,
           lastDonationCurrency: 'CAD',
           lastDonationDate: '2021-08-07',
@@ -82,20 +81,10 @@ const mocks = {
   },
 };
 
-const allContactIds =
-  mocks.PartnerGivingAnalysis.partnerGivingAnalysis?.nodes.map(
-    (contact) => contact.id,
-  ) ?? [];
-
 const defaultProps = {
-  order,
-  orderBy,
-  onRequestSort,
-  onSelectAll,
   onSelectOne,
-  ids,
-  allContactIds,
   isRowChecked,
+  apiRef: mockApiRef,
 };
 
 const Components = () => (
@@ -105,9 +94,6 @@ const Components = () => (
         <PartnerGivingAnalysisTable
           {...defaultProps}
           data={mocks.PartnerGivingAnalysis.partnerGivingAnalysis.nodes}
-          totalCount={
-            mocks.PartnerGivingAnalysis.partnerGivingAnalysis.totalCount
-          }
         />
       </ContactPanelProvider>
     </TestRouter>
@@ -155,7 +141,7 @@ describe('PartnerGivingAnalysisReportTable', () => {
       getByRole('link', { name: 'Ababa, Aladdin und Jasmine (Princess)' }),
     ).toHaveAttribute(
       'href',
-      '/accountLists/account-list-1/reports/partnerGivingAnalysis/01',
+      '/accountLists/account-list-1/reports/partnerGivingAnalysis/01?tab=Donations',
     );
   });
 });
