@@ -8,6 +8,10 @@ import { currencyFormat } from 'src/lib/intlFormat';
 import { amount } from 'src/lib/yupHelpers';
 import { FormEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
+import {
+  HcmDataQuery,
+  useHcmDataQuery,
+} from '../../Shared/HcmData/HCMData.generated';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
 import { calculateCompletionPercentage } from './calculateCompletionPercentage';
@@ -23,6 +27,8 @@ export type AdditionalSalaryRequestType = {
   toggleDrawer: () => void;
   setIsDrawerOpen: (open: boolean) => void;
   handleCancel: () => void;
+  hcmUser: HcmDataQuery['hcm'][0] | null;
+  hcmSpouse: HcmDataQuery['hcm'][1] | null;
 };
 
 const AdditionalSalaryRequestContext =
@@ -54,6 +60,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     FormEnum.AdditionalSalary,
   );
   const locale = useLocale();
+
+  const { data: hcmData } = useHcmDataQuery();
 
   const createCurrencyValidation = useCallback(
     (fieldName: string, max?: number) => {
@@ -192,6 +200,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       toggleDrawer,
       setIsDrawerOpen,
       handleCancel,
+      hcmUser: hcmData?.hcm?.[0] ?? null,
+      hcmSpouse: hcmData?.hcm?.[1] ?? null,
     }),
     [
       steps,
@@ -202,6 +212,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       handlePreviousStep,
       isDrawerOpen,
       toggleDrawer,
+      hcmData,
     ],
   );
 
