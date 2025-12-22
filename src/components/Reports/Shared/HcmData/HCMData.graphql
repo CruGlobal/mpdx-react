@@ -40,6 +40,17 @@ query HcmData {
       grossSalaryAmount
       lastRegularPaymentDate
       lastUpdated
+      peopleGroupSupportType
+      assignmentStatus
+      assignmentCategory
+      boardCapException
+      isInternational
+      maritalStatus
+    }
+    mhaRequest {
+      currentApprovedOverallAmount
+      currentApprovedAmountForStaff
+      lastUpdatedDate
     }
     exceptionSalaryCap {
       amount
@@ -60,6 +71,21 @@ query HcmData {
       currentApprovedOverallAmount
       currentTakenAmount
       lastUpdatedDate
+    yearToDate {
+      additionalSalaryPaymentsReceived
+      bonus
+      fourOThreeBLimit
+      fourOThreeBMakeUpLimitAmount
+      grossEarnings
+      lastRegularPaymentDate
+      postTaxFourOThreeBContributions
+      preTaxFourOThreeBContributions
+      rothFourOThreeBContributions
+      taxableDeductions
+    }
+    currentSalary {
+      grossSalaryAmount
+      lastUpdated
     }
   }
 }
