@@ -15,16 +15,13 @@ import { useFormatters } from './useFormatters';
 
 export const SalaryCapCard: React.FC = () => {
   const { t } = useTranslation();
-  const { hcm, calculation } = useSalaryCalculator();
+  const { hcmUser, hcmSpouse, calculation } = useSalaryCalculator();
   const { formatCurrency, formatPercentage, formatDecimal } = useFormatters();
 
-  const [self, spouse] = hcm ?? [];
   const calcs = calculation?.calculations;
   const spouseCalcs = calculation?.spouseCalculations;
 
-  const selfName = self && `${self.staffInfo.firstName}`;
-  const spouseName = spouse && `${spouse.staffInfo.firstName}`;
-  const hasSpouse = !!spouse && !!spouseCalcs;
+  const hasSpouse = !!hcmSpouse && !!spouseCalcs;
 
   if (!calcs) {
     return (
@@ -52,11 +49,11 @@ export const SalaryCapCard: React.FC = () => {
             <TableRow>
               <TableCell scope="col">{t('Category')}</TableCell>
               <TableCell align="right" scope="col">
-                {selfName}
+                {hcmUser?.staffInfo.firstName}
               </TableCell>
               {hasSpouse && (
                 <TableCell align="right" scope="col">
-                  {spouseName}
+                  {hcmSpouse?.staffInfo.firstName}
                 </TableCell>
               )}
             </TableRow>

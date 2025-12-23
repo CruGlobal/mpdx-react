@@ -15,14 +15,10 @@ import { useFormatters } from './useFormatters';
 
 export const SalarySummaryCard: React.FC = () => {
   const { t } = useTranslation();
-  const { hcm, calculation } = useSalaryCalculator();
+  const { hcmUser, hcmSpouse, calculation } = useSalaryCalculator();
   const { data: approvedData } = useApprovedSalaryCalculationQuery();
   const approvedCalculation = approvedData?.salaryRequest;
   const { formatCurrency, formatPercentage } = useFormatters();
-
-  const [self, spouse] = hcm ?? [];
-  const name = self?.staffInfo.firstName;
-  const spouseName = spouse?.staffInfo.firstName;
 
   return (
     <StepCard
@@ -38,7 +34,7 @@ export const SalarySummaryCard: React.FC = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell scope="col">{name}</TableCell>
+              <TableCell scope="col">{hcmUser?.staffInfo.firstName}</TableCell>
               <TableCell scope="col">{t('Old')}</TableCell>
               <TableCell scope="col">{t('New')}</TableCell>
             </TableRow>
@@ -62,16 +58,18 @@ export const SalarySummaryCard: React.FC = () => {
               <TableCell scope="row">{t('403(b) Contribution')}</TableCell>
               <TableCell>
                 {formatPercentage(
-                  (self?.fourOThreeB
+                  (hcmUser?.fourOThreeB
                     ?.currentTaxDeferredContributionPercentage ?? 0) +
-                    (self?.fourOThreeB?.currentRothContributionPercentage ?? 0),
+                    (hcmUser?.fourOThreeB?.currentRothContributionPercentage ??
+                      0),
                 )}
               </TableCell>
               <TableCell>
                 {formatPercentage(
-                  (self?.fourOThreeB
+                  (hcmUser?.fourOThreeB
                     ?.currentTaxDeferredContributionPercentage ?? 0) +
-                    (self?.fourOThreeB?.currentRothContributionPercentage ?? 0),
+                    (hcmUser?.fourOThreeB?.currentRothContributionPercentage ??
+                      0),
                 )}
               </TableCell>
             </TableRow>
@@ -85,11 +83,13 @@ export const SalarySummaryCard: React.FC = () => {
           </TableBody>
         </Table>
 
-        {spouse && (
+        {hcmSpouse && (
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell scope="col">{spouseName}</TableCell>
+                <TableCell scope="col">
+                  {hcmSpouse?.staffInfo.firstName}
+                </TableCell>
                 <TableCell scope="col">{t('Old')}</TableCell>
                 <TableCell scope="col">{t('New')}</TableCell>
               </TableRow>
@@ -117,18 +117,18 @@ export const SalarySummaryCard: React.FC = () => {
                 <TableCell scope="row">{t('403(b) Contribution')}</TableCell>
                 <TableCell>
                   {formatPercentage(
-                    (spouse.fourOThreeB
+                    (hcmSpouse.fourOThreeB
                       ?.currentTaxDeferredContributionPercentage ?? 0) +
-                      (spouse.fourOThreeB?.currentRothContributionPercentage ??
-                        0),
+                      (hcmSpouse.fourOThreeB
+                        ?.currentRothContributionPercentage ?? 0),
                   )}
                 </TableCell>
                 <TableCell>
                   {formatPercentage(
-                    (spouse.fourOThreeB
+                    (hcmSpouse.fourOThreeB
                       ?.currentTaxDeferredContributionPercentage ?? 0) +
-                      (spouse.fourOThreeB?.currentRothContributionPercentage ??
-                        0),
+                      (hcmSpouse.fourOThreeB
+                        ?.currentRothContributionPercentage ?? 0),
                   )}
                 </TableCell>
               </TableRow>

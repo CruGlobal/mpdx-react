@@ -17,14 +17,14 @@ import { StepCard } from '../Shared/StepCard';
 export const StaffInfoSummaryCard: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { hcm, calculation } = useSalaryCalculator();
+  const { hcmUser, hcmSpouse, calculation } = useSalaryCalculator();
   const { data: userData } = useGetUserQuery();
 
-  const [self, spouse] = hcm ?? [];
-
-  const name = self && `${self.staffInfo.firstName} ${self.staffInfo.lastName}`;
+  const name =
+    hcmUser && `${hcmUser.staffInfo.firstName} ${hcmUser.staffInfo.lastName}`;
   const spouseName =
-    spouse && `${spouse.staffInfo.firstName} ${spouse.staffInfo.lastName}`;
+    hcmSpouse &&
+    `${hcmSpouse.staffInfo.firstName} ${hcmSpouse.staffInfo.lastName}`;
   const fullNames = spouseName
     ? t('{{ name }} and {{ spouseName }}', { name, spouseName })
     : name;
@@ -53,13 +53,13 @@ export const StaffInfoSummaryCard: React.FC = () => {
             </TableRow>
             <TableRow>
               <TableCell scope="row">{t('Phone Number')}</TableCell>
-              <TableCell>{self?.staffInfo.primaryPhoneNumber}</TableCell>
+              <TableCell>{hcmUser?.staffInfo.primaryPhoneNumber}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell scope="row">{t('Email Address')}</TableCell>
               <TableCell>
-                <div>{self?.staffInfo.emailAddress}</div>
-                <div>{spouse?.staffInfo.emailAddress}</div>
+                <div>{hcmUser?.staffInfo.emailAddress}</div>
+                <div>{hcmSpouse?.staffInfo.emailAddress}</div>
               </TableCell>
             </TableRow>
             <TableRow>
