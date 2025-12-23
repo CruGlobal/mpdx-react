@@ -20,6 +20,9 @@ export const SalarySummaryCard: React.FC = () => {
   const approvedCalculation = approvedData?.salaryRequest;
   const { formatCurrency, formatPercentage } = useFormatters();
 
+  const calcs = calculation?.calculations;
+  const spouseCalcs = calculation?.spouseCalculations;
+
   return (
     <StepCard
       sx={{
@@ -58,18 +61,14 @@ export const SalarySummaryCard: React.FC = () => {
               <TableCell scope="row">{t('403(b) Contribution')}</TableCell>
               <TableCell>
                 {formatPercentage(
-                  (hcmUser?.fourOThreeB
-                    ?.currentTaxDeferredContributionPercentage ?? 0) +
-                    (hcmUser?.fourOThreeB?.currentRothContributionPercentage ??
-                      0),
+                  calcs ? calcs.contributing403bFraction * 100 : null,
                 )}
               </TableCell>
               <TableCell>
                 {formatPercentage(
-                  (hcmUser?.fourOThreeB
-                    ?.currentTaxDeferredContributionPercentage ?? 0) +
-                    (hcmUser?.fourOThreeB?.currentRothContributionPercentage ??
-                      0),
+                  spouseCalcs
+                    ? spouseCalcs.contributing403bFraction * 100
+                    : null,
                 )}
               </TableCell>
             </TableRow>
