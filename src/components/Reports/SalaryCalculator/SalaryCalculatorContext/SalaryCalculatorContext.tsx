@@ -36,6 +36,8 @@ export interface SalaryCalculatorContextType {
   toggleDrawer: () => void;
 
   hcm: HcmQuery['hcm'] | null;
+  hcmUser: HcmQuery['hcm'][number] | null;
+  hcmSpouse: HcmQuery['hcm'][number] | null;
   calculation: SalaryCalculationQuery['salaryRequest'] | null;
 }
 
@@ -104,6 +106,8 @@ export const SalaryCalculatorProvider: React.FC<
       setDrawerOpen,
       toggleDrawer,
       hcm: hcmData?.hcm ?? null,
+      hcmUser: hcmData?.hcm[0] ?? null,
+      hcmSpouse: hcmData?.hcm[1] ?? null,
       calculation: calculationData?.salaryRequest ?? null,
     }),
     [
