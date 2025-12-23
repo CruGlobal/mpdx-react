@@ -22,23 +22,6 @@ export const SalaryCapCard: React.FC = () => {
 
   const hasSpouse = !!hcmSpouse && !!spouseCalcs;
 
-  if (!calcs) {
-    return (
-      <StepCard>
-        <CardHeader title={t('Salary Cap Calculation')} />
-      </StepCard>
-    );
-  }
-
-  const subtotal5 =
-    (calcs.geographicAdjustment ?? 0) + (calcs.tenureAdjustment ?? 0);
-  const seca6 = subtotal5 * 0.22;
-  const spouseSubtotal5 = spouseCalcs
-    ? (spouseCalcs.geographicAdjustment ?? 0) +
-      (spouseCalcs.tenureAdjustment ?? 0)
-    : undefined;
-  const spouseSeca6 = spouseSubtotal5 ? spouseSubtotal5 * 0.22 : undefined;
-
   return (
     <StepCard>
       <CardHeader title={t('Salary Cap Calculation')} />
@@ -58,14 +41,14 @@ export const SalaryCapCard: React.FC = () => {
           <TableBody>
             <TableRow>
               <TableCell scope="row">1. {t('Annual Base')}</TableCell>
-              <TableCell>{formatCurrency(calcs.annualBase)}</TableCell>
+              <TableCell>{formatCurrency(calcs?.annualBase)}</TableCell>
               {hasSpouse && (
                 <TableCell>{formatCurrency(spouseCalcs?.annualBase)}</TableCell>
               )}
             </TableRow>
             <TableRow>
               <TableCell scope="row">2. {t('Additional Salary')}</TableCell>
-              <TableCell>{formatCurrency(calcs.additionalSalary)}</TableCell>
+              <TableCell>{formatCurrency(calcs?.additionalSalary)}</TableCell>
               {hasSpouse && (
                 <TableCell>
                   {formatCurrency(spouseCalcs?.additionalSalary)}
@@ -77,14 +60,14 @@ export const SalaryCapCard: React.FC = () => {
                 3. {t('Geographic Adjustment')}
                 <span className="explanation">
                   {t('City: {{city}}', {
-                    city: calculation.location ?? t('None of these'),
+                    city: calculation?.location ?? t('None of these'),
                   })}
                   <br />
                   {t('Line 2 x Geographic Cost of Living Factor')}
                 </span>
               </TableCell>
               <TableCell>
-                {formatCurrency(calcs.geographicAdjustment)}
+                {formatCurrency(calcs?.geographicAdjustment)}
               </TableCell>
               {hasSpouse && (
                 <TableCell>
@@ -94,7 +77,7 @@ export const SalaryCapCard: React.FC = () => {
             </TableRow>
             <TableRow>
               <TableCell scope="row">4. {t('Tenure')}</TableCell>
-              <TableCell>{formatCurrency(calcs.tenureAdjustment)}</TableCell>
+              <TableCell>{formatCurrency(calcs?.tenureAdjustment)}</TableCell>
               {hasSpouse && (
                 <TableCell>
                   {formatCurrency(spouseCalcs?.tenureAdjustment)}
@@ -106,7 +89,7 @@ export const SalaryCapCard: React.FC = () => {
                 5. {t('Subtotal')}
                 <span className="explanation">{t('Line 3 + Line 4')}</span>
               </TableCell>
-              <TableCell>{formatCurrency(calcs.oldSalaryCap)}</TableCell>
+              <TableCell>{formatCurrency(calcs?.oldSalaryCap)}</TableCell>
               {hasSpouse && (
                 <TableCell>
                   {formatCurrency(spouseCalcs.oldSalaryCap)}
@@ -118,13 +101,13 @@ export const SalaryCapCard: React.FC = () => {
                 6. {t('SECA')}
                 <span className="explanation">
                   {t('(If applicable) Line 5 x {{seca}}', {
-                    seca: formatDecimal(calcs.secaEstimatedFraction),
+                    seca: formatDecimal(calcs?.secaEstimatedFraction),
                   })}
                   <br />
                   {t('Includes tax on the social security')}
                 </span>
               </TableCell>
-              <TableCell>{formatCurrency(calcs.oldSecaAmount)}</TableCell>
+              <TableCell>{formatCurrency(calcs?.oldSecaAmount)}</TableCell>
               {hasSpouse && (
                 <TableCell>
                   {formatCurrency(spouseCalcs.oldSecaAmount)}
@@ -136,15 +119,9 @@ export const SalaryCapCard: React.FC = () => {
                 7. {t('Subtotal')}
                 <span className="explanation">{t('Line 5 + Line 6')}</span>
               </TableCell>
-              <TableCell>{formatCurrency(subtotal5 + seca6)}</TableCell>
+              <TableCell>{formatCurrency(calcs?.capWithSeca)}</TableCell>
               {hasSpouse && (
-                <TableCell>
-                  {formatCurrency(
-                    spouseSubtotal5 && spouseSeca6
-                      ? spouseSubtotal5 + spouseSeca6
-                      : undefined,
-                  )}
-                </TableCell>
+                <TableCell>{formatCurrency(spouseCalcs.capWithSeca)}</TableCell>
               )}
             </TableRow>
             <TableRow>
@@ -157,13 +134,13 @@ export const SalaryCapCard: React.FC = () => {
                 a. {t('403(b) Contribution Percentage')}
               </TableCell>
               <TableCell>
-                {calcs.contributing403bFraction
+                {calcs
                   ? formatPercentage(calcs.contributing403bFraction * 100)
                   : '-'}
               </TableCell>
               {hasSpouse && (
                 <TableCell>
-                  {spouseCalcs?.contributing403bFraction
+                  {spouseCalcs
                     ? formatPercentage(
                         spouseCalcs.contributing403bFraction * 100,
                       )
@@ -175,7 +152,7 @@ export const SalaryCapCard: React.FC = () => {
               <TableCell scope="row" className="sub-item">
                 b. {t('1.00 Minus 403(b) Percentage')}
               </TableCell>
-              <TableCell>{formatPercentage(calcs.non403bFraction)}</TableCell>
+              <TableCell>{formatPercentage(calcs?.non403bFraction)}</TableCell>
               {hasSpouse && (
                 <TableCell>
                   {formatPercentage(spouseCalcs.non403bFraction)}
@@ -191,8 +168,8 @@ export const SalaryCapCard: React.FC = () => {
                   {t(
                     'For a couple, the combined CAPs cannot exceed {{familyCap}}, with neither individual exceeding {{individualCap}}.',
                     {
-                      familyCap: formatCurrency(calcs.familyCap),
-                      individualCap: formatCurrency(calcs.individualCap),
+                      familyCap: formatCurrency(calcs?.familyCap),
+                      individualCap: formatCurrency(calcs?.individualCap),
                     },
                   )}
                 </span>
@@ -202,7 +179,7 @@ export const SalaryCapCard: React.FC = () => {
               <TableCell scope="row" className="sub-item">
                 a. {t('CAP')}
               </TableCell>
-              <TableCell>{formatCurrency(calcs.calculatedCap)}</TableCell>
+              <TableCell>{formatCurrency(calcs?.calculatedCap)}</TableCell>
               {hasSpouse && (
                 <TableCell>
                   {formatCurrency(spouseCalcs?.calculatedCap)}
