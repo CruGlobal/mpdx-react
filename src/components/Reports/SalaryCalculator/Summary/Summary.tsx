@@ -2,6 +2,7 @@ import NextLink from 'next/link';
 import { Link, Stack, Typography } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { SalaryCalculationCard } from './SalaryCalculationCard';
 import { SalaryCapCard } from './SalaryCapCard';
 import { SalarySummaryCard } from './SalarySummaryCard';
 import { StaffInfoSummaryCard } from './StaffInfoSummaryCard';
@@ -43,6 +44,7 @@ export const SummaryStep: React.FC = () => {
       <SalarySummaryCard />
       <StaffInfoSummaryCard />
       <SalaryCapCard />
+      <SalaryCalculationCard />
     </Stack>
   );
 };

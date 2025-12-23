@@ -9,15 +9,14 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 import { StepCard } from '../Shared/StepCard';
+import { useFormatters } from './useFormatters';
 
 export const SalaryCapCard: React.FC = () => {
   const { t } = useTranslation();
-  const locale = useLocale();
   const { hcm, calculation } = useSalaryCalculator();
+  const { formatCurrency, formatPercentage, formatDecimal } = useFormatters();
 
   const [self, spouse] = hcm ?? [];
   const calcs = calculation?.calculations;
@@ -26,22 +25,6 @@ export const SalaryCapCard: React.FC = () => {
   const selfName = self && `${self.staffInfo.firstName}`;
   const spouseName = spouse && `${spouse.staffInfo.firstName}`;
   const hasSpouse = !!spouse && !!spouseCalcs;
-
-  const formatCurrency = (value: number | null | undefined) =>
-    currencyFormat(value ?? 0, 'USD', locale, {
-      fractionDigits: 2,
-      showTrailingZeros: true,
-    });
-
-  const formatPercentage = (value: number | null | undefined) =>
-    percentageFormat((value ?? 0) / 100, locale, { fractionDigits: 2 });
-
-  const formatDecimal = (value: number) =>
-    new Intl.NumberFormat(locale, {
-      style: 'decimal',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(value);
 
   if (!calcs) {
     return (

@@ -8,27 +8,17 @@ import {
   TableRow,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import { useApprovedSalaryCalculationQuery } from '../SalaryCalculatorContext/SalaryCalculation.generated';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 import { StepCard } from '../Shared/StepCard';
+import { useFormatters } from './useFormatters';
 
 export const SalarySummaryCard: React.FC = () => {
   const { t } = useTranslation();
   const { hcm, calculation } = useSalaryCalculator();
   const { data: approvedData } = useApprovedSalaryCalculationQuery();
-  const locale = useLocale();
   const approvedCalculation = approvedData?.salaryRequest;
-
-  const formatCurrency = (value: number | null | undefined) =>
-    currencyFormat(value ?? 0, 'USD', locale, {
-      fractionDigits: 2,
-      showTrailingZeros: true,
-    });
-
-  const formatPercentage = (value: number | null | undefined) =>
-    percentageFormat((value ?? 0) / 100, locale, { fractionDigits: 2 });
+  const { formatCurrency, formatPercentage } = useFormatters();
 
   const [self, spouse] = hcm ?? [];
   const name = self?.staffInfo.firstName;
@@ -38,7 +28,7 @@ export const SalarySummaryCard: React.FC = () => {
     <StepCard
       sx={{
         '.MuiTableCell-head.MuiTableCell-root': {
-          // Make sure that both table's headers line up
+          // Make sure that both tables' headers line up
           width: '25%',
         },
       }}
