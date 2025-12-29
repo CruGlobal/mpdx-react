@@ -1,18 +1,34 @@
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { SalaryCalculatorTestWrapper } from '../SalaryCalculatorTestWrapper';
-import { MaxAllowableStep, MaxAllowableStepProps } from './MaxAllowableSection';
+import {
+  SalaryCalculatorTestWrapper,
+  SalaryCalculatorTestWrapperProps,
+} from '../SalaryCalculatorTestWrapper';
+import { MaxAllowableStep } from './MaxAllowableSection';
 
 const mutationSpy = jest.fn();
 
-const TestComponent: React.FC<MaxAllowableStepProps> = (props) => (
-  <SalaryCalculatorTestWrapper onCall={mutationSpy}>
-    <MaxAllowableStep {...props} />
+type TestComponentProps = Pick<
+  SalaryCalculatorTestWrapperProps,
+  'salaryRequestMock'
+>;
+
+const TestComponent: React.FC<TestComponentProps> = ({
+  salaryRequestMock = {
+    calculations: { calculatedCap: 75000 },
+    spouseCalculations: { calculatedCap: 75000 },
+  },
+}) => (
+  <SalaryCalculatorTestWrapper
+    salaryRequestMock={salaryRequestMock}
+    onCall={mutationSpy}
+  >
+    <MaxAllowableStep />
   </SalaryCalculatorTestWrapper>
 );
 
 describe('MaxAllowableSection', () => {
-  it('loads cap constants', async () => {
+  it('shows hard caps', async () => {
     const { findByText } = render(<TestComponent />);
 
     expect(
@@ -27,24 +43,21 @@ describe('MaxAllowableSection', () => {
     it('should render max allowable amounts', async () => {
       const { findByRole, getByRole } = render(
         <TestComponent
-          personalFactorsCap={50000}
-          spousePersonalFactorsCap={60000}
+          salaryRequestMock={{
+            calculations: { calculatedCap: 50000 },
+            spouseCalculations: { calculatedCap: 60000 },
+          }}
         />,
       );
 
-      expect(getByRole('cell', { name: '$50,000' })).toBeInTheDocument();
-      expect(await findByRole('cell', { name: '$60,000' })).toBeInTheDocument();
+      expect(await findByRole('cell', { name: '$50,000' })).toBeInTheDocument();
+      expect(getByRole('cell', { name: '$60,000' })).toBeInTheDocument();
     });
   });
 
   describe('when over combined cap', () => {
     it('should allow splitting max allowable amounts', async () => {
-      const { findByRole, getByRole } = render(
-        <TestComponent
-          personalFactorsCap={75000}
-          spousePersonalFactorsCap={75000}
-        />,
-      );
+      const { findByRole, getByRole } = render(<TestComponent />);
 
       userEvent.click(
         await findByRole('checkbox', {
@@ -71,12 +84,7 @@ describe('MaxAllowableSection', () => {
     });
 
     it('warns when input total exceeds the cap', async () => {
-      const { findByRole, getByRole } = render(
-        <TestComponent
-          personalFactorsCap={75000}
-          spousePersonalFactorsCap={75000}
-        />,
-      );
+      const { findByRole, getByRole } = render(<TestComponent />);
 
       userEvent.click(
         await findByRole('checkbox', { name: /Check if you prefer to split/ }),

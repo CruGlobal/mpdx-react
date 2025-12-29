@@ -1,5 +1,5 @@
-query HcmData($maritalStatus: MaritalStatusEnum!) {
-  hcm(maritalStatus: $maritalStatus) {
+query HcmData {
+  hcm {
     staffInfo {
       id
       personNumber
