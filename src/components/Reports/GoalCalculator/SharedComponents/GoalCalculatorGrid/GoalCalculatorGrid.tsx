@@ -450,19 +450,23 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
     },
   ];
 
+  const isNotSpecialIncome = categoryName !== t('Special Income');
+
   return (
     <GoalCalculatorSection
       title={categoryName}
       titleExtra={
         <ButtonGroup>
-          <Button
-            variant={directInput ? 'contained' : 'outlined'}
-            size="small"
-            onClick={() => handleDirectInputToggle(true)}
-            startIcon={<FunctionsIcon />}
-          >
-            {t('Lump Sum')}
-          </Button>
+          {isNotSpecialIncome && (
+            <Button
+              variant={directInput ? 'contained' : 'outlined'}
+              size="small"
+              onClick={() => handleDirectInputToggle(true)}
+              startIcon={<FunctionsIcon />}
+            >
+              {t('Lump Sum')}
+            </Button>
+          )}
           <Button
             size="small"
             variant={!directInput ? 'contained' : 'outlined'}
