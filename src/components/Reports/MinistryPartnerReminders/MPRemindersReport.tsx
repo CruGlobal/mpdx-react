@@ -54,7 +54,9 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
   const accountListId = useAccountListId();
   const { enqueueSnackbar } = useSnackbar();
 
-  const [updateMutation] = useUpdateMinistryPartnerRemindersMutation();
+  const [updateMutation] = useUpdateMinistryPartnerRemindersMutation({
+    refetchQueries: ['MinistryPartnerReminders'],
+  });
 
   const { data: designationAccountsData, loading: designationLoading } =
     useDesignationAccountsQuery({
@@ -86,7 +88,7 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
     const updates = Object.entries(values.status).map(([id, statusCd]) => {
       const reminder = reminders.find((r) => r.id === id);
       return {
-        rowId: reminder?.donorId ?? '',
+        rowId: reminder?.id ?? '',
         statusCd,
       };
     });
