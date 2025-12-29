@@ -1,0 +1,54 @@
+query AdditionalSalaryRequest($requestId: ID!) {
+  additionalSalaryRequest(id: $requestId) {
+    id
+    currentYearSalaryNotReceived
+    previousYearSalaryNotReceived
+    phoneNumber
+    status
+    feedback
+    createdAt
+    updatedAt
+    user {
+      id
+      firstName
+      lastName
+    }
+  }
+}
+
+query AdditionalSalaryRequests {
+  additionalSalaryRequests {
+    nodes {
+      id
+      personNumber
+      status
+      feedback
+      phoneNumber
+      currentYearSalaryNotReceived
+      previousYearSalaryNotReceived
+      additionalSalaryWithinMax
+      adoption
+      traditional403bContribution
+      roth403bContribution
+      counselingNonMedical
+      healthcareExpensesExceedingLimit
+      babysittingMinistryEvents
+      childrenMinistryTripExpenses
+      childrenCollegeEducation
+      movingExpense
+      seminary
+      housingDownPayment
+      autoPurchase
+      expensesNotApprovedWithin90Days
+      totalAdditionalSalaryRequested
+      deductTwelvePercent
+      traditional403bContributionRequested
+      usingSpouseSalary
+      user {
+        id
+        firstName
+        lastName
+      }
+    }
+  }
+}
