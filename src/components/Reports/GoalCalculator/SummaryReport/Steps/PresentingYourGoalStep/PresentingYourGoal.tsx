@@ -144,7 +144,7 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
         value: t('Campus Crusade for Christ, Inc.'),
       },
       {
-        label: t('Ministry Location'),
+        label: t('Ministry Team / Location'),
         value: goalCalculation?.ministryLocation ?? undefined,
       },
     ];

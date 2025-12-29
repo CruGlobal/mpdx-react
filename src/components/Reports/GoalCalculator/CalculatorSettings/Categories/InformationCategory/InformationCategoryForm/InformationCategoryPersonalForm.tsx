@@ -154,7 +154,7 @@ export const InformationCategoryPersonalForm: React.FC<
             <AutosaveTextField
               fieldName="ministryLocation"
               schema={schema}
-              label={t('Ministry Location')}
+              label={t('Ministry Team / Location')}
               helperText={t('For Presenting Your Goal report')}
             />
           </Grid>
