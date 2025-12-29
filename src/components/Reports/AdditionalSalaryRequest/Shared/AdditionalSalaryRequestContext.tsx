@@ -1,4 +1,5 @@
 import React, { createContext, useCallback, useMemo, useState } from 'react';
+import { ApolloError } from '@apollo/client';
 import { FormikProvider, useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -14,6 +15,11 @@ import {
 } from '../../Shared/HcmData/HCMData.generated';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
+import {
+  AdditionalSalaryRequestQuery,
+  AdditionalSalaryRequestsQuery,
+  useAdditionalSalaryRequestQuery,
+} from './AdditionalSalaryRequest.generated';
 import { calculateCompletionPercentage } from './calculateCompletionPercentage';
 
 export type AdditionalSalaryRequestType = {
@@ -29,6 +35,14 @@ export type AdditionalSalaryRequestType = {
   handleCancel: () => void;
   hcmUser: HcmDataQuery['hcm'][0] | null;
   hcmSpouse: HcmDataQuery['hcm'][1] | null;
+  requestData?: AdditionalSalaryRequestQuery['additionalSalaryRequest'] | null;
+  requestError?: ApolloError;
+
+  requestsData?:
+    | AdditionalSalaryRequestsQuery['additionalSalaryRequests']['nodes']
+    | null;
+  requestsError?: ApolloError;
+  requestId?: string;
 };
 
 const AdditionalSalaryRequestContext =
@@ -62,6 +76,17 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   const locale = useLocale();
 
   const { data: hcmData } = useHcmDataQuery();
+
+  const { data: requestsData, error: requestsError } =
+    useAdditionalSalaryRequestsQuery();
+
+  const requestId = 'c1a68821-5fb6-4e5e-b308-9263539af9d8';
+
+  const { data: requestData, error: requestError } =
+    useAdditionalSalaryRequestQuery({
+      variables: { requestId },
+      skip: !requestId,
+    });
 
   const createCurrencyValidation = useCallback(
     (fieldName: string, max?: number) => {
@@ -202,6 +227,11 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       handleCancel,
       hcmUser: hcmData?.hcm?.[0] ?? null,
       hcmSpouse: hcmData?.hcm?.[1] ?? null,
+      requestsData,
+      requestData,
+      requestsError,
+      requestError,
+      requestId,
     }),
     [
       steps,
@@ -213,6 +243,11 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       isDrawerOpen,
       toggleDrawer,
       hcmData,
+      requestsData,
+      requestData,
+      requestsError,
+      requestError,
+      requestId,
     ],
   );
 
