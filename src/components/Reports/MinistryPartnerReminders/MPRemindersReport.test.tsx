@@ -148,7 +148,9 @@ describe('MPRemindersReport', () => {
   });
 
   it('should render reminder data in table', async () => {
-    const { findAllByText, getAllByText } = render(<TestComponent />);
+    const { findAllByText, getAllByText, getByText } = render(
+      <TestComponent />,
+    );
 
     await waitFor(() => {
       expect(mutationSpy).toHaveGraphqlOperation('DesignationAccounts', {
@@ -164,10 +166,10 @@ describe('MPRemindersReport', () => {
     });
 
     const names = await findAllByText('Doe, John');
-    expect(names.length).toBeGreaterThan(0);
-    expect(getAllByText('Jan 15, 2023').length).toBeGreaterThan(0);
-    expect(getAllByText('Feb 15, 2023').length).toBeGreaterThan(0);
-    expect(getAllByText('Not Reminded').length).toBeGreaterThan(0);
+    expect(names).toHaveLength(2);
+    expect(getAllByText('Jan 15, 2023')).toHaveLength(2);
+    expect(getAllByText('Feb 15, 2023')).toHaveLength(2);
+    expect(getByText('Not Reminded')).toBeInTheDocument();
   });
 
   it('should call update mutation when changing reminder status and clicking save', async () => {

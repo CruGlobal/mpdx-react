@@ -2,7 +2,7 @@ import { FormControl, MenuItem, Select, SelectProps } from '@mui/material';
 import { MinistryPartnerReminderFrequencyEnum } from 'src/graphql/types.generated';
 import { getReminderStatus } from '../../Helper/getReminderStatus';
 
-type StatusSelectProps = Partial<SelectProps> & {
+type StatusSelectProps = Omit<SelectProps, 'value'> & {
   value: MinistryPartnerReminderFrequencyEnum;
 };
 

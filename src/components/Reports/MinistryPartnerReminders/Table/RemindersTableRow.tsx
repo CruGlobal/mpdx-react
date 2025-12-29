@@ -39,6 +39,7 @@ export const RemindersTableRow: React.FC<RemindersTableRowProps> = ({
           onChange={handleChange}
           onBlur={handleBlur}
           labelId="status-col"
+          aria-label={t('Reminder Status')}
         />
       </TableCell>
     </>
