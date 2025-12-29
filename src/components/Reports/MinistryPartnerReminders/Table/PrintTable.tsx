@@ -5,11 +5,13 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat } from 'src/lib/intlFormat';
 import { StyledTableRow } from '../../styledComponents';
+import { getReminderStatus } from '../Helper/getReminderStatus';
 import { ReminderData } from '../mockData';
 
 interface PrintTableProps {
@@ -34,10 +36,17 @@ export const PrintTable: React.FC<PrintTableProps> = ({ data }) => {
         <TableBody>
           {data.map((row) => (
             <StyledTableRow key={row.id}>
-              <TableCell>{row.partner}</TableCell>
+              <TableCell>
+                <Typography sx={{ fontSize: '14px' }}>{row.partner}</Typography>
+                <Typography sx={{ fontSize: '14px' }}>
+                  {row.partnerId
+                    ? t('({{partnerId}})', { partnerId: row.partnerId })
+                    : t('(N/A)')}
+                </Typography>
+              </TableCell>
               <TableCell>{dateFormat(row.lastGift, locale)}</TableCell>
               <TableCell>{dateFormat(row.lastReminder, locale)}</TableCell>
-              <TableCell>{t(row.status)}</TableCell>
+              <TableCell>{t(getReminderStatus(row.status))}</TableCell>
             </StyledTableRow>
           ))}
         </TableBody>

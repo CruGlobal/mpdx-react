@@ -19,6 +19,8 @@ import { EmptyTable } from '../../Shared/EmptyTable/EmptyTable';
 import { ReminderData } from '../mockData';
 import { RemindersTableRow } from './RemindersTableRow';
 
+const tableVirtuosoPadding = '62px';
+
 export type RowValues = {
   status: Record<string, MinistryPartnerReminderFrequencyEnum>;
 };
@@ -105,7 +107,7 @@ export const RemindersTable: React.FC<RemindersTableProps> = ({ data }) => {
       style={{
         height: isEmpty
           ? 390
-          : `calc(100vh - ${navBarHeight} - ${headerHeight} - 62px)`,
+          : `calc(100vh - ${navBarHeight} - ${headerHeight} - ${tableVirtuosoPadding})`,
         scrollbarWidth: 'none',
       }}
       components={TableComponents}

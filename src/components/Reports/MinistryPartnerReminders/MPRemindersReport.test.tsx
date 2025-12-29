@@ -4,6 +4,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
+import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { MinistryPartnerReminderFrequencyEnum } from 'src/graphql/types.generated';
@@ -72,26 +73,30 @@ jest.mock('notistack', () => ({
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
-    <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <SnackbarProvider>
-        <TestRouter router={router}>
-          <GqlMockedProvider<{
-            StaffAccount: StaffAccountQuery;
-            MinistryPartnerReminders: MinistryPartnerRemindersQuery;
-            DesignationAccounts: DesignationAccountsQuery;
-          }>
-            mocks={mocks}
-            onCall={mutationSpy}
-          >
-            <MPRemindersReport
-              isNavListOpen={true}
-              onNavListToggle={onNavListToggle}
-              title={title}
-            />
-          </GqlMockedProvider>
-        </TestRouter>
-      </SnackbarProvider>
-    </LocalizationProvider>
+    <VirtuosoMockContext.Provider
+      value={{ viewportHeight: 300, itemHeight: 100 }}
+    >
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <SnackbarProvider>
+          <TestRouter router={router}>
+            <GqlMockedProvider<{
+              StaffAccount: StaffAccountQuery;
+              MinistryPartnerReminders: MinistryPartnerRemindersQuery;
+              DesignationAccounts: DesignationAccountsQuery;
+            }>
+              mocks={mocks}
+              onCall={mutationSpy}
+            >
+              <MPRemindersReport
+                isNavListOpen={true}
+                onNavListToggle={onNavListToggle}
+                title={title}
+              />
+            </GqlMockedProvider>
+          </TestRouter>
+        </SnackbarProvider>
+      </LocalizationProvider>
+    </VirtuosoMockContext.Provider>
   </ThemeProvider>
 );
 
@@ -143,7 +148,9 @@ describe('MPRemindersReport', () => {
   });
 
   it('should render reminder data in table', async () => {
-    const { findByText, getByText } = render(<TestComponent />);
+    const { findAllByText, getAllByText, getByText } = render(
+      <TestComponent />,
+    );
 
     await waitFor(() => {
       expect(mutationSpy).toHaveGraphqlOperation('DesignationAccounts', {
@@ -158,9 +165,47 @@ describe('MPRemindersReport', () => {
       });
     });
 
-    expect(await findByText('Doe, John')).toBeInTheDocument();
-    expect(getByText('Jan 15, 2023')).toBeInTheDocument();
-    expect(getByText('Feb 15, 2023')).toBeInTheDocument();
+    const names = await findAllByText('Doe, John');
+    expect(names).toHaveLength(2);
+    expect(getAllByText('Jan 15, 2023')).toHaveLength(2);
+    expect(getAllByText('Feb 15, 2023')).toHaveLength(2);
     expect(getByText('Not Reminded')).toBeInTheDocument();
+  });
+
+  it('should call update mutation when changing reminder status and clicking save', async () => {
+    mutationSpy.mockClear();
+    const { findAllByText, getAllByRole, getByRole } = render(
+      <TestComponent />,
+    );
+
+    const names = await findAllByText('Doe, John');
+    expect(names.length).toBeGreaterThan(0);
+
+    const selects = getAllByRole('combobox', { name: /reminder status/i });
+    await userEvent.click(selects[0]);
+
+    const option = getByRole('option', { name: 'Monthly' });
+    await userEvent.click(option);
+
+    const saveButton = getByRole('button', { name: 'Save' });
+    await userEvent.click(saveButton);
+
+    await waitFor(() => {
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'UpdateMinistryPartnerReminders',
+        {
+          input: {
+            accountListId: 'account-list-1',
+            designationNumber: '09876',
+            updates: [
+              {
+                rowId: 'reminder1',
+                statusCd: MinistryPartnerReminderFrequencyEnum.Monthly,
+              },
+            ],
+          },
+        },
+      );
+    });
   });
 });
