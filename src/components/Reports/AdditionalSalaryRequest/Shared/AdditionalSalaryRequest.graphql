@@ -1,31 +1,30 @@
+fragment AdditionalSalaryRequestFields on AdditionalSalaryRequest {
+  id
+  currentYearSalaryNotReceived
+  previousYearSalaryNotReceived
+  phoneNumber
+  status
+  feedback
+  user {
+    id
+    firstName
+    lastName
+  }
+}
+
 query AdditionalSalaryRequest($requestId: ID!) {
   additionalSalaryRequest(id: $requestId) {
-    id
-    currentYearSalaryNotReceived
-    previousYearSalaryNotReceived
-    phoneNumber
-    status
-    feedback
+    ...AdditionalSalaryRequestFields
     createdAt
     updatedAt
-    user {
-      id
-      firstName
-      lastName
-    }
   }
 }
 
 query AdditionalSalaryRequests {
   additionalSalaryRequests {
     nodes {
-      id
+      ...AdditionalSalaryRequestFields
       personNumber
-      status
-      feedback
-      phoneNumber
-      currentYearSalaryNotReceived
-      previousYearSalaryNotReceived
       additionalSalaryWithinMax
       adoption
       traditional403bContribution
@@ -44,11 +43,6 @@ query AdditionalSalaryRequests {
       deductTwelvePercent
       traditional403bContributionRequested
       usingSpouseSalary
-      user {
-        id
-        firstName
-        lastName
-      }
     }
   }
 }
