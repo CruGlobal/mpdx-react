@@ -14,12 +14,12 @@ import {
   useHcmDataQuery,
 } from '../../Shared/HcmData/HCMData.generated';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
-import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
 import {
   AdditionalSalaryRequestQuery,
   AdditionalSalaryRequestsQuery,
   useAdditionalSalaryRequestQuery,
-} from './AdditionalSalaryRequest.generated';
+} from '../AdditionalSalaryRequest.generated';
+import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
 import { calculateCompletionPercentage } from './calculateCompletionPercentage';
 
 export type AdditionalSalaryRequestType = {
