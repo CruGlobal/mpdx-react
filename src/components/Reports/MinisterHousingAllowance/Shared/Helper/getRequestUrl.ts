@@ -7,7 +7,6 @@ export const getRequestUrl = (
     return '';
   }
 
-  return mode
-    ? `/accountLists/${accountListId}/reports/housingAllowance/${requestId}?mode=${mode}`
-    : `/accountLists/${accountListId}/reports/housingAllowance/${requestId}`;
+  const baseUrl = `/accountLists/${accountListId}/reports/housingAllowance/${requestId}`;
+  return mode ? `${baseUrl}?mode=${mode}` : baseUrl;
 };

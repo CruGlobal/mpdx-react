@@ -45,15 +45,13 @@ const HousingAllowanceRequestPage: React.FC = () => {
     }
   };
 
-  const type = getPageType(mode);
-  if (!type) {
+  const pageType = getPageType(mode);
+  if (!pageType) {
     return null;
   }
 
-  const modeLabel =
-    type === PageEnum.New ? 'New' : type === PageEnum.Edit ? 'Edit' : 'View';
   const title = t("{{mode}} Minister's Housing Allowance Request", {
-    mode: modeLabel,
+    mode: pageType,
   });
 
   const [isNavListOpen, setIsNavListOpen] = useState(false);
@@ -73,7 +71,7 @@ const HousingAllowanceRequestPage: React.FC = () => {
           leftPanel={
             <MultiPageMenu
               isOpen={isNavListOpen}
-              selectedId={'housingAllowance' + type}
+              selectedId={'housingAllowance' + pageType}
               onClose={handleNavListToggle}
               navType={NavTypeEnum.Reports}
             />
@@ -91,7 +89,7 @@ const HousingAllowanceRequestPage: React.FC = () => {
                 />
               </SimpleScreenOnly>
               <MinisterHousingAllowanceProvider
-                type={type}
+                type={pageType}
                 requestId={requestId as string}
               >
                 <RequestPage />

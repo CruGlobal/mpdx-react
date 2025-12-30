@@ -14,51 +14,28 @@ export function useStepList(formType: FormEnum, type?: PageEnum) {
 
   const [steps, setSteps] = useState<Steps[]>(() =>
     formType === FormEnum.MHA
-      ? isEdit
-        ? [
-            {
-              title: t('1. About this Form'),
-              current: true,
-              complete: true,
-            },
-            {
-              title: t('2. Rent or Own?'),
-              current: true,
-              complete: false,
-            },
-            {
-              title: t('3. Edit Your MHA'),
-              current: false,
-              complete: false,
-            },
-            {
-              title: t('4. Receipt'),
-              current: false,
-              complete: false,
-            },
-          ]
-        : [
-            {
-              title: t('1. About this Form'),
-              current: true,
-              complete: false,
-            },
-            {
-              title: t('2. Rent or Own?'),
-              current: false,
-              complete: false,
-            },
-            {
-              title: t('3. Calculate Your MHA'),
-              current: false,
-              complete: false,
-            },
-            {
-              title: t('4. Receipt'),
-              current: false,
-              complete: false,
-            },
-          ]
+      ? [
+          {
+            title: t('1. About this Form'),
+            current: isEdit ? false : true,
+            complete: isEdit ? true : false,
+          },
+          {
+            title: t('2. Rent or Own?'),
+            current: isEdit ? true : false,
+            complete: false,
+          },
+          {
+            title: isEdit ? t('3. Edit Your MHA') : t('3. Calculate Your MHA'),
+            current: false,
+            complete: false,
+          },
+          {
+            title: t('4. Receipt'),
+            current: false,
+            complete: false,
+          },
+        ]
       : formType === FormEnum.SalaryCalc
         ? [
             {

@@ -55,25 +55,17 @@ const TestComponent: React.FC<TestComponentProps> = ({
   type,
   contextValue,
 }) => {
-  if (contextValue) {
-    return (
-      <ThemeProvider theme={theme}>
-        <TestRouter>
-          <GqlMockedProvider<{
-            UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
-          }>
-            onCall={mutationSpy}
-          >
-            <MinisterHousingAllowanceContext.Provider
-              value={contextValue as ContextType}
-            >
-              <RequestPage />
-            </MinisterHousingAllowanceContext.Provider>
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>
-    );
-  }
+  const content = contextValue ? (
+    <MinisterHousingAllowanceContext.Provider
+      value={contextValue as ContextType}
+    >
+      <RequestPage />
+    </MinisterHousingAllowanceContext.Provider>
+  ) : (
+    <MinisterHousingAllowanceProvider type={type}>
+      <RequestPage />
+    </MinisterHousingAllowanceProvider>
+  );
 
   return (
     <ThemeProvider theme={theme}>
@@ -83,9 +75,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
         }>
           onCall={mutationSpy}
         >
-          <MinisterHousingAllowanceProvider type={type}>
-            <RequestPage />
-          </MinisterHousingAllowanceProvider>
+          {content}
         </GqlMockedProvider>
       </TestRouter>
     </ThemeProvider>
@@ -103,7 +93,7 @@ describe('RequestPage', () => {
   });
 
   describe('Edit Page', () => {
-    it('starts on step 2 and updates steps when Continue clicked', async () => {
+    it('starts on step 2 and updates steps when Continue clicked', () => {
       const { getByRole, getAllByRole, getByText, queryByTestId } = render(
         <TestComponent type={PageEnum.Edit} />,
       );
@@ -112,7 +102,7 @@ describe('RequestPage', () => {
       expect(queryByTestId('ArrowBackIcon')).toBeInTheDocument();
 
       const continueButton = getByRole('button', { name: 'Continue' });
-      await userEvent.click(continueButton);
+      userEvent.click(continueButton);
 
       const steps = getAllByRole('listitem');
 
@@ -131,7 +121,7 @@ describe('RequestPage', () => {
         within(thirdStep).getByTestId('RadioButtonUncheckedIcon'),
       ).toBeInTheDocument();
 
-      await userEvent.click(getByText('Back'));
+      userEvent.click(getByText('Back'));
 
       const updatedSteps = getAllByRole('listitem');
 
@@ -172,7 +162,7 @@ describe('RequestPage', () => {
       );
 
       const continueButton = getByRole('button', { name: 'Continue' });
-      await userEvent.click(continueButton);
+      userEvent.click(continueButton);
 
       expect(await findByRole('radio', { name: 'Rent' })).toBeChecked();
       expect(await findAllByRole('radio', { checked: true })).toHaveLength(1);
@@ -204,14 +194,14 @@ describe('RequestPage', () => {
       );
 
       const ownRadio = getByRole('radio', { name: 'Own' });
-      await userEvent.click(ownRadio);
+      userEvent.click(ownRadio);
       expect(ownRadio).not.toBeChecked();
 
       expect(
         getByText('Are you sure you want to change selection?'),
       ).toBeInTheDocument();
 
-      await userEvent.click(getByRole('button', { name: 'Yes, Continue' }));
+      userEvent.click(getByRole('button', { name: 'Yes, Continue' }));
 
       await waitFor(() =>
         expect(
@@ -233,7 +223,7 @@ describe('RequestPage', () => {
       expect(queryByTestId('ArrowBackIcon')).toBeInTheDocument();
 
       const continueButton = getByRole('button', { name: 'Continue' });
-      await userEvent.click(continueButton);
+      userEvent.click(continueButton);
 
       await waitFor(() => {
         expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '50');
@@ -260,7 +250,7 @@ describe('RequestPage', () => {
         ).toBeInTheDocument();
       });
 
-      await userEvent.click(getByText('Back'));
+      userEvent.click(getByText('Back'));
 
       const updatedSteps = getAllByRole('listitem');
 
@@ -331,7 +321,7 @@ describe('RequestPage', () => {
       expect(await findAllByRole('radio', { checked: false })).toHaveLength(2);
 
       const rentRadio = await findByRole('radio', { name: 'Rent' });
-      await userEvent.click(rentRadio);
+      userEvent.click(rentRadio);
 
       expect(await findAllByRole('radio', { checked: false })).toHaveLength(1);
       expect(rentRadio).toBeChecked();

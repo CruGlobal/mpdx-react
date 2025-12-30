@@ -31,7 +31,7 @@ export const MinisterHousingAllowanceReport = () => {
 
   const { data, error: requestsError } =
     useMinistryHousingAllowanceRequestsQuery();
-  const requestsData = data?.ministryHousingAllowanceRequests.nodes || [];
+  const requests = data?.ministryHousingAllowanceRequests.nodes ?? [];
 
   const {
     isMarried,
@@ -52,8 +52,6 @@ export const MinisterHousingAllowanceReport = () => {
   const personNumbers = isMarried
     ? `${personNumber} and ${spousePersonNumber}`
     : personNumber;
-
-  const requests = requestsData ?? [];
 
   const [createMHA] = useCreateHousingAllowanceRequestMutation();
 
