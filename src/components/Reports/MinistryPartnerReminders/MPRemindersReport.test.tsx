@@ -174,21 +174,19 @@ describe('MPRemindersReport', () => {
 
   it('should call update mutation when changing reminder status and clicking save', async () => {
     mutationSpy.mockClear();
-    const { findAllByText, getAllByRole, getByRole } = render(
-      <TestComponent />,
-    );
+    const { findAllByText, getByRole } = render(<TestComponent />);
 
     const names = await findAllByText('Doe, John');
     expect(names.length).toBeGreaterThan(0);
 
-    const selects = getAllByRole('combobox', { name: /reminder status/i });
-    await userEvent.click(selects[0]);
+    const select = getByRole('combobox', { name: /reminder status/i });
+    userEvent.click(select);
 
     const option = getByRole('option', { name: 'Monthly' });
-    await userEvent.click(option);
+    userEvent.click(option);
 
     const saveButton = getByRole('button', { name: 'Save' });
-    await userEvent.click(saveButton);
+    userEvent.click(saveButton);
 
     await waitFor(() => {
       expect(mutationSpy).toHaveGraphqlOperation(

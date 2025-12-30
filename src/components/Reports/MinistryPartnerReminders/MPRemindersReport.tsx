@@ -86,55 +86,51 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
 
   const handleSave = async (values: RowValues) => {
     const updates = Object.entries(values.status).map(([id, statusCd]) => {
-      const reminder = reminders.find((r) => r.id === id);
       return {
-        rowId: reminder?.id ?? '',
+        rowId: id,
         statusCd,
       };
     });
 
-    try {
-      await updateMutation({
-        variables: {
-          input: {
-            accountListId: accountListId ?? '',
-            designationNumber,
-            updates,
-          },
+    await updateMutation({
+      variables: {
+        input: {
+          accountListId: accountListId ?? '',
+          designationNumber,
+          updates,
         },
-      });
-
-      enqueueSnackbar(t('Changes saved'), { variant: 'success' });
-    } catch (error) {
-      enqueueSnackbar(t('Error saving changes'), { variant: 'error' });
-    }
+      },
+      onCompleted: () => {
+        enqueueSnackbar(t('Changes saved'), { variant: 'success' });
+      },
+      onError: () => {
+        enqueueSnackbar(t('Error saving changes'), { variant: 'error' });
+      },
+    });
   };
-
-  const sortedData = useMemo(
-    () => reminders.toSorted((a, b) => a.donorName.localeCompare(b.donorName)),
-    [reminders],
-  );
 
   const transformedData: ReminderData[] = useMemo(
     () =>
-      (sortedData ?? []).map((contact) => {
-        return {
-          ...contact,
-          id: contact.id,
-          partner: contact.donorName ?? '',
-          partnerId: contact.donorAccountNumber ?? '',
-          lastGift: contact.lastGiftDate
-            ? DateTime.fromISO(contact.lastGiftDate)
-            : null,
-          lastReminder: contact.lastReminderDate
-            ? DateTime.fromISO(contact.lastReminderDate)
-            : null,
-          status: contact.frequency
-            ? contact.frequency
-            : MinistryPartnerReminderFrequencyEnum.NotReminded,
-        };
-      }),
-    [sortedData],
+      reminders
+        .map((contact) => {
+          return {
+            ...contact,
+            id: contact.id,
+            partner: contact.donorName ?? '',
+            partnerId: contact.donorAccountNumber ?? '',
+            lastGift: contact.lastGiftDate
+              ? DateTime.fromISO(contact.lastGiftDate)
+              : null,
+            lastReminder: contact.lastReminderDate
+              ? DateTime.fromISO(contact.lastReminderDate)
+              : null,
+            status: contact.frequency
+              ? contact.frequency
+              : MinistryPartnerReminderFrequencyEnum.NotReminded,
+          };
+        })
+        .toSorted((a, b) => a.partner.localeCompare(b.partner)),
+    [reminders],
   );
 
   const initialValues = useMemo(
@@ -213,7 +209,7 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
                       <i>Reminder System</i> works and how it differs from the
                       Receipting System? Check out{' '}
                       <Link
-                        style={{
+                        sx={{
                           color: theme.palette.primary.main,
                           fontWeight: 'bold',
                         }}
