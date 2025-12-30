@@ -1,8 +1,7 @@
 import React from 'react';
-import { Box } from '@mui/material';
+import { Stack } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import theme from 'src/theme';
 import { PanelLayout } from '../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { useIconPanelItems } from '../Shared/CalculationReports/PanelLayout/useIconPanelItems';
 import { PanelTypeEnum } from '../Shared/CalculationReports/Shared/sharedTypes';
@@ -19,7 +18,7 @@ const MainContent: React.FC = () => {
     useSalaryCalculator();
 
   return (
-    <Box px={theme.spacing(3)}>
+    <Stack gap={4} maxWidth={800}>
       <CurrentStep />
       <StepNavigation
         onBack={handlePreviousStep}
@@ -27,7 +26,7 @@ const MainContent: React.FC = () => {
         isBackDisabled={currentIndex === 0}
         isContinueDisabled={currentIndex === steps.length - 1}
       />
-    </Box>
+    </Stack>
   );
 };
 

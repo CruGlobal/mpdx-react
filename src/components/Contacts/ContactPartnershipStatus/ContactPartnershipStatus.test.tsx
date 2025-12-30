@@ -16,12 +16,14 @@ const defaultStatus = StatusEnum.PartnerFinancial;
 interface TestComponentProps {
   pledgeAmount?: number | null;
   pledgeCurrency?: string | null;
+  pledgeReceived?: boolean;
   status?: StatusEnum;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   pledgeAmount = null,
   pledgeCurrency = null,
+  pledgeReceived = false,
   status = defaultStatus,
 }) => {
   return (
@@ -36,7 +38,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
                 pledgeAmount={pledgeAmount}
                 pledgeCurrency={pledgeCurrency}
                 pledgeFrequency={null}
-                pledgeReceived={false}
+                pledgeReceived={pledgeReceived}
                 status={status}
               />
             </ContactPanelProvider>
@@ -70,6 +72,16 @@ describe('ContactPartnershipStatus', () => {
         )?.value || '',
       ),
     ).toBeInTheDocument();
+  });
+
+  it('does not render pledgeReceived status when pledge received is true', () => {
+    const { queryByText } = render(<TestComponent pledgeReceived />);
+    expect(queryByText('Commitment Not Received')).not.toBeInTheDocument();
+  });
+
+  it('does render pledgeReceived status when pledge received is false', () => {
+    const { getByText } = render(<TestComponent />);
+    expect(getByText('Commitment Not Received')).toBeInTheDocument();
   });
 
   describe('pledge amount', () => {

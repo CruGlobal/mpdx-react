@@ -1,12 +1,16 @@
 import { ThemeProvider } from '@emotion/react';
 import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
+import { defaultsDeep } from 'lodash';
+import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { HcmQuery } from './SalaryCalculatorContext/Hcm.generated';
+import { SalaryCalculationQuery } from './SalaryCalculatorContext/SalaryCalculation.generated';
 import { SalaryCalculatorProvider } from './SalaryCalculatorContext/SalaryCalculatorContext';
 
-interface SalaryCalculatorTestWrapperProps {
+export interface SalaryCalculatorTestWrapperProps {
+  salaryRequestMock?: DeepPartial<SalaryCalculationQuery['salaryRequest']>;
   onCall?: MockLinkCallHandler;
   children?: React.ReactNode;
   hasSpouse?: boolean;
@@ -14,11 +18,12 @@ interface SalaryCalculatorTestWrapperProps {
 
 export const SalaryCalculatorTestWrapper: React.FC<
   SalaryCalculatorTestWrapperProps
-> = ({ onCall, children, hasSpouse = true }) => (
+> = ({ salaryRequestMock, onCall, children, hasSpouse = true }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
       <GqlMockedProvider<{
         Hcm: HcmQuery;
+        SalaryCalculation: SalaryCalculationQuery;
       }>
         mocks={{
           Hcm: {
@@ -38,6 +43,13 @@ export const SalaryCalculatorTestWrapper: React.FC<
                   currentTaxDeferredContributionPercentage: 5,
                   maximumContributionLimit: 45,
                 },
+                mhaRequest: {
+                  currentApprovedOverallAmount: 10000,
+                  currentApprovedAmountForStaff: 500,
+                },
+                exceptionSalaryCap: {
+                  amount: null,
+                },
               },
               ...(hasSpouse
                 ? [
@@ -52,10 +64,23 @@ export const SalaryCalculatorTestWrapper: React.FC<
                         currentTaxDeferredContributionPercentage: 8,
                         maximumContributionLimit: 47,
                       },
+                      mhaRequest: {
+                        currentApprovedOverallAmount: 12000,
+                        currentApprovedAmountForStaff: 800,
+                      },
                     },
                   ]
                 : []),
             ],
+          },
+          SalaryCalculation: {
+            salaryRequest: defaultsDeep(salaryRequestMock ?? {}, {
+              calculations: {
+                individualCap: 80000,
+                familyCap: 125000,
+                hardCap: 80000,
+              },
+            }),
           },
         }}
         onCall={onCall}

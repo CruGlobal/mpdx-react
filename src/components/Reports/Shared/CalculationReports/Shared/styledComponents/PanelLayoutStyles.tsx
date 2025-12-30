@@ -16,7 +16,7 @@ export const PrintableStack = styled(Stack)({
 });
 
 export const MainContent = styled('div')(({ theme }) => ({
-  paddingBlock: theme.spacing(4),
+  padding: theme.spacing(4),
   width: '100%',
   '@media screen': {
     height: `calc(100vh - ${navBarHeight} - ${multiPageHeaderHeight})`,

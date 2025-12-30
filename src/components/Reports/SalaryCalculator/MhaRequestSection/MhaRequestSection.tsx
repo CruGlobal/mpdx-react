@@ -1,0 +1,183 @@
+import React from 'react';
+import {
+  Box,
+  CardContent,
+  CardHeader,
+  LinearProgress,
+  TextField,
+  Typography,
+  styled,
+} from '@mui/material';
+import { useTheme } from '@mui/material/styles';
+import { Trans, useTranslation } from 'react-i18next';
+import { AutosaveTextField } from '../Autosave/AutosaveTextField';
+import { StepCard } from '../Shared/StepCard';
+import { useMhaRequestData } from './useMhaRequestData';
+
+const StyledNameHeadersBox = styled(Box)(({ theme }) => ({
+  display: 'grid',
+  gridTemplateColumns: '1fr 1fr',
+  gap: theme.spacing(2),
+  marginTop: theme.spacing(4),
+  marginBottom: theme.spacing(1),
+}));
+
+const StyledFieldGridBox = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'hasSpouse',
+})<{ hasSpouse?: boolean }>(({ theme, hasSpouse }) => ({
+  display: 'grid',
+  gridTemplateColumns: hasSpouse ? '1fr 1fr' : '1fr',
+  gap: theme.spacing(2),
+}));
+
+const StyledProgressHeaderBox = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: theme.spacing(1),
+}));
+
+const StyledRemainingBox = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginTop: theme.spacing(1),
+}));
+
+export const MhaRequestSection: React.FC = () => {
+  const { t } = useTranslation();
+  const theme = useTheme();
+  const {
+    hasSpouse,
+    schema,
+    totalRequestedMhaValue,
+    difference,
+    boardApprovedAmount,
+    progressPercentage,
+    currentApprovedAmountForStaff,
+    currentApprovedSpouseAmountForStaff,
+    self,
+    spouse,
+  } = useMhaRequestData();
+
+  return (
+    <StepCard>
+      <CardHeader title={t('MHA Request')} />
+      <CardContent>
+        <Typography
+          variant="body1"
+          sx={{ marginBottom: theme.spacing(3) }}
+          data-testid="board-approved-amount"
+        >
+          <strong>
+            {hasSpouse
+              ? t(
+                  'You may request up to your Board-approved MHA amount of {{boardApprovedAmount}} combined.',
+                  { boardApprovedAmount },
+                )
+              : t(
+                  'You may request up to your Board Approved MHA Amount of {{boardApprovedAmount}}.',
+                  { boardApprovedAmount },
+                )}
+          </strong>{' '}
+          {t(
+            'This is the amount you are approved for as of the effective date of this salary calculation.',
+          )}
+        </Typography>
+        <Typography variant="body1" sx={{ marginBottom: theme.spacing(3) }}>
+          <Trans t={t}>
+            Please enter the amount of your salary you would like to request as
+            MHA below. If you have a pending MHA Request for a new amount, it
+            will not apply to this salary calculation but you can submit a new
+            Salary Calculation Form after it is approved.
+          </Trans>
+        </Typography>
+
+        {hasSpouse && (
+          <StyledNameHeadersBox>
+            <Typography variant="subtitle1">
+              {self?.staffInfo.firstName}
+            </Typography>
+            <Typography variant="subtitle1">
+              {spouse?.staffInfo.firstName}
+            </Typography>
+          </StyledNameHeadersBox>
+        )}
+
+        <Box sx={{ marginBottom: theme.spacing(2) }}>
+          <StyledFieldGridBox hasSpouse={hasSpouse}>
+            <Box>
+              <TextField
+                label={t('Current MHA')}
+                size="small"
+                fullWidth
+                value={currentApprovedAmountForStaff}
+                disabled
+                inputProps={{ 'data-testid': 'current-mha-staff' }}
+              />
+            </Box>
+            {hasSpouse && (
+              <Box>
+                <TextField
+                  label={t('Current MHA')}
+                  size="small"
+                  fullWidth
+                  value={currentApprovedSpouseAmountForStaff}
+                  disabled
+                  inputProps={{ 'data-testid': 'current-mha-spouse' }}
+                />
+              </Box>
+            )}
+          </StyledFieldGridBox>
+        </Box>
+
+        <Box sx={{ marginBottom: theme.spacing(3) }}>
+          <StyledFieldGridBox hasSpouse={hasSpouse}>
+            <Box>
+              <AutosaveTextField
+                label={t('New Requested MHA')}
+                fieldName="mhaAmount"
+                schema={schema}
+                required
+              />
+            </Box>
+            {hasSpouse && (
+              <Box>
+                <AutosaveTextField
+                  label={t('New Requested MHA')}
+                  fieldName="spouseMhaAmount"
+                  schema={schema}
+                  required
+                />
+              </Box>
+            )}
+          </StyledFieldGridBox>
+        </Box>
+
+        <Box>
+          <StyledProgressHeaderBox>
+            <Typography variant="body2">
+              {hasSpouse ? t('Combined MHA Requested') : t('New MHA Requested')}
+            </Typography>
+            <Typography variant="body2">
+              {totalRequestedMhaValue} / {boardApprovedAmount}
+            </Typography>
+          </StyledProgressHeaderBox>
+          <LinearProgress
+            value={progressPercentage}
+            variant="determinate"
+            color="success"
+          />
+          <StyledRemainingBox>
+            <Typography variant="body2" color="textSecondary">
+              {t('Remaining in approved MHA Amount')}
+            </Typography>
+            <Typography variant="body2" color="textSecondary">
+              {difference}
+            </Typography>
+          </StyledRemainingBox>
+        </Box>
+      </CardContent>
+    </StepCard>
+  );
+};

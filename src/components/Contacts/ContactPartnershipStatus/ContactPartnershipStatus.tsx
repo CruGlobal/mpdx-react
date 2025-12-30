@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Hidden, Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { StatusEnum as ContactPartnershipStatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
@@ -8,7 +9,6 @@ import { currencyFormat } from 'src/lib/intlFormat';
 import { ContactRowFragment } from '../ContactRow/ContactRow.generated';
 import { ContactLateStatusLabel } from './ContactLateStatusLabel/ContactLateStatusLabel';
 import { ContactPartnershipStatusLabel } from './ContactPartnershipStatusLabel/ContactPartnershipStatusLabel';
-import { ContactPledgeReceivedIcon } from './ContactPledgeReceivedIcon/ContactPledgeReceivedIcon';
 
 interface ContactPartnershipStatusProps {
   lateAt: ContactRowFragment['lateAt'];
@@ -31,21 +31,13 @@ export const ContactPartnershipStatus: React.FC<
   pledgeReceived,
   status,
 }) => {
+  const { t } = useTranslation();
   const locale = useLocale();
   const { isOpen: contactPanelOpen } = useContactPanel();
   const { getLocalizedPledgeFrequency } = useLocalizedConstants();
 
   return (
-    <Box
-      display="flex"
-      alignItems="center"
-      justifyContent={contactPanelOpen ? 'flex-end' : undefined}
-    >
-      <Box display="flex" alignItems="center" width={32}>
-        {status === ContactPartnershipStatusEnum.PartnerFinancial && (
-          <ContactPledgeReceivedIcon pledgeReceived={pledgeReceived} />
-        )}
-      </Box>
+    <Box justifyContent={contactPanelOpen ? 'flex-end' : undefined}>
       <Hidden smDown>
         <Box display="flex" flexDirection="column" justifyContent="center">
           {status && <ContactPartnershipStatusLabel status={status} />}
@@ -62,6 +54,12 @@ export const ContactPartnershipStatus: React.FC<
               />
             )}
           </Typography>
+          {pledgeReceived === false &&
+            status === ContactPartnershipStatusEnum.PartnerFinancial && (
+              <Typography variant="body2" color="error">
+                {t('Commitment Not Received')}
+              </Typography>
+            )}
         </Box>
       </Hidden>
     </Box>
