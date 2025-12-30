@@ -125,7 +125,13 @@ export const InformationCategoryPersonalForm: React.FC<
               disabled={!data}
               size="small"
               renderInput={(params) => (
-                <TextField {...params} label={t('Geographic Location')} />
+                <TextField
+                  {...params}
+                  label={t('Geographic Location')}
+                  helperText={t(
+                    'Do you live within 50 miles of one of these major cities?',
+                  )}
+                />
               )}
             />
           </Grid>
