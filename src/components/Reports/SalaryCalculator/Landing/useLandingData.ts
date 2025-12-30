@@ -15,7 +15,7 @@ import { useLandingSalaryCalculationsQuery } from './NewSalaryCalculationLanding
 import { useStaffAccountIdQuery } from './StaffAccountId.generated';
 
 // TODO: Remove this function once the shared utility PR is merged
-// SC and SCO
+// SC, SCO, and NX
 // This logic will be moved to a shared utility function in another PR
 // Temporary implementation to check if user is full-time RMO
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
