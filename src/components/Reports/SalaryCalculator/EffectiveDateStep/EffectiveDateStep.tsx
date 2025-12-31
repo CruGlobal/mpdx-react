@@ -17,7 +17,23 @@ export const EffectiveDateStep: React.FC = () => {
       return false;
     }
 
-    const nextYear = DateTime.now().year + 1;
+    const now = DateTime.now();
+    const currentYear = DateTime.now().year;
+    const bannerStartDate = DateTime.fromObject({
+      year: currentYear,
+      month: 12,
+      day: 1,
+    });
+
+    /*
+     * Tentative until we find a better start date:
+     * Only show banner starting from December 1st
+     */
+    if (now < bannerStartDate) {
+      return false;
+    }
+
+    const nextYear = currentYear + 1;
     const hasNextYearDates = dateOptions.some((option) => {
       const date = DateTime.fromISO(option.value);
       return date.year === nextYear;

@@ -12,6 +12,17 @@ const TestComponent = () => (
 );
 
 describe('EffectiveDateBanner', () => {
+  beforeEach(() => {
+    const now = DateTime.fromObject({
+      year: DateTime.now().year,
+      month: 12,
+      day: 10,
+    }).toMillis();
+
+    // Mock Settings.now to return December 10th for tests
+    Settings.now = () => now;
+  });
+
   it('renders the banner message with this year and next year', async () => {
     const { findByTestId } = render(<TestComponent />);
 
