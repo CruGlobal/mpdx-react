@@ -12,9 +12,13 @@ import { PanelLayout } from '../Shared/CalculationReports/PanelLayout/PanelLayou
 import { PanelTypeEnum } from '../Shared/CalculationReports/Shared/sharedTypes';
 import { EligibleDisplay } from './MainPages/EligibleDisplay';
 import { IneligibleDisplay } from './MainPages/IneligibleDisplay';
-import { useCreateHousingAllowanceRequestMutation } from './MinisterHousingAllowance.generated';
+import {
+  useCreateHousingAllowanceRequestMutation,
+  useMinistryHousingAllowanceRequestsQuery,
+} from './MinisterHousingAllowance.generated';
 import { MinisterHousingAllowanceReportSkeleton } from './MinisterHousingAllowanceSkeleton';
 import { useMinisterHousingAllowance } from './Shared/Context/MinisterHousingAllowanceContext';
+import { getRequestUrl } from './Shared/Helper/getRequestUrl';
 import { CurrentBoardApproved } from './SharedComponents/CurrentBoardApproved';
 import { CurrentRequest } from './SharedComponents/CurrentRequest';
 
@@ -25,14 +29,16 @@ export const MinisterHousingAllowanceReport = () => {
   const { enqueueSnackbar } = useSnackbar();
   const accountListId = useAccountListId();
 
+  const { data, error: requestsError } =
+    useMinistryHousingAllowanceRequestsQuery();
+  const requests = data?.ministryHousingAllowanceRequests.nodes ?? [];
+
   const {
     isMarried,
     preferredName,
     spousePreferredName,
     userHcmData,
     spouseHcmData,
-    requestsData,
-    requestsError,
   } = useMinisterHousingAllowance();
 
   const personNumber = userHcmData?.staffInfo?.personNumber ?? '';
@@ -46,8 +52,6 @@ export const MinisterHousingAllowanceReport = () => {
   const personNumbers = isMarried
     ? `${personNumber} and ${spousePersonNumber}`
     : personNumber;
-
-  const requests = requestsData ?? [];
 
   const [createMHA] = useCreateHousingAllowanceRequestMutation();
 
@@ -65,7 +69,7 @@ export const MinisterHousingAllowanceReport = () => {
           },
         );
         const mhaRequestId = newRequest?.ministryHousingAllowanceRequest.id;
-        const requestLink = `/accountLists/${accountListId}/reports/housingAllowance/${mhaRequestId}/new`;
+        const requestLink = getRequestUrl(accountListId, mhaRequestId, 'new');
 
         // Wait 1 second before redirecting
         setTimeout(() => {

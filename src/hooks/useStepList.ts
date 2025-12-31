@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   FormEnum,
@@ -8,6 +8,7 @@ import { Steps } from '../components/Reports/Shared/CalculationReports/StepsList
 
 export function useStepList(formType: FormEnum, type?: PageEnum) {
   const { t } = useTranslation();
+  const isEdit = type === PageEnum.Edit;
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -16,19 +17,16 @@ export function useStepList(formType: FormEnum, type?: PageEnum) {
       ? [
           {
             title: t('1. About this Form'),
-            current: true,
-            complete: false,
+            current: isEdit ? false : true,
+            complete: isEdit ? true : false,
           },
           {
             title: t('2. Rent or Own?'),
-            current: false,
+            current: isEdit ? true : false,
             complete: false,
           },
           {
-            title:
-              type === PageEnum.New
-                ? t('3. Calculate Your MHA')
-                : t('3. Edit Your MHA'),
+            title: isEdit ? t('3. Edit Your MHA') : t('3. Calculate Your MHA'),
             current: false,
             complete: false,
           },
@@ -134,6 +132,12 @@ export function useStepList(formType: FormEnum, type?: PageEnum) {
     );
     setCurrentIndex(newIndex);
   }, [currentIndex, setSteps]);
+
+  useEffect(() => {
+    if (isEdit) {
+      nextStep();
+    }
+  }, [isEdit]);
 
   return {
     steps,
