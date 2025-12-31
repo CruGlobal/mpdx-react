@@ -175,7 +175,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
             {isMarried && (
               <TableRow>
                 <TableCell sx={{ fontSize: 20 }}>
-                  {spousePreferredName}
+                  {spousePreferredName ? spousePreferredName : 'N/A'}
                 </TableCell>
                 <TableCell>
                   <Grid container direction="column">
