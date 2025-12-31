@@ -1,14 +1,38 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Box, MenuItem, Typography } from '@mui/material';
+import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import theme from 'src/theme';
 import { AutosaveTextField } from '../Autosave/AutosaveTextField';
+import { EffectiveDateBanner } from './EffectiveDateBanner/EffectiveDateBanner';
 import { DateOption, useEffectiveDateOptions } from './useEffectiveDateOptions';
 
 export const EffectiveDateStep: React.FC = () => {
   const { t } = useTranslation();
   const dateOptions = useEffectiveDateOptions();
+
+  const shouldShowBanner = useMemo(() => {
+    if (dateOptions.length === 0) {
+      return false;
+    }
+
+    const nextYear = DateTime.now().year + 1;
+    const hasNextYearDates = dateOptions.some((option) => {
+      const date = DateTime.fromISO(option.value);
+      return date.year === nextYear;
+    });
+
+    return !hasNextYearDates;
+  }, [dateOptions]);
+
+  const [showAlert, setShowAlert] = React.useState(shouldShowBanner);
+
+  useEffect(() => {
+    if (shouldShowBanner) {
+      setShowAlert(true);
+    }
+  }, [shouldShowBanner]);
 
   const schema = useMemo(
     () =>
@@ -22,6 +46,7 @@ export const EffectiveDateStep: React.FC = () => {
 
   return (
     <Box py={theme.spacing(2)}>
+      {showAlert && <EffectiveDateBanner onClose={() => setShowAlert(false)} />}
       <Typography variant="h4" gutterBottom>
         {t('Effective Date')}
       </Typography>
