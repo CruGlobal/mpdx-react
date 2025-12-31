@@ -1,6 +1,7 @@
 query Hcm {
   hcm {
     staffInfo {
+      id
       firstName
       lastName
       city
@@ -8,9 +9,15 @@ query Hcm {
       tenure
       age
       dependentChildrenWithHealthcareBenefits
+      secaStatus
+      assignmentCategory
+      peopleGroupSupportType
+      userPersonType
+      assignmentStatus
     }
     currentSalary {
       grossSalaryAmount
+      lastUpdated
     }
     fourOThreeB {
       currentRothContributionPercentage

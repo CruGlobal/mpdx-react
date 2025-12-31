@@ -1,0 +1,18 @@
+query LandingSalaryCalculations {
+  inProgressCalculation: latestSalaryRequest(status: [IN_PROGRESS]) {
+    id
+  }
+  approvedCalculation: latestSalaryRequest(status: [APPROVED]) {
+    id
+    ...SalaryRequestFields
+  }
+}
+
+mutation CreateSalaryCalculation($input: SalaryRequestCreateMutationInput!) {
+  createSalaryRequest(input: $input) {
+    salaryRequest {
+      id
+      ...SalaryRequestFields
+    }
+  }
+}
