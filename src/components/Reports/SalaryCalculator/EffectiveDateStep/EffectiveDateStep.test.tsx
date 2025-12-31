@@ -86,15 +86,15 @@ describe('EffectiveDateStep', () => {
     expect(queryByTestId('effective-date-banner-text')).not.toBeInTheDocument();
   });
 
-  it('does not show the effective date banner before December 1st', async () => {
-    const beforeDecember = DateTime.fromObject({
+  it('does not show the effective date banner before November 15th', async () => {
+    const beforeNovember15 = DateTime.fromObject({
       year: currentYear,
       month: 11,
-      day: 25,
+      day: 10,
     }).toMillis();
 
-    // Mock Settings.now to return November 25th for this test
-    Settings.now = () => beforeDecember;
+    // Mock Settings.now to return November 10th for this test
+    Settings.now = () => beforeNovember15;
 
     const { queryByTestId } = render(<TestComponent />);
 

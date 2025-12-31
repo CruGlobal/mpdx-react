@@ -21,13 +21,13 @@ export const EffectiveDateStep: React.FC = () => {
     const currentYear = DateTime.now().year;
     const bannerStartDate = DateTime.fromObject({
       year: currentYear,
-      month: 12,
-      day: 1,
+      month: 11,
+      day: 15,
     });
 
     /*
      * Tentative until we find a better start date:
-     * Only show banner starting from December 1st
+     * Only show banner starting from November 15th
      */
     if (now < bannerStartDate) {
       return false;
