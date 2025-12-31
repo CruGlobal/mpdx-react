@@ -3,14 +3,19 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { Formik } from 'formik';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { mockData } from '../mockData';
-import { RemindersTable } from './RemindersTable';
+import { RemindersTable, RowValues } from './RemindersTable';
 
+const onSubmit = jest.fn();
 const mutationSpy = jest.fn();
-const mockFetchMore = jest.fn();
+
+const initialValues: RowValues = {
+  status: Object.fromEntries(mockData.map((row) => [row.id, row.status])),
+};
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
@@ -19,12 +24,9 @@ const TestComponent: React.FC = () => (
     >
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <GqlMockedProvider onCall={mutationSpy}>
-          <RemindersTable
-            data={mockData}
-            hasNextPage={true}
-            endCursor=""
-            fetchMore={mockFetchMore}
-          />
+          <Formik<RowValues> initialValues={initialValues} onSubmit={onSubmit}>
+            <RemindersTable data={mockData} />
+          </Formik>
         </GqlMockedProvider>
       </LocalizationProvider>
     </VirtuosoMockContext.Provider>
@@ -85,12 +87,7 @@ describe('RemindersTable', () => {
         >
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <GqlMockedProvider onCall={mutationSpy}>
-              <RemindersTable
-                data={[]}
-                hasNextPage={false}
-                endCursor=""
-                fetchMore={mockFetchMore}
-              />
+              <RemindersTable data={[]} />
             </GqlMockedProvider>
           </LocalizationProvider>
         </VirtuosoMockContext.Provider>

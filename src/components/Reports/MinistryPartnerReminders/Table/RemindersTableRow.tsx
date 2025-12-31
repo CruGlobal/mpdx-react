@@ -3,7 +3,6 @@ import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat } from 'src/lib/intlFormat';
-import { SimplePrintOnly, SimpleScreenOnly } from '../../styledComponents';
 import { ReminderData } from '../mockData';
 import { RowValues } from './RemindersTable';
 import { StatusSelect } from './StatusSelect/StatusSelect';
@@ -33,20 +32,16 @@ export const RemindersTableRow: React.FC<RemindersTableRowProps> = ({
       </TableCell>
       <TableCell>{dateFormat(lastGift, locale)}</TableCell>
       <TableCell>{dateFormat(lastReminder, locale)}</TableCell>
-      <SimpleScreenOnly>
-        <TableCell>
-          <StatusSelect
-            name={`status.${id}`}
-            value={values.status[id]}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            labelId="status-col"
-          />
-        </TableCell>
-      </SimpleScreenOnly>
-      <SimplePrintOnly>
-        <TableCell>{t(values.status[id])}</TableCell>
-      </SimplePrintOnly>
+      <TableCell>
+        <StatusSelect
+          name={`status.${id}`}
+          value={values.status[id]}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          labelId="status-col"
+          aria-label={t('Reminder Status')}
+        />
+      </TableCell>
     </>
   );
 };
