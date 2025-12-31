@@ -1,0 +1,36 @@
+import { render } from '@testing-library/react';
+import { DateTime, Settings } from 'luxon';
+import { SalaryCalculatorTestWrapper } from '../../SalaryCalculatorTestWrapper';
+import { EffectiveDateBanner } from './EffectiveDateBanner';
+
+const mutationSpy = jest.fn();
+
+const TestComponent = () => (
+  <SalaryCalculatorTestWrapper>
+    <EffectiveDateBanner onClose={mutationSpy} />
+  </SalaryCalculatorTestWrapper>
+);
+
+describe('EffectiveDateBanner', () => {
+  it('renders the banner message with this year and next year', async () => {
+    const { findByTestId } = render(<TestComponent />);
+
+    const thisYear = DateTime.fromMillis(Settings.now()).year;
+    const nextYear = thisYear + 1;
+
+    expect(await findByTestId('effective-date-banner-text')).toHaveTextContent(
+      thisYear.toString(),
+    );
+    expect(await findByTestId('effective-date-banner-text')).toHaveTextContent(
+      nextYear.toString(),
+    );
+  });
+
+  it('calls onClose when the close button is clicked', async () => {
+    const { findByRole } = render(<TestComponent />);
+
+    (await findByRole('button')).click();
+
+    expect(mutationSpy).toHaveBeenCalled();
+  });
+});
