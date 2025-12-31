@@ -56,25 +56,23 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
       return;
     }
 
-    try {
-      const result = await duplicateMHA({
-        variables: {
-          input: {
-            requestId: requestId,
-          },
+    const result = await duplicateMHA({
+      variables: {
+        input: {
+          requestId: requestId,
         },
-      });
+      },
+    });
 
-      const newRequestId =
-        result.data?.duplicateMinistryHousingAllowanceRequest
-          ?.ministryHousingAllowanceRequest?.id;
+    const newRequestId =
+      result.data?.duplicateMinistryHousingAllowanceRequest
+        ?.ministryHousingAllowanceRequest.id;
 
-      if (newRequestId) {
-        router.push(
-          `/accountLists/${accountListId}/reports/housingAllowance/${newRequestId}/edit`,
-        );
-      }
-    } catch (error) {}
+    if (newRequestId) {
+      router.push(
+        `/accountLists/${accountListId}/reports/housingAllowance/${newRequestId}/edit`,
+      );
+    }
   };
 
   return (
@@ -103,14 +101,14 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
         >
           <TableHead>
             <TableRow sx={{ backgroundColor: 'grey.100' }}>
-              <TableCell sx={{ fontSize: 16 }}>
-                <b>{t('Spouse')}</b>
+              <TableCell sx={{ fontSize: 16, fontWeight: 'bold' }}>
+                {t('Spouse')}
               </TableCell>
-              <TableCell sx={{ fontSize: 16 }}>
-                <b>{t('MHA Approved by Board')}</b>
+              <TableCell sx={{ fontSize: 16, fontWeight: 'bold' }}>
+                {t('MHA Approved by Board')}
               </TableCell>
-              <TableCell sx={{ fontSize: 16 }}>
-                <b>{t('MHA Claimed in Salary')}</b>
+              <TableCell sx={{ fontSize: 16, fontWeight: 'bold' }}>
+                {t('MHA Claimed in Salary')}
               </TableCell>
             </TableRow>
           </TableHead>

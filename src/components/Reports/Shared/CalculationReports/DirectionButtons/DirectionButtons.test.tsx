@@ -79,7 +79,7 @@ describe('DirectionButtons', () => {
   it('calls handleNext when Continue is clicked', async () => {
     const { findByRole } = render(<TestComponent />);
 
-    await userEvent.click(await findByRole('button', { name: 'Continue' }));
+    userEvent.click(await findByRole('button', { name: 'Continue' }));
 
     expect(handleNextStep).toHaveBeenCalled();
   });
@@ -89,7 +89,7 @@ describe('DirectionButtons', () => {
       <TestComponent overrideNext={overrideNext} />,
     );
 
-    await userEvent.click(await findByRole('button', { name: 'Continue' }));
+    userEvent.click(await findByRole('button', { name: 'Continue' }));
 
     expect(handleNextStep).not.toHaveBeenCalled();
     expect(overrideNext).toHaveBeenCalled();
@@ -98,7 +98,7 @@ describe('DirectionButtons', () => {
   it('calls handlePreviousStep when Back is clicked', async () => {
     const { findByRole } = render(<TestComponent showBackButton={true} />);
 
-    await userEvent.click(await findByRole('button', { name: /back/i }));
+    userEvent.click(await findByRole('button', { name: /back/i }));
 
     expect(handlePreviousStep).toHaveBeenCalled();
   });

@@ -71,19 +71,19 @@ describe('MinisterHousingAllowanceContext', () => {
     expect(getByTestId('currentIndex')).toHaveTextContent('0');
     expect(getByTestId('percentComplete')).toHaveTextContent('25');
 
-    await userEvent.click(getByRole('button', { name: 'Next' }));
+    userEvent.click(getByRole('button', { name: 'Next' }));
     expect(getByTestId('currentIndex')).toHaveTextContent('1');
     expect(getByTestId('percentComplete')).toHaveTextContent('50');
 
-    await userEvent.click(getByRole('button', { name: 'Next' }));
+    userEvent.click(getByRole('button', { name: 'Next' }));
     expect(getByTestId('currentIndex')).toHaveTextContent('2');
     expect(getByTestId('percentComplete')).toHaveTextContent('75');
 
-    await userEvent.click(getByRole('button', { name: 'Next' }));
+    userEvent.click(getByRole('button', { name: 'Next' }));
     expect(getByTestId('currentIndex')).toHaveTextContent('3');
     expect(getByTestId('percentComplete')).toHaveTextContent('100');
 
-    await userEvent.click(getByRole('button', { name: 'Previous' }));
+    userEvent.click(getByRole('button', { name: 'Previous' }));
     expect(getByTestId('currentIndex')).toHaveTextContent('2');
     expect(getByTestId('percentComplete')).toHaveTextContent('75');
   });
@@ -97,19 +97,19 @@ describe('MinisterHousingAllowanceContext', () => {
     expect(getByTestId('currentIndex')).toHaveTextContent('0');
     expect(getByTestId('percentComplete')).toHaveTextContent('25');
 
-    await userEvent.click(getByRole('button', { name: 'Next' }));
+    userEvent.click(getByRole('button', { name: 'Next' }));
     expect(getByTestId('currentIndex')).toHaveTextContent('1');
     expect(getByTestId('percentComplete')).toHaveTextContent('50');
 
-    await userEvent.click(getByRole('button', { name: 'Next' }));
+    userEvent.click(getByRole('button', { name: 'Next' }));
     expect(getByTestId('currentIndex')).toHaveTextContent('2');
     expect(getByTestId('percentComplete')).toHaveTextContent('75');
 
-    await userEvent.click(getByRole('button', { name: 'Next' }));
+    userEvent.click(getByRole('button', { name: 'Next' }));
     expect(getByTestId('currentIndex')).toHaveTextContent('3');
     expect(getByTestId('percentComplete')).toHaveTextContent('100');
 
-    await userEvent.click(getByRole('button', { name: 'Previous' }));
+    userEvent.click(getByRole('button', { name: 'Previous' }));
     expect(getByTestId('currentIndex')).toHaveTextContent('2');
     expect(getByTestId('percentComplete')).toHaveTextContent('75');
 

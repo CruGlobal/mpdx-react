@@ -136,7 +136,7 @@ describe('useStepList', () => {
     expect(result.current.percentComplete).toBe(25);
 
     act(() => {
-      result.current.nextStep();
+      result.current.handleNextStep();
     });
     expect(result.current.currentIndex).toBe(1);
     expect(result.current.percentComplete).toBe(50);
@@ -164,7 +164,7 @@ describe('useStepList', () => {
     ]);
 
     act(() => {
-      result.current.nextStep();
+      result.current.handleNextStep();
     });
     expect(result.current.currentIndex).toBe(2);
     expect(result.current.percentComplete).toBe(75);
@@ -192,7 +192,7 @@ describe('useStepList', () => {
     ]);
 
     act(() => {
-      result.current.previousStep();
+      result.current.handlePreviousStep();
     });
     expect(result.current.currentIndex).toBe(1);
     expect(result.current.percentComplete).toBe(50);
@@ -220,7 +220,7 @@ describe('useStepList', () => {
     ]);
 
     act(() => {
-      result.current.previousStep();
+      result.current.handlePreviousStep();
     });
     expect(result.current.currentIndex).toBe(0);
     expect(result.current.percentComplete).toBe(25);

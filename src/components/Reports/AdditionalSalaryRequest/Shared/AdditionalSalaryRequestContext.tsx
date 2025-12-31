@@ -46,9 +46,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   initialValues: providedInitialValues,
 }) => {
   const { t } = useTranslation();
-  const { steps, nextStep, previousStep, currentIndex } = useStepList(
-    FormEnum.AdditionalSalary,
-  );
+  const { steps, handleNextStep, handlePreviousStep, currentIndex } =
+    useStepList(FormEnum.AdditionalSalary);
   const locale = useLocale();
 
   const createCurrencyValidation = useCallback(
@@ -140,9 +139,9 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   const handleSubmit = useCallback(
     (_values: CompleteFormValues) => {
       //TODO: Submit form values
-      nextStep();
+      handleNextStep();
     },
-    [nextStep],
+    [handleNextStep],
   );
 
   const formik = useFormik<CompleteFormValues>({
@@ -162,8 +161,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       steps,
       currentIndex,
       percentComplete,
-      handleNextStep: nextStep,
-      handlePreviousStep: previousStep,
+      handleNextStep,
+      handlePreviousStep,
       isDrawerOpen,
       toggleDrawer,
       setIsDrawerOpen,
@@ -173,8 +172,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       steps,
       currentIndex,
       percentComplete,
-      nextStep,
-      previousStep,
+      handleNextStep,
+      handlePreviousStep,
       isDrawerOpen,
       toggleDrawer,
       setIsDrawerOpen,

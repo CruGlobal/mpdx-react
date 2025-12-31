@@ -134,19 +134,19 @@ describe('Calculation', () => {
     });
     const input = within(row).getByPlaceholderText(/\$0/i);
 
-    await userEvent.type(input, '100');
+    userEvent.type(input, '100');
     expect(input).toHaveValue('100');
-    await userEvent.clear(input);
+    userEvent.clear(input);
     expect(input).toHaveValue('');
 
     input.focus();
-    await userEvent.tab();
+    userEvent.tab();
 
     expect(await findByText('Required field.')).toBeInTheDocument();
 
     const submitButton = getByRole('button', { name: /submit/i });
 
-    await userEvent.click(submitButton);
+    userEvent.click(submitButton);
 
     expect(await findByRole('alert')).toBeInTheDocument();
     expect(
@@ -169,7 +169,7 @@ describe('Calculation', () => {
 
     const submitButton = await findByRole('button', { name: /submit/i });
 
-    await userEvent.click(submitButton);
+    userEvent.click(submitButton);
 
     expect(
       await findByText('This box must be checked to continue.'),
@@ -209,20 +209,20 @@ describe('Calculation', () => {
     expect(phone).toHaveValue('1234567890');
     expect(email).toHaveValue('john.doe@cru.org');
 
-    await userEvent.clear(phone);
-    await userEvent.tab();
+    userEvent.clear(phone);
+    userEvent.tab();
     expect(await findByText('Phone Number is required.')).toBeInTheDocument();
 
-    await userEvent.clear(email);
-    await userEvent.tab();
+    userEvent.clear(email);
+    userEvent.tab();
     expect(await findByText('Email is required.')).toBeInTheDocument();
 
-    await userEvent.type(phone, 'abc');
-    await userEvent.tab();
-    expect(await findByText('Invalid phone number')).toBeInTheDocument();
+    userEvent.type(phone, 'abc');
+    userEvent.tab();
+    expect(await findByText('Invalid phone number.')).toBeInTheDocument();
 
-    await userEvent.type(email, 'invalid-email');
-    await userEvent.tab();
+    userEvent.type(email, 'invalid-email');
+    userEvent.tab();
     expect(await findByText('Invalid email address.')).toBeInTheDocument();
   });
 
@@ -250,10 +250,10 @@ describe('Calculation', () => {
     });
     const input = within(row).getByPlaceholderText(/\$0/i);
 
-    await userEvent.type(input, '0');
+    userEvent.type(input, '0');
 
     input.focus();
-    await userEvent.tab();
+    userEvent.tab();
 
     expect(input).toHaveValue('$0.00');
 
@@ -312,21 +312,20 @@ describe('Calculation', () => {
     });
     const input5 = within(row5).getByPlaceholderText(/\$0/i);
 
-    await userEvent.type(input1, '1000');
-    await userEvent.type(input2, '200');
-    await userEvent.type(input3, '300');
-    await userEvent.type(input4, '400');
-    await userEvent.type(input5, '500');
+    userEvent.type(input1, '1000');
+    userEvent.type(input2, '200');
+    userEvent.type(input3, '300');
+    userEvent.type(input4, '400');
+    userEvent.type(input5, '500');
 
     const checkbox = getByRole('checkbox', {
       name: /i understand that my approved/i,
     });
-    await userEvent.click(checkbox);
+    userEvent.click(checkbox);
 
     const submitButton = getByRole('button', { name: /submit/i });
 
-    await userEvent.click(submitButton);
-
+    userEvent.click(submitButton);
     expect(await findByRole('dialog')).toBeInTheDocument();
 
     expect(
@@ -347,7 +346,7 @@ describe('Calculation', () => {
 
     const confirmButton = getByRole('button', { name: /yes, continue/i });
 
-    await userEvent.click(confirmButton);
+    userEvent.click(confirmButton);
 
     await waitFor(() => {
       expect(mutationSpy).toHaveBeenCalledTimes(6);
@@ -417,7 +416,7 @@ describe('Calculation', () => {
     });
     expect(checkbox).not.toBeChecked();
 
-    await userEvent.click(checkbox);
+    userEvent.click(checkbox);
     expect(checkbox).toBeChecked();
 
     await waitFor(() =>

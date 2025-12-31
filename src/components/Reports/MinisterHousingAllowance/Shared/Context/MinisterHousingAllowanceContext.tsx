@@ -101,8 +101,8 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   const pageType = type;
   const {
     steps: initialSteps,
-    nextStep,
-    previousStep,
+    handleNextStep,
+    handlePreviousStep,
     currentIndex,
     percentComplete,
   } = useStepList(FormEnum.MHA, type);
@@ -162,8 +162,8 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       steps,
       currentIndex,
       percentComplete,
-      handleNextStep: nextStep,
-      handlePreviousStep: previousStep,
+      handleNextStep,
+      handlePreviousStep,
       pageType,
       hasCalcValues,
       setHasCalcValues,
@@ -187,8 +187,8 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       steps,
       currentIndex,
       percentComplete,
-      nextStep,
-      previousStep,
+      handleNextStep,
+      handlePreviousStep,
       pageType,
       hasCalcValues,
       setHasCalcValues,
