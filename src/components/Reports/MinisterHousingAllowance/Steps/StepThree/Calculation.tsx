@@ -18,6 +18,7 @@ import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import Loading from 'src/components/Loading';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import {
   SimpleScreenOnly,
@@ -141,6 +142,7 @@ export const Calculation: React.FC<CalculationProps> = ({
     setIsPrint,
     isPrint,
     requestData,
+    loading,
     updateMutation,
     userHcmData,
   } = useMinisterHousingAllowance();
@@ -220,6 +222,10 @@ export const Calculation: React.FC<CalculationProps> = ({
   }, [print, setIsPrint]);
 
   const schema = getValidationSchema(rentOrOwn);
+
+  if (loading) {
+    return <Loading loading={loading} />;
+  }
 
   return (
     <Formik<CalculationFormValues>

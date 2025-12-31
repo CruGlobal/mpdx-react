@@ -2,6 +2,7 @@ import { Container, Stack } from '@mui/material';
 import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import Loading from 'src/components/Loading/Loading';
 import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import i18n from 'src/lib/i18n';
@@ -45,6 +46,7 @@ export const RequestPage: React.FC = () => {
     currentIndex,
     setIsComplete,
     requestData,
+    loading,
   } = useMinisterHousingAllowance();
 
   const request = requestData?.requestAttributes;
@@ -63,12 +65,18 @@ export const RequestPage: React.FC = () => {
   const availableDate = mocks[4].mhaDetails.staffMHA?.availableDate ?? '';
   const deadlineDate = mocks[4].mhaDetails.staffMHA?.deadlineDate ?? '';
 
+  const iconPanelItems = useIconPanelItems(isDrawerOpen, toggleDrawer);
+
+  if (loading) {
+    return <Loading loading={loading} />;
+  }
+
   return isView ? (
     <PanelLayout
       panelType={PanelTypeEnum.Empty}
       sidebarTitle={t('Your MHA')}
       percentComplete={0}
-      backHref=""
+      backHref={`/accountLists/${accountListId}/reports/housingAllowance`}
       mainContent={
         <Container sx={{ ml: 5 }}>
           <Stack direction="column" width={mainContentWidth}>
@@ -87,7 +95,7 @@ export const RequestPage: React.FC = () => {
   ) : (
     <PanelLayout
       panelType={PanelTypeEnum.Other}
-      icons={useIconPanelItems(isDrawerOpen, toggleDrawer)}
+      icons={iconPanelItems}
       percentComplete={percentComplete}
       currentIndex={currentIndex}
       steps={steps}

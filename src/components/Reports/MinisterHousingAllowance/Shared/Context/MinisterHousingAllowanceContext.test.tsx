@@ -113,11 +113,11 @@ describe('MinisterHousingAllowanceContext', () => {
     expect(getByTestId('currentIndex')).toHaveTextContent('2');
     expect(getByTestId('percentComplete')).toHaveTextContent('75');
 
-    await userEvent.click(getByRole('button', { name: 'Previous' }));
+    userEvent.click(getByRole('button', { name: 'Previous' }));
     expect(getByTestId('currentIndex')).toHaveTextContent('1');
     expect(getByTestId('percentComplete')).toHaveTextContent('50');
 
-    await userEvent.click(getByRole('button', { name: 'Previous' }));
+    userEvent.click(getByRole('button', { name: 'Previous' }));
     expect(getByTestId('currentIndex')).toHaveTextContent('0');
     expect(getByTestId('percentComplete')).toHaveTextContent('25');
   });

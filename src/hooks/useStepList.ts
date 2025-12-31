@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   FormEnum,
@@ -10,7 +10,7 @@ export function useStepList(formType: FormEnum, type?: PageEnum) {
   const { t } = useTranslation();
   const isEdit = type === PageEnum.Edit;
 
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(() => (isEdit ? 1 : 0));
 
   const [steps, setSteps] = useState<Steps[]>(() =>
     formType === FormEnum.MHA
@@ -135,12 +135,6 @@ export function useStepList(formType: FormEnum, type?: PageEnum) {
     );
     setCurrentIndex(newIndex);
   }, [currentIndex]);
-
-  useEffect(() => {
-    if (isEdit) {
-      nextStep();
-    }
-  }, [isEdit]);
 
   return {
     steps,

@@ -53,6 +53,7 @@ export type ContextType = {
     | MinistryHousingAllowanceRequestQuery['ministryHousingAllowanceRequest']
     | null;
   requestError?: ApolloError;
+  loading?: boolean;
   requestId?: string;
 
   updateMutation: ReturnType<
@@ -84,13 +85,16 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   type,
   children,
 }) => {
-  const { data: requestData, error: requestError } =
-    useMinistryHousingAllowanceRequestQuery({
-      variables: {
-        ministryHousingAllowanceRequestId: requestId ?? '',
-      },
-      skip: !requestId,
-    });
+  const {
+    data: requestData,
+    error: requestError,
+    loading,
+  } = useMinistryHousingAllowanceRequestQuery({
+    variables: {
+      ministryHousingAllowanceRequestId: requestId ?? '',
+    },
+    skip: !requestId,
+  });
 
   const hasValues = hasPopulatedValues(
     requestData?.ministryHousingAllowanceRequest?.requestAttributes ?? null,
@@ -180,6 +184,7 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       setIsComplete,
       requestData: requestData?.ministryHousingAllowanceRequest ?? null,
       requestError,
+      loading,
       requestId,
       updateMutation,
     }),
@@ -205,6 +210,7 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       setIsComplete,
       requestData,
       requestError,
+      loading,
       requestId,
       updateMutation,
     ],

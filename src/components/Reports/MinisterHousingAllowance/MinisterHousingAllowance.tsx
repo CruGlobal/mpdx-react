@@ -29,8 +29,11 @@ export const MinisterHousingAllowanceReport = () => {
   const { enqueueSnackbar } = useSnackbar();
   const accountListId = useAccountListId();
 
-  const { data, error: requestsError } =
-    useMinistryHousingAllowanceRequestsQuery();
+  const {
+    data,
+    error: requestsError,
+    loading,
+  } = useMinistryHousingAllowanceRequestsQuery();
   const requests = data?.ministryHousingAllowanceRequests.nodes ?? [];
 
   const {
@@ -121,7 +124,7 @@ export const MinisterHousingAllowanceReport = () => {
         <Container sx={{ ml: 5 }}>
           {requestsError ? (
             <Notification type="error" message={requestsError.message} />
-          ) : !requests ? (
+          ) : loading ? (
             <MinisterHousingAllowanceReportSkeleton />
           ) : (
             <>

@@ -17,6 +17,7 @@ import { DirectionButtons } from '../../../Shared/CalculationReports/DirectionBu
 import { SubmitModal } from '../../../Shared/CalculationReports/SubmitModal/SubmitModal';
 import { FormValues } from '../../RequestPage/RequestPage';
 import { useMinisterHousingAllowance } from '../../Shared/Context/MinisterHousingAllowanceContext';
+import { RentOwnSkeleton } from './RentOwnSkeleton';
 
 export const RentOwn: React.FC = () => {
   const { t } = useTranslation();
@@ -39,6 +40,7 @@ export const RentOwn: React.FC = () => {
     setHasCalcValues,
     handlePreviousStep,
     requestData,
+    loading,
     updateMutation,
   } = useMinisterHousingAllowance();
 
@@ -155,28 +157,32 @@ export const RentOwn: React.FC = () => {
           )}
       </Typography>
       <Box>
-        <FormControl
-          component="fieldset"
-          error={touched.rentOrOwn && Boolean(errors.rentOrOwn)}
-        >
-          <RadioGroup
-            name="rentOrOwn"
-            value={displayValue}
-            onChange={handleCustomChange}
-            onBlur={handleBlur}
+        {loading ? (
+          <RentOwnSkeleton />
+        ) : (
+          <FormControl
+            component="fieldset"
+            error={touched.rentOrOwn && Boolean(errors.rentOrOwn)}
           >
-            <FormControlLabel
-              value={MhaRentOrOwnEnum.Rent}
-              control={<Radio />}
-              label={t('Rent')}
-            />
-            <FormControlLabel
-              value={MhaRentOrOwnEnum.Own}
-              control={<Radio />}
-              label={t('Own')}
-            />
-          </RadioGroup>
-        </FormControl>
+            <RadioGroup
+              name="rentOrOwn"
+              value={displayValue}
+              onChange={handleCustomChange}
+              onBlur={handleBlur}
+            >
+              <FormControlLabel
+                value={MhaRentOrOwnEnum.Rent}
+                control={<Radio />}
+                label={t('Rent')}
+              />
+              <FormControlLabel
+                value={MhaRentOrOwnEnum.Own}
+                control={<Radio />}
+                label={t('Own')}
+              />
+            </RadioGroup>
+          </FormControl>
+        )}
         {isRequestingChange && (
           <SubmitModal
             formTitle={t('MHA Request')}
