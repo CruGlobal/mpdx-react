@@ -94,10 +94,6 @@ describe('MinisterHousingAllowanceContext', () => {
     );
 
     expect(await findByTestId('steps')).toHaveTextContent('4');
-    expect(getByTestId('currentIndex')).toHaveTextContent('0');
-    expect(getByTestId('percentComplete')).toHaveTextContent('25');
-
-    userEvent.click(getByRole('button', { name: 'Next' }));
     expect(getByTestId('currentIndex')).toHaveTextContent('1');
     expect(getByTestId('percentComplete')).toHaveTextContent('50');
 
@@ -112,6 +108,14 @@ describe('MinisterHousingAllowanceContext', () => {
     userEvent.click(getByRole('button', { name: 'Previous' }));
     expect(getByTestId('currentIndex')).toHaveTextContent('2');
     expect(getByTestId('percentComplete')).toHaveTextContent('75');
+
+    await userEvent.click(getByRole('button', { name: 'Previous' }));
+    expect(getByTestId('currentIndex')).toHaveTextContent('1');
+    expect(getByTestId('percentComplete')).toHaveTextContent('50');
+
+    await userEvent.click(getByRole('button', { name: 'Previous' }));
+    expect(getByTestId('currentIndex')).toHaveTextContent('0');
+    expect(getByTestId('percentComplete')).toHaveTextContent('25');
   });
 
   it('renders children correctly', async () => {

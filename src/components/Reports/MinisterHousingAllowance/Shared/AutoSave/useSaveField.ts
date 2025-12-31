@@ -17,7 +17,9 @@ export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
 
   const { requestData } = useMinisterHousingAllowance();
   const [updateMinistryHousingAllowanceRequest] =
-    useUpdateMinistryHousingAllowanceRequestMutation();
+    useUpdateMinistryHousingAllowanceRequestMutation({
+      refetchQueries: ['MinistryHousingAllowanceRequest'],
+    });
   const values = requestData?.requestAttributes;
 
   const saveField = useCallback(

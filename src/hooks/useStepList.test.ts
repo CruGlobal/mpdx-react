@@ -42,15 +42,16 @@ describe('useStepList', () => {
       useStepList(FormEnum.MHA, PageEnum.Edit),
     );
 
+    // edit page should start on step 2
     expect(result.current.steps).toEqual([
       {
         title: '1. About this Form',
-        current: true,
-        complete: false,
+        current: false,
+        complete: true,
       },
       {
         title: '2. Rent or Own?',
-        current: false,
+        current: true,
         complete: false,
       },
       {
@@ -65,7 +66,7 @@ describe('useStepList', () => {
       },
     ]);
 
-    expect(result.current.currentIndex).toBe(0);
+    expect(result.current.currentIndex).toBe(1);
   });
 
   it('returns correct steps for Salary Calculation', () => {

@@ -15,6 +15,7 @@ import {
 import { StepsList } from '../../Shared/CalculationReports/StepsList/StepsList';
 import { mainContentWidth } from '../MinisterHousingAllowance';
 import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
+import { getRequestUrl } from '../Shared/Helper/getRequestUrl';
 import { mocks } from '../Shared/mockData';
 import { AboutForm } from '../Steps/StepOne/AboutForm';
 import { Calculation } from '../Steps/StepThree/Calculation';
@@ -30,7 +31,7 @@ const validationSchema = yup.object({
     .required(i18n.t('Please select one of the options above to continue.')),
 });
 
-export const NewRequestPage: React.FC = () => {
+export const RequestPage: React.FC = () => {
   const { t } = useTranslation();
 
   const {
@@ -43,19 +44,47 @@ export const NewRequestPage: React.FC = () => {
     percentComplete,
     currentIndex,
     setIsComplete,
+    requestData,
   } = useMinisterHousingAllowance();
 
-  const accountListId = useAccountListId();
-  const editLink = `/accountLists/${accountListId}/reports/housingAllowance/${requestId}/edit`;
-  const viewLink = `/accountLists/${accountListId}/reports/housingAllowance/${requestId}/view`;
+  const request = requestData?.requestAttributes;
+  const value = request?.rentOrOwn ?? undefined;
 
+  const accountListId = useAccountListId();
+
+  const isView = pageType === PageEnum.View;
   const isEdit = pageType === PageEnum.Edit;
+
+  const handlePrint = () => {
+    window.print();
+  };
 
   const boardDate = mocks[4].mhaDetails.staffMHA?.boardApprovalDate ?? '';
   const availableDate = mocks[4].mhaDetails.staffMHA?.availableDate ?? '';
   const deadlineDate = mocks[4].mhaDetails.staffMHA?.deadlineDate ?? '';
 
-  return (
+  return isView ? (
+    <PanelLayout
+      panelType={PanelTypeEnum.Empty}
+      sidebarTitle={t('Your MHA')}
+      percentComplete={0}
+      backHref=""
+      mainContent={
+        <Container sx={{ ml: 5 }}>
+          <Stack direction="column" width={mainContentWidth}>
+            <Calculation
+              boardApprovalDate={
+                mocks[4].mhaDetails.staffMHA?.boardApprovalDate ?? ''
+              }
+              availableDate={mocks[4].mhaDetails.staffMHA?.availableDate ?? ''}
+              rentOrOwn={value}
+              handlePrint={handlePrint}
+            />
+          </Stack>
+        </Container>
+      }
+    />
+  ) : (
     <PanelLayout
       panelType={PanelTypeEnum.Other}
       icons={useIconPanelItems(isDrawerOpen, toggleDrawer)}
@@ -64,12 +93,16 @@ export const NewRequestPage: React.FC = () => {
       steps={steps}
       backHref={`/accountLists/${accountListId}/reports/housingAllowance`}
       isSidebarOpen={isDrawerOpen}
-      sidebarTitle={t('New Request')}
-      sidebarAriaLabel={t('MHA New Request')}
+      sidebarTitle={isEdit ? t('Edit Request') : t('New Request')}
+      sidebarAriaLabel={isEdit ? t('MHA Edit Request') : t('MHA New Request')}
       sidebarContent={<StepsList steps={steps} />}
       mainContent={
         <Formik<FormValues>
-          initialValues={{ rentOrOwn: undefined }}
+          enableReinitialize
+          initialValues={{
+            rentOrOwn:
+              isEdit && request?.rentOrOwn ? request.rentOrOwn : undefined,
+          }}
           validationSchema={validationSchema}
           onSubmit={() => handleNextStep()}
         >
@@ -95,13 +128,11 @@ export const NewRequestPage: React.FC = () => {
                   <Receipt
                     formTitle={t('MHA Request')}
                     buttonText={t('View Your MHA')}
-                    editLink={editLink}
+                    editLink={`${getRequestUrl(accountListId, requestId, 'edit')}`}
                     isEdit={isEdit}
-                    viewLink={viewLink}
+                    viewLink={`${getRequestUrl(accountListId, requestId, 'view')}`}
                     availableDate={availableDate}
-                    deadlineDate={
-                      mocks[4].mhaDetails.staffMHA?.deadlineDate ?? ''
-                    }
+                    deadlineDate={deadlineDate}
                     setIsComplete={setIsComplete}
                   />
                 )}

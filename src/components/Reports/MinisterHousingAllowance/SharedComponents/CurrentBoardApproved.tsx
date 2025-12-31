@@ -19,6 +19,7 @@ import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
 import { StatusCard } from '../../Shared/CalculationReports/StatusCard/StatusCard';
 import { useDuplicateMinistryHousingAllowanceRequestMutation } from '../MinisterHousingAllowance.generated';
 import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
+import { getRequestUrl } from '../Shared/Helper/getRequestUrl';
 import { MHARequest } from './types';
 
 interface CurrentBoardApprovedProps {
@@ -41,8 +42,9 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
     ],
   });
 
-  const { isMarried, preferredName, spousePreferredName, requestId } =
+  const { isMarried, preferredName, spousePreferredName } =
     useMinisterHousingAllowance();
+  const requestId = request?.id;
 
   const { approvedDate, approvedOverallAmount, staffSpecific, spouseSpecific } =
     request?.requestAttributes || {};
@@ -81,7 +83,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
       icon={HomeSharp}
       iconColor="success.main"
       linkOneText={t('View Current MHA')}
-      linkOne={`/accountLists/${accountListId}/reports/housingAllowance/${requestId}/view`}
+      linkOne={getRequestUrl(accountListId, requestId, 'view')}
       linkTwoText={t('Update Current MHA')}
       handleLinkTwo={handleDuplicateRequest}
       isRequest={false}

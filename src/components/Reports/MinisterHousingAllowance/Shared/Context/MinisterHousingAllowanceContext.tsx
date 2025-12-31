@@ -9,7 +9,6 @@ import {
   useState,
 } from 'react';
 import { ApolloError } from '@apollo/client';
-import { Box, CircularProgress } from '@mui/material';
 import {
   FormEnum,
   PageEnum,
@@ -22,9 +21,7 @@ import { useStepList } from 'src/hooks/useStepList';
 import { Steps } from '../../../Shared/CalculationReports/StepsList/StepsList';
 import {
   MinistryHousingAllowanceRequestQuery,
-  MinistryHousingAllowanceRequestsQuery,
   useMinistryHousingAllowanceRequestQuery,
-  useMinistryHousingAllowanceRequestsQuery,
   useUpdateMinistryHousingAllowanceRequestMutation,
 } from '../../MinisterHousingAllowance.generated';
 import { hasPopulatedValues } from './Helper/hasPopulatedValues';
@@ -56,11 +53,6 @@ export type ContextType = {
     | MinistryHousingAllowanceRequestQuery['ministryHousingAllowanceRequest']
     | null;
   requestError?: ApolloError;
-
-  requestsData?:
-    | MinistryHousingAllowanceRequestsQuery['ministryHousingAllowanceRequests']['nodes']
-    | null;
-  requestsError?: ApolloError;
   requestId?: string;
 
   updateMutation: ReturnType<
@@ -82,20 +74,16 @@ export const useMinisterHousingAllowance = (): ContextType => {
 };
 
 interface Props {
+  requestId?: string;
   type?: PageEnum;
   children?: React.ReactNode;
 }
 
 export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
+  requestId,
   type,
   children,
 }) => {
-  const { data: requestsData, error: requestsError } =
-    useMinistryHousingAllowanceRequestsQuery();
-
-  //const requestId = requestsData?.ministryHousingAllowanceRequests.nodes[0]?.id;
-  const requestId = '2018e74b-3bc7-4d19-9d72-089f60feb6d6';
-
   const { data: requestData, error: requestError } =
     useMinistryHousingAllowanceRequestQuery({
       variables: {
@@ -192,9 +180,6 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       setIsComplete,
       requestData: requestData?.ministryHousingAllowanceRequest ?? null,
       requestError,
-      requestsData:
-        requestsData?.ministryHousingAllowanceRequests.nodes ?? null,
-      requestsError,
       requestId,
       updateMutation,
     }),
@@ -220,25 +205,10 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       setIsComplete,
       requestData,
       requestError,
-      requestsData,
-      requestsError,
       requestId,
       updateMutation,
     ],
   );
-
-  if (!requestsData) {
-    return (
-      <Box
-        display="flex"
-        justifyContent="center"
-        alignItems="center"
-        height="100%"
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
 
   return (
     <MinisterHousingAllowanceContext.Provider value={contextValue}>

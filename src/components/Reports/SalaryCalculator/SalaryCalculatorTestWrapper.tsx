@@ -5,6 +5,7 @@ import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
+import { PayrollDatesQuery } from './EffectiveDateStep/PayrollDates.generated';
 import { HcmQuery } from './SalaryCalculatorContext/Hcm.generated';
 import { SalaryCalculationQuery } from './SalaryCalculatorContext/SalaryCalculation.generated';
 import { SalaryCalculatorProvider } from './SalaryCalculatorContext/SalaryCalculatorContext';
@@ -23,9 +24,17 @@ export const SalaryCalculatorTestWrapper: React.FC<
     <TestRouter>
       <GqlMockedProvider<{
         Hcm: HcmQuery;
+        PayrollDates: PayrollDatesQuery;
         SalaryCalculation: SalaryCalculationQuery;
       }>
         mocks={{
+          PayrollDates: {
+            payrollDates: [
+              { regularProcessDate: '2025-01-15' },
+              { regularProcessDate: '2025-02-01' },
+              { regularProcessDate: '2025-02-15' },
+            ],
+          },
           Hcm: {
             hcm: [
               {

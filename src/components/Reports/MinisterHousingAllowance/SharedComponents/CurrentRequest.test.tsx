@@ -7,10 +7,6 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { MhaStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { DeleteMinistryHousingAllowanceRequestMutation } from '../MinisterHousingAllowance.generated';
-import {
-  ContextType,
-  MinisterHousingAllowanceContext,
-} from '../Shared/Context/MinisterHousingAllowanceContext';
 import { mockMHARequest } from '../mockData';
 import { CurrentRequest, getDotColor, getDotVariant } from './CurrentRequest';
 
@@ -28,7 +24,11 @@ jest.mock('notistack', () => ({
   },
 }));
 
-const TestComponent: React.FC = () => {
+interface TestComponentProps {
+  requestId?: string;
+}
+
+const TestComponent: React.FC<TestComponentProps> = () => {
   return (
     <ThemeProvider theme={theme}>
       <SnackbarProvider>
@@ -37,17 +37,9 @@ const TestComponent: React.FC = () => {
         }>
           onCall={mutationSpy}
         >
-          <MinisterHousingAllowanceContext.Provider
-            value={
-              {
-                requestId: 'request-id',
-              } as unknown as ContextType
-            }
-          >
-            <TestRouter>
-              <CurrentRequest request={mockMHARequest} />
-            </TestRouter>
-          </MinisterHousingAllowanceContext.Provider>
+          <TestRouter>
+            <CurrentRequest request={mockMHARequest} />
+          </TestRouter>
         </GqlMockedProvider>
       </SnackbarProvider>
     </ThemeProvider>
@@ -90,7 +82,7 @@ describe('CurrentRequest Component', () => {
             operationName: 'DeleteMinistryHousingAllowanceRequest',
             variables: {
               input: {
-                requestId: 'request-id',
+                requestId: '1',
               },
             },
           }),

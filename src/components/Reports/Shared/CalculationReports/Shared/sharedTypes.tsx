@@ -4,9 +4,9 @@ export const enum PanelTypeEnum {
 }
 
 export const enum PageEnum {
-  New = 'new',
-  Edit = 'edit',
-  View = 'view',
+  New = 'New',
+  Edit = 'Edit',
+  View = 'View',
 }
 
 export const enum FormEnum {
