@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
-import { NewSalaryCalculatorLanding } from 'src/components/Reports/SalaryCalculator/Landing/NewSalaryCalculationLanding/NewSalaryCalculatorLanding';
+import { SalaryCalculator } from 'src/components/Reports/SalaryCalculator/SalaryCalculator';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -14,7 +14,7 @@ import {
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
-const SalaryCalculatorPage: React.FC = () => {
+const SalaryCalculatorEditPage: React.FC = () => {
   const { appName } = useGetAppSettings();
   const { t } = useTranslation();
   const [isNavListOpen, setIsNavListOpen] = useState(false);
@@ -49,7 +49,7 @@ const SalaryCalculatorPage: React.FC = () => {
               headerType={HeaderTypeEnum.Report}
             />
 
-            <NewSalaryCalculatorLanding />
+            <SalaryCalculator />
           </>
         }
       />
@@ -59,4 +59,4 @@ const SalaryCalculatorPage: React.FC = () => {
 
 export const getServerSideProps = blockImpersonatingNonDevelopers;
 
-export default SalaryCalculatorPage;
+export default SalaryCalculatorEditPage;
