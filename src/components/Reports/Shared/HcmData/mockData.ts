@@ -60,6 +60,18 @@ const noMhaAndNoException: HcmDataQuery['hcm'][0] = {
     lastUpdated: '2023-04-01',
     grossSalaryAmount: 60000,
   },
+  yearToDate: {
+    additionalSalaryPaymentsReceived: 0,
+    bonus: 0,
+    fourOThreeBLimit: 19500,
+    fourOThreeBMakeUpLimitAmount: 0,
+    grossEarnings: 20000,
+    lastRegularPaymentDate: '2023-05-01',
+    postTaxFourOThreeBContributions: 2000,
+    preTaxFourOThreeBContributions: 3000,
+    rothFourOThreeBContributions: 1000,
+    taxableDeductions: 500,
+  },
 };
 
 const mhaAndNoException: HcmDataQuery['hcm'][0] = {
