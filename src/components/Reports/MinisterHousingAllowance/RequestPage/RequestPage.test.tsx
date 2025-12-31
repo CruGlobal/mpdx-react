@@ -353,7 +353,7 @@ describe('RequestPage', () => {
 
   describe('View Page', () => {
     it('renders empty panel layout,', () => {
-      const { getByText, queryByRole, queryByTestId } = render(
+      const { getByText, queryByRole, getByTestId } = render(
         <TestComponent
           contextValue={{
             pageType: PageEnum.View,
@@ -365,7 +365,7 @@ describe('RequestPage', () => {
 
       expect(getByText('Your MHA')).toBeInTheDocument();
       expect(queryByRole('progressbar')).not.toBeInTheDocument();
-      expect(queryByTestId('ArrowBackIcon')).not.toBeInTheDocument();
+      expect(getByTestId('ArrowBackIcon')).toBeInTheDocument();
     });
 
     it('should have disabled text fields', () => {
