@@ -68,7 +68,7 @@ export const RequestPage: React.FC = () => {
       panelType={PanelTypeEnum.Empty}
       sidebarTitle={t('Your MHA')}
       percentComplete={0}
-      backHref=""
+      backHref={`/accountLists/${accountListId}/reports/housingAllowance`}
       mainContent={
         <Container sx={{ ml: 5 }}>
           <Stack direction="column" width={mainContentWidth}>
