@@ -59,8 +59,13 @@ interface SalaryCalculatorContextProps {
 export const SalaryCalculatorProvider: React.FC<
   SalaryCalculatorContextProps
 > = ({ children }) => {
-  const { steps, nextStep, previousStep, currentIndex, percentComplete } =
-    useStepList(FormEnum.SalaryCalc);
+  const {
+    steps,
+    handleNextStep,
+    handlePreviousStep,
+    currentIndex,
+    percentComplete,
+  } = useStepList(FormEnum.SalaryCalc);
 
   const [isDrawerOpen, setDrawerOpen] = useState(true);
   const { data: hcmData } = useHcmQuery();
@@ -75,8 +80,8 @@ export const SalaryCalculatorProvider: React.FC<
       steps,
       currentIndex,
       percentComplete,
-      handleNextStep: nextStep,
-      handlePreviousStep: previousStep,
+      handleNextStep,
+      handlePreviousStep,
       isDrawerOpen,
       setDrawerOpen,
       toggleDrawer,
@@ -87,8 +92,8 @@ export const SalaryCalculatorProvider: React.FC<
       steps,
       currentIndex,
       percentComplete,
-      nextStep,
-      previousStep,
+      handleNextStep,
+      handlePreviousStep,
       isDrawerOpen,
       toggleDrawer,
       hcmData,

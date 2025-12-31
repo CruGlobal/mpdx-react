@@ -122,7 +122,7 @@ export const StatusCard: React.FC<StatusCardProps> = ({
           </Button>
           <Button
             component={linkTwo ? NextLink : 'button'}
-            href={linkTwo ?? undefined}
+            href={linkTwo}
             onClick={handleLinkTwo}
             variant={isRequest ? 'outlined' : 'contained'}
             sx={{ px: 2, py: 1 }}

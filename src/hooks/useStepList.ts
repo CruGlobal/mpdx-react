@@ -11,8 +11,8 @@ export function useStepList(formType: FormEnum, type?: PageEnum) {
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const [steps, setSteps] = useState<Steps[]>(() => {
-    return formType === FormEnum.MHA
+  const [steps, setSteps] = useState<Steps[]>(() =>
+    formType === FormEnum.MHA
       ? [
           {
             title: t('1. About this Form'),
@@ -84,15 +84,15 @@ export function useStepList(formType: FormEnum, type?: PageEnum) {
                 complete: false,
               },
             ]
-          : [];
-  });
+          : [],
+  );
 
   const percentComplete = useMemo(
     () => ((currentIndex + 1) / steps.length) * 100,
     [currentIndex, steps.length],
   );
 
-  const nextStep = useCallback(() => {
+  const handleNextStep = useCallback(() => {
     const newIndex = currentIndex + 1;
     setSteps((prevSteps) =>
       prevSteps.map((step, index) => {
@@ -117,7 +117,7 @@ export function useStepList(formType: FormEnum, type?: PageEnum) {
     setCurrentIndex(newIndex);
   }, [currentIndex]);
 
-  const previousStep = useCallback(() => {
+  const handlePreviousStep = useCallback(() => {
     const newIndex = currentIndex - 1;
     setSteps((prevSteps) =>
       prevSteps.map((step, index) => {
@@ -140,8 +140,8 @@ export function useStepList(formType: FormEnum, type?: PageEnum) {
 
   return {
     steps,
-    nextStep,
-    previousStep,
+    handleNextStep,
+    handlePreviousStep,
     currentIndex,
     percentComplete,
   };

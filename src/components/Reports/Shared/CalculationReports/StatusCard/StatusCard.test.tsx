@@ -143,12 +143,12 @@ describe('CardSkeleton', () => {
     );
     const cancelButton = await findByRole('button', { name: 'Cancel Request' });
 
-    await userEvent.click(cancelButton);
+    userEvent.click(cancelButton);
 
     expect(await findByRole('dialog')).toBeInTheDocument();
     expect(getByText('Do you want to cancel?')).toBeInTheDocument();
 
-    await userEvent.click(getByRole('button', { name: /yes, cancel/i }));
+    userEvent.click(getByRole('button', { name: /yes, cancel/i }));
 
     expect(queryByRole('dialog')).not.toBeInTheDocument();
   });
@@ -171,7 +171,7 @@ describe('CardSkeleton', () => {
 
     const downloadIcon = await findByTestId('FileDownloadIcon');
 
-    await userEvent.click(downloadIcon);
+    userEvent.click(downloadIcon);
 
     expect(handleDownload).toHaveBeenCalled();
   });
@@ -182,12 +182,12 @@ describe('CardSkeleton', () => {
     );
     const cancelButton = await findByRole('button', { name: 'Cancel Request' });
 
-    await userEvent.click(cancelButton);
+    userEvent.click(cancelButton);
 
     expect(await findByRole('dialog')).toBeInTheDocument();
     expect(getByText('Do you want to cancel?')).toBeInTheDocument();
 
-    await userEvent.click(getByRole('button', { name: /yes, cancel/i }));
+    userEvent.click(getByRole('button', { name: /yes, cancel/i }));
 
     expect(handleConfirmCancel).toHaveBeenCalled();
 

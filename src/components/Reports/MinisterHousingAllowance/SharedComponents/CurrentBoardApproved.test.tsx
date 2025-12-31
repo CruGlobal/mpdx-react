@@ -62,7 +62,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
 
 describe('CurrentBoardApproved Component', () => {
   it('should render correctly for married person', () => {
-    const { getByText, getByRole, getAllByText } = render(
+    const { queryByText, queryByRole, getAllByText } = render(
       <TestComponent
         contextValue={{
           isMarried: true,
@@ -82,27 +82,29 @@ describe('CurrentBoardApproved Component', () => {
       />,
     );
 
-    expect(getByText('Current Board Approved MHA')).toBeInTheDocument();
-    expect(getByRole('columnheader', { name: /spouse/i })).toBeInTheDocument();
+    expect(queryByText('Current Board Approved MHA')).toBeInTheDocument();
     expect(
-      getByRole('columnheader', { name: /mha approved by board/i }),
+      queryByRole('columnheader', { name: /spouse/i }),
     ).toBeInTheDocument();
     expect(
-      getByRole('columnheader', { name: /mha claimed in salary/i }),
+      queryByRole('columnheader', { name: /mha approved by board/i }),
+    ).toBeInTheDocument();
+    expect(
+      queryByRole('columnheader', { name: /mha claimed in salary/i }),
     ).toBeInTheDocument();
 
-    expect(getByRole('cell', { name: 'John' })).toBeInTheDocument();
+    expect(queryByRole('cell', { name: 'John' })).toBeInTheDocument();
     expect(getAllByText('$1,500.00')).toHaveLength(2);
     expect(getAllByText('Approved on: 1/15/2023')).toHaveLength(2);
-    expect(getByText('$1,000.00')).toBeInTheDocument();
+    expect(queryByText('$1,000.00')).toBeInTheDocument();
     expect(getAllByText('Last updated: 12/1/2022')).toHaveLength(2);
 
-    expect(getByRole('cell', { name: 'Jane' })).toBeInTheDocument();
-    expect(getByText('$500.00')).toBeInTheDocument();
+    expect(queryByRole('cell', { name: 'Jane' })).toBeInTheDocument();
+    expect(queryByText('$500.00')).toBeInTheDocument();
   });
 
   it('should render correctly for single person', () => {
-    const { getByText, queryByText, getByRole, getAllByText } = render(
+    const { queryByText, queryByRole, getAllByText } = render(
       <TestComponent
         contextValue={{
           isMarried: false,
@@ -118,18 +120,20 @@ describe('CurrentBoardApproved Component', () => {
       />,
     );
 
-    expect(getByText('Current Board Approved MHA')).toBeInTheDocument();
-    expect(getByRole('columnheader', { name: /spouse/i })).toBeInTheDocument();
+    expect(queryByText('Current Board Approved MHA')).toBeInTheDocument();
     expect(
-      getByRole('columnheader', { name: /mha approved by board/i }),
+      queryByRole('columnheader', { name: /spouse/i }),
     ).toBeInTheDocument();
     expect(
-      getByRole('columnheader', { name: /mha claimed in salary/i }),
+      queryByRole('columnheader', { name: /mha approved by board/i }),
+    ).toBeInTheDocument();
+    expect(
+      queryByRole('columnheader', { name: /mha claimed in salary/i }),
     ).toBeInTheDocument();
 
-    expect(getByRole('cell', { name: 'John' })).toBeInTheDocument();
+    expect(queryByRole('cell', { name: 'John' })).toBeInTheDocument();
     expect(getAllByText('$1,500.00')).toHaveLength(1);
-    expect(getByText('$1,000.00')).toBeInTheDocument();
+    expect(queryByText('$1,000.00')).toBeInTheDocument();
 
     // Spouse data should not be rendered
     expect(queryByText('Jane')).not.toBeInTheDocument();

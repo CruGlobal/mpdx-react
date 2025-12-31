@@ -76,21 +76,22 @@ export const NewRequestPage: React.FC = () => {
           {({ values }) => (
             <Container sx={{ ml: 5 }}>
               <Stack direction="column" width={mainContentWidth}>
-                {currentIndex === 0 ? (
+                {currentIndex === 0 && (
                   <AboutForm
                     boardApprovalDate={boardDate}
                     availableDate={availableDate}
                   />
-                ) : currentIndex === 1 ? (
-                  <RentOwn />
-                ) : currentIndex === 2 ? (
+                )}
+                {currentIndex === 1 && <RentOwn />}
+                {currentIndex === 2 && (
                   <Calculation
                     boardApprovalDate={boardDate}
                     availableDate={availableDate}
                     rentOrOwn={values.rentOrOwn}
                     deadlineDate={deadlineDate}
                   />
-                ) : currentIndex === 3 ? (
+                )}
+                {currentIndex === 3 && (
                   <Receipt
                     formTitle={t('MHA Request')}
                     buttonText={t('View Your MHA')}
@@ -103,7 +104,7 @@ export const NewRequestPage: React.FC = () => {
                     }
                     setIsComplete={setIsComplete}
                   />
-                ) : null}
+                )}
               </Stack>
             </Container>
           )}

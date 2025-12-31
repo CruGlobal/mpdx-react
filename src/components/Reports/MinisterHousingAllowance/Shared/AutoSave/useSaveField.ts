@@ -24,7 +24,7 @@ export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
     async (
       attributes: Partial<MinistryHousingAllowanceRequestAttributesInput>,
     ) => {
-      if (!requestData || !requestData.id) {
+      if (!requestData?.id) {
         return;
       }
 
@@ -35,37 +35,34 @@ export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
       const { annualTotal: overallAmount } =
         calculateAnnualTotals(updatedValues);
 
-      try {
-        await updateMinistryHousingAllowanceRequest({
-          variables: {
-            input: {
-              requestId: requestData.id,
+      await updateMinistryHousingAllowanceRequest({
+        variables: {
+          input: {
+            requestId: requestData.id,
+            requestAttributes: {
+              ...attributes,
+              overallAmount,
+            },
+          },
+        },
+        optimisticResponse: {
+          updateMinistryHousingAllowanceRequest: {
+            __typename: 'MinistryHousingAllowanceRequestUpdateMutationPayload',
+            ministryHousingAllowanceRequest: {
+              ...requestData,
               requestAttributes: {
+                __typename: 'MhaRequestAttributes',
+                ...values,
                 ...attributes,
                 overallAmount,
               },
             },
           },
-          optimisticResponse: {
-            updateMinistryHousingAllowanceRequest: {
-              __typename:
-                'MinistryHousingAllowanceRequestUpdateMutationPayload',
-              ministryHousingAllowanceRequest: {
-                ...requestData,
-                requestAttributes: {
-                  __typename: 'MhaRequestAttributes',
-                  ...values,
-                  ...attributes,
-                  overallAmount,
-                },
-              },
-            },
-          },
-        });
-        enqueueSnackbar(t('Saved successfully'), { variant: 'success' });
-      } catch (error) {
-        // If failed, snackbar is already handled elsewhere
-      }
+        },
+        onCompleted: () => {
+          enqueueSnackbar(t('Saved successfully'), { variant: 'success' });
+        },
+      });
     },
     [formValues, updateMinistryHousingAllowanceRequest, requestData],
   );
