@@ -64,20 +64,17 @@ describe('InformationCategory', () => {
       <TestComponent />,
     );
 
-    expect(queryByTestId('spouse-personal-tab')).not.toBeInTheDocument();
-    expect(queryByTestId('spouse-financial-tab')).not.toBeInTheDocument();
+    expect(queryByTestId('spouse-information-form')).not.toBeInTheDocument();
 
     userEvent.click(await findByRole('button', { name: 'View Jane' }));
 
-    expect(getByTestId('spouse-personal-tab')).toBeInTheDocument();
-    expect(getByTestId('spouse-financial-tab')).toBeInTheDocument();
+    expect(getByTestId('spouse-information-form')).toBeInTheDocument();
   });
 
   it('shows user information by default', () => {
     const { getByTestId } = render(<TestComponent />);
 
-    expect(getByTestId('personal-tab')).toBeInTheDocument();
-    expect(getByTestId('financial-tab')).toBeInTheDocument();
+    expect(getByTestId('user-information-form')).toBeInTheDocument();
   });
 
   it('hides view spouse button if the user has no spouse', async () => {
@@ -157,7 +154,6 @@ describe('InformationCategory', () => {
     it('updates the spouse MHA amount', async () => {
       const { getByRole, findByRole } = render(<TestComponent />);
 
-      userEvent.click(getByRole('tab', { name: 'Financial' }));
       userEvent.click(await findByRole('button', { name: 'View Jane' }));
       const input = getByRole('spinbutton', {
         name: 'Spouse MHA Amount Per Paycheck',
@@ -232,7 +228,6 @@ describe('InformationCategory', () => {
         ),
       );
 
-      userEvent.click(getByRole('tab', { name: 'Financial' }));
       userEvent.click(getByRole('button', { name: 'View Jane' }));
       userEvent.click(
         getByRole('combobox', {
@@ -257,7 +252,6 @@ describe('InformationCategory', () => {
     it('sets field to null when input is empty', async () => {
       const { getByRole } = render(<TestComponent />);
 
-      userEvent.click(getByRole('tab', { name: 'Financial' }));
       const input = getByRole('spinbutton', {
         name: 'MHA Amount Per Paycheck',
       });
@@ -282,7 +276,6 @@ describe('InformationCategory', () => {
     it('shows errors and does not save when input is invalid', async () => {
       const { getByRole } = render(<TestComponent />);
 
-      userEvent.click(getByRole('tab', { name: 'Financial' }));
       const input = getByRole('spinbutton', {
         name: 'MHA Amount Per Paycheck',
       });

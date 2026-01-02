@@ -1,16 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import RightArrowIcon from '@mui/icons-material/ArrowForward';
-import CreditCardIcon from '@mui/icons-material/CreditCard';
-import PersonIcon from '@mui/icons-material/Person';
-import {
-  Avatar,
-  Box,
-  Button,
-  Card,
-  Tab,
-  Tabs,
-  Typography,
-} from '@mui/material';
+import { Avatar, Box, Button, Card, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -27,41 +17,11 @@ import { hasStaffSpouse } from '../../../Shared/calculateTotals';
 import { InformationCategoryFinancialForm } from './InformationCategoryForm/InformationCategoryFinancialForm';
 import { InformationCategoryPersonalForm } from './InformationCategoryForm/InformationCategoryPersonalForm';
 
-const StyledInfoBox = styled(Box)({
-  borderBottom: 1,
-  borderColor: 'divider',
-});
-
 const StyledCard = styled(Card)({
   width: '100%',
 });
 
-const StyledTabs = styled(Tabs)(({ theme }) => ({
-  paddingLeft: theme.spacing(2),
-  paddingRight: theme.spacing(2),
-}));
-
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-const TabPanel: React.FC<TabPanelProps> = ({ children, value, index }) => {
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-    >
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
-    </div>
-  );
-};
-
 export const InformationCategory: React.FC = () => {
-  const [value, setValue] = useState(0);
   const { t } = useTranslation();
   const { data: userData } = useGetUserQuery();
   const {
@@ -140,10 +100,6 @@ export const InformationCategory: React.FC = () => {
     [t],
   );
 
-  const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
-  };
-
   const hasSpouse = hasStaffSpouse(data?.goalCalculation.familySize);
   const firstName = data?.goalCalculation.firstName;
   const spouseFirstName = data?.goalCalculation.spouseFirstName;
@@ -192,73 +148,29 @@ export const InformationCategory: React.FC = () => {
 
       {!viewingSpouse && (
         <StyledCard>
-          <StyledInfoBox>
-            <StyledTabs
-              value={value}
-              onChange={handleChange}
-              aria-label={t('information tabs')}
-            >
-              <Tab
-                data-testid="personal-tab"
-                iconPosition={'start'}
-                icon={<PersonIcon />}
-                label={t('Personal')}
-              />
-              <Tab
-                data-testid="financial-tab"
-                iconPosition={'start'}
-                icon={<CreditCardIcon />}
-                label={t('Financial')}
-              />
-            </StyledTabs>
-          </StyledInfoBox>
-
-          <TabPanel value={value} index={0}>
+          <Box sx={{ p: 3 }} data-testid="user-information-form">
             <InformationCategoryPersonalForm schema={validationSchema} />
-          </TabPanel>
-
-          <TabPanel value={value} index={1}>
-            <InformationCategoryFinancialForm schema={validationSchema} />
-          </TabPanel>
+            <Box sx={{ mt: 3 }}>
+              <InformationCategoryFinancialForm schema={validationSchema} />
+            </Box>
+          </Box>
         </StyledCard>
       )}
 
       {viewingSpouse && (
         <StyledCard>
-          <StyledInfoBox>
-            <StyledTabs
-              value={value}
-              onChange={handleChange}
-              aria-label={t('information tabs')}
-            >
-              <Tab
-                data-testid="spouse-personal-tab"
-                iconPosition={'start'}
-                icon={<PersonIcon />}
-                label={t("Spouse's Personal")}
-              />
-              <Tab
-                data-testid="spouse-financial-tab"
-                iconPosition={'start'}
-                icon={<CreditCardIcon />}
-                label={t("Spouse's Financial")}
-              />
-            </StyledTabs>
-          </StyledInfoBox>
-
-          <TabPanel value={value} index={0}>
+          <Box sx={{ p: 3 }} data-testid="spouse-information-form">
             <InformationCategoryPersonalForm
               schema={validationSchema}
               isSpouse
             />
-          </TabPanel>
-
-          <TabPanel value={value} index={1}>
-            <InformationCategoryFinancialForm
-              schema={validationSchema}
-              isSpouse
-            />
-          </TabPanel>
+            <Box sx={{ mt: 3 }}>
+              <InformationCategoryFinancialForm
+                schema={validationSchema}
+                isSpouse
+              />
+            </Box>
+          </Box>
         </StyledCard>
       )}
     </StyledCard>
