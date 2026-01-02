@@ -18,7 +18,6 @@ import { StepsList } from '../../Shared/CalculationReports/StepsList/StepsList';
 import { mainContentWidth } from '../MinisterHousingAllowance';
 import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
 import { getRequestUrl } from '../Shared/Helper/getRequestUrl';
-import { mocks } from '../Shared/mockData';
 import { NoEditAccess } from '../Steps/NoEditAccess/NoEditAccess';
 import { NoRequestAccess } from '../Steps/NoRequestAccess/NoRequestAccess';
 import { AboutForm } from '../Steps/StepOne/AboutForm';
@@ -72,9 +71,9 @@ export const RequestPage: React.FC = () => {
     window.print();
   };
 
-  const boardDate = mocks[4].mhaDetails.staffMHA?.boardApprovedAt ?? '';
-  const availableDate = mocks[4].mhaDetails.staffMHA?.availableDate ?? '';
-  const deadlineDate = mocks[4].mhaDetails.staffMHA?.deadlineDate ?? '';
+  const boardDate = requestData?.requestAttributes?.boardApprovedAt ?? '';
+  const availableDate = requestData?.requestAttributes?.availableDate ?? '';
+  const deadlineDate = requestData?.requestAttributes?.deadlineDate ?? '';
 
   const iconPanelItems = useIconPanelItems(isDrawerOpen, toggleDrawer);
 
@@ -95,10 +94,8 @@ export const RequestPage: React.FC = () => {
         <Container sx={{ ml: 5 }}>
           <Stack direction="column" width={mainContentWidth}>
             <Calculation
-              boardApprovedAt={
-                mocks[4].mhaDetails.staffMHA?.boardApprovedAt ?? ''
-              }
-              availableDate={mocks[4].mhaDetails.staffMHA?.availableDate ?? ''}
+              boardApprovedAt={boardDate}
+              availableDate={availableDate}
               rentOrOwn={value}
               handlePrint={handlePrint}
             />
