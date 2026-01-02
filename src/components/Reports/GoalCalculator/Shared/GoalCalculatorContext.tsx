@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { MpdGoalBenefitsConstantSizeEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useTrackMutation } from 'src/hooks/useTrackMutation';
 import { getQueryParam } from 'src/utils/queryParam';
@@ -52,6 +53,7 @@ export type GoalCalculatorType = {
   percentComplete: number;
 
   defaultType: DefaultTypeEnum;
+  isMarried: boolean;
 };
 
 const GoalCalculatorContext = createContext<GoalCalculatorType | null>(null);
@@ -88,7 +90,12 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const familySize =
     goalCalculationResult.data?.goalCalculation?.familySize ?? null;
 
-  const defaultType = getDefaultType(role, familySize);
+  const isMarried =
+    familySize === MpdGoalBenefitsConstantSizeEnum.MarriedNoChildren ||
+    familySize === MpdGoalBenefitsConstantSizeEnum.MarriedOneToTwoChildren ||
+    familySize === MpdGoalBenefitsConstantSizeEnum.MarriedThreeOrMoreChildren;
+
+  const defaultType = getDefaultType(role, isMarried);
 
   const constants = useGoalCalculatorConstants();
 
@@ -167,6 +174,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       percentComplete,
       goalTotals,
       defaultType,
+      isMarried,
     }),
     [
       steps,
@@ -187,6 +195,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       percentComplete,
       goalTotals,
       defaultType,
+      isMarried,
     ],
   );
 

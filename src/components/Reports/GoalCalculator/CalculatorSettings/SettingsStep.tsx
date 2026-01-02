@@ -10,7 +10,7 @@ import { SettingsCategory } from './Categories/SettingsCategory/SettingsCategory
 import { SettingsSectionList } from './SettingsSectionList';
 
 export const SettingsStep: React.FC = () => {
-  const { goalCalculationResult } = useGoalCalculator();
+  const { goalCalculationResult, isMarried } = useGoalCalculator();
   const { data } = goalCalculationResult;
   const { t } = useTranslation();
   const specialFamilyPrimaryBudgetCategories =
@@ -29,7 +29,13 @@ export const SettingsStep: React.FC = () => {
           </GoalCalculatorSection>
           <GoalCalculatorSection
             title={t('Information')}
-            subtitle={t('Take a moment to verify your information.')}
+            subtitle={
+              isMarried
+                ? t(
+                    "Take a moment to verify you and your spouse's information.",
+                  )
+                : t('Take a moment to verify your information.')
+            }
           >
             <InformationCategory />
           </GoalCalculatorSection>
