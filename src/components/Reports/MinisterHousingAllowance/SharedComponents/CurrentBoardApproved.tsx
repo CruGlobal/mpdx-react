@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import { HomeSharp } from '@mui/icons-material';
 import { Grid, Skeleton, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
@@ -20,6 +21,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
   const accountListId = useAccountListId();
+  const router = useRouter();
   const currency = 'USD';
 
   const { isMarried, preferredName, spousePreferredName } =
@@ -28,6 +30,12 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
 
   const { approvedDate, approvedOverallAmount, staffSpecific, spouseSpecific } =
     request?.requestAttributes || {};
+
+  const handleDownload = () => {
+    router.push(
+      `${getRequestUrl(accountListId, requestId, 'view')}&print=true`,
+    );
+  };
 
   return (
     <StatusCard
@@ -40,6 +48,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
       linkTwoText={t("Duplicate Last Year's MHA")}
       linkTwo=""
       isRequest={false}
+      handleDownload={handleDownload}
       handleConfirmCancel={() => {}}
     >
       <Grid container spacing={2}>
