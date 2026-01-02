@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import { AddHomeSharp } from '@mui/icons-material';
 import {
   Timeline,
@@ -26,6 +27,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const accountListId = useAccountListId();
+  const router = useRouter();
   const currency = 'USD';
 
   const requestId = request.id;
@@ -40,6 +42,12 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
     approvedOverallAmount,
   } = requestAttributes || {};
 
+  const handleDownload = () => {
+    router.push(
+      `${getRequestUrl(accountListId, requestId, 'view')}&print=true`,
+    );
+  };
+
   return (
     <StatusCard
       formType={t('MHA Request')}
@@ -51,6 +59,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
       linkTwoText={t('Edit Request')}
       linkTwo={getRequestUrl(accountListId, requestId, 'edit')}
       isRequest={true}
+      handleDownload={handleDownload}
       handleConfirmCancel={() => {}}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
