@@ -15,7 +15,7 @@ const availabilityDate = '2024-10-01';
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
-    <TestRouter>
+    <TestRouter router={{ query: { accountListId: 'account-list-1' } }}>
       <GqlMockedProvider>
         <MinisterHousingAllowanceProvider type={PageEnum.New}>
           <Formik initialValues={{}} onSubmit={submit}>
@@ -46,5 +46,15 @@ describe('AboutForm', () => {
     expect(getByText(/10\/1\/2024/)).toBeInTheDocument();
 
     expect(getByRole('button', { name: 'Continue' })).toBeInTheDocument();
+  });
+
+  it('should go to salary calculator link when clicked', () => {
+    const { getByText } = render(<TestComponent />);
+
+    const salaryLink = getByText('Salary Calculation Form');
+    expect(salaryLink).toHaveAttribute(
+      'href',
+      '/accountLists/account-list-1/reports/salaryCalculator',
+    );
   });
 });
