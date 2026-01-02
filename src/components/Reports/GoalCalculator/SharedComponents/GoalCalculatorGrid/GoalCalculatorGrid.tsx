@@ -26,7 +26,10 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useAutoSave } from 'src/components/Shared/Autosave/useAutosave';
-import { SubBudgetCategoryEnum } from 'src/graphql/types.generated';
+import {
+  PrimaryBudgetCategoryEnum,
+  SubBudgetCategoryEnum,
+} from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
@@ -46,6 +49,7 @@ import {
   useUpdateSubBudgetCategoryMutation,
 } from './GoalCalculatorGrid.generated';
 import { StyledGrid } from './StyledGrid';
+import { getDirectInputDefaults } from './getDefaultDirectInput';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
@@ -72,7 +76,13 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   const locale = useLocale();
   const { label: categoryName } = category;
   const accountListId = useAccountListId() ?? '';
-  const { setRightPanelContent, trackMutation } = useGoalCalculator();
+  const { setRightPanelContent, trackMutation, defaultType } =
+    useGoalCalculator();
+
+  const categoryType = category.category;
+
+  const isNotSpecialIncome =
+    categoryType !== PrimaryBudgetCategoryEnum.SpecialIncome;
 
   const gridData = useMemo(
     () =>
@@ -195,7 +205,8 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   };
 
   const directInputProps = useAutoSave({
-    value: category.directInput,
+    value:
+      getDirectInputDefaults(categoryType, defaultType) ?? category.directInput,
     saveValue: updateDirectInput,
     fieldName: 'amount',
     schema: directInputSchema,
@@ -455,14 +466,16 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
       title={categoryName}
       titleExtra={
         <ButtonGroup>
-          <Button
-            variant={directInput ? 'contained' : 'outlined'}
-            size="small"
-            onClick={() => handleDirectInputToggle(true)}
-            startIcon={<FunctionsIcon />}
-          >
-            {t('Lump Sum')}
-          </Button>
+          {isNotSpecialIncome && (
+            <Button
+              variant={directInput ? 'contained' : 'outlined'}
+              size="small"
+              onClick={() => handleDirectInputToggle(true)}
+              startIcon={<FunctionsIcon />}
+            >
+              {t('Lump Sum')}
+            </Button>
+          )}
           <Button
             size="small"
             variant={!directInput ? 'contained' : 'outlined'}
