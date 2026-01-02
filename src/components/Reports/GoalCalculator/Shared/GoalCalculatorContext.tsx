@@ -19,6 +19,7 @@ import {
 import { useGoalCalculationQuery } from './GoalCalculation.generated';
 import { completionPercentage } from './calculateCompletion';
 import { GoalTotals, calculateGoalTotals } from './calculateTotals';
+import { DefaultTypeEnum, getDefaultType } from './getDefaultType';
 import { GoalCalculatorStep, useSteps } from './useSteps';
 
 export type GoalCalculatorType = {
@@ -48,6 +49,8 @@ export type GoalCalculatorType = {
   /** Call with the mutation promise to track the start and end of mutations */
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
   percentComplete: number;
+
+  defaultType: DefaultTypeEnum;
 };
 
 const GoalCalculatorContext = createContext<GoalCalculatorType | null>(null);
@@ -79,6 +82,12 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       id: goalCalculationId,
     },
   });
+
+  const role = goalCalculationResult.data?.goalCalculation?.role ?? null;
+  const familySize =
+    goalCalculationResult.data?.goalCalculation?.familySize ?? null;
+
+  const defaultType = getDefaultType(role, familySize);
 
   const constants = useGoalCalculatorConstants();
 
@@ -167,6 +176,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       trackMutation,
       percentComplete,
       goalTotals,
+      defaultType,
     }),
     [
       steps,
@@ -186,6 +196,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       trackMutation,
       percentComplete,
       goalTotals,
+      defaultType,
     ],
   );
 
