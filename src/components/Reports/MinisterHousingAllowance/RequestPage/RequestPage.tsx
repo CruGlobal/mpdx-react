@@ -2,6 +2,7 @@ import { Container, Stack } from '@mui/material';
 import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import Loading from 'src/components/Loading/Loading';
 import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import i18n from 'src/lib/i18n';
@@ -45,6 +46,7 @@ export const RequestPage: React.FC = () => {
     currentIndex,
     setIsComplete,
     requestData,
+    loading,
   } = useMinisterHousingAllowance();
 
   const request = requestData?.requestAttributes;
@@ -62,6 +64,10 @@ export const RequestPage: React.FC = () => {
   const boardDate = mocks[4].mhaDetails.staffMHA?.boardApprovalDate ?? '';
   const availableDate = mocks[4].mhaDetails.staffMHA?.availableDate ?? '';
   const deadlineDate = mocks[4].mhaDetails.staffMHA?.deadlineDate ?? '';
+
+  if (loading) {
+    return <Loading loading={loading} />;
+  }
 
   return isView ? (
     <PanelLayout
