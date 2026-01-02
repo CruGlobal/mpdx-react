@@ -126,7 +126,7 @@ export const InformationCategory: React.FC = () => {
             variant="rounded"
             sx={{ width: 36, height: 36, marginRight: 1 }}
           />
-          <Typography data-testid="info-name-typography">
+          <Typography data-testid="info-name-typography" sx={{ fontSize: 18 }}>
             {(viewingSpouse ? spouseFirstName : firstName) ?? t('User')}
           </Typography>
         </Box>
@@ -134,6 +134,7 @@ export const InformationCategory: React.FC = () => {
           <Button
             endIcon={<RightArrowIcon />}
             onClick={onClickSpouseInformation}
+            sx={{ fontWeight: 'bold', fontSize: '15px' }}
           >
             {viewingSpouse
               ? t('View {{name}}', {
