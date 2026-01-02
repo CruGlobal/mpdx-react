@@ -58,11 +58,31 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
 
   const isLastStep = steps ? currentIndex === steps.length - 1 : false;
 
+  const backArrow = (
+    <Link
+      component={NextLink}
+      href={backHref}
+      sx={{ textDecoration: 'none' }}
+      aria-label={backTitle ?? t('Back to dashboard')}
+    >
+      <IconButton
+        title={backTitle ?? t('Back to dashboard')}
+        sx={(theme) => ({
+          color: theme.palette.cruGrayDark.main,
+        })}
+      >
+        <ArrowBackIcon />
+      </IconButton>
+    </Link>
+  );
+
   return (
     <PrintableStack direction="row">
       {panelType === PanelTypeEnum.Empty ? (
         <>
-          <Stack direction="column" width={iconPanelWidth}></Stack>
+          <Stack direction="column" width={iconPanelWidth}>
+            {backHref !== '' && backArrow}
+          </Stack>
           <Divider orientation="vertical" flexItem />
           <StyledSidebar open={true} aria-label={sidebarAriaLabel}>
             {sidebarTitle && (
@@ -106,21 +126,7 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
                     {item.icon}
                   </IconButton>
                 ))}
-                <Link
-                  component={NextLink}
-                  href={backHref}
-                  sx={{ textDecoration: 'none' }}
-                  aria-label={backTitle ?? t('Back to dashboard')}
-                >
-                  <IconButton
-                    title={backTitle ?? t('Back to dashboard')}
-                    sx={(theme) => ({
-                      color: theme.palette.cruGrayDark.main,
-                    })}
-                  >
-                    <ArrowBackIcon />
-                  </IconButton>
-                </Link>
+                {backArrow}
               </>
             )}
           </Stack>

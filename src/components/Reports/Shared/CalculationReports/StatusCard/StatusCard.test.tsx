@@ -76,45 +76,47 @@ const TestComponent: React.FC<TestComponentProps> = ({
 };
 
 describe('CardSkeleton', () => {
-  it('should render card header no subtitle', () => {
-    const { getByText, getByTestId, queryByText } = render(<TestComponent />);
+  it('should render card header no subtitle', async () => {
+    const { getByText, getByTestId, queryByText, findByTestId } = render(
+      <TestComponent />,
+    );
 
-    expect(getByTestId('mock-icon')).toBeInTheDocument();
+    expect(await findByTestId('mock-icon')).toBeInTheDocument();
     expect(getByText(title)).toBeInTheDocument();
     expect(queryByText(subtitle)).not.toBeInTheDocument();
     expect(getByTestId('FileDownloadIcon')).toBeInTheDocument();
   });
 
-  it('should render card header with subtitle', () => {
-    const { getByText, getByTestId } = render(
+  it('should render card header with subtitle', async () => {
+    const { getByText, getByTestId, findByTestId } = render(
       <TestComponent subtitle={subtitle} />,
     );
 
-    expect(getByTestId('mock-icon')).toBeInTheDocument();
+    expect(await findByTestId('mock-icon')).toBeInTheDocument();
     expect(getByText(title)).toBeInTheDocument();
     expect(getByText(subtitle)).toBeInTheDocument();
     expect(getByTestId('FileDownloadIcon')).toBeInTheDocument();
   });
 
-  it('should render children', () => {
-    const { getByText } = render(<TestComponent />);
+  it('should render children', async () => {
+    const { findByText } = render(<TestComponent />);
 
-    expect(getByText('Test Children')).toBeInTheDocument();
+    expect(await findByText('Test Children')).toBeInTheDocument();
   });
 
-  it('should render action buttons', () => {
-    const { getByText } = render(<TestComponent />);
+  it('should render action buttons', async () => {
+    const { getByText, findByText } = render(<TestComponent />);
 
-    expect(getByText(titleOne)).toBeInTheDocument();
+    expect(await findByText(titleOne)).toBeInTheDocument();
     expect(getByText(titleTwo)).toBeInTheDocument();
   });
 
-  it('should go to correct link when first button is clicked', () => {
-    const { getByRole } = render(
+  it('should go to correct link when first button is clicked', async () => {
+    const { findByRole } = render(
       <TestComponent isRequest={true} linkOne={linkOne} />,
     );
 
-    const firstButton = getByRole('link', { name: titleOne });
+    const firstButton = await findByRole('link', { name: titleOne });
 
     expect(firstButton).toHaveAttribute(
       'href',
@@ -122,12 +124,12 @@ describe('CardSkeleton', () => {
     );
   });
 
-  it('should go to correct link when second button is clicked', () => {
-    const { getByRole } = render(
+  it('should go to correct link when second button is clicked', async () => {
+    const { findByRole } = render(
       <TestComponent isRequest={true} linkTwo={linkTwo} />,
     );
 
-    const secondButton = getByRole('link', { name: titleTwo });
+    const secondButton = await findByRole('link', { name: titleTwo });
 
     expect(secondButton).toHaveAttribute(
       'href',
@@ -139,14 +141,14 @@ describe('CardSkeleton', () => {
     const { getByRole, findByRole, getByText, queryByRole } = render(
       <TestComponent isRequest={true} />,
     );
-    const cancelButton = getByRole('button', { name: 'Cancel Request' });
+    const cancelButton = await findByRole('button', { name: 'Cancel Request' });
 
-    await userEvent.click(cancelButton);
+    userEvent.click(cancelButton);
 
     expect(await findByRole('dialog')).toBeInTheDocument();
     expect(getByText('Do you want to cancel?')).toBeInTheDocument();
 
-    await userEvent.click(getByRole('button', { name: /yes, cancel/i }));
+    userEvent.click(getByRole('button', { name: /yes, cancel/i }));
 
     expect(queryByRole('dialog')).not.toBeInTheDocument();
   });
@@ -165,11 +167,11 @@ describe('CardSkeleton', () => {
   });
 
   it('calls handleDownload when download icon is clicked', async () => {
-    const { getByTestId } = render(<TestComponent />);
+    const { findByTestId } = render(<TestComponent />);
 
-    const downloadIcon = getByTestId('FileDownloadIcon');
+    const downloadIcon = await findByTestId('FileDownloadIcon');
 
-    await userEvent.click(downloadIcon);
+    userEvent.click(downloadIcon);
 
     expect(handleDownload).toHaveBeenCalled();
   });
@@ -178,14 +180,14 @@ describe('CardSkeleton', () => {
     const { getByRole, findByRole, getByText, queryByRole } = render(
       <TestComponent isRequest={true} />,
     );
-    const cancelButton = getByRole('button', { name: 'Cancel Request' });
+    const cancelButton = await findByRole('button', { name: 'Cancel Request' });
 
-    await userEvent.click(cancelButton);
+    userEvent.click(cancelButton);
 
     expect(await findByRole('dialog')).toBeInTheDocument();
     expect(getByText('Do you want to cancel?')).toBeInTheDocument();
 
-    await userEvent.click(getByRole('button', { name: /yes, cancel/i }));
+    userEvent.click(getByRole('button', { name: /yes, cancel/i }));
 
     expect(handleConfirmCancel).toHaveBeenCalled();
 

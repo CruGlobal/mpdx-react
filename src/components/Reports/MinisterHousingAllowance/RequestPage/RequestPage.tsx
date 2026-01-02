@@ -2,6 +2,7 @@ import { Container, Stack } from '@mui/material';
 import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import Loading from 'src/components/Loading/Loading';
 import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import i18n from 'src/lib/i18n';
@@ -17,7 +18,6 @@ import { mainContentWidth } from '../MinisterHousingAllowance';
 import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
 import { getRequestUrl } from '../Shared/Helper/getRequestUrl';
 import { mocks } from '../Shared/mockData';
-import { StepsEnum } from '../Shared/sharedTypes';
 import { AboutForm } from '../Steps/StepOne/AboutForm';
 import { Calculation } from '../Steps/StepThree/Calculation';
 import { RentOwn } from '../Steps/StepTwo/RentOwn';
@@ -39,7 +39,6 @@ export const RequestPage: React.FC = () => {
     requestId,
     steps,
     handleNextStep,
-    currentStep,
     pageType,
     isDrawerOpen,
     toggleDrawer,
@@ -47,6 +46,7 @@ export const RequestPage: React.FC = () => {
     currentIndex,
     setIsComplete,
     requestData,
+    loading,
   } = useMinisterHousingAllowance();
 
   const request = requestData?.requestAttributes;
@@ -65,12 +65,16 @@ export const RequestPage: React.FC = () => {
   const availableDate = mocks[4].mhaDetails.staffMHA?.availableDate ?? '';
   const deadlineDate = mocks[4].mhaDetails.staffMHA?.deadlineDate ?? '';
 
+  if (loading) {
+    return <Loading loading={loading} />;
+  }
+
   return isView ? (
     <PanelLayout
       panelType={PanelTypeEnum.Empty}
       sidebarTitle={t('Your MHA')}
       percentComplete={0}
-      backHref=""
+      backHref={`/accountLists/${accountListId}/reports/housingAllowance`}
       mainContent={
         <Container sx={{ ml: 5 }}>
           <Stack direction="column" width={mainContentWidth}>
@@ -111,21 +115,22 @@ export const RequestPage: React.FC = () => {
           {({ values }) => (
             <Container sx={{ ml: 5 }}>
               <Stack direction="column" width={mainContentWidth}>
-                {currentStep === StepsEnum.AboutForm ? (
+                {currentIndex === 0 && (
                   <AboutForm
                     boardApprovalDate={boardDate}
                     availableDate={availableDate}
                   />
-                ) : currentStep === StepsEnum.RentOrOwn ? (
-                  <RentOwn />
-                ) : currentStep === StepsEnum.CalcForm ? (
+                )}
+                {currentIndex === 1 && <RentOwn />}
+                {currentIndex === 2 && (
                   <Calculation
                     boardApprovalDate={boardDate}
                     availableDate={availableDate}
                     rentOrOwn={values.rentOrOwn}
                     deadlineDate={deadlineDate}
                   />
-                ) : currentStep === StepsEnum.Receipt ? (
+                )}
+                {currentIndex === 3 && (
                   <Receipt
                     formTitle={t('MHA Request')}
                     buttonText={t('View Your MHA')}
@@ -136,7 +141,7 @@ export const RequestPage: React.FC = () => {
                     deadlineDate={deadlineDate}
                     setIsComplete={setIsComplete}
                   />
-                ) : null}
+                )}
               </Stack>
             </Container>
           )}

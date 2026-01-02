@@ -29,8 +29,11 @@ export const MinisterHousingAllowanceReport = () => {
   const { enqueueSnackbar } = useSnackbar();
   const accountListId = useAccountListId();
 
-  const { data, error: requestsError } =
-    useMinistryHousingAllowanceRequestsQuery();
+  const {
+    data,
+    error: requestsError,
+    loading,
+  } = useMinistryHousingAllowanceRequestsQuery();
   const requests = data?.ministryHousingAllowanceRequests.nodes ?? [];
 
   const {
@@ -58,7 +61,10 @@ export const MinisterHousingAllowanceReport = () => {
   const onCreateMHARequest = async () => {
     await createMHA({
       variables: {
-        requestAttributes: {},
+        requestAttributes: {
+          phoneNumber: userHcmData?.staffInfo.primaryPhoneNumber,
+          emailAddress: userHcmData?.staffInfo.emailAddress,
+        },
       },
       refetchQueries: ['MinistryHousingAllowanceRequests'],
       onCompleted: ({ createMinistryHousingAllowanceRequest: newRequest }) => {
@@ -107,6 +113,7 @@ export const MinisterHousingAllowanceReport = () => {
         request.status === MhaStatusEnum.BoardApproved &&
         isCurrentRequestPending,
     );
+
   return (
     <PanelLayout
       panelType={PanelTypeEnum.Empty}
@@ -117,7 +124,7 @@ export const MinisterHousingAllowanceReport = () => {
         <Container sx={{ ml: 5 }}>
           {requestsError ? (
             <Notification type="error" message={requestsError.message} />
-          ) : !requests ? (
+          ) : loading ? (
             <MinisterHousingAllowanceReportSkeleton />
           ) : (
             <>

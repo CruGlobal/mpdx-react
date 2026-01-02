@@ -26,8 +26,8 @@ describe('SalaryCalculator', () => {
   });
 
   it('renders individual step items', async () => {
-    const { getAllByRole } = render(<TestComponent />);
+    const { findAllByRole } = render(<TestComponent />);
 
-    expect(getAllByRole('listitem')).toHaveLength(5);
+    expect(await findAllByRole('listitem')).toHaveLength(5);
   });
 });

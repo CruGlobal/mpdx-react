@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
@@ -13,7 +14,6 @@ import {
   MinisterHousingAllowanceContext,
   MinisterHousingAllowanceProvider,
 } from '../Shared/Context/MinisterHousingAllowanceContext';
-import { StepsEnum } from '../Shared/sharedTypes';
 import { RequestPage } from './RequestPage';
 
 const mutationSpy = jest.fn();
@@ -70,23 +70,27 @@ const TestComponent: React.FC<TestComponentProps> = ({
   return (
     <ThemeProvider theme={theme}>
       <TestRouter>
-        <GqlMockedProvider<{
-          UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
-        }>
-          onCall={mutationSpy}
-        >
-          {content}
-        </GqlMockedProvider>
+        <SnackbarProvider>
+          <GqlMockedProvider<{
+            UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
+          }>
+            onCall={mutationSpy}
+          >
+            {content}
+          </GqlMockedProvider>
+        </SnackbarProvider>
       </TestRouter>
     </ThemeProvider>
   );
 };
 
 describe('RequestPage', () => {
-  it('renders steps list', () => {
-    const { getByText } = render(<TestComponent type={PageEnum.Edit} />);
+  it('renders steps list', async () => {
+    const { getByText, findByText } = render(
+      <TestComponent type={PageEnum.Edit} />,
+    );
 
-    expect(getByText(/1. about this form/i)).toBeInTheDocument();
+    expect(await findByText(/1. about this form/i)).toBeInTheDocument();
     expect(getByText(/2. rent or own?/i)).toBeInTheDocument();
     expect(getByText(/3. edit your mha/i)).toBeInTheDocument();
     expect(getByText(/4. receipt/i)).toBeInTheDocument();
@@ -141,12 +145,12 @@ describe('RequestPage', () => {
     });
 
     it('should show an option is preselected', async () => {
-      const { findAllByRole, getByRole, findByRole } = render(
+      const { findAllByRole, findByRole } = render(
         <TestComponent
           contextValue={
             {
               pageType: PageEnum.Edit,
-              currentStep: StepsEnum.RentOrOwn,
+              currentIndex: 1,
               steps,
               handleNextStep,
               handlePreviousStep,
@@ -161,7 +165,7 @@ describe('RequestPage', () => {
         />,
       );
 
-      const continueButton = getByRole('button', { name: 'Continue' });
+      const continueButton = await findByRole('button', { name: 'Continue' });
       userEvent.click(continueButton);
 
       expect(await findByRole('radio', { name: 'Rent' })).toBeChecked();
@@ -169,13 +173,13 @@ describe('RequestPage', () => {
     });
 
     it('opens confirmation modal when changing selection', async () => {
-      const { getByRole, getByText, queryByText } = render(
+      const { getByRole, getByText, queryByText, findByRole } = render(
         <TestComponent
           contextValue={
             {
               pageType: PageEnum.Edit,
               steps,
-              currentStep: StepsEnum.RentOrOwn,
+              currentIndex: 1,
               handleNextStep,
               handlePreviousStep,
               hasCalcValues: true,
@@ -193,7 +197,7 @@ describe('RequestPage', () => {
         />,
       );
 
-      const ownRadio = getByRole('radio', { name: 'Own' });
+      const ownRadio = await findByRole('radio', { name: 'Own' });
       userEvent.click(ownRadio);
       expect(ownRadio).not.toBeChecked();
 
@@ -274,7 +278,7 @@ describe('RequestPage', () => {
         <TestComponent
           contextValue={{
             steps,
-            currentStep: StepsEnum.RentOrOwn,
+            currentIndex: 1,
             pageType: PageEnum.New,
           }}
         />,
@@ -299,7 +303,7 @@ describe('RequestPage', () => {
               {
                 pageType: PageEnum.New,
                 steps,
-                currentStep: StepsEnum.RentOrOwn,
+                currentIndex: 1,
                 handleNextStep,
                 handlePreviousStep,
                 hasCalcValues: true,
@@ -349,7 +353,7 @@ describe('RequestPage', () => {
 
   describe('View Page', () => {
     it('renders empty panel layout,', () => {
-      const { getByText, queryByRole, queryByTestId } = render(
+      const { getByText, queryByRole, getByTestId } = render(
         <TestComponent
           contextValue={{
             pageType: PageEnum.View,
@@ -361,7 +365,7 @@ describe('RequestPage', () => {
 
       expect(getByText('Your MHA')).toBeInTheDocument();
       expect(queryByRole('progressbar')).not.toBeInTheDocument();
-      expect(queryByTestId('ArrowBackIcon')).not.toBeInTheDocument();
+      expect(getByTestId('ArrowBackIcon')).toBeInTheDocument();
     });
 
     it('should have disabled text fields', () => {
