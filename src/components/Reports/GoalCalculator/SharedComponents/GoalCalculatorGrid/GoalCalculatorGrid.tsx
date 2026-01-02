@@ -81,8 +81,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
 
   const categoryType = category.category;
 
-  const isNotSpecialIncome =
-    categoryType !== PrimaryBudgetCategoryEnum.SpecialIncome;
+  const showLumpSum = categoryType !== PrimaryBudgetCategoryEnum.SpecialIncome;
 
   const gridData = useMemo(
     () =>
@@ -186,18 +185,24 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
       // Parse the current input value, or use null if empty/invalid
       const existingValue = lumpSumValue ? parseFloat(lumpSumValue) : null;
 
+      // Get the default value for specific category and type
+      // Fall back to default if totalAmount does not exist
+      const defaultValue = getDirectInputDefaults(categoryType, defaultType);
+      const value = existingValue || totalAmount || defaultValue;
+
       // If no input value exists, populate with the current total from line items
       if (!lumpSumValue) {
-        setLumpSumValue(totalAmount.toString());
+        setLumpSumValue(value.toString());
       }
 
       // Set directInput to the existing value or fall back to totalAmount
       // This preserves user input or defaults to the calculated total
-      updateDirectInput(existingValue || totalAmount);
+      updateDirectInput(value);
     } else {
       // Switching to "Line Item" mode
-      // Set directInput to null to indicate line item mode
+      // Set directInput to null to indicate line item mode and reset lump sum value
       updateDirectInput(null);
+      setLumpSumValue('');
     }
 
     // Clear any validation errors when switching modes
@@ -205,8 +210,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   };
 
   const directInputProps = useAutoSave({
-    value:
-      getDirectInputDefaults(categoryType, defaultType) ?? category.directInput,
+    value: category.directInput ?? 0,
     saveValue: updateDirectInput,
     fieldName: 'amount',
     schema: directInputSchema,
@@ -466,7 +470,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
       title={categoryName}
       titleExtra={
         <ButtonGroup>
-          {isNotSpecialIncome && (
+          {showLumpSum && (
             <Button
               variant={directInput ? 'contained' : 'outlined'}
               size="small"

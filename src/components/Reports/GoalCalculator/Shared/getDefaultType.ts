@@ -1,6 +1,6 @@
 import { GoalCalculationRole } from 'src/graphql/types.generated';
 
-export const enum DefaultTypeEnum {
+export enum DefaultTypeEnum {
   SingleField = 'SingleField',
   SingleOffice = 'SingleOffice',
   MarriedField = 'MarriedField',
