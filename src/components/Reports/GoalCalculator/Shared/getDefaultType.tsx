@@ -1,7 +1,4 @@
-import {
-  GoalCalculationRole,
-  MpdGoalBenefitsConstantSizeEnum,
-} from 'src/graphql/types.generated';
+import { GoalCalculationRole } from 'src/graphql/types.generated';
 
 export const enum DefaultTypeEnum {
   SingleField = 'SingleField',
@@ -12,13 +9,8 @@ export const enum DefaultTypeEnum {
 
 export const getDefaultType = (
   role: GoalCalculationRole | null,
-  familySize: MpdGoalBenefitsConstantSizeEnum | null,
+  isMarried: boolean,
 ): DefaultTypeEnum => {
-  const isMarried =
-    familySize === MpdGoalBenefitsConstantSizeEnum.MarriedNoChildren ||
-    familySize === MpdGoalBenefitsConstantSizeEnum.MarriedOneToTwoChildren ||
-    familySize === MpdGoalBenefitsConstantSizeEnum.MarriedThreeOrMoreChildren;
-
   if (role === GoalCalculationRole.Field) {
     return isMarried
       ? DefaultTypeEnum.MarriedField
