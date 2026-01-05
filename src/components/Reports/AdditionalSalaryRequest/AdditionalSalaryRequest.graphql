@@ -12,6 +12,29 @@ fragment AdditionalSalaryRequestFields on AdditionalSalaryRequest {
   }
 }
 
+fragment AdditionalSalaryRequestDetailsFields on AdditionalSalaryRequest {
+  ...AdditionalSalaryRequestFields
+  personNumber
+  additionalSalaryWithinMax
+  adoption
+  traditional403bContribution
+  roth403bContribution
+  counselingNonMedical
+  healthcareExpensesExceedingLimit
+  babysittingMinistryEvents
+  childrenMinistryTripExpenses
+  childrenCollegeEducation
+  movingExpense
+  seminary
+  housingDownPayment
+  autoPurchase
+  expensesNotApprovedWithin90Days
+  totalAdditionalSalaryRequested
+  deductTwelvePercent
+  traditional403bContributionRequested
+  usingSpouseSalary
+}
+
 query AdditionalSalaryRequest($requestId: ID!) {
   additionalSalaryRequest(id: $requestId) {
     ...AdditionalSalaryRequestFields
@@ -23,26 +46,7 @@ query AdditionalSalaryRequest($requestId: ID!) {
 query AdditionalSalaryRequests {
   additionalSalaryRequests {
     nodes {
-      ...AdditionalSalaryRequestFields
-      personNumber
-      additionalSalaryWithinMax
-      adoption
-      traditional403bContribution
-      roth403bContribution
-      counselingNonMedical
-      healthcareExpensesExceedingLimit
-      babysittingMinistryEvents
-      childrenMinistryTripExpenses
-      childrenCollegeEducation
-      movingExpense
-      seminary
-      housingDownPayment
-      autoPurchase
-      expensesNotApprovedWithin90Days
-      totalAdditionalSalaryRequested
-      deductTwelvePercent
-      traditional403bContributionRequested
-      usingSpouseSalary
+      ...AdditionalSalaryRequestDetailsFields
     }
   }
 }
@@ -52,26 +56,7 @@ mutation CreateAdditionalSalaryRequest(
 ) {
   createAdditionalSalaryRequest(input: { attributes: $attributes }) {
     additionalSalaryRequest {
-      ...AdditionalSalaryRequestFields
-      personNumber
-      additionalSalaryWithinMax
-      adoption
-      traditional403bContribution
-      roth403bContribution
-      counselingNonMedical
-      healthcareExpensesExceedingLimit
-      babysittingMinistryEvents
-      childrenMinistryTripExpenses
-      childrenCollegeEducation
-      movingExpense
-      seminary
-      housingDownPayment
-      autoPurchase
-      expensesNotApprovedWithin90Days
-      totalAdditionalSalaryRequested
-      deductTwelvePercent
-      traditional403bContributionRequested
-      usingSpouseSalary
+      ...AdditionalSalaryRequestDetailsFields
     }
   }
 }
@@ -85,26 +70,7 @@ mutation DeleteAdditionalSalaryRequest($id: ID!) {
 mutation SubmitAdditionalSalaryRequest($id: ID!) {
   submitAdditionalSalaryRequest(input: { id: $id }) {
     additionalSalaryRequest {
-      ...AdditionalSalaryRequestFields
-      personNumber
-      additionalSalaryWithinMax
-      adoption
-      traditional403bContribution
-      roth403bContribution
-      counselingNonMedical
-      healthcareExpensesExceedingLimit
-      babysittingMinistryEvents
-      childrenMinistryTripExpenses
-      childrenCollegeEducation
-      movingExpense
-      seminary
-      housingDownPayment
-      autoPurchase
-      expensesNotApprovedWithin90Days
-      totalAdditionalSalaryRequested
-      deductTwelvePercent
-      traditional403bContributionRequested
-      usingSpouseSalary
+      ...AdditionalSalaryRequestDetailsFields
     }
   }
 }
@@ -115,26 +81,7 @@ mutation UpdateAdditionalSalaryRequest(
 ) {
   updateAdditionalSalaryRequest(input: { id: $id, attributes: $attributes }) {
     additionalSalaryRequest {
-      ...AdditionalSalaryRequestFields
-      personNumber
-      additionalSalaryWithinMax
-      adoption
-      traditional403bContribution
-      roth403bContribution
-      counselingNonMedical
-      healthcareExpensesExceedingLimit
-      babysittingMinistryEvents
-      childrenMinistryTripExpenses
-      childrenCollegeEducation
-      movingExpense
-      seminary
-      housingDownPayment
-      autoPurchase
-      expensesNotApprovedWithin90Days
-      totalAdditionalSalaryRequested
-      deductTwelvePercent
-      traditional403bContributionRequested
-      usingSpouseSalary
+      ...AdditionalSalaryRequestDetailsFields
     }
   }
 }
