@@ -17,54 +17,6 @@ import {
 import { ReportPageWrapper } from 'src/components/Shared/styledComponents/ReportPageWrapper';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
-interface AdditionalSalaryRequestContentProps {
-  isNavListOpen: boolean;
-  onNavListToggle: () => void;
-  designationAccounts: string[];
-  setDesignationAccounts: (accounts: string[]) => void;
-}
-
-const AdditionalSalaryRequestContent: React.FC<
-  AdditionalSalaryRequestContentProps
-> = ({
-  isNavListOpen,
-  onNavListToggle,
-  designationAccounts,
-  setDesignationAccounts,
-}) => {
-  const { t } = useTranslation();
-
-  return (
-    <SidePanelsLayout
-      isScrollBox={false}
-      leftPanel={
-        <MultiPageMenu
-          isOpen={isNavListOpen}
-          selectedId="salaryRequest"
-          onClose={onNavListToggle}
-          designationAccounts={designationAccounts}
-          setDesignationAccounts={setDesignationAccounts}
-          navType={NavTypeEnum.Reports}
-        />
-      }
-      leftOpen={isNavListOpen}
-      leftWidth="290px"
-      headerHeight={multiPageHeaderHeight}
-      mainContent={
-        <>
-          <MultiPageHeader
-            isNavListOpen={isNavListOpen}
-            onNavListToggle={onNavListToggle}
-            title={t('Additional Salary Request')}
-            headerType={HeaderTypeEnum.Report}
-          />
-          <RequestPage />
-        </>
-      }
-    />
-  );
-};
-
 const AdditionalSalaryRequestPage: React.FC = () => {
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
@@ -82,11 +34,32 @@ const AdditionalSalaryRequestPage: React.FC = () => {
       </Head>
       <ReportPageWrapper>
         <AdditionalSalaryRequestProvider>
-          <AdditionalSalaryRequestContent
-            isNavListOpen={isNavListOpen}
-            onNavListToggle={handleNavListToggle}
-            designationAccounts={designationAccounts}
-            setDesignationAccounts={setDesignationAccounts}
+          <SidePanelsLayout
+            isScrollBox={false}
+            leftPanel={
+              <MultiPageMenu
+                isOpen={isNavListOpen}
+                selectedId="salaryRequest"
+                onClose={handleNavListToggle}
+                designationAccounts={designationAccounts}
+                setDesignationAccounts={setDesignationAccounts}
+                navType={NavTypeEnum.Reports}
+              />
+            }
+            leftOpen={isNavListOpen}
+            leftWidth="290px"
+            headerHeight={multiPageHeaderHeight}
+            mainContent={
+              <>
+                <MultiPageHeader
+                  isNavListOpen={isNavListOpen}
+                  onNavListToggle={handleNavListToggle}
+                  title={t('Additional Salary Request')}
+                  headerType={HeaderTypeEnum.Report}
+                />
+                <RequestPage />
+              </>
+            }
           />
         </AdditionalSalaryRequestProvider>
       </ReportPageWrapper>
