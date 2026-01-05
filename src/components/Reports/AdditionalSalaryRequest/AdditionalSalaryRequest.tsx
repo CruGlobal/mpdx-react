@@ -1,17 +1,22 @@
 import React from 'react';
-import { Box } from '@mui/material';
-import { useFormikContext } from 'formik';
+import { Button, Container, Stack } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { DirectionButtons } from 'src/components/Reports/Shared/CalculationReports/DirectionButtons/DirectionButtons';
+import { Notification } from 'src/components/Notification/Notification';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
+import { NameDisplay } from '../Shared/CalculationReports/NameDisplay/NameDisplay';
 import { PanelLayout } from '../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { useIconPanelItems } from '../Shared/CalculationReports/PanelLayout/useIconPanelItems';
 import { PanelTypeEnum } from '../Shared/CalculationReports/Shared/sharedTypes';
 import { StepsList } from '../Shared/CalculationReports/StepsList/StepsList';
-import { CurrentStep } from './CurrentStep';
+import { AdditionalSalaryRequestSkeleton } from './AdditionalSalaryRequestSkeleton';
+import { EligibleDisplay } from './MainPages/EligibleDisplay';
+import { IneligibleDisplay } from './MainPages/IneligibleDisplay';
 import { useAdditionalSalaryRequest } from './Shared/AdditionalSalaryRequestContext';
-import { SectionPage } from './SharedComponents/SectionPage';
+import { CurrentBoardApproved } from './SharedComponents/CurrentBoardApproved';
+import { CurrentRequest } from './SharedComponents/CurrentRequest';
+
+export const mainContentWidth = theme.spacing(85);
 
 export interface CompleteFormValues {
   currentYearSalary: string;
@@ -33,46 +38,43 @@ export interface CompleteFormValues {
   telephoneNumber: string;
 }
 
-const MainContent: React.FC = () => {
-  const {
-    handleCancel,
-    handlePreviousStep,
-    handleNextStep,
-    currentIndex,
-    steps,
-  } = useAdditionalSalaryRequest();
-  const { submitForm, validateForm, submitCount, isValid } =
-    useFormikContext<CompleteFormValues>();
-
-  const isFirstFormPage = currentIndex === 0;
-  const isLastFormPage = currentIndex === steps.length - 2;
-  const reviewPage = currentIndex === steps.length - 1;
-
-  return (
-    <Box px={theme.spacing(3)}>
-      <CurrentStep />
-      {!reviewPage && (
-        <DirectionButtons
-          handleNextStep={handleNextStep}
-          handlePreviousStep={handlePreviousStep}
-          showBackButton={!isFirstFormPage}
-          handleCancel={isFirstFormPage ? undefined : handleCancel}
-          isSubmission={isLastFormPage}
-          submitForm={submitForm}
-          validateForm={validateForm}
-          submitCount={submitCount}
-          isValid={isValid}
-        />
-      )}
-    </Box>
-  );
-};
-
 export const AdditionalSalaryRequest: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const { isDrawerOpen, toggleDrawer, steps, currentIndex, percentComplete } =
-    useAdditionalSalaryRequest();
+  const {
+    isDrawerOpen,
+    toggleDrawer,
+    steps,
+    currentIndex,
+    percentComplete,
+    requestsError,
+    requestsData,
+    hcmUser,
+    hcmSpouse,
+    isMarried,
+    preferredName,
+    spousePreferredName,
+    createAdditionalSalaryRequest,
+    previousApprovedRequest,
+  } = useAdditionalSalaryRequest();
+
+  const personNumber = hcmUser?.staffInfo?.personNumber ?? '';
+  const spousePersonNumber = hcmSpouse?.staffInfo?.personNumber ?? '';
+  const lastName = hcmUser?.staffInfo?.lastName ?? '';
+  const spouseLastName = hcmSpouse?.staffInfo?.lastName ?? '';
+
+  const names = isMarried
+    ? `${preferredName} ${lastName} and ${spousePreferredName} ${spouseLastName}`
+    : `${preferredName} ${lastName}`;
+  const personNumbers = isMarried
+    ? `${personNumber} and ${spousePersonNumber}`
+    : personNumber;
+
+  const currentRequest = requestsData[0] || {};
+  // It default to true when no availableDate as the request is likely still being processed
+  const isCurrentRequestPending = true;
+
+  const hasNoRequests = !requestsData.length;
 
   return (
     <PanelLayout
@@ -86,9 +88,47 @@ export const AdditionalSalaryRequest: React.FC = () => {
       isSidebarOpen={isDrawerOpen}
       sidebarAriaLabel={t('Additional Salary Request Sections')}
       mainContent={
-        <SectionPage>
-          <MainContent />
-        </SectionPage>
+        <Container sx={{ ml: 5 }}>
+          {requestsError ? (
+            <Notification type="error" message={requestsError.message} />
+          ) : !requestsData ? (
+            <AdditionalSalaryRequestSkeleton />
+          ) : (
+            <>
+              <Stack direction="column" width={mainContentWidth}>
+                {hasNoRequests ? (
+                  <IneligibleDisplay />
+                ) : (
+                  <EligibleDisplay isPending={isCurrentRequestPending} />
+                )}
+                <NameDisplay names={names} personNumbers={personNumbers} />
+
+                {currentRequest &&
+                  (isCurrentRequestPending ? (
+                    <CurrentRequest request={currentRequest} />
+                  ) : (
+                    <CurrentBoardApproved request={currentRequest} />
+                  ))}
+              </Stack>
+              {(!isCurrentRequestPending || hasNoRequests) && (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{ mt: 2 }}
+                  onClick={createAdditionalSalaryRequest}
+                >
+                  {t('Request New MHA')}
+                </Button>
+              )}
+            </>
+          )}
+
+          {previousApprovedRequest && (
+            <Stack direction="column" width={mainContentWidth} mt={4}>
+              <CurrentBoardApproved request={previousApprovedRequest} />
+            </Stack>
+          )}
+        </Container>
       }
       backHref={`/accountLists/${accountListId}`}
     />

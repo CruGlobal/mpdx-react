@@ -1,8 +1,10 @@
 import React, { createContext, useCallback, useMemo, useState } from 'react';
 import { ApolloError } from '@apollo/client';
 import { FormikProvider, useFormik } from 'formik';
+import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { AsrStatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useStepList } from 'src/hooks/useStepList';
 import { currencyFormat } from 'src/lib/intlFormat';
@@ -18,6 +20,7 @@ import {
   AdditionalSalaryRequestQuery,
   AdditionalSalaryRequestsQuery,
   useAdditionalSalaryRequestQuery,
+  useCreateAdditionalSalaryRequestMutation,
 } from '../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
 import { calculateCompletionPercentage } from './calculateCompletionPercentage';
@@ -35,6 +38,12 @@ export type AdditionalSalaryRequestType = {
   handleCancel: () => void;
   hcmUser: HcmDataQuery['hcm'][0] | null;
   hcmSpouse: HcmDataQuery['hcm'][1] | null;
+  isMarried: boolean;
+  preferredName: string;
+  spousePreferredName: string;
+  previousApprovedRequest:
+    | AdditionalSalaryRequestsQuery['additionalSalaryRequests']['nodes'][number]
+    | undefined;
   requestData?: AdditionalSalaryRequestQuery['additionalSalaryRequest'] | null;
   requestError?: ApolloError;
 
@@ -43,6 +52,9 @@ export type AdditionalSalaryRequestType = {
     | null;
   requestsError?: ApolloError;
   requestId?: string;
+  createAdditionalSalaryRequest: ReturnType<
+    typeof useCreateAdditionalSalaryRequestMutation
+  >[0];
 };
 
 const AdditionalSalaryRequestContext =
@@ -87,6 +99,9 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       variables: { requestId },
       skip: !requestId,
     });
+
+  const [createAdditionalSalaryRequest] =
+    useCreateAdditionalSalaryRequestMutation();
 
   const createCurrencyValidation = useCallback(
     (fieldName: string, max?: number) => {
@@ -213,6 +228,30 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     [formik.values],
   );
 
+  const preferredName = useMemo(
+    () => hcmData?.hcm?.[0]?.staffInfo?.preferredName || '',
+    [hcmData],
+  );
+
+  const spousePreferredName = useMemo(
+    () => hcmData?.hcm?.[1]?.staffInfo?.preferredName || '',
+    [hcmData],
+  );
+
+  const isCurrentRequestPending =
+    requestsData[0].status === AsrStatusEnum.Approved &&
+    requestsData[0].requestAttributes?.availableDate
+      ? DateTime.fromISO(requestsData[0].requestAttributes.availableDate) >
+        DateTime.now()
+      : true;
+
+  const previousApprovedRequest = requestsData
+    .slice(1)
+    ?.find(
+      (request) =>
+        request.status === AsrStatusEnum.Approved && isCurrentRequestPending,
+    );
+
   const contextValue = useMemo<AdditionalSalaryRequestType>(
     () => ({
       steps,
@@ -227,11 +266,16 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       handleCancel,
       hcmUser: hcmData?.hcm?.[0] ?? null,
       hcmSpouse: hcmData?.hcm?.[1] ?? null,
+      isMarried: !!hcmData?.hcm?.[1],
+      preferredName,
+      spousePreferredName,
+      previousApprovedRequest,
       requestsData,
       requestData,
       requestsError,
       requestError,
       requestId,
+      createAdditionalSalaryRequest,
     }),
     [
       steps,
@@ -248,6 +292,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       requestsError,
       requestError,
       requestId,
+      createAdditionalSalaryRequest,
     ],
   );
 
