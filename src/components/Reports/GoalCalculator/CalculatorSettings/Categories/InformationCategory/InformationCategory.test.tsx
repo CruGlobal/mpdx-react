@@ -60,21 +60,30 @@ const TestComponent: React.FC<TestComponentProps> = ({ single = false }) => (
 
 describe('InformationCategory', () => {
   it('toggles to spouse information when button is clicked', async () => {
-    const { findByRole, queryByTestId, getByTestId } = render(
-      <TestComponent />,
-    );
+    const { findByRole, queryByTestId, getByTestId, queryByText, getByText } =
+      render(<TestComponent />);
 
     expect(queryByTestId('spouse-information-form')).not.toBeInTheDocument();
+    expect(
+      queryByText(/spouse's personal information/i),
+    ).not.toBeInTheDocument();
+    expect(
+      queryByText(/spouse's financial information/i),
+    ).not.toBeInTheDocument();
 
     userEvent.click(await findByRole('button', { name: 'View Jane' }));
 
     expect(getByTestId('spouse-information-form')).toBeInTheDocument();
+    expect(getByText(/spouse's personal information/i)).toBeInTheDocument();
+    expect(getByText(/spouse's financial information/i)).toBeInTheDocument();
   });
 
   it('shows user information by default', () => {
-    const { getByTestId } = render(<TestComponent />);
+    const { getByTestId, getByText } = render(<TestComponent />);
 
     expect(getByTestId('user-information-form')).toBeInTheDocument();
+    expect(getByText(/personal information/i)).toBeInTheDocument();
+    expect(getByText(/financial information/i)).toBeInTheDocument();
   });
 
   it('hides view spouse button if the user has no spouse', async () => {

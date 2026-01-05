@@ -45,12 +45,12 @@ const DirectInputDefaults: Partial<
 export const getDirectInputDefaults = (
   categoryName: PrimaryBudgetCategoryEnum,
   defaultType: DefaultTypeEnum,
-) => {
+): number => {
   const categoryDefaults = DirectInputDefaults[categoryName];
 
   if (categoryDefaults) {
-    return categoryDefaults[defaultType] ?? null;
+    return categoryDefaults[defaultType];
   }
 
-  return null;
+  return 0;
 };
