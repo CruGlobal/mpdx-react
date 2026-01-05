@@ -186,9 +186,9 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
       const existingValue = lumpSumValue ? parseFloat(lumpSumValue) : null;
 
       // Get the default value for specific category and type
-      // Fall back to totalAmount if no default exists
+      // Fall back to default if totalAmount does not exist
       const defaultValue = getDirectInputDefaults(categoryType, defaultType);
-      const value = existingValue || defaultValue || totalAmount;
+      const value = existingValue || totalAmount || defaultValue;
 
       // If no input value exists, populate with the current total from line items
       if (!lumpSumValue) {
@@ -210,8 +210,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   };
 
   const directInputProps = useAutoSave({
-    value:
-      category.directInput || getDirectInputDefaults(categoryType, defaultType),
+    value: category.directInput ?? 0,
     saveValue: updateDirectInput,
     fieldName: 'amount',
     schema: directInputSchema,
