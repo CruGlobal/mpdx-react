@@ -29,13 +29,11 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
   const accountListId = useAccountListId();
   const { preferredName } = useAdditionalSalaryRequest();
 
-  const {
-    id: requestId,
-    status,
-    submittedDate,
-    totalAdditionalSalaryRequested,
-    processedDate,
-  } = request;
+  const { id: requestId, status, totalAdditionalSalaryRequested } = request;
+
+  // TODO remove submittedDate and processedDate placeholders and grab from request once available
+  const submittedDate = new Date().toISOString();
+  const processedDate = new Date().toISOString();
 
   return (
     <StatusCard
@@ -85,7 +83,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
             <TimelineContent>
               {status === AsrStatusEnum.InProgress ? (
                 <Typography sx={{ fontWeight: 'bold' }}>
-                  {t('In Progress:')}
+                  {t('In Progress')}
                 </Typography>
               ) : (
                 <>
@@ -121,7 +119,9 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
                   </Typography>
                 </>
               ) : (
-                t('Request In Process')
+                <Typography sx={{ fontWeight: 'bold' }}>
+                  {t('Request In Process')}
+                </Typography>
               )}
             </TimelineContent>
           </TimelineItem>
