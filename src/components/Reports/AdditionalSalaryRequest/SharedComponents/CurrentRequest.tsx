@@ -86,15 +86,13 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
                   {t('In Progress')}
                 </Typography>
               ) : (
-                <>
-                  <Typography sx={{ fontWeight: 'bold' }}>
+                <Typography>
+                  <Box component="span" sx={{ fontWeight: 'bold' }}>
                     {t('Requested on:')}
-                  </Typography>
-                  <Typography>
-                    {submittedDate &&
-                      `: ${dateFormat(DateTime.fromISO(submittedDate), locale)}`}
-                  </Typography>
-                </>
+                  </Box>
+                  {submittedDate &&
+                    ` ${dateFormat(DateTime.fromISO(submittedDate), locale)}`}
+                </Typography>
               )}
             </TimelineContent>
           </TimelineItem>
@@ -109,15 +107,13 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
             <TimelineContent>
               {status === AsrStatusEnum.Approved ||
               status === AsrStatusEnum.ActionRequired ? (
-                <>
-                  <Typography sx={{ fontWeight: 'bold' }}>
+                <Typography>
+                  <Box component="span" sx={{ fontWeight: 'bold' }}>
                     {t('Request processed on:')}
-                  </Typography>
-                  <Typography>
-                    {processedDate &&
-                      `: ${dateFormat(DateTime.fromISO(processedDate), locale)}`}
-                  </Typography>
-                </>
+                  </Box>
+                  {processedDate &&
+                    ` ${dateFormat(DateTime.fromISO(processedDate), locale)}`}
+                </Typography>
               ) : (
                 <Typography sx={{ fontWeight: 'bold' }}>
                   {t('Request In Process')}

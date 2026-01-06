@@ -87,7 +87,7 @@ export const RequestPage: React.FC = () => {
       isSidebarOpen={isDrawerOpen}
       sidebarAriaLabel={t('Additional Salary Request Sections')}
       mainContent={<MainContent />}
-      backHref={`/accountLists/${accountListId}`}
+      backHref={`/accountLists/${accountListId}/reports/additionalSalaryRequest`}
     />
   );
 };
