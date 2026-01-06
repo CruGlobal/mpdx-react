@@ -8,7 +8,6 @@ import theme from 'src/theme';
 import { PanelLayout } from '../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { useIconPanelItems } from '../Shared/CalculationReports/PanelLayout/useIconPanelItems';
 import { PanelTypeEnum } from '../Shared/CalculationReports/Shared/sharedTypes';
-import { StepsList } from '../Shared/CalculationReports/StepsList/StepsList';
 import { AdditionalSalaryRequestSkeleton } from './AdditionalSalaryRequestSkeleton';
 import { EligibleDisplay } from './MainPages/EligibleDisplay';
 import { useAdditionalSalaryRequest } from './Shared/AdditionalSalaryRequestContext';
@@ -77,7 +76,6 @@ export const AdditionalSalaryRequest: React.FC = () => {
       steps={steps}
       currentIndex={currentIndex}
       icons={useIconPanelItems(isDrawerOpen, toggleDrawer)}
-      sidebarContent={<StepsList steps={steps} />}
       sidebarTitle={t('Additional Salary Request')}
       isSidebarOpen={isDrawerOpen}
       sidebarAriaLabel={t('Additional Salary Request Sections')}
