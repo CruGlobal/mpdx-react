@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DoNotDisturbAltIcon from '@mui/icons-material/DoNotDisturbAlt';
@@ -31,6 +31,7 @@ import {
   SubBudgetCategoryEnum,
 } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import {
@@ -107,6 +108,9 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   const [updateSubBudgetCategory] = useUpdateSubBudgetCategoryMutation();
   const [createSubBudgetCategory] = useCreateSubBudgetCategoryMutation();
   const [deleteSubBudgetCategory] = useDeleteSubBudgetCategoryMutation();
+
+  const constants = useGoalCalculatorConstants();
+  const { goalMiscConstants } = constants;
 
   // Yup validation schemas
   const directInputSchema = useMemo(() => {
@@ -187,7 +191,11 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
 
       // Get the default value for specific category and type
       // Fall back to default if totalAmount does not exist
-      const defaultValue = getDirectInputDefaults(categoryType, defaultType);
+      const defaultValue = getDirectInputDefaults(
+        categoryType,
+        defaultType,
+        goalMiscConstants,
+      );
       const value = existingValue || totalAmount || defaultValue;
 
       // If no input value exists, populate with the current total from line items
@@ -208,6 +216,19 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
     // Clear any validation errors when switching modes
     setCellErrors({});
   };
+
+  // When familySize or role changes, update lumpSumValue with new defaults
+  useEffect(() => {
+    if (directInput) {
+      const newDefaultValues = getDirectInputDefaults(
+        categoryType,
+        defaultType,
+        goalMiscConstants,
+      );
+      setLumpSumValue(newDefaultValues.toString());
+      updateDirectInput(newDefaultValues);
+    }
+  }, [directInput, defaultType, categoryType, goalMiscConstants]);
 
   const directInputProps = useAutoSave({
     value: category.directInput ?? 0,

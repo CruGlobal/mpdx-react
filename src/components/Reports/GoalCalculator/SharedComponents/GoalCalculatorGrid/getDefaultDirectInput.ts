@@ -1,56 +1,50 @@
-import { PrimaryBudgetCategoryEnum } from 'src/graphql/types.generated';
+import {
+  GoalCalculationRole,
+  MpdGoalBenefitsConstantSizeEnum,
+  PrimaryBudgetCategoryEnum,
+} from 'src/graphql/types.generated';
+import { GoalMiscConstants } from 'src/hooks/useGoalCalculatorConstants';
+import { ListGoalCalculationFragment } from '../../GoalsList/GoalCalculations.generated';
+import { getNewStaffBudgetCategory } from '../../Shared/calculateNewStaffTotals';
 import { DefaultTypeEnum } from '../../Shared/getDefaultType';
 
-const DirectInputDefaults: Partial<
-  Record<PrimaryBudgetCategoryEnum, Record<DefaultTypeEnum, number>>
-> = {
-  [PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage]: {
-    [DefaultTypeEnum.SingleField]: 140,
-    [DefaultTypeEnum.SingleOffice]: 70,
-    [DefaultTypeEnum.MarriedField]: 140,
-    [DefaultTypeEnum.MarriedOffice]: 70,
-  },
-  [PrimaryBudgetCategoryEnum.MinistryTravel]: {
-    [DefaultTypeEnum.SingleField]: 30,
-    [DefaultTypeEnum.SingleOffice]: 30,
-    [DefaultTypeEnum.MarriedField]: 60,
-    [DefaultTypeEnum.MarriedOffice]: 60,
-  },
-  [PrimaryBudgetCategoryEnum.MeetingsRetreatsConferences]: {
-    [DefaultTypeEnum.SingleField]: 100,
-    [DefaultTypeEnum.SingleOffice]: 25,
-    [DefaultTypeEnum.MarriedField]: 200,
-    [DefaultTypeEnum.MarriedOffice]: 50,
-  },
-  [PrimaryBudgetCategoryEnum.MealsAndPerDiem]: {
-    [DefaultTypeEnum.SingleField]: 50,
-    [DefaultTypeEnum.SingleOffice]: 25,
-    [DefaultTypeEnum.MarriedField]: 100,
-    [DefaultTypeEnum.MarriedOffice]: 50,
-  },
-  [PrimaryBudgetCategoryEnum.MinistryPartnerDevelopment]: {
-    [DefaultTypeEnum.SingleField]: 125,
-    [DefaultTypeEnum.SingleOffice]: 125,
-    [DefaultTypeEnum.MarriedField]: 187.5,
-    [DefaultTypeEnum.MarriedOffice]: 187.5,
-  },
-  [PrimaryBudgetCategoryEnum.SuppliesAndMaterials]: {
-    [DefaultTypeEnum.SingleField]: 50,
-    [DefaultTypeEnum.SingleOffice]: 50,
-    [DefaultTypeEnum.MarriedField]: 75,
-    [DefaultTypeEnum.MarriedOffice]: 75,
-  },
+const createGoalCalculationFromDefault = (
+  defaultType: DefaultTypeEnum,
+): Partial<ListGoalCalculationFragment> => {
+  switch (defaultType) {
+    case DefaultTypeEnum.SingleField:
+      return {
+        role: GoalCalculationRole.Field,
+        familySize: null,
+      };
+    case DefaultTypeEnum.SingleOffice:
+      return {
+        role: GoalCalculationRole.Office,
+        familySize: null,
+      };
+    case DefaultTypeEnum.MarriedField:
+      return {
+        role: GoalCalculationRole.Field,
+        familySize: MpdGoalBenefitsConstantSizeEnum.MarriedNoChildren,
+      };
+    case DefaultTypeEnum.MarriedOffice:
+      return {
+        role: GoalCalculationRole.Office,
+        familySize: MpdGoalBenefitsConstantSizeEnum.MarriedNoChildren,
+      };
+  }
 };
 
 export const getDirectInputDefaults = (
   categoryName: PrimaryBudgetCategoryEnum,
   defaultType: DefaultTypeEnum,
+  miscConstants: GoalMiscConstants,
 ): number => {
-  const categoryDefaults = DirectInputDefaults[categoryName];
+  const goalCalculationDefaults = createGoalCalculationFromDefault(defaultType);
 
-  if (categoryDefaults) {
-    return categoryDefaults[defaultType];
-  }
-
-  return 0;
+  return getNewStaffBudgetCategory(
+    goalCalculationDefaults as ListGoalCalculationFragment,
+    categoryName,
+    miscConstants,
+  );
 };
