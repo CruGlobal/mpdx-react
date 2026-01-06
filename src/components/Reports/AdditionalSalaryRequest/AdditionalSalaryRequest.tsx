@@ -2,16 +2,15 @@ import React from 'react';
 import { Button, Container, Stack } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Notification } from 'src/components/Notification/Notification';
+import { AsrStatusEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
-import { NameDisplay } from '../Shared/CalculationReports/NameDisplay/NameDisplay';
 import { PanelLayout } from '../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { useIconPanelItems } from '../Shared/CalculationReports/PanelLayout/useIconPanelItems';
 import { PanelTypeEnum } from '../Shared/CalculationReports/Shared/sharedTypes';
 import { StepsList } from '../Shared/CalculationReports/StepsList/StepsList';
 import { AdditionalSalaryRequestSkeleton } from './AdditionalSalaryRequestSkeleton';
 import { EligibleDisplay } from './MainPages/EligibleDisplay';
-import { IneligibleDisplay } from './MainPages/IneligibleDisplay';
 import { useAdditionalSalaryRequest } from './Shared/AdditionalSalaryRequestContext';
 import { CurrentBoardApproved } from './SharedComponents/CurrentBoardApproved';
 import { CurrentRequest } from './SharedComponents/CurrentRequest';
@@ -49,32 +48,13 @@ export const AdditionalSalaryRequest: React.FC = () => {
     percentComplete,
     requestsError,
     requestsData,
-    hcmUser,
-    hcmSpouse,
-    isMarried,
-    preferredName,
-    spousePreferredName,
     createAdditionalSalaryRequest,
-    previousApprovedRequest,
   } = useAdditionalSalaryRequest();
 
-  const personNumber = hcmUser?.staffInfo?.personNumber ?? '';
-  const spousePersonNumber = hcmSpouse?.staffInfo?.personNumber ?? '';
-  const lastName = hcmUser?.staffInfo?.lastName ?? '';
-  const spouseLastName = hcmSpouse?.staffInfo?.lastName ?? '';
-
-  const names = isMarried
-    ? `${preferredName} ${lastName} and ${spousePreferredName} ${spouseLastName}`
-    : `${preferredName} ${lastName}`;
-  const personNumbers = isMarried
-    ? `${personNumber} and ${spousePersonNumber}`
-    : personNumber;
-
-  const currentRequest = requestsData?.[0];
   // It default to true when no availableDate as the request is likely still being processed
-  const isCurrentRequestPending = true;
-
-  const hasNoRequests = !requestsData?.length;
+  const isAnyRequestPending =
+    requestsData?.some((request) => request.status === AsrStatusEnum.Pending) ??
+    false;
 
   return (
     <PanelLayout
@@ -94,38 +74,30 @@ export const AdditionalSalaryRequest: React.FC = () => {
           ) : !requestsData ? (
             <AdditionalSalaryRequestSkeleton />
           ) : (
-            <>
-              <Stack direction="column" width={mainContentWidth}>
-                {hasNoRequests ? (
-                  <IneligibleDisplay />
+            <Stack
+              direction="column"
+              sx={{
+                gap: theme.spacing(4),
+              }}
+              width={mainContentWidth}
+            >
+              <EligibleDisplay isAnyRequestPending={isAnyRequestPending} />
+
+              {requestsData.map((request) =>
+                request.status === AsrStatusEnum.Approved ? (
+                  <CurrentBoardApproved request={request} />
                 ) : (
-                  <EligibleDisplay isPending={isCurrentRequestPending} />
-                )}
-                <NameDisplay names={names} personNumbers={personNumbers} />
-
-                {currentRequest &&
-                  (isCurrentRequestPending ? (
-                    <CurrentRequest request={currentRequest} />
-                  ) : (
-                    <CurrentBoardApproved request={currentRequest} />
-                  ))}
-              </Stack>
-              {(!isCurrentRequestPending || hasNoRequests) && (
-                <Button
-                  variant="contained"
-                  color="primary"
-                  sx={{ mt: 2 }}
-                  onClick={() => createAdditionalSalaryRequest()}
-                >
-                  {t('Request New MHA')}
-                </Button>
+                  <CurrentRequest request={request} />
+                ),
               )}
-            </>
-          )}
-
-          {previousApprovedRequest && (
-            <Stack direction="column" width={mainContentWidth} mt={4}>
-              <CurrentBoardApproved request={previousApprovedRequest} />
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => createAdditionalSalaryRequest()}
+                sx={{ alignSelf: 'flex-start' }}
+              >
+                {t('Request New ASR')}
+              </Button>
             </Stack>
           )}
         </Container>
