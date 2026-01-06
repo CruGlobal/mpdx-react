@@ -43,7 +43,6 @@ export const AdditionalSalaryRequest: React.FC = () => {
     toggleDrawer,
     steps,
     currentIndex,
-    percentComplete,
     requestsError,
     requestsData,
     createAdditionalSalaryRequest,
@@ -72,7 +71,8 @@ export const AdditionalSalaryRequest: React.FC = () => {
   return (
     <PanelLayout
       panelType={PanelTypeEnum.Other}
-      percentComplete={percentComplete}
+      percentComplete={0}
+      showPercentage={false}
       steps={steps}
       currentIndex={currentIndex}
       icons={useIconPanelItems(isDrawerOpen, toggleDrawer)}
