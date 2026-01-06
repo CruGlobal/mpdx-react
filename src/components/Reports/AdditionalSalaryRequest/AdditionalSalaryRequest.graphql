@@ -37,7 +37,7 @@ fragment AdditionalSalaryRequestDetailsFields on AdditionalSalaryRequest {
 
 query AdditionalSalaryRequest($requestId: ID!) {
   additionalSalaryRequest(id: $requestId) {
-    ...AdditionalSalaryRequestFields
+    ...AdditionalSalaryRequestDetailsFields
     createdAt
     updatedAt
   }

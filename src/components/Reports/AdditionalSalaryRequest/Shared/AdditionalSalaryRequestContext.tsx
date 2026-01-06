@@ -8,7 +8,10 @@ import { useLocale } from 'src/hooks/useLocale';
 import { useStepList } from 'src/hooks/useStepList';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { amount } from 'src/lib/yupHelpers';
-import { FormEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
+import {
+  FormEnum,
+  PageEnum,
+} from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
 import {
   HcmDataQuery,
@@ -21,9 +24,12 @@ import {
   useAdditionalSalaryRequestQuery,
   useAdditionalSalaryRequestsQuery,
   useCreateAdditionalSalaryRequestMutation,
+  useSubmitAdditionalSalaryRequestMutation,
+  useUpdateAdditionalSalaryRequestMutation,
 } from '../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
 import { calculateCompletionPercentage } from './calculateCompletionPercentage';
+import { useSalaryCalculations } from './useSalaryCalculations';
 
 export type AdditionalSalaryRequestType = {
   steps: Steps[];
@@ -55,6 +61,9 @@ export type AdditionalSalaryRequestType = {
   createAdditionalSalaryRequest: ReturnType<
     typeof useCreateAdditionalSalaryRequestMutation
   >[0];
+  submitAdditionalSalaryRequest: ReturnType<
+    typeof useSubmitAdditionalSalaryRequestMutation
+  >[0];
 };
 
 const AdditionalSalaryRequestContext =
@@ -73,6 +82,8 @@ export const useAdditionalSalaryRequest = (): AdditionalSalaryRequestType => {
 interface Props {
   children?: React.ReactNode;
   initialValues?: CompleteFormValues;
+  requestId?: string;
+  type?: PageEnum;
 }
 
 const objects = Object.values(AdditionalSalaryRequestSectionEnum);
@@ -80,6 +91,7 @@ const objects = Object.values(AdditionalSalaryRequestSectionEnum);
 export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   children,
   initialValues: providedInitialValues,
+  requestId: providedRequestId,
 }) => {
   const { t } = useTranslation();
   const { steps, nextStep, previousStep, currentIndex } = useStepList(
@@ -92,16 +104,22 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   const { data: requestsData, error: requestsError } =
     useAdditionalSalaryRequestsQuery();
 
-  const requestId = 'c1a68821-5fb6-4e5e-b308-9263539af9d8';
+  const requestId = providedRequestId;
 
   const { data: requestData, error: requestError } =
     useAdditionalSalaryRequestQuery({
-      variables: { requestId },
+      variables: { requestId: requestId || '' },
       skip: !requestId,
     });
 
   const [createAdditionalSalaryRequest] =
     useCreateAdditionalSalaryRequestMutation();
+
+  const [updateAdditionalSalaryRequest] =
+    useUpdateAdditionalSalaryRequestMutation();
+
+  const [submitAdditionalSalaryRequest] =
+    useSubmitAdditionalSalaryRequestMutation();
 
   const createCurrencyValidation = useCallback(
     (fieldName: string, max?: number) => {
@@ -121,7 +139,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     [t],
   );
 
-  const initialValues: CompleteFormValues = {
+  const defaultInitialValues: CompleteFormValues = {
     currentYearSalary: '0',
     previousYearSalary: '0',
     additionalSalary: '0',
@@ -140,6 +158,40 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     defaultPercentage: false,
     telephoneNumber: '',
   };
+
+  // Populate initialValues from requestData if available
+  const initialValues: CompleteFormValues = useMemo(() => {
+    if (providedInitialValues) {
+      return providedInitialValues;
+    }
+
+    const request = requestData?.additionalSalaryRequest;
+    if (!request) {
+      return defaultInitialValues;
+    }
+
+    return {
+      currentYearSalary: String(request.currentYearSalaryNotReceived || 0),
+      previousYearSalary: String(request.previousYearSalaryNotReceived || 0),
+      additionalSalary: String(request.additionalSalaryWithinMax || 0),
+      adoption: String(request.adoption || 0),
+      contribution403b: String(request.traditional403bContribution || 0),
+      counseling: String(request.counselingNonMedical || 0),
+      healthcareExpenses: String(request.healthcareExpensesExceedingLimit || 0),
+      babysitting: String(request.babysittingMinistryEvents || 0),
+      childrenMinistryTrip: String(request.childrenMinistryTripExpenses || 0),
+      childrenCollege: String(request.childrenCollegeEducation || 0),
+      movingExpense: String(request.movingExpense || 0),
+      seminary: String(request.seminary || 0),
+      housingDownPayment: String(request.housingDownPayment || 0),
+      autoPurchase: String(request.autoPurchase || 0),
+      reimbursableExpenses: String(
+        request.expensesNotApprovedWithin90Days || 0,
+      ),
+      defaultPercentage: request.deductTwelvePercent || false,
+      telephoneNumber: request.phoneNumber || '',
+    };
+  }, [providedInitialValues, requestData]);
 
   const validationSchema = useMemo(
     () =>
@@ -209,15 +261,72 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   };
 
   const handleSubmit = useCallback(
-    (_values: CompleteFormValues) => {
-      //TODO: Submit form values
-      handleNextStep();
+    (values: CompleteFormValues) => {
+      if (!requestId) {
+        return;
+      }
+      const { total } = useSalaryCalculations();
+      // Transform form values to match the GraphQL mutation input
+      const attributes = {
+        currentYearSalaryNotReceived: parseFloat(values.currentYearSalary) || 0,
+        previousYearSalaryNotReceived:
+          parseFloat(values.previousYearSalary) || 0,
+        additionalSalaryWithinMax: parseFloat(values.additionalSalary) || 0,
+        adoption: parseFloat(values.adoption) || 0,
+        traditional403bContribution: parseFloat(values.contribution403b) || 0,
+        counselingNonMedical: parseFloat(values.counseling) || 0,
+        healthcareExpensesExceedingLimit:
+          parseFloat(values.healthcareExpenses) || 0,
+        babysittingMinistryEvents: parseFloat(values.babysitting) || 0,
+        childrenMinistryTripExpenses:
+          parseFloat(values.childrenMinistryTrip) || 0,
+        childrenCollegeEducation: parseFloat(values.childrenCollege) || 0,
+        movingExpense: parseFloat(values.movingExpense) || 0,
+        seminary: parseFloat(values.seminary) || 0,
+        housingDownPayment: parseFloat(values.housingDownPayment) || 0,
+        autoPurchase: parseFloat(values.autoPurchase) || 0,
+        expensesNotApprovedWithin90Days:
+          parseFloat(values.reimbursableExpenses) || 0,
+        deductTwelvePercent: values.defaultPercentage,
+        phoneNumber: values.telephoneNumber,
+        totalAdditionalSalaryRequested: total,
+      };
+
+      // First update the request with the form values
+      updateAdditionalSalaryRequest({
+        variables: {
+          id: requestId,
+          attributes,
+        },
+        onCompleted: () => {
+          // Then submit the request
+          submitAdditionalSalaryRequest({
+            variables: {
+              id: requestId,
+            },
+            onCompleted: () => {
+              handleNextStep();
+            },
+            onError: (_error) => {
+              // Error handling can be implemented here
+            },
+          });
+        },
+        onError: (_error) => {
+          // Error handling can be implemented here
+        },
+      });
     },
-    [handleNextStep],
+    [
+      requestId,
+      updateAdditionalSalaryRequest,
+      submitAdditionalSalaryRequest,
+      handleNextStep,
+    ],
   );
 
   const formik = useFormik<CompleteFormValues>({
-    initialValues: providedInitialValues || initialValues,
+    initialValues,
     validationSchema,
     onSubmit: handleSubmit,
     enableReinitialize: true,
@@ -268,6 +377,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       requestError,
       requestId,
       createAdditionalSalaryRequest,
+      submitAdditionalSalaryRequest,
     }),
     [
       steps,
@@ -285,6 +395,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       requestError,
       requestId,
       createAdditionalSalaryRequest,
+      submitAdditionalSalaryRequest,
     ],
   );
 

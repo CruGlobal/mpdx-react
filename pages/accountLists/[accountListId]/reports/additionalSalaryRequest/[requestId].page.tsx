@@ -1,10 +1,12 @@
 import Head from 'next/head';
+import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { RequestPage } from 'src/components/Reports/AdditionalSalaryRequest/RequestPage/RequestPage';
 import { AdditionalSalaryRequestProvider } from 'src/components/Reports/AdditionalSalaryRequest/Shared/AdditionalSalaryRequestContext';
+import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -19,9 +21,27 @@ import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
 const AdditionalSalaryRequestPage: React.FC = () => {
   const { t } = useTranslation();
+  const router = useRouter();
   const { appName } = useGetAppSettings();
   const [isNavListOpen, setNavListOpen] = useState(false);
   const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
+
+  const { requestId, mode } = router.query;
+
+  const getPageType = (mode: string | string[] | undefined) => {
+    switch (mode) {
+      case 'new':
+        return PageEnum.New;
+      case 'edit':
+        return PageEnum.Edit;
+      case 'view':
+        return PageEnum.View;
+      default:
+        return undefined;
+    }
+  };
+
+  const pageType = getPageType(mode);
 
   const handleNavListToggle = () => {
     setNavListOpen(!isNavListOpen);
@@ -33,7 +53,10 @@ const AdditionalSalaryRequestPage: React.FC = () => {
         <title>{`${appName} | ${t('Additional Salary Request')}`}</title>
       </Head>
       <ReportPageWrapper>
-        <AdditionalSalaryRequestProvider>
+        <AdditionalSalaryRequestProvider
+          requestId={requestId as string}
+          type={pageType}
+        >
           <SidePanelsLayout
             isScrollBox={false}
             leftPanel={
