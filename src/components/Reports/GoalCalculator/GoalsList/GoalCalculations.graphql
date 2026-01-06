@@ -1,6 +1,7 @@
 fragment ListGoalCalculation on GoalCalculation {
   id
   name
+  role
   primary
   familySize
   benefitsPlan

@@ -4,7 +4,9 @@ import React, {
   SetStateAction,
   createContext,
   useCallback,
+  useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { useSnackbar } from 'notistack';
@@ -54,6 +56,9 @@ export type GoalCalculatorType = {
 
   defaultType: DefaultTypeEnum;
   isMarried: boolean;
+
+  defaultTypeChanged: boolean;
+  clearDefaultTypeChanged: () => void;
 };
 
 const GoalCalculatorContext = createContext<GoalCalculatorType | null>(null);
@@ -96,6 +101,24 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     familySize === MpdGoalBenefitsConstantSizeEnum.MarriedThreeOrMoreChildren;
 
   const defaultType = getDefaultType(role, isMarried);
+
+  // Track when defaultType changes (not on initial load)
+  const previousDefaultTypeRef = useRef<DefaultTypeEnum | null>(null);
+  const [defaultTypeChanged, setDefaultTypeChanged] = useState(false);
+
+  useEffect(() => {
+    const previousDefaultType = previousDefaultTypeRef.current;
+
+    if (previousDefaultType && previousDefaultType !== defaultType) {
+      setDefaultTypeChanged(true);
+    }
+
+    previousDefaultTypeRef.current = defaultType;
+  }, [defaultType]);
+
+  const clearDefaultTypeChanged = useCallback(() => {
+    setDefaultTypeChanged(false);
+  }, []);
 
   const constants = useGoalCalculatorConstants();
 
@@ -175,6 +198,8 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       goalTotals,
       defaultType,
       isMarried,
+      defaultTypeChanged,
+      clearDefaultTypeChanged,
     }),
     [
       steps,
@@ -196,6 +221,8 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       goalTotals,
       defaultType,
       isMarried,
+      defaultTypeChanged,
+      clearDefaultTypeChanged,
     ],
   );
 

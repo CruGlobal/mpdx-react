@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DoNotDisturbAltIcon from '@mui/icons-material/DoNotDisturbAlt';
@@ -31,6 +31,7 @@ import {
   SubBudgetCategoryEnum,
 } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import {
@@ -50,6 +51,16 @@ import {
 } from './GoalCalculatorGrid.generated';
 import { StyledGrid } from './StyledGrid';
 import { getDirectInputDefaults } from './getDefaultDirectInput';
+
+const categoriesWithDefaults = [
+  PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage,
+  PrimaryBudgetCategoryEnum.MinistryTravel,
+  PrimaryBudgetCategoryEnum.MeetingsRetreatsConferences,
+  PrimaryBudgetCategoryEnum.MealsAndPerDiem,
+  PrimaryBudgetCategoryEnum.MinistryPartnerDevelopment,
+  PrimaryBudgetCategoryEnum.SuppliesAndMaterials,
+  PrimaryBudgetCategoryEnum.ReimbursableMedicalExpenses,
+];
 
 const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
@@ -76,12 +87,19 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   const locale = useLocale();
   const { label: categoryName } = category;
   const accountListId = useAccountListId() ?? '';
-  const { setRightPanelContent, trackMutation, defaultType } =
-    useGoalCalculator();
+  const {
+    setRightPanelContent,
+    trackMutation,
+    defaultType,
+    defaultTypeChanged,
+    clearDefaultTypeChanged,
+  } = useGoalCalculator();
 
   const categoryType = category.category;
 
-  const showLumpSum = categoryType !== PrimaryBudgetCategoryEnum.SpecialIncome;
+  const hasDefaultsForType = categoriesWithDefaults.includes(categoryType);
+
+  const showLumpSum = categoryType !== PrimaryBudgetCategoryEnum.OutsideIncome;
 
   const gridData = useMemo(
     () =>
@@ -107,6 +125,9 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   const [updateSubBudgetCategory] = useUpdateSubBudgetCategoryMutation();
   const [createSubBudgetCategory] = useCreateSubBudgetCategoryMutation();
   const [deleteSubBudgetCategory] = useDeleteSubBudgetCategoryMutation();
+
+  const constants = useGoalCalculatorConstants();
+  const { goalMiscConstants } = constants;
 
   // Yup validation schemas
   const directInputSchema = useMemo(() => {
@@ -185,32 +206,73 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
       // Parse the current input value, or use null if empty/invalid
       const existingValue = lumpSumValue ? parseFloat(lumpSumValue) : null;
 
-      // Get the default value for specific category and type
-      // Fall back to default if totalAmount does not exist
-      const defaultValue = getDirectInputDefaults(categoryType, defaultType);
-      const value = existingValue || totalAmount || defaultValue;
-
       // If no input value exists, populate with the current total from line items
       if (!lumpSumValue) {
-        setLumpSumValue(value.toString());
+        setLumpSumValue(totalAmount.toString());
       }
 
       // Set directInput to the existing value or fall back to totalAmount
       // This preserves user input or defaults to the calculated total
-      updateDirectInput(value);
+      updateDirectInput(existingValue || totalAmount);
     } else {
       // Switching to "Line Item" mode
-      // Set directInput to null to indicate line item mode and reset lump sum value
+      // Set directInput to null to indicate line item mode
       updateDirectInput(null);
-      setLumpSumValue('');
     }
 
     // Clear any validation errors when switching modes
     setCellErrors({});
   };
 
+  // Update line item defaults when defaultType changes (user changed role/family size)
+  useEffect(() => {
+    if (!hasDefaultsForType) {
+      return;
+    }
+
+    if (!defaultTypeChanged || directInput) {
+      return;
+    }
+
+    const newDefaultValues = getDirectInputDefaults(
+      categoryType,
+      defaultType,
+      goalMiscConstants,
+    );
+
+    gridData.forEach(async (row) => {
+      if (row.category) {
+        await updateSubBudgetCategory({
+          variables: {
+            input: {
+              accountListId,
+              attributes: {
+                id: row.id,
+                label: row.label,
+                amount: newDefaultValues,
+              },
+            },
+          },
+        });
+      }
+    });
+
+    clearDefaultTypeChanged();
+  }, [
+    hasDefaultsForType,
+    defaultTypeChanged,
+    directInput,
+    categoryType,
+    defaultType,
+    goalMiscConstants,
+    gridData,
+    accountListId,
+    updateSubBudgetCategory,
+    clearDefaultTypeChanged,
+  ]);
+
   const directInputProps = useAutoSave({
-    value: category.directInput ?? 0,
+    value: category.directInput,
     saveValue: updateDirectInput,
     fieldName: 'amount',
     schema: directInputSchema,
