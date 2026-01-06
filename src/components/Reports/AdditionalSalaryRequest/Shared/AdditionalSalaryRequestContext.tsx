@@ -1,7 +1,6 @@
 import React, { createContext, useCallback, useMemo, useState } from 'react';
 import { ApolloError } from '@apollo/client';
 import { FormikProvider, useFormik } from 'formik';
-import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { AsrStatusEnum } from 'src/graphql/types.generated';
@@ -20,6 +19,7 @@ import {
   AdditionalSalaryRequestQuery,
   AdditionalSalaryRequestsQuery,
   useAdditionalSalaryRequestQuery,
+  useAdditionalSalaryRequestsQuery,
   useCreateAdditionalSalaryRequestMutation,
 } from '../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
@@ -238,19 +238,11 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     [hcmData],
   );
 
-  const isCurrentRequestPending =
-    requestsData[0].status === AsrStatusEnum.Approved &&
-    requestsData[0].requestAttributes?.availableDate
-      ? DateTime.fromISO(requestsData[0].requestAttributes.availableDate) >
-        DateTime.now()
-      : true;
+  const nodes = requestsData?.additionalSalaryRequests?.nodes;
 
-  const previousApprovedRequest = requestsData
-    .slice(1)
-    ?.find(
-      (request) =>
-        request.status === AsrStatusEnum.Approved && isCurrentRequestPending,
-    );
+  const previousApprovedRequest = nodes
+    ?.slice(1)
+    ?.find((request) => request.status === AsrStatusEnum.Approved);
 
   const contextValue = useMemo<AdditionalSalaryRequestType>(
     () => ({
@@ -270,8 +262,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       preferredName,
       spousePreferredName,
       previousApprovedRequest,
-      requestsData,
-      requestData,
+      requestsData: requestsData?.additionalSalaryRequests?.nodes,
+      requestData: requestData?.additionalSalaryRequest,
       requestsError,
       requestError,
       requestId,
