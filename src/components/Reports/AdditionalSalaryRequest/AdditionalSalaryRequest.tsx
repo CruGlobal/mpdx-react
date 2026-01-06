@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Button, Container, Stack } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Notification } from 'src/components/Notification/Notification';
@@ -12,7 +12,6 @@ import { StepsList } from '../Shared/CalculationReports/StepsList/StepsList';
 import { AdditionalSalaryRequestSkeleton } from './AdditionalSalaryRequestSkeleton';
 import { EligibleDisplay } from './MainPages/EligibleDisplay';
 import { useAdditionalSalaryRequest } from './Shared/AdditionalSalaryRequestContext';
-import { CurrentBoardApproved } from './SharedComponents/CurrentBoardApproved';
 import { CurrentRequest } from './SharedComponents/CurrentRequest';
 
 export const mainContentWidth = theme.spacing(85);
@@ -51,10 +50,25 @@ export const AdditionalSalaryRequest: React.FC = () => {
     createAdditionalSalaryRequest,
   } = useAdditionalSalaryRequest();
 
-  // It default to true when no availableDate as the request is likely still being processed
-  const isAnyRequestPending =
-    requestsData?.some((request) => request.status === AsrStatusEnum.Pending) ??
-    false;
+  // Determine overall request status based on priority
+  const allRequestStatus = useMemo((): string => {
+    if (!requestsData || requestsData.length === 0) {
+      return 'None';
+    }
+    for (const request of requestsData) {
+      switch (request.status) {
+        case AsrStatusEnum.Approved:
+          return 'Approved';
+        case AsrStatusEnum.ActionRequired:
+          return 'Action Required';
+        case AsrStatusEnum.Pending:
+          return 'Pending';
+        case AsrStatusEnum.InProgress:
+          return 'In Progress';
+      }
+    }
+    return 'None';
+  }, [requestsData]);
 
   return (
     <PanelLayout
@@ -81,22 +95,18 @@ export const AdditionalSalaryRequest: React.FC = () => {
               }}
               width={mainContentWidth}
             >
-              <EligibleDisplay isAnyRequestPending={isAnyRequestPending} />
+              <EligibleDisplay allRequestStatus={allRequestStatus} />
 
-              {requestsData.map((request) =>
-                request.status === AsrStatusEnum.Approved ? (
-                  <CurrentBoardApproved request={request} />
-                ) : (
-                  <CurrentRequest request={request} />
-                ),
-              )}
+              {requestsData.map((request) => (
+                <CurrentRequest key={request.id} request={request} />
+              ))}
               <Button
                 variant="contained"
                 color="primary"
                 onClick={() => createAdditionalSalaryRequest()}
                 sx={{ alignSelf: 'flex-start' }}
               >
-                {t('Request New ASR')}
+                {t('Create New ASR')}
               </Button>
             </Stack>
           )}
