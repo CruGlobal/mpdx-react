@@ -2,15 +2,15 @@ import { TextField, TextFieldProps } from '@mui/material';
 import { useFormikContext } from 'formik';
 import * as yup from 'yup';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
+import { useCustomAutoSave } from '../../../Shared/CalculationReports/CustomAutosave/useCustomAutosave';
 import { CalculationFormValues } from '../../Steps/StepThree/Calculation';
 import { useMinisterHousingAllowance } from '../Context/MinisterHousingAllowanceContext';
-import { useAutoSave } from './useAutosave';
 import { useSaveField } from './useSaveField';
 
 export interface AutosaveCustomTextFieldProps
   extends Omit<
     TextFieldProps<'outlined' | 'standard'>,
-    keyof ReturnType<typeof useAutoSave> | 'variant'
+    keyof ReturnType<typeof useCustomAutoSave> | 'variant'
   > {
   variant?: 'standard' | 'outlined';
   fieldName: keyof CalculationFormValues & string;
@@ -32,7 +32,7 @@ export const AutosaveCustomTextField: React.FC<
 
   const saveField = useSaveField({ formValues });
 
-  const fieldProps = useAutoSave({
+  const fieldProps = useCustomAutoSave({
     value: request?.[fieldName],
     saveValue: (value) => saveField({ [fieldName]: value }),
     fieldName,
@@ -41,6 +41,7 @@ export const AutosaveCustomTextField: React.FC<
     setFieldTouched,
     submitCount,
     disabled: !request || pageType === PageEnum.View,
+    stringFields: ['phoneNumber', 'emailAddress'],
   });
 
   return <TextField variant={variant} {...fieldProps} {...props} />;
