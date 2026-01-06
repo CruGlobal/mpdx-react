@@ -65,6 +65,8 @@ export const RequestPage: React.FC = () => {
   const availableDate = mocks[4].mhaDetails.staffMHA?.availableDate ?? '';
   const deadlineDate = mocks[4].mhaDetails.staffMHA?.deadlineDate ?? '';
 
+  const iconPanelItems = useIconPanelItems(isDrawerOpen, toggleDrawer);
+
   if (loading) {
     return <Loading loading={loading} />;
   }
@@ -93,7 +95,7 @@ export const RequestPage: React.FC = () => {
   ) : (
     <PanelLayout
       panelType={PanelTypeEnum.Other}
-      icons={useIconPanelItems(isDrawerOpen, toggleDrawer)}
+      icons={iconPanelItems}
       percentComplete={percentComplete}
       currentIndex={currentIndex}
       steps={steps}

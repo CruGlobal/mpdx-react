@@ -230,7 +230,7 @@ export const Calculation: React.FC<CalculationProps> = ({
   const schema = getValidationSchema(rentOrOwn);
 
   if (loading) {
-    <Loading loading={loading} />;
+    return <Loading loading={loading} />;
   }
 
   return (

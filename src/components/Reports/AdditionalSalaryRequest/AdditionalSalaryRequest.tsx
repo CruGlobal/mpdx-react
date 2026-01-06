@@ -74,13 +74,15 @@ export const AdditionalSalaryRequest: React.FC = () => {
   const { isDrawerOpen, toggleDrawer, steps, currentIndex, percentComplete } =
     useAdditionalSalaryRequest();
 
+  const iconPanelItems = useIconPanelItems(isDrawerOpen, toggleDrawer);
+
   return (
     <PanelLayout
       panelType={PanelTypeEnum.Other}
       percentComplete={percentComplete}
       steps={steps}
       currentIndex={currentIndex}
-      icons={useIconPanelItems(isDrawerOpen, toggleDrawer)}
+      icons={iconPanelItems}
       sidebarContent={<StepsList steps={steps} />}
       sidebarTitle={t('Additional Salary Request')}
       isSidebarOpen={isDrawerOpen}
