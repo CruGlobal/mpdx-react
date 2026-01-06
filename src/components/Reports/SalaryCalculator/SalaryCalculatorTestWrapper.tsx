@@ -4,6 +4,7 @@ import { defaultsDeep } from 'lodash';
 import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { PayrollDate } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { PayrollDatesQuery } from './EffectiveDateStep/PayrollDates.generated';
 import { HcmQuery } from './SalaryCalculatorContext/Hcm.generated';
@@ -15,11 +16,18 @@ export interface SalaryCalculatorTestWrapperProps {
   onCall?: MockLinkCallHandler;
   children?: React.ReactNode;
   hasSpouse?: boolean;
+  payrollDates?: PayrollDate[];
 }
 
 export const SalaryCalculatorTestWrapper: React.FC<
   SalaryCalculatorTestWrapperProps
-> = ({ salaryRequestMock, onCall, children, hasSpouse = true }) => (
+> = ({
+  salaryRequestMock,
+  onCall,
+  children,
+  hasSpouse = true,
+  payrollDates,
+}) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
       <GqlMockedProvider<{
@@ -29,11 +37,7 @@ export const SalaryCalculatorTestWrapper: React.FC<
       }>
         mocks={{
           PayrollDates: {
-            payrollDates: [
-              { regularProcessDate: '2025-01-15' },
-              { regularProcessDate: '2025-02-01' },
-              { regularProcessDate: '2025-02-15' },
-            ],
+            payrollDates: payrollDates || [],
           },
           Hcm: {
             hcm: [
