@@ -70,11 +70,11 @@ export const AdditionalSalaryRequest: React.FC = () => {
     ? `${personNumber} and ${spousePersonNumber}`
     : personNumber;
 
-  const currentRequest = requestsData[0] || {};
+  const currentRequest = requestsData?.[0];
   // It default to true when no availableDate as the request is likely still being processed
   const isCurrentRequestPending = true;
 
-  const hasNoRequests = !requestsData.length;
+  const hasNoRequests = !requestsData?.length;
 
   return (
     <PanelLayout
@@ -115,7 +115,7 @@ export const AdditionalSalaryRequest: React.FC = () => {
                   variant="contained"
                   color="primary"
                   sx={{ mt: 2 }}
-                  onClick={createAdditionalSalaryRequest}
+                  onClick={() => createAdditionalSalaryRequest()}
                 >
                   {t('Request New MHA')}
                 </Button>
