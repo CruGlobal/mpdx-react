@@ -16,6 +16,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { StatusCard } from '../../Shared/CalculationReports/StatusCard/StatusCard';
 import { AdditionalSalaryRequestsQuery } from '../AdditionalSalaryRequest.generated';
+import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { getRequestUrl } from '../Shared/Helper/getRequestUrl';
 
 interface CurrentRequestProps {
@@ -26,24 +27,22 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const accountListId = useAccountListId();
-  const currency = 'USD';
-
-  const requestId = request.id;
-
-  const { status, requestAttributes } = request;
+  const { preferredName } = useAdditionalSalaryRequest();
 
   const {
-    boardApprovedDate,
-    deadlineDate,
+    id: requestId,
+    status,
     submittedDate,
-    availableDate,
-    approvedOverallAmount,
-  } = requestAttributes || {};
+    totalAdditionalSalaryRequested,
+    processedDate,
+  } = request;
 
   return (
     <StatusCard
-      formType={t('MHA Request')}
-      title={t('Current MHA Request')}
+      formType={t('ASR Request')}
+      title={t("{{preferredName}}'s Pending Additional Salary Request", {
+        preferredName,
+      })}
       icon={AddHomeSharp}
       iconColor="warning.main"
       linkOneText={t('View Request')}
@@ -54,12 +53,13 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
       handleConfirmCancel={() => {}}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-        <Typography variant="h3" sx={{ color: 'primary.main' }}>
-          <b>
-            {currencyFormat(approvedOverallAmount || 0, currency, locale, {
-              showTrailingZeros: true,
-            })}
-          </b>
+        <Typography
+          variant="h3"
+          sx={{ color: 'primary.main', fontWeight: 'bold' }}
+        >
+          {currencyFormat(totalAdditionalSalaryRequested || 0, 'USD', locale, {
+            showTrailingZeros: true,
+          })}
         </Typography>
         <Timeline
           sx={{
@@ -83,80 +83,68 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
               <TimelineConnector />
             </TimelineSeparator>
             <TimelineContent>
-              <b>
-                {status === AsrStatusEnum.InProgress ? (
-                  t('Currently Editing')
-                ) : (
-                  <>
-                    {t('Requested on')}
+              {status === AsrStatusEnum.InProgress ? (
+                <Typography sx={{ fontWeight: 'bold' }}>
+                  {t('In Progress:')}
+                </Typography>
+              ) : (
+                <>
+                  <Typography sx={{ fontWeight: 'bold' }}>
+                    {t('Requested on:')}
+                  </Typography>
+                  <Typography>
                     {submittedDate &&
                       `: ${dateFormat(DateTime.fromISO(submittedDate), locale)}`}
-                  </>
-                )}
-              </b>
+                  </Typography>
+                </>
+              )}
             </TimelineContent>
           </TimelineItem>
           <TimelineItem>
             <TimelineSeparator>
               <TimelineDot
-                sx={{ bgcolor: getDotColor(status, 'inProcess') }}
-                variant={getDotVariant(status, 'inProcess')}
+                sx={{ bgcolor: getDotColor(status, 'processed') }}
+                variant={getDotVariant(status, 'processed')}
               />
               <TimelineConnector />
             </TimelineSeparator>
             <TimelineContent>
-              <b>
-                {status === AsrStatusEnum.ActionRequired
-                  ? t('Action Required')
-                  : t('Request in Process')}
-              </b>
+              {status === AsrStatusEnum.Approved ||
+              status === AsrStatusEnum.ActionRequired ? (
+                <>
+                  <Typography sx={{ fontWeight: 'bold' }}>
+                    {t('Request processed on:')}
+                  </Typography>
+                  <Typography>
+                    {processedDate &&
+                      `: ${dateFormat(DateTime.fromISO(processedDate), locale)}`}
+                  </Typography>
+                </>
+              ) : (
+                t('Request In Process')
+              )}
             </TimelineContent>
           </TimelineItem>
           <TimelineItem>
             <TimelineSeparator>
               <TimelineDot
-                sx={{ bgcolor: getDotColor(status, 'deadline') }}
-                variant={getDotVariant(status, 'deadline')}
-              />
-              <TimelineConnector />
-            </TimelineSeparator>
-            <TimelineContent>
-              <b>
-                {t('Deadline for changes')}
-                {deadlineDate &&
-                  `: ${dateFormat(DateTime.fromISO(deadlineDate), locale)}`}
-              </b>
-            </TimelineContent>
-          </TimelineItem>
-          <TimelineItem>
-            <TimelineSeparator>
-              <TimelineDot
-                sx={{ bgcolor: getDotColor(status, 'boardApproval') }}
-                variant={getDotVariant(status, 'boardApproval')}
-              />
-              <TimelineConnector />
-            </TimelineSeparator>
-            <TimelineContent>
-              <b>
-                {t('Board Approval on')}
-                {boardApprovedDate &&
-                  `: ${dateFormat(DateTime.fromISO(boardApprovedDate), locale)}`}
-              </b>
-            </TimelineContent>
-          </TimelineItem>
-          <TimelineItem>
-            <TimelineSeparator>
-              <TimelineDot
-                sx={{ bgcolor: getDotColor(status, 'available') }}
-                variant={getDotVariant(status, 'available')}
+                sx={{ bgcolor: getDotColor(status, 'complete') }}
+                variant={getDotVariant(status, 'complete')}
               />
             </TimelineSeparator>
             <TimelineContent>
-              <b>
-                {t('MHA Available on')}
-                {availableDate &&
-                  `: ${dateFormat(DateTime.fromISO(availableDate), locale)}`}
-              </b>
+              {status === AsrStatusEnum.ActionRequired ? (
+                <>
+                  <Typography sx={{ fontWeight: 'bold' }}>
+                    {t('Action Required:')}{' '}
+                  </Typography>
+                  <Typography paragraph>{request?.feedback}</Typography>
+                </>
+              ) : (
+                <Typography sx={{ fontWeight: 'bold' }}>
+                  {t('Request Complete')}
+                </Typography>
+              )}
             </TimelineContent>
           </TimelineItem>
         </Timeline>
@@ -168,43 +156,39 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
 // Helper to get timeline dot color based on current status and step
 export const getDotColor = (
   status: AsrStatusEnum,
-  step: 'submitted' | 'inProcess' | 'deadline' | 'boardApproval' | 'available',
+  step: 'submitted' | 'processed' | 'complete',
 ): string => {
   switch (step) {
     case 'submitted':
-      return status === AsrStatusEnum.InProgress ? 'info.main' : 'success.main';
+      if (status !== AsrStatusEnum.InProgress) {
+        return 'success.main';
+      }
+      return 'info.main';
 
-    case 'inProcess':
+    case 'processed':
+      if (
+        status === AsrStatusEnum.Approved ||
+        status === AsrStatusEnum.ActionRequired
+      ) {
+        return 'success.main';
+      }
       if (status === AsrStatusEnum.Pending) {
         return 'info.main';
       }
       if (status === AsrStatusEnum.InProgress) {
         return 'transparent';
       }
-      if (status === AsrStatusEnum.ActionRequired) {
-        return 'warning.main';
-      }
-      return 'success.main';
+      return 'transparent';
 
-    case 'deadline':
-      if (status === AsrStatusEnum.Pending) {
-        return 'info.main';
-      }
-      if (
-        status === AsrStatusEnum.InProgress ||
-        status === AsrStatusEnum.ActionRequired
-      ) {
-        return 'transparent';
-      }
-      return 'success.main';
-
-    case 'boardApproval':
+    case 'complete':
       if (status === AsrStatusEnum.Approved) {
         return 'success.main';
       }
+      if (status === AsrStatusEnum.ActionRequired) {
+        return 'warning.main';
+      }
       return 'transparent';
 
-    case 'available':
     default:
       return 'transparent';
   }
@@ -213,25 +197,31 @@ export const getDotColor = (
 // Helper to determine if dot should be filled or outlined
 export const getDotVariant = (
   status: AsrStatusEnum,
-  step: 'submitted' | 'inProcess' | 'deadline' | 'boardApproval' | 'available',
+  step: 'submitted' | 'processed' | 'complete',
 ): 'filled' | 'outlined' => {
   switch (step) {
     case 'submitted':
       return 'filled';
 
-    case 'inProcess':
-      return status === AsrStatusEnum.InProgress ? 'outlined' : 'filled';
+    case 'processed':
+      if (
+        status === AsrStatusEnum.Approved ||
+        status === AsrStatusEnum.ActionRequired ||
+        status === AsrStatusEnum.Pending
+      ) {
+        return 'filled';
+      }
+      return 'outlined';
 
-    case 'deadline':
-      return status === AsrStatusEnum.Pending ||
-        status === AsrStatusEnum.Approved
-        ? 'filled'
-        : 'outlined';
+    case 'complete':
+      if (
+        status === AsrStatusEnum.Approved ||
+        status === AsrStatusEnum.ActionRequired
+      ) {
+        return 'filled';
+      }
+      return 'outlined';
 
-    case 'boardApproval':
-      return status === AsrStatusEnum.Approved ? 'filled' : 'outlined';
-
-    case 'available':
     default:
       return 'outlined';
   }
