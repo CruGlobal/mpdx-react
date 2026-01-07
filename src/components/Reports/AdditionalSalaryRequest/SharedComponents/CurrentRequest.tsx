@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import { AddHomeSharp } from '@mui/icons-material';
 import {
   Timeline,
@@ -15,8 +16,13 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { StatusCard } from '../../Shared/CalculationReports/StatusCard/StatusCard';
-import { AdditionalSalaryRequestsQuery } from '../AdditionalSalaryRequest.generated';
+import {
+  AdditionalSalaryRequestsQuery,
+  useDeleteAdditionalSalaryRequestMutation,
+} from '../AdditionalSalaryRequest.generated';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
+import { getDotColor } from '../Shared/Helper/getDotColor';
+import { getDotVariant } from '../Shared/Helper/getDotVariant';
 import { getRequestUrl } from '../Shared/Helper/getRequestUrl';
 
 interface CurrentRequestProps {
@@ -29,7 +35,16 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
   const accountListId = useAccountListId();
   const { preferredName } = useAdditionalSalaryRequest();
 
-  const { id: requestId, status, totalAdditionalSalaryRequested } = request;
+  const { id, status, totalAdditionalSalaryRequested } = request;
+
+  const [deleteAdditionalSalaryRequest] =
+    useDeleteAdditionalSalaryRequestMutation();
+
+  const handleConfirmCancel = useCallback(async () => {
+    await deleteAdditionalSalaryRequest({
+      variables: { id },
+    });
+  }, [deleteAdditionalSalaryRequest, id]);
 
   // TODO remove submittedDate and processedDate placeholders and grab from request once available
   const submittedDate = new Date().toISOString();
@@ -44,11 +59,11 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
       icon={AddHomeSharp}
       iconColor="warning.main"
       linkOneText={t('View Request')}
-      linkOne={getRequestUrl(accountListId, requestId, 'view')}
+      linkOne={getRequestUrl(accountListId, id, 'view')}
       linkTwoText={t('Edit Request')}
-      linkTwo={getRequestUrl(accountListId, requestId, 'edit')}
+      linkTwo={getRequestUrl(accountListId, id, 'edit')}
       isRequest={true}
-      handleConfirmCancel={() => {}}
+      handleConfirmCancel={handleConfirmCancel}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <Typography
@@ -147,78 +162,4 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
       </Box>
     </StatusCard>
   );
-};
-
-// Helper to get timeline dot color based on current status and step
-export const getDotColor = (
-  status: AsrStatusEnum,
-  step: 'submitted' | 'processed' | 'complete',
-): string => {
-  switch (step) {
-    case 'submitted':
-      if (status !== AsrStatusEnum.InProgress) {
-        return 'success.main';
-      }
-      return 'info.main';
-
-    case 'processed':
-      if (
-        status === AsrStatusEnum.Approved ||
-        status === AsrStatusEnum.ActionRequired
-      ) {
-        return 'success.main';
-      }
-      if (status === AsrStatusEnum.Pending) {
-        return 'info.main';
-      }
-      if (status === AsrStatusEnum.InProgress) {
-        return 'transparent';
-      }
-      return 'transparent';
-
-    case 'complete':
-      if (status === AsrStatusEnum.Approved) {
-        return 'success.main';
-      }
-      if (status === AsrStatusEnum.ActionRequired) {
-        return 'warning.main';
-      }
-      return 'transparent';
-
-    default:
-      return 'transparent';
-  }
-};
-
-// Helper to determine if dot should be filled or outlined
-export const getDotVariant = (
-  status: AsrStatusEnum,
-  step: 'submitted' | 'processed' | 'complete',
-): 'filled' | 'outlined' => {
-  switch (step) {
-    case 'submitted':
-      return 'filled';
-
-    case 'processed':
-      if (
-        status === AsrStatusEnum.Approved ||
-        status === AsrStatusEnum.ActionRequired ||
-        status === AsrStatusEnum.Pending
-      ) {
-        return 'filled';
-      }
-      return 'outlined';
-
-    case 'complete':
-      if (
-        status === AsrStatusEnum.Approved ||
-        status === AsrStatusEnum.ActionRequired
-      ) {
-        return 'filled';
-      }
-      return 'outlined';
-
-    default:
-      return 'outlined';
-  }
 };

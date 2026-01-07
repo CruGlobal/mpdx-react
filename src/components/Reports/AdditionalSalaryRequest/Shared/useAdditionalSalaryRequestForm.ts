@@ -131,7 +131,7 @@ export const useAdditionalSalaryRequestForm = ({
     [createCurrencyValidation, t],
   );
 
-  const handleSubmit = useCallback(
+  const onSubmit = useCallback(
     (values: CompleteFormValues) => {
       if (!requestId) {
         return;
@@ -174,7 +174,7 @@ export const useAdditionalSalaryRequestForm = ({
   const formik = useFormik<CompleteFormValues>({
     initialValues,
     validationSchema,
-    onSubmit: handleSubmit,
+    onSubmit,
     enableReinitialize: true,
   });
 
