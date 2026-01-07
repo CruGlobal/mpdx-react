@@ -171,15 +171,25 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     }
 
     return {
-      currentYearSalaryNotReceived: String(request.currentYearSalaryNotReceived || 0),
-      previousYearSalaryNotReceived: String(request.previousYearSalaryNotReceived || 0),
+      currentYearSalaryNotReceived: String(
+        request.currentYearSalaryNotReceived || 0,
+      ),
+      previousYearSalaryNotReceived: String(
+        request.previousYearSalaryNotReceived || 0,
+      ),
       additionalSalaryWithinMax: String(request.additionalSalaryWithinMax || 0),
       adoption: String(request.adoption || 0),
-      traditional403bContribution: String(request.traditional403bContribution || 0),
+      traditional403bContribution: String(
+        request.traditional403bContribution || 0,
+      ),
       counselingNonMedical: String(request.counselingNonMedical || 0),
-      healthcareExpensesExceedingLimit: String(request.healthcareExpensesExceedingLimit || 0),
+      healthcareExpensesExceedingLimit: String(
+        request.healthcareExpensesExceedingLimit || 0,
+      ),
       babysittingMinistryEvents: String(request.babysittingMinistryEvents || 0),
-      childrenMinistryTripExpenses: String(request.childrenMinistryTripExpenses || 0),
+      childrenMinistryTripExpenses: String(
+        request.childrenMinistryTripExpenses || 0,
+      ),
       childrenCollegeEducation: String(request.childrenCollegeEducation || 0),
       movingExpense: String(request.movingExpense || 0),
       seminary: String(request.seminary || 0),
@@ -196,20 +206,30 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   const validationSchema = useMemo(
     () =>
       yup.object({
-        currentYearSalaryNotReceived: createCurrencyValidation(t("Current Year's Salary")),
+        currentYearSalaryNotReceived: createCurrencyValidation(
+          t("Current Year's Salary"),
+        ),
         previousYearSalaryNotReceived: createCurrencyValidation(
           t("Previous Year's Salary"),
         ),
-        additionalSalaryWithinMax: createCurrencyValidation(t('Additional Salary')),
+        additionalSalaryWithinMax: createCurrencyValidation(
+          t('Additional Salary'),
+        ),
         adoption: createCurrencyValidation(t('Adoption'), 15000), // replace with MpdGoalMiscConstants value when possible
-        traditional403bContribution: createCurrencyValidation(t('403(b) Contribution')), // Can't be greater than salary (will be pulled from HCM)
+        traditional403bContribution: createCurrencyValidation(
+          t('403(b) Contribution'),
+        ), // Can't be greater than salary (will be pulled from HCM)
         counselingNonMedical: createCurrencyValidation(t('Counseling')),
-        healthcareExpensesExceedingLimit: createCurrencyValidation(t('Healthcare Expenses')),
+        healthcareExpensesExceedingLimit: createCurrencyValidation(
+          t('Healthcare Expenses'),
+        ),
         babysittingMinistryEvents: createCurrencyValidation(t('Babysitting')),
         childrenMinistryTripExpenses: createCurrencyValidation(
           t("Children's Ministry Trip"),
         ), // Need to pull number of children from HCM and multiply by 21000 for max
-        childrenCollegeEducation: createCurrencyValidation(t("Children's College")),
+        childrenCollegeEducation: createCurrencyValidation(
+          t("Children's College"),
+        ),
         movingExpense: createCurrencyValidation(t('Moving Expense')),
         seminary: createCurrencyValidation(t('Seminary')),
         housingDownPayment: createCurrencyValidation(
@@ -265,33 +285,22 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       if (!requestId) {
         return;
       }
-      // Parse string values to numbers for the GraphQL mutation
-      const attributes = {
-        currentYearSalaryNotReceived: parseFloat(values.currentYearSalaryNotReceived) || 0,
-        previousYearSalaryNotReceived: parseFloat(values.previousYearSalaryNotReceived) || 0,
-        additionalSalaryWithinMax: parseFloat(values.additionalSalaryWithinMax) || 0,
-        adoption: parseFloat(values.adoption) || 0,
-        traditional403bContribution: parseFloat(values.traditional403bContribution) || 0,
-        counselingNonMedical: parseFloat(values.counselingNonMedical) || 0,
-        healthcareExpensesExceedingLimit: parseFloat(values.healthcareExpensesExceedingLimit) || 0,
-        babysittingMinistryEvents: parseFloat(values.babysittingMinistryEvents) || 0,
-        childrenMinistryTripExpenses: parseFloat(values.childrenMinistryTripExpenses) || 0,
-        childrenCollegeEducation: parseFloat(values.childrenCollegeEducation) || 0,
-        movingExpense: parseFloat(values.movingExpense) || 0,
-        seminary: parseFloat(values.seminary) || 0,
-        housingDownPayment: parseFloat(values.housingDownPayment) || 0,
-        autoPurchase: parseFloat(values.autoPurchase) || 0,
-        expensesNotApprovedWithin90Days: parseFloat(values.expensesNotApprovedWithin90Days) || 0,
-        deductTwelvePercent: values.deductTwelvePercent,
-        phoneNumber: values.phoneNumber,
-        totalAdditionalSalaryRequested: getTotal(values),
-      };
 
       // First update the request with the form values
       updateAdditionalSalaryRequest({
         variables: {
           id: requestId,
-          attributes,
+          attributes: {
+            ...Object.fromEntries(
+              Object.entries(values).map(([key, value]) =>
+                // Convert string numbers to floats, but keep phoneNumber as string
+                typeof value === 'string' && key !== 'phoneNumber'
+                  ? [key, parseFloat(value) || 0]
+                  : [key, value],
+              ),
+            ),
+            totalAdditionalSalaryRequested: getTotal(values),
+          },
         },
         onCompleted: () => {
           // Then submit the request
