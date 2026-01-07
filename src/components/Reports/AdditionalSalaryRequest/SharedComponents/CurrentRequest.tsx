@@ -43,6 +43,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
   const handleConfirmCancel = useCallback(async () => {
     await deleteAdditionalSalaryRequest({
       variables: { id },
+      refetchQueries: ['AdditionalSalaryRequests'],
     });
   }, [deleteAdditionalSalaryRequest, id]);
 
