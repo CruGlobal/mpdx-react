@@ -3,7 +3,6 @@ import { ApolloError } from '@apollo/client';
 import { FormikProvider, useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { AsrStatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useStepList } from 'src/hooks/useStepList';
 import { currencyFormat } from 'src/lib/intlFormat';
@@ -13,57 +12,31 @@ import {
   PageEnum,
 } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
-import {
-  HcmDataQuery,
-  useHcmDataQuery,
-} from '../../Shared/HcmData/HCMData.generated';
+import { useHcmDataQuery } from '../../Shared/HcmData/HCMData.generated';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import {
-  AdditionalSalaryRequestQuery,
   AdditionalSalaryRequestsQuery,
   useAdditionalSalaryRequestQuery,
   useAdditionalSalaryRequestsQuery,
-  useCreateAdditionalSalaryRequestMutation,
   useSubmitAdditionalSalaryRequestMutation,
   useUpdateAdditionalSalaryRequestMutation,
 } from '../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
 import { getTotal } from './Helper/getTotal';
-import { calculateCompletionPercentage } from './calculateCompletionPercentage';
 
 export type AdditionalSalaryRequestType = {
   steps: Steps[];
   currentIndex: number;
-  percentComplete: number;
   currentStep: AdditionalSalaryRequestSectionEnum;
   handleNextStep: () => void;
   handlePreviousStep: () => void;
   isDrawerOpen: boolean;
   toggleDrawer: () => void;
-  setIsDrawerOpen: (open: boolean) => void;
-  handleCancel: () => void;
-  hcmUser: HcmDataQuery['hcm'][0] | null;
-  hcmSpouse: HcmDataQuery['hcm'][1] | null;
-  isMarried: boolean;
   preferredName: string;
-  spousePreferredName: string;
-  previousApprovedRequest:
-    | AdditionalSalaryRequestsQuery['additionalSalaryRequests']['nodes'][number]
-    | undefined;
-  requestData?: AdditionalSalaryRequestQuery['additionalSalaryRequest'] | null;
-  requestError?: ApolloError;
-
   requestsData?:
     | AdditionalSalaryRequestsQuery['additionalSalaryRequests']['nodes']
     | null;
   requestsError?: ApolloError;
-  requestId?: string;
-  createAdditionalSalaryRequest: ReturnType<
-    typeof useCreateAdditionalSalaryRequestMutation
-  >[0];
-  submitAdditionalSalaryRequest: ReturnType<
-    typeof useSubmitAdditionalSalaryRequestMutation
-  >[0];
 };
 
 const AdditionalSalaryRequestContext =
@@ -106,14 +79,10 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
 
   const requestId = providedRequestId;
 
-  const { data: requestData, error: requestError } =
-    useAdditionalSalaryRequestQuery({
-      variables: { requestId: requestId || '' },
-      skip: !requestId,
-    });
-
-  const [createAdditionalSalaryRequest] =
-    useCreateAdditionalSalaryRequestMutation();
+  const { data: requestData } = useAdditionalSalaryRequestQuery({
+    variables: { requestId: requestId || '' },
+    skip: !requestId,
+  });
 
   const [updateAdditionalSalaryRequest] =
     useUpdateAdditionalSalaryRequestMutation();
@@ -139,25 +108,30 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     [t],
   );
 
+  // Currency field keys for form
+  const currencyFields = [
+    'currentYearSalaryNotReceived',
+    'previousYearSalaryNotReceived',
+    'additionalSalaryWithinMax',
+    'adoption',
+    'traditional403bContribution',
+    'counselingNonMedical',
+    'healthcareExpensesExceedingLimit',
+    'babysittingMinistryEvents',
+    'childrenMinistryTripExpenses',
+    'childrenCollegeEducation',
+    'movingExpense',
+    'seminary',
+    'housingDownPayment',
+    'autoPurchase',
+    'expensesNotApprovedWithin90Days',
+  ] as const;
+
   const defaultInitialValues: CompleteFormValues = {
-    currentYearSalaryNotReceived: '0',
-    previousYearSalaryNotReceived: '0',
-    additionalSalaryWithinMax: '0',
-    adoption: '0',
-    traditional403bContribution: '0',
-    counselingNonMedical: '0',
-    healthcareExpensesExceedingLimit: '0',
-    babysittingMinistryEvents: '0',
-    childrenMinistryTripExpenses: '0',
-    childrenCollegeEducation: '0',
-    movingExpense: '0',
-    seminary: '0',
-    housingDownPayment: '0',
-    autoPurchase: '0',
-    expensesNotApprovedWithin90Days: '0',
+    ...Object.fromEntries(currencyFields.map((key) => [key, '0'])),
     deductTwelvePercent: false,
     phoneNumber: '',
-  };
+  } as CompleteFormValues;
 
   // Populate initialValues from requestData if available
   const initialValues: CompleteFormValues = useMemo(() => {
@@ -171,74 +145,44 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     }
 
     return {
-      currentYearSalaryNotReceived: String(
-        request.currentYearSalaryNotReceived || 0,
-      ),
-      previousYearSalaryNotReceived: String(
-        request.previousYearSalaryNotReceived || 0,
-      ),
-      additionalSalaryWithinMax: String(request.additionalSalaryWithinMax || 0),
-      adoption: String(request.adoption || 0),
-      traditional403bContribution: String(
-        request.traditional403bContribution || 0,
-      ),
-      counselingNonMedical: String(request.counselingNonMedical || 0),
-      healthcareExpensesExceedingLimit: String(
-        request.healthcareExpensesExceedingLimit || 0,
-      ),
-      babysittingMinistryEvents: String(request.babysittingMinistryEvents || 0),
-      childrenMinistryTripExpenses: String(
-        request.childrenMinistryTripExpenses || 0,
-      ),
-      childrenCollegeEducation: String(request.childrenCollegeEducation || 0),
-      movingExpense: String(request.movingExpense || 0),
-      seminary: String(request.seminary || 0),
-      housingDownPayment: String(request.housingDownPayment || 0),
-      autoPurchase: String(request.autoPurchase || 0),
-      expensesNotApprovedWithin90Days: String(
-        request.expensesNotApprovedWithin90Days || 0,
+      ...Object.fromEntries(
+        currencyFields.map((key) => [
+          key,
+          String((request[key as keyof typeof request] as number) || 0),
+        ]),
       ),
       deductTwelvePercent: request.deductTwelvePercent || false,
       phoneNumber: request.phoneNumber || '',
-    };
+    } as CompleteFormValues;
   }, [providedInitialValues, requestData]);
+
+  // Field validation configuration: [fieldKey, label, maxValue?]
+  const fieldValidations: Array<[string, string, number?]> = [
+    ['currentYearSalaryNotReceived', t("Current Year's Salary")],
+    ['previousYearSalaryNotReceived', t("Previous Year's Salary")],
+    ['additionalSalaryWithinMax', t('Additional Salary')],
+    ['adoption', t('Adoption'), 15000],
+    ['traditional403bContribution', t('403(b) Contribution')],
+    ['counselingNonMedical', t('Counseling')],
+    ['healthcareExpensesExceedingLimit', t('Healthcare Expenses')],
+    ['babysittingMinistryEvents', t('Babysitting')],
+    ['childrenMinistryTripExpenses', t("Children's Ministry Trip")],
+    ['childrenCollegeEducation', t("Children's College")],
+    ['movingExpense', t('Moving Expense')],
+    ['seminary', t('Seminary')],
+    ['housingDownPayment', t('Housing Down Payment'), 50000],
+    ['autoPurchase', t('Auto Purchase')],
+    ['expensesNotApprovedWithin90Days', t('Reimbursable Expenses')],
+  ];
 
   const validationSchema = useMemo(
     () =>
       yup.object({
-        currentYearSalaryNotReceived: createCurrencyValidation(
-          t("Current Year's Salary"),
-        ),
-        previousYearSalaryNotReceived: createCurrencyValidation(
-          t("Previous Year's Salary"),
-        ),
-        additionalSalaryWithinMax: createCurrencyValidation(
-          t('Additional Salary'),
-        ),
-        adoption: createCurrencyValidation(t('Adoption'), 15000), // replace with MpdGoalMiscConstants value when possible
-        traditional403bContribution: createCurrencyValidation(
-          t('403(b) Contribution'),
-        ), // Can't be greater than salary (will be pulled from HCM)
-        counselingNonMedical: createCurrencyValidation(t('Counseling')),
-        healthcareExpensesExceedingLimit: createCurrencyValidation(
-          t('Healthcare Expenses'),
-        ),
-        babysittingMinistryEvents: createCurrencyValidation(t('Babysitting')),
-        childrenMinistryTripExpenses: createCurrencyValidation(
-          t("Children's Ministry Trip"),
-        ), // Need to pull number of children from HCM and multiply by 21000 for max
-        childrenCollegeEducation: createCurrencyValidation(
-          t("Children's College"),
-        ),
-        movingExpense: createCurrencyValidation(t('Moving Expense')),
-        seminary: createCurrencyValidation(t('Seminary')),
-        housingDownPayment: createCurrencyValidation(
-          t('Housing Down Payment'),
-          50000,
-        ), // replace with MpdGoalMiscConstants value when possible
-        autoPurchase: createCurrencyValidation(t('Auto Purchase')), // Max will eventually be a constant, no determined value yet
-        expensesNotApprovedWithin90Days: createCurrencyValidation(
-          t('Reimbursable Expenses'),
+        ...Object.fromEntries(
+          fieldValidations.map(([key, label, max]) => [
+            key,
+            createCurrencyValidation(label, max),
+          ]),
         ),
         deductTwelvePercent: yup.boolean(),
         phoneNumber: yup
@@ -276,9 +220,6 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     setIsDrawerOpen((prev) => !prev);
   }, []);
 
-  const handleCancel = () => {
-    // Implement cancel logic here
-  };
 
   const handleSubmit = useCallback(
     (values: CompleteFormValues) => {
@@ -336,70 +277,35 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     enableReinitialize: true,
   });
 
-  const percentComplete = useMemo(
-    () => calculateCompletionPercentage(formik.values),
-    [formik.values],
-  );
-
   const preferredName = useMemo(
     () => hcmData?.hcm?.[0]?.staffInfo?.preferredName || '',
     [hcmData],
   );
 
-  const spousePreferredName = useMemo(
-    () => hcmData?.hcm?.[1]?.staffInfo?.preferredName || '',
-    [hcmData],
-  );
-
-  const nodes = requestsData?.additionalSalaryRequests?.nodes;
-
-  const previousApprovedRequest = nodes
-    ?.slice(1)
-    ?.find((request) => request.status === AsrStatusEnum.Approved);
-
   const contextValue = useMemo<AdditionalSalaryRequestType>(
     () => ({
       steps,
       currentIndex,
-      percentComplete,
       currentStep,
       handleNextStep,
       handlePreviousStep,
       isDrawerOpen,
       toggleDrawer,
-      setIsDrawerOpen,
-      handleCancel,
-      hcmUser: hcmData?.hcm?.[0] ?? null,
-      hcmSpouse: hcmData?.hcm?.[1] ?? null,
-      isMarried: !!hcmData?.hcm?.[1],
       preferredName,
-      spousePreferredName,
-      previousApprovedRequest,
       requestsData: requestsData?.additionalSalaryRequests?.nodes,
-      requestData: requestData?.additionalSalaryRequest,
       requestsError,
-      requestError,
-      requestId,
-      createAdditionalSalaryRequest,
-      submitAdditionalSalaryRequest,
     }),
     [
       steps,
       currentIndex,
-      percentComplete,
       currentStep,
       handleNextStep,
       handlePreviousStep,
       isDrawerOpen,
       toggleDrawer,
-      hcmData,
+      preferredName,
       requestsData,
-      requestData,
       requestsError,
-      requestError,
-      requestId,
-      createAdditionalSalaryRequest,
-      submitAdditionalSalaryRequest,
     ],
   );
 

@@ -3,16 +3,19 @@ import { Link, List, ListItem, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
 import { NameDisplay } from '../../Shared/CalculationReports/NameDisplay/NameDisplay';
+import { useHcmDataQuery } from '../../Shared/HcmData/HCMData.generated';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { getHeader } from '../Shared/Helper/getHeader';
 import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSalaryRequestSection';
 import { SpouseComponent } from '../SharedComponents/SpouseComponent';
 
 export const AboutForm: React.FC = () => {
-  const { currentStep, hcmUser } = useAdditionalSalaryRequest();
+  const { currentStep } = useAdditionalSalaryRequest();
   const { t } = useTranslation();
   const theme = useTheme();
+  const { data: hcmData } = useHcmDataQuery();
 
+  const hcmUser = hcmData?.hcm?.[0];
   const { staffInfo } = hcmUser || {};
 
   // TODO: Replace with actual data from API/context
