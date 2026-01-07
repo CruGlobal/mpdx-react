@@ -119,15 +119,15 @@ export const goalCalculationMock = gqlMock<
         primaryBudgetCategories: [
           {
             id: 'category-special',
-            label: 'Special Income',
-            category: PrimaryBudgetCategoryEnum.SpecialIncome,
+            label: 'Outside Income',
+            category: PrimaryBudgetCategoryEnum.OutsideIncome,
             directInput: 1000,
             subBudgetCategories: [],
           },
           {
             id: 'category-goal',
-            label: 'One Time Goal',
-            category: PrimaryBudgetCategoryEnum.OneTimeGoal,
+            label: 'Special Needs Goal',
+            category: PrimaryBudgetCategoryEnum.SpecialNeedsGoal,
             directInput: 0,
             subBudgetCategories: [],
           },
