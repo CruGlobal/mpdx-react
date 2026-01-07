@@ -28,8 +28,8 @@ import {
   useUpdateAdditionalSalaryRequestMutation,
 } from '../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
+import { getTotal } from './Helper/getTotal';
 import { calculateCompletionPercentage } from './calculateCompletionPercentage';
-import { useSalaryCalculations } from './useSalaryCalculations';
 
 export type AdditionalSalaryRequestType = {
   steps: Steps[];
@@ -140,23 +140,23 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   );
 
   const defaultInitialValues: CompleteFormValues = {
-    currentYearSalary: '0',
-    previousYearSalary: '0',
-    additionalSalary: '0',
+    currentYearSalaryNotReceived: '0',
+    previousYearSalaryNotReceived: '0',
+    additionalSalaryWithinMax: '0',
     adoption: '0',
-    contribution403b: '0',
-    counseling: '0',
-    healthcareExpenses: '0',
-    babysitting: '0',
-    childrenMinistryTrip: '0',
-    childrenCollege: '0',
+    traditional403bContribution: '0',
+    counselingNonMedical: '0',
+    healthcareExpensesExceedingLimit: '0',
+    babysittingMinistryEvents: '0',
+    childrenMinistryTripExpenses: '0',
+    childrenCollegeEducation: '0',
     movingExpense: '0',
     seminary: '0',
     housingDownPayment: '0',
     autoPurchase: '0',
-    reimbursableExpenses: '0',
-    defaultPercentage: false,
-    telephoneNumber: '',
+    expensesNotApprovedWithin90Days: '0',
+    deductTwelvePercent: false,
+    phoneNumber: '',
   };
 
   // Populate initialValues from requestData if available
@@ -171,45 +171,45 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     }
 
     return {
-      currentYearSalary: String(request.currentYearSalaryNotReceived || 0),
-      previousYearSalary: String(request.previousYearSalaryNotReceived || 0),
-      additionalSalary: String(request.additionalSalaryWithinMax || 0),
+      currentYearSalaryNotReceived: String(request.currentYearSalaryNotReceived || 0),
+      previousYearSalaryNotReceived: String(request.previousYearSalaryNotReceived || 0),
+      additionalSalaryWithinMax: String(request.additionalSalaryWithinMax || 0),
       adoption: String(request.adoption || 0),
-      contribution403b: String(request.traditional403bContribution || 0),
-      counseling: String(request.counselingNonMedical || 0),
-      healthcareExpenses: String(request.healthcareExpensesExceedingLimit || 0),
-      babysitting: String(request.babysittingMinistryEvents || 0),
-      childrenMinistryTrip: String(request.childrenMinistryTripExpenses || 0),
-      childrenCollege: String(request.childrenCollegeEducation || 0),
+      traditional403bContribution: String(request.traditional403bContribution || 0),
+      counselingNonMedical: String(request.counselingNonMedical || 0),
+      healthcareExpensesExceedingLimit: String(request.healthcareExpensesExceedingLimit || 0),
+      babysittingMinistryEvents: String(request.babysittingMinistryEvents || 0),
+      childrenMinistryTripExpenses: String(request.childrenMinistryTripExpenses || 0),
+      childrenCollegeEducation: String(request.childrenCollegeEducation || 0),
       movingExpense: String(request.movingExpense || 0),
       seminary: String(request.seminary || 0),
       housingDownPayment: String(request.housingDownPayment || 0),
       autoPurchase: String(request.autoPurchase || 0),
-      reimbursableExpenses: String(
+      expensesNotApprovedWithin90Days: String(
         request.expensesNotApprovedWithin90Days || 0,
       ),
-      defaultPercentage: request.deductTwelvePercent || false,
-      telephoneNumber: request.phoneNumber || '',
+      deductTwelvePercent: request.deductTwelvePercent || false,
+      phoneNumber: request.phoneNumber || '',
     };
   }, [providedInitialValues, requestData]);
 
   const validationSchema = useMemo(
     () =>
       yup.object({
-        currentYearSalary: createCurrencyValidation(t("Current Year's Salary")),
-        previousYearSalary: createCurrencyValidation(
+        currentYearSalaryNotReceived: createCurrencyValidation(t("Current Year's Salary")),
+        previousYearSalaryNotReceived: createCurrencyValidation(
           t("Previous Year's Salary"),
         ),
-        additionalSalary: createCurrencyValidation(t('Additional Salary')),
+        additionalSalaryWithinMax: createCurrencyValidation(t('Additional Salary')),
         adoption: createCurrencyValidation(t('Adoption'), 15000), // replace with MpdGoalMiscConstants value when possible
-        contribution403b: createCurrencyValidation(t('403(b) Contribution')), // Can't be greater than salary (will be pulled from HCM)
-        counseling: createCurrencyValidation(t('Counseling')),
-        healthcareExpenses: createCurrencyValidation(t('Healthcare Expenses')),
-        babysitting: createCurrencyValidation(t('Babysitting')),
-        childrenMinistryTrip: createCurrencyValidation(
+        traditional403bContribution: createCurrencyValidation(t('403(b) Contribution')), // Can't be greater than salary (will be pulled from HCM)
+        counselingNonMedical: createCurrencyValidation(t('Counseling')),
+        healthcareExpensesExceedingLimit: createCurrencyValidation(t('Healthcare Expenses')),
+        babysittingMinistryEvents: createCurrencyValidation(t('Babysitting')),
+        childrenMinistryTripExpenses: createCurrencyValidation(
           t("Children's Ministry Trip"),
         ), // Need to pull number of children from HCM and multiply by 21000 for max
-        childrenCollege: createCurrencyValidation(t("Children's College")),
+        childrenCollegeEducation: createCurrencyValidation(t("Children's College")),
         movingExpense: createCurrencyValidation(t('Moving Expense')),
         seminary: createCurrencyValidation(t('Seminary')),
         housingDownPayment: createCurrencyValidation(
@@ -217,11 +217,11 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
           50000,
         ), // replace with MpdGoalMiscConstants value when possible
         autoPurchase: createCurrencyValidation(t('Auto Purchase')), // Max will eventually be a constant, no determined value yet
-        reimbursableExpenses: createCurrencyValidation(
+        expensesNotApprovedWithin90Days: createCurrencyValidation(
           t('Reimbursable Expenses'),
         ),
-        defaultPercentage: yup.boolean(),
-        telephoneNumber: yup
+        deductTwelvePercent: yup.boolean(),
+        phoneNumber: yup
           .string()
           .required(t('Telephone number is required'))
           .matches(
@@ -265,31 +265,26 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       if (!requestId) {
         return;
       }
-      const { total } = useSalaryCalculations();
-      // Transform form values to match the GraphQL mutation input
+      // Parse string values to numbers for the GraphQL mutation
       const attributes = {
-        currentYearSalaryNotReceived: parseFloat(values.currentYearSalary) || 0,
-        previousYearSalaryNotReceived:
-          parseFloat(values.previousYearSalary) || 0,
-        additionalSalaryWithinMax: parseFloat(values.additionalSalary) || 0,
+        currentYearSalaryNotReceived: parseFloat(values.currentYearSalaryNotReceived) || 0,
+        previousYearSalaryNotReceived: parseFloat(values.previousYearSalaryNotReceived) || 0,
+        additionalSalaryWithinMax: parseFloat(values.additionalSalaryWithinMax) || 0,
         adoption: parseFloat(values.adoption) || 0,
-        traditional403bContribution: parseFloat(values.contribution403b) || 0,
-        counselingNonMedical: parseFloat(values.counseling) || 0,
-        healthcareExpensesExceedingLimit:
-          parseFloat(values.healthcareExpenses) || 0,
-        babysittingMinistryEvents: parseFloat(values.babysitting) || 0,
-        childrenMinistryTripExpenses:
-          parseFloat(values.childrenMinistryTrip) || 0,
-        childrenCollegeEducation: parseFloat(values.childrenCollege) || 0,
+        traditional403bContribution: parseFloat(values.traditional403bContribution) || 0,
+        counselingNonMedical: parseFloat(values.counselingNonMedical) || 0,
+        healthcareExpensesExceedingLimit: parseFloat(values.healthcareExpensesExceedingLimit) || 0,
+        babysittingMinistryEvents: parseFloat(values.babysittingMinistryEvents) || 0,
+        childrenMinistryTripExpenses: parseFloat(values.childrenMinistryTripExpenses) || 0,
+        childrenCollegeEducation: parseFloat(values.childrenCollegeEducation) || 0,
         movingExpense: parseFloat(values.movingExpense) || 0,
         seminary: parseFloat(values.seminary) || 0,
         housingDownPayment: parseFloat(values.housingDownPayment) || 0,
         autoPurchase: parseFloat(values.autoPurchase) || 0,
-        expensesNotApprovedWithin90Days:
-          parseFloat(values.reimbursableExpenses) || 0,
-        deductTwelvePercent: values.defaultPercentage,
-        phoneNumber: values.telephoneNumber,
-        totalAdditionalSalaryRequested: total,
+        expensesNotApprovedWithin90Days: parseFloat(values.expensesNotApprovedWithin90Days) || 0,
+        deductTwelvePercent: values.deductTwelvePercent,
+        phoneNumber: values.phoneNumber,
+        totalAdditionalSalaryRequested: getTotal(values),
       };
 
       // First update the request with the form values

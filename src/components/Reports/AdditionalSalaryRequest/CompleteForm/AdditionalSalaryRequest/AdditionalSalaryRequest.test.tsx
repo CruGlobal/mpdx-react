@@ -58,7 +58,7 @@ describe('AdditionalSalaryRequest', () => {
   it('calculates total from a single field', () => {
     const valuesWithAmount: CompleteFormValues = {
       ...defaultCompleteFormValues,
-      additionalSalary: '5000',
+      additionalSalaryWithinMax: '5000',
     };
 
     const { getByTestId } = render(
@@ -71,9 +71,9 @@ describe('AdditionalSalaryRequest', () => {
   it('calculates total from multiple fields', () => {
     const valuesWithMultiple: CompleteFormValues = {
       ...defaultCompleteFormValues,
-      additionalSalary: '5000',
+      additionalSalaryWithinMax: '5000',
       adoption: '2000',
-      counseling: '3000',
+      counselingNonMedical: '3000',
     };
 
     const { getByTestId } = render(
@@ -101,9 +101,9 @@ describe('AdditionalSalaryRequest', () => {
   it('handles empty string values in calculation', () => {
     const valuesWithEmpty: CompleteFormValues = {
       ...defaultCompleteFormValues,
-      additionalSalary: '5000',
+      additionalSalaryWithinMax: '5000',
       adoption: '',
-      counseling: '',
+      counselingNonMedical: '',
     };
 
     const { getByTestId } = render(
@@ -113,11 +113,11 @@ describe('AdditionalSalaryRequest', () => {
     expect(getByTestId('total-amount')).toHaveTextContent('$5,000');
   });
 
-  it('does not include defaultPercentage boolean in total calculation', () => {
+  it('does not include deductTwelvePercent boolean in total calculation', () => {
     const valuesWithBoolean: CompleteFormValues = {
       ...defaultCompleteFormValues,
-      additionalSalary: '10000',
-      defaultPercentage: true,
+      additionalSalaryWithinMax: '10000',
+      deductTwelvePercent: true,
     };
 
     const { getByTestId } = render(
@@ -163,23 +163,23 @@ describe('AdditionalSalaryRequest', () => {
 
   it('calculates total with all fields populated', () => {
     const allFieldsPopulated: CompleteFormValues = {
-      currentYearSalary: '1000',
-      previousYearSalary: '1000',
-      additionalSalary: '1000',
+      currentYearSalaryNotReceived: '1000',
+      previousYearSalaryNotReceived: '1000',
+      additionalSalaryWithinMax: '1000',
       adoption: '1000',
-      contribution403b: '1000',
-      counseling: '1000',
-      healthcareExpenses: '1000',
-      babysitting: '1000',
-      childrenMinistryTrip: '1000',
-      childrenCollege: '1000',
+      traditional403bContribution: '1000',
+      counselingNonMedical: '1000',
+      healthcareExpensesExceedingLimit: '1000',
+      babysittingMinistryEvents: '1000',
+      childrenMinistryTripExpenses: '1000',
+      childrenCollegeEducation: '1000',
       movingExpense: '1000',
       seminary: '1000',
       housingDownPayment: '1000',
       autoPurchase: '1000',
-      reimbursableExpenses: '1000',
-      defaultPercentage: false,
-      telephoneNumber: '157-234-4291',
+      expensesNotApprovedWithin90Days: '1000',
+      deductTwelvePercent: false,
+      phoneNumber: '157-234-4291',
     };
 
     const { getByTestId } = render(
@@ -197,7 +197,7 @@ describe('AdditionalSalaryRequest', () => {
 
     const updatedValues: CompleteFormValues = {
       ...defaultCompleteFormValues,
-      additionalSalary: '7500',
+      additionalSalaryWithinMax: '7500',
     };
 
     rerender(<TestWrapper initialValues={updatedValues} />);
@@ -208,7 +208,7 @@ describe('AdditionalSalaryRequest', () => {
   it('handles decimal values correctly', () => {
     const valuesWithDecimals: CompleteFormValues = {
       ...defaultCompleteFormValues,
-      additionalSalary: '1000.50',
+      additionalSalaryWithinMax: '1000.50',
       adoption: '500.25',
     };
 
@@ -222,9 +222,9 @@ describe('AdditionalSalaryRequest', () => {
   it('displays all values from formik props', () => {
     const customValues: CompleteFormValues = {
       ...defaultCompleteFormValues,
-      currentYearSalary: '100',
-      previousYearSalary: '200',
-      additionalSalary: '300',
+      currentYearSalaryNotReceived: '100',
+      previousYearSalaryNotReceived: '200',
+      additionalSalaryWithinMax: '300',
     };
 
     const { getAllByRole } = render(

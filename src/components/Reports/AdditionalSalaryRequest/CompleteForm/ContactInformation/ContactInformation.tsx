@@ -29,14 +29,14 @@ export const ContactInformation: React.FC<ContactInformationProps> = ({
         <TextField
           fullWidth
           variant="standard"
-          name="telephoneNumber"
+          name="phoneNumber"
           type="tel"
           label={t('Telephone Number')}
-          value={values.telephoneNumber}
+          value={values.phoneNumber}
           onChange={handleChange}
           onBlur={handleBlur}
-          error={touched.telephoneNumber && Boolean(errors.telephoneNumber)}
-          helperText={touched.telephoneNumber && errors.telephoneNumber}
+          error={touched.phoneNumber && Boolean(errors.phoneNumber)}
+          helperText={touched.phoneNumber && errors.phoneNumber}
           placeholder={t('Enter telephone number')}
           sx={{ flex: '0 0 35%' }}
         />

@@ -9,30 +9,11 @@ import { PanelLayout } from '../../Shared/CalculationReports/PanelLayout/PanelLa
 import { useIconPanelItems } from '../../Shared/CalculationReports/PanelLayout/useIconPanelItems';
 import { PanelTypeEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { StepsList } from '../../Shared/CalculationReports/StepsList/StepsList';
+import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { CurrentStep } from '../CurrentStep';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 
 export const mainContentWidth = theme.spacing(85);
-
-export interface CompleteFormValues {
-  currentYearSalary: string;
-  previousYearSalary: string;
-  additionalSalary: string;
-  adoption: string;
-  contribution403b: string;
-  counseling: string;
-  healthcareExpenses: string;
-  babysitting: string;
-  childrenMinistryTrip: string;
-  childrenCollege: string;
-  movingExpense: string;
-  seminary: string;
-  housingDownPayment: string;
-  autoPurchase: string;
-  reimbursableExpenses: string;
-  defaultPercentage: boolean;
-  telephoneNumber: string;
-}
 
 const MainContent: React.FC = () => {
   const {

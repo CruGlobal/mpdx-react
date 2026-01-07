@@ -71,7 +71,7 @@ describe('Deduction', () => {
   it('calculates 12% deduction when checkbox is checked', async () => {
     const valuesWithSalary: CompleteFormValues = {
       ...defaultCompleteFormValues,
-      additionalSalary: '10000',
+      additionalSalaryWithinMax: '10000',
     };
 
     const { getByRole, getByLabelText } = render(
@@ -99,7 +99,7 @@ describe('Deduction', () => {
   it('does not calculate deduction when checkbox is unchecked', () => {
     const valuesWithSalary: CompleteFormValues = {
       ...defaultCompleteFormValues,
-      additionalSalary: '10000',
+      additionalSalaryWithinMax: '10000',
     };
 
     const { getByLabelText } = render(
@@ -111,26 +111,26 @@ describe('Deduction', () => {
     );
   });
 
-  it('displays contribution403b amount from form values', () => {
+  it('displays traditional403bContribution amount from form values', () => {
     const valuesWithContribution: CompleteFormValues = {
       ...defaultCompleteFormValues,
-      contribution403b: '5000',
+      traditional403bContribution: '5000',
     };
 
     const { getAllByText } = render(
       <TestWrapper initialValues={valuesWithContribution} />,
     );
 
-    // The contribution403b value should be displayed
+    // The traditional403bContribution value should be displayed
     expect(getAllByText('$5,000').length).toBeGreaterThanOrEqual(1);
   });
 
-  it('calculates total deduction as sum of calculated and contribution403b', async () => {
+  it('calculates total deduction as sum of calculated and traditional403bContribution', async () => {
     const valuesWithBoth: CompleteFormValues = {
       ...defaultCompleteFormValues,
-      additionalSalary: '10000',
-      contribution403b: '3000',
-      defaultPercentage: true,
+      additionalSalaryWithinMax: '10000',
+      traditional403bContribution: '3000',
+      deductTwelvePercent: true,
     };
 
     const { getByLabelText } = render(
@@ -155,10 +155,10 @@ describe('Deduction', () => {
   it('calculates 12% based on total of all salary fields', async () => {
     const valuesWithMultiple: CompleteFormValues = {
       ...defaultCompleteFormValues,
-      additionalSalary: '5000',
+      additionalSalaryWithinMax: '5000',
       adoption: '2000',
-      counseling: '3000',
-      defaultPercentage: true,
+      counselingNonMedical: '3000',
+      deductTwelvePercent: true,
     };
 
     const { getByLabelText } = render(
@@ -173,11 +173,11 @@ describe('Deduction', () => {
     });
   });
 
-  it('does not include defaultPercentage boolean in calculation', async () => {
+  it('does not include deductTwelvePercent boolean in calculation', async () => {
     const valuesWithBoolean: CompleteFormValues = {
       ...defaultCompleteFormValues,
-      additionalSalary: '10000',
-      defaultPercentage: true,
+      additionalSalaryWithinMax: '10000',
+      deductTwelvePercent: true,
     };
 
     const { getByLabelText } = render(
@@ -195,10 +195,10 @@ describe('Deduction', () => {
   it('handles empty string values in calculation', async () => {
     const valuesWithEmpty: CompleteFormValues = {
       ...defaultCompleteFormValues,
-      additionalSalary: '5000',
+      additionalSalaryWithinMax: '5000',
       adoption: '',
-      counseling: '',
-      defaultPercentage: true,
+      counselingNonMedical: '',
+      deductTwelvePercent: true,
     };
 
     const { getByLabelText } = render(
@@ -213,14 +213,14 @@ describe('Deduction', () => {
     });
   });
 
-  it('updates total when contribution403b changes', async () => {
+  it('updates total when traditional403bContribution changes', async () => {
     const { getByLabelText, rerender } = render(<TestWrapper />);
 
     expect(getByLabelText('Total requested amount')).toHaveTextContent('$0');
 
     const updatedValues: CompleteFormValues = {
       ...defaultCompleteFormValues,
-      contribution403b: '2500',
+      traditional403bContribution: '2500',
     };
 
     rerender(<TestWrapper initialValues={updatedValues} />);

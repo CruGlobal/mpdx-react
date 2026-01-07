@@ -30,7 +30,7 @@ export const Deduction: React.FC = () => {
             control={
               <Field
                 type="checkbox"
-                name="defaultPercentage"
+                name="deductTwelvePercent"
                 as={Checkbox}
                 sx={{ mt: -0.5 }}
                 inputProps={{
