@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { AddHomeSharp } from '@mui/icons-material';
+import { AttachMoney } from '@mui/icons-material';
 import {
   Timeline,
   TimelineConnector,
@@ -57,7 +57,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
       title={t("{{preferredName}}'s Pending Additional Salary Request", {
         preferredName,
       })}
-      icon={AddHomeSharp}
+      icon={AttachMoney}
       iconColor="warning.main"
       linkOneText={t('View Request')}
       linkOne={getRequestUrl(accountListId, id, 'view')}
