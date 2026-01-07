@@ -2,7 +2,9 @@ import React from 'react';
 import { Box, TextField, Typography } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
+import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
+import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
 
 interface ContactInformationProps {
   // TODO once we have users email make this argument required and remove default argument
@@ -13,7 +15,7 @@ export const ContactInformation: React.FC<ContactInformationProps> = ({
   email = '',
 }) => {
   const { t } = useTranslation();
-
+  const { pageType } = useAdditionalSalaryRequest();
   const { values, handleChange, handleBlur, errors, touched } =
     useFormikContext<CompleteFormValues>();
 
@@ -26,20 +28,53 @@ export const ContactInformation: React.FC<ContactInformationProps> = ({
           width: '100%',
         }}
       >
-        <TextField
-          fullWidth
-          variant="standard"
-          name="phoneNumber"
-          type="tel"
-          label={t('Telephone Number')}
-          value={values.phoneNumber}
-          onChange={handleChange}
-          onBlur={handleBlur}
-          error={touched.phoneNumber && Boolean(errors.phoneNumber)}
-          helperText={touched.phoneNumber && errors.phoneNumber}
-          placeholder={t('Enter telephone number')}
-          sx={{ flex: '0 0 35%' }}
-        />
+        {pageType === PageEnum.View ? (
+          <Box
+            sx={{
+              flex: '0 0 35%',
+              display: 'flex',
+              flexDirection: 'column',
+              mb: 2,
+            }}
+          >
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'text.secondary',
+                fontSize: '0.75rem',
+                mb: 1,
+              }}
+            >
+              {t('Telephone Number')}
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{
+                minHeight: '1.5rem',
+                borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
+                pb: 0.5,
+              }}
+            >
+              {values.phoneNumber || t('phone number')}
+            </Typography>
+          </Box>
+        ) : (
+          <TextField
+            fullWidth
+            variant="standard"
+            name="phoneNumber"
+            type="tel"
+            label={t('Telephone Number')}
+            value={values.phoneNumber}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            error={touched.phoneNumber && Boolean(errors.phoneNumber)}
+            helperText={touched.phoneNumber && errors.phoneNumber}
+            placeholder={t('Enter telephone number')}
+            sx={{ flex: '0 0 35%' }}
+          />
+        )}
+
         <Box sx={{ flex: '1 1 65%', display: 'flex', flexDirection: 'column' }}>
           <Typography
             variant="caption"
