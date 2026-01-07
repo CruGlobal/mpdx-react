@@ -1,4 +1,3 @@
-import { useCallback } from 'react';
 import { AttachMoney } from '@mui/icons-material';
 import {
   Timeline,
@@ -16,10 +15,7 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { StatusCard } from '../../Shared/CalculationReports/StatusCard/StatusCard';
-import {
-  AdditionalSalaryRequestsQuery,
-  useDeleteAdditionalSalaryRequestMutation,
-} from '../AdditionalSalaryRequest.generated';
+import { AdditionalSalaryRequestsQuery } from '../AdditionalSalaryRequest.generated';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { getDotColor } from '../Shared/Helper/getDotColor';
 import { getDotVariant } from '../Shared/Helper/getDotVariant';
@@ -33,19 +29,9 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const accountListId = useAccountListId();
-  const { preferredName } = useAdditionalSalaryRequest();
+  const { preferredName, handleDeleteRequest } = useAdditionalSalaryRequest();
 
   const { id, status, totalAdditionalSalaryRequested } = request;
-
-  const [deleteAdditionalSalaryRequest] =
-    useDeleteAdditionalSalaryRequestMutation();
-
-  const handleConfirmCancel = useCallback(async () => {
-    await deleteAdditionalSalaryRequest({
-      variables: { id },
-      refetchQueries: ['AdditionalSalaryRequests'],
-    });
-  }, [deleteAdditionalSalaryRequest, id]);
 
   // TODO remove submittedDate and processedDate placeholders and grab from request once available
   const submittedDate = new Date().toISOString();
@@ -64,7 +50,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
       linkTwoText={t('Edit Request')}
       linkTwo={getRequestUrl(accountListId, id, 'edit')}
       isRequest={true}
-      handleConfirmCancel={handleConfirmCancel}
+      handleConfirmCancel={() => handleDeleteRequest(id)}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <Typography

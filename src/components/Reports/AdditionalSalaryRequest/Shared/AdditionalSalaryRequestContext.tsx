@@ -9,6 +9,7 @@ import { useHcmDataQuery } from '../../Shared/HcmData/HCMData.generated';
 import {
   AdditionalSalaryRequestsQuery,
   useAdditionalSalaryRequestsQuery,
+  useDeleteAdditionalSalaryRequestMutation,
 } from '../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
 
@@ -27,6 +28,8 @@ export type AdditionalSalaryRequestType = {
     | null;
   requestsError?: ApolloError;
   pageType: PageEnum | undefined;
+  handleDeleteRequest: (id: string) => Promise<void>;
+  requestId?: string;
 };
 
 const AdditionalSalaryRequestContext =
@@ -43,12 +46,14 @@ export const useAdditionalSalaryRequest = (): AdditionalSalaryRequestType => {
 };
 
 interface Props {
+  requestId?: string;
   children?: React.ReactNode;
 }
 
 const sections = Object.values(AdditionalSalaryRequestSectionEnum);
 
 export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
+  requestId,
   children,
 }) => {
   const router = useRouter();
@@ -76,6 +81,9 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   const { data: requestsData, error: requestsError } =
     useAdditionalSalaryRequestsQuery();
 
+  const [deleteAdditionalSalaryRequest] =
+    useDeleteAdditionalSalaryRequestMutation();
+
   const currentStep = sections[currentIndex];
 
   const handleNextStep = useCallback(() => {
@@ -85,6 +93,16 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   const handlePreviousStep = useCallback(() => {
     previousStep();
   }, [previousStep]);
+
+  const handleDeleteRequest = useCallback(
+    async (id: string) => {
+      await deleteAdditionalSalaryRequest({
+        variables: { id },
+        refetchQueries: ['AdditionalSalaryRequests'],
+      });
+    },
+    [deleteAdditionalSalaryRequest],
+  );
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
   const toggleDrawer = useCallback(() => {
@@ -117,6 +135,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       requestsData: requestsData?.additionalSalaryRequests?.nodes,
       requestsError,
       pageType,
+      handleDeleteRequest,
+      requestId,
     }),
     [
       steps,
@@ -131,6 +151,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       requestsData,
       requestsError,
       pageType,
+      handleDeleteRequest,
+      requestId,
     ],
   );
 

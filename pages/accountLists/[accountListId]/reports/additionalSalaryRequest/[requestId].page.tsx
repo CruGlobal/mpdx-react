@@ -77,7 +77,7 @@ const AdditionalSalaryRequestPage: React.FC = () => {
         <title>{`${appName} | ${t('Additional Salary Request')}`}</title>
       </Head>
       <ReportPageWrapper>
-        <AdditionalSalaryRequestProvider>
+        <AdditionalSalaryRequestProvider requestId={requestId as string}>
           {requestId && <RequestPageContent requestId={requestId as string} />}
         </AdditionalSalaryRequestProvider>
       </ReportPageWrapper>
