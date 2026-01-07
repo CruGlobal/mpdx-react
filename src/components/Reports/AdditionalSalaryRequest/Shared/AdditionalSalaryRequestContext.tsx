@@ -19,6 +19,7 @@ export type AdditionalSalaryRequestType = {
   isDrawerOpen: boolean;
   toggleDrawer: () => void;
   preferredName: string;
+  spousePreferredName: string;
   requestsData?:
     | AdditionalSalaryRequestsQuery['additionalSalaryRequests']['nodes']
     | null;
@@ -71,9 +72,16 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     setIsDrawerOpen((prev) => !prev);
   }, []);
 
+  const [user, spouse] = hcmData?.hcm ?? [];
+
   const preferredName = useMemo(
-    () => hcmData?.hcm?.[0]?.staffInfo?.preferredName || '',
-    [hcmData],
+    () => user?.staffInfo?.preferredName || '',
+    [user],
+  );
+
+  const spousePreferredName = useMemo(
+    () => spouse?.staffInfo?.preferredName || '',
+    [spouse],
   );
 
   const contextValue = useMemo<AdditionalSalaryRequestType>(
@@ -86,6 +94,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       isDrawerOpen,
       toggleDrawer,
       preferredName,
+      spousePreferredName,
       requestsData: requestsData?.additionalSalaryRequests?.nodes,
       requestsError,
     }),
@@ -98,6 +107,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       isDrawerOpen,
       toggleDrawer,
       preferredName,
+      spousePreferredName,
       requestsData,
       requestsError,
     ],

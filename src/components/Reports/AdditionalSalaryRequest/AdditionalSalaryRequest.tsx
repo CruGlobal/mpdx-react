@@ -14,6 +14,7 @@ import { AdditionalSalaryRequestSkeleton } from './AdditionalSalaryRequestSkelet
 import { EligibleDisplay } from './MainPages/EligibleDisplay';
 import { useAdditionalSalaryRequest } from './Shared/AdditionalSalaryRequestContext';
 import { getRequestUrl } from './Shared/Helper/getRequestUrl';
+import { ApprovedRequest } from './SharedComponents/ApprovedRequest';
 import { CurrentRequest } from './SharedComponents/CurrentRequest';
 
 export const mainContentWidth = theme.spacing(85);
@@ -135,9 +136,13 @@ export const AdditionalSalaryRequest: React.FC = () => {
             >
               <EligibleDisplay allRequestStatus={allRequestStatus} />
 
-              {requestsData.map((request) => (
-                <CurrentRequest key={request.id} request={request} />
-              ))}
+              {requestsData.map((request) =>
+                request.status === AsrStatusEnum.Approved ? (
+                  <ApprovedRequest request={request} />
+                ) : (
+                  <CurrentRequest key={request.id} request={request} />
+                ),
+              )}
               <Button
                 variant="contained"
                 color="primary"
