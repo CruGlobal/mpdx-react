@@ -16,6 +16,8 @@ fragment CalculationFields on SalaryRequestCalculations {
   individualCap
   familyCap
   hardCap
+  minimumRequiredSalary
+  minimumRequestedSalary
 }
 
 query SalaryCalculation {
