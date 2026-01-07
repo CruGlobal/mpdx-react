@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Box } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
@@ -22,10 +22,6 @@ const MainContent: React.FC = () => {
   const { submitForm, validateForm, submitCount, isValid } =
     useFormikContext<CompleteFormValues>();
 
-  const handleCancel = useCallback(() => {
-    handlePreviousStep();
-  }, [handlePreviousStep]);
-
   const isFirstFormPage = currentIndex === 0;
   const isLastFormPage = currentIndex === steps.length - 2;
   const reviewPage = currentIndex === steps.length - 1;
@@ -38,7 +34,7 @@ const MainContent: React.FC = () => {
           handleNextStep={handleNextStep}
           handlePreviousStep={handlePreviousStep}
           showBackButton={!isFirstFormPage}
-          handleCancel={isFirstFormPage ? undefined : handleCancel}
+          handleCancel={handlePreviousStep}
           isSubmission={isLastFormPage}
           submitForm={submitForm}
           validateForm={validateForm}

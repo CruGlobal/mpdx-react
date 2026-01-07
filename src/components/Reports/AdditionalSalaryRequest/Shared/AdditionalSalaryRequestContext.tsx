@@ -1,5 +1,7 @@
+import { useRouter } from 'next/router';
 import React, { createContext, useCallback, useMemo, useState } from 'react';
 import { ApolloError } from '@apollo/client';
+import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { useStepList } from 'src/hooks/useStepList';
 import { FormEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
@@ -24,6 +26,7 @@ export type AdditionalSalaryRequestType = {
     | AdditionalSalaryRequestsQuery['additionalSalaryRequests']['nodes']
     | null;
   requestsError?: ApolloError;
+  pageType: PageEnum | undefined;
 };
 
 const AdditionalSalaryRequestContext =
@@ -48,6 +51,22 @@ const sections = Object.values(AdditionalSalaryRequestSectionEnum);
 export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   children,
 }) => {
+  const router = useRouter();
+  const { mode } = router.query;
+
+  const pageType = useMemo(() => {
+    switch (mode) {
+      case 'new':
+        return PageEnum.New;
+      case 'edit':
+        return PageEnum.Edit;
+      case 'view':
+        return PageEnum.View;
+      default:
+        return undefined;
+    }
+  }, [mode]);
+
   const { steps, nextStep, previousStep, currentIndex } = useStepList(
     FormEnum.AdditionalSalary,
   );
@@ -97,6 +116,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       spousePreferredName,
       requestsData: requestsData?.additionalSalaryRequests?.nodes,
       requestsError,
+      pageType,
     }),
     [
       steps,
@@ -110,6 +130,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       spousePreferredName,
       requestsData,
       requestsError,
+      pageType,
     ],
   );
 
