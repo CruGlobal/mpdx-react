@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useFormikContext } from 'formik';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
+import { getTotal } from './Helper/getTotal';
 
 export interface SalaryCalculations {
   total: number;
@@ -14,18 +15,12 @@ export const useSalaryCalculations = (): SalaryCalculations => {
   const { values } = useFormikContext<CompleteFormValues>();
 
   return useMemo(() => {
-    // Calculate total excluding the defaultPercentage boolean and telephoneNumber string
-    const total = Object.entries(values).reduce((sum, [key, val]) => {
-      if (key === 'defaultPercentage' || key === 'telephoneNumber') {
-        return sum;
-      }
-      return sum + Number(val || 0);
-    }, 0);
+    const total = getTotal(values);
 
     // TODO: Pull the 12% from the admin rate goal calculator misc constant
-    const calculatedDeduction = values.defaultPercentage ? total * 0.12 : 0;
+    const calculatedDeduction = values.deductTwelvePercent ? total * 0.12 : 0;
 
-    const contribution403b = Number(values.contribution403b || 0);
+    const contribution403b = Number(values.traditional403bContribution || 0);
 
     const totalDeduction = calculatedDeduction + contribution403b;
 

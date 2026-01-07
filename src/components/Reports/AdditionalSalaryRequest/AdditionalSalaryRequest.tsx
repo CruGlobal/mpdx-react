@@ -16,23 +16,23 @@ import { CurrentRequest } from './SharedComponents/CurrentRequest';
 export const mainContentWidth = theme.spacing(85);
 
 export interface CompleteFormValues {
-  currentYearSalary: string;
-  previousYearSalary: string;
-  additionalSalary: string;
+  currentYearSalaryNotReceived: string;
+  previousYearSalaryNotReceived: string;
+  additionalSalaryWithinMax: string;
   adoption: string;
-  contribution403b: string;
-  counseling: string;
-  healthcareExpenses: string;
-  babysitting: string;
-  childrenMinistryTrip: string;
-  childrenCollege: string;
+  traditional403bContribution: string;
+  counselingNonMedical: string;
+  healthcareExpensesExceedingLimit: string;
+  babysittingMinistryEvents: string;
+  childrenMinistryTripExpenses: string;
+  childrenCollegeEducation: string;
   movingExpense: string;
   seminary: string;
   housingDownPayment: string;
   autoPurchase: string;
-  reimbursableExpenses: string;
-  defaultPercentage: boolean;
-  telephoneNumber: string;
+  expensesNotApprovedWithin90Days: string;
+  deductTwelvePercent: boolean;
+  phoneNumber: string;
 }
 
 export const AdditionalSalaryRequest: React.FC = () => {
