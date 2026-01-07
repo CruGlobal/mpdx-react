@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Box } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
@@ -12,19 +12,19 @@ import { StepsList } from '../../Shared/CalculationReports/StepsList/StepsList';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { CurrentStep } from '../CurrentStep';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
+import { calculateCompletionPercentage } from '../Shared/calculateCompletionPercentage';
 
 export const mainContentWidth = theme.spacing(85);
 
 const MainContent: React.FC = () => {
-  const {
-    handleCancel,
-    handlePreviousStep,
-    handleNextStep,
-    currentIndex,
-    steps,
-  } = useAdditionalSalaryRequest();
+  const { handlePreviousStep, handleNextStep, currentIndex, steps } =
+    useAdditionalSalaryRequest();
   const { submitForm, validateForm, submitCount, isValid } =
     useFormikContext<CompleteFormValues>();
+
+  const handleCancel = useCallback(() => {
+    handlePreviousStep();
+  }, [handlePreviousStep]);
 
   const isFirstFormPage = currentIndex === 0;
   const isLastFormPage = currentIndex === steps.length - 2;
@@ -53,8 +53,14 @@ const MainContent: React.FC = () => {
 export const RequestPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const { isDrawerOpen, toggleDrawer, steps, currentIndex, percentComplete } =
+  const { isDrawerOpen, toggleDrawer, steps, currentIndex } =
     useAdditionalSalaryRequest();
+  const { values } = useFormikContext<CompleteFormValues>();
+
+  const percentComplete = useMemo(
+    () => calculateCompletionPercentage(values),
+    [values],
+  );
 
   return (
     <PanelLayout

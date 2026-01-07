@@ -6,6 +6,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
+import { HcmDataQuery } from '../../Shared/HcmData/HCMData.generated';
 import { AdditionalSalaryRequestProvider } from '../Shared/AdditionalSalaryRequestContext';
 import { AboutForm } from './AboutForm';
 
@@ -29,11 +30,38 @@ const router = {
   isReady: true,
 };
 
+const mocks = {
+  HcmData: {
+    hcm: [
+      {
+        id: '1',
+        staffInfo: {
+          id: 'staff-1',
+          firstName: 'John',
+          lastName: 'Doc',
+          preferredName: 'Doc, John',
+          personNumber: '00123456',
+        },
+      },
+      {
+        id: '2',
+        staffInfo: {
+          id: 'staff-2',
+          firstName: 'Jane',
+          lastName: 'Doe',
+          preferredName: 'Jane',
+          personNumber: '00123457',
+        },
+      },
+    ],
+  },
+};
+
 const TestWrapper: React.FC = () => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
       <I18nextProvider i18n={i18n}>
-        <GqlMockedProvider>
+        <GqlMockedProvider<{ HcmData: HcmDataQuery }> mocks={mocks}>
           <AdditionalSalaryRequestProvider>
             <AboutForm />
           </AdditionalSalaryRequestProvider>
@@ -59,10 +87,10 @@ describe('AboutForm', () => {
     ).toBeInTheDocument();
   });
 
-  it('should display user information and financial data', () => {
-    const { getByText, getAllByText } = render(<TestWrapper />);
+  it('should display user information and financial data', async () => {
+    const { findByText, getByText, getAllByText } = render(<TestWrapper />);
 
-    expect(getByText('Doc, John')).toBeInTheDocument();
+    expect(await findByText('Doc, John')).toBeInTheDocument();
     expect(getByText('00123456')).toBeInTheDocument();
     expect(getByText(/Primary Account Balance/i)).toBeInTheDocument();
     expect(getAllByText(/Your Remaining Allowable Salary/i)).toHaveLength(2);

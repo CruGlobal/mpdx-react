@@ -1,6 +1,7 @@
 import { ThemeProvider } from '@emotion/react';
 import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { CompleteFormValues } from './AdditionalSalaryRequest';
@@ -23,9 +24,11 @@ export const AdditionalSalaryRequestTestWrapper: React.FC<
           },
         }}
       >
-        <AdditionalSalaryRequestProvider initialValues={initialValues}>
-          {children}
-        </AdditionalSalaryRequestProvider>
+        <GqlMockedProvider>
+          <AdditionalSalaryRequestProvider initialValues={initialValues}>
+            {children}
+          </AdditionalSalaryRequestProvider>
+        </GqlMockedProvider>
       </TestRouter>
     </I18nextProvider>
   </ThemeProvider>

@@ -4,14 +4,16 @@ import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
-import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
+import { useHcmDataQuery } from '../../Shared/HcmData/HCMData.generated';
 
 export const SpouseComponent: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { hcmSpouse } = useAdditionalSalaryRequest();
+  const { data: hcmData } = useHcmDataQuery();
   const locale = useLocale();
   const currency = 'USD';
+
+  const hcmSpouse = hcmData?.hcm?.[1];
   const { staffInfo } = hcmSpouse || {};
 
   const name = staffInfo?.preferredName ?? '';
