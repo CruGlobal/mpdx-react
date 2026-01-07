@@ -17,8 +17,14 @@ import { calculateCompletionPercentage } from '../Shared/calculateCompletionPerc
 export const mainContentWidth = theme.spacing(85);
 
 const MainContent: React.FC = () => {
-  const { handlePreviousStep, handleNextStep, currentIndex, steps } =
-    useAdditionalSalaryRequest();
+  const {
+    handlePreviousStep,
+    handleNextStep,
+    currentIndex,
+    steps,
+    handleDeleteRequest,
+    requestId,
+  } = useAdditionalSalaryRequest();
   const { submitForm, validateForm, submitCount, isValid } =
     useFormikContext<CompleteFormValues>();
 
@@ -34,7 +40,7 @@ const MainContent: React.FC = () => {
           handleNextStep={handleNextStep}
           handlePreviousStep={handlePreviousStep}
           showBackButton={!isFirstFormPage}
-          handleCancel={handlePreviousStep}
+          handleCancel={() => requestId && handleDeleteRequest(requestId)}
           isSubmission={isLastFormPage}
           submitForm={submitForm}
           validateForm={validateForm}
