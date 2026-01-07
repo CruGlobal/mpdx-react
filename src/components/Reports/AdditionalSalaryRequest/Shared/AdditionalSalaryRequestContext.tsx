@@ -1,9 +1,11 @@
 import { useRouter } from 'next/router';
 import React, { createContext, useCallback, useMemo, useState } from 'react';
 import { ApolloError } from '@apollo/client';
-import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
+import {
+  FormEnum,
+  PageEnum,
+} from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { useStepList } from 'src/hooks/useStepList';
-import { FormEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
 import { useHcmDataQuery } from '../../Shared/HcmData/HCMData.generated';
 import {

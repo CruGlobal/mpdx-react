@@ -10,13 +10,16 @@ import {
 import { Field } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { FormCard } from 'src/components/Reports/Shared/CalculationReports/FormCard/FormCard';
+import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 
 export const Deduction: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const { pageType } = useAdditionalSalaryRequest();
 
   const { calculatedDeduction, contribution403b, totalDeduction } =
     useSalaryCalculations();
@@ -32,6 +35,7 @@ export const Deduction: React.FC = () => {
                 type="checkbox"
                 name="deductTwelvePercent"
                 as={Checkbox}
+                disabled={pageType === PageEnum.View}
                 sx={{ mt: -0.5 }}
                 inputProps={{
                   'aria-label': t(
