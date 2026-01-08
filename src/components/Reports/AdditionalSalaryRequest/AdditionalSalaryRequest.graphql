@@ -34,6 +34,7 @@ fragment AdditionalSalaryRequestDetailsFields on AdditionalSalaryRequest {
   traditional403bContributionRequested
   usingSpouseSalary
   phoneNumber
+  approvedAt
   calculations {
     id
     currentSalaryCap

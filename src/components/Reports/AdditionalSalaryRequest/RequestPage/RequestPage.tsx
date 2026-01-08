@@ -27,6 +27,7 @@ const MainContent: React.FC = () => {
     requestId,
     pageType,
   } = useAdditionalSalaryRequest();
+
   const { submitForm, validateForm, submitCount, isValid } =
     useFormikContext<CompleteFormValues>();
 
