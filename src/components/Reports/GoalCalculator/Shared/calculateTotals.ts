@@ -135,7 +135,7 @@ export const calculateGoalTotals = (
 
   const additionalIncome = calculateCategoryEnumTotal(
     goalCalculation?.specialFamily,
-    PrimaryBudgetCategoryEnum.SpecialIncome,
+    PrimaryBudgetCategoryEnum.OutsideIncome,
   );
 
   const monthlyBudget =
