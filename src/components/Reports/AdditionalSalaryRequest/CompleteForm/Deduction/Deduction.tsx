@@ -19,10 +19,13 @@ import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 export const Deduction: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { pageType } = useAdditionalSalaryRequest();
+  const { pageType, requestData } = useAdditionalSalaryRequest();
+
+  const traditional403bContribution =
+    requestData?.additionalSalaryRequest?.traditional403bContribution ?? 0;
 
   const { calculatedDeduction, contribution403b, totalDeduction } =
-    useSalaryCalculations();
+    useSalaryCalculations(traditional403bContribution);
 
   return (
     <FormCard title={t('403(b) Deduction')}>
@@ -48,7 +51,12 @@ export const Deduction: React.FC = () => {
               <Box>
                 <Typography variant="body1">
                   {t(
-                    'Check this box if you would like 12% of the amount requested above deducted from this Additional Salary Request.',
+                    'Check this box if you would like {{percentage}}% of the amount requested above deducted from this Additional Salary Request.',
+                    {
+                      percentage: (traditional403bContribution * 100).toFixed(
+                        0,
+                      ),
+                    },
                   )}
                 </Typography>
                 <Typography
