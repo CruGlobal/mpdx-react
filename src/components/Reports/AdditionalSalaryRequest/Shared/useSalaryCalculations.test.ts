@@ -16,7 +16,7 @@ const FormikWrapper = ({
     { initialValues: values, onSubmit: () => {} },
     children,
   );
-
+const traditional403bContribution = 12;
 describe('useSalaryCalculations', () => {
   const baseValues: CompleteFormValues = {
     currentYearSalaryNotReceived: '0',
@@ -48,9 +48,12 @@ describe('useSalaryCalculations', () => {
       deductTwelvePercent: true,
     };
 
-    const { result } = renderHook(() => useSalaryCalculations(), {
-      wrapper: ({ children }) => FormikWrapper({ children, values }),
-    });
+    const { result } = renderHook(
+      () => useSalaryCalculations(traditional403bContribution),
+      {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      },
+    );
 
     expect(result.current.total).toBe(11000); // 5000 + 3000 + 2000 + 1000
     expect(result.current.calculatedDeduction).toBe(1320); // 11000 * 0.12
@@ -67,9 +70,12 @@ describe('useSalaryCalculations', () => {
       deductTwelvePercent: false,
     };
 
-    const { result } = renderHook(() => useSalaryCalculations(), {
-      wrapper: ({ children }) => FormikWrapper({ children, values }),
-    });
+    const { result } = renderHook(
+      () => useSalaryCalculations(traditional403bContribution),
+      {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      },
+    );
 
     expect(result.current.total).toBe(10500); // 10000 + 500
     expect(result.current.calculatedDeduction).toBe(0);
@@ -86,9 +92,12 @@ describe('useSalaryCalculations', () => {
       traditional403bContribution: '',
     };
 
-    const { result } = renderHook(() => useSalaryCalculations(), {
-      wrapper: ({ children }) => FormikWrapper({ children, values }),
-    });
+    const { result } = renderHook(
+      () => useSalaryCalculations(traditional403bContribution),
+      {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      },
+    );
 
     expect(result.current.total).toBe(5000);
     expect(result.current.calculatedDeduction).toBe(600); // 5000 * 0.12
@@ -105,9 +114,12 @@ describe('useSalaryCalculations', () => {
       deductTwelvePercent: true,
     };
 
-    const { result } = renderHook(() => useSalaryCalculations(), {
-      wrapper: ({ children }) => FormikWrapper({ children, values }),
-    });
+    const { result } = renderHook(
+      () => useSalaryCalculations(traditional403bContribution),
+      {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      },
+    );
 
     // Should not include deductTwelvePercent boolean in total
     expect(result.current.total).toBe(3000); // 1000 + 2000
@@ -134,9 +146,12 @@ describe('useSalaryCalculations', () => {
       phoneNumber: '',
     };
 
-    const { result } = renderHook(() => useSalaryCalculations(), {
-      wrapper: ({ children }) => FormikWrapper({ children, values }),
-    });
+    const { result } = renderHook(
+      () => useSalaryCalculations(traditional403bContribution),
+      {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      },
+    );
 
     expect(result.current.total).toBe(15000); // 15 fields * 1000
     expect(result.current.calculatedDeduction).toBe(0); // deductTwelvePercent is false
@@ -151,9 +166,12 @@ describe('useSalaryCalculations', () => {
       deductTwelvePercent: false,
     };
 
-    const { result } = renderHook(() => useSalaryCalculations(), {
-      wrapper: ({ children }) => FormikWrapper({ children, values }),
-    });
+    const { result } = renderHook(
+      () => useSalaryCalculations(traditional403bContribution),
+      {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      },
+    );
 
     expect(result.current.total).toBe(0);
     expect(result.current.calculatedDeduction).toBe(0);
