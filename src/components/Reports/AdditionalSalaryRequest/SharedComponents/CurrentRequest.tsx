@@ -32,10 +32,9 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
   const { user, handleDeleteRequest } = useAdditionalSalaryRequest();
   const preferredName = user?.staffInfo?.preferredName;
 
-  const { id, status, totalAdditionalSalaryRequested } = request;
+  const { id, status, totalAdditionalSalaryRequested, submittedAt } = request;
 
-  // TODO remove submittedDate and processedDate placeholders and grab from request once available
-  const submittedDate = new Date().toISOString();
+  // TODO remove submittedAt and processedDate placeholders and grab from request once available
   const processedDate = new Date().toISOString();
 
   return (
@@ -93,8 +92,8 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
                   <Box component="span" sx={{ fontWeight: 'bold' }}>
                     {t('Requested on:')}
                   </Box>
-                  {submittedDate &&
-                    ` ${dateFormat(DateTime.fromISO(submittedDate), locale)}`}
+                  {submittedAt &&
+                    ` ${dateFormat(DateTime.fromISO(submittedAt), locale)}`}
                 </Typography>
               )}
             </TimelineContent>

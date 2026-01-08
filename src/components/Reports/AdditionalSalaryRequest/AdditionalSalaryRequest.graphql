@@ -35,6 +35,7 @@ fragment AdditionalSalaryRequestDetailsFields on AdditionalSalaryRequest {
   usingSpouseSalary
   phoneNumber
   approvedAt
+  submittedAt
   calculations {
     id
     currentSalaryCap
