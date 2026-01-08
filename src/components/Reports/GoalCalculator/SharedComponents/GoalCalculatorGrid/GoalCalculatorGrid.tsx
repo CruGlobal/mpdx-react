@@ -82,7 +82,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
 
   const categoryType = category.category;
 
-  const showLumpSum = categoryType !== PrimaryBudgetCategoryEnum.SpecialIncome;
+  const showLumpSum = categoryType !== PrimaryBudgetCategoryEnum.OutsideIncome;
 
   const gridData = useMemo(
     () =>
