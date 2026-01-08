@@ -8,6 +8,8 @@ fragment SalaryRequestFields on SalaryRequest {
   salary
   spouseSalary
   status
+  phoneNumber
+  emailAddress
 }
 
 mutation UpdateSalaryCalculation($input: SalaryRequestUpdateMutationInput!) {
