@@ -1,7 +1,5 @@
 import { currencyFormat } from 'src/lib/intlFormat';
-import { CalculationFormValues } from '../../Calculation';
 
-// Helper function to parse a currency input string into a number
 export const parseInput = (s: string) => {
   const cleaned = s.replace(/[^\d.-]/g, '');
   if (cleaned === '' || cleaned === '-' || cleaned === '.') {
@@ -12,9 +10,9 @@ export const parseInput = (s: string) => {
 };
 
 export const display = (
-  isEditing: (name: keyof CalculationFormValues & string) => boolean,
-  name: keyof CalculationFormValues & string,
-  value: number | undefined | null,
+  isEditing: (name: string) => boolean,
+  name: string,
+  value: string,
   currency: string,
   locale: string,
 ) => {
@@ -23,7 +21,7 @@ export const display = (
       ? String(value)
       : ''
     : value
-      ? currencyFormat(value as number, currency, locale, {
+      ? currencyFormat(Number(value), currency, locale, {
           showTrailingZeros: true,
         })
       : '';

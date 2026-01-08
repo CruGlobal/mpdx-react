@@ -4,13 +4,15 @@ import { prepareDataForValidation } from 'formik';
 import * as yup from 'yup';
 import { useLocale } from 'src/hooks/useLocale';
 import { useSyncedState } from 'src/hooks/useSyncedState';
-import { CalculationFormValues } from '../../Steps/StepThree/Calculation';
 import { display, parseInput } from './Helper/formatHelper';
 
-interface UseAutoSaveOptions<Value extends string | number | boolean> {
+// By default, treats all fields as currency numbers and auto-formats them
+// Pass field names in 'stringFields' to treat them as plain text instead
+
+interface UseCustomAutoSaveOptions<Value extends string | number | boolean> {
   value: Value | null | undefined;
   saveValue: (value: Value | null) => Promise<unknown>;
-  fieldName: keyof CalculationFormValues & string;
+  fieldName: string;
   schema: yup.Schema;
   //eslint-disable-next-line @typescript-eslint/no-explicit-any
   setFieldValue: (field: string, value: any, shouldValidate?: boolean) => void;
@@ -21,9 +23,10 @@ interface UseAutoSaveOptions<Value extends string | number | boolean> {
   ) => void;
   submitCount?: number;
   disabled?: boolean;
+  stringFields?: string[];
 }
 
-export const useAutoSave = <Value extends string | number | boolean>({
+export const useCustomAutoSave = <Value extends string | number | boolean>({
   value,
   saveValue,
   fieldName,
@@ -32,10 +35,11 @@ export const useAutoSave = <Value extends string | number | boolean>({
   setFieldTouched,
   submitCount,
   disabled = false,
-}: UseAutoSaveOptions<Value>) => {
+  stringFields,
+}: UseCustomAutoSaveOptions<Value>) => {
   const locale = useLocale();
   const currency = 'USD';
-  const isString = fieldName === 'phoneNumber' || fieldName === 'emailAddress';
+  const isString = stringFields?.includes(fieldName) ?? false;
 
   const [focused, setFocused] = useState<string | null>(null);
   const isEditing = (name: string) => {
