@@ -20,10 +20,10 @@ import {
 
 export const FourOhThreeBSection: React.FC = () => {
   const { t } = useTranslation();
-  const { hcm } = useSalaryCalculator();
+  const { hcmUser, hcmSpouse } = useSalaryCalculator();
 
-  const self = hcm?.[0]?.fourOThreeB;
-  const spouse = hcm?.[1]?.fourOThreeB;
+  const user = hcmUser?.fourOThreeB;
+  const spouse = hcmSpouse?.fourOThreeB;
 
   return (
     <Stack gap={4}>
@@ -55,7 +55,7 @@ export const FourOhThreeBSection: React.FC = () => {
                 </TableCell>
                 <FormattedTableCell
                   percentage
-                  value={self?.currentTaxDeferredContributionPercentage}
+                  value={user?.currentTaxDeferredContributionPercentage}
                 />
                 {spouse && (
                   <FormattedTableCell
@@ -70,7 +70,7 @@ export const FourOhThreeBSection: React.FC = () => {
                 </TableCell>
                 <FormattedTableCell
                   percentage
-                  value={self?.currentRothContributionPercentage}
+                  value={user?.currentRothContributionPercentage}
                 />
                 {spouse && (
                   <FormattedTableCell
@@ -85,7 +85,7 @@ export const FourOhThreeBSection: React.FC = () => {
                 </TableCell>
                 <FormattedTableCell
                   percentage
-                  value={self?.maximumContributionLimit}
+                  value={user?.maximumContributionLimit}
                 />
                 {spouse && (
                   <FormattedTableCell
