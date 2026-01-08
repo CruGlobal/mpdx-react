@@ -14,6 +14,8 @@ query Hcm {
       peopleGroupSupportType
       userPersonType
       assignmentStatus
+      primaryPhoneNumber
+      emailAddress
     }
     currentSalary {
       grossSalaryAmount
