@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { useHcmDataQuery } from '../../Shared/HcmData/HCMData.generated';
-import { useAdditionalSalaryRequestQuery } from '../AdditionalSalaryRequest.generated';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 
 export const SpouseComponent: React.FC = () => {
@@ -15,12 +14,7 @@ export const SpouseComponent: React.FC = () => {
   const locale = useLocale();
   const currency = 'USD';
 
-  const { requestId } = useAdditionalSalaryRequest();
-
-  const { data: requestData } = useAdditionalSalaryRequestQuery({
-    variables: { requestId: requestId || '' },
-    skip: !requestId,
-  });
+  const { requestData } = useAdditionalSalaryRequest();
 
   const hcmSpouse = hcmData?.hcm?.[1];
   const { staffInfo } = hcmSpouse || {};
