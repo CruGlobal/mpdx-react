@@ -3,6 +3,8 @@ import { Box, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
 import { NameDisplay } from 'src/components/Reports/Shared/CalculationReports/NameDisplay/NameDisplay';
+import { useHcmDataQuery } from '../../Shared/HcmData/HCMData.generated';
+import { useAdditionalSalaryRequestQuery } from '../AdditionalSalaryRequest.generated';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { getHeader } from '../Shared/Helper/getHeader';
 import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSalaryRequestSection';
@@ -13,13 +15,30 @@ import { NetAdditionalSalary } from './NetAdditionalSalary/NetAdditionalSalary';
 
 export const CompleteForm: React.FC = () => {
   const { t } = useTranslation();
-  const { currentStep } = useAdditionalSalaryRequest();
+  const { currentStep, requestId } = useAdditionalSalaryRequest();
 
   const theme = useTheme();
-  const name = 'Doc, John';
-  const accountNumber = '00123456';
-  const primaryAccountBalance = 20307.58;
-  const remainingAllowableSalary = 17500.0;
+
+  const { data: hcmData } = useHcmDataQuery();
+
+  const { data: requestData } = useAdditionalSalaryRequestQuery({
+    variables: { requestId: requestId || '' },
+    skip: !requestId,
+  });
+
+  const { currentSalaryCap, staffAccountBalance } =
+    requestData?.additionalSalaryRequest?.calculations || {};
+
+  const hcmUser = hcmData?.hcm?.[0];
+  const { staffInfo } = hcmUser || {};
+
+  const name = staffInfo?.preferredName ?? '';
+  const accountNumber = staffInfo?.personNumber ?? '';
+  const email = staffInfo?.emailAddress ?? '';
+
+  const primaryAccountBalance = staffAccountBalance ?? 0;
+  const remainingAllowableSalary =
+    (currentSalaryCap ?? 0) - (staffAccountBalance ?? 0);
 
   return (
     <AdditionalSalaryRequestSection title={getHeader(t, currentStep)}>
@@ -67,7 +86,7 @@ export const CompleteForm: React.FC = () => {
             this form.
           </Typography>
         </Trans>
-        <ContactInformation />
+        <ContactInformation email={email} />
       </Box>
     </AdditionalSalaryRequestSection>
   );
