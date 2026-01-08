@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { useHcmDataQuery } from '../../Shared/HcmData/HCMData.generated';
+import { useAdditionalSalaryRequestQuery } from '../AdditionalSalaryRequest.generated';
+import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 
 export const SpouseComponent: React.FC = () => {
   const { t } = useTranslation();
@@ -13,11 +15,23 @@ export const SpouseComponent: React.FC = () => {
   const locale = useLocale();
   const currency = 'USD';
 
+  const { requestId } = useAdditionalSalaryRequest();
+
+  const { data: requestData } = useAdditionalSalaryRequestQuery({
+    variables: { requestId: requestId || '' },
+    skip: !requestId,
+  });
+
   const hcmSpouse = hcmData?.hcm?.[1];
   const { staffInfo } = hcmSpouse || {};
 
   const name = staffInfo?.preferredName ?? '';
-  const remainingAllowableSalary = currencyFormat(12200, currency, locale);
+
+  const { currentSalaryCap, staffAccountBalance } =
+    requestData?.additionalSalaryRequest?.spouseCalculations || {};
+
+  const remainingAllowableSalary =
+    (currentSalaryCap ?? 0) - (staffAccountBalance ?? 0);
   return (
     <Box>
       <Box
@@ -39,7 +53,7 @@ export const SpouseComponent: React.FC = () => {
 
       <Typography variant="caption" color="text.secondary">
         {t('Up to her remaining allowable salary of {{amount}}', {
-          amount: remainingAllowableSalary,
+          amount: currencyFormat(remainingAllowableSalary, currency, locale),
         })}
       </Typography>
     </Box>

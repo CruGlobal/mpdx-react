@@ -29,7 +29,8 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const accountListId = useAccountListId();
-  const { preferredName, handleDeleteRequest } = useAdditionalSalaryRequest();
+  const { user, handleDeleteRequest } = useAdditionalSalaryRequest();
+  const preferredName = user?.staffInfo?.preferredName;
 
   const { id, status, totalAdditionalSalaryRequested } = request;
 

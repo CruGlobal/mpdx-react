@@ -10,7 +10,8 @@ export const EligibleDisplay: React.FC<EligibleDisplayProps> = ({
   allRequestStatus,
 }) => {
   const { t } = useTranslation();
-  const { preferredName } = useAdditionalSalaryRequest();
+  const { user } = useAdditionalSalaryRequest();
+  const preferredName = user?.staffInfo?.preferredName;
   return (
     <>
       <Box>

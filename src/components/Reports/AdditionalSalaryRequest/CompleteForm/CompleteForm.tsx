@@ -4,7 +4,6 @@ import { useTheme } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
 import { NameDisplay } from 'src/components/Reports/Shared/CalculationReports/NameDisplay/NameDisplay';
 import { useHcmDataQuery } from '../../Shared/HcmData/HCMData.generated';
-import { useAdditionalSalaryRequestQuery } from '../AdditionalSalaryRequest.generated';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { getHeader } from '../Shared/Helper/getHeader';
 import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSalaryRequestSection';
@@ -15,16 +14,11 @@ import { NetAdditionalSalary } from './NetAdditionalSalary/NetAdditionalSalary';
 
 export const CompleteForm: React.FC = () => {
   const { t } = useTranslation();
-  const { currentStep, requestId } = useAdditionalSalaryRequest();
+  const { currentStep, requestData } = useAdditionalSalaryRequest();
 
   const theme = useTheme();
 
   const { data: hcmData } = useHcmDataQuery();
-
-  const { data: requestData } = useAdditionalSalaryRequestQuery({
-    variables: { requestId: requestId || '' },
-    skip: !requestId,
-  });
 
   const { currentSalaryCap, staffAccountBalance } =
     requestData?.additionalSalaryRequest?.calculations || {};
