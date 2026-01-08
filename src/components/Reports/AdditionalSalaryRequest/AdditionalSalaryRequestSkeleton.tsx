@@ -1,42 +1,39 @@
 import React from 'react';
-import { Skeleton } from '@mui/material';
+import { Box, Skeleton, Stack } from '@mui/material';
+import theme from 'src/theme';
 import { mainContentWidth } from './AdditionalSalaryRequest';
 
 export const AdditionalSalaryRequestSkeleton: React.FC = () => {
   return (
-    <>
-      <Skeleton
-        variant="rectangular"
-        width={mainContentWidth}
-        height={35}
-        style={{
-          marginBottom: '16px',
-        }}
-      />
-      <Skeleton
-        variant="rectangular"
-        width={mainContentWidth}
-        height={75}
-        style={{
-          marginBottom: '16px',
-        }}
-      />
-      <Skeleton
-        variant="rectangular"
-        width={mainContentWidth}
-        height={110}
-        style={{
-          marginBottom: '16px',
-        }}
-      />
-      <Skeleton
-        variant="rectangular"
-        width={mainContentWidth}
-        height={300}
-        style={{
-          marginBottom: '16px',
-        }}
-      />
-    </>
+    <Stack
+      direction="column"
+      sx={{
+        gap: theme.spacing(4),
+      }}
+      width={mainContentWidth}
+    >
+      <Box>
+        <Skeleton variant="text" width="60%" height={40} />
+      </Box>
+
+      <Box>
+        <Skeleton variant="text" width="100%" height={24} />
+        <Skeleton variant="text" width="100%" height={24} />
+        <Skeleton variant="text" width="80%" height={24} />
+      </Box>
+
+      <Box>
+        <Skeleton
+          variant="rectangular"
+          width="100%"
+          height={300}
+          sx={{ borderRadius: 1 }}
+        />
+      </Box>
+
+      <Box>
+        <Skeleton variant="rectangular" width={180} height={42} />
+      </Box>
+    </Stack>
   );
 };

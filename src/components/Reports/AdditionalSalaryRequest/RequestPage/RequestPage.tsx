@@ -3,6 +3,7 @@ import { Box } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { DirectionButtons } from 'src/components/Reports/Shared/CalculationReports/DirectionButtons/DirectionButtons';
+import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import { PanelLayout } from '../../Shared/CalculationReports/PanelLayout/PanelLayout';
@@ -24,6 +25,7 @@ const MainContent: React.FC = () => {
     steps,
     handleDeleteRequest,
     requestId,
+    pageType,
   } = useAdditionalSalaryRequest();
   const { submitForm, validateForm, submitCount, isValid } =
     useFormikContext<CompleteFormValues>();
@@ -41,7 +43,7 @@ const MainContent: React.FC = () => {
           handlePreviousStep={handlePreviousStep}
           showBackButton={!isFirstFormPage}
           handleCancel={() => requestId && handleDeleteRequest(requestId)}
-          isSubmission={isLastFormPage}
+          isSubmission={isLastFormPage && pageType !== PageEnum.View}
           submitForm={submitForm}
           validateForm={validateForm}
           submitCount={submitCount}
