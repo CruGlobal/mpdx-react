@@ -6,8 +6,11 @@ import {
   StaffExpenseCategoryEnum,
   StaffExpensesSubCategoryEnum,
 } from 'src/graphql/types.generated';
+import {
+  getLocalizedCategory,
+  getLocalizedSubCategory,
+} from '../../Shared/Helpers/transformStaffExpenseEnums';
 import { ReportType } from './StaffReportEnum';
-import { getLocalizedCategory } from './useLocalizedCategory';
 
 export interface Transaction {
   id: string;
@@ -123,16 +126,28 @@ export const filterTransactions = ({
                     : transaction.amount < 0;
                 return isInRange && matchesType;
               })
-              .map((transaction) => ({
-                ...transaction,
-                fundType: fund.fundType,
-                category: category.category,
-                subcategory: subcategory.subCategory,
-                displayCategory: `${getLocalizedCategory(
+              .map((transaction) => {
+                const localizedCategory = getLocalizedCategory(
                   category.category,
                   t,
-                )} - ${getLocalizedCategory(subcategory.subCategory, t)}`,
-              })) ?? [],
+                );
+                const localizedSubCategory = getLocalizedSubCategory(
+                  subcategory.subCategory,
+                  t,
+                );
+                const displayCategory =
+                  localizedCategory === localizedSubCategory
+                    ? localizedCategory
+                    : `${localizedCategory} - ${localizedSubCategory}`;
+
+                return {
+                  ...transaction,
+                  fundType: fund.fundType,
+                  category: category.category,
+                  subcategory: subcategory.subCategory,
+                  displayCategory,
+                };
+              }) ?? [],
         ),
       ),
     ) ?? [];
