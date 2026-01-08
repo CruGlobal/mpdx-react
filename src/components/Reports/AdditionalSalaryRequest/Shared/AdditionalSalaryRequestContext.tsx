@@ -7,9 +7,14 @@ import {
 } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { useStepList } from 'src/hooks/useStepList';
 import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
-import { useHcmDataQuery } from '../../Shared/HcmData/HCMData.generated';
 import {
+  HcmDataQuery,
+  useHcmDataQuery,
+} from '../../Shared/HcmData/HCMData.generated';
+import {
+  AdditionalSalaryRequestQuery,
   AdditionalSalaryRequestsQuery,
+  useAdditionalSalaryRequestQuery,
   useAdditionalSalaryRequestsQuery,
   useDeleteAdditionalSalaryRequestMutation,
 } from '../AdditionalSalaryRequest.generated';
@@ -23,15 +28,17 @@ export type AdditionalSalaryRequestType = {
   handlePreviousStep: () => void;
   isDrawerOpen: boolean;
   toggleDrawer: () => void;
-  preferredName: string;
-  spousePreferredName: string;
   requestsData?:
     | AdditionalSalaryRequestsQuery['additionalSalaryRequests']['nodes']
     | null;
+  requestData?: AdditionalSalaryRequestQuery | null;
+
   requestsError?: ApolloError;
   pageType: PageEnum | undefined;
   handleDeleteRequest: (id: string) => Promise<void>;
   requestId?: string;
+  user: HcmDataQuery['hcm'][0] | undefined;
+  spouse: HcmDataQuery['hcm'][1] | undefined;
 };
 
 const AdditionalSalaryRequestContext =
@@ -83,6 +90,11 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   const { data: requestsData, error: requestsError } =
     useAdditionalSalaryRequestsQuery();
 
+  const { data: requestData } = useAdditionalSalaryRequestQuery({
+    variables: { requestId: requestId || '' },
+    skip: !requestId,
+  });
+
   const [deleteAdditionalSalaryRequest] =
     useDeleteAdditionalSalaryRequestMutation();
 
@@ -113,16 +125,6 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
 
   const [user, spouse] = hcmData?.hcm ?? [];
 
-  const preferredName = useMemo(
-    () => user?.staffInfo?.preferredName || '',
-    [user],
-  );
-
-  const spousePreferredName = useMemo(
-    () => spouse?.staffInfo?.preferredName || '',
-    [spouse],
-  );
-
   const contextValue = useMemo<AdditionalSalaryRequestType>(
     () => ({
       steps,
@@ -132,13 +134,14 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       handlePreviousStep,
       isDrawerOpen,
       toggleDrawer,
-      preferredName,
-      spousePreferredName,
       requestsData: requestsData?.additionalSalaryRequests?.nodes,
       requestsError,
+      requestData,
       pageType,
       handleDeleteRequest,
       requestId,
+      user,
+      spouse,
     }),
     [
       steps,
@@ -148,13 +151,14 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       handlePreviousStep,
       isDrawerOpen,
       toggleDrawer,
-      preferredName,
-      spousePreferredName,
       requestsData,
       requestsError,
+      requestData,
       pageType,
       handleDeleteRequest,
       requestId,
+      user,
+      spouse,
     ],
   );
 

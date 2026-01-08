@@ -22,8 +22,9 @@ export const ApprovedRequest: React.FC<ApprovedRequestProps> = ({
   const accountListId = useAccountListId();
   const currency = 'USD';
 
-  const { preferredName, spousePreferredName } = useAdditionalSalaryRequest();
-
+  const { user, spouse } = useAdditionalSalaryRequest();
+  const preferredName = user?.staffInfo?.preferredName;
+  const spousePreferredName = spouse?.staffInfo?.preferredName;
   const { id, totalAdditionalSalaryRequested, usingSpouseSalary } = request;
 
   // TODO remove approvedDate placeholder and grab from request once available

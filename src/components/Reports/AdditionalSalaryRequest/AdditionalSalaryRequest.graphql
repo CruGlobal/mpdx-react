@@ -47,6 +47,10 @@ fragment AdditionalSalaryRequestDetailsFields on AdditionalSalaryRequest {
       reason
     }
   }
+  spouseCalculations {
+    currentSalaryCap
+    staffAccountBalance
+  }
 }
 
 query AdditionalSalaryRequest($requestId: ID!) {
