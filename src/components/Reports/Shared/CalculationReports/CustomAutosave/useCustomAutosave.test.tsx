@@ -8,8 +8,8 @@ import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Share
 import {
   ContextType,
   MinisterHousingAllowanceContext,
-} from '../Context/MinisterHousingAllowanceContext';
-import { useAutoSave } from './useAutosave';
+} from '../../../MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
+import { useCustomAutoSave } from './useCustomAutosave';
 
 const setFieldValue = jest.fn();
 const setFieldTouched = jest.fn();
@@ -37,7 +37,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   schema = defaultSchema,
   submitCount = 0,
 }) => {
-  const props = useAutoSave({
+  const props = useCustomAutoSave({
     value: 50,
     saveValue,
     fieldName: 'rentalValue',
@@ -51,7 +51,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   return <TextField label="Rental Value" {...props} />;
 };
 
-describe('useAutoSave', () => {
+describe('useCustomAutoSave', () => {
   it('initializes with value and no errors', () => {
     const { getByRole } = render(<TestComponent />);
 

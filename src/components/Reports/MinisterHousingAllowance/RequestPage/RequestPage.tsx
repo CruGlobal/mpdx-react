@@ -1,4 +1,3 @@
-import React from 'react';
 import { Container, Stack } from '@mui/material';
 import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
@@ -16,6 +15,7 @@ import {
 import { StepsList } from '../../Shared/CalculationReports/StepsList/StepsList';
 import { mainContentWidth } from '../MinisterHousingAllowance';
 import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
+import { getRequestUrl } from '../Shared/Helper/getRequestUrl';
 import { mocks } from '../Shared/mockData';
 import { StepsEnum } from '../Shared/sharedTypes';
 import { AboutForm } from '../Steps/StepOne/AboutForm';
@@ -32,7 +32,7 @@ const validationSchema = yup.object({
     .required(i18n.t('Please select one of the options above to continue.')),
 });
 
-export const EditRequestPage: React.FC = () => {
+export const RequestPage: React.FC = () => {
   const { t } = useTranslation();
 
   const {
@@ -50,18 +50,43 @@ export const EditRequestPage: React.FC = () => {
   } = useMinisterHousingAllowance();
 
   const request = requestData?.requestAttributes;
+  const value = request?.rentOrOwn ?? undefined;
 
   const accountListId = useAccountListId();
-  const editLink = `/accountLists/${accountListId}/reports/housingAllowance/${requestId}/edit`;
-  const viewLink = `/accountLists/${accountListId}/reports/housingAllowance/${requestId}/view`;
 
+  const isView = pageType === PageEnum.View;
   const isEdit = pageType === PageEnum.Edit;
+
+  const handlePrint = () => {
+    window.print();
+  };
 
   const boardDate = mocks[4].mhaDetails.staffMHA?.boardApprovalDate ?? '';
   const availableDate = mocks[4].mhaDetails.staffMHA?.availableDate ?? '';
   const deadlineDate = mocks[4].mhaDetails.staffMHA?.deadlineDate ?? '';
 
-  return (
+  return isView ? (
+    <PanelLayout
+      panelType={PanelTypeEnum.Empty}
+      sidebarTitle={t('Your MHA')}
+      percentComplete={0}
+      backHref=""
+      mainContent={
+        <Container sx={{ ml: 5 }}>
+          <Stack direction="column" width={mainContentWidth}>
+            <Calculation
+              boardApprovalDate={
+                mocks[4].mhaDetails.staffMHA?.boardApprovalDate ?? ''
+              }
+              availableDate={mocks[4].mhaDetails.staffMHA?.availableDate ?? ''}
+              rentOrOwn={value}
+              handlePrint={handlePrint}
+            />
+          </Stack>
+        </Container>
+      }
+    />
+  ) : (
     <PanelLayout
       panelType={PanelTypeEnum.Other}
       icons={useIconPanelItems(isDrawerOpen, toggleDrawer)}
@@ -70,13 +95,16 @@ export const EditRequestPage: React.FC = () => {
       steps={steps}
       backHref={`/accountLists/${accountListId}/reports/housingAllowance`}
       isSidebarOpen={isDrawerOpen}
-      sidebarTitle={t('Edit Request')}
-      sidebarAriaLabel={t('MHA Edit Request')}
+      sidebarTitle={isEdit ? t('Edit Request') : t('New Request')}
+      sidebarAriaLabel={isEdit ? t('MHA Edit Request') : t('MHA New Request')}
       sidebarContent={<StepsList steps={steps} />}
       mainContent={
         <Formik<FormValues>
           enableReinitialize
-          initialValues={{ rentOrOwn: request?.rentOrOwn ?? undefined }}
+          initialValues={{
+            rentOrOwn:
+              isEdit && request?.rentOrOwn ? request.rentOrOwn : undefined,
+          }}
           validationSchema={validationSchema}
           onSubmit={() => handleNextStep()}
         >
@@ -94,18 +122,16 @@ export const EditRequestPage: React.FC = () => {
                   <Calculation
                     boardApprovalDate={boardDate}
                     availableDate={availableDate}
-                    deadlineDate={
-                      mocks[4].mhaDetails.staffMHA?.deadlineDate ?? ''
-                    }
                     rentOrOwn={values.rentOrOwn}
+                    deadlineDate={deadlineDate}
                   />
                 ) : currentStep === StepsEnum.Receipt ? (
                   <Receipt
                     formTitle={t('MHA Request')}
                     buttonText={t('View Your MHA')}
+                    editLink={`${getRequestUrl(accountListId, requestId, 'edit')}`}
                     isEdit={isEdit}
-                    editLink={editLink}
-                    viewLink={viewLink}
+                    viewLink={`${getRequestUrl(accountListId, requestId, 'view')}`}
                     availableDate={availableDate}
                     deadlineDate={deadlineDate}
                     setIsComplete={setIsComplete}

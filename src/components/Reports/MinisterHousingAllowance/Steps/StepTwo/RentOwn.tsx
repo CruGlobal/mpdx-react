@@ -14,7 +14,7 @@ import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Share
 import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
 import { DirectionButtons } from '../../../Shared/CalculationReports/DirectionButtons/DirectionButtons';
 import { SubmitModal } from '../../../Shared/CalculationReports/SubmitModal/SubmitModal';
-import { FormValues } from '../../NewRequest/NewRequestPage';
+import { FormValues } from '../../RequestPage/RequestPage';
 import { useMinisterHousingAllowance } from '../../Shared/Context/MinisterHousingAllowanceContext';
 
 export const RentOwn: React.FC = () => {
