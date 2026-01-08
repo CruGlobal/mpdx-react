@@ -33,6 +33,19 @@ fragment AdditionalSalaryRequestDetailsFields on AdditionalSalaryRequest {
   deductTwelvePercent
   traditional403bContributionRequested
   usingSpouseSalary
+  calculations {
+    id
+    currentSalaryCap
+    createdAt
+    staffAccountBalance
+    predictedYearIncome
+    pendingAsrAmount
+    updatedAt
+    maxAmountAndReason {
+      amount
+      reason
+    }
+  }
 }
 
 query AdditionalSalaryRequest($requestId: ID!) {
