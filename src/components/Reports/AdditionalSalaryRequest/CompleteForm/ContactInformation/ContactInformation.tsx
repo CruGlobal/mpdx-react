@@ -7,12 +7,11 @@ import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
 
 interface ContactInformationProps {
-  // TODO once we have users email make this argument required and remove default argument
   email?: string;
 }
 
 export const ContactInformation: React.FC<ContactInformationProps> = ({
-  email = '',
+  email,
 }) => {
   const { t } = useTranslation();
   const { pageType } = useAdditionalSalaryRequest();

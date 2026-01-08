@@ -25,10 +25,8 @@ export const ApprovedRequest: React.FC<ApprovedRequestProps> = ({
   const { user, spouse } = useAdditionalSalaryRequest();
   const preferredName = user?.staffInfo?.preferredName;
   const spousePreferredName = spouse?.staffInfo?.preferredName;
-  const { id, totalAdditionalSalaryRequested, usingSpouseSalary } = request;
-
-  // TODO remove approvedDate placeholder and grab from request once available
-  const approvedDate = new Date().toISOString();
+  const { id, totalAdditionalSalaryRequested, usingSpouseSalary, approvedAt } =
+    request;
 
   return (
     <StatusCard
@@ -49,8 +47,8 @@ export const ApprovedRequest: React.FC<ApprovedRequestProps> = ({
         <Grid item xs={6}>
           <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
             {t('APPROVAL DATE')}:{' '}
-            {approvedDate ? (
-              dateFormatShort(DateTime.fromISO(approvedDate), locale)
+            {approvedAt ? (
+              dateFormatShort(DateTime.fromISO(approvedAt), locale)
             ) : (
               <Skeleton
                 width={100}
