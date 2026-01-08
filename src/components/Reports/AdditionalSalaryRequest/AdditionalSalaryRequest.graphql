@@ -33,6 +33,7 @@ fragment AdditionalSalaryRequestDetailsFields on AdditionalSalaryRequest {
   deductTwelvePercent
   traditional403bContributionRequested
   usingSpouseSalary
+  phoneNumber
   calculations {
     id
     currentSalaryCap
