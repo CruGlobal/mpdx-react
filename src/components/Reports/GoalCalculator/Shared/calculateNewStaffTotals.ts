@@ -178,14 +178,13 @@ const MINISTRY_CATEGORIES = [
   PrimaryBudgetCategoryEnum.MealsAndPerDiem,
   PrimaryBudgetCategoryEnum.MinistryPartnerDevelopment,
   PrimaryBudgetCategoryEnum.SuppliesAndMaterials,
-  PrimaryBudgetCategoryEnum.ReimbursableMedicalExpense,
+  PrimaryBudgetCategoryEnum.ReimbursableMedicalExpenses,
   PrimaryBudgetCategoryEnum.UsStaffConference,
   PrimaryBudgetCategoryEnum.AccountTransfers,
   PrimaryBudgetCategoryEnum.InternetServiceProviderFee,
   PrimaryBudgetCategoryEnum.CellPhoneWorkLine,
   PrimaryBudgetCategoryEnum.CreditCardProcessingCharges,
   PrimaryBudgetCategoryEnum.SummerAssignmentExpenses,
-  PrimaryBudgetCategoryEnum.SummerAssignmentTravel,
   PrimaryBudgetCategoryEnum.MinistryOther,
 ];
 
@@ -387,7 +386,7 @@ export const getNewStaffBudgetCategory = (
     case PrimaryBudgetCategoryEnum.SuppliesAndMaterials:
       return getExpenseAmount(goalCalculation, 'supplies');
 
-    case PrimaryBudgetCategoryEnum.ReimbursableMedicalExpense:
+    case PrimaryBudgetCategoryEnum.ReimbursableMedicalExpenses:
       if (!goalCalculation.benefitsPlan) {
         return 0;
       }
@@ -403,7 +402,6 @@ export const getNewStaffBudgetCategory = (
     case PrimaryBudgetCategoryEnum.CellPhoneWorkLine:
     case PrimaryBudgetCategoryEnum.CreditCardProcessingCharges:
     case PrimaryBudgetCategoryEnum.SummerAssignmentExpenses:
-    case PrimaryBudgetCategoryEnum.SummerAssignmentTravel:
     case PrimaryBudgetCategoryEnum.MinistryOther:
       return calculateCategoryEnumTotal(
         goalCalculation.ministryFamily,

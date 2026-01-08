@@ -114,15 +114,12 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({
       {
         line: '3G',
         category: t('Summer Assignment Expenses'),
-        categories: [
-          PrimaryBudgetCategoryEnum.SummerAssignmentExpenses,
-          PrimaryBudgetCategoryEnum.SummerAssignmentTravel,
-        ],
+        categories: [PrimaryBudgetCategoryEnum.SummerAssignmentExpenses],
       },
       {
         line: '3H',
         category: t('Reimbursable Medical Expenses'),
-        categories: [PrimaryBudgetCategoryEnum.ReimbursableMedicalExpense],
+        categories: [PrimaryBudgetCategoryEnum.ReimbursableMedicalExpenses],
       },
       {
         line: '3I',
