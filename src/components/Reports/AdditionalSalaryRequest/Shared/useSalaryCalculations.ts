@@ -11,14 +11,17 @@ export interface SalaryCalculations {
   netSalary: number;
 }
 
-export const useSalaryCalculations = (): SalaryCalculations => {
+export const useSalaryCalculations = (
+  traditional403bContribution: number,
+): SalaryCalculations => {
   const { values } = useFormikContext<CompleteFormValues>();
 
   return useMemo(() => {
     const total = getTotal(values);
 
-    // TODO: Pull the 12% from the admin rate goal calculator misc constant
-    const calculatedDeduction = values.deductTwelvePercent ? total * 0.12 : 0;
+    const calculatedDeduction = values.deductTwelvePercent
+      ? total * traditional403bContribution
+      : 0;
 
     const contribution403b = Number(values.traditional403bContribution || 0);
 
@@ -33,5 +36,5 @@ export const useSalaryCalculations = (): SalaryCalculations => {
       totalDeduction,
       netSalary,
     };
-  }, [values]);
+  }, [values, traditional403bContribution]);
 };

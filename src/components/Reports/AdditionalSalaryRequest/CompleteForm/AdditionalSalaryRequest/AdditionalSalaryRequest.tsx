@@ -16,13 +16,15 @@ export const AdditionalSalaryRequest: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const { pageType } = useAdditionalSalaryRequest();
+  const { pageType, requestData } = useAdditionalSalaryRequest();
   const categories = useCompleteFormCategories();
 
   const { values, handleChange, handleBlur, errors, touched } =
     useFormikContext<CompleteFormValues>();
 
-  const { total } = useSalaryCalculations();
+  const traditional403bContribution =
+    requestData?.additionalSalaryRequest?.traditional403bContribution ?? 0;
+  const { total } = useSalaryCalculations(traditional403bContribution);
 
   return (
     <FormCard title={t('Additional Salary Request')}>
