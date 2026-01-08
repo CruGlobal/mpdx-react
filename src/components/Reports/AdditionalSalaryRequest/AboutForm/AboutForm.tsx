@@ -4,25 +4,34 @@ import { useTheme } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
 import { NameDisplay } from '../../Shared/CalculationReports/NameDisplay/NameDisplay';
 import { useHcmDataQuery } from '../../Shared/HcmData/HCMData.generated';
+import { useAdditionalSalaryRequestQuery } from '../AdditionalSalaryRequest.generated';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { getHeader } from '../Shared/Helper/getHeader';
 import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSalaryRequestSection';
 import { SpouseComponent } from '../SharedComponents/SpouseComponent';
 
 export const AboutForm: React.FC = () => {
-  const { currentStep } = useAdditionalSalaryRequest();
+  const { currentStep, requestId } = useAdditionalSalaryRequest();
   const { t } = useTranslation();
   const theme = useTheme();
   const { data: hcmData } = useHcmDataQuery();
 
+  const { data: requestData } = useAdditionalSalaryRequestQuery({
+    variables: { requestId: requestId || '' },
+    skip: !requestId,
+  });
+
+  const { currentSalaryCap, staffAccountBalance } =
+    requestData?.additionalSalaryRequest?.calculations || {};
+
   const hcmUser = hcmData?.hcm?.[0];
   const { staffInfo } = hcmUser || {};
 
-  // TODO: Replace with actual data from API/context
   const name = staffInfo?.preferredName ?? '';
   const accountNumber = staffInfo?.personNumber ?? '';
-  const primaryAccountBalance = 20307.58;
-  const remainingAllowableSalary = 17500.0;
+  const primaryAccountBalance = staffAccountBalance ?? 0;
+  const remainingAllowableSalary =
+    (currentSalaryCap ?? 0) - (staffAccountBalance ?? 0);
 
   return (
     <AdditionalSalaryRequestSection title={getHeader(t, currentStep)}>
