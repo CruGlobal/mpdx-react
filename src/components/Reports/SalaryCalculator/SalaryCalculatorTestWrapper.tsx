@@ -100,6 +100,7 @@ export const SalaryCalculatorTestWrapper: React.FC<
           },
           SalaryCalculation: {
             salaryRequest: defaultsDeep(salaryRequestMock ?? {}, {
+              id: 'salary-request-1',
               calculations: {
                 individualCap: 80000,
                 familyCap: 125000,
