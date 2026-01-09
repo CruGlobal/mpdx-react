@@ -1,4 +1,5 @@
 import NextLink from 'next/link';
+import { useState } from 'react';
 import { Visibility } from '@mui/icons-material';
 import {
   Alert,
@@ -12,12 +13,19 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 import { useFormatters } from '../Shared/useFormatters';
+import { MhaCard } from '../Summary/MhaCard';
+import { SalaryCalculationCard } from '../Summary/SalaryCalculationCard';
+import { SalaryCapCard } from '../Summary/SalaryCapCard';
+import { SalarySummaryCard } from '../Summary/SalarySummaryCard';
+import { StaffInfoSummaryCard } from '../Summary/StaffInfoSummaryCard';
 
 export const ReceiptStep: React.FC = () => {
   const accountListId = useAccountListId();
   const { t } = useTranslation();
   const { calculation, hcmUser, hcmSpouse } = useSalaryCalculator();
   const { formatCurrency } = useFormatters();
+
+  const [showReceipt, setShowReceipt] = useState(false);
 
   const userRequested = calculation?.calculations.requestedGross ?? 0;
   const spouseRequested = calculation?.spouseCalculations?.effectiveCap ?? 0;
@@ -71,14 +79,24 @@ export const ReceiptStep: React.FC = () => {
         </Typography>
       </Alert>
 
-      <Stack direction="row" gap={1}>
-        <Visibility sx={{ color: 'cruGrayMedium' }} />
-        <Link component={ButtonBase}>
-          {t(
-            'View or print a copy of your submitted Salary Calculation Request',
-          )}
-        </Link>
-      </Stack>
+      {showReceipt ? (
+        <>
+          <SalarySummaryCard />
+          <StaffInfoSummaryCard />
+          <SalaryCapCard />
+          <SalaryCalculationCard />
+          <MhaCard />
+        </>
+      ) : (
+        <Stack direction="row" gap={1}>
+          <Visibility sx={{ color: 'cruGrayMedium' }} />
+          <Link component={ButtonBase} onClick={() => setShowReceipt(true)}>
+            {t(
+              'View or print a copy of your submitted Salary Calculation Request',
+            )}
+          </Link>
+        </Stack>
+      )}
 
       <Button
         component={NextLink}
