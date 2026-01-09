@@ -55,6 +55,8 @@ export const AdditionalSalaryRequest: React.FC = () => {
   const [createAdditionalSalaryRequest] =
     useCreateAdditionalSalaryRequestMutation();
 
+  const iconPanelItems = useIconPanelItems(isDrawerOpen, toggleDrawer);
+
   const handleCreateAsrRequest = useCallback(() => {
     createAdditionalSalaryRequest({
       variables: {
@@ -116,7 +118,7 @@ export const AdditionalSalaryRequest: React.FC = () => {
       showPercentage={false}
       steps={steps}
       currentIndex={currentIndex}
-      icons={useIconPanelItems(isDrawerOpen, toggleDrawer)}
+      icons={iconPanelItems}
       sidebarTitle={t('Additional Salary Request')}
       isSidebarOpen={isDrawerOpen}
       sidebarAriaLabel={t('Additional Salary Request Sections')}
