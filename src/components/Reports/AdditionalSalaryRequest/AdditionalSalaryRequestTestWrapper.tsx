@@ -62,31 +62,56 @@ const TestFormikWrapper: React.FC<{
     enableReinitialize: true,
   });
 
-  return <FormikProvider value={formik}>{children}</FormikProvider>;
+  // Add validationSchema to formik context so autosave fields can access it
+  const formikWithSchema = { ...formik, validationSchema };
+
+  return <FormikProvider value={formikWithSchema}>{children}</FormikProvider>;
 };
 
 export const AdditionalSalaryRequestTestWrapper: React.FC<
   AdditionalSalaryRequestTestWrapperProps
-> = ({ children, initialValues }) => (
-  <ThemeProvider theme={theme}>
-    <SnackbarProvider>
-      <I18nextProvider i18n={i18n}>
-        <TestRouter
-          router={{
-            query: {
-              accountListId: 'account-list-1',
-            },
-          }}
-        >
-          <GqlMockedProvider>
-            <AdditionalSalaryRequestProvider>
-              <TestFormikWrapper initialValues={initialValues}>
-                {children}
-              </TestFormikWrapper>
-            </AdditionalSalaryRequestProvider>
-          </GqlMockedProvider>
-        </TestRouter>
-      </I18nextProvider>
-    </SnackbarProvider>
-  </ThemeProvider>
-);
+> = ({ children, initialValues }) => {
+  const requestValues = initialValues || defaultInitialValues;
+
+  return (
+    <ThemeProvider theme={theme}>
+      <SnackbarProvider>
+        <I18nextProvider i18n={i18n}>
+          <TestRouter
+            router={{
+              query: {
+                accountListId: 'account-list-1',
+              },
+            }}
+          >
+            <GqlMockedProvider
+              mocks={{
+                AdditionalSalaryRequest: {
+                  additionalSalaryRequest: {
+                    id: 'test-request-id',
+                    ...Object.fromEntries(
+                      Object.entries(requestValues).map(([key, value]) =>
+                        typeof value === 'string' && key !== 'phoneNumber'
+                          ? [key, parseFloat(value) || 0]
+                          : [key, value],
+                      ),
+                    ),
+                    traditional403bContribution: parseFloat(
+                      requestValues.traditional403bContribution,
+                    ) || 0,
+                  },
+                },
+              }}
+            >
+              <AdditionalSalaryRequestProvider requestId="test-request-id">
+                <TestFormikWrapper initialValues={initialValues}>
+                  {children}
+                </TestFormikWrapper>
+              </AdditionalSalaryRequestProvider>
+            </GqlMockedProvider>
+          </TestRouter>
+        </I18nextProvider>
+      </SnackbarProvider>
+    </ThemeProvider>
+  );
+};

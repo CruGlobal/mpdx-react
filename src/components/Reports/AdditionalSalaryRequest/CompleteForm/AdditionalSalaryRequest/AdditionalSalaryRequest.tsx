@@ -1,5 +1,5 @@
 import React from 'react';
-import { TableCell, TableRow, TextField, Typography } from '@mui/material';
+import { TableCell, TableRow, Typography } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { useAdditionalSalaryRequest } from 'src/components/Reports/AdditionalSalaryRequest/Shared/AdditionalSalaryRequestContext';
@@ -9,6 +9,7 @@ import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Share
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
+import { AutosaveCustomTextField } from '../../Shared/AutoSave/AutosaveCustomTextField';
 import { useCompleteFormCategories } from '../../Shared/useCompleteFormCategories';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 
@@ -19,8 +20,8 @@ export const AdditionalSalaryRequest: React.FC = () => {
   const { pageType, requestData } = useAdditionalSalaryRequest();
   const categories = useCompleteFormCategories();
 
-  const { values, handleChange, handleBlur, errors, touched } =
-    useFormikContext<CompleteFormValues>();
+  const formikContext = useFormikContext<CompleteFormValues>();
+  const { values } = formikContext;
 
   const traditional403bContribution =
     requestData?.additionalSalaryRequest?.traditional403bContribution ?? 0;
@@ -40,7 +41,6 @@ export const AdditionalSalaryRequest: React.FC = () => {
             sx={{
               width: '30%',
               color: 'text.secondary',
-              border: touched[key] && errors[key] ? '2px solid red' : '',
             }}
           >
             {pageType === PageEnum.View ? (
@@ -50,18 +50,11 @@ export const AdditionalSalaryRequest: React.FC = () => {
                 })}
               </Typography>
             ) : (
-              <TextField
+              <AutosaveCustomTextField
                 fullWidth
                 size="small"
-                name={key}
-                type="number"
-                value={values[key]}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                error={touched[key] && Boolean(errors[key])}
-                helperText={touched[key] && errors[key]}
+                fieldName={key as keyof CompleteFormValues}
                 placeholder={t('Enter amount')}
-                inputProps={{ min: 0, step: 1 }}
                 InputProps={{
                   startAdornment: <CurrencyAdornment />,
                 }}

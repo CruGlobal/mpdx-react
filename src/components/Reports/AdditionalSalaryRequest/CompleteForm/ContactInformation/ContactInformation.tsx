@@ -1,10 +1,11 @@
 import React from 'react';
-import { Box, TextField, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
+import { AutosaveCustomTextField } from '../../Shared/AutoSave/AutosaveCustomTextField';
 
 interface ContactInformationProps {
   email?: string;
@@ -15,8 +16,8 @@ export const ContactInformation: React.FC<ContactInformationProps> = ({
 }) => {
   const { t } = useTranslation();
   const { pageType } = useAdditionalSalaryRequest();
-  const { values, handleChange, handleBlur, errors, touched } =
-    useFormikContext<CompleteFormValues>();
+  const formikContext = useFormikContext<CompleteFormValues>();
+  const { values } = formikContext;
 
   return (
     <Box>
@@ -58,17 +59,11 @@ export const ContactInformation: React.FC<ContactInformationProps> = ({
             </Typography>
           </Box>
         ) : (
-          <TextField
+          <AutosaveCustomTextField
             fullWidth
             variant="standard"
-            name="phoneNumber"
-            type="tel"
+            fieldName="phoneNumber"
             label={t('Telephone Number')}
-            value={values.phoneNumber}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={touched.phoneNumber && Boolean(errors.phoneNumber)}
-            helperText={touched.phoneNumber && errors.phoneNumber}
             placeholder={t('Enter telephone number')}
             sx={{ flex: '0 0 35%' }}
           />
