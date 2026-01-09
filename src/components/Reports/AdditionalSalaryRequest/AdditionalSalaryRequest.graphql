@@ -36,6 +36,7 @@ fragment AdditionalSalaryRequestDetailsFields on AdditionalSalaryRequest {
   phoneNumber
   approvedAt
   submittedAt
+  updatedAt
   calculations {
     id
     currentSalaryCap
@@ -59,7 +60,6 @@ query AdditionalSalaryRequest($requestId: ID!) {
   additionalSalaryRequest(id: $requestId) {
     ...AdditionalSalaryRequestDetailsFields
     createdAt
-    updatedAt
   }
 }
 

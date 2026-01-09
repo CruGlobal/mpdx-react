@@ -39,6 +39,8 @@ export type AdditionalSalaryRequestType = {
   requestId?: string;
   user: HcmDataQuery['hcm'][0] | undefined;
   spouse: HcmDataQuery['hcm'][1] | undefined;
+  isMutating: boolean;
+  trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
 };
 
 const AdditionalSalaryRequestContext =
@@ -123,6 +125,19 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     setIsDrawerOpen((prev) => !prev);
   }, []);
 
+  const [mutationCount, setMutationCount] = useState(0);
+  const isMutating = mutationCount > 0;
+
+  const trackMutation = useCallback(
+    async <T,>(mutation: Promise<T>): Promise<T> => {
+      setMutationCount((prev) => prev + 1);
+      return mutation.finally(() => {
+        setMutationCount((prev) => Math.max(0, prev - 1));
+      });
+    },
+    [],
+  );
+
   const [user, spouse] = hcmData?.hcm ?? [];
 
   const contextValue = useMemo<AdditionalSalaryRequestType>(
@@ -142,6 +157,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       requestId,
       user,
       spouse,
+      isMutating,
+      trackMutation,
     }),
     [
       steps,
@@ -159,6 +176,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       requestId,
       user,
       spouse,
+      isMutating,
+      trackMutation,
     ],
   );
 
