@@ -25,22 +25,35 @@ export const SummaryStep: React.FC = () => {
           left.
         </Typography>
 
-        <Typography variant="body1">
-          As you review the information here, please take note: Staff members
-          are paid individually according to the amount that is requested within
-          policy. If you are married, as you set your salary levels, the amount
-          each spouse receives should reflect the amount of time each works in
-          ministry. To submit online your Gross Salary (line 14), which includes
-          403(b) and (if applicable) Social Security, may not exceed your
-          Maximum Allowable Salary (CAP-Line 9). For approved expenses,
-          additional salary may be requested by using the{' '}
-          <Link
-            component={NextLink}
-            href={`/accountLists/${accountListId}/reports/additionalSalaryRequest`}
-          >
-            Additional Salary Request Form
-          </Link>
-          .
+        <Typography variant="body1" sx={{ ul: { pl: 2 } }}>
+          As you review the information here, please take note:
+          <ul>
+            <li>
+              Staff members are paid individually according to the amount that
+              is requested within policy.
+            </li>
+            <li>
+              If you are married, as you set your salary levels, the amount each
+              spouse receives should reflect the amount of time each works in
+              ministry.
+            </li>
+            <li>
+              To submit online your Gross Salary (line 14), which includes
+              403(b) and (if applicable) Social Security, may not exceed your
+              Maximum Allowable Salary (CAP - line 9).
+            </li>
+            <li>
+              For approved expenses, additional salary may be requested by using
+              the{' '}
+              <Link
+                component={NextLink}
+                href={`/accountLists/${accountListId}/reports/additionalSalaryRequest`}
+              >
+                Additional Salary Request Form
+              </Link>
+              .
+            </li>
+          </ul>
         </Typography>
       </Trans>
       <SalarySummaryCard />
