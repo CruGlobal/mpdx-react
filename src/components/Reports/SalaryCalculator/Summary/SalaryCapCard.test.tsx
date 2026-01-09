@@ -83,7 +83,7 @@ describe('SalaryCapCard', () => {
       ['7. SubtotalLine 5 + Line 6', '$10,007.00', '$20,007.00'],
       ['8. 403(b) Contribution', '-', '-'],
       ['a. 403(b) Contribution Percentage', '10.00%', '20.00%'],
-      ['b. 1.00 Minus 403(b) Percentage', '0.90%', '0.80%'],
+      ['b. 1.00 Minus 403(b) Percentage', '0.90', '0.80'],
       [
         '9. Maximum Allowable Salary (CAP)Line 7 × Line 8bFor a couple, the combined CAPs cannot exceed $10,008.00, with neither individual exceeding $10,009.00.',
       ],

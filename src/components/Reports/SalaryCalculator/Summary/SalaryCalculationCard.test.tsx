@@ -74,7 +74,7 @@ describe('SalaryCalculationCard', () => {
       ['a. Tax-deferred (before tax) percentage', '5.00%', '8.00%'],
       ['b. Roth (after-tax) percentage', '12.00%', '10.00%'],
       ['c. Total ContributionLine 13a + 13b', '10.00%', '20.00%'],
-      ['d. 1.00 minus 403(b) percentage', '90.00%', '80.00%'],
+      ['d. 1.00 minus 403(b) percentage', '0.90', '0.80'],
       [
         '14. Gross SalaryLine 12 ÷ Line 13dIf this amount is greater than your CAP (the lesser of line 9a or 9b), it must be approved.',
         '$10,005.00',
