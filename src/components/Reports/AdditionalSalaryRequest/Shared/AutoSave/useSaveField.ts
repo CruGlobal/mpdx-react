@@ -10,7 +10,7 @@ interface UseSaveFieldOptions {
 }
 
 export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
-  const { requestData } = useAdditionalSalaryRequest();
+  const { requestData, trackMutation } = useAdditionalSalaryRequest();
   const [updateAdditionalSalaryRequest] =
     useUpdateAdditionalSalaryRequestMutation({
       refetchQueries: ['AdditionalSalaryRequest'],
@@ -32,17 +32,19 @@ export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
       } as CompleteFormValues;
       const totalAdditionalSalaryRequested = getTotal(updatedValues);
 
-      await updateAdditionalSalaryRequest({
-        variables: {
-          id: requestId,
-          attributes: {
-            ...attributes,
-            totalAdditionalSalaryRequested,
+      await trackMutation(
+        updateAdditionalSalaryRequest({
+          variables: {
+            id: requestId,
+            attributes: {
+              ...attributes,
+              totalAdditionalSalaryRequested,
+            },
           },
-        },
-      });
+        }),
+      );
     },
-    [formValues, updateAdditionalSalaryRequest, requestData],
+    [formValues, updateAdditionalSalaryRequest, requestData, trackMutation],
   );
 
   return saveField;
