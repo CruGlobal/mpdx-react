@@ -7,6 +7,7 @@ import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelper
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { RequestPage } from 'src/components/Reports/AdditionalSalaryRequest/RequestPage/RequestPage';
 import { AdditionalSalaryRequestProvider } from 'src/components/Reports/AdditionalSalaryRequest/Shared/AdditionalSalaryRequestContext';
+import { SavingStatus } from 'src/components/Reports/AdditionalSalaryRequest/Shared/SavingStatus/SavingStatus';
 import { useAdditionalSalaryRequestForm } from 'src/components/Reports/AdditionalSalaryRequest/Shared/useAdditionalSalaryRequestForm';
 import {
   HeaderTypeEnum,
@@ -55,6 +56,7 @@ const RequestPageContent: React.FC<{ requestId: string }> = ({ requestId }) => {
               onNavListToggle={handleNavListToggle}
               title={t('Additional Salary Request')}
               headerType={HeaderTypeEnum.Report}
+              rightExtra={<SavingStatus />}
             />
             <RequestPage />
           </>
