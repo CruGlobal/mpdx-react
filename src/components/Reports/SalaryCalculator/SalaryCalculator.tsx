@@ -13,22 +13,12 @@ import {
 } from './SalaryCalculatorContext/SalaryCalculatorContext';
 import { StepNavigation } from './StepNavigation/StepNavigation';
 
-const MainContent: React.FC = () => {
-  const { steps, handlePreviousStep, handleNextStep, currentIndex } =
-    useSalaryCalculator();
-
-  return (
-    <Stack gap={4} maxWidth={800}>
-      <CurrentStep />
-      <StepNavigation
-        onBack={handlePreviousStep}
-        onContinue={handleNextStep}
-        isBackDisabled={currentIndex === 0}
-        isContinueDisabled={currentIndex === steps.length - 1}
-      />
-    </Stack>
-  );
-};
+const MainContent: React.FC = () => (
+  <Stack gap={4} maxWidth={800}>
+    <CurrentStep />
+    <StepNavigation />
+  </Stack>
+);
 
 export const SalaryCalculator: React.FC = () => (
   <SalaryCalculatorProvider>

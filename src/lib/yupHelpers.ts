@@ -2,6 +2,15 @@ import { DateTime } from 'luxon';
 import { TFunction } from 'react-i18next';
 import * as yup from 'yup';
 
+export const phoneNumber = (t: TFunction) =>
+  yup.string().test('is-phone-number', t('Invalid phone number'), (val) => {
+    if (!val) {
+      return false;
+    }
+    const cleaned = val.replace(/\D/g, '');
+    return /^1?\d{10}$/.test(cleaned);
+  });
+
 export const dateTime = () =>
   yup
     .mixed<DateTime>()
