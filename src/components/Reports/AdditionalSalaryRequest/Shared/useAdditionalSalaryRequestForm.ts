@@ -178,5 +178,5 @@ export const useAdditionalSalaryRequestForm = ({
     enableReinitialize: true,
   });
 
-  return formik;
+  return { ...formik, validationSchema };
 };

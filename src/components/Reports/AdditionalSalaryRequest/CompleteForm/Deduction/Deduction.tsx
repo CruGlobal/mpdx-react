@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import {
   Box,
   Checkbox,
@@ -7,25 +7,40 @@ import {
   TableRow,
   Typography,
 } from '@mui/material';
-import { Field } from 'formik';
+import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { FormCard } from 'src/components/Reports/Shared/CalculationReports/FormCard/FormCard';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
+import { useSaveField } from '../../Shared/AutoSave/useSaveField';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 
 export const Deduction: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
   const { pageType, requestData } = useAdditionalSalaryRequest();
+  const { values: formValues, setFieldValue } =
+    useFormikContext<CompleteFormValues>();
+
+  const saveField = useSaveField({ formValues });
 
   const traditional403bContribution =
     requestData?.additionalSalaryRequest?.traditional403bContribution ?? 0;
 
   const { calculatedDeduction, contribution403b, totalDeduction } =
     useSalaryCalculations(traditional403bContribution);
+
+  const handleCheckboxChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const checked = e.target.checked;
+      setFieldValue('deductTwelvePercent', checked);
+      saveField({ deductTwelvePercent: checked });
+    },
+    [setFieldValue, saveField],
+  );
 
   return (
     <FormCard title={t('403(b) Deduction')}>
@@ -34,10 +49,9 @@ export const Deduction: React.FC = () => {
           <FormControlLabel
             sx={{ alignItems: 'flex-start', ml: 0 }}
             control={
-              <Field
-                type="checkbox"
-                name="deductTwelvePercent"
-                as={Checkbox}
+              <Checkbox
+                checked={formValues.deductTwelvePercent || false}
+                onChange={handleCheckboxChange}
                 disabled={pageType === PageEnum.View}
                 sx={{ mt: -0.5 }}
                 inputProps={{

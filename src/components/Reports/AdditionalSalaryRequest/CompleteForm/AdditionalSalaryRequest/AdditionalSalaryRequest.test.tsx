@@ -39,7 +39,7 @@ describe('AdditionalSalaryRequest', () => {
   it('renders all input fields for categories', () => {
     const { getAllByRole } = render(<TestWrapper />);
 
-    const inputs = getAllByRole('spinbutton');
+    const inputs = getAllByRole('textbox');
     expect(inputs).toHaveLength(15);
   });
 
@@ -86,7 +86,7 @@ describe('AdditionalSalaryRequest', () => {
   it('updates total when user enters values', async () => {
     const { getAllByRole, getByTestId } = render(<TestWrapper />);
 
-    const inputs = getAllByRole('spinbutton');
+    const inputs = getAllByRole('textbox');
 
     userEvent.clear(inputs[0]);
     userEvent.type(inputs[0], '1000');
@@ -150,14 +150,14 @@ describe('AdditionalSalaryRequest', () => {
   it('accepts numeric input in fields', async () => {
     const { getAllByRole } = render(<TestWrapper />);
 
-    const inputs = getAllByRole('spinbutton');
+    const inputs = getAllByRole('textbox');
     const firstInput = inputs[0];
 
     userEvent.clear(firstInput);
     userEvent.type(firstInput, '12345');
 
     await waitFor(() => {
-      expect(firstInput).toHaveValue(12345);
+      expect(firstInput).toHaveValue('12345');
     });
   });
 
@@ -231,9 +231,10 @@ describe('AdditionalSalaryRequest', () => {
       <TestWrapper initialValues={customValues} />,
     );
 
-    const inputs = getAllByRole('spinbutton');
-    expect(inputs[0]).toHaveValue(100);
-    expect(inputs[1]).toHaveValue(200);
-    expect(inputs[2]).toHaveValue(300);
+    const inputs = getAllByRole('textbox');
+    // Autosave fields display values (formatted when not focused)
+    expect(inputs[0]).toHaveValue('100');
+    expect(inputs[1]).toHaveValue('200');
+    expect(inputs[2]).toHaveValue('300');
   });
 });
