@@ -185,7 +185,7 @@ describe('getNewStaffBudgetCategory', () => {
         expected: 50,
       },
       {
-        category: PrimaryBudgetCategoryEnum.ReimbursableMedicalExpense,
+        category: PrimaryBudgetCategoryEnum.ReimbursableMedicalExpenses,
         expected: 165,
       },
     ])('calculates $category', ({ category, expected }) => {
@@ -219,7 +219,7 @@ describe('getNewStaffBudgetCategory', () => {
         expected: 75,
       },
       {
-        category: PrimaryBudgetCategoryEnum.ReimbursableMedicalExpense,
+        category: PrimaryBudgetCategoryEnum.ReimbursableMedicalExpenses,
         expected: 330,
       },
     ])('calculates $category', ({ category, expected }) => {
@@ -253,7 +253,7 @@ describe('getNewStaffBudgetCategory', () => {
         expected: 75,
       },
       {
-        category: PrimaryBudgetCategoryEnum.ReimbursableMedicalExpense,
+        category: PrimaryBudgetCategoryEnum.ReimbursableMedicalExpenses,
         expected: 365,
       },
     ])('calculates $category', ({ category, expected }) => {
@@ -287,7 +287,7 @@ describe('getNewStaffBudgetCategory', () => {
         expected: 50,
       },
       {
-        category: PrimaryBudgetCategoryEnum.ReimbursableMedicalExpense,
+        category: PrimaryBudgetCategoryEnum.ReimbursableMedicalExpenses,
         expected: 235,
       },
     ])('calculates $category', ({ category, expected }) => {
@@ -321,7 +321,7 @@ describe('getNewStaffBudgetCategory', () => {
         expected: 50,
       },
       {
-        category: PrimaryBudgetCategoryEnum.ReimbursableMedicalExpense,
+        category: PrimaryBudgetCategoryEnum.ReimbursableMedicalExpenses,
         expected: 165,
       },
     ])('calculates $category', ({ category, expected }) => {

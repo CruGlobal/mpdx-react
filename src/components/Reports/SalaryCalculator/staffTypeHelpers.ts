@@ -16,12 +16,13 @@ export type StaffTypeFields = Pick<
 
 /**
  * Checks if staff member is a full-time RMO.
- * Reference Status Code: NX, SC
+ * Reference Status Code: NX, SC, SCO
  */
 export const isFullTimeRmo = (fields: StaffTypeFields): boolean => {
   const isValidPersonType =
     fields.userPersonType === UserPersonTypeEnum.EmployeeStaff ||
-    fields.userPersonType === UserPersonTypeEnum.EmployeeNationalStaff;
+    fields.userPersonType === UserPersonTypeEnum.EmployeeNationalStaff ||
+    fields.userPersonType === UserPersonTypeEnum.EmployeeStaffNonRmoSpouse;
 
   return (
     isValidPersonType &&

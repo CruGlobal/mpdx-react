@@ -22,10 +22,10 @@ import Loading from 'src/components/Loading/Loading';
 import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
 import { Fund, StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
+import { getLocalizedCategory } from '../../Shared/Helpers/transformStaffExpenseEnums';
 import { useReportsStaffExpensesQuery } from '../GetStaffExpense.generated';
 import { DateRange } from '../Helpers/StaffReportEnum';
 import { getAvailableCategories } from '../Helpers/filterTransactions';
-import { getLocalizedCategory } from '../Helpers/useLocalizedCategory';
 
 export interface SettingsDialogProps {
   isOpen: boolean;

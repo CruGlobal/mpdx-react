@@ -1,11 +1,6 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  AssignmentCategoryEnum,
-  AssignmentStatusEnum,
-  PeopleGroupSupportTypeEnum,
-  UserPersonTypeEnum,
-} from 'src/graphql/types.generated';
+import { isFullTimeRmo } from 'src/components/Reports/SalaryCalculator/staffTypeHelpers';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import { useHcmQuery } from '../SalaryCalculatorContext/Hcm.generated';
@@ -13,30 +8,6 @@ import { getLocalizedTaxStatus } from '../Shared/getLocalizedTaxStatus';
 import { useAccountBalanceQuery } from './AccountBalance.generated';
 import { useLandingSalaryCalculationsQuery } from './NewSalaryCalculationLanding/LandingSalaryCalculations.generated';
 import { useStaffAccountIdQuery } from './StaffAccountId.generated';
-
-// TODO: Remove this function once the shared utility PR is merged
-// SC, SCO, and NX
-// This logic will be moved to a shared utility function in another PR
-// Temporary implementation to check if user is full-time RMO
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const isFullTimeRmo = (staffInfo: any): boolean => {
-  if (!staffInfo) {
-    return false;
-  }
-
-  const isValidPersonType =
-    staffInfo.userPersonType === UserPersonTypeEnum.EmployeeStaff ||
-    staffInfo.userPersonType === UserPersonTypeEnum.EmployeeNationalStaff ||
-    staffInfo.userPersonType === UserPersonTypeEnum.EmployeeStaffNonRmoSpouse;
-
-  return (
-    isValidPersonType &&
-    staffInfo.peopleGroupSupportType ===
-      PeopleGroupSupportTypeEnum.SupportedRmo &&
-    staffInfo.assignmentStatus === AssignmentStatusEnum.ActivePayrollEligible &&
-    staffInfo.assignmentCategory === AssignmentCategoryEnum.FullTimeRegular
-  );
-};
 
 interface SalaryCategory {
   category: string;
@@ -123,7 +94,7 @@ export const useLandingData = () => {
   );
 
   const canCalculateSalary = useMemo(
-    () => isFullTimeRmo(self?.staffInfo),
+    () => (self?.staffInfo ? isFullTimeRmo(self.staffInfo) : false),
     [self],
   );
 

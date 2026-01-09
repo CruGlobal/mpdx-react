@@ -2,6 +2,7 @@ import { Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { EffectiveDateStep } from './EffectiveDateStep/EffectiveDateStep';
 import { useSalaryCalculator } from './SalaryCalculatorContext/SalaryCalculatorContext';
+import { SummaryStep } from './Summary/Summary';
 import { YourInformationStep } from './YourInformation/YourInformation';
 
 export const CurrentStep: React.FC = () => {
@@ -14,9 +15,7 @@ export const CurrentStep: React.FC = () => {
     <Typography variant="h5" key="salary-calculation">
       {t('Salary Calculation')}
     </Typography>,
-    <Typography variant="h5" key="summary">
-      {t('Summary')}
-    </Typography>,
+    <SummaryStep key="summary" />,
     <Typography variant="h5" key="receipt">
       {t('Receipt')}
     </Typography>,

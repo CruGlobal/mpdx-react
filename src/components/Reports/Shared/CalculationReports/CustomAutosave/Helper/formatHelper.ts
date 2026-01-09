@@ -1,5 +1,4 @@
 import { currencyFormat } from 'src/lib/intlFormat';
-import { CalculationFormValues } from '../../../Steps/StepThree/Calculation';
 
 export const parseInput = (s: string) => {
   const cleaned = s.replace(/[^\d.-]/g, '');
@@ -12,7 +11,7 @@ export const parseInput = (s: string) => {
 
 export const display = (
   isEditing: (name: string) => boolean,
-  name: keyof CalculationFormValues & string,
+  name: string,
   value: string,
   currency: string,
   locale: string,
