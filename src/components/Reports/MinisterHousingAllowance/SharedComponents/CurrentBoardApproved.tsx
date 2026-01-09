@@ -35,12 +35,9 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
   const router = useRouter();
   const currency = 'USD';
 
-  const [duplicateMHA] = useDuplicateMinistryHousingAllowanceRequestMutation({
-    refetchQueries: [
-      'MinistryHousingAllowanceRequests',
-      'MinistryHousingAllowanceRequest',
-    ],
-  });
+  const [duplicateMHA] = useDuplicateMinistryHousingAllowanceRequestMutation(
+    {},
+  );
 
   const { isMarried, preferredName, spousePreferredName } =
     useMinisterHousingAllowance();
@@ -50,6 +47,8 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
     request?.requestAttributes || {};
 
   const lastUpdated = request?.updatedAt ?? null;
+
+  const viewLink = getRequestUrl(accountListId, requestId, 'view');
 
   const handleDuplicateRequest = async () => {
     if (!requestId) {
@@ -69,9 +68,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
         ?.ministryHousingAllowanceRequest.id;
 
     if (newRequestId) {
-      router.push(
-        `/accountLists/${accountListId}/reports/housingAllowance/${newRequestId}/edit`,
-      );
+      router.push(getRequestUrl(accountListId, newRequestId, 'edit'));
     }
   };
 
@@ -83,7 +80,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
       icon={HomeSharp}
       iconColor="success.main"
       linkOneText={t('View Current MHA')}
-      linkOne={getRequestUrl(accountListId, requestId, 'view')}
+      linkOne={viewLink}
       linkTwoText={t('Update Current MHA')}
       handleLinkTwo={handleDuplicateRequest}
       isRequest={false}

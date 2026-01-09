@@ -60,10 +60,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
 
   const [deleteRequestMutation] =
     useDeleteMinistryHousingAllowanceRequestMutation({
-      refetchQueries: [
-        'MinistryHousingAllowanceRequests',
-        'MinistryHousingAllowanceRequest',
-      ],
+      refetchQueries: ['MinistryHousingAllowanceRequests'],
       awaitRefetchQueries: true,
     });
 
@@ -79,11 +76,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
       enqueueSnackbar(t('MHA request cancelled successfully.'), {
         variant: 'success',
       });
-    } catch (error) {
-      enqueueSnackbar(t('Failed to cancel your MHA request.'), {
-        variant: 'error',
-      });
-    }
+    } catch (error) {}
   };
 
   return (
