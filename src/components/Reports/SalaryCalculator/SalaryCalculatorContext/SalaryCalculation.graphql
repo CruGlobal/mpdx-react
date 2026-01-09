@@ -10,6 +10,7 @@ fragment SalaryRequestFields on SalaryRequest {
   status
   phoneNumber
   emailAddress
+  submittedAt
 }
 
 fragment CalculationFields on SalaryRequestCalculations {
