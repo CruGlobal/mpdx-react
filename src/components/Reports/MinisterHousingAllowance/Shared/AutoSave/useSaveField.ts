@@ -17,9 +17,7 @@ export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
 
   const { requestData } = useMinisterHousingAllowance();
   const [updateMinistryHousingAllowanceRequest] =
-    useUpdateMinistryHousingAllowanceRequestMutation({
-      refetchQueries: ['MinistryHousingAllowanceRequest'],
-    });
+    useUpdateMinistryHousingAllowanceRequestMutation({});
   const values = requestData?.requestAttributes;
 
   const saveField = useCallback(
@@ -62,7 +60,12 @@ export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
           },
         },
         onCompleted: () => {
-          enqueueSnackbar(t('Saved successfully'), { variant: 'success' });
+          const hasValue = Object.values(attributes).some(
+            (value) => value !== null,
+          );
+          if (hasValue) {
+            enqueueSnackbar(t('Saved successfully'), { variant: 'success' });
+          }
         },
       });
     },

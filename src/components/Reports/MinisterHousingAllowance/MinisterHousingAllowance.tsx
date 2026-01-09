@@ -153,13 +153,12 @@ export const MinisterHousingAllowanceReport = () => {
                   {t('Request New MHA')}
                 </Button>
               )}
+              {previousApprovedRequest && (
+                <Stack direction="column" width={mainContentWidth} mt={4}>
+                  <CurrentBoardApproved request={previousApprovedRequest} />
+                </Stack>
+              )}
             </>
-          )}
-
-          {previousApprovedRequest && (
-            <Stack direction="column" width={mainContentWidth} mt={4}>
-              <CurrentBoardApproved request={previousApprovedRequest} />
-            </Stack>
           )}
         </Container>
       }

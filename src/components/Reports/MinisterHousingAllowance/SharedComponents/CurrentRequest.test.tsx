@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -56,22 +56,26 @@ const TestComponent: React.FC = () => {
 
 describe('CurrentRequest Component', () => {
   it('should render correctly', () => {
-    const { getByText } = render(<TestComponent />);
+    const { getByText, queryByText } = render(<TestComponent />);
 
     expect(getByText('Current MHA Request')).toBeInTheDocument();
     expect(getByText('View Request')).toBeInTheDocument();
-    expect(getByText('Edit Request')).toBeInTheDocument();
+
+    expect(
+      getByText(/this request is still pending board approval/i),
+    ).toBeInTheDocument();
+    expect(queryByText('Edit Request')).not.toBeInTheDocument();
 
     expect(getByText('$15,000.00')).toBeInTheDocument();
 
-    expect(getByText(/Requested on/i)).toBeInTheDocument();
-    expect(getByText(/Oct 1, 2019/i)).toBeInTheDocument();
-    expect(getByText(/Deadline for changes/i)).toBeInTheDocument();
-    expect(getByText(/Oct 23, 2019/i)).toBeInTheDocument();
-    expect(getByText(/Board Approval on/i)).toBeInTheDocument();
-    expect(getByText(/Oct 30, 2019/i)).toBeInTheDocument();
-    expect(getByText(/MHA Available on/i)).toBeInTheDocument();
-    expect(getByText(/Nov 20, 2019/i)).toBeInTheDocument();
+    screen.logTestingPlaygroundURL();
+
+    expect(getByText(/Requested on: Oct 1, 2019/i)).toBeInTheDocument();
+    expect(
+      getByText(/Deadline for changes: Oct 23, 2019/i),
+    ).toBeInTheDocument();
+    expect(getByText(/Board Approval on: Oct 30, 2019/i)).toBeInTheDocument();
+    expect(getByText(/MHA Available on: Nov 20, 2019/i)).toBeInTheDocument();
   });
 
   it('should call delete mutation on cancel request', async () => {

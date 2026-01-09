@@ -92,4 +92,34 @@ describe('useSaveField', () => {
       ),
     );
   });
+
+  it('should not show snackbar if all values are null', async () => {
+    const { result } = renderHook(
+      () =>
+        useSaveField({
+          formValues: { rentalValue: 50 },
+        }),
+      {
+        wrapper: TestComponent,
+      },
+    );
+
+    result.current({ rentalValue: null });
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'UpdateMinistryHousingAllowanceRequest',
+        {
+          input: {
+            requestId: 'request-id',
+            requestAttributes: {
+              rentalValue: null,
+            },
+          },
+        },
+      ),
+    );
+
+    expect(mockEnqueue).not.toHaveBeenCalled();
+  });
 });
