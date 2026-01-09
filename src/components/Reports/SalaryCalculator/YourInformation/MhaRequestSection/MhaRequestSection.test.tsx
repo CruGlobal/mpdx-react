@@ -1,5 +1,5 @@
 import { render, waitFor } from '@testing-library/react';
-import { SalaryCalculatorTestWrapper } from '../SalaryCalculatorTestWrapper';
+import { SalaryCalculatorTestWrapper } from '../../SalaryCalculatorTestWrapper';
 import { MhaRequestSection } from './MhaRequestSection';
 
 const mutationSpy = jest.fn();

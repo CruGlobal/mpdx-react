@@ -13,17 +13,21 @@ import * as yup from 'yup';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { amount } from 'src/lib/yupHelpers';
-import { AutosaveTextField } from '../Autosave/AutosaveTextField';
-import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
+import { AutosaveTextField } from '../../Autosave/AutosaveTextField';
+import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
 import {
   FormattedTableCell,
   StepCard,
   StepTableHead,
-} from '../Shared/StepCard';
+} from '../../Shared/StepCard';
 
-export const RequestedSalarySection: React.FC = () => {
+export const RequestedSalaryCard: React.FC = () => {
   const { t } = useTranslation();
-  const { calculation: salaryCalculation, hcm } = useSalaryCalculator();
+  const {
+    calculation: salaryCalculation,
+    hcmUser,
+    hcmSpouse,
+  } = useSalaryCalculator();
   const locale = useLocale();
 
   const schema = useMemo(
@@ -35,7 +39,6 @@ export const RequestedSalarySection: React.FC = () => {
     [t],
   );
 
-  const [self, spouse] = hcm ?? [];
   const minimumSalaryValue =
     salaryCalculation?.calculations.minimumRequestedSalary ?? 0;
   const spouseMinimumSalaryValue =
@@ -67,13 +70,13 @@ export const RequestedSalarySection: React.FC = () => {
             Minister&apos;s Housing Allowance. It does not include either Social
             Security (SECA) or 403b. They will be added in later.{' '}
           </Trans>
-          {spouse ? (
+          {hcmSpouse ? (
             <Trans t={t}>
               Because of IRS and Cru requirements, the lowest salary you can
               request is {{ minimumSalary }} ({formula}) for{' '}
-              {{ name: self.staffInfo.preferredName }} and{' '}
+              {{ name: hcmUser?.staffInfo.preferredName }} and{' '}
               {{ spouseMinimumSalary }} ({formula}) for{' '}
-              {{ spouseName: spouse.staffInfo.preferredName }}.
+              {{ spouseName: hcmSpouse?.staffInfo.preferredName }}.
             </Trans>
           ) : (
             <Trans t={t}>
@@ -95,11 +98,11 @@ export const RequestedSalarySection: React.FC = () => {
                 {t('Current Salary')}
               </TableCell>
               <FormattedTableCell
-                value={self?.currentSalary.grossSalaryAmount}
+                value={hcmUser?.currentSalary.grossSalaryAmount}
               />
-              {spouse && (
+              {hcmSpouse && (
                 <FormattedTableCell
-                  value={spouse.currentSalary.grossSalaryAmount}
+                  value={hcmSpouse.currentSalary.grossSalaryAmount}
                 />
               )}
             </TableRow>
@@ -109,7 +112,7 @@ export const RequestedSalarySection: React.FC = () => {
                 {t('Salary Minimum')}
               </TableCell>
               <FormattedTableCell value={minimumSalaryValue} />
-              {spouse && (
+              {hcmSpouse && (
                 <FormattedTableCell value={spouseMinimumSalaryValue} />
               )}
             </TableRow>
@@ -126,7 +129,7 @@ export const RequestedSalarySection: React.FC = () => {
                   required
                 />
               </TableCell>
-              {spouse && (
+              {hcmSpouse && (
                 <TableCell>
                   <AutosaveTextField
                     fieldName="spouseSalary"

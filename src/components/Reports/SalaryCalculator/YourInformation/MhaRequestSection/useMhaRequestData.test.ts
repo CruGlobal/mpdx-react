@@ -1,5 +1,5 @@
 import { renderHook, waitFor } from '@testing-library/react';
-import { SalaryCalculatorTestWrapper } from '../SalaryCalculatorTestWrapper';
+import { SalaryCalculatorTestWrapper } from '../../SalaryCalculatorTestWrapper';
 import { useMhaRequestData } from './useMhaRequestData';
 
 describe('useMhaRequestData', () => {

@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
-import { StepCard, StepTableHead } from '../Shared/StepCard';
+import { StepCard, StepTableHead } from '../../Shared/StepCard';
 import { usePersonalInformation } from './usePersonalInformation';
 
 export const PersonalInformationSection: React.FC = () => {
