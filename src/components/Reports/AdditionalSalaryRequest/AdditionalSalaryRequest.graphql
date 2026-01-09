@@ -38,13 +38,10 @@ fragment AdditionalSalaryRequestDetailsFields on AdditionalSalaryRequest {
   submittedAt
   updatedAt
   calculations {
-    id
     currentSalaryCap
-    createdAt
     staffAccountBalance
     predictedYearIncome
     pendingAsrAmount
-    updatedAt
     maxAmountAndReason {
       amount
       reason
