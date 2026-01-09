@@ -11,6 +11,7 @@ import {
 import { useTheme } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
 import { AutosaveTextField } from '../Autosave/AutosaveTextField';
+import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 import { StepCard } from '../Shared/StepCard';
 import { useMhaRequestData } from './useMhaRequestData';
 
@@ -47,6 +48,7 @@ const StyledRemainingBox = styled(Box)(({ theme }) => ({
 export const MhaRequestSection: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
+  const { hcmUser, hcmSpouse } = useSalaryCalculator();
   const {
     hasSpouse,
     schema,
@@ -56,8 +58,6 @@ export const MhaRequestSection: React.FC = () => {
     progressPercentage,
     currentApprovedAmountForStaff,
     currentApprovedSpouseAmountForStaff,
-    self,
-    spouse,
   } = useMhaRequestData();
 
   return (
@@ -96,10 +96,10 @@ export const MhaRequestSection: React.FC = () => {
         {hasSpouse && (
           <StyledNameHeadersBox>
             <Typography variant="subtitle1">
-              {self?.staffInfo.firstName}
+              {hcmUser?.staffInfo.firstName}
             </Typography>
             <Typography variant="subtitle1">
-              {spouse?.staffInfo.firstName}
+              {hcmSpouse?.staffInfo.firstName}
             </Typography>
           </StyledNameHeadersBox>
         )}
