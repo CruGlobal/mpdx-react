@@ -15,12 +15,10 @@ import { SummaryTable } from './SummaryTable';
 export const SalaryCapCard: React.FC = () => {
   const { t } = useTranslation();
   const { hcmUser, hcmSpouse, calculation } = useSalaryCalculator();
-  const { formatCurrency, formatFraction, formatPercentage, formatDecimal } =
-    useFormatters();
+  const { formatCurrency, formatFraction, formatDecimal } = useFormatters();
 
   const calcs = calculation?.calculations;
   const spouseCalcs = calculation?.spouseCalculations;
-
   const hasSpouse = !!hcmSpouse && !!spouseCalcs;
 
   return (
@@ -151,10 +149,10 @@ export const SalaryCapCard: React.FC = () => {
               <TableCell scope="row" className="sub-item">
                 b. {t('1.00 Minus 403(b) Percentage')}
               </TableCell>
-              <TableCell>{formatPercentage(calcs?.non403bFraction)}</TableCell>
+              <TableCell>{formatDecimal(calcs?.non403bFraction)}</TableCell>
               {hasSpouse && (
                 <TableCell>
-                  {formatPercentage(spouseCalcs.non403bFraction)}
+                  {formatDecimal(spouseCalcs.non403bFraction)}
                 </TableCell>
               )}
             </TableRow>
