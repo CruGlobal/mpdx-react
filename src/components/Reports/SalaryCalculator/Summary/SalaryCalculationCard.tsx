@@ -30,10 +30,12 @@ export const SalaryCalculationCard: React.FC = () => {
           <TableHead>
             <TableRow>
               <TableCell scope="col">{t('Category')}</TableCell>
-              <TableCell scope="col">{hcmUser?.staffInfo.firstName}</TableCell>
+              <TableCell scope="col">
+                {hcmUser?.staffInfo.preferredName}
+              </TableCell>
               {hasSpouse && (
                 <TableCell scope="col">
-                  {hcmSpouse.staffInfo.firstName}
+                  {hcmSpouse.staffInfo.preferredName}
                 </TableCell>
               )}
             </TableRow>

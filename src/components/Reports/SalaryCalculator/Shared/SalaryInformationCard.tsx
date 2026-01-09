@@ -69,9 +69,9 @@ export const SalaryInformationCard: React.FC = () => {
           <TableHead>
             <TableRow>
               <TableCell>{t('Category')}</TableCell>
-              <TableCell>{self?.staffInfo.firstName}</TableCell>
+              <TableCell>{self?.staffInfo.preferredName}</TableCell>
               {hasSpouse && (
-                <TableCell>{spouse?.staffInfo.firstName}</TableCell>
+                <TableCell>{spouse?.staffInfo.preferredName}</TableCell>
               )}
             </TableRow>
           </TableHead>

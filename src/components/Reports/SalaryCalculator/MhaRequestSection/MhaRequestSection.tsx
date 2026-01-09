@@ -96,10 +96,10 @@ export const MhaRequestSection: React.FC = () => {
         {hasSpouse && (
           <StyledNameHeadersBox>
             <Typography variant="subtitle1">
-              {hcmUser?.staffInfo.firstName}
+              {hcmUser?.staffInfo.preferredName}
             </Typography>
             <Typography variant="subtitle1">
-              {hcmSpouse?.staffInfo.firstName}
+              {hcmSpouse?.staffInfo.preferredName}
             </Typography>
           </StyledNameHeadersBox>
         )}
