@@ -18,9 +18,6 @@ import {
 import { useTranslation } from 'react-i18next';
 import { SubmitModal } from '../SubmitModal/SubmitModal';
 
-//TODO: handle cancel request
-//TODO: handle duplicate last years mha and view current mha links
-
 interface StatusCardProps {
   formType: string;
   title: string;
@@ -35,6 +32,7 @@ interface StatusCardProps {
   isRequest?: boolean;
   hideDownload?: boolean;
   hideActions?: boolean;
+  hideLinkTwoButton?: boolean;
   handleDownload?: () => void;
   handleConfirmCancel: () => void;
   handleLinkTwo?: () => void;
@@ -55,6 +53,7 @@ export const StatusCard: React.FC<StatusCardProps> = ({
   isRequest,
   hideDownload,
   hideActions,
+  hideLinkTwoButton,
   handleDownload,
   handleConfirmCancel,
   handleLinkTwo,
@@ -120,15 +119,17 @@ export const StatusCard: React.FC<StatusCardProps> = ({
           >
             {linkOneText}
           </Button>
-          <Button
-            component={linkTwo ? NextLink : 'button'}
-            href={linkTwo}
-            onClick={handleLinkTwo}
-            variant={isRequest ? 'outlined' : 'contained'}
-            sx={{ px: 2, py: 1 }}
-          >
-            {linkTwoText}
-          </Button>
+          {!hideLinkTwoButton && (
+            <Button
+              component={linkTwo ? NextLink : 'button'}
+              href={linkTwo}
+              onClick={handleLinkTwo}
+              variant={isRequest ? 'outlined' : 'contained'}
+              sx={{ px: 2, py: 1 }}
+            >
+              {linkTwoText}
+            </Button>
+          )}
           {isRequest && (
             <Box sx={{ float: 'right' }}>
               <Button

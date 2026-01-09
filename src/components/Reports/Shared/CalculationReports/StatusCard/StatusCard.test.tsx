@@ -30,6 +30,7 @@ interface TestComponentProps {
   subtitle?: string;
   isRequest?: boolean;
   hideDownload?: boolean;
+  hideLinkTwoButton?: boolean;
   hideActions?: boolean;
   linkOne?: string;
   linkTwo?: string;
@@ -40,6 +41,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   isRequest,
   hideDownload = false,
   hideActions = false,
+  hideLinkTwoButton,
   linkOne,
   linkTwo,
 }) => {
@@ -60,6 +62,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
                 isRequest={isRequest}
                 hideDownload={hideDownload}
                 hideActions={hideActions}
+                hideLinkTwoButton={hideLinkTwoButton}
                 linkOne={linkOne}
                 linkTwo={linkTwo}
                 handleDownload={handleDownload}
@@ -192,5 +195,11 @@ describe('CardSkeleton', () => {
     expect(handleConfirmCancel).toHaveBeenCalled();
 
     expect(queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('should hide second button when hideLinkTwoButton is true', () => {
+    const { queryByText } = render(<TestComponent hideLinkTwoButton={true} />);
+
+    expect(queryByText(titleTwo)).not.toBeInTheDocument();
   });
 });
