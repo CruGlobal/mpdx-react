@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { useApprovedSalaryCalculationQuery } from '../SalaryCalculatorContext/SalaryCalculation.generated';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 import { StepCard } from '../Shared/StepCard';
-import { useFormatters } from './useFormatters';
+import { useFormatters } from '../Shared/useFormatters';
 
 export const SalarySummaryCard: React.FC = () => {
   const { t } = useTranslation();
