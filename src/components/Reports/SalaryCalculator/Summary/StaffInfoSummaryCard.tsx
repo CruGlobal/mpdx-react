@@ -9,6 +9,7 @@ import {
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
+import { SalaryRequestStatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
@@ -32,6 +33,9 @@ export const StaffInfoSummaryCard: React.FC = () => {
 
   const effectiveDate = calculation?.effectiveDate
     ? dateFormatShort(DateTime.fromISO(calculation.effectiveDate), locale)
+    : null;
+  const submittedDate = calculation?.submittedAt
+    ? dateFormatShort(DateTime.fromISO(calculation.submittedAt), locale)
     : null;
 
   return (
@@ -65,6 +69,12 @@ export const StaffInfoSummaryCard: React.FC = () => {
               </TableCell>
               <TableCell>{effectiveDate}</TableCell>
             </TableRow>
+            {calculation?.status === SalaryRequestStatusEnum.Pending && (
+              <TableRow>
+                <TableCell scope="row">{t('Date Submitted')}</TableCell>
+                <TableCell>{submittedDate}</TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </CardContent>

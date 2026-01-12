@@ -1,3 +1,18 @@
+fragment SalaryRequestFields on SalaryRequest {
+  effectiveDate
+  location
+  mhaAmount
+  spouseMhaAmount
+  salaryCap
+  spouseSalaryCap
+  salary
+  spouseSalary
+  status
+  phoneNumber
+  emailAddress
+  submittedAt
+}
+
 fragment CalculationFields on SalaryRequestCalculations {
   annualBase
   additionalSalary
