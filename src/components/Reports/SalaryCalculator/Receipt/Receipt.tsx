@@ -28,7 +28,7 @@ export const ReceiptStep: React.FC = () => {
   const [showReceipt, setShowReceipt] = useState(false);
 
   const userRequested = calculation?.calculations.requestedGross ?? 0;
-  const spouseRequested = calculation?.spouseCalculations?.effectiveCap ?? 0;
+  const spouseRequested = calculation?.spouseCalculations?.requestedGross ?? 0;
 
   const userOverCap =
     calculation && userRequested > calculation.calculations.effectiveCap;
