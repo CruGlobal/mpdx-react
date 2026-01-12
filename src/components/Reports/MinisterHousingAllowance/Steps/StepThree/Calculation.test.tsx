@@ -219,7 +219,7 @@ describe('Calculation', () => {
 
     userEvent.type(phone, 'abc');
     userEvent.tab();
-    expect(await findByText('Invalid phone number.')).toBeInTheDocument();
+    expect(await findByText('Invalid phone number')).toBeInTheDocument();
 
     userEvent.type(email, 'invalid-email');
     userEvent.tab();

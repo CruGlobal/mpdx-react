@@ -31,10 +31,10 @@ describe('Receipt step', () => {
     ).toBeInTheDocument();
   });
 
-  it('should show summary when user clicks to view receipt', () => {
-    const { getByText, getByRole } = render(<TestComponent />);
+  it('should show summary when user clicks to view receipt', async () => {
+    const { getByText, findByRole } = render(<TestComponent />);
 
-    userEvent.click(getByRole('button', { name: /View or print/ }));
+    userEvent.click(await findByRole('button', { name: /View or print/ }));
     expect(getByText('New Salary Calculation Summary')).toBeInTheDocument();
   });
 });
