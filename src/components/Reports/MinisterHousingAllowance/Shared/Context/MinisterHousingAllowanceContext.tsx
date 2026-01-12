@@ -164,7 +164,7 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
     setIsDrawerOpen((prev) => !prev);
   }, []);
 
-  const [hasCalcValues, setHasCalcValues] = useState(hasValues ? true : false);
+  const [hasCalcValues, setHasCalcValues] = useState(hasValues);
   const [isPrint, setIsPrint] = useState(false);
 
   const contextValue = useMemo(
