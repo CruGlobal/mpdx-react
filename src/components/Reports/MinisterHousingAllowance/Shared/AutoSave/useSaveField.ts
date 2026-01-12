@@ -1,4 +1,6 @@
 import { useCallback } from 'react';
+import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
 import { MinistryHousingAllowanceRequestAttributesInput } from 'pages/api/graphql-rest.page.generated';
 import { calculateAnnualTotals } from 'src/hooks/useAnnualTotal';
 import { useUpdateMinistryHousingAllowanceRequestMutation } from '../../MinisterHousingAllowance.generated';
@@ -10,18 +12,29 @@ interface UseSaveFieldOptions {
 }
 
 export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
-  const { requestData } = useMinisterHousingAllowance();
+  const { requestData, userEligibleForMHA } = useMinisterHousingAllowance();
   const [updateMinistryHousingAllowanceRequest] =
     useUpdateMinistryHousingAllowanceRequestMutation({
       refetchQueries: ['MinistryHousingAllowanceRequest'],
     });
   const values = requestData?.requestAttributes;
+  const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
 
   const saveField = useCallback(
     async (
       attributes: Partial<MinistryHousingAllowanceRequestAttributesInput>,
     ) => {
       if (!requestData?.id) {
+        return;
+      }
+      if (!userEligibleForMHA) {
+        enqueueSnackbar(
+          t('You are not eligible to make changes to this request.'),
+          {
+            variant: 'error',
+          },
+        );
         return;
       }
 
@@ -60,7 +73,12 @@ export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
         });
       } catch (error) {}
     },
-    [formValues, updateMinistryHousingAllowanceRequest, requestData],
+    [
+      formValues,
+      updateMinistryHousingAllowanceRequest,
+      requestData,
+      userEligibleForMHA,
+    ],
   );
 
   return saveField;

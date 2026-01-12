@@ -60,7 +60,13 @@ export const MinisterHousingAllowanceReport = () => {
   const [createMHA] = useCreateHousingAllowanceRequestMutation();
 
   const onCreateMHARequest = async () => {
-    if (!canAccessMHA) {
+    if (!userEligibleForMHA) {
+      enqueueSnackbar(
+        t('You are not eligible to make changes to this request.'),
+        {
+          variant: 'error',
+        },
+      );
       return;
     }
 
@@ -150,7 +156,7 @@ export const MinisterHousingAllowanceReport = () => {
                   color="primary"
                   sx={{ mt: 2 }}
                   onClick={onCreateMHARequest}
-                  disabled={!canAccessMHA}
+                  disabled={!userEligibleForMHA}
                 >
                   {t('Request New MHA')}
                 </Button>

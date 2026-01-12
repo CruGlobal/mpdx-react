@@ -9,6 +9,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useFormikContext } from 'formik';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
@@ -19,6 +20,7 @@ import { useMinisterHousingAllowance } from '../../Shared/Context/MinisterHousin
 
 export const RentOwn: React.FC = () => {
   const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
 
   const {
     values,
@@ -38,9 +40,20 @@ export const RentOwn: React.FC = () => {
     handlePreviousStep,
     requestData,
     updateMutation,
+    userEligibleForMHA,
   } = useMinisterHousingAllowance();
 
   const updateRequest = (id: string, rentOrOwn: MhaRentOrOwnEnum) => {
+    if (!userEligibleForMHA) {
+      enqueueSnackbar(
+        t('You are not eligible to make changes to this request.'),
+        {
+          variant: 'error',
+        },
+      );
+      return;
+    }
+
     updateMutation({
       variables: {
         input: {
@@ -141,6 +154,7 @@ export const RentOwn: React.FC = () => {
         <FormControl
           component="fieldset"
           error={touched.rentOrOwn && Boolean(errors.rentOrOwn)}
+          disabled={!userEligibleForMHA}
         >
           <RadioGroup
             name="rentOrOwn"

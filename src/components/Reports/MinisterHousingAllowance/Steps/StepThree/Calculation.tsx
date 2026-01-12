@@ -15,6 +15,7 @@ import {
 } from '@mui/material';
 import { Formik } from 'formik';
 import { DateTime } from 'luxon';
+import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
@@ -102,6 +103,7 @@ export const Calculation: React.FC<CalculationProps> = ({
   const locale = useLocale();
   const { query } = useRouter();
   const print = query.print === 'true';
+  const { enqueueSnackbar } = useSnackbar();
 
   const {
     handleNextStep,
@@ -113,9 +115,20 @@ export const Calculation: React.FC<CalculationProps> = ({
     requestData,
     updateMutation,
     userHcmData,
+    userEligibleForMHA,
   } = useMinisterHousingAllowance();
 
-  const updateCheckbox = (value: boolean) =>
+  const updateCheckbox = (value: boolean) => {
+    if (!userEligibleForMHA) {
+      enqueueSnackbar(
+        t('You are not eligible to make changes to this request.'),
+        {
+          variant: 'error',
+        },
+      );
+      return;
+    }
+
     updateMutation({
       variables: {
         input: {
@@ -126,6 +139,7 @@ export const Calculation: React.FC<CalculationProps> = ({
         },
       },
     });
+  };
 
   const request = requestData ? requestData.requestAttributes : null;
 
@@ -245,6 +259,7 @@ export const Calculation: React.FC<CalculationProps> = ({
                         </SvgIcon>
                       }
                       onClick={handlePrint}
+                      disabled={!userEligibleForMHA}
                     >
                       {t('Print')}
                     </StyledPrintButton>
@@ -318,6 +333,7 @@ export const Calculation: React.FC<CalculationProps> = ({
                         onChange={handleOnChange}
                         onBlur={handleBlur}
                         name="iUnderstandMhaPolicy"
+                        disabled={!userEligibleForMHA}
                       />
                     }
                     label={t(
