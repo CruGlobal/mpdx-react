@@ -192,9 +192,7 @@ describe('MinisterHousingAllowanceReport', () => {
 
       // Should show error message and not trigger mutation
       expect(
-        await findByText(
-          'You are not eligible to make changes to this request.',
-        ),
+        await findByText('You are not eligible to create a new MHA request.'),
       ).toBeInTheDocument();
 
       await waitFor(() => {
