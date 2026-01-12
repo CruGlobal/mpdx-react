@@ -89,7 +89,9 @@ export const ReceiptStep: React.FC = () => {
         </>
       ) : (
         <Stack direction="row" gap={1}>
-          <Visibility sx={{ color: 'cruGrayMedium' }} />
+          <Visibility
+            sx={(theme) => ({ color: theme.palette.mpdxGrayDark.main })}
+          />
           <Link component={ButtonBase} onClick={() => setShowReceipt(true)}>
             {t(
               'View or print a copy of your submitted Salary Calculation Request',
