@@ -29,7 +29,22 @@ export const IneligibleDisplay: React.FC = () => {
             <a href="mailto:MHA@cru.org">MHA@cru.org</a>.
           </p>
         </Trans>
-        {!hcmLoading && !userEligibleForMHA && (
+        {!hcmLoading && isMarried && userEligibleForMHA && !spouseEligibleForMHA && (
+          <Box mt={2} data-testid="spouse-ineligible-message">
+            <Trans
+              i18nKey="spouseNotEligibleMha"
+              values={{ preferredName, spousePreferredName }}
+            >
+              <p style={{ lineHeight: 1.5 }}>
+                Completing a Minister&apos;s Housing Allowance calculation form
+                will submit the request for {preferredName}.{' '}
+                {spousePreferredName} has not completed the required IBS
+                courses to meet eligibility criteria.
+              </p>
+            </Trans>
+          </Box>
+        )}
+        {!hcmLoading && (isMarried && !spouseEligibleForMHA || !userEligibleForMHA) && (
           <Box mt={2} data-testid="user-ineligible-message">
             <Trans
               i18nKey="userNotEligibleMha"
@@ -41,19 +56,6 @@ export const IneligibleDisplay: React.FC = () => {
                 salary. If you believe this is incorrect, please contact
                 Personnel Records at 407-826-2236 or{' '}
                 <a href="mailto:MHA@cru.org">MHA@cru.org</a>.
-              </p>
-            </Trans>
-          </Box>
-        )}
-        {!hcmLoading && isMarried && !spouseEligibleForMHA && (
-          <Box mt={2} data-testid="spouse-ineligible-message">
-            <Trans
-              i18nKey="spouseNotEligibleMha"
-              values={{ spousePreferredName }}
-            >
-              <p style={{ lineHeight: 1.5 }}>
-                {spousePreferredName} has not completed the required IBS
-                courses to meet eligibility criteria.
               </p>
             </Trans>
           </Box>

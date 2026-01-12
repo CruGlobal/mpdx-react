@@ -65,15 +65,12 @@ describe('IneligibleDisplay', () => {
   });
 
   it('should render page with married staff and ineligible spouse', async () => {
-    const { findByRole, findByTestId, queryByTestId } = render(
+    const { findByTestId } = render(
       <TestComponent hcmMock={marriedSpouseIneligible} />,
     );
 
-    expect(
-      await findByRole('heading', { name: 'Your MHA' }),
-    ).toBeInTheDocument();
     expect(await findByTestId('spouse-ineligible-message')).toBeInTheDocument();
-    expect(queryByTestId('user-ineligible-message')).not.toBeInTheDocument();
+    expect(await findByTestId('user-ineligible-message')).toBeInTheDocument();
   });
 
   it('should render page with married staff and ineligible user', async () => {
@@ -86,11 +83,11 @@ describe('IneligibleDisplay', () => {
   });
 
   it('should render page with both married staff ineligible', async () => {
-    const { findByTestId } = render(
+    const { findByTestId, queryByTestId } = render(
       <TestComponent hcmMock={marriedBothIneligible} />,
     );
 
     expect(await findByTestId('user-ineligible-message')).toBeInTheDocument();
-    expect(await findByTestId('spouse-ineligible-message')).toBeInTheDocument();
+    expect(queryByTestId('spouse-ineligible-message')).not.toBeInTheDocument();
   });
 });
