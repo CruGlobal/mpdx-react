@@ -61,12 +61,9 @@ export const MinisterHousingAllowanceReport = () => {
 
   const onCreateMHARequest = async () => {
     if (!userEligibleForMHA) {
-      enqueueSnackbar(
-        t('You are not eligible to make changes to this request.'),
-        {
-          variant: 'error',
-        },
-      );
+      enqueueSnackbar(t('You are not eligible to create a new MHA request.'), {
+        variant: 'error',
+      });
       return;
     }
 
