@@ -46,6 +46,9 @@ const noMhaAndNoException: HcmDataQuery['hcm'][0] = {
     lastUpdatedDate: null,
     currentApprovedAmountForStaff: null,
   },
+  mhaEit: {
+    mhaEligibility: true,
+  },
   exceptionSalaryCap: {
     amount: null,
     effectiveDate: null,

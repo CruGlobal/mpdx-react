@@ -8,6 +8,8 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { MhaRentOrOwnEnum, MhaStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { PageEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
+import { HcmDataQuery } from '../../Shared/HcmData/HCMData.generated';
+import { singleMhaNoException } from '../../Shared/HcmData/mockData';
 import {
   MinistryHousingAllowanceRequestQuery,
   UpdateMinistryHousingAllowanceRequestMutation,
@@ -52,11 +54,17 @@ const steps = [
 interface TestComponentProps {
   type?: PageEnum;
   contextValue?: Partial<ContextType>;
+  mocks?: {
+    HcmData?: HcmDataQuery;
+    MinistryHousingAllowanceRequest?: MinistryHousingAllowanceRequestQuery;
+    UpdateMinistryHousingAllowanceRequest?: UpdateMinistryHousingAllowanceRequestMutation;
+  };
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   type,
   contextValue,
+  mocks,
 }) => {
   const content = contextValue ? (
     <MinisterHousingAllowanceContext.Provider
@@ -75,9 +83,11 @@ const TestComponent: React.FC<TestComponentProps> = ({
       <TestRouter>
         <SnackbarProvider>
           <GqlMockedProvider<{
+            HcmData: HcmDataQuery;
             MinistryHousingAllowanceRequest: MinistryHousingAllowanceRequestQuery;
             UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
           }>
+            mocks={mocks}
             onCall={mutationSpy}
           >
             {content}
@@ -96,6 +106,7 @@ describe('RequestPage', () => {
         contextValue={
           {
             steps,
+            userEligibleForMHA: true,
             requestData: {
               id: 'request-id',
               status: MhaStatusEnum.InProgress,
@@ -171,6 +182,7 @@ describe('RequestPage', () => {
               steps,
               handleNextStep,
               handlePreviousStep,
+              userEligibleForMHA: true,
               requestData: {
                 id: 'request-id',
                 status: MhaStatusEnum.InProgress,
@@ -203,6 +215,7 @@ describe('RequestPage', () => {
               hasCalcValues: true,
               setHasCalcValues,
               updateMutation,
+              userEligibleForMHA: true,
               requestData: {
                 id: 'request-id',
                 status: MhaStatusEnum.InProgress,
@@ -238,11 +251,22 @@ describe('RequestPage', () => {
 
   describe('New Page', () => {
     it('updates steps when Continue clicked', async () => {
-      const { getByRole, getAllByRole, getByText, queryByTestId } = render(
-        <TestComponent type={PageEnum.New} />,
-      );
+      const { getByRole, getAllByRole, getByText, queryByTestId, findByRole } =
+        render(
+          <TestComponent
+            type={PageEnum.New}
+            mocks={{
+              HcmData: {
+                hcm: singleMhaNoException,
+              },
+            }}
+          />,
+        );
 
-      expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '25');
+      expect(await findByRole('progressbar')).toHaveAttribute(
+        'aria-valuenow',
+        '25',
+      );
       expect(queryByTestId('ArrowBackIcon')).toBeInTheDocument();
 
       const continueButton = getByRole('button', { name: 'Continue' });
@@ -300,6 +324,7 @@ describe('RequestPage', () => {
               steps,
               currentIndex: 1,
               pageType: PageEnum.New,
+              userEligibleForMHA: true,
               requestData: {
                 id: 'request-id',
                 status: MhaStatusEnum.InProgress,
@@ -335,6 +360,7 @@ describe('RequestPage', () => {
                 setHasCalcValues,
                 updateMutation,
                 setIsPrint,
+                userEligibleForMHA: true,
                 requestData: {
                   id: 'request-id',
                   status: MhaStatusEnum.InProgress,

@@ -20,6 +20,7 @@ import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAl
 import { getRequestUrl } from '../Shared/Helper/getRequestUrl';
 import { mocks } from '../Shared/mockData';
 import { NoEditAccess } from '../Steps/NoEditAccess/NoEditAccess';
+import { NoRequestAccess } from '../Steps/NoRequestAccess/NoRequestAccess';
 import { AboutForm } from '../Steps/StepOne/AboutForm';
 import { Calculation } from '../Steps/StepThree/Calculation';
 import { RentOwn } from '../Steps/StepTwo/RentOwn';
@@ -51,6 +52,7 @@ export const RequestPage: React.FC = () => {
     setIsComplete,
     requestData,
     loading,
+    userEligibleForMHA,
   } = useMinisterHousingAllowance();
 
   const canEdit =
@@ -114,6 +116,20 @@ export const RequestPage: React.FC = () => {
         <Container sx={{ ml: 5 }}>
           <Stack direction="column" width={permissionDeniedWidth}>
             <NoEditAccess />
+          </Stack>
+        </Container>
+      }
+    />
+  ) : !userEligibleForMHA ? (
+    <PanelLayout
+      panelType={PanelTypeEnum.Empty}
+      sidebarTitle={t('Your MHA')}
+      percentComplete={0}
+      backHref={`/accountLists/${accountListId}/reports/housingAllowance`}
+      mainContent={
+        <Container sx={{ ml: 5 }}>
+          <Stack direction="column" width={permissionDeniedWidth}>
+            <NoRequestAccess />
           </Stack>
         </Container>
       }

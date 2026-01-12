@@ -29,6 +29,9 @@ query HcmData {
       lastUpdatedDate
       currentApprovedAmountForStaff
     }
+    mhaEit {
+      mhaEligibility
+    }
     exceptionSalaryCap {
       amount
       effectiveDate
