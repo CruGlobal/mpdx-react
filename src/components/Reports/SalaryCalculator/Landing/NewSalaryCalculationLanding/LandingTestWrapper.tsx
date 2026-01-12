@@ -44,7 +44,7 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
             hcm: [
               {
                 staffInfo: {
-                  firstName: 'John',
+                  preferredName: 'John',
                   lastName: 'Doe',
                   userPersonType: UserPersonTypeEnum.EmployeeStaff,
                   assignmentStatus: AssignmentStatusEnum.ActivePayrollEligible,
@@ -67,7 +67,7 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
               },
               {
                 staffInfo: {
-                  firstName: 'Jane',
+                  preferredName: 'Jane',
                   lastName: 'Doe',
                   userPersonType: UserPersonTypeEnum.EmployeeStaff,
                   assignmentStatus: AssignmentStatusEnum.ActivePayrollEligible,

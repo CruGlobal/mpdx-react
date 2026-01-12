@@ -20,7 +20,7 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
     hcm: [
       {
         staffInfo: {
-          firstName: 'John',
+          preferredName: 'John',
           lastName: 'Doe',
           city: 'Tampa',
           state: 'FL',
@@ -45,7 +45,7 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
       },
       {
         staffInfo: {
-          firstName: 'Jane',
+          preferredName: 'Jane',
           lastName: 'Doe',
           tenure: 1000,
           primaryPhoneNumber: '555-0124',

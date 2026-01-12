@@ -76,9 +76,9 @@ export const StepTableHead: React.FC = () => {
     <TableHead>
       <TableRow>
         <TableCell scope="col">{t('Category')}</TableCell>
-        <TableCell scope="col">{self?.staffInfo.firstName}</TableCell>
+        <TableCell scope="col">{self?.staffInfo.preferredName}</TableCell>
         {hasSpouse && (
-          <TableCell scope="col">{spouse?.staffInfo.firstName}</TableCell>
+          <TableCell scope="col">{spouse?.staffInfo.preferredName}</TableCell>
         )}
       </TableRow>
     </TableHead>

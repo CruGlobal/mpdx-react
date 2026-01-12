@@ -47,14 +47,14 @@ export const useLandingData = () => {
   );
 
   const names = useMemo(() => {
-    if (!self?.staffInfo?.firstName || !self?.staffInfo?.lastName) {
+    if (!self?.staffInfo?.preferredName || !self?.staffInfo?.lastName) {
       return '';
     }
-    const selfName = `${self.staffInfo.lastName}, ${self.staffInfo.firstName}`;
-    if (!hasSpouse || !spouse?.staffInfo?.firstName) {
+    const selfName = `${self.staffInfo.lastName}, ${self.staffInfo.preferredName}`;
+    if (!hasSpouse || !spouse?.staffInfo?.preferredName) {
       return selfName;
     }
-    return `${selfName} and ${spouse.staffInfo.firstName}`;
+    return `${selfName} and ${spouse.staffInfo.preferredName}`;
   }, [self, spouse, hasSpouse]);
 
   const salaryData = useMemo(() => {

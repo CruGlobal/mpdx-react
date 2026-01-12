@@ -34,7 +34,9 @@ export const SalarySummaryCard: React.FC = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell scope="col">{hcmUser?.staffInfo.firstName}</TableCell>
+              <TableCell scope="col">
+                {hcmUser?.staffInfo.preferredName}
+              </TableCell>
               <TableCell scope="col">{t('Old')}</TableCell>
               <TableCell scope="col">{t('New')}</TableCell>
             </TableRow>
@@ -82,7 +84,7 @@ export const SalarySummaryCard: React.FC = () => {
             <TableHead>
               <TableRow>
                 <TableCell scope="col">
-                  {hcmSpouse?.staffInfo.firstName}
+                  {hcmSpouse?.staffInfo.preferredName}
                 </TableCell>
                 <TableCell scope="col">{t('Old')}</TableCell>
                 <TableCell scope="col">{t('New')}</TableCell>
