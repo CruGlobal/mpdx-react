@@ -69,7 +69,7 @@ export const ExpectedMonthlyTotalReportTable: React.FC<Props> = ({
         <AccordionSummary
           expandIcon={<ExpandMore />}
           style={{
-            backgroundColor: theme.palette.cruGrayLight.main,
+            backgroundColor: theme.palette.mpdxGrayLight.main,
           }}
           onClick={() => setVisible((v) => !v)}
         >
@@ -110,7 +110,7 @@ export const ExpectedMonthlyTotalReportTable: React.FC<Props> = ({
                       backgroundColor:
                         index % 2
                           ? theme.palette.common.white
-                          : theme.palette.cruGrayLight.main,
+                          : theme.palette.mpdxGrayLight.main,
                     }}
                   >
                     <TableCell align="left">

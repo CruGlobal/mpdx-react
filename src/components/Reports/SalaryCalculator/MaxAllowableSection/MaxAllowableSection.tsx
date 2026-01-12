@@ -76,8 +76,8 @@ export const MaxAllowableStep: React.FC = () => {
     (salaryCalculation?.salaryCap ?? 0) +
     (salaryCalculation?.spouseSalaryCap ?? 0);
 
-  const name = self?.staffInfo.firstName;
-  const spouseName = spouse?.staffInfo.firstName;
+  const name = self?.staffInfo.preferredName;
+  const spouseName = spouse?.staffInfo.preferredName;
 
   return (
     <StepCard>

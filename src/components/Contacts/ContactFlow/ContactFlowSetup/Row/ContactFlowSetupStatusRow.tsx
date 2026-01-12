@@ -9,7 +9,7 @@ import theme from '../../../../../theme';
 
 const StatusRow = styled(Box)(() => ({
   padding: theme.spacing(1.5),
-  borderBottom: `1px solid ${theme.palette.cruGrayMedium.main}`,
+  borderBottom: `1px solid ${theme.palette.mpdxGrayMedium.main}`,
   '&:hover': {
     backgroundColor: theme.palette.mpdxYellow.main,
     cursor: 'move',

@@ -1,3 +1,18 @@
+fragment SalaryRequestFields on SalaryRequest {
+  effectiveDate
+  location
+  mhaAmount
+  spouseMhaAmount
+  salaryCap
+  spouseSalaryCap
+  salary
+  spouseSalary
+  status
+  phoneNumber
+  emailAddress
+  submittedAt
+}
+
 fragment CalculationFields on SalaryRequestCalculations {
   annualBase
   additionalSalary
@@ -16,17 +31,50 @@ fragment CalculationFields on SalaryRequestCalculations {
   individualCap
   familyCap
   hardCap
+  minimumRequiredSalary
+  minimumRequestedSalary
+  requestedSeca
+  requestedWithSeca
+  requestedGross
+  requestedAboveMinimum
+  requestedMha
+  requestedAboveMha
+  taxableCompensation
+  contributing403bAmount
+  contributingTaxDeferredAmount
+  contributingRothAmount
+  annualCompensation
 }
 
 query SalaryCalculation {
   salaryRequest: latestSalaryRequest(status: [IN_PROGRESS]) {
     id
+    createdAt
     ...SalaryRequestFields
     calculations {
       ...CalculationFields
     }
     spouseCalculations {
       ...CalculationFields
+    }
+  }
+}
+
+query ApprovedSalaryCalculation {
+  salaryRequest: latestSalaryRequest(status: [APPROVED]) {
+    id
+    mhaAmount
+    spouseMhaAmount
+    salaryCap
+    spouseSalaryCap
+    salary
+    spouseSalary
+
+    calculations {
+      contributing403bFraction
+    }
+    spouseCalculations {
+      contributing403bFraction
     }
   }
 }

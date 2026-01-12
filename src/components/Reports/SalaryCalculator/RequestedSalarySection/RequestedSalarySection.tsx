@@ -23,7 +23,7 @@ import {
 
 export const RequestedSalarySection: React.FC = () => {
   const { t } = useTranslation();
-  const { hcm } = useSalaryCalculator();
+  const { calculation: salaryCalculation, hcm } = useSalaryCalculator();
   const locale = useLocale();
 
   const schema = useMemo(
@@ -36,12 +36,18 @@ export const RequestedSalarySection: React.FC = () => {
   );
 
   const [self, spouse] = hcm ?? [];
+  const minimumSalaryValue =
+    salaryCalculation?.calculations.minimumRequestedSalary ?? 0;
+  const spouseMinimumSalaryValue =
+    salaryCalculation?.spouseCalculations?.minimumRequestedSalary ?? 0;
 
-  // TODO: Use real minimum salary values when they are available in the API
-  const minimumSalaryValue = 55081.96;
-  const spouseMinimumSalaryValue = 45081.96;
-
-  const formula = t('MHA + $8,400 - SECA');
+  const formula = t('MHA + {{ min }} - SECA', {
+    min: currencyFormat(
+      salaryCalculation?.calculations.minimumRequiredSalary ?? 0,
+      'USD',
+      locale,
+    ),
+  });
 
   const minimumSalary = currencyFormat(minimumSalaryValue, 'USD', locale);
   const spouseMinimumSalary = currencyFormat(
@@ -65,8 +71,9 @@ export const RequestedSalarySection: React.FC = () => {
             <Trans t={t}>
               Because of IRS and Cru requirements, the lowest salary you can
               request is {{ minimumSalary }} ({formula}) for{' '}
-              {{ name: self.staffInfo.firstName }} and {{ spouseMinimumSalary }}{' '}
-              ({formula}) for {{ spouseName: spouse.staffInfo.firstName }}.
+              {{ name: self.staffInfo.preferredName }} and{' '}
+              {{ spouseMinimumSalary }} ({formula}) for{' '}
+              {{ spouseName: spouse.staffInfo.preferredName }}.
             </Trans>
           ) : (
             <Trans t={t}>

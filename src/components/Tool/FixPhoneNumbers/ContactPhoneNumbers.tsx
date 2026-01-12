@@ -29,7 +29,7 @@ const useStyles = makeStyles()(() => ({
   responsiveBorder: {
     [theme.breakpoints.down('xs')]: {
       paddingBottom: theme.spacing(2),
-      borderBottom: `1px solid ${theme.palette.cruGrayMedium.main}`,
+      borderBottom: `1px solid ${theme.palette.mpdxGrayMedium.main}`,
     },
   },
   paddingX: {
@@ -226,7 +226,7 @@ export const ContactPhoneNumbers: React.FC<Props> = ({
                   path={mdiLock}
                   size={1}
                   style={{
-                    color: theme.palette.cruGrayMedium.main,
+                    color: theme.palette.mpdxGrayMedium.main,
                   }}
                 />
               </Box>

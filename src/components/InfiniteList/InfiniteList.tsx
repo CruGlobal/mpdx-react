@@ -35,7 +35,7 @@ export const ItemWithBorders = styled(ListItem, {
     : {
         borderBottom: `1px solid ${theme.palette.grey[200]}`,
         '&:hover': {
-          backgroundColor: theme.palette.cruGrayLight.main,
+          backgroundColor: theme.palette.mpdxGrayLight.main,
         },
       }),
 }));

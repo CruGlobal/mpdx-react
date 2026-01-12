@@ -410,6 +410,42 @@ describe('filterTransactions', () => {
     expect(result).toHaveLength(3);
     expect(result.every((r) => !('groupedTransactions' in r))).toBe(true);
   });
+
+  describe('No filters applied', () => {
+    it('should set displayCategory correctly for individual transactions when category equals subcategory', () => {
+      const targetTime = DateTime.fromISO('2025-01-15');
+      const result = filterTransactions({
+        fund: mockFund,
+        targetTime,
+        t: i18n.t,
+        filters: null,
+        tableType: ReportType.Expense,
+      });
+
+      const same = result.find(
+        (r) => r.category === StaffExpenseCategoryEnum.AdditionalSalary,
+      );
+      expect(same?.displayCategory).toBe('Additional Salary');
+      expect(same?.displayCategory).not.toContain(' - ');
+    });
+
+    it('should set displayCategory correctly for individual transactions when category differs from subcategory', () => {
+      const targetTime = DateTime.fromISO('2025-01-15');
+      const result = filterTransactions({
+        fund: mockFund,
+        targetTime,
+        t: i18n.t,
+        filters: null,
+        tableType: ReportType.Expense,
+      });
+
+      const different = result.find(
+        (r) => r.category === StaffExpenseCategoryEnum.Benefits,
+      );
+      expect(different?.displayCategory).toBe('Benefits - Benefits Other');
+      expect(different?.displayCategory).toContain(' - ');
+    });
+  });
 });
 
 describe('getAvailableCategories', () => {

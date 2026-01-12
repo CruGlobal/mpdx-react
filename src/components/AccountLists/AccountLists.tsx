@@ -13,15 +13,12 @@ import {
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
-import { GetAccountListsQuery } from 'pages/GetAccountLists.generated';
+import { useGetAccountListsQuery } from 'pages/GetAccountLists.generated';
+import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, percentageFormat } from '../../lib/intlFormat';
 import AnimatedCard from '../AnimatedCard';
 import PageHeading from '../PageHeading';
-
-interface Props {
-  data: GetAccountListsQuery;
-}
 
 const useStyles = makeStyles()((theme: Theme) => ({
   box: {
@@ -56,10 +53,22 @@ const variants = {
   },
 };
 
-const AccountLists = ({ data }: Props): ReactElement => {
+const AccountLists = (): ReactElement => {
   const { classes } = useStyles();
   const { t } = useTranslation();
   const locale = useLocale();
+
+  const { data, fetchMore, error } = useGetAccountListsQuery({
+    variables: {
+      first: 50,
+    },
+  });
+
+  useFetchAllPages({
+    fetchMore,
+    error,
+    pageInfo: data?.accountLists.pageInfo,
+  });
 
   return (
     <Box className={classes.box}>
@@ -72,7 +81,7 @@ const AccountLists = ({ data }: Props): ReactElement => {
       >
         <Container>
           <Grid container spacing={3}>
-            {data.accountLists.nodes.map(
+            {data?.accountLists.nodes.map(
               ({
                 id,
                 name,
@@ -97,7 +106,7 @@ const AccountLists = ({ data }: Props): ReactElement => {
                         <CardActionArea>
                           <CardContent className={classes.cardContent}>
                             <Box flex={1}>
-                              <Typography variant="h5" data-testid={id} noWrap>
+                              <Typography variant="h5" noWrap>
                                 {name}
                               </Typography>
                             </Box>

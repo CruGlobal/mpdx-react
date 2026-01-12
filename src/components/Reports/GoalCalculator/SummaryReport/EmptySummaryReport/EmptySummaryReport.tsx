@@ -5,7 +5,7 @@ import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 
 const BoxWrapper = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.cruGrayLight.main,
+  backgroundColor: theme.palette.mpdxGrayLight.main,
   minWidth: 700,
   maxWidth: '97%',
   height: '100%',
@@ -18,7 +18,7 @@ const BoxWrapper = styled(Box)(({ theme }) => ({
 }));
 
 const StyledInfoIcon = styled(InfoOutlinedIcon)(({ theme }) => ({
-  color: theme.palette.cruGrayDark.main,
+  color: theme.palette.mpdxGrayDark.main,
 }));
 
 export const EmptySummaryReport: React.FC = () => {
