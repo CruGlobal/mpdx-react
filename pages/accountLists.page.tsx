@@ -13,11 +13,7 @@ import {
 } from './GetAccountLists.generated';
 import { makeGetServerSideProps } from './api/utils/pagePropsHelpers';
 
-export interface AccountListsPageProps {
-  data: GetAccountListsQuery;
-}
-
-const AccountListsPage = ({ data }: AccountListsPageProps): ReactElement => {
+const AccountListsPage = (): ReactElement => {
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
 
@@ -26,7 +22,7 @@ const AccountListsPage = ({ data }: AccountListsPageProps): ReactElement => {
       <Head>
         <title>{`${appName} | ${t('Account Lists')}`}</title>
       </Head>
-      <AccountLists data={data} />
+      <AccountLists />
     </>
   );
 };
@@ -41,6 +37,9 @@ export const getServerSideProps = makeGetServerSideProps(async (session) => {
       GetAccountListsQueryVariables
     >({
       query: GetAccountListsDocument,
+      variables: {
+        first: 1,
+      },
     });
 
     if (data.user.setup) {
@@ -53,7 +52,11 @@ export const getServerSideProps = makeGetServerSideProps(async (session) => {
       };
     }
 
-    if (data.accountLists.nodes.length === 1) {
+    if (
+      data.accountLists.nodes.length === 1 &&
+      !data.accountLists.pageInfo.hasNextPage
+    ) {
+      // This is the only account list, so automatically redirect to it
       return {
         redirect: {
           destination: `/accountLists/${data.accountLists.nodes[0].id}`,
@@ -62,11 +65,7 @@ export const getServerSideProps = makeGetServerSideProps(async (session) => {
       };
     }
 
-    return {
-      props: {
-        data,
-      },
-    };
+    return { props: {} };
   } catch (error) {
     logErrorOnRollbar(error, '/accountLists.page');
     throw error;
