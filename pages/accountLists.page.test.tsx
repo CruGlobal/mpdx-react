@@ -1,22 +1,14 @@
 import { GetServerSidePropsContext } from 'next';
-import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
 import { getSession } from 'next-auth/react';
-import { I18nextProvider } from 'react-i18next';
 import { session } from '__tests__/fixtures/session';
 import { UserSetupStageEnum } from 'src/graphql/types.generated';
 import makeSsrClient from 'src/lib/apollo/ssrClient';
-import i18n from 'src/lib/i18n';
-import theme from 'src/theme';
-import AccountListsPage, {
-  AccountListsPageProps,
-  getServerSideProps,
-} from './accountLists.page';
+import { getServerSideProps } from './accountLists.page';
 
 jest.mock('src/lib/apollo/ssrClient', () => jest.fn());
 
 interface GetServerSidePropsReturn {
-  props: AccountListsPageProps;
+  props: Record<string, never>;
   redirect: unknown;
 }
 
@@ -72,7 +64,10 @@ describe('Account Lists page', () => {
         query: jest.fn().mockResolvedValue({
           data: {
             user: { id: 'user-1', setup: null },
-            accountLists: { nodes: [{ id: accountListId }] },
+            accountLists: {
+              nodes: [{ id: accountListId }],
+              pageInfo: { hasNextPage: false },
+            },
           },
         }),
       });
@@ -88,9 +83,10 @@ describe('Account Lists page', () => {
       });
     });
 
-    it("renders all the user's accounts and does not redirect if multiple accountLists", async () => {
+    it('does not redirect if multiple accountLists', async () => {
       const accountLists = {
-        nodes: [{ id: accountListId }, { id: 'accountID2' }],
+        nodes: [{ id: accountListId }],
+        pageInfo: { hasNextPage: true },
       };
 
       (makeSsrClient as jest.Mock).mockReturnValue({
@@ -102,20 +98,9 @@ describe('Account Lists page', () => {
         }),
       });
 
-      const { props, redirect } = (await getServerSideProps(
+      const { redirect } = (await getServerSideProps(
         context,
       )) as GetServerSidePropsReturn;
-
-      const { getByText } = render(
-        <ThemeProvider theme={theme}>
-          <I18nextProvider i18n={i18n}>
-            <AccountListsPage {...props} />
-          </I18nextProvider>
-        </ThemeProvider>,
-      );
-
-      expect(getByText('My Accounts')).toBeInTheDocument();
-      expect(props.data?.accountLists).toEqual(accountLists);
       expect(redirect).toBeUndefined();
     });
   });

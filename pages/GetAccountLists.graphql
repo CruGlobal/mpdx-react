@@ -1,9 +1,9 @@
-query GetAccountLists {
+query GetAccountLists($first: Int, $after: String) {
   user {
     id
     setup
   }
-  accountLists(first: 50) {
+  accountLists(first: $first, after: $after) {
     nodes {
       id
       name
@@ -11,6 +11,10 @@ query GetAccountLists {
       receivedPledges
       totalPledges
       currency
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
     }
   }
 }
