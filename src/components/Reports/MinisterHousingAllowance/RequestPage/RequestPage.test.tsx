@@ -21,7 +21,6 @@ const handleNextStep = jest.fn();
 const handlePreviousStep = jest.fn();
 const updateMutation = jest.fn();
 const setHasCalcValues = jest.fn();
-const setIsPrint = jest.fn();
 
 const steps = [
   {
@@ -305,7 +304,6 @@ describe('RequestPage', () => {
                 hasCalcValues: true,
                 setHasCalcValues,
                 updateMutation,
-                setIsPrint,
                 requestData: {
                   id: 'request-id',
                   requestAttributes: {
@@ -354,7 +352,6 @@ describe('RequestPage', () => {
           contextValue={{
             pageType: PageEnum.View,
             setHasCalcValues,
-            setIsPrint,
           }}
         />,
       );
@@ -370,7 +367,6 @@ describe('RequestPage', () => {
           contextValue={{
             pageType: PageEnum.View,
             setHasCalcValues,
-            setIsPrint,
           }}
         />,
       );

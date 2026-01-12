@@ -20,7 +20,6 @@ import { Calculation } from './Calculation';
 const submit = jest.fn();
 const mutationSpy = jest.fn();
 const setHasCalcValues = jest.fn();
-const setIsPrint = jest.fn();
 const updateMutation = jest.fn();
 
 interface TestComponentProps {
@@ -69,7 +68,6 @@ describe('Calculation', () => {
           {
             pageType: PageEnum.New,
             setHasCalcValues,
-            setIsPrint,
           } as unknown as ContextType
         }
       />,
@@ -97,7 +95,6 @@ describe('Calculation', () => {
           {
             pageType: PageEnum.New,
             setHasCalcValues,
-            setIsPrint,
             requestData: {
               id: 'request-id',
               requestAttributes: {
@@ -141,7 +138,6 @@ describe('Calculation', () => {
           {
             pageType: PageEnum.New,
             setHasCalcValues,
-            setIsPrint,
           } as unknown as ContextType
         }
       />,
@@ -170,7 +166,6 @@ describe('Calculation', () => {
           {
             pageType: PageEnum.New,
             setHasCalcValues,
-            setIsPrint,
             requestData: {
               id: 'request-id',
               requestAttributes: {
@@ -213,7 +208,6 @@ describe('Calculation', () => {
           {
             pageType: PageEnum.New,
             setHasCalcValues,
-            setIsPrint,
             updateMutation,
             requestData: {
               id: 'request-id',
@@ -294,7 +288,6 @@ describe('Calculation', () => {
           {
             pageType: PageEnum.New,
             setHasCalcValues,
-            setIsPrint,
           } as unknown as ContextType
         }
         boardApprovalDate={null}
@@ -316,7 +309,6 @@ describe('Calculation', () => {
           {
             pageType: PageEnum.New,
             setHasCalcValues,
-            setIsPrint,
             updateMutation,
             requestData: {
               id: 'request-id',
@@ -359,7 +351,6 @@ describe('Calculation', () => {
             {
               pageType: PageEnum.View,
               setHasCalcValues,
-              setIsPrint,
             } as unknown as ContextType
           }
         />,

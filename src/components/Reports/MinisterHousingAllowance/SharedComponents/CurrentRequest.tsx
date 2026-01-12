@@ -43,7 +43,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
   } = requestAttributes || {};
 
   const handlePrint = async () => {
-    await router.push(`${getRequestUrl(accountListId, requestId, 'view')}`);
+    await router.push(getRequestUrl(accountListId, requestId, 'view'));
     setTimeout(() => window.print(), 500);
   };
 

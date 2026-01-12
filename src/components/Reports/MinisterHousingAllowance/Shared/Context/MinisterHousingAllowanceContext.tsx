@@ -42,8 +42,6 @@ export type ContextType = {
   isDrawerOpen: boolean;
   toggleDrawer: () => void;
   setIsDrawerOpen: Dispatch<SetStateAction<boolean>>;
-  isPrint: boolean;
-  setIsPrint: Dispatch<SetStateAction<boolean>>;
   setIsComplete: Dispatch<SetStateAction<boolean>>;
   isMarried: boolean;
   userHcmData?: HcmData;
@@ -159,7 +157,6 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   }, []);
 
   const [hasCalcValues, setHasCalcValues] = useState(hasValues ? true : false);
-  const [isPrint, setIsPrint] = useState(false);
 
   const [currentStep, setCurrentStep] = useState(StepsEnum.AboutForm);
 
@@ -202,8 +199,6 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       spouseHcmData,
       preferredName,
       spousePreferredName,
-      isPrint,
-      setIsPrint,
       setIsComplete,
       requestData: requestData?.ministryHousingAllowanceRequest ?? null,
       requestError,
@@ -228,8 +223,6 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       spouseHcmData,
       preferredName,
       spousePreferredName,
-      isPrint,
-      setIsPrint,
       setIsComplete,
       requestData,
       requestError,

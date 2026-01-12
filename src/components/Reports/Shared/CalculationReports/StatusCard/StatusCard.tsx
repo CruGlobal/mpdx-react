@@ -91,12 +91,12 @@ export const StatusCard: React.FC<StatusCardProps> = ({
               <Typography sx={{ fontSize: 24 }}>{title}</Typography>
             )}
             {!hidePrint && (
-              <IconButton sx={{ ml: 'auto' }} aria-label={t('Print')}>
-                <Print
-                  sx={{ fontSize: '32px' }}
-                  titleAccess={t('Print')}
-                  onClick={handlePrint}
-                />
+              <IconButton
+                sx={{ ml: 'auto' }}
+                aria-label={t('Print')}
+                onClick={handlePrint}
+              >
+                <Print sx={{ fontSize: '32px' }} titleAccess={t('Print')} />
               </IconButton>
             )}
           </Box>

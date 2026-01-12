@@ -32,7 +32,10 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
     request?.requestAttributes || {};
 
   const handlePrint = async () => {
-    await router.push(`${getRequestUrl(accountListId, requestId, 'view')}`);
+    if (!requestId) {
+      return;
+    }
+    await router.push(getRequestUrl(accountListId, requestId, 'view'));
     setTimeout(() => window.print(), 500);
   };
 
