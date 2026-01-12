@@ -66,7 +66,6 @@ export const MinisterHousingAllowanceReport = () => {
           emailAddress: userHcmData?.staffInfo.emailAddress,
         },
       },
-      refetchQueries: ['MinistryHousingAllowanceRequests'],
       onCompleted: ({ createMinistryHousingAllowanceRequest: newRequest }) => {
         enqueueSnackbar(
           t("Successfully created MHA Request. You'll be redirected shortly."),

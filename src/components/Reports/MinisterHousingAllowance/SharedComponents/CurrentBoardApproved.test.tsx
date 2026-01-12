@@ -196,7 +196,7 @@ describe('CurrentBoardApproved Component', () => {
 
     await waitFor(() => {
       expect(mockPush).toHaveBeenCalledWith(
-        `/accountLists/account-list-1/reports/housingAllowance/${newRequestId}/edit`,
+        `/accountLists/account-list-1/reports/housingAllowance/${newRequestId}?mode=edit`,
       );
     });
   });

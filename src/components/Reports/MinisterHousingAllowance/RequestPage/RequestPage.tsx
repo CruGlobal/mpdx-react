@@ -3,9 +3,10 @@ import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import Loading from 'src/components/Loading/Loading';
-import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
+import { MhaRentOrOwnEnum, MhaStatusEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import i18n from 'src/lib/i18n';
+import theme from 'src/theme';
 import { PanelLayout } from '../../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { useIconPanelItems } from '../../Shared/CalculationReports/PanelLayout/useIconPanelItems';
 import { Receipt } from '../../Shared/CalculationReports/ReceiptStep/Receipt';
@@ -18,9 +19,12 @@ import { mainContentWidth } from '../MinisterHousingAllowance';
 import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
 import { getRequestUrl } from '../Shared/Helper/getRequestUrl';
 import { mocks } from '../Shared/mockData';
+import { NoEditAccess } from '../Steps/NoEditAccess/NoEditAccess';
 import { AboutForm } from '../Steps/StepOne/AboutForm';
 import { Calculation } from '../Steps/StepThree/Calculation';
 import { RentOwn } from '../Steps/StepTwo/RentOwn';
+
+const permissionDeniedWidth = theme.spacing(100);
 
 export interface FormValues {
   rentOrOwn: MhaRentOrOwnEnum | undefined;
@@ -48,6 +52,11 @@ export const RequestPage: React.FC = () => {
     requestData,
     loading,
   } = useMinisterHousingAllowance();
+
+  const canEdit =
+    !requestData ||
+    requestData.status === MhaStatusEnum.InProgress ||
+    requestData.status === MhaStatusEnum.ActionRequired;
 
   const request = requestData?.requestAttributes;
   const value = request?.rentOrOwn ?? undefined;
@@ -91,6 +100,20 @@ export const RequestPage: React.FC = () => {
               rentOrOwn={value}
               handlePrint={handlePrint}
             />
+          </Stack>
+        </Container>
+      }
+    />
+  ) : !canEdit ? (
+    <PanelLayout
+      panelType={PanelTypeEnum.Empty}
+      sidebarTitle={t('Your MHA')}
+      percentComplete={0}
+      backHref={`/accountLists/${accountListId}/reports/housingAllowance`}
+      mainContent={
+        <Container sx={{ ml: 5 }}>
+          <Stack direction="column" width={permissionDeniedWidth}>
+            <NoEditAccess />
           </Stack>
         </Container>
       }

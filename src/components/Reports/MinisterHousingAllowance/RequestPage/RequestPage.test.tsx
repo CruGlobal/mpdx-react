@@ -2,12 +2,16 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
+import { MhaRentOrOwnEnum, MhaStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { PageEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
-import { UpdateMinistryHousingAllowanceRequestMutation } from '../MinisterHousingAllowance.generated';
+import {
+  MinistryHousingAllowanceRequestQuery,
+  UpdateMinistryHousingAllowanceRequestMutation,
+} from '../MinisterHousingAllowance.generated';
 import {
   ContextType,
   MinisterHousingAllowanceContext,
@@ -70,21 +74,37 @@ const TestComponent: React.FC<TestComponentProps> = ({
   return (
     <ThemeProvider theme={theme}>
       <TestRouter>
-        <GqlMockedProvider<{
-          UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
-        }>
-          onCall={mutationSpy}
-        >
-          {content}
-        </GqlMockedProvider>
+        <SnackbarProvider>
+          <GqlMockedProvider<{
+            MinistryHousingAllowanceRequest: MinistryHousingAllowanceRequestQuery;
+            UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
+          }>
+            onCall={mutationSpy}
+          >
+            {content}
+          </GqlMockedProvider>
+        </SnackbarProvider>
       </TestRouter>
     </ThemeProvider>
   );
 };
 
 describe('RequestPage', () => {
-  it('renders steps list', () => {
-    const { getByText } = render(<TestComponent type={PageEnum.Edit} />);
+  it('renders steps list', async () => {
+    const { getByText } = render(
+      <TestComponent
+        type={PageEnum.Edit}
+        contextValue={
+          {
+            steps,
+            requestData: {
+              id: 'request-id',
+              status: MhaStatusEnum.InProgress,
+            },
+          } as unknown as ContextType
+        }
+      />,
+    );
 
     expect(getByText(/1. about this form/i)).toBeInTheDocument();
     expect(getByText(/2. rent or own?/i)).toBeInTheDocument();
@@ -93,20 +113,22 @@ describe('RequestPage', () => {
   });
 
   describe('Edit Page', () => {
-    it('starts on step 2 and updates steps when Continue clicked', () => {
-      const { getByRole, getAllByRole, getByText, queryByTestId } = render(
-        <TestComponent type={PageEnum.Edit} />,
-      );
+    it('starts on step 2 and updates steps when Continue clicked', async () => {
+      const { getByRole, getAllByRole, getByText, queryByTestId, findByRole } =
+        render(<TestComponent type={PageEnum.Edit} />);
 
-      expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '50');
+      expect(await findByRole('progressbar')).toHaveAttribute(
+        'aria-valuenow',
+        '50',
+      );
       expect(queryByTestId('ArrowBackIcon')).toBeInTheDocument();
 
       const continueButton = getByRole('button', { name: 'Continue' });
       userEvent.click(continueButton);
 
-      const steps = getAllByRole('listitem');
+      const stepItems = getAllByRole('listitem');
 
-      const [firstStep, secondStep, thirdStep] = steps;
+      const [firstStep, secondStep, thirdStep] = stepItems;
 
       expect(firstStep).toHaveTextContent('1. About this Form');
       expect(
@@ -152,6 +174,7 @@ describe('RequestPage', () => {
               handlePreviousStep,
               requestData: {
                 id: 'request-id',
+                status: MhaStatusEnum.InProgress,
                 requestAttributes: {
                   rentOrOwn: MhaRentOrOwnEnum.Rent,
                 },
@@ -183,6 +206,7 @@ describe('RequestPage', () => {
               updateMutation,
               requestData: {
                 id: 'request-id',
+                status: MhaStatusEnum.InProgress,
                 requestAttributes: {
                   rentOrOwn: MhaRentOrOwnEnum.Rent,
                   rentalValue: 1000,
@@ -272,11 +296,17 @@ describe('RequestPage', () => {
     it('should show validation error if continue is clicked without selecting an option', async () => {
       const { getByRole, findByRole } = render(
         <TestComponent
-          contextValue={{
-            steps,
-            currentStep: StepsEnum.RentOrOwn,
-            pageType: PageEnum.New,
-          }}
+          contextValue={
+            {
+              steps,
+              currentIndex: 1,
+              pageType: PageEnum.New,
+              requestData: {
+                id: 'request-id',
+                status: MhaStatusEnum.InProgress,
+              },
+            } as unknown as ContextType
+          }
         />,
       );
 
@@ -308,6 +338,7 @@ describe('RequestPage', () => {
                 setIsPrint,
                 requestData: {
                   id: 'request-id',
+                  status: MhaStatusEnum.InProgress,
                   requestAttributes: {
                     rentOrOwn: null,
                     rentalValue: 1000,
@@ -381,6 +412,33 @@ describe('RequestPage', () => {
       const input = within(row).getByRole('textbox');
 
       expect(input).toBeDisabled();
+    });
+  });
+
+  describe('Permission Denied', () => {
+    it('renders permission denied layout', () => {
+      const { getByText, queryByRole, getByTestId } = render(
+        <TestComponent
+          contextValue={
+            {
+              pageType: PageEnum.Edit,
+              setHasCalcValues,
+              setIsPrint,
+              requestData: {
+                id: 'request-id',
+                status: MhaStatusEnum.BoardApproved,
+              },
+            } as unknown as ContextType
+          }
+        />,
+      );
+
+      expect(getByText('Your MHA')).toBeInTheDocument();
+      expect(queryByRole('progressbar')).not.toBeInTheDocument();
+      expect(getByTestId('ArrowBackIcon')).toBeInTheDocument();
+      expect(
+        getByText('You do not have permission to edit this request.'),
+      ).toBeInTheDocument();
     });
   });
 });
