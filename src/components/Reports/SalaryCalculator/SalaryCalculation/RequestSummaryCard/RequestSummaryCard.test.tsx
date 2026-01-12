@@ -96,7 +96,7 @@ If this is correct, please provide reasoning for why Jane's Salary should exceed
 
       await waitFor(() =>
         expect(getByTestId('RequestSummaryCard-status')).toHaveTextContent(
-          'Your Gross Requested Salary exceeds your Maximum Allowable Salary. \
+          'Your Combined Gross Requested Salary exceeds your Combined Maximum Allowable Salary. \
 Please make adjustments to your Salary Request above or fill out the Approval Process Section below to request a higher amount through our Progressive Approvals process. \
 This may take [time frame] as it needs to be signed off by Approver Name and Other Approver. \
 This may affect your selected effective date.',
@@ -228,6 +228,26 @@ This may affect your selected effective date.',
         '$10,004.00',
         '$10,005.00',
       ]);
+    });
+
+    describe('when over cap', () => {
+      it('renders status message', async () => {
+        const { getByTestId } = render(
+          <TestComponent
+            hasSpouse={false}
+            salaryRequestMock={{ calculations: { requestedGross: 100_000 } }}
+          />,
+        );
+
+        await waitFor(() =>
+          expect(getByTestId('RequestSummaryCard-status')).toHaveTextContent(
+            'Your Gross Requested Salary exceeds your Maximum Allowable Salary. \
+Please make adjustments to your Salary Request above or fill out the Approval Process Section below to request a higher amount through our Progressive Approvals process. \
+This may take [time frame] as it needs to be signed off by Approver Name. \
+This may affect your selected effective date.',
+          ),
+        );
+      });
     });
   });
 });

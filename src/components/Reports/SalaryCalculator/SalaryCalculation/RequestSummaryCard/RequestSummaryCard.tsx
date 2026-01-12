@@ -99,17 +99,18 @@ export const RequestedSummaryCard: React.FC = () => {
     },
   ];
 
+  const combinedModifier = hasSpouse ? t('Combined') : '';
   const statusMessage =
     !overCap && !userOverCap && !spouseOverCap
       ? t('Your gross request is within your Maximum Allowable Salary.')
       : overCap
         ? t(
-            'Your Gross Requested Salary exceeds your Maximum Allowable Salary. \
+            'Your {{ combined }} Gross Requested Salary exceeds your {{ combined }} Maximum Allowable Salary. \
 Please make adjustments to your Salary Request above \
 or fill out the Approval Process Section below to request a higher amount through our Progressive Approvals process. \
 This may take [time frame] as it needs to be signed off by {{ approvers }}. \
 This may affect your selected effective date.',
-            { approvers },
+            { combined: combinedModifier, approvers },
           )
         : t(
             "Your Combined Gross Requested Salary is within your Combined Maximum Allowable Salary. \
@@ -184,9 +185,9 @@ or make changes to how your Requested Salary is distributed above.",
             data-testid="RequestSummaryCard-remaining"
           >
             <Typography aria-describedby={remainingId} color="textSecondary">
-              {hasSpouse
-                ? t('Remaining in Combined Max Allowable Salary')
-                : t('Remaining in Max Allowable Salary')}
+              {t('Remaining in {{ combined }} Max Allowable Salary', {
+                combined: combinedModifier,
+              })}
             </Typography>
             <Typography
               id={remainingId}
