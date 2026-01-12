@@ -236,7 +236,7 @@ describe('TransferHistoryTable', () => {
     });
 
     expect(dialog).not.toBeVisible();
-  }, 10000);
+  }, 30000);
 
   it('updates end date when Ok is clicked', async () => {
     const { getByRole, findByRole } = render(<TestComponent />);

@@ -1,53 +1,41 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { GetAccountListsQuery } from 'pages/GetAccountLists.generated';
 import theme from '../../theme';
 import AccountLists from '.';
 
 describe('AccountLists', () => {
-  it('has correct defaults', () => {
-    const { getByTestId } = render(
+  it('renders accounts', async () => {
+    const { findByRole, getByRole } = render(
       <ThemeProvider theme={theme}>
-        <AccountLists
-          data={{
-            user: {
-              id: 'user-1',
-              setup: null,
-            },
-            accountLists: {
-              nodes: [
-                {
-                  id: 'abc',
-                  name: 'My Personal Staff Account',
-                  monthlyGoal: 100,
-                  receivedPledges: 10,
-                  totalPledges: 20,
-                  currency: 'USD',
-                },
-                {
-                  id: 'def',
-                  name: 'My Ministry Account',
-                  monthlyGoal: null,
-                  receivedPledges: 10,
-                  totalPledges: 20,
-                  currency: 'USD',
-                },
-                {
-                  id: 'ghi',
-                  name: "My Friend's Staff Account",
-                  monthlyGoal: 100,
-                  receivedPledges: 0,
-                  totalPledges: 0,
-                  currency: 'USD',
-                },
-              ],
+        <GqlMockedProvider<{ GetAccountLists: GetAccountListsQuery }>
+          mocks={{
+            GetAccountLists: {
+              accountLists: {
+                nodes: [
+                  { name: 'My Personal Staff Account' },
+                  { name: 'My Ministry Account' },
+                  { name: "My Friend's Staff Account" },
+                ],
+              },
             },
           }}
-        />
+        >
+          <AccountLists />
+        </GqlMockedProvider>
       </ThemeProvider>,
     );
-    expect(getByTestId('abc')).toHaveTextContent('My Personal Staff Account');
-    expect(getByTestId('def')).toHaveTextContent('My Ministry Account');
-    expect(getByTestId('ghi')).toHaveTextContent("My Friend's Staff Account");
+
+    expect(
+      await findByRole('heading', { name: 'My Personal Staff Account' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('heading', { name: 'My Ministry Account' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('heading', { name: "My Friend's Staff Account" }),
+    ).toBeInTheDocument();
   });
 });
