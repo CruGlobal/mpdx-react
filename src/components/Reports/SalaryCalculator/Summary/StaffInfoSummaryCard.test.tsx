@@ -2,6 +2,7 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
+import { SalaryRequestStatusEnum } from 'src/graphql/types.generated';
 import { HcmQuery } from '../SalaryCalculatorContext/Hcm.generated';
 import { SalaryCalculationQuery } from '../SalaryCalculatorContext/SalaryCalculation.generated';
 import { SalaryCalculatorProvider } from '../SalaryCalculatorContext/SalaryCalculatorContext';
@@ -10,9 +11,13 @@ import { StaffInfoSummaryCard } from './StaffInfoSummaryCard';
 
 interface TestComponentProps {
   hasSpouse?: boolean;
+  submitted?: boolean;
 }
 
-const TestComponent: React.FC<TestComponentProps> = ({ hasSpouse = true }) => (
+const TestComponent: React.FC<TestComponentProps> = ({
+  hasSpouse = true,
+  submitted,
+}) => (
   <GqlMockedProvider<{
     Hcm: HcmQuery;
     SalaryCalculation: SalaryCalculationQuery;
@@ -24,7 +29,11 @@ const TestComponent: React.FC<TestComponentProps> = ({ hasSpouse = true }) => (
       },
       SalaryCalculation: {
         salaryRequest: {
+          status: submitted
+            ? SalaryRequestStatusEnum.Pending
+            : SalaryRequestStatusEnum.InProgress,
           effectiveDate: '2024-01-15',
+          submittedAt: '2025-01-01',
         },
       },
       GetUser: {
@@ -57,6 +66,12 @@ describe('StaffInfoSummaryCard', () => {
         expectedCells,
       ),
     );
+  });
+
+  it('should render submitted date', async () => {
+    const { findByRole } = render(<TestComponent submitted />);
+
+    expect(await findByRole('cell', { name: '1/1/2025' })).toBeInTheDocument();
   });
 
   describe('single', () => {

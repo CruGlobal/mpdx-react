@@ -41,6 +41,7 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
         },
         exceptionSalaryCap: {
           amount: null,
+          exceptionApprover: 'Approver Name',
         },
       },
       {
@@ -59,6 +60,10 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
         mhaRequest: {
           currentApprovedOverallAmount: 12000,
           currentApprovedAmountForStaff: 800,
+        },
+        exceptionSalaryCap: {
+          amount: null,
+          exceptionApprover: 'Other Approver',
         },
       },
     ],
