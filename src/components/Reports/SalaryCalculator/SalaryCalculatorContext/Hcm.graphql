@@ -2,7 +2,7 @@ query Hcm {
   hcm {
     staffInfo {
       id
-      firstName
+      preferredName
       lastName
       city
       state
