@@ -80,7 +80,6 @@ export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
       userEligibleForMHA,
       enqueueSnackbar,
       t,
-      values,
     ],
   );
 
