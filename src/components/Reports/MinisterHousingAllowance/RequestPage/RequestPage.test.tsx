@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
@@ -69,15 +70,17 @@ const TestComponent: React.FC<TestComponentProps> = ({
 
   return (
     <ThemeProvider theme={theme}>
-      <TestRouter>
-        <GqlMockedProvider<{
-          UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
-        }>
-          onCall={mutationSpy}
-        >
-          {content}
-        </GqlMockedProvider>
-      </TestRouter>
+      <SnackbarProvider>
+        <TestRouter>
+          <GqlMockedProvider<{
+            UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
+          }>
+            onCall={mutationSpy}
+          >
+            {content}
+          </GqlMockedProvider>
+        </TestRouter>
+      </SnackbarProvider>
     </ThemeProvider>
   );
 };
@@ -181,6 +184,7 @@ describe('RequestPage', () => {
               hasCalcValues: true,
               setHasCalcValues,
               updateMutation,
+              userEligibleForMHA: true,
               requestData: {
                 id: 'request-id',
                 requestAttributes: {
@@ -306,6 +310,7 @@ describe('RequestPage', () => {
                 setHasCalcValues,
                 updateMutation,
                 setIsPrint,
+                userEligibleForMHA: true,
                 requestData: {
                   id: 'request-id',
                   requestAttributes: {

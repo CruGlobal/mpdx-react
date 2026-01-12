@@ -5,6 +5,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
@@ -15,6 +16,7 @@ import {
   ContextType,
   MinisterHousingAllowanceContext,
 } from '../../Shared/Context/MinisterHousingAllowanceContext';
+import { mockMHARequest } from '../../mockData';
 import { Calculation } from './Calculation';
 
 const submit = jest.fn();
@@ -37,27 +39,29 @@ const TestComponent: React.FC<TestComponentProps> = ({
   rentOrOwn = MhaRentOrOwnEnum.Own,
 }) => (
   <ThemeProvider theme={theme}>
-    <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <TestRouter>
-        <GqlMockedProvider<{
-          UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
-        }>
-          onCall={mutationSpy}
-        >
-          <Formik initialValues={{}} onSubmit={submit}>
-            <MinisterHousingAllowanceContext.Provider
-              value={contextValue as ContextType}
-            >
-              <Calculation
-                boardApprovalDate={boardApprovalDate}
-                availableDate={availableDate}
-                rentOrOwn={rentOrOwn}
-              />
-            </MinisterHousingAllowanceContext.Provider>
-          </Formik>
-        </GqlMockedProvider>
-      </TestRouter>
-    </LocalizationProvider>
+    <SnackbarProvider>
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <TestRouter>
+          <GqlMockedProvider<{
+            UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
+          }>
+            onCall={mutationSpy}
+          >
+            <Formik initialValues={{}} onSubmit={submit}>
+              <MinisterHousingAllowanceContext.Provider
+                value={contextValue as ContextType}
+              >
+                <Calculation
+                  boardApprovalDate={boardApprovalDate}
+                  availableDate={availableDate}
+                  rentOrOwn={rentOrOwn}
+                />
+              </MinisterHousingAllowanceContext.Provider>
+            </Formik>
+          </GqlMockedProvider>
+        </TestRouter>
+      </LocalizationProvider>
+    </SnackbarProvider>
   </ThemeProvider>
 );
 
@@ -215,6 +219,7 @@ describe('Calculation', () => {
             setHasCalcValues,
             setIsPrint,
             updateMutation,
+            userEligibleForMHA: true,
             requestData: {
               id: 'request-id',
               requestAttributes: {
@@ -318,6 +323,7 @@ describe('Calculation', () => {
             setHasCalcValues,
             setIsPrint,
             updateMutation,
+            userEligibleForMHA: true,
             requestData: {
               id: 'request-id',
               requestAttributes: {
@@ -376,6 +382,63 @@ describe('Calculation', () => {
       ).not.toBeInTheDocument();
       expect(queryByRole('button', { name: /back/i })).not.toBeInTheDocument();
       expect(queryByRole('checkbox')).not.toBeInTheDocument();
+    });
+
+    describe('Update Checkbox Eligibility', () => {
+      it('should allow update mutation when user is eligible', async () => {
+        const { getByRole } = render(
+          <TestComponent
+            contextValue={{
+              pageType: PageEnum.New,
+              setHasCalcValues,
+              setIsPrint,
+              updateMutation,
+              requestData: mockMHARequest,
+              userEligibleForMHA: true,
+            }}
+          />,
+        );
+
+        const checkbox = getByRole('checkbox', {
+          name: /i understand that my approved/i,
+        });
+
+        userEvent.click(checkbox);
+
+        await waitFor(() =>
+          expect(updateMutation).toHaveBeenCalledWith({
+            variables: {
+              input: {
+                requestId: '1',
+                requestAttributes: {
+                  iUnderstandMhaPolicy: true,
+                },
+              },
+            },
+          }),
+        );
+      });
+
+      it('should disable checkbox when user is not eligible', async () => {
+        const { findByRole } = render(
+          <TestComponent
+            contextValue={{
+              pageType: PageEnum.New,
+              setHasCalcValues,
+              setIsPrint,
+              updateMutation,
+              requestData: mockMHARequest,
+              userEligibleForMHA: false,
+            }}
+          />,
+        );
+
+        const checkbox = await findByRole('checkbox', {
+          name: /i understand that my approved/i,
+        });
+
+        expect(checkbox).toBeDisabled();
+      });
     });
   });
 });

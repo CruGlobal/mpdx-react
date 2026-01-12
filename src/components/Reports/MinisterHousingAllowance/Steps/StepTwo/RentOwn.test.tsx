@@ -3,6 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
@@ -12,6 +13,7 @@ import {
   ContextType,
   MinisterHousingAllowanceContext,
 } from '../../Shared/Context/MinisterHousingAllowanceContext';
+import { mockMHARequest } from '../../mockData';
 import { RentOwn } from './RentOwn';
 
 const submit = jest.fn();
@@ -25,21 +27,23 @@ interface TestComponentProps {
 
 const TestComponent: React.FC<TestComponentProps> = ({ contextValue }) => (
   <ThemeProvider theme={theme}>
-    <TestRouter>
-      <GqlMockedProvider<{
-        UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
-      }>
-        onCall={mutationSpy}
-      >
-        <Formik initialValues={{}} onSubmit={submit}>
-          <MinisterHousingAllowanceContext.Provider
-            value={contextValue as ContextType}
-          >
-            <RentOwn />
-          </MinisterHousingAllowanceContext.Provider>
-        </Formik>
-      </GqlMockedProvider>
-    </TestRouter>
+    <SnackbarProvider>
+      <TestRouter>
+        <GqlMockedProvider<{
+          UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
+        }>
+          onCall={mutationSpy}
+        >
+          <Formik initialValues={{}} onSubmit={submit}>
+            <MinisterHousingAllowanceContext.Provider
+              value={contextValue as ContextType}
+            >
+              <RentOwn />
+            </MinisterHousingAllowanceContext.Provider>
+          </Formik>
+        </GqlMockedProvider>
+      </TestRouter>
+    </SnackbarProvider>
   </ThemeProvider>
 );
 
@@ -52,7 +56,8 @@ describe('RentOwn', () => {
             pageType: PageEnum.New,
             updateMutation,
             setHasCalcValues,
-            requestData: { id: 'request-id' },
+            requestData: mockMHARequest,
+            userEligibleForMHA: true,
           } as unknown as ContextType
         }
       />,
@@ -64,7 +69,7 @@ describe('RentOwn', () => {
     expect(getByText('Own')).toBeInTheDocument();
 
     expect(await findAllByRole('radio', { checked: false })).toHaveLength(2);
-    await userEvent.click(getByText('Rent'));
+    userEvent.click(getByText('Rent'));
 
     await waitFor(() =>
       expect(updateMutation).toHaveBeenCalledWith({
@@ -83,7 +88,7 @@ describe('RentOwn', () => {
               overallAmount: null,
               iUnderstandMhaPolicy: null,
             },
-            requestId: 'request-id',
+            requestId: '1',
           },
         },
       }),
@@ -98,7 +103,7 @@ describe('RentOwn', () => {
         contextValue={
           {
             pageType: PageEnum.Edit,
-            requestData: { id: 'request-id' },
+            requestData: mockMHARequest,
           } as unknown as ContextType
         }
       />,
@@ -111,5 +116,67 @@ describe('RentOwn', () => {
 
     expect(getByRole('radio', { name: 'Rent' })).not.toBeChecked();
     expect(getByRole('radio', { name: 'Own' })).not.toBeChecked();
+  });
+
+  describe('Update Request Eligibility', () => {
+    it('should allow update mutation when user is eligible', async () => {
+      const { getByText } = render(
+        <TestComponent
+          contextValue={{
+            pageType: PageEnum.New,
+            updateMutation,
+            setHasCalcValues,
+            requestData: mockMHARequest,
+            userEligibleForMHA: true,
+          }}
+        />,
+      );
+
+      await userEvent.click(getByText('Rent'));
+
+      await waitFor(() =>
+        expect(updateMutation).toHaveBeenCalledWith({
+          variables: {
+            input: {
+              requestAttributes: {
+                rentOrOwn: 'RENT',
+                rentalValue: null,
+                furnitureCostsOne: null,
+                avgUtilityOne: null,
+                mortgageOrRentPayment: null,
+                furnitureCostsTwo: null,
+                repairCosts: null,
+                avgUtilityTwo: null,
+                unexpectedExpenses: null,
+                overallAmount: null,
+                iUnderstandMhaPolicy: null,
+              },
+              requestId: '1',
+            },
+          },
+        }),
+      );
+    });
+
+    it('should block update mutation when user is not eligible', async () => {
+      const { getByText } = render(
+        <TestComponent
+          contextValue={{
+            pageType: PageEnum.New,
+            updateMutation,
+            setHasCalcValues,
+            requestData: mockMHARequest,
+            userEligibleForMHA: false,
+          }}
+        />,
+      );
+
+      await userEvent.click(getByText('Rent'));
+
+      // Wait a moment to ensure the mutation would have been called if it was going to be
+      await waitFor(() => {
+        expect(updateMutation).not.toHaveBeenCalled();
+      });
+    });
   });
 });

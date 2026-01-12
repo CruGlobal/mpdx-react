@@ -5,6 +5,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
+import { SnackbarProvider } from 'notistack';
 import * as yup from 'yup';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -31,25 +32,27 @@ interface TestComponentProps {
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({ contextValue }) => (
-  <ThemeProvider theme={theme}>
-    <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <GqlMockedProvider<{
-        UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
-      }>
-        onCall={mutationSpy}
-      >
-        <TestRouter>
-          <MinisterHousingAllowanceContext.Provider
-            value={contextValue as ContextType}
-          >
-            <Formik initialValues={{}} onSubmit={submit}>
-              <FairRentalValue schema={mockSchema} />
-            </Formik>
-          </MinisterHousingAllowanceContext.Provider>
-        </TestRouter>
-      </GqlMockedProvider>
-    </LocalizationProvider>
-  </ThemeProvider>
+  <SnackbarProvider>
+    <ThemeProvider theme={theme}>
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <GqlMockedProvider<{
+          UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
+        }>
+          onCall={mutationSpy}
+        >
+          <TestRouter>
+            <MinisterHousingAllowanceContext.Provider
+              value={contextValue as ContextType}
+            >
+              <Formik initialValues={{}} onSubmit={submit}>
+                <FairRentalValue schema={mockSchema} />
+              </Formik>
+            </MinisterHousingAllowanceContext.Provider>
+          </TestRouter>
+        </GqlMockedProvider>
+      </LocalizationProvider>
+    </ThemeProvider>
+  </SnackbarProvider>
 );
 
 describe('FairRentalValue', () => {

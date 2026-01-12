@@ -3,6 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
+import { SnackbarProvider } from 'notistack';
 import * as yup from 'yup';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
@@ -22,32 +23,35 @@ const defaultSchema = yup.object({
 });
 
 const TestComponent: React.FC = () => (
-  <ThemeProvider theme={theme}>
-    <GqlMockedProvider<{
-      UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
-    }>
-      onCall={mutationSpy}
-    >
-      <MinisterHousingAllowanceContext.Provider
-        value={
-          {
-            pageType: PageEnum.New,
-            requestData: {
-              id: 'request-id',
-              requestAttributes: { mortgageOrRentPayment: null },
-            },
-          } as unknown as ContextType
-        }
+  <SnackbarProvider>
+    <ThemeProvider theme={theme}>
+      <GqlMockedProvider<{
+        UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
+      }>
+        onCall={mutationSpy}
       >
-        <Formik initialValues={{}} onSubmit={submit}>
-          <AutosaveCustomTextField
-            fieldName="mortgageOrRentPayment"
-            schema={defaultSchema}
-          />
-        </Formik>
-      </MinisterHousingAllowanceContext.Provider>
-    </GqlMockedProvider>
-  </ThemeProvider>
+        <MinisterHousingAllowanceContext.Provider
+          value={
+            {
+              pageType: PageEnum.New,
+              userEligibleForMHA: true,
+              requestData: {
+                id: 'request-id',
+                requestAttributes: { mortgageOrRentPayment: null },
+              },
+            } as unknown as ContextType
+          }
+        >
+          <Formik initialValues={{}} onSubmit={submit}>
+            <AutosaveCustomTextField
+              fieldName="mortgageOrRentPayment"
+              schema={defaultSchema}
+            />
+          </Formik>
+        </MinisterHousingAllowanceContext.Provider>
+      </GqlMockedProvider>
+    </ThemeProvider>
+  </SnackbarProvider>
 );
 
 describe('AutosaveCustomTextField', () => {
@@ -76,7 +80,7 @@ describe('AutosaveCustomTextField', () => {
     const { getByRole } = render(<TestComponent />);
 
     const input = getByRole('textbox');
-    await userEvent.type(input, '1500');
+    userEvent.type(input, '1500');
     input.blur();
 
     await waitFor(() =>

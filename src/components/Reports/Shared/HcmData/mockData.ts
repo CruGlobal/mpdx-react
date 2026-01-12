@@ -119,3 +119,12 @@ export const marriedSpouseIneligible: HcmDataQuery['hcm'] = [
     },
   },
 ];
+
+export const singleIneligible: HcmDataQuery['hcm'] = [
+  {
+    ...noMhaAndNoException,
+    mhaEit: {
+      mhaEligibility: false,
+    },
+  },
+];
