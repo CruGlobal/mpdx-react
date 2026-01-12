@@ -41,6 +41,9 @@ query HcmData {
       lastRegularPaymentDate
       lastUpdated
     }
+    mhaEit {
+      mhaEligibility
+    }
     exceptionSalaryCap {
       amount
       effectiveDate

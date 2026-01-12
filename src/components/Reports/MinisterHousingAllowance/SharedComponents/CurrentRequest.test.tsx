@@ -94,7 +94,7 @@ describe('CurrentRequest Component', () => {
             operationName: 'DeleteMinistryHousingAllowanceRequest',
             variables: {
               input: {
-                requestId: 'request-id',
+                requestId: '1',
               },
             },
           }),

@@ -34,5 +34,6 @@ export const mockMHARequest: MHARequest = {
     hrApprovedAt: '2019-11-01T15:30:45.123Z',
     spouseSpecific: null,
     staffSpecific: 15000,
+    changesRequestedAt: null,
   },
 };

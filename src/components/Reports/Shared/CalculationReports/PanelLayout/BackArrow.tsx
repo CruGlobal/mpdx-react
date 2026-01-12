@@ -25,7 +25,7 @@ export const BackArrow: React.FC<BackArrowProps> = ({
       <IconButton
         title={backTitle ?? t('Back to dashboard')}
         sx={(theme) => ({
-          color: theme.palette.cruGrayDark.main,
+          color: theme.palette.mpdxGrayDark.main,
         })}
       >
         <ArrowBackIcon />

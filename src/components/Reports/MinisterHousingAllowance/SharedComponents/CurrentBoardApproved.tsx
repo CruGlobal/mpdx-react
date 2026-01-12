@@ -35,9 +35,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
   const router = useRouter();
   const currency = 'USD';
 
-  const [duplicateMHA] = useDuplicateMinistryHousingAllowanceRequestMutation(
-    {},
-  );
+  const [duplicateMHA] = useDuplicateMinistryHousingAllowanceRequestMutation();
 
   const { isMarried, preferredName, spousePreferredName } =
     useMinisterHousingAllowance();
@@ -55,21 +53,22 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
       return;
     }
 
-    const result = await duplicateMHA({
+    await duplicateMHA({
       variables: {
         input: {
           requestId: requestId,
         },
       },
+      onCompleted: (data) => {
+        const newRequestId =
+          data?.duplicateMinistryHousingAllowanceRequest
+            ?.ministryHousingAllowanceRequest.id;
+
+        if (newRequestId) {
+          router.push(getRequestUrl(accountListId, newRequestId, 'edit'));
+        }
+      },
     });
-
-    const newRequestId =
-      result.data?.duplicateMinistryHousingAllowanceRequest
-        ?.ministryHousingAllowanceRequest.id;
-
-    if (newRequestId) {
-      router.push(getRequestUrl(accountListId, newRequestId, 'edit'));
-    }
   };
 
   return (

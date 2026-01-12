@@ -35,12 +35,14 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
 
   const { status, requestAttributes } = request;
 
-  const canEdit =
-    status === MhaStatusEnum.InProgress ||
-    status === MhaStatusEnum.ActionRequired;
-  const approved =
-    status === MhaStatusEnum.HrApproved ||
-    status === MhaStatusEnum.BoardApproved;
+  const canEdit = [
+    MhaStatusEnum.InProgress,
+    MhaStatusEnum.ActionRequired,
+  ].includes(status);
+  const approved = [
+    MhaStatusEnum.HrApproved,
+    MhaStatusEnum.BoardApproved,
+  ].includes(status);
 
   const editLink = getRequestUrl(accountListId, requestId, 'edit');
   const viewLink = getRequestUrl(accountListId, requestId, 'view');
@@ -65,18 +67,18 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
     });
 
   const handleCancelRequest = async () => {
-    try {
-      await deleteRequestMutation({
-        variables: {
-          input: {
-            requestId: requestId ?? '',
-          },
+    await deleteRequestMutation({
+      variables: {
+        input: {
+          requestId: requestId ?? '',
         },
-      });
-      enqueueSnackbar(t('MHA request cancelled successfully.'), {
-        variant: 'success',
-      });
-    } catch (error) {}
+      },
+      onCompleted: () => {
+        enqueueSnackbar(t('MHA request cancelled successfully.'), {
+          variant: 'success',
+        });
+      },
+    });
   };
 
   return (

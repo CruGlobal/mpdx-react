@@ -69,7 +69,7 @@ export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
         },
       });
     },
-    [formValues, updateMinistryHousingAllowanceRequest, requestData],
+    [formValues, updateMinistryHousingAllowanceRequest, requestData, t],
   );
 
   return saveField;

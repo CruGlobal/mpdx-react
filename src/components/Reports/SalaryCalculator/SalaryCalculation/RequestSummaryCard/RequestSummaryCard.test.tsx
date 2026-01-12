@@ -38,9 +38,9 @@ const TestComponent: React.FC<SalaryCalculatorTestWrapperProps> = (props) => (
 
 describe('RequestSummaryCard', () => {
   it('renders status message', async () => {
-    const { getByTestId } = render(<TestComponent />);
+    const { findByTestId } = render(<TestComponent />);
 
-    expect(getByTestId('RequestSummaryCard-status')).toHaveTextContent(
+    expect(await findByTestId('RequestSummaryCard-status')).toHaveTextContent(
       'Your gross request is within your Maximum Allowable Salary.',
     );
   });

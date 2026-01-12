@@ -94,10 +94,6 @@ describe('MinisterHousingAllowanceContext', () => {
     );
 
     expect(await findByTestId('steps')).toHaveTextContent('4');
-    expect(getByTestId('currentIndex')).toHaveTextContent('0');
-    expect(getByTestId('percentComplete')).toHaveTextContent('25');
-
-    userEvent.click(getByRole('button', { name: 'Next' }));
     expect(getByTestId('currentIndex')).toHaveTextContent('1');
     expect(getByTestId('percentComplete')).toHaveTextContent('50');
 

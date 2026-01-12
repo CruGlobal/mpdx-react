@@ -48,6 +48,7 @@ export type ContextType = {
   spouseHcmData?: HcmData | null;
   preferredName: string;
   spousePreferredName: string;
+  userEligibleForMHA: boolean;
 
   requestData?:
     | MinistryHousingAllowanceRequestQuery['ministryHousingAllowanceRequest']
@@ -153,12 +154,17 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
     [spouseHcmData],
   );
 
+  const userEligibleForMHA = useMemo(
+    () => userHcmData?.mhaEit?.mhaEligibility ?? false,
+    [userHcmData],
+  );
+
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
   const toggleDrawer = useCallback(() => {
     setIsDrawerOpen((prev) => !prev);
   }, []);
 
-  const [hasCalcValues, setHasCalcValues] = useState(hasValues ? true : false);
+  const [hasCalcValues, setHasCalcValues] = useState(hasValues);
   const [isPrint, setIsPrint] = useState(false);
 
   const contextValue = useMemo(
@@ -179,6 +185,7 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       spouseHcmData,
       preferredName,
       spousePreferredName,
+      userEligibleForMHA,
       isPrint,
       setIsPrint,
       setIsComplete,
@@ -205,6 +212,7 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       spouseHcmData,
       preferredName,
       spousePreferredName,
+      userEligibleForMHA,
       isPrint,
       setIsPrint,
       setIsComplete,

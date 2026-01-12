@@ -8,6 +8,8 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { MhaRentOrOwnEnum, MhaStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { PageEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
+import { HcmDataQuery } from '../../Shared/HcmData/HCMData.generated';
+import { singleMhaNoException } from '../../Shared/HcmData/mockData';
 import {
   MinistryHousingAllowanceRequestQuery,
   UpdateMinistryHousingAllowanceRequestMutation,
@@ -17,7 +19,6 @@ import {
   MinisterHousingAllowanceContext,
   MinisterHousingAllowanceProvider,
 } from '../Shared/Context/MinisterHousingAllowanceContext';
-import { StepsEnum } from '../Shared/sharedTypes';
 import { RequestPage } from './RequestPage';
 
 const mutationSpy = jest.fn();
@@ -53,11 +54,17 @@ const steps = [
 interface TestComponentProps {
   type?: PageEnum;
   contextValue?: Partial<ContextType>;
+  mocks?: {
+    HcmData?: HcmDataQuery;
+    MinistryHousingAllowanceRequest?: MinistryHousingAllowanceRequestQuery;
+    UpdateMinistryHousingAllowanceRequest?: UpdateMinistryHousingAllowanceRequestMutation;
+  };
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   type,
   contextValue,
+  mocks,
 }) => {
   const content = contextValue ? (
     <MinisterHousingAllowanceContext.Provider
@@ -76,9 +83,11 @@ const TestComponent: React.FC<TestComponentProps> = ({
       <TestRouter>
         <SnackbarProvider>
           <GqlMockedProvider<{
+            HcmData: HcmDataQuery;
             MinistryHousingAllowanceRequest: MinistryHousingAllowanceRequestQuery;
             UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
           }>
+            mocks={mocks}
             onCall={mutationSpy}
           >
             {content}
@@ -97,6 +106,7 @@ describe('RequestPage', () => {
         contextValue={
           {
             steps,
+            userEligibleForMHA: true,
             requestData: {
               id: 'request-id',
               status: MhaStatusEnum.InProgress,
@@ -115,7 +125,16 @@ describe('RequestPage', () => {
   describe('Edit Page', () => {
     it('starts on step 2 and updates steps when Continue clicked', async () => {
       const { getByRole, getAllByRole, getByText, queryByTestId, findByRole } =
-        render(<TestComponent type={PageEnum.Edit} />);
+        render(
+          <TestComponent
+            type={PageEnum.Edit}
+            mocks={{
+              HcmData: {
+                hcm: singleMhaNoException,
+              },
+            }}
+          />,
+        );
 
       expect(await findByRole('progressbar')).toHaveAttribute(
         'aria-valuenow',
@@ -163,15 +182,16 @@ describe('RequestPage', () => {
     });
 
     it('should show an option is preselected', async () => {
-      const { findAllByRole, getByRole, findByRole } = render(
+      const { findAllByRole, findByRole } = render(
         <TestComponent
           contextValue={
             {
               pageType: PageEnum.Edit,
-              currentStep: StepsEnum.RentOrOwn,
+              currentIndex: 1,
               steps,
               handleNextStep,
               handlePreviousStep,
+              userEligibleForMHA: true,
               requestData: {
                 id: 'request-id',
                 status: MhaStatusEnum.InProgress,
@@ -184,7 +204,7 @@ describe('RequestPage', () => {
         />,
       );
 
-      const continueButton = getByRole('button', { name: 'Continue' });
+      const continueButton = await findByRole('button', { name: 'Continue' });
       userEvent.click(continueButton);
 
       expect(await findByRole('radio', { name: 'Rent' })).toBeChecked();
@@ -192,18 +212,19 @@ describe('RequestPage', () => {
     });
 
     it('opens confirmation modal when changing selection', async () => {
-      const { getByRole, getByText, queryByText } = render(
+      const { getByRole, getByText, queryByText, findByRole } = render(
         <TestComponent
           contextValue={
             {
               pageType: PageEnum.Edit,
               steps,
-              currentStep: StepsEnum.RentOrOwn,
+              currentIndex: 1,
               handleNextStep,
               handlePreviousStep,
               hasCalcValues: true,
               setHasCalcValues,
               updateMutation,
+              userEligibleForMHA: true,
               requestData: {
                 id: 'request-id',
                 status: MhaStatusEnum.InProgress,
@@ -217,7 +238,7 @@ describe('RequestPage', () => {
         />,
       );
 
-      const ownRadio = getByRole('radio', { name: 'Own' });
+      const ownRadio = await findByRole('radio', { name: 'Own' });
       userEvent.click(ownRadio);
       expect(ownRadio).not.toBeChecked();
 
@@ -239,11 +260,22 @@ describe('RequestPage', () => {
 
   describe('New Page', () => {
     it('updates steps when Continue clicked', async () => {
-      const { getByRole, getAllByRole, getByText, queryByTestId } = render(
-        <TestComponent type={PageEnum.New} />,
-      );
+      const { getByRole, getAllByRole, getByText, queryByTestId, findByRole } =
+        render(
+          <TestComponent
+            type={PageEnum.New}
+            mocks={{
+              HcmData: {
+                hcm: singleMhaNoException,
+              },
+            }}
+          />,
+        );
 
-      expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '25');
+      expect(await findByRole('progressbar')).toHaveAttribute(
+        'aria-valuenow',
+        '25',
+      );
       expect(queryByTestId('ArrowBackIcon')).toBeInTheDocument();
 
       const continueButton = getByRole('button', { name: 'Continue' });
@@ -301,6 +333,7 @@ describe('RequestPage', () => {
               steps,
               currentIndex: 1,
               pageType: PageEnum.New,
+              userEligibleForMHA: true,
               requestData: {
                 id: 'request-id',
                 status: MhaStatusEnum.InProgress,
@@ -329,13 +362,14 @@ describe('RequestPage', () => {
               {
                 pageType: PageEnum.New,
                 steps,
-                currentStep: StepsEnum.RentOrOwn,
+                currentIndex: 1,
                 handleNextStep,
                 handlePreviousStep,
                 hasCalcValues: true,
                 setHasCalcValues,
                 updateMutation,
                 setIsPrint,
+                userEligibleForMHA: true,
                 requestData: {
                   id: 'request-id',
                   status: MhaStatusEnum.InProgress,

@@ -163,7 +163,6 @@ describe('CurrentBoardApproved Component', () => {
                   isMarried: false,
                   preferredName: 'John',
                   spousePreferredName: '',
-                  requestId: 'old-request-id',
                   userHcmData: {
                     staffInfo: {
                       personNumber: '000123456',
@@ -188,7 +187,7 @@ describe('CurrentBoardApproved Component', () => {
         'DuplicateMinistryHousingAllowanceRequest',
         {
           input: {
-            requestId: 'old-request-id',
+            requestId: '1',
           },
         },
       );

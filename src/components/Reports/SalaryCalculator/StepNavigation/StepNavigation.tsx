@@ -4,7 +4,6 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Box, Button, Stack, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { SalaryCalculatorSectionEnum } from '../SalaryCalculatorContext/Helper/sharedTypes';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 import { useSubmitSalaryCalculationMutation } from './SubmitSalaryCalculation.generated';
 
@@ -76,17 +75,13 @@ export const SubmitButton: React.FC = () => {
 
 export const StepNavigation: React.FC = () => {
   const theme = useTheme();
-  const { currentStep } = useSalaryCalculator();
+  const { currentIndex } = useSalaryCalculator();
 
   return (
     <Box display="flex" justifyContent="flex-end">
       <Stack direction="row" spacing={theme.spacing(1)}>
         <BackButton />
-        {currentStep === SalaryCalculatorSectionEnum.Summary ? (
-          <SubmitButton />
-        ) : (
-          <ContinueButton />
-        )}
+        {currentIndex === 3 ? <SubmitButton /> : <ContinueButton />}
       </Stack>
     </Box>
   );
