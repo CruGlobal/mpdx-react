@@ -42,10 +42,9 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
     approvedOverallAmount,
   } = requestAttributes || {};
 
-  const handleDownload = () => {
-    router.push(
-      `${getRequestUrl(accountListId, requestId, 'view')}&print=true`,
-    );
+  const handlePrint = async () => {
+    await router.push(`${getRequestUrl(accountListId, requestId, 'view')}`);
+    setTimeout(() => window.print(), 500);
   };
 
   return (
@@ -59,7 +58,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
       linkTwoText={t('Edit Request')}
       linkTwo={getRequestUrl(accountListId, requestId, 'edit')}
       isRequest={true}
-      handleDownload={handleDownload}
+      handlePrint={handlePrint}
       handleConfirmCancel={() => {}}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>

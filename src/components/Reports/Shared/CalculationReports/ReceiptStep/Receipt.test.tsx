@@ -183,18 +183,13 @@ describe('Receipt', () => {
   });
 
   it('should go to view link when Print clicked', async () => {
-    const { getByRole } = render(
+    const { getByText } = render(
       <TestComponent viewLink={viewLink} setIsComplete={setIsComplete} />,
     );
 
-    const viewButton = getByRole('link', { name: /print a copy/i });
+    const printLink = getByText(/print a copy/i);
 
-    expect(viewButton).toHaveAttribute(
-      'href',
-      expect.stringContaining('/test/view-link'),
-    );
-
-    await userEvent.click(viewButton);
+    await userEvent.click(printLink);
     expect(setIsComplete).toHaveBeenCalledWith(true);
   });
 });

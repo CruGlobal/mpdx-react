@@ -64,6 +64,11 @@ export const RequestPage: React.FC = () => {
   const availableDate = requestData?.requestAttributes?.availableDate ?? '';
   const deadlineDate = requestData?.requestAttributes?.deadlineDate ?? '';
 
+  const iconPanelItems = useIconPanelItems(isDrawerOpen, toggleDrawer);
+
+  const editLink = getRequestUrl(accountListId, requestId, 'edit');
+  const viewLink = getRequestUrl(accountListId, requestId, 'view');
+
   return isView ? (
     <PanelLayout
       panelType={PanelTypeEnum.Empty}
@@ -86,7 +91,7 @@ export const RequestPage: React.FC = () => {
   ) : (
     <PanelLayout
       panelType={PanelTypeEnum.Other}
-      icons={useIconPanelItems(isDrawerOpen, toggleDrawer)}
+      icons={iconPanelItems}
       percentComplete={percentComplete}
       currentIndex={currentIndex}
       steps={steps}
@@ -126,9 +131,9 @@ export const RequestPage: React.FC = () => {
                   <Receipt
                     formTitle={t('MHA Request')}
                     buttonText={t('View Your MHA')}
-                    editLink={`${getRequestUrl(accountListId, requestId, 'edit')}`}
+                    editLink={editLink}
                     isEdit={isEdit}
-                    viewLink={`${getRequestUrl(accountListId, requestId, 'view')}`}
+                    viewLink={viewLink}
                     availableDate={availableDate}
                     deadlineDate={deadlineDate}
                     setIsComplete={setIsComplete}

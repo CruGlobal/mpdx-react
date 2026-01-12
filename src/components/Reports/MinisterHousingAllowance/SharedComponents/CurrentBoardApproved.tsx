@@ -31,10 +31,9 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
   const { approvedDate, approvedOverallAmount, staffSpecific, spouseSpecific } =
     request?.requestAttributes || {};
 
-  const handleDownload = () => {
-    router.push(
-      `${getRequestUrl(accountListId, requestId, 'view')}&print=true`,
-    );
+  const handlePrint = async () => {
+    await router.push(`${getRequestUrl(accountListId, requestId, 'view')}`);
+    setTimeout(() => window.print(), 500);
   };
 
   return (
@@ -48,7 +47,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
       linkTwoText={t("Duplicate Last Year's MHA")}
       linkTwo=""
       isRequest={false}
-      handleDownload={handleDownload}
+      handlePrint={handlePrint}
       handleConfirmCancel={() => {}}
     >
       <Grid container spacing={2}>
