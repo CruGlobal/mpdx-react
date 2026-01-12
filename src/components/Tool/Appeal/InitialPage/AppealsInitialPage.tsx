@@ -62,7 +62,7 @@ const AppealsInitialPage: React.FC = () => {
                 <CardHeader
                   title={t('Add Appeal')}
                   sx={(theme) => ({
-                    backgroundColor: theme.palette.cruGrayLight.main,
+                    backgroundColor: theme.palette.mpdxGrayLight.main,
                   })}
                 />
                 <CardContent>

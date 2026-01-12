@@ -240,7 +240,7 @@ export function populateTransferRows(options: Options) {
               className="material-symbols-outlined"
               sx={{
                 fontSize: 24,
-                color: 'cruGrayMedium',
+                color: 'mpdxGrayMedium',
               }}
             >
               edit_calendar
@@ -269,7 +269,7 @@ export function populateTransferRows(options: Options) {
               className="material-symbols-outlined"
               sx={{
                 fontSize: 24,
-                color: 'cruGrayMedium',
+                color: 'mpdxGrayMedium',
               }}
             >
               calendar_add_on

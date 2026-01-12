@@ -20,7 +20,7 @@ const useStyles = makeStyles()(() => ({
 
 const StepCard = styled(Card)(({ theme }) => ({
   textAlign: 'center',
-  backgroundColor: theme.palette.cruGrayLight.main,
+  backgroundColor: theme.palette.mpdxGrayLight.main,
   padding: '10px',
 }));
 

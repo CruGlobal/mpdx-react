@@ -24,7 +24,7 @@ export const ListItemContent: React.FC<ListItemContentProps> = ({
             ? 'success.main'
             : current
               ? theme.palette.mpdxBlue.main
-              : theme.palette.cruGrayDark.main,
+              : theme.palette.mpdxGrayDark.main,
         })}
       >
         {complete ? (

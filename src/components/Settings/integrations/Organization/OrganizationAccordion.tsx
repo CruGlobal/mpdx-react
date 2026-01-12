@@ -35,7 +35,7 @@ type OrganizationAccountPartial =
   GetUsersOrganizationsAccountsQuery['userOrganizationAccounts'][0];
 
 const OrganizationDeleteIconButton = styled(IconButton)(() => ({
-  color: theme.palette.cruGrayMedium.main,
+  color: theme.palette.mpdxGrayMedium.main,
   marginLeft: '10px',
   '&:disabled': {
     cursor: 'not-allowed',
@@ -194,9 +194,9 @@ export const OrganizationAccordion: React.FC<AccordionProps> = ({
     >
       <Typography>
         {t(
-          `Add organizations that sync donation information with this {{appName}} account. That 
-          organization will have the ability to manage or delete your account. Removing an 
-          organization will not remove past information, but will prevent future donations 
+          `Add organizations that sync donation information with this {{appName}} account. That
+          organization will have the ability to manage or delete your account. Removing an
+          organization will not remove past information, but will prevent future donations
           and contacts from syncing.`,
           { appName },
         )}
@@ -224,7 +224,7 @@ export const OrganizationAccordion: React.FC<AccordionProps> = ({
                   sx={{
                     p: 1,
                     pl: 2,
-                    background: theme.palette.cruGrayLight.main,
+                    background: theme.palette.mpdxGrayLight.main,
                     justifyContent: 'space-between',
                     display: 'flex',
                   }}

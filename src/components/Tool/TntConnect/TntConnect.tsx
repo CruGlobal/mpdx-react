@@ -39,7 +39,7 @@ const BoldTypography = styled(Typography)(() => ({
 }));
 
 const BottomBox = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.cruGrayLight.main,
+  backgroundColor: theme.palette.mpdxGrayLight.main,
   width: '100%',
   padding: theme.spacing(1),
   display: 'flex',
@@ -197,7 +197,7 @@ const TntConnect: React.FC<Props> = ({ accountListId }: Props) => {
           sx={{
             marginY: theme.spacing(2),
             border: '1px solid',
-            borderColor: theme.palette.cruGrayLight.main,
+            borderColor: theme.palette.mpdxGrayLight.main,
             width: '100%',
           }}
         >

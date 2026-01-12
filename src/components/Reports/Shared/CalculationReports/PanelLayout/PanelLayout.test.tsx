@@ -168,7 +168,7 @@ describe('PanelLayout', () => {
 
     expect(activeButton).toHaveStyle({ color: theme.palette.mpdxBlue.main });
     expect(inactiveButton).toHaveStyle({
-      color: theme.palette.cruGrayDark.main,
+      color: theme.palette.mpdxGrayDark.main,
     });
   });
 

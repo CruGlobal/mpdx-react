@@ -310,7 +310,7 @@ describe('ListHeader', () => {
 
     await waitFor(() =>
       expect(filterButton).toHaveStyle({
-        backgroundColor: theme.palette.cruYellow.main,
+        backgroundColor: theme.palette.yellow.main,
       }),
     );
   });
@@ -325,7 +325,7 @@ describe('ListHeader', () => {
     });
 
     expect(filterButton).toHaveStyle({
-      backgroundColor: theme.palette.cruYellow.main,
+      backgroundColor: theme.palette.yellow.main,
     });
   });
 

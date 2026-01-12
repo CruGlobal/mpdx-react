@@ -6,7 +6,7 @@ export const LoadingIndicator = styled(CircularProgress)(({ theme }) => ({
 }));
 
 export const LoadingBox = styled(Box)(({ theme }) => ({
-  backgroundColor: theme.palette.cruGrayLight.main,
+  backgroundColor: theme.palette.mpdxGrayLight.main,
   height: 300,
   minWidth: 700,
   margin: 'auto',

@@ -39,7 +39,7 @@ export const StyledSidebar = styled('nav', {
     duration: theme.transitions.duration.enteringScreen,
   }),
   overflow: 'hidden',
-  borderRight: open ? `1px solid ${theme.palette.cruGrayLight.main}` : 'none',
+  borderRight: open ? `1px solid ${theme.palette.mpdxGrayLight.main}` : 'none',
   [theme.breakpoints.down('sm')]: {
     position: 'absolute',
     top: multiPageHeaderHeight,

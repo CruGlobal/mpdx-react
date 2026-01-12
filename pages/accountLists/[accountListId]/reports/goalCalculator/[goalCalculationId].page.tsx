@@ -31,7 +31,7 @@ const RightPanelHeader = styled(Box)(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'space-between',
   padding: theme.spacing(1),
-  borderBottom: `1px solid ${theme.palette.cruGrayLight.main}`,
+  borderBottom: `1px solid ${theme.palette.mpdxGrayLight.main}`,
 }));
 
 const RightPanelTitle = styled(Typography)({

@@ -3,7 +3,7 @@ import { TextField } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
 export const ContactTagIcon = styled(TagIcon)(({ theme }) => ({
-  color: theme.palette.cruGrayMedium.main,
+  color: theme.palette.mpdxGrayMedium.main,
   marginRight: theme.spacing(1),
 }));
 

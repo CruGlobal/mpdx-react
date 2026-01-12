@@ -29,7 +29,7 @@ export const CustomDateField: React.FC<DesktopDateFieldProps> = (props) => {
           InputProps: {
             endAdornment: (
               <InputAdornment position="end">
-                <CalendarToday sx={{ color: 'cruGrayMedium' }} />
+                <CalendarToday sx={{ color: 'mpdxGrayMedium' }} />
               </InputAdornment>
             ),
           },

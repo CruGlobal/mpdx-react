@@ -25,7 +25,7 @@ const HeaderBarContactWrap = styled(Box)(() => ({
 }));
 
 const AppealInfoHeader = styled(Typography)(() => ({
-  color: theme.palette.cruGrayMedium.main,
+  color: theme.palette.mpdxGrayMedium.main,
 }));
 
 const AppealInfo = styled(Typography)(() => ({
@@ -44,7 +44,7 @@ const GridContainer = styled(Grid)(() => ({
   height: appealHeaderInfoHeight,
   paddingLeft: theme.spacing(2),
   paddingRight: theme.spacing(2),
-  borderBottom: `1px solid ${theme.palette.cruGrayLight.main}`,
+  borderBottom: `1px solid ${theme.palette.mpdxGrayLight.main}`,
 }));
 
 export type AppealHeaderInfoProps = {

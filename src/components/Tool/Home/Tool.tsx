@@ -21,7 +21,7 @@ const useStyles = makeStyles()(() => ({
     justifyContent: 'center',
     alignItems: 'center',
     height: '250px',
-    borderColor: theme.palette.cruGrayMedium.main,
+    borderColor: theme.palette.mpdxGrayMedium.main,
     '&:hover': {
       outline: '2px solid',
       outlineColor: theme.palette.mpdxBlue.main,
