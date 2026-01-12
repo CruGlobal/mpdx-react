@@ -25,7 +25,7 @@ const DeleteColumnButton = styled(IconButton)(() => ({
   color: theme.palette.error.main,
   padding: theme.spacing(1),
   '&:hover': {
-    backgroundColor: theme.palette.cruGrayLight.main,
+    backgroundColor: theme.palette.mpdxGrayLight.main,
     color: theme.palette.error.dark,
   },
 }));
@@ -221,7 +221,7 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
           position: 'relative',
           height: 'calc(100vh - 230px)',
           padding: 0,
-          background: theme.palette.cruGrayLight.main,
+          background: theme.palette.mpdxGrayLight.main,
           overflowY: 'auto',
         }}
       >
@@ -237,7 +237,7 @@ export const ContactFlowSetupColumn: React.FC<Props> = ({
             display="flex"
             data-testid="color-selector-box"
             justifyContent="center"
-            borderBottom={`1px solid ${theme.palette.cruGrayMedium.main}`}
+            borderBottom={`1px solid ${theme.palette.mpdxGrayMedium.main}`}
             style={{ backgroundColor: theme.palette.common.white }}
           >
             {Object.entries(colorMap).map(([colorKey, colorValue]) => (

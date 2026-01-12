@@ -114,7 +114,7 @@ const CsvValues: React.FC<CsvValuesProps> = ({
     <Card sx={{ minWidth: '340px' }}>
       <CardHeader
         sx={{
-          backgroundColor: theme.palette.cruGrayLight.main,
+          backgroundColor: theme.palette.mpdxGrayLight.main,
         }}
         title={t('Map your values')}
       />
@@ -242,7 +242,7 @@ const CsvValues: React.FC<CsvValuesProps> = ({
       </Table>
       <Box
         sx={{
-          backgroundColor: 'cruGrayLight.main',
+          backgroundColor: 'mpdxGrayLight.main',
           padding: '10px 15px',
           display: 'flex',
           justifyContent: 'space-between',
