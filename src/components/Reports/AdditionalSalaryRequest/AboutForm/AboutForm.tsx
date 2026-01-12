@@ -9,15 +9,18 @@ import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSa
 import { SpouseComponent } from '../SharedComponents/SpouseComponent';
 
 export const AboutForm: React.FC = () => {
-  const { currentStep } = useAdditionalSalaryRequest();
+  const { currentStep, requestData, user } = useAdditionalSalaryRequest();
   const { t } = useTranslation();
   const theme = useTheme();
 
-  // TODO: Replace with actual data from API/context
-  const name = 'Doc, John';
-  const accountNumber = '00123456';
-  const primaryAccountBalance = 20307.58;
-  const remainingAllowableSalary = 17500.0;
+  const { currentSalaryCap, staffAccountBalance } =
+    requestData?.additionalSalaryRequest?.calculations || {};
+
+  const name = user?.staffInfo?.preferredName ?? '';
+  const accountNumber = user?.staffInfo?.personNumber ?? '';
+  const primaryAccountBalance = staffAccountBalance ?? 0;
+  const remainingAllowableSalary =
+    (currentSalaryCap ?? 0) - (staffAccountBalance ?? 0);
 
   return (
     <AdditionalSalaryRequestSection title={getHeader(t, currentStep)}>

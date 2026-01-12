@@ -1,0 +1,104 @@
+fragment AdditionalSalaryRequestFields on AdditionalSalaryRequest {
+  id
+  currentYearSalaryNotReceived
+  previousYearSalaryNotReceived
+  phoneNumber
+  status
+  feedback
+  user {
+    id
+    firstName
+    lastName
+  }
+}
+
+fragment AdditionalSalaryRequestDetailsFields on AdditionalSalaryRequest {
+  ...AdditionalSalaryRequestFields
+  personNumber
+  additionalSalaryWithinMax
+  adoption
+  traditional403bContribution
+  roth403bContribution
+  counselingNonMedical
+  healthcareExpensesExceedingLimit
+  babysittingMinistryEvents
+  childrenMinistryTripExpenses
+  childrenCollegeEducation
+  movingExpense
+  seminary
+  housingDownPayment
+  autoPurchase
+  expensesNotApprovedWithin90Days
+  totalAdditionalSalaryRequested
+  deductTwelvePercent
+  traditional403bContributionRequested
+  usingSpouseSalary
+  phoneNumber
+  approvedAt
+  submittedAt
+  updatedAt
+  calculations {
+    currentSalaryCap
+    staffAccountBalance
+    predictedYearIncome
+    pendingAsrAmount
+    maxAmountAndReason {
+      amount
+      reason
+    }
+  }
+  spouseCalculations {
+    currentSalaryCap
+    staffAccountBalance
+  }
+}
+
+query AdditionalSalaryRequest($requestId: ID!) {
+  additionalSalaryRequest(id: $requestId) {
+    ...AdditionalSalaryRequestDetailsFields
+    createdAt
+  }
+}
+
+query AdditionalSalaryRequests {
+  additionalSalaryRequests {
+    nodes {
+      ...AdditionalSalaryRequestDetailsFields
+    }
+  }
+}
+
+mutation CreateAdditionalSalaryRequest(
+  $attributes: AdditionalSalaryRequestAttributesInput
+) {
+  createAdditionalSalaryRequest(input: { attributes: $attributes }) {
+    additionalSalaryRequest {
+      ...AdditionalSalaryRequestDetailsFields
+    }
+  }
+}
+
+mutation DeleteAdditionalSalaryRequest($id: ID!) {
+  deleteAdditionalSalaryRequest(input: { id: $id }) {
+    id
+  }
+}
+
+mutation SubmitAdditionalSalaryRequest($id: ID!) {
+  submitAdditionalSalaryRequest(input: { id: $id }) {
+    additionalSalaryRequest {
+      ...AdditionalSalaryRequestDetailsFields
+    }
+  }
+}
+
+mutation UpdateAdditionalSalaryRequest(
+  $id: ID!
+  $attributes: AdditionalSalaryRequestAttributesInput!
+) {
+  updateAdditionalSalaryRequest(input: { id: $id, attributes: $attributes }) {
+    additionalSalaryRequest {
+      ...AdditionalSalaryRequestDetailsFields
+    }
+  }
+}

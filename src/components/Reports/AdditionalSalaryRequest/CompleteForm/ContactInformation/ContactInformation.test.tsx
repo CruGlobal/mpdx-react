@@ -51,7 +51,7 @@ describe('ContactInformation', () => {
   it('displays telephone number from initial values', () => {
     const valuesWithPhone: CompleteFormValues = {
       ...defaultCompleteFormValues,
-      telephoneNumber: '555-1234',
+      phoneNumber: '555-1234',
     };
 
     const { getByLabelText } = render(
