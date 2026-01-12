@@ -58,7 +58,7 @@ export interface DonationTableProps {
 
 export const StyledGrid = styled(DataGrid)(({ theme }) => ({
   '.MuiDataGrid-row:nth-of-type(2n + 1):not(:hover)': {
-    backgroundColor: theme.palette.cruGrayLight.main,
+    backgroundColor: theme.palette.mpdxGrayLight.main,
   },
   '.MuiDataGrid-cell': {
     overflow: 'hidden',

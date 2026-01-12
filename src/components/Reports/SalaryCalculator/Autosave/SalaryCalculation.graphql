@@ -1,22 +1,14 @@
-fragment SalaryRequestFields on SalaryRequest {
-  effectiveDate
-  location
-  mhaAmount
-  spouseMhaAmount
-  salaryCap
-  spouseSalaryCap
-  salary
-  spouseSalary
-  status
-  phoneNumber
-  emailAddress
-}
-
 mutation UpdateSalaryCalculation($input: SalaryRequestUpdateMutationInput!) {
   updateSalaryRequest(input: $input) {
     salaryRequest {
       id
       ...SalaryRequestFields
+      calculations {
+        ...CalculationFields
+      }
+      spouseCalculations {
+        ...CalculationFields
+      }
     }
   }
 }

@@ -1,6 +1,7 @@
 import { Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { EffectiveDateStep } from './EffectiveDateStep/EffectiveDateStep';
+import { ReceiptStep } from './Receipt/Receipt';
 import { useSalaryCalculator } from './SalaryCalculatorContext/SalaryCalculatorContext';
 import { SummaryStep } from './Summary/Summary';
 import { YourInformationStep } from './YourInformation/YourInformation';
@@ -16,9 +17,7 @@ export const CurrentStep: React.FC = () => {
       {t('Salary Calculation')}
     </Typography>,
     <SummaryStep key="summary" />,
-    <Typography variant="h5" key="receipt">
-      {t('Receipt')}
-    </Typography>,
+    <ReceiptStep key="receipt" />,
   ];
 
   return steps[currentIndex] ?? null;

@@ -17,7 +17,7 @@ interface Props {
 }
 
 const StyledLocalAtmIcon = styled(LocalAtmIcon)(({ theme }) => ({
-  color: theme.palette.cruGrayDark.main,
+  color: theme.palette.mpdxGrayDark.main,
 }));
 
 export const EmptyDonationsTable: React.FC<Props> = ({ title }) => {

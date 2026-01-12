@@ -99,7 +99,7 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
                     sx={{
                       color: item.isActive
                         ? theme.palette.mpdxBlue.main
-                        : theme.palette.cruGrayDark.main,
+                        : theme.palette.mpdxGrayDark.main,
                     }}
                     onClick={item.onClick}
                   >

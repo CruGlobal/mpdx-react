@@ -3,6 +3,6 @@ import { styled } from '@mui/material/styles';
 
 export const StyledDialogContentText = styled(DialogContentText)(
   ({ theme }) => ({
-    color: theme.palette.cruGrayDark.main,
+    color: theme.palette.mpdxGrayDark.main,
   }),
 );
