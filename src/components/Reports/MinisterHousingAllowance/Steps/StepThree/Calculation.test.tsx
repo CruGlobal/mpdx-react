@@ -419,8 +419,8 @@ describe('Calculation', () => {
         );
       });
 
-      it('should disable checkbox when user is not eligible', async () => {
-        const { findByRole } = render(
+      it('should block checkbox update when user is not eligible', async () => {
+        const { findByRole, findByText } = render(
           <TestComponent
             contextValue={{
               pageType: PageEnum.New,
@@ -437,7 +437,18 @@ describe('Calculation', () => {
           name: /i understand that my approved/i,
         });
 
-        expect(checkbox).toBeDisabled();
+        userEvent.click(checkbox);
+
+        // Should show error message and not trigger mutation
+        expect(
+          await findByText(
+            'You are not eligible to make changes to this request.',
+          ),
+        ).toBeInTheDocument();
+
+        await waitFor(() => {
+          expect(updateMutation).not.toHaveBeenCalled();
+        });
       });
     });
   });

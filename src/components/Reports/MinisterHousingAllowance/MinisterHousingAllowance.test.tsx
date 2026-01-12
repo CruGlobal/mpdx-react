@@ -190,7 +190,20 @@ describe('MinisterHousingAllowanceReport', () => {
       await findByText('John Doe');
 
       const button = getByRole('button', { name: 'Request New MHA' });
-      expect(button).toBeDisabled();
+      userEvent.click(button);
+
+      // Should show error message and not trigger mutation
+      expect(
+        await findByText(
+          'You are not eligible to make changes to this request.',
+        ),
+      ).toBeInTheDocument();
+
+      await waitFor(() => {
+        expect(mutationSpy).not.toHaveGraphqlOperation(
+          'CreateHousingAllowanceRequest',
+        );
+      });
     });
   });
 });

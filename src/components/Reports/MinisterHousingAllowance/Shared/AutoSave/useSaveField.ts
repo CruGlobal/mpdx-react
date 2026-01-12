@@ -78,6 +78,9 @@ export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
       updateMinistryHousingAllowanceRequest,
       requestData,
       userEligibleForMHA,
+      enqueueSnackbar,
+      t,
+      values,
     ],
   );
 

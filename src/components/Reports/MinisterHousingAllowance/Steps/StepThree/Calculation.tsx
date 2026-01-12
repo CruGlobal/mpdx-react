@@ -259,7 +259,6 @@ export const Calculation: React.FC<CalculationProps> = ({
                         </SvgIcon>
                       }
                       onClick={handlePrint}
-                      disabled={!userEligibleForMHA}
                     >
                       {t('Print')}
                     </StyledPrintButton>
@@ -333,7 +332,6 @@ export const Calculation: React.FC<CalculationProps> = ({
                         onChange={handleOnChange}
                         onBlur={handleBlur}
                         name="iUnderstandMhaPolicy"
-                        disabled={!userEligibleForMHA}
                       />
                     }
                     label={t(

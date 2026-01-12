@@ -154,7 +154,6 @@ export const RentOwn: React.FC = () => {
         <FormControl
           component="fieldset"
           error={touched.rentOrOwn && Boolean(errors.rentOrOwn)}
-          disabled={!userEligibleForMHA}
         >
           <RadioGroup
             name="rentOrOwn"

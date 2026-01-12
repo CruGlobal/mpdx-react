@@ -13,7 +13,6 @@ interface DirectionButtonsProps {
   actionRequired?: boolean;
   overrideNext?: () => void;
   showBackButton?: boolean;
-  disabled?: boolean;
   //Formik validation for submit modal
   isSubmission?: boolean;
   submitForm?: () => Promise<void>;
@@ -36,7 +35,6 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
   isValid,
   deadlineDate,
   actionRequired,
-  disabled = false,
 }) => {
   const { t } = useTranslation();
 
@@ -93,7 +91,6 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
               fontWeight: 'bold',
             }}
             onClick={handlePreviousStep}
-            disabled={disabled}
           >
             <ChevronLeft sx={{ mr: 1 }} />
             {t('Back')}
@@ -104,7 +101,7 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
             variant="contained"
             color="primary"
             onClick={handleSubmit}
-            disabled={submitCount ? !isValid || disabled : disabled}
+            disabled={submitCount ? !isValid : false}
           >
             {t('Submit')}
             <ChevronRight sx={{ ml: 1 }} />
@@ -114,7 +111,6 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
             variant="contained"
             color="primary"
             onClick={overrideNext ?? handleNextStep}
-            disabled={disabled}
           >
             {buttonTitle ?? t('Continue')}
             <ChevronRight sx={{ ml: 1 }} />

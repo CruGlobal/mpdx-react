@@ -156,7 +156,6 @@ export const MinisterHousingAllowanceReport = () => {
                   color="primary"
                   sx={{ mt: 2 }}
                   onClick={onCreateMHARequest}
-                  disabled={!userEligibleForMHA}
                 >
                   {t('Request New MHA')}
                 </Button>
