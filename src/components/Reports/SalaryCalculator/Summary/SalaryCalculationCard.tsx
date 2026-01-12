@@ -30,10 +30,12 @@ export const SalaryCalculationCard: React.FC = () => {
           <TableHead>
             <TableRow>
               <TableCell scope="col">{t('Category')}</TableCell>
-              <TableCell scope="col">{hcmUser?.staffInfo.firstName}</TableCell>
+              <TableCell scope="col">
+                {hcmUser?.staffInfo.preferredName}
+              </TableCell>
               {hasSpouse && (
                 <TableCell scope="col">
-                  {hcmSpouse.staffInfo.firstName}
+                  {hcmSpouse.staffInfo.preferredName}
                 </TableCell>
               )}
             </TableRow>
@@ -173,10 +175,10 @@ export const SalaryCalculationCard: React.FC = () => {
               <TableCell scope="row" className="sub-item">
                 d. {t('1.00 minus 403(b) percentage')}
               </TableCell>
-              <TableCell>{formatFraction(calcs?.non403bFraction)}</TableCell>
+              <TableCell>{formatDecimal(calcs?.non403bFraction)}</TableCell>
               {hasSpouse && (
                 <TableCell>
-                  {formatFraction(spouseCalcs.non403bFraction)}
+                  {formatDecimal(spouseCalcs.non403bFraction)}
                 </TableCell>
               )}
             </TableRow>

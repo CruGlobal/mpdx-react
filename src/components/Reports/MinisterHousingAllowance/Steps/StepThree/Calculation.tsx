@@ -28,6 +28,7 @@ import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import i18n from 'src/lib/i18n';
 import { dateFormatShort } from 'src/lib/intlFormat';
+import { phoneNumber } from 'src/lib/yupHelpers';
 import { DirectionButtons } from '../../../Shared/CalculationReports/DirectionButtons/DirectionButtons';
 import { useSubmitMinistryHousingAllowanceRequestMutation } from '../../MinisterHousingAllowance.generated';
 import { hasPopulatedValues } from '../../Shared/Context/Helper/hasPopulatedValues';
@@ -83,16 +84,9 @@ const getValidationSchema = (rentOrOwn?: MhaRentOrOwnEnum) => {
       .number()
       .moreThan(0, i18n.t('Must be greater than $0.'))
       .required(i18n.t('Required field.')),
-    phoneNumber: yup
-      .string()
-      .test('is-phone-number', i18n.t('Invalid phone number.'), (val) => {
-        if (!val) {
-          return false;
-        }
-        const cleaned = val.replace(/\D/g, '');
-        return /^1?\d{10}$/.test(cleaned);
-      })
-      .required(i18n.t('Phone Number is required.')),
+    phoneNumber: phoneNumber(i18n.t).required(
+      i18n.t('Phone Number is required.'),
+    ),
     emailAddress: yup
       .string()
       .email(i18n.t('Invalid email address.'))

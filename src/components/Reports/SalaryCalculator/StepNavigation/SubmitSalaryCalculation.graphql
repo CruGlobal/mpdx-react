@@ -1,0 +1,8 @@
+mutation SubmitSalaryCalculation($input: SalaryRequestSubmitMutationInput!) {
+  submitSalaryRequest(input: $input) {
+    salaryRequest {
+      id
+      ...SalaryRequestFields
+    }
+  }
+}

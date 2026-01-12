@@ -71,8 +71,9 @@ export const RequestedSalarySection: React.FC = () => {
             <Trans t={t}>
               Because of IRS and Cru requirements, the lowest salary you can
               request is {{ minimumSalary }} ({formula}) for{' '}
-              {{ name: self.staffInfo.firstName }} and {{ spouseMinimumSalary }}{' '}
-              ({formula}) for {{ spouseName: spouse.staffInfo.firstName }}.
+              {{ name: self.staffInfo.preferredName }} and{' '}
+              {{ spouseMinimumSalary }} ({formula}) for{' '}
+              {{ spouseName: spouse.staffInfo.preferredName }}.
             </Trans>
           ) : (
             <Trans t={t}>

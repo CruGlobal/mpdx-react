@@ -21,10 +21,11 @@ export const StaffInfoSummaryCard: React.FC = () => {
   const { data: userData } = useGetUserQuery();
 
   const name =
-    hcmUser && `${hcmUser.staffInfo.firstName} ${hcmUser.staffInfo.lastName}`;
+    hcmUser &&
+    `${hcmUser.staffInfo.preferredName} ${hcmUser.staffInfo.lastName}`;
   const spouseName =
     hcmSpouse &&
-    `${hcmSpouse.staffInfo.firstName} ${hcmSpouse.staffInfo.lastName}`;
+    `${hcmSpouse.staffInfo.preferredName} ${hcmSpouse.staffInfo.lastName}`;
   const fullNames = spouseName
     ? t('{{ name }} and {{ spouseName }}', { name, spouseName })
     : name;
