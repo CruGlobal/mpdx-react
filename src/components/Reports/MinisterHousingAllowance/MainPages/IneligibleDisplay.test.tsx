@@ -6,8 +6,10 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { HcmDataQuery } from '../../Shared/HcmData/HCMData.generated';
 import {
+  marriedBothIneligible,
   marriedSpouseIneligible,
-  singleNoMhaNoException,
+  marriedUserIneligible,
+  singleIneligible,
 } from '../../Shared/HcmData/mockData';
 import { MinistryHousingAllowanceRequestsQuery } from '../MinisterHousingAllowance.generated';
 import { MinisterHousingAllowanceProvider } from '../Shared/Context/MinisterHousingAllowanceContext';
@@ -46,9 +48,9 @@ const TestComponent: React.FC<TestComponentProps> = ({ hcmMock }) => {
 };
 
 describe('IneligibleDisplay', () => {
-  it('should render page with single staff', async () => {
-    const { findByRole, findByText, queryByText } = render(
-      <TestComponent hcmMock={singleNoMhaNoException} />,
+  it('should render page with single ineligible staff', async () => {
+    const { findByRole, findByText, findByTestId } = render(
+      <TestComponent hcmMock={singleIneligible} />,
     );
 
     expect(
@@ -59,21 +61,36 @@ describe('IneligibleDisplay', () => {
         /our records indicate that you have not applied for minister's housing allowance/i,
       ),
     ).toBeInTheDocument();
-    expect(
-      queryByText(/Jane has not completed the required ibs courses/i),
-    ).not.toBeInTheDocument();
+    expect(await findByTestId('user-ineligible-message')).toBeInTheDocument();
   });
 
   it('should render page with married staff and ineligible spouse', async () => {
-    const { findByRole, findByText } = render(
+    const { findByRole, findByTestId, queryByTestId } = render(
       <TestComponent hcmMock={marriedSpouseIneligible} />,
     );
 
     expect(
       await findByRole('heading', { name: 'Your MHA' }),
     ).toBeInTheDocument();
-    expect(
-      await findByText(/Jane has not completed the required ibs courses/i),
-    ).toBeInTheDocument();
+    expect(await findByTestId('spouse-ineligible-message')).toBeInTheDocument();
+    expect(queryByTestId('user-ineligible-message')).not.toBeInTheDocument();
+  });
+
+  it('should render page with married staff and ineligible user', async () => {
+    const { findByTestId, queryByTestId } = render(
+      <TestComponent hcmMock={marriedUserIneligible} />,
+    );
+
+    expect(await findByTestId('user-ineligible-message')).toBeInTheDocument();
+    expect(queryByTestId('spouse-ineligible-message')).not.toBeInTheDocument();
+  });
+
+  it('should render page with both married staff ineligible', async () => {
+    const { findByTestId } = render(
+      <TestComponent hcmMock={marriedBothIneligible} />,
+    );
+
+    expect(await findByTestId('user-ineligible-message')).toBeInTheDocument();
+    expect(await findByTestId('spouse-ineligible-message')).toBeInTheDocument();
   });
 });

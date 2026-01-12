@@ -76,16 +76,14 @@ describe('MinisterHousingAllowanceReport', () => {
   });
 
   it('renders married with ineligible spouse, no approved requests', async () => {
-    const { findByText } = render(
+    const { findByText, findByTestId } = render(
       <TestComponent hcmMock={marriedSpouseIneligible} mhaRequestsMock={[]} />,
     );
 
     expect(
       await findByText(/our records indicate that you have not applied for/i),
     ).toBeInTheDocument();
-    expect(
-      await findByText(/will submit the request for john. jane has not/i),
-    ).toBeInTheDocument();
+    expect(await findByTestId('spouse-ineligible-message')).toBeInTheDocument();
     expect(await findByText('John Doe and Jane Doe')).toBeInTheDocument();
   });
 
