@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import { AddHomeSharp } from '@mui/icons-material';
 import {
   Timeline,
@@ -28,6 +29,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const accountListId = useAccountListId();
+  const router = useRouter();
   const currency = 'USD';
   const { enqueueSnackbar } = useSnackbar();
 
@@ -81,6 +83,11 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
     });
   };
 
+  const handlePrint = async () => {
+    await router.push(getRequestUrl(accountListId, requestId, 'view'));
+    setTimeout(() => window.print(), 500);
+  };
+
   return (
     <StatusCard
       formType={t('MHA Request')}
@@ -94,6 +101,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
       hideLinkTwoButton={hideEditButton}
       isRequest={true}
       handleConfirmCancel={handleCancelRequest}
+      handlePrint={handlePrint}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         {status === MhaStatusEnum.Pending && (

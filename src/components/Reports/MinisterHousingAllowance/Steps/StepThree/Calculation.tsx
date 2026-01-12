@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { OpenInNew } from '@mui/icons-material';
 import PrintIcon from '@mui/icons-material/Print';
@@ -128,9 +127,6 @@ export const Calculation: React.FC<CalculationProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
   const { enqueueSnackbar } = useSnackbar();
-  const router = useRouter();
-  const { query } = router;
-  const print = query.print === 'true';
 
   const [submitMutation] = useSubmitMinistryHousingAllowanceRequestMutation();
 
@@ -139,8 +135,6 @@ export const Calculation: React.FC<CalculationProps> = ({
     handlePreviousStep,
     pageType,
     setHasCalcValues,
-    setIsPrint,
-    isPrint,
     requestData,
     loading,
     updateMutation,
@@ -217,10 +211,6 @@ export const Calculation: React.FC<CalculationProps> = ({
     ? t(`approval effective ${availableDateFormatted}`)
     : t('approval soon');
 
-  useEffect(() => {
-    setIsPrint(print);
-  }, [print, setIsPrint]);
-
   const schema = getValidationSchema(rentOrOwn);
 
   if (loading) {
@@ -280,7 +270,8 @@ export const Calculation: React.FC<CalculationProps> = ({
                     ? t('Your MHA Request')
                     : t('Calculate Your MHA Request')}
                 </Typography>
-                {isPrint && (
+
+                {isViewPage && (
                   <SimpleScreenOnly>
                     <StyledPrintButton
                       startIcon={
@@ -319,7 +310,7 @@ export const Calculation: React.FC<CalculationProps> = ({
                 )}
               </Trans>
             )}
-            {!isPrint && (
+            <SimpleScreenOnly>
               <Box sx={{ mt: 2, mb: 3 }}>
                 <OpenInNew
                   fontSize="medium"
@@ -329,7 +320,7 @@ export const Calculation: React.FC<CalculationProps> = ({
                   What expenses can I claim on my MHA?
                 </Link>
               </Box>
-            )}
+            </SimpleScreenOnly>
             {isViewPage && (
               <Box mb={3}>
                 <RequestSummaryCard rentOrOwn={rentOrOwn} />

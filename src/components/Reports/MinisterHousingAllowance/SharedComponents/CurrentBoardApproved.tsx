@@ -71,6 +71,14 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
     });
   };
 
+  const handlePrint = async () => {
+    if (!requestId) {
+      return;
+    }
+    await router.push(getRequestUrl(accountListId, requestId, 'view'));
+    setTimeout(() => window.print(), 500);
+  };
+
   return (
     <StatusCard
       formType={t('MHA Request')}
@@ -83,6 +91,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
       linkTwoText={t('Update Current MHA')}
       handleLinkTwo={handleDuplicateRequest}
       isRequest={false}
+      handlePrint={handlePrint}
       handleConfirmCancel={() => {}}
       styling={{ p: 0 }}
     >

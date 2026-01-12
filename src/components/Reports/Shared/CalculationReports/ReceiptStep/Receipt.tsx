@@ -1,4 +1,5 @@
 import NextLink from 'next/link';
+import { useRouter } from 'next/router';
 import { Dispatch, SetStateAction } from 'react';
 import { Edit, PrintSharp } from '@mui/icons-material';
 import { Alert, Box, Button, Link, Typography } from '@mui/material';
@@ -32,6 +33,7 @@ export const Receipt: React.FC<ReceiptProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const router = useRouter();
 
   const available = availableDate
     ? dateFormatShort(DateTime.fromISO(availableDate), locale)
@@ -46,7 +48,15 @@ export const Receipt: React.FC<ReceiptProps> = ({
     ? t(`approval effective ${available}`)
     : t('approval soon');
 
-  const printLink = `${viewLink}&print=true`;
+  const handlePrint = async () => {
+    if (!viewLink) {
+      return;
+    }
+
+    setIsComplete?.(true);
+    await router.push(viewLink);
+    setTimeout(() => window.print(), 500);
+  };
 
   return (
     <Box>
@@ -91,11 +101,7 @@ export const Receipt: React.FC<ReceiptProps> = ({
           fontSize="small"
           sx={{ verticalAlign: 'middle', opacity: 0.56 }}
         />{' '}
-        <Link
-          component={NextLink}
-          href={printLink ?? ''}
-          onClick={() => setIsComplete && setIsComplete(true)}
-        >
+        <Link onClick={handlePrint} sx={{ cursor: 'pointer' }}>
           {t(`Print a copy of your submitted ${formTitle}`)}
         </Link>
       </Box>
