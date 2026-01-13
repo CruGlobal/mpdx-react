@@ -10,9 +10,9 @@ import {
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
-import { AutosaveTextField } from '../Autosave/AutosaveTextField';
-import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
-import { StepCard } from '../Shared/StepCard';
+import { AutosaveTextField } from '../../Autosave/AutosaveTextField';
+import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
+import { StepCard } from '../../Shared/StepCard';
 import { useMhaRequestData } from './useMhaRequestData';
 
 const StyledNameHeadersBox = styled(Box)(({ theme }) => ({

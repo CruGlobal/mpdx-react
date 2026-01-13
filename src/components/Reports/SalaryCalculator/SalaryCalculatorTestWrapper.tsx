@@ -1,6 +1,6 @@
 import { ThemeProvider } from '@emotion/react';
 import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
-import { defaultsDeep } from 'lodash';
+import { merge } from 'lodash';
 import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
@@ -72,8 +72,10 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
 export const hcmUserMock = hcmMock[0];
 export const hcmSpouseMock = hcmMock[1];
 
+type SalaryRequestMock = DeepPartial<SalaryCalculationQuery['salaryRequest']>;
+
 export interface SalaryCalculatorTestWrapperProps {
-  salaryRequestMock?: DeepPartial<SalaryCalculationQuery['salaryRequest']>;
+  salaryRequestMock?: SalaryRequestMock;
   onCall?: MockLinkCallHandler;
   children?: React.ReactNode;
   hasSpouse?: boolean;
@@ -104,14 +106,18 @@ export const SalaryCalculatorTestWrapper: React.FC<
             hcm: hasSpouse ? [hcmUserMock, hcmSpouseMock] : [hcmUserMock],
           },
           SalaryCalculation: {
-            salaryRequest: defaultsDeep(salaryRequestMock ?? {}, {
-              id: 'salary-request-1',
-              calculations: {
-                individualCap: 80000,
-                familyCap: 125000,
-                hardCap: 80000,
-              },
-            }),
+            salaryRequest: merge(
+              {
+                id: 'salary-request-1',
+                calculations: {
+                  individualCap: 80000,
+                  familyCap: 125000,
+                  hardCap: 80000,
+                },
+              } satisfies SalaryRequestMock,
+              salaryRequestMock,
+              hasSpouse ? undefined : { spouseCalculations: null },
+            ) as NonNullable<SalaryRequestMock>,
           },
         }}
         onCall={onCall}

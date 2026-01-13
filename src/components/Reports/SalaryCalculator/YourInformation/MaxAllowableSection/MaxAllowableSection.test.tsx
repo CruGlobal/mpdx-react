@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import {
   SalaryCalculatorTestWrapper,
   SalaryCalculatorTestWrapperProps,
-} from '../SalaryCalculatorTestWrapper';
+} from '../../SalaryCalculatorTestWrapper';
 import { MaxAllowableStep } from './MaxAllowableSection';
 
 const mutationSpy = jest.fn();

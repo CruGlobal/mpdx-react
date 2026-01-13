@@ -4,7 +4,7 @@ import * as yup from 'yup';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { amount } from 'src/lib/yupHelpers';
-import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
+import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
 
 export const useMhaRequestData = () => {
   const { t } = useTranslation();
