@@ -14,7 +14,7 @@ import {
   styled,
   useTheme,
 } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
 import { StepCard } from '../../Shared/StepCard';
 import { useApprovers } from '../../Shared/useApprovers';
@@ -100,34 +100,35 @@ export const RequestedSummaryCard: React.FC = () => {
   ];
 
   const combinedModifier = hasSpouse ? t('Combined') : '';
+  const overCapName = userOverCap
+    ? hcmUser?.staffInfo.preferredName
+    : hcmSpouse?.staffInfo.preferredName;
+  const overCapSalary = formatCurrency(
+    userOverCap ? calcs.requestedGross : spouseCalcs?.requestedGross,
+  );
   const statusMessage =
-    !overCap && !userOverCap && !spouseOverCap
-      ? t('Your gross request is within your Maximum Allowable Salary.')
-      : overCap
-        ? t(
-            'Your {{ combined }} Gross Requested Salary exceeds your {{ combined }} Maximum Allowable Salary. \
-Please make adjustments to your Salary Request above \
-or fill out the Approval Process Section below to request a higher amount through our Progressive Approvals process. \
-This may take [time frame] as it needs to be signed off by {{ approvers }}. \
-This may affect your selected effective date.',
-            { combined: combinedModifier, approvers },
-          )
-        : t(
-            "Your Combined Gross Requested Salary is within your Combined Maximum Allowable Salary. \
-However, {{ name }}'s Gross Requested Salary exceeds his individual Maximum Allowable Salary. \
-If this is correct, please provide reasoning for why {{ name }}'s Salary should exceed {{ salary }} in the Additional Information section below \
-or make changes to how your Requested Salary is distributed above.",
-            {
-              name: userOverCap
-                ? hcmUser?.staffInfo.preferredName
-                : hcmSpouse?.staffInfo.preferredName,
-              salary: formatCurrency(
-                userOverCap
-                  ? calcs.requestedGross
-                  : spouseCalcs?.requestedGross,
-              ),
-            },
-          );
+    !overCap && !userOverCap && !spouseOverCap ? (
+      t('Your gross request is within your Maximum Allowable Salary.')
+    ) : overCap ? (
+      <Trans t={t}>
+        Your {{ combined: combinedModifier }} Gross Requested Salary exceeds
+        your {{ combined: combinedModifier }} Maximum Allowable Salary. Please
+        make adjustments to your Salary Request above or fill out the Approval
+        Process Section below to request a higher amount through our Progressive
+        Approvals process. This may take [time frame] as it needs to be signed
+        off by {{ approvers }}. This may affect your selected effective date.
+      </Trans>
+    ) : (
+      <Trans t={t}>
+        Your Combined Gross Requested Salary is within your Combined Maximum
+        Allowable Salary. However, {{ name: overCapName }}
+        &apos;s Gross Requested Salary exceeds his individual Maximum Allowable
+        Salary. If this is correct, please provide reasoning for why{' '}
+        {{ name: overCapName }}&apos;s Salary should exceed{' '}
+        {{ salary: overCapSalary }} in the Additional Information section below
+        or make changes to how your Requested Salary is distributed above.
+      </Trans>
+    );
 
   const requestedVsMaxId = useId();
   const remainingId = useId();
