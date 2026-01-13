@@ -1,33 +1,45 @@
 query HcmData {
   hcm {
     staffInfo {
-      id
-      personNumber
-      firstName
-      lastName
-      preferredName
-      age
-      tenure
       addressLine1
       addressLine2
+      age
+      assignmentCategory
+      assignmentId
+      assignmentLength
+      assignmentStatus
+      boardCapException
       city
-      state
-      zipCode
       country
       dependentChildrenWithHealthcareBenefits
-      secaStatus
       emailAddress
-      primaryPhoneNumber
-      assignmentId
-      userPersonType
+      firstName
+      id
+      isInternational
+      lastName
+      maritalStatus
       peopleGroupSupportType
-      assignmentStatus
-      assignmentCategory
+      personNumber
+      preferredName
+      primaryPhoneNumber
+      secaStatus
+      state
+      tenure
+      userPersonType
+      zipCode
     }
-    mhaRequest {
-      currentApprovedOverallAmount
-      lastUpdatedDate
-      currentApprovedAmountForStaff
+    yearToDate {
+      additionalSalaryPaymentsReceived
+      bonus
+      grossEarnings
+      preTaxFourOThreeBContributions
+      rothFourOThreeBContributions
+      taxableDeductions
+    }
+    currentSalary {
+      grossSalaryAmount
+      lastRegularPaymentDate
+      lastUpdated
     }
     exceptionSalaryCap {
       amount
@@ -35,13 +47,19 @@ query HcmData {
       exceptionApprover
     }
     fourOThreeB {
-      currentTaxDeferredContributionPercentage
       currentRothContributionPercentage
+      currentTaxDeferredContributionPercentage
+      fourOThreeBMakeUpLimitAmount
       maximumContributionLimit
     }
-    currentSalary {
-      lastUpdated
-      grossSalaryAmount
+    mhaEit {
+      mhaEligibility
+    }
+    mhaRequest {
+      boardApprovedOnDate
+      currentApprovedOverallAmount
+      currentTakenAmount
+      lastUpdatedDate
     }
   }
 }
