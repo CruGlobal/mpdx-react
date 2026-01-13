@@ -9,13 +9,15 @@ import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSa
 import { SpouseComponent } from '../SharedComponents/SpouseComponent';
 
 export const AboutForm: React.FC = () => {
-  const { currentStep } = useAdditionalSalaryRequest();
+  const { currentStep, hcmUser } = useAdditionalSalaryRequest();
   const { t } = useTranslation();
   const theme = useTheme();
 
+  const { staffInfo } = hcmUser || {};
+
   // TODO: Replace with actual data from API/context
-  const name = 'Doc, John';
-  const accountNumber = '00123456';
+  const name = staffInfo?.preferredName ?? '';
+  const accountNumber = staffInfo?.personNumber ?? '';
   const primaryAccountBalance = 20307.58;
   const remainingAllowableSalary = 17500.0;
 
