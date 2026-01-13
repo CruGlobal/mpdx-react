@@ -24,6 +24,10 @@ const johnDoe: StaffInfo = {
   peopleGroupSupportType: null,
   assignmentStatus: null,
   assignmentCategory: null,
+  assignmentLength: null,
+  boardCapException: null,
+  isInternational: null,
+  maritalStatus: null,
 };
 
 const janeDoe: StaffInfo = {
@@ -41,10 +45,19 @@ const janeDoe: StaffInfo = {
 
 const noMhaAndNoException: HcmDataQuery['hcm'][0] = {
   staffInfo: johnDoe,
+  yearToDate: {
+    additionalSalaryPaymentsReceived: null,
+    bonus: null,
+    grossEarnings: null,
+    preTaxFourOThreeBContributions: null,
+    rothFourOThreeBContributions: null,
+    taxableDeductions: null,
+  },
   mhaRequest: {
+    boardApprovedOnDate: null,
     currentApprovedOverallAmount: null,
     lastUpdatedDate: null,
-    currentApprovedAmountForStaff: null,
+    currentTakenAmount: null,
   },
   exceptionSalaryCap: {
     amount: null,
@@ -54,20 +67,26 @@ const noMhaAndNoException: HcmDataQuery['hcm'][0] = {
   fourOThreeB: {
     currentTaxDeferredContributionPercentage: 6,
     currentRothContributionPercentage: 4,
+    fourOThreeBMakeUpLimitAmount: null,
     maximumContributionLimit: 19500,
   },
   currentSalary: {
     lastUpdated: '2023-04-01',
     grossSalaryAmount: 60000,
+    lastRegularPaymentDate: null,
+  },
+  mhaEit: {
+    mhaEligibility: true,
   },
 };
 
 const mhaAndNoException: HcmDataQuery['hcm'][0] = {
   ...noMhaAndNoException,
   mhaRequest: {
+    boardApprovedOnDate: '2022-12-01',
     currentApprovedOverallAmount: 15000,
     lastUpdatedDate: '2023-01-15',
-    currentApprovedAmountForStaff: 10000,
+    currentTakenAmount: 10000,
   },
 };
 
