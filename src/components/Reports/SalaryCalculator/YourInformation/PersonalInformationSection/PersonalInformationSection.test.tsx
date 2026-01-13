@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
-import { SalaryCalculatorTestWrapper } from '../SalaryCalculatorTestWrapper';
+import { SalaryCalculatorTestWrapper } from '../../SalaryCalculatorTestWrapper';
 import { PersonalInformationSection } from './PersonalInformationSection';
 
 const TestComponent: React.FC<{ hasSpouse?: boolean }> = ({ hasSpouse }) => (
