@@ -16,28 +16,22 @@ query Hcm {
       assignmentStatus
       primaryPhoneNumber
       emailAddress
-      isInternational
     }
     currentSalary {
       grossSalaryAmount
       lastUpdated
-      lastRegularPaymentDate
     }
     fourOThreeB {
       currentRothContributionPercentage
       currentTaxDeferredContributionPercentage
-      fourOThreeBMakeUpLimitAmount
       maximumContributionLimit
     }
     mhaRequest {
-      boardApprovedOnDate
       currentApprovedOverallAmount
       currentTakenAmount
-      lastUpdatedDate
     }
     exceptionSalaryCap {
       amount
-      effectiveDate
       exceptionApprover
     }
   }
