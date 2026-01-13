@@ -59,9 +59,8 @@ export const AppealsWrapper: React.FC<Props> = ({ children }) => {
           data.userOptions.find((option) => option.key === 'contacts_view')
             ?.value,
         );
-        if (defaultView) {
-          setViewMode(defaultView);
-        }
+        // Always set a view mode, defaulting to Flows if preference is invalid
+        setViewMode(defaultView ?? TableViewModeEnum.Flows);
       });
     }
   }, [viewMode]);
