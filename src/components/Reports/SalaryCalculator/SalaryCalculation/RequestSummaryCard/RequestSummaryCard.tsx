@@ -2,7 +2,6 @@ import React, { useId } from 'react';
 import InfoIcon from '@mui/icons-material/Info';
 import {
   CardContent,
-  CardHeader,
   Stack,
   Table,
   TableBody,
@@ -19,17 +18,12 @@ import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalcula
 import { StepCard } from '../../Shared/StepCard';
 import { useApprovers } from '../../Shared/useApprovers';
 import { useFormatters } from '../../Shared/useFormatters';
+import { StyledCardHeader } from '../StyledCardHeader';
 import { useCaps } from '../useCaps';
 import { CardTitle } from './CardTitle';
 import { Category } from './Category';
 import { Distribution } from './Distribution';
 import { Legend } from './Legend';
-
-const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  gap: theme.spacing(1),
-}));
 
 const SummaryTable = styled(Table)(({ theme }) => ({
   'tr.total': {

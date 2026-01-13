@@ -1,0 +1,79 @@
+import { render, waitFor } from '@testing-library/react';
+import {
+  SalaryCalculatorTestWrapper,
+  SalaryCalculatorTestWrapperProps,
+} from '../../SalaryCalculatorTestWrapper';
+import { AdditionalInfoCard } from './AdditionalInfoCard';
+
+const TestComponent: React.FC<SalaryCalculatorTestWrapperProps> = (props) => (
+  <SalaryCalculatorTestWrapper {...props}>
+    <AdditionalInfoCard />
+  </SalaryCalculatorTestWrapper>
+);
+
+describe('AdditionalInfoCard', () => {
+  it('renders nothing when not over cap', async () => {
+    const { queryByRole } = render(<TestComponent />);
+
+    await waitFor(() => expect(queryByRole('textbox')).not.toBeInTheDocument());
+  });
+
+  describe('user over cap', () => {
+    it('renders status message and textfield', async () => {
+      const { getByRole, findByTestId } = render(
+        <TestComponent
+          salaryRequestMock={{
+            calculations: { requestedGross: 40000 },
+            spouseCalculations: { effectiveCap: 50000 },
+          }}
+        />,
+      );
+
+      expect(await findByTestId('AdditionalInfoCard-status')).toHaveTextContent(
+        "John's Gross Requested Salary exceeds their individual Maximum Allowable Salary. \
+If this is correct, please provide reasoning for why John's Salary should exceed $40,000.00 or make changes to your Requested Salary above.",
+      );
+      expect(
+        getByRole('textbox', { name: 'Additional info' }),
+      ).toBeInTheDocument();
+    });
+  });
+
+  describe('spouse over cap', () => {
+    it('renders status message and textfield', async () => {
+      const { getByRole, findByTestId } = render(
+        <TestComponent
+          salaryRequestMock={{
+            calculations: { effectiveCap: 50000 },
+            spouseCalculations: { requestedGross: 40000 },
+          }}
+        />,
+      );
+
+      expect(await findByTestId('AdditionalInfoCard-status')).toHaveTextContent(
+        "Jane's Gross Requested Salary exceeds their individual Maximum Allowable Salary. \
+If this is correct, please provide reasoning for why Jane's Salary should exceed $40,000.00 or make changes to your Requested Salary above.",
+      );
+      expect(
+        getByRole('textbox', { name: 'Additional info' }),
+      ).toBeInTheDocument();
+    });
+  });
+
+  describe('combined over cap', () => {
+    it('renders status message and textfield', async () => {
+      const { getByRole, findByTestId } = render(
+        <TestComponent
+          salaryRequestMock={{ calculations: { requestedGross: 100_000 } }}
+        />,
+      );
+
+      expect(await findByTestId('AdditionalInfoCard-status')).toHaveTextContent(
+        "Since you are requesting above your and Jane's combined Maximum Allowable Salary, you will need to provide the information below.",
+      );
+      expect(
+        getByRole('textbox', { name: 'Additional info' }),
+      ).toBeInTheDocument();
+    });
+  });
+});
