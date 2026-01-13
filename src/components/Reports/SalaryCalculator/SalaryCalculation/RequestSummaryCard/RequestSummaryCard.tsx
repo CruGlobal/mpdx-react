@@ -56,7 +56,7 @@ const SummaryTable = styled(Table)(({ theme }) => ({
   },
 }));
 
-export const RequestedSummaryCard: React.FC = () => {
+export const RequestSummaryCard: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
   const { calculation, hcmUser, hcmSpouse } = useSalaryCalculator();

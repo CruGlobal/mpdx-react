@@ -6,7 +6,7 @@ import {
   SalaryCalculatorTestWrapper,
   SalaryCalculatorTestWrapperProps,
 } from '../../SalaryCalculatorTestWrapper';
-import { RequestedSummaryCard } from './RequestSummaryCard';
+import { RequestSummaryCard } from './RequestSummaryCard';
 
 const defaultSalaryMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> =
   {
@@ -31,7 +31,7 @@ const TestComponent: React.FC<SalaryCalculatorTestWrapperProps> = (props) => (
     {...props}
     salaryRequestMock={merge({}, defaultSalaryMock, props.salaryRequestMock)}
   >
-    <RequestedSummaryCard />
+    <RequestSummaryCard />
   </SalaryCalculatorTestWrapper>
 );
 
