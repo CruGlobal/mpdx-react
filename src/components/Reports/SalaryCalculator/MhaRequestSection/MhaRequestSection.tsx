@@ -56,7 +56,7 @@ export const MhaRequestSection: React.FC = () => {
     difference,
     boardApprovedAmount,
     progressPercentage,
-    currentApprovedAmountForStaff,
+    currentTakenAmount,
     currentApprovedSpouseAmountForStaff,
   } = useMhaRequestData();
 
@@ -111,7 +111,7 @@ export const MhaRequestSection: React.FC = () => {
                 label={t('Current MHA')}
                 size="small"
                 fullWidth
-                value={currentApprovedAmountForStaff}
+                value={currentTakenAmount}
                 disabled
                 inputProps={{ 'data-testid': 'current-mha-staff' }}
               />
