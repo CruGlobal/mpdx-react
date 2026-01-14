@@ -44,7 +44,7 @@ export const FilterButton = styled(IconButton, {
     backgroundColor: panelOpen
       ? theme.palette.secondary.dark
       : isFiltered
-        ? theme.palette.cruYellow.main
+        ? theme.palette.yellow.main
         : 'transparent',
   };
 });
