@@ -4,6 +4,7 @@ import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { DirectionButtons } from 'src/components/Reports/Shared/CalculationReports/DirectionButtons/DirectionButtons';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
+import { NoStaffAccount } from 'src/components/Reports/Shared/NoStaffAccount/NoStaffAccount';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import { PanelLayout } from '../../Shared/CalculationReports/PanelLayout/PanelLayout';
@@ -58,7 +59,7 @@ const MainContent: React.FC = () => {
 export const RequestPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const { isDrawerOpen, toggleDrawer, steps, currentIndex } =
+  const { isDrawerOpen, toggleDrawer, steps, currentIndex, staffAccountId } =
     useAdditionalSalaryRequest();
   const { values } = useFormikContext<CompleteFormValues>();
 
@@ -66,6 +67,10 @@ export const RequestPage: React.FC = () => {
     () => calculateCompletionPercentage(values),
     [values],
   );
+
+  if (!staffAccountId) {
+    return <NoStaffAccount />;
+  }
 
   return (
     <PanelLayout
