@@ -46,9 +46,11 @@ export const useCaps = (): UseCapsResult => {
     : overSpouseCap
       ? (hcmSpouse?.staffInfo.preferredName ?? null)
       : null;
-  const overCapSalary = formatCurrency(
-    overUserCap ? calcs.requestedGross : spouseCalcs?.requestedGross,
-  );
+  const overCapSalary = overUserCap
+    ? formatCurrency(calcs.requestedGross)
+    : overSpouseCap
+      ? formatCurrency(spouseCalcs.requestedGross)
+      : null;
 
   return {
     combinedCap,
