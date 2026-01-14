@@ -1,7 +1,9 @@
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SalaryCalculatorTestWrapper } from '../SalaryCalculatorTestWrapper';
-import { StepNavigation, SubmitButton } from './StepNavigation';
+import { CancelButton, StepNavigation, SubmitButton } from './StepNavigation';
+
+const mutationSpy = jest.fn();
 
 const TestComponent: React.FC = () => (
   <SalaryCalculatorTestWrapper>
@@ -18,9 +20,26 @@ describe('StepNavigation', () => {
   });
 });
 
+describe('DeleteButton', () => {
+  it('opens cancel dialog on click', async () => {
+    const { findByText } = render(
+      <SalaryCalculatorTestWrapper onCall={mutationSpy}>
+        <CancelButton />
+      </SalaryCalculatorTestWrapper>,
+    );
+    userEvent.click(await findByText('Cancel'));
+
+    userEvent.click(await findByText('Yes, Cancel'));
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('DeleteSalaryCalculation', {
+        input: { id: 'salary-request-1' },
+      }),
+    );
+  });
+});
+
 describe('SubmitButton', () => {
   it('submits calculation', async () => {
-    const mutationSpy = jest.fn();
     const { findByText } = render(
       <SalaryCalculatorTestWrapper onCall={mutationSpy}>
         <SubmitButton />
