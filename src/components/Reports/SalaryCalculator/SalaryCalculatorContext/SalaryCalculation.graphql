@@ -78,9 +78,3 @@ query ApprovedSalaryCalculation {
     }
   }
 }
-
-mutation DeleteSalaryCalculation($input: SalaryRequestDeleteMutationInput!) {
-  deleteSalaryRequest(input: $input) {
-    clientMutationId
-  }
-}

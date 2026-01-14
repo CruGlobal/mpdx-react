@@ -8,8 +8,8 @@ import { useTranslation } from 'react-i18next';
 import { SubmitModal } from 'src/components/Reports/Shared/CalculationReports/SubmitModal/SubmitModal';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { SalaryCalculatorSectionEnum } from '../SalaryCalculatorContext/Helper/sharedTypes';
-import { useDeleteSalaryCalculationMutation } from '../SalaryCalculatorContext/SalaryCalculation.generated';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
+import { useDeleteSalaryCalculationMutation } from './DeleteSalaryCalculation.generated';
 import { useSubmitSalaryCalculationMutation } from './SubmitSalaryCalculation.generated';
 
 export const CancelButton: React.FC = () => {
