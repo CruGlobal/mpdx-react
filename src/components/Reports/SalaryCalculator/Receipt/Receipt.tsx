@@ -24,12 +24,12 @@ export const ReceiptStep: React.FC = () => {
   const accountListId = useAccountListId();
   const { t } = useTranslation();
   const { formatCurrency } = useFormatters();
-  const { combinedCap, overCombinedCap } = useCaps();
+  const { combinedGross, overCombinedCap } = useCaps();
   const { approvers } = useApprovers();
 
   const [showReceipt, setShowReceipt] = useState(false);
 
-  const requestedAmount = formatCurrency(combinedCap);
+  const requestedAmount = formatCurrency(combinedGross);
 
   return (
     <Stack gap={4}>
@@ -41,7 +41,7 @@ export const ReceiptStep: React.FC = () => {
         <Typography variant="body2" fontWeight="bold" sx={{ mb: 1 }}>
           {t("You've successfully submitted your Salary Calculation Form!")}
         </Typography>
-        <Typography variant="body2">
+        <Typography data-testid="Receipt-message" variant="body2">
           {overCombinedCap ? (
             // TODO: Determine the time frame
             <Trans t={t}>
