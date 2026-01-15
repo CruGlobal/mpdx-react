@@ -57,6 +57,12 @@ query SalaryCalculation {
     spouseCalculations {
       ...CalculationFields
     }
+    progressiveApprovalTier {
+      id
+      tier
+      approver
+      approvalTimeframe
+    }
   }
 }
 

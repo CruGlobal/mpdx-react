@@ -12,7 +12,7 @@ import {
 import { Trans, useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useCaps } from '../SalaryCalculation/useCaps';
-import { useApprovers } from '../Shared/useApprovers';
+import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 import { useFormatters } from '../Shared/useFormatters';
 import { MhaCard } from '../Summary/MhaCard';
 import { SalaryCalculationCard } from '../Summary/SalaryCalculationCard';
@@ -24,8 +24,9 @@ export const ReceiptStep: React.FC = () => {
   const accountListId = useAccountListId();
   const { t } = useTranslation();
   const { formatCurrency } = useFormatters();
-  const { combinedGross, overCombinedCap } = useCaps();
-  const { approvers } = useApprovers();
+  const { calculation } = useSalaryCalculator();
+  const progressiveApprovalTier = calculation?.progressiveApprovalTier;
+  const { combinedGross } = useCaps();
 
   const [showReceipt, setShowReceipt] = useState(false);
 
@@ -42,16 +43,17 @@ export const ReceiptStep: React.FC = () => {
           {t("You've successfully submitted your Salary Calculation Form!")}
         </Typography>
         <Typography data-testid="Receipt-message" variant="body2">
-          {overCombinedCap ? (
-            // TODO: Determine the time frame
+          {progressiveApprovalTier ? (
             <Trans t={t}>
               Because your request exceeds your maximum allowable salary it will
               require additional approvals. For the {{ requestedAmount }} you
-              are requesting, this will take [time frame] as it needs to be
-              signed off by {{ approvers }}. This may affect your selected
-              effective date. We will review your request through our
-              Progressive Approvals process and notify you of any changes to the
-              status of this request.
+              are requesting, this will take{' '}
+              {{ timeframe: progressiveApprovalTier.approvalTimeframe }} as it
+              needs to be signed off by the{' '}
+              {{ approver: progressiveApprovalTier.approver }}. This may affect
+              your selected effective date. We will review your request through
+              our Progressive Approvals process and notify you of any changes to
+              the status of this request.
             </Trans>
           ) : (
             <Trans t={t}>
