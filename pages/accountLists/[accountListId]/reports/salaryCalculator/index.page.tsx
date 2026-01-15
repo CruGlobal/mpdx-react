@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { NewSalaryCalculatorLanding } from 'src/components/Reports/SalaryCalculator/Landing/NewSalaryCalculationLanding/NewSalaryCalculatorLanding';
+import { PendingSalaryCalculationLanding } from 'src/components/Reports/SalaryCalculator/Landing/PendingSalaryCalculationLanding/PendingSalaryCalculationLanding';
+import { useLandingData } from 'src/components/Reports/SalaryCalculator/Landing/useLandingData';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -18,6 +20,7 @@ const SalaryCalculatorPage: React.FC = () => {
   const { appName } = useGetAppSettings();
   const { t } = useTranslation();
   const [isNavListOpen, setIsNavListOpen] = useState(false);
+  const { shouldShowPending } = useLandingData();
 
   const handleNavListToggle = () => {
     setIsNavListOpen(!isNavListOpen);
@@ -49,7 +52,11 @@ const SalaryCalculatorPage: React.FC = () => {
               headerType={HeaderTypeEnum.Report}
             />
 
-            <NewSalaryCalculatorLanding />
+            {shouldShowPending ? (
+              <PendingSalaryCalculationLanding />
+            ) : (
+              <NewSalaryCalculatorLanding />
+            )}
           </>
         }
       />
