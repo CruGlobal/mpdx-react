@@ -1,6 +1,15 @@
 query LandingSalaryCalculations {
+  latestCalculation: latestSalaryRequest(
+    status: [IN_PROGRESS, PENDING, ACTION_REQUIRED]
+  ) {
+    id
+    ...SalaryRequestFields
+    changesRequestedAt
+    feedback
+  }
   inProgressCalculation: latestSalaryRequest(status: [IN_PROGRESS]) {
     id
+    ...SalaryRequestFields
   }
   approvedCalculation: latestSalaryRequest(status: [APPROVED]) {
     id
