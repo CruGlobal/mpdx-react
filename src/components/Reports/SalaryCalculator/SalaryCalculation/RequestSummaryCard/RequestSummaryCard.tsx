@@ -2,7 +2,6 @@ import React, { useId } from 'react';
 import InfoIcon from '@mui/icons-material/Info';
 import {
   CardContent,
-  CardHeader,
   Stack,
   Table,
   TableBody,
@@ -19,16 +18,12 @@ import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalcula
 import { StepCard } from '../../Shared/StepCard';
 import { useApprovers } from '../../Shared/useApprovers';
 import { useFormatters } from '../../Shared/useFormatters';
+import { StyledCardHeader } from '../StyledCardHeader';
+import { useCaps } from '../useCaps';
 import { CardTitle } from './CardTitle';
 import { Category } from './Category';
 import { Distribution } from './Distribution';
 import { Legend } from './Legend';
-
-const StyledCardHeader = styled(CardHeader)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
-  gap: theme.spacing(1),
-}));
 
 const SummaryTable = styled(Table)(({ theme }) => ({
   'tr.total': {
@@ -55,31 +50,31 @@ const SummaryTable = styled(Table)(({ theme }) => ({
   },
 }));
 
-export const RequestedSummaryCard: React.FC = () => {
+export const RequestSummaryCard: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
   const { calculation, hcmUser, hcmSpouse } = useSalaryCalculator();
   const { approvers } = useApprovers();
+  const {
+    combinedCap,
+    combinedGross,
+    overCombinedCap,
+    overUserCap,
+    overSpouseCap,
+    overCapName,
+    overCapSalary,
+  } = useCaps();
   const { formatCurrency } = useFormatters();
 
   const calcs = calculation?.calculations;
   const spouseCalcs = calculation?.spouseCalculations;
   const hasSpouse = !!hcmSpouse && !!spouseCalcs;
 
-  const combinedCap =
-    (calcs?.effectiveCap ?? 0) + (spouseCalcs?.effectiveCap ?? 0);
-  const combinedGross =
-    (calcs?.requestedGross ?? 0) + (spouseCalcs?.requestedGross ?? 0);
   const combinedSeca =
     (calcs?.requestedSeca ?? 0) + (spouseCalcs?.requestedSeca ?? 0);
   const combined403b =
     (calcs?.contributing403bAmount ?? 0) +
     (spouseCalcs?.contributing403bAmount ?? 0);
-
-  const overCap = combinedGross > combinedCap;
-  const userOverCap = !!calcs && calcs.requestedGross > calcs.effectiveCap;
-  const spouseOverCap =
-    !!spouseCalcs && spouseCalcs.requestedGross > spouseCalcs.effectiveCap;
 
   const categories: Category[] = [
     {
@@ -100,16 +95,10 @@ export const RequestedSummaryCard: React.FC = () => {
   ];
 
   const combinedModifier = hasSpouse ? t('Combined') : '';
-  const overCapName = userOverCap
-    ? hcmUser?.staffInfo.preferredName
-    : hcmSpouse?.staffInfo.preferredName;
-  const overCapSalary = formatCurrency(
-    userOverCap ? calcs.requestedGross : spouseCalcs?.requestedGross,
-  );
   const statusMessage =
-    !overCap && !userOverCap && !spouseOverCap ? (
+    !overCombinedCap && !overUserCap && !overSpouseCap ? (
       t('Your gross request is within your Maximum Allowable Salary.')
-    ) : overCap ? (
+    ) : overCombinedCap ? (
       <Trans t={t}>
         Your {{ combined: combinedModifier }} Gross Requested Salary exceeds
         your {{ combined: combinedModifier }} Maximum Allowable Salary. Please
@@ -136,7 +125,11 @@ export const RequestedSummaryCard: React.FC = () => {
   return (
     <StepCard>
       <StyledCardHeader
-        title={<CardTitle invalid={overCap || userOverCap || spouseOverCap} />}
+        title={
+          <CardTitle
+            invalid={overCombinedCap || overUserCap || overSpouseCap}
+          />
+        }
       />
       <CardContent
         sx={(theme) => ({
@@ -168,7 +161,7 @@ export const RequestedSummaryCard: React.FC = () => {
             </span>
             <span
               aria-describedby={requestedVsMaxId}
-              className={overCap ? 'invalid' : undefined}
+              className={overCombinedCap ? 'invalid' : undefined}
             >
               {formatCurrency(combinedGross)} / {formatCurrency(combinedCap)}
             </span>
@@ -177,7 +170,7 @@ export const RequestedSummaryCard: React.FC = () => {
           <Distribution
             categories={categories}
             totalCap={combinedCap}
-            invalid={overCap}
+            invalid={overCombinedCap}
           />
 
           <Stack
@@ -192,7 +185,7 @@ export const RequestedSummaryCard: React.FC = () => {
             </Typography>
             <Typography
               id={remainingId}
-              className={overCap ? 'invalid' : undefined}
+              className={overCombinedCap ? 'invalid' : undefined}
             >
               {formatCurrency(combinedCap - combinedGross)}
             </Typography>
@@ -276,11 +269,13 @@ export const RequestedSummaryCard: React.FC = () => {
                     <InfoIcon />
                   </Tooltip>
                 </TableCell>
-                <TableCell className={overCap ? 'invalid' : undefined}>
+                <TableCell className={overCombinedCap ? 'invalid' : undefined}>
                   {formatCurrency(calcs?.requestedGross)}
                 </TableCell>
                 {hasSpouse && (
-                  <TableCell className={overCap ? 'invalid' : undefined}>
+                  <TableCell
+                    className={overCombinedCap ? 'invalid' : undefined}
+                  >
                     {formatCurrency(spouseCalcs.requestedGross)}
                   </TableCell>
                 )}
