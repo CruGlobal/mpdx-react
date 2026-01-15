@@ -1,10 +1,20 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
-import { SalaryCalculatorTestWrapper } from '../../SalaryCalculatorTestWrapper';
+import userEvent from '@testing-library/user-event';
+import {
+  SalaryCalculatorTestWrapper,
+  SalaryRequestMock,
+} from '../../SalaryCalculatorTestWrapper';
 import { PersonalInformationSection } from './PersonalInformationSection';
 
-const TestComponent: React.FC<{ hasSpouse?: boolean }> = ({ hasSpouse }) => (
-  <SalaryCalculatorTestWrapper hasSpouse={hasSpouse}>
+const TestComponent: React.FC<{
+  hasSpouse?: boolean;
+  requestMock?: SalaryRequestMock;
+}> = ({ hasSpouse, requestMock }) => (
+  <SalaryCalculatorTestWrapper
+    hasSpouse={hasSpouse}
+    salaryRequestMock={requestMock}
+  >
     <PersonalInformationSection />
   </SalaryCalculatorTestWrapper>
 );
@@ -18,10 +28,12 @@ describe('PersonalInformationSection', () => {
     ).toBeInTheDocument();
   });
 
-  it('should display all category row headers', () => {
+  it('should display category row headers', () => {
     const { getByRole } = render(<TestComponent />);
 
-    expect(getByRole('cell', { name: 'Location' })).toBeInTheDocument();
+    expect(
+      getByRole('combobox', { name: 'Nearest Geographic Multiplier Location' }),
+    ).toBeInTheDocument();
     expect(getByRole('cell', { name: 'Tenure' })).toBeInTheDocument();
     expect(getByRole('cell', { name: 'Age' })).toBeInTheDocument();
     expect(getByRole('cell', { name: 'Children' })).toBeInTheDocument();
@@ -53,8 +65,13 @@ describe('PersonalInformationSection', () => {
   it('should display married personal information values correctly', async () => {
     const { findByRole } = render(<TestComponent />);
 
-    // Self information
-    expect(await findByRole('cell', { name: 'Tampa, FL' })).toBeInTheDocument();
+    const locationCombobox = await findByRole('combobox', {
+      name: 'Nearest Geographic Multiplier Location',
+    });
+    await waitFor(() => {
+      expect(locationCombobox).toHaveValue('');
+    });
+
     expect(await findByRole('cell', { name: '4 years' })).toBeInTheDocument();
     expect(await findByRole('cell', { name: '34' })).toBeInTheDocument();
     expect(await findByRole('cell', { name: '2' })).toBeInTheDocument();
@@ -63,6 +80,28 @@ describe('PersonalInformationSection', () => {
     expect(
       await findByRole('cell', { name: '1000 years' }),
     ).toBeInTheDocument();
+  });
+
+  it('should display saved location and show available options', async () => {
+    const { findByRole, findAllByRole } = render(
+      <TestComponent
+        requestMock={{
+          location: 'Miami, FL',
+        }}
+      />,
+    );
+
+    const locationCombobox = await findByRole('combobox', {
+      name: 'Nearest Geographic Multiplier Location',
+    });
+
+    await waitFor(() => {
+      expect(locationCombobox).toHaveValue('Miami, FL');
+    });
+
+    userEvent.click(await findByRole('button', { name: 'Open' }));
+
+    expect(await findAllByRole('option')).toHaveLength(2);
   });
 
   it('should not display spouse information when no spouse exists', async () => {

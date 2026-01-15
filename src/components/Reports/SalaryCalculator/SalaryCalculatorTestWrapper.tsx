@@ -5,6 +5,7 @@ import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import { PayrollDate } from 'src/graphql/types.generated';
+import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
 import { PayrollDatesQuery } from './EffectiveDateStep/PayrollDates.generated';
 import {
@@ -22,7 +23,7 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
         staffInfo: {
           preferredName: 'John',
           lastName: 'Doe',
-          city: 'Tampa',
+          city: 'Miami',
           state: 'FL',
           tenure: 4,
           age: 34,
@@ -72,7 +73,9 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
 export const hcmUserMock = hcmMock[0];
 export const hcmSpouseMock = hcmMock[1];
 
-type SalaryRequestMock = DeepPartial<SalaryCalculationQuery['salaryRequest']>;
+export type SalaryRequestMock = DeepPartial<
+  SalaryCalculationQuery['salaryRequest']
+>;
 
 export interface SalaryCalculatorTestWrapperProps {
   salaryRequestMock?: SalaryRequestMock;
@@ -97,10 +100,19 @@ export const SalaryCalculatorTestWrapper: React.FC<
         Hcm: HcmQuery;
         PayrollDates: PayrollDatesQuery;
         SalaryCalculation: SalaryCalculationQuery;
+        GoalCalculatorConstants: GoalCalculatorConstantsQuery;
       }>
         mocks={{
           PayrollDates: {
             payrollDates,
+          },
+          GoalCalculatorConstants: {
+            constant: {
+              mpdGoalGeographicConstants: [
+                { location: 'Atlanta, GA' },
+                { location: 'Miami, FL' },
+              ],
+            },
           },
           Hcm: {
             hcm: hasSpouse ? [hcmUserMock, hcmSpouseMock] : [hcmUserMock],
