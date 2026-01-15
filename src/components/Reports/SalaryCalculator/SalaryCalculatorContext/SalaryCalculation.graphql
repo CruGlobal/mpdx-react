@@ -50,7 +50,6 @@ fragment CalculationFields on SalaryRequestCalculations {
 query SalaryCalculation {
   salaryRequest: latestSalaryRequest(status: [IN_PROGRESS]) {
     id
-    createdAt
     ...SalaryRequestFields
     calculations {
       ...CalculationFields
