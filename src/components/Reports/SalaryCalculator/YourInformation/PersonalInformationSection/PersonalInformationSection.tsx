@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   CardContent,
   CardHeader,
@@ -11,6 +11,8 @@ import {
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
+import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
+import { AutosaveAutocomplete } from '../../Autosave/AutosaveAutocomplete';
 import { StepCard, StepTableHead } from '../../Shared/StepCard';
 import { usePersonalInformation } from './usePersonalInformation';
 
@@ -19,8 +21,6 @@ export const PersonalInformationSection: React.FC = () => {
   const theme = useTheme();
   const {
     spouse,
-    selfLocation,
-    spouseLocation,
     selfTenure,
     spouseTenure,
     selfAge,
@@ -28,6 +28,12 @@ export const PersonalInformationSection: React.FC = () => {
     selfChildren,
     spouseChildren,
   } = usePersonalInformation();
+  const { goalGeographicConstantMap } = useGoalCalculatorConstants();
+
+  const locations = useMemo(
+    () => Array.from(goalGeographicConstantMap.keys()),
+    [goalGeographicConstantMap],
+  );
 
   return (
     <StepCard>
@@ -45,9 +51,31 @@ export const PersonalInformationSection: React.FC = () => {
           <StepTableHead />
           <TableBody>
             <TableRow>
-              <TableCell>{t('Location')}</TableCell>
-              <TableCell>{selfLocation}</TableCell>
-              {spouse && <TableCell>{spouseLocation}</TableCell>}
+              <TableCell>
+                <Typography>
+                  {t('Nearest Geographic Multiplier Location')}
+                </Typography>
+                <Typography variant="body2" color="textSecondary">
+                  {t(
+                    'If you live within 50 miles of one of the following metropolitan areas, please select it from the list. If not, select "None."',
+                  )}
+                </Typography>
+              </TableCell>
+              <TableCell colSpan={spouse ? 2 : 1}>
+                <AutosaveAutocomplete
+                  label={t('Nearest Geographic Multiplier Location')}
+                  fieldName="location"
+                  options={locations}
+                  textFieldProps={{
+                    InputLabelProps: {
+                      sx: { fontSize: theme.typography.body2.fontSize },
+                    },
+                    InputProps: {
+                      sx: { fontSize: theme.typography.body2.fontSize },
+                    },
+                  }}
+                />
+              </TableCell>
             </TableRow>
             <TableRow>
               <TableCell>{t('Tenure')}</TableCell>
