@@ -39,7 +39,11 @@ export const MinisterHousingAllowanceReport = () => {
     spousePreferredName,
     userHcmData,
     spouseHcmData,
+    userEligibleForMHA,
+    spouseEligibleForMHA,
   } = useMinisterHousingAllowance();
+
+  const canAccessMHA = userEligibleForMHA || spouseEligibleForMHA;
 
   const personNumber = userHcmData?.staffInfo?.personNumber ?? '';
   const spousePersonNumber = spouseHcmData?.staffInfo?.personNumber ?? '';
@@ -56,6 +60,13 @@ export const MinisterHousingAllowanceReport = () => {
   const [createMHA] = useCreateHousingAllowanceRequestMutation();
 
   const onCreateMHARequest = async () => {
+    if (!userEligibleForMHA) {
+      enqueueSnackbar(t('You are not eligible to create a new MHA request.'), {
+        variant: 'error',
+      });
+      return;
+    }
+
     await createMHA({
       variables: {
         requestAttributes: {},
@@ -122,7 +133,7 @@ export const MinisterHousingAllowanceReport = () => {
           ) : (
             <>
               <Stack direction="column" width={mainContentWidth}>
-                {hasNoRequests ? (
+                {hasNoRequests || !canAccessMHA ? (
                   <IneligibleDisplay />
                 ) : (
                   <EligibleDisplay isPending={isCurrentRequestPending} />
@@ -149,7 +160,7 @@ export const MinisterHousingAllowanceReport = () => {
             </>
           )}
 
-          {previousApprovedRequest && (
+          {canAccessMHA && previousApprovedRequest && (
             <Stack direction="column" width={mainContentWidth} mt={4}>
               <CurrentBoardApproved request={previousApprovedRequest} />
             </Stack>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -9,14 +10,20 @@ import theme from 'src/theme';
 import { HcmDataQuery } from '../Shared/HcmData/HCMData.generated';
 import {
   marriedMhaAndNoException,
-  marriedNoMhaNoException,
+  marriedSpouseIneligible,
+  singleIneligible,
   singleMhaNoException,
   singleNoMhaNoException,
 } from '../Shared/HcmData/mockData';
 import { MinisterHousingAllowanceReport } from './MinisterHousingAllowance';
-import { MinistryHousingAllowanceRequestsQuery } from './MinisterHousingAllowance.generated';
+import {
+  CreateHousingAllowanceRequestMutation,
+  MinistryHousingAllowanceRequestsQuery,
+} from './MinisterHousingAllowance.generated';
 import { MinisterHousingAllowanceProvider } from './Shared/Context/MinisterHousingAllowanceContext';
 import { mockMHARequest } from './mockData';
+
+const mutationSpy = jest.fn();
 
 interface TestComponentProps {
   hcmMock: HcmDataQuery['hcm'];
@@ -33,6 +40,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
         <GqlMockedProvider<{
           HcmData: HcmDataQuery;
           MinistryHousingAllowanceRequests: MinistryHousingAllowanceRequestsQuery;
+          CreateHousingAllowanceRequest: CreateHousingAllowanceRequestMutation;
         }>
           mocks={{
             HcmData: {
@@ -44,6 +52,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
               },
             },
           }}
+          onCall={mutationSpy}
         >
           <MinisterHousingAllowanceProvider>
             <MinisterHousingAllowanceReport />
@@ -66,17 +75,15 @@ describe('MinisterHousingAllowanceReport', () => {
     expect(await findByText('John Doe')).toBeInTheDocument();
   });
 
-  it('renders married, no pending, no approved correctly', async () => {
-    const { findByText } = render(
-      <TestComponent hcmMock={marriedNoMhaNoException} mhaRequestsMock={[]} />,
+  it('renders married with ineligible spouse, no approved requests', async () => {
+    const { findByText, findByTestId } = render(
+      <TestComponent hcmMock={marriedSpouseIneligible} mhaRequestsMock={[]} />,
     );
 
     expect(
       await findByText(/our records indicate that you have not applied for/i),
     ).toBeInTheDocument();
-    expect(
-      await findByText(/will submit the request for john. jane has not/i),
-    ).toBeInTheDocument();
+    expect(await findByTestId('spouse-ineligible-message')).toBeInTheDocument();
     expect(await findByText('John Doe and Jane Doe')).toBeInTheDocument();
   });
 
@@ -150,5 +157,49 @@ describe('MinisterHousingAllowanceReport', () => {
     expect(await findByText('John Doe and Jane Doe')).toBeInTheDocument();
 
     expect(await findByText('Current MHA Request')).toBeInTheDocument();
+  });
+
+  describe('Create MHA Request Eligibility', () => {
+    it('should allow create mutation when user is eligible', async () => {
+      const { findByText, getByRole } = render(
+        <TestComponent hcmMock={singleMhaNoException} mhaRequestsMock={[]} />,
+      );
+
+      // Wait for data to load
+      await findByText('John Doe');
+
+      const button = getByRole('button', { name: 'Request New MHA' });
+      expect(button).toBeEnabled();
+
+      userEvent.click(button);
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation(
+          'CreateHousingAllowanceRequest',
+        ),
+      );
+    });
+
+    it('should block create mutation when user is not eligible', async () => {
+      const { getByRole, findByText } = render(
+        <TestComponent hcmMock={singleIneligible} mhaRequestsMock={[]} />,
+      );
+
+      await findByText('John Doe');
+
+      const button = getByRole('button', { name: 'Request New MHA' });
+      userEvent.click(button);
+
+      // Should show error message and not trigger mutation
+      expect(
+        await findByText('You are not eligible to create a new MHA request.'),
+      ).toBeInTheDocument();
+
+      await waitFor(() => {
+        expect(mutationSpy).not.toHaveGraphqlOperation(
+          'CreateHousingAllowanceRequest',
+        );
+      });
+    });
   });
 });

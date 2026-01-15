@@ -59,6 +59,9 @@ const noMhaAndNoException: HcmDataQuery['hcm'][0] = {
     lastUpdatedDate: null,
     currentTakenAmount: null,
   },
+  mhaEit: {
+    mhaEligibility: true,
+  },
   exceptionSalaryCap: {
     amount: null,
     effectiveDate: null,
@@ -123,5 +126,53 @@ export const marriedNoMhaNoException: HcmDataQuery['hcm'] = [
   {
     ...noMhaAndNoException,
     staffInfo: janeDoe,
+  },
+];
+export const marriedSpouseIneligible: HcmDataQuery['hcm'] = [
+  noMhaAndNoException,
+  {
+    ...noMhaAndNoException,
+    staffInfo: janeDoe,
+    mhaEit: {
+      mhaEligibility: false,
+    },
+  },
+];
+
+export const singleIneligible: HcmDataQuery['hcm'] = [
+  {
+    ...noMhaAndNoException,
+    mhaEit: {
+      mhaEligibility: false,
+    },
+  },
+];
+
+export const marriedUserIneligible: HcmDataQuery['hcm'] = [
+  {
+    ...noMhaAndNoException,
+    mhaEit: {
+      mhaEligibility: false,
+    },
+  },
+  {
+    ...noMhaAndNoException,
+    staffInfo: janeDoe,
+  },
+];
+
+export const marriedBothIneligible: HcmDataQuery['hcm'] = [
+  {
+    ...noMhaAndNoException,
+    mhaEit: {
+      mhaEligibility: false,
+    },
+  },
+  {
+    ...noMhaAndNoException,
+    staffInfo: janeDoe,
+    mhaEit: {
+      mhaEligibility: false,
+    },
   },
 ];

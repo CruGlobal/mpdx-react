@@ -50,6 +50,10 @@ export type ContextType = {
   spouseHcmData?: HcmData | null;
   preferredName: string;
   spousePreferredName: string;
+  userEligibleForMHA: boolean;
+  spouseEligibleForMHA: boolean;
+  hcmLoading: boolean;
+  hcmError?: ApolloError;
 
   requestData?:
     | MinistryHousingAllowanceRequestQuery['ministryHousingAllowanceRequest']
@@ -125,7 +129,11 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
     }));
   }, [initialSteps, isComplete]);
 
-  const { data: hcmData } = useHcmDataQuery();
+  const {
+    data: hcmData,
+    loading: hcmLoading,
+    error: hcmError,
+  } = useHcmDataQuery();
 
   const [userHcmData, setUserHcmData] = useState<HcmData>();
   const [spouseHcmData, setSpouseHcmData] = useState<HcmData | null>(null);
@@ -150,6 +158,15 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   );
   const spousePreferredName = useMemo(
     () => spouseHcmData?.staffInfo?.preferredName || '',
+    [spouseHcmData],
+  );
+
+  const userEligibleForMHA = useMemo(
+    () => userHcmData?.mhaEit?.mhaEligibility ?? false,
+    [userHcmData],
+  );
+  const spouseEligibleForMHA = useMemo(
+    () => spouseHcmData?.mhaEit?.mhaEligibility ?? false,
     [spouseHcmData],
   );
 
@@ -202,6 +219,10 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       spouseHcmData,
       preferredName,
       spousePreferredName,
+      userEligibleForMHA,
+      spouseEligibleForMHA,
+      hcmLoading,
+      hcmError,
       isPrint,
       setIsPrint,
       setIsComplete,
@@ -228,6 +249,10 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       spouseHcmData,
       preferredName,
       spousePreferredName,
+      userEligibleForMHA,
+      spouseEligibleForMHA,
+      hcmLoading,
+      hcmError,
       isPrint,
       setIsPrint,
       setIsComplete,

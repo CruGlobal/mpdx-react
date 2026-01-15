@@ -1,86 +1,93 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { render } from '@testing-library/react';
+import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
+import { HcmDataQuery } from '../../Shared/HcmData/HCMData.generated';
 import {
-  ContextType,
-  HcmData,
-  MinisterHousingAllowanceContext,
-} from '../Shared/Context/MinisterHousingAllowanceContext';
+  marriedBothIneligible,
+  marriedSpouseIneligible,
+  marriedUserIneligible,
+  singleIneligible,
+} from '../../Shared/HcmData/mockData';
+import { MinistryHousingAllowanceRequestsQuery } from '../MinisterHousingAllowance.generated';
+import { MinisterHousingAllowanceProvider } from '../Shared/Context/MinisterHousingAllowanceContext';
 import { IneligibleDisplay } from './IneligibleDisplay';
 
 interface TestComponentProps {
-  contextValue: Partial<ContextType>;
+  hcmMock: HcmDataQuery['hcm'];
 }
 
-const TestComponent: React.FC<TestComponentProps> = ({ contextValue }) => {
+const TestComponent: React.FC<TestComponentProps> = ({ hcmMock }) => {
   return (
     <ThemeProvider theme={theme}>
-      <LocalizationProvider dateAdapter={AdapterLuxon}>
-        <MinisterHousingAllowanceContext.Provider
-          value={contextValue as ContextType}
+      <TestRouter>
+        <GqlMockedProvider<{
+          HcmData: HcmDataQuery;
+          MinistryHousingAllowanceRequests: MinistryHousingAllowanceRequestsQuery;
+        }>
+          mocks={{
+            HcmData: {
+              hcm: hcmMock,
+            },
+            MinistryHousingAllowanceRequests: {
+              ministryHousingAllowanceRequests: {
+                nodes: [],
+              },
+            },
+          }}
         >
-          <IneligibleDisplay />
-        </MinisterHousingAllowanceContext.Provider>
-      </LocalizationProvider>
+          <MinisterHousingAllowanceProvider>
+            <IneligibleDisplay />
+          </MinisterHousingAllowanceProvider>
+        </GqlMockedProvider>
+      </TestRouter>
     </ThemeProvider>
   );
 };
 
 describe('IneligibleDisplay', () => {
-  it('should render page with single staff', () => {
-    const { getByText, queryByText } = render(
-      <TestComponent
-        contextValue={{
-          isMarried: false,
-          preferredName: 'John',
-          spousePreferredName: '',
-          userHcmData: {
-            staffInfo: {
-              personNumber: '000123456',
-            },
-          } as unknown as HcmData,
-          spouseHcmData: null,
-        }}
-      />,
+  it('should render page with single ineligible staff', async () => {
+    const { findByRole, findByText, findByTestId } = render(
+      <TestComponent hcmMock={singleIneligible} />,
     );
 
-    expect(getByText('Your MHA')).toBeInTheDocument();
     expect(
-      getByText(
+      await findByRole('heading', { name: 'Your MHA' }),
+    ).toBeInTheDocument();
+    expect(
+      await findByText(
         /our records indicate that you have not applied for minister's housing allowance/i,
       ),
     ).toBeInTheDocument();
-    expect(
-      queryByText(/Jane has not completed the required ibs courses/i),
-    ).not.toBeInTheDocument();
+    expect(await findByTestId('user-ineligible-message')).toBeInTheDocument();
   });
 
-  it('should render page with married staff', () => {
-    const { getByText } = render(
-      <TestComponent
-        contextValue={{
-          isMarried: true,
-          preferredName: 'John',
-          spousePreferredName: 'Jane',
-          userHcmData: {
-            staffInfo: {
-              personNumber: '000123456',
-            },
-          } as unknown as HcmData,
-          spouseHcmData: {
-            staffInfo: {
-              personNumber: '100123456',
-            },
-          } as unknown as HcmData,
-        }}
-      />,
+  it('should render page with married staff and ineligible spouse', async () => {
+    const { findByTestId } = render(
+      <TestComponent hcmMock={marriedSpouseIneligible} />,
     );
 
-    expect(
-      getByText(/Jane has not completed the required ibs courses/i),
-    ).toBeInTheDocument();
+    expect(await findByTestId('spouse-ineligible-message')).toBeInTheDocument();
+    expect(await findByTestId('user-ineligible-message')).toBeInTheDocument();
+  });
+
+  it('should render page with married staff and ineligible user', async () => {
+    const { findByTestId, queryByTestId } = render(
+      <TestComponent hcmMock={marriedUserIneligible} />,
+    );
+
+    expect(await findByTestId('user-ineligible-message')).toBeInTheDocument();
+    expect(queryByTestId('spouse-ineligible-message')).not.toBeInTheDocument();
+  });
+
+  it('should render page with both married staff ineligible', async () => {
+    const { findByTestId, queryByTestId } = render(
+      <TestComponent hcmMock={marriedBothIneligible} />,
+    );
+
+    expect(await findByTestId('user-ineligible-message')).toBeInTheDocument();
+    expect(queryByTestId('spouse-ineligible-message')).not.toBeInTheDocument();
   });
 });

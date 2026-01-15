@@ -4,6 +4,7 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render } from '@testing-library/react';
 import { Formik } from 'formik';
+import { SnackbarProvider } from 'notistack';
 import * as yup from 'yup';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -20,19 +21,21 @@ const mockSchema = {
 } as unknown as yup.Schema;
 
 const TestComponent: React.FC = () => (
-  <ThemeProvider theme={theme}>
-    <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <TestRouter>
-        <GqlMockedProvider>
-          <MinisterHousingAllowanceProvider>
-            <Formik initialValues={{}} onSubmit={submit}>
-              <EndingSection schema={mockSchema} />
-            </Formik>
-          </MinisterHousingAllowanceProvider>
-        </GqlMockedProvider>
-      </TestRouter>
-    </LocalizationProvider>
-  </ThemeProvider>
+  <SnackbarProvider>
+    <ThemeProvider theme={theme}>
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <TestRouter>
+          <GqlMockedProvider>
+            <MinisterHousingAllowanceProvider>
+              <Formik initialValues={{}} onSubmit={submit}>
+                <EndingSection schema={mockSchema} />
+              </Formik>
+            </MinisterHousingAllowanceProvider>
+          </GqlMockedProvider>
+        </TestRouter>
+      </LocalizationProvider>
+    </ThemeProvider>
+  </SnackbarProvider>
 );
 
 describe('EndingSection', () => {
