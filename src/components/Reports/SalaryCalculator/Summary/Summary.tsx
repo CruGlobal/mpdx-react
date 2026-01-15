@@ -1,5 +1,7 @@
 import NextLink from 'next/link';
-import { Link, Stack, Typography } from '@mui/material';
+import { useState } from 'react';
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
+import { Button, Link, Stack, Typography } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { RequestSummaryCard } from '../SalaryCalculation/RequestSummaryCard/RequestSummaryCard';
@@ -13,6 +15,8 @@ import { StaffInfoSummaryCard } from './StaffInfoSummaryCard';
 export const SummaryStep: React.FC = () => {
   const accountListId = useAccountListId();
   const { t } = useTranslation();
+  const [showCompleteCalculations, setShowCompleteCalculations] =
+    useState(false);
 
   return (
     <Stack gap={4} padding={4}>
@@ -60,9 +64,23 @@ export const SummaryStep: React.FC = () => {
       <SalarySummaryCard />
       <StaffInfoSummaryCard />
       <RequestSummaryCard />
-      <SalaryCapCard />
-      <SalaryCalculationCard />
-      <MhaCard />
+
+      <Button
+        endIcon={showCompleteCalculations ? <ExpandLess /> : <ExpandMore />}
+        onClick={() => setShowCompleteCalculations(!showCompleteCalculations)}
+        sx={{ alignSelf: 'flex-start' }}
+      >
+        {t('View Complete Calculations')}
+      </Button>
+
+      {showCompleteCalculations && (
+        <>
+          <SalaryCapCard />
+          <SalaryCalculationCard />
+          <MhaCard />
+        </>
+      )}
+
       <ContactInfoForm />
     </Stack>
   );
