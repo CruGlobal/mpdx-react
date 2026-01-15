@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
+import { useCaps } from '../SalaryCalculation/useCaps';
 import { useApprovers } from '../Shared/useApprovers';
 import { useFormatters } from '../Shared/useFormatters';
 import { MhaCard } from '../Summary/MhaCard';
@@ -23,23 +23,13 @@ import { StaffInfoSummaryCard } from '../Summary/StaffInfoSummaryCard';
 export const ReceiptStep: React.FC = () => {
   const accountListId = useAccountListId();
   const { t } = useTranslation();
-  const { calculation } = useSalaryCalculator();
   const { formatCurrency } = useFormatters();
+  const { combinedGross, overCombinedCap } = useCaps();
   const { approvers } = useApprovers();
 
   const [showReceipt, setShowReceipt] = useState(false);
 
-  const userRequested = calculation?.calculations.requestedGross ?? 0;
-  const spouseRequested = calculation?.spouseCalculations?.requestedGross ?? 0;
-
-  const userOverCap =
-    calculation && userRequested > calculation.calculations.effectiveCap;
-  const spouseOverCap =
-    calculation?.spouseCalculations &&
-    spouseRequested > calculation.spouseCalculations.effectiveCap;
-  const requiresApproval = userOverCap || spouseOverCap;
-
-  const requestedAmount = formatCurrency(userRequested + spouseRequested);
+  const requestedAmount = formatCurrency(combinedGross);
 
   return (
     <Stack gap={4}>
@@ -51,8 +41,8 @@ export const ReceiptStep: React.FC = () => {
         <Typography variant="body2" fontWeight="bold" sx={{ mb: 1 }}>
           {t("You've successfully submitted your Salary Calculation Form!")}
         </Typography>
-        <Typography variant="body2">
-          {requiresApproval ? (
+        <Typography data-testid="Receipt-message" variant="body2">
+          {overCombinedCap ? (
             // TODO: Determine the time frame
             <Trans t={t}>
               Because your request exceeds your maximum allowable salary it will
