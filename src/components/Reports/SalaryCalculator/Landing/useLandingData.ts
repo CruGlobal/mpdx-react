@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { isFullTimeRmo } from 'src/components/Reports/SalaryCalculator/staffTypeHelpers';
+import { SalaryRequestStatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import { useHcmQuery } from '../SalaryCalculatorContext/Hcm.generated';
@@ -8,6 +9,7 @@ import { getLocalizedTaxStatus } from '../Shared/getLocalizedTaxStatus';
 import { useAccountBalanceQuery } from './AccountBalance.generated';
 import { useLandingSalaryCalculationsQuery } from './NewSalaryCalculationLanding/LandingSalaryCalculations.generated';
 import { useStaffAccountIdQuery } from './StaffAccountId.generated';
+import { formatCalculationDates } from './dateHelpers';
 
 interface SalaryCategory {
   category: string;
@@ -31,6 +33,24 @@ export const useLandingData = () => {
 
   const approvedCalculation = calculationData?.approvedCalculation;
   const hasInProgressCalculation = !!calculationData?.inProgressCalculation;
+  const latestCalculation = calculationData?.latestCalculation;
+
+  const { requestedOn, processedOn } = useMemo(
+    () => formatCalculationDates(latestCalculation ?? null, locale),
+    [latestCalculation, locale],
+  );
+
+  const shouldShowPending = useMemo(
+    () =>
+      latestCalculation?.status === SalaryRequestStatusEnum.Pending ||
+      latestCalculation?.status === SalaryRequestStatusEnum.ActionRequired,
+    [latestCalculation],
+  );
+
+  const feedback = useMemo(
+    () => latestCalculation?.feedback ?? null,
+    [latestCalculation],
+  );
 
   const { self, spouse, hasSpouse } = useMemo(() => {
     const [selfData, spouseData] = hcmData?.hcm ?? [];
@@ -190,11 +210,6 @@ export const useLandingData = () => {
   );
 
   return {
-    loading:
-      hcmLoading ||
-      calculationLoading ||
-      accountBalanceLoading ||
-      staffAccountIdLoading,
     staffAccountId,
     names,
     self,
@@ -205,7 +220,15 @@ export const useLandingData = () => {
     accountBalance,
     hasInProgressCalculation,
     canCalculateSalary,
-    // TODO: replace isNewStaff with value from API when available
-    isNewStaff: false,
+    loading:
+      hcmLoading ||
+      calculationLoading ||
+      accountBalanceLoading ||
+      staffAccountIdLoading,
+    calculation: latestCalculation,
+    requestedOn,
+    processedOn,
+    feedback,
+    shouldShowPending,
   };
 };
