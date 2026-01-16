@@ -19,13 +19,13 @@ import * as yup from 'yup';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { amount } from 'src/lib/yupHelpers';
-import { AutosaveTextField } from '../Autosave/AutosaveTextField';
-import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
+import { AutosaveTextField } from '../../Autosave/AutosaveTextField';
+import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
 import {
   FormattedTableCell,
   StepCard,
   StepTableHead,
-} from '../Shared/StepCard';
+} from '../../Shared/StepCard';
 
 export const MaxAllowableStep: React.FC = () => {
   const { t } = useTranslation();
@@ -76,8 +76,8 @@ export const MaxAllowableStep: React.FC = () => {
     (salaryCalculation?.salaryCap ?? 0) +
     (salaryCalculation?.spouseSalaryCap ?? 0);
 
-  const name = self?.staffInfo.firstName;
-  const spouseName = spouse?.staffInfo.firstName;
+  const name = self?.staffInfo.preferredName;
+  const spouseName = spouse?.staffInfo.preferredName;
 
   return (
     <StepCard>

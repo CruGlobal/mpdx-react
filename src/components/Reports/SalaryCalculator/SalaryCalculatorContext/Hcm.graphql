@@ -2,7 +2,7 @@ query Hcm {
   hcm {
     staffInfo {
       id
-      firstName
+      preferredName
       lastName
       city
       state
@@ -14,6 +14,8 @@ query Hcm {
       peopleGroupSupportType
       userPersonType
       assignmentStatus
+      primaryPhoneNumber
+      emailAddress
     }
     currentSalary {
       grossSalaryAmount
@@ -26,10 +28,11 @@ query Hcm {
     }
     mhaRequest {
       currentApprovedOverallAmount
-      currentApprovedAmountForStaff
+      currentTakenAmount
     }
     exceptionSalaryCap {
       amount
+      exceptionApprover
     }
   }
 }

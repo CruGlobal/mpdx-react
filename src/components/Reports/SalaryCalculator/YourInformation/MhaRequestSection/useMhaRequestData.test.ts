@@ -1,5 +1,5 @@
 import { renderHook, waitFor } from '@testing-library/react';
-import { SalaryCalculatorTestWrapper } from '../SalaryCalculatorTestWrapper';
+import { SalaryCalculatorTestWrapper } from '../../SalaryCalculatorTestWrapper';
 import { useMhaRequestData } from './useMhaRequestData';
 
 describe('useMhaRequestData', () => {
@@ -12,10 +12,8 @@ describe('useMhaRequestData', () => {
       expect(result.current.hasSpouse).toBe(true);
     });
 
-    expect(result.current.self?.staffInfo.firstName).toBe('John');
-    expect(result.current.spouse?.staffInfo.firstName).toBe('Jane');
     expect(result.current.boardApprovedAmount).toBe('$22,000');
-    expect(result.current.currentApprovedAmountForStaff).toBe('$12,000');
+    expect(result.current.currentTakenAmount).toBe('$12,000');
     expect(result.current.currentApprovedSpouseAmountForStaff).toBe('$19,200');
   });
 

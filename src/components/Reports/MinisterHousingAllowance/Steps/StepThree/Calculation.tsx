@@ -26,6 +26,7 @@ import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import i18n from 'src/lib/i18n';
 import { dateFormatShort } from 'src/lib/intlFormat';
+import { phoneNumber } from 'src/lib/yupHelpers';
 import { DirectionButtons } from '../../../Shared/CalculationReports/DirectionButtons/DirectionButtons';
 import { hasPopulatedValues } from '../../Shared/Context/Helper/hasPopulatedValues';
 import { useMinisterHousingAllowance } from '../../Shared/Context/MinisterHousingAllowanceContext';
@@ -38,7 +39,7 @@ import { RequestSummaryCard } from './CalcComponents/RequestSummaryCard';
 // TODO: get correct link for "What expenses can I claim on my MHA?"
 
 interface CalculationProps {
-  boardApprovalDate: string | null;
+  boardApprovedAt: string | null;
   availableDate: string | null;
   deadlineDate?: string | null;
   rentOrOwn?: MhaRentOrOwnEnum;
@@ -65,16 +66,9 @@ const getValidationSchema = (rentOrOwn?: MhaRentOrOwnEnum) => {
     repairCosts: yup.number().required(i18n.t('Required field.')),
     avgUtilityTwo: yup.number().required(i18n.t('Required field.')),
     unexpectedExpenses: yup.number().required(i18n.t('Required field.')),
-    phoneNumber: yup
-      .string()
-      .test('is-phone-number', i18n.t('Invalid phone number.'), (val) => {
-        if (!val) {
-          return false;
-        }
-        const cleaned = val.replace(/\D/g, '');
-        return /^1?\d{10}$/.test(cleaned);
-      })
-      .required(i18n.t('Phone Number is required.')),
+    phoneNumber: phoneNumber(i18n.t).required(
+      i18n.t('Phone Number is required.'),
+    ),
     emailAddress: yup
       .string()
       .email(i18n.t('Invalid email address.'))
@@ -98,7 +92,7 @@ const getValidationSchema = (rentOrOwn?: MhaRentOrOwnEnum) => {
 };
 
 export const Calculation: React.FC<CalculationProps> = ({
-  boardApprovalDate,
+  boardApprovedAt,
   availableDate,
   deadlineDate,
   rentOrOwn,
@@ -175,8 +169,8 @@ export const Calculation: React.FC<CalculationProps> = ({
         iUnderstandMhaPolicy: false,
       };
 
-  const boardDateFormatted = boardApprovalDate
-    ? dateFormatShort(DateTime.fromISO(boardApprovalDate), locale)
+  const boardDateFormatted = boardApprovedAt
+    ? dateFormatShort(DateTime.fromISO(boardApprovedAt), locale)
     : null;
 
   const availableDateFormatted = availableDate

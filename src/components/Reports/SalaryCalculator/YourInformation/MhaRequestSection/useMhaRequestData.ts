@@ -4,21 +4,19 @@ import * as yup from 'yup';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { amount } from 'src/lib/yupHelpers';
-import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
+import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
 
 export const useMhaRequestData = () => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { calculation, hcm } = useSalaryCalculator();
+  const { hcmUser, hcmSpouse, calculation } = useSalaryCalculator();
 
-  const self = hcm?.[0];
-  const spouse = hcm?.[1];
-  const hasSpouse = hcm?.length === 2;
+  const hasSpouse = !!hcmSpouse;
 
   const selfApprovedAmount =
-    self?.mhaRequest?.currentApprovedOverallAmount ?? 0;
+    hcmUser?.mhaRequest?.currentApprovedOverallAmount ?? 0;
   const spouseApprovedAmount =
-    spouse?.mhaRequest?.currentApprovedOverallAmount ?? 0;
+    hcmSpouse?.mhaRequest?.currentApprovedOverallAmount ?? 0;
 
   const selfApprovedAmountFormatted = useMemo(
     () => currencyFormat(selfApprovedAmount, 'USD', locale),
@@ -64,9 +62,9 @@ export const useMhaRequestData = () => {
 
   // Multiply by 24 to annualize the monthly amounts from HCM
   const currentAmountForStaff =
-    (self?.mhaRequest?.currentApprovedAmountForStaff ?? 0) * 24;
+    (hcmUser?.mhaRequest?.currentTakenAmount ?? 0) * 24;
   const spouseCurrentAmountForStaff =
-    (spouse?.mhaRequest?.currentApprovedAmountForStaff ?? 0) * 24;
+    (hcmSpouse?.mhaRequest?.currentTakenAmount ?? 0) * 24;
 
   const newRequestedMhaValue = calculation?.mhaAmount ?? 0;
   const newRequestedSpouseMhaValue = calculation?.spouseMhaAmount ?? 0;
@@ -91,7 +89,7 @@ export const useMhaRequestData = () => {
     [boardApprovedAmount, totalRequestedMhaValue],
   );
 
-  const currentApprovedAmountForStaffFormatted = useMemo(
+  const currentTakenAmountFormatted = useMemo(
     () => currencyFormat(currentAmountForStaff, 'USD', locale),
     [currentAmountForStaff, locale],
   );
@@ -113,11 +111,9 @@ export const useMhaRequestData = () => {
   );
 
   return {
-    self,
-    spouse,
     hasSpouse,
     schema,
-    currentApprovedAmountForStaff: currentApprovedAmountForStaffFormatted,
+    currentTakenAmount: currentTakenAmountFormatted,
     currentApprovedSpouseAmountForStaff:
       currentApprovedSpouseAmountForStaffFormatted,
     totalRequestedMhaValue: totalRequestedMhaFormatted,

@@ -10,8 +10,9 @@ import {
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
-import { AutosaveTextField } from '../Autosave/AutosaveTextField';
-import { StepCard } from '../Shared/StepCard';
+import { AutosaveTextField } from '../../Autosave/AutosaveTextField';
+import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
+import { StepCard } from '../../Shared/StepCard';
 import { useMhaRequestData } from './useMhaRequestData';
 
 const StyledNameHeadersBox = styled(Box)(({ theme }) => ({
@@ -47,6 +48,7 @@ const StyledRemainingBox = styled(Box)(({ theme }) => ({
 export const MhaRequestSection: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
+  const { hcmUser, hcmSpouse } = useSalaryCalculator();
   const {
     hasSpouse,
     schema,
@@ -54,10 +56,8 @@ export const MhaRequestSection: React.FC = () => {
     difference,
     boardApprovedAmount,
     progressPercentage,
-    currentApprovedAmountForStaff,
+    currentTakenAmount,
     currentApprovedSpouseAmountForStaff,
-    self,
-    spouse,
   } = useMhaRequestData();
 
   return (
@@ -96,10 +96,10 @@ export const MhaRequestSection: React.FC = () => {
         {hasSpouse && (
           <StyledNameHeadersBox>
             <Typography variant="subtitle1">
-              {self?.staffInfo.firstName}
+              {hcmUser?.staffInfo.preferredName}
             </Typography>
             <Typography variant="subtitle1">
-              {spouse?.staffInfo.firstName}
+              {hcmSpouse?.staffInfo.preferredName}
             </Typography>
           </StyledNameHeadersBox>
         )}
@@ -111,7 +111,7 @@ export const MhaRequestSection: React.FC = () => {
                 label={t('Current MHA')}
                 size="small"
                 fullWidth
-                value={currentApprovedAmountForStaff}
+                value={currentTakenAmount}
                 disabled
                 inputProps={{ 'data-testid': 'current-mha-staff' }}
               />

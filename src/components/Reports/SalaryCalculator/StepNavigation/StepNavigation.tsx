@@ -4,43 +4,89 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { Box, Button, Stack, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { SalaryCalculatorSectionEnum } from '../SalaryCalculatorContext/Helper/sharedTypes';
+import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
+import { useSubmitSalaryCalculationMutation } from './SubmitSalaryCalculation.generated';
 
-export interface StepNavigationProps {
-  onBack: () => void;
-  onContinue: () => void;
-  isBackDisabled?: boolean;
-  isContinueDisabled?: boolean;
-}
-
-export const StepNavigation: React.FC<StepNavigationProps> = ({
-  onBack,
-  onContinue,
-  isBackDisabled = false,
-  isContinueDisabled = false,
-}) => {
+export const BackButton: React.FC = () => {
   const { t } = useTranslation();
+  const { handlePreviousStep, currentIndex } = useSalaryCalculator();
+
+  return (
+    <Button
+      variant="contained"
+      startIcon={<ChevronLeftIcon />}
+      onClick={handlePreviousStep}
+      disabled={currentIndex === 0}
+      color="inherit"
+    >
+      <Typography fontWeight="bold">{t('Back')}</Typography>
+    </Button>
+  );
+};
+
+export const ContinueButton: React.FC = () => {
+  const { t } = useTranslation();
+  const { steps, handleNextStep, currentIndex } = useSalaryCalculator();
+
+  return (
+    <Button
+      variant="contained"
+      endIcon={<ChevronRightIcon />}
+      onClick={handleNextStep}
+      disabled={currentIndex === steps.length - 1}
+    >
+      <Typography fontWeight="bold">{t('Continue')}</Typography>
+    </Button>
+  );
+};
+
+export const SubmitButton: React.FC = () => {
+  const { t } = useTranslation();
+  const { handleNextStep, calculation } = useSalaryCalculator();
+  const [submit] = useSubmitSalaryCalculationMutation();
+
+  const handleSubmit = async () => {
+    if (calculation) {
+      await submit({
+        variables: {
+          input: {
+            id: calculation.id,
+          },
+        },
+      });
+      handleNextStep();
+    }
+  };
+
+  if (!calculation) {
+    return null;
+  }
+
+  return (
+    <Button
+      variant="contained"
+      endIcon={<ChevronRightIcon />}
+      onClick={handleSubmit}
+    >
+      <Typography fontWeight="bold">{t('Submit')}</Typography>
+    </Button>
+  );
+};
+
+export const StepNavigation: React.FC = () => {
   const theme = useTheme();
+  const { currentStep } = useSalaryCalculator();
 
   return (
     <Box display="flex" justifyContent="flex-end">
       <Stack direction="row" spacing={theme.spacing(1)}>
-        <Button
-          variant="contained"
-          startIcon={<ChevronLeftIcon />}
-          onClick={onBack}
-          disabled={isBackDisabled}
-          color="inherit"
-        >
-          <Typography fontWeight="bold">{t('Back')}</Typography>
-        </Button>
-        <Button
-          variant="contained"
-          endIcon={<ChevronRightIcon />}
-          onClick={onContinue}
-          disabled={isContinueDisabled}
-        >
-          <Typography fontWeight="bold">{t('Continue')}</Typography>
-        </Button>
+        <BackButton />
+        {currentStep === SalaryCalculatorSectionEnum.Summary ? (
+          <SubmitButton />
+        ) : (
+          <ContinueButton />
+        )}
       </Stack>
     </Box>
   );

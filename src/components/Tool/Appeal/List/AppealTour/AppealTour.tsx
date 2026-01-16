@@ -210,7 +210,7 @@ export const AppealTour: React.FC = () => {
           statisticNumber={excludedCount?.contacts.totalCount ?? 0}
         />
         <StatisticContainer
-          color={theme.palette.cruGrayDark.main}
+          color={theme.palette.mpdxGrayDark.main}
           statisticName={t('Asked')}
           statisticNumber={askedCount?.contacts.totalCount ?? 0}
         />

@@ -17,15 +17,15 @@ query MinistryHousingAllowanceRequests {
         phoneNumber
         emailAddress
         iUnderstandMhaPolicy
-        approvedDate
+        hrApprovedAt
         approvedOverallAmount
         availableDate
-        boardApprovedDate
+        boardApprovedAt
         deadlineDate
-        lastApprovedDate
         spouseSpecific
         staffSpecific
-        submittedDate
+        submittedAt
+        changesRequestedAt
       }
       status
       user {
@@ -56,15 +56,15 @@ query MinistryHousingAllowanceRequest($ministryHousingAllowanceRequestId: ID!) {
       phoneNumber
       emailAddress
       iUnderstandMhaPolicy
-      approvedDate
+      hrApprovedAt
       approvedOverallAmount
       availableDate
-      boardApprovedDate
+      boardApprovedAt
       deadlineDate
-      lastApprovedDate
       spouseSpecific
       staffSpecific
-      submittedDate
+      submittedAt
+      changesRequestedAt
     }
     status
     user {

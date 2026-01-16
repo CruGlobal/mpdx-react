@@ -44,7 +44,7 @@ const TagsSectionWrapper = styled(Box)(({ theme }) => ({
 const TagsAccordionWrapper = styled(Box)(() => ({
   '& .MuiPaper-elevation1': {
     boxShadow: 'none',
-    borderBottom: `1px solid ${theme.palette.cruGrayLight.main}`,
+    borderBottom: `1px solid ${theme.palette.mpdxGrayLight.main}`,
   },
   '& .MuiAccordion-root.Mui-expanded': {
     margin: 0,

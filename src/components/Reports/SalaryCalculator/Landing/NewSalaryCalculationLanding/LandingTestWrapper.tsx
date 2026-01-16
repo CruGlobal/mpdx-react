@@ -6,6 +6,7 @@ import {
   AssignmentCategoryEnum,
   AssignmentStatusEnum,
   PeopleGroupSupportTypeEnum,
+  SalaryRequestStatusEnum,
   UserPersonTypeEnum,
 } from 'src/graphql/types.generated';
 import theme from 'src/theme';
@@ -21,6 +22,7 @@ interface LandingTestWrapperProps {
   peopleGroupSupportType?: PeopleGroupSupportTypeEnum;
   hasInProgressCalculation?: boolean;
   hasApprovedCalculation?: boolean;
+  hasLatestCalculation?: boolean;
 }
 
 export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
@@ -30,6 +32,7 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
   peopleGroupSupportType,
   hasInProgressCalculation = false,
   hasApprovedCalculation = false,
+  hasLatestCalculation = false,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
@@ -44,7 +47,7 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
             hcm: [
               {
                 staffInfo: {
-                  firstName: 'John',
+                  preferredName: 'John',
                   lastName: 'Doe',
                   userPersonType: UserPersonTypeEnum.EmployeeStaff,
                   assignmentStatus: AssignmentStatusEnum.ActivePayrollEligible,
@@ -67,7 +70,7 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
               },
               {
                 staffInfo: {
-                  firstName: 'Jane',
+                  preferredName: 'Jane',
                   lastName: 'Doe',
                   userPersonType: UserPersonTypeEnum.EmployeeStaff,
                   assignmentStatus: AssignmentStatusEnum.ActivePayrollEligible,
@@ -93,6 +96,16 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
           LandingSalaryCalculations: {
             inProgressCalculation: hasInProgressCalculation ? {} : null,
             approvedCalculation: hasApprovedCalculation ? {} : null,
+            latestCalculation: hasLatestCalculation
+              ? {
+                  id: 'pending-calc-1',
+                  effectiveDate: '2025-02-01',
+                  status: SalaryRequestStatusEnum.Pending,
+                  submittedAt: '2025-01-16T10:00:00Z',
+                  changesRequestedAt: null,
+                  feedback: null,
+                }
+              : null,
           },
           StaffAccountId: {
             user: {
