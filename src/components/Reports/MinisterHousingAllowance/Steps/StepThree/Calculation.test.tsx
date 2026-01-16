@@ -25,14 +25,14 @@ const updateMutation = jest.fn();
 
 interface TestComponentProps {
   contextValue: Partial<ContextType>;
-  boardApprovalDate?: string | null;
+  boardApprovedAt?: string | null;
   availableDate?: string | null;
   rentOrOwn?: MhaRentOrOwnEnum;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   contextValue,
-  boardApprovalDate = '2024-06-15',
+  boardApprovedAt = '2024-06-15',
   availableDate = '2024-07-01',
   rentOrOwn = MhaRentOrOwnEnum.Own,
 }) => (
@@ -49,7 +49,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
               value={contextValue as ContextType}
             >
               <Calculation
-                boardApprovalDate={boardApprovalDate}
+                boardApprovedAt={boardApprovedAt}
                 availableDate={availableDate}
                 rentOrOwn={rentOrOwn}
               />
@@ -297,7 +297,7 @@ describe('Calculation', () => {
             setIsPrint,
           } as unknown as ContextType
         }
-        boardApprovalDate={null}
+        boardApprovedAt={null}
         availableDate={null}
       />,
     );

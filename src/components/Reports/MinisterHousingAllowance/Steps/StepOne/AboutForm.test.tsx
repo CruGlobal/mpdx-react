@@ -10,7 +10,7 @@ import { MinisterHousingAllowanceProvider } from '../../Shared/Context/MinisterH
 import { AboutForm } from './AboutForm';
 
 const submit = jest.fn();
-const boardApprovalDate = '2024-09-15';
+const boardApprovedAt = '2024-09-15';
 const availabilityDate = '2024-10-01';
 
 const TestComponent: React.FC = () => (
@@ -20,7 +20,7 @@ const TestComponent: React.FC = () => (
         <MinisterHousingAllowanceProvider type={PageEnum.New}>
           <Formik initialValues={{}} onSubmit={submit}>
             <AboutForm
-              boardApprovalDate={boardApprovalDate}
+              boardApprovedAt={boardApprovedAt}
               availableDate={availabilityDate}
             />
           </Formik>

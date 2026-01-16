@@ -9,12 +9,12 @@ import { DirectionButtons } from '../../../Shared/CalculationReports/DirectionBu
 import { useMinisterHousingAllowance } from '../../Shared/Context/MinisterHousingAllowanceContext';
 
 interface AboutFormProps {
-  boardApprovalDate: string | null;
+  boardApprovedAt: string | null;
   availableDate: string | null;
 }
 
 export const AboutForm: React.FC<AboutFormProps> = ({
-  boardApprovalDate,
+  boardApprovedAt,
   availableDate,
 }) => {
   const { t } = useTranslation();
@@ -27,8 +27,8 @@ export const AboutForm: React.FC<AboutFormProps> = ({
 
   const nextYear = DateTime.now().year + 1;
 
-  const boardDateFormatted = boardApprovalDate
-    ? dateFormatShort(DateTime.fromISO(boardApprovalDate), locale)
+  const boardDateFormatted = boardApprovedAt
+    ? dateFormatShort(DateTime.fromISO(boardApprovedAt), locale)
     : null;
 
   const availableDateFormatted = availableDate
