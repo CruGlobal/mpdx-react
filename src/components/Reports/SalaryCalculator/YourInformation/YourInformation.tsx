@@ -2,10 +2,9 @@ import React from 'react';
 import { Typography } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { FourOhThreeBSection } from '../403bSection/403bSection';
-import { MaxAllowableStep } from '../MaxAllowableSection/MaxAllowableSection';
-import { MhaRequestSection } from '../MhaRequestSection/MhaRequestSection';
-import { PersonalInformationSection } from '../PersonalInformationSection/PersonalInformationSection';
-import { RequestedSalarySection } from '../RequestedSalarySection/RequestedSalarySection';
+import { MaxAllowableStep } from './MaxAllowableSection/MaxAllowableSection';
+import { MhaRequestSection } from './MhaRequestSection/MhaRequestSection';
+import { PersonalInformationSection } from './PersonalInformationSection/PersonalInformationSection';
 
 export const YourInformationStep: React.FC = () => {
   const { t } = useTranslation();
@@ -22,7 +21,6 @@ export const YourInformationStep: React.FC = () => {
       <PersonalInformationSection />
       <MaxAllowableStep />
       <FourOhThreeBSection />
-      <RequestedSalarySection />
       <MhaRequestSection />
     </>
   );

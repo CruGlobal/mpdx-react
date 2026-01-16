@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
+import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
 
 export const usePersonalInformation = () => {
   const { t } = useTranslation();

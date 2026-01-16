@@ -8,6 +8,7 @@ fragment SalaryRequestFields on SalaryRequest {
   salary
   spouseSalary
   status
+  additionalInfo
   phoneNumber
   emailAddress
   submittedAt
