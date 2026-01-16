@@ -189,49 +189,54 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
       // Parse the current input value, or use null if empty/invalid
       const existingValue = lumpSumValue ? parseFloat(lumpSumValue) : null;
 
-      // Get the default value for specific category and type
-      // Fall back to default if totalAmount does not exist
-      const defaultValue = getDirectInputDefaults(
-        categoryType,
-        defaultType,
-        goalMiscConstants,
-      );
-      const value = existingValue || totalAmount || defaultValue;
-
       // If no input value exists, populate with the current total from line items
       if (!lumpSumValue) {
-        setLumpSumValue(value.toString());
+        setLumpSumValue(totalAmount.toString());
       }
 
       // Set directInput to the existing value or fall back to totalAmount
       // This preserves user input or defaults to the calculated total
-      updateDirectInput(value);
+      updateDirectInput(existingValue || totalAmount);
     } else {
       // Switching to "Line Item" mode
-      // Set directInput to null to indicate line item mode and reset lump sum value
+      // Set directInput to null to indicate line item mode
       updateDirectInput(null);
-      setLumpSumValue('');
     }
 
     // Clear any validation errors when switching modes
     setCellErrors({});
   };
 
-  // When familySize or role changes, update lumpSumValue with new defaults
+  // Update line item defaults only when defaultType changes
   useEffect(() => {
-    if (directInput) {
+    if (!directInput) {
       const newDefaultValues = getDirectInputDefaults(
         categoryType,
         defaultType,
         goalMiscConstants,
       );
-      setLumpSumValue(newDefaultValues.toString());
-      updateDirectInput(newDefaultValues);
+
+      gridData.forEach(async (row) => {
+        if (row.category) {
+          await updateSubBudgetCategory({
+            variables: {
+              input: {
+                accountListId,
+                attributes: {
+                  id: row.id,
+                  label: row.label,
+                  amount: newDefaultValues,
+                },
+              },
+            },
+          });
+        }
+      });
     }
-  }, [directInput, defaultType, categoryType, goalMiscConstants]);
+  }, [defaultType, categoryType, goalMiscConstants]);
 
   const directInputProps = useAutoSave({
-    value: category.directInput ?? 0,
+    value: category.directInput,
     saveValue: updateDirectInput,
     fieldName: 'amount',
     schema: directInputSchema,
