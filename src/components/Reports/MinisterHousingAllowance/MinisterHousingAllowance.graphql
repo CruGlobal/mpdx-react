@@ -12,15 +12,15 @@ fragment RequestAttributes on MhaRequestAttributes {
   phoneNumber
   emailAddress
   iUnderstandMhaPolicy
-  approvedDate
+  hrApprovedAt
   approvedOverallAmount
   availableDate
-  boardApprovedDate
+  boardApprovedAt
   deadlineDate
-  lastApprovedDate
   spouseSpecific
   staffSpecific
-  submittedDate
+  submittedAt
+  changesRequestedAt
 }
 
 query MinistryHousingAllowanceRequests {

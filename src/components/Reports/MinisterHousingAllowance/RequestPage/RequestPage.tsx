@@ -72,7 +72,7 @@ export const RequestPage: React.FC = () => {
     window.print();
   };
 
-  const boardDate = mocks[4].mhaDetails.staffMHA?.boardApprovalDate ?? '';
+  const boardDate = mocks[4].mhaDetails.staffMHA?.boardApprovedAt ?? '';
   const availableDate = mocks[4].mhaDetails.staffMHA?.availableDate ?? '';
   const deadlineDate = mocks[4].mhaDetails.staffMHA?.deadlineDate ?? '';
 
@@ -95,8 +95,8 @@ export const RequestPage: React.FC = () => {
         <Container sx={{ ml: 5 }}>
           <Stack direction="column" width={mainContentWidth}>
             <Calculation
-              boardApprovalDate={
-                mocks[4].mhaDetails.staffMHA?.boardApprovalDate ?? ''
+              boardApprovedAt={
+                mocks[4].mhaDetails.staffMHA?.boardApprovedAt ?? ''
               }
               availableDate={mocks[4].mhaDetails.staffMHA?.availableDate ?? ''}
               rentOrOwn={value}
@@ -161,14 +161,14 @@ export const RequestPage: React.FC = () => {
               <Stack direction="column" width={mainContentWidth}>
                 {currentIndex === 0 && (
                   <AboutForm
-                    boardApprovalDate={boardDate}
+                    boardApprovedAt={boardDate}
                     availableDate={availableDate}
                   />
                 )}
                 {currentIndex === 1 && <RentOwn />}
                 {currentIndex === 2 && (
                   <Calculation
-                    boardApprovalDate={boardDate}
+                    boardApprovedAt={boardDate}
                     availableDate={availableDate}
                     rentOrOwn={values.rentOrOwn}
                     deadlineDate={deadlineDate}

@@ -34,7 +34,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
     updatedAt: '2022-12-01',
     requestAttributes: {
       ...mockMHARequest.requestAttributes,
-      approvedDate: '2023-01-15',
+      hrApprovedAt: '2023-01-15',
       approvedOverallAmount: 1500,
       staffSpecific: 1000,
       spouseSpecific: 500,
