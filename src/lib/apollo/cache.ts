@@ -93,6 +93,7 @@ export const createCache = () =>
           people: paginationFieldPolicy,
           tasks: paginationFieldPolicy,
           userNotifications: paginationFieldPolicy,
+          partnerGivingAnalysis: paginationFieldPolicy,
           // When loading a user option, look it up from the cache by its key
           userOption: {
             read: (_, { args, toReference }) =>

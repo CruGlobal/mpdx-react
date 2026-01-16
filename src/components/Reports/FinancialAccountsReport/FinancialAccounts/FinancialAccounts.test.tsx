@@ -88,8 +88,8 @@ describe('FinancialAccounts', () => {
       <Components mocks={FinancialAccountsMock} />,
     );
 
-    expect(getByTestId('ReportsFilterIcon')).toBeInTheDocument();
-    userEvent.click(getByTestId('ReportsFilterIcon'));
+    expect(getByTestId('ReportsMenuIcon')).toBeInTheDocument();
+    userEvent.click(getByTestId('ReportsMenuIcon'));
     await waitFor(() => expect(onNavListToggle).toHaveBeenCalled());
   });
 
