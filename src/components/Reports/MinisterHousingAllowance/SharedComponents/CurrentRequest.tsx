@@ -33,9 +33,9 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
   const { status, requestAttributes } = request;
 
   const {
-    boardApprovedDate,
+    boardApprovedAt,
     deadlineDate,
-    submittedDate,
+    submittedAt,
     availableDate,
     approvedOverallAmount,
   } = requestAttributes || {};
@@ -89,8 +89,8 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
                 ) : (
                   <>
                     {t('Requested on')}
-                    {submittedDate &&
-                      `: ${dateFormat(DateTime.fromISO(submittedDate), locale)}`}
+                    {submittedAt &&
+                      `: ${dateFormat(DateTime.fromISO(submittedAt), locale)}`}
                   </>
                 )}
               </b>
@@ -139,8 +139,8 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
             <TimelineContent>
               <b>
                 {t('Board Approval on')}
-                {boardApprovedDate &&
-                  `: ${dateFormat(DateTime.fromISO(boardApprovedDate), locale)}`}
+                {boardApprovedAt &&
+                  `: ${dateFormat(DateTime.fromISO(boardApprovedAt), locale)}`}
               </b>
             </TimelineContent>
           </TimelineItem>
