@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import { AddHomeSharp } from '@mui/icons-material';
 import {
   Timeline,
@@ -26,6 +27,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const accountListId = useAccountListId();
+  const router = useRouter();
   const currency = 'USD';
 
   const requestId = request.id;
@@ -33,12 +35,17 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
   const { status, requestAttributes } = request;
 
   const {
-    boardApprovedDate,
+    boardApprovedAt,
     deadlineDate,
-    submittedDate,
+    submittedAt,
     availableDate,
     approvedOverallAmount,
   } = requestAttributes || {};
+
+  const handlePrint = async () => {
+    await router.push(getRequestUrl(accountListId, requestId, 'view'));
+    setTimeout(() => window.print(), 500);
+  };
 
   return (
     <StatusCard
@@ -51,6 +58,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
       linkTwoText={t('Edit Request')}
       linkTwo={getRequestUrl(accountListId, requestId, 'edit')}
       isRequest={true}
+      handlePrint={handlePrint}
       handleConfirmCancel={() => {}}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -89,8 +97,8 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
                 ) : (
                   <>
                     {t('Requested on')}
-                    {submittedDate &&
-                      `: ${dateFormat(DateTime.fromISO(submittedDate), locale)}`}
+                    {submittedAt &&
+                      `: ${dateFormat(DateTime.fromISO(submittedAt), locale)}`}
                   </>
                 )}
               </b>
@@ -139,8 +147,8 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
             <TimelineContent>
               <b>
                 {t('Board Approval on')}
-                {boardApprovedDate &&
-                  `: ${dateFormat(DateTime.fromISO(boardApprovedDate), locale)}`}
+                {boardApprovedAt &&
+                  `: ${dateFormat(DateTime.fromISO(boardApprovedAt), locale)}`}
               </b>
             </TimelineContent>
           </TimelineItem>

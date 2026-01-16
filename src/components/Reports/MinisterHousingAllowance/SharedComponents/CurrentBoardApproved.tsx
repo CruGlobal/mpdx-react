@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import { HomeSharp } from '@mui/icons-material';
 import { Grid, Skeleton, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
@@ -20,14 +21,23 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
   const accountListId = useAccountListId();
+  const router = useRouter();
   const currency = 'USD';
 
   const { isMarried, preferredName, spousePreferredName } =
     useMinisterHousingAllowance();
   const requestId = request?.id;
 
-  const { approvedDate, approvedOverallAmount, staffSpecific, spouseSpecific } =
+  const { hrApprovedAt, approvedOverallAmount, staffSpecific, spouseSpecific } =
     request?.requestAttributes || {};
+
+  const handlePrint = async () => {
+    if (!requestId) {
+      return;
+    }
+    await router.push(getRequestUrl(accountListId, requestId, 'view'));
+    setTimeout(() => window.print(), 500);
+  };
 
   return (
     <StatusCard
@@ -40,14 +50,15 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
       linkTwoText={t("Duplicate Last Year's MHA")}
       linkTwo=""
       isRequest={false}
+      handlePrint={handlePrint}
       handleConfirmCancel={() => {}}
     >
       <Grid container spacing={2}>
         <Grid item xs={6}>
           <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
             {t('APPROVAL DATE')}:{' '}
-            {approvedDate ? (
-              dateFormatShort(DateTime.fromISO(approvedDate), locale)
+            {hrApprovedAt ? (
+              dateFormatShort(DateTime.fromISO(hrApprovedAt), locale)
             ) : (
               <Skeleton
                 width={100}

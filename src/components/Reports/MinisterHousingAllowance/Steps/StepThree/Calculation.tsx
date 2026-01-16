@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { OpenInNew } from '@mui/icons-material';
 import PrintIcon from '@mui/icons-material/Print';
@@ -39,7 +38,7 @@ import { RequestSummaryCard } from './CalcComponents/RequestSummaryCard';
 // TODO: get correct link for "What expenses can I claim on my MHA?"
 
 interface CalculationProps {
-  boardApprovalDate: string | null;
+  boardApprovedAt: string | null;
   availableDate: string | null;
   deadlineDate?: string | null;
   rentOrOwn?: MhaRentOrOwnEnum;
@@ -92,7 +91,7 @@ const getValidationSchema = (rentOrOwn?: MhaRentOrOwnEnum) => {
 };
 
 export const Calculation: React.FC<CalculationProps> = ({
-  boardApprovalDate,
+  boardApprovedAt,
   availableDate,
   deadlineDate,
   rentOrOwn,
@@ -100,16 +99,12 @@ export const Calculation: React.FC<CalculationProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { query } = useRouter();
-  const print = query.print === 'true';
 
   const {
     handleNextStep,
     handlePreviousStep,
     pageType,
     setHasCalcValues,
-    setIsPrint,
-    isPrint,
     requestData,
     updateMutation,
     userHcmData,
@@ -169,8 +164,8 @@ export const Calculation: React.FC<CalculationProps> = ({
         iUnderstandMhaPolicy: false,
       };
 
-  const boardDateFormatted = boardApprovalDate
-    ? dateFormatShort(DateTime.fromISO(boardApprovalDate), locale)
+  const boardDateFormatted = boardApprovedAt
+    ? dateFormatShort(DateTime.fromISO(boardApprovedAt), locale)
     : null;
 
   const availableDateFormatted = availableDate
@@ -184,10 +179,6 @@ export const Calculation: React.FC<CalculationProps> = ({
   const approval = availableDateFormatted
     ? t(`approval effective ${availableDateFormatted}`)
     : t('approval soon');
-
-  useEffect(() => {
-    setIsPrint(print);
-  }, [print, setIsPrint]);
 
   const schema = getValidationSchema(rentOrOwn);
 
@@ -236,7 +227,8 @@ export const Calculation: React.FC<CalculationProps> = ({
                     ? t('Your MHA Request')
                     : t('Calculate Your MHA Request')}
                 </Typography>
-                {isPrint && (
+
+                {isViewPage && (
                   <SimpleScreenOnly>
                     <StyledPrintButton
                       startIcon={
@@ -275,7 +267,7 @@ export const Calculation: React.FC<CalculationProps> = ({
                 )}
               </Trans>
             )}
-            {!isPrint && (
+            <SimpleScreenOnly>
               <Box sx={{ mt: 2, mb: 3 }}>
                 <OpenInNew
                   fontSize="medium"
@@ -285,7 +277,7 @@ export const Calculation: React.FC<CalculationProps> = ({
                   What expenses can I claim on my MHA?
                 </Link>
               </Box>
-            )}
+            </SimpleScreenOnly>
             {isViewPage && (
               <Box mb={3}>
                 <RequestSummaryCard rentOrOwn={rentOrOwn} />

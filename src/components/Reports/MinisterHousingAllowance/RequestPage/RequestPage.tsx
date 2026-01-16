@@ -16,7 +16,6 @@ import { StepsList } from '../../Shared/CalculationReports/StepsList/StepsList';
 import { mainContentWidth } from '../MinisterHousingAllowance';
 import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
 import { getRequestUrl } from '../Shared/Helper/getRequestUrl';
-import { mocks } from '../Shared/mockData';
 import { StepsEnum } from '../Shared/sharedTypes';
 import { AboutForm } from '../Steps/StepOne/AboutForm';
 import { Calculation } from '../Steps/StepThree/Calculation';
@@ -61,9 +60,14 @@ export const RequestPage: React.FC = () => {
     window.print();
   };
 
-  const boardDate = mocks[4].mhaDetails.staffMHA?.boardApprovalDate ?? '';
-  const availableDate = mocks[4].mhaDetails.staffMHA?.availableDate ?? '';
-  const deadlineDate = mocks[4].mhaDetails.staffMHA?.deadlineDate ?? '';
+  const boardDate = requestData?.requestAttributes?.boardApprovedAt ?? '';
+  const availableDate = requestData?.requestAttributes?.availableDate ?? '';
+  const deadlineDate = requestData?.requestAttributes?.deadlineDate ?? '';
+
+  const iconPanelItems = useIconPanelItems(isDrawerOpen, toggleDrawer);
+
+  const editLink = getRequestUrl(accountListId, requestId, 'edit');
+  const viewLink = getRequestUrl(accountListId, requestId, 'view');
 
   return isView ? (
     <PanelLayout
@@ -75,10 +79,8 @@ export const RequestPage: React.FC = () => {
         <Container sx={{ ml: 5 }}>
           <Stack direction="column" width={mainContentWidth}>
             <Calculation
-              boardApprovalDate={
-                mocks[4].mhaDetails.staffMHA?.boardApprovalDate ?? ''
-              }
-              availableDate={mocks[4].mhaDetails.staffMHA?.availableDate ?? ''}
+              boardApprovedAt={boardDate}
+              availableDate={availableDate}
               rentOrOwn={value}
               handlePrint={handlePrint}
             />
@@ -89,7 +91,7 @@ export const RequestPage: React.FC = () => {
   ) : (
     <PanelLayout
       panelType={PanelTypeEnum.Other}
-      icons={useIconPanelItems(isDrawerOpen, toggleDrawer)}
+      icons={iconPanelItems}
       percentComplete={percentComplete}
       currentIndex={currentIndex}
       steps={steps}
@@ -113,14 +115,14 @@ export const RequestPage: React.FC = () => {
               <Stack direction="column" width={mainContentWidth}>
                 {currentStep === StepsEnum.AboutForm ? (
                   <AboutForm
-                    boardApprovalDate={boardDate}
+                    boardApprovedAt={boardDate}
                     availableDate={availableDate}
                   />
                 ) : currentStep === StepsEnum.RentOrOwn ? (
                   <RentOwn />
                 ) : currentStep === StepsEnum.CalcForm ? (
                   <Calculation
-                    boardApprovalDate={boardDate}
+                    boardApprovedAt={boardDate}
                     availableDate={availableDate}
                     rentOrOwn={values.rentOrOwn}
                     deadlineDate={deadlineDate}
@@ -129,9 +131,9 @@ export const RequestPage: React.FC = () => {
                   <Receipt
                     formTitle={t('MHA Request')}
                     buttonText={t('View Your MHA')}
-                    editLink={`${getRequestUrl(accountListId, requestId, 'edit')}`}
+                    editLink={editLink}
                     isEdit={isEdit}
-                    viewLink={`${getRequestUrl(accountListId, requestId, 'view')}`}
+                    viewLink={viewLink}
                     availableDate={availableDate}
                     deadlineDate={deadlineDate}
                     setIsComplete={setIsComplete}

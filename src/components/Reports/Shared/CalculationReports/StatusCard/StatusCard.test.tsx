@@ -17,7 +17,7 @@ const titleTwo = 'Edit';
 const linkOne = '/mock-view-link';
 const linkTwo = '/mock-edit-link';
 
-const handleDownload = jest.fn();
+const handlePrint = jest.fn();
 const handleConfirmCancel = jest.fn();
 
 const MockIcon: React.FC<SvgIconProps> = (props) => (
@@ -29,7 +29,7 @@ const MockIcon: React.FC<SvgIconProps> = (props) => (
 interface TestComponentProps {
   subtitle?: string;
   isRequest?: boolean;
-  hideDownload?: boolean;
+  hidePrint?: boolean;
   hideActions?: boolean;
   linkOne?: string;
   linkTwo?: string;
@@ -38,7 +38,7 @@ interface TestComponentProps {
 const TestComponent: React.FC<TestComponentProps> = ({
   subtitle,
   isRequest,
-  hideDownload = false,
+  hidePrint = false,
   hideActions = false,
   linkOne,
   linkTwo,
@@ -58,11 +58,11 @@ const TestComponent: React.FC<TestComponentProps> = ({
                 linkOneText={titleOne}
                 linkTwoText={titleTwo}
                 isRequest={isRequest}
-                hideDownload={hideDownload}
+                hidePrint={hidePrint}
                 hideActions={hideActions}
                 linkOne={linkOne}
                 linkTwo={linkTwo}
-                handleDownload={handleDownload}
+                handlePrint={handlePrint}
                 handleConfirmCancel={handleConfirmCancel}
               >
                 <div>Test Children</div>
@@ -82,7 +82,7 @@ describe('CardSkeleton', () => {
     expect(getByTestId('mock-icon')).toBeInTheDocument();
     expect(getByText(title)).toBeInTheDocument();
     expect(queryByText(subtitle)).not.toBeInTheDocument();
-    expect(getByTestId('FileDownloadIcon')).toBeInTheDocument();
+    expect(getByTestId('PrintIcon')).toBeInTheDocument();
   });
 
   it('should render card header with subtitle', () => {
@@ -93,7 +93,7 @@ describe('CardSkeleton', () => {
     expect(getByTestId('mock-icon')).toBeInTheDocument();
     expect(getByText(title)).toBeInTheDocument();
     expect(getByText(subtitle)).toBeInTheDocument();
-    expect(getByTestId('FileDownloadIcon')).toBeInTheDocument();
+    expect(getByTestId('PrintIcon')).toBeInTheDocument();
   });
 
   it('should render children', () => {
@@ -151,10 +151,10 @@ describe('CardSkeleton', () => {
     expect(queryByRole('dialog')).not.toBeInTheDocument();
   });
 
-  it('hides download icon when hideDownload is true', () => {
-    const { queryByTestId } = render(<TestComponent hideDownload={true} />);
+  it('hides print icon when hidePrint is true', () => {
+    const { queryByTestId } = render(<TestComponent hidePrint={true} />);
 
-    expect(queryByTestId('FileDownloadIcon')).not.toBeInTheDocument();
+    expect(queryByTestId('PrintIcon')).not.toBeInTheDocument();
   });
 
   it('hides action buttons when hideActions is true', () => {
@@ -164,14 +164,14 @@ describe('CardSkeleton', () => {
     expect(queryByText(titleTwo)).not.toBeInTheDocument();
   });
 
-  it('calls handleDownload when download icon is clicked', async () => {
+  it('calls handlePrint when print icon is clicked', async () => {
     const { getByTestId } = render(<TestComponent />);
 
-    const downloadIcon = getByTestId('FileDownloadIcon');
+    const printIcon = getByTestId('PrintIcon');
 
-    await userEvent.click(downloadIcon);
+    await userEvent.click(printIcon);
 
-    expect(handleDownload).toHaveBeenCalled();
+    expect(handlePrint).toHaveBeenCalled();
   });
 
   it('calls handleConfirmCancel when confirming cancel', async () => {
