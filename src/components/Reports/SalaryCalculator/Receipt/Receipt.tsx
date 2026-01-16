@@ -11,7 +11,8 @@ import {
 } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
+import { useCaps } from '../SalaryCalculation/useCaps';
+import { useApprovers } from '../Shared/useApprovers';
 import { useFormatters } from '../Shared/useFormatters';
 import { MhaCard } from '../Summary/MhaCard';
 import { SalaryCalculationCard } from '../Summary/SalaryCalculationCard';
@@ -22,31 +23,13 @@ import { StaffInfoSummaryCard } from '../Summary/StaffInfoSummaryCard';
 export const ReceiptStep: React.FC = () => {
   const accountListId = useAccountListId();
   const { t } = useTranslation();
-  const { calculation, hcmUser, hcmSpouse } = useSalaryCalculator();
   const { formatCurrency } = useFormatters();
+  const { combinedGross, overCombinedCap } = useCaps();
+  const { approvers } = useApprovers();
 
   const [showReceipt, setShowReceipt] = useState(false);
 
-  const userRequested = calculation?.calculations.requestedGross ?? 0;
-  const spouseRequested = calculation?.spouseCalculations?.effectiveCap ?? 0;
-
-  const userOverCap =
-    calculation && userRequested > calculation.calculations.effectiveCap;
-  const spouseOverCap =
-    calculation?.spouseCalculations &&
-    spouseRequested > calculation.spouseCalculations.effectiveCap;
-  const requiresApproval = userOverCap || spouseOverCap;
-
-  const requestedAmount = formatCurrency(userRequested + spouseRequested);
-
-  const approvers = [
-    hcmUser?.exceptionSalaryCap.exceptionApprover,
-    hcmSpouse?.exceptionSalaryCap.exceptionApprover,
-  ].filter((approver) => !!approver);
-  const approversFormatted =
-    approvers.length === 2
-      ? `${approvers[0]} ${t('and')} ${approvers[1]}`
-      : approvers[0];
+  const requestedAmount = formatCurrency(combinedGross);
 
   return (
     <Stack gap={4}>
@@ -58,17 +41,17 @@ export const ReceiptStep: React.FC = () => {
         <Typography variant="body2" fontWeight="bold" sx={{ mb: 1 }}>
           {t("You've successfully submitted your Salary Calculation Form!")}
         </Typography>
-        <Typography variant="body2">
-          {requiresApproval ? (
+        <Typography data-testid="Receipt-message" variant="body2">
+          {overCombinedCap ? (
             // TODO: Determine the time frame
             <Trans t={t}>
               Because your request exceeds your maximum allowable salary it will
               require additional approvals. For the {{ requestedAmount }} you
               are requesting, this will take [time frame] as it needs to be
-              signed off by {{ approvers: approversFormatted }}. This may affect
-              your selected effective date. We will review your request through
-              our Progressive Approvals process and notify you of any changes to
-              the status of this request.
+              signed off by {{ approvers }}. This may affect your selected
+              effective date. We will review your request through our
+              Progressive Approvals process and notify you of any changes to the
+              status of this request.
             </Trans>
           ) : (
             <Trans t={t}>
@@ -89,7 +72,9 @@ export const ReceiptStep: React.FC = () => {
         </>
       ) : (
         <Stack direction="row" gap={1}>
-          <Visibility sx={{ color: 'cruGrayMedium' }} />
+          <Visibility
+            sx={(theme) => ({ color: theme.palette.mpdxGrayDark.main })}
+          />
           <Link component={ButtonBase} onClick={() => setShowReceipt(true)}>
             {t(
               'View or print a copy of your submitted Salary Calculation Request',

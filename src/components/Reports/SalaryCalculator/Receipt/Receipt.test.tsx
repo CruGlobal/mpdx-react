@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SalaryCalculatorTestWrapper } from '../SalaryCalculatorTestWrapper';
 import { ReceiptStep } from './Receipt';
@@ -12,7 +12,12 @@ const TestComponent: React.FC<TestComponentProps> = ({
 }) => (
   <SalaryCalculatorTestWrapper
     salaryRequestMock={
-      requiresApproval ? { calculations: { requestedGross: 100000 } } : null
+      requiresApproval
+        ? {
+            calculations: { requestedGross: 100000 },
+            spouseCalculations: { requestedGross: 40000 },
+          }
+        : null
     }
   >
     <ReceiptStep />
@@ -21,14 +26,15 @@ const TestComponent: React.FC<TestComponentProps> = ({
 
 describe('Receipt step', () => {
   it('should show approval info when request requires approval', async () => {
-    const { findByText } = render(<TestComponent requiresApproval />);
+    const { getByTestId } = render(<TestComponent requiresApproval />);
 
-    expect(
-      await findByText(
-        'it needs to be signed off by Approver Name and Other Approver',
-        { exact: false },
+    await waitFor(() =>
+      expect(getByTestId('Receipt-message')).toHaveTextContent(
+        'Because your request exceeds your maximum allowable salary it will require additional approvals. \
+For the $140,000.00 you are requesting, this will take [time frame] as it needs to be signed off by Approver Name and Other Approver. \
+This may affect your selected effective date. We will review your request through our Progressive Approvals process and notify you of any changes to the status of this request.',
       ),
-    ).toBeInTheDocument();
+    );
   });
 
   it('should show summary when user clicks to view receipt', () => {

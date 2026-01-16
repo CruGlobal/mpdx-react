@@ -28,7 +28,7 @@ query Hcm {
     }
     mhaRequest {
       currentApprovedOverallAmount
-      currentApprovedAmountForStaff
+      currentTakenAmount
     }
     exceptionSalaryCap {
       amount
