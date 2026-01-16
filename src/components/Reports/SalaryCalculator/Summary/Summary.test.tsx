@@ -12,7 +12,7 @@ const TestComponent: React.FC = () => (
 
 describe('SummaryStep', () => {
   describe('View Complete Calculations button', () => {
-    it('should toggle calculation cards', async () => {
+    it('should toggle calculation cards', () => {
       const { getByRole, getByText, queryByText } = render(<TestComponent />);
 
       const button = getByRole('button', {
