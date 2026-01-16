@@ -28,8 +28,8 @@ describe('MhaRequestSection', () => {
     const staffField = await findByTestId('current-mha-staff');
     const spouseField = await findByTestId('current-mha-spouse');
 
-    expect(staffField).toHaveValue('$12,000');
-    expect(spouseField).toHaveValue('$19,200');
+    expect(staffField).toHaveValue('$7,200');
+    expect(spouseField).toHaveValue('$12,000');
   });
 
   it('should render new requested MHA input fields for both spouses', async () => {

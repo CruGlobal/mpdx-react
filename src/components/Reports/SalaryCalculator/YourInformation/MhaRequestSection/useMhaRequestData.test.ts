@@ -12,9 +12,9 @@ describe('useMhaRequestData', () => {
       expect(result.current.hasSpouse).toBe(true);
     });
 
-    expect(result.current.boardApprovedAmount).toBe('$22,000');
-    expect(result.current.currentTakenAmount).toBe('$12,000');
-    expect(result.current.currentApprovedSpouseAmountForStaff).toBe('$19,200');
+    expect(result.current.approvedAmount).toBe('$20,000');
+    expect(result.current.currentTakenAmount).toBe('$7,200');
+    expect(result.current.currentSpouseTakenAmount).toBe('$12,000');
   });
 
   it('should validate required fields and max amounts', async () => {
@@ -23,7 +23,7 @@ describe('useMhaRequestData', () => {
     });
 
     await waitFor(() => {
-      expect(result.current.boardApprovedAmount).toBe('$22,000');
+      expect(result.current.approvedAmount).toBe('$20,000');
     });
 
     const schema = result.current.schema;
@@ -33,15 +33,15 @@ describe('useMhaRequestData', () => {
     ).rejects.toThrow('MHA Amount is required');
 
     await expect(
-      schema.validate({ mhaAmount: 15000, spouseMhaAmount: 5000 }),
+      schema.validate({ mhaAmount: 25000, spouseMhaAmount: 5000 }),
     ).rejects.toThrow(
-      'New Requested MHA cannot exceed Board Approved MHA Amount of $10,000',
+      'New Requested MHA cannot exceed Board Approved MHA Amount of $20,000',
     );
 
     await expect(
-      schema.validate({ mhaAmount: 5000, spouseMhaAmount: 15000 }),
+      schema.validate({ mhaAmount: 5000, spouseMhaAmount: 25000 }),
     ).rejects.toThrow(
-      'New Requested MHA cannot exceed Board Approved MHA Amount of $12,000',
+      'New Requested MHA cannot exceed Board Approved MHA Amount of $20,000',
     );
 
     await expect(

@@ -37,8 +37,8 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
           maximumContributionLimit: 45,
         },
         mhaRequest: {
-          currentApprovedOverallAmount: 10000,
-          currentTakenAmount: 500,
+          currentApprovedOverallAmount: 20000,
+          currentTakenAmount: 300,
         },
         exceptionSalaryCap: {
           amount: null,
@@ -59,8 +59,8 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
           maximumContributionLimit: 47,
         },
         mhaRequest: {
-          currentApprovedOverallAmount: 12000,
-          currentTakenAmount: 800,
+          currentApprovedOverallAmount: 20000,
+          currentTakenAmount: 500,
         },
         exceptionSalaryCap: {
           amount: null,
