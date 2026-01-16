@@ -1,6 +1,7 @@
 import { render, waitFor } from '@testing-library/react';
 import { merge } from 'lodash';
 import { DeepPartial } from 'ts-essentials';
+import { ProgressiveApprovalTierEnum } from 'src/graphql/types.generated';
 import { SalaryCalculationQuery } from '../../SalaryCalculatorContext/SalaryCalculation.generated';
 import {
   SalaryCalculatorTestWrapper,
@@ -51,6 +52,9 @@ describe('RequestSummaryCard', () => {
           salaryRequestMock={{
             calculations: { requestedGross: 40000 },
             spouseCalculations: { effectiveCap: 50000 },
+            progressiveApprovalTier: {
+              tier: ProgressiveApprovalTierEnum.DivisionHead,
+            },
           }}
         />,
       );
@@ -73,6 +77,9 @@ or make changes to how your Requested Salary is distributed above.",
           salaryRequestMock={{
             calculations: { effectiveCap: 50000 },
             spouseCalculations: { requestedGross: 40000 },
+            progressiveApprovalTier: {
+              tier: ProgressiveApprovalTierEnum.DivisionHead,
+            },
           }}
         />,
       );
@@ -88,11 +95,18 @@ or make changes to how your Requested Salary is distributed above.",
     });
   });
 
-  describe('combined over cap', () => {
+  describe('requires above division head approval', () => {
     it('renders status message', async () => {
       const { getByTestId } = render(
         <TestComponent
-          salaryRequestMock={{ calculations: { requestedGross: 100_000 } }}
+          salaryRequestMock={{
+            calculations: { requestedGross: 100_000 },
+            progressiveApprovalTier: {
+              tier: ProgressiveApprovalTierEnum.VicePresident,
+              approver: 'Vice President',
+              approvalTimeframe: '1-2 weeks',
+            },
+          }}
         />,
       );
 
@@ -100,7 +114,7 @@ or make changes to how your Requested Salary is distributed above.",
         expect(getByTestId('RequestSummaryCard-status')).toHaveTextContent(
           'Your Combined Gross Requested Salary exceeds your Combined Maximum Allowable Salary. \
 Please make adjustments to your Salary Request above or fill out the Approval Process Section below to request a higher amount through our Progressive Approvals process. \
-This may take [time frame] as it needs to be signed off by Approver Name and Other Approver. \
+This may take 1-2 weeks as it needs to be signed off by the Vice President. \
 This may affect your selected effective date.',
         ),
       );
@@ -232,12 +246,19 @@ This may affect your selected effective date.',
       ]);
     });
 
-    describe('when over cap', () => {
+    describe('requires above division head approval', () => {
       it('renders status message', async () => {
         const { getByTestId } = render(
           <TestComponent
             hasSpouse={false}
-            salaryRequestMock={{ calculations: { requestedGross: 100_000 } }}
+            salaryRequestMock={{
+              calculations: { requestedGross: 100_000 },
+              progressiveApprovalTier: {
+                tier: ProgressiveApprovalTierEnum.VicePresident,
+                approver: 'Vice President',
+                approvalTimeframe: '1-2 weeks',
+              },
+            }}
           />,
         );
 
@@ -245,7 +266,7 @@ This may affect your selected effective date.',
           expect(getByTestId('RequestSummaryCard-status')).toHaveTextContent(
             'Your Gross Requested Salary exceeds your Maximum Allowable Salary. \
 Please make adjustments to your Salary Request above or fill out the Approval Process Section below to request a higher amount through our Progressive Approvals process. \
-This may take [time frame] as it needs to be signed off by Approver Name. \
+This may take 1-2 weeks as it needs to be signed off by the Vice President. \
 This may affect your selected effective date.',
           ),
         );

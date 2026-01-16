@@ -50,13 +50,18 @@ fragment CalculationFields on SalaryRequestCalculations {
 query SalaryCalculation {
   salaryRequest: latestSalaryRequest(status: [IN_PROGRESS]) {
     id
-    createdAt
     ...SalaryRequestFields
     calculations {
       ...CalculationFields
     }
     spouseCalculations {
       ...CalculationFields
+    }
+    progressiveApprovalTier {
+      id
+      tier
+      approver
+      approvalTimeframe
     }
   }
 }

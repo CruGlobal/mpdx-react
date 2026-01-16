@@ -14,9 +14,9 @@ import {
   useTheme,
 } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
+import { ProgressiveApprovalTierEnum } from 'src/graphql/types.generated';
 import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
 import { StepCard } from '../../Shared/StepCard';
-import { useApprovers } from '../../Shared/useApprovers';
 import { useFormatters } from '../../Shared/useFormatters';
 import { StyledCardHeader } from '../StyledCardHeader';
 import { useCaps } from '../useCaps';
@@ -54,7 +54,7 @@ export const RequestSummaryCard: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
   const { calculation, hcmUser, hcmSpouse } = useSalaryCalculator();
-  const { approvers } = useApprovers();
+  const progressiveApprovalTier = calculation?.progressiveApprovalTier;
   const {
     combinedCap,
     combinedGross,
@@ -98,14 +98,18 @@ export const RequestSummaryCard: React.FC = () => {
   const statusMessage =
     !overCombinedCap && !overUserCap && !overSpouseCap ? (
       t('Your gross request is within your Maximum Allowable Salary.')
-    ) : overCombinedCap ? (
+    ) : progressiveApprovalTier &&
+      progressiveApprovalTier.tier !==
+        ProgressiveApprovalTierEnum.DivisionHead ? (
       <Trans t={t}>
         Your {{ combined: combinedModifier }} Gross Requested Salary exceeds
         your {{ combined: combinedModifier }} Maximum Allowable Salary. Please
         make adjustments to your Salary Request above or fill out the Approval
         Process Section below to request a higher amount through our Progressive
-        Approvals process. This may take [time frame] as it needs to be signed
-        off by {{ approvers }}. This may affect your selected effective date.
+        Approvals process. This may take{' '}
+        {{ timeframe: progressiveApprovalTier.approvalTimeframe }} as it needs
+        to be signed off by the {{ approver: progressiveApprovalTier.approver }}
+        . This may affect your selected effective date.
       </Trans>
     ) : (
       <Trans t={t}>

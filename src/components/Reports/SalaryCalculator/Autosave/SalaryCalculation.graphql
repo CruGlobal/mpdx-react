@@ -9,6 +9,12 @@ mutation UpdateSalaryCalculation($input: SalaryRequestUpdateMutationInput!) {
       spouseCalculations {
         ...CalculationFields
       }
+      progressiveApprovalTier {
+        id
+        tier
+        approver
+        approvalTimeframe
+      }
     }
   }
 }
