@@ -78,6 +78,10 @@ export const StepNavigation: React.FC = () => {
   const theme = useTheme();
   const { currentStep } = useSalaryCalculator();
 
+  if (currentStep === SalaryCalculatorSectionEnum.Receipt) {
+    return null;
+  }
+
   return (
     <Box display="flex" justifyContent="flex-end">
       <Stack direction="row" spacing={theme.spacing(1)}>
