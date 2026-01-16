@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { MpdGoalBenefitsConstantSizeEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getQueryParam } from 'src/utils/queryParam';
 import { useGoalCalculatorConstants } from '../../../../hooks/useGoalCalculatorConstants';
@@ -19,6 +20,7 @@ import {
 import { useGoalCalculationQuery } from './GoalCalculation.generated';
 import { completionPercentage } from './calculateCompletion';
 import { GoalTotals, calculateGoalTotals } from './calculateTotals';
+import { DefaultTypeEnum, getDefaultType } from './getDefaultType';
 import { GoalCalculatorStep, useSteps } from './useSteps';
 
 export type GoalCalculatorType = {
@@ -48,6 +50,9 @@ export type GoalCalculatorType = {
   /** Call with the mutation promise to track the start and end of mutations */
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
   percentComplete: number;
+
+  defaultType: DefaultTypeEnum;
+  isMarried: boolean;
 };
 
 const GoalCalculatorContext = createContext<GoalCalculatorType | null>(null);
@@ -79,6 +84,17 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       id: goalCalculationId,
     },
   });
+
+  const role = goalCalculationResult.data?.goalCalculation?.role ?? null;
+  const familySize =
+    goalCalculationResult.data?.goalCalculation?.familySize ?? null;
+
+  const isMarried =
+    familySize === MpdGoalBenefitsConstantSizeEnum.MarriedNoChildren ||
+    familySize === MpdGoalBenefitsConstantSizeEnum.MarriedOneToTwoChildren ||
+    familySize === MpdGoalBenefitsConstantSizeEnum.MarriedThreeOrMoreChildren;
+
+  const defaultType = getDefaultType(role, isMarried);
 
   const constants = useGoalCalculatorConstants();
 
@@ -167,6 +183,8 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       trackMutation,
       percentComplete,
       goalTotals,
+      defaultType,
+      isMarried,
     }),
     [
       steps,
@@ -186,6 +204,8 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       trackMutation,
       percentComplete,
       goalTotals,
+      defaultType,
+      isMarried,
     ],
   );
 

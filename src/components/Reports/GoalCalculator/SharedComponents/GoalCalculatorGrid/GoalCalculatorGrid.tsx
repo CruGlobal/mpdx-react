@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DoNotDisturbAltIcon from '@mui/icons-material/DoNotDisturbAlt';
@@ -26,8 +26,12 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useAutoSave } from 'src/components/Shared/Autosave/useAutosave';
-import { SubBudgetCategoryEnum } from 'src/graphql/types.generated';
+import {
+  PrimaryBudgetCategoryEnum,
+  SubBudgetCategoryEnum,
+} from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import {
@@ -46,6 +50,7 @@ import {
   useUpdateSubBudgetCategoryMutation,
 } from './GoalCalculatorGrid.generated';
 import { StyledGrid } from './StyledGrid';
+import { getDirectInputDefaults } from './getDefaultDirectInput';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
@@ -72,7 +77,12 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   const locale = useLocale();
   const { label: categoryName } = category;
   const accountListId = useAccountListId() ?? '';
-  const { setRightPanelContent, trackMutation } = useGoalCalculator();
+  const { setRightPanelContent, trackMutation, defaultType } =
+    useGoalCalculator();
+
+  const categoryType = category.category;
+
+  const showLumpSum = categoryType !== PrimaryBudgetCategoryEnum.OutsideIncome;
 
   const gridData = useMemo(
     () =>
@@ -98,6 +108,9 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
   const [updateSubBudgetCategory] = useUpdateSubBudgetCategoryMutation();
   const [createSubBudgetCategory] = useCreateSubBudgetCategoryMutation();
   const [deleteSubBudgetCategory] = useDeleteSubBudgetCategoryMutation();
+
+  const constants = useGoalCalculatorConstants();
+  const { goalMiscConstants } = constants;
 
   // Yup validation schemas
   const directInputSchema = useMemo(() => {
@@ -193,6 +206,34 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
     // Clear any validation errors when switching modes
     setCellErrors({});
   };
+
+  // Update line item defaults only when defaultType changes
+  useEffect(() => {
+    if (!directInput) {
+      const newDefaultValues = getDirectInputDefaults(
+        categoryType,
+        defaultType,
+        goalMiscConstants,
+      );
+
+      gridData.forEach(async (row) => {
+        if (row.category) {
+          await updateSubBudgetCategory({
+            variables: {
+              input: {
+                accountListId,
+                attributes: {
+                  id: row.id,
+                  label: row.label,
+                  amount: newDefaultValues,
+                },
+              },
+            },
+          });
+        }
+      });
+    }
+  }, [defaultType, categoryType, goalMiscConstants]);
 
   const directInputProps = useAutoSave({
     value: category.directInput,
@@ -455,14 +496,16 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
       title={categoryName}
       titleExtra={
         <ButtonGroup>
-          <Button
-            variant={directInput ? 'contained' : 'outlined'}
-            size="small"
-            onClick={() => handleDirectInputToggle(true)}
-            startIcon={<FunctionsIcon />}
-          >
-            {t('Lump Sum')}
-          </Button>
+          {showLumpSum && (
+            <Button
+              variant={directInput ? 'contained' : 'outlined'}
+              size="small"
+              onClick={() => handleDirectInputToggle(true)}
+              startIcon={<FunctionsIcon />}
+            >
+              {t('Lump Sum')}
+            </Button>
+          )}
           <Button
             size="small"
             variant={!directInput ? 'contained' : 'outlined'}
