@@ -16,6 +16,10 @@ const TestComponent: React.FC<TestComponentProps> = ({
         ? {
             calculations: { requestedGross: 100000 },
             spouseCalculations: { requestedGross: 40000 },
+            progressiveApprovalTier: {
+              approver: 'Division Head',
+              approvalTimeframe: '1-2 weeks',
+            },
           }
         : null
     }
@@ -31,7 +35,7 @@ describe('Receipt step', () => {
     await waitFor(() =>
       expect(getByTestId('Receipt-message')).toHaveTextContent(
         'Because your request exceeds your maximum allowable salary it will require additional approvals. \
-For the $140,000.00 you are requesting, this will take [time frame] as it needs to be signed off by Approver Name and Other Approver. \
+For the $140,000.00 you are requesting, this will take 1-2 weeks as it needs to be signed off by the Division Head. \
 This may affect your selected effective date. We will review your request through our Progressive Approvals process and notify you of any changes to the status of this request.',
       ),
     );

@@ -32,7 +32,6 @@ query Hcm {
     }
     exceptionSalaryCap {
       amount
-      exceptionApprover
     }
   }
 }
