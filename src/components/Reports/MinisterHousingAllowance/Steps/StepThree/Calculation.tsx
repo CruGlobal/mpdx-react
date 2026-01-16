@@ -39,7 +39,7 @@ import { RequestSummaryCard } from './CalcComponents/RequestSummaryCard';
 // TODO: get correct link for "What expenses can I claim on my MHA?"
 
 interface CalculationProps {
-  boardApprovalDate: string | null;
+  boardApprovedAt: string | null;
   availableDate: string | null;
   deadlineDate?: string | null;
   rentOrOwn?: MhaRentOrOwnEnum;
@@ -92,7 +92,7 @@ const getValidationSchema = (rentOrOwn?: MhaRentOrOwnEnum) => {
 };
 
 export const Calculation: React.FC<CalculationProps> = ({
-  boardApprovalDate,
+  boardApprovedAt,
   availableDate,
   deadlineDate,
   rentOrOwn,
@@ -169,8 +169,8 @@ export const Calculation: React.FC<CalculationProps> = ({
         iUnderstandMhaPolicy: false,
       };
 
-  const boardDateFormatted = boardApprovalDate
-    ? dateFormatShort(DateTime.fromISO(boardApprovalDate), locale)
+  const boardDateFormatted = boardApprovedAt
+    ? dateFormatShort(DateTime.fromISO(boardApprovedAt), locale)
     : null;
 
   const availableDateFormatted = availableDate

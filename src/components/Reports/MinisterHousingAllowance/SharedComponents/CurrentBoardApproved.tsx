@@ -26,7 +26,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
     useMinisterHousingAllowance();
   const requestId = request?.id;
 
-  const { approvedDate, approvedOverallAmount, staffSpecific, spouseSpecific } =
+  const { hrApprovedAt, approvedOverallAmount, staffSpecific, spouseSpecific } =
     request?.requestAttributes || {};
 
   return (
@@ -46,8 +46,8 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
         <Grid item xs={6}>
           <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
             {t('APPROVAL DATE')}:{' '}
-            {approvedDate ? (
-              dateFormatShort(DateTime.fromISO(approvedDate), locale)
+            {hrApprovedAt ? (
+              dateFormatShort(DateTime.fromISO(hrApprovedAt), locale)
             ) : (
               <Skeleton
                 width={100}
