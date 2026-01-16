@@ -10,10 +10,9 @@ const TestComponent: React.FC = () => (
 );
 
 describe('StepNavigation', () => {
-  it('renders back and continue buttons', () => {
-    const { getByText } = render(<TestComponent />);
-
-    expect(getByText('Back')).toBeInTheDocument();
+  it('renders back and continue buttons', async () => {
+    const { getByText, findByText } = render(<TestComponent />);
+    expect(await findByText('Back')).toBeInTheDocument();
     expect(getByText('Continue')).toBeInTheDocument();
   });
 });

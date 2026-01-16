@@ -7,14 +7,16 @@ import {
   TimelineItem,
   TimelineSeparator,
 } from '@mui/lab';
-import { Box, Typography } from '@mui/material';
+import { Alert, Box, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { MhaStatusEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { StatusCard } from '../../Shared/CalculationReports/StatusCard/StatusCard';
+import { useDeleteMinistryHousingAllowanceRequestMutation } from '../MinisterHousingAllowance.generated';
 import { getRequestUrl } from '../Shared/Helper/getRequestUrl';
 import { MHARequest } from './types';
 
@@ -27,18 +29,55 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
   const locale = useLocale();
   const accountListId = useAccountListId();
   const currency = 'USD';
+  const { enqueueSnackbar } = useSnackbar();
 
   const requestId = request.id;
 
   const { status, requestAttributes } = request;
 
+  const canEdit =
+    status === MhaStatusEnum.InProgress ||
+    status === MhaStatusEnum.ActionRequired;
+  const approved =
+    status === MhaStatusEnum.HrApproved ||
+    status === MhaStatusEnum.BoardApproved;
+
+  const editLink = getRequestUrl(accountListId, requestId, 'edit');
+  const viewLink = getRequestUrl(accountListId, requestId, 'view');
+
   const {
-    boardApprovedDate,
+    boardApprovedAt,
     deadlineDate,
-    submittedDate,
+    submittedAt,
     availableDate,
     approvedOverallAmount,
   } = requestAttributes || {};
+
+  const pastDeadlineDate = deadlineDate
+    ? DateTime.fromISO(deadlineDate) < DateTime.now()
+    : false;
+  const hideEditButton = !canEdit || pastDeadlineDate;
+
+  const [deleteRequestMutation] =
+    useDeleteMinistryHousingAllowanceRequestMutation({
+      refetchQueries: ['MinistryHousingAllowanceRequests'],
+      awaitRefetchQueries: true,
+    });
+
+  const handleCancelRequest = async () => {
+    try {
+      await deleteRequestMutation({
+        variables: {
+          input: {
+            requestId: requestId ?? '',
+          },
+        },
+      });
+      enqueueSnackbar(t('MHA request cancelled successfully.'), {
+        variant: 'success',
+      });
+    } catch (error) {}
+  };
 
   return (
     <StatusCard
@@ -47,13 +86,31 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
       icon={AddHomeSharp}
       iconColor="warning.main"
       linkOneText={t('View Request')}
-      linkOne={getRequestUrl(accountListId, requestId, 'view')}
+      linkOne={viewLink}
       linkTwoText={t('Edit Request')}
-      linkTwo={getRequestUrl(accountListId, requestId, 'edit')}
+      linkTwo={editLink}
+      hideLinkTwoButton={hideEditButton}
       isRequest={true}
-      handleConfirmCancel={() => {}}
+      handleConfirmCancel={handleCancelRequest}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+        {status === MhaStatusEnum.Pending && (
+          <Alert severity="info" sx={{ mb: 3 }}>
+            {t(
+              'This request is still pending board approval. You cannot make changes at this time.',
+            )}
+          </Alert>
+        )}
+        {pastDeadlineDate && !approved && (
+          <Alert severity="info" sx={{ mb: 3 }}>
+            {t(
+              'The deadline to make changes to this request was {{date}}. Please contact support if you need further assistance.',
+              {
+                date: dateFormat(DateTime.fromISO(deadlineDate ?? ''), locale),
+              },
+            )}
+          </Alert>
+        )}
         <Typography variant="h3" sx={{ color: 'primary.main' }}>
           <b>
             {currencyFormat(approvedOverallAmount || 0, currency, locale, {
@@ -77,7 +134,9 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
           <TimelineItem>
             <TimelineSeparator>
               <TimelineDot
-                sx={{ bgcolor: getDotColor(status, 'submitted') }}
+                sx={{
+                  bgcolor: getDotColor(status, 'submitted'),
+                }}
                 variant={getDotVariant(status, 'submitted')}
               />
               <TimelineConnector />
@@ -89,8 +148,8 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
                 ) : (
                   <>
                     {t('Requested on')}
-                    {submittedDate &&
-                      `: ${dateFormat(DateTime.fromISO(submittedDate), locale)}`}
+                    {submittedAt &&
+                      `: ${dateFormat(DateTime.fromISO(submittedAt), locale)}`}
                   </>
                 )}
               </b>
@@ -99,7 +158,9 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
           <TimelineItem>
             <TimelineSeparator>
               <TimelineDot
-                sx={{ bgcolor: getDotColor(status, 'inProcess') }}
+                sx={{
+                  bgcolor: getDotColor(status, 'inProcess'),
+                }}
                 variant={getDotVariant(status, 'inProcess')}
               />
               <TimelineConnector />
@@ -115,7 +176,9 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
           <TimelineItem>
             <TimelineSeparator>
               <TimelineDot
-                sx={{ bgcolor: getDotColor(status, 'deadline') }}
+                sx={{
+                  bgcolor: getDotColor(status, 'deadline'),
+                }}
                 variant={getDotVariant(status, 'deadline')}
               />
               <TimelineConnector />
@@ -131,7 +194,9 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
           <TimelineItem>
             <TimelineSeparator>
               <TimelineDot
-                sx={{ bgcolor: getDotColor(status, 'boardApproval') }}
+                sx={{
+                  bgcolor: getDotColor(status, 'boardApproval'),
+                }}
                 variant={getDotVariant(status, 'boardApproval')}
               />
               <TimelineConnector />
@@ -139,15 +204,17 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
             <TimelineContent>
               <b>
                 {t('Board Approval on')}
-                {boardApprovedDate &&
-                  `: ${dateFormat(DateTime.fromISO(boardApprovedDate), locale)}`}
+                {boardApprovedAt &&
+                  `: ${dateFormat(DateTime.fromISO(boardApprovedAt), locale)}`}
               </b>
             </TimelineContent>
           </TimelineItem>
           <TimelineItem>
             <TimelineSeparator>
               <TimelineDot
-                sx={{ bgcolor: getDotColor(status, 'available') }}
+                sx={{
+                  bgcolor: getDotColor(status, 'available'),
+                }}
                 variant={getDotVariant(status, 'available')}
               />
             </TimelineSeparator>

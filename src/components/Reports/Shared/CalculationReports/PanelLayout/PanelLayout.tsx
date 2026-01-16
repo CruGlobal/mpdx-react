@@ -1,9 +1,6 @@
-import NextLink from 'next/link';
 import React from 'react';
 import { CheckCircleOutline } from '@mui/icons-material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { Box, Divider, IconButton, Link, Stack } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import { Box, Divider, IconButton, Stack } from '@mui/material';
 import { CircularProgressWithLabel } from 'src/components/Reports/Shared/CalculationReports/CircularProgressWithLabel/CircularProgressWithLabel';
 import {
   MainContent,
@@ -16,6 +13,7 @@ import {
 import { Steps } from 'src/components/Reports/Shared/CalculationReports/StepsList/StepsList';
 import theme from 'src/theme';
 import { PanelTypeEnum } from '../Shared/sharedTypes';
+import { BackArrow } from './BackArrow';
 
 export interface IconPanelItem {
   key: string;
@@ -54,15 +52,17 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
   currentIndex,
   steps,
 }) => {
-  const { t } = useTranslation();
-
   const isLastStep = steps ? currentIndex === steps.length - 1 : false;
 
   return (
     <PrintableStack direction="row">
       {panelType === PanelTypeEnum.Empty ? (
         <>
-          <Stack direction="column" width={iconPanelWidth}></Stack>
+          <Stack direction="column" width={iconPanelWidth}>
+            {backHref && (
+              <BackArrow backHref={backHref} backTitle={backTitle} />
+            )}
+          </Stack>
           <Divider orientation="vertical" flexItem />
           <StyledSidebar open={true} aria-label={sidebarAriaLabel}>
             {sidebarTitle && (
@@ -106,21 +106,7 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
                     {item.icon}
                   </IconButton>
                 ))}
-                <Link
-                  component={NextLink}
-                  href={backHref}
-                  sx={{ textDecoration: 'none' }}
-                  aria-label={backTitle ?? t('Back to dashboard')}
-                >
-                  <IconButton
-                    title={backTitle ?? t('Back to dashboard')}
-                    sx={(theme) => ({
-                      color: theme.palette.mpdxGrayDark.main,
-                    })}
-                  >
-                    <ArrowBackIcon />
-                  </IconButton>
-                </Link>
+                <BackArrow backHref={backHref} backTitle={backTitle} />
               </>
             )}
           </Stack>

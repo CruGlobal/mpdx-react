@@ -1,4 +1,6 @@
 import { useCallback } from 'react';
+import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
 import { MinistryHousingAllowanceRequestAttributesInput } from 'pages/api/graphql-rest.page.generated';
 import { calculateAnnualTotals } from 'src/hooks/useAnnualTotal';
 import { useUpdateMinistryHousingAllowanceRequestMutation } from '../../MinisterHousingAllowance.generated';
@@ -10,11 +12,12 @@ interface UseSaveFieldOptions {
 }
 
 export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
+  const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
+
   const { requestData } = useMinisterHousingAllowance();
   const [updateMinistryHousingAllowanceRequest] =
-    useUpdateMinistryHousingAllowanceRequestMutation({
-      refetchQueries: ['MinistryHousingAllowanceRequest'],
-    });
+    useUpdateMinistryHousingAllowanceRequestMutation({});
   const values = requestData?.requestAttributes;
 
   const saveField = useCallback(
@@ -32,35 +35,41 @@ export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
       const { annualTotal: overallAmount } =
         calculateAnnualTotals(updatedValues);
 
-      try {
-        await updateMinistryHousingAllowanceRequest({
-          variables: {
-            input: {
-              requestId: requestData.id,
+      await updateMinistryHousingAllowanceRequest({
+        variables: {
+          input: {
+            requestId: requestData.id,
+            requestAttributes: {
+              ...attributes,
+              overallAmount,
+            },
+          },
+        },
+        optimisticResponse: {
+          updateMinistryHousingAllowanceRequest: {
+            __typename: 'MinistryHousingAllowanceRequestUpdateMutationPayload',
+            ministryHousingAllowanceRequest: {
+              ...requestData,
               requestAttributes: {
+                __typename: 'MhaRequestAttributes',
+                ...values,
                 ...attributes,
                 overallAmount,
               },
             },
           },
-          optimisticResponse: {
-            updateMinistryHousingAllowanceRequest: {
-              __typename:
-                'MinistryHousingAllowanceRequestUpdateMutationPayload',
-              ministryHousingAllowanceRequest: {
-                ...requestData,
-                requestAttributes: {
-                  ...values,
-                  ...attributes,
-                  overallAmount,
-                },
-              },
-            },
-          },
-        });
-      } catch (error) {}
+        },
+        onCompleted: () => {
+          const hasValue = Object.values(attributes).some(
+            (value) => value !== null,
+          );
+          if (hasValue) {
+            enqueueSnackbar(t('Saved successfully'), { variant: 'success' });
+          }
+        },
+      });
     },
-    [formValues, updateMinistryHousingAllowanceRequest, requestData],
+    [formValues, updateMinistryHousingAllowanceRequest, requestData, t],
   );
 
   return saveField;

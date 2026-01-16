@@ -32,36 +32,38 @@ describe('EffectiveDateStep', () => {
     Settings.now = () => now;
   });
 
-  it('renders the heading', () => {
-    const { getByRole } = render(<TestComponent />);
+  it('renders the heading', async () => {
+    const { findByRole } = render(<TestComponent />);
 
     expect(
-      getByRole('heading', { name: 'Effective Date' }),
+      await findByRole('heading', { name: 'Effective Date' }),
     ).toBeInTheDocument();
   });
 
-  it('renders the date selection dropdown', () => {
-    const { getByRole } = render(<TestComponent />);
+  it('renders the date selection dropdown', async () => {
+    const { findByRole } = render(<TestComponent />);
 
     expect(
-      getByRole('combobox', { name: 'Select a future date' }),
+      await findByRole('combobox', { name: 'Select a future date' }),
     ).toBeInTheDocument();
   });
 
-  it('renders text content', () => {
-    const { getByText } = render(<TestComponent />);
+  it('renders text content', async () => {
+    const { findByText } = render(<TestComponent />);
 
     expect(
-      getByText(
+      await findByText(
         'Please select the date of the paycheck you would like this change to first occur.',
       ),
     ).toBeInTheDocument();
   });
 
-  it('renders an empty dropdown when no effective dates are available', () => {
-    const { getByRole } = render(<TestComponent />);
+  it('renders an empty dropdown when no effective dates are available', async () => {
+    const { findByRole } = render(<TestComponent />);
 
-    const dropdown = getByRole('combobox', { name: 'Select a future date' });
+    const dropdown = await findByRole('combobox', {
+      name: 'Select a future date',
+    });
     // The dropdown should be empty since hcm.effectiveDates doesn't exist yet
     expect(dropdown).toBeInTheDocument();
   });

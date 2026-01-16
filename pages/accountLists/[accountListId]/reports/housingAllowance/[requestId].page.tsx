@@ -26,6 +26,7 @@ const RequestPageWrapper = styled(Box)(({ theme }) => ({
 const HousingAllowanceRequestPage: React.FC = () => {
   const { t } = useTranslation();
   const router = useRouter();
+  const [isNavListOpen, setIsNavListOpen] = useState(false);
   const { requestId, mode } = router.query;
 
   if (!requestId) {
@@ -53,8 +54,6 @@ const HousingAllowanceRequestPage: React.FC = () => {
   const title = t("{{mode}} Minister's Housing Allowance Request", {
     mode: pageType,
   });
-
-  const [isNavListOpen, setIsNavListOpen] = useState(false);
 
   const handleNavListToggle = () => {
     setIsNavListOpen(!isNavListOpen);

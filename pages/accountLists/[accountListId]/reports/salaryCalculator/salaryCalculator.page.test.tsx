@@ -12,10 +12,10 @@ const TestComponent = () => (
 );
 
 describe('SalaryCalculatorPage', () => {
-  it('renders the Salary Calculator header', () => {
-    const { getByRole } = render(<TestComponent />);
+  it('renders the Salary Calculator header', async () => {
+    const { findByRole } = render(<TestComponent />);
     expect(
-      getByRole('heading', { name: /Salary Calculator/i }),
+      await findByRole('heading', { name: /Salary Calculator/i }),
     ).toBeInTheDocument();
   });
 

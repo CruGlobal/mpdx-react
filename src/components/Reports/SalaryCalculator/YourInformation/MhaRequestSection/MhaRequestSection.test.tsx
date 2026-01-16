@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { SalaryCalculatorTestWrapper } from '../../SalaryCalculatorTestWrapper';
 import { MhaRequestSection } from './MhaRequestSection';
 
@@ -33,11 +33,13 @@ describe('MhaRequestSection', () => {
   });
 
   it('should render new requested MHA input fields for both spouses', async () => {
-    const { getAllByRole } = render(<TestComponent />);
+    const { findAllByRole } = render(<TestComponent />);
 
-    await waitFor(() => {
-      expect(getAllByRole('textbox')).toHaveLength(2);
-    });
+    const enabledTextbox = (await findAllByRole('textbox')).filter(
+      (textbox) => !textbox.hasAttribute('disabled'),
+    );
+
+    expect(enabledTextbox).toHaveLength(2);
   });
 
   it('should display progress bar', async () => {

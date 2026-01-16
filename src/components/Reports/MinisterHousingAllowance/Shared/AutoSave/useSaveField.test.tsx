@@ -1,5 +1,6 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { renderHook, waitFor } from '@testing-library/react';
+import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import theme from 'src/theme';
@@ -11,6 +12,18 @@ import {
 import { useSaveField } from './useSaveField';
 
 const mutationSpy = jest.fn();
+const mockEnqueue = jest.fn();
+
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
 
 interface TestComponentProps {
   children: React.ReactNode;
@@ -19,25 +32,27 @@ interface TestComponentProps {
 const TestComponent: React.FC<TestComponentProps> = ({ children }) => {
   return (
     <ThemeProvider theme={theme}>
-      <GqlMockedProvider<{
-        UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
-      }>
-        onCall={mutationSpy}
-      >
-        <MinisterHousingAllowanceContext.Provider
-          value={
-            {
-              pageType: PageEnum.New,
-              requestData: {
-                id: 'request-id',
-                requestAttributes: { rentalValue: 50 },
-              },
-            } as unknown as ContextType
-          }
+      <SnackbarProvider>
+        <GqlMockedProvider<{
+          UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
+        }>
+          onCall={mutationSpy}
         >
-          {children}
-        </MinisterHousingAllowanceContext.Provider>
-      </GqlMockedProvider>
+          <MinisterHousingAllowanceContext.Provider
+            value={
+              {
+                pageType: PageEnum.New,
+                requestData: {
+                  id: 'request-id',
+                  requestAttributes: { rentalValue: 50 },
+                },
+              } as unknown as ContextType
+            }
+          >
+            {children}
+          </MinisterHousingAllowanceContext.Provider>
+        </GqlMockedProvider>
+      </SnackbarProvider>
     </ThemeProvider>
   );
 };
@@ -69,5 +84,42 @@ describe('useSaveField', () => {
         },
       ),
     );
+
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        expect.stringContaining('Saved successfully'),
+        { variant: 'success' },
+      ),
+    );
+  });
+
+  it('should not show snackbar if all values are null', async () => {
+    const { result } = renderHook(
+      () =>
+        useSaveField({
+          formValues: { rentalValue: 50 },
+        }),
+      {
+        wrapper: TestComponent,
+      },
+    );
+
+    result.current({ rentalValue: null });
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'UpdateMinistryHousingAllowanceRequest',
+        {
+          input: {
+            requestId: 'request-id',
+            requestAttributes: {
+              rentalValue: null,
+            },
+          },
+        },
+      ),
+    );
+
+    expect(mockEnqueue).not.toHaveBeenCalled();
   });
 });
