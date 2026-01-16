@@ -60,7 +60,7 @@ export const RequestPage: React.FC = () => {
     window.print();
   };
 
-  const boardDate = requestData?.requestAttributes?.boardApprovedDate ?? '';
+  const boardDate = requestData?.requestAttributes?.boardApprovedAt ?? '';
   const availableDate = requestData?.requestAttributes?.availableDate ?? '';
   const deadlineDate = requestData?.requestAttributes?.deadlineDate ?? '';
 
@@ -79,7 +79,7 @@ export const RequestPage: React.FC = () => {
         <Container sx={{ ml: 5 }}>
           <Stack direction="column" width={mainContentWidth}>
             <Calculation
-              boardApprovalDate={boardDate}
+              boardApprovedAt={boardDate}
               availableDate={availableDate}
               rentOrOwn={value}
               handlePrint={handlePrint}
@@ -115,14 +115,14 @@ export const RequestPage: React.FC = () => {
               <Stack direction="column" width={mainContentWidth}>
                 {currentStep === StepsEnum.AboutForm ? (
                   <AboutForm
-                    boardApprovalDate={boardDate}
+                    boardApprovedAt={boardDate}
                     availableDate={availableDate}
                   />
                 ) : currentStep === StepsEnum.RentOrOwn ? (
                   <RentOwn />
                 ) : currentStep === StepsEnum.CalcForm ? (
                   <Calculation
-                    boardApprovalDate={boardDate}
+                    boardApprovedAt={boardDate}
                     availableDate={availableDate}
                     rentOrOwn={values.rentOrOwn}
                     deadlineDate={deadlineDate}
