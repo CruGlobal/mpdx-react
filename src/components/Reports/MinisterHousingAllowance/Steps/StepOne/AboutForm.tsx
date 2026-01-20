@@ -20,7 +20,8 @@ export const AboutForm: React.FC<AboutFormProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const { handleNextStep, handlePreviousStep } = useMinisterHousingAllowance();
+  const { handleNextStep, handlePreviousStep, setIsRightPanelOpen } =
+    useMinisterHousingAllowance();
 
   // TODO: "newRequestAboutForm" value needs to be added to translation files to see all values
   // TODO: Get correct link for "Salary Calculation Form" and "What expenses can I claim on my MHA?"
@@ -101,7 +102,11 @@ export const AboutForm: React.FC<AboutFormProps> = ({
             fontSize="medium"
             sx={{ verticalAlign: 'middle', opacity: 0.56 }}
           />{' '}
-          <Link component="button" type="button">
+          <Link
+            component="button"
+            type="button"
+            onClick={() => setIsRightPanelOpen(true)}
+          >
             What expenses can I claim on my MHA?
           </Link>
         </Box>
