@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import Loading from 'src/components/Loading/Loading';
 import { Notification } from 'src/components/Notification/Notification';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
+import { HeaderTypeEnum } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { FourteenMonthReportHeader as Header } from './Layout/Header/Header';
 import {
   FourteenMonthReportTable as Table,
@@ -105,6 +106,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
         onNavListToggle={onNavListToggle}
         onPrint={handlePrint}
         title={title}
+        headerType={HeaderTypeEnum.Report}
       />
       {loading ? (
         <Loading />

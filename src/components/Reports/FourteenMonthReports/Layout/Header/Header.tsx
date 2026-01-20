@@ -1,8 +1,11 @@
 import React, { FC } from 'react';
 import FilterList from '@mui/icons-material/FilterList';
+import MenuIcon from '@mui/icons-material/Menu';
 import { Box, Grid, IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { HeaderTypeEnum } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
+import { getHeaderTitleAccess } from 'src/components/Shared/MultiPageLayout/helpers';
 import theme from 'src/theme';
 import { FourteenMonthReportCurrencyType } from '../../FourteenMonthReport';
 import { FourteenMonthReportActions } from './Actions/Actions';
@@ -17,6 +20,7 @@ interface FourteenMonthReportHeaderProps {
   onNavListToggle: () => void;
   onPrint: (event: React.MouseEvent<unknown>) => void;
   title: string;
+  headerType?: HeaderTypeEnum;
 }
 
 const StickyHeader = styled(Box)(({}) => ({
@@ -41,7 +45,7 @@ const NavListButton = styled(IconButton, {
   display: 'inline-block',
   width: 48,
   height: 48,
-  borderradius: 24,
+  borderRadius: 24,
   margin: theme.spacing(1),
   backgroundColor: panelOpen ? theme.palette.secondary.dark : 'transparent',
   '@media print': {
@@ -50,6 +54,12 @@ const NavListButton = styled(IconButton, {
 }));
 
 const NavListIcon = styled(FilterList)(({ theme }) => ({
+  width: 24,
+  height: 24,
+  color: theme.palette.primary.dark,
+}));
+
+const NavMenuIcon = styled(MenuIcon)(({}) => ({
   width: 24,
   height: 24,
   color: theme.palette.primary.dark,
@@ -65,6 +75,7 @@ export const FourteenMonthReportHeader: FC<FourteenMonthReportHeaderProps> = ({
   csvData,
   currencyType,
   title,
+  headerType,
   isExpanded,
   isMobile,
   isNavListOpen,
@@ -74,6 +85,11 @@ export const FourteenMonthReportHeader: FC<FourteenMonthReportHeaderProps> = ({
   ...rest
 }) => {
   const { t } = useTranslation();
+  const isReportsHeader = headerType === HeaderTypeEnum.Report;
+
+  const titleAccess = headerType
+    ? getHeaderTitleAccess(headerType, t)
+    : undefined;
 
   return (
     <StickyHeader p={2} data-testid="FourteenMonthReportHeader">
@@ -86,7 +102,11 @@ export const FourteenMonthReportHeader: FC<FourteenMonthReportHeaderProps> = ({
         <Grid item>
           <Box display="flex" alignItems="center">
             <NavListButton panelOpen={isNavListOpen} onClick={onNavListToggle}>
-              <NavListIcon titleAccess={t('Toggle Filter Panel')} />
+              {isReportsHeader ? (
+                <NavMenuIcon titleAccess={titleAccess} />
+              ) : (
+                <NavListIcon titleAccess={titleAccess} />
+              )}
             </NavListButton>
             <HeaderTitle variant="h5">{title}</HeaderTitle>
           </Box>

@@ -35,11 +35,16 @@ export const StickyButtonHeaderBox = styled(Box)(({ theme }) => ({
   },
 }));
 
-export const FilterButton = styled(IconButton)(({ theme }) => {
+export const FilterButton = styled(IconButton, {
+  shouldForwardProp: (prop) => prop !== 'panelOpen',
+})<{ panelOpen: boolean }>(({ theme, panelOpen }) => {
   const { isFiltered } = useUrlFilters();
-
   return {
     marginRight: theme.spacing(2),
-    backgroundColor: isFiltered ? theme.palette.yellow.main : 'transparent',
+    backgroundColor: panelOpen
+      ? theme.palette.secondary.dark
+      : isFiltered
+        ? theme.palette.yellow.main
+        : 'transparent',
   };
 });

@@ -123,7 +123,7 @@ export const ListHeader: React.FC<ListHeaderProps> = ({
         {page === PageEnum.Appeal && leftButtonGroup && (
           <Box>{leftButtonGroup}</Box>
         )}
-        <FilterButton onClick={toggleFilterPanel}>
+        <FilterButton onClick={toggleFilterPanel} panelOpen={filterPanelOpen}>
           {contactsView === TableViewModeEnum.Map ? (
             <ViewList titleAccess={t('Toggle Contact List')} />
           ) : (

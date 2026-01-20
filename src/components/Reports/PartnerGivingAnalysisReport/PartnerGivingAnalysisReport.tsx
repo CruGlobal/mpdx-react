@@ -1,10 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Box, CircularProgress } from '@mui/material';
-import { GridPaginationModel } from '@mui/x-data-grid/models/gridPaginationProps';
-import { GridSortModel } from '@mui/x-data-grid/models/gridSortModel';
+import React, { useMemo } from 'react';
+import { Box } from '@mui/material';
+import { useGridApiRef } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import { Panel } from 'pages/accountLists/[accountListId]/reports/helpers';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
+import { useStaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
 import { ListHeader, PageEnum } from 'src/components/Shared/Header/ListHeader';
 import {
   HeaderTypeEnum,
@@ -13,7 +13,10 @@ import {
 import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { PartnerGivingAnalysisFilterSetInput } from 'src/graphql/types.generated';
 import { useGetPartnerGivingAnalysisIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
+import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useMassSelection } from 'src/hooks/useMassSelection';
+import { HeaderActions } from './Actions/HeaderActions';
+import { BalanceCard } from './BalanceCard/BalanceCard';
 import { AscendingSortEnums, DescendingSortEnums } from './Helper/sortRecords';
 import { usePartnerGivingAnalysisQuery } from './PartnerGivingAnalysis.generated';
 import { PartnerGivingAnalysisTable as Table } from './Table/Table';
@@ -35,18 +38,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
 }) => {
   const { t } = useTranslation();
   const { activeFilters, searchTerm } = useUrlFilters();
-  const cursorsRef = useRef(new Map<number, string | null>([[0, null]]));
-
-  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
-    page: 0,
-    pageSize: 25,
-  });
-  const [sortModel, setSortModel] = useState<GridSortModel>([
-    {
-      field: 'name',
-      sort: 'asc',
-    },
-  ]);
+  const apiRef = useGridApiRef();
 
   const contactFilters: PartnerGivingAnalysisFilterSetInput = useMemo(
     () => ({
@@ -58,21 +50,42 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
     [activeFilters, searchTerm],
   );
 
-  const { data, previousData, loading } = usePartnerGivingAnalysisQuery({
-    variables: {
+  const pageSize = apiRef.current?.state.pagination.paginationModel.pageSize;
+  const sortModel = apiRef.current?.state.sorting.sortModel;
+
+  const variables = useMemo(
+    () => ({
       input: {
         accountListId,
         filters: contactFilters,
-        sortBy: sortModel[0].sort
-          ? sortModel[0].sort === 'asc'
-            ? AscendingSortEnums[sortModel[0].field]
-            : DescendingSortEnums[sortModel[0].field]
-          : null,
+        sortBy:
+          sortModel && sortModel.length > 0 && sortModel[0]
+            ? sortModel[0].sort === 'asc'
+              ? AscendingSortEnums[sortModel[0].field]
+              : DescendingSortEnums[sortModel[0].field]
+            : null,
       },
-      first: paginationModel.pageSize,
-      after: cursorsRef.current.get(paginationModel.page) ?? null,
-    },
+      first: pageSize,
+    }),
+    // pageSize and sortModel are intentionally omitted from the dependencies array so that the query isn't reloaded when the page size or sort order changes
+    // If all the pages have loaded and the user changes the page size or sort order, there's no reason to reload all the pages
+    [accountListId, contactFilters],
+  );
+
+  const { data, previousData, fetchMore, error, loading } =
+    usePartnerGivingAnalysisQuery({
+      variables,
+    });
+
+  // Load remaining pages in background for printing
+  const { loading: loadingAllPages } = useFetchAllPages({
+    fetchMore,
+    error,
+    pageInfo: data?.partnerGivingAnalysis.pageInfo,
   });
+
+  const { data: staffAccountData, loading: staffAccountLoading } =
+    useStaffAccountQuery();
 
   const contacts = data?.partnerGivingAnalysis.nodes ?? [];
 
@@ -88,6 +101,7 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
       },
       skip: contactCount === 0,
     });
+
   // When the next batch of contact ids is loading, use the previous batch of contact ids in the
   // meantime to avoid throwing out the selected contact ids.
   const allContactIds = useMemo(
@@ -98,15 +112,6 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
     [allContacts, allContactsPrevious],
   );
 
-  useEffect(() => {
-    const end = data?.partnerGivingAnalysis.pageInfo.endCursor ?? null;
-    const hasNextPage =
-      data?.partnerGivingAnalysis.pageInfo.hasNextPage ?? false;
-    if (end !== null && hasNextPage) {
-      cursorsRef.current.set(paginationModel.page + 1, end);
-    }
-  }, [data, paginationModel.page]);
-
   const {
     ids,
     selectionType,
@@ -115,24 +120,11 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
     isRowChecked,
   } = useMassSelection(allContactIds);
 
-  const handlePageChange = (model: GridPaginationModel) => {
-    if (model.pageSize !== paginationModel.pageSize) {
-      cursorsRef.current = new Map([[0, null]]);
-      setPaginationModel({ page: 0, pageSize: model.pageSize });
-    } else {
-      setPaginationModel(model);
+  const handlePrint = () => {
+    if (apiRef.current?.exportDataAsPrint) {
+      apiRef.current.exportDataAsPrint({ hideFooter: true });
     }
   };
-
-  const handleSortChange = (model: GridSortModel) => {
-    setSortModel(model);
-  };
-
-  // reset pagination when filters or sort change
-  useEffect(() => {
-    cursorsRef.current = new Map([[0, null]]);
-    setPaginationModel({ page: 0, pageSize: paginationModel.pageSize });
-  }, [contactFilters, sortModel]);
 
   return (
     <Box>
@@ -141,6 +133,9 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
         onNavListToggle={onNavListToggle}
         title={title}
         headerType={HeaderTypeEnum.Report}
+        rightExtra={
+          <HeaderActions onPrint={handlePrint} loading={loadingAllPages} />
+        }
       />
       <ListHeader
         page={PageEnum.Report}
@@ -152,27 +147,23 @@ export const PartnerGivingAnalysisReport: React.FC<Props> = ({
         headerCheckboxState={selectionType}
         selectedIds={ids}
       />
-      {loading ? (
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          height="100%"
-        >
-          <CircularProgress data-testid="LoadingPartnerGivingAnalysisReport" />
-        </Box>
-      ) : contacts.length ? (
+
+      {!staffAccountLoading && staffAccountData?.staffAccount?.id ? (
+        <BalanceCard
+          donationPeriodTotalSum={
+            data?.partnerGivingAnalysis?.donationPeriodTotalSum
+          }
+        />
+      ) : null}
+      {contacts.length > 0 && (
         <Table
           data={contacts}
-          totalCount={data?.partnerGivingAnalysis.totalCount ?? 0}
           onSelectOne={toggleSelectionById}
           isRowChecked={isRowChecked}
-          paginationModel={paginationModel}
-          handlePageChange={handlePageChange}
-          sortModel={sortModel}
-          handleSortChange={handleSortChange}
+          apiRef={apiRef}
         />
-      ) : (
+      )}
+      {contacts.length === 0 && !loading && (
         <EmptyReport
           title={t('You have {{contacts}} total contacts', {
             contacts: data?.partnerGivingAnalysis.totalCount ?? '?',
