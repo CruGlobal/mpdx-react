@@ -19,8 +19,10 @@ import {
   useDeleteAdditionalSalaryRequestMutation,
 } from '../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
+import { useStaffAccountIdQuery } from '../StaffAccountId.generated';
 
 export type AdditionalSalaryRequestType = {
+  staffAccountId: string | null | undefined;
   steps: Steps[];
   currentIndex: number;
   currentStep: AdditionalSalaryRequestSectionEnum;
@@ -97,6 +99,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     skip: !requestId,
   });
 
+  const { data: staffAccountIdData } = useStaffAccountIdQuery();
+
   const [deleteAdditionalSalaryRequest] =
     useDeleteAdditionalSalaryRequestMutation();
 
@@ -140,8 +144,14 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
 
   const [user, spouse] = hcmData?.hcm ?? [];
 
+  const staffAccountId = useMemo(
+    () => staffAccountIdData?.user?.staffAccountId,
+    [staffAccountIdData],
+  );
+
   const contextValue = useMemo<AdditionalSalaryRequestType>(
     () => ({
+      staffAccountId,
       steps,
       currentIndex,
       currentStep,
@@ -161,6 +171,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       trackMutation,
     }),
     [
+      staffAccountId,
       steps,
       currentIndex,
       currentStep,
