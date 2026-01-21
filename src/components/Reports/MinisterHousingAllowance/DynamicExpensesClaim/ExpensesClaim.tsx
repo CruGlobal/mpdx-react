@@ -1,7 +1,8 @@
 import React from 'react';
-import { Close } from '@mui/icons-material';
+import { Close, RequestPageSharp } from '@mui/icons-material';
 import { Box, Container, IconButton, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import theme from 'src/theme';
 import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
 
 export const ExpensesClaim: React.FC = () => {
@@ -17,6 +18,15 @@ export const ExpensesClaim: React.FC = () => {
         <IconButton onClick={() => setIsRightPanelOpen(false)}>
           <Close />
         </IconButton>
+      </Box>
+
+      <Box mt={4}>
+        <Box display="flex" alignItems="center" gap={1}>
+          <RequestPageSharp sx={{ color: theme.palette.orange.main }} />
+          <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+            {t('Allowable Expenses for MHA')}
+          </Typography>
+        </Box>
       </Box>
     </Container>
   );

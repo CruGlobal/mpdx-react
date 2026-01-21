@@ -24,7 +24,7 @@ export const AboutForm: React.FC<AboutFormProps> = ({
     useMinisterHousingAllowance();
 
   // TODO: "newRequestAboutForm" value needs to be added to translation files to see all values
-  // TODO: Get correct link for "Salary Calculation Form" and "What expenses can I claim on my MHA?"
+  // TODO: Get correct link for "Salary Calculation Form"
 
   const nextYear = DateTime.now().year + 1;
 
