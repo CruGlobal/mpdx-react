@@ -11,10 +11,12 @@ import theme from 'src/theme';
 import { CompleteFormValues } from './AdditionalSalaryRequest';
 import { AdditionalSalaryRequestProvider } from './Shared/AdditionalSalaryRequestContext';
 import { fieldConfig } from './Shared/useAdditionalSalaryRequestForm';
+// ...existing code...
 
 interface AdditionalSalaryRequestTestWrapperProps {
   children?: React.ReactNode;
   initialValues?: CompleteFormValues;
+  pageType?: 'new' | 'edit' | 'view';
 }
 
 const defaultInitialValues: CompleteFormValues = {
@@ -70,7 +72,7 @@ const TestFormikWrapper: React.FC<{
 
 export const AdditionalSalaryRequestTestWrapper: React.FC<
   AdditionalSalaryRequestTestWrapperProps
-> = ({ children, initialValues }) => {
+> = ({ children, initialValues, pageType = 'new' }) => {
   const requestValues = initialValues || defaultInitialValues;
 
   return (
@@ -81,6 +83,7 @@ export const AdditionalSalaryRequestTestWrapper: React.FC<
             router={{
               query: {
                 accountListId: 'account-list-1',
+                mode: pageType,
               },
             }}
           >
@@ -96,9 +99,9 @@ export const AdditionalSalaryRequestTestWrapper: React.FC<
                           : [key, value],
                       ),
                     ),
-                    traditional403bContribution: parseFloat(
-                      requestValues.traditional403bContribution,
-                    ) || 0,
+                    traditional403bContribution:
+                      parseFloat(requestValues.traditional403bContribution) ||
+                      0,
                   },
                 },
               }}

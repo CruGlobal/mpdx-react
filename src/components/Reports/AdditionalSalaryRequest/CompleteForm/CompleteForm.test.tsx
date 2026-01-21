@@ -258,7 +258,9 @@ describe('CompleteForm', () => {
       expect(
         getByText('403(b) Deduction', { selector: '.MuiCardHeader-title' }),
       ).toBeInTheDocument();
-      expect(getAllByText('Net Additional Salary').length).toBeGreaterThanOrEqual(1);
+      expect(
+        getAllByText('Net Additional Salary').length,
+      ).toBeGreaterThanOrEqual(1);
     });
 
     it('renders ContactInformation with email and phone fields', () => {
