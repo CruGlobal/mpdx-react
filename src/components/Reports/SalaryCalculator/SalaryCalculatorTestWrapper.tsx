@@ -7,16 +7,16 @@ import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import { PayrollDate } from 'src/graphql/types.generated';
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
-import { PayrollDatesQuery } from './EffectiveDateStep/PayrollDates.generated';
 import {
-  HcmDocument,
-  HcmQuery,
-  HcmQueryVariables,
-} from './SalaryCalculatorContext/Hcm.generated';
+  HcmDataDocument,
+  HcmDataQuery,
+  HcmDataQueryVariables,
+} from '../Shared/HcmData/HCMData.generated';
+import { PayrollDatesQuery } from './EffectiveDateStep/PayrollDates.generated';
 import { SalaryCalculationQuery } from './SalaryCalculatorContext/SalaryCalculation.generated';
 import { SalaryCalculatorProvider } from './SalaryCalculatorContext/SalaryCalculatorContext';
 
-const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
+const hcmMock = gqlMock<HcmDataQuery, HcmDataQueryVariables>(HcmDataDocument, {
   mocks: {
     hcm: [
       {
@@ -95,7 +95,7 @@ export const SalaryCalculatorTestWrapper: React.FC<
   <ThemeProvider theme={theme}>
     <TestRouter>
       <GqlMockedProvider<{
-        Hcm: HcmQuery;
+        Hcm: HcmDataQuery;
         PayrollDates: PayrollDatesQuery;
         SalaryCalculation: SalaryCalculationQuery;
         GoalCalculatorConstants: GoalCalculatorConstantsQuery;

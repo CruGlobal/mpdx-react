@@ -10,7 +10,10 @@ import React, {
 import { useStepList } from 'src/hooks/useStepList';
 import { FormEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
-import { HcmQuery, useHcmQuery } from './Hcm.generated';
+import {
+  HcmDataQuery,
+  useHcmDataQuery,
+} from '../../Shared/HcmData/HCMData.generated';
 import { SalaryCalculatorSectionEnum } from './Helper/sharedTypes';
 import {
   SalaryCalculationQuery,
@@ -35,9 +38,9 @@ export interface SalaryCalculatorContextType {
   setDrawerOpen: Dispatch<SetStateAction<boolean>>;
   toggleDrawer: () => void;
 
-  hcm: HcmQuery['hcm'] | null;
-  hcmUser: HcmQuery['hcm'][number] | null;
-  hcmSpouse: HcmQuery['hcm'][number] | null;
+  hcm: HcmDataQuery['hcm'] | null;
+  hcmUser: HcmDataQuery['hcm'][number] | null;
+  hcmSpouse: HcmDataQuery['hcm'][number] | null;
   calculation: SalaryCalculationQuery['salaryRequest'] | null;
 }
 
@@ -87,7 +90,7 @@ export const SalaryCalculatorProvider: React.FC<
   // End Step Handlers
 
   const [isDrawerOpen, setDrawerOpen] = useState(true);
-  const { data: hcmData } = useHcmQuery();
+  const { data: hcmData } = useHcmDataQuery();
   const { data: calculationData } = useSalaryCalculationQuery();
 
   const toggleDrawer = useCallback(() => {

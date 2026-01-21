@@ -3,7 +3,7 @@ import { render, waitFor } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { SalaryRequestStatusEnum } from 'src/graphql/types.generated';
-import { HcmQuery } from '../SalaryCalculatorContext/Hcm.generated';
+import { HcmDataQuery } from '../../Shared/HcmData/HCMData.generated';
 import { SalaryCalculationQuery } from '../SalaryCalculatorContext/SalaryCalculation.generated';
 import { SalaryCalculatorProvider } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 import { hcmSpouseMock, hcmUserMock } from '../SalaryCalculatorTestWrapper';
@@ -19,7 +19,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   submitted,
 }) => (
   <GqlMockedProvider<{
-    Hcm: HcmQuery;
+    Hcm: HcmDataQuery;
     SalaryCalculation: SalaryCalculationQuery;
     GetUser: GetUserQuery;
   }>
