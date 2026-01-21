@@ -15,7 +15,7 @@ export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
 
-  const { requestData } = useMinisterHousingAllowance();
+  const { requestData, trackMutation } = useMinisterHousingAllowance();
   const [updateMinistryHousingAllowanceRequest] =
     useUpdateMinistryHousingAllowanceRequestMutation({});
   const values = requestData?.requestAttributes;
@@ -35,41 +35,51 @@ export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
       const { annualTotal: overallAmount } =
         calculateAnnualTotals(updatedValues);
 
-      await updateMinistryHousingAllowanceRequest({
-        variables: {
-          input: {
-            requestId: requestData.id,
-            requestAttributes: {
-              ...attributes,
-              overallAmount,
-            },
-          },
-        },
-        optimisticResponse: {
-          updateMinistryHousingAllowanceRequest: {
-            __typename: 'MinistryHousingAllowanceRequestUpdateMutationPayload',
-            ministryHousingAllowanceRequest: {
-              ...requestData,
+      return trackMutation(
+        updateMinistryHousingAllowanceRequest({
+          variables: {
+            input: {
+              requestId: requestData.id,
               requestAttributes: {
-                __typename: 'MhaRequestAttributes',
-                ...values,
                 ...attributes,
                 overallAmount,
               },
             },
           },
-        },
-        onCompleted: () => {
-          const hasValue = Object.values(attributes).some(
-            (value) => value !== null,
-          );
-          if (hasValue) {
-            enqueueSnackbar(t('Saved successfully'), { variant: 'success' });
-          }
-        },
-      });
+          optimisticResponse: {
+            updateMinistryHousingAllowanceRequest: {
+              __typename:
+                'MinistryHousingAllowanceRequestUpdateMutationPayload',
+              ministryHousingAllowanceRequest: {
+                ...requestData,
+                requestAttributes: {
+                  __typename: 'MhaRequestAttributes',
+                  ...values,
+                  ...attributes,
+                  overallAmount,
+                },
+              },
+            },
+          },
+          onCompleted: () => {
+            const hasValue = Object.values(attributes).some(
+              (value) => value !== null,
+            );
+            if (hasValue) {
+              enqueueSnackbar(t('Saved successfully'), { variant: 'success' });
+            }
+          },
+        }),
+      );
     },
-    [formValues, updateMinistryHousingAllowanceRequest, requestData, t],
+    [
+      formValues,
+      updateMinistryHousingAllowanceRequest,
+      requestData,
+      values,
+      trackMutation,
+      t,
+    ],
   );
 
   return saveField;

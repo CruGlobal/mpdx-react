@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import { Box, IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
@@ -8,11 +8,12 @@ import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelper
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
 import { GoalCalculator } from 'src/components/Reports/GoalCalculator/GoalCalculator';
-import { SavingStatus } from 'src/components/Reports/GoalCalculator/SavingStatus/SavingStatus';
+import { getGoalLastUpdated } from 'src/components/Reports/GoalCalculator/SavingStatusHelpers/helpers';
 import {
   GoalCalculatorProvider,
   useGoalCalculator,
 } from 'src/components/Reports/GoalCalculator/Shared/GoalCalculatorContext';
+import { SavingStatus } from 'src/components/Reports/Shared/CalculationReports/SavingStatus/SavingStatus';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -55,8 +56,19 @@ const GoalCalculatorContent: React.FC<GoalCalculatorContentProps> = ({
   designationAccounts,
   setDesignationAccounts,
 }) => {
-  const { rightPanelContent, closeRightPanel } = useGoalCalculator();
+  const {
+    rightPanelContent,
+    closeRightPanel,
+    goalCalculationResult: { data, loading },
+    isMutating,
+  } = useGoalCalculator();
   const { t } = useTranslation();
+
+  const goalCalculation = data?.goalCalculation;
+  const lastSavedAt = useMemo(
+    () => (goalCalculation ? getGoalLastUpdated(goalCalculation) : null),
+    [goalCalculation],
+  );
 
   const rightPanel = (
     <>
@@ -97,7 +109,14 @@ const GoalCalculatorContent: React.FC<GoalCalculatorContentProps> = ({
             isNavListOpen={isNavListOpen}
             onNavListToggle={onNavListToggle}
             title={t('Goal Calculator')}
-            rightExtra={<SavingStatus />}
+            rightExtra={
+              <SavingStatus
+                loading={loading}
+                hasData={!!data}
+                isMutating={isMutating}
+                lastSavedAt={lastSavedAt}
+              />
+            }
             headerType={HeaderTypeEnum.Report}
           />
           <GoalCalculator />

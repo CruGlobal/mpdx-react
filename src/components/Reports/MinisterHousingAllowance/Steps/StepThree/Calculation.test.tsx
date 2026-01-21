@@ -27,6 +27,7 @@ const setHasCalcValues = jest.fn();
 const updateMutation = jest.fn();
 const handleNextStep = jest.fn();
 const mockEnqueue = jest.fn();
+const trackMutation = jest.fn();
 
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -185,6 +186,7 @@ describe('Calculation', () => {
         contextValue={
           {
             pageType: PageEnum.New,
+            trackMutation,
             setHasCalcValues,
             requestData: {
               id: 'request-id',
@@ -260,6 +262,7 @@ describe('Calculation', () => {
         contextValue={
           {
             pageType: PageEnum.New,
+            trackMutation,
             setHasCalcValues,
             updateMutation,
             handleNextStep,
@@ -388,6 +391,7 @@ describe('Calculation', () => {
         contextValue={
           {
             pageType: PageEnum.New,
+            trackMutation,
             setHasCalcValues,
             updateMutation,
             requestData: {

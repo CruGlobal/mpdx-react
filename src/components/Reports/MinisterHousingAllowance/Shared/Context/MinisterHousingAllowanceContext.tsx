@@ -52,12 +52,15 @@ export type ContextType = {
     | MinistryHousingAllowanceRequestQuery['ministryHousingAllowanceRequest']
     | null;
   requestError?: ApolloError;
-  loading?: boolean;
+  loading: boolean;
   requestId?: string;
 
   updateMutation: ReturnType<
     typeof useUpdateMinistryHousingAllowanceRequestMutation
   >[0];
+
+  isMutating: boolean;
+  trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
 };
 
 export const MinisterHousingAllowanceContext =
@@ -100,6 +103,18 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   );
 
   const [updateMutation] = useUpdateMinistryHousingAllowanceRequestMutation();
+  const [mutationCount, setMutationCount] = useState(0);
+  const isMutating = mutationCount > 0;
+
+  const trackMutation = useCallback(
+    async <T,>(mutation: Promise<T>): Promise<T> => {
+      setMutationCount((prev) => prev + 1);
+      return mutation.finally(() => {
+        setMutationCount((prev) => Math.max(0, prev - 1));
+      });
+    },
+    [],
+  );
 
   const pageType = type;
   const {
@@ -189,6 +204,8 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       loading,
       requestId,
       updateMutation,
+      isMutating,
+      trackMutation,
     }),
     [
       steps,
@@ -213,6 +230,8 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       loading,
       requestId,
       updateMutation,
+      isMutating,
+      trackMutation,
     ],
   );
 
