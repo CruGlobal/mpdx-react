@@ -46,11 +46,11 @@ interface TestComponentProps {
 
 const TestComponent: React.FC<TestComponentProps> = ({ hasSpouse = true }) => (
   <GqlMockedProvider<{
-    Hcm: HcmDataQuery;
+    HcmData: HcmDataQuery;
     SalaryCalculation: SalaryCalculationQuery;
   }>
     mocks={{
-      Hcm: {
+      HcmData: {
         hcm: hasSpouse ? [hcmUserMock, hcmSpouseMock] : [hcmUserMock],
       },
       SalaryCalculation: {

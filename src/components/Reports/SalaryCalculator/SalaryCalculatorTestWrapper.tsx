@@ -95,7 +95,7 @@ export const SalaryCalculatorTestWrapper: React.FC<
   <ThemeProvider theme={theme}>
     <TestRouter>
       <GqlMockedProvider<{
-        Hcm: HcmDataQuery;
+        HcmData: HcmDataQuery;
         PayrollDates: PayrollDatesQuery;
         SalaryCalculation: SalaryCalculationQuery;
         GoalCalculatorConstants: GoalCalculatorConstantsQuery;
@@ -112,7 +112,7 @@ export const SalaryCalculatorTestWrapper: React.FC<
               ],
             },
           },
-          Hcm: {
+          HcmData: {
             hcm: hasSpouse ? [hcmUserMock, hcmSpouseMock] : [hcmUserMock],
           },
           SalaryCalculation: {

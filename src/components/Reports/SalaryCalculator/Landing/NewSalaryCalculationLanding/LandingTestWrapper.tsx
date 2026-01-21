@@ -37,13 +37,13 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
   <ThemeProvider theme={theme}>
     <TestRouter>
       <GqlMockedProvider<{
-        Hcm: HcmDataQuery;
+        HcmData: HcmDataQuery;
         StaffAccountId: StaffAccountIdQuery;
         AccountBalance: AccountBalanceQuery;
         LandingSalaryCalculations: LandingSalaryCalculationsQuery;
       }>
         mocks={{
-          Hcm: {
+          HcmData: {
             hcm: [
               {
                 staffInfo: {

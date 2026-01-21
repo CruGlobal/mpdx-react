@@ -19,12 +19,12 @@ const TestComponent: React.FC<TestComponentProps> = ({
   submitted,
 }) => (
   <GqlMockedProvider<{
-    Hcm: HcmDataQuery;
+    HcmData: HcmDataQuery;
     SalaryCalculation: SalaryCalculationQuery;
     GetUser: GetUserQuery;
   }>
     mocks={{
-      Hcm: {
+      HcmData: {
         hcm: hasSpouse ? [hcmUserMock, hcmSpouseMock] : [hcmUserMock],
       },
       SalaryCalculation: {
