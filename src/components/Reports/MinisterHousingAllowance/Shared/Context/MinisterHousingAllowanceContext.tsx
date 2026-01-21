@@ -50,6 +50,8 @@ export type ContextType = {
   spouseHcmData?: HcmData | null;
   preferredName: string;
   spousePreferredName: string;
+  isRightPanelOpen: boolean;
+  setIsRightPanelOpen: Dispatch<SetStateAction<boolean>>;
 
   requestData?:
     | MinistryHousingAllowanceRequestQuery['ministryHousingAllowanceRequest']
@@ -112,6 +114,7 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   } = useStepList(FormEnum.MHA, type);
 
   const [isComplete, setIsComplete] = useState(false);
+  const [isRightPanelOpen, setIsRightPanelOpen] = useState(false);
 
   const steps = useMemo(() => {
     if (!isComplete) {
@@ -205,6 +208,8 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       isPrint,
       setIsPrint,
       setIsComplete,
+      isRightPanelOpen,
+      setIsRightPanelOpen,
       requestData: requestData?.ministryHousingAllowanceRequest ?? null,
       requestError,
       requestId,
@@ -231,6 +236,8 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       isPrint,
       setIsPrint,
       setIsComplete,
+      isRightPanelOpen,
+      setIsRightPanelOpen,
       requestData,
       requestError,
       requestId,

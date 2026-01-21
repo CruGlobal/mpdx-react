@@ -113,6 +113,7 @@ export const Calculation: React.FC<CalculationProps> = ({
     requestData,
     updateMutation,
     userHcmData,
+    setIsRightPanelOpen,
   } = useMinisterHousingAllowance();
 
   const updateCheckbox = (value: boolean) =>
@@ -281,7 +282,13 @@ export const Calculation: React.FC<CalculationProps> = ({
                   fontSize="medium"
                   sx={{ verticalAlign: 'middle', opacity: 0.56 }}
                 />{' '}
-                <Link component="button" type="button">
+                <Link
+                  component="button"
+                  type="button"
+                  onClick={() => {
+                    setIsRightPanelOpen(true);
+                  }}
+                >
                   What expenses can I claim on my MHA?
                 </Link>
               </Box>

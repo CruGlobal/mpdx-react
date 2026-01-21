@@ -22,6 +22,7 @@ const mutationSpy = jest.fn();
 const setHasCalcValues = jest.fn();
 const setIsPrint = jest.fn();
 const updateMutation = jest.fn();
+const setIsRightPanelOpen = jest.fn();
 
 interface TestComponentProps {
   contextValue: Partial<ContextType>;
@@ -349,6 +350,26 @@ describe('Calculation', () => {
         },
       }),
     );
+  });
+
+  it('should open right panel when link is clicked', async () => {
+    const { findByText } = render(
+      <TestComponent
+        contextValue={
+          {
+            pageType: PageEnum.New,
+            setHasCalcValues,
+            setIsPrint,
+            setIsRightPanelOpen,
+          } as unknown as ContextType
+        }
+      />,
+    );
+
+    const link = await findByText(/what expenses can i claim on my mha/i);
+    userEvent.click(link);
+
+    expect(setIsRightPanelOpen).toHaveBeenCalledWith(true);
   });
 
   describe('isViewPage behavior', () => {
