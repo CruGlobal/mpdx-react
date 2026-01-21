@@ -219,7 +219,7 @@ describe('AdditionalSalaryRequest', () => {
     expect(getByTestId('total-amount')).toHaveTextContent('$1,500.75');
   });
 
-  it('displays all values from formik props', () => {
+  it('displays all values from formik props', async () => {
     const customValues: CompleteFormValues = {
       ...defaultCompleteFormValues,
       currentYearSalaryNotReceived: '100',
@@ -231,10 +231,13 @@ describe('AdditionalSalaryRequest', () => {
       <TestWrapper initialValues={customValues} />,
     );
 
-    const inputs = getAllByRole('textbox');
-    // Autosave fields display values (formatted when not focused)
-    expect(inputs[0]).toHaveValue('100');
-    expect(inputs[1]).toHaveValue('200');
-    expect(inputs[2]).toHaveValue('300');
+    // Wait for GraphQL mock to resolve and values to be displayed
+    // Values are currency-formatted when not focused
+    await waitFor(() => {
+      const inputs = getAllByRole('textbox');
+      expect(inputs[0]).toHaveValue('$100.00');
+      expect(inputs[1]).toHaveValue('$200.00');
+      expect(inputs[2]).toHaveValue('$300.00');
+    });
   });
 });
