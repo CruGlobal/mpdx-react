@@ -47,7 +47,7 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
   const title = overrideTitle
     ? overrideTitle
     : isCancel
-      ? t('Do you want to cancel?')
+      ? t(`Do you want to cancel your ${formTitle}?`)
       : actionRequired
         ? t(`Are you ready to submit your updated ${formTitle}?`)
         : t(`Are you ready to submit your ${formTitle}?`);
@@ -65,7 +65,9 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
   const contentText = overrideSubContent
     ? overrideSubContent
     : isCancel
-      ? t('Your work will not be saved.')
+      ? t(
+          'It will no longer be considered for board review and your information entered in this form will not be saved.',
+        )
       : actionRequired
         ? t(
             'This updated request will take the place of your previous request. Once submitted, you can return and make edits until {{date}}. After this date, your request will be processed as is.',
@@ -95,7 +97,7 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose} sx={{ color: 'text.secondary' }}>
-          <b>{isCancel ? t('NO') : t('GO BACK')}</b>
+          <b>{t('GO BACK')}</b>
         </Button>
         <Button onClick={handleConfirm} color={isCancel ? 'error' : 'primary'}>
           <b>{isCancel ? t('Yes, Cancel') : t('Yes, Continue')}</b>

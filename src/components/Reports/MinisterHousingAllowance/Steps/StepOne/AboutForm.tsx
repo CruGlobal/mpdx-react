@@ -3,6 +3,7 @@ import { Box, Link, List, ListItemText, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { Trans, useTranslation } from 'react-i18next';
 import { StyledListItem } from 'src/components/Reports/SavingsFundTransfer/styledComponents/StyledListItem';
+import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
@@ -22,7 +23,9 @@ export const AboutForm: React.FC<AboutFormProps> = ({
   const locale = useLocale();
   const accountListId = useAccountListId();
 
-  const { handleNextStep, handlePreviousStep } = useMinisterHousingAllowance();
+  const { handleNextStep, handlePreviousStep, pageType } =
+    useMinisterHousingAllowance();
+  const isEdit = pageType === PageEnum.Edit;
 
   // TODO: "newRequestAboutForm" value needs to be added to translation files to see all values
   // TODO: Get correct link for "What expenses can I claim on my MHA?"
@@ -115,6 +118,8 @@ export const AboutForm: React.FC<AboutFormProps> = ({
       <DirectionButtons
         handleNextStep={handleNextStep}
         handlePreviousStep={handlePreviousStep}
+        isEdit={isEdit}
+        handleDiscard={() => {}}
       />
     </>
   );

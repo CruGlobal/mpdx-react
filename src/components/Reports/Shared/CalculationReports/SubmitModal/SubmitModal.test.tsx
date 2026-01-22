@@ -98,10 +98,12 @@ describe('ConfirmationModal', () => {
     const { getByRole, findByRole } = render(<TestComponent isCancel={true} />);
 
     expect(
-      await findByRole('heading', { name: 'Do you want to cancel?' }),
+      await findByRole('heading', {
+        name: 'Do you want to cancel your Main Title?',
+      }),
     ).toBeInTheDocument();
 
-    await userEvent.click(getByRole('button', { name: /NO/i }));
+    await userEvent.click(getByRole('button', { name: /BACK/i }));
     expect(handleClose).toHaveBeenCalled();
   });
 

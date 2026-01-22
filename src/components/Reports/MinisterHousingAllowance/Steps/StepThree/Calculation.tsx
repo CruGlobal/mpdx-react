@@ -158,6 +158,7 @@ export const Calculation: React.FC<CalculationProps> = ({
   const actionRequired =
     pageType === PageEnum.Edit || pageType === PageEnum.View;
   const isViewPage = pageType === PageEnum.View;
+  const isEdit = pageType === PageEnum.Edit;
 
   const initialValues: CalculationFormValues = actionRequired
     ? {
@@ -405,6 +406,8 @@ export const Calculation: React.FC<CalculationProps> = ({
                 isValid={isValid}
                 deadlineDate={deadlineDate ?? ''}
                 actionRequired={actionRequired}
+                isEdit={isEdit}
+                handleDiscard={() => {}}
               />
             )}
           </form>

@@ -16,14 +16,14 @@ const pushMock = jest.fn();
 const handleNextStep = jest.fn();
 const handlePreviousStep = jest.fn();
 const overrideNext = jest.fn();
-const handleCancel = jest.fn();
+const handleDiscard = jest.fn();
 
 interface TestComponentProps {
   isSubmission?: boolean;
   overrideNext?: () => void;
   showBackButton?: boolean;
   buttonTitle?: string;
-  handleCancel?: () => void;
+  handleDiscard?: () => void;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
@@ -31,7 +31,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   overrideNext,
   showBackButton = false,
   buttonTitle,
-  handleCancel: handleCancelProp,
+  handleDiscard: handleDiscardProp,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter
@@ -49,7 +49,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
               overrideNext={overrideNext}
               showBackButton={showBackButton}
               buttonTitle={buttonTitle}
-              handleCancel={handleCancelProp}
+              handleDiscard={handleDiscardProp}
             />
           </MinisterHousingAllowanceProvider>
         </Formik>
@@ -109,27 +109,29 @@ describe('DirectionButtons', () => {
     expect(await findByRole('button', { name: title })).toBeInTheDocument();
   });
 
-  it('renders Cancel button when handleCancel is provided', async () => {
+  it('renders Cancel button when handleDiscard is provided', async () => {
     const { findByRole } = render(
-      <TestComponent handleCancel={handleCancel} />,
+      <TestComponent handleDiscard={handleDiscard} />,
     );
 
-    expect(await findByRole('button', { name: /cancel/i })).toBeInTheDocument();
+    expect(
+      await findByRole('button', { name: /discard/i }),
+    ).toBeInTheDocument();
   });
 
-  it('does not render Cancel button when handleCancel is not provided', () => {
+  it('does not render Cancel button when handleDiscard is not provided', () => {
     const { queryByRole } = render(<TestComponent />);
 
-    expect(queryByRole('button', { name: /cancel/i })).not.toBeInTheDocument();
+    expect(queryByRole('button', { name: /discard/i })).not.toBeInTheDocument();
   });
 
-  it('calls handleCancel when Cancel button is clicked', async () => {
+  it('calls handleDiscard when Cancel button is clicked', async () => {
     const { findByRole } = render(
-      <TestComponent handleCancel={handleCancel} />,
+      <TestComponent handleDiscard={handleDiscard} />,
     );
 
-    userEvent.click(await findByRole('button', { name: /cancel/i }));
+    userEvent.click(await findByRole('button', { name: /discard/i }));
 
-    expect(handleCancel).toHaveBeenCalled();
+    expect(handleDiscard).toHaveBeenCalled();
   });
 });
