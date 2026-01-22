@@ -22,9 +22,11 @@ jest.mock('../Shared/CalculationReports/ReceiptStep/Receipt', () => ({
   Receipt: () => <div data-testid="receipt">Receipt</div>,
 }));
 jest.mock('./SharedComponents/AdditionalSalaryRequestSection', () => ({
-  AdditionalSalaryRequestSection: ({ children }: { children: React.ReactNode }) => (
-    <div data-testid="asr-section">{children}</div>
-  ),
+  AdditionalSalaryRequestSection: ({
+    children,
+  }: {
+    children: React.ReactNode;
+  }) => <div data-testid="asr-section">{children}</div>,
 }));
 
 const mockContextValue = {
