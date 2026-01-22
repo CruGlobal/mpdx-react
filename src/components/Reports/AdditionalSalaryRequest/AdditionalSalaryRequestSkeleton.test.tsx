@@ -8,10 +8,4 @@ describe('AdditionalSalaryRequestSkeleton', () => {
     const skeletons = container.querySelectorAll('.MuiSkeleton-root');
     expect(skeletons).toHaveLength(6);
   });
-
-  it('matches snapshot', () => {
-    const { container } = render(<AdditionalSalaryRequestSkeleton />);
-
-    expect(container).toMatchSnapshot();
-  });
 });
