@@ -15,7 +15,7 @@ export const useCompleteFormCategories = (): Category[] => {
 
   return [
     {
-      key: 'currentYearSalary',
+      key: 'currentYearSalaryNotReceived',
       label: t(
         "Current year's ({{year}}) salary not received due to inadequate support",
         { year: currentYear },
@@ -25,11 +25,11 @@ export const useCompleteFormCategories = (): Category[] => {
       ),
     },
     {
-      key: 'previousYearSalary',
+      key: 'previousYearSalaryNotReceived',
       label: t("Previous year's salary not received due to inadequate support"),
     },
     {
-      key: 'additionalSalary',
+      key: 'additionalSalaryWithinMax',
       label: t(
         'Additional salary not exceeding your Maximum Allowable Salary level',
       ),
@@ -40,34 +40,34 @@ export const useCompleteFormCategories = (): Category[] => {
       description: t('$15,000.00 Maximum, per adoption, not per year'),
     },
     {
-      key: 'contribution403b',
+      key: 'traditional403bContribution',
       label: t('403(b) Contribution'),
       description: t(
         '100% of what you enter here will be contributed to your 403(b)',
       ),
     },
     {
-      key: 'counseling',
+      key: 'counselingNonMedical',
       label: t(
         'Counseling that is not for the treatment of a medical condition',
       ),
       description: t('i.e. marital, family or spiritual issues'),
     },
     {
-      key: 'healthcareExpenses',
+      key: 'healthcareExpensesExceedingLimit',
       label: t('Healthcare expenses that exceed the annual reimbursable limit'),
     },
     {
-      key: 'babysitting',
+      key: 'babysittingMinistryEvents',
       label: t('Babysitting for ministry meetings, training, and retreats'),
     },
     {
-      key: 'childrenMinistryTrip',
+      key: 'childrenMinistryTripExpenses',
       label: t("Children's expenses on a ministry trip"),
       description: t('Support raising, Staff Conference, etc.'),
     },
     {
-      key: 'childrenCollege',
+      key: 'childrenCollegeEducation',
       label: t("Children's college education"),
       description: t('$21,000.00 Maximum per year, per child'),
     },
@@ -84,7 +84,7 @@ export const useCompleteFormCategories = (): Category[] => {
     },
     { key: 'autoPurchase', label: t('Auto purchase') },
     {
-      key: 'reimbursableExpenses',
+      key: 'expensesNotApprovedWithin90Days',
       label: t('Reimbursable expenses that were not approved within 90 days'),
     },
   ];

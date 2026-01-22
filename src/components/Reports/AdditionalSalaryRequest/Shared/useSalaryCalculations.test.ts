@@ -16,41 +16,44 @@ const FormikWrapper = ({
     { initialValues: values, onSubmit: () => {} },
     children,
   );
-
+const traditional403bContribution = 0.12;
 describe('useSalaryCalculations', () => {
   const baseValues: CompleteFormValues = {
-    currentYearSalary: '0',
-    previousYearSalary: '0',
-    additionalSalary: '0',
+    currentYearSalaryNotReceived: '0',
+    previousYearSalaryNotReceived: '0',
+    additionalSalaryWithinMax: '0',
     adoption: '0',
-    contribution403b: '0',
-    counseling: '0',
-    healthcareExpenses: '0',
-    babysitting: '0',
-    childrenMinistryTrip: '0',
-    childrenCollege: '0',
+    traditional403bContribution: '0',
+    counselingNonMedical: '0',
+    healthcareExpensesExceedingLimit: '0',
+    babysittingMinistryEvents: '0',
+    childrenMinistryTripExpenses: '0',
+    childrenCollegeEducation: '0',
     movingExpense: '0',
     seminary: '0',
     housingDownPayment: '0',
     autoPurchase: '0',
-    reimbursableExpenses: '0',
-    defaultPercentage: false,
-    telephoneNumber: '',
+    expensesNotApprovedWithin90Days: '0',
+    deductTwelvePercent: false,
+    phoneNumber: '',
   };
 
   it('calculates all salary values correctly with default percentage enabled', () => {
     const values: CompleteFormValues = {
       ...baseValues,
-      currentYearSalary: '5000',
-      previousYearSalary: '3000',
+      currentYearSalaryNotReceived: '5000',
+      previousYearSalaryNotReceived: '3000',
       adoption: '2000',
-      contribution403b: '1000',
-      defaultPercentage: true,
+      traditional403bContribution: '1000',
+      deductTwelvePercent: true,
     };
 
-    const { result } = renderHook(() => useSalaryCalculations(), {
-      wrapper: ({ children }) => FormikWrapper({ children, values }),
-    });
+    const { result } = renderHook(
+      () => useSalaryCalculations(traditional403bContribution),
+      {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      },
+    );
 
     expect(result.current.total).toBe(11000); // 5000 + 3000 + 2000 + 1000
     expect(result.current.calculatedDeduction).toBe(1320); // 11000 * 0.12
@@ -62,14 +65,17 @@ describe('useSalaryCalculations', () => {
   it('calculates all salary values correctly with default percentage disabled', () => {
     const values: CompleteFormValues = {
       ...baseValues,
-      currentYearSalary: '10000',
-      contribution403b: '500',
-      defaultPercentage: false,
+      currentYearSalaryNotReceived: '10000',
+      traditional403bContribution: '500',
+      deductTwelvePercent: false,
     };
 
-    const { result } = renderHook(() => useSalaryCalculations(), {
-      wrapper: ({ children }) => FormikWrapper({ children, values }),
-    });
+    const { result } = renderHook(
+      () => useSalaryCalculations(traditional403bContribution),
+      {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      },
+    );
 
     expect(result.current.total).toBe(10500); // 10000 + 500
     expect(result.current.calculatedDeduction).toBe(0);
@@ -78,17 +84,20 @@ describe('useSalaryCalculations', () => {
     expect(result.current.netSalary).toBe(10000); // 10500 - 500
   });
 
-  it('handles empty contribution403b value', () => {
+  it('handles empty traditional403bContribution value', () => {
     const values: CompleteFormValues = {
       ...baseValues,
-      currentYearSalary: '5000',
-      defaultPercentage: true,
-      contribution403b: '',
+      currentYearSalaryNotReceived: '5000',
+      deductTwelvePercent: true,
+      traditional403bContribution: '',
     };
 
-    const { result } = renderHook(() => useSalaryCalculations(), {
-      wrapper: ({ children }) => FormikWrapper({ children, values }),
-    });
+    const { result } = renderHook(
+      () => useSalaryCalculations(traditional403bContribution),
+      {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      },
+    );
 
     expect(result.current.total).toBe(5000);
     expect(result.current.calculatedDeduction).toBe(600); // 5000 * 0.12
@@ -97,49 +106,55 @@ describe('useSalaryCalculations', () => {
     expect(result.current.netSalary).toBe(4400); // 5000 - 600
   });
 
-  it('excludes defaultPercentage from total calculation', () => {
+  it('excludes deductTwelvePercent from total calculation', () => {
     const values: CompleteFormValues = {
       ...baseValues,
-      currentYearSalary: '1000',
-      previousYearSalary: '2000',
-      defaultPercentage: true,
+      currentYearSalaryNotReceived: '1000',
+      previousYearSalaryNotReceived: '2000',
+      deductTwelvePercent: true,
     };
 
-    const { result } = renderHook(() => useSalaryCalculations(), {
-      wrapper: ({ children }) => FormikWrapper({ children, values }),
-    });
+    const { result } = renderHook(
+      () => useSalaryCalculations(traditional403bContribution),
+      {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      },
+    );
 
-    // Should not include defaultPercentage boolean in total
+    // Should not include deductTwelvePercent boolean in total
     expect(result.current.total).toBe(3000); // 1000 + 2000
   });
 
   it('handles all fields with values', () => {
     const values: CompleteFormValues = {
-      currentYearSalary: '1000',
-      previousYearSalary: '1000',
-      additionalSalary: '1000',
+      currentYearSalaryNotReceived: '1000',
+      previousYearSalaryNotReceived: '1000',
+      additionalSalaryWithinMax: '1000',
       adoption: '1000',
-      contribution403b: '1000',
-      counseling: '1000',
-      healthcareExpenses: '1000',
-      babysitting: '1000',
-      childrenMinistryTrip: '1000',
-      childrenCollege: '1000',
+      traditional403bContribution: '1000',
+      counselingNonMedical: '1000',
+      healthcareExpensesExceedingLimit: '1000',
+      babysittingMinistryEvents: '1000',
+      childrenMinistryTripExpenses: '1000',
+      childrenCollegeEducation: '1000',
       movingExpense: '1000',
       seminary: '1000',
       housingDownPayment: '1000',
       autoPurchase: '1000',
-      reimbursableExpenses: '1000',
-      defaultPercentage: false,
-      telephoneNumber: '',
+      expensesNotApprovedWithin90Days: '1000',
+      deductTwelvePercent: false,
+      phoneNumber: '',
     };
 
-    const { result } = renderHook(() => useSalaryCalculations(), {
-      wrapper: ({ children }) => FormikWrapper({ children, values }),
-    });
+    const { result } = renderHook(
+      () => useSalaryCalculations(traditional403bContribution),
+      {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      },
+    );
 
     expect(result.current.total).toBe(15000); // 15 fields * 1000
-    expect(result.current.calculatedDeduction).toBe(0); // defaultPercentage is false
+    expect(result.current.calculatedDeduction).toBe(0); // deductTwelvePercent is false
     expect(result.current.contribution403b).toBe(1000);
     expect(result.current.totalDeduction).toBe(1000);
     expect(result.current.netSalary).toBe(14000); // 15000 - 1000
@@ -148,12 +163,15 @@ describe('useSalaryCalculations', () => {
   it('handles zero values correctly', () => {
     const values: CompleteFormValues = {
       ...baseValues,
-      defaultPercentage: false,
+      deductTwelvePercent: false,
     };
 
-    const { result } = renderHook(() => useSalaryCalculations(), {
-      wrapper: ({ children }) => FormikWrapper({ children, values }),
-    });
+    const { result } = renderHook(
+      () => useSalaryCalculations(traditional403bContribution),
+      {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      },
+    );
 
     expect(result.current.total).toBe(0);
     expect(result.current.calculatedDeduction).toBe(0);
