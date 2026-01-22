@@ -16,7 +16,7 @@ const FormikWrapper = ({
     { initialValues: values, onSubmit: () => {} },
     children,
   );
-const traditional403bContribution = 12;
+const traditional403bContribution = 0.12;
 describe('useSalaryCalculations', () => {
   const baseValues: CompleteFormValues = {
     currentYearSalaryNotReceived: '0',

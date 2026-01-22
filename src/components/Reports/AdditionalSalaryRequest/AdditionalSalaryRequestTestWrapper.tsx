@@ -96,12 +96,10 @@ export const AdditionalSalaryRequestTestWrapper: React.FC<
                     ...Object.fromEntries(
                       Object.entries(requestValues)
                         .filter(
-                          ([key]) =>
-                            key !== 'traditional403bContribution' &&
-                            key !== 'phoneNumber',
+                          ([key]) => key !== 'traditional403bContribution',
                         )
                         .map(([key, value]) =>
-                          typeof value === 'string'
+                          typeof value === 'string' && key !== 'phoneNumber'
                             ? [key, parseFloat(value) || 0]
                             : [key, value],
                         ),
