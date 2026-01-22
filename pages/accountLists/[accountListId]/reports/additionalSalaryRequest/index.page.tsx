@@ -3,8 +3,11 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
+import Loading from 'src/components/Loading';
 import { AdditionalSalaryRequest } from 'src/components/Reports/AdditionalSalaryRequest/AdditionalSalaryRequest';
 import { AdditionalSalaryRequestProvider } from 'src/components/Reports/AdditionalSalaryRequest/Shared/AdditionalSalaryRequestContext';
+import { NoStaffAccount } from 'src/components/Reports/Shared/NoStaffAccount/NoStaffAccount';
+import { useStaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -71,6 +74,8 @@ const AdditionalSalaryRequestPage: React.FC = () => {
   const [isNavListOpen, setNavListOpen] = useState(false);
   const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
 
+  const { data: staffAccountData, loading } = useStaffAccountQuery();
+
   const handleNavListToggle = () => {
     setNavListOpen(!isNavListOpen);
   };
@@ -80,16 +85,22 @@ const AdditionalSalaryRequestPage: React.FC = () => {
       <Head>
         <title>{`${appName} | ${t('Additional Salary Request')}`}</title>
       </Head>
-      <ReportPageWrapper>
-        <AdditionalSalaryRequestProvider>
-          <AdditionalSalaryRequestContent
-            isNavListOpen={isNavListOpen}
-            onNavListToggle={handleNavListToggle}
-            designationAccounts={designationAccounts}
-            setDesignationAccounts={setDesignationAccounts}
-          />
-        </AdditionalSalaryRequestProvider>
-      </ReportPageWrapper>
+      {staffAccountData?.staffAccount?.id ? (
+        <ReportPageWrapper>
+          <AdditionalSalaryRequestProvider>
+            <AdditionalSalaryRequestContent
+              isNavListOpen={isNavListOpen}
+              onNavListToggle={handleNavListToggle}
+              designationAccounts={designationAccounts}
+              setDesignationAccounts={setDesignationAccounts}
+            />
+          </AdditionalSalaryRequestProvider>
+        </ReportPageWrapper>
+      ) : loading ? (
+        <Loading loading />
+      ) : (
+        <NoStaffAccount />
+      )}
     </>
   );
 };
