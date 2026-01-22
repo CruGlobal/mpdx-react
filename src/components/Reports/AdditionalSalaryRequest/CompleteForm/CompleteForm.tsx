@@ -54,7 +54,7 @@ export const CompleteForm: React.FC = () => {
   }, [errors, submitCount, t]);
 
   return (
-    <AdditionalSalaryRequestSection title={getHeader(t, currentStep)}>
+    <AdditionalSalaryRequestSection title={getHeader(currentStep)}>
       <Box
         sx={{
           display: 'flex',
