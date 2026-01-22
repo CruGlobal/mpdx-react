@@ -8,12 +8,17 @@ import { Deduction } from './Deduction';
 
 interface TestWrapperProps {
   initialValues?: CompleteFormValues;
+  deductionPercentage?: number;
 }
 
 const TestWrapper: React.FC<TestWrapperProps> = ({
   initialValues = defaultCompleteFormValues,
+  deductionPercentage = 0,
 }) => (
-  <AdditionalSalaryRequestTestWrapper initialValues={initialValues}>
+  <AdditionalSalaryRequestTestWrapper
+    initialValues={initialValues}
+    deductionPercentage={deductionPercentage}
+  >
     <Deduction />
   </AdditionalSalaryRequestTestWrapper>
 );
@@ -37,11 +42,13 @@ describe('Deduction', () => {
     expect(checkbox).not.toBeChecked();
   });
 
-  it('displays the checkbox label text', () => {
-    const { getByText } = render(<TestWrapper />);
+  it('displays the checkbox label text with percentage', async () => {
+    const { findByText, getByText } = render(
+      <TestWrapper deductionPercentage={0.12} />,
+    );
 
     expect(
-      getByText(
+      await findByText(
         'Check this box if you would like 12% of the amount requested above deducted from this Additional Salary Request.',
       ),
     ).toBeInTheDocument();
@@ -68,15 +75,21 @@ describe('Deduction', () => {
     expect(zeroAmounts.length).toBeGreaterThanOrEqual(3);
   });
 
-  it('calculates 12% deduction when checkbox is checked', async () => {
+  it('calculates deduction when checkbox is checked', async () => {
     const valuesWithSalary: CompleteFormValues = {
       ...defaultCompleteFormValues,
       additionalSalaryWithinMax: '10000',
     };
 
-    const { getByRole, getByLabelText } = render(
-      <TestWrapper initialValues={valuesWithSalary} />,
+    const { getByRole, findByText, getByLabelText } = render(
+      <TestWrapper
+        initialValues={valuesWithSalary}
+        deductionPercentage={0.12}
+      />,
     );
+
+    // Wait for GraphQL data to load
+    await findByText(/12%/);
 
     const checkbox = getByRole('checkbox', {
       name: 'Use default Percentage for 403(b) deduction',
@@ -103,7 +116,10 @@ describe('Deduction', () => {
     };
 
     const { getByLabelText } = render(
-      <TestWrapper initialValues={valuesWithSalary} />,
+      <TestWrapper
+        initialValues={valuesWithSalary}
+        deductionPercentage={0.12}
+      />,
     );
 
     expect(getByLabelText('Calculated deduction amount')).toHaveTextContent(
@@ -133,9 +149,12 @@ describe('Deduction', () => {
       deductTwelvePercent: true,
     };
 
-    const { getByLabelText } = render(
-      <TestWrapper initialValues={valuesWithBoth} />,
+    const { getByLabelText, findByText } = render(
+      <TestWrapper initialValues={valuesWithBoth} deductionPercentage={0.12} />,
     );
+
+    // Wait for GraphQL data to load
+    await findByText(/12%/);
 
     // 12% of ($10,000 + $3,000) = $1,560
     await waitFor(() => {
@@ -152,7 +171,7 @@ describe('Deduction', () => {
     });
   });
 
-  it('calculates 12% based on total of all salary fields', async () => {
+  it('calculates percentage based on total of all salary fields', async () => {
     const valuesWithMultiple: CompleteFormValues = {
       ...defaultCompleteFormValues,
       additionalSalaryWithinMax: '5000',
@@ -161,9 +180,15 @@ describe('Deduction', () => {
       deductTwelvePercent: true,
     };
 
-    const { getByLabelText } = render(
-      <TestWrapper initialValues={valuesWithMultiple} />,
+    const { getByLabelText, findByText } = render(
+      <TestWrapper
+        initialValues={valuesWithMultiple}
+        deductionPercentage={0.12}
+      />,
     );
+
+    // Wait for GraphQL data to load
+    await findByText(/12%/);
 
     // 12% of ($5,000 + $2,000 + $3,000) = 12% of $10,000 = $1,200
     await waitFor(() => {
@@ -180,9 +205,15 @@ describe('Deduction', () => {
       deductTwelvePercent: true,
     };
 
-    const { getByLabelText } = render(
-      <TestWrapper initialValues={valuesWithBoolean} />,
+    const { getByLabelText, findByText } = render(
+      <TestWrapper
+        initialValues={valuesWithBoolean}
+        deductionPercentage={0.12}
+      />,
     );
+
+    // Wait for GraphQL data to load
+    await findByText(/12%/);
 
     // Should calculate 12% of $10,000, not treat boolean as a number
     await waitFor(() => {
@@ -201,9 +232,15 @@ describe('Deduction', () => {
       deductTwelvePercent: true,
     };
 
-    const { getByLabelText } = render(
-      <TestWrapper initialValues={valuesWithEmpty} />,
+    const { getByLabelText, findByText } = render(
+      <TestWrapper
+        initialValues={valuesWithEmpty}
+        deductionPercentage={0.12}
+      />,
     );
+
+    // Wait for GraphQL data to load
+    await findByText(/12%/);
 
     // 12% of $5,000 = $600 (empty strings should be treated as 0)
     await waitFor(() => {

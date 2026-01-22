@@ -17,6 +17,7 @@ interface AdditionalSalaryRequestTestWrapperProps {
   children?: React.ReactNode;
   initialValues?: CompleteFormValues;
   pageType?: 'new' | 'edit' | 'view';
+  deductionPercentage?: number;
 }
 
 const defaultInitialValues: CompleteFormValues = {
@@ -72,7 +73,7 @@ const TestFormikWrapper: React.FC<{
 
 export const AdditionalSalaryRequestTestWrapper: React.FC<
   AdditionalSalaryRequestTestWrapperProps
-> = ({ children, initialValues, pageType = 'new' }) => {
+> = ({ children, initialValues, pageType = 'new', deductionPercentage = 0 }) => {
   const requestValues = initialValues || defaultInitialValues;
 
   return (
@@ -93,15 +94,19 @@ export const AdditionalSalaryRequestTestWrapper: React.FC<
                   additionalSalaryRequest: {
                     id: 'test-request-id',
                     ...Object.fromEntries(
-                      Object.entries(requestValues).map(([key, value]) =>
-                        typeof value === 'string' && key !== 'phoneNumber'
-                          ? [key, parseFloat(value) || 0]
-                          : [key, value],
-                      ),
+                      Object.entries(requestValues)
+                        .filter(
+                          ([key]) =>
+                            key !== 'traditional403bContribution' &&
+                            key !== 'phoneNumber',
+                        )
+                        .map(([key, value]) =>
+                          typeof value === 'string'
+                            ? [key, parseFloat(value) || 0]
+                            : [key, value],
+                        ),
                     ),
-                    traditional403bContribution:
-                      parseFloat(requestValues.traditional403bContribution) ||
-                      0,
+                    traditional403bContribution: deductionPercentage,
                   },
                 },
               }}
