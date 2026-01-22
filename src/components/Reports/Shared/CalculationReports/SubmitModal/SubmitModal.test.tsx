@@ -24,6 +24,8 @@ interface TestComponentProps {
   overrideContent?: string;
   overrideSubContent?: string;
   isCancel?: boolean;
+  isDiscard?: boolean;
+  isDiscardEdit?: boolean;
   actionRequired?: boolean;
 }
 
@@ -33,6 +35,8 @@ const TestComponent: React.FC<TestComponentProps> = ({
   overrideContent,
   overrideSubContent,
   isCancel,
+  isDiscard,
+  isDiscardEdit,
   actionRequired,
 }) => (
   <ThemeProvider theme={theme}>
@@ -47,6 +51,8 @@ const TestComponent: React.FC<TestComponentProps> = ({
             overrideContent={overrideContent}
             overrideSubContent={overrideSubContent}
             isCancel={isCancel}
+            isDiscard={isDiscard}
+            isDiscardEdit={isDiscardEdit}
             deadlineDate={date}
             actionRequired={actionRequired}
           />
@@ -119,5 +125,35 @@ describe('ConfirmationModal', () => {
     expect(await findByText(title)).toBeInTheDocument();
     expect(getByText(content)).toBeInTheDocument();
     expect(getByText(subContent)).toBeInTheDocument();
+  });
+
+  it('renders discard modal correctly', async () => {
+    const { findByRole, getByRole } = render(
+      <TestComponent isDiscard={true} />,
+    );
+
+    expect(
+      await findByRole('heading', {
+        name: 'Do you want to discard?',
+      }),
+    ).toBeInTheDocument();
+
+    await userEvent.click(getByRole('button', { name: /BACK/i }));
+    expect(handleClose).toHaveBeenCalled();
+  });
+
+  it('renders discard changes modal correctly', async () => {
+    const { findByRole, getByRole } = render(
+      <TestComponent isDiscardEdit={true} />,
+    );
+
+    expect(
+      await findByRole('heading', {
+        name: 'Do you want to discard these changes?',
+      }),
+    ).toBeInTheDocument();
+
+    await userEvent.click(getByRole('button', { name: /BACK/i }));
+    expect(handleClose).toHaveBeenCalled();
   });
 });

@@ -119,7 +119,6 @@ export const AboutForm: React.FC<AboutFormProps> = ({
         handleNextStep={handleNextStep}
         handlePreviousStep={handlePreviousStep}
         isEdit={isEdit}
-        handleDiscard={() => {}}
       />
     </>
   );

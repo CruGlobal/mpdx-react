@@ -1,6 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -56,5 +57,21 @@ describe('AboutForm', () => {
       'href',
       '/accountLists/account-list-1/reports/salaryCalculator',
     );
+  });
+
+  it('should show discard modal when Discard is clicked', async () => {
+    const { getByRole, findByRole } = render(<TestComponent />);
+
+    const discard = await findByRole('button', { name: /discard/i });
+
+    userEvent.click(discard);
+
+    await waitFor(() => {
+      expect(
+        getByRole('heading', {
+          name: 'Do you want to discard?',
+        }),
+      ).toBeInTheDocument();
+    });
   });
 });

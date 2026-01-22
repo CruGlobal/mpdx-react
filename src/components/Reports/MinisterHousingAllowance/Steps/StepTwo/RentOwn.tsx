@@ -200,7 +200,6 @@ export const RentOwn: React.FC = () => {
         overrideNext={handleNext}
         handlePreviousStep={handlePreviousStep}
         isEdit={isEdit}
-        handleDiscard={() => {}}
         showBackButton={true}
       />
       {errors.rentOrOwn && (

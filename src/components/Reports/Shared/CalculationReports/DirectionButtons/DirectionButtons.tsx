@@ -7,7 +7,6 @@ import { SubmitModal } from '../SubmitModal/SubmitModal';
 interface DirectionButtonsProps {
   handleNextStep?: () => void;
   handlePreviousStep?: () => void;
-  handleDiscard?: () => void;
   buttonTitle?: string;
   deadlineDate?: string;
   actionRequired?: boolean;
@@ -25,7 +24,6 @@ interface DirectionButtonsProps {
 export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
   handleNextStep,
   handlePreviousStep,
-  handleDiscard,
   buttonTitle,
   isEdit,
   isSubmission,
@@ -41,6 +39,7 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
   const { t } = useTranslation();
 
   const [openSubmitModal, setOpenSubmitModal] = useState(false);
+  const [openDiscardModal, setOpenDiscardModal] = useState(false);
 
   const handleSubmit = async () => {
     if (!submitForm || !validateForm) {
@@ -67,17 +66,15 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
       sx={{
         mt: 5,
         display: 'flex',
-        justifyContent: handleDiscard ? 'space-between' : 'flex-end',
+        justifyContent: 'space-between',
       }}
     >
-      {handleDiscard && (
-        <Button
-          sx={{ color: 'error.light', px: 2, py: 1, fontWeight: 'bold' }}
-          onClick={handleDiscard}
-        >
-          {isEdit ? t('Discard Changes') : t('Discard')}
-        </Button>
-      )}
+      <Button
+        sx={{ color: 'error.light', px: 2, py: 1, fontWeight: 'bold' }}
+        onClick={() => setOpenDiscardModal(true)}
+      >
+        {isEdit ? t('Discard Changes') : t('Discard')}
+      </Button>
       <Box sx={{ display: 'flex', gap: 2 }}>
         {showBackButton && (
           <Button
@@ -124,6 +121,15 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
           handleConfirm={handleConfirm}
           deadlineDate={deadlineDate}
           actionRequired={actionRequired}
+        />
+      )}
+      {openDiscardModal && (
+        <SubmitModal
+          formTitle={t('MHA Request')}
+          handleClose={() => setOpenDiscardModal(false)}
+          handleConfirm={() => {}}
+          isDiscard={!isEdit}
+          isDiscardEdit={isEdit}
         />
       )}
     </Box>

@@ -16,14 +16,13 @@ const pushMock = jest.fn();
 const handleNextStep = jest.fn();
 const handlePreviousStep = jest.fn();
 const overrideNext = jest.fn();
-const handleDiscard = jest.fn();
 
 interface TestComponentProps {
   isSubmission?: boolean;
   overrideNext?: () => void;
   showBackButton?: boolean;
   buttonTitle?: string;
-  handleDiscard?: () => void;
+  isEdit?: boolean;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
@@ -31,7 +30,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   overrideNext,
   showBackButton = false,
   buttonTitle,
-  handleDiscard: handleDiscardProp,
+  isEdit,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter
@@ -49,7 +48,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
               overrideNext={overrideNext}
               showBackButton={showBackButton}
               buttonTitle={buttonTitle}
-              handleDiscard={handleDiscardProp}
+              isEdit={isEdit}
             />
           </MinisterHousingAllowanceProvider>
         </Formik>
@@ -109,29 +108,19 @@ describe('DirectionButtons', () => {
     expect(await findByRole('button', { name: title })).toBeInTheDocument();
   });
 
-  it('renders Cancel button when handleDiscard is provided', async () => {
-    const { findByRole } = render(
-      <TestComponent handleDiscard={handleDiscard} />,
-    );
+  it('renders Discard button', async () => {
+    const { findByRole } = render(<TestComponent />);
 
     expect(
       await findByRole('button', { name: /discard/i }),
     ).toBeInTheDocument();
   });
 
-  it('does not render Cancel button when handleDiscard is not provided', () => {
-    const { queryByRole } = render(<TestComponent />);
+  it('renders Discard Changes button', async () => {
+    const { findByRole } = render(<TestComponent isEdit={true} />);
 
-    expect(queryByRole('button', { name: /discard/i })).not.toBeInTheDocument();
-  });
-
-  it('calls handleDiscard when Cancel button is clicked', async () => {
-    const { findByRole } = render(
-      <TestComponent handleDiscard={handleDiscard} />,
-    );
-
-    userEvent.click(await findByRole('button', { name: /discard/i }));
-
-    expect(handleDiscard).toHaveBeenCalled();
+    expect(
+      await findByRole('button', { name: /discard changes/i }),
+    ).toBeInTheDocument();
   });
 });

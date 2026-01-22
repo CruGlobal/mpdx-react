@@ -138,4 +138,28 @@ describe('RentOwn', () => {
     expect(getByRole('radio', { name: 'Rent' })).not.toBeChecked();
     expect(getByRole('radio', { name: 'Own' })).not.toBeChecked();
   });
+
+  it('should show discard modal when Discard is clicked', async () => {
+    const { getByRole, findByRole } = render(
+      <TestComponent
+        contextValue={
+          {
+            pageType: PageEnum.New,
+          } as unknown as ContextType
+        }
+      />,
+    );
+
+    const discard = await findByRole('button', { name: /discard/i });
+
+    userEvent.click(discard);
+
+    await waitFor(() => {
+      expect(
+        getByRole('heading', {
+          name: 'Do you want to discard?',
+        }),
+      ).toBeInTheDocument();
+    });
+  });
 });

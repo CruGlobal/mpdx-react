@@ -364,6 +364,32 @@ describe('Calculation', () => {
     });
   }, 10000);
 
+  it('should show discard modal when Discard is clicked', async () => {
+    const { getByRole, findByRole } = render(
+      <TestComponent
+        contextValue={
+          {
+            pageType: PageEnum.New,
+            setHasCalcValues,
+          } as unknown as ContextType
+        }
+        rentOrOwn={MhaRentOrOwnEnum.Rent}
+      />,
+    );
+
+    const discard = await findByRole('button', { name: /discard/i });
+
+    userEvent.click(discard);
+
+    await waitFor(() => {
+      expect(
+        getByRole('heading', {
+          name: 'Do you want to discard?',
+        }),
+      ).toBeInTheDocument();
+    });
+  });
+
   it('should change text when dates are null', () => {
     const { getByText } = render(
       <TestComponent

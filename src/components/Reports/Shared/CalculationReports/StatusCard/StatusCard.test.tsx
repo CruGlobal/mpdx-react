@@ -149,7 +149,9 @@ describe('CardSkeleton', () => {
     userEvent.click(cancelButton);
 
     expect(await findByRole('dialog')).toBeInTheDocument();
-    expect(getByText('Do you want to cancel?')).toBeInTheDocument();
+    expect(
+      getByText('Do you want to cancel your MHA Request?'),
+    ).toBeInTheDocument();
 
     userEvent.click(getByRole('button', { name: /yes, cancel/i }));
 
@@ -188,7 +190,9 @@ describe('CardSkeleton', () => {
     userEvent.click(cancelButton);
 
     expect(await findByRole('dialog')).toBeInTheDocument();
-    expect(getByText('Do you want to cancel?')).toBeInTheDocument();
+    expect(
+      getByText('Do you want to cancel your MHA Request?'),
+    ).toBeInTheDocument();
 
     userEvent.click(getByRole('button', { name: /yes, cancel/i }));
 

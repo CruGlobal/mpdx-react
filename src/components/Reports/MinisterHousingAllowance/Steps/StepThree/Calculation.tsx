@@ -407,7 +407,6 @@ export const Calculation: React.FC<CalculationProps> = ({
                 deadlineDate={deadlineDate ?? ''}
                 actionRequired={actionRequired}
                 isEdit={isEdit}
-                handleDiscard={() => {}}
               />
             )}
           </form>
