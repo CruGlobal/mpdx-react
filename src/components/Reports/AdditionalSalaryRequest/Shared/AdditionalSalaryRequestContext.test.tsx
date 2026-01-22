@@ -11,7 +11,7 @@ const TestComponent: React.FC = () => {
 
   return (
     <div>
-      <h2>{getHeader(currentStep)}</h2>
+      <h2>{getHeader(currentIndex)}</h2>
       <div aria-label="drawer state" data-open={isDrawerOpen}>
         Drawer: {isDrawerOpen ? 'open' : 'closed'}
       </div>

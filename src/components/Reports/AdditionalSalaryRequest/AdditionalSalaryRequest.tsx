@@ -111,8 +111,6 @@ export const AdditionalSalaryRequest: React.FC = () => {
     return 'None';
   }, [requestsData]);
 
-  const iconPanelItems = useIconPanelItems(isDrawerOpen, toggleDrawer);
-
   return (
     <PanelLayout
       panelType={PanelTypeEnum.Other}
