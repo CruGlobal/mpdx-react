@@ -82,7 +82,7 @@ describe('AdditionalSalaryRequestSection', () => {
       </AdditionalSalaryRequestSection>,
     );
 
-    await userEvent.click(getByRole('button', { name: 'Print' }));
+    userEvent.click(getByRole('button', { name: 'Print' }));
 
     expect(printSpy).toHaveBeenCalledTimes(1);
     printSpy.mockRestore();
