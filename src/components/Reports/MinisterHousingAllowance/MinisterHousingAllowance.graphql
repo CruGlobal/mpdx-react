@@ -1,31 +1,36 @@
+fragment RequestAttributes on MhaRequestAttributes {
+  rentOrOwn
+  rentalValue
+  furnitureCostsOne
+  avgUtilityOne
+  mortgageOrRentPayment
+  furnitureCostsTwo
+  repairCosts
+  avgUtilityTwo
+  unexpectedExpenses
+  overallAmount
+  phoneNumber
+  emailAddress
+  iUnderstandMhaPolicy
+  hrApprovedAt
+  approvedOverallAmount
+  availableDate
+  boardApprovedAt
+  deadlineDate
+  spouseSpecific
+  staffSpecific
+  submittedAt
+  changesRequestedAt
+}
+
 query MinistryHousingAllowanceRequests {
   ministryHousingAllowanceRequests {
     nodes {
       id
       personNumber
+      updatedAt
       requestAttributes {
-        rentOrOwn
-        rentalValue
-        furnitureCostsOne
-        avgUtilityOne
-        mortgageOrRentPayment
-        furnitureCostsTwo
-        repairCosts
-        avgUtilityTwo
-        unexpectedExpenses
-        overallAmount
-        phoneNumber
-        emailAddress
-        iUnderstandMhaPolicy
-        hrApprovedAt
-        approvedOverallAmount
-        availableDate
-        boardApprovedAt
-        deadlineDate
-        spouseSpecific
-        staffSpecific
-        submittedAt
-        changesRequestedAt
+        ...RequestAttributes
       }
       status
       user {
@@ -42,29 +47,9 @@ query MinistryHousingAllowanceRequest($ministryHousingAllowanceRequestId: ID!) {
   ministryHousingAllowanceRequest(id: $ministryHousingAllowanceRequestId) {
     id
     personNumber
+    updatedAt
     requestAttributes {
-      rentOrOwn
-      rentalValue
-      furnitureCostsOne
-      avgUtilityOne
-      mortgageOrRentPayment
-      furnitureCostsTwo
-      repairCosts
-      avgUtilityTwo
-      unexpectedExpenses
-      overallAmount
-      phoneNumber
-      emailAddress
-      iUnderstandMhaPolicy
-      hrApprovedAt
-      approvedOverallAmount
-      availableDate
-      boardApprovedAt
-      deadlineDate
-      spouseSpecific
-      staffSpecific
-      submittedAt
-      changesRequestedAt
+      ...RequestAttributes
     }
     status
     user {
@@ -87,10 +72,7 @@ mutation CreateHousingAllowanceRequest(
       status
       personNumber
       requestAttributes {
-        rentOrOwn
-        rentalValue
-        furnitureCostsOne
-        avgUtilityOne
+        ...RequestAttributes
       }
       user {
         id
@@ -108,19 +90,40 @@ mutation UpdateMinistryHousingAllowanceRequest(
     ministryHousingAllowanceRequest {
       id
       requestAttributes {
-        rentOrOwn
-        rentalValue
-        furnitureCostsOne
-        avgUtilityOne
-        mortgageOrRentPayment
-        furnitureCostsTwo
-        repairCosts
-        avgUtilityTwo
-        unexpectedExpenses
-        overallAmount
-        phoneNumber
-        emailAddress
-        iUnderstandMhaPolicy
+        ...RequestAttributes
+      }
+    }
+  }
+}
+
+mutation DeleteMinistryHousingAllowanceRequest(
+  $input: MinistryHousingAllowanceRequestDeleteMutationInput!
+) {
+  deleteMinistryHousingAllowanceRequest(input: $input) {
+    id
+  }
+}
+
+mutation SubmitMinistryHousingAllowanceRequest(
+  $input: MinistryHousingAllowanceRequestSubmitMutationInput!
+) {
+  submitMinistryHousingAllowanceRequest(input: $input) {
+    ministryHousingAllowanceRequest {
+      requestAttributes {
+        ...RequestAttributes
+      }
+    }
+  }
+}
+
+mutation DuplicateMinistryHousingAllowanceRequest(
+  $input: DuplicateMinistryHousingAllowanceRequestMutationInput!
+) {
+  duplicateMinistryHousingAllowanceRequest(input: $input) {
+    ministryHousingAllowanceRequest {
+      id
+      requestAttributes {
+        ...RequestAttributes
       }
     }
   }

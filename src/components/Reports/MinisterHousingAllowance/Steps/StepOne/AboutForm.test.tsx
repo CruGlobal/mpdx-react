@@ -31,11 +31,11 @@ const TestComponent: React.FC = () => (
 );
 
 describe('AboutForm', () => {
-  it('renders form and formatted dates', () => {
-    const { getByText, getByRole } = render(<TestComponent />);
+  it('renders form and formatted dates', async () => {
+    const { getByText, getByRole, findByRole } = render(<TestComponent />);
 
     expect(
-      getByRole('heading', { name: 'About this Form' }),
+      await findByRole('heading', { name: 'About this Form' }),
     ).toBeInTheDocument();
     expect(
       getByText(

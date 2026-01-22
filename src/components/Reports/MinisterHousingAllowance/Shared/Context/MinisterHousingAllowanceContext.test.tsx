@@ -7,7 +7,6 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import theme from 'src/theme';
-import { StepsEnum } from '../sharedTypes';
 import {
   MinisterHousingAllowanceProvider,
   useMinisterHousingAllowance,
@@ -38,7 +37,7 @@ function FailedConsumer() {
 function TestConsumer() {
   const {
     steps,
-    currentStep,
+    currentIndex,
     handleNextStep,
     handlePreviousStep,
     percentComplete,
@@ -49,7 +48,7 @@ function TestConsumer() {
       <div data-testid="steps">{steps.length}</div>
       <div data-testid="percentComplete">{percentComplete}</div>
 
-      <div data-testid="currentStep">{currentStep}</div>
+      <div data-testid="currentIndex">{currentIndex}</div>
       <button onClick={handleNextStep}>Next</button>
       <button onClick={handlePreviousStep}>Previous</button>
     </div>
@@ -66,63 +65,65 @@ describe('MinisterHousingAllowanceContext', () => {
   });
 
   it('provides initial state for new page', async () => {
-    const { getByTestId, getByRole } = render(<TestComponent />);
+    const { findByTestId, getByTestId, getByRole } = render(<TestComponent />);
 
-    expect(getByTestId('steps')).toHaveTextContent('4');
-    expect(getByTestId('currentStep')).toHaveTextContent(StepsEnum.AboutForm);
+    expect(await findByTestId('steps')).toHaveTextContent('4');
+    expect(getByTestId('currentIndex')).toHaveTextContent('0');
     expect(getByTestId('percentComplete')).toHaveTextContent('25');
 
-    await userEvent.click(getByRole('button', { name: 'Next' }));
-    expect(getByTestId('currentStep')).toHaveTextContent(StepsEnum.RentOrOwn);
+    userEvent.click(getByRole('button', { name: 'Next' }));
+    expect(getByTestId('currentIndex')).toHaveTextContent('1');
     expect(getByTestId('percentComplete')).toHaveTextContent('50');
 
-    await userEvent.click(getByRole('button', { name: 'Next' }));
-    expect(getByTestId('currentStep')).toHaveTextContent(StepsEnum.CalcForm);
+    userEvent.click(getByRole('button', { name: 'Next' }));
+    expect(getByTestId('currentIndex')).toHaveTextContent('2');
     expect(getByTestId('percentComplete')).toHaveTextContent('75');
 
-    await userEvent.click(getByRole('button', { name: 'Next' }));
-    expect(getByTestId('currentStep')).toHaveTextContent(StepsEnum.Receipt);
+    userEvent.click(getByRole('button', { name: 'Next' }));
+    expect(getByTestId('currentIndex')).toHaveTextContent('3');
     expect(getByTestId('percentComplete')).toHaveTextContent('100');
 
-    await userEvent.click(getByRole('button', { name: 'Previous' }));
-    expect(getByTestId('currentStep')).toHaveTextContent(StepsEnum.CalcForm);
+    userEvent.click(getByRole('button', { name: 'Previous' }));
+    expect(getByTestId('currentIndex')).toHaveTextContent('2');
     expect(getByTestId('percentComplete')).toHaveTextContent('75');
   });
 
   it('provides initial state for edit page', async () => {
-    const { getByTestId, getByRole } = render(
+    const { findByTestId, getByTestId, getByRole } = render(
       <TestComponent type={PageEnum.Edit} />,
     );
 
-    expect(getByTestId('steps')).toHaveTextContent('4');
-    expect(getByTestId('currentStep')).toHaveTextContent(StepsEnum.RentOrOwn);
+    expect(await findByTestId('steps')).toHaveTextContent('4');
+    expect(getByTestId('currentIndex')).toHaveTextContent('1');
     expect(getByTestId('percentComplete')).toHaveTextContent('50');
 
-    await userEvent.click(getByRole('button', { name: 'Next' }));
-    expect(getByTestId('currentStep')).toHaveTextContent(StepsEnum.CalcForm);
+    userEvent.click(getByRole('button', { name: 'Next' }));
+    expect(getByTestId('currentIndex')).toHaveTextContent('2');
     expect(getByTestId('percentComplete')).toHaveTextContent('75');
 
-    await userEvent.click(getByRole('button', { name: 'Next' }));
-    expect(getByTestId('currentStep')).toHaveTextContent(StepsEnum.Receipt);
+    userEvent.click(getByRole('button', { name: 'Next' }));
+    expect(getByTestId('currentIndex')).toHaveTextContent('3');
     expect(getByTestId('percentComplete')).toHaveTextContent('100');
 
-    await userEvent.click(getByRole('button', { name: 'Previous' }));
-    expect(getByTestId('currentStep')).toHaveTextContent(StepsEnum.CalcForm);
+    userEvent.click(getByRole('button', { name: 'Previous' }));
+    expect(getByTestId('currentIndex')).toHaveTextContent('2');
     expect(getByTestId('percentComplete')).toHaveTextContent('75');
 
-    await userEvent.click(getByRole('button', { name: 'Previous' }));
-    expect(getByTestId('currentStep')).toHaveTextContent(StepsEnum.RentOrOwn);
+    userEvent.click(getByRole('button', { name: 'Previous' }));
+    expect(getByTestId('currentIndex')).toHaveTextContent('1');
     expect(getByTestId('percentComplete')).toHaveTextContent('50');
 
-    await userEvent.click(getByRole('button', { name: 'Previous' }));
-    expect(getByTestId('currentStep')).toHaveTextContent(StepsEnum.AboutForm);
+    userEvent.click(getByRole('button', { name: 'Previous' }));
+    expect(getByTestId('currentIndex')).toHaveTextContent('0');
     expect(getByTestId('percentComplete')).toHaveTextContent('25');
   });
 
-  it('renders children correctly', () => {
-    const { getByRole } = render(<TestComponent />);
+  it('renders children correctly', async () => {
+    const { getByRole, findByRole } = render(<TestComponent />);
 
-    expect(getByRole('button', { name: 'Previous' })).toBeInTheDocument();
+    expect(
+      await findByRole('button', { name: 'Previous' }),
+    ).toBeInTheDocument();
     expect(getByRole('button', { name: 'Next' })).toBeInTheDocument();
   });
 });

@@ -5,6 +5,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
+import { SnackbarProvider } from 'notistack';
 import * as yup from 'yup';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -33,21 +34,23 @@ interface TestComponentProps {
 const TestComponent: React.FC<TestComponentProps> = ({ contextValue }) => (
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <GqlMockedProvider<{
-        UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
-      }>
-        onCall={mutationSpy}
-      >
-        <TestRouter>
-          <MinisterHousingAllowanceContext.Provider
-            value={contextValue as ContextType}
-          >
-            <Formik initialValues={{}} onSubmit={submit}>
-              <FairRentalValue schema={mockSchema} />
-            </Formik>
-          </MinisterHousingAllowanceContext.Provider>
-        </TestRouter>
-      </GqlMockedProvider>
+      <SnackbarProvider>
+        <GqlMockedProvider<{
+          UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
+        }>
+          onCall={mutationSpy}
+        >
+          <TestRouter>
+            <MinisterHousingAllowanceContext.Provider
+              value={contextValue as ContextType}
+            >
+              <Formik initialValues={{}} onSubmit={submit}>
+                <FairRentalValue schema={mockSchema} />
+              </Formik>
+            </MinisterHousingAllowanceContext.Provider>
+          </TestRouter>
+        </GqlMockedProvider>
+      </SnackbarProvider>
     </LocalizationProvider>
   </ThemeProvider>
 );
@@ -95,15 +98,15 @@ describe('FairRentalValue', () => {
     const row1 = getByRole('row', {
       name: /monthly market rental value of your home/i,
     });
-    const input1 = within(row1).getByPlaceholderText(/enter amount/i);
+    const input1 = within(row1).getByPlaceholderText(/\$0/i);
 
     const row2 = getByRole('row', { name: /monthly value for furniture/i });
-    const input2 = within(row2).getByPlaceholderText(/enter amount/i);
+    const input2 = within(row2).getByPlaceholderText(/\$0/i);
 
     const row3 = getByRole('row', {
       name: /average monthly utility costs/i,
     });
-    const input3 = within(row3).getByPlaceholderText(/enter amount/i);
+    const input3 = within(row3).getByPlaceholderText(/\$0/i);
 
     await userEvent.type(input1, '1000');
     await userEvent.type(input2, '200');

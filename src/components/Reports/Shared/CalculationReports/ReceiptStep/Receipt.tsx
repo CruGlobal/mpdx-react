@@ -46,7 +46,7 @@ export const Receipt: React.FC<ReceiptProps> = ({
     ? t(`approval effective ${available}`)
     : t('approval soon');
 
-  const printLink = `${viewLink}?print=true`;
+  const printLink = `${viewLink}&print=true`;
 
   return (
     <Box>

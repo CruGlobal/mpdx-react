@@ -4,6 +4,7 @@ import { MHARequest } from './SharedComponents/types';
 export const mockMHARequest: MHARequest = {
   id: '1',
   personNumber: '123456',
+  updatedAt: '2019-09-15T12:00:00.000Z',
   status: MhaStatusEnum.Pending,
   feedback: null,
   user: {
@@ -33,5 +34,6 @@ export const mockMHARequest: MHARequest = {
     hrApprovedAt: '2019-11-01T15:30:45.123Z',
     spouseSpecific: null,
     staffSpecific: 15000,
+    changesRequestedAt: null,
   },
 };

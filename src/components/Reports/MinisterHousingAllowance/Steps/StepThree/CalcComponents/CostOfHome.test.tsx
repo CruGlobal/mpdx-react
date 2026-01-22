@@ -5,6 +5,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
+import { SnackbarProvider } from 'notistack';
 import * as yup from 'yup';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -38,21 +39,23 @@ const TestComponent: React.FC<TestComponentProps> = ({
 }) => (
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <GqlMockedProvider<{
-        UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
-      }>
-        onCall={mutationSpy}
-      >
-        <TestRouter>
-          <MinisterHousingAllowanceContext.Provider
-            value={contextValue as ContextType}
-          >
-            <Formik initialValues={{}} onSubmit={submit}>
-              <CostOfHome schema={mockSchema} rentOrOwn={rentOrOwn} />
-            </Formik>
-          </MinisterHousingAllowanceContext.Provider>
-        </TestRouter>
-      </GqlMockedProvider>
+      <SnackbarProvider>
+        <GqlMockedProvider<{
+          UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
+        }>
+          onCall={mutationSpy}
+        >
+          <TestRouter>
+            <MinisterHousingAllowanceContext.Provider
+              value={contextValue as ContextType}
+            >
+              <Formik initialValues={{}} onSubmit={submit}>
+                <CostOfHome schema={mockSchema} rentOrOwn={rentOrOwn} />
+              </Formik>
+            </MinisterHousingAllowanceContext.Provider>
+          </TestRouter>
+        </GqlMockedProvider>
+      </SnackbarProvider>
     </LocalizationProvider>
   </ThemeProvider>
 );
@@ -119,7 +122,7 @@ describe('CostOfHome', () => {
                 furnitureCostsTwo: null,
                 repairCosts: null,
                 avgUtilityTwo: null,
-                unexpectedCosts: null,
+                unexpectedExpenses: null,
               },
             },
           } as unknown as ContextType
@@ -130,25 +133,25 @@ describe('CostOfHome', () => {
     const row1 = getByRole('row', {
       name: /monthly rent/i,
     });
-    const input1 = within(row1).getByPlaceholderText(/enter amount/i);
+    const input1 = within(row1).getByPlaceholderText(/\$0/i);
 
     const row2 = getByRole('row', { name: /monthly value for furniture/i });
-    const input2 = within(row2).getByPlaceholderText(/enter amount/i);
+    const input2 = within(row2).getByPlaceholderText(/\$0/i);
 
     const row3 = getByRole('row', {
       name: /estimated monthly cost of repairs/i,
     });
-    const input3 = within(row3).getByPlaceholderText(/enter amount/i);
+    const input3 = within(row3).getByPlaceholderText(/\$0/i);
 
     const row4 = getByRole('row', {
       name: /average monthly utility costs/i,
     });
-    const input4 = within(row4).getByPlaceholderText(/enter amount/i);
+    const input4 = within(row4).getByPlaceholderText(/\$0/i);
 
     const row5 = getByRole('row', {
       name: /average monthly amount for unexpected/i,
     });
-    const input5 = within(row5).getByPlaceholderText(/enter amount/i);
+    const input5 = within(row5).getByPlaceholderText(/\$0/i);
 
     await userEvent.type(input1, '1000');
     userEvent.tab();

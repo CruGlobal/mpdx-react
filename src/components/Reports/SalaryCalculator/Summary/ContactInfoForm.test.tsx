@@ -9,10 +9,12 @@ const TestComponent: React.FC = () => (
 );
 
 describe('ContactInfoForm', () => {
-  it('renders the inputs', () => {
-    const { getByRole } = render(<TestComponent />);
+  it('renders the inputs', async () => {
+    const { getByRole, findByRole } = render(<TestComponent />);
 
-    expect(getByRole('textbox', { name: 'Phone Number' })).toBeInTheDocument();
+    expect(
+      await findByRole('textbox', { name: 'Phone Number' }),
+    ).toBeInTheDocument();
     expect(getByRole('textbox', { name: 'Email' })).toBeInTheDocument();
   });
 });

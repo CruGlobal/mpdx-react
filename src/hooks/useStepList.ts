@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   FormEnum,
@@ -10,7 +10,7 @@ export function useStepList(formType: FormEnum, type?: PageEnum) {
   const { t } = useTranslation();
   const isEdit = type === PageEnum.Edit;
 
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(() => (isEdit ? 1 : 0));
 
   const [steps, setSteps] = useState<Steps[]>(() =>
     formType === FormEnum.MHA
@@ -85,9 +85,12 @@ export function useStepList(formType: FormEnum, type?: PageEnum) {
           : [],
   );
 
-  const percentComplete = ((currentIndex + 1) / steps.length) * 100;
+  const percentComplete = useMemo(
+    () => ((currentIndex + 1) / steps.length) * 100,
+    [currentIndex, steps.length],
+  );
 
-  const nextStep = useCallback(() => {
+  const handleNextStep = useCallback(() => {
     const newIndex = currentIndex + 1;
     setSteps((prevSteps) =>
       prevSteps.map((step, index) => {
@@ -110,9 +113,9 @@ export function useStepList(formType: FormEnum, type?: PageEnum) {
       }),
     );
     setCurrentIndex(newIndex);
-  }, [currentIndex, setSteps]);
+  }, [currentIndex]);
 
-  const previousStep = useCallback(() => {
+  const handlePreviousStep = useCallback(() => {
     const newIndex = currentIndex - 1;
     setSteps((prevSteps) =>
       prevSteps.map((step, index) => {
@@ -131,18 +134,12 @@ export function useStepList(formType: FormEnum, type?: PageEnum) {
       }),
     );
     setCurrentIndex(newIndex);
-  }, [currentIndex, setSteps]);
-
-  useEffect(() => {
-    if (isEdit) {
-      nextStep();
-    }
-  }, [isEdit]);
+  }, [currentIndex]);
 
   return {
     steps,
-    nextStep,
-    previousStep,
+    handleNextStep,
+    handlePreviousStep,
     currentIndex,
     percentComplete,
   };

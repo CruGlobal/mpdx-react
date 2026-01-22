@@ -1,24 +1,24 @@
+import { Typography } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { EffectiveDateStep } from './EffectiveDateStep/EffectiveDateStep';
 import { ReceiptStep } from './Receipt/Receipt';
-import { SalaryCalculationStep } from './SalaryCalculation/SalaryCalculation';
-import { SalaryCalculatorSectionEnum } from './SalaryCalculatorContext/Helper/sharedTypes';
 import { useSalaryCalculator } from './SalaryCalculatorContext/SalaryCalculatorContext';
 import { SummaryStep } from './Summary/Summary';
 import { YourInformationStep } from './YourInformation/YourInformation';
 
 export const CurrentStep: React.FC = () => {
-  const { currentStep } = useSalaryCalculator();
+  const { currentIndex } = useSalaryCalculator();
+  const { t } = useTranslation();
 
-  switch (currentStep) {
-    case SalaryCalculatorSectionEnum.EffectiveDate:
-      return <EffectiveDateStep />;
-    case SalaryCalculatorSectionEnum.YourInformation:
-      return <YourInformationStep />;
-    case SalaryCalculatorSectionEnum.SalaryCalculation:
-      return <SalaryCalculationStep />;
-    case SalaryCalculatorSectionEnum.Summary:
-      return <SummaryStep />;
-    case SalaryCalculatorSectionEnum.Receipt:
-      return <ReceiptStep />;
-  }
+  const steps = [
+    <EffectiveDateStep key="effective-date" />,
+    <YourInformationStep key="your-information" />,
+    <Typography variant="h5" key="salary-calculation">
+      {t('Salary Calculation')}
+    </Typography>,
+    <SummaryStep key="summary" />,
+    <ReceiptStep key="receipt" />,
+  ];
+
+  return steps[currentIndex] ?? null;
 };

@@ -3,9 +3,11 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
+import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { UpdateMinistryHousingAllowanceRequestMutation } from '../../MinisterHousingAllowance.generated';
 import {
@@ -18,6 +20,18 @@ const submit = jest.fn();
 const mutationSpy = jest.fn();
 const updateMutation = jest.fn();
 const setHasCalcValues = jest.fn();
+const mockEnqueue = jest.fn();
+
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
 
 interface TestComponentProps {
   contextValue: Partial<ContextType>;
@@ -26,39 +40,44 @@ interface TestComponentProps {
 const TestComponent: React.FC<TestComponentProps> = ({ contextValue }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
-      <GqlMockedProvider<{
-        UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
-      }>
-        onCall={mutationSpy}
-      >
-        <Formik initialValues={{}} onSubmit={submit}>
-          <MinisterHousingAllowanceContext.Provider
-            value={contextValue as ContextType}
-          >
-            <RentOwn />
-          </MinisterHousingAllowanceContext.Provider>
-        </Formik>
-      </GqlMockedProvider>
+      <SnackbarProvider>
+        <GqlMockedProvider<{
+          UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
+        }>
+          onCall={mutationSpy}
+        >
+          <Formik initialValues={{}} onSubmit={submit}>
+            <MinisterHousingAllowanceContext.Provider
+              value={contextValue as ContextType}
+            >
+              <RentOwn />
+            </MinisterHousingAllowanceContext.Provider>
+          </Formik>
+        </GqlMockedProvider>
+      </SnackbarProvider>
     </TestRouter>
   </ThemeProvider>
 );
 
 describe('RentOwn', () => {
   it('renders form and options for new page', async () => {
-    const { getByRole, getByText, findAllByRole } = render(
+    const { getByRole, getByText, findAllByRole, findByRole } = render(
       <TestComponent
         contextValue={
           {
             pageType: PageEnum.New,
             updateMutation,
             setHasCalcValues,
+            hasCalcValues: true,
             requestData: { id: 'request-id' },
           } as unknown as ContextType
         }
       />,
     );
 
-    expect(getByRole('heading', { name: 'Rent or Own?' })).toBeInTheDocument();
+    expect(
+      await findByRole('heading', { name: 'Rent or Own?' }),
+    ).toBeInTheDocument();
 
     expect(getByText('Rent')).toBeInTheDocument();
     expect(getByText('Own')).toBeInTheDocument();
@@ -71,7 +90,7 @@ describe('RentOwn', () => {
         variables: {
           input: {
             requestAttributes: {
-              rentOrOwn: 'RENT',
+              rentOrOwn: MhaRentOrOwnEnum.Rent,
               rentalValue: null,
               furnitureCostsOne: null,
               avgUtilityOne: null,
@@ -88,6 +107,13 @@ describe('RentOwn', () => {
         },
       }),
     );
+
+    await waitFor(() => {
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        expect.stringContaining('All inputs have been cleared successfully'),
+        { variant: 'success' },
+      );
+    });
 
     expect(getByRole('radio', { name: 'Rent' })).toBeChecked();
   });

@@ -15,8 +15,10 @@ import {
 } from '@mui/material';
 import { Formik } from 'formik';
 import { DateTime } from 'luxon';
+import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import Loading from 'src/components/Loading';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import {
   SimpleScreenOnly,
@@ -28,6 +30,7 @@ import i18n from 'src/lib/i18n';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { phoneNumber } from 'src/lib/yupHelpers';
 import { DirectionButtons } from '../../../Shared/CalculationReports/DirectionButtons/DirectionButtons';
+import { useSubmitMinistryHousingAllowanceRequestMutation } from '../../MinisterHousingAllowance.generated';
 import { hasPopulatedValues } from '../../Shared/Context/Helper/hasPopulatedValues';
 import { useMinisterHousingAllowance } from '../../Shared/Context/MinisterHousingAllowanceContext';
 import { CostOfHome } from './CalcComponents/CostOfHome';
@@ -61,11 +64,26 @@ export interface CalculationFormValues {
 
 const getValidationSchema = (rentOrOwn?: MhaRentOrOwnEnum) => {
   const baseSchema = {
-    mortgageOrRentPayment: yup.number().required(i18n.t('Required field.')),
-    furnitureCostsTwo: yup.number().required(i18n.t('Required field.')),
-    repairCosts: yup.number().required(i18n.t('Required field.')),
-    avgUtilityTwo: yup.number().required(i18n.t('Required field.')),
-    unexpectedExpenses: yup.number().required(i18n.t('Required field.')),
+    mortgageOrRentPayment: yup
+      .number()
+      .moreThan(0, i18n.t('Must be greater than $0.'))
+      .required(i18n.t('Required field.')),
+    furnitureCostsTwo: yup
+      .number()
+      .moreThan(0, i18n.t('Must be greater than $0.'))
+      .required(i18n.t('Required field.')),
+    repairCosts: yup
+      .number()
+      .moreThan(0, i18n.t('Must be greater than $0.'))
+      .required(i18n.t('Required field.')),
+    avgUtilityTwo: yup
+      .number()
+      .moreThan(0, i18n.t('Must be greater than $0.'))
+      .required(i18n.t('Required field.')),
+    unexpectedExpenses: yup
+      .number()
+      .moreThan(0, i18n.t('Must be greater than $0.'))
+      .required(i18n.t('Required field.')),
     phoneNumber: phoneNumber(i18n.t).required(
       i18n.t('Phone Number is required.'),
     ),
@@ -82,9 +100,18 @@ const getValidationSchema = (rentOrOwn?: MhaRentOrOwnEnum) => {
   if (rentOrOwn === MhaRentOrOwnEnum.Own) {
     return yup.object({
       ...baseSchema,
-      rentalValue: yup.number().required(i18n.t('Required field.')),
-      furnitureCostsOne: yup.number().required(i18n.t('Required field.')),
-      avgUtilityOne: yup.number().required(i18n.t('Required field.')),
+      rentalValue: yup
+        .number()
+        .moreThan(0, i18n.t('Must be greater than $0.'))
+        .required(i18n.t('Required field.')),
+      furnitureCostsOne: yup
+        .number()
+        .moreThan(0, i18n.t('Must be greater than $0.'))
+        .required(i18n.t('Required field.')),
+      avgUtilityOne: yup
+        .number()
+        .moreThan(0, i18n.t('Must be greater than $0.'))
+        .required(i18n.t('Required field.')),
     });
   }
 
@@ -100,8 +127,12 @@ export const Calculation: React.FC<CalculationProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { query } = useRouter();
+  const { enqueueSnackbar } = useSnackbar();
+  const router = useRouter();
+  const { query } = router;
   const print = query.print === 'true';
+
+  const [submitMutation] = useSubmitMinistryHousingAllowanceRequestMutation();
 
   const {
     handleNextStep,
@@ -111,6 +142,7 @@ export const Calculation: React.FC<CalculationProps> = ({
     setIsPrint,
     isPrint,
     requestData,
+    loading,
     updateMutation,
     userHcmData,
   } = useMinisterHousingAllowance();
@@ -191,6 +223,10 @@ export const Calculation: React.FC<CalculationProps> = ({
 
   const schema = getValidationSchema(rentOrOwn);
 
+  if (loading) {
+    return <Loading loading={loading} />;
+  }
+
   return (
     <Formik<CalculationFormValues>
       initialValues={initialValues}
@@ -198,7 +234,15 @@ export const Calculation: React.FC<CalculationProps> = ({
       validateOnChange
       validateOnBlur
       onSubmit={() => {
-        handleNextStep();
+        try {
+          submitMutation({
+            variables: { input: { requestId: requestData?.id ?? '' } },
+          });
+          enqueueSnackbar(t('MHA request submitted successfully.'), {
+            variant: 'success',
+          });
+          handleNextStep();
+        } catch (error) {}
       }}
     >
       {({

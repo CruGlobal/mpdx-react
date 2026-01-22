@@ -5,12 +5,16 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { UpdateMinistryHousingAllowanceRequestMutation } from '../../MinisterHousingAllowance.generated';
+import {
+  SubmitMinistryHousingAllowanceRequestMutation,
+  UpdateMinistryHousingAllowanceRequestMutation,
+} from '../../MinisterHousingAllowance.generated';
 import {
   ContextType,
   MinisterHousingAllowanceContext,
@@ -22,6 +26,19 @@ const mutationSpy = jest.fn();
 const setHasCalcValues = jest.fn();
 const setIsPrint = jest.fn();
 const updateMutation = jest.fn();
+const handleNextStep = jest.fn();
+const mockEnqueue = jest.fn();
+
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
 
 interface TestComponentProps {
   contextValue: Partial<ContextType>;
@@ -39,31 +56,34 @@ const TestComponent: React.FC<TestComponentProps> = ({
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <TestRouter>
-        <GqlMockedProvider<{
-          UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
-        }>
-          onCall={mutationSpy}
-        >
-          <Formik initialValues={{}} onSubmit={submit}>
-            <MinisterHousingAllowanceContext.Provider
-              value={contextValue as ContextType}
-            >
-              <Calculation
-                boardApprovedAt={boardApprovedAt}
-                availableDate={availableDate}
-                rentOrOwn={rentOrOwn}
-              />
-            </MinisterHousingAllowanceContext.Provider>
-          </Formik>
-        </GqlMockedProvider>
+        <SnackbarProvider>
+          <GqlMockedProvider<{
+            UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
+            SubmitMinistryHousingAllowanceRequest: SubmitMinistryHousingAllowanceRequestMutation;
+          }>
+            onCall={mutationSpy}
+          >
+            <Formik initialValues={{}} onSubmit={submit}>
+              <MinisterHousingAllowanceContext.Provider
+                value={contextValue as ContextType}
+              >
+                <Calculation
+                  boardApprovedAt={boardApprovedAt}
+                  availableDate={availableDate}
+                  rentOrOwn={rentOrOwn}
+                />
+              </MinisterHousingAllowanceContext.Provider>
+            </Formik>
+          </GqlMockedProvider>
+        </SnackbarProvider>
       </TestRouter>
     </LocalizationProvider>
   </ThemeProvider>
 );
 
 describe('Calculation', () => {
-  it('renders the component', () => {
-    const { getByText, getByRole } = render(
+  it('renders the component', async () => {
+    const { getByText, getByRole, findByRole } = render(
       <TestComponent
         contextValue={
           {
@@ -76,7 +96,7 @@ describe('Calculation', () => {
     );
 
     expect(
-      getByRole('heading', { name: 'Calculate Your MHA Request' }),
+      await findByRole('heading', { name: 'Calculate Your MHA Request' }),
     ).toBeInTheDocument();
     expect(
       getByText(/please enter dollar amounts for each category below/i),
@@ -101,7 +121,7 @@ describe('Calculation', () => {
             requestData: {
               id: 'request-id',
               requestAttributes: {
-                unexpectedCosts: null,
+                unexpectedExpenses: null,
               },
             },
           } as unknown as ContextType
@@ -109,10 +129,10 @@ describe('Calculation', () => {
       />,
     );
 
-    const row = getByRole('row', {
+    const row = await findByRole('row', {
       name: /average monthly amount for unexpected/i,
     });
-    const input = within(row).getByPlaceholderText(/enter amount/i);
+    const input = within(row).getByPlaceholderText(/\$0/i);
 
     await userEvent.type(input, '100');
     expect(input).toHaveValue('100');
@@ -135,7 +155,7 @@ describe('Calculation', () => {
   });
 
   it('should show validation error when checkbox is not checked', async () => {
-    const { findByText, getByRole, getByText, findByRole } = render(
+    const { findByText, findByRole, getByText } = render(
       <TestComponent
         contextValue={
           {
@@ -147,7 +167,7 @@ describe('Calculation', () => {
       />,
     );
 
-    const submitButton = getByRole('button', { name: /submit/i });
+    const submitButton = await findByRole('button', { name: /submit/i });
 
     await userEvent.click(submitButton);
 
@@ -163,8 +183,8 @@ describe('Calculation', () => {
     ).toBeInTheDocument();
   });
 
-  it('shows validation errors when inputs are invalid', async () => {
-    const { getByRole, findByText } = render(
+  it('shows validation errors when email and phone are invalid', async () => {
+    const { getByRole, findByText, findByRole } = render(
       <TestComponent
         contextValue={
           {
@@ -183,7 +203,7 @@ describe('Calculation', () => {
       />,
     );
 
-    const phone = getByRole('textbox', { name: 'Telephone Number' });
+    const phone = await findByRole('textbox', { name: 'Telephone Number' });
     const email = getByRole('textbox', { name: 'Email' });
 
     expect(phone).toHaveValue('1234567890');
@@ -206,6 +226,40 @@ describe('Calculation', () => {
     expect(await findByText('Invalid email address.')).toBeInTheDocument();
   });
 
+  it('shows validation error when input is 0', async () => {
+    const { findByRole, findByText } = render(
+      <TestComponent
+        contextValue={
+          {
+            pageType: PageEnum.New,
+            setHasCalcValues,
+            setIsPrint,
+            requestData: {
+              id: 'request-id',
+              requestAttributes: {
+                unexpectedExpenses: null,
+              },
+            },
+          } as unknown as ContextType
+        }
+      />,
+    );
+
+    const row = await findByRole('row', {
+      name: /average monthly amount for unexpected/i,
+    });
+    const input = within(row).getByPlaceholderText(/\$0/i);
+
+    await userEvent.type(input, '0');
+
+    input.focus();
+    await userEvent.tab();
+
+    expect(input).toHaveValue('$0.00');
+
+    expect(await findByText('Must be greater than $0.')).toBeInTheDocument();
+  });
+
   it('shows confirmation modal when submit is clicked', async () => {
     const { getByRole, getByText, findByRole } = render(
       <TestComponent
@@ -215,6 +269,7 @@ describe('Calculation', () => {
             setHasCalcValues,
             setIsPrint,
             updateMutation,
+            handleNextStep,
             requestData: {
               id: 'request-id',
               requestAttributes: {
@@ -222,7 +277,7 @@ describe('Calculation', () => {
                 furnitureValue: null,
                 repairCosts: null,
                 utilityCosts: null,
-                unexpectedCosts: null,
+                unexpectedExpenses: null,
                 iUnderstandMhaPolicy: false,
                 phoneNumber: '1234567890',
                 emailAddress: 'john.doe@cru.org',
@@ -234,35 +289,34 @@ describe('Calculation', () => {
       />,
     );
 
-    const row1 = getByRole('row', {
+    const row1 = await findByRole('row', {
       name: /monthly rent/i,
     });
-    const input1 = within(row1).getByPlaceholderText(/enter amount/i);
+    const input1 = within(row1).getByPlaceholderText(/\$0/i);
 
     const row2 = getByRole('row', { name: /monthly value for furniture/i });
-    const input2 = within(row2).getByPlaceholderText(/enter amount/i);
+    const input2 = within(row2).getByPlaceholderText(/\$0/i);
 
     const row3 = getByRole('row', {
       name: /estimated monthly cost of repairs/i,
     });
-    const input3 = within(row3).getByPlaceholderText(/enter amount/i);
+    const input3 = within(row3).getByPlaceholderText(/\$0/i);
 
     const row4 = getByRole('row', {
       name: /average monthly utility costs/i,
     });
-    const input4 = within(row4).getByPlaceholderText(/enter amount/i);
+    const input4 = within(row4).getByPlaceholderText(/\$0/i);
 
     const row5 = getByRole('row', {
       name: /average monthly amount for unexpected/i,
     });
-    const input5 = within(row5).getByPlaceholderText(/enter amount/i);
+    const input5 = within(row5).getByPlaceholderText(/\$0/i);
 
     await userEvent.type(input1, '1000');
     await userEvent.type(input2, '200');
     await userEvent.type(input3, '300');
     await userEvent.type(input4, '400');
     await userEvent.type(input5, '500');
-
     const checkbox = getByRole('checkbox', {
       name: /i understand that my approved/i,
     });
@@ -271,7 +325,6 @@ describe('Calculation', () => {
     const submitButton = getByRole('button', { name: /submit/i });
 
     await userEvent.click(submitButton);
-
     expect(await findByRole('dialog')).toBeInTheDocument();
 
     expect(
@@ -285,7 +338,35 @@ describe('Calculation', () => {
 
     expect(getByRole('button', { name: /go back/i })).toBeInTheDocument();
     expect(getByRole('button', { name: /yes, continue/i })).toBeInTheDocument();
-  });
+
+    expect(mutationSpy).not.toHaveGraphqlOperation(
+      'SubmitMinistryHousingAllowanceRequest',
+    );
+
+    const confirmButton = getByRole('button', { name: /yes, continue/i });
+
+    await userEvent.click(confirmButton);
+
+    await waitFor(() => {
+      expect(mutationSpy).toHaveBeenCalledTimes(6);
+    });
+
+    expect(mutationSpy).toHaveGraphqlOperation(
+      'SubmitMinistryHousingAllowanceRequest',
+      {
+        input: {
+          requestId: 'request-id',
+        },
+      },
+    );
+
+    await waitFor(() => {
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        expect.stringContaining('MHA request submitted successfully.'),
+        { variant: 'success' },
+      );
+    });
+  }, 10000);
 
   it('should change text when dates are null', () => {
     const { getByText } = render(
@@ -310,7 +391,7 @@ describe('Calculation', () => {
   });
 
   it('should update checkbox value when clicked', async () => {
-    const { getByRole } = render(
+    const { findByRole } = render(
       <TestComponent
         contextValue={
           {
@@ -329,7 +410,7 @@ describe('Calculation', () => {
       />,
     );
 
-    const checkbox = getByRole('checkbox', {
+    const checkbox = await findByRole('checkbox', {
       name: /i understand that my approved/i,
     });
     expect(checkbox).not.toBeChecked();
@@ -352,8 +433,8 @@ describe('Calculation', () => {
   });
 
   describe('isViewPage behavior', () => {
-    it('renders view only mode', () => {
-      const { getByRole, queryByRole, getByText } = render(
+    it('renders view only mode', async () => {
+      const { findByRole, queryByRole, getByText } = render(
         <TestComponent
           contextValue={
             {
@@ -366,7 +447,7 @@ describe('Calculation', () => {
       );
 
       expect(
-        getByRole('heading', { name: 'Your MHA Request' }),
+        await findByRole('heading', { name: 'Your MHA Request' }),
       ).toBeInTheDocument();
 
       expect(getByText('Personal Contact Information')).toBeInTheDocument();
