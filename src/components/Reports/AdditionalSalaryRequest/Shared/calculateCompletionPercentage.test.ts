@@ -7,21 +7,21 @@ describe('calculateCompletionPercentage', () => {
     overrides: Partial<CompleteFormValues> = {},
   ): CompleteFormValues => ({
     ...defaultCompleteFormValues,
-    currentYearSalary: '',
-    previousYearSalary: '',
-    additionalSalary: '',
+    currentYearSalaryNotReceived: '',
+    previousYearSalaryNotReceived: '',
+    additionalSalaryWithinMax: '',
     adoption: '',
-    contribution403b: '',
-    counseling: '',
-    healthcareExpenses: '',
-    babysitting: '',
-    childrenMinistryTrip: '',
-    childrenCollege: '',
+    traditional403bContribution: '',
+    counselingNonMedical: '',
+    healthcareExpensesExceedingLimit: '',
+    babysittingMinistryEvents: '',
+    childrenMinistryTripExpenses: '',
+    childrenCollegeEducation: '',
     movingExpense: '',
     seminary: '',
     housingDownPayment: '',
     autoPurchase: '',
-    reimbursableExpenses: '',
+    expensesNotApprovedWithin90Days: '',
     ...overrides,
   });
 
@@ -32,47 +32,47 @@ describe('calculateCompletionPercentage', () => {
 
   it('should return 100 when all fields are filled', () => {
     const values = createFormValues({
-      currentYearSalary: '50000',
-      previousYearSalary: '48000',
-      additionalSalary: '5000',
+      currentYearSalaryNotReceived: '50000',
+      previousYearSalaryNotReceived: '48000',
+      additionalSalaryWithinMax: '5000',
       adoption: '1000',
-      contribution403b: '2000',
-      counseling: '500',
-      healthcareExpenses: '1500',
-      babysitting: '800',
-      childrenMinistryTrip: '1200',
-      childrenCollege: '3000',
+      traditional403bContribution: '2000',
+      counselingNonMedical: '500',
+      healthcareExpensesExceedingLimit: '1500',
+      babysittingMinistryEvents: '800',
+      childrenMinistryTripExpenses: '1200',
+      childrenCollegeEducation: '3000',
       movingExpense: '2500',
       seminary: '1000',
       housingDownPayment: '10000',
       autoPurchase: '5000',
-      reimbursableExpenses: '750',
-      telephoneNumber: '555-1234',
+      expensesNotApprovedWithin90Days: '750',
+      phoneNumber: '555-1234',
     });
     expect(calculateCompletionPercentage(values)).toBe(100);
   });
 
-  it('should exclude defaultPercentage from calculation', () => {
+  it('should exclude deductTwelvePercent from calculation', () => {
     const values = createFormValues({
-      currentYearSalary: '50000',
-      defaultPercentage: true,
+      currentYearSalaryNotReceived: '50000',
+      deductTwelvePercent: true,
     });
     expect(calculateCompletionPercentage(values)).toBe(6);
   });
 
   it('should treat zero values as unfilled', () => {
     const values = createFormValues({
-      currentYearSalary: '0',
-      previousYearSalary: '0',
-      additionalSalary: '50000',
+      currentYearSalaryNotReceived: '0',
+      previousYearSalaryNotReceived: '0',
+      additionalSalaryWithinMax: '50000',
     });
     expect(calculateCompletionPercentage(values)).toBe(6);
   });
 
   it('should handle decimal values correctly', () => {
     const values = createFormValues({
-      currentYearSalary: '50000.50',
-      previousYearSalary: '48000.75',
+      currentYearSalaryNotReceived: '50000.50',
+      previousYearSalaryNotReceived: '48000.75',
     });
     expect(calculateCompletionPercentage(values)).toBe(13);
   });
