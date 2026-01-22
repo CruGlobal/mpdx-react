@@ -1,14 +1,13 @@
-import { TFunction } from 'i18next';
+import i18n from 'src/lib/i18n';
+import { AdditionalSalaryRequestSectionEnum } from '../../AdditionalSalaryRequestHelper';
 
-export const getHeader = (t: TFunction, step: number): string => {
+export const getHeader = (step: AdditionalSalaryRequestSectionEnum): string => {
   switch (step) {
-    case 0:
-      return 'About this Form';
-    case 1:
-      return 'Complete the Form';
-    case 2:
-      return 'Receipt';
-    default:
-      return '';
+    case AdditionalSalaryRequestSectionEnum.AboutForm:
+      return i18n.t('About this Form');
+    case AdditionalSalaryRequestSectionEnum.CompleteForm:
+      return i18n.t('Complete the Form');
+    case AdditionalSalaryRequestSectionEnum.Receipt:
+      return i18n.t('Receipt');
   }
 };
