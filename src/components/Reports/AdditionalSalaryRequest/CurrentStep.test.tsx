@@ -1,33 +1,18 @@
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { AdditionalSalaryRequestSectionEnum } from './AdditionalSalaryRequestHelper';
+import { AdditionalSalaryRequestTestWrapper } from './AdditionalSalaryRequestTestWrapper';
 import { CurrentStep } from './CurrentStep';
 import { useAdditionalSalaryRequest } from './Shared/AdditionalSalaryRequestContext';
 
-jest.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key: string) => key,
-  }),
+jest.mock('./Shared/AdditionalSalaryRequestContext', () => ({
+  ...jest.requireActual('./Shared/AdditionalSalaryRequestContext'),
+  useAdditionalSalaryRequest: jest.fn(),
 }));
-jest.mock('src/hooks/useAccountListId', () => ({
-  useAccountListId: () => 'account-list-1',
-}));
-jest.mock('./Shared/AdditionalSalaryRequestContext');
-jest.mock('./AboutForm/AboutForm', () => ({
-  AboutForm: () => <div data-testid="about-form">AboutForm</div>,
-}));
-jest.mock('./CompleteForm/CompleteForm', () => ({
-  CompleteForm: () => <div data-testid="complete-form">CompleteForm</div>,
-}));
-jest.mock('../Shared/CalculationReports/ReceiptStep/Receipt', () => ({
-  Receipt: () => <div data-testid="receipt">Receipt</div>,
-}));
-jest.mock('./SharedComponents/AdditionalSalaryRequestSection', () => ({
-  AdditionalSalaryRequestSection: ({
-    children,
-  }: {
-    children: React.ReactNode;
-  }) => <div data-testid="asr-section">{children}</div>,
-}));
+
+const mockUseAdditionalSalaryRequest =
+  useAdditionalSalaryRequest as jest.MockedFunction<
+    typeof useAdditionalSalaryRequest
+  >;
 
 const mockContextValue = {
   staffAccountId: 'staff-1',
@@ -50,41 +35,55 @@ const mockContextValue = {
   trackMutation: jest.fn(),
 };
 
+const TestComponent: React.FC = () => (
+  <AdditionalSalaryRequestTestWrapper>
+    <CurrentStep />
+  </AdditionalSalaryRequestTestWrapper>
+);
+
 describe('CurrentStep', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  it('renders AboutForm when currentStep is AboutForm', () => {
-    (useAdditionalSalaryRequest as jest.Mock).mockReturnValue({
+  it('renders AboutForm when currentStep is AboutForm', async () => {
+    mockUseAdditionalSalaryRequest.mockReturnValue({
       ...mockContextValue,
       currentStep: AdditionalSalaryRequestSectionEnum.AboutForm,
     });
 
-    const { getByTestId } = render(<CurrentStep />);
+    const { getByText } = render(<TestComponent />);
 
-    expect(getByTestId('about-form')).toBeInTheDocument();
+    await waitFor(() =>
+      expect(getByText('About this Form')).toBeInTheDocument(),
+    );
   });
 
-  it('renders CompleteForm when currentStep is CompleteForm', () => {
-    (useAdditionalSalaryRequest as jest.Mock).mockReturnValue({
+  it('renders CompleteForm when currentStep is CompleteForm', async () => {
+    mockUseAdditionalSalaryRequest.mockReturnValue({
       ...mockContextValue,
       currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
     });
 
-    const { getByTestId } = render(<CurrentStep />);
+    const { getByText } = render(<TestComponent />);
 
-    expect(getByTestId('complete-form')).toBeInTheDocument();
+    await waitFor(() =>
+      expect(getByText('Complete the Form')).toBeInTheDocument(),
+    );
   });
 
-  it('renders Receipt when currentStep is Receipt', () => {
-    (useAdditionalSalaryRequest as jest.Mock).mockReturnValue({
+  it('renders Receipt when currentStep is Receipt', async () => {
+    mockUseAdditionalSalaryRequest.mockReturnValue({
       ...mockContextValue,
       currentStep: AdditionalSalaryRequestSectionEnum.Receipt,
     });
 
-    const { getByTestId } = render(<CurrentStep />);
+    const { getByText } = render(<TestComponent />);
 
-    expect(getByTestId('receipt')).toBeInTheDocument();
+    await waitFor(() =>
+      expect(
+        getByText('Thank you for Submitting your Additional Salary Request!'),
+      ).toBeInTheDocument(),
+    );
   });
 });
