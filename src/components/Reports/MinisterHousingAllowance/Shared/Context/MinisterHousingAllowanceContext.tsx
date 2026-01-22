@@ -40,8 +40,6 @@ export type ContextType = {
   isDrawerOpen: boolean;
   toggleDrawer: () => void;
   setIsDrawerOpen: Dispatch<SetStateAction<boolean>>;
-  isPrint: boolean;
-  setIsPrint: Dispatch<SetStateAction<boolean>>;
   setIsComplete: Dispatch<SetStateAction<boolean>>;
   isMarried: boolean;
   userHcmData?: HcmData;
@@ -165,7 +163,6 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   }, []);
 
   const [hasCalcValues, setHasCalcValues] = useState(hasValues);
-  const [isPrint, setIsPrint] = useState(false);
 
   const contextValue = useMemo(
     () => ({
@@ -186,8 +183,6 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       preferredName,
       spousePreferredName,
       userEligibleForMHA,
-      isPrint,
-      setIsPrint,
       setIsComplete,
       requestData: requestData?.ministryHousingAllowanceRequest ?? null,
       requestError,
@@ -213,9 +208,6 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       preferredName,
       spousePreferredName,
       userEligibleForMHA,
-      isPrint,
-      setIsPrint,
-      setIsComplete,
       requestData,
       requestError,
       loading,

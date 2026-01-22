@@ -26,7 +26,6 @@ const handleNextStep = jest.fn();
 const handlePreviousStep = jest.fn();
 const updateMutation = jest.fn();
 const setHasCalcValues = jest.fn();
-const setIsPrint = jest.fn();
 
 const steps = [
   {
@@ -368,7 +367,6 @@ describe('RequestPage', () => {
                 hasCalcValues: true,
                 setHasCalcValues,
                 updateMutation,
-                setIsPrint,
                 userEligibleForMHA: true,
                 requestData: {
                   id: 'request-id',
@@ -419,7 +417,6 @@ describe('RequestPage', () => {
           contextValue={{
             pageType: PageEnum.View,
             setHasCalcValues,
-            setIsPrint,
           }}
         />,
       );
@@ -435,7 +432,6 @@ describe('RequestPage', () => {
           contextValue={{
             pageType: PageEnum.View,
             setHasCalcValues,
-            setIsPrint,
           }}
         />,
       );
@@ -457,7 +453,6 @@ describe('RequestPage', () => {
             {
               pageType: PageEnum.Edit,
               setHasCalcValues,
-              setIsPrint,
               requestData: {
                 id: 'request-id',
                 status: MhaStatusEnum.BoardApproved,

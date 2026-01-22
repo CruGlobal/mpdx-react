@@ -1,6 +1,6 @@
 import NextLink from 'next/link';
 import { useState } from 'react';
-import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import { Print } from '@mui/icons-material';
 import {
   Avatar,
   Box,
@@ -30,10 +30,10 @@ interface StatusCardProps {
   linkTwoText?: string;
   linkTwo?: string;
   isRequest?: boolean;
-  hideDownload?: boolean;
+  hidePrint?: boolean;
   hideActions?: boolean;
   hideLinkTwoButton?: boolean;
-  handleDownload?: () => void;
+  handlePrint?: () => void;
   handleConfirmCancel: () => void;
   handleLinkTwo?: () => void;
   styling?: SxProps<Theme>;
@@ -51,10 +51,10 @@ export const StatusCard: React.FC<StatusCardProps> = ({
   linkTwoText,
   linkTwo,
   isRequest,
-  hideDownload,
+  hidePrint,
   hideActions,
   hideLinkTwoButton,
-  handleDownload,
+  handlePrint,
   handleConfirmCancel,
   handleLinkTwo,
   styling,
@@ -95,13 +95,13 @@ export const StatusCard: React.FC<StatusCardProps> = ({
             ) : (
               <Typography sx={{ fontSize: 24 }}>{title}</Typography>
             )}
-            {!hideDownload && (
-              <IconButton sx={{ ml: 'auto' }} aria-label={t('Download')}>
-                <FileDownloadIcon
-                  sx={{ fontSize: '32px' }}
-                  titleAccess={t('Download')}
-                  onClick={handleDownload}
-                />
+            {!hidePrint && (
+              <IconButton
+                sx={{ ml: 'auto' }}
+                aria-label={t('Print')}
+                onClick={handlePrint}
+              >
+                <Print sx={{ fontSize: '32px' }} titleAccess={t('Print')} />
               </IconButton>
             )}
           </Box>

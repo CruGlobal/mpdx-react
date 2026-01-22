@@ -3,6 +3,7 @@ import { Box, Link, List, ListItemText, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { Trans, useTranslation } from 'react-i18next';
 import { StyledListItem } from 'src/components/Reports/SavingsFundTransfer/styledComponents/StyledListItem';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { DirectionButtons } from '../../../Shared/CalculationReports/DirectionButtons/DirectionButtons';
@@ -19,11 +20,12 @@ export const AboutForm: React.FC<AboutFormProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const accountListId = useAccountListId();
 
   const { handleNextStep, handlePreviousStep } = useMinisterHousingAllowance();
 
   // TODO: "newRequestAboutForm" value needs to be added to translation files to see all values
-  // TODO: Get correct link for "Salary Calculation Form" and "What expenses can I claim on my MHA?"
+  // TODO: Get correct link for "What expenses can I claim on my MHA?"
 
   const nextYear = DateTime.now().year + 1;
 
@@ -42,6 +44,8 @@ export const AboutForm: React.FC<AboutFormProps> = ({
   const approval = availableDateFormatted
     ? t(` on ${availableDateFormatted}.`)
     : '.';
+
+  const salaryLink = `/accountLists/${accountListId}/reports/salaryCalculator`;
 
   return (
     <>
@@ -92,7 +96,9 @@ export const AboutForm: React.FC<AboutFormProps> = ({
         <Box sx={{ mt: 2 }}>
           The next time the board will approve MHA Requests is {after} and your
           approved annual MHA amount will appear on your{' '}
-          <Link href="">Salary Calculation Form</Link>
+          <Link href={salaryLink} target="_blank">
+            Salary Calculation Form
+          </Link>
           {approval} Once approved by the board, keep a copy for your tax
           records.
         </Box>

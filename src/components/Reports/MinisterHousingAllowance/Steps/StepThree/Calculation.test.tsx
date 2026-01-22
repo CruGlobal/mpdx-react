@@ -24,7 +24,6 @@ import { Calculation } from './Calculation';
 const submit = jest.fn();
 const mutationSpy = jest.fn();
 const setHasCalcValues = jest.fn();
-const setIsPrint = jest.fn();
 const updateMutation = jest.fn();
 const handleNextStep = jest.fn();
 const mockEnqueue = jest.fn();
@@ -89,7 +88,6 @@ describe('Calculation', () => {
           {
             pageType: PageEnum.New,
             setHasCalcValues,
-            setIsPrint,
           } as unknown as ContextType
         }
       />,
@@ -117,7 +115,6 @@ describe('Calculation', () => {
           {
             pageType: PageEnum.New,
             setHasCalcValues,
-            setIsPrint,
             requestData: {
               id: 'request-id',
               requestAttributes: {
@@ -161,7 +158,6 @@ describe('Calculation', () => {
           {
             pageType: PageEnum.New,
             setHasCalcValues,
-            setIsPrint,
           } as unknown as ContextType
         }
       />,
@@ -190,7 +186,6 @@ describe('Calculation', () => {
           {
             pageType: PageEnum.New,
             setHasCalcValues,
-            setIsPrint,
             requestData: {
               id: 'request-id',
               requestAttributes: {
@@ -233,7 +228,6 @@ describe('Calculation', () => {
           {
             pageType: PageEnum.New,
             setHasCalcValues,
-            setIsPrint,
             requestData: {
               id: 'request-id',
               requestAttributes: {
@@ -267,7 +261,6 @@ describe('Calculation', () => {
           {
             pageType: PageEnum.New,
             setHasCalcValues,
-            setIsPrint,
             updateMutation,
             handleNextStep,
             requestData: {
@@ -375,7 +368,6 @@ describe('Calculation', () => {
           {
             pageType: PageEnum.New,
             setHasCalcValues,
-            setIsPrint,
           } as unknown as ContextType
         }
         boardApprovedAt={null}
@@ -397,7 +389,6 @@ describe('Calculation', () => {
           {
             pageType: PageEnum.New,
             setHasCalcValues,
-            setIsPrint,
             updateMutation,
             requestData: {
               id: 'request-id',
@@ -440,7 +431,6 @@ describe('Calculation', () => {
             {
               pageType: PageEnum.View,
               setHasCalcValues,
-              setIsPrint,
             } as unknown as ContextType
           }
         />,
