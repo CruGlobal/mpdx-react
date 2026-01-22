@@ -1,0 +1,50 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AdditionalSalaryRequestSkeleton matches snapshot 1`] = `
+<div>
+  <div
+    class="MuiStack-root css-11zzc41-MuiStack-root"
+  >
+    <div
+      class="MuiBox-root css-0"
+    >
+      <span
+        class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-pulse css-1e1x4vv-MuiSkeleton-root"
+        style="width: 60%; height: 40px;"
+      />
+    </div>
+    <div
+      class="MuiBox-root css-0"
+    >
+      <span
+        class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-pulse css-1e1x4vv-MuiSkeleton-root"
+        style="width: 100%; height: 24px;"
+      />
+      <span
+        class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-pulse css-1e1x4vv-MuiSkeleton-root"
+        style="width: 100%; height: 24px;"
+      />
+      <span
+        class="MuiSkeleton-root MuiSkeleton-text MuiSkeleton-pulse css-1e1x4vv-MuiSkeleton-root"
+        style="width: 80%; height: 24px;"
+      />
+    </div>
+    <div
+      class="MuiBox-root css-0"
+    >
+      <span
+        class="MuiSkeleton-root MuiSkeleton-rectangular MuiSkeleton-pulse css-13s1xpp-MuiSkeleton-root"
+        style="width: 100%; height: 300px;"
+      />
+    </div>
+    <div
+      class="MuiBox-root css-0"
+    >
+      <span
+        class="MuiSkeleton-root MuiSkeleton-rectangular MuiSkeleton-pulse css-153n0d3-MuiSkeleton-root"
+        style="width: 180px; height: 42px;"
+      />
+    </div>
+  </div>
+</div>
+`;
