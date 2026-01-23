@@ -116,7 +116,7 @@ export const usePopulateTableRows = (
               row.lastDonationCurrency,
               locale,
             )
-          : ''}
+          : null}
       </Typography>
     );
   };
