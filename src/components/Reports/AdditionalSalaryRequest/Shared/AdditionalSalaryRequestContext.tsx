@@ -49,6 +49,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   const { steps, handleNextStep, handlePreviousStep, currentIndex } =
     useStepList(FormEnum.AdditionalSalary);
   const locale = useLocale();
+  const totalSteps = steps.length;
 
   const createCurrencyValidation = useCallback(
     (fieldName: string, max?: number) => {
@@ -152,8 +153,9 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   });
 
   const percentComplete = useMemo(
-    () => calculateCompletionPercentage(formik.values),
-    [formik.values],
+    () =>
+      calculateCompletionPercentage(formik.values, currentIndex, totalSteps),
+    [formik.values, currentIndex, totalSteps],
   );
 
   const contextValue = useMemo<AdditionalSalaryRequestType>(
