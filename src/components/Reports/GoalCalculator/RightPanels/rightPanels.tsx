@@ -7,6 +7,7 @@ import { MedicalPanel } from './MedicalPanel';
 import { MileagePanel } from './MileagePanel';
 import { SavingsPanel } from './SavingsPanel';
 import { SubUtilitiesPanel } from './SubUtilitiesPanel';
+import { UsStaffConferencePanel } from './UsStaffConferencePanel';
 
 export const getPrimaryCategoryRightPanel = (
   category: PrimaryBudgetCategoryEnum,
@@ -16,6 +17,8 @@ export const getPrimaryCategoryRightPanel = (
       return <MedicalPanel />;
     case PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage:
       return <MileagePanel />;
+    case PrimaryBudgetCategoryEnum.UsStaffConference:
+      return <UsStaffConferencePanel />;
     default:
       return null;
   }

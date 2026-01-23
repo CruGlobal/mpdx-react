@@ -4,11 +4,14 @@ import React, {
   SetStateAction,
   createContext,
   useCallback,
+  useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { MpdGoalBenefitsConstantSizeEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useTrackMutation } from 'src/hooks/useTrackMutation';
 import { getQueryParam } from 'src/utils/queryParam';
@@ -20,6 +23,7 @@ import {
 import { useGoalCalculationQuery } from './GoalCalculation.generated';
 import { completionPercentage } from './calculateCompletion';
 import { GoalTotals, calculateGoalTotals } from './calculateTotals';
+import { DefaultTypeEnum, getDefaultType } from './getDefaultType';
 import { GoalCalculatorStep, useSteps } from './useSteps';
 
 export type GoalCalculatorType = {
@@ -49,6 +53,12 @@ export type GoalCalculatorType = {
   /** Call with the mutation promise to track the start and end of mutations */
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
   percentComplete: number;
+
+  defaultType: DefaultTypeEnum;
+  isMarried: boolean;
+
+  defaultTypeChanged: boolean;
+  clearDefaultTypeChanged: () => void;
 };
 
 const GoalCalculatorContext = createContext<GoalCalculatorType | null>(null);
@@ -80,6 +90,35 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       id: goalCalculationId,
     },
   });
+
+  const role = goalCalculationResult.data?.goalCalculation?.role ?? null;
+  const familySize =
+    goalCalculationResult.data?.goalCalculation?.familySize ?? null;
+
+  const isMarried =
+    familySize === MpdGoalBenefitsConstantSizeEnum.MarriedNoChildren ||
+    familySize === MpdGoalBenefitsConstantSizeEnum.MarriedOneToTwoChildren ||
+    familySize === MpdGoalBenefitsConstantSizeEnum.MarriedThreeOrMoreChildren;
+
+  const defaultType = getDefaultType(role, isMarried);
+
+  // Track when defaultType changes (not on initial load)
+  const previousDefaultTypeRef = useRef<DefaultTypeEnum | null>(null);
+  const [defaultTypeChanged, setDefaultTypeChanged] = useState(false);
+
+  useEffect(() => {
+    const previousDefaultType = previousDefaultTypeRef.current;
+
+    if (previousDefaultType && previousDefaultType !== defaultType) {
+      setDefaultTypeChanged(true);
+    }
+
+    previousDefaultTypeRef.current = defaultType;
+  }, [defaultType]);
+
+  const clearDefaultTypeChanged = useCallback(() => {
+    setDefaultTypeChanged(false);
+  }, []);
 
   const constants = useGoalCalculatorConstants();
 
@@ -157,6 +196,10 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       trackMutation,
       percentComplete,
       goalTotals,
+      defaultType,
+      isMarried,
+      defaultTypeChanged,
+      clearDefaultTypeChanged,
     }),
     [
       steps,
@@ -176,6 +219,10 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       trackMutation,
       percentComplete,
       goalTotals,
+      defaultType,
+      isMarried,
+      defaultTypeChanged,
+      clearDefaultTypeChanged,
     ],
   );
 

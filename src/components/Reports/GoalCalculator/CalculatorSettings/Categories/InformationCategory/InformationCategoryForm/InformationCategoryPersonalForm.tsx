@@ -125,7 +125,13 @@ export const InformationCategoryPersonalForm: React.FC<
               disabled={!data}
               size="small"
               renderInput={(params) => (
-                <TextField {...params} label={t('Geographic Location')} />
+                <TextField
+                  {...params}
+                  label={t('Geographic Location')}
+                  helperText={t(
+                    'Do you live within 50 miles of one of these major cities?',
+                  )}
+                />
               )}
             />
           </Grid>
@@ -154,7 +160,7 @@ export const InformationCategoryPersonalForm: React.FC<
             <AutosaveTextField
               fieldName="ministryLocation"
               schema={schema}
-              label={t('Ministry Location')}
+              label={t('Ministry Team / Location')}
               helperText={t('For Presenting Your Goal report')}
             />
           </Grid>
