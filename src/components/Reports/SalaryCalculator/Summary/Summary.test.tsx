@@ -12,10 +12,10 @@ const TestComponent: React.FC = () => (
 
 describe('SummaryStep', () => {
   describe('View Complete Calculations button', () => {
-    it('should toggle calculation cards', () => {
-      const { getByRole, getByText, queryByText } = render(<TestComponent />);
+    it('should toggle calculation cards', async () => {
+      const { findByRole, getByText, queryByText } = render(<TestComponent />);
 
-      const button = getByRole('button', {
+      const button = await findByRole('button', {
         name: 'View Complete Calculations',
       });
 
