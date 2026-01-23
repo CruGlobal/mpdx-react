@@ -18,6 +18,7 @@ import {
   useHcmDataQuery,
 } from 'src/components/Reports/Shared/HcmData/HCMData.generated';
 import { useStepList } from 'src/hooks/useStepList';
+import { useTrackMutation } from 'src/hooks/useTrackMutation';
 import { Steps } from '../../../Shared/CalculationReports/StepsList/StepsList';
 import {
   MinistryHousingAllowanceRequestQuery,
@@ -52,12 +53,15 @@ export type ContextType = {
     | MinistryHousingAllowanceRequestQuery['ministryHousingAllowanceRequest']
     | null;
   requestError?: ApolloError;
-  loading?: boolean;
+  loading: boolean;
   requestId?: string;
 
   updateMutation: ReturnType<
     typeof useUpdateMinistryHousingAllowanceRequestMutation
   >[0];
+
+  isMutating: boolean;
+  trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
 };
 
 export const MinisterHousingAllowanceContext =
@@ -100,6 +104,7 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   );
 
   const [updateMutation] = useUpdateMinistryHousingAllowanceRequestMutation();
+  const { trackMutation, isMutating } = useTrackMutation();
 
   const pageType = type;
   const {
@@ -163,6 +168,9 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   }, []);
 
   const [hasCalcValues, setHasCalcValues] = useState(hasValues);
+  useEffect(() => {
+    setHasCalcValues(hasValues);
+  }, [hasValues]);
 
   const contextValue = useMemo(
     () => ({
@@ -189,6 +197,8 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       loading,
       requestId,
       updateMutation,
+      isMutating,
+      trackMutation,
     }),
     [
       steps,
@@ -213,6 +223,8 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       loading,
       requestId,
       updateMutation,
+      isMutating,
+      trackMutation,
     ],
   );
 

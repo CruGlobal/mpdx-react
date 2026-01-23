@@ -89,6 +89,7 @@ mutation UpdateMinistryHousingAllowanceRequest(
   updateMinistryHousingAllowanceRequest(input: $input) {
     ministryHousingAllowanceRequest {
       id
+      updatedAt
       requestAttributes {
         ...RequestAttributes
       }

@@ -7,7 +7,11 @@ import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { RequestPage } from 'src/components/Reports/MinisterHousingAllowance/RequestPage/RequestPage';
-import { MinisterHousingAllowanceProvider } from 'src/components/Reports/MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
+import {
+  MinisterHousingAllowanceProvider,
+  useMinisterHousingAllowance,
+} from 'src/components/Reports/MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
+import { SavingStatus } from 'src/components/Reports/Shared/CalculationReports/SavingStatus/SavingStatus';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { SimpleScreenOnly } from 'src/components/Reports/styledComponents';
 import {
@@ -23,33 +27,25 @@ const RequestPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
 }));
 
-const HousingAllowanceRequestPage: React.FC = () => {
+const getPageType = (mode: string | string[] | undefined) => {
+  switch (mode) {
+    case 'new':
+      return PageEnum.New;
+    case 'edit':
+      return PageEnum.Edit;
+    case 'view':
+      return PageEnum.View;
+    default:
+      return undefined;
+  }
+};
+
+const HousingAllowanceRequestPageContent: React.FC = () => {
   const { t } = useTranslation();
-  const router = useRouter();
   const [isNavListOpen, setIsNavListOpen] = useState(false);
-  const { requestId, mode } = router.query;
 
-  if (!requestId) {
-    return <CircularProgress />;
-  }
-
-  const getPageType = (mode: string | string[] | undefined) => {
-    switch (mode) {
-      case 'new':
-        return PageEnum.New;
-      case 'edit':
-        return PageEnum.Edit;
-      case 'view':
-        return PageEnum.View;
-      default:
-        return undefined;
-    }
-  };
-
-  const pageType = getPageType(mode);
-  if (!pageType) {
-    return null;
-  }
+  const { requestData, loading, isMutating, pageType } =
+    useMinisterHousingAllowance();
 
   const title = t("{{mode}} Minister's Housing Allowance Request", {
     mode: pageType,
@@ -84,20 +80,43 @@ const HousingAllowanceRequestPage: React.FC = () => {
                   isNavListOpen={isNavListOpen}
                   onNavListToggle={handleNavListToggle}
                   title={t("Minister's Housing Allowance Request")}
+                  rightExtra={
+                    <SavingStatus
+                      loading={loading}
+                      hasData={!!requestData}
+                      isMutating={isMutating}
+                      lastSavedAt={requestData?.updatedAt ?? null}
+                    />
+                  }
                   headerType={HeaderTypeEnum.Report}
                 />
               </SimpleScreenOnly>
-              <MinisterHousingAllowanceProvider
-                type={pageType}
-                requestId={requestId as string}
-              >
-                <RequestPage />
-              </MinisterHousingAllowanceProvider>
+              <RequestPage />
             </>
           }
         />
       </RequestPageWrapper>
     </>
+  );
+};
+
+const HousingAllowanceRequestPage: React.FC = () => {
+  const router = useRouter();
+  const { requestId, mode } = router.query;
+
+  const pageType = getPageType(mode);
+
+  if (!requestId || !pageType) {
+    return <CircularProgress />;
+  }
+
+  return (
+    <MinisterHousingAllowanceProvider
+      type={pageType}
+      requestId={requestId as string}
+    >
+      <HousingAllowanceRequestPageContent />
+    </MinisterHousingAllowanceProvider>
   );
 };
 

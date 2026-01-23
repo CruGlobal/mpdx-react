@@ -1,25 +1,25 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CircularProgress, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { formatRelativeTime } from 'src/lib/intlFormat';
-import { useGoalCalculator } from '../Shared/GoalCalculatorContext';
-import { getGoalLastUpdated } from './helpers';
 
-export const SavingStatus: React.FC = () => {
+export interface SavingStatusProps {
+  loading: boolean;
+  hasData: boolean;
+  isMutating: boolean;
+  lastSavedAt: string | null;
+}
+
+export const SavingStatus: React.FC<SavingStatusProps> = ({
+  loading,
+  hasData,
+  isMutating,
+  lastSavedAt,
+}) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const {
-    goalCalculationResult: { data, loading },
-    isMutating,
-  } = useGoalCalculator();
-
-  const goalCalculation = data?.goalCalculation;
-  const lastSavedAt = useMemo(
-    () => (goalCalculation ? getGoalLastUpdated(goalCalculation) : null),
-    [goalCalculation],
-  );
 
   // Rerender periodically to update the saved at time
   const [_tick, setTick] = useState(0);
@@ -28,7 +28,7 @@ export const SavingStatus: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  if (loading && !data) {
+  if (loading && !hasData) {
     return (
       <Typography variant="body1" color="textSecondary">
         {t('Loading')}

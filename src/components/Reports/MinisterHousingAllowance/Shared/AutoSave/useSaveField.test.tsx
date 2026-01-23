@@ -11,6 +11,7 @@ import {
 } from '../Context/MinisterHousingAllowanceContext';
 import { useSaveField } from './useSaveField';
 
+const trackMutation = jest.fn();
 const mutationSpy = jest.fn();
 const mockEnqueue = jest.fn();
 
@@ -42,6 +43,7 @@ const TestComponent: React.FC<TestComponentProps> = ({ children }) => {
             value={
               {
                 pageType: PageEnum.New,
+                trackMutation,
                 requestData: {
                   id: 'request-id',
                   requestAttributes: { rentalValue: 50 },
@@ -84,6 +86,8 @@ describe('useSaveField', () => {
         },
       ),
     );
+
+    await waitFor(() => expect(trackMutation).toHaveBeenCalled());
 
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith(

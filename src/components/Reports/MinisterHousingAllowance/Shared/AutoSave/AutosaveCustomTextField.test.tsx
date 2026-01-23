@@ -17,6 +17,7 @@ import { AutosaveCustomTextField } from './AutosaveCustomTextField';
 
 const submit = jest.fn();
 const mutationSpy = jest.fn();
+const trackMutation = jest.fn();
 
 const defaultSchema = yup.object({
   mortgageOrRentPayment: yup.number().required('Mortgage Payment is required'),
@@ -34,6 +35,7 @@ const TestComponent: React.FC = () => (
           value={
             {
               pageType: PageEnum.New,
+              trackMutation,
               requestData: {
                 id: 'request-id',
                 requestAttributes: { mortgageOrRentPayment: null },

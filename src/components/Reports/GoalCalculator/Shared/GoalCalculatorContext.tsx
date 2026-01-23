@@ -10,6 +10,7 @@ import React, {
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useTrackMutation } from 'src/hooks/useTrackMutation';
 import { getQueryParam } from 'src/utils/queryParam';
 import { useGoalCalculatorConstants } from '../../../../hooks/useGoalCalculatorConstants';
 import {
@@ -101,8 +102,7 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const [rightPanelContent, setRightPanelContent] =
     useState<JSX.Element | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(true);
-  const [mutationCount, setMutationCount] = useState(0);
-  const isMutating = mutationCount > 0;
+  const { trackMutation, isMutating } = useTrackMutation();
 
   const currentStep = steps[stepIndex];
 
@@ -137,16 +137,6 @@ export const GoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const toggleDrawer = useCallback(() => {
     setIsDrawerOpen((prev) => !prev);
   }, []);
-
-  const trackMutation = useCallback(
-    async <T,>(mutation: Promise<T>): Promise<T> => {
-      setMutationCount((prev) => prev + 1);
-      return mutation.finally(() => {
-        setMutationCount((prev) => Math.max(0, prev - 1));
-      });
-    },
-    [],
-  );
 
   const contextValue = useMemo(
     (): GoalCalculatorType => ({
