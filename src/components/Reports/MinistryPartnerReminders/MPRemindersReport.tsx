@@ -16,6 +16,7 @@ import {
   HeaderTypeEnum,
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
+import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { MinistryPartnerReminderFrequencyEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
@@ -31,7 +32,6 @@ import {
   StyledPrintButton,
 } from '../styledComponents';
 import {
-  useDesignationAccountsQuery,
   useMinistryPartnerRemindersQuery,
   useUpdateMinistryPartnerRemindersMutation,
 } from './MinistryPartnerRemindersQuery.generated';
@@ -58,17 +58,12 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
     refetchQueries: ['MinistryPartnerReminders'],
   });
 
-  const { data: designationAccountsData, loading: designationLoading } =
-    useDesignationAccountsQuery({
-      variables: { accountListId: accountListId ?? '' },
-    });
+  const { data: userData, loading: userLoading } = useGetUserQuery();
 
   const { data: staffAccountData, loading: staffLoading } =
     useStaffAccountQuery({});
 
-  const designationNumber =
-    designationAccountsData?.accountList?.designationAccounts[0]
-      ?.accountNumber ?? '';
+  const designationNumber = userData?.user?.primaryDesignation ?? '';
 
   const { data, loading } = useMinistryPartnerRemindersQuery({
     variables: {
@@ -239,7 +234,7 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
               </SimpleScreenOnly>
               <Box sx={{ mb: 4 }}>
                 <SimpleScreenOnly>
-                  {(loading || designationLoading) && !data ? (
+                  {(loading || userLoading) && !data ? (
                     <LoadingBox>
                       <LoadingIndicator
                         data-testid="loading-spinner"
