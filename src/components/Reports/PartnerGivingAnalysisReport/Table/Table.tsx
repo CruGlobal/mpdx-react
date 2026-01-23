@@ -33,12 +33,12 @@ export const createTableRow = (data: Row): TableData => ({
   donationPeriodSum: data.donationPeriodSum,
   donationPeriodCount: data.donationPeriodCount,
   donationPeriodAverage: data.donationPeriodAverage,
-  lastDonationAmount: data.lastDonationAmount,
-  firstDonationDate: data.firstDonationDate,
-  lastDonationDate: data.lastDonationDate,
+  lastDonationAmount: data.lastDonationAmount ?? null,
+  firstDonationDate: data.firstDonationDate ?? null,
+  lastDonationDate: data.lastDonationDate ?? null,
   totalDonations: data.totalDonations,
-  pledgeCurrency: data.pledgeCurrency,
-  lastDonationCurrency: data.lastDonationCurrency,
+  pledgeCurrency: data.pledgeCurrency ?? null,
+  lastDonationCurrency: data.lastDonationCurrency ?? null,
 });
 
 const CustomFooter: React.FC = () => {

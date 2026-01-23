@@ -110,11 +110,13 @@ export const usePopulateTableRows = (
   const lastDonationAmount: RenderCell = ({ row }) => {
     return (
       <Typography variant="body2" noWrap>
-        {currencyFormat(
-          row.lastDonationAmount,
-          row.lastDonationCurrency,
-          locale,
-        )}
+        {row.lastDonationAmount && row.lastDonationCurrency
+          ? currencyFormat(
+              row.lastDonationAmount,
+              row.lastDonationCurrency,
+              locale,
+            )
+          : null}
       </Typography>
     );
   };
