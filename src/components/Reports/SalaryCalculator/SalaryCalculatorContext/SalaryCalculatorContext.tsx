@@ -35,7 +35,6 @@ export interface SalaryCalculatorContextType {
   setDrawerOpen: Dispatch<SetStateAction<boolean>>;
   toggleDrawer: () => void;
 
-  hcm: HcmQuery['hcm'] | null;
   hcmUser: HcmQuery['hcm'][number] | null;
   hcmSpouse: HcmQuery['hcm'][number] | null;
   calculation: SalaryCalculationQuery['salaryRequest'] | null;
@@ -72,6 +71,7 @@ export const SalaryCalculatorProvider: React.FC<
   const [isDrawerOpen, setDrawerOpen] = useState(true);
   const { data: hcmData } = useHcmQuery();
   const { data: calculationData } = useSalaryCalculationQuery();
+  const calculation = calculationData?.salaryRequest ?? null;
 
   const toggleDrawer = useCallback(() => {
     setDrawerOpen((prev) => !prev);
@@ -87,10 +87,13 @@ export const SalaryCalculatorProvider: React.FC<
       isDrawerOpen,
       setDrawerOpen,
       toggleDrawer,
-      hcm: hcmData?.hcm ?? null,
       hcmUser: hcmData?.hcm[0] ?? null,
-      hcmSpouse: hcmData?.hcm[1] ?? null,
-      calculation: calculationData?.salaryRequest ?? null,
+      // If the calculation doesn't have spouse calculations, it means that the spouse is not
+      // eligible for MHA and should be ignored
+      hcmSpouse: calculation?.spouseCalculations
+        ? (hcmData?.hcm[1] ?? null)
+        : null,
+      calculation,
     }),
     [
       steps,

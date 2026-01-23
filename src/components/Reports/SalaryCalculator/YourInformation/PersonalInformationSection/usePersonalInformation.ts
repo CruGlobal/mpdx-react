@@ -3,12 +3,10 @@ import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalcula
 
 export const usePersonalInformation = () => {
   const { t } = useTranslation();
-  const { hcm } = useSalaryCalculator();
+  const { hcmUser, hcmSpouse } = useSalaryCalculator();
 
-  const [self, spouse] = hcm ?? [];
-
-  const selfStaffInfo = self?.staffInfo;
-  const spouseStaffInfo = spouse?.staffInfo;
+  const selfStaffInfo = hcmUser?.staffInfo;
+  const spouseStaffInfo = hcmSpouse?.staffInfo;
 
   const formatLocation = (city?: string | null, state?: string | null) => {
     if (city && state) {
@@ -42,7 +40,6 @@ export const usePersonalInformation = () => {
     spouseStaffInfo?.dependentChildrenWithHealthcareBenefits?.toString() ?? '-';
 
   return {
-    spouse,
     selfLocation,
     spouseLocation,
     selfTenure,
