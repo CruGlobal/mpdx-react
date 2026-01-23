@@ -18,6 +18,7 @@ import {
   useHcmDataQuery,
 } from 'src/components/Reports/Shared/HcmData/HCMData.generated';
 import { useStepList } from 'src/hooks/useStepList';
+import { useTrackMutation } from 'src/hooks/useTrackMutation';
 import { Steps } from '../../../Shared/CalculationReports/StepsList/StepsList';
 import {
   MinistryHousingAllowanceRequestQuery,
@@ -103,18 +104,7 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   );
 
   const [updateMutation] = useUpdateMinistryHousingAllowanceRequestMutation();
-  const [mutationCount, setMutationCount] = useState(0);
-  const isMutating = mutationCount > 0;
-
-  const trackMutation = useCallback(
-    async <T,>(mutation: Promise<T>): Promise<T> => {
-      setMutationCount((prev) => prev + 1);
-      return mutation.finally(() => {
-        setMutationCount((prev) => Math.max(0, prev - 1));
-      });
-    },
-    [],
-  );
+  const { trackMutation, isMutating } = useTrackMutation();
 
   const pageType = type;
   const {
@@ -178,6 +168,9 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   }, []);
 
   const [hasCalcValues, setHasCalcValues] = useState(hasValues);
+  useEffect(() => {
+    setHasCalcValues(hasValues);
+  }, [hasValues]);
 
   const contextValue = useMemo(
     () => ({

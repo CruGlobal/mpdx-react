@@ -46,7 +46,6 @@ const HousingAllowanceRequestPageContent: React.FC = () => {
 
   const { requestData, loading, isMutating, pageType } =
     useMinisterHousingAllowance();
-  const lastSavedAt = requestData ? requestData.updatedAt : '';
 
   const title = t("{{mode}} Minister's Housing Allowance Request", {
     mode: pageType,
@@ -86,7 +85,7 @@ const HousingAllowanceRequestPageContent: React.FC = () => {
                       loading={loading}
                       hasData={!!requestData}
                       isMutating={isMutating}
-                      lastSavedAt={lastSavedAt}
+                      lastSavedAt={requestData?.updatedAt ?? null}
                     />
                   }
                   headerType={HeaderTypeEnum.Report}

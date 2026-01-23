@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { formatRelativeTime } from 'src/lib/intlFormat';
 
-interface SavingStatusProps {
+export interface SavingStatusProps {
   loading: boolean;
   hasData: boolean;
   isMutating: boolean;
