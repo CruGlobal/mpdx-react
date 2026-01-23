@@ -54,10 +54,10 @@ export const MhaRequestSection: React.FC = () => {
     schema,
     totalRequestedMhaValue,
     difference,
-    boardApprovedAmount,
+    approvedAmount,
     progressPercentage,
     currentTakenAmount,
-    currentApprovedSpouseAmountForStaff,
+    currentSpouseTakenAmount,
   } = useMhaRequestData();
 
   return (
@@ -72,12 +72,12 @@ export const MhaRequestSection: React.FC = () => {
           <strong>
             {hasSpouse
               ? t(
-                  'You may request up to your Board-approved MHA amount of {{boardApprovedAmount}} combined.',
-                  { boardApprovedAmount },
+                  'You may request up to your Board-approved MHA amount of {{approvedAmount}} combined.',
+                  { approvedAmount },
                 )
               : t(
-                  'You may request up to your Board Approved MHA Amount of {{boardApprovedAmount}}.',
-                  { boardApprovedAmount },
+                  'You may request up to your Board Approved MHA Amount of {{approvedAmount}}.',
+                  { approvedAmount },
                 )}
           </strong>{' '}
           {t(
@@ -122,7 +122,7 @@ export const MhaRequestSection: React.FC = () => {
                   label={t('Current MHA')}
                   size="small"
                   fullWidth
-                  value={currentApprovedSpouseAmountForStaff}
+                  value={currentSpouseTakenAmount}
                   disabled
                   inputProps={{ 'data-testid': 'current-mha-spouse' }}
                 />
@@ -160,7 +160,7 @@ export const MhaRequestSection: React.FC = () => {
               {hasSpouse ? t('Combined MHA Requested') : t('New MHA Requested')}
             </Typography>
             <Typography variant="body2">
-              {totalRequestedMhaValue} / {boardApprovedAmount}
+              {totalRequestedMhaValue} / {approvedAmount}
             </Typography>
           </StyledProgressHeaderBox>
           <LinearProgress
