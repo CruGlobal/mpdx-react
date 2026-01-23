@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import PrintIcon from '@mui/icons-material/Print';
 import {
   Box,
@@ -16,6 +16,7 @@ import {
   HeaderTypeEnum,
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
+import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { MinistryPartnerReminderFrequencyEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
@@ -31,7 +32,6 @@ import {
   StyledPrintButton,
 } from '../styledComponents';
 import {
-  useDesignationAccountsQuery,
   useMinistryPartnerRemindersQuery,
   useUpdateMinistryPartnerRemindersMutation,
 } from './MinistryPartnerRemindersQuery.generated';
@@ -58,19 +58,24 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
     refetchQueries: ['MinistryPartnerReminders'],
   });
 
-  const { data: designationAccountsData, loading: designationLoading } =
-    useDesignationAccountsQuery({
-      variables: { accountListId: accountListId ?? '' },
-    });
+  const {
+    data: userData,
+    loading: userLoading,
+    refetch: refetchUser,
+  } = useGetUserQuery();
+
+  useEffect(() => {
+    if (accountListId) {
+      refetchUser();
+    }
+  }, [accountListId, refetchUser]);
 
   const { data: staffAccountData, loading: staffLoading } =
     useStaffAccountQuery({});
 
-  const designationNumber =
-    designationAccountsData?.accountList?.designationAccounts[0]
-      ?.accountNumber ?? '';
+  const designationNumber = userData?.user?.primaryDesignation ?? '';
 
-  const { data, loading } = useMinistryPartnerRemindersQuery({
+  const { data, loading, error } = useMinistryPartnerRemindersQuery({
     variables: {
       accountListId: accountListId ?? '',
       designationNumber,
@@ -195,15 +200,15 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
               <SimpleScreenOnly>
                 <Box mt={3} mb={4}>
                   <Trans i18nKey={'reminders.description'}>
-                    <p style={{ lineHeight: 1.5 }}>
+                    <Typography sx={{ lineHeight: 1.5 }}>
                       You can now change the reminder status of any of your
                       ministry partners online! Your current list and related
                       information is displayed below. To change the reminder
                       status of any of your ministry partners, use the drop-down
-                      boxes in the &quot;Change Reminder Status&quot; column.
-                    </p>
+                      boxes in the &quot;Reminder Status&quot; column.
+                    </Typography>
 
-                    <p style={{ marginTop: 10, lineHeight: 1.5 }}>
+                    <Typography sx={{ marginTop: 3, lineHeight: 1.5 }}>
                       When you&apos;re done, click the &quot;Save&quot; button
                       at the bottom of the page. Wondering how the{' '}
                       <i>Reminder System</i> works and how it differs from the
@@ -220,7 +225,7 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
                         Ministry Partner Reminder help
                       </Link>
                       .
-                    </p>
+                    </Typography>
                   </Trans>
                 </Box>
                 <Box mb={2}>
@@ -239,7 +244,7 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
               </SimpleScreenOnly>
               <Box sx={{ mb: 4 }}>
                 <SimpleScreenOnly>
-                  {(loading || designationLoading) && !data ? (
+                  {(loading || userLoading) && !data ? (
                     <LoadingBox>
                       <LoadingIndicator
                         data-testid="loading-spinner"
@@ -248,11 +253,11 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
                       />
                     </LoadingBox>
                   ) : (
-                    <RemindersTable data={transformedData} />
+                    <RemindersTable data={transformedData} error={error} />
                   )}
                 </SimpleScreenOnly>
                 <SimplePrintOnly>
-                  <PrintTable data={transformedData} />
+                  <PrintTable data={transformedData} error={error} />
                 </SimplePrintOnly>
               </Box>
             </Container>

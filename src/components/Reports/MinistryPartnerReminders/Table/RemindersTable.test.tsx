@@ -94,9 +94,35 @@ describe('RemindersTable', () => {
       </ThemeProvider>,
     );
 
-    expect(getByText('No ministry partners to display')).toBeInTheDocument();
+    expect(getByText('No ministry partners found')).toBeInTheDocument();
     expect(
       getByText('Add a ministry partner to get started'),
+    ).toBeInTheDocument();
+  });
+
+  it('should render no designation account message when designation error is present', () => {
+    const { getByText } = render(
+      <ThemeProvider theme={theme}>
+        <VirtuosoMockContext.Provider
+          value={{ viewportHeight: 300, itemHeight: 100 }}
+        >
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <GqlMockedProvider onCall={mutationSpy}>
+              <RemindersTable
+                data={[]}
+                error={{ message: 'Designation account not found', name: '' }}
+              />
+            </GqlMockedProvider>
+          </LocalizationProvider>
+        </VirtuosoMockContext.Provider>
+      </ThemeProvider>,
+    );
+
+    expect(getByText('No designation account found')).toBeInTheDocument();
+    expect(
+      getByText(
+        'This account is not associated with a designation account number',
+      ),
     ).toBeInTheDocument();
   });
 });

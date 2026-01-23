@@ -1,5 +1,5 @@
-import React, { forwardRef } from 'react';
-import { HourglassDisabled } from '@mui/icons-material';
+import React, { forwardRef, useMemo } from 'react';
+import { ErrorOutline, HourglassDisabled } from '@mui/icons-material';
 import {
   Paper,
   Table,
@@ -42,64 +42,87 @@ const Body = forwardRef<HTMLTableSectionElement>((props, ref) => (
 ));
 Body.displayName = 'Body';
 
-const TableComponents: TableVirtuosoProps<HeaderProps, unknown>['components'] =
-  {
-    Scroller,
-    Table: (props) => (
-      <Table
-        {...props}
-        sx={{
-          '& .MuiTableCell-root': { borderBottom: 'none' },
-          '& .MuiTableCell-head': {
-            position: 'sticky',
-            top: 0,
-            zIndex: (t) => t.zIndex.appBar,
-            backgroundColor: 'background.paper',
-            boxShadow: (t) => `inset 0 -1px 0 ${t.palette.divider}`,
-          },
-          tableLayout: 'fixed',
-          minWidth: 730,
-        }}
-      />
-    ),
-    TableHead,
-    TableBody: Body,
-    TableRow: (props) => {
-      const index = props['data-index'] ?? 0;
-      const even = index % 2 === 0;
-      return (
-        <TableRow
-          {...props}
-          style={{
-            ...props.style,
-            backgroundColor: even
-              ? theme.palette.chipBlueLight.main
-              : 'inherit',
-          }}
-        />
-      );
-    },
-
-    EmptyPlaceholder: () => (
-      <TableRow>
-        <TableCell colSpan={4}>
-          <EmptyTable
-            title={'No ministry partners to display'}
-            subtitle={'Add a ministry partner to get started'}
-            icon={HourglassDisabled}
-          />
-        </TableCell>
-      </TableRow>
-    ),
-  };
 interface RemindersTableProps {
   data: ReminderData[];
+  error?: Error | null;
 }
 
-export const RemindersTable: React.FC<RemindersTableProps> = ({ data }) => {
+export const RemindersTable: React.FC<RemindersTableProps> = ({
+  data,
+  error,
+}) => {
   const { t } = useTranslation();
 
+  const noDesignation = error?.message.includes(
+    'Designation account not found',
+  );
   const isEmpty = !data.length;
+
+  const TableComponents: TableVirtuosoProps<
+    HeaderProps,
+    unknown
+  >['components'] = useMemo(
+    () => ({
+      Scroller,
+      Table: (props) => (
+        <Table
+          {...props}
+          sx={{
+            '& .MuiTableCell-root': { borderBottom: 'none' },
+            '& .MuiTableCell-head': {
+              position: 'sticky',
+              top: 0,
+              zIndex: (t) => t.zIndex.appBar,
+              backgroundColor: 'background.paper',
+              boxShadow: (t) => `inset 0 -1px 0 ${t.palette.divider}`,
+            },
+            tableLayout: 'fixed',
+            minWidth: 730,
+          }}
+        />
+      ),
+      TableHead,
+      TableBody: Body,
+      TableRow: (props) => {
+        const index = props['data-index'] ?? 0;
+        const even = index % 2 === 0;
+        return (
+          <TableRow
+            {...props}
+            style={{
+              ...props.style,
+              backgroundColor: even
+                ? theme.palette.chipBlueLight.main
+                : 'inherit',
+            }}
+          />
+        );
+      },
+
+      EmptyPlaceholder: () => (
+        <TableRow>
+          <TableCell colSpan={4}>
+            <EmptyTable
+              title={
+                noDesignation
+                  ? t('No designation account found')
+                  : t('No ministry partners found')
+              }
+              subtitle={
+                noDesignation
+                  ? t(
+                      'This account is not associated with a designation account number',
+                    )
+                  : t('Add a ministry partner to get started')
+              }
+              icon={noDesignation ? ErrorOutline : HourglassDisabled}
+            />
+          </TableCell>
+        </TableRow>
+      ),
+    }),
+    [noDesignation, t],
+  );
 
   return (
     <TableVirtuoso

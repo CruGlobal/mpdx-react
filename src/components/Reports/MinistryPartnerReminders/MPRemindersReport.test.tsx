@@ -7,14 +7,12 @@ import { SnackbarProvider } from 'notistack';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { MinistryPartnerReminderFrequencyEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { StaffAccountQuery } from '../StaffAccount.generated';
 import { MPRemindersReport } from './MPRemindersReport';
-import {
-  DesignationAccountsQuery,
-  MinistryPartnerRemindersQuery,
-} from './MinistryPartnerRemindersQuery.generated';
+import { MinistryPartnerRemindersQuery } from './MinistryPartnerRemindersQuery.generated';
 
 const mutationSpy = jest.fn();
 const onNavListToggle = jest.fn();
@@ -31,16 +29,9 @@ const mocks = {
       name: 'Test Account',
     },
   },
-  DesignationAccounts: {
-    accountList: {
-      id: 'account-list-1',
-      designationAccounts: [
-        {
-          id: 'designation1',
-          accountNumber: '09876',
-          name: 'Test Designation',
-        },
-      ],
+  GetUser: {
+    user: {
+      primaryDesignation: '09876',
     },
   },
   MinistryPartnerReminders: {
@@ -82,7 +73,7 @@ const TestComponent: React.FC = () => (
             <GqlMockedProvider<{
               StaffAccount: StaffAccountQuery;
               MinistryPartnerReminders: MinistryPartnerRemindersQuery;
-              DesignationAccounts: DesignationAccountsQuery;
+              GetUser: GetUserQuery;
             }>
               mocks={mocks}
               onCall={mutationSpy}
@@ -153,9 +144,7 @@ describe('MPRemindersReport', () => {
     );
 
     await waitFor(() => {
-      expect(mutationSpy).toHaveGraphqlOperation('DesignationAccounts', {
-        accountListId: 'account-list-1',
-      });
+      expect(mutationSpy).toHaveGraphqlOperation('GetUser');
     });
 
     await waitFor(() => {
