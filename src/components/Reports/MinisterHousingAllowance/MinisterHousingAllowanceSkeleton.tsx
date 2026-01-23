@@ -6,7 +6,7 @@ export const MinisterHousingAllowanceReportSkeleton: React.FC = () => {
   return (
     <>
       <Skeleton
-        variant="rectangular"
+        variant="rounded"
         width={mainContentWidth}
         height={35}
         style={{
@@ -14,7 +14,7 @@ export const MinisterHousingAllowanceReportSkeleton: React.FC = () => {
         }}
       />
       <Skeleton
-        variant="rectangular"
+        variant="rounded"
         width={mainContentWidth}
         height={75}
         style={{
@@ -22,7 +22,7 @@ export const MinisterHousingAllowanceReportSkeleton: React.FC = () => {
         }}
       />
       <Skeleton
-        variant="rectangular"
+        variant="rounded"
         width={mainContentWidth}
         height={110}
         style={{
@@ -30,7 +30,7 @@ export const MinisterHousingAllowanceReportSkeleton: React.FC = () => {
         }}
       />
       <Skeleton
-        variant="rectangular"
+        variant="rounded"
         width={mainContentWidth}
         height={300}
         style={{

@@ -9,14 +9,14 @@ import { Transaction } from '../Helpers/filterTransactions';
 import { createCsvReport } from './downloadReport';
 
 const StyledButtonGroup = styled(ButtonGroup)(({ theme }) => ({
-  borderColor: theme.palette.cruGrayDark.main,
+  borderColor: theme.palette.mpdxGrayDark.main,
   [theme.breakpoints.down('sm')]: {
     width: '100%',
   },
 }));
 
 const StyledButton = styled(Button)(({ theme }) => ({
-  color: theme.palette.cruGrayDark.main,
+  color: theme.palette.mpdxGrayDark.main,
   backgroundColor: 'white',
   fontSize: '0.75rem',
   padding: '4px 8px',

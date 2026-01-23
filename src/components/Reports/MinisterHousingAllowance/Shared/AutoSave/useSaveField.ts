@@ -1,4 +1,6 @@
 import { useCallback } from 'react';
+import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
 import { MinistryHousingAllowanceRequestAttributesInput } from 'pages/api/graphql-rest.page.generated';
 import { calculateAnnualTotals } from 'src/hooks/useAnnualTotal';
 import { useUpdateMinistryHousingAllowanceRequestMutation } from '../../MinisterHousingAllowance.generated';
@@ -10,9 +12,12 @@ interface UseSaveFieldOptions {
 }
 
 export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
-  const { requestData } = useMinisterHousingAllowance();
+  const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
+
+  const { requestData, trackMutation } = useMinisterHousingAllowance();
   const [updateMinistryHousingAllowanceRequest] =
-    useUpdateMinistryHousingAllowanceRequestMutation();
+    useUpdateMinistryHousingAllowanceRequestMutation({});
   const values = requestData?.requestAttributes;
 
   const saveField = useCallback(
@@ -30,8 +35,8 @@ export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
       const { annualTotal: overallAmount } =
         calculateAnnualTotals(updatedValues);
 
-      try {
-        await updateMinistryHousingAllowanceRequest({
+      return trackMutation(
+        updateMinistryHousingAllowanceRequest({
           variables: {
             input: {
               requestId: requestData.id,
@@ -48,6 +53,7 @@ export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
               ministryHousingAllowanceRequest: {
                 ...requestData,
                 requestAttributes: {
+                  __typename: 'MhaRequestAttributes',
                   ...values,
                   ...attributes,
                   overallAmount,
@@ -55,10 +61,25 @@ export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
               },
             },
           },
-        });
-      } catch (error) {}
+          onCompleted: () => {
+            const hasValue = Object.values(attributes).some(
+              (value) => value !== null,
+            );
+            if (hasValue) {
+              enqueueSnackbar(t('Saved successfully'), { variant: 'success' });
+            }
+          },
+        }),
+      );
     },
-    [formValues, updateMinistryHousingAllowanceRequest, requestData],
+    [
+      formValues,
+      updateMinistryHousingAllowanceRequest,
+      requestData,
+      values,
+      trackMutation,
+      t,
+    ],
   );
 
   return saveField;

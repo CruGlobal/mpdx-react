@@ -18,15 +18,13 @@ import {
   useHcmDataQuery,
 } from 'src/components/Reports/Shared/HcmData/HCMData.generated';
 import { useStepList } from 'src/hooks/useStepList';
+import { useTrackMutation } from 'src/hooks/useTrackMutation';
 import { Steps } from '../../../Shared/CalculationReports/StepsList/StepsList';
 import {
   MinistryHousingAllowanceRequestQuery,
-  MinistryHousingAllowanceRequestsQuery,
   useMinistryHousingAllowanceRequestQuery,
-  useMinistryHousingAllowanceRequestsQuery,
   useUpdateMinistryHousingAllowanceRequestMutation,
 } from '../../MinisterHousingAllowance.generated';
-import { StepsEnum } from '../sharedTypes';
 import { hasPopulatedValues } from './Helper/hasPopulatedValues';
 
 export type HcmData = HcmDataQuery['hcm'][number];
@@ -35,7 +33,6 @@ export type ContextType = {
   steps: Steps[];
   currentIndex: number;
   percentComplete: number;
-  currentStep: StepsEnum;
   handleNextStep: () => void;
   handlePreviousStep: () => void;
   pageType: PageEnum | undefined;
@@ -44,29 +41,27 @@ export type ContextType = {
   isDrawerOpen: boolean;
   toggleDrawer: () => void;
   setIsDrawerOpen: Dispatch<SetStateAction<boolean>>;
-  isPrint: boolean;
-  setIsPrint: Dispatch<SetStateAction<boolean>>;
   setIsComplete: Dispatch<SetStateAction<boolean>>;
   isMarried: boolean;
   userHcmData?: HcmData;
   spouseHcmData?: HcmData | null;
   preferredName: string;
   spousePreferredName: string;
+  userEligibleForMHA: boolean;
 
   requestData?:
     | MinistryHousingAllowanceRequestQuery['ministryHousingAllowanceRequest']
     | null;
   requestError?: ApolloError;
-
-  requestsData?:
-    | MinistryHousingAllowanceRequestsQuery['ministryHousingAllowanceRequests']['nodes']
-    | null;
-  requestsError?: ApolloError;
+  loading: boolean;
   requestId?: string;
 
   updateMutation: ReturnType<
     typeof useUpdateMinistryHousingAllowanceRequestMutation
   >[0];
+
+  isMutating: boolean;
+  trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
 };
 
 export const MinisterHousingAllowanceContext =
@@ -83,41 +78,39 @@ export const useMinisterHousingAllowance = (): ContextType => {
 };
 
 interface Props {
+  requestId?: string;
   type?: PageEnum;
   children?: React.ReactNode;
 }
 
-const objects = Object.values(StepsEnum);
-
 export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
+  requestId,
   type,
   children,
 }) => {
-  const { data: requestsData, error: requestsError } =
-    useMinistryHousingAllowanceRequestsQuery();
-
-  //const requestId = requestsData?.ministryHousingAllowanceRequests.nodes[0]?.id;
-  const requestId = 'c1a68821-5fb6-4e5e-b308-9263539af9d8';
-
-  const { data: requestData, error: requestError } =
-    useMinistryHousingAllowanceRequestQuery({
-      variables: {
-        ministryHousingAllowanceRequestId: requestId ?? '',
-      },
-      skip: !requestId,
-    });
+  const {
+    data: requestData,
+    error: requestError,
+    loading,
+  } = useMinistryHousingAllowanceRequestQuery({
+    variables: {
+      ministryHousingAllowanceRequestId: requestId ?? '',
+    },
+    skip: !requestId,
+  });
 
   const hasValues = hasPopulatedValues(
     requestData?.ministryHousingAllowanceRequest?.requestAttributes ?? null,
   );
 
   const [updateMutation] = useUpdateMinistryHousingAllowanceRequestMutation();
+  const { trackMutation, isMutating } = useTrackMutation();
 
   const pageType = type;
   const {
     steps: initialSteps,
-    nextStep,
-    previousStep,
+    handleNextStep,
+    handlePreviousStep,
     currentIndex,
     percentComplete,
   } = useStepList(FormEnum.MHA, type);
@@ -164,35 +157,25 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
     [spouseHcmData],
   );
 
+  const userEligibleForMHA = useMemo(
+    () => userHcmData?.mhaEit?.mhaEligibility ?? false,
+    [userHcmData],
+  );
+
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
   const toggleDrawer = useCallback(() => {
     setIsDrawerOpen((prev) => !prev);
   }, []);
 
-  const [hasCalcValues, setHasCalcValues] = useState(hasValues ? true : false);
-  const [isPrint, setIsPrint] = useState(false);
-
-  const [currentStep, setCurrentStep] = useState(StepsEnum.AboutForm);
-
-  const handleNextStep = useCallback(() => {
-    const next = objects[currentIndex + 1];
-    nextStep();
-
-    setCurrentStep(next);
-  }, [currentIndex, objects, nextStep]);
-
-  const handlePreviousStep = useCallback(() => {
-    const next = objects[currentIndex - 1];
-    previousStep();
-
-    setCurrentStep(next);
-  }, [currentIndex, objects, previousStep]);
+  const [hasCalcValues, setHasCalcValues] = useState(hasValues);
+  useEffect(() => {
+    setHasCalcValues(hasValues);
+  }, [hasValues]);
 
   const contextValue = useMemo(
     () => ({
       steps,
       currentIndex,
-      currentStep,
       percentComplete,
       handleNextStep,
       handlePreviousStep,
@@ -207,21 +190,19 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       spouseHcmData,
       preferredName,
       spousePreferredName,
-      isPrint,
-      setIsPrint,
+      userEligibleForMHA,
       setIsComplete,
       requestData: requestData?.ministryHousingAllowanceRequest ?? null,
       requestError,
-      requestsData:
-        requestsData?.ministryHousingAllowanceRequests.nodes ?? null,
-      requestsError,
+      loading,
       requestId,
       updateMutation,
+      isMutating,
+      trackMutation,
     }),
     [
       steps,
       currentIndex,
-      currentStep,
       percentComplete,
       handleNextStep,
       handlePreviousStep,
@@ -236,15 +217,14 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       spouseHcmData,
       preferredName,
       spousePreferredName,
-      isPrint,
-      setIsPrint,
-      setIsComplete,
+      userEligibleForMHA,
       requestData,
       requestError,
-      requestsData,
-      requestsError,
+      loading,
       requestId,
       updateMutation,
+      isMutating,
+      trackMutation,
     ],
   );
 

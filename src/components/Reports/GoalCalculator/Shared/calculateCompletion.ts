@@ -80,7 +80,7 @@ export const completionPercentage = (
     (complete) => complete,
   ).length;
 
-  // We don't consider special income or one time goals because they are optional
+  // We don't consider outside income or special needs goal because they are optional
   const allFamilies = [
     goalCalculation.householdFamily,
     goalCalculation.ministryFamily,

@@ -11,6 +11,6 @@ describe('SettingsSectionList', () => {
     );
 
     expect(getByText('Information')).toBeInTheDocument();
-    expect(await findByText('Special Income')).toBeInTheDocument();
+    expect(await findByText('Outside Income')).toBeInTheDocument();
   });
 });

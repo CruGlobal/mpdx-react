@@ -210,8 +210,8 @@ describe('DonationsReport', () => {
     onNavListToggle.mockClear();
     const { getByTestId } = render(<TestComponent />);
 
-    expect(getByTestId('ReportsFilterIcon')).toBeInTheDocument();
-    userEvent.click(getByTestId('ReportsFilterIcon'));
+    expect(getByTestId('ReportsMenuIcon')).toBeInTheDocument();
+    userEvent.click(getByTestId('ReportsMenuIcon'));
     await waitFor(() => expect(onNavListToggle).toHaveBeenCalled());
   });
 });

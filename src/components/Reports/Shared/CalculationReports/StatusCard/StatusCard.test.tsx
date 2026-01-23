@@ -17,7 +17,7 @@ const titleTwo = 'Edit';
 const linkOne = '/mock-view-link';
 const linkTwo = '/mock-edit-link';
 
-const handleDownload = jest.fn();
+const handlePrint = jest.fn();
 const handleConfirmCancel = jest.fn();
 
 const MockIcon: React.FC<SvgIconProps> = (props) => (
@@ -29,7 +29,8 @@ const MockIcon: React.FC<SvgIconProps> = (props) => (
 interface TestComponentProps {
   subtitle?: string;
   isRequest?: boolean;
-  hideDownload?: boolean;
+  hideLinkTwoButton?: boolean;
+  hidePrint?: boolean;
   hideActions?: boolean;
   linkOne?: string;
   linkTwo?: string;
@@ -38,8 +39,9 @@ interface TestComponentProps {
 const TestComponent: React.FC<TestComponentProps> = ({
   subtitle,
   isRequest,
-  hideDownload = false,
+  hidePrint = false,
   hideActions = false,
+  hideLinkTwoButton,
   linkOne,
   linkTwo,
 }) => {
@@ -58,11 +60,12 @@ const TestComponent: React.FC<TestComponentProps> = ({
                 linkOneText={titleOne}
                 linkTwoText={titleTwo}
                 isRequest={isRequest}
-                hideDownload={hideDownload}
+                hidePrint={hidePrint}
                 hideActions={hideActions}
+                hideLinkTwoButton={hideLinkTwoButton}
                 linkOne={linkOne}
                 linkTwo={linkTwo}
-                handleDownload={handleDownload}
+                handlePrint={handlePrint}
                 handleConfirmCancel={handleConfirmCancel}
               >
                 <div>Test Children</div>
@@ -76,45 +79,47 @@ const TestComponent: React.FC<TestComponentProps> = ({
 };
 
 describe('CardSkeleton', () => {
-  it('should render card header no subtitle', () => {
-    const { getByText, getByTestId, queryByText } = render(<TestComponent />);
+  it('should render card header no subtitle', async () => {
+    const { getByText, getByTestId, queryByText, findByTestId } = render(
+      <TestComponent />,
+    );
 
-    expect(getByTestId('mock-icon')).toBeInTheDocument();
+    expect(await findByTestId('mock-icon')).toBeInTheDocument();
     expect(getByText(title)).toBeInTheDocument();
     expect(queryByText(subtitle)).not.toBeInTheDocument();
-    expect(getByTestId('FileDownloadIcon')).toBeInTheDocument();
+    expect(getByTestId('PrintIcon')).toBeInTheDocument();
   });
 
-  it('should render card header with subtitle', () => {
-    const { getByText, getByTestId } = render(
+  it('should render card header with subtitle', async () => {
+    const { getByText, getByTestId, findByTestId } = render(
       <TestComponent subtitle={subtitle} />,
     );
 
-    expect(getByTestId('mock-icon')).toBeInTheDocument();
+    expect(await findByTestId('mock-icon')).toBeInTheDocument();
     expect(getByText(title)).toBeInTheDocument();
     expect(getByText(subtitle)).toBeInTheDocument();
-    expect(getByTestId('FileDownloadIcon')).toBeInTheDocument();
+    expect(getByTestId('PrintIcon')).toBeInTheDocument();
   });
 
-  it('should render children', () => {
-    const { getByText } = render(<TestComponent />);
+  it('should render children', async () => {
+    const { findByText } = render(<TestComponent />);
 
-    expect(getByText('Test Children')).toBeInTheDocument();
+    expect(await findByText('Test Children')).toBeInTheDocument();
   });
 
-  it('should render action buttons', () => {
-    const { getByText } = render(<TestComponent />);
+  it('should render action buttons', async () => {
+    const { getByText, findByText } = render(<TestComponent />);
 
-    expect(getByText(titleOne)).toBeInTheDocument();
+    expect(await findByText(titleOne)).toBeInTheDocument();
     expect(getByText(titleTwo)).toBeInTheDocument();
   });
 
-  it('should go to correct link when first button is clicked', () => {
-    const { getByRole } = render(
+  it('should go to correct link when first button is clicked', async () => {
+    const { findByRole } = render(
       <TestComponent isRequest={true} linkOne={linkOne} />,
     );
 
-    const firstButton = getByRole('link', { name: titleOne });
+    const firstButton = await findByRole('link', { name: titleOne });
 
     expect(firstButton).toHaveAttribute(
       'href',
@@ -122,12 +127,12 @@ describe('CardSkeleton', () => {
     );
   });
 
-  it('should go to correct link when second button is clicked', () => {
-    const { getByRole } = render(
+  it('should go to correct link when second button is clicked', async () => {
+    const { findByRole } = render(
       <TestComponent isRequest={true} linkTwo={linkTwo} />,
     );
 
-    const secondButton = getByRole('link', { name: titleTwo });
+    const secondButton = await findByRole('link', { name: titleTwo });
 
     expect(secondButton).toHaveAttribute(
       'href',
@@ -139,22 +144,22 @@ describe('CardSkeleton', () => {
     const { getByRole, findByRole, getByText, queryByRole } = render(
       <TestComponent isRequest={true} />,
     );
-    const cancelButton = getByRole('button', { name: 'Cancel Request' });
+    const cancelButton = await findByRole('button', { name: 'Cancel Request' });
 
-    await userEvent.click(cancelButton);
+    userEvent.click(cancelButton);
 
     expect(await findByRole('dialog')).toBeInTheDocument();
     expect(getByText('Do you want to cancel?')).toBeInTheDocument();
 
-    await userEvent.click(getByRole('button', { name: /yes, cancel/i }));
+    userEvent.click(getByRole('button', { name: /yes, cancel/i }));
 
     expect(queryByRole('dialog')).not.toBeInTheDocument();
   });
 
-  it('hides download icon when hideDownload is true', () => {
-    const { queryByTestId } = render(<TestComponent hideDownload={true} />);
+  it('hides print icon when hidePrint is true', () => {
+    const { queryByTestId } = render(<TestComponent hidePrint={true} />);
 
-    expect(queryByTestId('FileDownloadIcon')).not.toBeInTheDocument();
+    expect(queryByTestId('PrintIcon')).not.toBeInTheDocument();
   });
 
   it('hides action buttons when hideActions is true', () => {
@@ -164,31 +169,37 @@ describe('CardSkeleton', () => {
     expect(queryByText(titleTwo)).not.toBeInTheDocument();
   });
 
-  it('calls handleDownload when download icon is clicked', async () => {
+  it('calls handlePrint when print icon is clicked', async () => {
     const { getByTestId } = render(<TestComponent />);
 
-    const downloadIcon = getByTestId('FileDownloadIcon');
+    const printIcon = getByTestId('PrintIcon');
 
-    await userEvent.click(downloadIcon);
+    await userEvent.click(printIcon);
 
-    expect(handleDownload).toHaveBeenCalled();
+    expect(handlePrint).toHaveBeenCalled();
   });
 
   it('calls handleConfirmCancel when confirming cancel', async () => {
     const { getByRole, findByRole, getByText, queryByRole } = render(
       <TestComponent isRequest={true} />,
     );
-    const cancelButton = getByRole('button', { name: 'Cancel Request' });
+    const cancelButton = await findByRole('button', { name: 'Cancel Request' });
 
-    await userEvent.click(cancelButton);
+    userEvent.click(cancelButton);
 
     expect(await findByRole('dialog')).toBeInTheDocument();
     expect(getByText('Do you want to cancel?')).toBeInTheDocument();
 
-    await userEvent.click(getByRole('button', { name: /yes, cancel/i }));
+    userEvent.click(getByRole('button', { name: /yes, cancel/i }));
 
     expect(handleConfirmCancel).toHaveBeenCalled();
 
     expect(queryByRole('dialog')).not.toBeInTheDocument();
+  });
+
+  it('should hide second button when hideLinkTwoButton is true', () => {
+    const { queryByText } = render(<TestComponent hideLinkTwoButton={true} />);
+
+    expect(queryByText(titleTwo)).not.toBeInTheDocument();
   });
 });

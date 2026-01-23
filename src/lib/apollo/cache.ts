@@ -82,6 +82,7 @@ export const createCache = () =>
       Tag: { keyFields: false },
       Query: {
         fields: {
+          accountLists: paginationFieldPolicy,
           accountListPledges: paginationFieldPolicy,
           appeals: paginationFieldPolicy,
           coachingAccountListPledges: paginationFieldPolicy,
@@ -92,6 +93,7 @@ export const createCache = () =>
           people: paginationFieldPolicy,
           tasks: paginationFieldPolicy,
           userNotifications: paginationFieldPolicy,
+          partnerGivingAnalysis: paginationFieldPolicy,
           // When loading a user option, look it up from the cache by its key
           userOption: {
             read: (_, { args, toReference }) =>

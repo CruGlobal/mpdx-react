@@ -283,7 +283,7 @@ describe('GoalCalculatorGrid', () => {
     const propsWithoutData = {
       category: {
         id: 'category-1',
-        label: 'Special Income',
+        label: 'Outside Income',
         category: PrimaryBudgetCategoryEnum.MinistryAndMedicalMileage,
         directInput: 0,
         createdAt: '2024-01-01T00:00:00Z',
@@ -298,7 +298,7 @@ describe('GoalCalculatorGrid', () => {
       </GoalCalculatorTestWrapper>,
     );
 
-    expect(getByText('Special Income')).toBeInTheDocument();
+    expect(getByText('Outside Income')).toBeInTheDocument();
   });
 
   it('switches from lump sum to line items and clears directInput', async () => {

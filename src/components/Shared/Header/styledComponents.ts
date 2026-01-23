@@ -27,7 +27,7 @@ export const StickyButtonHeaderBox = styled(Box)(({ theme }) => ({
   top: '80px',
   zIndex: '100',
   borderBottom: '1px solid',
-  borderBottomColor: theme.palette.cruGrayLight.main,
+  borderBottomColor: theme.palette.mpdxGrayLight.main,
   [theme.breakpoints.down('sm')]: {
     flexDirection: 'column',
     alignItems: 'start',
@@ -35,11 +35,16 @@ export const StickyButtonHeaderBox = styled(Box)(({ theme }) => ({
   },
 }));
 
-export const FilterButton = styled(IconButton)(({ theme }) => {
+export const FilterButton = styled(IconButton, {
+  shouldForwardProp: (prop) => prop !== 'panelOpen',
+})<{ panelOpen: boolean }>(({ theme, panelOpen }) => {
   const { isFiltered } = useUrlFilters();
-
   return {
     marginRight: theme.spacing(2),
-    backgroundColor: isFiltered ? theme.palette.cruYellow.main : 'transparent',
+    backgroundColor: panelOpen
+      ? theme.palette.secondary.dark
+      : isFiltered
+        ? theme.palette.yellow.main
+        : 'transparent',
   };
 });

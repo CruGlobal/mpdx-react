@@ -10,17 +10,17 @@ import { MinisterHousingAllowanceProvider } from '../../Shared/Context/MinisterH
 import { AboutForm } from './AboutForm';
 
 const submit = jest.fn();
-const boardApprovalDate = '2024-09-15';
+const boardApprovedAt = '2024-09-15';
 const availabilityDate = '2024-10-01';
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
-    <TestRouter>
+    <TestRouter router={{ query: { accountListId: 'account-list-1' } }}>
       <GqlMockedProvider>
         <MinisterHousingAllowanceProvider type={PageEnum.New}>
           <Formik initialValues={{}} onSubmit={submit}>
             <AboutForm
-              boardApprovalDate={boardApprovalDate}
+              boardApprovedAt={boardApprovedAt}
               availableDate={availabilityDate}
             />
           </Formik>
@@ -31,11 +31,11 @@ const TestComponent: React.FC = () => (
 );
 
 describe('AboutForm', () => {
-  it('renders form and formatted dates', () => {
-    const { getByText, getByRole } = render(<TestComponent />);
+  it('renders form and formatted dates', async () => {
+    const { getByText, getByRole, findByRole } = render(<TestComponent />);
 
     expect(
-      getByRole('heading', { name: 'About this Form' }),
+      await findByRole('heading', { name: 'About this Form' }),
     ).toBeInTheDocument();
     expect(
       getByText(
@@ -46,5 +46,15 @@ describe('AboutForm', () => {
     expect(getByText(/10\/1\/2024/)).toBeInTheDocument();
 
     expect(getByRole('button', { name: 'Continue' })).toBeInTheDocument();
+  });
+
+  it('should go to salary calculator link when clicked', () => {
+    const { getByText } = render(<TestComponent />);
+
+    const salaryLink = getByText('Salary Calculation Form');
+    expect(salaryLink).toHaveAttribute(
+      'href',
+      '/accountLists/account-list-1/reports/salaryCalculator',
+    );
   });
 });

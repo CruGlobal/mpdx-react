@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   FormEnum,
@@ -8,27 +8,25 @@ import { Steps } from '../components/Reports/Shared/CalculationReports/StepsList
 
 export function useStepList(formType: FormEnum, type?: PageEnum) {
   const { t } = useTranslation();
+  const isEdit = type === PageEnum.Edit;
 
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(() => (isEdit ? 1 : 0));
 
   const [steps, setSteps] = useState<Steps[]>(() =>
     formType === FormEnum.MHA
       ? [
           {
             title: t('1. About this Form'),
-            current: true,
-            complete: false,
+            current: isEdit ? false : true,
+            complete: isEdit ? true : false,
           },
           {
             title: t('2. Rent or Own?'),
-            current: false,
+            current: isEdit ? true : false,
             complete: false,
           },
           {
-            title:
-              type === PageEnum.New
-                ? t('3. Calculate Your MHA')
-                : t('3. Edit Your MHA'),
+            title: isEdit ? t('3. Edit Your MHA') : t('3. Calculate Your MHA'),
             current: false,
             complete: false,
           },
@@ -87,9 +85,12 @@ export function useStepList(formType: FormEnum, type?: PageEnum) {
           : [],
   );
 
-  const percentComplete = ((currentIndex + 1) / steps.length) * 100;
+  const percentComplete = useMemo(
+    () => ((currentIndex + 1) / steps.length) * 100,
+    [currentIndex, steps.length],
+  );
 
-  const nextStep = useCallback(() => {
+  const handleNextStep = useCallback(() => {
     const newIndex = currentIndex + 1;
     setSteps((prevSteps) =>
       prevSteps.map((step, index) => {
@@ -112,9 +113,9 @@ export function useStepList(formType: FormEnum, type?: PageEnum) {
       }),
     );
     setCurrentIndex(newIndex);
-  }, [currentIndex, setSteps]);
+  }, [currentIndex]);
 
-  const previousStep = useCallback(() => {
+  const handlePreviousStep = useCallback(() => {
     const newIndex = currentIndex - 1;
     setSteps((prevSteps) =>
       prevSteps.map((step, index) => {
@@ -133,12 +134,12 @@ export function useStepList(formType: FormEnum, type?: PageEnum) {
       }),
     );
     setCurrentIndex(newIndex);
-  }, [currentIndex, setSteps]);
+  }, [currentIndex]);
 
   return {
     steps,
-    nextStep,
-    previousStep,
+    handleNextStep,
+    handlePreviousStep,
     currentIndex,
     percentComplete,
   };

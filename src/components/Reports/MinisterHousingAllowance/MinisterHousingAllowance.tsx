@@ -12,9 +12,13 @@ import { PanelLayout } from '../Shared/CalculationReports/PanelLayout/PanelLayou
 import { PanelTypeEnum } from '../Shared/CalculationReports/Shared/sharedTypes';
 import { EligibleDisplay } from './MainPages/EligibleDisplay';
 import { IneligibleDisplay } from './MainPages/IneligibleDisplay';
-import { useCreateHousingAllowanceRequestMutation } from './MinisterHousingAllowance.generated';
+import {
+  useCreateHousingAllowanceRequestMutation,
+  useMinistryHousingAllowanceRequestsQuery,
+} from './MinisterHousingAllowance.generated';
 import { MinisterHousingAllowanceReportSkeleton } from './MinisterHousingAllowanceSkeleton';
 import { useMinisterHousingAllowance } from './Shared/Context/MinisterHousingAllowanceContext';
+import { getRequestUrl } from './Shared/Helper/getRequestUrl';
 import { CurrentBoardApproved } from './SharedComponents/CurrentBoardApproved';
 import { CurrentRequest } from './SharedComponents/CurrentRequest';
 
@@ -26,13 +30,18 @@ export const MinisterHousingAllowanceReport = () => {
   const accountListId = useAccountListId();
 
   const {
+    data,
+    error: requestsError,
+    loading,
+  } = useMinistryHousingAllowanceRequestsQuery();
+  const requests = data?.ministryHousingAllowanceRequests.nodes ?? [];
+
+  const {
     isMarried,
     preferredName,
     spousePreferredName,
     userHcmData,
     spouseHcmData,
-    requestsData,
-    requestsError,
   } = useMinisterHousingAllowance();
 
   const personNumber = userHcmData?.staffInfo?.personNumber ?? '';
@@ -47,16 +56,16 @@ export const MinisterHousingAllowanceReport = () => {
     ? `${personNumber} and ${spousePersonNumber}`
     : personNumber;
 
-  const requests = requestsData ?? [];
-
   const [createMHA] = useCreateHousingAllowanceRequestMutation();
 
   const onCreateMHARequest = async () => {
     await createMHA({
       variables: {
-        requestAttributes: {},
+        requestAttributes: {
+          phoneNumber: userHcmData?.staffInfo.primaryPhoneNumber,
+          emailAddress: userHcmData?.staffInfo.emailAddress,
+        },
       },
-      refetchQueries: ['MinistryHousingAllowanceRequests'],
       onCompleted: ({ createMinistryHousingAllowanceRequest: newRequest }) => {
         enqueueSnackbar(
           t("Successfully created MHA Request. You'll be redirected shortly."),
@@ -65,7 +74,7 @@ export const MinisterHousingAllowanceReport = () => {
           },
         );
         const mhaRequestId = newRequest?.ministryHousingAllowanceRequest.id;
-        const requestLink = `/accountLists/${accountListId}/reports/housingAllowance/${mhaRequestId}/new`;
+        const requestLink = getRequestUrl(accountListId, mhaRequestId, 'new');
 
         // Wait 1 second before redirecting
         setTimeout(() => {
@@ -103,6 +112,7 @@ export const MinisterHousingAllowanceReport = () => {
         request.status === MhaStatusEnum.BoardApproved &&
         isCurrentRequestPending,
     );
+
   return (
     <PanelLayout
       panelType={PanelTypeEnum.Empty}
@@ -113,7 +123,7 @@ export const MinisterHousingAllowanceReport = () => {
         <Container sx={{ ml: 5 }}>
           {requestsError ? (
             <Notification type="error" message={requestsError.message} />
-          ) : !requests ? (
+          ) : loading ? (
             <MinisterHousingAllowanceReportSkeleton />
           ) : (
             <>
@@ -142,13 +152,12 @@ export const MinisterHousingAllowanceReport = () => {
                   {t('Request New MHA')}
                 </Button>
               )}
+              {previousApprovedRequest && (
+                <Stack direction="column" width={mainContentWidth} mt={4}>
+                  <CurrentBoardApproved request={previousApprovedRequest} />
+                </Stack>
+              )}
             </>
-          )}
-
-          {previousApprovedRequest && (
-            <Stack direction="column" width={mainContentWidth} mt={4}>
-              <CurrentBoardApproved request={previousApprovedRequest} />
-            </Stack>
           )}
         </Container>
       }
