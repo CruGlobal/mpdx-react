@@ -7,6 +7,7 @@ import { SubmitModal } from '../SubmitModal/SubmitModal';
 interface DirectionButtonsProps {
   handleNextStep?: () => void;
   handlePreviousStep?: () => void;
+  handleDiscard?: () => void;
   buttonTitle?: string;
   deadlineDate?: string;
   actionRequired?: boolean;
@@ -24,6 +25,7 @@ interface DirectionButtonsProps {
 export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
   handleNextStep,
   handlePreviousStep,
+  handleDiscard,
   buttonTitle,
   isEdit,
   isSubmission,
@@ -59,6 +61,13 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
       submitForm();
     }
     setOpenSubmitModal(false);
+  };
+
+  const handleDiscardConfirm = () => {
+    if (handleDiscard) {
+      handleDiscard();
+    }
+    setOpenDiscardModal(false);
   };
 
   return (
@@ -127,7 +136,7 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
         <SubmitModal
           formTitle={t('MHA Request')}
           handleClose={() => setOpenDiscardModal(false)}
-          handleConfirm={() => {}}
+          handleConfirm={handleDiscardConfirm}
           isDiscard={!isEdit}
           isDiscardEdit={isEdit}
         />
