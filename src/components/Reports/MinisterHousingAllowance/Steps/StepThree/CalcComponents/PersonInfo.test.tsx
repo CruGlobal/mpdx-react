@@ -1,6 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { HcmDataQuery } from 'src/components/Reports/Shared/HcmData/HCMData.generated';
@@ -11,21 +12,23 @@ import { PersonInfo } from './PersonInfo';
 
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
-    <GqlMockedProvider<{
-      HcmData: HcmDataQuery;
-    }>
-      mocks={{
-        HcmData: {
-          hcm: singleNoMhaNoException,
-        },
-      }}
-    >
-      <MinisterHousingAllowanceProvider>
-        <TestRouter>
-          <PersonInfo />
-        </TestRouter>
-      </MinisterHousingAllowanceProvider>
-    </GqlMockedProvider>
+    <TestRouter>
+      <SnackbarProvider>
+        <GqlMockedProvider<{
+          HcmData: HcmDataQuery;
+        }>
+          mocks={{
+            HcmData: {
+              hcm: singleNoMhaNoException,
+            },
+          }}
+        >
+          <MinisterHousingAllowanceProvider>
+            <PersonInfo />
+          </MinisterHousingAllowanceProvider>
+        </GqlMockedProvider>
+      </SnackbarProvider>
+    </TestRouter>
   </ThemeProvider>
 );
 

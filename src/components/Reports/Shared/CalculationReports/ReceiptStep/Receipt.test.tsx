@@ -4,6 +4,7 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
@@ -43,21 +44,23 @@ const TestComponent: React.FC<TestComponentProps> = ({
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <TestRouter>
-        <GqlMockedProvider>
-          <MinisterHousingAllowanceProvider type={pageType}>
-            <Receipt
-              formTitle={formTitle}
-              buttonText={buttonText}
-              alertText={alertText}
-              editLink={editLink}
-              viewLink={viewLink}
-              isEdit={isEdit}
-              availableDate={availableDate}
-              deadlineDate={deadlineDate}
-              setIsComplete={setIsComplete}
-            />
-          </MinisterHousingAllowanceProvider>
-        </GqlMockedProvider>
+        <SnackbarProvider>
+          <GqlMockedProvider>
+            <MinisterHousingAllowanceProvider type={pageType}>
+              <Receipt
+                formTitle={formTitle}
+                buttonText={buttonText}
+                alertText={alertText}
+                editLink={editLink}
+                viewLink={viewLink}
+                isEdit={isEdit}
+                availableDate={availableDate}
+                deadlineDate={deadlineDate}
+                setIsComplete={setIsComplete}
+              />
+            </MinisterHousingAllowanceProvider>
+          </GqlMockedProvider>
+        </SnackbarProvider>
       </TestRouter>
     </LocalizationProvider>
   </ThemeProvider>

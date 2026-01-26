@@ -42,6 +42,7 @@ export const RentOwn: React.FC = () => {
     requestData,
     loading,
     updateMutation,
+    handleDiscard,
   } = useMinisterHousingAllowance();
 
   const updateRequest = (id: string, rentOrOwn: MhaRentOrOwnEnum) => {
@@ -199,6 +200,7 @@ export const RentOwn: React.FC = () => {
       <DirectionButtons
         overrideNext={handleNext}
         handlePreviousStep={handlePreviousStep}
+        handleDiscard={handleDiscard}
         isEdit={isEdit}
         showBackButton={true}
       />

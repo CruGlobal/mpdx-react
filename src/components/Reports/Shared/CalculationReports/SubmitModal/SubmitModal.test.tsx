@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
@@ -41,23 +42,25 @@ const TestComponent: React.FC<TestComponentProps> = ({
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
-      <GqlMockedProvider>
-        <MinisterHousingAllowanceProvider type={pageType}>
-          <SubmitModal
-            formTitle={formTitle}
-            handleClose={handleClose}
-            handleConfirm={handleConfirm}
-            overrideTitle={overrideTitle}
-            overrideContent={overrideContent}
-            overrideSubContent={overrideSubContent}
-            isCancel={isCancel}
-            isDiscard={isDiscard}
-            isDiscardEdit={isDiscardEdit}
-            deadlineDate={date}
-            actionRequired={actionRequired}
-          />
-        </MinisterHousingAllowanceProvider>
-      </GqlMockedProvider>
+      <SnackbarProvider>
+        <GqlMockedProvider>
+          <MinisterHousingAllowanceProvider type={pageType}>
+            <SubmitModal
+              formTitle={formTitle}
+              handleClose={handleClose}
+              handleConfirm={handleConfirm}
+              overrideTitle={overrideTitle}
+              overrideContent={overrideContent}
+              overrideSubContent={overrideSubContent}
+              isCancel={isCancel}
+              isDiscard={isDiscard}
+              isDiscardEdit={isDiscardEdit}
+              deadlineDate={date}
+              actionRequired={actionRequired}
+            />
+          </MinisterHousingAllowanceProvider>
+        </GqlMockedProvider>
+      </SnackbarProvider>
     </TestRouter>
   </ThemeProvider>
 );

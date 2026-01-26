@@ -139,6 +139,7 @@ export const Calculation: React.FC<CalculationProps> = ({
     loading,
     updateMutation,
     userHcmData,
+    handleDiscard,
   } = useMinisterHousingAllowance();
 
   const updateCheckbox = (value: boolean) =>
@@ -400,6 +401,7 @@ export const Calculation: React.FC<CalculationProps> = ({
                 showBackButton
                 handleNextStep={handleNextStep}
                 handlePreviousStep={handlePreviousStep}
+                handleDiscard={handleDiscard}
                 submitForm={submitForm}
                 validateForm={validateForm}
                 submitCount={submitCount}

@@ -23,8 +23,9 @@ export const AboutForm: React.FC<AboutFormProps> = ({
   const locale = useLocale();
   const accountListId = useAccountListId();
 
-  const { handleNextStep, handlePreviousStep, pageType } =
+  const { handleNextStep, handlePreviousStep, pageType, handleDiscard } =
     useMinisterHousingAllowance();
+
   const isEdit = pageType === PageEnum.Edit;
 
   // TODO: "newRequestAboutForm" value needs to be added to translation files to see all values
@@ -118,6 +119,7 @@ export const AboutForm: React.FC<AboutFormProps> = ({
       <DirectionButtons
         handleNextStep={handleNextStep}
         handlePreviousStep={handlePreviousStep}
+        handleDiscard={handleDiscard}
         isEdit={isEdit}
       />
     </>

@@ -3,35 +3,66 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import theme from 'src/theme';
+import { DeleteMinistryHousingAllowanceRequestMutation } from '../../MinisterHousingAllowance.generated';
 import { MinisterHousingAllowanceProvider } from '../../Shared/Context/MinisterHousingAllowanceContext';
 import { AboutForm } from './AboutForm';
 
+const mutationSpy = jest.fn();
+const mockEnqueue = jest.fn();
+const mockPush = jest.fn();
 const submit = jest.fn();
 const boardApprovedAt = '2024-09-15';
 const availabilityDate = '2024-10-01';
 
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
+
 const TestComponent: React.FC = () => (
   <ThemeProvider theme={theme}>
-    <TestRouter router={{ query: { accountListId: 'account-list-1' } }}>
-      <GqlMockedProvider>
-        <MinisterHousingAllowanceProvider type={PageEnum.New}>
-          <Formik initialValues={{}} onSubmit={submit}>
-            <AboutForm
-              boardApprovedAt={boardApprovedAt}
-              availableDate={availabilityDate}
-            />
-          </Formik>
-        </MinisterHousingAllowanceProvider>
-      </GqlMockedProvider>
-    </TestRouter>
+    <SnackbarProvider>
+      <TestRouter
+        router={{ push: mockPush, query: { accountListId: 'account-list-1' } }}
+      >
+        <GqlMockedProvider<{
+          DeleteMinistryHousingAllowanceRequest: DeleteMinistryHousingAllowanceRequestMutation;
+        }>
+          onCall={mutationSpy}
+        >
+          <MinisterHousingAllowanceProvider
+            requestId="request-id"
+            type={PageEnum.New}
+          >
+            <Formik initialValues={{}} onSubmit={submit}>
+              <AboutForm
+                boardApprovedAt={boardApprovedAt}
+                availableDate={availabilityDate}
+              />
+            </Formik>
+          </MinisterHousingAllowanceProvider>
+        </GqlMockedProvider>
+      </TestRouter>
+    </SnackbarProvider>
   </ThemeProvider>
 );
 
 describe('AboutForm', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('renders form and formatted dates', async () => {
     const { getByText, getByRole, findByRole } = render(<TestComponent />);
 
@@ -72,6 +103,33 @@ describe('AboutForm', () => {
           name: 'Do you want to discard?',
         }),
       ).toBeInTheDocument();
+    });
+
+    const confirmDiscard = getByRole('button', { name: /yes, discard/i });
+    userEvent.click(confirmDiscard);
+
+    await waitFor(() => {
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'DeleteMinistryHousingAllowanceRequest',
+        {
+          input: {
+            requestId: 'request-id',
+          },
+        },
+      );
+    });
+
+    await waitFor(() => {
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        expect.stringContaining('Request discarded successfully.'),
+        { variant: 'success' },
+      );
+    });
+
+    await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith(
+        `/accountLists/account-list-1/reports/housingAllowance`,
+      );
     });
   });
 });
