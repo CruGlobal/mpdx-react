@@ -1,10 +1,13 @@
-import React from 'react';
-import { Box, Typography } from '@mui/material';
+import React, { useMemo } from 'react';
+import { Alert, Box, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import { useFormikContext } from 'formik';
 import { Trans, useTranslation } from 'react-i18next';
 import { NameDisplay } from 'src/components/Reports/Shared/CalculationReports/NameDisplay/NameDisplay';
+import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { getHeader } from '../Shared/Helper/getHeader';
+import { fieldConfig } from '../Shared/useAdditionalSalaryRequestForm';
 import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSalaryRequestSection';
 import { AdditionalSalaryRequest } from './AdditionalSalaryRequest/AdditionalSalaryRequest';
 import { ContactInformation } from './ContactInformation/ContactInformation';
@@ -13,16 +16,45 @@ import { NetAdditionalSalary } from './NetAdditionalSalary/NetAdditionalSalary';
 
 export const CompleteForm: React.FC = () => {
   const { t } = useTranslation();
-  const { currentIndex } = useAdditionalSalaryRequest();
+  const { currentIndex, requestData, user } = useAdditionalSalaryRequest();
+  const { submitCount, isValid, errors } =
+    useFormikContext<CompleteFormValues>();
 
   const theme = useTheme();
-  const name = 'Doc, John';
-  const accountNumber = '00123456';
-  const primaryAccountBalance = 20307.58;
-  const remainingAllowableSalary = 17500.0;
+
+  const { currentSalaryCap, staffAccountBalance } =
+    requestData?.additionalSalaryRequest?.calculations || {};
+
+  const name = user?.staffInfo?.preferredName ?? '';
+  const accountNumber = user?.staffInfo?.personNumber ?? '';
+  const email = user?.staffInfo?.emailAddress ?? '';
+
+  const primaryAccountBalance = staffAccountBalance ?? 0;
+  const remainingAllowableSalary =
+    (currentSalaryCap ?? 0) - (staffAccountBalance ?? 0);
+
+  const showAlert = !!submitCount && !isValid;
+
+  const exceedingLimitFields = useMemo(() => {
+    if (!errors || !submitCount) {
+      return [];
+    }
+
+    return fieldConfig
+      .filter(({ key, max }) => {
+        if (!max) {
+          return false;
+        }
+        const error = errors[key as keyof CompleteFormValues];
+        return (
+          typeof error === 'string' && error.toLowerCase().includes('exceeds')
+        );
+      })
+      .map(({ label }) => t(label));
+  }, [errors, submitCount, t]);
 
   return (
-    <AdditionalSalaryRequestSection title={getHeader(t, currentIndex)}>
+    <AdditionalSalaryRequestSection title={getHeader(currentIndex)}>
       <Box
         sx={{
           display: 'flex',
@@ -67,7 +99,22 @@ export const CompleteForm: React.FC = () => {
             this form.
           </Typography>
         </Trans>
-        <ContactInformation />
+        <ContactInformation email={email} />
+        {showAlert && (
+          <Alert severity="error" sx={{ mt: 2, '& ul': { m: 0, pl: 3 } }}>
+            {t('Your form is missing information.')}
+            <ul>
+              <li>{t('Please enter a value for all required fields.')}</li>
+              {exceedingLimitFields.length > 0 && (
+                <li>
+                  {t('The following fields exceed their limits: {{fields}}', {
+                    fields: exceedingLimitFields.join(', '),
+                  })}
+                </li>
+              )}
+            </ul>
+          </Alert>
+        )}
       </Box>
     </AdditionalSalaryRequestSection>
   );

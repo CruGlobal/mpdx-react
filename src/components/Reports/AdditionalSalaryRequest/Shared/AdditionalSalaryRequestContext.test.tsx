@@ -1,7 +1,6 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { useTranslation } from 'react-i18next';
 import { AdditionalSalaryRequestTestWrapper } from '../AdditionalSalaryRequestTestWrapper';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 import { getHeader } from './Helper/getHeader';
@@ -9,11 +8,10 @@ import { getHeader } from './Helper/getHeader';
 const TestComponent: React.FC = () => {
   const { currentIndex, handleNextStep, isDrawerOpen, toggleDrawer } =
     useAdditionalSalaryRequest();
-  const { t } = useTranslation();
 
   return (
     <div>
-      <h2>{getHeader(t, currentIndex)}</h2>
+      <h2>{getHeader(currentIndex)}</h2>
       <div aria-label="drawer state" data-open={isDrawerOpen}>
         Drawer: {isDrawerOpen ? 'open' : 'closed'}
       </div>

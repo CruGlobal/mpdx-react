@@ -27,11 +27,11 @@ describe('staffTypeHelpers', () => {
       expect(isFullTimeRmo(mockStaff())).toBe(true);
     });
 
-    it('returns true for Employee National Staff (NX code)', () => {
+    it('returns true for Employee National Staff Expat', () => {
       expect(
         isFullTimeRmo(
           mockStaff({
-            userPersonType: UserPersonTypeEnum.EmployeeNationalStaff,
+            userPersonType: UserPersonTypeEnum.EmployeeNationalStaffExpat,
           }),
         ),
       ).toBe(true);
@@ -60,7 +60,8 @@ describe('staffTypeHelpers', () => {
       const raisingInitial = mockStaff({
         userPersonType: UserPersonTypeEnum.EmployeeStaff,
         peopleGroupSupportType: PeopleGroupSupportTypeEnum.SupportedRmo,
-        assignmentStatus: AssignmentStatusEnum.RaisingInitialPayrollEligible,
+        assignmentStatus:
+          AssignmentStatusEnum.RaisingInitialSupportPayrollEligible,
         assignmentCategory: AssignmentCategoryEnum.FullTimeRegular,
       });
 

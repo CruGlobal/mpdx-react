@@ -3,8 +3,3 @@ export enum AdditionalSalaryRequestSectionEnum {
   CompleteForm = 'complete-form',
   Receipt = 'receipt',
 }
-
-export interface SectionOrderItem {
-  title: string;
-  section: AdditionalSalaryRequestSectionEnum;
-}

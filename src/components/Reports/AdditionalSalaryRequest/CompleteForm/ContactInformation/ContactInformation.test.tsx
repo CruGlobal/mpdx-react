@@ -9,13 +9,18 @@ import { ContactInformation } from './ContactInformation';
 interface TestWrapperProps {
   initialValues?: CompleteFormValues;
   email?: string;
+  pageType?: 'new' | 'edit' | 'view';
 }
 
 const TestWrapper: React.FC<TestWrapperProps> = ({
   initialValues = defaultCompleteFormValues,
   email = '',
+  pageType = 'edit',
 }) => (
-  <AdditionalSalaryRequestTestWrapper initialValues={initialValues}>
+  <AdditionalSalaryRequestTestWrapper
+    initialValues={initialValues}
+    pageType={pageType}
+  >
     <ContactInformation email={email} />
   </AdditionalSalaryRequestTestWrapper>
 );
@@ -48,22 +53,26 @@ describe('ContactInformation', () => {
     expect(queryByText('email address')).not.toBeInTheDocument();
   });
 
-  it('displays telephone number from initial values', () => {
+  it('displays telephone number from initial values', async () => {
     const valuesWithPhone: CompleteFormValues = {
       ...defaultCompleteFormValues,
-      telephoneNumber: '555-1234',
+      phoneNumber: '555-1234',
     };
 
     const { getByLabelText } = render(
       <TestWrapper initialValues={valuesWithPhone} />,
     );
 
-    expect(getByLabelText('Telephone Number')).toHaveValue('555-1234');
+    await waitFor(() => {
+      expect(getByLabelText('Telephone Number')).toHaveValue('555-1234');
+    });
   });
 
   it('allows user to enter telephone number', async () => {
     const { getByLabelText } = render(<TestWrapper />);
+
     const phoneInput = getByLabelText('Telephone Number');
+    await waitFor(() => expect(phoneInput).toBeEnabled());
 
     userEvent.type(phoneInput, '555-5678');
 
@@ -75,6 +84,7 @@ describe('ContactInformation', () => {
   it('shows validation error when telephone number is empty and touched', async () => {
     const { getByLabelText, findByText } = render(<TestWrapper />);
     const phoneInput = getByLabelText('Telephone Number');
+    await waitFor(() => expect(phoneInput).toBeEnabled());
 
     userEvent.click(phoneInput);
     userEvent.tab();
@@ -87,6 +97,7 @@ describe('ContactInformation', () => {
   it('clears validation error when telephone number is entered', async () => {
     const { getByLabelText, queryByText, findByText } = render(<TestWrapper />);
     const phoneInput = getByLabelText('Telephone Number');
+    await waitFor(() => expect(phoneInput).toBeEnabled());
 
     userEvent.click(phoneInput);
     userEvent.tab();

@@ -1,6 +1,5 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { AdditionalSalaryRequestTestWrapper } from '../../AdditionalSalaryRequestTestWrapper';
 import { defaultCompleteFormValues } from '../CompleteForm.mock';
@@ -19,221 +18,131 @@ const TestWrapper: React.FC<TestWrapperProps> = ({
 );
 
 describe('AdditionalSalaryRequest', () => {
-  it('renders the Additional Salary Request card', () => {
-    const { getByText } = render(<TestWrapper />);
+  describe('rendering', () => {
+    it('renders the card with title and headers', () => {
+      const { getByText } = render(<TestWrapper />);
 
-    expect(
-      getByText('Additional Salary Request', {
-        selector: '.MuiCardHeader-title',
-      }),
-    ).toBeInTheDocument();
-  });
+      expect(
+        getByText('Additional Salary Request', {
+          selector: '.MuiCardHeader-title',
+        }),
+      ).toBeInTheDocument();
+      expect(getByText('Category')).toBeInTheDocument();
+      expect(getByText('Amount')).toBeInTheDocument();
+    });
 
-  it('renders Category and Amount headers', () => {
-    const { getByText } = render(<TestWrapper />);
+    it('renders all category input fields with labels', () => {
+      const { getAllByRole, getByText } = render(<TestWrapper />);
 
-    expect(getByText('Category')).toBeInTheDocument();
-    expect(getByText('Amount')).toBeInTheDocument();
-  });
+      const inputs = getAllByRole('textbox');
+      expect(inputs).toHaveLength(15);
 
-  it('renders all input fields for categories', () => {
-    const { getAllByRole } = render(<TestWrapper />);
+      // Verify key category labels are present
+      expect(
+        getByText(
+          'Additional salary not exceeding your Maximum Allowable Salary level',
+        ),
+      ).toBeInTheDocument();
+      expect(getByText('Adoption')).toBeInTheDocument();
+      expect(getByText('Moving Expense')).toBeInTheDocument();
+    });
 
-    const inputs = getAllByRole('spinbutton');
-    expect(inputs).toHaveLength(15);
-  });
+    it('displays Total Additional Salary Requested section', () => {
+      const { getByText, getByTestId } = render(<TestWrapper />);
 
-  it('displays Total Additional Salary Requested section', () => {
-    const { getByText } = render(<TestWrapper />);
-
-    expect(getByText('Total Additional Salary Requested')).toBeInTheDocument();
-  });
-
-  it('shows $0 as total when all fields are empty', () => {
-    const { getByTestId } = render(<TestWrapper />);
-
-    expect(getByTestId('total-amount')).toHaveTextContent('$0');
-  });
-
-  it('calculates total from a single field', () => {
-    const valuesWithAmount: CompleteFormValues = {
-      ...defaultCompleteFormValues,
-      additionalSalary: '5000',
-    };
-
-    const { getByTestId } = render(
-      <TestWrapper initialValues={valuesWithAmount} />,
-    );
-
-    expect(getByTestId('total-amount')).toHaveTextContent('$5,000');
-  });
-
-  it('calculates total from multiple fields', () => {
-    const valuesWithMultiple: CompleteFormValues = {
-      ...defaultCompleteFormValues,
-      additionalSalary: '5000',
-      adoption: '2000',
-      counseling: '3000',
-    };
-
-    const { getByTestId } = render(
-      <TestWrapper initialValues={valuesWithMultiple} />,
-    );
-
-    expect(getByTestId('total-amount')).toHaveTextContent('$10,000');
-  });
-
-  it('updates total when user enters values', async () => {
-    const { getAllByRole, getByTestId } = render(<TestWrapper />);
-
-    const inputs = getAllByRole('spinbutton');
-
-    userEvent.clear(inputs[0]);
-    userEvent.type(inputs[0], '1000');
-    userEvent.clear(inputs[1]);
-    userEvent.type(inputs[1], '500');
-
-    await waitFor(() => {
-      expect(getByTestId('total-amount')).toHaveTextContent('$1,500');
+      expect(
+        getByText('Total Additional Salary Requested'),
+      ).toBeInTheDocument();
+      expect(getByTestId('total-amount')).toBeInTheDocument();
     });
   });
 
-  it('handles empty string values in calculation', () => {
-    const valuesWithEmpty: CompleteFormValues = {
-      ...defaultCompleteFormValues,
-      additionalSalary: '5000',
-      adoption: '',
-      counseling: '',
-    };
+  describe('total calculations', () => {
+    it('shows $0 when all fields are empty', () => {
+      const { getByTestId } = render(<TestWrapper />);
 
-    const { getByTestId } = render(
-      <TestWrapper initialValues={valuesWithEmpty} />,
-    );
+      expect(getByTestId('total-amount')).toHaveTextContent('$0');
+    });
 
-    expect(getByTestId('total-amount')).toHaveTextContent('$5,000');
-  });
+    it('calculates total from multiple fields correctly', () => {
+      const valuesWithMultiple: CompleteFormValues = {
+        ...defaultCompleteFormValues,
+        additionalSalaryWithinMax: '5000',
+        adoption: '2000',
+        counselingNonMedical: '3000',
+      };
 
-  it('does not include defaultPercentage boolean in total calculation', () => {
-    const valuesWithBoolean: CompleteFormValues = {
-      ...defaultCompleteFormValues,
-      additionalSalary: '10000',
-      defaultPercentage: true,
-    };
+      const { getByTestId } = render(
+        <TestWrapper initialValues={valuesWithMultiple} />,
+      );
 
-    const { getByTestId } = render(
-      <TestWrapper initialValues={valuesWithBoolean} />,
-    );
+      expect(getByTestId('total-amount')).toHaveTextContent('$10,000');
+    });
 
-    expect(getByTestId('total-amount')).toHaveTextContent('$10,000');
-  });
+    it('handles decimal values correctly', () => {
+      const valuesWithDecimals: CompleteFormValues = {
+        ...defaultCompleteFormValues,
+        additionalSalaryWithinMax: '1000.50',
+        adoption: '500.25',
+      };
 
-  it('displays all category labels', () => {
-    const { getByText } = render(<TestWrapper />);
+      const { getByTestId } = render(
+        <TestWrapper initialValues={valuesWithDecimals} />,
+      );
 
-    // Check for a few key categories
-    expect(
-      getByText(
-        'Additional salary not exceeding your Maximum Allowable Salary level',
-      ),
-    ).toBeInTheDocument();
-    expect(getByText('Adoption')).toBeInTheDocument();
-    expect(getByText('Moving Expense')).toBeInTheDocument();
-  });
+      expect(getByTestId('total-amount')).toHaveTextContent('$1,500.75');
+    });
 
-  it('displays placeholder text in input fields', () => {
-    const { getAllByPlaceholderText } = render(<TestWrapper />);
+    it('ignores non-numeric fields in total calculation', () => {
+      const valuesWithBoolean: CompleteFormValues = {
+        ...defaultCompleteFormValues,
+        additionalSalaryWithinMax: '10000',
+        deductTwelvePercent: true,
+        phoneNumber: '555-1234',
+      };
 
-    const placeholders = getAllByPlaceholderText('Enter amount');
-    expect(placeholders.length).toBeGreaterThan(0);
-  });
+      const { getByTestId } = render(
+        <TestWrapper initialValues={valuesWithBoolean} />,
+      );
 
-  it('accepts numeric input in fields', async () => {
-    const { getAllByRole } = render(<TestWrapper />);
-
-    const inputs = getAllByRole('spinbutton');
-    const firstInput = inputs[0];
-
-    userEvent.clear(firstInput);
-    userEvent.type(firstInput, '12345');
-
-    await waitFor(() => {
-      expect(firstInput).toHaveValue(12345);
+      expect(getByTestId('total-amount')).toHaveTextContent('$10,000');
     });
   });
 
-  it('calculates total with all fields populated', () => {
-    const allFieldsPopulated: CompleteFormValues = {
-      currentYearSalary: '1000',
-      previousYearSalary: '1000',
-      additionalSalary: '1000',
-      adoption: '1000',
-      contribution403b: '1000',
-      counseling: '1000',
-      healthcareExpenses: '1000',
-      babysitting: '1000',
-      childrenMinistryTrip: '1000',
-      childrenCollege: '1000',
-      movingExpense: '1000',
-      seminary: '1000',
-      housingDownPayment: '1000',
-      autoPurchase: '1000',
-      reimbursableExpenses: '1000',
-      defaultPercentage: false,
-      telephoneNumber: '157-234-4291',
-    };
+  describe('form values display', () => {
+    it('displays initial values from formik in currency format', async () => {
+      const customValues: CompleteFormValues = {
+        ...defaultCompleteFormValues,
+        currentYearSalaryNotReceived: '100',
+        previousYearSalaryNotReceived: '200',
+        additionalSalaryWithinMax: '300',
+      };
 
-    const { getByTestId } = render(
-      <TestWrapper initialValues={allFieldsPopulated} />,
-    );
+      const { getAllByRole } = render(
+        <TestWrapper initialValues={customValues} />,
+      );
 
-    // 15 fields * $1,000 = $15,000
-    expect(getByTestId('total-amount')).toHaveTextContent('$15,000');
-  });
+      await waitFor(() => {
+        const inputs = getAllByRole('textbox');
+        expect(inputs[0]).toHaveValue('$100.00');
+        expect(inputs[1]).toHaveValue('$200.00');
+        expect(inputs[2]).toHaveValue('$300.00');
+      });
+    });
 
-  it('updates total when values change', () => {
-    const { getByTestId, rerender } = render(<TestWrapper />);
+    it('updates total when initial values change via rerender', () => {
+      const { getByTestId, rerender } = render(<TestWrapper />);
 
-    expect(getByTestId('total-amount')).toHaveTextContent('$0');
+      expect(getByTestId('total-amount')).toHaveTextContent('$0');
 
-    const updatedValues: CompleteFormValues = {
-      ...defaultCompleteFormValues,
-      additionalSalary: '7500',
-    };
+      const updatedValues: CompleteFormValues = {
+        ...defaultCompleteFormValues,
+        additionalSalaryWithinMax: '7500',
+      };
 
-    rerender(<TestWrapper initialValues={updatedValues} />);
+      rerender(<TestWrapper initialValues={updatedValues} />);
 
-    expect(getByTestId('total-amount')).toHaveTextContent('$7,500');
-  });
-
-  it('handles decimal values correctly', () => {
-    const valuesWithDecimals: CompleteFormValues = {
-      ...defaultCompleteFormValues,
-      additionalSalary: '1000.50',
-      adoption: '500.25',
-    };
-
-    const { getByTestId } = render(
-      <TestWrapper initialValues={valuesWithDecimals} />,
-    );
-
-    expect(getByTestId('total-amount')).toHaveTextContent('$1,500.75');
-  });
-
-  it('displays all values from formik props', () => {
-    const customValues: CompleteFormValues = {
-      ...defaultCompleteFormValues,
-      currentYearSalary: '100',
-      previousYearSalary: '200',
-      additionalSalary: '300',
-    };
-
-    const { getAllByRole } = render(
-      <TestWrapper initialValues={customValues} />,
-    );
-
-    const inputs = getAllByRole('spinbutton');
-    expect(inputs[0]).toHaveValue(100);
-    expect(inputs[1]).toHaveValue(200);
-    expect(inputs[2]).toHaveValue(300);
+      expect(getByTestId('total-amount')).toHaveTextContent('$7,500');
+    });
   });
 });

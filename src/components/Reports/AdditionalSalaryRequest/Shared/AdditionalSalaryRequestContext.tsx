@@ -1,26 +1,48 @@
+import { useRouter } from 'next/router';
 import React, { createContext, useCallback, useMemo, useState } from 'react';
-import { FormikProvider, useFormik } from 'formik';
-import { useTranslation } from 'react-i18next';
-import * as yup from 'yup';
-import { useLocale } from 'src/hooks/useLocale';
+import { ApolloError } from '@apollo/client';
+import {
+  FormEnum,
+  PageEnum,
+} from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { useStepList } from 'src/hooks/useStepList';
-import { currencyFormat } from 'src/lib/intlFormat';
-import { amount } from 'src/lib/yupHelpers';
-import { FormEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
-import { CompleteFormValues } from '../AdditionalSalaryRequest';
-import { calculateCompletionPercentage } from './calculateCompletionPercentage';
+import {
+  HcmDataQuery,
+  useHcmDataQuery,
+} from '../../Shared/HcmData/HCMData.generated';
+import {
+  AdditionalSalaryRequestQuery,
+  AdditionalSalaryRequestsQuery,
+  useAdditionalSalaryRequestQuery,
+  useAdditionalSalaryRequestsQuery,
+  useDeleteAdditionalSalaryRequestMutation,
+} from '../AdditionalSalaryRequest.generated';
+import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
+import { useStaffAccountIdQuery } from '../StaffAccountId.generated';
 
 export type AdditionalSalaryRequestType = {
+  staffAccountId: string | null | undefined;
   steps: Steps[];
   currentIndex: number;
-  percentComplete: number;
+  currentStep: AdditionalSalaryRequestSectionEnum;
   handleNextStep: () => void;
   handlePreviousStep: () => void;
   isDrawerOpen: boolean;
   toggleDrawer: () => void;
-  setIsDrawerOpen: (open: boolean) => void;
-  handleCancel: () => void;
+  requestsData?:
+    | AdditionalSalaryRequestsQuery['additionalSalaryRequests']['nodes']
+    | null;
+  requestData?: AdditionalSalaryRequestQuery | null;
+
+  requestsError?: ApolloError;
+  pageType: PageEnum | undefined;
+  handleDeleteRequest: (id: string) => Promise<void>;
+  requestId?: string;
+  user: HcmDataQuery['hcm'][0] | undefined;
+  spouse: HcmDataQuery['hcm'][1] | undefined;
+  isMutating: boolean;
+  trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
 };
 
 const AdditionalSalaryRequestContext =
@@ -37,94 +59,72 @@ export const useAdditionalSalaryRequest = (): AdditionalSalaryRequestType => {
 };
 
 interface Props {
+  requestId?: string;
   children?: React.ReactNode;
-  initialValues?: CompleteFormValues;
 }
 
+const sections = Object.values(AdditionalSalaryRequestSectionEnum);
+
 export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
+  requestId,
   children,
-  initialValues: providedInitialValues,
 }) => {
-  const { t } = useTranslation();
-  const { steps, handleNextStep, handlePreviousStep, currentIndex } =
-    useStepList(FormEnum.AdditionalSalary);
-  const locale = useLocale();
+  const router = useRouter();
+  const { mode } = router.query;
 
-  const createCurrencyValidation = useCallback(
-    (fieldName: string, max?: number) => {
-      let schema = amount(fieldName, t);
-      if (max) {
-        schema = schema.max(
-          max,
-          t('Exceeds {{amount}} limit', {
-            amount: currencyFormat(max, 'USD', locale, {
-              showTrailingZeros: true,
-            }),
-          }),
-        );
-      }
-      return schema;
+  const pageType = useMemo(() => {
+    switch (mode) {
+      case 'new':
+        return PageEnum.New;
+      case 'edit':
+        return PageEnum.Edit;
+      case 'view':
+        return PageEnum.View;
+      default:
+        return undefined;
+    }
+  }, [mode]);
+
+  const {
+    steps,
+    handleNextStep: nextStep,
+    handlePreviousStep: previousStep,
+    currentIndex,
+  } = useStepList(FormEnum.AdditionalSalary);
+
+  const { data: hcmData } = useHcmDataQuery();
+
+  const { data: requestsData, error: requestsError } =
+    useAdditionalSalaryRequestsQuery();
+
+  const { data: requestData } = useAdditionalSalaryRequestQuery({
+    variables: { requestId: requestId || '' },
+    skip: !requestId,
+  });
+
+  const { data: staffAccountIdData } = useStaffAccountIdQuery();
+
+  const [deleteAdditionalSalaryRequest] =
+    useDeleteAdditionalSalaryRequestMutation();
+
+  const currentStep = sections[currentIndex];
+
+  const handleNextStep = useCallback(() => {
+    nextStep();
+  }, [nextStep]);
+
+  const handlePreviousStep = useCallback(() => {
+    previousStep();
+  }, [previousStep]);
+
+  const handleDeleteRequest = useCallback(
+    async (id: string) => {
+      await deleteAdditionalSalaryRequest({
+        variables: { id },
+        refetchQueries: ['AdditionalSalaryRequests'],
+      });
     },
-    [t],
-  );
-
-  const initialValues: CompleteFormValues = {
-    currentYearSalary: '0',
-    previousYearSalary: '0',
-    additionalSalary: '0',
-    adoption: '0',
-    contribution403b: '0',
-    counseling: '0',
-    healthcareExpenses: '0',
-    babysitting: '0',
-    childrenMinistryTrip: '0',
-    childrenCollege: '0',
-    movingExpense: '0',
-    seminary: '0',
-    housingDownPayment: '0',
-    autoPurchase: '0',
-    reimbursableExpenses: '0',
-    defaultPercentage: false,
-    telephoneNumber: '',
-  };
-
-  const validationSchema = useMemo(
-    () =>
-      yup.object({
-        currentYearSalary: createCurrencyValidation(t("Current Year's Salary")),
-        previousYearSalary: createCurrencyValidation(
-          t("Previous Year's Salary"),
-        ),
-        additionalSalary: createCurrencyValidation(t('Additional Salary')),
-        adoption: createCurrencyValidation(t('Adoption'), 15000), // replace with MpdGoalMiscConstants value when possible
-        contribution403b: createCurrencyValidation(t('403(b) Contribution')), // Can't be greater than salary (will be pulled from HCM)
-        counseling: createCurrencyValidation(t('Counseling')),
-        healthcareExpenses: createCurrencyValidation(t('Healthcare Expenses')),
-        babysitting: createCurrencyValidation(t('Babysitting')),
-        childrenMinistryTrip: createCurrencyValidation(
-          t("Children's Ministry Trip"),
-        ), // Need to pull number of children from HCM and multiply by 21000 for max
-        childrenCollege: createCurrencyValidation(t("Children's College")),
-        movingExpense: createCurrencyValidation(t('Moving Expense')),
-        seminary: createCurrencyValidation(t('Seminary')),
-        housingDownPayment: createCurrencyValidation(
-          t('Housing Down Payment'),
-          50000,
-        ), // replace with MpdGoalMiscConstants value when possible
-        autoPurchase: createCurrencyValidation(t('Auto Purchase')), // Max will eventually be a constant, no determined value yet
-        reimbursableExpenses: createCurrencyValidation(
-          t('Reimbursable Expenses'),
-        ),
-        defaultPercentage: yup.boolean(),
-        telephoneNumber: yup
-          .string()
-          .required(t('Telephone number is required'))
-          .matches(
-            /^[\d\s\-\(\)\+]+$/,
-            t('Please enter a valid telephone number'),
-          ),
-      }),
-    [createCurrencyValidation, t],
+    [deleteAdditionalSalaryRequest],
   );
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
@@ -132,60 +132,72 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     setIsDrawerOpen((prev) => !prev);
   }, []);
 
-  const handleCancel = () => {
-    // Implement cancel logic here
-  };
+  const [mutationCount, setMutationCount] = useState(0);
+  const isMutating = mutationCount > 0;
 
-  const handleSubmit = useCallback(
-    (_values: CompleteFormValues) => {
-      //TODO: Submit form values
-      handleNextStep();
+  const trackMutation = useCallback(
+    async <T,>(mutation: Promise<T>): Promise<T> => {
+      setMutationCount((prev) => prev + 1);
+      return mutation.finally(() => {
+        setMutationCount((prev) => Math.max(0, prev - 1));
+      });
     },
-    [handleNextStep],
+    [],
   );
 
-  const formik = useFormik<CompleteFormValues>({
-    initialValues: providedInitialValues || initialValues,
-    validationSchema,
-    onSubmit: handleSubmit,
-    enableReinitialize: true,
-  });
+  const [user, spouse] = hcmData?.hcm ?? [];
 
-  const percentComplete = useMemo(
-    () => calculateCompletionPercentage(formik.values),
-    [formik.values],
+  const staffAccountId = useMemo(
+    () => staffAccountIdData?.user?.staffAccountId,
+    [staffAccountIdData],
   );
 
   const contextValue = useMemo<AdditionalSalaryRequestType>(
     () => ({
+      staffAccountId,
       steps,
       currentIndex,
-      percentComplete,
+      currentStep,
       handleNextStep,
       handlePreviousStep,
       isDrawerOpen,
       toggleDrawer,
-      setIsDrawerOpen,
-      handleCancel,
+      requestsData: requestsData?.additionalSalaryRequests?.nodes,
+      requestsError,
+      requestData,
+      pageType,
+      handleDeleteRequest,
+      requestId,
+      user,
+      spouse,
+      isMutating,
+      trackMutation,
     }),
     [
+      staffAccountId,
       steps,
       currentIndex,
-      percentComplete,
+      currentStep,
       handleNextStep,
       handlePreviousStep,
       isDrawerOpen,
       toggleDrawer,
-      setIsDrawerOpen,
-      handleCancel,
+      requestsData,
+      requestsError,
+      requestData,
+      pageType,
+      handleDeleteRequest,
+      requestId,
+      user,
+      spouse,
+      isMutating,
+      trackMutation,
     ],
   );
 
   return (
-    <FormikProvider value={formik}>
-      <AdditionalSalaryRequestContext.Provider value={contextValue}>
-        {children}
-      </AdditionalSalaryRequestContext.Provider>
-    </FormikProvider>
+    <AdditionalSalaryRequestContext.Provider value={contextValue}>
+      {children}
+    </AdditionalSalaryRequestContext.Provider>
   );
 };
