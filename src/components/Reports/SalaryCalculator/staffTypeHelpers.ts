@@ -21,7 +21,7 @@ export type StaffTypeFields = Pick<
 export const isFullTimeRmo = (fields: StaffTypeFields): boolean => {
   const isValidPersonType =
     fields.userPersonType === UserPersonTypeEnum.EmployeeStaff ||
-    fields.userPersonType === UserPersonTypeEnum.EmployeeNationalStaff ||
+    fields.userPersonType === UserPersonTypeEnum.EmployeeNationalStaffExpat ||
     fields.userPersonType === UserPersonTypeEnum.EmployeeStaffNonRmoSpouse;
 
   return (
@@ -50,8 +50,9 @@ export const isNewStaff = (fields: StaffTypeFields): boolean => {
     fields.assignmentStatus === AssignmentStatusEnum.InactiveNoPayroll ||
     fields.assignmentStatus === AssignmentStatusEnum.PendingNoPayroll ||
     fields.assignmentStatus ===
-      AssignmentStatusEnum.RaisingInitialPayrollEligible ||
-    fields.assignmentStatus === AssignmentStatusEnum.RaisingInitialNoPayroll;
+      AssignmentStatusEnum.RaisingInitialSupportPayrollEligible ||
+    fields.assignmentStatus ===
+      AssignmentStatusEnum.RaisingInitialSupportNoPayroll;
 
   const isValidCategory =
     fields.assignmentCategory === AssignmentCategoryEnum.FullTimeRegular;

@@ -5,12 +5,12 @@ import { getLocalizedTaxStatus } from './getLocalizedTaxStatus';
 describe('getLocalizedSecaStatus', () => {
   const t: TFunction = (key) => key;
 
-  it('should return localized string for Exempt status', () => {
-    expect(getLocalizedTaxStatus(SecaStatusEnum.Exempt, t)).toBe('Exempt');
+  it('should return localized string for Optout status', () => {
+    expect(getLocalizedTaxStatus(SecaStatusEnum.Optout, t)).toBe('Exempt');
   });
 
-  it('should return localized string for NonExempt status', () => {
-    expect(getLocalizedTaxStatus(SecaStatusEnum.NonExempt, t)).toBe(
+  it('should return localized string for Seca status', () => {
+    expect(getLocalizedTaxStatus(SecaStatusEnum.Seca, t)).toBe(
       'Subject to SECA',
     );
   });
