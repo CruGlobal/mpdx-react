@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import PrintIcon from '@mui/icons-material/Print';
 import {
   Box,
@@ -58,7 +58,17 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
     refetchQueries: ['MinistryPartnerReminders'],
   });
 
-  const { data: userData, loading: userLoading } = useGetUserQuery();
+  const {
+    data: userData,
+    loading: userLoading,
+    refetch: refetchUser,
+  } = useGetUserQuery();
+
+  useEffect(() => {
+    if (accountListId) {
+      refetchUser();
+    }
+  }, [accountListId, refetchUser]);
 
   const { data: staffAccountData, loading: staffLoading } =
     useStaffAccountQuery({});
