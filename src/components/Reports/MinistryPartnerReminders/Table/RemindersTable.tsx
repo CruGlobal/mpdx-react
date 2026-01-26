@@ -84,7 +84,7 @@ const TableComponents: TableVirtuosoProps<HeaderProps, unknown>['components'] =
       <TableRow>
         <TableCell colSpan={4}>
           <EmptyTable
-            title={'No ministry partners to display'}
+            title={'No ministry partners found'}
             subtitle={'Add a ministry partner to get started'}
             icon={HourglassDisabled}
           />

@@ -22,6 +22,8 @@ export const PrintTable: React.FC<PrintTableProps> = ({ data }) => {
   const { t } = useTranslation();
   const locale = useLocale();
 
+  const isEmpty = data.length === 0;
+
   return (
     <TableContainer>
       <Table>
@@ -34,21 +36,31 @@ export const PrintTable: React.FC<PrintTableProps> = ({ data }) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.map((row) => (
-            <StyledTableRow key={row.id}>
-              <TableCell>
-                <Typography sx={{ fontSize: '14px' }}>{row.partner}</Typography>
-                <Typography sx={{ fontSize: '14px' }}>
-                  {row.partnerId
-                    ? t('({{partnerId}})', { partnerId: row.partnerId })
-                    : t('(N/A)')}
-                </Typography>
+          {isEmpty ? (
+            <TableRow>
+              <TableCell colSpan={4} align="center">
+                <Typography>{t('No ministry partners found.')}</Typography>
               </TableCell>
-              <TableCell>{dateFormat(row.lastGift, locale)}</TableCell>
-              <TableCell>{dateFormat(row.lastReminder, locale)}</TableCell>
-              <TableCell>{t(getReminderStatus(row.status))}</TableCell>
-            </StyledTableRow>
-          ))}
+            </TableRow>
+          ) : (
+            data.map((row) => (
+              <StyledTableRow key={row.id}>
+                <TableCell>
+                  <Typography sx={{ fontSize: '14px' }}>
+                    {row.partner}
+                  </Typography>
+                  <Typography sx={{ fontSize: '14px' }}>
+                    {row.partnerId
+                      ? t('({{partnerId}})', { partnerId: row.partnerId })
+                      : t('(N/A)')}
+                  </Typography>
+                </TableCell>
+                <TableCell>{dateFormat(row.lastGift, locale)}</TableCell>
+                <TableCell>{dateFormat(row.lastReminder, locale)}</TableCell>
+                <TableCell>{t(getReminderStatus(row.status))}</TableCell>
+              </StyledTableRow>
+            ))
+          )}
         </TableBody>
       </Table>
     </TableContainer>

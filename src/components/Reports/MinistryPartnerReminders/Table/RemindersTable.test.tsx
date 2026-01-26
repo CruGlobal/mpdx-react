@@ -94,7 +94,7 @@ describe('RemindersTable', () => {
       </ThemeProvider>,
     );
 
-    expect(getByText('No ministry partners to display')).toBeInTheDocument();
+    expect(getByText('No ministry partners found')).toBeInTheDocument();
     expect(
       getByText('Add a ministry partner to get started'),
     ).toBeInTheDocument();
