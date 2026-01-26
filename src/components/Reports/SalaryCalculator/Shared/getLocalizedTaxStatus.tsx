@@ -12,10 +12,10 @@ export const getLocalizedTaxStatus = (
   if (status === SecaStatusEnum.Fica) {
     return t('Subject to FICA');
   }
-  if (status === SecaStatusEnum.NonExempt) {
+  if (status === SecaStatusEnum.Seca) {
     return t('Subject to SECA');
   }
-  if (status === SecaStatusEnum.Exempt) {
+  if (status === SecaStatusEnum.Optout) {
     return t('Exempt');
   }
 };
