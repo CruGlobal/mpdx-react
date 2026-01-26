@@ -70,9 +70,6 @@ const noMhaAndNoException: HcmDataQuery['hcm'][0] = {
     grossSalaryAmount: 60000,
     lastRegularPaymentDate: null,
   },
-  mhaEit: {
-    mhaEligibility: true,
-  },
   yearToDate: {
     additionalSalaryPaymentsReceived: 0,
     bonus: 0,

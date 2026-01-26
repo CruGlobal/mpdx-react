@@ -16,7 +16,7 @@ import { NetAdditionalSalary } from './NetAdditionalSalary/NetAdditionalSalary';
 
 export const CompleteForm: React.FC = () => {
   const { t } = useTranslation();
-  const { currentStep, requestData, user } = useAdditionalSalaryRequest();
+  const { currentIndex, requestData, user } = useAdditionalSalaryRequest();
   const { submitCount, isValid, errors } =
     useFormikContext<CompleteFormValues>();
 
@@ -54,7 +54,7 @@ export const CompleteForm: React.FC = () => {
   }, [errors, submitCount, t]);
 
   return (
-    <AdditionalSalaryRequestSection title={getHeader(currentStep)}>
+    <AdditionalSalaryRequestSection title={getHeader(currentIndex)}>
       <Box
         sx={{
           display: 'flex',
