@@ -14,7 +14,7 @@ describe('SalaryCalculator', () => {
   it('loads HCM data', async () => {
     render(<TestComponent />);
 
-    await waitFor(() => expect(mutationSpy).toHaveGraphqlOperation('Hcm'));
+    await waitFor(() => expect(mutationSpy).toHaveGraphqlOperation('HcmData'));
   });
 
   it('loads salary calculation', async () => {

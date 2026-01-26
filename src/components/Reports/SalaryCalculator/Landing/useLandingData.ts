@@ -4,7 +4,7 @@ import { isFullTimeRmo } from 'src/components/Reports/SalaryCalculator/staffType
 import { SalaryRequestStatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
-import { useHcmQuery } from '../SalaryCalculatorContext/Hcm.generated';
+import { useHcmDataQuery } from '../../Shared/HcmData/HCMData.generated';
 import { getLocalizedTaxStatus } from '../Shared/getLocalizedTaxStatus';
 import { useAccountBalanceQuery } from './AccountBalance.generated';
 import { useLandingSalaryCalculationsQuery } from './NewSalaryCalculationLanding/LandingSalaryCalculations.generated';
@@ -23,7 +23,7 @@ export const useLandingData = () => {
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const { data: hcmData, loading: hcmLoading } = useHcmQuery();
+  const { data: hcmData, loading: hcmLoading } = useHcmDataQuery();
   const { data: calculationData, loading: calculationLoading } =
     useLandingSalaryCalculationsQuery();
   const { data: accountBalanceData, loading: accountBalanceLoading } =
