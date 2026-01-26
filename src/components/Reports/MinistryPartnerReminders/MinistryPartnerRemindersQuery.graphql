@@ -17,16 +17,6 @@ query MinistryPartnerReminders(
   }
 }
 
-query DesignationAccounts($accountListId: ID!) {
-  accountList(id: $accountListId) {
-    designationAccounts {
-      accountNumber
-      id
-      name
-    }
-  }
-}
-
 mutation UpdateMinistryPartnerReminders(
   $input: UpdateMinistryPartnerRemindersInput!
 ) {
