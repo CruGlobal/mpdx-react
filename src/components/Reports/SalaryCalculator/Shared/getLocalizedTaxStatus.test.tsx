@@ -1,9 +1,9 @@
-import { TFunction } from 'react-i18next';
 import { SecaStatusEnum } from 'pages/api/graphql-rest.page.generated';
+import i18n from 'src/lib/i18n';
 import { getLocalizedTaxStatus } from './getLocalizedTaxStatus';
 
 describe('getLocalizedSecaStatus', () => {
-  const t: TFunction = (key) => key;
+  const { t } = i18n;
 
   it('should return localized string for Optout status', () => {
     expect(getLocalizedTaxStatus(SecaStatusEnum.Optout, t)).toBe('Exempt');
