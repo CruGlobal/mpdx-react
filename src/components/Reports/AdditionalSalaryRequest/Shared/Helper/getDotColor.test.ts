@@ -51,7 +51,9 @@ describe('getDotColor', () => {
     });
 
     it('returns transparent for other statuses', () => {
-      expect(getDotColor(AsrStatusEnum.Pending, 'complete')).toBe('transparent');
+      expect(getDotColor(AsrStatusEnum.Pending, 'complete')).toBe(
+        'transparent',
+      );
     });
   });
 });

@@ -73,7 +73,12 @@ const TestFormikWrapper: React.FC<{
 
 export const AdditionalSalaryRequestTestWrapper: React.FC<
   AdditionalSalaryRequestTestWrapperProps
-> = ({ children, initialValues, pageType = 'new', deductionPercentage = 0 }) => {
+> = ({
+  children,
+  initialValues,
+  pageType = 'new',
+  deductionPercentage = 0,
+}) => {
   const requestValues = initialValues || defaultInitialValues;
 
   return (

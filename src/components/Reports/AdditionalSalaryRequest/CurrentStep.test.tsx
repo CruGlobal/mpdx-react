@@ -46,10 +46,10 @@ describe('CurrentStep', () => {
     jest.clearAllMocks();
   });
 
-  it('renders AboutForm when currentStep is AboutForm', async () => {
+  it('renders AboutForm when currentIndex is 0', async () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
       ...mockContextValue,
-      currentStep: AdditionalSalaryRequestSectionEnum.AboutForm,
+      currentIndex: 0,
     });
 
     const { getByText } = render(<TestComponent />);
@@ -59,10 +59,10 @@ describe('CurrentStep', () => {
     );
   });
 
-  it('renders CompleteForm when currentStep is CompleteForm', async () => {
+  it('renders CompleteForm when currentIndex is 1', async () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
       ...mockContextValue,
-      currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
+      currentIndex: 1,
     });
 
     const { getByText } = render(<TestComponent />);
@@ -72,10 +72,10 @@ describe('CurrentStep', () => {
     );
   });
 
-  it('renders Receipt when currentStep is Receipt', async () => {
+  it('renders Receipt when currentIndex is 2', async () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
       ...mockContextValue,
-      currentStep: AdditionalSalaryRequestSectionEnum.Receipt,
+      currentIndex: 2,
     });
 
     const { getByText } = render(<TestComponent />);

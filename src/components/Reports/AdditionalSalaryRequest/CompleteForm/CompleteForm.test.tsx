@@ -189,9 +189,9 @@ describe('CompleteForm', () => {
       const { getByTestId } = render(<TestWrapper />);
 
       // staffAccountBalance is 20000
-      expect(getByTestId('amount-one')).toHaveTextContent('$20,000');
+      expect(getByTestId('amount-one')).toHaveTextContent('$20,000.00');
       // currentSalaryCap (50000) - staffAccountBalance (20000) = 30000
-      expect(getByTestId('amount-two')).toHaveTextContent('$30,000');
+      expect(getByTestId('amount-two')).toHaveTextContent('$30,000.00');
     });
 
     it('handles missing calculations data gracefully', () => {
@@ -207,8 +207,8 @@ describe('CompleteForm', () => {
 
       const { getByTestId } = render(<TestWrapper />);
 
-      expect(getByTestId('amount-one')).toHaveTextContent('$0');
-      expect(getByTestId('amount-two')).toHaveTextContent('$0');
+      expect(getByTestId('amount-one')).toHaveTextContent('$0.00');
+      expect(getByTestId('amount-two')).toHaveTextContent('$0.00');
     });
   });
 
@@ -284,6 +284,7 @@ describe('CompleteForm', () => {
     it('displays correct header for AboutForm step', () => {
       mockUseAdditionalSalaryRequest.mockReturnValue({
         ...defaultMockContextValue,
+        currentIndex: 0,
         currentStep: AdditionalSalaryRequestSectionEnum.AboutForm,
       } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
 
@@ -295,6 +296,7 @@ describe('CompleteForm', () => {
     it('displays correct header for Receipt step', () => {
       mockUseAdditionalSalaryRequest.mockReturnValue({
         ...defaultMockContextValue,
+        currentIndex: 2,
         currentStep: AdditionalSalaryRequestSectionEnum.Receipt,
       } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
 
