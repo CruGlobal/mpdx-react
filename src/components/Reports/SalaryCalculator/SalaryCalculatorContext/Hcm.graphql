@@ -33,5 +33,6 @@ query Hcm {
     exceptionSalaryCap {
       amount
     }
+    salaryRequestEligible
   }
 }

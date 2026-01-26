@@ -1,32 +1,25 @@
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {
-  AssignmentCategoryEnum,
-  PeopleGroupSupportTypeEnum,
-} from 'src/graphql/types.generated';
 import { LandingTestWrapper } from './LandingTestWrapper';
 import { NewSalaryCalculatorLanding } from './NewSalaryCalculatorLanding';
 
 const mutationSpy = jest.fn();
 
 interface TestComponentProps {
-  assignmentCategory?: AssignmentCategoryEnum;
-  peopleGroupSupportType?: PeopleGroupSupportTypeEnum;
   hasInProgressCalculation?: boolean;
   hasApprovedCalculation?: boolean;
+  salaryRequestEligible?: boolean;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
-  assignmentCategory,
-  peopleGroupSupportType,
   hasInProgressCalculation = false,
   hasApprovedCalculation = false,
+  salaryRequestEligible,
 }) => (
   <LandingTestWrapper
-    assignmentCategory={assignmentCategory}
-    peopleGroupSupportType={peopleGroupSupportType}
     hasInProgressCalculation={hasInProgressCalculation}
     hasApprovedCalculation={hasApprovedCalculation}
+    salaryRequestEligible={salaryRequestEligible}
     onCall={mutationSpy}
   >
     <NewSalaryCalculatorLanding />
@@ -66,7 +59,7 @@ describe('NewSalaryCalculatorLanding', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders action button for full time staff with SUPPORTED_RMO', async () => {
+  it('renders action button', async () => {
     const { findByRole } = render(<TestComponent />);
 
     expect(
@@ -74,45 +67,18 @@ describe('NewSalaryCalculatorLanding', () => {
     ).toBeInTheDocument();
   });
 
-  it('does not render action button for part time staff with SUPPORTED_RMO', async () => {
+  it('does not render action button for ineligible staff', async () => {
     const { queryByRole } = render(
-      <TestComponent
-        assignmentCategory={AssignmentCategoryEnum.PartTimeRegular}
-        peopleGroupSupportType={PeopleGroupSupportTypeEnum.SupportedRmo}
-      />,
+      <TestComponent salaryRequestEligible={false} />,
+    );
+
+    await waitFor(() =>
+      expect(queryByRole('progressbar')).not.toBeInTheDocument(),
     );
 
     await waitFor(() => {
       expect(
-        queryByRole('button', { name: 'Continue Salary Calculation' }),
-      ).not.toBeInTheDocument();
-    });
-  });
-
-  it('does not render action button for part-time staff without SUPPORTED_RMO', async () => {
-    const { queryByRole } = render(
-      <TestComponent
-        assignmentCategory={AssignmentCategoryEnum.PartTimeRegular}
-        peopleGroupSupportType={PeopleGroupSupportTypeEnum.Designation}
-      />,
-    );
-
-    expect(
-      queryByRole('button', { name: 'Continue Salary Calculation' }),
-    ).not.toBeInTheDocument();
-  });
-
-  it('does not render action button for full-time staff without SUPPORTED_RMO', async () => {
-    const { queryByRole } = render(
-      <TestComponent
-        assignmentCategory={AssignmentCategoryEnum.FullTimeRegular}
-        peopleGroupSupportType={PeopleGroupSupportTypeEnum.None}
-      />,
-    );
-
-    await waitFor(() => {
-      expect(
-        queryByRole('button', { name: 'Continue Salary Calculation' }),
+        queryByRole('button', { name: 'Calculate New Salary' }),
       ).not.toBeInTheDocument();
     });
   });

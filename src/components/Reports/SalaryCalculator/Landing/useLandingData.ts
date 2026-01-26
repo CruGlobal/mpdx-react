@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { isFullTimeRmo } from 'src/components/Reports/SalaryCalculator/staffTypeHelpers';
 import { SalaryRequestStatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
@@ -56,8 +55,8 @@ export const useLandingData = () => {
     const [selfData, spouseData] = hcmData?.hcm ?? [];
     return {
       self: selfData,
-      spouse: spouseData,
-      hasSpouse: hcmData?.hcm?.length === 2,
+      spouse: spouseData?.salaryRequestEligible ? spouseData : null,
+      hasSpouse: !!spouseData,
     };
   }, [hcmData]);
 
@@ -111,11 +110,6 @@ export const useLandingData = () => {
         0,
       ) ?? 0,
     [accountBalanceData],
-  );
-
-  const canCalculateSalary = useMemo(
-    () => (self?.staffInfo ? isFullTimeRmo(self.staffInfo) : false),
-    [self],
   );
 
   const salaryCategories = useMemo<SalaryCategory[]>(
@@ -212,14 +206,13 @@ export const useLandingData = () => {
   return {
     staffAccountId,
     names,
-    self,
-    spouse,
+    self: (self ?? null) as typeof spouse | null,
+    spouse: (spouse ?? null) as typeof spouse | null,
     hasSpouse,
     salaryData,
     salaryCategories,
     accountBalance,
     hasInProgressCalculation,
-    canCalculateSalary,
     loading:
       hcmLoading ||
       calculationLoading ||

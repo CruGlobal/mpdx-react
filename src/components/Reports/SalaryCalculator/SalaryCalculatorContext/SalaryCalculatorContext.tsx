@@ -77,8 +77,9 @@ export const SalaryCalculatorProvider: React.FC<
     setDrawerOpen((prev) => !prev);
   }, []);
 
-  const contextValue: SalaryCalculatorContextType = useMemo(
-    () => ({
+  const contextValue: SalaryCalculatorContextType = useMemo(() => {
+    const hcmSpouse = hcmData?.hcm[1] ?? null;
+    return {
       steps,
       currentIndex,
       percentComplete,
@@ -88,25 +89,21 @@ export const SalaryCalculatorProvider: React.FC<
       setDrawerOpen,
       toggleDrawer,
       hcmUser: hcmData?.hcm[0] ?? null,
-      // If the calculation doesn't have spouse calculations, it means that the spouse is not
-      // eligible for MHA and should be ignored
-      hcmSpouse: calculation?.spouseCalculations
-        ? (hcmData?.hcm[1] ?? null)
-        : null,
+      // Ignore spouses that aren't eligible to make a salary request
+      hcmSpouse: hcmSpouse?.salaryRequestEligible ? hcmSpouse : null,
       calculation,
-    }),
-    [
-      steps,
-      currentIndex,
-      percentComplete,
-      handleNextStep,
-      handlePreviousStep,
-      isDrawerOpen,
-      toggleDrawer,
-      hcmData,
-      calculationData,
-    ],
-  );
+    };
+  }, [
+    steps,
+    currentIndex,
+    percentComplete,
+    handleNextStep,
+    handlePreviousStep,
+    isDrawerOpen,
+    toggleDrawer,
+    hcmData,
+    calculationData,
+  ]);
 
   if (!calculationData) {
     return (
