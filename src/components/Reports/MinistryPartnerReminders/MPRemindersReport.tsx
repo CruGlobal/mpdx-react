@@ -190,15 +190,15 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
               <SimpleScreenOnly>
                 <Box mt={3} mb={4}>
                   <Trans i18nKey={'reminders.description'}>
-                    <p style={{ lineHeight: 1.5 }}>
+                    <Typography style={{ lineHeight: 1.5 }}>
                       You can now change the reminder status of any of your
                       ministry partners online! Your current list and related
                       information is displayed below. To change the reminder
                       status of any of your ministry partners, use the drop-down
                       boxes in the &quot;Change Reminder Status&quot; column.
-                    </p>
+                    </Typography>
 
-                    <p style={{ marginTop: 10, lineHeight: 1.5 }}>
+                    <Typography style={{ marginTop: 10, lineHeight: 1.5 }}>
                       When you&apos;re done, click the &quot;Save&quot; button
                       at the bottom of the page. Wondering how the{' '}
                       <i>Reminder System</i> works and how it differs from the
@@ -215,7 +215,7 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
                         Ministry Partner Reminder help
                       </Link>
                       .
-                    </p>
+                    </Typography>
                   </Trans>
                 </Box>
                 <Box mb={2}>

@@ -50,9 +50,7 @@ export const PrintTable: React.FC<PrintTableProps> = ({ data }) => {
                     {row.partner}
                   </Typography>
                   <Typography sx={{ fontSize: '14px' }}>
-                    {row.partnerId
-                      ? t('({{partnerId}})', { partnerId: row.partnerId })
-                      : t('(N/A)')}
+                    {row.partnerId ? t(`${row.partnerId}`) : t('(N/A)')}
                   </Typography>
                 </TableCell>
                 <TableCell>{dateFormat(row.lastGift, locale)}</TableCell>
