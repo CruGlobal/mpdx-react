@@ -1,13 +1,13 @@
-import { TFunction } from 'i18next';
+import i18n from 'src/lib/i18n';
 
-export const getHeader = (t: TFunction, step: number): string => {
+export const getHeader = (step: number): string => {
   switch (step) {
     case 0:
-      return 'About this Form';
+      return i18n.t('About this Form');
     case 1:
-      return 'Complete the Form';
+      return i18n.t('Complete the Form');
     case 2:
-      return 'Receipt';
+      return i18n.t('Receipt');
     default:
       return '';
   }

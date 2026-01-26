@@ -45,14 +45,6 @@ const janeDoe: StaffInfo = {
 
 const noMhaAndNoException: HcmDataQuery['hcm'][0] = {
   staffInfo: johnDoe,
-  yearToDate: {
-    additionalSalaryPaymentsReceived: null,
-    bonus: null,
-    grossEarnings: null,
-    preTaxFourOThreeBContributions: null,
-    rothFourOThreeBContributions: null,
-    taxableDeductions: null,
-  },
   mhaRequest: {
     boardApprovedOnDate: null,
     currentApprovedOverallAmount: null,
@@ -77,6 +69,14 @@ const noMhaAndNoException: HcmDataQuery['hcm'][0] = {
     lastUpdated: '2023-04-01',
     grossSalaryAmount: 60000,
     lastRegularPaymentDate: null,
+  },
+  yearToDate: {
+    additionalSalaryPaymentsReceived: 0,
+    bonus: 0,
+    grossEarnings: 20000,
+    preTaxFourOThreeBContributions: 3000,
+    rothFourOThreeBContributions: 1000,
+    taxableDeductions: 500,
   },
 };
 

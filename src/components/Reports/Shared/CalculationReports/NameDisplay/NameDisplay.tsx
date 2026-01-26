@@ -51,7 +51,7 @@ export const NameDisplay: React.FC<NameDisplayProps> = ({
   );
 
   return (
-    <Box sx={{ mt: theme.spacing(2) }}>
+    <Box>
       <Card sx={{ marginBottom: theme.spacing(2), boxShadow: 1 }}>
         <CardHeader title={title} sx={{ paddingInline: theme.spacing(4) }} />
         {showContent && (

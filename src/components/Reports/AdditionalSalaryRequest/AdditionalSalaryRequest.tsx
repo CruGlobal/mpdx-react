@@ -1,96 +1,161 @@
-import React from 'react';
-import { Box } from '@mui/material';
-import { useFormikContext } from 'formik';
+import React, { useCallback, useMemo } from 'react';
+import { Button, Container, Stack } from '@mui/material';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import { DirectionButtons } from 'src/components/Reports/Shared/CalculationReports/DirectionButtons/DirectionButtons';
+import { Notification } from 'src/components/Notification/Notification';
+import { AsrStatusEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import { PanelLayout } from '../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { useIconPanelItems } from '../Shared/CalculationReports/PanelLayout/useIconPanelItems';
 import { PanelTypeEnum } from '../Shared/CalculationReports/Shared/sharedTypes';
-import { StepsList } from '../Shared/CalculationReports/StepsList/StepsList';
-import { CurrentStep } from './CurrentStep';
+import { useCreateAdditionalSalaryRequestMutation } from './AdditionalSalaryRequest.generated';
+import { AdditionalSalaryRequestSkeleton } from './AdditionalSalaryRequestSkeleton';
+import { EligibleDisplay } from './MainPages/EligibleDisplay';
 import { useAdditionalSalaryRequest } from './Shared/AdditionalSalaryRequestContext';
-import { SectionPage } from './SharedComponents/SectionPage';
+import { getRequestUrl } from './Shared/Helper/getRequestUrl';
+import { ApprovedRequest } from './SharedComponents/ApprovedRequest';
+import { CurrentRequest } from './SharedComponents/CurrentRequest';
+
+export const mainContentWidth = theme.spacing(85);
 
 export interface CompleteFormValues {
-  currentYearSalary: string;
-  previousYearSalary: string;
-  additionalSalary: string;
+  currentYearSalaryNotReceived: string;
+  previousYearSalaryNotReceived: string;
+  additionalSalaryWithinMax: string;
   adoption: string;
-  contribution403b: string;
-  counseling: string;
-  healthcareExpenses: string;
-  babysitting: string;
-  childrenMinistryTrip: string;
-  childrenCollege: string;
+  traditional403bContribution: string;
+  counselingNonMedical: string;
+  healthcareExpensesExceedingLimit: string;
+  babysittingMinistryEvents: string;
+  childrenMinistryTripExpenses: string;
+  childrenCollegeEducation: string;
   movingExpense: string;
   seminary: string;
   housingDownPayment: string;
   autoPurchase: string;
-  reimbursableExpenses: string;
-  defaultPercentage: boolean;
-  telephoneNumber: string;
+  expensesNotApprovedWithin90Days: string;
+  deductTwelvePercent: boolean;
+  phoneNumber: string;
 }
-
-const MainContent: React.FC = () => {
-  const {
-    handleCancel,
-    handlePreviousStep,
-    handleNextStep,
-    currentIndex,
-    steps,
-  } = useAdditionalSalaryRequest();
-  const { submitForm, validateForm, submitCount, isValid } =
-    useFormikContext<CompleteFormValues>();
-
-  const isFirstFormPage = currentIndex === 0;
-  const isLastFormPage = currentIndex === steps.length - 2;
-  const reviewPage = currentIndex === steps.length - 1;
-
-  return (
-    <Box px={theme.spacing(3)}>
-      <CurrentStep />
-      {!reviewPage && (
-        <DirectionButtons
-          handleNextStep={handleNextStep}
-          handlePreviousStep={handlePreviousStep}
-          showBackButton={!isFirstFormPage}
-          handleCancel={isFirstFormPage ? undefined : handleCancel}
-          isSubmission={isLastFormPage}
-          submitForm={submitForm}
-          validateForm={validateForm}
-          submitCount={submitCount}
-          isValid={isValid}
-        />
-      )}
-    </Box>
-  );
-};
 
 export const AdditionalSalaryRequest: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const { isDrawerOpen, toggleDrawer, steps, currentIndex, percentComplete } =
-    useAdditionalSalaryRequest();
+  const { enqueueSnackbar } = useSnackbar();
+  const {
+    isDrawerOpen,
+    toggleDrawer,
+    steps,
+    currentIndex,
+    requestsError,
+    requestsData,
+  } = useAdditionalSalaryRequest();
+
+  const [createAdditionalSalaryRequest] =
+    useCreateAdditionalSalaryRequestMutation();
 
   const iconPanelItems = useIconPanelItems(isDrawerOpen, toggleDrawer);
+
+  const handleCreateAsrRequest = useCallback(() => {
+    createAdditionalSalaryRequest({
+      variables: {
+        attributes: {},
+      },
+      refetchQueries: ['AdditionalSalaryRequests'],
+      onCompleted: ({ createAdditionalSalaryRequest: newRequest }) => {
+        enqueueSnackbar(
+          t("Successfully created ASR Request. You'll be redirected shortly."),
+          {
+            variant: 'success',
+          },
+        );
+        const asrRequestId = newRequest?.additionalSalaryRequest.id;
+        const requestLink = getRequestUrl(accountListId, asrRequestId, 'new');
+
+        // Wait 1 second before redirecting
+        setTimeout(() => {
+          window.location.href = requestLink;
+        }, 1000);
+      },
+      onError: (err) => {
+        enqueueSnackbar(
+          t('Error while creating ASR Request - {{error}}', {
+            error: err.message,
+          }),
+          {
+            variant: 'error',
+          },
+        );
+      },
+    });
+  }, [createAdditionalSalaryRequest, enqueueSnackbar, t, accountListId]);
+
+  // Determine overall request status based on priority
+  const allRequestStatus = useMemo((): string => {
+    if (!requestsData || requestsData.length === 0) {
+      return 'None';
+    }
+    for (const request of requestsData) {
+      switch (request.status) {
+        case AsrStatusEnum.Approved:
+          return 'Approved';
+        case AsrStatusEnum.ActionRequired:
+          return 'Action Required';
+        case AsrStatusEnum.Pending:
+          return 'Pending';
+        case AsrStatusEnum.InProgress:
+          return 'In Progress';
+      }
+    }
+    return 'None';
+  }, [requestsData]);
 
   return (
     <PanelLayout
       panelType={PanelTypeEnum.Other}
-      percentComplete={percentComplete}
+      percentComplete={0}
+      showPercentage={false}
       steps={steps}
       currentIndex={currentIndex}
       icons={iconPanelItems}
-      sidebarContent={<StepsList steps={steps} />}
       sidebarTitle={t('Additional Salary Request')}
       isSidebarOpen={isDrawerOpen}
       sidebarAriaLabel={t('Additional Salary Request Sections')}
       mainContent={
-        <SectionPage>
-          <MainContent />
-        </SectionPage>
+        <Container sx={{ ml: 5 }}>
+          {requestsError ? (
+            <Notification type="error" message={requestsError.message} />
+          ) : !requestsData ? (
+            <AdditionalSalaryRequestSkeleton />
+          ) : (
+            <Stack
+              direction="column"
+              sx={{
+                gap: theme.spacing(4),
+              }}
+              width={mainContentWidth}
+            >
+              <EligibleDisplay allRequestStatus={allRequestStatus} />
+
+              {requestsData.map((request) =>
+                request.status === AsrStatusEnum.Approved ? (
+                  <ApprovedRequest request={request} />
+                ) : (
+                  <CurrentRequest key={request.id} request={request} />
+                ),
+              )}
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleCreateAsrRequest}
+                sx={{ alignSelf: 'flex-start' }}
+              >
+                {t('Create New ASR')}
+              </Button>
+            </Stack>
+          )}
+        </Container>
       }
       backHref={`/accountLists/${accountListId}`}
     />
