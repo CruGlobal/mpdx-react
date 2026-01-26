@@ -1,7 +1,7 @@
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import { Dispatch, SetStateAction } from 'react';
-import { Edit, PrintSharp } from '@mui/icons-material';
+import { Edit, RemoveRedEyeSharp } from '@mui/icons-material';
 import { Alert, Box, Button, Link, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +14,7 @@ interface ReceiptProps {
   alertText?: string;
   editLink?: string;
   viewLink?: string;
+  dashboardLink?: string;
   isEdit?: boolean;
   availableDate?: string | null;
   deadlineDate?: string | null;
@@ -26,6 +27,7 @@ export const Receipt: React.FC<ReceiptProps> = ({
   alertText,
   editLink,
   viewLink,
+  dashboardLink,
   isEdit,
   availableDate,
   deadlineDate,
@@ -97,19 +99,18 @@ export const Receipt: React.FC<ReceiptProps> = ({
         </Box>
       )}
       <Box sx={{ mt: 4 }}>
-        <PrintSharp
+        <RemoveRedEyeSharp
           fontSize="small"
           sx={{ verticalAlign: 'middle', opacity: 0.56 }}
         />{' '}
         <Link onClick={handlePrint} sx={{ cursor: 'pointer' }}>
-          {t(`Print a copy of your submitted ${formTitle}`)}
+          {t(`View or print a copy of your submitted ${formTitle}`)}
         </Link>
       </Box>
       <Box sx={{ mt: 4 }}>
         <Button
           component={NextLink}
-          href={viewLink ?? ''}
-          onClick={() => setIsComplete && setIsComplete(true)}
+          href={dashboardLink ?? ''}
           variant="contained"
         >
           {buttonText}
