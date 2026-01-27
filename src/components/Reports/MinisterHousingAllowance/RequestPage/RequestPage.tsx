@@ -77,7 +77,6 @@ export const RequestPage: React.FC = () => {
 
   const iconPanelItems = useIconPanelItems(isDrawerOpen, toggleDrawer);
 
-  const editLink = getRequestUrl(accountListId, requestId, 'edit');
   const viewLink = getRequestUrl(accountListId, requestId, 'view');
 
   if (loading) {
@@ -175,12 +174,10 @@ export const RequestPage: React.FC = () => {
                   <Receipt
                     formTitle={t('MHA Request')}
                     buttonText={t('View In Dashboard')}
-                    editLink={editLink}
                     isEdit={isEdit}
                     viewLink={viewLink}
                     buttonLink={`/accountLists/${accountListId}/reports/housingAllowance`}
                     availableDate={availableDate}
-                    deadlineDate={deadlineDate}
                     setIsComplete={setIsComplete}
                   />
                 )}
