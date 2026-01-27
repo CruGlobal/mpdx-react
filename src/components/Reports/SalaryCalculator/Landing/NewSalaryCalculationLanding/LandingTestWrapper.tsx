@@ -67,6 +67,7 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
                   currentTaxDeferredContributionPercentage: 6,
                   maximumContributionLimit: 45,
                 },
+                salaryRequestEligible,
               },
             ],
           },
