@@ -4,6 +4,7 @@ import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import { Button, Link, Stack, Typography } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { AdditionalInfoCard } from '../SalaryCalculation/AdditionalInfoCard/AdditionalInfoCard';
 import { RequestSummaryCard } from '../SalaryCalculation/RequestSummaryCard/RequestSummaryCard';
 import { ContactInfoForm } from './ContactInfoForm';
 import { MhaCard } from './MhaCard';
@@ -64,6 +65,7 @@ export const SummaryStep: React.FC = () => {
       <SalarySummaryCard />
       <StaffInfoSummaryCard />
       <RequestSummaryCard />
+      <AdditionalInfoCard />
 
       <Button
         endIcon={showCompleteCalculations ? <ExpandLess /> : <ExpandMore />}
