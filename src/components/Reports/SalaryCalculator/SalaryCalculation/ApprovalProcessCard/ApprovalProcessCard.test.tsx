@@ -4,15 +4,15 @@ import {
   SalaryCalculatorTestWrapper,
   SalaryCalculatorTestWrapperProps,
 } from '../../SalaryCalculatorTestWrapper';
-import { AdditionalInfoCard } from './AdditionalInfoCard';
+import { ApprovalProcessCard } from './ApprovalProcessCard';
 
 const TestComponent: React.FC<SalaryCalculatorTestWrapperProps> = (props) => (
   <SalaryCalculatorTestWrapper {...props}>
-    <AdditionalInfoCard />
+    <ApprovalProcessCard />
   </SalaryCalculatorTestWrapper>
 );
 
-describe('AdditionalInfoCard', () => {
+describe('ApprovalProcessCard', () => {
   it('renders nothing when not over cap', async () => {
     const { queryByRole } = render(<TestComponent />);
 
@@ -33,7 +33,9 @@ describe('AdditionalInfoCard', () => {
         />,
       );
 
-      expect(await findByTestId('AdditionalInfoCard-status')).toHaveTextContent(
+      expect(
+        await findByTestId('ApprovalProcessCard-status'),
+      ).toHaveTextContent(
         "John's Gross Requested Salary exceeds their individual Maximum Allowable Salary. \
 If this is correct, please provide reasoning for why John's Salary should exceed $40,000.00 or make changes to your Requested Salary above.",
       );
@@ -57,7 +59,9 @@ If this is correct, please provide reasoning for why John's Salary should exceed
         />,
       );
 
-      expect(await findByTestId('AdditionalInfoCard-status')).toHaveTextContent(
+      expect(
+        await findByTestId('ApprovalProcessCard-status'),
+      ).toHaveTextContent(
         "Jane's Gross Requested Salary exceeds their individual Maximum Allowable Salary. \
 If this is correct, please provide reasoning for why Jane's Salary should exceed $40,000.00 or make changes to your Requested Salary above.",
       );
@@ -80,7 +84,9 @@ If this is correct, please provide reasoning for why Jane's Salary should exceed
         />,
       );
 
-      expect(await findByTestId('AdditionalInfoCard-status')).toHaveTextContent(
+      expect(
+        await findByTestId('ApprovalProcessCard-status'),
+      ).toHaveTextContent(
         "Since you are requesting above your and Jane's combined Maximum Allowable Salary, you will need to provide the information below.",
       );
       expect(

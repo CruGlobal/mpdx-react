@@ -10,7 +10,7 @@ import { StepCard } from '../../Shared/StepCard';
 import { StyledCardHeader } from '../StyledCardHeader';
 import { useCaps } from '../useCaps';
 
-export const AdditionalInfoCard: React.FC = () => {
+export const ApprovalProcessCard: React.FC = () => {
   const { t } = useTranslation();
   const { calculation, hcmSpouse } = useSalaryCalculator();
   const { overCapName, overCapSalary } = useCaps();
@@ -54,7 +54,7 @@ export const AdditionalInfoCard: React.FC = () => {
         }
       />
       <CardContent>
-        <Typography paragraph data-testid="AdditionalInfoCard-status">
+        <Typography paragraph data-testid="ApprovalProcessCard-status">
           {tier === ProgressiveApprovalTierEnum.DivisionHead ? (
             <Trans t={t}>
               {{ name: overCapName }}&apos;s Gross Requested Salary exceeds
