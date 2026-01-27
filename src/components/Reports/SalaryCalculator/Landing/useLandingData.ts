@@ -3,10 +3,16 @@ import { useTranslation } from 'react-i18next';
 import { SalaryRequestStatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
-import { useHcmQuery } from '../SalaryCalculatorContext/Hcm.generated';
+import {
+  type HcmQuery,
+  useHcmQuery,
+} from '../SalaryCalculatorContext/Hcm.generated';
 import { getLocalizedTaxStatus } from '../Shared/getLocalizedTaxStatus';
 import { useAccountBalanceQuery } from './AccountBalance.generated';
-import { useLandingSalaryCalculationsQuery } from './NewSalaryCalculationLanding/LandingSalaryCalculations.generated';
+import {
+  type LandingSalaryCalculationsQuery,
+  useLandingSalaryCalculationsQuery,
+} from './NewSalaryCalculationLanding/LandingSalaryCalculations.generated';
 import { useStaffAccountIdQuery } from './StaffAccountId.generated';
 import { formatCalculationDates } from './dateHelpers';
 
@@ -18,7 +24,34 @@ interface SalaryCategory {
   tooltip?: string;
 }
 
-export const useLandingData = () => {
+type HcmPerson = HcmQuery['hcm'][number];
+
+export interface LandingData {
+  staffAccountId: string | null;
+  names: string;
+  self: HcmPerson | null;
+  spouse: HcmPerson | null;
+  salaryData: {
+    currentGrossSalary: number;
+    lastUpdated: string;
+    spouseCurrentGrossSalary: number;
+    rothContribution: number;
+    spouseRothContribution: number;
+    taxDeferredContribution: number;
+    spouseTaxDeferredContribution: number;
+  };
+  salaryCategories: SalaryCategory[];
+  accountBalance: number;
+  hasInProgressCalculation: boolean;
+  loading: boolean;
+  calculation: LandingSalaryCalculationsQuery['latestCalculation'];
+  requestedOn: string;
+  processedOn: string;
+  feedback: string | null;
+  shouldShowPending: boolean;
+}
+
+export const useLandingData = (): LandingData => {
   const { t } = useTranslation();
   const locale = useLocale();
 
@@ -52,15 +85,17 @@ export const useLandingData = () => {
   );
 
   const { self, spouse } = useMemo(() => {
-    const [selfData, spouseData] = hcmData?.hcm ?? [];
+    // Using [undefined, undefined] instead of [] ensures that we handle the case where HCM returns
+    // an array with fewer than two elements
+    const [selfData, spouseData] = hcmData?.hcm ?? [undefined, undefined];
     return {
-      self: selfData,
-      spouse: spouseData?.salaryRequestEligible ? spouseData : null,
+      self: selfData ?? null,
+      spouse: spouseData?.salaryRequestEligible ? (spouseData ?? null) : null,
     };
   }, [hcmData]);
 
   const staffAccountId = useMemo(
-    () => staffAccountIdData?.user?.staffAccountId,
+    () => staffAccountIdData?.user?.staffAccountId ?? null,
     [staffAccountIdData],
   );
 
@@ -205,8 +240,8 @@ export const useLandingData = () => {
   return {
     staffAccountId,
     names,
-    self: (self ?? null) as typeof spouse | null,
-    spouse: (spouse ?? null) as typeof spouse | null,
+    self,
+    spouse,
     salaryData,
     salaryCategories,
     accountBalance,
