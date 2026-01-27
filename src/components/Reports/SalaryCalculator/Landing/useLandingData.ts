@@ -51,12 +51,11 @@ export const useLandingData = () => {
     [latestCalculation],
   );
 
-  const { self, spouse, hasSpouse } = useMemo(() => {
+  const { self, spouse } = useMemo(() => {
     const [selfData, spouseData] = hcmData?.hcm ?? [];
     return {
       self: selfData,
       spouse: spouseData?.salaryRequestEligible ? spouseData : null,
-      hasSpouse: !!spouseData,
     };
   }, [hcmData]);
 
@@ -70,11 +69,11 @@ export const useLandingData = () => {
       return '';
     }
     const selfName = `${self.staffInfo.lastName}, ${self.staffInfo.preferredName}`;
-    if (!hasSpouse || !spouse?.staffInfo?.preferredName) {
+    if (!spouse || !spouse?.staffInfo?.preferredName) {
       return selfName;
     }
     return `${selfName} and ${spouse.staffInfo.preferredName}`;
-  }, [self, spouse, hasSpouse]);
+  }, [self, spouse]);
 
   const salaryData = useMemo(() => {
     const currentGrossSalary = self?.currentSalary.grossSalaryAmount ?? 0;
@@ -208,7 +207,6 @@ export const useLandingData = () => {
     names,
     self: (self ?? null) as typeof spouse | null,
     spouse: (spouse ?? null) as typeof spouse | null,
-    hasSpouse,
     salaryData,
     salaryCategories,
     accountBalance,
