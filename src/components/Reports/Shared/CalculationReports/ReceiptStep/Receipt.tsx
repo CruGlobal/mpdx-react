@@ -11,10 +11,10 @@ import { dateFormatShort } from 'src/lib/intlFormat';
 interface ReceiptProps {
   formTitle: string;
   buttonText: string;
+  buttonLink: string;
   alertText?: string;
   editLink?: string;
   viewLink?: string;
-  dashboardLink?: string;
   isEdit?: boolean;
   availableDate?: string | null;
   deadlineDate?: string | null;
@@ -24,10 +24,10 @@ interface ReceiptProps {
 export const Receipt: React.FC<ReceiptProps> = ({
   formTitle,
   buttonText,
+  buttonLink,
   alertText,
   editLink,
   viewLink,
-  dashboardLink,
   isEdit,
   availableDate,
   deadlineDate,
@@ -108,11 +108,7 @@ export const Receipt: React.FC<ReceiptProps> = ({
         </Link>
       </Box>
       <Box sx={{ mt: 4 }}>
-        <Button
-          component={NextLink}
-          href={dashboardLink ?? ''}
-          variant="contained"
-        >
+        <Button component={NextLink} href={buttonLink} variant="contained">
           {buttonText}
         </Button>
       </Box>

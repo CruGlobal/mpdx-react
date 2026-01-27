@@ -23,6 +23,7 @@ export const CurrentStep: React.FC = () => {
         buttonText={t('View Your Additional Salary Request')}
         viewLink={pageLink}
         isEdit={false}
+        buttonLink={''}
       />
     </AdditionalSalaryRequestSection>,
   ];

@@ -119,7 +119,7 @@ export const MinisterHousingAllowanceReport = () => {
       percentComplete={0}
       backHref={''}
       sidebarTitle={t('Your MHA')}
-      hasCurrentRequest={isCurrentRequestPending}
+      hasCurrentRequestPending={isCurrentRequestPending}
       mainContent={
         <Container sx={{ ml: 5 }}>
           {requestsError ? (

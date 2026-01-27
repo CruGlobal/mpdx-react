@@ -44,7 +44,7 @@ const MainContent: React.FC = () => {
           handleNextStep={handleNextStep}
           handlePreviousStep={handlePreviousStep}
           showBackButton={!isFirstFormPage}
-          handleCancel={() => requestId && handleDeleteRequest(requestId)}
+          handleDiscard={() => requestId && handleDeleteRequest(requestId)}
           isSubmission={isLastFormPage && pageType !== PageEnum.View}
           submitForm={submitForm}
           validateForm={validateForm}

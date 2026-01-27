@@ -178,7 +178,7 @@ export const RequestPage: React.FC = () => {
                     editLink={editLink}
                     isEdit={isEdit}
                     viewLink={viewLink}
-                    dashboardLink={`/accountLists/${accountListId}/reports/housingAllowance`}
+                    buttonLink={`/accountLists/${accountListId}/reports/housingAllowance`}
                     availableDate={availableDate}
                     deadlineDate={deadlineDate}
                     setIsComplete={setIsComplete}

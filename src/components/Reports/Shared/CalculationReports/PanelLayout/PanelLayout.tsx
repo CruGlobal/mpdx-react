@@ -37,7 +37,7 @@ export interface PanelLayoutProps {
   mainContent?: React.ReactNode;
   currentIndex?: number;
   steps?: Steps[];
-  hasCurrentRequest?: boolean;
+  hasCurrentRequestPending?: boolean;
 }
 
 export const PanelLayout: React.FC<PanelLayoutProps> = ({
@@ -54,7 +54,7 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
   mainContent,
   currentIndex,
   steps,
-  hasCurrentRequest,
+  hasCurrentRequestPending,
 }) => {
   const isLastStep = steps ? currentIndex === steps.length - 1 : false;
 
@@ -70,7 +70,7 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
           <Divider orientation="vertical" flexItem />
           <StyledSidebar open={true} aria-label={sidebarAriaLabel}>
             {sidebarTitle &&
-              (hasCurrentRequest ? (
+              (hasCurrentRequestPending ? (
                 <Box
                   sx={{
                     my: 2,

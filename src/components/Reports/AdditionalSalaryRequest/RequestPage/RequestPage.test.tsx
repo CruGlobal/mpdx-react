@@ -231,11 +231,14 @@ describe('RequestPage', () => {
     expect(getByRole('button', { name: /continue/i })).toBeInTheDocument();
   });
 
-  it('calls handleDeleteRequest when cancel is clicked', async () => {
+  it('calls handleDeleteRequest when discard is clicked', async () => {
     const { getByRole } = render(<TestWrapper />);
 
-    const cancelButton = getByRole('button', { name: /cancel/i });
-    userEvent.click(cancelButton);
+    const discardButton = getByRole('button', { name: /discard/i });
+    userEvent.click(discardButton);
+
+    const confirmButton = getByRole('button', { name: /yes, discard/i });
+    userEvent.click(confirmButton);
 
     await waitFor(() => {
       expect(mockHandleDeleteRequest).toHaveBeenCalledWith('test-request-id');

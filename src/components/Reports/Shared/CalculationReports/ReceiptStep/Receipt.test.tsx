@@ -17,7 +17,7 @@ const buttonText = 'View Dashboard';
 const alertText = 'Override text';
 const editLink = '/test/edit-link';
 const viewLink = '/test/view-link';
-const dashboardLink = '/test/dashboard-link';
+const buttonLink = '/test/button-link';
 
 const setIsComplete = jest.fn();
 
@@ -26,7 +26,6 @@ interface TestComponentProps {
   alertText?: string;
   editLink?: string;
   viewLink?: string;
-  dashboardLink?: string;
   isEdit?: boolean;
   availableDate?: string | null;
   deadlineDate?: string | null;
@@ -38,7 +37,6 @@ const TestComponent: React.FC<TestComponentProps> = ({
   alertText,
   editLink,
   viewLink,
-  dashboardLink,
   isEdit,
   availableDate = '2024-06-15',
   deadlineDate = '2024-07-01',
@@ -56,7 +54,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
                 alertText={alertText}
                 editLink={editLink}
                 viewLink={viewLink}
-                dashboardLink={dashboardLink}
+                buttonLink={buttonLink}
                 isEdit={isEdit}
                 availableDate={availableDate}
                 deadlineDate={deadlineDate}
@@ -89,9 +87,7 @@ describe('Receipt', () => {
       ),
     ).toBeInTheDocument();
 
-    expect(
-      getByRole('button', { name: /view dashboard/i }),
-    ).toBeInTheDocument();
+    expect(getByRole('link', { name: /view dashboard/i })).toBeInTheDocument();
   });
 
   it('renders the component in edit page', async () => {
@@ -112,9 +108,7 @@ describe('Receipt', () => {
       ),
     ).toBeInTheDocument();
 
-    expect(
-      getByRole('button', { name: /view dashboard/i }),
-    ).toBeInTheDocument();
+    expect(getByRole('link', { name: /view dashboard/i })).toBeInTheDocument();
   });
 
   it('should change text when dates are null', async () => {
@@ -179,21 +173,19 @@ describe('Receipt', () => {
     expect(editButton).toHaveAttribute('href', editLink);
   });
 
-  it('should go to dashboard link when Dashboard clicked', async () => {
-    const { findByRole } = render(
-      <TestComponent dashboardLink={dashboardLink} />,
-    );
+  it('should go to button link when Button clicked', async () => {
+    const { findByRole } = render(<TestComponent />);
 
-    const dashboardButton = await findByRole('link', {
+    const button = await findByRole('link', {
       name: /view dashboard/i,
     });
 
-    expect(dashboardButton).toHaveAttribute(
+    expect(button).toHaveAttribute(
       'href',
-      expect.stringContaining('/test/dashboard-link'),
+      expect.stringContaining('/test/button-link'),
     );
 
-    await userEvent.click(dashboardButton);
+    await userEvent.click(button);
   });
 
   it('should go to view link when view/print clicked', async () => {
