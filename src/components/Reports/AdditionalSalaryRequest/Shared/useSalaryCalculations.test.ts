@@ -49,7 +49,7 @@ describe('useSalaryCalculations', () => {
     };
 
     const { result } = renderHook(
-      () => useSalaryCalculations(traditional403bContribution),
+      () => useSalaryCalculations({ traditional403bContribution, values }),
       {
         wrapper: ({ children }) => FormikWrapper({ children, values }),
       },
@@ -71,7 +71,7 @@ describe('useSalaryCalculations', () => {
     };
 
     const { result } = renderHook(
-      () => useSalaryCalculations(traditional403bContribution),
+      () => useSalaryCalculations({ traditional403bContribution, values }),
       {
         wrapper: ({ children }) => FormikWrapper({ children, values }),
       },
@@ -93,7 +93,7 @@ describe('useSalaryCalculations', () => {
     };
 
     const { result } = renderHook(
-      () => useSalaryCalculations(traditional403bContribution),
+      () => useSalaryCalculations({ traditional403bContribution, values }),
       {
         wrapper: ({ children }) => FormikWrapper({ children, values }),
       },
@@ -115,7 +115,7 @@ describe('useSalaryCalculations', () => {
     };
 
     const { result } = renderHook(
-      () => useSalaryCalculations(traditional403bContribution),
+      () => useSalaryCalculations({ traditional403bContribution, values }),
       {
         wrapper: ({ children }) => FormikWrapper({ children, values }),
       },
@@ -147,7 +147,7 @@ describe('useSalaryCalculations', () => {
     };
 
     const { result } = renderHook(
-      () => useSalaryCalculations(traditional403bContribution),
+      () => useSalaryCalculations({ traditional403bContribution, values }),
       {
         wrapper: ({ children }) => FormikWrapper({ children, values }),
       },
@@ -167,7 +167,7 @@ describe('useSalaryCalculations', () => {
     };
 
     const { result } = renderHook(
-      () => useSalaryCalculations(traditional403bContribution),
+      () => useSalaryCalculations({ traditional403bContribution, values }),
       {
         wrapper: ({ children }) => FormikWrapper({ children, values }),
       },

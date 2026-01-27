@@ -1,10 +1,6 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
-import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
-import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
-import { CompleteFormValues } from '../../AdditionalSalaryRequest';
-import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
 import { AutosaveCustomTextField } from '../../Shared/AutoSave/AutosaveCustomTextField';
 
 interface ContactInformationProps {
@@ -15,9 +11,6 @@ export const ContactInformation: React.FC<ContactInformationProps> = ({
   email,
 }) => {
   const { t } = useTranslation();
-  const { pageType } = useAdditionalSalaryRequest();
-  const formikContext = useFormikContext<CompleteFormValues>();
-  const { values } = formikContext;
 
   return (
     <Box>
@@ -28,46 +21,14 @@ export const ContactInformation: React.FC<ContactInformationProps> = ({
           width: '100%',
         }}
       >
-        {pageType === PageEnum.View ? (
-          <Box
-            sx={{
-              flex: '0 0 35%',
-              display: 'flex',
-              flexDirection: 'column',
-              mb: 2,
-            }}
-          >
-            <Typography
-              variant="caption"
-              sx={{
-                color: 'text.secondary',
-                fontSize: '0.75rem',
-                mb: 1,
-              }}
-            >
-              {t('Telephone Number')}
-            </Typography>
-            <Typography
-              variant="body1"
-              sx={{
-                minHeight: '1.5rem',
-                borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
-                pb: 0.5,
-              }}
-            >
-              {values.phoneNumber || t('phone number')}
-            </Typography>
-          </Box>
-        ) : (
-          <AutosaveCustomTextField
-            fullWidth
-            variant="standard"
-            fieldName="phoneNumber"
-            label={t('Telephone Number')}
-            placeholder={t('Enter telephone number')}
-            sx={{ flex: '0 0 35%' }}
-          />
-        )}
+        <AutosaveCustomTextField
+          fullWidth
+          variant="standard"
+          fieldName="phoneNumber"
+          label={t('Telephone Number')}
+          placeholder={t('Enter telephone number')}
+          sx={{ flex: '0 0 35%' }}
+        />
 
         <Box sx={{ flex: '1 1 65%', display: 'flex', flexDirection: 'column' }}>
           <Typography

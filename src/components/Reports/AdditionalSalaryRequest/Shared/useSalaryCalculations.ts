@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { useFormikContext } from 'formik';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { getTotal } from './Helper/getTotal';
 
@@ -11,12 +10,30 @@ export interface SalaryCalculations {
   netSalary: number;
 }
 
-export const useSalaryCalculations = (
-  traditional403bContribution: number,
-): SalaryCalculations => {
-  const { values } = useFormikContext<CompleteFormValues>();
+type NullablePartial<T> = {
+  [P in keyof T]?: T[P] | null;
+};
 
+export interface UseSalaryCalculationsProps {
+  traditional403bContribution: number;
+  values?: NullablePartial<CompleteFormValues> | null;
+}
+
+export const useSalaryCalculations = ({
+  traditional403bContribution,
+  values,
+}: UseSalaryCalculationsProps): SalaryCalculations => {
   return useMemo(() => {
+    if (!values) {
+      return {
+        total: 0,
+        calculatedDeduction: 0,
+        contribution403b: 0,
+        totalDeduction: 0,
+        netSalary: 0,
+      };
+    }
+
     const total = getTotal(values);
 
     const calculatedDeduction = values.deductTwelvePercent

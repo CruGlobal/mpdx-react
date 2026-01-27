@@ -1,0 +1,52 @@
+import React from 'react';
+import {
+  CardContent,
+  CardHeader,
+  Table,
+  TableCell,
+  TableRow,
+  Typography,
+} from '@mui/material';
+import { useTranslation } from 'react-i18next';
+import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
+import { StepCard } from '../SharedComponents/StepCard';
+
+export const ContactInformationSummaryCard: React.FC = () => {
+  const { t } = useTranslation();
+  const { requestData } = useAdditionalSalaryRequest();
+  // TODO Need email on ASR query
+  const email = 'test@testington.testerson';
+  const { phoneNumber } = requestData?.additionalSalaryRequest ?? {};
+
+  return (
+    <StepCard
+      sx={{
+        '.MuiTableCell-head.MuiTableCell-root': {
+          width: '25%',
+        },
+      }}
+    >
+      <CardHeader title={t('Contact Information')} />
+      <CardContent>
+        <Table>
+          <TableRow>
+            <TableCell sx={{ width: '50%' }}>
+              <Typography variant="body1">{t('Phone Number')}</Typography>
+            </TableCell>
+            <TableCell sx={{ width: '50%' }}>
+              <Typography variant="body1">{phoneNumber}</Typography>
+            </TableCell>
+          </TableRow>
+          <TableRow sx={{ '& td': { borderBottom: 'none' } }}>
+            <TableCell sx={{ width: '50%' }}>
+              <Typography variant="body1">{t('Email')}</Typography>
+            </TableCell>
+            <TableCell sx={{ width: '50%' }}>
+              <Typography variant="body1">{email}</Typography>
+            </TableCell>
+          </TableRow>
+        </Table>
+      </CardContent>
+    </StepCard>
+  );
+};

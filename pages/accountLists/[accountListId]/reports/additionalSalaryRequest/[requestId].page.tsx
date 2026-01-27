@@ -6,9 +6,13 @@ import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { RequestPage } from 'src/components/Reports/AdditionalSalaryRequest/RequestPage/RequestPage';
-import { AdditionalSalaryRequestProvider } from 'src/components/Reports/AdditionalSalaryRequest/Shared/AdditionalSalaryRequestContext';
+import {
+  AdditionalSalaryRequestProvider,
+  useAdditionalSalaryRequest,
+} from 'src/components/Reports/AdditionalSalaryRequest/Shared/AdditionalSalaryRequestContext';
 import { SavingStatus } from 'src/components/Reports/AdditionalSalaryRequest/Shared/SavingStatus/SavingStatus';
 import { useAdditionalSalaryRequestForm } from 'src/components/Reports/AdditionalSalaryRequest/Shared/useAdditionalSalaryRequestForm';
+import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -27,6 +31,7 @@ const RequestPageContent: React.FC<{ requestId: string }> = ({ requestId }) => {
   const { t } = useTranslation();
 
   const formik = useAdditionalSalaryRequestForm({ requestId });
+  const { pageType } = useAdditionalSalaryRequest();
 
   const handleNavListToggle = () => {
     setNavListOpen(!isNavListOpen);
@@ -56,7 +61,7 @@ const RequestPageContent: React.FC<{ requestId: string }> = ({ requestId }) => {
               onNavListToggle={handleNavListToggle}
               title={t('Additional Salary Request')}
               headerType={HeaderTypeEnum.Report}
-              rightExtra={<SavingStatus />}
+              rightExtra={pageType !== PageEnum.View && <SavingStatus />}
             />
             <RequestPage />
           </>

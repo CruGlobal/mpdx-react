@@ -15,6 +15,7 @@ import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { CurrentStep } from '../CurrentStep';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { calculateCompletionPercentage } from '../Shared/calculateCompletionPercentage';
+import { Summary } from '../Summary/Summary';
 
 export const mainContentWidth = theme.spacing(85);
 
@@ -38,19 +39,25 @@ const MainContent: React.FC = () => {
 
   return (
     <Box px={theme.spacing(3)}>
-      <CurrentStep />
-      {!reviewPage && (
-        <DirectionButtons
-          handleNextStep={handleNextStep}
-          handlePreviousStep={handlePreviousStep}
-          showBackButton={!isFirstFormPage}
-          handleDiscard={() => requestId && handleDeleteRequest(requestId)}
-          isSubmission={isLastFormPage && pageType !== PageEnum.View}
-          submitForm={submitForm}
-          validateForm={validateForm}
-          submitCount={submitCount}
-          isValid={isValid}
-        />
+      {pageType !== PageEnum.View ? (
+        <>
+          <CurrentStep />
+          {!reviewPage && (
+            <DirectionButtons
+              handleNextStep={handleNextStep}
+              handlePreviousStep={handlePreviousStep}
+              showBackButton={!isFirstFormPage}
+              handleDiscard={() => requestId && handleDeleteRequest(requestId)}
+              isSubmission={isLastFormPage}
+              submitForm={submitForm}
+              validateForm={validateForm}
+              submitCount={submitCount}
+              isValid={isValid}
+            />
+          )}
+        </>
+      ) : (
+        <Summary />
       )}
     </Box>
   );
@@ -59,8 +66,14 @@ const MainContent: React.FC = () => {
 export const RequestPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const { isDrawerOpen, toggleDrawer, steps, currentIndex, staffAccountId } =
-    useAdditionalSalaryRequest();
+  const {
+    pageType,
+    isDrawerOpen,
+    toggleDrawer,
+    steps,
+    currentIndex,
+    staffAccountId,
+  } = useAdditionalSalaryRequest();
   const { values } = useFormikContext<CompleteFormValues>();
 
   const percentComplete = useMemo(
@@ -75,12 +88,19 @@ export const RequestPage: React.FC = () => {
   return (
     <PanelLayout
       panelType={PanelTypeEnum.Other}
+      showPercentage={pageType !== PageEnum.View}
       percentComplete={percentComplete}
       steps={steps}
       currentIndex={currentIndex}
       icons={useIconPanelItems(isDrawerOpen, toggleDrawer)}
-      sidebarContent={<StepsList steps={steps} />}
-      sidebarTitle={t('Additional Salary Request')}
+      sidebarContent={
+        pageType !== PageEnum.View ? <StepsList steps={steps} /> : null
+      }
+      sidebarTitle={
+        pageType !== PageEnum.View
+          ? t('Additional Salary Request')
+          : t('Pending Request')
+      }
       isSidebarOpen={isDrawerOpen}
       sidebarAriaLabel={t('Additional Salary Request Sections')}
       mainContent={<MainContent />}
