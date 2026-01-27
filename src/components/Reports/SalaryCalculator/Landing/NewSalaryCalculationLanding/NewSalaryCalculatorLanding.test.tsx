@@ -100,7 +100,6 @@ describe('NewSalaryCalculatorLanding', () => {
   });
 
   it('does not create a new calculation when continuing an in-progress calculation', async () => {
-    const mutationSpy = jest.fn();
     const { findByRole } = render(<TestComponent hasInProgressCalculation />);
 
     userEvent.click(
