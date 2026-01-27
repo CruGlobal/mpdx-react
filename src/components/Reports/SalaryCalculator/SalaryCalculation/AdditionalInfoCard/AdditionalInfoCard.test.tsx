@@ -1,4 +1,5 @@
 import { render, waitFor } from '@testing-library/react';
+import { ProgressiveApprovalTierEnum } from 'src/graphql/types.generated';
 import {
   SalaryCalculatorTestWrapper,
   SalaryCalculatorTestWrapperProps,
@@ -25,6 +26,9 @@ describe('AdditionalInfoCard', () => {
           salaryRequestMock={{
             calculations: { requestedGross: 40000 },
             spouseCalculations: { effectiveCap: 50000 },
+            progressiveApprovalTier: {
+              tier: ProgressiveApprovalTierEnum.DivisionHead,
+            },
           }}
         />,
       );
@@ -46,6 +50,9 @@ If this is correct, please provide reasoning for why John's Salary should exceed
           salaryRequestMock={{
             calculations: { effectiveCap: 50000 },
             spouseCalculations: { requestedGross: 40000 },
+            progressiveApprovalTier: {
+              tier: ProgressiveApprovalTierEnum.DivisionHead,
+            },
           }}
         />,
       );
@@ -64,7 +71,12 @@ If this is correct, please provide reasoning for why Jane's Salary should exceed
     it('renders status message and textfield', async () => {
       const { getByRole, findByTestId } = render(
         <TestComponent
-          salaryRequestMock={{ calculations: { requestedGross: 100_000 } }}
+          salaryRequestMock={{
+            calculations: { requestedGross: 100_000 },
+            progressiveApprovalTier: {
+              tier: ProgressiveApprovalTierEnum.VicePresident,
+            },
+          }}
         />,
       );
 

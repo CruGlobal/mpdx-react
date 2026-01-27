@@ -55,15 +55,11 @@ export const RequestSummaryCard: React.FC = () => {
   const theme = useTheme();
   const { calculation, hcmUser, hcmSpouse } = useSalaryCalculator();
   const progressiveApprovalTier = calculation?.progressiveApprovalTier;
-  const {
-    combinedCap,
-    combinedGross,
-    overCombinedCap,
-    overUserCap,
-    overSpouseCap,
-    overCapName,
-    overCapSalary,
-  } = useCaps();
+  const overCombinedCap =
+    !!progressiveApprovalTier &&
+    progressiveApprovalTier?.tier !== ProgressiveApprovalTierEnum.DivisionHead;
+  const { combinedCap, combinedGross, overCapName, overCapSalary } = useCaps();
+
   const { formatCurrency } = useFormatters();
 
   const calcs = calculation?.calculations;
@@ -95,33 +91,31 @@ export const RequestSummaryCard: React.FC = () => {
   ];
 
   const combinedModifier = hasSpouse ? t('Combined') : '';
-  const statusMessage =
-    !overCombinedCap && !overUserCap && !overSpouseCap ? (
-      t('Your gross request is within your Maximum Allowable Salary.')
-    ) : progressiveApprovalTier &&
-      progressiveApprovalTier.tier !==
-        ProgressiveApprovalTierEnum.DivisionHead ? (
-      <Trans t={t}>
-        Your {{ combined: combinedModifier }} Gross Requested Salary exceeds
-        your {{ combined: combinedModifier }} Maximum Allowable Salary. Please
-        make adjustments to your Salary Request above or fill out the Approval
-        Process Section below to request a higher amount through our Progressive
-        Approvals process. This may take{' '}
-        {{ timeframe: progressiveApprovalTier.approvalTimeframe }} as it needs
-        to be signed off by the {{ approver: progressiveApprovalTier.approver }}
-        . This may affect your selected effective date.
-      </Trans>
-    ) : (
-      <Trans t={t}>
-        Your Combined Gross Requested Salary is within your Combined Maximum
-        Allowable Salary. However, {{ name: overCapName }}
-        &apos;s Gross Requested Salary exceeds his individual Maximum Allowable
-        Salary. If this is correct, please provide reasoning for why{' '}
-        {{ name: overCapName }}&apos;s Salary should exceed{' '}
-        {{ salary: overCapSalary }} in the Additional Information section below
-        or make changes to how your Requested Salary is distributed above.
-      </Trans>
-    );
+  const statusMessage = !progressiveApprovalTier ? (
+    t('Your gross request is within your Maximum Allowable Salary.')
+  ) : progressiveApprovalTier.tier ===
+    ProgressiveApprovalTierEnum.DivisionHead ? (
+    <Trans t={t}>
+      Your Combined Gross Requested Salary is within your Combined Maximum
+      Allowable Salary. However, {{ name: overCapName }}
+      &apos;s Gross Requested Salary exceeds his individual Maximum Allowable
+      Salary. If this is correct, please provide reasoning for why{' '}
+      {{ name: overCapName }}&apos;s Salary should exceed{' '}
+      {{ salary: overCapSalary }} in the Additional Information section below or
+      make changes to how your Requested Salary is distributed above.
+    </Trans>
+  ) : (
+    <Trans t={t}>
+      Your {{ combined: combinedModifier }} Gross Requested Salary exceeds your{' '}
+      {{ combined: combinedModifier }} Maximum Allowable Salary. Please make
+      adjustments to your Salary Request above or fill out the Approval Process
+      Section below to request a higher amount through our Progressive Approvals
+      process. This may take{' '}
+      {{ timeframe: progressiveApprovalTier.approvalTimeframe }} as it needs to
+      be signed off by the {{ approver: progressiveApprovalTier.approver }}.
+      This may affect your selected effective date.
+    </Trans>
+  );
 
   const requestedVsMaxId = useId();
   const remainingId = useId();
@@ -129,11 +123,7 @@ export const RequestSummaryCard: React.FC = () => {
   return (
     <StepCard>
       <StyledCardHeader
-        title={
-          <CardTitle
-            invalid={overCombinedCap || overUserCap || overSpouseCap}
-          />
-        }
+        title={<CardTitle invalid={!!progressiveApprovalTier} />}
       />
       <CardContent
         sx={(theme) => ({
