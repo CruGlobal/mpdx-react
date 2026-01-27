@@ -18,7 +18,6 @@ interface ReceiptProps {
   viewLink?: string;
   isEdit?: boolean;
   availableDate?: string | null;
-  deadlineDate?: string | null;
   setIsComplete?: Dispatch<SetStateAction<boolean>>;
 }
 

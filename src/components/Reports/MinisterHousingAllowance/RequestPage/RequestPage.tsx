@@ -178,7 +178,6 @@ export const RequestPage: React.FC = () => {
                     viewLink={viewLink}
                     buttonLink={`/accountLists/${accountListId}/reports/housingAllowance`}
                     availableDate={availableDate}
-                    deadlineDate={deadlineDate}
                     setIsComplete={setIsComplete}
                   />
                 )}

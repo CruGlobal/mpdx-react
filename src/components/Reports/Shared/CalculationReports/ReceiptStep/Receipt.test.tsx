@@ -30,7 +30,6 @@ interface TestComponentProps {
   viewLink?: string;
   isEdit?: boolean;
   availableDate?: string | null;
-  deadlineDate?: string | null;
   setIsComplete?: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -42,7 +41,6 @@ const TestComponent: React.FC<TestComponentProps> = ({
   viewLink,
   isEdit,
   availableDate = '2024-06-15',
-  deadlineDate = '2024-07-01',
   setIsComplete,
 }) => (
   <ThemeProvider theme={theme}>
@@ -61,7 +59,6 @@ const TestComponent: React.FC<TestComponentProps> = ({
                 buttonLink={buttonLink}
                 isEdit={isEdit}
                 availableDate={availableDate}
-                deadlineDate={deadlineDate}
                 setIsComplete={setIsComplete}
               />
             </MinisterHousingAllowanceProvider>
@@ -117,11 +114,7 @@ describe('Receipt', () => {
 
   it('should change text when dates are null', async () => {
     const { findByText } = render(
-      <TestComponent
-        pageType={PageEnum.New}
-        availableDate={null}
-        deadlineDate={null}
-      />,
+      <TestComponent pageType={PageEnum.New} availableDate={null} />,
     );
 
     expect(
