@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import {
   Dispatch,
   SetStateAction,
@@ -9,6 +10,8 @@ import {
   useState,
 } from 'react';
 import { ApolloError } from '@apollo/client';
+import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
 import {
   FormEnum,
   PageEnum,
@@ -17,11 +20,13 @@ import {
   HcmDataQuery,
   useHcmDataQuery,
 } from 'src/components/Reports/Shared/HcmData/HCMData.generated';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useStepList } from 'src/hooks/useStepList';
 import { useTrackMutation } from 'src/hooks/useTrackMutation';
 import { Steps } from '../../../Shared/CalculationReports/StepsList/StepsList';
 import {
   MinistryHousingAllowanceRequestQuery,
+  useDeleteMinistryHousingAllowanceRequestMutation,
   useMinistryHousingAllowanceRequestQuery,
   useUpdateMinistryHousingAllowanceRequestMutation,
 } from '../../MinisterHousingAllowance.generated';
@@ -48,6 +53,7 @@ export type ContextType = {
   preferredName: string;
   spousePreferredName: string;
   userEligibleForMHA: boolean;
+  handleDiscard: () => Promise<void>;
 
   requestData?:
     | MinistryHousingAllowanceRequestQuery['ministryHousingAllowanceRequest']
@@ -56,6 +62,9 @@ export type ContextType = {
   loading: boolean;
   requestId?: string;
 
+  deleteRequestMutation: ReturnType<
+    typeof useDeleteMinistryHousingAllowanceRequestMutation
+  >[0];
   updateMutation: ReturnType<
     typeof useUpdateMinistryHousingAllowanceRequestMutation
   >[0];
@@ -88,6 +97,11 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   type,
   children,
 }) => {
+  const { t } = useTranslation();
+  const accountListId = useAccountListId();
+  const router = useRouter();
+  const { enqueueSnackbar } = useSnackbar();
+
   const {
     data: requestData,
     error: requestError,
@@ -102,6 +116,28 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
   const hasValues = hasPopulatedValues(
     requestData?.ministryHousingAllowanceRequest?.requestAttributes ?? null,
   );
+
+  const [deleteRequestMutation] =
+    useDeleteMinistryHousingAllowanceRequestMutation({
+      refetchQueries: ['MinistryHousingAllowanceRequests'],
+      awaitRefetchQueries: true,
+    });
+
+  const handleDiscard = async () => {
+    await deleteRequestMutation({
+      variables: {
+        input: {
+          requestId: requestId ?? '',
+        },
+      },
+      onCompleted: () => {
+        enqueueSnackbar(t('Request discarded successfully.'), {
+          variant: 'success',
+        });
+        router.push(`/accountLists/${accountListId}/reports/housingAllowance`);
+      },
+    });
+  };
 
   const [updateMutation] = useUpdateMinistryHousingAllowanceRequestMutation();
   const { trackMutation, isMutating } = useTrackMutation();
@@ -191,11 +227,13 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       preferredName,
       spousePreferredName,
       userEligibleForMHA,
+      handleDiscard,
       setIsComplete,
       requestData: requestData?.ministryHousingAllowanceRequest ?? null,
       requestError,
       loading,
       requestId,
+      deleteRequestMutation,
       updateMutation,
       isMutating,
       trackMutation,
@@ -218,10 +256,12 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       preferredName,
       spousePreferredName,
       userEligibleForMHA,
+      handleDiscard,
       requestData,
       requestError,
       loading,
       requestId,
+      deleteRequestMutation,
       updateMutation,
       isMutating,
       trackMutation,

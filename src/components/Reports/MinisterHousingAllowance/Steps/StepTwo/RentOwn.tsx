@@ -42,6 +42,7 @@ export const RentOwn: React.FC = () => {
     requestData,
     loading,
     updateMutation,
+    handleDiscard,
   } = useMinisterHousingAllowance();
 
   const updateRequest = (id: string, rentOrOwn: MhaRentOrOwnEnum) => {
@@ -144,6 +145,8 @@ export const RentOwn: React.FC = () => {
     'Clicking "Yes, Continue" will wipe all inputs you\'ve entered previously. Are you sure you want to continue?',
   );
 
+  const isEdit = pageType === PageEnum.Edit;
+
   return (
     <>
       <Box mb={3}>
@@ -151,7 +154,7 @@ export const RentOwn: React.FC = () => {
       </Box>
       <Typography variant="body1" sx={{ mb: 2 }}>
         {t('Please select the option that applies to you.')}
-        {pageType === PageEnum.Edit &&
+        {isEdit &&
           t(
             ' If this has changed from your previous submission, you may need to provide additional information on the next screen.',
           )}
@@ -197,6 +200,8 @@ export const RentOwn: React.FC = () => {
       <DirectionButtons
         overrideNext={handleNext}
         handlePreviousStep={handlePreviousStep}
+        handleDiscard={handleDiscard}
+        isEdit={isEdit}
         showBackButton={true}
       />
       {errors.rentOrOwn && (

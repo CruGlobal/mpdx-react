@@ -1,6 +1,6 @@
 import NextLink from 'next/link';
 import { useState } from 'react';
-import { Print } from '@mui/icons-material';
+import { Cancel, Print } from '@mui/icons-material';
 import {
   Avatar,
   Box,
@@ -136,6 +136,7 @@ export const StatusCard: React.FC<StatusCardProps> = ({
                 sx={{ color: 'error.light', px: 2, py: 1, fontWeight: 'bold' }}
                 onClick={() => setOpenCancel(true)}
               >
+                <Cancel sx={{ mr: 0.5 }} />
                 {t('Cancel Request')}
               </Button>
             </Box>

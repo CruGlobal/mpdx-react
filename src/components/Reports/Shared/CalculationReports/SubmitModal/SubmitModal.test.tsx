@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
@@ -24,6 +25,8 @@ interface TestComponentProps {
   overrideContent?: string;
   overrideSubContent?: string;
   isCancel?: boolean;
+  isDiscard?: boolean;
+  isDiscardEdit?: boolean;
   actionRequired?: boolean;
 }
 
@@ -33,25 +36,31 @@ const TestComponent: React.FC<TestComponentProps> = ({
   overrideContent,
   overrideSubContent,
   isCancel,
+  isDiscard,
+  isDiscardEdit,
   actionRequired,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
-      <GqlMockedProvider>
-        <MinisterHousingAllowanceProvider type={pageType}>
-          <SubmitModal
-            formTitle={formTitle}
-            handleClose={handleClose}
-            handleConfirm={handleConfirm}
-            overrideTitle={overrideTitle}
-            overrideContent={overrideContent}
-            overrideSubContent={overrideSubContent}
-            isCancel={isCancel}
-            deadlineDate={date}
-            actionRequired={actionRequired}
-          />
-        </MinisterHousingAllowanceProvider>
-      </GqlMockedProvider>
+      <SnackbarProvider>
+        <GqlMockedProvider>
+          <MinisterHousingAllowanceProvider type={pageType}>
+            <SubmitModal
+              formTitle={formTitle}
+              handleClose={handleClose}
+              handleConfirm={handleConfirm}
+              overrideTitle={overrideTitle}
+              overrideContent={overrideContent}
+              overrideSubContent={overrideSubContent}
+              isCancel={isCancel}
+              isDiscard={isDiscard}
+              isDiscardEdit={isDiscardEdit}
+              deadlineDate={date}
+              actionRequired={actionRequired}
+            />
+          </MinisterHousingAllowanceProvider>
+        </GqlMockedProvider>
+      </SnackbarProvider>
     </TestRouter>
   </ThemeProvider>
 );
@@ -98,10 +107,12 @@ describe('ConfirmationModal', () => {
     const { getByRole, findByRole } = render(<TestComponent isCancel={true} />);
 
     expect(
-      await findByRole('heading', { name: 'Do you want to cancel?' }),
+      await findByRole('heading', {
+        name: 'Do you want to cancel your Main Title?',
+      }),
     ).toBeInTheDocument();
 
-    await userEvent.click(getByRole('button', { name: /NO/i }));
+    await userEvent.click(getByRole('button', { name: /BACK/i }));
     expect(handleClose).toHaveBeenCalled();
   });
 
@@ -117,5 +128,35 @@ describe('ConfirmationModal', () => {
     expect(await findByText(title)).toBeInTheDocument();
     expect(getByText(content)).toBeInTheDocument();
     expect(getByText(subContent)).toBeInTheDocument();
+  });
+
+  it('renders discard modal correctly', async () => {
+    const { findByRole, getByRole } = render(
+      <TestComponent isDiscard={true} />,
+    );
+
+    expect(
+      await findByRole('heading', {
+        name: 'Do you want to discard?',
+      }),
+    ).toBeInTheDocument();
+
+    await userEvent.click(getByRole('button', { name: /BACK/i }));
+    expect(handleClose).toHaveBeenCalled();
+  });
+
+  it('renders discard changes modal correctly', async () => {
+    const { findByRole, getByRole } = render(
+      <TestComponent isDiscardEdit={true} />,
+    );
+
+    expect(
+      await findByRole('heading', {
+        name: 'Do you want to discard these changes?',
+      }),
+    ).toBeInTheDocument();
+
+    await userEvent.click(getByRole('button', { name: /BACK/i }));
+    expect(handleClose).toHaveBeenCalled();
   });
 });

@@ -174,10 +174,11 @@ export const RequestPage: React.FC = () => {
                 {currentIndex === 3 && (
                   <Receipt
                     formTitle={t('MHA Request')}
-                    buttonText={t('View Your MHA')}
+                    buttonText={t('View In Dashboard')}
                     editLink={editLink}
                     isEdit={isEdit}
                     viewLink={viewLink}
+                    buttonLink={`/accountLists/${accountListId}/reports/housingAllowance`}
                     availableDate={availableDate}
                     deadlineDate={deadlineDate}
                     setIsComplete={setIsComplete}

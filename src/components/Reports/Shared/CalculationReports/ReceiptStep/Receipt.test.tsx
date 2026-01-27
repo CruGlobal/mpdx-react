@@ -4,6 +4,7 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
@@ -12,10 +13,11 @@ import { PageEnum } from '../Shared/sharedTypes';
 import { Receipt } from './Receipt';
 
 const formTitle = 'Test Title';
-const buttonText = 'View Form';
+const buttonText = 'View Dashboard';
 const alertText = 'Override text';
 const editLink = '/test/edit-link';
 const viewLink = '/test/view-link';
+const buttonLink = '/test/button-link';
 
 const setIsComplete = jest.fn();
 
@@ -43,21 +45,24 @@ const TestComponent: React.FC<TestComponentProps> = ({
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <TestRouter>
-        <GqlMockedProvider>
-          <MinisterHousingAllowanceProvider type={pageType}>
-            <Receipt
-              formTitle={formTitle}
-              buttonText={buttonText}
-              alertText={alertText}
-              editLink={editLink}
-              viewLink={viewLink}
-              isEdit={isEdit}
-              availableDate={availableDate}
-              deadlineDate={deadlineDate}
-              setIsComplete={setIsComplete}
-            />
-          </MinisterHousingAllowanceProvider>
-        </GqlMockedProvider>
+        <SnackbarProvider>
+          <GqlMockedProvider>
+            <MinisterHousingAllowanceProvider type={pageType}>
+              <Receipt
+                formTitle={formTitle}
+                buttonText={buttonText}
+                alertText={alertText}
+                editLink={editLink}
+                viewLink={viewLink}
+                buttonLink={buttonLink}
+                isEdit={isEdit}
+                availableDate={availableDate}
+                deadlineDate={deadlineDate}
+                setIsComplete={setIsComplete}
+              />
+            </MinisterHousingAllowanceProvider>
+          </GqlMockedProvider>
+        </SnackbarProvider>
       </TestRouter>
     </LocalizationProvider>
   </ThemeProvider>
@@ -82,7 +87,7 @@ describe('Receipt', () => {
       ),
     ).toBeInTheDocument();
 
-    expect(getByRole('button', { name: /view form/i })).toBeInTheDocument();
+    expect(getByRole('link', { name: /view dashboard/i })).toBeInTheDocument();
   });
 
   it('renders the component in edit page', async () => {
@@ -103,7 +108,7 @@ describe('Receipt', () => {
       ),
     ).toBeInTheDocument();
 
-    expect(getByRole('button', { name: /view form/i })).toBeInTheDocument();
+    expect(getByRole('link', { name: /view dashboard/i })).toBeInTheDocument();
   });
 
   it('should change text when dates are null', async () => {
@@ -168,28 +173,27 @@ describe('Receipt', () => {
     expect(editButton).toHaveAttribute('href', editLink);
   });
 
-  it('should go to view link when View clicked', async () => {
-    const { findByRole } = render(
-      <TestComponent viewLink={viewLink} setIsComplete={setIsComplete} />,
-    );
+  it('should go to button link when Button clicked', async () => {
+    const { findByRole } = render(<TestComponent />);
 
-    const viewButton = await findByRole('link', { name: /view form/i });
+    const button = await findByRole('link', {
+      name: /view dashboard/i,
+    });
 
-    expect(viewButton).toHaveAttribute(
+    expect(button).toHaveAttribute(
       'href',
-      expect.stringContaining('/test/view-link'),
+      expect.stringContaining('/test/button-link'),
     );
 
-    await userEvent.click(viewButton);
-    expect(setIsComplete).toHaveBeenCalledWith(true);
+    await userEvent.click(button);
   });
 
-  it('should go to view link when Print clicked', async () => {
+  it('should go to view link when view/print clicked', async () => {
     const { findByText } = render(
       <TestComponent viewLink={viewLink} setIsComplete={setIsComplete} />,
     );
 
-    const printLink = await findByText(/print a copy/i);
+    const printLink = await findByText(/view or print a copy/i);
 
     await userEvent.click(printLink);
     expect(setIsComplete).toHaveBeenCalledWith(true);

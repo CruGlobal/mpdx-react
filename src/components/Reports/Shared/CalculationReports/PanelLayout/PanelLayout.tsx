@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckCircleOutline } from '@mui/icons-material';
+import { CheckCircleOutline, CircleSharp } from '@mui/icons-material';
 import { Box, Divider, IconButton, Stack } from '@mui/material';
 import { CircularProgressWithLabel } from 'src/components/Reports/Shared/CalculationReports/CircularProgressWithLabel/CircularProgressWithLabel';
 import {
@@ -37,6 +37,7 @@ export interface PanelLayoutProps {
   mainContent?: React.ReactNode;
   currentIndex?: number;
   steps?: Steps[];
+  hasCurrentRequestPending?: boolean;
 }
 
 export const PanelLayout: React.FC<PanelLayoutProps> = ({
@@ -53,6 +54,7 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
   mainContent,
   currentIndex,
   steps,
+  hasCurrentRequestPending,
 }) => {
   const isLastStep = steps ? currentIndex === steps.length - 1 : false;
 
@@ -67,9 +69,29 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
           </Stack>
           <Divider orientation="vertical" flexItem />
           <StyledSidebar open={true} aria-label={sidebarAriaLabel}>
-            {sidebarTitle && (
-              <SidebarTitle variant="h6">{sidebarTitle}</SidebarTitle>
-            )}
+            {sidebarTitle &&
+              (hasCurrentRequestPending ? (
+                <Box
+                  sx={{
+                    my: 2,
+                    py: 1,
+                    px: 2,
+                    display: 'flex',
+                    alignItems: 'center',
+                    backgroundColor: 'rgba(25, 118, 210, 0.04)',
+                  }}
+                >
+                  <CircleSharp sx={{ color: 'primary.main', fontSize: 18 }} />
+                  <SidebarTitle
+                    variant="h6"
+                    sx={{ marginTop: 0, paddingLeft: 1 }}
+                  >
+                    {sidebarTitle}
+                  </SidebarTitle>
+                </Box>
+              ) : (
+                <SidebarTitle variant="h6">{sidebarTitle}</SidebarTitle>
+              ))}
           </StyledSidebar>
           <Divider orientation="vertical" flexItem />
           <MainContent className="main-content">{mainContent}</MainContent>

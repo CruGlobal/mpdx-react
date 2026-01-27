@@ -4,6 +4,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
@@ -49,29 +50,31 @@ const TestComponent: React.FC<TestComponentProps> = ({
     <ThemeProvider theme={theme}>
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <TestRouter>
-          <GqlMockedProvider>
-            <MinisterHousingAllowanceProvider>
-              <StatusCard
-                formType={'MHA Request'}
-                title={title}
-                subtitle={subtitle}
-                icon={MockIcon}
-                iconColor="primary"
-                linkOneText={titleOne}
-                linkTwoText={titleTwo}
-                isRequest={isRequest}
-                hidePrint={hidePrint}
-                hideActions={hideActions}
-                hideLinkTwoButton={hideLinkTwoButton}
-                linkOne={linkOne}
-                linkTwo={linkTwo}
-                handlePrint={handlePrint}
-                handleConfirmCancel={handleConfirmCancel}
-              >
-                <div>Test Children</div>
-              </StatusCard>
-            </MinisterHousingAllowanceProvider>
-          </GqlMockedProvider>
+          <SnackbarProvider>
+            <GqlMockedProvider>
+              <MinisterHousingAllowanceProvider>
+                <StatusCard
+                  formType={'MHA Request'}
+                  title={title}
+                  subtitle={subtitle}
+                  icon={MockIcon}
+                  iconColor="primary"
+                  linkOneText={titleOne}
+                  linkTwoText={titleTwo}
+                  isRequest={isRequest}
+                  hidePrint={hidePrint}
+                  hideActions={hideActions}
+                  hideLinkTwoButton={hideLinkTwoButton}
+                  linkOne={linkOne}
+                  linkTwo={linkTwo}
+                  handlePrint={handlePrint}
+                  handleConfirmCancel={handleConfirmCancel}
+                >
+                  <div>Test Children</div>
+                </StatusCard>
+              </MinisterHousingAllowanceProvider>
+            </GqlMockedProvider>
+          </SnackbarProvider>
         </TestRouter>
       </LocalizationProvider>
     </ThemeProvider>
@@ -149,7 +152,9 @@ describe('CardSkeleton', () => {
     userEvent.click(cancelButton);
 
     expect(await findByRole('dialog')).toBeInTheDocument();
-    expect(getByText('Do you want to cancel?')).toBeInTheDocument();
+    expect(
+      getByText('Do you want to cancel your MHA Request?'),
+    ).toBeInTheDocument();
 
     userEvent.click(getByRole('button', { name: /yes, cancel/i }));
 
@@ -188,7 +193,9 @@ describe('CardSkeleton', () => {
     userEvent.click(cancelButton);
 
     expect(await findByRole('dialog')).toBeInTheDocument();
-    expect(getByText('Do you want to cancel?')).toBeInTheDocument();
+    expect(
+      getByText('Do you want to cancel your MHA Request?'),
+    ).toBeInTheDocument();
 
     userEvent.click(getByRole('button', { name: /yes, cancel/i }));
 

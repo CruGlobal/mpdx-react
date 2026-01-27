@@ -1,8 +1,9 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Formik } from 'formik';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { MinisterHousingAllowanceProvider } from 'src/components/Reports/MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
@@ -15,15 +16,15 @@ const submit = jest.fn();
 const pushMock = jest.fn();
 const handleNextStep = jest.fn();
 const handlePreviousStep = jest.fn();
+const handleDiscard = jest.fn();
 const overrideNext = jest.fn();
-const handleCancel = jest.fn();
 
 interface TestComponentProps {
   isSubmission?: boolean;
   overrideNext?: () => void;
   showBackButton?: boolean;
   buttonTitle?: string;
-  handleCancel?: () => void;
+  isEdit?: boolean;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
@@ -31,7 +32,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   overrideNext,
   showBackButton = false,
   buttonTitle,
-  handleCancel: handleCancelProp,
+  isEdit,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter
@@ -39,21 +40,24 @@ const TestComponent: React.FC<TestComponentProps> = ({
         query: { accountListId: 'account-list-1' },
       }}
     >
-      <GqlMockedProvider>
-        <Formik initialValues={{}} onSubmit={submit}>
-          <MinisterHousingAllowanceProvider>
-            <DirectionButtons
-              isSubmission={isSubmission}
-              handleNextStep={handleNextStep}
-              handlePreviousStep={handlePreviousStep}
-              overrideNext={overrideNext}
-              showBackButton={showBackButton}
-              buttonTitle={buttonTitle}
-              handleCancel={handleCancelProp}
-            />
-          </MinisterHousingAllowanceProvider>
-        </Formik>
-      </GqlMockedProvider>
+      <SnackbarProvider>
+        <GqlMockedProvider>
+          <Formik initialValues={{}} onSubmit={submit}>
+            <MinisterHousingAllowanceProvider>
+              <DirectionButtons
+                isSubmission={isSubmission}
+                handleNextStep={handleNextStep}
+                handlePreviousStep={handlePreviousStep}
+                handleDiscard={handleDiscard}
+                overrideNext={overrideNext}
+                showBackButton={showBackButton}
+                buttonTitle={buttonTitle}
+                isEdit={isEdit}
+              />
+            </MinisterHousingAllowanceProvider>
+          </Formik>
+        </GqlMockedProvider>
+      </SnackbarProvider>
     </TestRouter>
   </ThemeProvider>
 );
@@ -109,27 +113,37 @@ describe('DirectionButtons', () => {
     expect(await findByRole('button', { name: title })).toBeInTheDocument();
   });
 
-  it('renders Cancel button when handleCancel is provided', async () => {
-    const { findByRole } = render(
-      <TestComponent handleCancel={handleCancel} />,
-    );
+  it('renders Discard button', async () => {
+    const { findByRole } = render(<TestComponent />);
 
-    expect(await findByRole('button', { name: /cancel/i })).toBeInTheDocument();
+    expect(
+      await findByRole('button', { name: /discard/i }),
+    ).toBeInTheDocument();
   });
 
-  it('does not render Cancel button when handleCancel is not provided', () => {
-    const { queryByRole } = render(<TestComponent />);
+  it('renders Discard Changes button', async () => {
+    const { findByRole, getByRole } = render(<TestComponent isEdit={true} />);
 
-    expect(queryByRole('button', { name: /cancel/i })).not.toBeInTheDocument();
-  });
+    const discardButton = await findByRole('button', {
+      name: /discard changes/i,
+    });
+    expect(discardButton).toBeInTheDocument();
 
-  it('calls handleCancel when Cancel button is clicked', async () => {
-    const { findByRole } = render(
-      <TestComponent handleCancel={handleCancel} />,
-    );
+    userEvent.click(discardButton);
 
-    userEvent.click(await findByRole('button', { name: /cancel/i }));
+    await waitFor(() => {
+      expect(
+        getByRole('heading', {
+          name: 'Do you want to discard these changes?',
+        }),
+      ).toBeInTheDocument();
+    });
 
-    expect(handleCancel).toHaveBeenCalled();
+    const confirmDiscard = getByRole('button', {
+      name: /yes, discard changes/i,
+    });
+    userEvent.click(confirmDiscard);
+
+    expect(handleDiscard).toHaveBeenCalled();
   });
 });

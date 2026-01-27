@@ -1,7 +1,7 @@
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import { Dispatch, SetStateAction } from 'react';
-import { Edit, PrintSharp } from '@mui/icons-material';
+import { Edit, RemoveRedEyeSharp } from '@mui/icons-material';
 import { Alert, Box, Button, Link, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
@@ -11,6 +11,7 @@ import { dateFormatShort } from 'src/lib/intlFormat';
 interface ReceiptProps {
   formTitle: string;
   buttonText: string;
+  buttonLink: string;
   alertText?: string;
   editLink?: string;
   viewLink?: string;
@@ -23,6 +24,7 @@ interface ReceiptProps {
 export const Receipt: React.FC<ReceiptProps> = ({
   formTitle,
   buttonText,
+  buttonLink,
   alertText,
   editLink,
   viewLink,
@@ -97,21 +99,16 @@ export const Receipt: React.FC<ReceiptProps> = ({
         </Box>
       )}
       <Box sx={{ mt: 4 }}>
-        <PrintSharp
+        <RemoveRedEyeSharp
           fontSize="small"
           sx={{ verticalAlign: 'middle', opacity: 0.56 }}
         />{' '}
         <Link onClick={handlePrint} sx={{ cursor: 'pointer' }}>
-          {t(`Print a copy of your submitted ${formTitle}`)}
+          {t(`View or print a copy of your submitted ${formTitle}`)}
         </Link>
       </Box>
       <Box sx={{ mt: 4 }}>
-        <Button
-          component={NextLink}
-          href={viewLink ?? ''}
-          onClick={() => setIsComplete && setIsComplete(true)}
-          variant="contained"
-        >
+        <Button component={NextLink} href={buttonLink} variant="contained">
           {buttonText}
         </Button>
       </Box>
