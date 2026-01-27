@@ -10,10 +10,6 @@ query Hcm {
       age
       dependentChildrenWithHealthcareBenefits
       secaStatus
-      assignmentCategory
-      peopleGroupSupportType
-      userPersonType
-      assignmentStatus
       primaryPhoneNumber
       emailAddress
     }
