@@ -6,6 +6,7 @@ import {
   FormEnum,
   PageEnum,
 } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useStepList } from 'src/hooks/useStepList';
 import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
 import {
@@ -38,7 +39,7 @@ export type AdditionalSalaryRequestType = {
 
   requestsError?: ApolloError;
   pageType: PageEnum | undefined;
-  handleDeleteRequest: (id: string) => Promise<void>;
+  handleDeleteRequest: (id: string, isCancel: boolean) => Promise<void>;
   requestId?: string;
   user: HcmDataQuery['hcm'][0] | undefined;
   spouse: HcmDataQuery['hcm'][1] | undefined;
@@ -71,6 +72,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   children,
 }) => {
   const { enqueueSnackbar } = useSnackbar();
+  const accountListId = useAccountListId();
   const router = useRouter();
   const { mode } = router.query;
 
@@ -120,19 +122,27 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   }, [previousStep]);
 
   const handleDeleteRequest = useCallback(
-    async (id: string) => {
+    async (id: string, isCancel: boolean) => {
       await deleteAdditionalSalaryRequest({
         variables: { id },
         refetchQueries: ['AdditionalSalaryRequests'],
-        awaitRefetchQueries: true,
         onCompleted: () => {
-          enqueueSnackbar('Additional Salary Request cancelled successfully.', {
-            variant: 'success',
-          });
+          enqueueSnackbar(
+            `Additional Salary Request ${isCancel ? 'cancelled' : 'discarded'} successfully.`,
+            {
+              variant: 'success',
+            },
+          );
+
+          if (!isCancel) {
+            router.push(
+              `/accountLists/${accountListId}/reports/additionalSalaryRequest`,
+            );
+          }
         },
       });
     },
-    [deleteAdditionalSalaryRequest, enqueueSnackbar],
+    [deleteAdditionalSalaryRequest, enqueueSnackbar, accountListId, router],
   );
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);

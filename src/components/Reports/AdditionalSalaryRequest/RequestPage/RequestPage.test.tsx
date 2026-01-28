@@ -161,20 +161,6 @@ describe('RequestPage', () => {
     expect(getAllByText('Receipt').length).toBeGreaterThanOrEqual(1);
   });
 
-  it('renders NoStaffAccount when staffAccountId is missing', () => {
-    mockUseAdditionalSalaryRequest.mockReturnValue({
-      ...defaultMockContextValue,
-      staffAccountId: null,
-    } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
-
-    const { getByText, getByRole } = render(<TestWrapper />);
-
-    expect(getByText('Access to this feature is limited.')).toBeInTheDocument();
-    expect(
-      getByRole('link', { name: 'Back to Dashboard' }),
-    ).toBeInTheDocument();
-  });
-
   it('shows continue button and hides back button on first form page', () => {
     const { getByRole, queryByRole } = render(<TestWrapper />);
 
@@ -249,7 +235,10 @@ describe('RequestPage', () => {
     userEvent.click(confirmButton);
 
     await waitFor(() => {
-      expect(mockHandleDeleteRequest).toHaveBeenCalledWith('test-request-id');
+      expect(mockHandleDeleteRequest).toHaveBeenCalledWith(
+        'test-request-id',
+        false,
+      );
     });
   });
 

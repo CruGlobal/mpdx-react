@@ -1,10 +1,9 @@
 import React, { useMemo } from 'react';
-import { Box } from '@mui/material';
+import { Box, Stack } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { DirectionButtons } from 'src/components/Reports/Shared/CalculationReports/DirectionButtons/DirectionButtons';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
-import { NoStaffAccount } from 'src/components/Reports/Shared/NoStaffAccount/NoStaffAccount';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import { PanelLayout } from '../../Shared/CalculationReports/PanelLayout/PanelLayout';
@@ -43,17 +42,22 @@ const MainContent: React.FC = () => {
         <>
           <CurrentStep />
           {!reviewPage && (
-            <DirectionButtons
-              handleNextStep={handleNextStep}
-              handlePreviousStep={handlePreviousStep}
-              showBackButton={!isFirstFormPage}
-              handleDiscard={() => requestId && handleDeleteRequest(requestId)}
-              isSubmission={isLastFormPage}
-              submitForm={submitForm}
-              validateForm={validateForm}
-              submitCount={submitCount}
-              isValid={isValid}
-            />
+            <Stack direction="column" width={mainContentWidth}>
+              <DirectionButtons
+                handleNextStep={handleNextStep}
+                handlePreviousStep={handlePreviousStep}
+                showBackButton={!isFirstFormPage}
+                handleDiscard={() =>
+                  requestId && handleDeleteRequest(requestId, false)
+                }
+                isSubmission={isLastFormPage}
+                submitForm={submitForm}
+                validateForm={validateForm}
+                submitCount={submitCount}
+                isValid={isValid}
+                isEdit={pageType === PageEnum.Edit}
+              />
+            </Stack>
           )}
         </>
       ) : (
@@ -66,24 +70,14 @@ const MainContent: React.FC = () => {
 export const RequestPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const {
-    pageType,
-    isDrawerOpen,
-    toggleDrawer,
-    steps,
-    currentIndex,
-    staffAccountId,
-  } = useAdditionalSalaryRequest();
+  const { pageType, isDrawerOpen, toggleDrawer, steps, currentIndex } =
+    useAdditionalSalaryRequest();
   const { values } = useFormikContext<CompleteFormValues>();
 
   const percentComplete = useMemo(
     () => calculateCompletionPercentage(values),
     [values],
   );
-
-  if (!staffAccountId) {
-    return <NoStaffAccount />;
-  }
 
   return (
     <PanelLayout

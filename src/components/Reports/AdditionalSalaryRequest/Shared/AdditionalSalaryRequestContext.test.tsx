@@ -8,6 +8,7 @@ import { getHeader } from './Helper/getHeader';
 
 const mutationSpy = jest.fn();
 const mockEnqueue = jest.fn();
+const mockPush = jest.fn();
 
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -38,8 +39,11 @@ const TestComponent: React.FC = () => {
       <button onClick={handleNextStep}>Change Section</button>
       <button onClick={toggleDrawer}>Toggle Drawer</button>
 
-      <button onClick={() => handleDeleteRequest('test-id')}>
+      <button onClick={() => handleDeleteRequest('test-id', true)}>
         Delete Request
+      </button>
+      <button onClick={() => handleDeleteRequest('test-id', false)}>
+        Discard Request
       </button>
     </div>
   );
@@ -47,10 +51,11 @@ const TestComponent: React.FC = () => {
 
 interface TestWrapperProps {
   onCall?: jest.Mock;
+  mockPush?: jest.Mock;
 }
 
-const TestWrapper: React.FC<TestWrapperProps> = ({ onCall }) => (
-  <AdditionalSalaryRequestTestWrapper onCall={onCall}>
+const TestWrapper: React.FC<TestWrapperProps> = ({ onCall, mockPush }) => (
+  <AdditionalSalaryRequestTestWrapper onCall={onCall} mockPush={mockPush}>
     <SnackbarProvider>
       <TestComponent />
     </SnackbarProvider>
@@ -85,7 +90,7 @@ describe('AdditionalSalaryRequestContext', () => {
     expect(drawerState).toHaveAttribute('data-open', 'false');
   });
 
-  it('handles delete request', async () => {
+  it('handles cancel request', async () => {
     const { getByRole } = render(<TestWrapper onCall={mutationSpy} />);
 
     userEvent.click(getByRole('button', { name: 'Delete Request' }));
@@ -103,6 +108,36 @@ describe('AdditionalSalaryRequestContext', () => {
       expect(mockEnqueue).toHaveBeenCalledWith(
         'Additional Salary Request cancelled successfully.',
         { variant: 'success' },
+      );
+    });
+  });
+
+  it('handles discard request', async () => {
+    const { getByRole } = render(
+      <TestWrapper onCall={mutationSpy} mockPush={mockPush} />,
+    );
+
+    userEvent.click(getByRole('button', { name: 'Discard Request' }));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'DeleteAdditionalSalaryRequest',
+        {
+          id: 'test-id',
+        },
+      ),
+    );
+
+    await waitFor(() => {
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Additional Salary Request discarded successfully.',
+        { variant: 'success' },
+      );
+    });
+
+    await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith(
+        '/accountLists/account-list-1/reports/additionalSalaryRequest',
       );
     });
   });

@@ -248,6 +248,6 @@ describe('CurrentRequest', () => {
     const confirmButton = getByRole('button', { name: /yes, cancel/i });
     userEvent.click(confirmButton);
 
-    expect(mockHandleDeleteRequest).toHaveBeenCalledWith('request-123');
+    expect(mockHandleDeleteRequest).toHaveBeenCalledWith('request-123', true);
   });
 });
