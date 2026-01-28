@@ -7,6 +7,7 @@ import theme from 'src/theme';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import {
   AdditionalSalaryRequestQuery,
+  SalaryInfoQuery,
   SubmitAdditionalSalaryRequestMutation,
   UpdateAdditionalSalaryRequestMutation,
 } from '../AdditionalSalaryRequest.generated';
@@ -95,6 +96,7 @@ const mutationSpy = jest.fn();
 
 type MocksType = {
   AdditionalSalaryRequest: AdditionalSalaryRequestQuery;
+  SalaryInfo: SalaryInfoQuery;
   UpdateAdditionalSalaryRequest: UpdateAdditionalSalaryRequestMutation;
   SubmitAdditionalSalaryRequest: SubmitAdditionalSalaryRequestMutation;
 };
@@ -109,6 +111,7 @@ const TestWrapper: React.FC<TestComponentProps> = ({ children, mocks }) => {
     <ThemeProvider theme={theme}>
       <GqlMockedProvider<{
         AdditionalSalaryRequest: AdditionalSalaryRequestQuery;
+        SalaryInfo: SalaryInfoQuery;
         UpdateAdditionalSalaryRequest: UpdateAdditionalSalaryRequestMutation;
         SubmitAdditionalSalaryRequest: SubmitAdditionalSalaryRequestMutation;
       }>
@@ -369,6 +372,56 @@ describe('useAdditionalSalaryRequestForm', () => {
 
       expect(errors.housingDownPayment).toContain('Exceeds');
       expect(errors.housingDownPayment).toContain('$50,000.00');
+    });
+
+    it('should validate auto purchase max amount of $25,000', async () => {
+      const { result } = renderHook(
+        () =>
+          useAdditionalSalaryRequestForm({
+            requestId: 'test-request-id',
+            initialValues: {
+              ...defaultFormValues,
+              autoPurchase: '30000',
+              phoneNumber: '555-123-4567',
+            },
+          }),
+        {
+          wrapper: TestWrapper,
+        },
+      );
+
+      let errors: Record<string, string> = {};
+      await act(async () => {
+        errors = await result.current.validateForm();
+      });
+
+      expect(errors.autoPurchase).toContain('Exceeds');
+      expect(errors.autoPurchase).toContain('$25,000.00');
+    });
+
+    it('should validate college max amount of $21,000', async () => {
+      const { result } = renderHook(
+        () =>
+          useAdditionalSalaryRequestForm({
+            requestId: 'test-request-id',
+            initialValues: {
+              ...defaultFormValues,
+              childrenCollegeEducation: '25000',
+              phoneNumber: '555-123-4567',
+            },
+          }),
+        {
+          wrapper: TestWrapper,
+        },
+      );
+
+      let errors: Record<string, string> = {};
+      await act(async () => {
+        errors = await result.current.validateForm();
+      });
+
+      expect(errors.childrenCollegeEducation).toContain('Exceeds');
+      expect(errors.childrenCollegeEducation).toContain('$21,000.00');
     });
   });
 

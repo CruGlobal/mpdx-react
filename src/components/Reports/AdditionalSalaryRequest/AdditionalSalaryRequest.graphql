@@ -87,6 +87,14 @@ query SalaryInfo($year: Int!) {
     secaestAt403bInt
     secaestNo403bInt
     secaestPt403bInt
+    maxAdoptionInt
+    maxAdoptionUss
+    maxAutoPurchaseInt
+    maxAutoPurchaseUss
+    maxCollegeInt
+    maxCollegeUss
+    maxHousingDownPaymentInt
+    maxHousingDownPaymentUss
   }
 }
 

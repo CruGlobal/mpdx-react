@@ -1,5 +1,7 @@
-import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat';
+import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 
 // TODO Get these fields from the API when available
 
@@ -11,7 +13,10 @@ interface Category {
 
 export const useCompleteFormCategories = (): Category[] => {
   const { t } = useTranslation();
-  const currentYear = DateTime.now().year;
+  const locale = useLocale();
+  const currency = 'USD';
+
+  const { currentYear, salaryInfo } = useAdditionalSalaryRequest();
 
   return [
     {
@@ -37,7 +42,11 @@ export const useCompleteFormCategories = (): Category[] => {
     {
       key: 'adoption',
       label: t('Adoption'),
-      description: t('$15,000.00 Maximum, per adoption, not per year'),
+      description: t('{{max}} Maximum, per adoption, not per year', {
+        max: currencyFormat(salaryInfo?.maxAdoptionUss ?? 0, currency, locale, {
+          showTrailingZeros: true,
+        }),
+      }),
     },
     {
       key: 'traditional403bContribution',
@@ -69,7 +78,11 @@ export const useCompleteFormCategories = (): Category[] => {
     {
       key: 'childrenCollegeEducation',
       label: t("Children's college education"),
-      description: t('$21,000.00 Maximum per year, per child'),
+      description: t('{{max}} Maximum per year, per child', {
+        max: currencyFormat(salaryInfo?.maxCollegeUss ?? 0, currency, locale, {
+          showTrailingZeros: true,
+        }),
+      }),
     },
     { key: 'movingExpense', label: t('Moving Expense') },
     {
@@ -80,9 +93,25 @@ export const useCompleteFormCategories = (): Category[] => {
     {
       key: 'housingDownPayment',
       label: t('Housing Down Payment'),
-      description: t('Maximum amount is $50,000 for primary home'),
+      description: t('Maximum amount is {{max}} for primary home', {
+        max: currencyFormat(
+          salaryInfo?.maxHousingDownPaymentUss ?? 0,
+          currency,
+          locale,
+        ),
+      }),
     },
-    { key: 'autoPurchase', label: t('Auto purchase') },
+    {
+      key: 'autoPurchase',
+      label: t('Auto purchase'),
+      description: t('Maximum amount is {{max}}', {
+        max: currencyFormat(
+          salaryInfo?.maxAutoPurchaseUss ?? 0,
+          currency,
+          locale,
+        ),
+      }),
+    },
     {
       key: 'expensesNotApprovedWithin90Days',
       label: t('Reimbursable expenses that were not approved within 90 days'),
