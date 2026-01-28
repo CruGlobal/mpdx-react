@@ -16,7 +16,8 @@ import { NetAdditionalSalary } from './NetAdditionalSalary/NetAdditionalSalary';
 
 export const CompleteForm: React.FC = () => {
   const { t } = useTranslation();
-  const { currentIndex, requestData, user } = useAdditionalSalaryRequest();
+  const { currentIndex, requestData, user, salaryInfoData } =
+    useAdditionalSalaryRequest();
   const { submitCount, isValid, errors } =
     useFormikContext<CompleteFormValues>();
 
@@ -40,7 +41,7 @@ export const CompleteForm: React.FC = () => {
       return [];
     }
 
-    return fieldConfig
+    return fieldConfig(salaryInfoData)
       .filter(({ key, max }) => {
         if (!max) {
           return false;
