@@ -3,7 +3,6 @@ import { TableCell, TableRow, Typography } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { useAdditionalSalaryRequest } from 'src/components/Reports/AdditionalSalaryRequest/Shared/AdditionalSalaryRequestContext';
-import { CurrencyAdornment } from 'src/components/Reports/GoalCalculator/Shared/Adornments';
 import { FormCard } from 'src/components/Reports/Shared/CalculationReports/FormCard/FormCard';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { useLocale } from 'src/hooks/useLocale';
@@ -16,6 +15,7 @@ import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 export const AdditionalSalaryRequest: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const currency = 'USD';
 
   const { pageType, requestData } = useAdditionalSalaryRequest();
   const categories = useCompleteFormCategories();
@@ -45,7 +45,7 @@ export const AdditionalSalaryRequest: React.FC = () => {
           >
             {pageType === PageEnum.View ? (
               <Typography>
-                {currencyFormat(values[key] || 0, 'USD', locale, {
+                {currencyFormat(values[key] || 0, currency, locale, {
                   showTrailingZeros: true,
                 })}
               </Typography>
@@ -53,11 +53,10 @@ export const AdditionalSalaryRequest: React.FC = () => {
               <AutosaveCustomTextField
                 fullWidth
                 size="small"
+                variant="standard"
                 fieldName={key as keyof CompleteFormValues}
-                placeholder={t('Enter amount')}
-                InputProps={{
-                  startAdornment: <CurrencyAdornment />,
-                }}
+                placeholder={currencyFormat(0, currency, locale)}
+                InputProps={{ disableUnderline: true, inputMode: 'decimal' }}
               />
             )}
           </TableCell>
@@ -73,7 +72,7 @@ export const AdditionalSalaryRequest: React.FC = () => {
           sx={{ width: '30%', fontSize: 16, fontWeight: 'bold' }}
           data-testid="total-amount"
         >
-          {currencyFormat(total, 'USD', locale)}
+          {currencyFormat(total, currency, locale)}
         </TableCell>
       </TableRow>
     </FormCard>
