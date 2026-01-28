@@ -8,28 +8,21 @@ import { useTranslation } from 'react-i18next';
 import { SubmitModal } from 'src/components/Reports/Shared/CalculationReports/SubmitModal/SubmitModal';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
-import { useDeleteSalaryCalculationMutation } from './DeleteSalaryCalculation.generated';
+import { useDeleteSalaryCalculation } from '../Shared/useDeleteSalaryCalculation';
 import { useSubmitSalaryCalculationMutation } from './SubmitSalaryCalculation.generated';
 
 export const DiscardButton: React.FC = () => {
   const { t } = useTranslation();
-  const router = useRouter();
+  const { push } = useRouter();
   const accountListId = useAccountListId();
   const { calculation } = useSalaryCalculator();
-  const [deleteSalaryCalculation] = useDeleteSalaryCalculationMutation();
+  const { deleteSalaryCalculation } = useDeleteSalaryCalculation();
   const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
 
   const handleDiscard = async () => {
     if (calculation) {
-      await deleteSalaryCalculation({
-        variables: {
-          input: {
-            id: calculation.id,
-          },
-        },
-      });
-      setRemoveDialogOpen(false);
-      router.push(`/accountLists/${accountListId}/reports/salaryCalculator`);
+      await deleteSalaryCalculation(calculation.id);
+      push(`/accountLists/${accountListId}/reports/salaryCalculator`);
     }
   };
 

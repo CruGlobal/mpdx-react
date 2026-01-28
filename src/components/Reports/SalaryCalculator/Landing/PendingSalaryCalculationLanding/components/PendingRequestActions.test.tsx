@@ -1,4 +1,5 @@
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { SalaryRequestStatusEnum } from 'src/graphql/types.generated';
 import { LandingTestWrapper } from '../../NewSalaryCalculationLanding/LandingTestWrapper';
 import { PendingRequestActions } from './PendingRequestActions';
@@ -24,8 +25,16 @@ const mockCalculation: LatestCalculation = {
   status: SalaryRequestStatusEnum.Pending,
 };
 
-const TestComponent = ({ calculation }: { calculation: LatestCalculation }) => (
-  <LandingTestWrapper hasLatestCalculation>
+const mutationSpy = jest.fn();
+
+const TestComponent = ({
+  calculation,
+  onCall,
+}: {
+  calculation: LatestCalculation;
+  onCall?: typeof mutationSpy;
+}) => (
+  <LandingTestWrapper hasLatestCalculation onCall={onCall}>
     <PendingRequestActions calculation={calculation} />
   </LandingTestWrapper>
 );
@@ -61,5 +70,18 @@ describe('PendingRequestActions', () => {
     expect(
       queryByRole('button', { name: 'Edit Request' }),
     ).not.toBeInTheDocument();
+  });
+
+  it('enables canceling the salary calculation request', async () => {
+    const { findByRole, findByText } = render(
+      <TestComponent calculation={mockCalculation} onCall={mutationSpy} />,
+    );
+
+    userEvent.click(await findByRole('button', { name: 'Delete request' }));
+
+    userEvent.click(await findByText('Yes, Cancel'));
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('DeleteSalaryCalculation'),
+    );
   });
 });
