@@ -1,54 +1,38 @@
-import { StaffInfo } from 'src/graphql/types.generated';
 import { HcmDataQuery } from './HCMData.generated';
 
-const johnDoe: StaffInfo = {
+const johnDoe: HcmDataQuery['hcm'][number]['staffInfo'] = {
   id: `ID000000`,
   personNumber: `000123456`,
   firstName: `John`,
   lastName: `Doe`,
   preferredName: `John`,
   age: 35,
-  tenure: 10,
   addressLine1: '100 Lake Hart Dr',
   addressLine2: '',
   city: 'Orlando',
   state: 'FL',
   zipCode: '32832',
-  country: 'USA',
   dependentChildrenWithHealthcareBenefits: null,
   secaStatus: null,
   emailAddress: 'john.doe@cru.org',
   primaryPhoneNumber: '1234567890',
-  assignmentId: 'assignment-000123456',
-  userPersonType: null,
-  peopleGroupSupportType: null,
-  assignmentStatus: null,
-  assignmentCategory: null,
-  assignmentLength: null,
-  boardCapException: null,
-  isInternational: null,
-  maritalStatus: null,
 };
 
-const janeDoe: StaffInfo = {
+const janeDoe: HcmDataQuery['hcm'][number]['staffInfo'] = {
   ...johnDoe,
   id: `ID111111`,
   personNumber: `000789123`,
   firstName: `Jane`,
   preferredName: `Jane`,
   age: 35,
-  tenure: 3,
   emailAddress: 'jane.doe@cru.org',
   primaryPhoneNumber: '9876543210',
-  assignmentId: 'assignment-000789123',
 };
 
-const noMhaAndNoException: HcmDataQuery['hcm'][0] = {
+const noMhaAndNoException: HcmDataQuery['hcm'][number] = {
   staffInfo: johnDoe,
   mhaRequest: {
-    boardApprovedOnDate: null,
     currentApprovedOverallAmount: null,
-    lastUpdatedDate: null,
     currentTakenAmount: null,
   },
   mhaEit: {
@@ -57,12 +41,10 @@ const noMhaAndNoException: HcmDataQuery['hcm'][0] = {
   exceptionSalaryCap: {
     amount: null,
     effectiveDate: null,
-    exceptionApprover: null,
   },
   fourOThreeB: {
     currentTaxDeferredContributionPercentage: 6,
     currentRothContributionPercentage: 4,
-    fourOThreeBMakeUpLimitAmount: null,
     maximumContributionLimit: 19500,
   },
   currentSalary: {
@@ -70,32 +52,13 @@ const noMhaAndNoException: HcmDataQuery['hcm'][0] = {
     grossSalaryAmount: 60000,
     lastRegularPaymentDate: null,
   },
-  yearToDate: {
-    additionalSalaryPaymentsReceived: 0,
-    bonus: 0,
-    grossEarnings: 20000,
-    preTaxFourOThreeBContributions: 3000,
-    rothFourOThreeBContributions: 1000,
-    taxableDeductions: 500,
-  },
 };
 
-const mhaAndNoException: HcmDataQuery['hcm'][0] = {
+const mhaAndNoException: HcmDataQuery['hcm'][number] = {
   ...noMhaAndNoException,
   mhaRequest: {
-    boardApprovedOnDate: '2022-12-01',
     currentApprovedOverallAmount: 15000,
-    lastUpdatedDate: '2023-01-15',
     currentTakenAmount: 10000,
-  },
-};
-
-const mhaAndException: HcmDataQuery['hcm'][0] = {
-  ...mhaAndNoException,
-  exceptionSalaryCap: {
-    amount: 95000,
-    effectiveDate: '2025-11-15',
-    exceptionApprover: 'Mr Smith',
   },
 };
 
@@ -103,14 +66,6 @@ export const singleNoMhaNoException: HcmDataQuery['hcm'] = [
   noMhaAndNoException,
 ];
 export const singleMhaNoException: HcmDataQuery['hcm'] = [mhaAndNoException];
-export const singleMhaAndException: HcmDataQuery['hcm'] = [mhaAndException];
-export const marriedNoMhaAndNoException: HcmDataQuery['hcm'] = [
-  noMhaAndNoException,
-  {
-    ...noMhaAndNoException,
-    staffInfo: janeDoe,
-  },
-];
 export const marriedMhaAndNoException: HcmDataQuery['hcm'] = [
   mhaAndNoException,
   {

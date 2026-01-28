@@ -4,37 +4,18 @@ query HcmData {
       addressLine1
       addressLine2
       age
-      assignmentCategory
-      assignmentId
-      assignmentLength
-      assignmentStatus
-      boardCapException
       city
-      country
       dependentChildrenWithHealthcareBenefits
       emailAddress
       firstName
       id
-      isInternational
       lastName
-      maritalStatus
-      peopleGroupSupportType
       personNumber
       preferredName
       primaryPhoneNumber
       secaStatus
       state
-      tenure
-      userPersonType
       zipCode
-    }
-    yearToDate {
-      additionalSalaryPaymentsReceived
-      bonus
-      grossEarnings
-      preTaxFourOThreeBContributions
-      rothFourOThreeBContributions
-      taxableDeductions
     }
     currentSalary {
       grossSalaryAmount
@@ -47,22 +28,18 @@ query HcmData {
     exceptionSalaryCap {
       amount
       effectiveDate
-      exceptionApprover
     }
     fourOThreeB {
       currentRothContributionPercentage
       currentTaxDeferredContributionPercentage
-      fourOThreeBMakeUpLimitAmount
       maximumContributionLimit
     }
     mhaEit {
       mhaEligibility
     }
     mhaRequest {
-      boardApprovedOnDate
       currentApprovedOverallAmount
       currentTakenAmount
-      lastUpdatedDate
     }
   }
 }
