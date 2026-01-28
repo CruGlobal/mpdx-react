@@ -93,7 +93,8 @@ export const TotalAnnualSalarySummaryCard: React.FC = () => {
     maxAllowableSalary > 0
       ? Math.min((totalAnnualSalary / maxAllowableSalary) * 100, 100)
       : 0;
-  const isOverMax = totalAnnualSalary > maxAllowableSalary;
+  const isOverMax =
+    maxAllowableSalary > 0 && totalAnnualSalary > maxAllowableSalary;
   const colors = useMemo(
     () => getStatusColors(theme, isOverMax, remainingInMaxAllowable),
     [theme, isOverMax, remainingInMaxAllowable],

@@ -48,12 +48,7 @@ export const AdditionalSalaryRequest: React.FC = () => {
       <CardContent>
         <Table>
           <TableHead>
-            <TableRow
-              sx={(theme) => ({
-                color: theme.palette.primary.main,
-                fontWeight: 'bold',
-              })}
-            >
+            <TableRow>
               <TableCell sx={{ fontWeight: 'bold', width: '70%' }}>
                 {t('Category')}
               </TableCell>

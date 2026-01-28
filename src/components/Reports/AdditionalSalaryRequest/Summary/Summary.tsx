@@ -1,6 +1,6 @@
 import NextLink from 'next/link';
 import { Button, Stack, Typography } from '@mui/material';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { NameDisplay } from '../../Shared/CalculationReports/NameDisplay/NameDisplay';
 import { mainContentWidth } from '../AdditionalSalaryRequest';
@@ -38,14 +38,11 @@ export const Summary: React.FC = () => {
         amountTwo={remainingAllowableSalary}
         spouseComponent={<SpouseComponent />}
       />
-      <Trans t={t}>
-        <Typography variant="body1" paragraph>
-          Your Net Additional Salary calculated below represents the amount you
-          will receive as an additional salary check (before taxes) and is equal
-          to the amount you are requesting minus any amount being contributed to
-          your 403(b).
-        </Typography>
-      </Trans>
+      <Typography variant="body1" paragraph>
+        {t(
+          'Your Net Additional Salary calculated below represents the amount you will receive as an additional salary check (before taxes) and is equal to the amount you are requesting minus any amount being contributed to your 403(b).',
+        )}
+      </Typography>
       <AdditionalSalaryRequest />
       <Deduction />
       <NetAdditionalSalary />
