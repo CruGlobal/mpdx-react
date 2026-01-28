@@ -7,10 +7,7 @@ import { useIconPanelItems } from '../Shared/CalculationReports/PanelLayout/useI
 import { PanelTypeEnum } from '../Shared/CalculationReports/Shared/sharedTypes';
 import { StepsList } from '../Shared/CalculationReports/StepsList/StepsList';
 import { CurrentStep } from './CurrentStep';
-import {
-  SalaryCalculatorProvider,
-  useSalaryCalculator,
-} from './SalaryCalculatorContext/SalaryCalculatorContext';
+import { useSalaryCalculator } from './SalaryCalculatorContext/SalaryCalculatorContext';
 import { StepNavigation } from './StepNavigation/StepNavigation';
 
 const MainContent: React.FC = () => (
@@ -20,13 +17,7 @@ const MainContent: React.FC = () => (
   </Stack>
 );
 
-export const SalaryCalculator: React.FC = () => (
-  <SalaryCalculatorProvider>
-    <SalaryCalculatorContent />
-  </SalaryCalculatorProvider>
-);
-
-export const SalaryCalculatorContent: React.FC = () => {
+export const SalaryCalculator: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { steps, currentIndex, percentComplete, isDrawerOpen, toggleDrawer } =

@@ -1,12 +1,12 @@
 import { render, waitFor } from '@testing-library/react';
-import { SalaryCalculatorContent } from '../SalaryCalculator';
+import { SalaryCalculator } from '../SalaryCalculator';
 import { SalaryCalculatorTestWrapper } from '../SalaryCalculatorTestWrapper';
 
 const mutationSpy = jest.fn();
 
 const TestComponent: React.FC = () => (
   <SalaryCalculatorTestWrapper onCall={mutationSpy}>
-    <SalaryCalculatorContent />
+    <SalaryCalculator />
   </SalaryCalculatorTestWrapper>
 );
 
