@@ -6,11 +6,11 @@ import { NameDisplay } from '../../Shared/CalculationReports/NameDisplay/NameDis
 import { mainContentWidth } from '../AdditionalSalaryRequest';
 import { AdditionalSalaryRequest } from '../CompleteForm/AdditionalSalaryRequest/AdditionalSalaryRequest';
 import { Deduction } from '../CompleteForm/Deduction/Deduction';
+import { NetAdditionalSalary } from '../CompleteForm/NetAdditionalSalary/NetAdditionalSalary';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { ContactInformationSummaryCard } from '../SharedComponents/ContactInformationSummaryCard';
 import { SpouseComponent } from '../SharedComponents/SpouseComponent';
 import { TotalAnnualSalarySummaryCard } from '../SharedComponents/TotalAnnualSalarySummaryCard';
-import { NetAdditionalSalarySummaryCard } from './NetAdditionalSalarySummaryCard';
 
 export const Summary: React.FC = () => {
   const accountListId = useAccountListId();
@@ -48,7 +48,7 @@ export const Summary: React.FC = () => {
       </Trans>
       <AdditionalSalaryRequest />
       <Deduction />
-      <NetAdditionalSalarySummaryCard />
+      <NetAdditionalSalary />
       <ContactInformationSummaryCard />
       <TotalAnnualSalarySummaryCard />
 
