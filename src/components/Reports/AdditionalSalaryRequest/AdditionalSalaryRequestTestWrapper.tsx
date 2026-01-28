@@ -18,6 +18,7 @@ interface AdditionalSalaryRequestTestWrapperProps {
   initialValues?: CompleteFormValues;
   pageType?: 'new' | 'edit' | 'view';
   deductionPercentage?: number;
+  onCall?: jest.Mock;
 }
 
 const defaultInitialValues: CompleteFormValues = {
@@ -78,6 +79,7 @@ export const AdditionalSalaryRequestTestWrapper: React.FC<
   initialValues,
   pageType = 'new',
   deductionPercentage = 0,
+  onCall,
 }) => {
   const requestValues = initialValues || defaultInitialValues;
 
@@ -113,6 +115,7 @@ export const AdditionalSalaryRequestTestWrapper: React.FC<
                   },
                 },
               }}
+              onCall={onCall}
             >
               <AdditionalSalaryRequestProvider requestId="test-request-id">
                 <TestFormikWrapper initialValues={initialValues}>

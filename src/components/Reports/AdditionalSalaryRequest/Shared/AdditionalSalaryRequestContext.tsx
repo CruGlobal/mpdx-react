@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { createContext, useCallback, useMemo, useState } from 'react';
 import { ApolloError } from '@apollo/client';
+import { useSnackbar } from 'notistack';
 import {
   FormEnum,
   PageEnum,
@@ -69,6 +70,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   requestId,
   children,
 }) => {
+  const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
   const { mode } = router.query;
 
@@ -122,9 +124,15 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       await deleteAdditionalSalaryRequest({
         variables: { id },
         refetchQueries: ['AdditionalSalaryRequests'],
+        awaitRefetchQueries: true,
+        onCompleted: () => {
+          enqueueSnackbar('Additional Salary Request cancelled successfully.', {
+            variant: 'success',
+          });
+        },
       });
     },
-    [deleteAdditionalSalaryRequest],
+    [deleteAdditionalSalaryRequest, enqueueSnackbar],
   );
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);

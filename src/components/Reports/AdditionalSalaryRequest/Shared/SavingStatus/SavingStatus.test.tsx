@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@emotion/react';
 import { render, waitFor } from '@testing-library/react';
 import { DateTime } from 'luxon';
+import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -56,11 +57,13 @@ const TestWrapper: React.FC<TestWrapperProps> = ({
             query: { accountListId: 'account-list-1', mode: 'edit' },
           }}
         >
-          <GqlMockedProvider mocks={mocks}>
-            <AdditionalSalaryRequestProvider requestId="test-request-id">
-              {children}
-            </AdditionalSalaryRequestProvider>
-          </GqlMockedProvider>
+          <SnackbarProvider>
+            <GqlMockedProvider mocks={mocks}>
+              <AdditionalSalaryRequestProvider requestId="test-request-id">
+                {children}
+              </AdditionalSalaryRequestProvider>
+            </GqlMockedProvider>
+          </SnackbarProvider>
         </TestRouter>
       </I18nextProvider>
     </ThemeProvider>
@@ -149,13 +152,15 @@ describe('SavingStatus', () => {
               query: { accountListId: 'account-list-1', mode: 'edit' },
             }}
           >
-            <GqlMockedProvider mocks={mocks}>
-              <AdditionalSalaryRequestProvider requestId="test-request-id">
-                <MutatingTrigger>
-                  <SavingStatus />
-                </MutatingTrigger>
-              </AdditionalSalaryRequestProvider>
-            </GqlMockedProvider>
+            <SnackbarProvider>
+              <GqlMockedProvider mocks={mocks}>
+                <AdditionalSalaryRequestProvider requestId="test-request-id">
+                  <MutatingTrigger>
+                    <SavingStatus />
+                  </MutatingTrigger>
+                </AdditionalSalaryRequestProvider>
+              </GqlMockedProvider>
+            </SnackbarProvider>
           </TestRouter>
         </I18nextProvider>
       </ThemeProvider>,
