@@ -28,7 +28,6 @@ export const CompleteForm: React.FC = () => {
 
   const name = user?.staffInfo?.preferredName ?? '';
   const accountNumber = user?.staffInfo?.personNumber ?? '';
-  const email = user?.staffInfo?.emailAddress ?? '';
 
   const primaryAccountBalance = staffAccountBalance ?? 0;
   const remainingAllowableSalary =
@@ -100,7 +99,7 @@ export const CompleteForm: React.FC = () => {
             this form.
           </Typography>
         </Trans>
-        <ContactInformation email={email} />
+        <ContactInformation />
         {showAlert && (
           <Alert severity="error" sx={{ mt: 2, '& ul': { m: 0, pl: 3 } }}>
             {t('Your form is missing information.')}

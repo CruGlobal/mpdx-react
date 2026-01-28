@@ -70,7 +70,7 @@ export const useAdditionalSalaryRequestForm = ({
 }: UseAdditionalSalaryRequestFormProps) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { handleNextStep, salaryInfoData } = useAdditionalSalaryRequest();
+  const { handleNextStep, salaryInfoData, user } = useAdditionalSalaryRequest();
 
   const { data: requestData } = useAdditionalSalaryRequestQuery({
     variables: { requestId: requestId || '' },
@@ -106,7 +106,8 @@ export const useAdditionalSalaryRequestForm = ({
       fieldConfig(salaryInfoData).map(({ key }) => [key, '0']),
     ),
     deductTwelvePercent: false,
-    phoneNumber: '',
+    phoneNumber: user?.staffInfo?.primaryPhoneNumber || '',
+    email: user?.staffInfo?.emailAddress || '',
   } as CompleteFormValues;
 
   const initialValues: CompleteFormValues = useMemo(() => {
@@ -127,7 +128,9 @@ export const useAdditionalSalaryRequestForm = ({
         ]),
       ),
       deductTwelvePercent: request.deductTwelvePercent || false,
-      phoneNumber: request.phoneNumber || '',
+      phoneNumber:
+        request.phoneNumber ?? user?.staffInfo?.primaryPhoneNumber ?? '',
+      email: user?.staffInfo?.emailAddress ?? '',
     } as CompleteFormValues;
   }, [providedInitialValues, requestData?.additionalSalaryRequest]);
 
@@ -148,6 +151,10 @@ export const useAdditionalSalaryRequestForm = ({
             /^[\d\s\-\(\)\+]+$/,
             t('Please enter a valid telephone number'),
           ),
+        email: yup
+          .string()
+          .email(t('Please enter a valid email address'))
+          .required(t('Email address is required')),
       }),
     [createCurrencyValidation, t],
   );

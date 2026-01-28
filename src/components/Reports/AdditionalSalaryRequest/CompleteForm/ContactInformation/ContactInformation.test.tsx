@@ -8,20 +8,18 @@ import { ContactInformation } from './ContactInformation';
 
 interface TestWrapperProps {
   initialValues?: CompleteFormValues;
-  email?: string;
   pageType?: 'new' | 'edit' | 'view';
 }
 
 const TestWrapper: React.FC<TestWrapperProps> = ({
   initialValues = defaultCompleteFormValues,
-  email = '',
   pageType = 'edit',
 }) => (
   <AdditionalSalaryRequestTestWrapper
     initialValues={initialValues}
     pageType={pageType}
   >
-    <ContactInformation email={email} />
+    <ContactInformation />
   </AdditionalSalaryRequestTestWrapper>
 );
 
@@ -46,7 +44,12 @@ describe('ContactInformation', () => {
 
   it('displays email address when provided', () => {
     const { getByText, queryByText } = render(
-      <TestWrapper email="test@example.com" />,
+      <TestWrapper
+        initialValues={{
+          ...defaultCompleteFormValues,
+          email: 'test@example.com',
+        }}
+      />,
     );
 
     expect(getByText('test@example.com')).toBeInTheDocument();

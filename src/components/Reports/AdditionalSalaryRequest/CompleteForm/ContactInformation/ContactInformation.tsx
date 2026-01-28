@@ -7,13 +7,7 @@ import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
 import { AutosaveCustomTextField } from '../../Shared/AutoSave/AutosaveCustomTextField';
 
-interface ContactInformationProps {
-  email?: string;
-}
-
-export const ContactInformation: React.FC<ContactInformationProps> = ({
-  email,
-}) => {
+export const ContactInformation: React.FC = () => {
   const { t } = useTranslation();
   const { pageType } = useAdditionalSalaryRequest();
   const formikContext = useFormikContext<CompleteFormValues>();
@@ -61,40 +55,54 @@ export const ContactInformation: React.FC<ContactInformationProps> = ({
         ) : (
           <AutosaveCustomTextField
             fullWidth
-            variant="standard"
+            variant="outlined"
             fieldName="phoneNumber"
             label={t('Telephone Number')}
-            placeholder={t('Enter telephone number')}
-            sx={{ flex: '0 0 35%' }}
+            InputLabelProps={{ shrink: true }}
+            sx={{ width: '40%' }}
           />
         )}
 
-        <Box sx={{ flex: '1 1 65%', display: 'flex', flexDirection: 'column' }}>
-          <Typography
-            variant="caption"
-            sx={{
-              color: 'text.secondary',
-              fontSize: '0.75rem',
-              mb: 1,
-            }}
+        {pageType === PageEnum.View ? (
+          <Box
+            sx={{ flex: '1 1 65%', display: 'flex', flexDirection: 'column' }}
           >
-            {t('Email Address')}
-          </Typography>
-          <Typography
-            variant="body1"
-            sx={{
-              minHeight: '1.5rem',
-              pb: 1,
-            }}
-          >
-            {email || t('email address')}
-          </Typography>
-        </Box>
+            <Typography
+              variant="caption"
+              sx={{
+                color: 'text.secondary',
+                fontSize: '0.75rem',
+                mb: 1,
+              }}
+            >
+              {t('Email Address')}
+            </Typography>
+            <Typography
+              variant="body1"
+              sx={{
+                minHeight: '1.5rem',
+                pb: 1,
+              }}
+            >
+              {values.email || t('email address')}
+            </Typography>
+          </Box>
+        ) : (
+          <AutosaveCustomTextField
+            fullWidth
+            variant="outlined"
+            fieldName="email"
+            label={t('Email Address')}
+            InputLabelProps={{ shrink: true }}
+            sx={{ width: '60%' }}
+            InputProps={{ readOnly: true }}
+          />
+        )}
       </Box>
       <Typography
         variant="body2"
         sx={{
-          mt: 0.5,
+          mt: 1,
         }}
       >
         {t(

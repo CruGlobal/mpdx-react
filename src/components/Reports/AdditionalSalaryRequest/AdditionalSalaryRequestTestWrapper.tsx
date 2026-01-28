@@ -68,6 +68,7 @@ const defaultInitialValues: CompleteFormValues = {
   expensesNotApprovedWithin90Days: '0',
   deductTwelvePercent: false,
   phoneNumber: '',
+  email: '',
 };
 
 const validationSchema = yup.object({
@@ -82,6 +83,10 @@ const validationSchema = yup.object({
     .string()
     .required('Telephone number is required')
     .matches(/^[\d\s\-\(\)\+]+$/, 'Please enter a valid telephone number'),
+  email: yup
+    .string()
+    .email('Please enter a valid email address')
+    .required('Email address is required'),
 });
 
 const TestFormikWrapper: React.FC<{
