@@ -77,28 +77,27 @@ export const TotalAnnualSalarySummaryCard: React.FC = () => {
   const traditional403bContribution =
     asrValues?.traditional403bContribution ?? 0;
 
-  const { total } = useSalaryCalculations({
-    traditional403bContribution,
-    values,
-  });
+  const { total, totalAnnualSalary, remainingInMaxAllowable } =
+    useSalaryCalculations({
+      traditional403bContribution,
+      values,
+      calculations,
+    });
 
   const maxAllowableSalary = calculations?.maxAmountAndReason?.amount ?? 0;
   const grossAnnualSalary = calculations?.predictedYearIncome ?? 0;
   const additionalSalaryReceivedThisYear = calculations?.pendingAsrAmount ?? 0;
   const additionalSalaryOnThisRequest = total;
 
-  const totalAnnualSalary =
-    grossAnnualSalary +
-    additionalSalaryReceivedThisYear +
-    additionalSalaryOnThisRequest;
-
-  const remainingInMaxAllowable = maxAllowableSalary - totalAnnualSalary;
   const progressPercentage =
     maxAllowableSalary > 0
       ? Math.min((totalAnnualSalary / maxAllowableSalary) * 100, 100)
       : 0;
   const isOverMax = totalAnnualSalary > maxAllowableSalary;
-  const colors = getStatusColors(theme, isOverMax, remainingInMaxAllowable);
+  const colors = useMemo(
+    () => getStatusColors(theme, isOverMax, remainingInMaxAllowable),
+    [theme, isOverMax, remainingInMaxAllowable],
+  );
 
   const summaryItems = useMemo(
     () => [
@@ -157,6 +156,10 @@ export const TotalAnnualSalarySummaryCard: React.FC = () => {
         </StyledHeaderLeft>
         <IconButton
           onClick={() => setExpanded(!expanded)}
+          aria-label={
+            expanded ? t('Collapse salary details') : t('Expand salary details')
+          }
+          aria-expanded={expanded}
           sx={{
             transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)',
             transition: 'transform 0.3s',

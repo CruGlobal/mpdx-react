@@ -8,7 +8,6 @@ import {
   TableHead,
   TableRow,
   Typography,
-  useTheme,
 } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
@@ -25,7 +24,6 @@ import { StepCard } from '../../SharedComponents/StepCard';
 export const AdditionalSalaryRequest: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const theme = useTheme();
 
   const { requestData, pageType } = useAdditionalSalaryRequest();
   const categories = useCompleteFormCategories();
@@ -51,9 +49,12 @@ export const AdditionalSalaryRequest: React.FC = () => {
         <Table>
           <TableHead>
             <TableRow
-              sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}
+              sx={(theme) => ({
+                color: theme.palette.primary.main,
+                fontWeight: 'bold',
+              })}
             >
-              <TableCell scope="row" sx={{ fontWeight: 'bold', width: '70%' }}>
+              <TableCell sx={{ fontWeight: 'bold', width: '70%' }}>
                 {t('Category')}
               </TableCell>
               <TableCell
@@ -107,6 +108,7 @@ export const AdditionalSalaryRequest: React.FC = () => {
               </TableCell>
               <TableCell
                 sx={{ width: '30%', fontWeight: 'bold', textAlign: 'center' }}
+                data-testid="total-amount"
               >
                 {currencyFormat(total, 'USD', locale)}
               </TableCell>

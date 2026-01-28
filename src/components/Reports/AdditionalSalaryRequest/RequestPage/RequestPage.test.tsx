@@ -209,7 +209,7 @@ describe('RequestPage', () => {
     expect(queryByRole('button', { name: /^back$/i })).not.toBeInTheDocument();
   });
 
-  it('shows submit button on last form page except for View mode', () => {
+  it('shows submit button on last form page in New mode', () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
       ...defaultMockContextValue,
       currentIndex: 1,
@@ -217,9 +217,11 @@ describe('RequestPage', () => {
       pageType: PageEnum.New,
     } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
 
-    const { getByRole, rerender } = render(<TestWrapper />);
+    const { getByRole } = render(<TestWrapper />);
     expect(getByRole('button', { name: /submit/i })).toBeInTheDocument();
+  });
 
+  it('shows Summary component in View mode instead of form', () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
       ...defaultMockContextValue,
       currentIndex: 1,
@@ -227,8 +229,12 @@ describe('RequestPage', () => {
       pageType: PageEnum.View,
     } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
 
-    rerender(<TestWrapper />);
-    expect(getByRole('button', { name: /continue/i })).toBeInTheDocument();
+    const { getByRole, queryByRole } = render(<TestWrapper />);
+
+    // View mode shows Summary with "Back to Status" link, not direction buttons
+    expect(getByRole('link', { name: /back to status/i })).toBeInTheDocument();
+    expect(queryByRole('button', { name: /submit/i })).not.toBeInTheDocument();
+    expect(queryByRole('button', { name: /continue/i })).not.toBeInTheDocument();
   });
 
   it('calls handleDeleteRequest when discard is clicked', async () => {
