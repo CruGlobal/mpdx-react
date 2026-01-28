@@ -1,4 +1,4 @@
-import { defaultCompleteFormValues } from '../../CompleteForm/CompleteForm.mock';
+import { defaultCompleteFormValues } from '../CompleteForm.mock';
 import { getTotal } from './getTotal';
 
 describe('getTotal', () => {

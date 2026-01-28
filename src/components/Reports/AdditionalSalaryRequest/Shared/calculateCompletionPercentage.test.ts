@@ -1,5 +1,5 @@
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
-import { defaultCompleteFormValues } from '../CompleteForm/CompleteForm.mock';
+import { defaultCompleteFormValues } from './CompleteForm.mock';
 import { calculateCompletionPercentage } from './calculateCompletionPercentage';
 
 describe('calculateCompletionPercentage', () => {

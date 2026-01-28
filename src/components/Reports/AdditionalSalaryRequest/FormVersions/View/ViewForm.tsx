@@ -2,17 +2,17 @@ import NextLink from 'next/link';
 import { Button, Stack, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { NameDisplay } from '../../Shared/CalculationReports/NameDisplay/NameDisplay';
-import { mainContentWidth } from '../AdditionalSalaryRequest';
-import { AdditionalSalaryRequest } from '../CompleteForm/AdditionalSalaryRequest/AdditionalSalaryRequest';
-import { Deduction } from '../CompleteForm/Deduction/Deduction';
-import { NetAdditionalSalary } from '../CompleteForm/NetAdditionalSalary/NetAdditionalSalary';
-import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
-import { ContactInformationSummaryCard } from '../SharedComponents/ContactInformationSummaryCard';
-import { SpouseComponent } from '../SharedComponents/SpouseComponent';
-import { TotalAnnualSalarySummaryCard } from '../SharedComponents/TotalAnnualSalarySummaryCard';
+import { NameDisplay } from '../../../Shared/CalculationReports/NameDisplay/NameDisplay';
+import { mainContentWidth } from '../../AdditionalSalaryRequest';
+import { AdditionalSalaryRequest } from '../../CompleteForm/AdditionalSalaryRequest/AdditionalSalaryRequest';
+import { Deduction } from '../../CompleteForm/Deduction/Deduction';
+import { NetAdditionalSalary } from '../../CompleteForm/NetAdditionalSalary/NetAdditionalSalary';
+import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
+import { ContactInformationSummaryCard } from '../../SharedComponents/ContactInformationSummaryCard';
+import { SpouseComponent } from '../../SharedComponents/SpouseComponent';
+import { TotalAnnualSalarySummaryCard } from '../../SharedComponents/TotalAnnualSalarySummaryCard';
 
-export const Summary: React.FC = () => {
+export const ViewForm: React.FC = () => {
   const accountListId = useAccountListId();
   const { t } = useTranslation();
   const { requestData, user } = useAdditionalSalaryRequest();

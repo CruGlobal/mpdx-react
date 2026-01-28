@@ -10,11 +10,11 @@ import theme from 'src/theme';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { UpdateAdditionalSalaryRequestMutation } from '../../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSectionEnum } from '../../AdditionalSalaryRequestHelper';
-import { defaultCompleteFormValues } from '../../CompleteForm/CompleteForm.mock';
 import {
   AdditionalSalaryRequestType,
   useAdditionalSalaryRequest,
 } from '../AdditionalSalaryRequestContext';
+import { defaultCompleteFormValues } from '../CompleteForm.mock';
 import { AutosaveCustomTextField } from './AutosaveCustomTextField';
 
 jest.mock('../AdditionalSalaryRequestContext', () => {

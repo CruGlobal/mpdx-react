@@ -10,12 +10,12 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import i18n from 'src/lib/i18n';
 import { amount } from 'src/lib/yupHelpers';
 import theme from 'src/theme';
-import { CompleteFormValues } from '../AdditionalSalaryRequest';
-import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
-import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
-import { fieldConfig } from '../Shared/useAdditionalSalaryRequestForm';
-import { CompleteForm } from './CompleteForm';
-import { defaultCompleteFormValues } from './CompleteForm.mock';
+import { CompleteFormValues } from '../../AdditionalSalaryRequest';
+import { AdditionalSalaryRequestSectionEnum } from '../../AdditionalSalaryRequestHelper';
+import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
+import { defaultCompleteFormValues } from '../../Shared/CompleteForm.mock';
+import { fieldConfig } from '../../Shared/useAdditionalSalaryRequestForm';
+import { NewForm } from './NewForm';
 
 jest.mock('../Shared/AdditionalSalaryRequestContext', () => {
   const originalModule = jest.requireActual(
@@ -138,7 +138,7 @@ const TestWrapper: React.FC<TestWrapperProps> = ({
         <TestRouter router={router}>
           <GqlMockedProvider>
             <TestFormikWrapper initialValues={initialValues}>
-              <CompleteForm />
+              <NewForm />
             </TestFormikWrapper>
           </GqlMockedProvider>
         </TestRouter>

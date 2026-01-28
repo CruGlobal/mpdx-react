@@ -14,8 +14,8 @@ import theme from 'src/theme';
 import { PageEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
-import { defaultCompleteFormValues } from '../CompleteForm/CompleteForm.mock';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
+import { defaultCompleteFormValues } from '../Shared/CompleteForm.mock';
 import { fieldConfig } from '../Shared/useAdditionalSalaryRequestForm';
 import { RequestPage } from './RequestPage';
 

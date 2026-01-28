@@ -11,10 +11,12 @@ import { useIconPanelItems } from '../../Shared/CalculationReports/PanelLayout/u
 import { PanelTypeEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { StepsList } from '../../Shared/CalculationReports/StepsList/StepsList';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
-import { CurrentStep } from '../CurrentStep';
+import { EditForm } from '../FormVersions/Edit/EditForm';
+import { NewForm } from '../FormVersions/New/NewForm';
+import { ViewForm } from '../FormVersions/View/ViewForm';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { calculateCompletionPercentage } from '../Shared/calculateCompletionPercentage';
-import { Summary } from '../Summary/Summary';
+import { StepList } from '../SharedComponents/StepList';
 
 export const mainContentWidth = theme.spacing(85);
 
@@ -38,9 +40,13 @@ const MainContent: React.FC = () => {
 
   return (
     <Box px={theme.spacing(3)}>
-      {pageType !== PageEnum.View ? (
+      {pageType === PageEnum.View ? (
+        <ViewForm />
+      ) : (
         <>
-          <CurrentStep />
+          <StepList
+            FormComponent={pageType === PageEnum.New ? NewForm : EditForm}
+          />
           {!reviewPage && (
             <Stack direction="column" width={mainContentWidth}>
               <DirectionButtons
@@ -60,8 +66,6 @@ const MainContent: React.FC = () => {
             </Stack>
           )}
         </>
-      ) : (
-        <Summary />
       )}
     </Box>
   );

@@ -9,11 +9,11 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import i18n from 'src/lib/i18n';
 import { amount } from 'src/lib/yupHelpers';
 import theme from 'src/theme';
-import { CompleteFormValues } from '../AdditionalSalaryRequest';
-import { defaultCompleteFormValues } from '../CompleteForm/CompleteForm.mock';
-import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
-import { fieldConfig } from '../Shared/useAdditionalSalaryRequestForm';
-import { Summary } from './Summary';
+import { CompleteFormValues } from '../../AdditionalSalaryRequest';
+import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
+import { defaultCompleteFormValues } from '../../Shared/CompleteForm.mock';
+import { fieldConfig } from '../../Shared/useAdditionalSalaryRequestForm';
+import { ViewForm } from './ViewForm';
 
 jest.mock('../Shared/AdditionalSalaryRequestContext', () => {
   const originalModule = jest.requireActual(
@@ -115,7 +115,7 @@ const renderComponent = ({
         <TestRouter router={router}>
           <GqlMockedProvider>
             <TestFormikWrapper initialValues={initialValues}>
-              <Summary />
+              <ViewForm />
             </TestFormikWrapper>
           </GqlMockedProvider>
         </TestRouter>
@@ -124,7 +124,7 @@ const renderComponent = ({
   );
 };
 
-describe('Summary', () => {
+describe('ViewForm', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -132,7 +132,7 @@ describe('Summary', () => {
   it('renders page with user info and navigation', () => {
     const { getByText, getByRole } = renderComponent();
 
-    expect(getByText('View Your Request')).toBeInTheDocument();
+    expect(getByText('ViewForm Your Request')).toBeInTheDocument();
     expect(getByText('Doe, John')).toBeInTheDocument();
     expect(getByText('00123456')).toBeInTheDocument();
 
