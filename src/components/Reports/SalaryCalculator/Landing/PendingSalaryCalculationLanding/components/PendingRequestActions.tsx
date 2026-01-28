@@ -1,11 +1,13 @@
 import { useRouter } from 'next/router';
-import React from 'react';
+import React, { useState } from 'react';
 import { Delete } from '@mui/icons-material';
 import { Box, Button, CardActions, IconButton } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { SubmitModal } from 'src/components/Reports/Shared/CalculationReports/SubmitModal/SubmitModal';
 import { SalaryRequestStatusEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
+import { useDeleteSalaryCalculation } from '../../../Shared/useDeleteSalaryCalculation';
 import type { LandingSalaryCalculationsQuery } from '../../NewSalaryCalculationLanding/LandingSalaryCalculations.generated';
 
 interface PendingRequestActionsProps {
@@ -18,14 +20,18 @@ export const PendingRequestActions: React.FC<PendingRequestActionsProps> = ({
   const { t } = useTranslation();
   const router = useRouter();
   const accountListId = useAccountListId();
+  const { deleteSalaryCalculation } = useDeleteSalaryCalculation();
+  const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
 
   const handleView = () => {
     // TODO: implement proper view logic
     router.push(`/accountLists/${accountListId}/reports/salaryCalculator/edit`);
   };
 
-  const handleDelete = () => {
-    // TODO: implement delete logic
+  const handleDelete = async () => {
+    if (calculation) {
+      await deleteSalaryCalculation(calculation.id);
+    }
   };
 
   return (
@@ -47,8 +53,16 @@ export const PendingRequestActions: React.FC<PendingRequestActionsProps> = ({
           </Button>
         )}
       </Box>
+      {removeDialogOpen && (
+        <SubmitModal
+          formTitle={t('Salary Calculation')}
+          handleClose={() => setRemoveDialogOpen(false)}
+          handleConfirm={handleDelete}
+          isCancel
+        />
+      )}
       <IconButton
-        onClick={handleDelete}
+        onClick={() => setRemoveDialogOpen(true)}
         sx={{ color: 'error.main' }}
         aria-label={t('Delete request')}
       >
