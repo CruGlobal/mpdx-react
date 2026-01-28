@@ -33,7 +33,7 @@ export const AutosaveCustomTextField: React.FC<
   const saveField = useSaveField({ formValues });
 
   const fieldProps = useCustomAutoSave({
-    value: request?.[fieldName],
+    value: request?.[fieldName] ?? formValues[fieldName],
     saveValue: (value) => saveField({ [fieldName]: value }),
     fieldName: fieldName as string,
     schema,
