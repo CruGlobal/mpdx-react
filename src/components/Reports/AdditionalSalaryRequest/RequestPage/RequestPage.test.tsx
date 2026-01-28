@@ -234,7 +234,9 @@ describe('RequestPage', () => {
     // View mode shows Summary with "Back to Status" link, not direction buttons
     expect(getByRole('link', { name: /back to status/i })).toBeInTheDocument();
     expect(queryByRole('button', { name: /submit/i })).not.toBeInTheDocument();
-    expect(queryByRole('button', { name: /continue/i })).not.toBeInTheDocument();
+    expect(
+      queryByRole('button', { name: /continue/i }),
+    ).not.toBeInTheDocument();
   });
 
   it('calls handleDeleteRequest when discard is clicked', async () => {

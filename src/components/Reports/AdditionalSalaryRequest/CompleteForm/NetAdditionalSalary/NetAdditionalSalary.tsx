@@ -58,11 +58,11 @@ export const NetAdditionalSalary: React.FC = () => {
                   <Typography variant="body2">
                     <b>Note:</b> Taxes and any requested 403(b) amount will be
                     subtracted from the amount of additional salary that you are
-                    requesting. The percentage of taxes on this request should be
-                    similar to that of your paychecks, but may be more if you have
-                    chosen to have an additional amount of withholding on your
-                    paychecks. If you have any questions about this, please call 1
-                    (888) 278-7233 (option 2, 2)
+                    requesting. The percentage of taxes on this request should
+                    be similar to that of your paychecks, but may be more if you
+                    have chosen to have an additional amount of withholding on
+                    your paychecks. If you have any questions about this, please
+                    call 1 (888) 278-7233 (option 2, 2)
                   </Typography>
                 </Trans>
               </TableCell>
