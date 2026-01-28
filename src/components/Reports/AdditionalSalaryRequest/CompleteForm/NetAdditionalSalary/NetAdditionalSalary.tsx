@@ -3,6 +3,7 @@ import {
   CardContent,
   CardHeader,
   Table,
+  TableBody,
   TableCell,
   TableRow,
   Typography,
@@ -31,46 +32,42 @@ export const NetAdditionalSalary: React.FC = () => {
   });
 
   return (
-    <StepCard
-      sx={{
-        '.MuiTableCell-head.MuiTableCell-root': {
-          width: '25%',
-        },
-      }}
-    >
+    <StepCard>
       <CardHeader title={t('Net Additional Salary')} />
       <CardContent>
         <Table>
-          <TableRow>
-            <TableCell sx={{ width: '70%' }}>
-              <Typography variant="body1" fontWeight="bold">
-                {t('Net Additional Salary (Before Taxes)')}
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {t(
-                  'Total Additional Salary Requested minus 403(b) Contribution',
-                )}
-              </Typography>
-            </TableCell>
-            <TableCell sx={{ width: '30%', fontSize: 16 }}>
-              {currencyFormat(netSalary, 'USD', locale)}
-            </TableCell>
-          </TableRow>
-          <TableRow sx={{ '& td': { borderBottom: 'none' } }}>
-            <TableCell colSpan={2}>
-              <Trans t={t}>
-                <Typography variant="body2">
-                  <b>Note:</b> Taxes and any requested 403(b) amount will be
-                  subtracted from the amount of additional salary that you are
-                  requesting. The percentage of taxes on this request should be
-                  similar to that of your paychecks, but may be more if you have
-                  chosen to have an additional amount of withholding on your
-                  paychecks. If you have any questions about this, please call 1
-                  (888) 278-7233 (option 2, 2)
+          <TableBody>
+            <TableRow>
+              <TableCell sx={{ width: '70%' }}>
+                <Typography variant="body1" fontWeight="bold">
+                  {t('Net Additional Salary (Before Taxes)')}
                 </Typography>
-              </Trans>
-            </TableCell>
-          </TableRow>
+                <Typography variant="body2" color="text.secondary">
+                  {t(
+                    'Total Additional Salary Requested minus 403(b) Contribution',
+                  )}
+                </Typography>
+              </TableCell>
+              <TableCell sx={{ width: '30%', fontSize: 16 }}>
+                {currencyFormat(netSalary, 'USD', locale)}
+              </TableCell>
+            </TableRow>
+            <TableRow sx={{ '& td': { borderBottom: 'none' } }}>
+              <TableCell colSpan={2}>
+                <Trans t={t}>
+                  <Typography variant="body2">
+                    <b>Note:</b> Taxes and any requested 403(b) amount will be
+                    subtracted from the amount of additional salary that you are
+                    requesting. The percentage of taxes on this request should be
+                    similar to that of your paychecks, but may be more if you have
+                    chosen to have an additional amount of withholding on your
+                    paychecks. If you have any questions about this, please call 1
+                    (888) 278-7233 (option 2, 2)
+                  </Typography>
+                </Trans>
+              </TableCell>
+            </TableRow>
+          </TableBody>
         </Table>
       </CardContent>
     </StepCard>

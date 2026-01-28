@@ -8,32 +8,28 @@ export interface SalaryCalculations {
   contribution403b: number;
   totalDeduction: number;
   netSalary: number;
+  totalAnnualSalary: number;
+  remainingInMaxAllowable: number;
 }
 
-type NullablePartial<T> = {
-  [P in keyof T]?: T[P] | null;
-};
+interface CalculationsData {
+  maxAmountAndReason?: { amount?: number | null } | null;
+  predictedYearIncome?: number | null;
+  pendingAsrAmount?: number | null;
+}
 
 export interface UseSalaryCalculationsProps {
   traditional403bContribution: number;
-  values?: NullablePartial<CompleteFormValues> | null;
+  values: CompleteFormValues;
+  calculations?: CalculationsData | null;
 }
 
 export const useSalaryCalculations = ({
   traditional403bContribution,
   values,
+  calculations,
 }: UseSalaryCalculationsProps): SalaryCalculations => {
   return useMemo(() => {
-    if (!values) {
-      return {
-        total: 0,
-        calculatedDeduction: 0,
-        contribution403b: 0,
-        totalDeduction: 0,
-        netSalary: 0,
-      };
-    }
-
     const total = getTotal(values);
 
     const calculatedDeduction = values.deductTwelvePercent
@@ -46,12 +42,25 @@ export const useSalaryCalculations = ({
 
     const netSalary = total - totalDeduction;
 
+    // Annual salary calculations
+    const maxAllowableSalary = calculations?.maxAmountAndReason?.amount ?? 0;
+    const grossAnnualSalary = calculations?.predictedYearIncome ?? 0;
+    const additionalSalaryReceivedThisYear =
+      calculations?.pendingAsrAmount ?? 0;
+
+    const totalAnnualSalary =
+      grossAnnualSalary + additionalSalaryReceivedThisYear + total;
+
+    const remainingInMaxAllowable = maxAllowableSalary - totalAnnualSalary;
+
     return {
       total,
       calculatedDeduction,
       contribution403b,
       totalDeduction,
       netSalary,
+      totalAnnualSalary,
+      remainingInMaxAllowable,
     };
-  }, [values, traditional403bContribution]);
+  }, [values, traditional403bContribution, calculations]);
 };

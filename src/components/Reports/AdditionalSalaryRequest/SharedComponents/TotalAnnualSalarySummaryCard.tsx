@@ -19,9 +19,11 @@ import {
   styled,
   useTheme,
 } from '@mui/material';
+import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { getStatusColors } from '../Shared/Helper/getStatusColors';
 import { useSalaryCalculations } from '../Shared/useSalaryCalculations';
@@ -37,10 +39,10 @@ const StyledHeader = styled(Box)(({ theme }) => ({
   padding: theme.spacing(1, 2),
 }));
 
-const StyledHeaderLeft = styled(Box)(() => ({
+const StyledHeaderLeft = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
-  gap: 8,
+  gap: theme.spacing(1),
 }));
 
 const StyledProgressSection = styled(Box)(({ theme }) => ({
@@ -67,11 +69,13 @@ export const TotalAnnualSalarySummaryCard: React.FC = () => {
   const theme = useTheme();
   const { requestData } = useAdditionalSalaryRequest();
   const [expanded, setExpanded] = useState(true);
+  const { values } = useFormikContext<CompleteFormValues>();
 
-  const values = requestData?.additionalSalaryRequest;
-  const calculations = values?.calculations;
+  const asrValues = requestData?.additionalSalaryRequest;
+  const calculations = asrValues?.calculations;
 
-  const traditional403bContribution = values?.traditional403bContribution ?? 0;
+  const traditional403bContribution =
+    asrValues?.traditional403bContribution ?? 0;
 
   const { total } = useSalaryCalculations({
     traditional403bContribution,
@@ -88,31 +92,34 @@ export const TotalAnnualSalarySummaryCard: React.FC = () => {
     additionalSalaryReceivedThisYear +
     additionalSalaryOnThisRequest;
 
-  const totalSalaryRequested = totalAnnualSalary;
-  const remainingInMaxAllowable = maxAllowableSalary - totalSalaryRequested;
+  const remainingInMaxAllowable = maxAllowableSalary - totalAnnualSalary;
   const progressPercentage =
     maxAllowableSalary > 0
-      ? Math.min((totalSalaryRequested / maxAllowableSalary) * 100, 100)
+      ? Math.min((totalAnnualSalary / maxAllowableSalary) * 100, 100)
       : 0;
-  const isOverMax = totalSalaryRequested > maxAllowableSalary;
+  const isOverMax = totalAnnualSalary > maxAllowableSalary;
   const colors = getStatusColors(theme, isOverMax, remainingInMaxAllowable);
 
   const summaryItems = useMemo(
     () => [
       {
+        id: 'maxAllowable',
         label: t('Maximum Allowable Salary'),
         value: maxAllowableSalary,
       },
       {
+        id: 'grossAnnual',
         label: t('Gross Annual Salary'),
         value: grossAnnualSalary,
       },
       {
+        id: 'additionalReceived',
         label: t('Additional Salary Received This Year'),
         description: t('Does not include payments received for backpay.'),
         value: additionalSalaryReceivedThisYear,
       },
       {
+        id: 'additionalRequested',
         label: t('Additional Salary on This Request'),
         description: t('Does not include requests made for backpay.'),
         value: additionalSalaryOnThisRequest,
@@ -176,7 +183,7 @@ export const TotalAnnualSalarySummaryCard: React.FC = () => {
               </Tooltip>
             </Box>
             <Typography variant="body1" fontWeight="bold">
-              {currencyFormat(totalSalaryRequested, 'USD', locale)}/
+              {currencyFormat(totalAnnualSalary, 'USD', locale)}/
               {currencyFormat(maxAllowableSalary, 'USD', locale)}
             </Typography>
           </StyledFlexRow>
@@ -216,8 +223,8 @@ export const TotalAnnualSalarySummaryCard: React.FC = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {summaryItems.map(({ label, description, value }) => (
-                <TableRow key={label}>
+              {summaryItems.map(({ id, label, description, value }) => (
+                <TableRow key={id}>
                   <TableCell>
                     <Typography variant="body1">{label}</Typography>
                     {description && (

@@ -5,15 +5,16 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableHead,
   TableRow,
   Typography,
+  useTheme,
 } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
-import theme from 'src/theme';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
 import { AutosaveCustomTextField } from '../../Shared/AutoSave/AutosaveCustomTextField';
@@ -24,6 +25,7 @@ import { StepCard } from '../../SharedComponents/StepCard';
 export const AdditionalSalaryRequest: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const theme = useTheme();
 
   const { requestData, pageType } = useAdditionalSalaryRequest();
   const categories = useCompleteFormCategories();
@@ -47,18 +49,20 @@ export const AdditionalSalaryRequest: React.FC = () => {
       <CardHeader title={t('Additional Salary Request')} />
       <CardContent>
         <Table>
-          <TableRow
-            sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}
-          >
-            <TableCell scope="row" sx={{ fontWeight: 'bold', width: '70%' }}>
-              {t('Category')}
-            </TableCell>
-            <TableCell
-              sx={{ fontWeight: 'bold', width: '30%', textAlign: 'center' }}
+          <TableHead>
+            <TableRow
+              sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}
             >
-              {t('Amount')}
-            </TableCell>
-          </TableRow>
+              <TableCell scope="row" sx={{ fontWeight: 'bold', width: '70%' }}>
+                {t('Category')}
+              </TableCell>
+              <TableCell
+                sx={{ fontWeight: 'bold', width: '30%', textAlign: 'center' }}
+              >
+                {t('Amount')}
+              </TableCell>
+            </TableRow>
+          </TableHead>
           <TableBody>
             {categories.map(({ key, label, description }) => (
               <TableRow key={key}>
@@ -97,17 +101,17 @@ export const AdditionalSalaryRequest: React.FC = () => {
                 </TableCell>
               </TableRow>
             ))}
+            <TableRow sx={{ '& td': { borderBottom: 'none' } }}>
+              <TableCell sx={{ width: '70%', fontWeight: 'bold' }} scope="row">
+                {t('Total Additional Salary Requested')}
+              </TableCell>
+              <TableCell
+                sx={{ width: '30%', fontWeight: 'bold', textAlign: 'center' }}
+              >
+                {currencyFormat(total, 'USD', locale)}
+              </TableCell>
+            </TableRow>
           </TableBody>
-          <TableRow sx={{ '& td': { borderBottom: 'none' } }}>
-            <TableCell sx={{ width: '70%', fontWeight: 'bold' }} scope="row">
-              {t('Total Additional Salary Requested')}
-            </TableCell>
-            <TableCell
-              sx={{ width: '30%', fontWeight: 'bold', textAlign: 'center' }}
-            >
-              {currencyFormat(total, 'USD', locale)}
-            </TableCell>
-          </TableRow>
         </Table>
       </CardContent>
     </StepCard>
