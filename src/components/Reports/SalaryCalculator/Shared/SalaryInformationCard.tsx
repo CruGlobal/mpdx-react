@@ -36,7 +36,6 @@ export const SalaryInformationCard: React.FC = () => {
   const {
     self,
     spouse,
-    hasSpouse,
     salaryCategories,
     salaryData: { lastUpdated },
   } = useLandingData();
@@ -70,8 +69,8 @@ export const SalaryInformationCard: React.FC = () => {
             <TableRow>
               <TableCell>{t('Category')}</TableCell>
               <TableCell>{self?.staffInfo.preferredName}</TableCell>
-              {hasSpouse && (
-                <TableCell>{spouse?.staffInfo.preferredName}</TableCell>
+              {spouse && (
+                <TableCell>{spouse.staffInfo.preferredName}</TableCell>
               )}
             </TableRow>
           </TableHead>
@@ -109,7 +108,7 @@ export const SalaryInformationCard: React.FC = () => {
                     )}
                   </FlexBox>
                 </TableCell>
-                {hasSpouse && <TableCell>{row.spouse}</TableCell>}
+                {spouse && <TableCell>{row.spouse}</TableCell>}
               </TableRow>
             ))}
           </TableBody>

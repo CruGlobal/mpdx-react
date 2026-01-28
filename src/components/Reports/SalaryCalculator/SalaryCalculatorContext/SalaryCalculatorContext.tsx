@@ -35,7 +35,6 @@ export interface SalaryCalculatorContextType {
   setDrawerOpen: Dispatch<SetStateAction<boolean>>;
   toggleDrawer: () => void;
 
-  hcm: HcmQuery['hcm'] | null;
   hcmUser: HcmQuery['hcm'][number] | null;
   hcmSpouse: HcmQuery['hcm'][number] | null;
   calculation: SalaryCalculationQuery['salaryRequest'] | null;
@@ -72,13 +71,15 @@ export const SalaryCalculatorProvider: React.FC<
   const [isDrawerOpen, setDrawerOpen] = useState(true);
   const { data: hcmData } = useHcmQuery();
   const { data: calculationData } = useSalaryCalculationQuery();
+  const calculation = calculationData?.salaryRequest ?? null;
 
   const toggleDrawer = useCallback(() => {
     setDrawerOpen((prev) => !prev);
   }, []);
 
-  const contextValue: SalaryCalculatorContextType = useMemo(
-    () => ({
+  const contextValue: SalaryCalculatorContextType = useMemo(() => {
+    const hcmSpouse = hcmData?.hcm[1] ?? null;
+    return {
       steps,
       currentIndex,
       percentComplete,
@@ -87,23 +88,22 @@ export const SalaryCalculatorProvider: React.FC<
       isDrawerOpen,
       setDrawerOpen,
       toggleDrawer,
-      hcm: hcmData?.hcm ?? null,
       hcmUser: hcmData?.hcm[0] ?? null,
-      hcmSpouse: hcmData?.hcm[1] ?? null,
-      calculation: calculationData?.salaryRequest ?? null,
-    }),
-    [
-      steps,
-      currentIndex,
-      percentComplete,
-      handleNextStep,
-      handlePreviousStep,
-      isDrawerOpen,
-      toggleDrawer,
-      hcmData,
-      calculationData,
-    ],
-  );
+      // Ignore spouses that aren't eligible to make a salary request
+      hcmSpouse: hcmSpouse?.salaryRequestEligible ? hcmSpouse : null,
+      calculation,
+    };
+  }, [
+    steps,
+    currentIndex,
+    percentComplete,
+    handleNextStep,
+    handlePreviousStep,
+    isDrawerOpen,
+    toggleDrawer,
+    hcmData,
+    calculationData,
+  ]);
 
   if (!calculationData) {
     return (

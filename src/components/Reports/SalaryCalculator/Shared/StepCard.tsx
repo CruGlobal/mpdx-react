@@ -67,18 +67,15 @@ export const FormattedTableCell: React.FC<FormattedTableCellProps> = ({
 
 export const StepTableHead: React.FC = () => {
   const { t } = useTranslation();
-  const { hcm } = useSalaryCalculator();
-
-  const [self, spouse] = hcm ?? [];
-  const hasSpouse = hcm?.length === 2;
+  const { hcmUser, hcmSpouse } = useSalaryCalculator();
 
   return (
     <TableHead>
       <TableRow>
         <TableCell scope="col">{t('Category')}</TableCell>
-        <TableCell scope="col">{self?.staffInfo.preferredName}</TableCell>
-        {hasSpouse && (
-          <TableCell scope="col">{spouse?.staffInfo.preferredName}</TableCell>
+        <TableCell scope="col">{hcmUser?.staffInfo.preferredName}</TableCell>
+        {hcmSpouse && (
+          <TableCell scope="col">{hcmSpouse.staffInfo.preferredName}</TableCell>
         )}
       </TableRow>
     </TableHead>
