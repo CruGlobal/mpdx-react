@@ -5,6 +5,11 @@ import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelper
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { SalaryCalculator } from 'src/components/Reports/SalaryCalculator/SalaryCalculator';
 import {
+  SalaryCalculatorProvider,
+  useSalaryCalculator,
+} from 'src/components/Reports/SalaryCalculator/SalaryCalculatorContext/SalaryCalculatorContext';
+import { SavingStatus } from 'src/components/Reports/Shared/CalculationReports/SavingStatus/SavingStatus';
+import {
   HeaderTypeEnum,
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
@@ -14,7 +19,19 @@ import {
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
-const SalaryCalculatorEditPage: React.FC = () => {
+const SalaryCalculatorSavingStatus: React.FC = () => {
+  const { calculation, isMutating, loading } = useSalaryCalculator();
+  return (
+    <SavingStatus
+      loading={loading}
+      hasData={!!calculation}
+      isMutating={isMutating}
+      lastSavedAt={calculation?.updatedAt ?? null}
+    />
+  );
+};
+
+export const SalaryCalculatorEditPage: React.FC = () => {
   const { appName } = useGetAppSettings();
   const { t } = useTranslation();
   const [isNavListOpen, setIsNavListOpen] = useState(false);
@@ -28,6 +45,7 @@ const SalaryCalculatorEditPage: React.FC = () => {
       <Head>
         <title>{`${appName} | ${t('Salary Calculator')}`}</title>
       </Head>
+
       <SidePanelsLayout
         isScrollBox={false}
         leftPanel={
@@ -41,16 +59,16 @@ const SalaryCalculatorEditPage: React.FC = () => {
         leftOpen={isNavListOpen}
         leftWidth="290px"
         mainContent={
-          <>
+          <SalaryCalculatorProvider>
             <MultiPageHeader
               isNavListOpen={isNavListOpen}
               onNavListToggle={handleNavListToggle}
               title={t('Salary Calculator')}
               headerType={HeaderTypeEnum.Report}
+              rightExtra={<SalaryCalculatorSavingStatus />}
             />
-
             <SalaryCalculator />
-          </>
+          </SalaryCalculatorProvider>
         }
       />
     </>

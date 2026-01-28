@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import { Box, CircularProgress } from '@mui/material';
 import { useStepList } from 'src/hooks/useStepList';
+import { useTrackMutation } from 'src/hooks/useTrackMutation';
 import { FormEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
 import { HcmQuery, useHcmQuery } from './Hcm.generated';
@@ -38,6 +39,12 @@ export interface SalaryCalculatorContextType {
   hcmUser: HcmQuery['hcm'][number] | null;
   hcmSpouse: HcmQuery['hcm'][number] | null;
   calculation: SalaryCalculationQuery['salaryRequest'] | null;
+
+  /** Whether any mutations are currently in progress */
+  isMutating: boolean;
+  /** Call with the mutation promise to track the start and end of mutations */
+  trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
+  loading: boolean;
 }
 
 const SalaryCalculatorContext =
@@ -70,7 +77,8 @@ export const SalaryCalculatorProvider: React.FC<
 
   const [isDrawerOpen, setDrawerOpen] = useState(true);
   const { data: hcmData } = useHcmQuery();
-  const { data: calculationData } = useSalaryCalculationQuery();
+  const { data: calculationData, loading } = useSalaryCalculationQuery();
+  const { trackMutation, isMutating } = useTrackMutation();
   const calculation = calculationData?.salaryRequest ?? null;
 
   const toggleDrawer = useCallback(() => {
@@ -92,6 +100,9 @@ export const SalaryCalculatorProvider: React.FC<
       // Ignore spouses that aren't eligible to make a salary request
       hcmSpouse: hcmSpouse?.salaryRequestEligible ? hcmSpouse : null,
       calculation,
+      isMutating,
+      trackMutation,
+      loading,
     };
   }, [
     steps,
@@ -103,6 +114,9 @@ export const SalaryCalculatorProvider: React.FC<
     toggleDrawer,
     hcmData,
     calculationData,
+    isMutating,
+    trackMutation,
+    loading,
   ]);
 
   if (!calculationData) {
