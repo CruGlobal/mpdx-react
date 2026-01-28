@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
-import { StepCard } from '../SharedComponents/StepCard';
+import { StepCard } from './StepCard';
 
 export const ContactInformationSummaryCard: React.FC = () => {
   const { t } = useTranslation();

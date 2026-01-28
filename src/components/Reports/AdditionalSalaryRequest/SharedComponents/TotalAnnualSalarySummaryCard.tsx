@@ -12,7 +12,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { useSalaryCalculations } from '../Shared/useSalaryCalculations';
-import { StepCard } from '../SharedComponents/StepCard';
+import { StepCard } from './StepCard';
 
 export const TotalAnnualSalarySummaryCard: React.FC = () => {
   const { t } = useTranslation();

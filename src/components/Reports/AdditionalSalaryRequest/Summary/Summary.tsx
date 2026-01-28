@@ -7,10 +7,10 @@ import { mainContentWidth } from '../AdditionalSalaryRequest';
 import { AdditionalSalaryRequest } from '../CompleteForm/AdditionalSalaryRequest/AdditionalSalaryRequest';
 import { Deduction } from '../CompleteForm/Deduction/Deduction';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
+import { ContactInformationSummaryCard } from '../SharedComponents/ContactInformationSummaryCard';
 import { SpouseComponent } from '../SharedComponents/SpouseComponent';
-import { ContactInformationSummaryCard } from './ContactInformationSummaryCard';
+import { TotalAnnualSalarySummaryCard } from '../SharedComponents/TotalAnnualSalarySummaryCard';
 import { NetAdditionalSalarySummaryCard } from './NetAdditionalSalarySummaryCard';
-import { TotalAnnualSalarySummaryCard } from './TotalAnnualSalarySummaryCard';
 
 export const Summary: React.FC = () => {
   const accountListId = useAccountListId();
