@@ -70,6 +70,7 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
       },
     },
   } as AdditionalSalaryRequestType['requestData'],
+  loading: false,
   requestsError: undefined,
   pageType: PageEnum.New,
   handleDeleteRequest: jest.fn(),

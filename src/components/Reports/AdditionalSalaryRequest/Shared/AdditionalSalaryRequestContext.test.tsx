@@ -1,7 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { SnackbarProvider } from 'notistack';
 import { AdditionalSalaryRequestTestWrapper } from '../AdditionalSalaryRequestTestWrapper';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 import { getHeader } from './Helper/getHeader';
@@ -56,9 +55,7 @@ interface TestWrapperProps {
 
 const TestWrapper: React.FC<TestWrapperProps> = ({ onCall, mockPush }) => (
   <AdditionalSalaryRequestTestWrapper onCall={onCall} mockPush={mockPush}>
-    <SnackbarProvider>
-      <TestComponent />
-    </SnackbarProvider>
+    <TestComponent />
   </AdditionalSalaryRequestTestWrapper>
 );
 
