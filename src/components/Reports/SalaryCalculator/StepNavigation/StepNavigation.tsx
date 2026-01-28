@@ -121,6 +121,10 @@ export const StepNavigation: React.FC = () => {
   const theme = useTheme();
   const { currentIndex, steps } = useSalaryCalculator();
 
+  if (currentStep === SalaryCalculatorSectionEnum.Receipt) {
+    return null;
+  }
+
   return (
     <Box display="flex" justifyContent="space-between" alignItems="center">
       {currentIndex < steps.length - 1 && <DiscardButton />}
