@@ -64,10 +64,7 @@ export const MaxAllowableStep: React.FC = () => {
   const spouseCalculatedCap = spouseCalculations?.calculatedCap ?? 0;
   const combinedCalculatedCap = calculatedCap + spouseCalculatedCap;
   const exceptionCap = hcmUser?.exceptionSalaryCap.amount ?? 0;
-  const cap = Math.max(
-    exceptionCap,
-    (hcmSpouse ? calculations?.familyCap : calculations?.hardCap) ?? 0,
-  );
+  const cap = calculations?.familyCap ?? 0;
   // If the user and their spouse's combined calculated cap exceeds their allowed cap as a
   // family (taking into account an exception they might have), then they will need to split their
   // family cap between the two of them
