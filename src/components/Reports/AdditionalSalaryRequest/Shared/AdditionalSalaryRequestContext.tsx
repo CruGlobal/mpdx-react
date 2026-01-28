@@ -136,20 +136,20 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
           cache.gc();
         },
         onCompleted: () => {
-          enqueueSnackbar(
-            t(`Additional Salary Request {{action}} successfully.`, {
-              action: isCancel ? 'cancelled' : 'discarded',
-            }),
-            {
-              variant: 'success',
-            },
-          );
-
           if (!isCancel) {
             router.push(
               `/accountLists/${accountListId}/reports/additionalSalaryRequest`,
             );
           }
+
+          enqueueSnackbar(
+            isCancel
+              ? t('Additional Salary Request cancelled successfully.')
+              : t('Additional Salary Request discarded successfully.'),
+            {
+              variant: 'success',
+            },
+          );
         },
       });
     },

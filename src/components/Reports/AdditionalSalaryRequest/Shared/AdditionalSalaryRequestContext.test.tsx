@@ -92,16 +92,13 @@ describe('AdditionalSalaryRequestContext', () => {
 
     userEvent.click(getByRole('button', { name: 'Delete Request' }));
 
-    await waitFor(() =>
+    await waitFor(() => {
       expect(mutationSpy).toHaveGraphqlOperation(
         'DeleteAdditionalSalaryRequest',
         {
           id: 'test-id',
         },
-      ),
-    );
-
-    await waitFor(() => {
+      );
       expect(mockEnqueue).toHaveBeenCalledWith(
         'Additional Salary Request cancelled successfully.',
         { variant: 'success' },
@@ -116,23 +113,17 @@ describe('AdditionalSalaryRequestContext', () => {
 
     userEvent.click(getByRole('button', { name: 'Discard Request' }));
 
-    await waitFor(() =>
+    await waitFor(() => {
       expect(mutationSpy).toHaveGraphqlOperation(
         'DeleteAdditionalSalaryRequest',
         {
           id: 'test-id',
         },
-      ),
-    );
-
-    await waitFor(() => {
+      );
       expect(mockEnqueue).toHaveBeenCalledWith(
         'Additional Salary Request discarded successfully.',
         { variant: 'success' },
       );
-    });
-
-    await waitFor(() => {
       expect(mockPush).toHaveBeenCalledWith(
         '/accountLists/account-list-1/reports/additionalSalaryRequest',
       );
