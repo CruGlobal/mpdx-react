@@ -67,7 +67,7 @@ export const TotalAnnualSalarySummaryCard: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
   const theme = useTheme();
-  const { requestData } = useAdditionalSalaryRequest();
+  const { requestData, user } = useAdditionalSalaryRequest();
   const [expanded, setExpanded] = useState(true);
   const { values } = useFormikContext<CompleteFormValues>();
 
@@ -77,17 +77,19 @@ export const TotalAnnualSalarySummaryCard: React.FC = () => {
   const traditional403bContribution =
     asrValues?.traditional403bContribution ?? 0;
 
+  const grossAnnualSalary = user?.currentSalary?.grossSalaryAmount ?? 0;
+
   const {
     total,
     totalAnnualSalary,
     remainingInMaxAllowable,
     maxAllowableSalary,
-    grossAnnualSalary,
     additionalSalaryReceivedThisYear,
   } = useSalaryCalculations({
     traditional403bContribution,
     values,
     calculations,
+    grossSalaryAmount: grossAnnualSalary,
   });
 
   const progressPercentage =

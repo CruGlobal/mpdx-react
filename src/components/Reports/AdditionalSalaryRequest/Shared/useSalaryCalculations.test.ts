@@ -192,7 +192,6 @@ describe('useSalaryCalculations', () => {
 
     const calculations = {
       maxAmountAndReason: { amount: 100000 },
-      predictedYearIncome: 50000,
       pendingAsrAmount: 10000,
     };
 
@@ -202,6 +201,7 @@ describe('useSalaryCalculations', () => {
           traditional403bContribution,
           values,
           calculations,
+          grossSalaryAmount: 50000,
         }),
       {
         wrapper: ({ children }) => FormikWrapper({ children, values }),
@@ -225,7 +225,6 @@ describe('useSalaryCalculations', () => {
 
     const calculations = {
       maxAmountAndReason: { amount: 80000 },
-      predictedYearIncome: 50000,
       pendingAsrAmount: 10000,
     };
 
@@ -235,6 +234,7 @@ describe('useSalaryCalculations', () => {
           traditional403bContribution,
           values,
           calculations,
+          grossSalaryAmount: 50000,
         }),
       {
         wrapper: ({ children }) => FormikWrapper({ children, values }),
