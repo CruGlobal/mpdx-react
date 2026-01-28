@@ -17,11 +17,11 @@ import {
   Tooltip,
   Typography,
   styled,
+  useTheme,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
-import theme from 'src/theme';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { useSalaryCalculations } from '../Shared/useSalaryCalculations';
 
@@ -33,9 +33,7 @@ const StyledHeader = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
-  padding: theme.spacing(2),
-  backgroundColor: '#FFF8E1',
-  borderBottom: '1px solid #FFE0B2',
+  padding: theme.spacing(1, 2),
 }));
 
 const StyledHeaderLeft = styled(Box)(() => ({
@@ -64,7 +62,7 @@ const StyledRemainingRow = styled(Box)(() => ({
 }));
 
 const StyledTotalRow = styled(TableRow)(({ theme }) => ({
-  backgroundColor: theme.palette.grey[100],
+  backgroundColor: theme.palette.mpdxGrayLight.main,
   '& td': {
     borderBottom: 'none',
   },
@@ -73,6 +71,7 @@ const StyledTotalRow = styled(TableRow)(({ theme }) => ({
 export const TotalAnnualSalarySummaryCard: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const theme = useTheme();
   const { requestData } = useAdditionalSalaryRequest();
   const [expanded, setExpanded] = useState(true);
 
@@ -103,6 +102,21 @@ export const TotalAnnualSalarySummaryCard: React.FC = () => {
       ? Math.min((totalSalaryRequested / maxAllowableSalary) * 100, 100)
       : 0;
   const isOverMax = totalSalaryRequested > maxAllowableSalary;
+
+  // Define colors based on isOverMax state
+  const headerBackgroundColor = isOverMax
+    ? theme.palette.mpdxYellow.main
+    : theme.palette.mpdxBlue.light;
+  const primaryColor = isOverMax
+    ? theme.palette.statusWarning.main
+    : theme.palette.mpdxBlue.main;
+  const totalColor = isOverMax
+    ? theme.palette.statusDanger.main
+    : theme.palette.mpdxBlue.main;
+  const remainingColor =
+    remainingInMaxAllowable < 0
+      ? theme.palette.statusDanger.main
+      : theme.palette.text.secondary;
 
   const summaryItems = useMemo(
     () => [
@@ -136,10 +150,19 @@ export const TotalAnnualSalarySummaryCard: React.FC = () => {
 
   return (
     <StyledCard>
-      <StyledHeader>
+      <StyledHeader
+        sx={{
+          backgroundColor: headerBackgroundColor,
+        }}
+      >
         <StyledHeaderLeft>
-          <WarningAmberIcon sx={{ color: theme.palette.warning.main }} />
-          <Typography variant="subtitle1" fontWeight="bold">
+          {isOverMax && <WarningAmberIcon sx={{ color: primaryColor }} />}
+
+          <Typography
+            variant="subtitle1"
+            fontWeight="bold"
+            sx={{ color: primaryColor }}
+          >
             {t('Total Annual Salary')}
           </Typography>
           <Typography variant="body2" color="text.secondary" sx={{ ml: 4 }}>
@@ -184,11 +207,9 @@ export const TotalAnnualSalarySummaryCard: React.FC = () => {
             sx={{
               height: 8,
               borderRadius: 4,
-              backgroundColor: theme.palette.grey[200],
+              backgroundColor: theme.palette.mpdxGray.main,
               '& .MuiLinearProgress-bar': {
-                backgroundColor: isOverMax
-                  ? theme.palette.error.main
-                  : theme.palette.warning.main,
+                backgroundColor: primaryColor,
                 borderRadius: 4,
               },
             }}
@@ -197,10 +218,7 @@ export const TotalAnnualSalarySummaryCard: React.FC = () => {
             <Typography variant="body2" color="text.secondary">
               {t('Remaining in your Max Allowable Salary')}
             </Typography>
-            <Typography
-              variant="body2"
-              color={remainingInMaxAllowable < 0 ? 'error' : 'text.secondary'}
-            >
+            <Typography variant="body2" sx={{ color: remainingColor }}>
               {currencyFormat(remainingInMaxAllowable, 'USD', locale)}
             </Typography>
           </StyledRemainingRow>
@@ -242,7 +260,7 @@ export const TotalAnnualSalarySummaryCard: React.FC = () => {
                   <Typography
                     variant="body1"
                     fontWeight="bold"
-                    color={isOverMax ? 'error' : 'warning.main'}
+                    sx={{ color: totalColor }}
                   >
                     {currencyFormat(totalAnnualSalary, 'USD', locale)}
                   </Typography>
