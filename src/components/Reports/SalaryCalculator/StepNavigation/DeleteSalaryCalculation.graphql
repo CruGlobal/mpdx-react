@@ -1,0 +1,5 @@
+mutation DeleteSalaryCalculation($input: SalaryRequestDeleteMutationInput!) {
+  deleteSalaryRequest(input: $input) {
+    id
+  }
+}
