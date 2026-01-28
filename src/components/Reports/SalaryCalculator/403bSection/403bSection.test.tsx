@@ -16,6 +16,6 @@ describe('403bSection', () => {
 
     expect(await findByRole('cell', { name: '12.00%' })).toBeInTheDocument();
     expect(getByRole('cell', { name: '8.00%' })).toBeInTheDocument();
-    expect(getByRole('cell', { name: '47.00%' })).toBeInTheDocument();
+    expect(getByRole('cell', { name: '$47' })).toBeInTheDocument();
   });
 });
