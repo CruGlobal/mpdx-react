@@ -7,6 +7,7 @@ import { currencyFormat } from 'src/lib/intlFormat';
 import { amount } from 'src/lib/yupHelpers';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import {
+  SalaryInfoQuery,
   useAdditionalSalaryRequestQuery,
   useSubmitAdditionalSalaryRequestMutation,
   useUpdateAdditionalSalaryRequestMutation,
@@ -15,25 +16,43 @@ import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 import { getTotal } from './Helper/getTotal';
 
 // Field configuration: combines keys, labels, and max values
-export const fieldConfig: Array<{
+export const fieldConfig = (
+  data: SalaryInfoQuery['salaryInfo'] | null,
+): Array<{
   key: string;
   label: string;
   max?: number;
-}> = [
+}> => [
   { key: 'currentYearSalaryNotReceived', label: "Current Year's Salary" },
   { key: 'previousYearSalaryNotReceived', label: "Previous Year's Salary" },
   { key: 'additionalSalaryWithinMax', label: 'Additional Salary' },
-  { key: 'adoption', label: 'Adoption', max: 15000 },
+  {
+    key: 'adoption',
+    label: 'Adoption',
+    max: data?.maxAdoptionUss ? data.maxAdoptionUss : 0,
+  },
   { key: 'traditional403bContribution', label: '403(b) Contribution' },
   { key: 'counselingNonMedical', label: 'Counseling' },
   { key: 'healthcareExpensesExceedingLimit', label: 'Healthcare Expenses' },
   { key: 'babysittingMinistryEvents', label: 'Babysitting' },
   { key: 'childrenMinistryTripExpenses', label: "Children's Ministry Trip" },
-  { key: 'childrenCollegeEducation', label: "Children's College" },
+  {
+    key: 'childrenCollegeEducation',
+    label: "Children's College",
+    max: data?.maxCollegeUss ? data.maxCollegeUss : 0,
+  },
   { key: 'movingExpense', label: 'Moving Expense' },
   { key: 'seminary', label: 'Seminary' },
-  { key: 'housingDownPayment', label: 'Housing Down Payment', max: 50000 },
-  { key: 'autoPurchase', label: 'Auto Purchase' },
+  {
+    key: 'housingDownPayment',
+    label: 'Housing Down Payment',
+    max: data?.maxHousingDownPaymentUss ? data.maxHousingDownPaymentUss : 0,
+  },
+  {
+    key: 'autoPurchase',
+    label: 'Auto Purchase',
+    max: data?.maxAutoPurchaseUss ? data.maxAutoPurchaseUss : 0,
+  },
   {
     key: 'expensesNotApprovedWithin90Days',
     label: 'Reimbursable Expenses',
@@ -51,7 +70,7 @@ export const useAdditionalSalaryRequestForm = ({
 }: UseAdditionalSalaryRequestFormProps) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { handleNextStep } = useAdditionalSalaryRequest();
+  const { handleNextStep, salaryInfoData } = useAdditionalSalaryRequest();
 
   const { data: requestData } = useAdditionalSalaryRequestQuery({
     variables: { requestId: requestId || '' },
@@ -83,7 +102,9 @@ export const useAdditionalSalaryRequestForm = ({
   );
 
   const defaultInitialValues: CompleteFormValues = {
-    ...Object.fromEntries(fieldConfig.map(({ key }) => [key, '0'])),
+    ...Object.fromEntries(
+      fieldConfig(salaryInfoData).map(({ key }) => [key, '0']),
+    ),
     deductTwelvePercent: false,
     phoneNumber: '',
   } as CompleteFormValues;
@@ -100,7 +121,7 @@ export const useAdditionalSalaryRequestForm = ({
 
     return {
       ...Object.fromEntries(
-        fieldConfig.map(({ key }) => [
+        fieldConfig(salaryInfoData).map(({ key }) => [
           key,
           String((request[key as keyof typeof request] as number) || 0),
         ]),
@@ -114,7 +135,7 @@ export const useAdditionalSalaryRequestForm = ({
     () =>
       yup.object({
         ...Object.fromEntries(
-          fieldConfig.map(({ key, label, max }) => [
+          fieldConfig(salaryInfoData).map(({ key, label, max }) => [
             key,
             createCurrencyValidation(t(label), max),
           ]),

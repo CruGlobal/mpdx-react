@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { createContext, useCallback, useMemo, useState } from 'react';
 import { ApolloError } from '@apollo/client';
+import { DateTime } from 'luxon';
 import {
   FormEnum,
   PageEnum,
@@ -14,9 +15,11 @@ import {
 import {
   AdditionalSalaryRequestQuery,
   AdditionalSalaryRequestsQuery,
+  SalaryInfoQuery,
   useAdditionalSalaryRequestQuery,
   useAdditionalSalaryRequestsQuery,
   useDeleteAdditionalSalaryRequestMutation,
+  useSalaryInfoQuery,
 } from '../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
 import { useStaffAccountIdQuery } from '../StaffAccountId.generated';
@@ -34,6 +37,8 @@ export type AdditionalSalaryRequestType = {
     | AdditionalSalaryRequestsQuery['additionalSalaryRequests']['nodes']
     | null;
   requestData?: AdditionalSalaryRequestQuery | null;
+  salaryInfoData?: SalaryInfoQuery['salaryInfo'] | null;
+  currentYear?: number;
 
   requestsError?: ApolloError;
   pageType: PageEnum | undefined;
@@ -102,6 +107,11 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     skip: !requestId,
   });
 
+  const currentYear = DateTime.now().year;
+  const { data: salaryInfoData } = useSalaryInfoQuery({
+    variables: { year: currentYear },
+  });
+
   const { data: staffAccountIdData } = useStaffAccountIdQuery();
 
   const [deleteAdditionalSalaryRequest] =
@@ -165,6 +175,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       requestsData: requestsData?.additionalSalaryRequests?.nodes,
       requestsError,
       requestData,
+      salaryInfoData: salaryInfoData?.salaryInfo,
+      currentYear,
       pageType,
       handleDeleteRequest,
       requestId,
@@ -185,6 +197,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       requestsData,
       requestsError,
       requestData,
+      salaryInfoData,
+      currentYear,
       pageType,
       handleDeleteRequest,
       requestId,

@@ -7,6 +7,7 @@ import theme from 'src/theme';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import {
   AdditionalSalaryRequestQuery,
+  SalaryInfoQuery,
   SubmitAdditionalSalaryRequestMutation,
   UpdateAdditionalSalaryRequestMutation,
 } from '../AdditionalSalaryRequest.generated';
@@ -35,6 +36,35 @@ const mockUseAdditionalSalaryRequest =
 
 const mockHandleNextStep = jest.fn();
 
+const defaultSalaryInfoData: SalaryInfoQuery = {
+  salaryInfo: {
+    id: 'salary-info-1',
+    year: 2024,
+    annualBase: 28500,
+    fourOhThreeBAnnualLimitForOverFifty: 0,
+    fourOhThreeBAnnualLimitForSixtyToSixtyThree: 0,
+    maxFamilyInt: 25000,
+    maxFamilyUss: 135000,
+    maxSingleInt: 80000,
+    maxSingleUss: 90000,
+    minReqSalary: 0,
+    secaestAt403bInt: 0,
+    secaestPt403bInt: 0,
+    secaEstimate: 0,
+    secaestNo403bInt: 0,
+    minRequiredSalary: 0,
+    raisingSupportMinReqSalary: 0,
+    maxAdoptionInt: 15000,
+    maxAdoptionUss: 15000,
+    maxAutoPurchaseInt: 25000,
+    maxAutoPurchaseUss: 25000,
+    maxCollegeInt: 21000,
+    maxCollegeUss: 21000,
+    maxHousingDownPaymentInt: 50000,
+    maxHousingDownPaymentUss: 50000,
+  },
+};
+
 const defaultMockContextValue: AdditionalSalaryRequestType = {
   staffAccountId: 'staff-account-1',
   steps: [],
@@ -54,6 +84,7 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   spouse: undefined,
   isMutating: false,
   trackMutation: jest.fn((mutation) => mutation),
+  salaryInfoData: defaultSalaryInfoData.salaryInfo,
 };
 
 const defaultFormValues: CompleteFormValues = {
@@ -80,6 +111,7 @@ const mutationSpy = jest.fn();
 
 type MocksType = {
   AdditionalSalaryRequest: AdditionalSalaryRequestQuery;
+  SalaryInfo: SalaryInfoQuery;
   UpdateAdditionalSalaryRequest: UpdateAdditionalSalaryRequestMutation;
   SubmitAdditionalSalaryRequest: SubmitAdditionalSalaryRequestMutation;
 };
@@ -94,6 +126,7 @@ const TestWrapper: React.FC<TestComponentProps> = ({ children, mocks }) => {
     <ThemeProvider theme={theme}>
       <GqlMockedProvider<{
         AdditionalSalaryRequest: AdditionalSalaryRequestQuery;
+        SalaryInfo: SalaryInfoQuery;
         UpdateAdditionalSalaryRequest: UpdateAdditionalSalaryRequestMutation;
         SubmitAdditionalSalaryRequest: SubmitAdditionalSalaryRequestMutation;
       }>
@@ -114,9 +147,11 @@ describe('useAdditionalSalaryRequestForm', () => {
 
   describe('fieldConfig', () => {
     it('should have all expected field configurations', () => {
-      expect(fieldConfig).toHaveLength(15);
+      expect(fieldConfig(defaultSalaryInfoData.salaryInfo)).toHaveLength(15);
 
-      const fieldKeys = fieldConfig.map((f) => f.key);
+      const fieldKeys = fieldConfig(defaultSalaryInfoData.salaryInfo).map(
+        (f) => f.key,
+      );
       expect(fieldKeys).toContain('currentYearSalaryNotReceived');
       expect(fieldKeys).toContain('previousYearSalaryNotReceived');
       expect(fieldKeys).toContain('additionalSalaryWithinMax');
@@ -125,8 +160,10 @@ describe('useAdditionalSalaryRequestForm', () => {
     });
 
     it('should have max values for adoption and housing down payment', () => {
-      const adoptionConfig = fieldConfig.find((f) => f.key === 'adoption');
-      const housingConfig = fieldConfig.find(
+      const adoptionConfig = fieldConfig(defaultSalaryInfoData.salaryInfo).find(
+        (f) => f.key === 'adoption',
+      );
+      const housingConfig = fieldConfig(defaultSalaryInfoData.salaryInfo).find(
         (f) => f.key === 'housingDownPayment',
       );
 
@@ -344,6 +381,56 @@ describe('useAdditionalSalaryRequestForm', () => {
 
       expect(errors.housingDownPayment).toContain('Exceeds');
       expect(errors.housingDownPayment).toContain('$50,000.00');
+    });
+
+    it('should validate auto purchase max amount of $25,000', async () => {
+      const { result } = renderHook(
+        () =>
+          useAdditionalSalaryRequestForm({
+            requestId: 'test-request-id',
+            initialValues: {
+              ...defaultFormValues,
+              autoPurchase: '30000',
+              phoneNumber: '555-123-4567',
+            },
+          }),
+        {
+          wrapper: TestWrapper,
+        },
+      );
+
+      let errors: Record<string, string> = {};
+      await act(async () => {
+        errors = await result.current.validateForm();
+      });
+
+      expect(errors.autoPurchase).toContain('Exceeds');
+      expect(errors.autoPurchase).toContain('$25,000.00');
+    });
+
+    it('should validate college max amount of $21,000', async () => {
+      const { result } = renderHook(
+        () =>
+          useAdditionalSalaryRequestForm({
+            requestId: 'test-request-id',
+            initialValues: {
+              ...defaultFormValues,
+              childrenCollegeEducation: '25000',
+              phoneNumber: '555-123-4567',
+            },
+          }),
+        {
+          wrapper: TestWrapper,
+        },
+      );
+
+      let errors: Record<string, string> = {};
+      await act(async () => {
+        errors = await result.current.validateForm();
+      });
+
+      expect(errors.childrenCollegeEducation).toContain('Exceeds');
+      expect(errors.childrenCollegeEducation).toContain('$21,000.00');
     });
   });
 
