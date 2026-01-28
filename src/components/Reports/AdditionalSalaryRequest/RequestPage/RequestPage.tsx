@@ -77,6 +77,7 @@ export const RequestPage: React.FC = () => {
   const { pageType, isDrawerOpen, toggleDrawer, steps, currentIndex } =
     useAdditionalSalaryRequest();
   const { values } = useFormikContext<CompleteFormValues>();
+  const iconPanelItems = useIconPanelItems(isDrawerOpen, toggleDrawer);
 
   const percentComplete = useMemo(
     () => calculateCompletionPercentage(values),
@@ -90,7 +91,7 @@ export const RequestPage: React.FC = () => {
       percentComplete={percentComplete}
       steps={steps}
       currentIndex={currentIndex}
-      icons={useIconPanelItems(isDrawerOpen, toggleDrawer)}
+      icons={iconPanelItems}
       sidebarContent={
         pageType !== PageEnum.View ? <StepsList steps={steps} /> : null
       }
