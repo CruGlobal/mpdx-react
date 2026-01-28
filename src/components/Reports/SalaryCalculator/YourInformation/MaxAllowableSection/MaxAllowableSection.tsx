@@ -85,9 +85,10 @@ export const MaxAllowableStep: React.FC = () => {
       <CardContent>
         <Typography variant="body1">
           <Trans t={t}>
-            Your Maximum Allowable Salary (CAP) includes SECA, 403(b), MHA, and
-            any taxes (if applicable). It is calculated using your personal
-            information above.
+            Your Maximum Allowable Salary (CAP) is the maximum amount you can
+            request without requiring additional approval. It includes SECA,
+            403(b), and any taxes (if applicable) and is calculated using your
+            personal information above.
           </Trans>
         </Typography>
 
