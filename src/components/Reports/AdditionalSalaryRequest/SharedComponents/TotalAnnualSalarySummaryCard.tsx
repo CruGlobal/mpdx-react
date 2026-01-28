@@ -77,17 +77,18 @@ export const TotalAnnualSalarySummaryCard: React.FC = () => {
   const traditional403bContribution =
     asrValues?.traditional403bContribution ?? 0;
 
-  const { total, totalAnnualSalary, remainingInMaxAllowable } =
-    useSalaryCalculations({
-      traditional403bContribution,
-      values,
-      calculations,
-    });
-
-  const maxAllowableSalary = calculations?.maxAmountAndReason?.amount ?? 0;
-  const grossAnnualSalary = calculations?.predictedYearIncome ?? 0;
-  const additionalSalaryReceivedThisYear = calculations?.pendingAsrAmount ?? 0;
-  const additionalSalaryOnThisRequest = total;
+  const {
+    total,
+    totalAnnualSalary,
+    remainingInMaxAllowable,
+    maxAllowableSalary,
+    grossAnnualSalary,
+    additionalSalaryReceivedThisYear,
+  } = useSalaryCalculations({
+    traditional403bContribution,
+    values,
+    calculations,
+  });
 
   const progressPercentage =
     maxAllowableSalary > 0
@@ -122,7 +123,7 @@ export const TotalAnnualSalarySummaryCard: React.FC = () => {
         id: 'additionalRequested',
         label: t('Additional Salary on This Request'),
         description: t('Does not include requests made for backpay.'),
-        value: additionalSalaryOnThisRequest,
+        value: total,
       },
     ],
     [
@@ -130,7 +131,7 @@ export const TotalAnnualSalarySummaryCard: React.FC = () => {
       maxAllowableSalary,
       grossAnnualSalary,
       additionalSalaryReceivedThisYear,
-      additionalSalaryOnThisRequest,
+      total,
     ],
   );
 

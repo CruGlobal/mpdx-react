@@ -8,6 +8,9 @@ export interface SalaryCalculations {
   contribution403b: number;
   totalDeduction: number;
   netSalary: number;
+  maxAllowableSalary: number;
+  grossAnnualSalary: number;
+  additionalSalaryReceivedThisYear: number;
   totalAnnualSalary: number;
   remainingInMaxAllowable: number;
 }
@@ -59,6 +62,9 @@ export const useSalaryCalculations = ({
       contribution403b,
       totalDeduction,
       netSalary,
+      maxAllowableSalary,
+      grossAnnualSalary,
+      additionalSalaryReceivedThisYear,
       totalAnnualSalary,
       remainingInMaxAllowable,
     };
