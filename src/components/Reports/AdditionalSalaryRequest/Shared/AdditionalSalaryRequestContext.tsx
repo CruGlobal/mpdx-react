@@ -52,8 +52,8 @@ export type AdditionalSalaryRequestType = {
   pageType: PageEnum | undefined;
   handleDeleteRequest: (id: string) => Promise<void>;
   requestId?: string;
-  user: HcmData | undefined;
-  spouse: HcmData | null;
+  user?: HcmData;
+  spouse?: HcmData | null;
   isMutating: boolean;
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
 };
