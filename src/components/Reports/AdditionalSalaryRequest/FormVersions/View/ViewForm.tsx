@@ -18,12 +18,12 @@ export const ViewForm: React.FC = () => {
   const { requestData, user } = useAdditionalSalaryRequest();
   const { currentSalaryCap, staffAccountBalance } =
     requestData?.additionalSalaryRequest?.calculations || {};
-
+  const grossSalaryAmount = user?.currentSalary?.grossSalaryAmount ?? 0;
   const { preferredName: name, personNumber: accountNumber } =
     user?.staffInfo || {};
   const primaryAccountBalance = staffAccountBalance ?? 0;
   const remainingAllowableSalary =
-    (currentSalaryCap ?? 0) - (staffAccountBalance ?? 0);
+    (currentSalaryCap ?? 0) - (grossSalaryAmount ?? 0);
 
   return (
     <Stack gap={4} padding={4} width={mainContentWidth}>

@@ -22,16 +22,15 @@ export const NewForm: React.FC = () => {
 
   const { currentSalaryCap, staffAccountBalance } =
     requestData?.additionalSalaryRequest?.calculations || {};
-
+  const grossSalaryAmount = user?.currentSalary?.grossSalaryAmount ?? 0;
   const {
     preferredName: name,
     personNumber: accountNumber,
     emailAddress: email,
   } = user?.staffInfo || {};
 
-  const primaryAccountBalance = staffAccountBalance ?? 0;
   const remainingAllowableSalary =
-    (currentSalaryCap ?? 0) - (staffAccountBalance ?? 0);
+    (currentSalaryCap ?? 0) - (grossSalaryAmount ?? 0);
 
   const showAlert = !!submitCount && !isValid;
 
@@ -60,7 +59,7 @@ export const NewForm: React.FC = () => {
         personNumbers={accountNumber ?? ''}
         showContent={true}
         titleOne={t('Primary Account Balance')}
-        amountOne={primaryAccountBalance}
+        amountOne={staffAccountBalance ?? 0}
         titleTwo={t('Your Remaining Allowable Salary')}
         amountTwo={remainingAllowableSalary}
       />
