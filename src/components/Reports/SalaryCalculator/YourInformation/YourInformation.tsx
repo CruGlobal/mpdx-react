@@ -4,10 +4,12 @@ import { Trans, useTranslation } from 'react-i18next';
 import { FourOhThreeBSection } from '../403bSection/403bSection';
 import { MaxAllowableStep } from './MaxAllowableSection/MaxAllowableSection';
 import { MhaRequestSection } from './MhaRequestSection/MhaRequestSection';
+import { useMhaRequestData } from './MhaRequestSection/useMhaRequestData';
 import { PersonalInformationSection } from './PersonalInformationSection/PersonalInformationSection';
 
 export const YourInformationStep: React.FC = () => {
   const { t } = useTranslation();
+  const { showMhaSection } = useMhaRequestData();
 
   return (
     <>
@@ -21,7 +23,7 @@ export const YourInformationStep: React.FC = () => {
       <PersonalInformationSection />
       <MaxAllowableStep />
       <FourOhThreeBSection />
-      <MhaRequestSection />
+      {showMhaSection && <MhaRequestSection />}
     </>
   );
 };
