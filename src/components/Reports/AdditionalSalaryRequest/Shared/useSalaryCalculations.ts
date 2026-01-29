@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { useFormikContext } from 'formik';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { getTotal } from './Helper/getTotal';
 
@@ -9,13 +8,30 @@ export interface SalaryCalculations {
   contribution403b: number;
   totalDeduction: number;
   netSalary: number;
+  maxAllowableSalary: number;
+  additionalSalaryReceivedThisYear: number;
+  totalAnnualSalary: number;
+  remainingInMaxAllowable: number;
 }
 
-export const useSalaryCalculations = (
-  traditional403bContribution: number,
-): SalaryCalculations => {
-  const { values } = useFormikContext<CompleteFormValues>();
+interface CalculationsData {
+  maxAmountAndReason?: { amount?: number | null } | null;
+  pendingAsrAmount?: number | null;
+}
 
+export interface UseSalaryCalculationsProps {
+  traditional403bContribution: number;
+  values: CompleteFormValues;
+  calculations?: CalculationsData | null;
+  grossSalaryAmount?: number | null;
+}
+
+export const useSalaryCalculations = ({
+  traditional403bContribution,
+  values,
+  calculations,
+  grossSalaryAmount,
+}: UseSalaryCalculationsProps): SalaryCalculations => {
   return useMemo(() => {
     const total = getTotal(values);
 
@@ -29,12 +45,27 @@ export const useSalaryCalculations = (
 
     const netSalary = total - totalDeduction;
 
+    // Annual salary calculations
+    const maxAllowableSalary = calculations?.maxAmountAndReason?.amount ?? 0;
+    const grossAnnualSalary = grossSalaryAmount ?? 0;
+    const additionalSalaryReceivedThisYear =
+      calculations?.pendingAsrAmount ?? 0;
+
+    const totalAnnualSalary =
+      grossAnnualSalary + additionalSalaryReceivedThisYear + total;
+
+    const remainingInMaxAllowable = maxAllowableSalary - totalAnnualSalary;
+
     return {
       total,
       calculatedDeduction,
       contribution403b,
       totalDeduction,
       netSalary,
+      maxAllowableSalary,
+      additionalSalaryReceivedThisYear,
+      totalAnnualSalary,
+      remainingInMaxAllowable,
     };
-  }, [values, traditional403bContribution]);
+  }, [values, traditional403bContribution, calculations, grossSalaryAmount]);
 };

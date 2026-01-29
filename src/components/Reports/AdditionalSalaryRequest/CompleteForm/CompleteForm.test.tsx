@@ -172,12 +172,13 @@ describe('CompleteForm', () => {
     });
 
     it('renders instructional text and notes', () => {
-      const { getByText } = render(<TestWrapper />);
+      const { getByText, getAllByText } = render(<TestWrapper />);
 
       expect(
         getByText(/Please enter the desired dollar amounts/i),
       ).toBeInTheDocument();
-      expect(getByText('Note:')).toBeInTheDocument();
+      // There are multiple "Note:" elements in the form
+      expect(getAllByText('Note:').length).toBeGreaterThanOrEqual(1);
       expect(
         getByText(/If the above information is correct/i),
       ).toBeInTheDocument();
