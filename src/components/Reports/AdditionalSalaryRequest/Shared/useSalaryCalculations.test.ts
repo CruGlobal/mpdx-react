@@ -36,7 +36,7 @@ describe('useSalaryCalculations', () => {
     expensesNotApprovedWithin90Days: '0',
     deductTwelvePercent: false,
     phoneNumber: '',
-    email: '',
+    emailAddress: '',
   };
 
   it('calculates all salary values correctly with default percentage enabled', () => {
@@ -145,7 +145,7 @@ describe('useSalaryCalculations', () => {
       expensesNotApprovedWithin90Days: '1000',
       deductTwelvePercent: false,
       phoneNumber: '',
-      email: '',
+      emailAddress: '',
     };
 
     const { result } = renderHook(

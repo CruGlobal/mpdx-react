@@ -47,7 +47,7 @@ const defaultFormValues: CompleteFormValues = {
   expensesNotApprovedWithin90Days: '0',
   deductTwelvePercent: false,
   phoneNumber: '555-1234',
-  email: '',
+  emailAddress: '',
 };
 
 const mockTrackMutation = jest.fn((mutation) => mutation);
