@@ -463,6 +463,7 @@ describe('useAdditionalSalaryRequestForm', () => {
             initialValues: {
               ...defaultFormValues,
               phoneNumber: '555-123-4567',
+              emailAddress: 'test@example.com',
               currentYearSalaryNotReceived: '100',
             },
           }),
@@ -496,6 +497,7 @@ describe('useAdditionalSalaryRequestForm', () => {
               previousYearSalaryNotReceived: '200',
               adoption: '300',
               phoneNumber: '555-123-4567',
+              emailAddress: 'test@example.com',
             },
           }),
         {
@@ -531,6 +533,7 @@ describe('useAdditionalSalaryRequestForm', () => {
             initialValues: {
               ...defaultFormValues,
               phoneNumber: '555-123-4567',
+              emailAddress: 'test@example.com',
             },
           }),
         {

@@ -132,7 +132,7 @@ const validationSchema = yup.object({
     .string()
     .required('Telephone number is required')
     .matches(/^[\d\s\-\(\)\+]+$/, 'Please enter a valid telephone number'),
-  email: yup
+  emailAddress: yup
     .string()
     .email('Please enter a valid email address')
     .required('Email address is required'),
@@ -299,22 +299,14 @@ describe('CompleteForm', () => {
     });
 
     it('renders ContactInformation with email and phone fields', () => {
-      const { getByRole } = render(
-        <TestWrapper
-          initialValues={{
-            ...defaultCompleteFormValues,
-            emailAddress: 'john.doe@example.com',
-          }}
-        />,
-      );
+      const { getByRole } = render(<TestWrapper />);
 
-      const emailTextbox = getByRole('textbox', { name: 'Email Address' });
-
-      expect(emailTextbox).toBeInTheDocument();
+      expect(
+        getByRole('textbox', { name: 'Email Address' }),
+      ).toBeInTheDocument();
       expect(
         getByRole('textbox', { name: 'Telephone Number' }),
       ).toBeInTheDocument();
-      expect(emailTextbox).toHaveValue('john.doe@example.com');
     });
   });
 

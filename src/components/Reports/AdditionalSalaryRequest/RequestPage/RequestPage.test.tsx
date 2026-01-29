@@ -135,6 +135,10 @@ const validationSchema = yup.object({
     .string()
     .required('Telephone number is required')
     .matches(/^[\d\s\-\(\)\+]+$/, 'Please enter a valid telephone number'),
+  emailAddress: yup
+    .string()
+    .email('Please enter a valid email address')
+    .required('Email address is required'),
 });
 
 interface TestFormikWrapperProps {
