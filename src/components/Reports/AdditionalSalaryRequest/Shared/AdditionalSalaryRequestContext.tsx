@@ -27,6 +27,7 @@ import { useStaffAccountIdQuery } from '../StaffAccountId.generated';
 
 export type AdditionalSalaryRequestType = {
   staffAccountId: string | null | undefined;
+  staffAccountIdLoading: boolean;
   steps: Steps[];
   currentIndex: number;
   currentStep: AdditionalSalaryRequestSectionEnum;
@@ -110,7 +111,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     skip: !requestId,
   });
 
-  const { data: staffAccountIdData } = useStaffAccountIdQuery();
+  const { data: staffAccountIdData, loading: staffAccountIdLoading } =
+    useStaffAccountIdQuery();
 
   const [deleteAdditionalSalaryRequest] =
     useDeleteAdditionalSalaryRequestMutation();
@@ -173,6 +175,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   const contextValue = useMemo<AdditionalSalaryRequestType>(
     () => ({
       staffAccountId,
+      staffAccountIdLoading,
       steps,
       currentIndex,
       currentStep,
@@ -194,6 +197,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     }),
     [
       staffAccountId,
+      staffAccountIdLoading,
       steps,
       currentIndex,
       currentStep,

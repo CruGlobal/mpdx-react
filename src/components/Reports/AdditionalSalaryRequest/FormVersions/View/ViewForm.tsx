@@ -7,7 +7,7 @@ import { mainContentWidth } from '../../AdditionalSalaryRequest';
 import { AdditionalSalaryRequest } from '../../CompleteForm/AdditionalSalaryRequest/AdditionalSalaryRequest';
 import { Deduction } from '../../CompleteForm/Deduction/Deduction';
 import { NetAdditionalSalary } from '../../CompleteForm/NetAdditionalSalary/NetAdditionalSalary';
-import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
+import { useFormData } from '../../Shared/useFormData';
 import { ContactInformationSummaryCard } from '../../SharedComponents/ContactInformationSummaryCard';
 import { SpouseComponent } from '../../SharedComponents/SpouseComponent';
 import { TotalAnnualSalarySummaryCard } from '../../SharedComponents/TotalAnnualSalarySummaryCard';
@@ -15,28 +15,25 @@ import { TotalAnnualSalarySummaryCard } from '../../SharedComponents/TotalAnnual
 export const ViewForm: React.FC = () => {
   const accountListId = useAccountListId();
   const { t } = useTranslation();
-  const { requestData, user } = useAdditionalSalaryRequest();
-  const { currentSalaryCap, staffAccountBalance } =
-    requestData?.additionalSalaryRequest?.calculations || {};
-
-  const name = user?.staffInfo?.preferredName ?? '';
-  const accountNumber = user?.staffInfo?.personNumber ?? '';
-  const primaryAccountBalance = staffAccountBalance ?? 0;
-  const remainingAllowableSalary =
-    (currentSalaryCap ?? 0) - (staffAccountBalance ?? 0);
+  const {
+    name,
+    accountNumber,
+    primaryAccountBalance,
+    remainingAllowableSalary,
+  } = useFormData();
 
   return (
     <Stack gap={4} padding={4} width={mainContentWidth}>
       <Typography variant="h4">{t('View Your Request')}</Typography>
       <NameDisplay
-        names={name}
-        personNumbers={accountNumber}
-        showContent={true}
+        names={name ?? ''}
+        personNumbers={accountNumber ?? ''}
         titleOne={t('Primary Account Balance')}
         amountOne={primaryAccountBalance}
         titleTwo={t('Your Remaining Allowable Salary')}
         amountTwo={remainingAllowableSalary}
         spouseComponent={<SpouseComponent />}
+        showContent
       />
       <Typography variant="body1" paragraph>
         {t(

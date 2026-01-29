@@ -1,9 +1,11 @@
+import { useRouter } from 'next/router';
 import React, { useMemo } from 'react';
 import { Box, Stack } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { DirectionButtons } from 'src/components/Reports/Shared/CalculationReports/DirectionButtons/DirectionButtons';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
+import { NoStaffAccount } from 'src/components/Reports/Shared/NoStaffAccount/NoStaffAccount';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import { PanelLayout } from '../../Shared/CalculationReports/PanelLayout/PanelLayout';
@@ -18,9 +20,9 @@ import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestCon
 import { calculateCompletionPercentage } from '../Shared/calculateCompletionPercentage';
 import { StepList } from '../SharedComponents/StepList';
 
-export const mainContentWidth = theme.spacing(85);
-
 const MainContent: React.FC = () => {
+  const router = useRouter();
+  const accountListId = useAccountListId();
   const {
     handlePreviousStep,
     handleNextStep,
@@ -38,6 +40,15 @@ const MainContent: React.FC = () => {
   const isLastFormPage = currentIndex === steps.length - 2;
   const reviewPage = currentIndex === steps.length - 1;
 
+  const handleDiscard = async () => {
+    if (requestId) {
+      await handleDeleteRequest(requestId, false);
+      router.push(
+        `/accountLists/${accountListId}/reports/additionalSalaryRequest`,
+      );
+    }
+  };
+
   return (
     <Box px={theme.spacing(3)}>
       {pageType === PageEnum.View ? (
@@ -53,9 +64,7 @@ const MainContent: React.FC = () => {
                 handleNextStep={handleNextStep}
                 handlePreviousStep={handlePreviousStep}
                 showBackButton={!isFirstFormPage}
-                handleDiscard={() =>
-                  requestId && handleDeleteRequest(requestId, false)
-                }
+                handleDiscard={() => handleDiscard}
                 isSubmission={isLastFormPage}
                 submitForm={submitForm}
                 validateForm={validateForm}
@@ -74,8 +83,15 @@ const MainContent: React.FC = () => {
 export const RequestPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const { pageType, isDrawerOpen, toggleDrawer, steps, currentIndex } =
-    useAdditionalSalaryRequest();
+  const {
+    pageType,
+    isDrawerOpen,
+    toggleDrawer,
+    steps,
+    currentIndex,
+    staffAccountId,
+    staffAccountIdLoading,
+  } = useAdditionalSalaryRequest();
   const { values } = useFormikContext<CompleteFormValues>();
   const iconPanelItems = useIconPanelItems(isDrawerOpen, toggleDrawer);
 
@@ -83,6 +99,10 @@ export const RequestPage: React.FC = () => {
     () => calculateCompletionPercentage(values),
     [values],
   );
+
+  if (!staffAccountId && !staffAccountIdLoading) {
+    return <NoStaffAccount />;
+  }
 
   return (
     <PanelLayout

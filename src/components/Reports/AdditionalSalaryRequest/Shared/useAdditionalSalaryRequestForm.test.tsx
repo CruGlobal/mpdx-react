@@ -37,6 +37,7 @@ const mockHandleNextStep = jest.fn();
 
 const defaultMockContextValue: AdditionalSalaryRequestType = {
   staffAccountId: 'staff-account-1',
+  staffAccountIdLoading: false,
   steps: [],
   currentIndex: 1,
   currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,

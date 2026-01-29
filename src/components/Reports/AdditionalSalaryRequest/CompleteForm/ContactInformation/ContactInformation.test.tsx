@@ -27,30 +27,13 @@ const TestWrapper: React.FC<TestWrapperProps> = ({
 
 describe('ContactInformation', () => {
   it('renders telephone number field', () => {
-    const { getByLabelText } = render(<TestWrapper />);
-
-    expect(getByLabelText('Telephone Number')).toBeInTheDocument();
-  });
-
-  it('renders email address label', () => {
-    const { getByText } = render(<TestWrapper />);
-
-    expect(getByText('Email Address')).toBeInTheDocument();
-  });
-
-  it('displays placeholder text when email is not provided', () => {
-    const { getByText } = render(<TestWrapper />);
-
-    expect(getByText('email address')).toBeInTheDocument();
-  });
-
-  it('displays email address when provided', () => {
-    const { getByText, queryByText } = render(
+    const { getByLabelText, getByDisplayValue } = render(
       <TestWrapper email="test@example.com" />,
     );
 
-    expect(getByText('test@example.com')).toBeInTheDocument();
-    expect(queryByText('email address')).not.toBeInTheDocument();
+    expect(getByLabelText('Telephone Number')).toBeInTheDocument();
+    expect(getByLabelText('Email')).toBeInTheDocument();
+    expect(getByDisplayValue('test@example.com')).toBeInTheDocument();
   });
 
   it('displays telephone number from initial values', async () => {

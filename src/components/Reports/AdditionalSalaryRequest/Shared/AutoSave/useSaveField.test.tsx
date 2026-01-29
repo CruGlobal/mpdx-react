@@ -53,6 +53,7 @@ const mockTrackMutation = jest.fn((mutation) => mutation);
 
 const defaultMockContextValue: AdditionalSalaryRequestType = {
   staffAccountId: 'staff-account-1',
+  staffAccountIdLoading: false,
   steps: [],
   currentIndex: 1,
   currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,

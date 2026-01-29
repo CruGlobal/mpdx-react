@@ -71,6 +71,7 @@ const mockRequest: RequestType = {
 
 const mockContextValue = {
   staffAccountId: 'staff-1',
+  staffAccountIdLoading: false,
   steps: [],
   currentIndex: 0,
   currentStep: AdditionalSalaryRequestSectionEnum.AboutForm,
