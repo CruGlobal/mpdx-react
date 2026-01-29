@@ -107,7 +107,7 @@ export const useAdditionalSalaryRequestForm = ({
     ),
     deductTwelvePercent: false,
     phoneNumber: user?.staffInfo?.primaryPhoneNumber || '',
-    email: user?.staffInfo?.emailAddress || '',
+    emailAddress: user?.staffInfo?.emailAddress || '',
   } as CompleteFormValues;
 
   const initialValues: CompleteFormValues = useMemo(() => {
@@ -130,7 +130,7 @@ export const useAdditionalSalaryRequestForm = ({
       deductTwelvePercent: request.deductTwelvePercent || false,
       phoneNumber:
         request.phoneNumber ?? user?.staffInfo?.primaryPhoneNumber ?? '',
-      email: user?.staffInfo?.emailAddress ?? '',
+      emailAddress: request.emailAddress ?? user?.staffInfo?.emailAddress ?? '',
     } as CompleteFormValues;
   }, [providedInitialValues, requestData?.additionalSalaryRequest]);
 
@@ -151,7 +151,7 @@ export const useAdditionalSalaryRequestForm = ({
             /^[\d\s\-\(\)\+]+$/,
             t('Please enter a valid telephone number'),
           ),
-        email: yup
+        emailAddress: yup
           .string()
           .email(t('Please enter a valid email address'))
           .required(t('Email address is required')),

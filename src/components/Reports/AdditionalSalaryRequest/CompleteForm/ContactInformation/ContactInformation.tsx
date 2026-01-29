@@ -84,18 +84,17 @@ export const ContactInformation: React.FC = () => {
                 pb: 1,
               }}
             >
-              {values.email || t('email address')}
+              {values.emailAddress || t('email address')}
             </Typography>
           </Box>
         ) : (
           <AutosaveCustomTextField
             fullWidth
             variant="outlined"
-            fieldName="email"
+            fieldName="emailAddress"
             label={t('Email Address')}
             InputLabelProps={{ shrink: true }}
             sx={{ width: '60%' }}
-            InputProps={{ readOnly: true }}
           />
         )}
       </Box>

@@ -1,5 +1,11 @@
 import { useRouter } from 'next/router';
-import React, { createContext, useCallback, useMemo, useState } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { ApolloError } from '@apollo/client';
 import { DateTime } from 'luxon';
 import {
@@ -24,6 +30,8 @@ import {
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
 import { useStaffAccountIdQuery } from '../StaffAccountId.generated';
 
+export type HcmData = HcmDataQuery['hcm'][number];
+
 export type AdditionalSalaryRequestType = {
   staffAccountId: string | null | undefined;
   steps: Steps[];
@@ -44,8 +52,8 @@ export type AdditionalSalaryRequestType = {
   pageType: PageEnum | undefined;
   handleDeleteRequest: (id: string) => Promise<void>;
   requestId?: string;
-  user: HcmDataQuery['hcm'][0] | undefined;
-  spouse: HcmDataQuery['hcm'][1] | undefined;
+  user: HcmData | undefined;
+  spouse: HcmData | null;
   isMutating: boolean;
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
 };
@@ -155,7 +163,19 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     [],
   );
 
-  const [user, spouse] = hcmData?.hcm ?? [];
+  const [user, setUser] = useState<HcmData>();
+  const [spouse, setSpouse] = useState<HcmData | null>(null);
+
+  useEffect(() => {
+    if (!hcmData?.hcm?.length) {
+      setUser(undefined);
+      setSpouse(null);
+      return;
+    }
+    const [user, spouse] = hcmData.hcm;
+    setUser(user);
+    setSpouse(spouse ?? null);
+  }, [hcmData]);
 
   const staffAccountId = useMemo(
     () => staffAccountIdData?.user?.staffAccountId,

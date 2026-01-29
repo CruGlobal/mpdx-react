@@ -47,7 +47,7 @@ describe('ContactInformation', () => {
       <TestWrapper
         initialValues={{
           ...defaultCompleteFormValues,
-          email: 'test@example.com',
+          emailAddress: 'test@example.com',
         }}
       />,
     );

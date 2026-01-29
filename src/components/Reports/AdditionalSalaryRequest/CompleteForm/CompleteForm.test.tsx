@@ -302,7 +302,7 @@ describe('CompleteForm', () => {
         <TestWrapper
           initialValues={{
             ...defaultCompleteFormValues,
-            email: 'john.doe@example.com',
+            emailAddress: 'john.doe@example.com',
           }}
         />,
       );
