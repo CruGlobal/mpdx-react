@@ -27,11 +27,11 @@ export const EditForm: React.FC = () => {
       <NameDisplay
         names={name ?? ''}
         personNumbers={accountNumber ?? ''}
-        showContent={true}
         titleOne={t('Primary Account Balance')}
         amountOne={primaryAccountBalance}
         titleTwo={t('Your Remaining Allowable Salary')}
         amountTwo={remainingAllowableSalary}
+        showContent
       />
       <Typography variant="body1" paragraph>
         {t(
