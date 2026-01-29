@@ -30,7 +30,11 @@ import {
 export const MaxAllowableStep: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { calculation: salaryCalculation, hcm } = useSalaryCalculator();
+  const {
+    calculation: salaryCalculation,
+    hcmUser,
+    hcmSpouse,
+  } = useSalaryCalculator();
   const { calculations, spouseCalculations } = salaryCalculation ?? {};
   const [splitting, setSplitting] = useState(false);
 
@@ -56,19 +60,18 @@ export const MaxAllowableStep: React.FC = () => {
   const formattedSingleCap = formatCap(calculations?.individualCap);
   const formattedFamilyCap = formatCap(calculations?.familyCap);
 
-  const [self, spouse] = hcm ?? [];
   const calculatedCap = calculations?.calculatedCap ?? 0;
   const spouseCalculatedCap = spouseCalculations?.calculatedCap ?? 0;
   const combinedCalculatedCap = calculatedCap + spouseCalculatedCap;
-  const exceptionCap = self?.exceptionSalaryCap.amount ?? 0;
+  const exceptionCap = hcmUser?.exceptionSalaryCap.amount ?? 0;
   const cap = Math.max(
     exceptionCap,
-    (spouse ? calculations?.familyCap : calculations?.hardCap) ?? 0,
+    (hcmSpouse ? calculations?.familyCap : calculations?.hardCap) ?? 0,
   );
   // If the user and their spouse's combined calculated cap exceeds their allowed cap as a
   // family (taking into account an exception they might have), then they will need to split their
   // family cap between the two of them
-  const overCap = spouse && combinedCalculatedCap > cap;
+  const overCap = hcmSpouse && combinedCalculatedCap > cap;
   const formattedCap = currencyFormat(cap, 'USD', locale, {
     showTrailingZeros: true,
   });
@@ -76,8 +79,8 @@ export const MaxAllowableStep: React.FC = () => {
     (salaryCalculation?.salaryCap ?? 0) +
     (salaryCalculation?.spouseSalaryCap ?? 0);
 
-  const name = self?.staffInfo.preferredName;
-  const spouseName = spouse?.staffInfo.preferredName;
+  const name = hcmUser?.staffInfo.preferredName;
+  const spouseName = hcmSpouse?.staffInfo.preferredName;
 
   return (
     <StepCard>
@@ -199,7 +202,9 @@ export const MaxAllowableStep: React.FC = () => {
               <TableRow>
                 <FormattedTableCell value={t('Maximum Allowable Salary')} />
                 <FormattedTableCell value={calculatedCap} />
-                {spouse && <FormattedTableCell value={spouseCalculatedCap} />}
+                {hcmSpouse && (
+                  <FormattedTableCell value={spouseCalculatedCap} />
+                )}
               </TableRow>
             </TableBody>
           </Table>

@@ -13,14 +13,15 @@ import { useTheme } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
 import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import { AutosaveAutocomplete } from '../../Autosave/AutosaveAutocomplete';
+import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
 import { StepCard, StepTableHead } from '../../Shared/StepCard';
 import { usePersonalInformation } from './usePersonalInformation';
 
 export const PersonalInformationSection: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
+  const { hcmSpouse } = useSalaryCalculator();
   const {
-    spouse,
     selfTenure,
     spouseTenure,
     selfAge,
@@ -61,7 +62,7 @@ export const PersonalInformationSection: React.FC = () => {
                   )}
                 </Typography>
               </TableCell>
-              <TableCell colSpan={spouse ? 2 : 1}>
+              <TableCell colSpan={hcmSpouse ? 2 : 1}>
                 <AutosaveAutocomplete
                   label={t('Nearest Geographic Multiplier Location')}
                   fieldName="location"
@@ -80,17 +81,17 @@ export const PersonalInformationSection: React.FC = () => {
             <TableRow>
               <TableCell>{t('Tenure')}</TableCell>
               <TableCell>{selfTenure}</TableCell>
-              {spouse && <TableCell>{spouseTenure}</TableCell>}
+              {hcmSpouse && <TableCell>{spouseTenure}</TableCell>}
             </TableRow>
             <TableRow>
               <TableCell>{t('Age')}</TableCell>
               <TableCell>{selfAge}</TableCell>
-              {spouse && <TableCell>{spouseAge}</TableCell>}
+              {hcmSpouse && <TableCell>{spouseAge}</TableCell>}
             </TableRow>
             <TableRow>
               <TableCell>{t('Children')}</TableCell>
               <TableCell>{selfChildren}</TableCell>
-              {spouse && <TableCell>{spouseChildren}</TableCell>}
+              {hcmSpouse && <TableCell>{spouseChildren}</TableCell>}
             </TableRow>
           </TableBody>
         </Table>

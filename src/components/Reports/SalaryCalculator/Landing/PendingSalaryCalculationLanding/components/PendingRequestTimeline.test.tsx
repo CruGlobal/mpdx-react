@@ -27,6 +27,7 @@ const createCalculation = (
   emailAddress: null,
   submittedAt: '2025-01-15T10:00:00Z',
   changesRequestedAt: null,
+  updatedAt: '2025-01-15T10:00:00Z',
   feedback,
 });
 

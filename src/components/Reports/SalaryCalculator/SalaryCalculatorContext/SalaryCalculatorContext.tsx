@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import { Box, CircularProgress } from '@mui/material';
 import { useStepList } from 'src/hooks/useStepList';
+import { useTrackMutation } from 'src/hooks/useTrackMutation';
 import { FormEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
 import { HcmQuery, useHcmQuery } from './Hcm.generated';
@@ -35,10 +36,15 @@ export interface SalaryCalculatorContextType {
   setDrawerOpen: Dispatch<SetStateAction<boolean>>;
   toggleDrawer: () => void;
 
-  hcm: HcmQuery['hcm'] | null;
   hcmUser: HcmQuery['hcm'][number] | null;
   hcmSpouse: HcmQuery['hcm'][number] | null;
   calculation: SalaryCalculationQuery['salaryRequest'] | null;
+
+  /** Whether any mutations are currently in progress */
+  isMutating: boolean;
+  /** Call with the mutation promise to track the start and end of mutations */
+  trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
+  loading: boolean;
 }
 
 const SalaryCalculatorContext =
@@ -71,14 +77,17 @@ export const SalaryCalculatorProvider: React.FC<
 
   const [isDrawerOpen, setDrawerOpen] = useState(true);
   const { data: hcmData } = useHcmQuery();
-  const { data: calculationData } = useSalaryCalculationQuery();
+  const { data: calculationData, loading } = useSalaryCalculationQuery();
+  const { trackMutation, isMutating } = useTrackMutation();
+  const calculation = calculationData?.salaryRequest ?? null;
 
   const toggleDrawer = useCallback(() => {
     setDrawerOpen((prev) => !prev);
   }, []);
 
-  const contextValue: SalaryCalculatorContextType = useMemo(
-    () => ({
+  const contextValue: SalaryCalculatorContextType = useMemo(() => {
+    const hcmSpouse = hcmData?.hcm[1] ?? null;
+    return {
       steps,
       currentIndex,
       percentComplete,
@@ -87,23 +96,28 @@ export const SalaryCalculatorProvider: React.FC<
       isDrawerOpen,
       setDrawerOpen,
       toggleDrawer,
-      hcm: hcmData?.hcm ?? null,
       hcmUser: hcmData?.hcm[0] ?? null,
-      hcmSpouse: hcmData?.hcm[1] ?? null,
-      calculation: calculationData?.salaryRequest ?? null,
-    }),
-    [
-      steps,
-      currentIndex,
-      percentComplete,
-      handleNextStep,
-      handlePreviousStep,
-      isDrawerOpen,
-      toggleDrawer,
-      hcmData,
-      calculationData,
-    ],
-  );
+      // Ignore spouses that aren't eligible to make a salary request
+      hcmSpouse: hcmSpouse?.salaryRequestEligible ? hcmSpouse : null,
+      calculation,
+      isMutating,
+      trackMutation,
+      loading,
+    };
+  }, [
+    steps,
+    currentIndex,
+    percentComplete,
+    handleNextStep,
+    handlePreviousStep,
+    isDrawerOpen,
+    toggleDrawer,
+    hcmData,
+    calculationData,
+    isMutating,
+    trackMutation,
+    loading,
+  ]);
 
   if (!calculationData) {
     return (

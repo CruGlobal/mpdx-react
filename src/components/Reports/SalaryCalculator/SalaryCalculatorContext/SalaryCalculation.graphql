@@ -12,6 +12,7 @@ fragment SalaryRequestFields on SalaryRequest {
   phoneNumber
   emailAddress
   submittedAt
+  updatedAt
 }
 
 fragment CalculationFields on SalaryRequestCalculations {

@@ -23,13 +23,13 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
   const router = useRouter();
   const accountListId = useAccountListId();
   const {
+    self,
     loading,
     staffAccountId,
     names,
     salaryData: { currentGrossSalary },
     accountBalance,
     hasInProgressCalculation,
-    canCalculateSalary,
   } = useLandingData();
 
   const [createSalaryCalculation, { loading: creatingCalculation }] =
@@ -114,7 +114,7 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
           amountTwo={accountBalance}
         />
         <SalaryInformationCard />
-        {canCalculateSalary && (
+        {self?.salaryRequestEligible && (
           <Box sx={{ marginTop: theme.spacing(4) }}>
             <Button
               variant="contained"

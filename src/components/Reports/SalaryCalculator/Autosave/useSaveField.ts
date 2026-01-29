@@ -4,7 +4,7 @@ import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculator
 import { useUpdateSalaryCalculationMutation } from './SalaryCalculation.generated';
 
 export const useSaveField = () => {
-  const { calculation } = useSalaryCalculator();
+  const { calculation, trackMutation } = useSalaryCalculator();
   const [updateCalculation] = useUpdateSalaryCalculationMutation();
 
   const saveField = useCallback(
@@ -20,27 +20,29 @@ export const useSaveField = () => {
         return;
       }
 
-      return updateCalculation({
-        variables: {
-          input: {
-            attributes: {
-              id: calculation.id,
-              ...attributes,
+      return trackMutation(
+        updateCalculation({
+          variables: {
+            input: {
+              attributes: {
+                id: calculation.id,
+                ...attributes,
+              },
             },
           },
-        },
-        optimisticResponse: {
-          updateSalaryRequest: {
-            __typename: 'SalaryRequestUpdateMutationPayload',
-            salaryRequest: {
-              ...calculation,
-              ...attributes,
+          optimisticResponse: {
+            updateSalaryRequest: {
+              __typename: 'SalaryRequestUpdateMutationPayload',
+              salaryRequest: {
+                ...calculation,
+                ...attributes,
+              },
             },
           },
-        },
-      });
+        }),
+      );
     },
-    [calculation, updateCalculation],
+    [calculation, updateCalculation, trackMutation],
   );
 
   return saveField;
