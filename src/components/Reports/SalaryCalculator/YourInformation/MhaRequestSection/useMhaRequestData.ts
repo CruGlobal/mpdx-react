@@ -126,7 +126,6 @@ export const useMhaRequestData = () => {
   );
 
   return {
-    hasSpouse,
     schema,
     currentTakenAmount: currentTakenAmountFormatted,
     currentSpouseTakenAmount: currentApprovedSpouseTakenAmountFormatted,
