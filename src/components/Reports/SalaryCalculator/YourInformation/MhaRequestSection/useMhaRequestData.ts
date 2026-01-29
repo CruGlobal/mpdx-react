@@ -13,6 +13,37 @@ export const useMhaRequestData = () => {
 
   const hasSpouse = !!hcmSpouse;
 
+  // User MHA eligibility and request status
+  const userEligibleForMha = hcmUser?.mhaEit.mhaEligibility ?? false;
+  const userHasMhaRequest =
+    (hcmUser?.mhaRequest.currentApprovedOverallAmount ?? 0) > 0;
+
+  // Spouse MHA eligibility and request status
+  const spouseEligibleForMha = hcmSpouse?.mhaEit.mhaEligibility ?? false;
+  const spouseHasMhaRequest =
+    (hcmSpouse?.mhaRequest.currentApprovedOverallAmount ?? 0) > 0;
+
+  // Show MHA section if either user or spouse is eligible
+  const showMhaSection = userEligibleForMha || spouseEligibleForMha;
+
+  // Show form if at least one eligible person has an MHA request
+  const showMhaForm =
+    (userEligibleForMha && userHasMhaRequest) ||
+    (spouseEligibleForMha && spouseHasMhaRequest);
+
+  // Show "no MHA" message for eligible people who don't have an MHA
+  const showUserNoMhaMessage = userEligibleForMha && !userHasMhaRequest;
+  const showSpouseNoMhaMessage =
+    hasSpouse && spouseEligibleForMha && !spouseHasMhaRequest;
+
+  // Determine which fields should be shown/editable
+  const showUserFields = userEligibleForMha && userHasMhaRequest;
+  const showSpouseFields =
+    hasSpouse && spouseEligibleForMha && spouseHasMhaRequest;
+
+  const userPreferredName = hcmUser?.staffInfo.preferredName ?? '';
+  const spousePreferredName = hcmSpouse?.staffInfo.preferredName ?? '';
+
   const approvedAmount = hcmUser?.mhaRequest.currentApprovedOverallAmount ?? 0;
   const approvedAmountFormatted = useMemo(
     () => currencyFormat(approvedAmount, 'USD', locale),
@@ -103,5 +134,13 @@ export const useMhaRequestData = () => {
     difference: differenceFormatted,
     approvedAmount: approvedAmountFormatted,
     progressPercentage,
+    showMhaSection,
+    showMhaForm,
+    showUserNoMhaMessage,
+    showSpouseNoMhaMessage,
+    showUserFields,
+    showSpouseFields,
+    userPreferredName,
+    spousePreferredName,
   };
 };
