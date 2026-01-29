@@ -15,7 +15,7 @@ import { StepCard } from './StepCard';
 export const ContactInformationSummaryCard: React.FC = () => {
   const { t } = useTranslation();
   const { requestData, user } = useAdditionalSalaryRequest();
-  const email = user?.staffInfo?.emailAddress ?? '';
+  const email = user?.staffInfo.emailAddress;
   const { phoneNumber } = requestData?.additionalSalaryRequest ?? {};
 
   return (
@@ -32,16 +32,14 @@ export const ContactInformationSummaryCard: React.FC = () => {
                 <Typography variant="body1">{phoneNumber}</Typography>
               </TableCell>
             </TableRow>
-            {email && (
-              <TableRow sx={{ '& td': { borderBottom: 'none' } }}>
-                <TableCell sx={{ width: '50%' }}>
-                  <Typography variant="body1">{t('Email')}</Typography>
-                </TableCell>
-                <TableCell sx={{ width: '50%' }}>
-                  <Typography variant="body1">{email}</Typography>
-                </TableCell>
-              </TableRow>
-            )}
+            <TableRow sx={{ '& td': { borderBottom: 'none' } }}>
+              <TableCell sx={{ width: '50%' }}>
+                <Typography variant="body1">{t('Email')}</Typography>
+              </TableCell>
+              <TableCell sx={{ width: '50%' }}>
+                <Typography variant="body1">{email}</Typography>
+              </TableCell>
+            </TableRow>
           </TableBody>
         </Table>
       </CardContent>
