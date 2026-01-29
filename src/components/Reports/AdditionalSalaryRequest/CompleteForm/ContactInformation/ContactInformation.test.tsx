@@ -28,7 +28,22 @@ describe('ContactInformation', () => {
     const { getByLabelText } = render(<TestWrapper />);
 
     expect(getByLabelText('Telephone Number')).toBeInTheDocument();
-    expect(getByLabelText('Email')).toBeInTheDocument();
+    expect(getByLabelText('Email Address')).toBeInTheDocument();
+  });
+
+  it('displays email address from initial values', async () => {
+    const valuesWithEmail: CompleteFormValues = {
+      ...defaultCompleteFormValues,
+      emailAddress: 'test@example.com',
+    };
+
+    const { getByLabelText } = render(
+      <TestWrapper initialValues={valuesWithEmail} />,
+    );
+
+    await waitFor(() => {
+      expect(getByLabelText('Email Address')).toHaveValue('test@example.com');
+    });
   });
 
   it('displays telephone number from initial values', async () => {

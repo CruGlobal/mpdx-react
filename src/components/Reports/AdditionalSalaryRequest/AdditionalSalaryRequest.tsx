@@ -51,6 +51,7 @@ export const AdditionalSalaryRequest: React.FC = () => {
     currentIndex,
     requestsError,
     requestsData,
+    user,
   } = useAdditionalSalaryRequest();
 
   const [createAdditionalSalaryRequest] =
@@ -61,7 +62,10 @@ export const AdditionalSalaryRequest: React.FC = () => {
   const handleCreateAsrRequest = useCallback(() => {
     createAdditionalSalaryRequest({
       variables: {
-        attributes: {},
+        attributes: {
+          phoneNumber: user?.staffInfo?.primaryPhoneNumber,
+          emailAddress: user?.staffInfo?.emailAddress,
+        },
       },
       refetchQueries: ['AdditionalSalaryRequests'],
       onCompleted: ({ createAdditionalSalaryRequest: newRequest }) => {
@@ -90,7 +94,7 @@ export const AdditionalSalaryRequest: React.FC = () => {
         );
       },
     });
-  }, [createAdditionalSalaryRequest, enqueueSnackbar, t, accountListId]);
+  }, [createAdditionalSalaryRequest, enqueueSnackbar, t, accountListId, user]);
 
   // Determine overall request status based on priority
   const allRequestStatus = useMemo((): string => {
