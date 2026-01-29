@@ -21,7 +21,7 @@ import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 export const Deduction: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { pageType, requestData } = useAdditionalSalaryRequest();
+  const { requestData, pageType } = useAdditionalSalaryRequest();
   const { values: formValues, setFieldValue } =
     useFormikContext<CompleteFormValues>();
 
@@ -31,7 +31,7 @@ export const Deduction: React.FC = () => {
     requestData?.additionalSalaryRequest?.traditional403bContribution ?? 0;
 
   const { calculatedDeduction, contribution403b, totalDeduction } =
-    useSalaryCalculations(traditional403bContribution);
+    useSalaryCalculations({ traditional403bContribution, values: formValues });
 
   const handleCheckboxChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,7 +43,7 @@ export const Deduction: React.FC = () => {
   );
 
   return (
-    <FormCard title={t('403(b) Deduction')}>
+    <FormCard title={t('403(b) Deduction')} hideHeaders={true}>
       <TableRow>
         <TableCell sx={{ width: '70%' }}>
           <FormControlLabel

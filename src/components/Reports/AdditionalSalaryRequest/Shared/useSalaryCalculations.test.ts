@@ -50,7 +50,7 @@ describe('useSalaryCalculations', () => {
     };
 
     const { result } = renderHook(
-      () => useSalaryCalculations(traditional403bContribution),
+      () => useSalaryCalculations({ traditional403bContribution, values }),
       {
         wrapper: ({ children }) => FormikWrapper({ children, values }),
       },
@@ -61,6 +61,8 @@ describe('useSalaryCalculations', () => {
     expect(result.current.contribution403b).toBe(1000);
     expect(result.current.totalDeduction).toBe(2320); // 1320 + 1000
     expect(result.current.netSalary).toBe(8680); // 11000 - 2320
+    expect(result.current.totalAnnualSalary).toBe(11000); // No calculations data, so just total
+    expect(result.current.remainingInMaxAllowable).toBe(-11000); // 0 - 11000
   });
 
   it('calculates all salary values correctly with default percentage disabled', () => {
@@ -72,7 +74,7 @@ describe('useSalaryCalculations', () => {
     };
 
     const { result } = renderHook(
-      () => useSalaryCalculations(traditional403bContribution),
+      () => useSalaryCalculations({ traditional403bContribution, values }),
       {
         wrapper: ({ children }) => FormikWrapper({ children, values }),
       },
@@ -94,7 +96,7 @@ describe('useSalaryCalculations', () => {
     };
 
     const { result } = renderHook(
-      () => useSalaryCalculations(traditional403bContribution),
+      () => useSalaryCalculations({ traditional403bContribution, values }),
       {
         wrapper: ({ children }) => FormikWrapper({ children, values }),
       },
@@ -116,7 +118,7 @@ describe('useSalaryCalculations', () => {
     };
 
     const { result } = renderHook(
-      () => useSalaryCalculations(traditional403bContribution),
+      () => useSalaryCalculations({ traditional403bContribution, values }),
       {
         wrapper: ({ children }) => FormikWrapper({ children, values }),
       },
@@ -149,7 +151,7 @@ describe('useSalaryCalculations', () => {
     };
 
     const { result } = renderHook(
-      () => useSalaryCalculations(traditional403bContribution),
+      () => useSalaryCalculations({ traditional403bContribution, values }),
       {
         wrapper: ({ children }) => FormikWrapper({ children, values }),
       },
@@ -169,7 +171,7 @@ describe('useSalaryCalculations', () => {
     };
 
     const { result } = renderHook(
-      () => useSalaryCalculations(traditional403bContribution),
+      () => useSalaryCalculations({ traditional403bContribution, values }),
       {
         wrapper: ({ children }) => FormikWrapper({ children, values }),
       },
@@ -180,5 +182,71 @@ describe('useSalaryCalculations', () => {
     expect(result.current.contribution403b).toBe(0);
     expect(result.current.totalDeduction).toBe(0);
     expect(result.current.netSalary).toBe(0);
+    expect(result.current.totalAnnualSalary).toBe(0);
+    expect(result.current.remainingInMaxAllowable).toBe(0);
+  });
+
+  it('calculates totalAnnualSalary and remainingInMaxAllowable with calculations data', () => {
+    const values: CompleteFormValues = {
+      ...baseValues,
+      currentYearSalaryNotReceived: '5000',
+    };
+
+    const calculations = {
+      maxAmountAndReason: { amount: 100000 },
+      pendingAsrAmount: 10000,
+    };
+
+    const { result } = renderHook(
+      () =>
+        useSalaryCalculations({
+          traditional403bContribution,
+          values,
+          calculations,
+          grossSalaryAmount: 50000,
+        }),
+      {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      },
+    );
+
+    expect(result.current.total).toBe(5000);
+    // totalAnnualSalary = grossAnnualSalary + additionalSalaryReceivedThisYear + total
+    // = 50000 + 10000 + 5000 = 65000
+    expect(result.current.totalAnnualSalary).toBe(65000);
+    // remainingInMaxAllowable = maxAllowableSalary - totalAnnualSalary
+    // = 100000 - 65000 = 35000
+    expect(result.current.remainingInMaxAllowable).toBe(35000);
+  });
+
+  it('handles negative remainingInMaxAllowable when over max', () => {
+    const values: CompleteFormValues = {
+      ...baseValues,
+      currentYearSalaryNotReceived: '30000',
+    };
+
+    const calculations = {
+      maxAmountAndReason: { amount: 80000 },
+      pendingAsrAmount: 10000,
+    };
+
+    const { result } = renderHook(
+      () =>
+        useSalaryCalculations({
+          traditional403bContribution,
+          values,
+          calculations,
+          grossSalaryAmount: 50000,
+        }),
+      {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      },
+    );
+
+    expect(result.current.total).toBe(30000);
+    // totalAnnualSalary = 50000 + 10000 + 30000 = 90000
+    expect(result.current.totalAnnualSalary).toBe(90000);
+    // remainingInMaxAllowable = 80000 - 90000 = -10000
+    expect(result.current.remainingInMaxAllowable).toBe(-10000);
   });
 });

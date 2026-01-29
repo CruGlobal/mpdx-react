@@ -1,12 +1,27 @@
-import { CompleteFormValues } from '../../AdditionalSalaryRequest';
+const numericFields = [
+  'currentYearSalaryNotReceived',
+  'previousYearSalaryNotReceived',
+  'additionalSalaryWithinMax',
+  'adoption',
+  'traditional403bContribution',
+  'counselingNonMedical',
+  'healthcareExpensesExceedingLimit',
+  'babysittingMinistryEvents',
+  'childrenMinistryTripExpenses',
+  'childrenCollegeEducation',
+  'movingExpense',
+  'seminary',
+  'housingDownPayment',
+  'autoPurchase',
+  'expensesNotApprovedWithin90Days',
+] as const;
 
-export const getTotal = (values: CompleteFormValues): number => {
-  // Calculate total excluding the deductTwelvePercent boolean and phoneNumber string
-  const total = Object.entries(values).reduce((sum, [key, val]) => {
-    if (key === 'deductTwelvePercent' || key === 'phoneNumber') {
-      return sum;
-    }
-    return sum + Number(val || 0);
+type NumericField = (typeof numericFields)[number];
+
+type TotalableValues = Partial<Record<NumericField, string | number | null>>;
+
+export const getTotal = (values: TotalableValues): number => {
+  return numericFields.reduce((sum, key) => {
+    return sum + Number(values[key] || 0);
   }, 0);
-  return total;
 };

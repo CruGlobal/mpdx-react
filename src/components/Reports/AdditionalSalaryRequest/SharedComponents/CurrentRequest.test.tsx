@@ -124,11 +124,14 @@ describe('CurrentRequest', () => {
     expect(getByText('$5,000.00')).toBeInTheDocument();
   });
 
-  it('renders View Request and Edit Request links', () => {
-    const { getByText } = render(<TestComponent request={mockRequest} />);
+  it('renders View Request link', () => {
+    const { getByText, queryByText } = render(
+      <TestComponent request={mockRequest} />,
+    );
 
     expect(getByText('View Request')).toBeInTheDocument();
-    expect(getByText('Edit Request')).toBeInTheDocument();
+    // Edit Request link is hidden
+    expect(queryByText('Edit Request')).not.toBeInTheDocument();
   });
 
   describe('timeline status - InProgress', () => {

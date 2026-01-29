@@ -47,8 +47,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
       iconColor="warning.main"
       linkOneText={t('View Request')}
       linkOne={getRequestUrl(accountListId, id, 'view')}
-      linkTwoText={t('Edit Request')}
-      linkTwo={getRequestUrl(accountListId, id, 'edit')}
+      hideLinkTwoButton={true}
       isRequest={true}
       handleConfirmCancel={() => handleDeleteRequest(id)}
     >
