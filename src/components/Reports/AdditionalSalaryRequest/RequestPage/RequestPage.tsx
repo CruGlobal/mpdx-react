@@ -20,8 +20,6 @@ import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestCon
 import { calculateCompletionPercentage } from '../Shared/calculateCompletionPercentage';
 import { StepList } from '../SharedComponents/StepList';
 
-export const mainContentWidth = theme.spacing(85);
-
 const MainContent: React.FC = () => {
   const router = useRouter();
   const accountListId = useAccountListId();

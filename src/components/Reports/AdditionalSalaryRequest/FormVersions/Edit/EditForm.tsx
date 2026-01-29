@@ -1,6 +1,6 @@
 import React from 'react';
 import { Stack, Typography } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import { NameDisplay } from '../../../Shared/CalculationReports/NameDisplay/NameDisplay';
 import { mainContentWidth } from '../../AdditionalSalaryRequest';
 import { AdditionalSalaryRequest } from '../../CompleteForm/AdditionalSalaryRequest/AdditionalSalaryRequest';
@@ -42,11 +42,13 @@ export const EditForm: React.FC = () => {
       <Deduction />
       <NetAdditionalSalary />
       <TotalAnnualSalarySummaryCard />
-      <Typography variant="body1" paragraph>
-        {t(
-          'If the above information is correct, please confirm your telephone number and email address and click "Submit" to process this form.',
-        )}
-      </Typography>
+      <Trans t={t}>
+        <Typography variant="body1" paragraph>
+          If the above information is correct, please confirm your telephone
+          number and email address and click &quot;Submit&quot; to process this
+          form.
+        </Typography>
+      </Trans>
       <ContactInformation email={email ?? ''} />
       <ValidationAlert />
     </Stack>

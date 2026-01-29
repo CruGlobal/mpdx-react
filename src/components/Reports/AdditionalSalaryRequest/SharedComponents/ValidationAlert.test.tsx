@@ -50,7 +50,7 @@ const TestFormikWrapper: React.FC<TestWrapperProps> = ({
     if (submitOnMount) {
       formik.submitForm();
     }
-  }, []);
+  }, [formik.submitForm]);
 
   return <FormikProvider value={formik}>{children}</FormikProvider>;
 };
