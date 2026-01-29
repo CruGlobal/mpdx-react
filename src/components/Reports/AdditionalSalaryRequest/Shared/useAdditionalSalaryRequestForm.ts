@@ -171,7 +171,9 @@ export const useAdditionalSalaryRequestForm = ({
           attributes: {
             ...Object.fromEntries(
               Object.entries(values).map(([key, value]) =>
-                typeof value === 'string' && key !== 'phoneNumber' && key !== 'emailAddress'
+                typeof value === 'string' &&
+                key !== 'phoneNumber' &&
+                key !== 'emailAddress'
                   ? [key, parseFloat(value) || 0]
                   : [key, value],
               ),
