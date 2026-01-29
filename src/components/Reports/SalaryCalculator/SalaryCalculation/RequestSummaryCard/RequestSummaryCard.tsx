@@ -55,7 +55,7 @@ export const RequestSummaryCard: React.FC = () => {
   const theme = useTheme();
   const { calculation, hcmUser, hcmSpouse } = useSalaryCalculator();
   const progressiveApprovalTier = calculation?.progressiveApprovalTier;
-  const overCombinedCap =
+  const approvalRequired =
     !!progressiveApprovalTier &&
     progressiveApprovalTier?.tier !== ProgressiveApprovalTierEnum.DivisionHead;
   const { combinedCap, combinedGross, overCapName, overCapSalary } = useCaps();
@@ -93,18 +93,7 @@ export const RequestSummaryCard: React.FC = () => {
   const combinedModifier = hasSpouse ? t('Combined') : '';
   const statusMessage = !progressiveApprovalTier ? (
     t('Your gross request is within your Maximum Allowable Salary.')
-  ) : progressiveApprovalTier.tier ===
-    ProgressiveApprovalTierEnum.DivisionHead ? (
-    <Trans t={t}>
-      Your Combined Gross Requested Salary is within your Combined Maximum
-      Allowable Salary. However, {{ name: overCapName }}
-      &apos;s Gross Requested Salary exceeds his individual Maximum Allowable
-      Salary. If this is correct, please provide reasoning for why{' '}
-      {{ name: overCapName }}&apos;s Salary should exceed{' '}
-      {{ salary: overCapSalary }} in the Additional Information section below or
-      make changes to how your Requested Salary is distributed above.
-    </Trans>
-  ) : (
+  ) : approvalRequired ? (
     <Trans t={t}>
       Your {{ combined: combinedModifier }} Gross Requested Salary exceeds your{' '}
       {{ combined: combinedModifier }} Maximum Allowable Salary. Please make
@@ -114,6 +103,16 @@ export const RequestSummaryCard: React.FC = () => {
       {{ timeframe: progressiveApprovalTier.approvalTimeframe }} as it needs to
       be signed off by the {{ approver: progressiveApprovalTier.approver }}.
       This may affect your selected effective date.
+    </Trans>
+  ) : (
+    <Trans t={t}>
+      Your Combined Gross Requested Salary is within your Combined Maximum
+      Allowable Salary. However, {{ name: overCapName }}
+      &apos;s Gross Requested Salary exceeds his individual Maximum Allowable
+      Salary. If this is correct, please provide reasoning for why{' '}
+      {{ name: overCapName }}&apos;s Salary should exceed{' '}
+      {{ salary: overCapSalary }} in the Additional Information section below or
+      make changes to how your Requested Salary is distributed above.
     </Trans>
   );
 
@@ -155,7 +154,7 @@ export const RequestSummaryCard: React.FC = () => {
             </span>
             <span
               aria-describedby={requestedVsMaxId}
-              className={overCombinedCap ? 'invalid' : undefined}
+              className={approvalRequired ? 'invalid' : undefined}
             >
               {formatCurrency(combinedGross)} / {formatCurrency(combinedCap)}
             </span>
@@ -164,7 +163,7 @@ export const RequestSummaryCard: React.FC = () => {
           <Distribution
             categories={categories}
             totalCap={combinedCap}
-            invalid={overCombinedCap}
+            invalid={approvalRequired}
           />
 
           <Stack
@@ -179,7 +178,7 @@ export const RequestSummaryCard: React.FC = () => {
             </Typography>
             <Typography
               id={remainingId}
-              className={overCombinedCap ? 'invalid' : undefined}
+              className={approvalRequired ? 'invalid' : undefined}
             >
               {formatCurrency(combinedCap - combinedGross)}
             </Typography>
@@ -263,12 +262,12 @@ export const RequestSummaryCard: React.FC = () => {
                     <InfoIcon />
                   </Tooltip>
                 </TableCell>
-                <TableCell className={overCombinedCap ? 'invalid' : undefined}>
+                <TableCell className={approvalRequired ? 'invalid' : undefined}>
                   {formatCurrency(calcs?.requestedGross)}
                 </TableCell>
                 {hasSpouse && (
                   <TableCell
-                    className={overCombinedCap ? 'invalid' : undefined}
+                    className={approvalRequired ? 'invalid' : undefined}
                   >
                     {formatCurrency(spouseCalcs.requestedGross)}
                   </TableCell>

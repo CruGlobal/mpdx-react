@@ -30,6 +30,8 @@ export const ApprovalProcessCard: React.FC = () => {
     return null;
   }
 
+  const approvalRequired = tier !== ProgressiveApprovalTierEnum.DivisionHead;
+
   return (
     <StepCard>
       <StyledCardHeader
@@ -41,11 +43,11 @@ export const ApprovalProcessCard: React.FC = () => {
               color="info.main"
               sx={{ fontWeight: 'bold' }}
             >
-              {tier === ProgressiveApprovalTierEnum.DivisionHead
-                ? t('Additional Information')
-                : t('Approval Process')}
+              {approvalRequired
+                ? t('Approval Process')
+                : t('Additional Information')}
             </Typography>
-            {tier !== ProgressiveApprovalTierEnum.DivisionHead && (
+            {approvalRequired && (
               <Typography color="textSecondary" ml={4}>
                 {t('Approvals are needed for this request')}
               </Typography>
@@ -55,19 +57,19 @@ export const ApprovalProcessCard: React.FC = () => {
       />
       <CardContent>
         <Typography paragraph data-testid="ApprovalProcessCard-status">
-          {tier === ProgressiveApprovalTierEnum.DivisionHead ? (
+          {approvalRequired ? (
+            <Trans t={t}>
+              Since you are requesting above your and {{ spouse: spouseName }}
+              &apos;s combined Maximum Allowable Salary, you will need to
+              provide the information below.
+            </Trans>
+          ) : (
             <Trans t={t}>
               {{ name: overCapName }}&apos;s Gross Requested Salary exceeds
               their individual Maximum Allowable Salary. If this is correct,
               please provide reasoning for why {{ name: overCapName }}&apos;s
               Salary should exceed {{ salary: overCapSalary }} or make changes
               to your Requested Salary above.
-            </Trans>
-          ) : (
-            <Trans t={t}>
-              Since you are requesting above your and {{ spouse: spouseName }}
-              &apos;s combined Maximum Allowable Salary, you will need to
-              provide the information below.
             </Trans>
           )}
         </Typography>
