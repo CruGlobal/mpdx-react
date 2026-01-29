@@ -33,9 +33,13 @@ const defaultMockContextValue = {
       traditional403bContribution: 0.12,
       calculations: {
         maxAmountAndReason: { amount: 100000 },
-        predictedYearIncome: 50000,
         pendingAsrAmount: 5000,
       },
+    },
+  },
+  user: {
+    currentSalary: {
+      grossSalaryAmount: 50000,
     },
   },
 };
@@ -185,9 +189,13 @@ describe('TotalAnnualSalarySummaryCard', () => {
               traditional403bContribution: 0.12,
               calculations: {
                 maxAmountAndReason: { amount: 50000 },
-                predictedYearIncome: 60000,
                 pendingAsrAmount: 10000,
               },
+            },
+          },
+          user: {
+            currentSalary: {
+              grossSalaryAmount: 60000,
             },
           },
         },
