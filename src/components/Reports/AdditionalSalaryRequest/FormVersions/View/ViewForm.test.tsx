@@ -15,9 +15,9 @@ import { defaultCompleteFormValues } from '../../Shared/CompleteForm.mock';
 import { fieldConfig } from '../../Shared/useAdditionalSalaryRequestForm';
 import { ViewForm } from './ViewForm';
 
-jest.mock('../Shared/AdditionalSalaryRequestContext', () => {
+jest.mock('../../Shared/AdditionalSalaryRequestContext', () => {
   const originalModule = jest.requireActual(
-    '../Shared/AdditionalSalaryRequestContext',
+    '../../Shared/AdditionalSalaryRequestContext',
   );
   return {
     ...originalModule,
@@ -132,7 +132,7 @@ describe('ViewForm', () => {
   it('renders page with user info and navigation', () => {
     const { getByText, getByRole } = renderComponent();
 
-    expect(getByText('ViewForm Your Request')).toBeInTheDocument();
+    expect(getByText('View Your Request')).toBeInTheDocument();
     expect(getByText('Doe, John')).toBeInTheDocument();
     expect(getByText('00123456')).toBeInTheDocument();
 

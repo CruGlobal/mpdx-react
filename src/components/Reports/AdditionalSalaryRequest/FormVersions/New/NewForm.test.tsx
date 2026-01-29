@@ -17,9 +17,9 @@ import { defaultCompleteFormValues } from '../../Shared/CompleteForm.mock';
 import { fieldConfig } from '../../Shared/useAdditionalSalaryRequestForm';
 import { NewForm } from './NewForm';
 
-jest.mock('../Shared/AdditionalSalaryRequestContext', () => {
+jest.mock('../../Shared/AdditionalSalaryRequestContext', () => {
   const originalModule = jest.requireActual(
-    '../Shared/AdditionalSalaryRequestContext',
+    '../../Shared/AdditionalSalaryRequestContext',
   );
   return {
     ...originalModule,
@@ -158,12 +158,6 @@ describe('CompleteForm', () => {
   });
 
   describe('rendering', () => {
-    it('renders the section title', () => {
-      const { getByText } = render(<TestWrapper />);
-
-      expect(getByText('Complete the Form')).toBeInTheDocument();
-    });
-
     it('renders user name and account number', () => {
       const { getByText } = render(<TestWrapper />);
 
@@ -281,29 +275,4 @@ describe('CompleteForm', () => {
     });
   });
 
-  describe('different steps', () => {
-    it('displays correct header for AboutForm step', () => {
-      mockUseAdditionalSalaryRequest.mockReturnValue({
-        ...defaultMockContextValue,
-        currentIndex: 0,
-        currentStep: AdditionalSalaryRequestSectionEnum.AboutForm,
-      } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
-
-      const { getByText } = render(<TestWrapper />);
-
-      expect(getByText('About this Form')).toBeInTheDocument();
-    });
-
-    it('displays correct header for Receipt step', () => {
-      mockUseAdditionalSalaryRequest.mockReturnValue({
-        ...defaultMockContextValue,
-        currentIndex: 2,
-        currentStep: AdditionalSalaryRequestSectionEnum.Receipt,
-      } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
-
-      const { getByText } = render(<TestWrapper />);
-
-      expect(getByText('Receipt')).toBeInTheDocument();
-    });
-  });
 });

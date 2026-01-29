@@ -36,6 +36,9 @@ const mockUser = {
     personNumber: '00123456',
     emailAddress: 'john.doe@example.com',
   },
+  currentSalary: {
+    grossSalaryAmount: 40000,
+  },
 };
 
 const defaultMockContextValue = {
@@ -163,8 +166,10 @@ describe('EditForm', () => {
       },
     });
 
+    // staffAccountBalance defaults to 0 when calculations are undefined
     expect(getByTestId('amount-one')).toHaveTextContent('$0.00');
-    expect(getByTestId('amount-two')).toHaveTextContent('$0.00');
+    // remainingAllowableSalary = (currentSalaryCap ?? 0) - grossSalaryAmount = 0 - 40000
+    expect(getByTestId('amount-two')).toHaveTextContent('-$40,000.00');
   });
 
   it('renders all child components', () => {
