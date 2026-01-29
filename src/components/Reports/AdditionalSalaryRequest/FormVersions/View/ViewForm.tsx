@@ -7,7 +7,7 @@ import { mainContentWidth } from '../../AdditionalSalaryRequest';
 import { AdditionalSalaryRequest } from '../../CompleteForm/AdditionalSalaryRequest/AdditionalSalaryRequest';
 import { Deduction } from '../../CompleteForm/Deduction/Deduction';
 import { NetAdditionalSalary } from '../../CompleteForm/NetAdditionalSalary/NetAdditionalSalary';
-import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
+import { useFormData } from '../../Shared/useFormData';
 import { ContactInformationSummaryCard } from '../../SharedComponents/ContactInformationSummaryCard';
 import { SpouseComponent } from '../../SharedComponents/SpouseComponent';
 import { TotalAnnualSalarySummaryCard } from '../../SharedComponents/TotalAnnualSalarySummaryCard';
@@ -15,15 +15,8 @@ import { TotalAnnualSalarySummaryCard } from '../../SharedComponents/TotalAnnual
 export const ViewForm: React.FC = () => {
   const accountListId = useAccountListId();
   const { t } = useTranslation();
-  const { requestData, user } = useAdditionalSalaryRequest();
-  const { currentSalaryCap, staffAccountBalance } =
-    requestData?.additionalSalaryRequest?.calculations || {};
-  const grossSalaryAmount = user?.currentSalary?.grossSalaryAmount ?? 0;
-  const { preferredName: name, personNumber: accountNumber } =
-    user?.staffInfo || {};
-  const primaryAccountBalance = staffAccountBalance ?? 0;
-  const remainingAllowableSalary =
-    (currentSalaryCap ?? 0) - (grossSalaryAmount ?? 0);
+  const { name, accountNumber, primaryAccountBalance, remainingAllowableSalary } =
+    useFormData();
 
   return (
     <Stack gap={4} padding={4} width={mainContentWidth}>

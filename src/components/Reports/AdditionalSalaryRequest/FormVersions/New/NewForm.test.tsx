@@ -42,6 +42,9 @@ const mockUser = {
     personNumber: '00123456',
     emailAddress: 'john.doe@example.com',
   },
+  currentSalary: {
+    grossSalaryAmount: 20000,
+  },
 };
 
 const mockSpouse = {
@@ -203,7 +206,8 @@ describe('CompleteForm', () => {
       const { getByTestId } = render(<TestWrapper />);
 
       expect(getByTestId('amount-one')).toHaveTextContent('$0.00');
-      expect(getByTestId('amount-two')).toHaveTextContent('$0.00');
+      // remainingAllowableSalary = (currentSalaryCap ?? 0) - grossSalaryAmount = 0 - 20000
+      expect(getByTestId('amount-two')).toHaveTextContent('-$20,000.00');
     });
   });
 

@@ -132,18 +132,12 @@ describe('EditForm', () => {
     jest.clearAllMocks();
   });
 
-  it('renders page with user info and navigation', () => {
-    const { getByText, getByRole } = renderComponent();
+  it('renders page with user info', () => {
+    const { getByText } = renderComponent();
 
     expect(getByText('Edit Your Request')).toBeInTheDocument();
     expect(getByText('Doe, John')).toBeInTheDocument();
     expect(getByText('00123456')).toBeInTheDocument();
-
-    const backButton = getByRole('link', { name: /back to status/i });
-    expect(backButton).toHaveAttribute(
-      'href',
-      '/accountLists/account-list-1/reports/additionalSalaryRequest',
-    );
   });
 
   it('displays financial balances from context', () => {

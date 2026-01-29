@@ -1,56 +1,25 @@
-import React, { useMemo } from 'react';
-import { Alert, Stack, Typography } from '@mui/material';
-import { useFormikContext } from 'formik';
+import React from 'react';
+import { Stack, Typography } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
-import { NameDisplay } from 'src/components/Reports/Shared/CalculationReports/NameDisplay/NameDisplay';
-import {
-  CompleteFormValues,
-  mainContentWidth,
-} from '../../AdditionalSalaryRequest';
+import { NameDisplay } from '../../../Shared/CalculationReports/NameDisplay/NameDisplay';
+import { mainContentWidth } from '../../AdditionalSalaryRequest';
 import { AdditionalSalaryRequest } from '../../CompleteForm/AdditionalSalaryRequest/AdditionalSalaryRequest';
 import { ContactInformation } from '../../CompleteForm/ContactInformation/ContactInformation';
 import { Deduction } from '../../CompleteForm/Deduction/Deduction';
 import { NetAdditionalSalary } from '../../CompleteForm/NetAdditionalSalary/NetAdditionalSalary';
-import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
-import { fieldConfig } from '../../Shared/useAdditionalSalaryRequestForm';
+import { useFormData } from '../../Shared/useFormData';
+import { SpouseComponent } from '../../SharedComponents/SpouseComponent';
+import { ValidationAlert } from '../../SharedComponents/ValidationAlert';
 
 export const NewForm: React.FC = () => {
   const { t } = useTranslation();
-  const { requestData, user } = useAdditionalSalaryRequest();
-  const { submitCount, isValid, errors } =
-    useFormikContext<CompleteFormValues>();
-
-  const { currentSalaryCap, staffAccountBalance } =
-    requestData?.additionalSalaryRequest?.calculations || {};
-  const grossSalaryAmount = user?.currentSalary?.grossSalaryAmount ?? 0;
   const {
-    preferredName: name,
-    personNumber: accountNumber,
-    emailAddress: email,
-  } = user?.staffInfo || {};
-
-  const remainingAllowableSalary =
-    (currentSalaryCap ?? 0) - (grossSalaryAmount ?? 0);
-
-  const showAlert = !!submitCount && !isValid;
-
-  const exceedingLimitFields = useMemo(() => {
-    if (!errors || !submitCount) {
-      return [];
-    }
-
-    return fieldConfig
-      .filter(({ key, max }) => {
-        if (!max) {
-          return false;
-        }
-        const error = errors[key as keyof CompleteFormValues];
-        return (
-          typeof error === 'string' && error.toLowerCase().includes('exceeds')
-        );
-      })
-      .map(({ label }) => t(label));
-  }, [errors, submitCount, t]);
+    email,
+    name,
+    accountNumber,
+    primaryAccountBalance,
+    remainingAllowableSalary,
+  } = useFormData();
 
   return (
     <Stack gap={4} padding={4} width={mainContentWidth}>
@@ -59,9 +28,10 @@ export const NewForm: React.FC = () => {
         personNumbers={accountNumber ?? ''}
         showContent={true}
         titleOne={t('Primary Account Balance')}
-        amountOne={staffAccountBalance ?? 0}
+        amountOne={primaryAccountBalance}
         titleTwo={t('Your Remaining Allowable Salary')}
         amountTwo={remainingAllowableSalary}
+        spouseComponent={<SpouseComponent />}
       />
 
       <Typography variant="body1" paragraph>
@@ -70,7 +40,6 @@ export const NewForm: React.FC = () => {
         )}
       </Typography>
       <AdditionalSalaryRequest />
-      <NetAdditionalSalary />
       <Deduction />
       <NetAdditionalSalary />
       <Trans t={t}>
@@ -92,21 +61,7 @@ export const NewForm: React.FC = () => {
         </Typography>
       </Trans>
       <ContactInformation email={email ?? ''} />
-      {showAlert && (
-        <Alert severity="error" sx={{ mt: 2, '& ul': { m: 0, pl: 3 } }}>
-          {t('Your form is missing information.')}
-          <ul>
-            <li>{t('Please enter a value for all required fields.')}</li>
-            {exceedingLimitFields.length > 0 && (
-              <li>
-                {t('The following fields exceed their limits: {{fields}}', {
-                  fields: exceedingLimitFields.join(', '),
-                })}
-              </li>
-            )}
-          </ul>
-        </Alert>
-      )}
+      <ValidationAlert />
     </Stack>
   );
 };

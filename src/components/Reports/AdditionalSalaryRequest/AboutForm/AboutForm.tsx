@@ -5,22 +5,20 @@ import { Trans, useTranslation } from 'react-i18next';
 import { NameDisplay } from '../../Shared/CalculationReports/NameDisplay/NameDisplay';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { getHeader } from '../Shared/Helper/getHeader';
+import { useFormData } from '../Shared/useFormData';
 import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSalaryRequestSection';
 import { SpouseComponent } from '../SharedComponents/SpouseComponent';
 
 export const AboutForm: React.FC = () => {
-  const { currentIndex, requestData, user } = useAdditionalSalaryRequest();
+  const { currentIndex } = useAdditionalSalaryRequest();
   const { t } = useTranslation();
   const theme = useTheme();
-
-  const { currentSalaryCap, staffAccountBalance } =
-    requestData?.additionalSalaryRequest?.calculations || {};
-
-  const name = user?.staffInfo?.preferredName ?? '';
-  const accountNumber = user?.staffInfo?.personNumber ?? '';
-  const primaryAccountBalance = staffAccountBalance ?? 0;
-  const remainingAllowableSalary =
-    (currentSalaryCap ?? 0) - (staffAccountBalance ?? 0);
+  const {
+    name,
+    accountNumber,
+    primaryAccountBalance,
+    remainingAllowableSalary,
+  } = useFormData();
 
   return (
     <AdditionalSalaryRequestSection title={getHeader(currentIndex)}>
@@ -92,8 +90,8 @@ export const AboutForm: React.FC = () => {
         </Typography>
       </Trans>
       <NameDisplay
-        names={name}
-        personNumbers={accountNumber}
+        names={name ?? ''}
+        personNumbers={accountNumber ?? ''}
         showContent={true}
         titleOne={t('Primary Account Balance')}
         amountOne={primaryAccountBalance}
