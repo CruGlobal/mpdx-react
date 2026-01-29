@@ -23,9 +23,11 @@ export const NewForm: React.FC = () => {
   const { currentSalaryCap, staffAccountBalance } =
     requestData?.additionalSalaryRequest?.calculations || {};
 
-  const name = user?.staffInfo?.preferredName ?? '';
-  const accountNumber = user?.staffInfo?.personNumber ?? '';
-  const email = user?.staffInfo?.emailAddress ?? '';
+  const {
+    preferredName: name,
+    personNumber: accountNumber,
+    emailAddress: email,
+  } = user?.staffInfo || {};
 
   const primaryAccountBalance = staffAccountBalance ?? 0;
   const remainingAllowableSalary =
@@ -54,8 +56,8 @@ export const NewForm: React.FC = () => {
   return (
     <Stack gap={4} padding={4} width={mainContentWidth}>
       <NameDisplay
-        names={name}
-        personNumbers={accountNumber}
+        names={name ?? ''}
+        personNumbers={accountNumber ?? ''}
         showContent={true}
         titleOne={t('Primary Account Balance')}
         amountOne={primaryAccountBalance}
@@ -90,7 +92,7 @@ export const NewForm: React.FC = () => {
           form.
         </Typography>
       </Trans>
-      <ContactInformation email={email} />
+      <ContactInformation email={email ?? ''} />
       {showAlert && (
         <Alert severity="error" sx={{ mt: 2, '& ul': { m: 0, pl: 3 } }}>
           {t('Your form is missing information.')}

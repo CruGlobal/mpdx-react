@@ -18,19 +18,21 @@ export const EditForm: React.FC = () => {
   const { requestData, user } = useAdditionalSalaryRequest();
   const { currentSalaryCap, staffAccountBalance } =
     requestData?.additionalSalaryRequest?.calculations || {};
-  const email = user?.staffInfo?.emailAddress ?? '';
-  const name = user?.staffInfo?.preferredName ?? '';
-  const accountNumber = user?.staffInfo?.personNumber ?? '';
+  const {
+    emailAddress: email,
+    preferredName: name,
+    personNumber: accountNumber,
+  } = user?.staffInfo || {};
+  const grossSalaryAmount = user?.currentSalary?.grossSalaryAmount ?? 0;
   const primaryAccountBalance = staffAccountBalance ?? 0;
-  const remainingAllowableSalary =
-    (currentSalaryCap ?? 0) - (staffAccountBalance ?? 0);
+  const remainingAllowableSalary = (currentSalaryCap ?? 0) - grossSalaryAmount;
 
   return (
     <Stack gap={4} padding={4} width={mainContentWidth}>
       <Typography variant="h4">{t('Edit Your Request')}</Typography>
       <NameDisplay
-        names={name}
-        personNumbers={accountNumber}
+        names={name ?? ''}
+        personNumbers={accountNumber ?? ''}
         showContent={true}
         titleOne={t('Primary Account Balance')}
         amountOne={primaryAccountBalance}
@@ -52,7 +54,7 @@ export const EditForm: React.FC = () => {
           'If the above information is correct, please confirm your telephone number and email address and click "Submit" to process this form.',
         )}
       </Typography>
-      <ContactInformation email={email} />
+      <ContactInformation email={email ?? ''} />
       <Button
         component={NextLink}
         href={`/accountLists/${accountListId}/reports/additionalSalaryRequest`}

@@ -19,8 +19,8 @@ export const ViewForm: React.FC = () => {
   const { currentSalaryCap, staffAccountBalance } =
     requestData?.additionalSalaryRequest?.calculations || {};
 
-  const name = user?.staffInfo?.preferredName ?? '';
-  const accountNumber = user?.staffInfo?.personNumber ?? '';
+  const { preferredName: name, personNumber: accountNumber } =
+    user?.staffInfo || {};
   const primaryAccountBalance = staffAccountBalance ?? 0;
   const remainingAllowableSalary =
     (currentSalaryCap ?? 0) - (staffAccountBalance ?? 0);
@@ -29,8 +29,8 @@ export const ViewForm: React.FC = () => {
     <Stack gap={4} padding={4} width={mainContentWidth}>
       <Typography variant="h4">{t('View Your Request')}</Typography>
       <NameDisplay
-        names={name}
-        personNumbers={accountNumber}
+        names={name ?? ''}
+        personNumbers={accountNumber ?? ''}
         showContent={true}
         titleOne={t('Primary Account Balance')}
         amountOne={primaryAccountBalance}
