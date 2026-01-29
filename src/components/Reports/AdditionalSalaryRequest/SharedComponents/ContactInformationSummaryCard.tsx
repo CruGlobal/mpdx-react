@@ -15,7 +15,7 @@ import { StepCard } from './StepCard';
 export const ContactInformationSummaryCard: React.FC = () => {
   const { t } = useTranslation();
   const { requestData, user } = useAdditionalSalaryRequest();
-  const email = user?.staffInfo.emailAddress;
+  const email = user?.staffInfo?.emailAddress;
   const { phoneNumber } = requestData?.additionalSalaryRequest ?? {};
 
   return (

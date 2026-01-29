@@ -15,8 +15,12 @@ import { TotalAnnualSalarySummaryCard } from '../../SharedComponents/TotalAnnual
 export const ViewForm: React.FC = () => {
   const accountListId = useAccountListId();
   const { t } = useTranslation();
-  const { name, accountNumber, primaryAccountBalance, remainingAllowableSalary } =
-    useFormData();
+  const {
+    name,
+    accountNumber,
+    primaryAccountBalance,
+    remainingAllowableSalary,
+  } = useFormData();
 
   return (
     <Stack gap={4} padding={4} width={mainContentWidth}>

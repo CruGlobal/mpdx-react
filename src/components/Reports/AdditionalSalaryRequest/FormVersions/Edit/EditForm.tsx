@@ -8,14 +8,18 @@ import { ContactInformation } from '../../CompleteForm/ContactInformation/Contac
 import { Deduction } from '../../CompleteForm/Deduction/Deduction';
 import { NetAdditionalSalary } from '../../CompleteForm/NetAdditionalSalary/NetAdditionalSalary';
 import { useFormData } from '../../Shared/useFormData';
-import { SpouseComponent } from '../../SharedComponents/SpouseComponent';
 import { TotalAnnualSalarySummaryCard } from '../../SharedComponents/TotalAnnualSalarySummaryCard';
 import { ValidationAlert } from '../../SharedComponents/ValidationAlert';
 
 export const EditForm: React.FC = () => {
   const { t } = useTranslation();
-  const { email, name, accountNumber, primaryAccountBalance, remainingAllowableSalary } =
-    useFormData();
+  const {
+    email,
+    name,
+    accountNumber,
+    primaryAccountBalance,
+    remainingAllowableSalary,
+  } = useFormData();
 
   return (
     <Stack gap={4} padding={4} width={mainContentWidth}>
@@ -28,7 +32,6 @@ export const EditForm: React.FC = () => {
         amountOne={primaryAccountBalance}
         titleTwo={t('Your Remaining Allowable Salary')}
         amountTwo={remainingAllowableSalary}
-        spouseComponent={<SpouseComponent />}
       />
       <Typography variant="body1" paragraph>
         {t(

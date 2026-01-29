@@ -52,11 +52,6 @@ describe('useFormData', () => {
         },
       },
       user: {
-        staffInfo: {
-          preferredName: 'Doe, John',
-          personNumber: '00123456',
-          emailAddress: 'john.doe@example.com',
-        },
         currentSalary: {
           grossSalaryAmount: 40000,
         },

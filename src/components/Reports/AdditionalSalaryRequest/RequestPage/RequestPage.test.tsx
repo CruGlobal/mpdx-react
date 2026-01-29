@@ -34,7 +34,8 @@ const mockUseAdditionalSalaryRequest =
     typeof useAdditionalSalaryRequest
   >;
 
-const mockHandleDeleteRequest = jest.fn();
+const mockPush = jest.fn();
+const mockHandleDeleteRequest = jest.fn().mockResolvedValue(undefined);
 
 const mockSteps = [
   {
@@ -91,6 +92,7 @@ const defaultMockContextValue = {
 const router = {
   query: { accountListId: 'account-list-1' },
   isReady: true,
+  push: mockPush,
 };
 
 const validationSchema = yup.object({
@@ -225,7 +227,7 @@ describe('RequestPage', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('calls handleDeleteRequest when discard is clicked', async () => {
+  it('calls handleDeleteRequest when discard is clicked and navigates back', async () => {
     const { getByRole } = render(<TestWrapper />);
 
     const discardButton = getByRole('button', { name: /discard/i });
@@ -235,8 +237,9 @@ describe('RequestPage', () => {
     userEvent.click(confirmButton);
 
     await waitFor(() => {
-      expect(mockHandleDeleteRequest).toHaveBeenCalledWith(
-        'test-request-id',
+      expect(mockHandleDeleteRequest).toHaveBeenCalledWith('test-request-id');
+      expect(mockPush).toHaveBeenCalledWith(
+        '/accountLists/account-list-1/reports/additionalSalaryRequest',
         false,
       );
     });

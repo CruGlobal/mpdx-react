@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import React, { useMemo } from 'react';
 import { Box, Stack } from '@mui/material';
 import { useFormikContext } from 'formik';
@@ -22,6 +23,8 @@ import { StepList } from '../SharedComponents/StepList';
 export const mainContentWidth = theme.spacing(85);
 
 const MainContent: React.FC = () => {
+  const router = useRouter();
+  const accountListId = useAccountListId();
   const {
     handlePreviousStep,
     handleNextStep,
@@ -39,6 +42,15 @@ const MainContent: React.FC = () => {
   const isLastFormPage = currentIndex === steps.length - 2;
   const reviewPage = currentIndex === steps.length - 1;
 
+  const handleDiscard = async () => {
+    if (requestId) {
+      await handleDeleteRequest(requestId, false);
+      router.push(
+        `/accountLists/${accountListId}/reports/additionalSalaryRequest`,
+      );
+    }
+  };
+
   return (
     <Box px={theme.spacing(3)}>
       {pageType === PageEnum.View ? (
@@ -54,9 +66,7 @@ const MainContent: React.FC = () => {
                 handleNextStep={handleNextStep}
                 handlePreviousStep={handlePreviousStep}
                 showBackButton={!isFirstFormPage}
-                handleDiscard={() =>
-                  requestId && handleDeleteRequest(requestId, false)
-                }
+                handleDiscard={() => handleDiscard}
                 isSubmission={isLastFormPage}
                 submitForm={submitForm}
                 validateForm={validateForm}
