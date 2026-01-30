@@ -1,6 +1,13 @@
 import { useRouter } from 'next/router';
-import React, { createContext, useCallback, useMemo, useState } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { ApolloError } from '@apollo/client';
+import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import {
@@ -18,12 +25,16 @@ import {
 import {
   AdditionalSalaryRequestQuery,
   AdditionalSalaryRequestsQuery,
+  SalaryInfoQuery,
   useAdditionalSalaryRequestQuery,
   useAdditionalSalaryRequestsQuery,
   useDeleteAdditionalSalaryRequestMutation,
+  useSalaryInfoQuery,
 } from '../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
 import { useStaffAccountIdQuery } from '../StaffAccountId.generated';
+
+export type HcmData = HcmDataQuery['hcm'][number];
 
 export type AdditionalSalaryRequestType = {
   staffAccountId: string | null | undefined;
@@ -39,13 +50,15 @@ export type AdditionalSalaryRequestType = {
     | null;
   requestData?: AdditionalSalaryRequestQuery | null;
   loading: boolean;
+  salaryInfoData?: SalaryInfoQuery['salaryInfo'] | null;
+  currentYear?: number;
 
   requestsError?: ApolloError;
   pageType: PageEnum | undefined;
   handleDeleteRequest: (id: string, isCancel: boolean) => Promise<void>;
   requestId?: string;
-  user: HcmDataQuery['hcm'][0] | undefined;
-  spouse: HcmDataQuery['hcm'][1] | undefined;
+  user?: HcmData;
+  spouse?: HcmData | null;
   isMutating: boolean;
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
 };
@@ -110,6 +123,11 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     skip: !requestId,
   });
 
+  const currentYear = useMemo(() => DateTime.now().year, []);
+  const { data: salaryInfoData } = useSalaryInfoQuery({
+    variables: { year: currentYear },
+  });
+
   const { data: staffAccountIdData } = useStaffAccountIdQuery();
 
   const [deleteAdditionalSalaryRequest] =
@@ -135,6 +153,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
           });
           cache.gc();
         },
+        onQueryUpdated: () => false,
         onCompleted: () => {
           if (!isCancel) {
             router.push(
@@ -163,7 +182,19 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
 
   const { trackMutation, isMutating } = useTrackMutation();
 
-  const [user, spouse] = hcmData?.hcm ?? [];
+  const [user, setUser] = useState<HcmData>();
+  const [spouse, setSpouse] = useState<HcmData | null>(null);
+
+  useEffect(() => {
+    if (!hcmData?.hcm?.length) {
+      setUser(undefined);
+      setSpouse(null);
+      return;
+    }
+    const [user, spouse] = hcmData.hcm;
+    setUser(user);
+    setSpouse(spouse ?? null);
+  }, [hcmData]);
 
   const staffAccountId = useMemo(
     () => staffAccountIdData?.user?.staffAccountId,
@@ -184,6 +215,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       requestsError,
       requestData,
       loading,
+      salaryInfoData: salaryInfoData?.salaryInfo,
+      currentYear,
       pageType,
       handleDeleteRequest,
       requestId,
@@ -205,6 +238,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       requestsError,
       requestData,
       loading,
+      salaryInfoData,
+      currentYear,
       pageType,
       handleDeleteRequest,
       requestId,

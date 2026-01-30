@@ -10,7 +10,10 @@ import i18n from 'src/lib/i18n';
 import { amount } from 'src/lib/yupHelpers';
 import theme from 'src/theme';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
-import { defaultCompleteFormValues } from '../CompleteForm/CompleteForm.mock';
+import {
+  defaultCompleteFormValues,
+  defaultSalaryInfoData,
+} from '../CompleteForm/CompleteForm.mock';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { fieldConfig } from '../Shared/useAdditionalSalaryRequestForm';
 import { Summary } from './Summary';
@@ -61,7 +64,7 @@ const router = {
 
 const validationSchema = yup.object({
   ...Object.fromEntries(
-    fieldConfig.map(({ key, label }) => [
+    fieldConfig(defaultSalaryInfoData.salaryInfo).map(({ key, label }) => [
       key,
       amount(label, (key: string) => key),
     ]),

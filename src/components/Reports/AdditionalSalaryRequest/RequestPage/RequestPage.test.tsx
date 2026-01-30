@@ -14,7 +14,10 @@ import theme from 'src/theme';
 import { PageEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
-import { defaultCompleteFormValues } from '../CompleteForm/CompleteForm.mock';
+import {
+  defaultCompleteFormValues,
+  defaultSalaryInfoData,
+} from '../CompleteForm/CompleteForm.mock';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { fieldConfig } from '../Shared/useAdditionalSalaryRequestForm';
 import { RequestPage } from './RequestPage';
@@ -95,7 +98,7 @@ const router = {
 
 const validationSchema = yup.object({
   ...Object.fromEntries(
-    fieldConfig.map(({ key, label }) => [
+    fieldConfig(defaultSalaryInfoData.salaryInfo).map(({ key, label }) => [
       key,
       amount(label, (key: string) => key),
     ]),
@@ -105,6 +108,10 @@ const validationSchema = yup.object({
     .string()
     .required('Telephone number is required')
     .matches(/^[\d\s\-\(\)\+]+$/, 'Please enter a valid telephone number'),
+  emailAddress: yup
+    .string()
+    .email('Please enter a valid email address')
+    .required('Email address is required'),
 });
 
 interface TestFormikWrapperProps {
@@ -148,6 +155,20 @@ describe('RequestPage', () => {
         typeof useAdditionalSalaryRequest
       >,
     );
+  });
+
+  it('should load on complete form step', async () => {
+    mockUseAdditionalSalaryRequest.mockReturnValue({
+      ...defaultMockContextValue,
+      currentIndex: 1,
+      currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
+    } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+    const { findByRole } = render(<TestWrapper />);
+
+    expect(
+      await findByRole('heading', { name: 'Complete the Form' }),
+    ).toBeInTheDocument();
   });
 
   it('renders the sidebar with title and steps', () => {

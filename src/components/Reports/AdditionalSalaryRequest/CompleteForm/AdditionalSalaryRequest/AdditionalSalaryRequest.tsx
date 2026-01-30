@@ -24,6 +24,7 @@ import { StepCard } from '../../SharedComponents/StepCard';
 export const AdditionalSalaryRequest: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const currency = 'USD';
 
   const { requestData, pageType } = useAdditionalSalaryRequest();
   const categories = useCompleteFormCategories();
@@ -76,17 +77,19 @@ export const AdditionalSalaryRequest: React.FC = () => {
                   }}
                 >
                   {pageType === PageEnum.View ? (
-                    currencyFormat(Number(values[key]) || 0, 'USD', locale)
+                    currencyFormat(Number(values[key]) || 0, currency, locale)
                   ) : (
                     <AutosaveCustomTextField
                       fullWidth
                       size="small"
+                      variant="standard"
                       fieldName={key as keyof CompleteFormValues}
-                      placeholder={t('Enter amount')}
+                      InputProps={{
+                        disableUnderline: true,
+                        inputMode: 'decimal',
+                      }}
+                      placeholder={currencyFormat(0, currency, locale)}
                       sx={{
-                        '& .MuiOutlinedInput-notchedOutline': {
-                          border: 'none',
-                        },
                         '& .MuiInputBase-input': {
                           padding: 0,
                           textAlign: 'center',
@@ -105,7 +108,7 @@ export const AdditionalSalaryRequest: React.FC = () => {
                 sx={{ width: '30%', fontWeight: 'bold', textAlign: 'center' }}
                 data-testid="total-amount"
               >
-                {currencyFormat(total, 'USD', locale)}
+                {currencyFormat(total, currency, locale)}
               </TableCell>
             </TableRow>
           </TableBody>

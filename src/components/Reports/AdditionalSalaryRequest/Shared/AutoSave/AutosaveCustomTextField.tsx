@@ -41,7 +41,7 @@ export const AutosaveCustomTextField: React.FC<
     setFieldTouched,
     submitCount,
     disabled: !request || pageType === PageEnum.View,
-    stringFields: ['phoneNumber'],
+    stringFields: ['phoneNumber', 'emailAddress'],
   });
 
   return <TextField variant={variant} {...fieldProps} {...props} />;

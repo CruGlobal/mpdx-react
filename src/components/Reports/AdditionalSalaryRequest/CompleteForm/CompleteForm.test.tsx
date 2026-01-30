@@ -15,7 +15,10 @@ import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHe
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { fieldConfig } from '../Shared/useAdditionalSalaryRequestForm';
 import { CompleteForm } from './CompleteForm';
-import { defaultCompleteFormValues } from './CompleteForm.mock';
+import {
+  defaultCompleteFormValues,
+  defaultSalaryInfoData,
+} from './CompleteForm.mock';
 
 jest.mock('../Shared/AdditionalSalaryRequestContext', () => {
   const originalModule = jest.requireActual(
@@ -92,7 +95,7 @@ const router = {
 
 const validationSchema = yup.object({
   ...Object.fromEntries(
-    fieldConfig.map(({ key, label }) => [
+    fieldConfig(defaultSalaryInfoData.salaryInfo).map(({ key, label }) => [
       key,
       amount(label, (key: string) => key),
     ]),
@@ -102,6 +105,10 @@ const validationSchema = yup.object({
     .string()
     .required('Telephone number is required')
     .matches(/^[\d\s\-\(\)\+]+$/, 'Please enter a valid telephone number'),
+  emailAddress: yup
+    .string()
+    .email('Please enter a valid email address')
+    .required('Email address is required'),
 });
 
 interface TestFormikWrapperProps {
@@ -265,11 +272,14 @@ describe('CompleteForm', () => {
     });
 
     it('renders ContactInformation with email and phone fields', () => {
-      const { getByText } = render(<TestWrapper />);
+      const { getByRole } = render(<TestWrapper />);
 
-      expect(getByText('Email Address')).toBeInTheDocument();
-      expect(getByText('Telephone Number')).toBeInTheDocument();
-      expect(getByText('john.doe@example.com')).toBeInTheDocument();
+      expect(
+        getByRole('textbox', { name: 'Email Address' }),
+      ).toBeInTheDocument();
+      expect(
+        getByRole('textbox', { name: 'Telephone Number' }),
+      ).toBeInTheDocument();
     });
   });
 

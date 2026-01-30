@@ -9,6 +9,7 @@ import i18n from 'src/lib/i18n';
 import { amount } from 'src/lib/yupHelpers';
 import theme from 'src/theme';
 import { CompleteFormValues } from './AdditionalSalaryRequest';
+import { defaultSalaryInfoData } from './CompleteForm/CompleteForm.mock';
 import { AdditionalSalaryRequestProvider } from './Shared/AdditionalSalaryRequestContext';
 import { fieldConfig } from './Shared/useAdditionalSalaryRequestForm';
 // ...existing code...
@@ -40,11 +41,12 @@ const defaultInitialValues: CompleteFormValues = {
   expensesNotApprovedWithin90Days: '0',
   deductTwelvePercent: false,
   phoneNumber: '',
+  emailAddress: '',
 };
 
 const validationSchema = yup.object({
   ...Object.fromEntries(
-    fieldConfig.map(({ key, label }) => [
+    fieldConfig(defaultSalaryInfoData.salaryInfo).map(({ key, label }) => [
       key,
       amount(label, (key: string) => key),
     ]),
@@ -54,6 +56,10 @@ const validationSchema = yup.object({
     .string()
     .required('Telephone number is required')
     .matches(/^[\d\s\-\(\)\+]+$/, 'Please enter a valid telephone number'),
+  emailAddress: yup
+    .string()
+    .email('Please enter a valid email address')
+    .required('Email address is required'),
 });
 
 const TestFormikWrapper: React.FC<{
@@ -109,7 +115,9 @@ export const AdditionalSalaryRequestTestWrapper: React.FC<
                           ([key]) => key !== 'traditional403bContribution',
                         )
                         .map(([key, value]) =>
-                          typeof value === 'string' && key !== 'phoneNumber'
+                          typeof value === 'string' &&
+                          key !== 'phoneNumber' &&
+                          key !== 'emailAddress'
                             ? [key, parseFloat(value) || 0]
                             : [key, value],
                         ),

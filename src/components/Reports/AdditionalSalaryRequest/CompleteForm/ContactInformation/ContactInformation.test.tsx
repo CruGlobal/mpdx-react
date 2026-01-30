@@ -8,20 +8,18 @@ import { ContactInformation } from './ContactInformation';
 
 interface TestWrapperProps {
   initialValues?: CompleteFormValues;
-  email?: string;
   pageType?: 'new' | 'edit' | 'view';
 }
 
 const TestWrapper: React.FC<TestWrapperProps> = ({
   initialValues = defaultCompleteFormValues,
-  email = '',
   pageType = 'edit',
 }) => (
   <AdditionalSalaryRequestTestWrapper
     initialValues={initialValues}
     pageType={pageType}
   >
-    <ContactInformation email={email} />
+    <ContactInformation />
   </AdditionalSalaryRequestTestWrapper>
 );
 
@@ -33,24 +31,24 @@ describe('ContactInformation', () => {
   });
 
   it('renders email address label', () => {
-    const { getByText } = render(<TestWrapper />);
+    const { getByLabelText } = render(<TestWrapper />);
 
-    expect(getByText('Email Address')).toBeInTheDocument();
+    expect(getByLabelText('Email Address')).toBeInTheDocument();
   });
 
-  it('displays placeholder text when email is not provided', () => {
-    const { getByText } = render(<TestWrapper />);
+  it('displays email address from initial values', async () => {
+    const valuesWithEmail: CompleteFormValues = {
+      ...defaultCompleteFormValues,
+      emailAddress: 'test@example.com',
+    };
 
-    expect(getByText('email address')).toBeInTheDocument();
-  });
-
-  it('displays email address when provided', () => {
-    const { getByText, queryByText } = render(
-      <TestWrapper email="test@example.com" />,
+    const { getByLabelText } = render(
+      <TestWrapper initialValues={valuesWithEmail} />,
     );
 
-    expect(getByText('test@example.com')).toBeInTheDocument();
-    expect(queryByText('email address')).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(getByLabelText('Email Address')).toHaveValue('test@example.com');
+    });
   });
 
   it('displays telephone number from initial values', async () => {
