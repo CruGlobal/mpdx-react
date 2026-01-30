@@ -23,6 +23,7 @@ export const NewForm: React.FC = () => {
 
   return (
     <Stack gap={4} padding={4} width={mainContentWidth}>
+      <Typography variant="h4">{t('Complete the Form')}</Typography>
       <NameDisplay
         names={name ?? ''}
         personNumbers={accountNumber ?? ''}
