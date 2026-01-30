@@ -3,22 +3,17 @@ import InfoIcon from '@mui/icons-material/Info';
 import { CardContent, Typography } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { ProgressiveApprovalTierEnum } from 'src/graphql/types.generated';
 import { AutosaveTextField } from '../../Autosave/AutosaveTextField';
 import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
 import { StepCard } from '../../Shared/StepCard';
 import { StyledCardHeader } from '../StyledCardHeader';
 import { useCaps } from '../useCaps';
 
-export const AdditionalInfoCard: React.FC = () => {
+export const ApprovalProcessCard: React.FC = () => {
   const { t } = useTranslation();
-  const { hcmSpouse } = useSalaryCalculator();
-  const {
-    overCombinedCap,
-    overUserCap,
-    overSpouseCap,
-    overCapName,
-    overCapSalary,
-  } = useCaps();
+  const { calculation, hcmSpouse } = useSalaryCalculator();
+  const { overCapName, overCapSalary } = useCaps();
 
   const schema = useMemo(
     () =>
@@ -30,9 +25,12 @@ export const AdditionalInfoCard: React.FC = () => {
 
   const spouseName = hcmSpouse?.staffInfo.preferredName;
 
-  if (!overCombinedCap && !overUserCap && !overSpouseCap) {
+  const tier = calculation?.progressiveApprovalTier?.tier;
+  if (!tier) {
     return null;
   }
+
+  const approvalRequired = tier !== ProgressiveApprovalTierEnum.DivisionHead;
 
   return (
     <StepCard>
@@ -45,15 +43,21 @@ export const AdditionalInfoCard: React.FC = () => {
               color="info.main"
               sx={{ fontWeight: 'bold' }}
             >
-              {t('Additional Information')}
+              {approvalRequired
+                ? t('Approval Process')
+                : t('Additional Information')}
             </Typography>
+            {approvalRequired && (
+              <Typography color="textSecondary" ml={4}>
+                {t('Approvals are needed for this request')}
+              </Typography>
+            )}
           </>
         }
       />
-
       <CardContent>
-        <Typography paragraph data-testid="AdditionalInfoCard-status">
-          {overCombinedCap ? (
+        <Typography paragraph data-testid="ApprovalProcessCard-status">
+          {approvalRequired ? (
             <Trans t={t}>
               Since you are requesting above your and {{ spouse: spouseName }}
               &apos;s combined Maximum Allowable Salary, you will need to
@@ -70,15 +74,15 @@ export const AdditionalInfoCard: React.FC = () => {
           )}
         </Typography>
         <Typography paragraph>
-          {overCombinedCap ? (
-            <Trans t={t}>
-              Please explain in detail, what are the specific expenses and
-              reasons why you are requesting this salary level.
-            </Trans>
-          ) : (
+          {tier === ProgressiveApprovalTierEnum.DivisionHead ? (
             <Trans t={t}>
               Since your combined request is still within your combined Max
               Allowable Salary, no additional approvals are required.
+            </Trans>
+          ) : (
+            <Trans t={t}>
+              Please explain in detail, what are the specific expenses and
+              reasons why you are requesting this salary level.
             </Trans>
           )}
         </Typography>
