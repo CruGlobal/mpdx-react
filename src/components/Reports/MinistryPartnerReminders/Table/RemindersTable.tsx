@@ -1,4 +1,4 @@
-import React, { forwardRef, useMemo } from 'react';
+import React, { forwardRef } from 'react';
 import { HourglassDisabled } from '@mui/icons-material';
 import {
   Paper,
@@ -9,18 +9,20 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { TableVirtuoso, TableVirtuosoProps } from 'react-virtuoso';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { headerHeight } from 'src/components/Shared/Header/ListHeader';
+import { MinistryPartnerReminderFrequencyEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { EmptyTable } from '../../Shared/EmptyTable/EmptyTable';
-import { ReminderData, ReminderStatusEnum } from '../mockData';
+import { ReminderData } from '../mockData';
 import { RemindersTableRow } from './RemindersTableRow';
 
+const tableVirtuosoPadding = '62px';
+
 export type RowValues = {
-  status: Record<string, ReminderStatusEnum>;
+  status: Record<string, MinistryPartnerReminderFrequencyEnum>;
 };
 interface HeaderProps {
   partner: string;
@@ -82,7 +84,7 @@ const TableComponents: TableVirtuosoProps<HeaderProps, unknown>['components'] =
       <TableRow>
         <TableCell colSpan={4}>
           <EmptyTable
-            title={'No ministry partners to display'}
+            title={'No ministry partners found'}
             subtitle={'Add a ministry partner to get started'}
             icon={HourglassDisabled}
           />
@@ -92,64 +94,36 @@ const TableComponents: TableVirtuosoProps<HeaderProps, unknown>['components'] =
   };
 interface RemindersTableProps {
   data: ReminderData[];
-  hasNextPage: boolean;
-  endCursor: string;
-  fetchMore: (args: { variables: { after: string } }) => void;
 }
 
-export const RemindersTable: React.FC<RemindersTableProps> = ({
-  data,
-  hasNextPage,
-  endCursor,
-  fetchMore,
-}) => {
+export const RemindersTable: React.FC<RemindersTableProps> = ({ data }) => {
   const { t } = useTranslation();
 
   const isEmpty = !data.length;
 
-  const initialValues = useMemo(
-    () => ({
-      status: Object.fromEntries(
-        data.map((row) => [
-          row.id,
-          row.status ?? ReminderStatusEnum.NotReminded,
-        ]),
-      ),
-    }),
-    [data],
-  );
-
   return (
-    <Formik<RowValues> initialValues={initialValues} onSubmit={() => {}}>
-      <TableVirtuoso
-        data={data}
-        style={{
-          height: isEmpty
-            ? 390
-            : `calc(100vh - ${navBarHeight} - ${headerHeight} - 62px)`,
-          scrollbarWidth: 'none',
-        }}
-        components={TableComponents}
-        fixedHeaderContent={() => (
-          <TableRow>
-            <TableCell sx={{ width: '35%' }}>{t('Ministry Partner')}</TableCell>
-            <TableCell sx={{ width: '20%' }}>{t('Last Gift')}</TableCell>
-            <TableCell sx={{ width: '20%' }}>{t('Last Reminder')}</TableCell>
-            <TableCell id="status-col" sx={{ width: '25%' }}>
-              {t('Reminder Status')}
-            </TableCell>
-          </TableRow>
-        )}
-        itemContent={(_, row) => (
-          <RemindersTableRow key={row.id} id={row.id} row={row} />
-        )}
-        endReached={() =>
-          hasNextPage &&
-          fetchMore({
-            variables: { after: endCursor },
-          })
-        }
-      />
-    </Formik>
+    <TableVirtuoso
+      data={data}
+      style={{
+        height: isEmpty
+          ? 390
+          : `calc(100vh - ${navBarHeight} - ${headerHeight} - ${tableVirtuosoPadding})`,
+        scrollbarWidth: 'none',
+      }}
+      components={TableComponents}
+      fixedHeaderContent={() => (
+        <TableRow>
+          <TableCell sx={{ width: '35%' }}>{t('Ministry Partner')}</TableCell>
+          <TableCell sx={{ width: '20%' }}>{t('Last Gift')}</TableCell>
+          <TableCell sx={{ width: '20%' }}>{t('Last Reminder')}</TableCell>
+          <TableCell id="status-col" sx={{ width: '25%' }}>
+            {t('Reminder Status')}
+          </TableCell>
+        </TableRow>
+      )}
+      itemContent={(_, row) => (
+        <RemindersTableRow key={row.id} id={row.id} row={row} />
+      )}
+    />
   );
 };
