@@ -8,10 +8,10 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  Typography,
 } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { TotalAnnualSalaryAccordion } from 'src/components/Reports/AdditionalSalaryRequest/SubmitModalComponents/TotalAnnualSalaryAccordion/TotalAnnualSalaryAccordion';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { getModalText } from './getModalText';
@@ -83,7 +83,11 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
             {contentText}
           </Box>
         </Alert>
-        {exceedsCap && <Typography>{t('Temporary')}</Typography>}
+        {exceedsCap && (
+          <Box mt={2}>
+            <TotalAnnualSalaryAccordion />
+          </Box>
+        )}
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose} sx={{ color: 'text.secondary' }}>
