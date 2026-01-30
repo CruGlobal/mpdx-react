@@ -47,12 +47,14 @@ const defaultFormValues: CompleteFormValues = {
   expensesNotApprovedWithin90Days: '0',
   deductTwelvePercent: false,
   phoneNumber: '555-1234',
+  emailAddress: 'test@testerson.test',
 };
 
 const mockTrackMutation = jest.fn((mutation) => mutation);
 
 const defaultMockContextValue: AdditionalSalaryRequestType = {
   staffAccountId: 'staff-account-1',
+  staffAccountIdLoading: false,
   steps: [],
   currentIndex: 1,
   currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
@@ -77,6 +79,8 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   requestId: 'request-id',
   user: undefined,
   spouse: undefined,
+  salaryInfo: undefined,
+  isInternational: false,
   isMutating: false,
   trackMutation: mockTrackMutation,
 };

@@ -10,11 +10,11 @@ import theme from 'src/theme';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { UpdateAdditionalSalaryRequestMutation } from '../../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSectionEnum } from '../../AdditionalSalaryRequestHelper';
-import { defaultCompleteFormValues } from '../../CompleteForm/CompleteForm.mock';
 import {
   AdditionalSalaryRequestType,
   useAdditionalSalaryRequest,
 } from '../AdditionalSalaryRequestContext';
+import { defaultCompleteFormValues } from '../CompleteForm.mock';
 import { AutosaveCustomTextField } from './AutosaveCustomTextField';
 
 jest.mock('../AdditionalSalaryRequestContext', () => {
@@ -43,6 +43,7 @@ const defaultSchema = yup.object({
 
 const defaultMockContextValue: AdditionalSalaryRequestType = {
   staffAccountId: 'staff-account-1',
+  staffAccountIdLoading: false,
   steps: [],
   currentIndex: 1,
   currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
@@ -68,6 +69,8 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   requestId: 'request-id',
   user: undefined,
   spouse: undefined,
+  salaryInfo: undefined,
+  isInternational: false,
   isMutating: false,
   trackMutation: mockTrackMutation,
 };
