@@ -51,7 +51,8 @@ export const useAdditionalSalaryRequestForm = ({
 }: UseAdditionalSalaryRequestFormProps) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { handleNextStep } = useAdditionalSalaryRequest();
+  const { handleNextStep, remainingAllowableSalary } =
+    useAdditionalSalaryRequest();
 
   const { data: requestData } = useAdditionalSalaryRequestQuery({
     variables: { requestId: requestId || '' },
@@ -86,6 +87,7 @@ export const useAdditionalSalaryRequestForm = ({
     ...Object.fromEntries(fieldConfig.map(({ key }) => [key, '0'])),
     deductTwelvePercent: false,
     phoneNumber: '',
+    totalAdditionalSalaryRequested: '0',
   } as CompleteFormValues;
 
   const initialValues: CompleteFormValues = useMemo(() => {
@@ -107,6 +109,7 @@ export const useAdditionalSalaryRequestForm = ({
       ),
       deductTwelvePercent: request.deductTwelvePercent || false,
       phoneNumber: request.phoneNumber || '',
+      totalAdditionalSalaryRequested: request.totalAdditionalSalaryRequested,
     } as CompleteFormValues;
   }, [providedInitialValues, requestData?.additionalSalaryRequest]);
 
@@ -127,8 +130,17 @@ export const useAdditionalSalaryRequestForm = ({
             /^[\d\s\-\(\)\+]+$/,
             t('Please enter a valid telephone number'),
           ),
+        totalAdditionalSalaryRequested: yup
+          .number()
+          .test(
+            'total-within-remaining-allowable-salary',
+            t('Exceeds account balance'),
+            function (value) {
+              return (value || 0) <= remainingAllowableSalary;
+            },
+          ),
       }),
-    [createCurrencyValidation, t],
+    [createCurrencyValidation, t, remainingAllowableSalary, locale],
   );
 
   const onSubmit = useCallback(

@@ -18,4 +18,5 @@ export const defaultCompleteFormValues: CompleteFormValues = {
   expensesNotApprovedWithin90Days: '0',
   deductTwelvePercent: false,
   phoneNumber: '',
+  totalAdditionalSalaryRequested: '0',
 };

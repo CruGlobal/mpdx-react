@@ -94,6 +94,7 @@ const mockContextValue = {
   } as never,
   isMutating: false,
   trackMutation: jest.fn(),
+  remainingAllowableSalary: 0,
 };
 
 const TestComponent: React.FC<{ request: RequestType }> = ({ request }) => (

@@ -55,6 +55,7 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   spouse: undefined,
   isMutating: false,
   trackMutation: jest.fn((mutation) => mutation),
+  remainingAllowableSalary: 10000,
 };
 
 const defaultFormValues: CompleteFormValues = {
@@ -75,6 +76,7 @@ const defaultFormValues: CompleteFormValues = {
   expensesNotApprovedWithin90Days: '0',
   deductTwelvePercent: false,
   phoneNumber: '',
+  totalAdditionalSalaryRequested: '0',
 };
 
 const mutationSpy = jest.fn();

@@ -47,6 +47,7 @@ const defaultFormValues: CompleteFormValues = {
   expensesNotApprovedWithin90Days: '0',
   deductTwelvePercent: false,
   phoneNumber: '555-1234',
+  totalAdditionalSalaryRequested: '100',
 };
 
 const mockTrackMutation = jest.fn((mutation) => mutation);
@@ -79,6 +80,7 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   spouse: undefined,
   isMutating: false,
   trackMutation: mockTrackMutation,
+  remainingAllowableSalary: 10000,
 };
 
 interface TestComponentProps {

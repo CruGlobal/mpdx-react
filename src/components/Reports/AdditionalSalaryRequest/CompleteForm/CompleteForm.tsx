@@ -16,13 +16,14 @@ import { NetAdditionalSalary } from './NetAdditionalSalary/NetAdditionalSalary';
 
 export const CompleteForm: React.FC = () => {
   const { t } = useTranslation();
-  const { currentIndex, requestData, user } = useAdditionalSalaryRequest();
+  const { currentIndex, requestData, user, remainingAllowableSalary } =
+    useAdditionalSalaryRequest();
   const { submitCount, isValid, errors } =
     useFormikContext<CompleteFormValues>();
 
   const theme = useTheme();
 
-  const { currentSalaryCap, staffAccountBalance } =
+  const { staffAccountBalance } =
     requestData?.additionalSalaryRequest?.calculations || {};
 
   const name = user?.staffInfo?.preferredName ?? '';
@@ -30,8 +31,6 @@ export const CompleteForm: React.FC = () => {
   const email = user?.staffInfo?.emailAddress ?? '';
 
   const primaryAccountBalance = staffAccountBalance ?? 0;
-  const remainingAllowableSalary =
-    (currentSalaryCap ?? 0) - (staffAccountBalance ?? 0);
 
   const showAlert = !!submitCount && !isValid;
 
@@ -104,12 +103,25 @@ export const CompleteForm: React.FC = () => {
           <Alert severity="error" sx={{ mt: 2, '& ul': { m: 0, pl: 3 } }}>
             {t('Your form is missing information.')}
             <ul>
-              <li>{t('Please enter a value for all required fields.')}</li>
+              {Object.keys(errors).some(
+                (key) => !key.includes('totalAdditionalSalaryRequested'),
+              ) && (
+                <li>{t('Please enter a value for all required fields.')}</li>
+              )}
               {exceedingLimitFields.length > 0 && (
                 <li>
                   {t('The following fields exceed their limits: {{fields}}', {
                     fields: exceedingLimitFields.join(', '),
                   })}
+                </li>
+              )}
+              {Object.keys(errors).includes(
+                'totalAdditionalSalaryRequested',
+              ) && (
+                <li>
+                  {t(
+                    'Your total additional salary request exceeds your account balance.',
+                  )}
                 </li>
               )}
             </ul>

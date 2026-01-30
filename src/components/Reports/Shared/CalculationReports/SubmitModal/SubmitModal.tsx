@@ -1,3 +1,4 @@
+import React from 'react';
 import { ChevronRight } from '@mui/icons-material';
 import {
   Alert,
@@ -7,6 +8,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Typography,
 } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
@@ -20,12 +22,13 @@ interface SubmitModalProps {
   handleConfirm: () => void;
   overrideTitle?: string;
   overrideContent?: string;
-  overrideSubContent?: string;
+  overrideSubContent?: React.ReactNode;
   isCancel?: boolean;
   isDiscard?: boolean;
   isDiscardEdit?: boolean;
   deadlineDate?: string;
   actionRequired?: boolean;
+  exceedsCap?: boolean;
 }
 
 export const SubmitModal: React.FC<SubmitModalProps> = ({
@@ -40,6 +43,7 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
   isDiscardEdit,
   deadlineDate,
   actionRequired,
+  exceedsCap,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -79,6 +83,7 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
             {contentText}
           </Box>
         </Alert>
+        {exceedsCap && <Typography>{t('Temporary')}</Typography>}
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose} sx={{ color: 'text.secondary' }}>

@@ -5,6 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { SubmitModal } from '../SubmitModal/SubmitModal';
 
 interface DirectionButtonsProps {
+  formTitle: string;
+  overrideTitle?: string;
+  overrideContent?: string;
+  overrideSubContent?: React.ReactNode;
   handleNextStep?: () => void;
   handlePreviousStep?: () => void;
   handleDiscard?: () => void;
@@ -14,6 +18,7 @@ interface DirectionButtonsProps {
   overrideNext?: () => void;
   showBackButton?: boolean;
   isEdit?: boolean;
+  exceedsCap?: boolean;
   //Formik validation for submit modal
   isSubmission?: boolean;
   submitForm?: () => Promise<void>;
@@ -23,6 +28,10 @@ interface DirectionButtonsProps {
 }
 
 export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
+  formTitle,
+  overrideTitle,
+  overrideContent,
+  overrideSubContent,
   handleNextStep,
   handlePreviousStep,
   handleDiscard,
@@ -37,6 +46,7 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
   isValid,
   deadlineDate,
   actionRequired,
+  exceedsCap,
 }) => {
   const { t } = useTranslation();
 
@@ -125,16 +135,20 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
       </Box>
       {openSubmitModal && (
         <SubmitModal
-          formTitle={t('MHA Request')}
+          formTitle={formTitle}
           handleClose={() => setOpenSubmitModal(false)}
           handleConfirm={handleConfirm}
+          overrideTitle={overrideTitle}
+          overrideContent={overrideContent}
+          overrideSubContent={overrideSubContent}
           deadlineDate={deadlineDate}
           actionRequired={actionRequired}
+          exceedsCap={exceedsCap}
         />
       )}
       {openDiscardModal && (
         <SubmitModal
-          formTitle={t('MHA Request')}
+          formTitle={formTitle}
           handleClose={() => setOpenDiscardModal(false)}
           handleConfirm={handleDiscardConfirm}
           isDiscard={!isEdit}

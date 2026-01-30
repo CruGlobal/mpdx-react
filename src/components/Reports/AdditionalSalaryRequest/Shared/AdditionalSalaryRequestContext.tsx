@@ -48,6 +48,10 @@ export type AdditionalSalaryRequestType = {
   spouse: HcmDataQuery['hcm'][1] | undefined;
   isMutating: boolean;
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
+
+  remainingAllowableSalary: number;
+  exceedsCap?: boolean;
+  setExceedsCap?: (value: boolean) => void;
 };
 
 const AdditionalSalaryRequestContext =
@@ -109,6 +113,15 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     variables: { requestId: requestId || '' },
     skip: !requestId,
   });
+
+  const [exceedsCap, setExceedsCap] = useState<boolean>(false);
+
+  // const { currentSalaryCap, staffAccountBalance } =
+  //   requestData?.additionalSalaryRequest?.calculations || {};
+  // const remainingAllowableSalary = useMemo(() => {
+  //   return (currentSalaryCap ?? 0) - (staffAccountBalance ?? 0);
+  // }, [currentSalaryCap, staffAccountBalance]);
+  const remainingAllowableSalary = 17500.0;
 
   const { data: staffAccountIdData } = useStaffAccountIdQuery();
 
@@ -191,6 +204,9 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       spouse,
       isMutating,
       trackMutation,
+      remainingAllowableSalary,
+      exceedsCap,
+      setExceedsCap,
     }),
     [
       staffAccountId,
@@ -212,6 +228,9 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       spouse,
       isMutating,
       trackMutation,
+      remainingAllowableSalary,
+      exceedsCap,
+      setExceedsCap,
     ],
   );
 

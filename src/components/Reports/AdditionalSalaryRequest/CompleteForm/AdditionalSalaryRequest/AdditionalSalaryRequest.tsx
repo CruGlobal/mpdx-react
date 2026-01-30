@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   CardContent,
   CardHeader,
@@ -27,7 +27,8 @@ export const AdditionalSalaryRequest: React.FC = () => {
 
   const { requestData, pageType } = useAdditionalSalaryRequest();
   const categories = useCompleteFormCategories();
-  const { values } = useFormikContext<CompleteFormValues>();
+  const { values, errors, touched, setFieldValue, setFieldTouched } =
+    useFormikContext<CompleteFormValues>();
 
   const traditional403bContribution =
     requestData?.additionalSalaryRequest?.traditional403bContribution ?? 0;
@@ -35,6 +36,11 @@ export const AdditionalSalaryRequest: React.FC = () => {
     traditional403bContribution,
     values,
   });
+
+  useEffect(() => {
+    setFieldValue('totalAdditionalSalaryRequested', total);
+    setFieldTouched('totalAdditionalSalaryRequested', true, false);
+  }, [total, setFieldValue, setFieldTouched]);
 
   return (
     <StepCard
@@ -73,6 +79,11 @@ export const AdditionalSalaryRequest: React.FC = () => {
                   sx={{
                     width: '30%',
                     textAlign: 'center',
+                    border:
+                      touched[key as keyof CompleteFormValues] &&
+                      errors[key as keyof CompleteFormValues]
+                        ? '2px solid red'
+                        : '',
                   }}
                 >
                   {pageType === PageEnum.View ? (
@@ -102,10 +113,22 @@ export const AdditionalSalaryRequest: React.FC = () => {
                 {t('Total Additional Salary Requested')}
               </TableCell>
               <TableCell
-                sx={{ width: '30%', fontWeight: 'bold', textAlign: 'center' }}
+                sx={{
+                  width: '30%',
+                  fontWeight: 'bold',
+                  textAlign: 'center',
+                  outline: errors.totalAdditionalSalaryRequested
+                    ? '2px solid red'
+                    : 'none',
+                }}
                 data-testid="total-amount"
               >
                 {currencyFormat(total, 'USD', locale)}
+                {errors.totalAdditionalSalaryRequested && (
+                  <Typography variant="body2" color="error">
+                    {t('Exceeds account balance.')}
+                  </Typography>
+                )}
               </TableCell>
             </TableRow>
           </TableBody>
