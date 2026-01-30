@@ -76,6 +76,7 @@ const defaultFormValues: CompleteFormValues = {
   expensesNotApprovedWithin90Days: '0',
   deductTwelvePercent: false,
   phoneNumber: '',
+  totalAdditionalSalaryRequested: '0',
 };
 
 const mutationSpy = jest.fn();

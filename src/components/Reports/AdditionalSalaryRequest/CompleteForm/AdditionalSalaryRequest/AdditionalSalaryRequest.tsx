@@ -25,10 +25,10 @@ export const AdditionalSalaryRequest: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const { requestData, pageType, remainingAllowableSalary, setExceedsCap } =
-    useAdditionalSalaryRequest();
+  const { requestData, pageType } = useAdditionalSalaryRequest();
   const categories = useCompleteFormCategories();
-  const { values, errors, touched } = useFormikContext<CompleteFormValues>();
+  const { values, errors, touched, setFieldValue, setFieldTouched } =
+    useFormikContext<CompleteFormValues>();
 
   const traditional403bContribution =
     requestData?.additionalSalaryRequest?.traditional403bContribution ?? 0;
@@ -37,13 +37,10 @@ export const AdditionalSalaryRequest: React.FC = () => {
     values,
   });
 
-  const exceedsBalance = total > remainingAllowableSalary;
-
   useEffect(() => {
-    if (setExceedsCap) {
-      setExceedsCap(exceedsBalance);
-    }
-  }, [exceedsBalance, setExceedsCap]);
+    setFieldValue('totalAdditionalSalaryRequested', total);
+    setFieldTouched('totalAdditionalSalaryRequested', true, false);
+  }, [total, setFieldValue, setFieldTouched]);
 
   return (
     <StepCard
@@ -120,12 +117,14 @@ export const AdditionalSalaryRequest: React.FC = () => {
                   width: '30%',
                   fontWeight: 'bold',
                   textAlign: 'center',
-                  outline: exceedsBalance ? '2px solid red' : 'none',
+                  outline: errors.totalAdditionalSalaryRequested
+                    ? '2px solid red'
+                    : 'none',
                 }}
                 data-testid="total-amount"
               >
                 {currencyFormat(total, 'USD', locale)}
-                {exceedsBalance && (
+                {errors.totalAdditionalSalaryRequested && (
                   <Typography variant="body2" color="error">
                     {t('Exceeds account balance.')}
                   </Typography>

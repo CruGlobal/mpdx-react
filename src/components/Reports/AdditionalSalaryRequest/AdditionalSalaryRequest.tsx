@@ -37,6 +37,7 @@ export interface CompleteFormValues {
   expensesNotApprovedWithin90Days: string;
   deductTwelvePercent: boolean;
   phoneNumber: string;
+  totalAdditionalSalaryRequested: string;
 }
 
 export const AdditionalSalaryRequest: React.FC = () => {

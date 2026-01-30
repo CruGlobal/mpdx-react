@@ -40,6 +40,7 @@ const defaultInitialValues: CompleteFormValues = {
   expensesNotApprovedWithin90Days: '0',
   deductTwelvePercent: false,
   phoneNumber: '',
+  totalAdditionalSalaryRequested: '0',
 };
 
 const validationSchema = yup.object({

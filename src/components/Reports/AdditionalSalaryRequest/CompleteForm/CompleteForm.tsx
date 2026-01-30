@@ -103,12 +103,25 @@ export const CompleteForm: React.FC = () => {
           <Alert severity="error" sx={{ mt: 2, '& ul': { m: 0, pl: 3 } }}>
             {t('Your form is missing information.')}
             <ul>
-              <li>{t('Please enter a value for all required fields.')}</li>
+              {Object.keys(errors).some(
+                (key) => !key.includes('totalAdditionalSalaryRequested'),
+              ) && (
+                <li>{t('Please enter a value for all required fields.')}</li>
+              )}
               {exceedingLimitFields.length > 0 && (
                 <li>
                   {t('The following fields exceed their limits: {{fields}}', {
                     fields: exceedingLimitFields.join(', '),
                   })}
+                </li>
+              )}
+              {Object.keys(errors).includes(
+                'totalAdditionalSalaryRequested',
+              ) && (
+                <li>
+                  {t(
+                    'Your total additional salary request exceeds your account balance.',
+                  )}
                 </li>
               )}
             </ul>
