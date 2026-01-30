@@ -15,6 +15,7 @@ import { Receipt } from './Receipt';
 const formTitle = 'Test Title';
 const buttonText = 'View Dashboard';
 const alertText = 'Override text';
+const linkOneText = 'Edit your MHA Request';
 const editLink = '/test/edit-link';
 const viewLink = '/test/view-link';
 const buttonLink = '/test/button-link';
@@ -24,22 +25,22 @@ const setIsComplete = jest.fn();
 interface TestComponentProps {
   pageType?: PageEnum;
   alertText?: string;
-  editLink?: string;
+  linkOne?: string;
+  linkOneText?: string;
   viewLink?: string;
   isEdit?: boolean;
   availableDate?: string | null;
-  deadlineDate?: string | null;
   setIsComplete?: Dispatch<SetStateAction<boolean>>;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   pageType,
   alertText,
-  editLink,
+  linkOne,
+  linkOneText,
   viewLink,
   isEdit,
   availableDate = '2024-06-15',
-  deadlineDate = '2024-07-01',
   setIsComplete,
 }) => (
   <ThemeProvider theme={theme}>
@@ -52,12 +53,12 @@ const TestComponent: React.FC<TestComponentProps> = ({
                 formTitle={formTitle}
                 buttonText={buttonText}
                 alertText={alertText}
-                editLink={editLink}
+                linkOne={linkOne}
+                linkOneText={linkOneText}
                 viewLink={viewLink}
                 buttonLink={buttonLink}
                 isEdit={isEdit}
                 availableDate={availableDate}
-                deadlineDate={deadlineDate}
                 setIsComplete={setIsComplete}
               />
             </MinisterHousingAllowanceProvider>
@@ -113,11 +114,7 @@ describe('Receipt', () => {
 
   it('should change text when dates are null', async () => {
     const { findByText } = render(
-      <TestComponent
-        pageType={PageEnum.New}
-        availableDate={null}
-        deadlineDate={null}
-      />,
+      <TestComponent pageType={PageEnum.New} availableDate={null} />,
     );
 
     expect(
@@ -129,11 +126,15 @@ describe('Receipt', () => {
 
   it('should go to edit link when clicked', async () => {
     const { findByRole } = render(
-      <TestComponent pageType={PageEnum.New} editLink={editLink} />,
+      <TestComponent
+        pageType={PageEnum.New}
+        linkOne={editLink}
+        linkOneText={linkOneText}
+      />,
     );
 
     const editButton = await findByRole('link', {
-      name: /edit your mha request \(not available after/i,
+      name: /edit your mha request/i,
     });
 
     expect(editButton).toHaveAttribute(
@@ -154,7 +155,7 @@ describe('Receipt', () => {
     const { queryByRole } = render(<TestComponent pageType={PageEnum.New} />);
 
     const editButton = queryByRole('link', {
-      name: /edit your mha request \(not available after/i,
+      name: /edit your mha request/i,
     });
 
     expect(editButton).not.toBeInTheDocument();
@@ -162,11 +163,15 @@ describe('Receipt', () => {
 
   it('should render edit link when provided', async () => {
     const { findByRole } = render(
-      <TestComponent pageType={PageEnum.New} editLink={editLink} />,
+      <TestComponent
+        pageType={PageEnum.New}
+        linkOne={editLink}
+        linkOneText={linkOneText}
+      />,
     );
 
     const editButton = await findByRole('link', {
-      name: /edit your mha request \(not available after/i,
+      name: /edit your mha request/i,
     });
 
     expect(editButton).toBeInTheDocument();
