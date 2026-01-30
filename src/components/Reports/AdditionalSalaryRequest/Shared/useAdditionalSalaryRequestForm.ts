@@ -78,10 +78,7 @@ export const useAdditionalSalaryRequestForm = ({
   const { handleNextStep, user, salaryInfo, isInternational } =
     useAdditionalSalaryRequest();
 
-  const { data: requestData } = useAdditionalSalaryRequestQuery({
-    variables: { requestId: requestId || '' },
-    skip: !requestId,
-  });
+  const { data: requestData } = useAdditionalSalaryRequestQuery();
 
   const [updateAdditionalSalaryRequest] =
     useUpdateAdditionalSalaryRequestMutation();

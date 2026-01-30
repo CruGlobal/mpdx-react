@@ -45,10 +45,9 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   handlePreviousStep: jest.fn(),
   isDrawerOpen: true,
   toggleDrawer: jest.fn(),
-  requestsData: null,
   requestData: null,
   loading: false,
-  requestsError: undefined,
+  requestError: undefined,
   pageType: PageEnum.New,
   handleDeleteRequest: jest.fn(),
   requestId: 'test-request-id',
@@ -389,7 +388,9 @@ describe('useAdditionalSalaryRequestForm', () => {
         await result.current.submitForm();
       });
 
-      expect(mutationSpy).not.toHaveBeenCalled();
+      expect(mutationSpy).not.toHaveGraphqlOperation(
+        'UpdateAdditionalSalaryRequest',
+      );
     });
 
     it('should call update and submit mutations on form submit', async () => {

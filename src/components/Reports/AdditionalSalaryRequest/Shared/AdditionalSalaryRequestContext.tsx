@@ -17,9 +17,7 @@ import {
 } from '../../Shared/HcmData/HCMData.generated';
 import {
   AdditionalSalaryRequestQuery,
-  AdditionalSalaryRequestsQuery,
   useAdditionalSalaryRequestQuery,
-  useAdditionalSalaryRequestsQuery,
   useDeleteAdditionalSalaryRequestMutation,
 } from '../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
@@ -36,13 +34,10 @@ export type AdditionalSalaryRequestType = {
   handlePreviousStep: () => void;
   isDrawerOpen: boolean;
   toggleDrawer: () => void;
-  requestsData?:
-    | AdditionalSalaryRequestsQuery['additionalSalaryRequests']['nodes']
-    | null;
   requestData?: AdditionalSalaryRequestQuery | null;
   loading: boolean;
 
-  requestsError?: ApolloError;
+  requestError?: ApolloError;
   pageType: PageEnum | undefined;
   handleDeleteRequest: (id: string, isCancel: boolean) => Promise<void>;
   requestId?: string;
@@ -106,13 +101,11 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
 
   const { data: hcmData } = useHcmDataQuery();
 
-  const { data: requestsData, error: requestsError } =
-    useAdditionalSalaryRequestsQuery();
-
-  const { data: requestData, loading } = useAdditionalSalaryRequestQuery({
-    variables: { requestId: requestId || '' },
-    skip: !requestId,
-  });
+  const {
+    data: requestData,
+    error: requestError,
+    loading,
+  } = useAdditionalSalaryRequestQuery();
 
   const { data: staffAccountIdData, loading: staffAccountIdLoading } =
     useStaffAccountIdQuery();
@@ -192,9 +185,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       handlePreviousStep,
       isDrawerOpen,
       toggleDrawer,
-      requestsData: requestsData?.additionalSalaryRequests?.nodes,
-      requestsError,
       requestData,
+      requestError,
       loading,
       pageType,
       handleDeleteRequest,
@@ -216,9 +208,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       handlePreviousStep,
       isDrawerOpen,
       toggleDrawer,
-      requestsData,
-      requestsError,
       requestData,
+      requestError,
       loading,
       pageType,
       handleDeleteRequest,

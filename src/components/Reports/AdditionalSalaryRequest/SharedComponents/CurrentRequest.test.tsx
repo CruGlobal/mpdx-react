@@ -1,14 +1,15 @@
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AsrStatusEnum } from 'src/graphql/types.generated';
-import { AdditionalSalaryRequestsQuery } from '../AdditionalSalaryRequest.generated';
+import { AdditionalSalaryRequestQuery } from '../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
 import { AdditionalSalaryRequestTestWrapper } from '../AdditionalSalaryRequestTestWrapper';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { CurrentRequest } from './CurrentRequest';
 
-type RequestType =
-  AdditionalSalaryRequestsQuery['additionalSalaryRequests']['nodes'][0];
+type RequestType = NonNullable<
+  AdditionalSalaryRequestQuery['additionalSalaryRequest']
+>;
 
 jest.mock('../Shared/AdditionalSalaryRequestContext', () => ({
   ...jest.requireActual('../Shared/AdditionalSalaryRequestContext'),
@@ -24,6 +25,7 @@ const mockHandleDeleteRequest = jest.fn();
 
 const mockRequest: RequestType = {
   id: 'request-123',
+  createdAt: '2025-06-01T00:00:00.000Z',
   totalAdditionalSalaryRequested: 5000,
   usingSpouseSalary: false,
   approvedAt: null,
@@ -79,10 +81,9 @@ const mockContextValue = {
   handlePreviousStep: jest.fn(),
   isDrawerOpen: false,
   toggleDrawer: jest.fn(),
-  requestsData: null,
   requestData: null,
   loading: false,
-  requestsError: undefined,
+  requestError: undefined,
   pageType: undefined,
   handleDeleteRequest: mockHandleDeleteRequest,
   requestId: undefined,
