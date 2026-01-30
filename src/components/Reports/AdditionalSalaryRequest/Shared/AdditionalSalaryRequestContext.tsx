@@ -50,6 +50,8 @@ export type AdditionalSalaryRequestType = {
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
 
   remainingAllowableSalary: number;
+  exceedsCap?: boolean;
+  setExceedsCap?: (value: boolean) => void;
 };
 
 const AdditionalSalaryRequestContext =
@@ -111,6 +113,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     variables: { requestId: requestId || '' },
     skip: !requestId,
   });
+
+  const [exceedsCap, setExceedsCap] = useState<boolean>(false);
 
   // const { currentSalaryCap, staffAccountBalance } =
   //   requestData?.additionalSalaryRequest?.calculations || {};
@@ -201,6 +205,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       isMutating,
       trackMutation,
       remainingAllowableSalary,
+      exceedsCap,
+      setExceedsCap,
     }),
     [
       staffAccountId,
@@ -223,6 +229,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       isMutating,
       trackMutation,
       remainingAllowableSalary,
+      exceedsCap,
+      setExceedsCap,
     ],
   );
 

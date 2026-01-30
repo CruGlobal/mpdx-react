@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   CardContent,
   CardHeader,
@@ -25,7 +25,7 @@ export const AdditionalSalaryRequest: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const { requestData, pageType, remainingAllowableSalary } =
+  const { requestData, pageType, remainingAllowableSalary, setExceedsCap } =
     useAdditionalSalaryRequest();
   const categories = useCompleteFormCategories();
   const { values, errors, touched } = useFormikContext<CompleteFormValues>();
@@ -38,6 +38,12 @@ export const AdditionalSalaryRequest: React.FC = () => {
   });
 
   const exceedsBalance = total > remainingAllowableSalary;
+
+  useEffect(() => {
+    if (setExceedsCap) {
+      setExceedsCap(exceedsBalance);
+    }
+  }, [exceedsBalance, setExceedsCap]);
 
   return (
     <StepCard
