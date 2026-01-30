@@ -49,7 +49,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
       linkOne={getRequestUrl(accountListId, id, 'view')}
       hideLinkTwoButton={true}
       isRequest={true}
-      handleConfirmCancel={() => handleDeleteRequest(id)}
+      handleConfirmCancel={() => handleDeleteRequest(id, true)}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <Typography

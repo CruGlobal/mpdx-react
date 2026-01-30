@@ -1,6 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
+import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -61,11 +62,13 @@ const TestWrapper: React.FC = () => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
       <I18nextProvider i18n={i18n}>
-        <GqlMockedProvider<{ HcmData: HcmDataQuery }> mocks={mocks}>
-          <AdditionalSalaryRequestProvider>
-            <AboutForm />
-          </AdditionalSalaryRequestProvider>
-        </GqlMockedProvider>
+        <SnackbarProvider>
+          <GqlMockedProvider<{ HcmData: HcmDataQuery }> mocks={mocks}>
+            <AdditionalSalaryRequestProvider>
+              <AboutForm />
+            </AdditionalSalaryRequestProvider>
+          </GqlMockedProvider>
+        </SnackbarProvider>
       </I18nextProvider>
     </TestRouter>
   </ThemeProvider>

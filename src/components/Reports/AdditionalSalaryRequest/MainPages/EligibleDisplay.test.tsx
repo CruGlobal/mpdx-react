@@ -1,6 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from '@emotion/react';
 import { render } from '@testing-library/react';
+import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -41,25 +42,27 @@ const TestWrapper: React.FC<TestWrapperProps> = ({
             },
           }}
         >
-          <GqlMockedProvider
-            mocks={{
-              HcmData: hcmData,
-              AdditionalSalaryRequests: {
-                additionalSalaryRequests: {
-                  nodes: [],
+          <SnackbarProvider>
+            <GqlMockedProvider
+              mocks={{
+                HcmData: hcmData,
+                AdditionalSalaryRequests: {
+                  additionalSalaryRequests: {
+                    nodes: [],
+                  },
                 },
-              },
-              StaffAccountId: {
-                user: {
-                  staffAccountId: 'staff-account-1',
+                StaffAccountId: {
+                  user: {
+                    staffAccountId: 'staff-account-1',
+                  },
                 },
-              },
-            }}
-          >
-            <AdditionalSalaryRequestProvider>
-              <EligibleDisplay allRequestStatus={allRequestStatus} />
-            </AdditionalSalaryRequestProvider>
-          </GqlMockedProvider>
+              }}
+            >
+              <AdditionalSalaryRequestProvider>
+                <EligibleDisplay allRequestStatus={allRequestStatus} />
+              </AdditionalSalaryRequestProvider>
+            </GqlMockedProvider>
+          </SnackbarProvider>
         </TestRouter>
       </I18nextProvider>
     </ThemeProvider>

@@ -76,6 +76,7 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   toggleDrawer: jest.fn(),
   requestsData: null,
   requestData: null,
+  loading: false,
   requestsError: undefined,
   pageType: PageEnum.New,
   handleDeleteRequest: jest.fn(),

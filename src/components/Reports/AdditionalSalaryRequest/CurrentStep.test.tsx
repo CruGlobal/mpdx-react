@@ -25,6 +25,7 @@ const mockContextValue = {
   toggleDrawer: jest.fn(),
   requestsData: null,
   requestData: null,
+  loading: false,
   requestsError: undefined,
   pageType: undefined,
   handleDeleteRequest: jest.fn(),

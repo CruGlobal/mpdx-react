@@ -10,8 +10,8 @@ import {
   AdditionalSalaryRequestProvider,
   useAdditionalSalaryRequest,
 } from 'src/components/Reports/AdditionalSalaryRequest/Shared/AdditionalSalaryRequestContext';
-import { SavingStatus } from 'src/components/Reports/AdditionalSalaryRequest/Shared/SavingStatus/SavingStatus';
 import { useAdditionalSalaryRequestForm } from 'src/components/Reports/AdditionalSalaryRequest/Shared/useAdditionalSalaryRequestForm';
+import { SavingStatus } from 'src/components/Reports/Shared/CalculationReports/SavingStatus/SavingStatus';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import {
   HeaderTypeEnum,
@@ -32,6 +32,8 @@ const RequestPageContent: React.FC<{ requestId: string }> = ({ requestId }) => {
 
   const formik = useAdditionalSalaryRequestForm({ requestId });
   const { pageType } = useAdditionalSalaryRequest();
+
+  const { requestData, loading, isMutating } = useAdditionalSalaryRequest();
 
   const handleNavListToggle = () => {
     setNavListOpen(!isNavListOpen);
@@ -61,7 +63,18 @@ const RequestPageContent: React.FC<{ requestId: string }> = ({ requestId }) => {
               onNavListToggle={handleNavListToggle}
               title={t('Additional Salary Request')}
               headerType={HeaderTypeEnum.Report}
-              rightExtra={pageType !== PageEnum.View && <SavingStatus />}
+              rightExtra={
+                pageType !== PageEnum.View && (
+                  <SavingStatus
+                    loading={loading}
+                    hasData={!!requestData}
+                    isMutating={isMutating}
+                    lastSavedAt={
+                      requestData?.additionalSalaryRequest?.updatedAt ?? null
+                    }
+                  />
+                )
+              }
             />
             <RequestPage />
           </>
