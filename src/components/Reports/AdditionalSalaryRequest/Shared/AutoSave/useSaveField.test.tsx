@@ -48,6 +48,7 @@ const defaultFormValues: CompleteFormValues = {
   deductTaxDeferredPercent: false,
   phoneNumber: '555-1234',
   emailAddress: 'test@testerson.test',
+  totalAdditionalSalaryRequested: '100',
 };
 
 const mockTrackMutation = jest.fn((mutation) => mutation);
@@ -82,7 +83,6 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   isInternational: false,
   isMutating: false,
   trackMutation: mockTrackMutation,
-  remainingAllowableSalary: 10000,
 };
 
 interface TestComponentProps {

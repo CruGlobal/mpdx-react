@@ -115,11 +115,18 @@ export const AdditionalSalaryRequest: React.FC = () => {
                   width: '30%',
                   fontWeight: 'bold',
                   textAlign: 'center',
-                  outline: 'none',
+                  outline: errors.totalAdditionalSalaryRequested
+                    ? '2px solid red'
+                    : 'none',
                 }}
                 data-testid="total-amount"
               >
-                {currencyFormat(total, currency, locale)}
+                {currencyFormat(total, 'USD', locale)}
+                {errors.totalAdditionalSalaryRequested && (
+                  <Typography variant="body2" color="error">
+                    {t('Exceeds account balance.')}
+                  </Typography>
+                )}
               </TableCell>
             </TableRow>
           </TableBody>

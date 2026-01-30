@@ -41,6 +41,7 @@ const defaultInitialValues: CompleteFormValues = {
   deductTaxDeferredPercent: false,
   phoneNumber: '',
   emailAddress: '',
+  totalAdditionalSalaryRequested: '0',
 };
 
 const validationSchema = yup.object({

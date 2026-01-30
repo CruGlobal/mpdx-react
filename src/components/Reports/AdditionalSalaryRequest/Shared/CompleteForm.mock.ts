@@ -20,6 +20,7 @@ export const defaultCompleteFormValues: CompleteFormValues = {
   deductTaxDeferredPercent: false,
   phoneNumber: '',
   emailAddress: '',
+  totalAdditionalSalaryRequested: '0',
 };
 
 export const defaultSalaryInfoData: SalaryInfoQuery = {

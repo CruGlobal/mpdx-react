@@ -3,7 +3,6 @@ import React, { useMemo } from 'react';
 import { Box, Stack } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
-import Loading from 'src/components/Loading/Loading';
 import { DirectionButtons } from 'src/components/Reports/Shared/CalculationReports/DirectionButtons/DirectionButtons';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { NoStaffAccount } from 'src/components/Reports/Shared/NoStaffAccount/NoStaffAccount';
@@ -39,8 +38,6 @@ const MainContent: React.FC = () => {
     handleDeleteRequest,
     requestId,
     pageType,
-    loading,
-    currentStep,
     trackMutation,
   } = useAdditionalSalaryRequest();
 
@@ -78,9 +75,12 @@ const MainContent: React.FC = () => {
     }
   };
 
-  if (loading && currentStep !== AdditionalSalaryRequestSectionEnum.AboutForm) {
-    return <Loading loading={loading} />;
-  }
+  const capTitle = t(
+    'Your request requires additional approval. Please fill in the information below to continue.',
+  );
+  const capContent = t(
+    'Your request causes your Total Requested Salary to exceed your Maximum Allowable Salary.',
+  );
 
   return (
     <Box px={theme.spacing(3)}>
@@ -95,6 +95,8 @@ const MainContent: React.FC = () => {
             <Stack direction="column" width={mainContentWidth}>
               <DirectionButtons
                 formTitle={t('Additional Salary Request')}
+                overrideTitle={capTitle}
+                overrideContent={capContent}
                 overrideSubContent={
                   isEdit
                     ? t('Your updated request will be sent to payroll.')

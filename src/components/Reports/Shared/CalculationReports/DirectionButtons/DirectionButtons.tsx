@@ -8,7 +8,7 @@ interface DirectionButtonsProps {
   formTitle: string;
   overrideTitle?: string;
   overrideContent?: string;
-  overrideSubContent?: string;
+  overrideSubContent?: React.ReactNode;
   handleNextStep?: () => void;
   handlePreviousStep?: () => void;
   handleDiscard?: () => void;
@@ -18,6 +18,7 @@ interface DirectionButtonsProps {
   overrideNext?: () => void;
   showBackButton?: boolean;
   isEdit?: boolean;
+  exceedsCap?: boolean;
   //Formik validation for submit modal
   isSubmission?: boolean;
   submitForm?: () => Promise<void>;
@@ -45,6 +46,7 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
   isValid,
   deadlineDate,
   actionRequired,
+  exceedsCap,
 }) => {
   const { t } = useTranslation();
 
@@ -141,6 +143,7 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
           overrideSubContent={overrideSubContent}
           deadlineDate={deadlineDate}
           actionRequired={actionRequired}
+          exceedsCap={exceedsCap}
         />
       )}
       {openDiscardModal && (

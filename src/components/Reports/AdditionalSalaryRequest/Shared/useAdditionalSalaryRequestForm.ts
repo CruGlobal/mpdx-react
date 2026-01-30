@@ -101,6 +101,7 @@ export const useAdditionalSalaryRequestForm = (
 
   const defaultInitialValues: CompleteFormValues = {
     ...Object.fromEntries(fieldConfig.map(({ key }) => [key, '0'])),
+    totalAdditionalSalaryRequested: '0',
     deductTaxDeferredPercent: false,
     phoneNumber: user?.staffInfo?.primaryPhoneNumber || '',
     emailAddress: user?.staffInfo?.emailAddress || '',
@@ -127,6 +128,8 @@ export const useAdditionalSalaryRequestForm = (
       phoneNumber:
         request.phoneNumber || user?.staffInfo?.primaryPhoneNumber || '',
       emailAddress: request.emailAddress || user?.staffInfo?.emailAddress || '',
+      totalAdditionalSalaryRequested:
+        request.totalAdditionalSalaryRequested || '',
     } as CompleteFormValues;
   }, [providedInitialValues, requestData?.latestAdditionalSalaryRequest, user]);
 
@@ -164,6 +167,15 @@ export const useAdditionalSalaryRequestForm = (
           .string()
           .required(t('Email address is required'))
           .email(t('Please enter a valid email address')),
+        totalAdditionalSalaryRequested: yup
+          .number()
+          .test(
+            'total-within-remaining-allowable-salary',
+            t('Exceeds account balance'),
+            function (value) {
+              return (value || 0) <= 17500;
+            },
+          ),
       }),
     [createCurrencyValidation, t, locale],
   );

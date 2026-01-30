@@ -37,6 +37,7 @@ describe('useSalaryCalculations', () => {
     deductTaxDeferredPercent: false,
     phoneNumber: '',
     emailAddress: '',
+    totalAdditionalSalaryRequested: '0',
   };
 
   it('calculates all salary values correctly with default percentage enabled', () => {
@@ -148,6 +149,7 @@ describe('useSalaryCalculations', () => {
       deductTaxDeferredPercent: false,
       phoneNumber: '',
       emailAddress: '',
+      totalAdditionalSalaryRequested: '15000',
     };
 
     const { result } = renderHook(

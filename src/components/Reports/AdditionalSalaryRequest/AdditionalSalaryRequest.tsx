@@ -38,6 +38,7 @@ export interface CompleteFormValues {
   deductTaxDeferredPercent: boolean;
   phoneNumber: string;
   emailAddress: string;
+  totalAdditionalSalaryRequested: string;
 }
 
 export const AdditionalSalaryRequest: React.FC = () => {
