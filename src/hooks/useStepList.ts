@@ -10,7 +10,14 @@ export function useStepList(formType: FormEnum, type?: PageEnum) {
   const { t } = useTranslation();
   const isEdit = type === PageEnum.Edit;
 
-  const [currentIndex, setCurrentIndex] = useState(() => (isEdit ? 1 : 0));
+  const [currentIndex, setCurrentIndex] = useState(() => {
+    if (formType === FormEnum.SalaryCalc) {
+      // First step for edit, Summary for view
+      return isEdit ? 0 : 3;
+    }
+    // Original logic for other forms
+    return isEdit ? 1 : 0;
+  });
 
   const [steps, setSteps] = useState<Steps[]>(() =>
     formType === FormEnum.MHA
@@ -40,22 +47,22 @@ export function useStepList(formType: FormEnum, type?: PageEnum) {
         ? [
             {
               title: t('1. Effective Date'),
-              current: true,
-              complete: false,
+              current: isEdit,
+              complete: !isEdit,
             },
             {
               title: t('2. Your Information'),
               current: false,
-              complete: false,
+              complete: !isEdit,
             },
             {
               title: t('3. Salary Calculation'),
               current: false,
-              complete: false,
+              complete: !isEdit,
             },
             {
               title: t('4. Summary'),
-              current: false,
+              current: !isEdit,
               complete: false,
             },
             {
