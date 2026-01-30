@@ -12,7 +12,10 @@ import { PanelLayout } from '../../Shared/CalculationReports/PanelLayout/PanelLa
 import { useIconPanelItems } from '../../Shared/CalculationReports/PanelLayout/useIconPanelItems';
 import { PanelTypeEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { StepsList } from '../../Shared/CalculationReports/StepsList/StepsList';
-import { CompleteFormValues } from '../AdditionalSalaryRequest';
+import {
+  CompleteFormValues,
+  mainContentWidth,
+} from '../AdditionalSalaryRequest';
 import { EditForm } from '../FormVersions/Edit/EditForm';
 import { NewForm } from '../FormVersions/New/NewForm';
 import { ViewForm } from '../FormVersions/View/ViewForm';

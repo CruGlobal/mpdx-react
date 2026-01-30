@@ -36,6 +36,7 @@ const mockContextValue = {
   spouse: undefined,
   isMutating: false,
   trackMutation: jest.fn(),
+  loading: false,
 };
 
 describe('StepList', () => {
