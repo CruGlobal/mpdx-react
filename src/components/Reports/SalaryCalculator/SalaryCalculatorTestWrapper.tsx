@@ -138,9 +138,9 @@ export const SalaryCalculatorTestWrapper: React.FC<
                   id: 'salary-request-1',
                   status: SalaryRequestStatusEnum.InProgress,
                   calculations: {
-                    individualCap: 80000,
-                    familyCap: 125000,
                     hardCap: 80000,
+                    exceptionCap: null,
+                    combinedCap: 125000,
                   },
                   progressiveApprovalTier: null,
                 } satisfies SalaryRequestMock,

@@ -1,5 +1,8 @@
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { merge } from 'lodash';
+import { DeepPartial } from 'ts-essentials';
+import { SalaryCalculationQuery } from '../../SalaryCalculatorContext/SalaryCalculation.generated';
 import {
   SalaryCalculatorTestWrapper,
   SalaryCalculatorTestWrapperProps,
@@ -7,18 +10,20 @@ import {
 import { MaxAllowableStep } from './MaxAllowableSection';
 
 const mutationSpy = jest.fn();
+const defaultSalaryRequestMock: DeepPartial<
+  SalaryCalculationQuery['salaryRequest']
+> = {
+  calculations: { calculatedCap: 75000 },
+  spouseCalculations: { calculatedCap: 80000 },
+  splitCapRequired: true,
+};
 
-const TestComponent: React.FC<SalaryCalculatorTestWrapperProps> = ({
-  salaryRequestMock = {
-    calculations: { calculatedCap: 75000 },
-    spouseCalculations: { calculatedCap: 80000 },
-  },
-  ...props
-}) => (
+const TestComponent: React.FC<
+  Pick<SalaryCalculatorTestWrapperProps, 'salaryRequestMock'>
+> = ({ salaryRequestMock }) => (
   <SalaryCalculatorTestWrapper
-    salaryRequestMock={salaryRequestMock}
+    salaryRequestMock={merge({}, defaultSalaryRequestMock, salaryRequestMock)}
     onCall={mutationSpy}
-    {...props}
   >
     <MaxAllowableStep />
   </SalaryCalculatorTestWrapper>
@@ -37,18 +42,20 @@ describe('MaxAllowableSection', () => {
   });
 
   describe('when not over combined cap', () => {
-    it('should render max allowable amounts', async () => {
-      const { findByRole, getByRole } = render(
+    it('should render max allowable amounts and hide split checkbox', async () => {
+      const { findByRole, getByRole, queryByRole } = render(
         <TestComponent
           salaryRequestMock={{
             calculations: { calculatedCap: 50000 },
             spouseCalculations: { calculatedCap: 60000 },
+            splitCapRequired: false,
           }}
         />,
       );
 
       expect(await findByRole('cell', { name: '$50,000' })).toBeInTheDocument();
       expect(getByRole('cell', { name: '$60,000' })).toBeInTheDocument();
+      expect(queryByRole('checkbox')).not.toBeInTheDocument();
     });
   });
 
@@ -107,27 +114,27 @@ describe('MaxAllowableSection', () => {
     });
   });
 
-  describe('when user has exception cap', () => {
-    const hcmMock = { exceptionSalaryCap: { amount: 100000 } };
+  it('shows message to users with exception cap', async () => {
+    const { findByText } = render(
+      <TestComponent
+        salaryRequestMock={{ calculations: { exceptionCap: 100000 } }}
+      />,
+    );
 
-    it('shows message to users with exception cap', async () => {
-      const { findByText } = render(<TestComponent hcmMock={hcmMock} />);
+    expect(
+      await findByText(
+        'You have a Board-approved Maximum Allowable Salary (CAP).',
+        { exact: false },
+      ),
+    ).toBeInTheDocument();
+  });
 
-      expect(
-        await findByText(
-          'You have a Board-approved Maximum Allowable Salary (CAP).',
-          { exact: false },
-        ),
-      ).toBeInTheDocument();
-    });
+  it('removes ability to split combined cap when split is not required', async () => {
+    const { queryByRole, findByRole } = render(
+      <TestComponent salaryRequestMock={{ splitCapRequired: false }} />,
+    );
 
-    it('removes ability to split combined cap', async () => {
-      const { queryByRole, findByRole } = render(
-        <TestComponent hcmMock={hcmMock} />,
-      );
-
-      expect(await findByRole('cell', { name: '$75,000' })).toBeInTheDocument();
-      expect(queryByRole('checkbox')).not.toBeInTheDocument();
-    });
+    expect(await findByRole('cell', { name: '$75,000' })).toBeInTheDocument();
+    expect(queryByRole('checkbox')).not.toBeInTheDocument();
   });
 });

@@ -44,8 +44,6 @@ fragment CalculationFields on SalaryRequestCalculations {
   non403bFraction
   calculatedCap
   effectiveCap
-  individualCap
-  familyCap
   hardCap
   exceptionCap
   combinedCap

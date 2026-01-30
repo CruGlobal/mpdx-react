@@ -57,21 +57,16 @@ export const MaxAllowableStep: React.FC = () => {
     });
   };
 
-  const formattedSingleCap = formatCap(calculations?.individualCap);
-  const formattedFamilyCap = formatCap(calculations?.familyCap);
+  const formattedHardCap = formatCap(calculations?.hardCap);
+  const formattedCombinedCap = formatCap(calculations?.combinedCap);
 
   const calculatedCap = calculations?.calculatedCap ?? 0;
   const spouseCalculatedCap = spouseCalculations?.calculatedCap ?? 0;
-  const combinedCalculatedCap = calculatedCap + spouseCalculatedCap;
-  const exceptionCap = hcmUser?.exceptionSalaryCap.amount ?? 0;
-  const cap = calculations?.familyCap ?? 0;
-  // If the couple's combined calculated cap exceeds their combined cap (unless they have an
-  // exception), then they will need to split their family cap between the two of them
-  const overCap = hcmSpouse && !exceptionCap && combinedCalculatedCap > cap;
-  const formattedCap = currencyFormat(cap, 'USD', locale, {
+  const combinedCap = calculations?.combinedCap ?? 0;
+  const formattedCap = currencyFormat(combinedCap, 'USD', locale, {
     showTrailingZeros: true,
   });
-  const inputCombinedMaxSalary =
+  const inputCombinedCap =
     (salaryCalculation?.salaryCap ?? 0) +
     (salaryCalculation?.spouseSalaryCap ?? 0);
 
@@ -92,7 +87,7 @@ export const MaxAllowableStep: React.FC = () => {
         </Typography>
 
         <Typography variant="body1">
-          {exceptionCap ? (
+          {calculations?.exceptionCap ? (
             <Trans t={t}>
               You have a Board-approved Maximum Allowable Salary (CAP). Any
               adjustment that may exceed this cap must be submitted for further
@@ -101,14 +96,14 @@ export const MaxAllowableStep: React.FC = () => {
           ) : (
             <Trans t={t}>
               Maximum Allowable Salary may not exceed{' '}
-              {{ singleCap: formattedSingleCap }} for an individual and{' '}
-              {{ familyCap: formattedFamilyCap }} combined for a couple or a
+              {{ hardCap: formattedHardCap }} for an individual and{' '}
+              {{ combinedCap: formattedCombinedCap }} combined for a couple or a
               widow(er).
             </Trans>
           )}
         </Typography>
 
-        {overCap ? (
+        {salaryCalculation?.splitCapRequired ? (
           <>
             <Table>
               <TableHead>
@@ -127,10 +122,10 @@ export const MaxAllowableStep: React.FC = () => {
                   <TableCell>{t('Maximum Allowable Salary')}</TableCell>
                   <TableCell>
                     {t(
-                      '{{ familyCap }} (with neither exceeding {{ singleCap }})',
+                      '{{ combinedCap }} (with neither exceeding {{ singleCap }})',
                       {
-                        familyCap: formattedFamilyCap,
-                        singleCap: formattedSingleCap,
+                        combinedCap: formattedCombinedCap,
+                        singleCap: formattedHardCap,
                       },
                     )}
                   </TableCell>
@@ -189,7 +184,7 @@ export const MaxAllowableStep: React.FC = () => {
                   />
                 </Stack>
 
-                {inputCombinedMaxSalary > cap && (
+                {inputCombinedCap > combinedCap && (
                   <Alert severity="error">
                     <Trans t={t}>
                       Your combined maximum allowable salary exceeds your
