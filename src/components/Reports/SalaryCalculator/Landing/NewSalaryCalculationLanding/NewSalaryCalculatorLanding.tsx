@@ -29,23 +29,36 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
     names,
     salaryData: { currentGrossSalary },
     accountBalance,
-    hasInProgressCalculation,
+    inProgressCalculationId,
   } = useLandingData();
 
   const [createSalaryCalculation, { loading: creatingCalculation }] =
     useCreateSalaryCalculationMutation();
 
   const handleStartCalculation = async () => {
-    if (!hasInProgressCalculation) {
+    if (inProgressCalculationId) {
+      router.push({
+        pathname: `/accountLists/${accountListId}/reports/salaryCalculator/${inProgressCalculationId}`,
+        query: { mode: 'edit' },
+      });
+    } else {
       await createSalaryCalculation({
         variables: {
           input: {
             attributes: {},
           },
         },
+        onCompleted: ({ createSalaryRequest }) => {
+          const newCalculationId = createSalaryRequest?.salaryRequest?.id;
+          if (newCalculationId) {
+            router.push({
+              pathname: `/accountLists/${accountListId}/reports/salaryCalculator/${newCalculationId}`,
+              query: { mode: 'edit' },
+            });
+          }
+        },
       });
     }
-    router.push(`/accountLists/${accountListId}/reports/salaryCalculator/edit`);
   };
 
   if (loading) {
@@ -122,7 +135,7 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
               onClick={handleStartCalculation}
               disabled={creatingCalculation}
             >
-              {hasInProgressCalculation
+              {inProgressCalculationId
                 ? t('Continue Salary Calculation')
                 : t('Calculate New Salary')}
             </Button>

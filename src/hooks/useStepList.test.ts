@@ -69,8 +69,10 @@ describe('useStepList', () => {
     expect(result.current.currentIndex).toBe(1);
   });
 
-  it('returns correct steps for Salary Calculation', () => {
-    const { result } = renderHook(() => useStepList(FormEnum.SalaryCalc));
+  it('returns correct steps for Salary Calculation Edit page', () => {
+    const { result } = renderHook(() =>
+      useStepList(FormEnum.SalaryCalc, PageEnum.Edit),
+    );
 
     expect(result.current.steps).toEqual([
       {
@@ -101,6 +103,41 @@ describe('useStepList', () => {
     ]);
 
     expect(result.current.currentIndex).toBe(0);
+  });
+
+  it('returns correct steps for SalaryCalculation view page (no edit mode)', () => {
+    const { result } = renderHook(() => useStepList(FormEnum.SalaryCalc));
+
+    // View mode: starts on Summary (index 3), first 3 steps complete
+    expect(result.current.steps).toEqual([
+      {
+        title: '1. Effective Date',
+        current: false,
+        complete: true,
+      },
+      {
+        title: '2. Your Information',
+        current: false,
+        complete: true,
+      },
+      {
+        title: '3. Salary Calculation',
+        current: false,
+        complete: true,
+      },
+      {
+        title: '4. Summary',
+        current: true,
+        complete: false,
+      },
+      {
+        title: '5. Receipt',
+        current: false,
+        complete: false,
+      },
+    ]);
+
+    expect(result.current.currentIndex).toBe(3);
   });
 
   it('returns correct steps for Additional Salary', () => {

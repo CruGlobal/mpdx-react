@@ -20,8 +20,14 @@ const MainContent: React.FC = () => (
 export const SalaryCalculator: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const { steps, currentIndex, percentComplete, isDrawerOpen, toggleDrawer } =
-    useSalaryCalculator();
+  const {
+    steps,
+    currentIndex,
+    percentComplete,
+    isDrawerOpen,
+    toggleDrawer,
+    isEdit,
+  } = useSalaryCalculator();
 
   const iconPanelItems = useIconPanelItems(isDrawerOpen, toggleDrawer);
 
@@ -29,12 +35,13 @@ export const SalaryCalculator: React.FC = () => {
     <PanelLayout
       panelType={PanelTypeEnum.Other}
       percentComplete={percentComplete}
+      showPercentage={isEdit}
       steps={steps}
       currentIndex={currentIndex}
-      icons={iconPanelItems}
+      icons={isEdit ? iconPanelItems : []}
       sidebarContent={<StepsList steps={steps} />}
       sidebarTitle={t('Form Steps')}
-      isSidebarOpen={isDrawerOpen}
+      isSidebarOpen={isEdit && isDrawerOpen}
       sidebarAriaLabel={t('Salary Calculator Sections')}
       mainContent={<MainContent />}
       backHref={`/accountLists/${accountListId}/reports/salaryCalculator`}

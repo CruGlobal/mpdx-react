@@ -82,6 +82,7 @@ export interface SalaryCalculatorTestWrapperProps {
   children?: React.ReactNode;
   hasSpouse?: boolean;
   payrollDates?: PayrollDate[];
+  isEdit?: boolean;
 }
 
 export const SalaryCalculatorTestWrapper: React.FC<
@@ -93,11 +94,19 @@ export const SalaryCalculatorTestWrapper: React.FC<
   children,
   hasSpouse = true,
   payrollDates = [],
+  isEdit = true,
 }) => {
   const hcmUser = merge(hcmUserMock, hcmMock);
   return (
     <ThemeProvider theme={theme}>
-      <TestRouter>
+      <TestRouter
+        router={{
+          query: {
+            accountListId: 'account-list-1',
+            ...(isEdit ? { mode: 'edit' } : {}),
+          },
+        }}
+      >
         <GqlMockedProvider<{
           Hcm: HcmQuery;
           PayrollDates: PayrollDatesQuery;

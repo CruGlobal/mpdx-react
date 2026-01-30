@@ -1,3 +1,4 @@
+import { NextRouter } from 'next/router';
 import { ThemeProvider } from '@emotion/react';
 import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
 import TestRouter from '__tests__/util/TestRouter';
@@ -16,6 +17,7 @@ interface LandingTestWrapperProps {
   hasApprovedCalculation?: boolean;
   hasLatestCalculation?: boolean;
   salaryRequestEligible?: boolean;
+  router?: Partial<NextRouter>;
 }
 
 export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
@@ -25,9 +27,10 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
   hasApprovedCalculation = false,
   hasLatestCalculation = false,
   salaryRequestEligible = true,
+  router,
 }) => (
   <ThemeProvider theme={theme}>
-    <TestRouter>
+    <TestRouter router={router}>
       <GqlMockedProvider<{
         Hcm: HcmQuery;
         StaffAccountId: StaffAccountIdQuery;
@@ -72,7 +75,9 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
             ],
           },
           LandingSalaryCalculations: {
-            inProgressCalculation: hasInProgressCalculation ? {} : null,
+            inProgressCalculation: hasInProgressCalculation
+              ? { id: 'in-progress-calc-1' }
+              : null,
             approvedCalculation: hasApprovedCalculation ? {} : null,
             latestCalculation: hasLatestCalculation
               ? {

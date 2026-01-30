@@ -1,3 +1,4 @@
+import { NextRouter } from 'next/router';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SalaryRequestStatusEnum } from 'src/graphql/types.generated';
@@ -31,11 +32,13 @@ const mutationSpy = jest.fn();
 const TestComponent = ({
   calculation,
   onCall,
+  router,
 }: {
   calculation: LatestCalculation;
   onCall?: typeof mutationSpy;
+  router?: Partial<NextRouter>;
 }) => (
-  <LandingTestWrapper hasLatestCalculation onCall={onCall}>
+  <LandingTestWrapper hasLatestCalculation onCall={onCall} router={router}>
     <PendingRequestActions calculation={calculation} />
   </LandingTestWrapper>
 );
@@ -83,6 +86,44 @@ describe('PendingRequestActions', () => {
     userEvent.click(await findByText('Yes, Cancel'));
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('DeleteSalaryCalculation'),
+    );
+  });
+
+  it('navigates to the salary calculation page when View Request is clicked', async () => {
+    const push = jest.fn();
+
+    const { findByRole } = render(
+      <TestComponent calculation={mockCalculation} router={{ push }} />,
+    );
+
+    userEvent.click(await findByRole('button', { name: 'View Request' }));
+
+    expect(push).toHaveBeenCalledWith(
+      '/accountLists/account-list-1/reports/salaryCalculator/1',
+    );
+  });
+
+  it('navigates to edit mode when View Request is clicked', async () => {
+    const push = jest.fn();
+
+    const calculation = {
+      ...mockCalculation,
+      status: SalaryRequestStatusEnum.ActionRequired,
+    };
+
+    const { findByRole } = render(
+      <TestComponent calculation={calculation} router={{ push }} />,
+    );
+
+    userEvent.click(await findByRole('button', { name: 'Edit Request' }));
+
+    expect(push).toHaveBeenCalledWith(
+      expect.objectContaining({
+        pathname: '/accountLists/account-list-1/reports/salaryCalculator/1',
+        query: expect.objectContaining({
+          mode: 'edit',
+        }),
+      }),
     );
   });
 });
