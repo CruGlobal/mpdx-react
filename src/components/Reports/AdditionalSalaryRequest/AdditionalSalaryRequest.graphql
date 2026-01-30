@@ -3,6 +3,7 @@ fragment AdditionalSalaryRequestFields on AdditionalSalaryRequest {
   currentYearSalaryNotReceived
   previousYearSalaryNotReceived
   phoneNumber
+  emailAddress
   status
   feedback
   user {
