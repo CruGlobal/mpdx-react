@@ -25,7 +25,8 @@ export const AdditionalSalaryRequest: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
 
-  const { requestData, pageType } = useAdditionalSalaryRequest();
+  const { requestData, pageType, setExceedsCap, maxAmount } =
+    useAdditionalSalaryRequest();
   const categories = useCompleteFormCategories();
   const { values, errors, touched, setFieldValue, setFieldTouched } =
     useFormikContext<CompleteFormValues>();
@@ -36,6 +37,12 @@ export const AdditionalSalaryRequest: React.FC = () => {
     traditional403bContribution,
     values,
   });
+
+  useEffect(() => {
+    if (setExceedsCap && maxAmount) {
+      setExceedsCap(total > maxAmount);
+    }
+  }, [total, setExceedsCap, requestData]);
 
   useEffect(() => {
     setFieldValue('totalAdditionalSalaryRequested', total);
