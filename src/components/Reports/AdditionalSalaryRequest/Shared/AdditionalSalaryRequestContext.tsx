@@ -1,11 +1,15 @@
 import { useRouter } from 'next/router';
 import React, { createContext, useCallback, useMemo, useState } from 'react';
 import { ApolloError } from '@apollo/client';
+import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
 import {
   FormEnum,
   PageEnum,
 } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useStepList } from 'src/hooks/useStepList';
+import { useTrackMutation } from 'src/hooks/useTrackMutation';
 import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
 import {
   HcmDataQuery,
@@ -34,10 +38,11 @@ export type AdditionalSalaryRequestType = {
     | AdditionalSalaryRequestsQuery['additionalSalaryRequests']['nodes']
     | null;
   requestData?: AdditionalSalaryRequestQuery | null;
+  loading: boolean;
 
   requestsError?: ApolloError;
   pageType: PageEnum | undefined;
-  handleDeleteRequest: (id: string) => Promise<void>;
+  handleDeleteRequest: (id: string, isCancel: boolean) => Promise<void>;
   requestId?: string;
   user: HcmDataQuery['hcm'][0] | undefined;
   spouse: HcmDataQuery['hcm'][1] | undefined;
@@ -69,6 +74,9 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   requestId,
   children,
 }) => {
+  const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
+  const accountListId = useAccountListId();
   const router = useRouter();
   const { mode } = router.query;
 
@@ -97,7 +105,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   const { data: requestsData, error: requestsError } =
     useAdditionalSalaryRequestsQuery();
 
-  const { data: requestData } = useAdditionalSalaryRequestQuery({
+  const { data: requestData, loading } = useAdditionalSalaryRequestQuery({
     variables: { requestId: requestId || '' },
     skip: !requestId,
   });
@@ -118,13 +126,34 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   }, [previousStep]);
 
   const handleDeleteRequest = useCallback(
-    async (id: string) => {
+    async (id: string, isCancel: boolean) => {
       await deleteAdditionalSalaryRequest({
         variables: { id },
-        refetchQueries: ['AdditionalSalaryRequests'],
+        update: (cache) => {
+          cache.evict({
+            id: cache.identify({ __typename: 'AdditionalSalaryRequest', id }),
+          });
+          cache.gc();
+        },
+        onCompleted: () => {
+          if (!isCancel) {
+            router.push(
+              `/accountLists/${accountListId}/reports/additionalSalaryRequest`,
+            );
+          }
+
+          enqueueSnackbar(
+            isCancel
+              ? t('Additional Salary Request cancelled successfully.')
+              : t('Additional Salary Request discarded successfully.'),
+            {
+              variant: 'success',
+            },
+          );
+        },
       });
     },
-    [deleteAdditionalSalaryRequest],
+    [deleteAdditionalSalaryRequest, enqueueSnackbar, accountListId, router, t],
   );
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
@@ -132,18 +161,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     setIsDrawerOpen((prev) => !prev);
   }, []);
 
-  const [mutationCount, setMutationCount] = useState(0);
-  const isMutating = mutationCount > 0;
-
-  const trackMutation = useCallback(
-    async <T,>(mutation: Promise<T>): Promise<T> => {
-      setMutationCount((prev) => prev + 1);
-      return mutation.finally(() => {
-        setMutationCount((prev) => Math.max(0, prev - 1));
-      });
-    },
-    [],
-  );
+  const { trackMutation, isMutating } = useTrackMutation();
 
   const [user, spouse] = hcmData?.hcm ?? [];
 
@@ -165,6 +183,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       requestsData: requestsData?.additionalSalaryRequests?.nodes,
       requestsError,
       requestData,
+      loading,
       pageType,
       handleDeleteRequest,
       requestId,
@@ -185,6 +204,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       requestsData,
       requestsError,
       requestData,
+      loading,
       pageType,
       handleDeleteRequest,
       requestId,

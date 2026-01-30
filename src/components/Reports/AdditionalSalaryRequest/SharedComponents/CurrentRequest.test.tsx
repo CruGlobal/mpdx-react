@@ -80,6 +80,7 @@ const mockContextValue = {
   toggleDrawer: jest.fn(),
   requestsData: null,
   requestData: null,
+  loading: false,
   requestsError: undefined,
   pageType: undefined,
   handleDeleteRequest: mockHandleDeleteRequest,
@@ -248,6 +249,6 @@ describe('CurrentRequest', () => {
     const confirmButton = getByRole('button', { name: /yes, cancel/i });
     userEvent.click(confirmButton);
 
-    expect(mockHandleDeleteRequest).toHaveBeenCalledWith('request-123');
+    expect(mockHandleDeleteRequest).toHaveBeenCalledWith('request-123', true);
   });
 });
