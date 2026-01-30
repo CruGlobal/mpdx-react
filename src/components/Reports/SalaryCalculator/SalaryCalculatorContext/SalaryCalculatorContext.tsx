@@ -80,7 +80,7 @@ export const SalaryCalculatorProvider: React.FC<
     percentComplete,
   } = useStepList(FormEnum.SalaryCalc, isEdit ? PageEnum.Edit : undefined);
 
-  const [isDrawerOpen, setDrawerOpen] = useState(true);
+  const [isDrawerOpen, setDrawerOpen] = useState(isEdit);
   const { data: hcmData } = useHcmQuery();
   const { data: calculationData, loading } = useSalaryCalculationQuery();
   const { trackMutation, isMutating } = useTrackMutation();
