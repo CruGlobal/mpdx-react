@@ -15,14 +15,14 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { StatusCard } from '../../Shared/CalculationReports/StatusCard/StatusCard';
-import { AdditionalSalaryRequestsQuery } from '../AdditionalSalaryRequest.generated';
+import { AdditionalSalaryRequestQuery } from '../AdditionalSalaryRequest.generated';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { getDotColor } from '../Shared/Helper/getDotColor';
 import { getDotVariant } from '../Shared/Helper/getDotVariant';
 import { getRequestUrl } from '../Shared/Helper/getRequestUrl';
 
 interface CurrentRequestProps {
-  request: AdditionalSalaryRequestsQuery['additionalSalaryRequests']['nodes'][0];
+  request: NonNullable<AdditionalSalaryRequestQuery['additionalSalaryRequest']>;
 }
 
 export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
