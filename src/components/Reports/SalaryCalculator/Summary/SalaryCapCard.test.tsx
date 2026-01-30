@@ -22,9 +22,10 @@ const defaultSalaryMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> =
       capWithSeca: 10007,
       contributing403bFraction: 0.1,
       non403bFraction: 0.9,
-      familyCap: 10008,
-      individualCap: 10009,
-      calculatedCap: 10010,
+      calculatedCap: 10008,
+      effectiveCap: 10009,
+      hardCap: 10010,
+      combinedCap: 10011,
     },
     spouseCalculations: {
       annualBase: 20001,
@@ -37,12 +38,9 @@ const defaultSalaryMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> =
       capWithSeca: 20007,
       contributing403bFraction: 0.2,
       non403bFraction: 0.8,
-      familyCap: 20008,
-      individualCap: 20009,
-      calculatedCap: 20010,
+      calculatedCap: 20008,
+      effectiveCap: 20009,
     },
-    salaryCap: 10011,
-    spouseSalaryCap: 20011,
   };
 
 const TestComponent: React.FC<SalaryCalculatorTestWrapperProps> = (props) => (
@@ -85,10 +83,10 @@ describe('SalaryCapCard', () => {
       ['a. 403(b) Contribution Percentage', '10.00%', '20.00%'],
       ['b. 1.00 Minus 403(b) Percentage', '0.90', '0.80'],
       [
-        '9. Maximum Allowable Salary (CAP)Line 7 × Line 8bFor a couple, the combined CAPs cannot exceed $10,008.00, with neither individual exceeding $10,009.00.',
+        '9. Maximum Allowable Salary (CAP)Line 7 × Line 8bFor a couple, the combined CAPs cannot exceed $10,011.00, with neither individual exceeding $10,010.00.',
       ],
-      ['a. CAP', '$10,010.00', '$20,010.00'],
-      ['b. Minimum', '$10,011.00', '$20,011.00'],
+      ['a. CAP', '$10,008.00', '$20,008.00'],
+      ['b. Minimum', '$10,009.00', '$20,009.00'],
     ].flat();
 
     await waitFor(() =>
