@@ -84,6 +84,10 @@ export const AdditionalSalaryRequest: React.FC = () => {
                       size="small"
                       variant="standard"
                       fieldName={key as keyof CompleteFormValues}
+                      InputProps={{
+                        disableUnderline: true,
+                        inputMode: 'decimal',
+                      }}
                       placeholder={currencyFormat(0, currency, locale)}
                       sx={{
                         '& .MuiOutlinedInput-notchedOutline': {

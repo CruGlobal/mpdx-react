@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { Box, Stack } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
+import Loading from 'src/components/Loading/Loading';
 import { DirectionButtons } from 'src/components/Reports/Shared/CalculationReports/DirectionButtons/DirectionButtons';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -11,6 +12,7 @@ import { useIconPanelItems } from '../../Shared/CalculationReports/PanelLayout/u
 import { PanelTypeEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { StepsList } from '../../Shared/CalculationReports/StepsList/StepsList';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
+import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
 import { CurrentStep } from '../CurrentStep';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { calculateCompletionPercentage } from '../Shared/calculateCompletionPercentage';
@@ -27,6 +29,8 @@ const MainContent: React.FC = () => {
     handleDeleteRequest,
     requestId,
     pageType,
+    loading,
+    currentStep,
   } = useAdditionalSalaryRequest();
 
   const { submitForm, validateForm, submitCount, isValid } =
@@ -35,6 +39,10 @@ const MainContent: React.FC = () => {
   const isFirstFormPage = currentIndex === 0;
   const isLastFormPage = currentIndex === steps.length - 2;
   const reviewPage = currentIndex === steps.length - 1;
+
+  if (loading && currentStep !== AdditionalSalaryRequestSectionEnum.AboutForm) {
+    return <Loading loading={loading} />;
+  }
 
   return (
     <Box px={theme.spacing(3)}>
