@@ -153,6 +153,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
           });
           cache.gc();
         },
+        onQueryUpdated: () => false,
         onCompleted: () => {
           if (!isCancel) {
             router.push(
