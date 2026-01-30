@@ -45,9 +45,9 @@ const createValidationSchema = () =>
       fieldConfig.map(({ key, label, salaryInfoUssKey }) => {
         let schema = amount(label, (k: string) => k);
         const max = salaryInfoUssKey
-          ? (mockSalaryInfo[
-              salaryInfoUssKey as keyof typeof mockSalaryInfo
-            ] as number | undefined)
+          ? (mockSalaryInfo[salaryInfoUssKey as keyof typeof mockSalaryInfo] as
+              | number
+              | undefined)
           : undefined;
         if (max) {
           schema = schema.max(max, `Exceeds limit`);
