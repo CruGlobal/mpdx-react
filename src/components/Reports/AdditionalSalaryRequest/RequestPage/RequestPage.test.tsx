@@ -116,11 +116,15 @@ const validationSchema = yup.object({
 
 interface TestFormikWrapperProps {
   children: React.ReactNode;
+  initialValues?: CompleteFormValues;
 }
 
-const TestFormikWrapper: React.FC<TestFormikWrapperProps> = ({ children }) => {
+const TestFormikWrapper: React.FC<TestFormikWrapperProps> = ({
+  children,
+  initialValues = defaultCompleteFormValues,
+}) => {
   const formik = useFormik<CompleteFormValues>({
-    initialValues: defaultCompleteFormValues,
+    initialValues,
     validationSchema,
     onSubmit: jest.fn(),
     enableReinitialize: true,
@@ -131,13 +135,17 @@ const TestFormikWrapper: React.FC<TestFormikWrapperProps> = ({ children }) => {
   return <FormikProvider value={formikWithSchema}>{children}</FormikProvider>;
 };
 
-const TestWrapper: React.FC = () => (
+interface TestWrapperProps {
+  initialValues?: CompleteFormValues;
+}
+
+const TestWrapper: React.FC<TestWrapperProps> = ({ initialValues }) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
       <I18nextProvider i18n={i18n}>
         <TestRouter router={router}>
           <GqlMockedProvider>
-            <TestFormikWrapper>
+            <TestFormikWrapper initialValues={initialValues}>
               <RequestPage />
             </TestFormikWrapper>
           </GqlMockedProvider>
@@ -283,90 +291,41 @@ describe('RequestPage', () => {
     );
   });
 
-  it('calls createNewRequest and handleNextStep when Continue is clicked on first page', async () => {
-    const mockHandleNextStep = jest.fn();
-    const mutationSpy = jest.fn();
-
+  it('shows submit modal when submit clicked on new page', async () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
       ...defaultMockContextValue,
-      handleNextStep: mockHandleNextStep,
+      currentIndex: 1,
+      currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
+      pageType: PageEnum.New,
     } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
 
-    const { getByRole } = render(
-      <ThemeProvider theme={theme}>
-        <SnackbarProvider>
-          <I18nextProvider i18n={i18n}>
-            <TestRouter router={router}>
-              <GqlMockedProvider
-                mocks={{
-                  CreateAdditionalSalaryRequest: {
-                    createAdditionalSalaryRequest: {
-                      additionalSalaryRequest: { id: 'new-request-id' },
-                    },
-                  },
-                }}
-                onCall={mutationSpy}
-              >
-                <TestFormikWrapper>
-                  <RequestPage />
-                </TestFormikWrapper>
-              </GqlMockedProvider>
-            </TestRouter>
-          </I18nextProvider>
-        </SnackbarProvider>
-      </ThemeProvider>,
+    const validFormValues: CompleteFormValues = {
+      ...defaultCompleteFormValues,
+      phoneNumber: '123-456-7890',
+    };
+
+    const { getByRole, getByText } = render(
+      <TestWrapper initialValues={validFormValues} />,
     );
 
-    userEvent.click(getByRole('button', { name: /continue/i }));
+    const submitButton = getByRole('button', { name: /submit/i });
+    userEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(mutationSpy).toHaveGraphqlOperation(
-        'CreateAdditionalSalaryRequest',
-      );
-      expect(mockHandleNextStep).toHaveBeenCalled();
+      expect(
+        getByText('Are you ready to submit your Additional Salary Request?'),
+      ).toBeInTheDocument();
     });
+
+    expect(
+      getByText('You are submitting your Additional Salary Request.'),
+    ).toBeInTheDocument();
+    expect(
+      getByText('Your request will be sent to payroll.'),
+    ).toBeInTheDocument();
   });
 
-  it('does not call handleNextStep when createNewRequest fails', async () => {
-    const mockHandleNextStep = jest.fn();
-
-    mockUseAdditionalSalaryRequest.mockReturnValue({
-      ...defaultMockContextValue,
-      handleNextStep: mockHandleNextStep,
-    } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
-
-    const { getByRole } = render(
-      <ThemeProvider theme={theme}>
-        <SnackbarProvider>
-          <I18nextProvider i18n={i18n}>
-            <TestRouter router={router}>
-              <GqlMockedProvider
-                mocks={{
-                  CreateAdditionalSalaryRequest: {
-                    createAdditionalSalaryRequest: null,
-                  },
-                }}
-              >
-                <TestFormikWrapper>
-                  <RequestPage />
-                </TestFormikWrapper>
-              </GqlMockedProvider>
-            </TestRouter>
-          </I18nextProvider>
-        </SnackbarProvider>
-      </ThemeProvider>,
-    );
-
-    userEvent.click(getByRole('button', { name: /continue/i }));
-
-    await waitFor(() => {
-      expect(mockHandleNextStep).not.toHaveBeenCalled();
-    });
-  });
-
-  it('does not use overrideNext on non-first pages', async () => {
-    const mutationSpy = jest.fn();
-
+  it('shows submit modal when submit clicked on edit page', async () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
       ...defaultMockContextValue,
       currentIndex: 1,
@@ -374,42 +333,33 @@ describe('RequestPage', () => {
       pageType: PageEnum.Edit,
     } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
 
-    const { getByRole } = render(
-      <ThemeProvider theme={theme}>
-        <SnackbarProvider>
-          <I18nextProvider i18n={i18n}>
-            <TestRouter router={router}>
-              <GqlMockedProvider onCall={mutationSpy}>
-                <TestFormikWrapper>
-                  <RequestPage />
-                </TestFormikWrapper>
-              </GqlMockedProvider>
-            </TestRouter>
-          </I18nextProvider>
-        </SnackbarProvider>
-      </ThemeProvider>,
+    const validFormValues: CompleteFormValues = {
+      ...defaultCompleteFormValues,
+      phoneNumber: '123-456-7890',
+    };
+
+    const { getByRole, getByText } = render(
+      <TestWrapper initialValues={validFormValues} />,
     );
 
-    userEvent.click(getByRole('button', { name: /submit/i }));
+    const submitButton = getByRole('button', { name: /submit/i });
+    userEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(mutationSpy).not.toHaveGraphqlOperation(
-        'CreateAdditionalSalaryRequest',
-      );
+      expect(
+        getByText(
+          'Are you ready to submit your updated Additional Salary Request?',
+        ),
+      ).toBeInTheDocument();
     });
-  });
 
-  it('hides back href on About this Form step in New mode', () => {
-    mockUseAdditionalSalaryRequest.mockReturnValue({
-      ...defaultMockContextValue,
-      currentIndex: 0,
-      currentStep: AdditionalSalaryRequestSectionEnum.AboutForm,
-      pageType: PageEnum.New,
-    } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
-
-    const { queryByRole } = render(<TestWrapper />);
-
-    const backLink = queryByRole('link', { name: /back to dashboard/i });
-    expect(backLink).not.toBeInTheDocument();
+    expect(
+      getByText(
+        'You are submitting changes to your Additional Salary Request.',
+      ),
+    ).toBeInTheDocument();
+    expect(
+      getByText('Your updated request will be sent to payroll.'),
+    ).toBeInTheDocument();
   });
 });

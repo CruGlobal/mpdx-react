@@ -165,7 +165,7 @@ export const useAdditionalSalaryRequestForm = (
           .required(t('Email address is required'))
           .email(t('Please enter a valid email address')),
       }),
-    [createCurrencyValidation, t, getMaxForField],
+    [createCurrencyValidation, t, locale],
   );
 
   const onSubmit = useCallback(

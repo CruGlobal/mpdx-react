@@ -27,8 +27,10 @@ import { calculateCompletionPercentage } from '../Shared/calculateCompletionPerc
 import { StepList } from '../SharedComponents/StepList';
 
 const MainContent: React.FC = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const accountListId = useAccountListId();
+
   const {
     handlePreviousStep,
     handleNextStep,
@@ -46,6 +48,8 @@ const MainContent: React.FC = () => {
 
   const { submitForm, validateForm, submitCount, isValid } =
     useFormikContext<CompleteFormValues>();
+
+  const isEdit = pageType === PageEnum.Edit;
 
   const isFirstFormPage = currentIndex === 0;
   const isLastFormPage = currentIndex === steps.length - 2;
@@ -90,6 +94,12 @@ const MainContent: React.FC = () => {
           {!reviewPage && (
             <Stack direction="column" width={mainContentWidth}>
               <DirectionButtons
+                formTitle={t('Additional Salary Request')}
+                overrideSubContent={
+                  isEdit
+                    ? t('Your updated request will be sent to payroll.')
+                    : t('Your request will be sent to payroll.')
+                }
                 handleNextStep={handleNextStep}
                 handlePreviousStep={handlePreviousStep}
                 showBackButton={!isFirstFormPage}
@@ -99,7 +109,8 @@ const MainContent: React.FC = () => {
                 validateForm={validateForm}
                 submitCount={submitCount}
                 isValid={isValid}
-                isEdit={pageType === PageEnum.Edit}
+                actionRequired={isEdit}
+                isEdit={isEdit}
                 overrideNext={
                   isFirstFormPage ? handleCreateAndContinue : undefined
                 }

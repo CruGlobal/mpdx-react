@@ -45,6 +45,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
           <Formik initialValues={{}} onSubmit={submit}>
             <MinisterHousingAllowanceProvider>
               <DirectionButtons
+                formTitle="MHA Request"
                 isSubmission={isSubmission}
                 handleNextStep={handleNextStep}
                 handlePreviousStep={handlePreviousStep}
