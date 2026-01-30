@@ -19,6 +19,8 @@ import { Summary } from '../Summary/Summary';
 export const mainContentWidth = theme.spacing(85);
 
 const MainContent: React.FC = () => {
+  const { t } = useTranslation();
+
   const {
     handlePreviousStep,
     handleNextStep,
@@ -44,6 +46,8 @@ const MainContent: React.FC = () => {
           {!reviewPage && (
             <Stack direction="column" width={mainContentWidth}>
               <DirectionButtons
+                formTitle={t('Additional Salary Request')}
+                overrideSubContent={t('Your request will be sent to payroll.')}
                 handleNextStep={handleNextStep}
                 handlePreviousStep={handlePreviousStep}
                 showBackButton={!isFirstFormPage}

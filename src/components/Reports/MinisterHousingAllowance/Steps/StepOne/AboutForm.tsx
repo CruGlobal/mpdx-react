@@ -117,6 +117,7 @@ export const AboutForm: React.FC<AboutFormProps> = ({
         </Box>
       </Trans>
       <DirectionButtons
+        formTitle={t('MHA Request')}
         handleNextStep={handleNextStep}
         handlePreviousStep={handlePreviousStep}
         handleDiscard={handleDiscard}

@@ -63,9 +63,12 @@ export const getModalText = ({
     case actionRequired:
       return {
         title: t(`Are you ready to submit your updated ${formTitle}?`),
-        contentTitle: t(
-          `You are submitting changes to your Annual ${formTitle} for board approval.`,
-        ),
+        contentTitle:
+          formTitle === t('MHA Request')
+            ? t(
+                `You are submitting changes to your Annual ${formTitle} for board approval.`,
+              )
+            : t(`You are submitting changes to your ${formTitle}.`),
         contentText: t(
           'This updated request will take the place of your previous request. Once submitted, you can return and make edits until {{date}}. After this date, your request will be processed as is.',
           {
@@ -79,9 +82,10 @@ export const getModalText = ({
     default:
       return {
         title: t(`Are you ready to submit your ${formTitle}?`),
-        contentTitle: t(
-          `You are submitting your ${formTitle} for board approval.`,
-        ),
+        contentTitle:
+          formTitle === t('MHA Request')
+            ? t(`You are submitting your ${formTitle} for board approval.`)
+            : t(`You are submitting your ${formTitle}.`),
         contentText: t(
           'Once submitted, you can return and make edits until {{date}}. After this date, your request will be processed as is.',
           {

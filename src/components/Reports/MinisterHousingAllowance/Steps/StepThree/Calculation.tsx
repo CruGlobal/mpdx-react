@@ -397,6 +397,7 @@ export const Calculation: React.FC<CalculationProps> = ({
             )}
             {!isViewPage && (
               <DirectionButtons
+                formTitle={t('MHA Request')}
                 isSubmission
                 showBackButton
                 handleNextStep={handleNextStep}
