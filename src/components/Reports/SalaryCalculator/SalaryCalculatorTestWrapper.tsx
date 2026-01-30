@@ -40,6 +40,9 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
           currentApprovedOverallAmount: 20000,
           currentTakenAmount: 300,
         },
+        mhaEit: {
+          mhaEligibility: true,
+        },
         exceptionSalaryCap: {
           amount: null,
         },
@@ -60,6 +63,9 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
         mhaRequest: {
           currentApprovedOverallAmount: 20000,
           currentTakenAmount: 500,
+        },
+        mhaEit: {
+          mhaEligibility: true,
         },
         exceptionSalaryCap: {
           amount: null,
@@ -123,6 +129,7 @@ export const SalaryCalculatorTestWrapper: React.FC<
               salaryRequest: merge(
                 {
                   id: 'salary-request-1',
+                  effectiveDate: '2025-01-01',
                   calculations: {
                     individualCap: 80000,
                     familyCap: 125000,

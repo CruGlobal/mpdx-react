@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import React from 'react';
 import {
   Box,
@@ -10,6 +11,7 @@ import {
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { AutosaveTextField } from '../../Autosave/AutosaveTextField';
 import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
 import { StepCard } from '../../Shared/StepCard';
@@ -48,9 +50,9 @@ const StyledRemainingBox = styled(Box)(({ theme }) => ({
 export const MhaRequestSection: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
+  const accountListId = useAccountListId();
   const { hcmUser, hcmSpouse } = useSalaryCalculator();
   const {
-    hasSpouse,
     schema,
     totalRequestedMhaValue,
     difference,
@@ -58,125 +60,218 @@ export const MhaRequestSection: React.FC = () => {
     progressPercentage,
     currentTakenAmount,
     currentSpouseTakenAmount,
+    showMhaForm,
+    showUserNoMhaMessage,
+    showSpouseNoMhaMessage,
+    showUserFields,
+    showSpouseFields,
+    userPreferredName,
+    spousePreferredName,
   } = useMhaRequestData();
+
+  let noMhaNames = '';
+  if (showUserNoMhaMessage && showSpouseNoMhaMessage) {
+    noMhaNames = `${userPreferredName} and ${spousePreferredName}`;
+  } else if (showUserNoMhaMessage) {
+    noMhaNames = userPreferredName;
+  } else if (showSpouseNoMhaMessage) {
+    noMhaNames = spousePreferredName;
+  }
+
+  const showNoMhaMessage = showUserNoMhaMessage || showSpouseNoMhaMessage;
 
   return (
     <StepCard>
       <CardHeader title={t('MHA Request')} />
       <CardContent>
-        <Typography
-          variant="body1"
-          sx={{ marginBottom: theme.spacing(3) }}
-          data-testid="board-approved-amount"
-        >
-          <strong>
-            {hasSpouse
-              ? t(
-                  'You may request up to your Board-approved MHA amount of {{approvedAmount}} combined.',
-                  { approvedAmount },
-                )
-              : t(
-                  'You may request up to your Board Approved MHA Amount of {{approvedAmount}}.',
-                  { approvedAmount },
-                )}
-          </strong>{' '}
-          {t(
-            'This is the amount you are approved for as of the effective date of this salary calculation.',
-          )}
-        </Typography>
-        <Typography variant="body1" sx={{ marginBottom: theme.spacing(3) }}>
-          <Trans t={t}>
-            Please enter the amount of your salary you would like to request as
-            MHA below. If you have a pending MHA Request for a new amount, it
-            will not apply to this salary calculation but you can submit a new
-            Salary Calculation Form after it is approved.
-          </Trans>
-        </Typography>
-
-        {hasSpouse && (
-          <StyledNameHeadersBox>
-            <Typography variant="subtitle1">
-              {hcmUser?.staffInfo.preferredName}
+        {showNoMhaMessage && !showMhaForm && (
+          <>
+            <Typography variant="body1" sx={{ marginBottom: theme.spacing(2) }}>
+              {t(
+                "Our records show that {{names}} does not have a Minister's Housing Allowance for the effective date of this salary calculation.",
+                { names: noMhaNames },
+              )}{' '}
+              {t(
+                showUserNoMhaMessage && showSpouseNoMhaMessage
+                  ? 'If {{names}} have not yet submitted an MHA Request form, it may be completed at your earliest convenience using'
+                  : 'If {{names}} has not yet submitted an MHA Request form, it may be completed at their earliest convenience using',
+                { names: noMhaNames },
+              )}{' '}
+              <Link
+                href={`/accountLists/${accountListId}/reports/housingAllowance`}
+              >
+                {t('this link')}
+              </Link>
+              .
             </Typography>
-            <Typography variant="subtitle1">
-              {hcmSpouse?.staffInfo.preferredName}
+            <Typography variant="body1">
+              {t(
+                showUserNoMhaMessage && showSpouseNoMhaMessage
+                  ? // eslint-disable-next-line max-len
+                    'If {{names}} have a pending MHA Request, it will not apply to this salary calculation but a new Salary Calculation Form can be submitted after it is approved.'
+                  : // eslint-disable-next-line max-len
+                    'If {{names}} has a pending MHA Request, it will not apply to this salary calculation but a new Salary Calculation Form can be submitted after it is approved.',
+                { names: noMhaNames },
+              )}
             </Typography>
-          </StyledNameHeadersBox>
+          </>
         )}
 
-        <Box sx={{ marginBottom: theme.spacing(2) }}>
-          <StyledFieldGridBox hasSpouse={hasSpouse}>
-            <Box>
-              <TextField
-                label={t('Current MHA')}
-                size="small"
-                fullWidth
-                value={currentTakenAmount}
-                disabled
-                inputProps={{ 'data-testid': 'current-mha-staff' }}
-              />
-            </Box>
-            {hasSpouse && (
-              <Box>
-                <TextField
-                  label={t('Current MHA')}
-                  size="small"
-                  fullWidth
-                  value={currentSpouseTakenAmount}
-                  disabled
-                  inputProps={{ 'data-testid': 'current-mha-spouse' }}
-                />
-              </Box>
-            )}
-          </StyledFieldGridBox>
-        </Box>
+        {showMhaForm && (
+          <>
+            <Typography
+              variant="body1"
+              sx={{ marginBottom: theme.spacing(3) }}
+              data-testid="board-approved-amount"
+            >
+              <strong>
+                {showUserFields && showSpouseFields
+                  ? t(
+                      'You may request up to your Board-approved MHA amount of {{approvedAmount}} combined.',
+                      { approvedAmount },
+                    )
+                  : t(
+                      'You may request up to your Board Approved MHA Amount of {{approvedAmount}}.',
+                      { approvedAmount },
+                    )}
+              </strong>{' '}
+              {t(
+                'This is the amount you are approved for as of the effective date of this salary calculation.',
+              )}
+            </Typography>
+            <Typography variant="body1" sx={{ marginBottom: theme.spacing(3) }}>
+              <Trans t={t}>
+                Please enter the amount of your salary you would like to request
+                as MHA below. If you have a pending MHA Request for a new
+                amount, it will not apply to this salary calculation but you can
+                submit a new Salary Calculation Form after it is approved.
+              </Trans>
+            </Typography>
 
-        <Box sx={{ marginBottom: theme.spacing(3) }}>
-          <StyledFieldGridBox hasSpouse={hasSpouse}>
-            <Box>
-              <AutosaveTextField
-                label={t('New Requested MHA')}
-                fieldName="mhaAmount"
-                schema={schema}
-                required
-              />
-            </Box>
-            {hasSpouse && (
-              <Box>
-                <AutosaveTextField
-                  label={t('New Requested MHA')}
-                  fieldName="spouseMhaAmount"
-                  schema={schema}
-                  required
-                />
-              </Box>
+            {showNoMhaMessage && (
+              <Typography
+                variant="body1"
+                sx={{ marginBottom: theme.spacing(2) }}
+              >
+                {t(
+                  "Our records show that {{names}} does not have a Minister's Housing Allowance for the effective date of this salary calculation.",
+                  { names: noMhaNames },
+                )}{' '}
+                {t(
+                  showUserNoMhaMessage && showSpouseNoMhaMessage
+                    ? 'If {{names}} have not yet submitted an MHA Request form, it may be completed at your earliest convenience using'
+                    : 'If {{names}} has not yet submitted an MHA Request form, it may be completed at your earliest convenience using',
+                  { names: noMhaNames },
+                )}{' '}
+                <Link
+                  href={`/accountLists/${accountListId}/reports/housingAllowance`}
+                >
+                  {t('this link')}
+                </Link>
+                .
+              </Typography>
             )}
-          </StyledFieldGridBox>
-        </Box>
 
-        <Box>
-          <StyledProgressHeaderBox>
-            <Typography variant="body2">
-              {hasSpouse ? t('Combined MHA Requested') : t('New MHA Requested')}
-            </Typography>
-            <Typography variant="body2">
-              {totalRequestedMhaValue} / {approvedAmount}
-            </Typography>
-          </StyledProgressHeaderBox>
-          <LinearProgress
-            value={progressPercentage}
-            variant="determinate"
-            color="success"
-          />
-          <StyledRemainingBox>
-            <Typography variant="body2" color="textSecondary">
-              {t('Remaining in approved MHA Amount')}
-            </Typography>
-            <Typography variant="body2" color="textSecondary">
-              {difference}
-            </Typography>
-          </StyledRemainingBox>
-        </Box>
+            {showUserFields && showSpouseFields && (
+              <StyledNameHeadersBox>
+                {showUserFields && (
+                  <Typography variant="subtitle1">
+                    {hcmUser?.staffInfo.preferredName}
+                  </Typography>
+                )}
+                {showSpouseFields && (
+                  <Typography variant="subtitle1">
+                    {hcmSpouse?.staffInfo.preferredName}
+                  </Typography>
+                )}
+              </StyledNameHeadersBox>
+            )}
+
+            <Box sx={{ marginBottom: theme.spacing(2) }}>
+              <StyledFieldGridBox
+                hasSpouse={showUserFields && showSpouseFields}
+              >
+                {showUserFields && (
+                  <Box>
+                    <TextField
+                      label={t('Current MHA')}
+                      size="small"
+                      fullWidth
+                      value={currentTakenAmount}
+                      disabled
+                      inputProps={{ 'data-testid': 'current-mha-staff' }}
+                    />
+                  </Box>
+                )}
+                {showSpouseFields && (
+                  <Box>
+                    <TextField
+                      label={t('Current MHA')}
+                      size="small"
+                      fullWidth
+                      value={currentSpouseTakenAmount}
+                      disabled
+                      inputProps={{ 'data-testid': 'current-mha-spouse' }}
+                    />
+                  </Box>
+                )}
+              </StyledFieldGridBox>
+            </Box>
+
+            <Box sx={{ marginBottom: theme.spacing(3) }}>
+              <StyledFieldGridBox
+                hasSpouse={showUserFields && showSpouseFields}
+              >
+                {showUserFields && (
+                  <Box>
+                    <AutosaveTextField
+                      label={t('New Requested MHA')}
+                      fieldName="mhaAmount"
+                      schema={schema}
+                      required
+                    />
+                  </Box>
+                )}
+                {showSpouseFields && (
+                  <Box>
+                    <AutosaveTextField
+                      label={t('New Requested MHA')}
+                      fieldName="spouseMhaAmount"
+                      schema={schema}
+                      required
+                    />
+                  </Box>
+                )}
+              </StyledFieldGridBox>
+            </Box>
+
+            <Box>
+              <StyledProgressHeaderBox>
+                <Typography variant="body2">
+                  {showUserFields && showSpouseFields
+                    ? t('Combined MHA Requested')
+                    : t('New MHA Requested')}
+                </Typography>
+                <Typography variant="body2">
+                  {totalRequestedMhaValue} / {approvedAmount}
+                </Typography>
+              </StyledProgressHeaderBox>
+              <LinearProgress
+                value={progressPercentage}
+                variant="determinate"
+                color="success"
+              />
+              <StyledRemainingBox>
+                <Typography variant="body2" color="textSecondary">
+                  {t('Remaining in approved MHA Amount')}
+                </Typography>
+                <Typography variant="body2" color="textSecondary">
+                  {difference}
+                </Typography>
+              </StyledRemainingBox>
+            </Box>
+          </>
+        )}
       </CardContent>
     </StepCard>
   );
