@@ -34,6 +34,8 @@ const mockContextValue = {
   requestId: undefined,
   user: undefined,
   spouse: undefined,
+  salaryInfo: undefined,
+  isInternational: false,
   isMutating: false,
   trackMutation: jest.fn(),
   loading: false,

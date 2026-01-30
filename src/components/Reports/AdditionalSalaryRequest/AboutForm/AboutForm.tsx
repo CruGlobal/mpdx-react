@@ -92,12 +92,12 @@ export const AboutForm: React.FC = () => {
       <NameDisplay
         names={name ?? ''}
         personNumbers={accountNumber ?? ''}
-        showContent={true}
         titleOne={t('Primary Account Balance')}
         amountOne={primaryAccountBalance}
         titleTwo={t('Your Remaining Allowable Salary')}
         amountTwo={remainingAllowableSalary}
         spouseComponent={<SpouseComponent />}
+        showContent
       />
     </AdditionalSalaryRequestSection>
   );

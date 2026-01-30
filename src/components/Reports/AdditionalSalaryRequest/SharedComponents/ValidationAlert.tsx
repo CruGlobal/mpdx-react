@@ -16,8 +16,8 @@ export const ValidationAlert: React.FC = () => {
     }
 
     return fieldConfig
-      .filter(({ key, max }) => {
-        if (!max) {
+      .filter(({ key, salaryInfoIntKey }) => {
+        if (!salaryInfoIntKey) {
           return false;
         }
         const error = errors[key as keyof CompleteFormValues];
