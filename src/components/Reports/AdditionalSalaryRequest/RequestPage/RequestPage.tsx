@@ -1,24 +1,31 @@
+import { useRouter } from 'next/router';
 import React, { useMemo } from 'react';
 import { Box, Stack } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { DirectionButtons } from 'src/components/Reports/Shared/CalculationReports/DirectionButtons/DirectionButtons';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
+import { NoStaffAccount } from 'src/components/Reports/Shared/NoStaffAccount/NoStaffAccount';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import { PanelLayout } from '../../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { useIconPanelItems } from '../../Shared/CalculationReports/PanelLayout/useIconPanelItems';
 import { PanelTypeEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { StepsList } from '../../Shared/CalculationReports/StepsList/StepsList';
-import { CompleteFormValues } from '../AdditionalSalaryRequest';
-import { CurrentStep } from '../CurrentStep';
+import {
+  CompleteFormValues,
+  mainContentWidth,
+} from '../AdditionalSalaryRequest';
+import { EditForm } from '../FormVersions/Edit/EditForm';
+import { NewForm } from '../FormVersions/New/NewForm';
+import { ViewForm } from '../FormVersions/View/ViewForm';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { calculateCompletionPercentage } from '../Shared/calculateCompletionPercentage';
-import { Summary } from '../Summary/Summary';
-
-export const mainContentWidth = theme.spacing(85);
+import { StepList } from '../SharedComponents/StepList';
 
 const MainContent: React.FC = () => {
+  const router = useRouter();
+  const accountListId = useAccountListId();
   const {
     handlePreviousStep,
     handleNextStep,
@@ -36,20 +43,31 @@ const MainContent: React.FC = () => {
   const isLastFormPage = currentIndex === steps.length - 2;
   const reviewPage = currentIndex === steps.length - 1;
 
+  const handleDiscard = async () => {
+    if (requestId) {
+      await handleDeleteRequest(requestId, false);
+      router.push(
+        `/accountLists/${accountListId}/reports/additionalSalaryRequest`,
+      );
+    }
+  };
+
   return (
     <Box px={theme.spacing(3)}>
-      {pageType !== PageEnum.View ? (
+      {pageType === PageEnum.View ? (
+        <ViewForm />
+      ) : (
         <>
-          <CurrentStep />
+          <StepList
+            FormComponent={pageType === PageEnum.New ? NewForm : EditForm}
+          />
           {!reviewPage && (
             <Stack direction="column" width={mainContentWidth}>
               <DirectionButtons
                 handleNextStep={handleNextStep}
                 handlePreviousStep={handlePreviousStep}
                 showBackButton={!isFirstFormPage}
-                handleDiscard={() =>
-                  requestId && handleDeleteRequest(requestId, false)
-                }
+                handleDiscard={handleDiscard}
                 isSubmission={isLastFormPage}
                 submitForm={submitForm}
                 validateForm={validateForm}
@@ -60,8 +78,6 @@ const MainContent: React.FC = () => {
             </Stack>
           )}
         </>
-      ) : (
-        <Summary />
       )}
     </Box>
   );
@@ -70,14 +86,26 @@ const MainContent: React.FC = () => {
 export const RequestPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const { pageType, isDrawerOpen, toggleDrawer, steps, currentIndex } =
-    useAdditionalSalaryRequest();
+  const {
+    pageType,
+    isDrawerOpen,
+    toggleDrawer,
+    steps,
+    currentIndex,
+    staffAccountId,
+    staffAccountIdLoading,
+  } = useAdditionalSalaryRequest();
   const { values } = useFormikContext<CompleteFormValues>();
+  const iconPanelItems = useIconPanelItems(isDrawerOpen, toggleDrawer);
 
   const percentComplete = useMemo(
     () => calculateCompletionPercentage(values),
     [values],
   );
+
+  if (!staffAccountId && !staffAccountIdLoading) {
+    return <NoStaffAccount />;
+  }
 
   return (
     <PanelLayout
@@ -86,7 +114,7 @@ export const RequestPage: React.FC = () => {
       percentComplete={percentComplete}
       steps={steps}
       currentIndex={currentIndex}
-      icons={useIconPanelItems(isDrawerOpen, toggleDrawer)}
+      icons={iconPanelItems}
       sidebarContent={
         pageType !== PageEnum.View ? <StepsList steps={steps} /> : null
       }
