@@ -51,7 +51,8 @@ export const useAdditionalSalaryRequestForm = ({
 }: UseAdditionalSalaryRequestFormProps) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { handleNextStep } = useAdditionalSalaryRequest();
+  const { handleNextStep, remainingAllowableSalary } =
+    useAdditionalSalaryRequest();
 
   const { data: requestData } = useAdditionalSalaryRequestQuery({
     variables: { requestId: requestId || '' },
@@ -128,7 +129,7 @@ export const useAdditionalSalaryRequestForm = ({
             t('Please enter a valid telephone number'),
           ),
       }),
-    [createCurrencyValidation, t],
+    [createCurrencyValidation, t, remainingAllowableSalary, locale],
   );
 
   const onSubmit = useCallback(

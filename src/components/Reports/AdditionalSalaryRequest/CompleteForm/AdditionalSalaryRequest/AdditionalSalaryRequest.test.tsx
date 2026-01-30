@@ -144,5 +144,20 @@ describe('AdditionalSalaryRequest', () => {
 
       expect(getByTestId('total-amount')).toHaveTextContent('$7,500');
     });
+
+    it('shows validation error for asr total amount', async () => {
+      const invalidValues: CompleteFormValues = {
+        ...defaultCompleteFormValues,
+        additionalSalaryWithinMax: '1000000',
+      };
+
+      const { getByText } = render(
+        <TestWrapper initialValues={invalidValues} />,
+      );
+
+      await waitFor(() => {
+        expect(getByText('Exceeds account balance.')).toBeInTheDocument();
+      });
+    });
   });
 });

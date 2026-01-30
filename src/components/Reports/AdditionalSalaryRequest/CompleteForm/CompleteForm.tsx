@@ -16,13 +16,14 @@ import { NetAdditionalSalary } from './NetAdditionalSalary/NetAdditionalSalary';
 
 export const CompleteForm: React.FC = () => {
   const { t } = useTranslation();
-  const { currentIndex, requestData, user } = useAdditionalSalaryRequest();
+  const { currentIndex, requestData, user, remainingAllowableSalary } =
+    useAdditionalSalaryRequest();
   const { submitCount, isValid, errors } =
     useFormikContext<CompleteFormValues>();
 
   const theme = useTheme();
 
-  const { currentSalaryCap, staffAccountBalance } =
+  const { staffAccountBalance } =
     requestData?.additionalSalaryRequest?.calculations || {};
 
   const name = user?.staffInfo?.preferredName ?? '';
@@ -30,8 +31,6 @@ export const CompleteForm: React.FC = () => {
   const email = user?.staffInfo?.emailAddress ?? '';
 
   const primaryAccountBalance = staffAccountBalance ?? 0;
-  const remainingAllowableSalary =
-    (currentSalaryCap ?? 0) - (staffAccountBalance ?? 0);
 
   const showAlert = !!submitCount && !isValid;
 

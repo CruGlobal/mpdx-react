@@ -70,6 +70,7 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   spouse: undefined,
   isMutating: false,
   trackMutation: mockTrackMutation,
+  remainingAllowableSalary: 10000,
 };
 
 interface TestComponentProps {
