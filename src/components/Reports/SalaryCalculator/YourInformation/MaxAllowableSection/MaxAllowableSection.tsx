@@ -64,14 +64,10 @@ export const MaxAllowableStep: React.FC = () => {
   const spouseCalculatedCap = spouseCalculations?.calculatedCap ?? 0;
   const combinedCalculatedCap = calculatedCap + spouseCalculatedCap;
   const exceptionCap = hcmUser?.exceptionSalaryCap.amount ?? 0;
-  const cap = Math.max(
-    exceptionCap,
-    (hcmSpouse ? calculations?.familyCap : calculations?.hardCap) ?? 0,
-  );
-  // If the user and their spouse's combined calculated cap exceeds their allowed cap as a
-  // family (taking into account an exception they might have), then they will need to split their
-  // family cap between the two of them
-  const overCap = hcmSpouse && combinedCalculatedCap > cap;
+  const cap = calculations?.familyCap ?? 0;
+  // If the couple's combined calculated cap exceeds their combined cap (unless they have an
+  // exception), then they will need to split their family cap between the two of them
+  const overCap = hcmSpouse && !exceptionCap && combinedCalculatedCap > cap;
   const formattedCap = currencyFormat(cap, 'USD', locale, {
     showTrailingZeros: true,
   });
@@ -88,19 +84,28 @@ export const MaxAllowableStep: React.FC = () => {
       <CardContent>
         <Typography variant="body1">
           <Trans t={t}>
-            Your Maximum Allowable Salary (CAP) includes SECA, 403(b), MHA, and
-            any taxes (if applicable). It is calculated using your personal
-            information above.
+            Your Maximum Allowable Salary (CAP) is the maximum amount you can
+            request without requiring additional approval. It includes SECA,
+            403(b), and any taxes (if applicable) and is calculated using your
+            personal information above.
           </Trans>
         </Typography>
 
         <Typography variant="body1">
-          <Trans t={t}>
-            Maximum Allowable Salary may not exceed{' '}
-            {{ singleCap: formattedSingleCap }} for an individual and{' '}
-            {{ familyCap: formattedFamilyCap }} combined for a couple or a
-            widow(er).
-          </Trans>
+          {exceptionCap ? (
+            <Trans t={t}>
+              You have a Board-approved Maximum Allowable Salary (CAP). Any
+              adjustment that may exceed this cap must be submitted for further
+              Board approval.
+            </Trans>
+          ) : (
+            <Trans t={t}>
+              Maximum Allowable Salary may not exceed{' '}
+              {{ singleCap: formattedSingleCap }} for an individual and{' '}
+              {{ familyCap: formattedFamilyCap }} combined for a couple or a
+              widow(er).
+            </Trans>
+          )}
         </Typography>
 
         {overCap ? (

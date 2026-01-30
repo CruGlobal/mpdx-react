@@ -8,20 +8,17 @@ import { MaxAllowableStep } from './MaxAllowableSection';
 
 const mutationSpy = jest.fn();
 
-type TestComponentProps = Pick<
-  SalaryCalculatorTestWrapperProps,
-  'salaryRequestMock'
->;
-
-const TestComponent: React.FC<TestComponentProps> = ({
+const TestComponent: React.FC<SalaryCalculatorTestWrapperProps> = ({
   salaryRequestMock = {
     calculations: { calculatedCap: 75000 },
-    spouseCalculations: { calculatedCap: 75000 },
+    spouseCalculations: { calculatedCap: 80000 },
   },
+  ...props
 }) => (
   <SalaryCalculatorTestWrapper
     salaryRequestMock={salaryRequestMock}
     onCall={mutationSpy}
+    {...props}
   >
     <MaxAllowableStep />
   </SalaryCalculatorTestWrapper>
@@ -107,6 +104,30 @@ describe('MaxAllowableSection', () => {
       expect(await findByRole('alert')).toHaveTextContent(
         'Your combined maximum allowable salary exceeds your maximum allowable salary of $125,000.00',
       );
+    });
+  });
+
+  describe('when user has exception cap', () => {
+    const hcmMock = { exceptionSalaryCap: { amount: 100000 } };
+
+    it('shows message to users with exception cap', async () => {
+      const { findByText } = render(<TestComponent hcmMock={hcmMock} />);
+
+      expect(
+        await findByText(
+          'You have a Board-approved Maximum Allowable Salary (CAP).',
+          { exact: false },
+        ),
+      ).toBeInTheDocument();
+    });
+
+    it('removes ability to split combined cap', async () => {
+      const { queryByRole, findByRole } = render(
+        <TestComponent hcmMock={hcmMock} />,
+      );
+
+      expect(await findByRole('cell', { name: '$75,000' })).toBeInTheDocument();
+      expect(queryByRole('checkbox')).not.toBeInTheDocument();
     });
   });
 });
