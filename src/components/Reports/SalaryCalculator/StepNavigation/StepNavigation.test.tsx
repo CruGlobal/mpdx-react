@@ -12,10 +12,27 @@ const TestComponent: React.FC = () => (
 );
 
 describe('StepNavigation', () => {
-  it('renders back and continue buttons', async () => {
+  it('renders back and continue buttons in edit mode', async () => {
     const { getByText, findByText } = render(<TestComponent />);
     expect(await findByText('Back')).toBeInTheDocument();
     expect(getByText('Continue')).toBeInTheDocument();
+  });
+
+  it('does not render buttons in view mode', async () => {
+    const { queryByRole } = render(
+      <SalaryCalculatorTestWrapper isEdit={false}>
+        <StepNavigation />
+      </SalaryCalculatorTestWrapper>,
+    );
+
+    // Wait for loading to complete
+    await waitFor(() =>
+      expect(queryByRole('progressbar')).not.toBeInTheDocument(),
+    );
+
+    expect(queryByRole('button', { name: 'Back' })).not.toBeInTheDocument();
+    expect(queryByRole('button', { name: 'Continue' })).not.toBeInTheDocument();
+    expect(queryByRole('button', { name: 'Discard' })).not.toBeInTheDocument();
   });
 });
 

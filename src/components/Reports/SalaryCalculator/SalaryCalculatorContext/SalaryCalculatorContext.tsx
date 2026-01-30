@@ -47,7 +47,6 @@ export interface SalaryCalculatorContextType {
   /** Call with the mutation promise to track the start and end of mutations */
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
   loading: boolean;
-  isViewMode: boolean;
   isEdit: boolean;
 }
 
