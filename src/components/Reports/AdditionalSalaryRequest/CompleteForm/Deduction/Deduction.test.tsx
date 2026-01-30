@@ -3,7 +3,7 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { AdditionalSalaryRequestTestWrapper } from '../../AdditionalSalaryRequestTestWrapper';
-import { defaultCompleteFormValues } from '../CompleteForm.mock';
+import { defaultCompleteFormValues } from '../../Shared/CompleteForm.mock';
 import { Deduction } from './Deduction';
 
 interface TestWrapperProps {
