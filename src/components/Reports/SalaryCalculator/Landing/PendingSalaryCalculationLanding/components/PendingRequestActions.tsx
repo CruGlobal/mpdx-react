@@ -24,8 +24,17 @@ export const PendingRequestActions: React.FC<PendingRequestActionsProps> = ({
   const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
 
   const handleView = () => {
-    // TODO: implement proper view logic
-    router.push(`/accountLists/${accountListId}/reports/salaryCalculator/edit`);
+    router.push({
+      pathname: `/accountLists/${accountListId}/reports/salaryCalculator/${calculation?.id}`,
+      query: { mode: 'view' },
+    });
+  };
+
+  const handleEdit = () => {
+    router.push({
+      pathname: `/accountLists/${accountListId}/reports/salaryCalculator/${calculation?.id}`,
+      query: { mode: 'edit' },
+    });
   };
 
   const handleDelete = async () => {
@@ -48,7 +57,7 @@ export const PendingRequestActions: React.FC<PendingRequestActionsProps> = ({
           {t('View Request')}
         </Button>
         {calculation?.status === SalaryRequestStatusEnum.ActionRequired && (
-          <Button variant="outlined" onClick={handleView}>
+          <Button variant="outlined" onClick={handleEdit}>
             {t('Edit Request')}
           </Button>
         )}

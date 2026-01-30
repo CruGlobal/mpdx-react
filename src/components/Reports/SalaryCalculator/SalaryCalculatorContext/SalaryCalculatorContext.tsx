@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import React, {
   Dispatch,
   SetStateAction,
@@ -8,6 +9,7 @@ import React, {
   useState,
 } from 'react';
 import { Box, CircularProgress } from '@mui/material';
+import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { useStepList } from 'src/hooks/useStepList';
 import { useTrackMutation } from 'src/hooks/useTrackMutation';
 import { FormEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
@@ -45,6 +47,8 @@ export interface SalaryCalculatorContextType {
   /** Call with the mutation promise to track the start and end of mutations */
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
   loading: boolean;
+  isViewMode: boolean;
+  isEdit: boolean;
 }
 
 const SalaryCalculatorContext =
@@ -67,13 +71,15 @@ interface SalaryCalculatorContextProps {
 export const SalaryCalculatorProvider: React.FC<
   SalaryCalculatorContextProps
 > = ({ children }) => {
+  const { mode } = useRouter().query;
+  const isEdit = mode === 'edit';
   const {
     steps,
     handleNextStep,
     handlePreviousStep,
     currentIndex,
     percentComplete,
-  } = useStepList(FormEnum.SalaryCalc);
+  } = useStepList(FormEnum.SalaryCalc, isEdit ? PageEnum.Edit : undefined);
 
   const [isDrawerOpen, setDrawerOpen] = useState(true);
   const { data: hcmData } = useHcmQuery();
@@ -103,6 +109,7 @@ export const SalaryCalculatorProvider: React.FC<
       isMutating,
       trackMutation,
       loading,
+      isEdit,
     };
   }, [
     steps,
@@ -117,6 +124,7 @@ export const SalaryCalculatorProvider: React.FC<
     isMutating,
     trackMutation,
     loading,
+    isEdit,
   ]);
 
   if (!calculationData) {
