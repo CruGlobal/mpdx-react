@@ -11,12 +11,14 @@ import i18n from 'src/lib/i18n';
 import { amount } from 'src/lib/yupHelpers';
 import theme from 'src/theme';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
-import { SalaryInfoQuery } from '../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { fieldConfig } from '../Shared/useAdditionalSalaryRequestForm';
 import { CompleteForm } from './CompleteForm';
-import { defaultCompleteFormValues } from './CompleteForm.mock';
+import {
+  defaultCompleteFormValues,
+  defaultSalaryInfoData,
+} from './CompleteForm.mock';
 
 jest.mock('../Shared/AdditionalSalaryRequestContext', () => {
   const originalModule = jest.requireActual(
@@ -54,35 +56,6 @@ const mockSpouse = {
     preferredName: 'Doe, Jane',
     personNumber: '00123457',
     emailAddress: 'jane.doe@example.com',
-  },
-};
-
-const defaultSalaryInfoData: SalaryInfoQuery = {
-  salaryInfo: {
-    id: 'salary-info-1',
-    year: 2024,
-    annualBase: 28500,
-    fourOhThreeBAnnualLimitForOverFifty: 0,
-    fourOhThreeBAnnualLimitForSixtyToSixtyThree: 0,
-    maxFamilyInt: 25000,
-    maxFamilyUss: 135000,
-    maxSingleInt: 80000,
-    maxSingleUss: 90000,
-    minReqSalary: 0,
-    secaestAt403bInt: 0,
-    secaestPt403bInt: 0,
-    secaEstimate: 0,
-    secaestNo403bInt: 0,
-    minRequiredSalary: 0,
-    raisingSupportMinReqSalary: 0,
-    maxAdoptionInt: 15000,
-    maxAdoptionUss: 15000,
-    maxAutoPurchaseInt: 25000,
-    maxAutoPurchaseUss: 25000,
-    maxCollegeInt: 21000,
-    maxCollegeUss: 21000,
-    maxHousingDownPaymentInt: 50000,
-    maxHousingDownPaymentUss: 50000,
   },
 };
 

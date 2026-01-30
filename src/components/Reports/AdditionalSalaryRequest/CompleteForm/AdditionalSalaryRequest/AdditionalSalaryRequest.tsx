@@ -90,9 +90,6 @@ export const AdditionalSalaryRequest: React.FC = () => {
                       }}
                       placeholder={currencyFormat(0, currency, locale)}
                       sx={{
-                        '& .MuiOutlinedInput-notchedOutline': {
-                          border: 'none',
-                        },
                         '& .MuiInputBase-input': {
                           padding: 0,
                           textAlign: 'center',

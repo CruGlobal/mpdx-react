@@ -13,9 +13,11 @@ import { amount } from 'src/lib/yupHelpers';
 import theme from 'src/theme';
 import { PageEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
-import { SalaryInfoQuery } from '../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
-import { defaultCompleteFormValues } from '../CompleteForm/CompleteForm.mock';
+import {
+  defaultCompleteFormValues,
+  defaultSalaryInfoData,
+} from '../CompleteForm/CompleteForm.mock';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { fieldConfig } from '../Shared/useAdditionalSalaryRequestForm';
 import { RequestPage } from './RequestPage';
@@ -57,35 +59,6 @@ const mockSteps = [
     activeForm: 'Receipt',
   },
 ];
-
-const defaultSalaryInfoData: SalaryInfoQuery = {
-  salaryInfo: {
-    id: 'salary-info-1',
-    year: 2024,
-    annualBase: 28500,
-    fourOhThreeBAnnualLimitForOverFifty: 0,
-    fourOhThreeBAnnualLimitForSixtyToSixtyThree: 0,
-    maxFamilyInt: 25000,
-    maxFamilyUss: 135000,
-    maxSingleInt: 80000,
-    maxSingleUss: 90000,
-    minReqSalary: 0,
-    secaestAt403bInt: 0,
-    secaestPt403bInt: 0,
-    secaEstimate: 0,
-    secaestNo403bInt: 0,
-    minRequiredSalary: 0,
-    raisingSupportMinReqSalary: 0,
-    maxAdoptionInt: 15000,
-    maxAdoptionUss: 15000,
-    maxAutoPurchaseInt: 25000,
-    maxAutoPurchaseUss: 25000,
-    maxCollegeInt: 21000,
-    maxCollegeUss: 21000,
-    maxHousingDownPaymentInt: 50000,
-    maxHousingDownPaymentUss: 50000,
-  },
-};
 
 const defaultMockContextValue = {
   staffAccountId: 'staff-account-1',
@@ -182,6 +155,20 @@ describe('RequestPage', () => {
         typeof useAdditionalSalaryRequest
       >,
     );
+  });
+
+  it('should load on complete form step', async () => {
+    mockUseAdditionalSalaryRequest.mockReturnValue({
+      ...defaultMockContextValue,
+      currentIndex: 1,
+      currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
+    } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+    const { findByRole } = render(<TestWrapper />);
+
+    expect(
+      await findByRole('heading', { name: 'Complete the Form' }),
+    ).toBeInTheDocument();
   });
 
   it('renders the sidebar with title and steps', () => {

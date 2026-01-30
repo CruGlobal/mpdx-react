@@ -29,7 +29,7 @@ export const fieldConfig = (
   {
     key: 'adoption',
     label: 'Adoption',
-    max: data?.maxAdoptionUss ? data.maxAdoptionUss : 0,
+    max: data?.maxAdoptionUss ?? 0,
   },
   { key: 'traditional403bContribution', label: '403(b) Contribution' },
   { key: 'counselingNonMedical', label: 'Counseling' },
@@ -39,19 +39,19 @@ export const fieldConfig = (
   {
     key: 'childrenCollegeEducation',
     label: "Children's College",
-    max: data?.maxCollegeUss ? data.maxCollegeUss : 0,
+    max: data?.maxCollegeUss ?? 0,
   },
   { key: 'movingExpense', label: 'Moving Expense' },
   { key: 'seminary', label: 'Seminary' },
   {
     key: 'housingDownPayment',
     label: 'Housing Down Payment',
-    max: data?.maxHousingDownPaymentUss ? data.maxHousingDownPaymentUss : 0,
+    max: data?.maxHousingDownPaymentUss ?? 0,
   },
   {
     key: 'autoPurchase',
     label: 'Auto Purchase',
-    max: data?.maxAutoPurchaseUss ? data.maxAutoPurchaseUss : 0,
+    max: data?.maxAutoPurchaseUss ?? 0,
   },
   {
     key: 'expensesNotApprovedWithin90Days',
@@ -101,10 +101,10 @@ export const useAdditionalSalaryRequestForm = ({
     [t, locale],
   );
 
+  const fields = useMemo(() => fieldConfig(salaryInfoData), [salaryInfoData]);
+
   const defaultInitialValues: CompleteFormValues = {
-    ...Object.fromEntries(
-      fieldConfig(salaryInfoData).map(({ key }) => [key, '0']),
-    ),
+    ...Object.fromEntries(fields.map(({ key }) => [key, '0'])),
     deductTwelvePercent: false,
     phoneNumber: user?.staffInfo?.primaryPhoneNumber || '',
     emailAddress: user?.staffInfo?.emailAddress || '',
@@ -122,7 +122,7 @@ export const useAdditionalSalaryRequestForm = ({
 
     return {
       ...Object.fromEntries(
-        fieldConfig(salaryInfoData).map(({ key }) => [
+        fields.map(({ key }) => [
           key,
           String((request[key as keyof typeof request] as number) || 0),
         ]),
@@ -132,13 +132,18 @@ export const useAdditionalSalaryRequestForm = ({
         request.phoneNumber ?? user?.staffInfo?.primaryPhoneNumber ?? '',
       emailAddress: request.emailAddress ?? user?.staffInfo?.emailAddress ?? '',
     } as CompleteFormValues;
-  }, [providedInitialValues, requestData?.additionalSalaryRequest]);
+  }, [
+    providedInitialValues,
+    requestData?.additionalSalaryRequest,
+    fields,
+    user,
+  ]);
 
   const validationSchema = useMemo(
     () =>
       yup.object({
         ...Object.fromEntries(
-          fieldConfig(salaryInfoData).map(({ key, label, max }) => [
+          fields.map(({ key, label, max }) => [
             key,
             createCurrencyValidation(t(label), max),
           ]),
@@ -156,7 +161,7 @@ export const useAdditionalSalaryRequestForm = ({
           .email(t('Please enter a valid email address'))
           .required(t('Email address is required')),
       }),
-    [createCurrencyValidation, t],
+    [createCurrencyValidation, t, fields],
   );
 
   const onSubmit = useCallback(
@@ -198,6 +203,7 @@ export const useAdditionalSalaryRequestForm = ({
       updateAdditionalSalaryRequest,
       submitAdditionalSalaryRequest,
       handleNextStep,
+      fields,
     ],
   );
 
