@@ -67,7 +67,7 @@ const MainContent: React.FC = () => {
                 handleNextStep={handleNextStep}
                 handlePreviousStep={handlePreviousStep}
                 showBackButton={!isFirstFormPage}
-                handleDiscard={() => handleDiscard}
+                handleDiscard={handleDiscard}
                 isSubmission={isLastFormPage}
                 submitForm={submitForm}
                 validateForm={validateForm}
