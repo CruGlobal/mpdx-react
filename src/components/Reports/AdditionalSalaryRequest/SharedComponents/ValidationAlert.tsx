@@ -3,30 +3,37 @@ import { Alert } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
+import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { fieldConfig } from '../Shared/useAdditionalSalaryRequestForm';
 
 export const ValidationAlert: React.FC = () => {
   const { t } = useTranslation();
-  const { submitCount, isValid, errors } =
+  const { submitCount, isValid, values } =
     useFormikContext<CompleteFormValues>();
+  const { salaryInfo, isInternational } = useAdditionalSalaryRequest();
 
   const exceedingLimitFields = useMemo(() => {
-    if (!errors || !submitCount) {
+    if (!submitCount || !salaryInfo) {
       return [];
     }
 
     return fieldConfig
-      .filter(({ key, salaryInfoIntKey }) => {
-        if (!salaryInfoIntKey) {
+      .filter(({ key, salaryInfoIntKey, salaryInfoUssKey }) => {
+        if (!salaryInfoIntKey || !salaryInfoUssKey) {
           return false;
         }
-        const error = errors[key as keyof CompleteFormValues];
-        return (
-          typeof error === 'string' && error.toLowerCase().includes('exceeds')
+        const maxKey = isInternational ? salaryInfoIntKey : salaryInfoUssKey;
+        const max = salaryInfo[maxKey] as number | undefined;
+        if (!max) {
+          return false;
+        }
+        const value = parseFloat(
+          values[key as keyof CompleteFormValues] as string,
         );
+        return !isNaN(value) && value > max;
       })
       .map(({ label }) => t(label));
-  }, [errors, submitCount, t]);
+  }, [submitCount, salaryInfo, isInternational, values, t]);
 
   if (!submitCount || isValid) {
     return null;
