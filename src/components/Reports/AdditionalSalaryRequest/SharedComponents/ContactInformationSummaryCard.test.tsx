@@ -26,10 +26,6 @@ const defaultMockContextValue = {
   requestData: {
     additionalSalaryRequest: {
       phoneNumber: '555-123-4567',
-    },
-  },
-  user: {
-    staffInfo: {
       emailAddress: 'test@example.com',
     },
   },
@@ -72,8 +68,8 @@ describe('ContactInformationSummaryCard', () => {
     expect(getByText('test@example.com')).toBeInTheDocument();
   });
 
-  it('does not render email row when email is empty', () => {
-    const { getByText, queryByText } = renderComponent({
+  it('renders email row even when email is empty', () => {
+    const { getByText } = renderComponent({
       contextOverrides: {
         user: {
           staffInfo: {
@@ -84,7 +80,7 @@ describe('ContactInformationSummaryCard', () => {
     });
 
     expect(getByText('Phone Number')).toBeInTheDocument();
-    expect(queryByText('Email')).not.toBeInTheDocument();
+    expect(getByText('Email')).toBeInTheDocument();
   });
 
   it('handles missing request data gracefully', () => {

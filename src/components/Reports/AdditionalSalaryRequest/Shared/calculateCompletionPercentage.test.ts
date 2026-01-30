@@ -1,5 +1,5 @@
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
-import { defaultCompleteFormValues } from '../CompleteForm/CompleteForm.mock';
+import { defaultCompleteFormValues } from './CompleteForm.mock';
 import { calculateCompletionPercentage } from './calculateCompletionPercentage';
 
 describe('calculateCompletionPercentage', () => {
@@ -48,6 +48,7 @@ describe('calculateCompletionPercentage', () => {
       autoPurchase: '5000',
       expensesNotApprovedWithin90Days: '750',
       phoneNumber: '555-1234',
+      emailAddress: 'test@example.com',
     });
     expect(calculateCompletionPercentage(values)).toBe(100);
   });
@@ -74,6 +75,6 @@ describe('calculateCompletionPercentage', () => {
       currentYearSalaryNotReceived: '50000.50',
       previousYearSalaryNotReceived: '48000.75',
     });
-    expect(calculateCompletionPercentage(values)).toBe(13);
+    expect(calculateCompletionPercentage(values)).toBe(12);
   });
 });
