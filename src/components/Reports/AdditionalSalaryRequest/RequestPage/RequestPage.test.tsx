@@ -243,10 +243,12 @@ describe('RequestPage', () => {
     userEvent.click(confirmButton);
 
     await waitFor(() => {
-      expect(mockHandleDeleteRequest).toHaveBeenCalledWith('test-request-id');
+      expect(mockHandleDeleteRequest).toHaveBeenCalledWith(
+        'test-request-id',
+        false,
+      );
       expect(mockPush).toHaveBeenCalledWith(
         '/accountLists/account-list-1/reports/additionalSalaryRequest',
-        false,
       );
     });
   });

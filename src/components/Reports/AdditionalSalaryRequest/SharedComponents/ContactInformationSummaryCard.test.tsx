@@ -26,10 +26,6 @@ const defaultMockContextValue = {
   requestData: {
     additionalSalaryRequest: {
       phoneNumber: '555-123-4567',
-    },
-  },
-  user: {
-    staffInfo: {
       emailAddress: 'test@example.com',
     },
   },
