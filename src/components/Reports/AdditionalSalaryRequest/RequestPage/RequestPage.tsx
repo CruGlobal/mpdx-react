@@ -34,6 +34,8 @@ const MainContent: React.FC = () => {
   const { submitForm, validateForm, submitCount, isValid } =
     useFormikContext<CompleteFormValues>();
 
+  const isEdit = pageType === PageEnum.Edit;
+
   const isFirstFormPage = currentIndex === 0;
   const isLastFormPage = currentIndex === steps.length - 2;
   const reviewPage = currentIndex === steps.length - 1;
@@ -47,7 +49,11 @@ const MainContent: React.FC = () => {
             <Stack direction="column" width={mainContentWidth}>
               <DirectionButtons
                 formTitle={t('Additional Salary Request')}
-                overrideSubContent={t('Your request will be sent to payroll.')}
+                overrideSubContent={
+                  isEdit
+                    ? t('Your updated request will be sent to payroll.')
+                    : t('Your request will be sent to payroll.')
+                }
                 handleNextStep={handleNextStep}
                 handlePreviousStep={handlePreviousStep}
                 showBackButton={!isFirstFormPage}
@@ -59,7 +65,8 @@ const MainContent: React.FC = () => {
                 validateForm={validateForm}
                 submitCount={submitCount}
                 isValid={isValid}
-                isEdit={pageType === PageEnum.Edit}
+                actionRequired={isEdit}
+                isEdit={isEdit}
               />
             </Stack>
           )}

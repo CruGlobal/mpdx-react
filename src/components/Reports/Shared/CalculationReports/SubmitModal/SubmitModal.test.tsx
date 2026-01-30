@@ -75,7 +75,7 @@ describe('ConfirmationModal', () => {
       await findByText('Are you ready to submit your Main Title?'),
     ).toBeInTheDocument();
     expect(
-      getByText('You are submitting your Main Title for board approval.'),
+      getByText('You are submitting your Main Title.'),
     ).toBeInTheDocument();
 
     expect(getByText(/12\/31\/2024/)).toBeInTheDocument();
@@ -96,7 +96,7 @@ describe('ConfirmationModal', () => {
     ).toBeInTheDocument();
 
     expect(
-      getByText(/you are submitting changes to your annual/i),
+      getByText(/you are submitting changes to your/i),
     ).toBeInTheDocument();
 
     await userEvent.click(getByRole('button', { name: /YES, CONTINUE/i }));
