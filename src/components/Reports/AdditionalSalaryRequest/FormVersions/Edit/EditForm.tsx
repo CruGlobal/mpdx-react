@@ -33,21 +33,25 @@ export const EditForm: React.FC = () => {
         showContent
       />
       <Typography variant="body1" paragraph>
-        {t(
-          'Please enter the desired dollar amounts for the appropriate categories and review totals before submitting. Your Net Additional Salary calculated below represents the amount you will receive as an additional salary check (before taxes) and is equal to the amount you are requesting minus any amount being contributed to your 403(b).',
-        )}
+        <Trans t={t}>
+          Please enter the desired dollar amounts for the appropriate categories
+          and review totals before submitting. Your Net Additional Salary
+          calculated below represents the amount you will receive as an
+          additional salary check (before taxes) and is equal to the amount you
+          are requesting minus any amount being contributed to your 403(b).
+        </Trans>
       </Typography>
       <AdditionalSalaryRequest />
       <Deduction />
       <NetAdditionalSalary />
       <TotalAnnualSalarySummaryCard />
-      <Trans t={t}>
-        <Typography variant="body1" paragraph>
+      <Typography variant="body1" paragraph>
+        <Trans t={t}>
           If the above information is correct, please confirm your telephone
           number and email address and click &quot;Submit&quot; to process this
           form.
-        </Typography>
-      </Trans>
+        </Trans>
+      </Typography>
       <ContactInformation />
       <ValidationAlert />
     </Stack>
