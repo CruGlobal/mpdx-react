@@ -118,7 +118,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     skip: !requestId,
   });
 
-  const currentYear = DateTime.now().year;
+  const currentYear = useMemo(() => DateTime.now().year, []);
   const { data: salaryInfoData } = useSalaryInfoQuery({
     variables: { year: currentYear },
   });
@@ -149,6 +149,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
           });
           cache.gc();
         },
+        onQueryUpdated: () => false,
         onCompleted: () => {
           if (!isCancel) {
             router.push(
