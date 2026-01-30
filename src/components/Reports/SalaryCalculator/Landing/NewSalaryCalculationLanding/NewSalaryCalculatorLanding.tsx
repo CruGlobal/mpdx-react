@@ -42,21 +42,22 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
         query: { mode: 'edit' },
       });
     } else {
-      const result = await createSalaryCalculation({
+      await createSalaryCalculation({
         variables: {
           input: {
             attributes: {},
           },
         },
+        onCompleted: ({ createSalaryRequest }) => {
+          const newCalculationId = createSalaryRequest?.salaryRequest?.id;
+          if (newCalculationId) {
+            router.push({
+              pathname: `/accountLists/${accountListId}/reports/salaryCalculator/${newCalculationId}`,
+              query: { mode: 'edit' },
+            });
+          }
+        },
       });
-      const newCalculationId =
-        result.data?.createSalaryRequest?.salaryRequest?.id;
-      if (newCalculationId) {
-        router.push({
-          pathname: `/accountLists/${accountListId}/reports/salaryCalculator/${newCalculationId}`,
-          query: { mode: 'edit' },
-        });
-      }
     }
   };
 
