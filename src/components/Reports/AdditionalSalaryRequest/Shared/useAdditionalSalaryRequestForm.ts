@@ -51,7 +51,7 @@ export const useAdditionalSalaryRequestForm = ({
 }: UseAdditionalSalaryRequestFormProps) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { handleNextStep } = useAdditionalSalaryRequest();
+  const { handleNextStep, user } = useAdditionalSalaryRequest();
 
   const { data: requestData } = useAdditionalSalaryRequestQuery({
     variables: { requestId: requestId || '' },
@@ -85,8 +85,8 @@ export const useAdditionalSalaryRequestForm = ({
   const defaultInitialValues: CompleteFormValues = {
     ...Object.fromEntries(fieldConfig.map(({ key }) => [key, '0'])),
     deductTwelvePercent: false,
-    phoneNumber: '',
-    emailAddress: '',
+    phoneNumber: user?.staffInfo?.primaryPhoneNumber || '',
+    emailAddress: user?.staffInfo?.emailAddress || '',
   } as CompleteFormValues;
 
   const initialValues: CompleteFormValues = useMemo(() => {
@@ -107,10 +107,11 @@ export const useAdditionalSalaryRequestForm = ({
         ]),
       ),
       deductTwelvePercent: request.deductTwelvePercent || false,
-      phoneNumber: request.phoneNumber || '',
-      emailAddress: request.emailAddress || '',
+      phoneNumber:
+        request.phoneNumber || user?.staffInfo?.primaryPhoneNumber || '',
+      emailAddress: request.emailAddress || user?.staffInfo?.emailAddress || '',
     } as CompleteFormValues;
-  }, [providedInitialValues, requestData?.additionalSalaryRequest]);
+  }, [providedInitialValues, requestData?.additionalSalaryRequest, user]);
 
   const validationSchema = useMemo(
     () =>
