@@ -23,10 +23,7 @@ import {
   useDeleteAdditionalSalaryRequestMutation,
 } from '../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
-import {
-  SalaryInfoQuery,
-  useSalaryInfoQuery,
-} from '../SalaryInfo.generated';
+import { SalaryInfoQuery, useSalaryInfoQuery } from '../SalaryInfo.generated';
 import { useStaffAccountIdQuery } from '../StaffAccountId.generated';
 
 export type AdditionalSalaryRequestType = {
