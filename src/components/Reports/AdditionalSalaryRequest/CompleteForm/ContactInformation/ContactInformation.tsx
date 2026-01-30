@@ -1,15 +1,9 @@
 import React from 'react';
-import { Box, TextField, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { AutosaveCustomTextField } from '../../Shared/AutoSave/AutosaveCustomTextField';
 
-interface ContactInformationProps {
-  email?: string;
-}
-
-export const ContactInformation: React.FC<ContactInformationProps> = ({
-  email,
-}) => {
+export const ContactInformation: React.FC = () => {
   const { t } = useTranslation();
 
   return (
@@ -30,14 +24,12 @@ export const ContactInformation: React.FC<ContactInformationProps> = ({
           sx={{ flex: '0 0 35%' }}
         />
 
-        <TextField
+        <AutosaveCustomTextField
           fullWidth
           variant="outlined"
+          fieldName="emailAddress"
           label={t('Email')}
-          value={email || ''}
-          InputProps={{
-            readOnly: true,
-          }}
+          placeholder={t('Enter email address')}
           sx={{ flex: '1 1 65%' }}
         />
       </Box>

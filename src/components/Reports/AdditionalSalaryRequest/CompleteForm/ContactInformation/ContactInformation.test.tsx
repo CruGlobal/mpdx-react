@@ -8,32 +8,27 @@ import { ContactInformation } from './ContactInformation';
 
 interface TestWrapperProps {
   initialValues?: CompleteFormValues;
-  email?: string;
   pageType?: 'new' | 'edit' | 'view';
 }
 
 const TestWrapper: React.FC<TestWrapperProps> = ({
   initialValues = defaultCompleteFormValues,
-  email = '',
   pageType = 'edit',
 }) => (
   <AdditionalSalaryRequestTestWrapper
     initialValues={initialValues}
     pageType={pageType}
   >
-    <ContactInformation email={email} />
+    <ContactInformation />
   </AdditionalSalaryRequestTestWrapper>
 );
 
 describe('ContactInformation', () => {
-  it('renders telephone number field', () => {
-    const { getByLabelText, getByDisplayValue } = render(
-      <TestWrapper email="test@example.com" />,
-    );
+  it('renders telephone number and email fields', () => {
+    const { getByLabelText } = render(<TestWrapper />);
 
     expect(getByLabelText('Telephone Number')).toBeInTheDocument();
     expect(getByLabelText('Email')).toBeInTheDocument();
-    expect(getByDisplayValue('test@example.com')).toBeInTheDocument();
   });
 
   it('displays telephone number from initial values', async () => {
@@ -51,6 +46,21 @@ describe('ContactInformation', () => {
     });
   });
 
+  it('displays email from initial values', async () => {
+    const valuesWithEmail: CompleteFormValues = {
+      ...defaultCompleteFormValues,
+      emailAddress: 'test@example.com',
+    };
+
+    const { getByLabelText } = render(
+      <TestWrapper initialValues={valuesWithEmail} />,
+    );
+
+    await waitFor(() => {
+      expect(getByLabelText('Email')).toHaveValue('test@example.com');
+    });
+  });
+
   it('allows user to enter telephone number', async () => {
     const { getByLabelText } = render(<TestWrapper />);
 
@@ -61,6 +71,19 @@ describe('ContactInformation', () => {
 
     await waitFor(() => {
       expect(phoneInput).toHaveValue('555-5678');
+    });
+  });
+
+  it('allows user to enter email address', async () => {
+    const { getByLabelText } = render(<TestWrapper />);
+
+    const emailInput = getByLabelText('Email');
+    await waitFor(() => expect(emailInput).toBeEnabled());
+
+    userEvent.type(emailInput, 'user@example.com');
+
+    await waitFor(() => {
+      expect(emailInput).toHaveValue('user@example.com');
     });
   });
 

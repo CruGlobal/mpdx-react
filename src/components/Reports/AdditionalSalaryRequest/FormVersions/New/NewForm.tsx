@@ -14,7 +14,6 @@ import { ValidationAlert } from '../../SharedComponents/ValidationAlert';
 export const NewForm: React.FC = () => {
   const { t } = useTranslation();
   const {
-    email,
     name,
     accountNumber,
     primaryAccountBalance,
@@ -50,7 +49,7 @@ export const NewForm: React.FC = () => {
           form.
         </Typography>
       </Trans>
-      <ContactInformation email={email ?? ''} />
+      <ContactInformation />
       <ValidationAlert />
     </Stack>
   );

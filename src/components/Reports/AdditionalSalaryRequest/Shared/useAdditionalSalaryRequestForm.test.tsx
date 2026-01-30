@@ -76,6 +76,7 @@ const defaultFormValues: CompleteFormValues = {
   expensesNotApprovedWithin90Days: '0',
   deductTwelvePercent: false,
   phoneNumber: '',
+  emailAddress: '',
 };
 
 const mutationSpy = jest.fn();
@@ -377,6 +378,7 @@ describe('useAdditionalSalaryRequestForm', () => {
             initialValues: {
               ...defaultFormValues,
               phoneNumber: '555-123-4567',
+              emailAddress: 'test@example.com',
               currentYearSalaryNotReceived: '100',
             },
           }),
@@ -410,6 +412,7 @@ describe('useAdditionalSalaryRequestForm', () => {
               previousYearSalaryNotReceived: '200',
               adoption: '300',
               phoneNumber: '555-123-4567',
+              emailAddress: 'test@example.com',
             },
           }),
         {
@@ -445,6 +448,7 @@ describe('useAdditionalSalaryRequestForm', () => {
             initialValues: {
               ...defaultFormValues,
               phoneNumber: '555-123-4567',
+              emailAddress: 'test@example.com',
             },
           }),
         {
@@ -543,6 +547,7 @@ describe('useAdditionalSalaryRequestForm', () => {
             expensesNotApprovedWithin90Days: 0,
             deductTwelvePercent: false,
             phoneNumber: '',
+            emailAddress: '',
             calculations: {
               currentSalaryCap: 50000,
               staffAccountBalance: 20000,

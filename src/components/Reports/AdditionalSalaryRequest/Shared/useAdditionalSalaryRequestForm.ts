@@ -86,6 +86,7 @@ export const useAdditionalSalaryRequestForm = ({
     ...Object.fromEntries(fieldConfig.map(({ key }) => [key, '0'])),
     deductTwelvePercent: false,
     phoneNumber: '',
+    emailAddress: '',
   } as CompleteFormValues;
 
   const initialValues: CompleteFormValues = useMemo(() => {
@@ -107,6 +108,7 @@ export const useAdditionalSalaryRequestForm = ({
       ),
       deductTwelvePercent: request.deductTwelvePercent || false,
       phoneNumber: request.phoneNumber || '',
+      emailAddress: request.emailAddress || '',
     } as CompleteFormValues;
   }, [providedInitialValues, requestData?.additionalSalaryRequest]);
 
@@ -127,6 +129,10 @@ export const useAdditionalSalaryRequestForm = ({
             /^[\d\s\-\(\)\+]+$/,
             t('Please enter a valid telephone number'),
           ),
+        emailAddress: yup
+          .string()
+          .required(t('Email address is required'))
+          .email(t('Please enter a valid email address')),
       }),
     [createCurrencyValidation, t],
   );
@@ -143,7 +149,9 @@ export const useAdditionalSalaryRequestForm = ({
           attributes: {
             ...Object.fromEntries(
               Object.entries(values).map(([key, value]) =>
-                typeof value === 'string' && key !== 'phoneNumber'
+                typeof value === 'string' &&
+                key !== 'phoneNumber' &&
+                key !== 'emailAddress'
                   ? [key, parseFloat(value) || 0]
                   : [key, value],
               ),
