@@ -24,14 +24,20 @@ export const PendingRequestActions: React.FC<PendingRequestActionsProps> = ({
   const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
 
   const handleView = () => {
+    if (!calculation?.id) {
+      return;
+    }
     router.push(
-      `/accountLists/${accountListId}/reports/salaryCalculator/${calculation?.id}`,
+      `/accountLists/${accountListId}/reports/salaryCalculator/${calculation.id}`,
     );
   };
 
   const handleEdit = () => {
+    if (!calculation?.id) {
+      return;
+    }
     router.push({
-      pathname: `/accountLists/${accountListId}/reports/salaryCalculator/${calculation?.id}`,
+      pathname: `/accountLists/${accountListId}/reports/salaryCalculator/${calculation.id}`,
       query: { mode: 'edit' },
     });
   };
