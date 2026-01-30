@@ -93,6 +93,8 @@ const mockContextValue = {
       preferredName: 'Jane',
     },
   } as never,
+  salaryInfo: undefined,
+  isInternational: false,
   isMutating: false,
   trackMutation: jest.fn(),
 };

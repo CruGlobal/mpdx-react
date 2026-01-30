@@ -12,11 +12,22 @@ import { defaultCompleteFormValues } from '../Shared/CompleteForm.mock';
 import { fieldConfig } from '../Shared/useAdditionalSalaryRequestForm';
 import { ValidationAlert } from './ValidationAlert';
 
+// Mock max values matching what salaryInfo would return for US-based staff
+const mockMaxValues: Record<string, number> = {
+  maxAdoptionUss: 15000,
+  maxAutoPurchaseUss: 50000,
+  maxCollegeUss: 50000,
+  maxHousingDownPaymentUss: 50000,
+};
+
 const createValidationSchema = () =>
   yup.object({
     ...Object.fromEntries(
-      fieldConfig.map(({ key, label, max }) => {
+      fieldConfig.map(({ key, label, salaryInfoUssKey }) => {
         let schema = amount(label, (key: string) => key);
+        const max = salaryInfoUssKey
+          ? mockMaxValues[salaryInfoUssKey]
+          : undefined;
         if (max) {
           schema = schema.max(max, `Exceeds $${max.toLocaleString()} limit`);
         }

@@ -79,6 +79,8 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   requestId: 'request-id',
   user: undefined,
   spouse: undefined,
+  salaryInfo: undefined,
+  isInternational: false,
   isMutating: false,
   trackMutation: mockTrackMutation,
 };

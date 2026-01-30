@@ -11,29 +11,53 @@ import {
   useSubmitAdditionalSalaryRequestMutation,
   useUpdateAdditionalSalaryRequestMutation,
 } from '../AdditionalSalaryRequest.generated';
+import { SalaryInfoQuery } from '../SalaryInfo.generated';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 import { getTotal } from './Helper/getTotal';
 
-// Field configuration: combines keys, labels, and max values
+type SalaryInfo = NonNullable<SalaryInfoQuery['salaryInfo']>;
+
+// Field configuration: combines keys, labels, and optional salaryInfo key pairs for dynamic max values
 export const fieldConfig: Array<{
   key: string;
   label: string;
-  max?: number;
+  salaryInfoIntKey?: keyof SalaryInfo;
+  salaryInfoUssKey?: keyof SalaryInfo;
 }> = [
   { key: 'currentYearSalaryNotReceived', label: "Current Year's Salary" },
   { key: 'previousYearSalaryNotReceived', label: "Previous Year's Salary" },
   { key: 'additionalSalaryWithinMax', label: 'Additional Salary' },
-  { key: 'adoption', label: 'Adoption', max: 15000 },
+  {
+    key: 'adoption',
+    label: 'Adoption',
+    salaryInfoIntKey: 'maxAdoptionInt',
+    salaryInfoUssKey: 'maxAdoptionUss',
+  },
   { key: 'traditional403bContribution', label: '403(b) Contribution' },
   { key: 'counselingNonMedical', label: 'Counseling' },
   { key: 'healthcareExpensesExceedingLimit', label: 'Healthcare Expenses' },
   { key: 'babysittingMinistryEvents', label: 'Babysitting' },
   { key: 'childrenMinistryTripExpenses', label: "Children's Ministry Trip" },
-  { key: 'childrenCollegeEducation', label: "Children's College" },
+  {
+    key: 'childrenCollegeEducation',
+    label: "Children's College",
+    salaryInfoIntKey: 'maxCollegeInt',
+    salaryInfoUssKey: 'maxCollegeUss',
+  },
   { key: 'movingExpense', label: 'Moving Expense' },
   { key: 'seminary', label: 'Seminary' },
-  { key: 'housingDownPayment', label: 'Housing Down Payment', max: 50000 },
-  { key: 'autoPurchase', label: 'Auto Purchase' },
+  {
+    key: 'housingDownPayment',
+    label: 'Housing Down Payment',
+    salaryInfoIntKey: 'maxHousingDownPaymentInt',
+    salaryInfoUssKey: 'maxHousingDownPaymentUss',
+  },
+  {
+    key: 'autoPurchase',
+    label: 'Auto Purchase',
+    salaryInfoIntKey: 'maxAutoPurchaseInt',
+    salaryInfoUssKey: 'maxAutoPurchaseUss',
+  },
   {
     key: 'expensesNotApprovedWithin90Days',
     label: 'Reimbursable Expenses',
@@ -51,7 +75,8 @@ export const useAdditionalSalaryRequestForm = ({
 }: UseAdditionalSalaryRequestFormProps) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { handleNextStep, user } = useAdditionalSalaryRequest();
+  const { handleNextStep, user, salaryInfo, isInternational } =
+    useAdditionalSalaryRequest();
 
   const { data: requestData } = useAdditionalSalaryRequestQuery({
     variables: { requestId: requestId || '' },
@@ -113,13 +138,26 @@ export const useAdditionalSalaryRequestForm = ({
     } as CompleteFormValues;
   }, [providedInitialValues, requestData?.additionalSalaryRequest, user]);
 
+  const getMaxForField = useCallback(
+    (field: (typeof fieldConfig)[number]): number | undefined => {
+      if (!field.salaryInfoIntKey || !field.salaryInfoUssKey || !salaryInfo) {
+        return undefined;
+      }
+      const key = isInternational
+        ? field.salaryInfoIntKey
+        : field.salaryInfoUssKey;
+      return salaryInfo[key] as number | undefined;
+    },
+    [salaryInfo, isInternational],
+  );
+
   const validationSchema = useMemo(
     () =>
       yup.object({
         ...Object.fromEntries(
-          fieldConfig.map(({ key, label, max }) => [
-            key,
-            createCurrencyValidation(t(label), max),
+          fieldConfig.map((field) => [
+            field.key,
+            createCurrencyValidation(t(field.label), getMaxForField(field)),
           ]),
         ),
         deductTwelvePercent: yup.boolean(),
@@ -135,7 +173,7 @@ export const useAdditionalSalaryRequestForm = ({
           .required(t('Email address is required'))
           .email(t('Please enter a valid email address')),
       }),
-    [createCurrencyValidation, t],
+    [createCurrencyValidation, t, getMaxForField],
   );
 
   const onSubmit = useCallback(

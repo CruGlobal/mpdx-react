@@ -85,6 +85,8 @@ const defaultMockContextValue = {
     },
   },
   spouse: undefined,
+  salaryInfo: undefined,
+  isInternational: false,
   isMutating: false,
   trackMutation: jest.fn(),
 };

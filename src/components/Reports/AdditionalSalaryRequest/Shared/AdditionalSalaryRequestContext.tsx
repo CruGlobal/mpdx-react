@@ -23,6 +23,10 @@ import {
   useDeleteAdditionalSalaryRequestMutation,
 } from '../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
+import {
+  SalaryInfoQuery,
+  useSalaryInfoQuery,
+} from '../SalaryInfo.generated';
 import { useStaffAccountIdQuery } from '../StaffAccountId.generated';
 
 export type AdditionalSalaryRequestType = {
@@ -47,6 +51,8 @@ export type AdditionalSalaryRequestType = {
   requestId?: string;
   user: HcmDataQuery['hcm'][0] | undefined;
   spouse: HcmDataQuery['hcm'][1] | undefined;
+  salaryInfo: SalaryInfoQuery['salaryInfo'] | undefined;
+  isInternational: boolean;
   isMutating: boolean;
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
 };
@@ -114,6 +120,10 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   const { data: staffAccountIdData, loading: staffAccountIdLoading } =
     useStaffAccountIdQuery();
 
+  const { data: salaryInfoData } = useSalaryInfoQuery({
+    variables: { year: new Date().getFullYear() },
+  });
+
   const [deleteAdditionalSalaryRequest] =
     useDeleteAdditionalSalaryRequestMutation();
 
@@ -166,6 +176,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   const { trackMutation, isMutating } = useTrackMutation();
 
   const [user, spouse] = hcmData?.hcm ?? [];
+  const salaryInfo = salaryInfoData?.salaryInfo;
+  const isInternational = user?.staffInfo?.isInternational ?? false;
 
   const staffAccountId = useMemo(
     () => staffAccountIdData?.user?.staffAccountId,
@@ -192,6 +204,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       requestId,
       user,
       spouse,
+      salaryInfo,
+      isInternational,
       isMutating,
       trackMutation,
     }),
@@ -214,6 +228,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       requestId,
       user,
       spouse,
+      salaryInfo,
+      isInternational,
       isMutating,
       trackMutation,
     ],
