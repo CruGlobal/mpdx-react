@@ -51,6 +51,7 @@ describe('CurrentStep', () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
       ...mockContextValue,
       currentIndex: 0,
+      remainingAllowableSalary: 0,
     });
 
     const { getByText } = render(<TestComponent />);
@@ -64,6 +65,7 @@ describe('CurrentStep', () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
       ...mockContextValue,
       currentIndex: 1,
+      remainingAllowableSalary: 0,
     });
 
     const { getByText } = render(<TestComponent />);
@@ -77,6 +79,7 @@ describe('CurrentStep', () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
       ...mockContextValue,
       currentIndex: 2,
+      remainingAllowableSalary: 0,
     });
 
     const { getByText } = render(<TestComponent />);
