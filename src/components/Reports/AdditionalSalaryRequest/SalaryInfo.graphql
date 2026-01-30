@@ -1,0 +1,13 @@
+query SalaryInfo($year: Int!) {
+  salaryInfo(year: $year) {
+    id
+    maxAdoptionInt
+    maxAdoptionUss
+    maxAutoPurchaseInt
+    maxAutoPurchaseUss
+    maxCollegeInt
+    maxCollegeUss
+    maxHousingDownPaymentInt
+    maxHousingDownPaymentUss
+  }
+}
