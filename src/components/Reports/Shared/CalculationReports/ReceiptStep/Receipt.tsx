@@ -13,11 +13,11 @@ interface ReceiptProps {
   buttonText: string;
   buttonLink: string;
   alertText?: string;
-  editLink?: string;
+  linkOne?: string;
+  linkOneText?: string;
   viewLink?: string;
   isEdit?: boolean;
   availableDate?: string | null;
-  deadlineDate?: string | null;
   setIsComplete?: Dispatch<SetStateAction<boolean>>;
 }
 
@@ -26,11 +26,11 @@ export const Receipt: React.FC<ReceiptProps> = ({
   buttonText,
   buttonLink,
   alertText,
-  editLink,
+  linkOne,
+  linkOneText,
   viewLink,
   isEdit,
   availableDate,
-  deadlineDate,
   setIsComplete,
 }) => {
   const { t } = useTranslation();
@@ -39,11 +39,6 @@ export const Receipt: React.FC<ReceiptProps> = ({
 
   const available = availableDate
     ? dateFormatShort(DateTime.fromISO(availableDate), locale)
-    : null;
-
-  //TODO: Not sure what to write if deadline date is null
-  const deadline = deadlineDate
-    ? dateFormatShort(DateTime.fromISO(deadlineDate), locale)
     : null;
 
   const approval = available
@@ -84,18 +79,13 @@ export const Receipt: React.FC<ReceiptProps> = ({
           </Typography>
         </Box>
       </Alert>
-      {editLink && (
+      {linkOne && (
         <Box sx={{ mt: 4 }}>
           <Edit
             fontSize="small"
             sx={{ verticalAlign: 'middle', opacity: 0.56 }}
           />{' '}
-          <Link href={editLink}>
-            {t('Edit your MHA Request (Not available after {{date}})', {
-              date: deadline,
-              interpolation: { escapeValue: false },
-            })}
-          </Link>
+          <Link href={linkOne}>{linkOneText}</Link>
         </Box>
       )}
       <Box sx={{ mt: 4 }}>
