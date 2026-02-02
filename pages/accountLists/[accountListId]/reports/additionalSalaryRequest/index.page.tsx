@@ -1,11 +1,22 @@
 import Head from 'next/head';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { FormikProvider } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
-import { AdditionalSalaryRequest } from 'src/components/Reports/AdditionalSalaryRequest/AdditionalSalaryRequest';
-import { AdditionalSalaryRequestProvider } from 'src/components/Reports/AdditionalSalaryRequest/Shared/AdditionalSalaryRequestContext';
+import { useCreateAdditionalSalaryRequestMutation } from 'src/components/Reports/AdditionalSalaryRequest/AdditionalSalaryRequest.generated';
+import { ContinuePage } from 'src/components/Reports/AdditionalSalaryRequest/MainPages/ContinuePage';
+import { IneligiblePage } from 'src/components/Reports/AdditionalSalaryRequest/MainPages/IneligiblePage';
+import { OverviewPage } from 'src/components/Reports/AdditionalSalaryRequest/MainPages/OverviewPage';
+import { RequestPage } from 'src/components/Reports/AdditionalSalaryRequest/RequestPage/RequestPage';
+import {
+  AdditionalSalaryRequestProvider,
+  useAdditionalSalaryRequest,
+} from 'src/components/Reports/AdditionalSalaryRequest/Shared/AdditionalSalaryRequestContext';
+import { useAdditionalSalaryRequestForm } from 'src/components/Reports/AdditionalSalaryRequest/Shared/useAdditionalSalaryRequestForm';
+import { SavingStatus } from 'src/components/Reports/Shared/CalculationReports/SavingStatus/SavingStatus';
+import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { NoStaffAccount } from 'src/components/Reports/Shared/NoStaffAccount/NoStaffAccount';
 import { useStaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
 import {
@@ -18,24 +29,90 @@ import {
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 import { ReportPageWrapper } from 'src/components/Shared/styledComponents/ReportPageWrapper';
+import { AsrStatusEnum } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
-interface AdditionalSalaryRequestContentProps {
-  isNavListOpen: boolean;
-  onNavListToggle: () => void;
-  designationAccounts: string[];
-  setDesignationAccounts: (accounts: string[]) => void;
-}
+const FormikRequestPage: React.FC = () => {
+  const { requestData, loading, user } = useAdditionalSalaryRequest();
 
-const AdditionalSalaryRequestContent: React.FC<
-  AdditionalSalaryRequestContentProps
-> = ({
-  isNavListOpen,
-  onNavListToggle,
-  designationAccounts,
-  setDesignationAccounts,
-}) => {
+  const [createRequest] = useCreateAdditionalSalaryRequestMutation();
+  const [newRequestId, setNewRequestId] = useState<string | undefined>();
+
+  useEffect(() => {
+    if (
+      !loading &&
+      !requestData &&
+      !newRequestId &&
+      user?.salaryRequestEligible
+    ) {
+      createRequest({
+        variables: { attributes: {} },
+        onCompleted: ({ createAdditionalSalaryRequest }) => {
+          setNewRequestId(
+            createAdditionalSalaryRequest?.additionalSalaryRequest.id,
+          );
+        },
+      });
+    }
+  }, [loading, requestData, newRequestId, createRequest]);
+
+  const requestId =
+    requestData?.additionalSalaryRequest?.id ?? newRequestId ?? '';
+  const formik = useAdditionalSalaryRequestForm({ requestId });
+
+  return (
+    <FormikProvider value={formik}>
+      <RequestPage />
+    </FormikProvider>
+  );
+};
+
+const AdditionalSalaryRequestRouter: React.FC = () => {
+  const { requestData, loading, user } = useAdditionalSalaryRequest();
+
+  if (user?.salaryRequestEligible === false) {
+    return <IneligiblePage />;
+  }
+
+  if (loading) {
+    return <Loading loading />;
+  }
+
+  if (!requestData) {
+    return <FormikRequestPage />;
+  }
+
+  switch (requestData.additionalSalaryRequest?.status) {
+    case AsrStatusEnum.ActionRequired:
+    case AsrStatusEnum.Pending:
+      return <OverviewPage />;
+    case AsrStatusEnum.InProgress:
+      return <ContinuePage />;
+    case AsrStatusEnum.Approved:
+    default:
+      return <FormikRequestPage />;
+  }
+};
+
+const AdditionalSalaryRequestContent: React.FC = () => {
+  const [isNavListOpen, setNavListOpen] = useState(false);
+  const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
   const { t } = useTranslation();
+
+  const { requestData, loading, isMutating, pageType, user } =
+    useAdditionalSalaryRequest();
+
+  const handleNavListToggle = () => {
+    setNavListOpen(!isNavListOpen);
+  };
+
+  const status = requestData?.additionalSalaryRequest?.status;
+  const showSavingStatus =
+    pageType !== PageEnum.View &&
+    status !== AsrStatusEnum.ActionRequired &&
+    status !== AsrStatusEnum.Pending &&
+    status !== AsrStatusEnum.InProgress &&
+    user?.salaryRequestEligible !== false;
 
   return (
     <SidePanelsLayout
@@ -44,7 +121,7 @@ const AdditionalSalaryRequestContent: React.FC<
         <MultiPageMenu
           isOpen={isNavListOpen}
           selectedId="salaryRequest"
-          onClose={onNavListToggle}
+          onClose={handleNavListToggle}
           designationAccounts={designationAccounts}
           setDesignationAccounts={setDesignationAccounts}
           navType={NavTypeEnum.Reports}
@@ -57,11 +134,23 @@ const AdditionalSalaryRequestContent: React.FC<
         <>
           <MultiPageHeader
             isNavListOpen={isNavListOpen}
-            onNavListToggle={onNavListToggle}
+            onNavListToggle={handleNavListToggle}
             title={t('Additional Salary Request')}
             headerType={HeaderTypeEnum.Report}
+            rightExtra={
+              showSavingStatus && (
+                <SavingStatus
+                  loading={loading}
+                  hasData={!!requestData}
+                  isMutating={isMutating}
+                  lastSavedAt={
+                    requestData?.additionalSalaryRequest?.updatedAt ?? null
+                  }
+                />
+              )
+            }
           />
-          <AdditionalSalaryRequest />
+          <AdditionalSalaryRequestRouter />
         </>
       }
     />
@@ -71,14 +160,8 @@ const AdditionalSalaryRequestContent: React.FC<
 const AdditionalSalaryRequestPage: React.FC = () => {
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
-  const [isNavListOpen, setNavListOpen] = useState(false);
-  const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
 
   const { data: staffAccountData, loading } = useStaffAccountQuery();
-
-  const handleNavListToggle = () => {
-    setNavListOpen(!isNavListOpen);
-  };
 
   return (
     <>
@@ -88,12 +171,7 @@ const AdditionalSalaryRequestPage: React.FC = () => {
       {staffAccountData?.staffAccount?.id ? (
         <ReportPageWrapper>
           <AdditionalSalaryRequestProvider>
-            <AdditionalSalaryRequestContent
-              isNavListOpen={isNavListOpen}
-              onNavListToggle={handleNavListToggle}
-              designationAccounts={designationAccounts}
-              setDesignationAccounts={setDesignationAccounts}
-            />
+            <AdditionalSalaryRequestContent />
           </AdditionalSalaryRequestProvider>
         </ReportPageWrapper>
       ) : loading ? (
