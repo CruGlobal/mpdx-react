@@ -43,9 +43,7 @@ export const useCompleteFormCategories = (): Category[] => {
       key: 'adoption',
       label: t('Adoption'),
       description: t('{{max}} Maximum, per adoption, not per year', {
-        max: currencyFormat(salaryInfo?.maxAdoptionUss ?? 0, currency, locale, {
-          showTrailingZeros: true,
-        }),
+        max: currencyFormat(salaryInfo?.maxAdoptionUss ?? 0, currency, locale),
       }),
     },
     {
@@ -79,9 +77,7 @@ export const useCompleteFormCategories = (): Category[] => {
       key: 'childrenCollegeEducation',
       label: t("Children's college education"),
       description: t('{{max}} Maximum per year, per child', {
-        max: currencyFormat(salaryInfo?.maxCollegeUss ?? 0, currency, locale, {
-          showTrailingZeros: true,
-        }),
+        max: currencyFormat(salaryInfo?.maxCollegeUss ?? 0, currency, locale),
       }),
     },
     { key: 'movingExpense', label: t('Moving Expense') },

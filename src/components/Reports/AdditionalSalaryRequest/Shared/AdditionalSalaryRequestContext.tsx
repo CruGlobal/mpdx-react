@@ -27,8 +27,6 @@ import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHe
 import { SalaryInfoQuery, useSalaryInfoQuery } from '../SalaryInfo.generated';
 import { useStaffAccountIdQuery } from '../StaffAccountId.generated';
 
-export type HcmData = HcmDataQuery['hcm'][number];
-
 export type AdditionalSalaryRequestType = {
   staffAccountId: string | null | undefined;
   staffAccountIdLoading: boolean;
@@ -149,7 +147,6 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
           });
           cache.gc();
         },
-        onQueryUpdated: () => false,
         onCompleted: () => {
           if (!isCancel) {
             router.push(

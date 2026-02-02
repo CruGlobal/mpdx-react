@@ -72,7 +72,7 @@ describe('ContactInformation', () => {
     );
 
     await waitFor(() => {
-      expect(getByLabelText('Email')).toHaveValue('test@example.com');
+      expect(getByLabelText('Email Address')).toHaveValue('test@example.com');
     });
   });
 
@@ -92,7 +92,7 @@ describe('ContactInformation', () => {
   it('allows user to enter email address', async () => {
     const { getByLabelText } = render(<TestWrapper />);
 
-    const emailInput = getByLabelText('Email');
+    const emailInput = getByLabelText('Email Address');
     await waitFor(() => expect(emailInput).toBeEnabled());
 
     userEvent.type(emailInput, 'user@example.com');
