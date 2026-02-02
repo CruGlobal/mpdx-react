@@ -34,8 +34,28 @@ const MainContent: React.FC = () => {
     exceedsCap,
   } = useAdditionalSalaryRequest();
 
-  const { submitForm, validateForm, submitCount, isValid } =
-    useFormikContext<CompleteFormValues>();
+  const {
+    submitForm,
+    validateForm,
+    submitCount,
+    isValid,
+    values,
+    setFieldTouched,
+    setFieldError,
+    errors,
+  } = useFormikContext<CompleteFormValues>();
+
+  const handleSubmit = async () => {
+    if (exceedsCap && !values.additionalInfo) {
+      setFieldTouched('additionalInfo', true, false);
+      setFieldError(
+        'additionalInfo',
+        t('Additional info is required for requests exceeding your cap.'),
+      );
+      throw new Error('Validation error');
+    }
+    await submitForm();
+  };
 
   const isEdit = pageType === PageEnum.Edit;
 
@@ -110,13 +130,14 @@ const MainContent: React.FC = () => {
                   requestId && handleDeleteRequest(requestId, false)
                 }
                 isSubmission={isLastFormPage}
-                submitForm={submitForm}
+                submitForm={handleSubmit}
                 validateForm={validateForm}
                 submitCount={submitCount}
                 isValid={isValid}
                 actionRequired={isEdit}
                 isEdit={isEdit}
                 exceedsCap={exceedsCap}
+                disableSubmit={exceedsCap && !!errors.additionalInfo}
               />
             </Stack>
           )}

@@ -30,6 +30,7 @@ fragment AdditionalSalaryRequestDetailsFields on AdditionalSalaryRequest {
   autoPurchase
   expensesNotApprovedWithin90Days
   totalAdditionalSalaryRequested
+  additionalInfo
   deductTwelvePercent
   traditional403bContributionRequested
   usingSpouseSalary

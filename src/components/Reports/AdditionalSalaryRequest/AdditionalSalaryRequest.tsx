@@ -38,6 +38,7 @@ export interface CompleteFormValues {
   deductTwelvePercent: boolean;
   phoneNumber: string;
   totalAdditionalSalaryRequested: string;
+  additionalInfo?: string;
 }
 
 export const AdditionalSalaryRequest: React.FC = () => {

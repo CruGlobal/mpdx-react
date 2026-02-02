@@ -19,6 +19,7 @@ interface DirectionButtonsProps {
   showBackButton?: boolean;
   isEdit?: boolean;
   exceedsCap?: boolean;
+  disableSubmit?: boolean;
   //Formik validation for submit modal
   isSubmission?: boolean;
   submitForm?: () => Promise<void>;
@@ -47,6 +48,7 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
   deadlineDate,
   actionRequired,
   exceedsCap,
+  disableSubmit,
 }) => {
   const { t } = useTranslation();
 
@@ -66,9 +68,13 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
     }
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (submitForm) {
-      submitForm();
+      try {
+        await submitForm();
+      } catch {
+        return;
+      }
     }
     setOpenSubmitModal(false);
   };
@@ -144,6 +150,7 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
           deadlineDate={deadlineDate}
           actionRequired={actionRequired}
           exceedsCap={exceedsCap}
+          disableSubmit={disableSubmit}
         />
       )}
       {openDiscardModal && (

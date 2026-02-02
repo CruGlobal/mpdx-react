@@ -88,6 +88,7 @@ export const useAdditionalSalaryRequestForm = ({
     deductTwelvePercent: false,
     phoneNumber: '',
     totalAdditionalSalaryRequested: '0',
+    additionalInfo: '',
   } as CompleteFormValues;
 
   const initialValues: CompleteFormValues = useMemo(() => {
@@ -161,6 +162,7 @@ export const useAdditionalSalaryRequestForm = ({
               ),
             ),
             totalAdditionalSalaryRequested: getTotal(values),
+            additionalInfo: values.additionalInfo,
           },
         },
         onCompleted: () => {
