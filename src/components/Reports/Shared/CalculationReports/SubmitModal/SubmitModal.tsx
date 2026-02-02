@@ -11,7 +11,8 @@ import {
 } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { TotalAnnualSalaryAccordion } from 'src/components/Reports/AdditionalSalaryRequest/SubmitModalComponents/TotalAnnualSalaryAccordion/TotalAnnualSalaryAccordion';
+import { ApprovalProcess } from 'src/components/Reports/AdditionalSalaryRequest/SubmitModalAccordions/ApprovalProcess/ApprovalProcess';
+import { TotalAnnualSalary } from 'src/components/Reports/AdditionalSalaryRequest/SubmitModalAccordions/TotalAnnualSalary/TotalAnnualSalary';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { getModalText } from './getModalText';
@@ -29,6 +30,7 @@ interface SubmitModalProps {
   deadlineDate?: string;
   actionRequired?: boolean;
   exceedsCap?: boolean;
+  disableSubmit?: boolean;
 }
 
 export const SubmitModal: React.FC<SubmitModalProps> = ({
@@ -44,6 +46,7 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
   deadlineDate,
   actionRequired,
   exceedsCap,
+  disableSubmit,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -85,7 +88,10 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
         </Alert>
         {exceedsCap && (
           <Box mt={2}>
-            <TotalAnnualSalaryAccordion />
+            <TotalAnnualSalary />
+            <Box sx={{ mt: 2 }}>
+              <ApprovalProcess />
+            </Box>
           </Box>
         )}
       </DialogContent>
@@ -93,8 +99,12 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
         <Button onClick={handleClose} sx={{ color: 'text.secondary' }}>
           <b>{t('GO BACK')}</b>
         </Button>
-        <Button onClick={handleConfirm} color={isError ? 'error' : 'primary'}>
-          <b>{cancelButtonText}</b>
+        <Button
+          onClick={handleConfirm}
+          color={isError ? 'error' : 'primary'}
+          disabled={disableSubmit}
+        >
+          <b>{exceedsCap ? t('Submit For Approval') : cancelButtonText}</b>
           <ChevronRight sx={{ ml: 1 }} />
         </Button>
       </DialogActions>

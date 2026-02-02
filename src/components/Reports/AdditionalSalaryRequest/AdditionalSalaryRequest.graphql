@@ -32,6 +32,7 @@ fragment AdditionalSalaryRequestDetailsFields on AdditionalSalaryRequest {
   expensesNotApprovedWithin90Days
   totalAdditionalSalaryRequested
   deductTaxDeferredPercent
+  additionalInfo
   traditional403bContributionRequested
   usingSpouseSalary
   phoneNumber

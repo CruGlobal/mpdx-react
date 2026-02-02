@@ -7,12 +7,15 @@ import { AdditionalSalaryRequest } from '../../CompleteForm/AdditionalSalaryRequ
 import { ContactInformation } from '../../CompleteForm/ContactInformation/ContactInformation';
 import { Deduction } from '../../CompleteForm/Deduction/Deduction';
 import { NetAdditionalSalary } from '../../CompleteForm/NetAdditionalSalary/NetAdditionalSalary';
+import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
 import { useFormData } from '../../Shared/useFormData';
-import { TotalAnnualSalarySummaryCard } from '../../SharedComponents/TotalAnnualSalarySummaryCard';
 import { ValidationAlert } from '../../SharedComponents/ValidationAlert';
+import { ApprovalProcess } from '../../SubmitModalAccordions/ApprovalProcess/ApprovalProcess';
+import { TotalAnnualSalary } from '../../SubmitModalAccordions/TotalAnnualSalary/TotalAnnualSalary';
 
 export const EditForm: React.FC = () => {
   const { t } = useTranslation();
+  const { exceedsCap } = useAdditionalSalaryRequest();
   const {
     name,
     accountNumber,
@@ -44,7 +47,12 @@ export const EditForm: React.FC = () => {
       <AdditionalSalaryRequest />
       <Deduction />
       <NetAdditionalSalary />
-      <TotalAnnualSalarySummaryCard />
+      {exceedsCap && (
+        <>
+          <TotalAnnualSalary onForm={true} />
+          <ApprovalProcess onForm={true} />
+        </>
+      )}
       <Typography variant="body1" paragraph>
         <Trans t={t}>
           If the above information is correct, please confirm your telephone

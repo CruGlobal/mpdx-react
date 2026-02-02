@@ -102,6 +102,7 @@ export const useAdditionalSalaryRequestForm = (
   const defaultInitialValues: CompleteFormValues = {
     ...Object.fromEntries(fieldConfig.map(({ key }) => [key, '0'])),
     totalAdditionalSalaryRequested: '0',
+    additionalInfo: '',
     deductTaxDeferredPercent: false,
     phoneNumber: user?.staffInfo?.primaryPhoneNumber || '',
     emailAddress: user?.staffInfo?.emailAddress || '',
@@ -200,6 +201,7 @@ export const useAdditionalSalaryRequestForm = (
               ),
             ),
             totalAdditionalSalaryRequested: getTotal(values),
+            additionalInfo: values.additionalInfo,
           },
         },
         onCompleted: () => {

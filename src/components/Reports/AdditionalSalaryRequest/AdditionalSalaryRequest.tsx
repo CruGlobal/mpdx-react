@@ -39,6 +39,7 @@ export interface CompleteFormValues {
   phoneNumber: string;
   emailAddress: string;
   totalAdditionalSalaryRequested: string;
+  additionalInfo?: string;
 }
 
 export const AdditionalSalaryRequest: React.FC = () => {

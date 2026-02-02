@@ -21,6 +21,7 @@ export const defaultCompleteFormValues: CompleteFormValues = {
   phoneNumber: '',
   emailAddress: '',
   totalAdditionalSalaryRequested: '0',
+  additionalInfo: '',
 };
 
 export const defaultSalaryInfoData: SalaryInfoQuery = {
