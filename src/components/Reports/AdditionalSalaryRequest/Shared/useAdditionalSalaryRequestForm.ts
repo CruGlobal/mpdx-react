@@ -177,6 +177,11 @@ export const useAdditionalSalaryRequestForm = (
               return (value || 0) <= 17500;
             },
           ),
+        additionalInfo: yup
+          .string()
+          .required(
+            t('Additional info is required for requests exceeding your cap.'),
+          ),
       }),
     [createCurrencyValidation, t, locale],
   );

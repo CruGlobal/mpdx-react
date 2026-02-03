@@ -58,6 +58,16 @@ const createValidationSchema = () =>
     deductTaxDeferredPercent: yup.boolean(),
     phoneNumber: yup.string().required('Telephone number is required'),
     emailAddress: yup.string(),
+    totalAdditionalSalaryRequested: yup
+      .number()
+      .test(
+        'total-within-remaining-allowable-salary',
+        'Exceeds account balance',
+        function (value) {
+          const remainingAllowableSalary = 17500.0;
+          return (value || 0) <= remainingAllowableSalary;
+        },
+      ),
   });
 
 interface TestWrapperProps {
@@ -216,5 +226,23 @@ describe('ValidationAlert', () => {
     expect(
       queryByText(/The following fields exceed their limits/),
     ).not.toBeInTheDocument();
+  });
+
+  it('shows total additional salary requested error when applicable', async () => {
+    const { findByRole, findByText } = renderComponent({
+      initialValues: {
+        ...defaultCompleteFormValues,
+        phoneNumber: '555-1234',
+        totalAdditionalSalaryRequested: '1000000',
+      },
+      submitOnMount: true,
+    });
+
+    await findByRole('alert');
+    expect(
+      await findByText(
+        'Your total additional salary requested exceeds your account balance.',
+      ),
+    ).toBeInTheDocument();
   });
 });

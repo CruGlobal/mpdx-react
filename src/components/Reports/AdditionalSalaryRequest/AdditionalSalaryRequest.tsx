@@ -37,9 +37,9 @@ export interface CompleteFormValues {
   expensesNotApprovedWithin90Days: string;
   deductTaxDeferredPercent: boolean;
   phoneNumber: string;
-  emailAddress: string;
   totalAdditionalSalaryRequested: string;
-  additionalInfo?: string;
+  additionalInfo: string;
+  emailAddress: string;
 }
 
 export const AdditionalSalaryRequest: React.FC = () => {

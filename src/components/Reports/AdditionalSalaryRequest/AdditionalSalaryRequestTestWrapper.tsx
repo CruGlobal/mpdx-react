@@ -42,6 +42,7 @@ const defaultInitialValues: CompleteFormValues = {
   phoneNumber: '',
   emailAddress: '',
   totalAdditionalSalaryRequested: '0',
+  additionalInfo: '',
 };
 
 const validationSchema = yup.object({
@@ -60,6 +61,16 @@ const validationSchema = yup.object({
     .string()
     .required('Email address is required')
     .email('Please enter a valid email address'),
+  totalAdditionalSalaryRequested: yup
+    .number()
+    .test(
+      'total-within-remaining-allowable-salary',
+      'Exceeds account balance',
+      function (value) {
+        const remainingAllowableSalary = 17500.0;
+        return (value || 0) <= remainingAllowableSalary;
+      },
+    ),
 });
 
 const TestFormikWrapper: React.FC<{

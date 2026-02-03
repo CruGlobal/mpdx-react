@@ -38,6 +38,7 @@ describe('useSalaryCalculations', () => {
     phoneNumber: '',
     emailAddress: '',
     totalAdditionalSalaryRequested: '0',
+    additionalInfo: '',
   };
 
   it('calculates all salary values correctly with default percentage enabled', () => {
@@ -150,6 +151,7 @@ describe('useSalaryCalculations', () => {
       phoneNumber: '',
       emailAddress: '',
       totalAdditionalSalaryRequested: '15000',
+      additionalInfo: '',
     };
 
     const { result } = renderHook(

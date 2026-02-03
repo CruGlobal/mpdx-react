@@ -4,6 +4,7 @@ import { useFormikContext } from 'formik';
 import { Trans, useTranslation } from 'react-i18next';
 import theme from 'src/theme';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
+import { useSaveField } from '../../Shared/AutoSave/useSaveField';
 import { ModalAccordion } from '../ModalAccordion/ModalAccordion';
 
 interface ApprovalProcessProps {
@@ -13,8 +14,18 @@ interface ApprovalProcessProps {
 export const ApprovalProcess: React.FC<ApprovalProcessProps> = ({ onForm }) => {
   const { t } = useTranslation();
 
-  const { errors, touched, values, handleChange } =
+  const { errors, touched, values, handleChange, handleBlur, submitCount } =
     useFormikContext<CompleteFormValues>();
+
+  const saveField = useSaveField({ formValues: values });
+
+  const showError =
+    (touched.additionalInfo || submitCount > 0) && !!errors.additionalInfo;
+
+  const handleBlurWithSave = (event: React.FocusEvent<HTMLInputElement>) => {
+    handleBlur(event);
+    saveField({ additionalInfo: values.additionalInfo });
+  };
 
   return (
     <ModalAccordion
@@ -23,7 +34,7 @@ export const ApprovalProcess: React.FC<ApprovalProcessProps> = ({ onForm }) => {
       title={t('Approval Process')}
       titleColor="info.dark"
       subtitle={t('Approvals needed for this request')}
-      expanded={touched.additionalInfo && errors.additionalInfo ? true : false}
+      expanded={showError}
       onForm={onForm}
     >
       <CardContent>
@@ -40,8 +51,9 @@ export const ApprovalProcess: React.FC<ApprovalProcessProps> = ({ onForm }) => {
             name="additionalInfo"
             value={values.additionalInfo}
             onChange={handleChange}
-            error={touched.additionalInfo && !!errors.additionalInfo}
-            helperText={touched.additionalInfo && errors.additionalInfo}
+            onBlur={handleBlurWithSave}
+            error={showError}
+            helperText={showError && errors.additionalInfo}
             multiline
             rows={6}
             fullWidth
