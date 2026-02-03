@@ -49,6 +49,7 @@ const defaultFormValues: CompleteFormValues = {
   phoneNumber: '555-1234',
   totalAdditionalSalaryRequested: '100',
   emailAddress: 'test@testerson.test',
+  additionalInfo: '',
 };
 
 const mockTrackMutation = jest.fn((mutation) => mutation);
