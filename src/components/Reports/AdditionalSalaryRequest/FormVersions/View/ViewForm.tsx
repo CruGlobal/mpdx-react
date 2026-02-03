@@ -7,14 +7,17 @@ import { mainContentWidth } from '../../AdditionalSalaryRequest';
 import { AdditionalSalaryRequest } from '../../CompleteForm/AdditionalSalaryRequest/AdditionalSalaryRequest';
 import { Deduction } from '../../CompleteForm/Deduction/Deduction';
 import { NetAdditionalSalary } from '../../CompleteForm/NetAdditionalSalary/NetAdditionalSalary';
+import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
 import { useFormData } from '../../Shared/useFormData';
 import { ContactInformationSummaryCard } from '../../SharedComponents/ContactInformationSummaryCard';
 import { SpouseComponent } from '../../SharedComponents/SpouseComponent';
-import { TotalAnnualSalarySummaryCard } from '../../SharedComponents/TotalAnnualSalarySummaryCard';
+import { ApprovalProcess } from '../../SubmitModalAccordions/ApprovalProcess/ApprovalProcess';
+import { TotalAnnualSalary } from '../../SubmitModalAccordions/TotalAnnualSalary/TotalAnnualSalary';
 
 export const ViewForm: React.FC = () => {
   const accountListId = useAccountListId();
   const { t } = useTranslation();
+  const { exceedsCap } = useAdditionalSalaryRequest();
   const {
     name,
     accountNumber,
@@ -47,7 +50,12 @@ export const ViewForm: React.FC = () => {
       <Deduction />
       <NetAdditionalSalary />
       <ContactInformationSummaryCard />
-      <TotalAnnualSalarySummaryCard />
+      {exceedsCap && (
+        <>
+          <TotalAnnualSalary onForm={true} />
+          <ApprovalProcess onForm={true} />
+        </>
+      )}
 
       <Button
         component={NextLink}

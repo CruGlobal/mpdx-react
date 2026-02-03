@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import {
   Table,
   TableCell,
@@ -6,9 +7,13 @@ import {
   Typography,
   styled,
 } from '@mui/material';
+import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
+import { CompleteFormValues } from '../../AdditionalSalaryRequest';
+import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
+import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 
 const StyledTableCell = styled(TableCell)(() => {
   return {
@@ -21,6 +26,63 @@ export const TotalSalaryTable: React.FC = () => {
   const locale = useLocale();
   const currency = 'USD';
 
+  const { requestData, user } = useAdditionalSalaryRequest();
+  const { values } = useFormikContext<CompleteFormValues>();
+
+  const asrValues = requestData?.additionalSalaryRequest;
+  const calculations = asrValues?.calculations;
+
+  const traditional403bContribution =
+    asrValues?.traditional403bContribution ?? 0;
+
+  const grossAnnualSalary = user?.currentSalary?.grossSalaryAmount ?? 0;
+
+  const {
+    total,
+    totalAnnualSalary,
+    maxAllowableSalary,
+    additionalSalaryReceivedThisYear,
+  } = useSalaryCalculations({
+    traditional403bContribution,
+    values,
+    calculations,
+    grossSalaryAmount: grossAnnualSalary,
+  });
+
+  const summaryItems = useMemo(
+    () => [
+      {
+        id: 'maxAllowable',
+        label: t('Maximum Allowable Salary'),
+        value: maxAllowableSalary,
+      },
+      {
+        id: 'grossAnnual',
+        label: t('Gross Annual Salary'),
+        value: grossAnnualSalary,
+      },
+      {
+        id: 'additionalReceived',
+        label: t('Additional Salary Received This Year'),
+        description: t('Does not include payments received for backpay.'),
+        value: additionalSalaryReceivedThisYear,
+      },
+      {
+        id: 'additionalRequested',
+        label: t('Additional Salary on this Request'),
+        description: t('Does not include requests made for backpay.'),
+        value: total,
+      },
+    ],
+    [
+      t,
+      maxAllowableSalary,
+      grossAnnualSalary,
+      additionalSalaryReceivedThisYear,
+      total,
+    ],
+  );
+
   return (
     <Table sx={{ mt: 2 }}>
       <TableHead>
@@ -32,52 +94,21 @@ export const TotalSalaryTable: React.FC = () => {
             {t('Amount')}
           </TableCell>
         </TableRow>
-        <TableRow>
-          <StyledTableCell>{t('Maximum Allowable Salary')}</StyledTableCell>
-          <StyledTableCell>
-            {currencyFormat(0, currency, locale, {
-              showTrailingZeros: true,
-            })}
-          </StyledTableCell>
-        </TableRow>
-        <TableRow>
-          <StyledTableCell>{t('Gross Annual Salary')}</StyledTableCell>
-          <StyledTableCell>
-            {currencyFormat(0, currency, locale, {
-              showTrailingZeros: true,
-            })}
-          </StyledTableCell>
-        </TableRow>
-        <TableRow>
-          <StyledTableCell>
-            <Typography variant="body2">
-              {t('Additional Salary Received This Year')}
-            </Typography>
-            <Typography variant="caption">
-              {t('Does not include payments received for backpay.')}
-            </Typography>
-          </StyledTableCell>
-          <StyledTableCell>
-            {currencyFormat(0, currency, locale, {
-              showTrailingZeros: true,
-            })}
-          </StyledTableCell>
-        </TableRow>
-        <TableRow>
-          <StyledTableCell>
-            <Typography variant="body2">
-              {t('Additional Salary on this Request')}
-            </Typography>
-            <Typography variant="caption">
-              {t('Does not include requests made for backpay.')}
-            </Typography>
-          </StyledTableCell>
-          <StyledTableCell>
-            {currencyFormat(0, currency, locale, {
-              showTrailingZeros: true,
-            })}
-          </StyledTableCell>
-        </TableRow>
+        {summaryItems.map(({ id, label, description, value }) => (
+          <TableRow key={id}>
+            <StyledTableCell>
+              <Typography variant="body2">{label}</Typography>
+              {description && (
+                <Typography variant="caption">{description}</Typography>
+              )}
+            </StyledTableCell>
+            <StyledTableCell>
+              {currencyFormat(value, currency, locale, {
+                showTrailingZeros: true,
+              })}
+            </StyledTableCell>
+          </TableRow>
+        ))}
         <TableRow
           sx={{
             '& td, & th': { borderBottom: 'none' },
@@ -86,7 +117,7 @@ export const TotalSalaryTable: React.FC = () => {
         >
           <TableCell>{t('Total Annual Salary:')}</TableCell>
           <TableCell sx={{ color: 'warning.dark' }}>
-            {currencyFormat(0, currency, locale, {
+            {currencyFormat(totalAnnualSalary, currency, locale, {
               showTrailingZeros: true,
             })}
           </TableCell>

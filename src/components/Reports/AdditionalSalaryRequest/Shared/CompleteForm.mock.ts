@@ -20,4 +20,5 @@ export const defaultCompleteFormValues: CompleteFormValues = {
   phoneNumber: '',
   totalAdditionalSalaryRequested: '0',
   emailAddress: '',
+  additionalInfo: '',
 };

@@ -6,7 +6,11 @@ import theme from 'src/theme';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { ModalAccordion } from '../ModalAccordion/ModalAccordion';
 
-export const ApprovalProcess: React.FC = () => {
+interface ApprovalProcessProps {
+  onForm?: boolean;
+}
+
+export const ApprovalProcess: React.FC<ApprovalProcessProps> = ({ onForm }) => {
   const { t } = useTranslation();
 
   const { errors, touched, values, handleChange } =
@@ -20,6 +24,7 @@ export const ApprovalProcess: React.FC = () => {
       titleColor="info.dark"
       subtitle={t('Approvals needed for this request')}
       expanded={touched.additionalInfo && errors.additionalInfo ? true : false}
+      onForm={onForm}
     >
       <CardContent>
         <Trans i18nKey="approvalProcessInfo">

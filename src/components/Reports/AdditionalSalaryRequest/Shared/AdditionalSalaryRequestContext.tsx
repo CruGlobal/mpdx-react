@@ -53,7 +53,6 @@ export type AdditionalSalaryRequestType = {
   isMutating: boolean;
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
 
-  maxAmount?: number;
   exceedsCap?: boolean;
   setExceedsCap?: (value: boolean) => void;
 };
@@ -119,12 +118,6 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   });
 
   const [exceedsCap, setExceedsCap] = useState<boolean>(false);
-
-  const maxFromData =
-    requestData?.additionalSalaryRequest?.calculations?.maxAmountAndReason
-      ?.amount;
-  // Temporary max value for testing
-  const maxAmount = maxFromData === 0 ? 15500 : maxFromData;
 
   const { data: staffAccountIdData, loading: staffAccountIdLoading } =
     useStaffAccountIdQuery();
@@ -217,7 +210,6 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       isInternational,
       isMutating,
       trackMutation,
-      maxAmount,
       exceedsCap,
       setExceedsCap,
     }),
@@ -244,7 +236,6 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       isInternational,
       isMutating,
       trackMutation,
-      maxAmount,
       exceedsCap,
       setExceedsCap,
     ],

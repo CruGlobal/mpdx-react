@@ -4,6 +4,7 @@ import {
   Box,
   CardContent,
   LinearProgress,
+  Tooltip,
   Typography,
   alpha,
 } from '@mui/material';
@@ -14,22 +15,39 @@ import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
+import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 import { ModalAccordion } from '../ModalAccordion/ModalAccordion';
 import { TotalSalaryTable } from './TotalSalaryTable';
 
-// TODO: Update all zero values to use real data --> not sure what fields are needed
+interface TotalAnnualSalaryProps {
+  onForm?: boolean;
+}
 
-export const TotalAnnualSalary: React.FC = () => {
+export const TotalAnnualSalary: React.FC<TotalAnnualSalaryProps> = ({
+  onForm,
+}) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const currency = 'USD';
 
   const { values } = useFormikContext<CompleteFormValues>();
+  const { requestData, user } = useAdditionalSalaryRequest();
 
-  const { maxAmount } = useAdditionalSalaryRequest();
+  const asrValues = requestData?.additionalSalaryRequest;
+  const calculations = asrValues?.calculations;
 
-  const difference =
-    Number(values.totalAdditionalSalaryRequested) - (maxAmount ?? 0);
+  const traditional403bContribution =
+    asrValues?.traditional403bContribution ?? 0;
+
+  const grossAnnualSalary = user?.currentSalary?.grossSalaryAmount ?? 0;
+
+  const { remainingInMaxAllowable, totalAnnualSalary, maxAllowableSalary } =
+    useSalaryCalculations({
+      traditional403bContribution,
+      values,
+      calculations,
+      grossSalaryAmount: grossAnnualSalary,
+    });
 
   return (
     <ModalAccordion
@@ -38,6 +56,7 @@ export const TotalAnnualSalary: React.FC = () => {
       title={t('Total Annual Salary')}
       titleColor="warning.dark"
       subtitle={t('A review of your income')}
+      onForm={onForm}
     >
       <CardContent>
         <Box sx={{ mb: 1, display: 'flex', justifyContent: 'space-between' }}>
@@ -45,9 +64,15 @@ export const TotalAnnualSalary: React.FC = () => {
             <Typography variant="body1" sx={{ mr: 1 }}>
               {t('Total Salary Requested')}
             </Typography>
-            <InfoSharp sx={{ color: 'text.secondary' }} />
+            <Tooltip
+              title={t(
+                'This shows how much of your maximum allowable salary you are using.',
+              )}
+            >
+              <InfoSharp sx={{ color: 'text.secondary' }} />
+            </Tooltip>
           </Box>
-          <Typography>{`${currencyFormat(Number(values.totalAdditionalSalaryRequested), currency, locale)}/${currencyFormat(maxAmount ?? 0, currency, locale)}`}</Typography>
+          <Typography>{`${currencyFormat(Number(totalAnnualSalary), currency, locale)}/${currencyFormat(maxAllowableSalary, currency, locale)}`}</Typography>
         </Box>
         <LinearProgress variant="determinate" value={100} color="warning" />
         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -55,12 +80,9 @@ export const TotalAnnualSalary: React.FC = () => {
             {t('Remaining in your Max Allowable Salary')}
           </Typography>
           <Typography variant="body2" sx={{ mt: 1, color: 'text.secondary' }}>
-            {`-${currencyFormat(
-              difference < 0 ? 0 : difference,
-              currency,
-              locale,
-              { showTrailingZeros: true },
-            )}`}
+            {currencyFormat(remainingInMaxAllowable, currency, locale, {
+              showTrailingZeros: true,
+            })}
           </Typography>
         </Box>
         <TotalSalaryTable />

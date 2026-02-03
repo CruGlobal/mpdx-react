@@ -4,6 +4,7 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Card,
   Typography,
 } from '@mui/material';
 
@@ -15,6 +16,7 @@ interface ModalAccordionProps {
   subtitle?: string;
   children: React.ReactNode;
   expanded?: boolean;
+  onForm?: boolean;
 }
 
 export const ModalAccordion: React.FC<ModalAccordionProps> = ({
@@ -25,16 +27,17 @@ export const ModalAccordion: React.FC<ModalAccordionProps> = ({
   subtitle,
   children,
   expanded = false,
+  onForm,
 }) => {
   const [isExpanded, setIsExpanded] = useState(expanded);
 
   useEffect(() => {
-    if (expanded) {
+    if (expanded || onForm) {
       setIsExpanded(true);
     }
-  }, [expanded]);
+  }, [expanded, onForm]);
 
-  return (
+  const accordion = (
     <Accordion
       expanded={isExpanded}
       onChange={(_, newExpanded) => setIsExpanded(newExpanded)}
@@ -44,6 +47,9 @@ export const ModalAccordion: React.FC<ModalAccordionProps> = ({
         sx={{
           backgroundColor: backgroundColor,
         }}
+        aria-label={
+          isExpanded ? 'Collapse salary details' : 'Expand salary details'
+        }
       >
         <Icon sx={{ mr: 1, color: titleColor }} />
         <Typography sx={{ fontWeight: 'bold', color: titleColor, mr: 1 }}>
@@ -54,4 +60,6 @@ export const ModalAccordion: React.FC<ModalAccordionProps> = ({
       <AccordionDetails>{children}</AccordionDetails>
     </Accordion>
   );
+
+  return onForm ? <Card data-testid="card">{accordion}</Card> : accordion;
 };
