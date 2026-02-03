@@ -87,8 +87,11 @@ describe('NewSalaryCalculatorLanding', () => {
     const { findByRole } = render(<TestComponent hasInProgressCalculation />);
 
     expect(
-      await findByRole('button', { name: 'Continue Salary Calculation' }),
-    ).toBeInTheDocument();
+      await findByRole('link', { name: 'Continue Salary Calculation' }),
+    ).toHaveAttribute(
+      'href',
+      '/accountLists/account-list-1/reports/salaryCalculator/in-progress-calc-1',
+    );
   });
 
   it('shows "Calculate New Salary" when there is no in-progress calculation', async () => {
@@ -103,7 +106,7 @@ describe('NewSalaryCalculatorLanding', () => {
     const { findByRole } = render(<TestComponent hasInProgressCalculation />);
 
     userEvent.click(
-      await findByRole('button', {
+      await findByRole('link', {
         name: 'Continue Salary Calculation',
       }),
     );
