@@ -4,6 +4,7 @@ import { useFormikContext } from 'formik';
 import { Trans, useTranslation } from 'react-i18next';
 import theme from 'src/theme';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
+import { useSaveField } from '../../Shared/AutoSave/useSaveField';
 import { ModalAccordion } from '../ModalAccordion/ModalAccordion';
 
 interface ApprovalProcessProps {
@@ -16,8 +17,18 @@ export const ApprovalProcess: React.FC<ApprovalProcessProps> = ({ onForm }) => {
   const { errors, touched, values, handleChange, handleBlur, submitCount } =
     useFormikContext<CompleteFormValues>();
 
+  const saveField = useSaveField({ formValues: values });
+
   const showError =
     (touched.additionalInfo || submitCount > 0) && !!errors.additionalInfo;
+
+  const handleBlurWithSave = (event: React.FocusEvent<HTMLInputElement>) => {
+    handleBlur(event);
+
+    if (onForm) {
+      saveField({ additionalInfo: values.additionalInfo });
+    }
+  };
 
   return (
     <ModalAccordion
@@ -43,7 +54,7 @@ export const ApprovalProcess: React.FC<ApprovalProcessProps> = ({ onForm }) => {
             name="additionalInfo"
             value={values.additionalInfo}
             onChange={handleChange}
-            onBlur={handleBlur}
+            onBlur={handleBlurWithSave}
             error={showError}
             helperText={showError && errors.additionalInfo}
             multiline
