@@ -14,8 +14,8 @@ import theme from 'src/theme';
 import { PageEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
-import { defaultCompleteFormValues } from '../CompleteForm/CompleteForm.mock';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
+import { defaultCompleteFormValues } from '../Shared/CompleteForm.mock';
 import { fieldConfig } from '../Shared/useAdditionalSalaryRequestForm';
 import { RequestPage } from './RequestPage';
 
@@ -34,7 +34,8 @@ const mockUseAdditionalSalaryRequest =
     typeof useAdditionalSalaryRequest
   >;
 
-const mockHandleDeleteRequest = jest.fn();
+const mockPush = jest.fn();
+const mockHandleDeleteRequest = jest.fn().mockResolvedValue(undefined);
 
 const mockSteps = [
   {
@@ -84,6 +85,8 @@ const defaultMockContextValue = {
     },
   },
   spouse: undefined,
+  salaryInfo: undefined,
+  isInternational: false,
   isMutating: false,
   trackMutation: jest.fn(),
 };
@@ -91,6 +94,7 @@ const defaultMockContextValue = {
 const router = {
   query: { accountListId: 'account-list-1' },
   isReady: true,
+  push: mockPush,
 };
 
 const validationSchema = yup.object({
@@ -105,6 +109,10 @@ const validationSchema = yup.object({
     .string()
     .required('Telephone number is required')
     .matches(/^[\d\s\-\(\)\+]+$/, 'Please enter a valid telephone number'),
+  emailAddress: yup
+    .string()
+    .required('Email address is required')
+    .email('Please enter a valid email address'),
 });
 
 interface TestFormikWrapperProps {
@@ -233,7 +241,7 @@ describe('RequestPage', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('calls handleDeleteRequest when discard is clicked', async () => {
+  it('calls handleDeleteRequest when discard is clicked and navigates back', async () => {
     const { getByRole } = render(<TestWrapper />);
 
     const discardButton = getByRole('button', { name: /discard/i });
@@ -246,6 +254,9 @@ describe('RequestPage', () => {
       expect(mockHandleDeleteRequest).toHaveBeenCalledWith(
         'test-request-id',
         false,
+      );
+      expect(mockPush).toHaveBeenCalledWith(
+        '/accountLists/account-list-1/reports/additionalSalaryRequest',
       );
     });
   });

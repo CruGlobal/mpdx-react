@@ -37,6 +37,7 @@ describe('useSalaryCalculations', () => {
     deductTwelvePercent: false,
     phoneNumber: '',
     totalAdditionalSalaryRequested: '0',
+    emailAddress: '',
   };
 
   it('calculates all salary values correctly with default percentage enabled', () => {
@@ -148,6 +149,7 @@ describe('useSalaryCalculations', () => {
       deductTwelvePercent: false,
       phoneNumber: '',
       totalAdditionalSalaryRequested: '15000',
+      emailAddress: '',
     };
 
     const { result } = renderHook(

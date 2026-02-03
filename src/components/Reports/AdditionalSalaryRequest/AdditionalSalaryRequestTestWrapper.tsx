@@ -41,6 +41,7 @@ const defaultInitialValues: CompleteFormValues = {
   deductTwelvePercent: false,
   phoneNumber: '',
   totalAdditionalSalaryRequested: '0',
+  emailAddress: '',
 };
 
 const validationSchema = yup.object({
@@ -55,6 +56,10 @@ const validationSchema = yup.object({
     .string()
     .required('Telephone number is required')
     .matches(/^[\d\s\-\(\)\+]+$/, 'Please enter a valid telephone number'),
+  emailAddress: yup
+    .string()
+    .required('Email address is required')
+    .email('Please enter a valid email address'),
 });
 
 const TestFormikWrapper: React.FC<{
@@ -110,7 +115,9 @@ export const AdditionalSalaryRequestTestWrapper: React.FC<
                           ([key]) => key !== 'traditional403bContribution',
                         )
                         .map(([key, value]) =>
-                          typeof value === 'string' && key !== 'phoneNumber'
+                          typeof value === 'string' &&
+                          key !== 'phoneNumber' &&
+                          key !== 'emailAddress'
                             ? [key, parseFloat(value) || 0]
                             : [key, value],
                         ),

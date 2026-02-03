@@ -68,6 +68,7 @@ const mockRequest: RequestType = {
 
 const mockContextValue = {
   staffAccountId: 'staff-1',
+  staffAccountIdLoading: false,
   steps: [],
   currentIndex: 0,
   currentStep: AdditionalSalaryRequestSectionEnum.AboutForm,
@@ -92,6 +93,8 @@ const mockContextValue = {
       preferredName: 'Jane',
     },
   } as never,
+  salaryInfo: undefined,
+  isInternational: false,
   isMutating: false,
   trackMutation: jest.fn(),
   remainingAllowableSalary: 0,

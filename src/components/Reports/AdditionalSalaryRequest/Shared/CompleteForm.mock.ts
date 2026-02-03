@@ -19,4 +19,5 @@ export const defaultCompleteFormValues: CompleteFormValues = {
   deductTwelvePercent: false,
   phoneNumber: '',
   totalAdditionalSalaryRequested: '0',
+  emailAddress: '',
 };

@@ -9,6 +9,7 @@ query HcmData {
       emailAddress
       firstName
       id
+      isInternational
       lastName
       personNumber
       preferredName

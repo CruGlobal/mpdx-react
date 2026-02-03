@@ -37,6 +37,7 @@ const mockHandleNextStep = jest.fn();
 
 const defaultMockContextValue: AdditionalSalaryRequestType = {
   staffAccountId: 'staff-account-1',
+  staffAccountIdLoading: false,
   steps: [],
   currentIndex: 1,
   currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
@@ -53,9 +54,20 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   requestId: 'test-request-id',
   user: undefined,
   spouse: undefined,
+  salaryInfo: {
+    id: '1',
+    maxAdoptionInt: 15000,
+    maxAdoptionUss: 15000,
+    maxAutoPurchaseInt: 50000,
+    maxAutoPurchaseUss: 50000,
+    maxCollegeInt: 50000,
+    maxCollegeUss: 50000,
+    maxHousingDownPaymentInt: 50000,
+    maxHousingDownPaymentUss: 50000,
+  },
+  isInternational: false,
   isMutating: false,
   trackMutation: jest.fn((mutation) => mutation),
-  remainingAllowableSalary: 10000,
 };
 
 const defaultFormValues: CompleteFormValues = {
@@ -77,6 +89,7 @@ const defaultFormValues: CompleteFormValues = {
   deductTwelvePercent: false,
   phoneNumber: '',
   totalAdditionalSalaryRequested: '0',
+  emailAddress: '',
 };
 
 const mutationSpy = jest.fn();
@@ -127,14 +140,24 @@ describe('useAdditionalSalaryRequestForm', () => {
       expect(fieldKeys).toContain('housingDownPayment');
     });
 
-    it('should have max values for adoption and housing down payment', () => {
+    it('should have salaryInfo keys for fields with dynamic max values', () => {
       const adoptionConfig = fieldConfig.find((f) => f.key === 'adoption');
       const housingConfig = fieldConfig.find(
         (f) => f.key === 'housingDownPayment',
       );
+      const autoConfig = fieldConfig.find((f) => f.key === 'autoPurchase');
+      const collegeConfig = fieldConfig.find(
+        (f) => f.key === 'childrenCollegeEducation',
+      );
 
-      expect(adoptionConfig?.max).toBe(15000);
-      expect(housingConfig?.max).toBe(50000);
+      expect(adoptionConfig?.salaryInfoIntKey).toBe('maxAdoptionInt');
+      expect(adoptionConfig?.salaryInfoUssKey).toBe('maxAdoptionUss');
+      expect(housingConfig?.salaryInfoIntKey).toBe('maxHousingDownPaymentInt');
+      expect(housingConfig?.salaryInfoUssKey).toBe('maxHousingDownPaymentUss');
+      expect(autoConfig?.salaryInfoIntKey).toBe('maxAutoPurchaseInt');
+      expect(autoConfig?.salaryInfoUssKey).toBe('maxAutoPurchaseUss');
+      expect(collegeConfig?.salaryInfoIntKey).toBe('maxCollegeInt');
+      expect(collegeConfig?.salaryInfoUssKey).toBe('maxCollegeUss');
     });
   });
 
@@ -378,6 +401,7 @@ describe('useAdditionalSalaryRequestForm', () => {
             initialValues: {
               ...defaultFormValues,
               phoneNumber: '555-123-4567',
+              emailAddress: 'test@example.com',
               currentYearSalaryNotReceived: '100',
             },
           }),
@@ -411,6 +435,7 @@ describe('useAdditionalSalaryRequestForm', () => {
               previousYearSalaryNotReceived: '200',
               adoption: '300',
               phoneNumber: '555-123-4567',
+              emailAddress: 'test@example.com',
             },
           }),
         {
@@ -446,6 +471,7 @@ describe('useAdditionalSalaryRequestForm', () => {
             initialValues: {
               ...defaultFormValues,
               phoneNumber: '555-123-4567',
+              emailAddress: 'test@example.com',
             },
           }),
         {
@@ -544,6 +570,7 @@ describe('useAdditionalSalaryRequestForm', () => {
             expensesNotApprovedWithin90Days: 0,
             deductTwelvePercent: false,
             phoneNumber: '',
+            emailAddress: '',
             calculations: {
               currentSalaryCap: 50000,
               staffAccountBalance: 20000,

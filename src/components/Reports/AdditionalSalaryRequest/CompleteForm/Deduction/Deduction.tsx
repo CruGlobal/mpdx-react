@@ -43,7 +43,7 @@ export const Deduction: React.FC = () => {
   );
 
   return (
-    <FormCard title={t('403(b) Deduction')} hideHeaders={true}>
+    <FormCard title={t('403(b) Deduction')} hideHeaders>
       <TableRow>
         <TableCell sx={{ width: '70%' }}>
           <FormControlLabel

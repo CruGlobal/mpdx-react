@@ -8,15 +8,6 @@ interface UseCapsResult {
   /** The sum of the users' requested gross salaries */
   combinedGross: number;
 
-  /** `true` if the combined requested gross is over the combined effective cap */
-  overCombinedCap: boolean;
-
-  /** `true` if the user's requested gross is over their effective cap */
-  overUserCap: boolean;
-
-  /** `true` if the spouse's requested gross is over their effective cap */
-  overSpouseCap: boolean;
-
   /** The name of the person whose salary is over their effective cap */
   overCapName: string | null;
 
@@ -36,7 +27,6 @@ export const useCaps = (): UseCapsResult => {
   const combinedGross =
     (calcs?.requestedGross ?? 0) + (spouseCalcs?.requestedGross ?? 0);
 
-  const overCombinedCap = combinedGross > combinedCap;
   const overUserCap = !!calcs && calcs.requestedGross > calcs.effectiveCap;
   const overSpouseCap =
     !!spouseCalcs && spouseCalcs.requestedGross > spouseCalcs.effectiveCap;
@@ -55,9 +45,6 @@ export const useCaps = (): UseCapsResult => {
   return {
     combinedCap,
     combinedGross,
-    overCombinedCap,
-    overUserCap,
-    overSpouseCap,
     overCapName,
     overCapSalary,
   };
