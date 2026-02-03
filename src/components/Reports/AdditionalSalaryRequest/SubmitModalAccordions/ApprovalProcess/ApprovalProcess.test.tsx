@@ -48,7 +48,10 @@ const TestComponent: React.FC<{
         <TestRouter>
           <SnackbarProvider>
             <GqlMockedProvider>
-              <Formik initialValues={{ additionalInfo: '' }} onSubmit={onSubmit}>
+              <Formik
+                initialValues={{ additionalInfo: '' }}
+                onSubmit={onSubmit}
+              >
                 <ApprovalProcess onForm={onForm} />
               </Formik>
             </GqlMockedProvider>
