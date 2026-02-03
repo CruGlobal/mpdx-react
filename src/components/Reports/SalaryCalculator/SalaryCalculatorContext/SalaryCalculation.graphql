@@ -48,8 +48,8 @@ fragment CalculationFields on SalaryRequestCalculations {
   annualCompensation
 }
 
-query SalaryCalculation {
-  salaryRequest: latestSalaryRequest(status: [IN_PROGRESS]) {
+query SalaryCalculation($id: ID!) {
+  salaryRequest(id: $id) {
     id
     ...SalaryRequestFields
     calculations {
