@@ -38,7 +38,7 @@ export interface CompleteFormValues {
   deductTwelvePercent: boolean;
   phoneNumber: string;
   totalAdditionalSalaryRequested: string;
-  additionalInfo?: string;
+  additionalInfo: string;
   emailAddress: string;
 }
 

@@ -41,28 +41,8 @@ const MainContent: React.FC = () => {
     exceedsCap,
   } = useAdditionalSalaryRequest();
 
-  const {
-    submitForm,
-    validateForm,
-    submitCount,
-    isValid,
-    values,
-    setFieldTouched,
-    setFieldError,
-    errors,
-  } = useFormikContext<CompleteFormValues>();
-
-  const handleSubmit = async () => {
-    if (exceedsCap && !values.additionalInfo) {
-      setFieldTouched('additionalInfo', true, false);
-      setFieldError(
-        'additionalInfo',
-        t('Additional info is required for requests exceeding your cap.'),
-      );
-      throw new Error('Validation error');
-    }
-    await submitForm();
-  };
+  const { submitForm, validateForm, submitCount, isValid, errors } =
+    useFormikContext<CompleteFormValues>();
 
   const handleDiscard = async () => {
     if (requestId) {
@@ -148,7 +128,7 @@ const MainContent: React.FC = () => {
                 showBackButton={!isFirstFormPage}
                 handleDiscard={handleDiscard}
                 isSubmission={isLastFormPage}
-                submitForm={handleSubmit}
+                submitForm={submitForm}
                 validateForm={validateForm}
                 submitCount={submitCount}
                 isValid={isValid}

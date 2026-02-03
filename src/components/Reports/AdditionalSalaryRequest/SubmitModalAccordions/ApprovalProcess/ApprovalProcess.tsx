@@ -13,8 +13,11 @@ interface ApprovalProcessProps {
 export const ApprovalProcess: React.FC<ApprovalProcessProps> = ({ onForm }) => {
   const { t } = useTranslation();
 
-  const { errors, touched, values, handleChange } =
+  const { errors, touched, values, handleChange, handleBlur, submitCount } =
     useFormikContext<CompleteFormValues>();
+
+  const showError =
+    (touched.additionalInfo || submitCount > 0) && !!errors.additionalInfo;
 
   return (
     <ModalAccordion
@@ -23,7 +26,7 @@ export const ApprovalProcess: React.FC<ApprovalProcessProps> = ({ onForm }) => {
       title={t('Approval Process')}
       titleColor="info.dark"
       subtitle={t('Approvals needed for this request')}
-      expanded={touched.additionalInfo && errors.additionalInfo ? true : false}
+      expanded={showError}
       onForm={onForm}
     >
       <CardContent>
@@ -40,8 +43,9 @@ export const ApprovalProcess: React.FC<ApprovalProcessProps> = ({ onForm }) => {
             name="additionalInfo"
             value={values.additionalInfo}
             onChange={handleChange}
-            error={touched.additionalInfo && !!errors.additionalInfo}
-            helperText={touched.additionalInfo && errors.additionalInfo}
+            onBlur={handleBlur}
+            error={showError}
+            helperText={showError && errors.additionalInfo}
             multiline
             rows={6}
             fullWidth

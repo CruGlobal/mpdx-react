@@ -90,6 +90,7 @@ const defaultFormValues: CompleteFormValues = {
   phoneNumber: '',
   totalAdditionalSalaryRequested: '0',
   emailAddress: '',
+  additionalInfo: '',
 };
 
 const mutationSpy = jest.fn();

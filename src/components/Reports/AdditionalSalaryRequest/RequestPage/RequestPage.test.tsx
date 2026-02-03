@@ -282,6 +282,7 @@ describe('RequestPage', () => {
     const validFormValues: CompleteFormValues = {
       ...defaultCompleteFormValues,
       phoneNumber: '123-456-7890',
+      emailAddress: 'test@example.com',
     };
 
     const { getByRole, getByText } = render(
@@ -316,6 +317,7 @@ describe('RequestPage', () => {
     const validFormValues: CompleteFormValues = {
       ...defaultCompleteFormValues,
       phoneNumber: '123-456-7890',
+      emailAddress: 'test@example.com',
     };
 
     const { getByRole, getByText } = render(

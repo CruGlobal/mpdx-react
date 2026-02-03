@@ -76,7 +76,7 @@ export const useAdditionalSalaryRequestForm = ({
 }: UseAdditionalSalaryRequestFormProps) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { handleNextStep, user, salaryInfo, isInternational } =
+  const { handleNextStep, user, salaryInfo, isInternational, exceedsCap } =
     useAdditionalSalaryRequest();
 
   const { remainingAllowableSalary } = useFormData();
@@ -187,8 +187,17 @@ export const useAdditionalSalaryRequestForm = ({
               return (value || 0) <= remainingAllowableSalary;
             },
           ),
+        additionalInfo: exceedsCap
+          ? yup
+              .string()
+              .required(
+                t(
+                  'Additional info is required for requests exceeding your cap.',
+                ),
+              )
+          : yup.string(),
       }),
-    [createCurrencyValidation, t, remainingAllowableSalary, locale],
+    [createCurrencyValidation, t, remainingAllowableSalary, locale, exceedsCap],
   );
 
   const onSubmit = useCallback(
