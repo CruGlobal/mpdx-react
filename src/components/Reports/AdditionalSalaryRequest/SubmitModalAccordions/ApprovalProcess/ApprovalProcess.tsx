@@ -24,10 +24,7 @@ export const ApprovalProcess: React.FC<ApprovalProcessProps> = ({ onForm }) => {
 
   const handleBlurWithSave = (event: React.FocusEvent<HTMLInputElement>) => {
     handleBlur(event);
-
-    if (onForm) {
-      saveField({ additionalInfo: values.additionalInfo });
-    }
+    saveField({ additionalInfo: values.additionalInfo });
   };
 
   return (
