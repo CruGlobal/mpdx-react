@@ -23,10 +23,8 @@ const mockStaffAccount = {
 };
 
 const mockAdditionalSalaryRequests = {
-  AdditionalSalaryRequests: {
-    additionalSalaryRequests: {
-      nodes: [],
-    },
+  AdditionalSalaryRequest: {
+    additionalSalaryRequest: null,
   },
 };
 
