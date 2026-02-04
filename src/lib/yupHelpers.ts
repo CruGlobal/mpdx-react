@@ -28,11 +28,24 @@ export const integer = (fieldName: string, t: TFunction) =>
     .integer(t('{{fieldName}} must be a whole number', { fieldName }))
     .min(0, t('{{fieldName}} must be positive', { fieldName }));
 
-export const amount = (fieldName: string, t: TFunction) =>
-  yup
+interface AmountOptions {
+  max?: number | null | undefined;
+  maxMessage?: string;
+}
+
+export const amount = (
+  fieldName: string,
+  t: TFunction,
+  options?: AmountOptions,
+) => {
+  const schema = yup
     .number()
     .typeError(t('{{fieldName}} must be a number', { fieldName }))
     .min(0, t('{{fieldName}} must be positive', { fieldName }));
+  return typeof options?.max === 'number'
+    ? schema.max(options.max, options.maxMessage)
+    : schema;
+};
 
 export const percentage = (fieldName: string, t: TFunction) =>
   yup
