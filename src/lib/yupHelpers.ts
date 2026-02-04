@@ -30,6 +30,8 @@ export const integer = (fieldName: string, t: TFunction) =>
 
 interface AmountOptions {
   required?: boolean;
+  min?: number | null | undefined;
+  minMessage?: string;
   max?: number | null | undefined;
   maxMessage?: string;
 }
@@ -46,6 +48,10 @@ export const amount = (
 
   if (options?.required) {
     schema = schema.required(t('{{fieldName}} is required', { fieldName }));
+  }
+
+  if (typeof options?.min === 'number') {
+    schema = schema.min(options.min, options.minMessage);
   }
 
   if (typeof options?.max === 'number') {
