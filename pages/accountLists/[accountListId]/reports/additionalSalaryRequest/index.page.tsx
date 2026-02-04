@@ -1,11 +1,10 @@
 import Head from 'next/head';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { FormikProvider } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
-import { useCreateAdditionalSalaryRequestMutation } from 'src/components/Reports/AdditionalSalaryRequest/AdditionalSalaryRequest.generated';
 import { ContinuePage } from 'src/components/Reports/AdditionalSalaryRequest/MainPages/ContinuePage';
 import { IneligiblePage } from 'src/components/Reports/AdditionalSalaryRequest/MainPages/IneligiblePage';
 import { OverviewPage } from 'src/components/Reports/AdditionalSalaryRequest/MainPages/OverviewPage';
@@ -33,27 +32,7 @@ import { AsrStatusEnum } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
 const FormikRequestPage: React.FC = () => {
-  const { requestData, loading, user, requestError } =
-    useAdditionalSalaryRequest();
-
-  const [createRequest] = useCreateAdditionalSalaryRequestMutation();
-  const [creating, setCreating] = useState(false);
-
-  useEffect(() => {
-    if (
-      !loading &&
-      !requestData &&
-      !requestError &&
-      !creating &&
-      user?.asrEit?.asrEligibility
-    ) {
-      setCreating(true);
-      createRequest({
-        variables: { attributes: {} },
-        refetchQueries: ['AdditionalSalaryRequest'],
-      });
-    }
-  }, [loading, requestData, requestError, creating, createRequest, user]);
+  const { requestData } = useAdditionalSalaryRequest();
 
   const requestId = requestData?.latestAdditionalSalaryRequest?.id ?? '';
   const formik = useAdditionalSalaryRequestForm({ requestId });
