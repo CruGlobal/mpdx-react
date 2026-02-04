@@ -23,10 +23,8 @@ const mockStaffAccount = {
 };
 
 const mockAdditionalSalaryRequests = {
-  AdditionalSalaryRequests: {
-    additionalSalaryRequests: {
-      nodes: [],
-    },
+  AdditionalSalaryRequest: {
+    latestAdditionalSalaryRequest: null,
   },
 };
 
@@ -34,6 +32,7 @@ const mockHcmData = {
   HcmData: {
     hcm: [
       {
+        salaryRequestEligible: true,
         staffInfo: {
           preferredName: 'Test User',
         },
