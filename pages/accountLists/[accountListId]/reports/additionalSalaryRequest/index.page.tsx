@@ -6,9 +6,7 @@ import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelper
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
 import { useCreateAdditionalSalaryRequestMutation } from 'src/components/Reports/AdditionalSalaryRequest/AdditionalSalaryRequest.generated';
-import { ContinuePage } from 'src/components/Reports/AdditionalSalaryRequest/MainPages/ContinuePage';
 import { IneligiblePage } from 'src/components/Reports/AdditionalSalaryRequest/MainPages/IneligiblePage';
-import { OverviewPage } from 'src/components/Reports/AdditionalSalaryRequest/MainPages/OverviewPage';
 import { RequestPage } from 'src/components/Reports/AdditionalSalaryRequest/RequestPage/RequestPage';
 import {
   AdditionalSalaryRequestProvider,
@@ -31,6 +29,8 @@ import {
 import { ReportPageWrapper } from 'src/components/Shared/styledComponents/ReportPageWrapper';
 import { AsrStatusEnum } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
+
+// TODO: Revert comments on this page
 
 const FormikRequestPage: React.FC = () => {
   const { requestData, loading, user } = useAdditionalSalaryRequest();
@@ -82,16 +82,18 @@ const AdditionalSalaryRequestRouter: React.FC = () => {
     return <FormikRequestPage />;
   }
 
-  switch (requestData.latestAdditionalSalaryRequest?.status) {
-    case AsrStatusEnum.ActionRequired:
-    case AsrStatusEnum.Pending:
-      return <OverviewPage />;
-    case AsrStatusEnum.InProgress:
-      return <ContinuePage />;
-    case AsrStatusEnum.Approved:
-    default:
-      return <FormikRequestPage />;
-  }
+  return <FormikRequestPage />;
+
+  // switch (requestData.latestAdditionalSalaryRequest?.status) {
+  //   case AsrStatusEnum.ActionRequired:
+  //   case AsrStatusEnum.Pending:
+  //     return <OverviewPage />;
+  //   case AsrStatusEnum.InProgress:
+  //     return <ContinuePage />;
+  //   case AsrStatusEnum.Approved:
+  //   default:
+  //     return <FormikRequestPage />;
+  // }
 };
 
 const AdditionalSalaryRequestContent: React.FC = () => {

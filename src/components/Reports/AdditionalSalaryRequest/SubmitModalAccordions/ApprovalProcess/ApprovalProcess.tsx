@@ -22,9 +22,9 @@ export const ApprovalProcess: React.FC<ApprovalProcessProps> = ({ onForm }) => {
   const showError =
     (touched.additionalInfo || submitCount > 0) && !!errors.additionalInfo;
 
-  const handleBlurWithSave = (event: React.FocusEvent<HTMLInputElement>) => {
+  const handleBlurWithSave = (event: React.FocusEvent<HTMLTextAreaElement>) => {
     handleBlur(event);
-    saveField({ additionalInfo: values.additionalInfo });
+    saveField({ additionalInfo: event.target.value });
   };
 
   return (

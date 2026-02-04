@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useLayoutEffect, useMemo } from 'react';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -137,7 +137,9 @@ export const useAdditionalSalaryRequestForm = ({
       phoneNumber:
         request.phoneNumber || user?.staffInfo?.primaryPhoneNumber || '',
       emailAddress: request.emailAddress || user?.staffInfo?.emailAddress || '',
-      totalAdditionalSalaryRequested: request.totalAdditionalSalaryRequested,
+      totalAdditionalSalaryRequested:
+        request.totalAdditionalSalaryRequested || '',
+      additionalInfo: request.additionalInfo || '',
     } as CompleteFormValues;
   }, [providedInitialValues, requestData?.latestAdditionalSalaryRequest, user]);
 
@@ -246,6 +248,10 @@ export const useAdditionalSalaryRequestForm = ({
     onSubmit,
     enableReinitialize: true,
   });
+
+  useLayoutEffect(() => {
+    formik.validateForm();
+  }, [initialValues]);
 
   return { ...formik, validationSchema };
 };

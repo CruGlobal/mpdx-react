@@ -28,7 +28,7 @@ const mockUseAdditionalSalaryRequest =
 
 const defaultMockContextValue = {
   requestData: {
-    additionalSalaryRequest: {
+    latestAdditionalSalaryRequest: {
       id: 'test-request-id',
       traditional403bContribution: 0.12,
       calculations: {

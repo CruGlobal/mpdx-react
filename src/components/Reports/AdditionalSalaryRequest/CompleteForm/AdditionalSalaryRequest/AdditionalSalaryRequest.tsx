@@ -47,7 +47,7 @@ export const AdditionalSalaryRequest: React.FC = () => {
 
   useEffect(() => {
     setFieldValue('totalAdditionalSalaryRequested', total);
-    setFieldTouched('totalAdditionalSalaryRequested', true, false);
+    setFieldTouched('totalAdditionalSalaryRequested', true);
   }, [total, setFieldValue, setFieldTouched]);
 
   return (
