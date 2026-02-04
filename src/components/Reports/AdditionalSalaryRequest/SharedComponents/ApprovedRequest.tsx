@@ -11,7 +11,9 @@ import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestCon
 import { getRequestUrl } from '../Shared/Helper/getRequestUrl';
 
 interface ApprovedRequestProps {
-  request: NonNullable<AdditionalSalaryRequestQuery['latestAdditionalSalaryRequest']>;
+  request: NonNullable<
+    AdditionalSalaryRequestQuery['latestAdditionalSalaryRequest']
+  >;
 }
 
 export const ApprovedRequest: React.FC<ApprovedRequestProps> = ({
