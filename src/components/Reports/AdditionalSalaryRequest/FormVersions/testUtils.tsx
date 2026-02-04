@@ -27,7 +27,7 @@ export const mockUser = {
 
 export const defaultMockContextValue = {
   requestData: {
-    additionalSalaryRequest: {
+    latestAdditionalSalaryRequest: {
       phoneNumber: '555-123-4567',
       traditional403bContribution: 0.12,
       calculations: {
