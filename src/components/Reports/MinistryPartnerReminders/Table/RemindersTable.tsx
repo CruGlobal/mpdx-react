@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useMemo } from 'react';
 import { ErrorOutline, HourglassDisabled } from '@mui/icons-material';
 import {
   Paper,
@@ -61,65 +61,68 @@ export const RemindersTable: React.FC<RemindersTableProps> = ({
   const TableComponents: TableVirtuosoProps<
     HeaderProps,
     unknown
-  >['components'] = {
-    Scroller,
-    Table: (props) => (
-      <Table
-        {...props}
-        sx={{
-          '& .MuiTableCell-root': { borderBottom: 'none' },
-          '& .MuiTableCell-head': {
-            position: 'sticky',
-            top: 0,
-            zIndex: (t) => t.zIndex.appBar,
-            backgroundColor: 'background.paper',
-            boxShadow: (t) => `inset 0 -1px 0 ${t.palette.divider}`,
-          },
-          tableLayout: 'fixed',
-          minWidth: 730,
-        }}
-      />
-    ),
-    TableHead,
-    TableBody: Body,
-    TableRow: (props) => {
-      const index = props['data-index'] ?? 0;
-      const even = index % 2 === 0;
-      return (
-        <TableRow
+  >['components'] = useMemo(
+    () => ({
+      Scroller,
+      Table: (props) => (
+        <Table
           {...props}
-          style={{
-            ...props.style,
-            backgroundColor: even
-              ? theme.palette.chipBlueLight.main
-              : 'inherit',
+          sx={{
+            '& .MuiTableCell-root': { borderBottom: 'none' },
+            '& .MuiTableCell-head': {
+              position: 'sticky',
+              top: 0,
+              zIndex: (t) => t.zIndex.appBar,
+              backgroundColor: 'background.paper',
+              boxShadow: (t) => `inset 0 -1px 0 ${t.palette.divider}`,
+            },
+            tableLayout: 'fixed',
+            minWidth: 730,
           }}
         />
-      );
-    },
-
-    EmptyPlaceholder: () => (
-      <TableRow>
-        <TableCell colSpan={4}>
-          <EmptyTable
-            title={
-              noDesignation
-                ? t('No designation account found')
-                : t('No ministry partners found')
-            }
-            subtitle={
-              noDesignation
-                ? t(
-                    'This account is not associated with a designation account number',
-                  )
-                : t('Add a ministry partner to get started')
-            }
-            icon={noDesignation ? ErrorOutline : HourglassDisabled}
+      ),
+      TableHead,
+      TableBody: Body,
+      TableRow: (props) => {
+        const index = props['data-index'] ?? 0;
+        const even = index % 2 === 0;
+        return (
+          <TableRow
+            {...props}
+            style={{
+              ...props.style,
+              backgroundColor: even
+                ? theme.palette.chipBlueLight.main
+                : 'inherit',
+            }}
           />
-        </TableCell>
-      </TableRow>
-    ),
-  };
+        );
+      },
+
+      EmptyPlaceholder: () => (
+        <TableRow>
+          <TableCell colSpan={4}>
+            <EmptyTable
+              title={
+                noDesignation
+                  ? t('No designation account found')
+                  : t('No ministry partners found')
+              }
+              subtitle={
+                noDesignation
+                  ? t(
+                      'This account is not associated with a designation account number',
+                    )
+                  : t('Add a ministry partner to get started')
+              }
+              icon={noDesignation ? ErrorOutline : HourglassDisabled}
+            />
+          </TableCell>
+        </TableRow>
+      ),
+    }),
+    [noDesignation, t],
+  );
 
   return (
     <TableVirtuoso
