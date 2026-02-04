@@ -358,4 +358,40 @@ describe('RequestPage', () => {
       getByText('Your updated request will be sent to payroll.'),
     ).toBeInTheDocument();
   });
+
+  it('shows submit modal when submit clicked with exceeded cap', async () => {
+    mockUseAdditionalSalaryRequest.mockReturnValue({
+      ...defaultMockContextValue,
+      currentIndex: 1,
+      currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
+      pageType: PageEnum.New,
+      exceedsCap: true,
+    } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+    const validFormValues: CompleteFormValues = {
+      ...defaultCompleteFormValues,
+      phoneNumber: '123-456-7890',
+      emailAddress: 'test@example.com',
+    };
+
+    const { getByRole, getByText } = render(
+      <TestWrapper initialValues={validFormValues} />,
+    );
+
+    const submitButton = getByRole('button', { name: /submit/i });
+    userEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(
+        getByText(/your request requires additional approval./i),
+      ).toBeInTheDocument();
+    });
+
+    expect(
+      getByText(/your request causes your total requested salary to exceed/i),
+    ).toBeInTheDocument();
+    expect(
+      getByText(/please complete the approval process section/i),
+    ).toBeInTheDocument();
+  });
 });

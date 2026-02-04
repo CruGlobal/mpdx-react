@@ -10,7 +10,6 @@ import { MinisterHousingAllowanceProvider } from '../../../MinisterHousingAllowa
 import { PageEnum } from '../Shared/sharedTypes';
 import { SubmitModal } from './SubmitModal';
 
-const formTitle = 'Main Title';
 const title = 'Test Title';
 const content = 'Test Content';
 const subContent = 'Test Sub Content';
@@ -20,6 +19,7 @@ const handleClose = jest.fn();
 const handleConfirm = jest.fn();
 
 interface TestComponentProps {
+  formTitle?: string;
   pageType?: PageEnum;
   overrideTitle?: string;
   overrideContent?: string;
@@ -31,6 +31,7 @@ interface TestComponentProps {
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
+  formTitle = 'Main Title',
   pageType,
   overrideTitle,
   overrideContent,
@@ -128,6 +129,23 @@ describe('ConfirmationModal', () => {
     expect(await findByText(title)).toBeInTheDocument();
     expect(getByText(content)).toBeInTheDocument();
     expect(getByText(subContent)).toBeInTheDocument();
+  });
+
+  it('should render correct title when form is MHA Request', async () => {
+    const { getByText } = render(
+      <TestComponent
+        formTitle="MHA Request"
+        pageType={PageEnum.New}
+        overrideTitle={undefined}
+        actionRequired={true}
+      />,
+    );
+
+    expect(
+      await getByText(
+        'You are submitting changes to your Annual MHA Request for board approval.',
+      ),
+    ).toBeInTheDocument();
   });
 
   it('renders discard modal correctly', async () => {

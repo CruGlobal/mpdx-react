@@ -425,6 +425,36 @@ describe('useAdditionalSalaryRequestForm', () => {
       expect(errors.childrenCollegeEducation).toContain('Exceeds');
       expect(errors.childrenCollegeEducation).toContain('$21,000.00');
     });
+
+    it('should validate additional info when exceedsCap is true', async () => {
+      mockUseAdditionalSalaryRequest.mockReturnValue({
+        ...defaultMockContextValue,
+        exceedsCap: true,
+      });
+
+      const { result } = renderHook(
+        () =>
+          useAdditionalSalaryRequestForm({
+            requestId: 'test-request-id',
+            initialValues: {
+              ...defaultFormValues,
+              phoneNumber: '555-123-4567',
+            },
+          }),
+        {
+          wrapper: TestWrapper,
+        },
+      );
+
+      let errors: Record<string, string> = {};
+      await act(async () => {
+        errors = await result.current.validateForm();
+      });
+
+      expect(errors.additionalInfo).toBe(
+        'Additional info is required for requests exceeding your cap.',
+      );
+    });
   });
 
   describe('onSubmit', () => {
