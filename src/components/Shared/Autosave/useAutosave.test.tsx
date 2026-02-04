@@ -3,16 +3,12 @@ import { MenuItem, TextField } from '@mui/material';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as yup from 'yup';
+import i18next from 'src/lib/i18n';
+import { amount } from 'src/lib/yupHelpers';
 import { useAutoSave } from './useAutosave';
 
-const positiveNumber = () =>
-  yup
-    .number()
-    .typeError('Field must be a number')
-    .min(0, 'Field must be positive');
-
 const defaultSchema = yup.object({
-  field: positiveNumber(),
+  field: amount('Field', i18next.t),
 });
 
 const saveValue = jest.fn().mockResolvedValue(undefined);
@@ -111,7 +107,7 @@ describe('AutosaveTextField', () => {
 
   it('disables the input and pauses validation when disabled', () => {
     const schema = yup.object({
-      field: positiveNumber().required(),
+      field: amount('field', i18next.t).required(),
     });
     const { getByRole } = render(<TestComponent disabled schema={schema} />);
 
