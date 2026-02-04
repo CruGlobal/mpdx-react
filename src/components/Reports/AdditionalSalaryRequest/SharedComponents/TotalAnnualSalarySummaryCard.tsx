@@ -71,7 +71,7 @@ export const TotalAnnualSalarySummaryCard: React.FC = () => {
   const [expanded, setExpanded] = useState(true);
   const { values } = useFormikContext<CompleteFormValues>();
 
-  const asrValues = requestData?.additionalSalaryRequest;
+  const asrValues = requestData?.latestAdditionalSalaryRequest;
   const calculations = asrValues?.calculations;
 
   const traditional403bContribution =

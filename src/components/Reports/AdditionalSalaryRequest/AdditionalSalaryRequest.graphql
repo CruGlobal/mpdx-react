@@ -54,18 +54,12 @@ fragment AdditionalSalaryRequestDetailsFields on AdditionalSalaryRequest {
   }
 }
 
-query AdditionalSalaryRequest($requestId: ID!) {
-  additionalSalaryRequest(id: $requestId) {
+query AdditionalSalaryRequest {
+  latestAdditionalSalaryRequest(
+    status: [IN_PROGRESS, ACTION_REQUIRED, PENDING]
+  ) {
     ...AdditionalSalaryRequestDetailsFields
     createdAt
-  }
-}
-
-query AdditionalSalaryRequests {
-  additionalSalaryRequests {
-    nodes {
-      ...AdditionalSalaryRequestDetailsFields
-    }
   }
 }
 

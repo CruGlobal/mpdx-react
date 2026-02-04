@@ -20,7 +20,7 @@ export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
     async (
       attributes: Partial<AdditionalSalaryRequestAttributesInput>,
     ): Promise<void> => {
-      const requestId = requestData?.additionalSalaryRequest?.id;
+      const requestId = requestData?.latestAdditionalSalaryRequest?.id;
       if (!requestId) {
         return;
       }

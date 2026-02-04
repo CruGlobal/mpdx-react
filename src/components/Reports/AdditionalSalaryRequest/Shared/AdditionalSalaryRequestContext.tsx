@@ -18,9 +18,7 @@ import {
 } from '../../Shared/HcmData/HCMData.generated';
 import {
   AdditionalSalaryRequestQuery,
-  AdditionalSalaryRequestsQuery,
   useAdditionalSalaryRequestQuery,
-  useAdditionalSalaryRequestsQuery,
   useDeleteAdditionalSalaryRequestMutation,
 } from '../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
@@ -37,14 +35,11 @@ export type AdditionalSalaryRequestType = {
   handlePreviousStep: () => void;
   isDrawerOpen: boolean;
   toggleDrawer: () => void;
-  requestsData?:
-    | AdditionalSalaryRequestsQuery['additionalSalaryRequests']['nodes']
-    | null;
   requestData?: AdditionalSalaryRequestQuery | null;
   loading: boolean;
   currentYear?: number;
 
-  requestsError?: ApolloError;
+  requestError?: ApolloError;
   pageType: PageEnum | undefined;
   handleDeleteRequest: (id: string, isCancel: boolean) => Promise<void>;
   requestId?: string;
@@ -108,13 +103,11 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
 
   const { data: hcmData } = useHcmDataQuery();
 
-  const { data: requestsData, error: requestsError } =
-    useAdditionalSalaryRequestsQuery();
-
-  const { data: requestData, loading } = useAdditionalSalaryRequestQuery({
-    variables: { requestId: requestId || '' },
-    skip: !requestId,
-  });
+  const {
+    data: requestData,
+    error: requestError,
+    loading,
+  } = useAdditionalSalaryRequestQuery();
 
   const currentYear = useMemo(() => DateTime.now().year, []);
   const { data: salaryInfoData } = useSalaryInfoQuery({
@@ -195,9 +188,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       handlePreviousStep,
       isDrawerOpen,
       toggleDrawer,
-      requestsData: requestsData?.additionalSalaryRequests?.nodes,
-      requestsError,
       requestData,
+      requestError,
       loading,
       currentYear,
       pageType,
@@ -220,9 +212,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       handlePreviousStep,
       isDrawerOpen,
       toggleDrawer,
-      requestsData,
-      requestsError,
       requestData,
+      requestError,
       loading,
       currentYear,
       pageType,

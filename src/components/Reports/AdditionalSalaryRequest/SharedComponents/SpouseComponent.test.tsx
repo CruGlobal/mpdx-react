@@ -14,7 +14,7 @@ const mockUseAdditionalSalaryRequest =
 
 const mockContextValue = {
   requestData: {
-    additionalSalaryRequest: {
+    latestAdditionalSalaryRequest: {
       spouseCalculations: {
         currentSalaryCap: 10000,
         staffAccountBalance: 3000,
@@ -63,7 +63,7 @@ describe('SpouseComponent', () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
       ...mockContextValue,
       requestData: {
-        additionalSalaryRequest: {
+        latestAdditionalSalaryRequest: {
           spouseCalculations: {
             currentSalaryCap: 15000,
             staffAccountBalance: 5000,
@@ -83,7 +83,7 @@ describe('SpouseComponent', () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
       ...mockContextValue,
       requestData: {
-        additionalSalaryRequest: {
+        latestAdditionalSalaryRequest: {
           spouseCalculations: null,
         },
       },
