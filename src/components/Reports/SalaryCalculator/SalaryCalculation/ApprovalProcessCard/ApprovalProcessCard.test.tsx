@@ -1,17 +1,18 @@
 import { render, waitFor } from '@testing-library/react';
+import { ProgressiveApprovalTierEnum } from 'src/graphql/types.generated';
 import {
   SalaryCalculatorTestWrapper,
   SalaryCalculatorTestWrapperProps,
 } from '../../SalaryCalculatorTestWrapper';
-import { AdditionalInfoCard } from './AdditionalInfoCard';
+import { ApprovalProcessCard } from './ApprovalProcessCard';
 
 const TestComponent: React.FC<SalaryCalculatorTestWrapperProps> = (props) => (
   <SalaryCalculatorTestWrapper {...props}>
-    <AdditionalInfoCard />
+    <ApprovalProcessCard />
   </SalaryCalculatorTestWrapper>
 );
 
-describe('AdditionalInfoCard', () => {
+describe('ApprovalProcessCard', () => {
   it('renders nothing when not over cap', async () => {
     const { queryByRole } = render(<TestComponent />);
 
@@ -25,11 +26,16 @@ describe('AdditionalInfoCard', () => {
           salaryRequestMock={{
             calculations: { requestedGross: 40000 },
             spouseCalculations: { effectiveCap: 50000 },
+            progressiveApprovalTier: {
+              tier: ProgressiveApprovalTierEnum.DivisionHead,
+            },
           }}
         />,
       );
 
-      expect(await findByTestId('AdditionalInfoCard-status')).toHaveTextContent(
+      expect(
+        await findByTestId('ApprovalProcessCard-status'),
+      ).toHaveTextContent(
         "John's Gross Requested Salary exceeds their individual Maximum Allowable Salary. \
 If this is correct, please provide reasoning for why John's Salary should exceed $40,000.00 or make changes to your Requested Salary above.",
       );
@@ -46,11 +52,16 @@ If this is correct, please provide reasoning for why John's Salary should exceed
           salaryRequestMock={{
             calculations: { effectiveCap: 50000 },
             spouseCalculations: { requestedGross: 40000 },
+            progressiveApprovalTier: {
+              tier: ProgressiveApprovalTierEnum.DivisionHead,
+            },
           }}
         />,
       );
 
-      expect(await findByTestId('AdditionalInfoCard-status')).toHaveTextContent(
+      expect(
+        await findByTestId('ApprovalProcessCard-status'),
+      ).toHaveTextContent(
         "Jane's Gross Requested Salary exceeds their individual Maximum Allowable Salary. \
 If this is correct, please provide reasoning for why Jane's Salary should exceed $40,000.00 or make changes to your Requested Salary above.",
       );
@@ -64,11 +75,18 @@ If this is correct, please provide reasoning for why Jane's Salary should exceed
     it('renders status message and textfield', async () => {
       const { getByRole, findByTestId } = render(
         <TestComponent
-          salaryRequestMock={{ calculations: { requestedGross: 100_000 } }}
+          salaryRequestMock={{
+            calculations: { requestedGross: 100_000 },
+            progressiveApprovalTier: {
+              tier: ProgressiveApprovalTierEnum.VicePresident,
+            },
+          }}
         />,
       );
 
-      expect(await findByTestId('AdditionalInfoCard-status')).toHaveTextContent(
+      expect(
+        await findByTestId('ApprovalProcessCard-status'),
+      ).toHaveTextContent(
         "Since you are requesting above your and Jane's combined Maximum Allowable Salary, you will need to provide the information below.",
       );
       expect(

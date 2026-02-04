@@ -1,13 +1,18 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { isFullTimeRmo } from 'src/components/Reports/SalaryCalculator/staffTypeHelpers';
 import { SalaryRequestStatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
-import { useHcmQuery } from '../SalaryCalculatorContext/Hcm.generated';
+import {
+  type HcmQuery,
+  useHcmQuery,
+} from '../SalaryCalculatorContext/Hcm.generated';
 import { getLocalizedTaxStatus } from '../Shared/getLocalizedTaxStatus';
 import { useAccountBalanceQuery } from './AccountBalance.generated';
-import { useLandingSalaryCalculationsQuery } from './NewSalaryCalculationLanding/LandingSalaryCalculations.generated';
+import {
+  type LandingSalaryCalculationsQuery,
+  useLandingSalaryCalculationsQuery,
+} from './NewSalaryCalculationLanding/LandingSalaryCalculations.generated';
 import { useStaffAccountIdQuery } from './StaffAccountId.generated';
 import { formatCalculationDates } from './dateHelpers';
 
@@ -19,7 +24,34 @@ interface SalaryCategory {
   tooltip?: string;
 }
 
-export const useLandingData = () => {
+type HcmPerson = HcmQuery['hcm'][number];
+
+export interface LandingData {
+  staffAccountId: string | null;
+  names: string;
+  self: HcmPerson | null;
+  spouse: HcmPerson | null;
+  salaryData: {
+    currentGrossSalary: number;
+    lastUpdated: string;
+    spouseCurrentGrossSalary: number;
+    rothContribution: number;
+    spouseRothContribution: number;
+    taxDeferredContribution: number;
+    spouseTaxDeferredContribution: number;
+  };
+  salaryCategories: SalaryCategory[];
+  accountBalance: number;
+  inProgressCalculationId: string | null;
+  loading: boolean;
+  calculation: LandingSalaryCalculationsQuery['latestCalculation'];
+  requestedOn: string;
+  processedOn: string;
+  feedback: string | null;
+  shouldShowPending: boolean;
+}
+
+export const useLandingData = (): LandingData => {
   const { t } = useTranslation();
   const locale = useLocale();
 
@@ -32,7 +64,8 @@ export const useLandingData = () => {
     useStaffAccountIdQuery();
 
   const approvedCalculation = calculationData?.approvedCalculation;
-  const hasInProgressCalculation = !!calculationData?.inProgressCalculation;
+  const inProgressCalculationId =
+    calculationData?.inProgressCalculation?.id ?? null;
   const latestCalculation = calculationData?.latestCalculation;
 
   const { requestedOn, processedOn } = useMemo(
@@ -52,17 +85,18 @@ export const useLandingData = () => {
     [latestCalculation],
   );
 
-  const { self, spouse, hasSpouse } = useMemo(() => {
-    const [selfData, spouseData] = hcmData?.hcm ?? [];
+  const { self, spouse } = useMemo(() => {
+    // Using [undefined, undefined] instead of [] ensures that we handle the case where HCM returns
+    // an array with fewer than two elements
+    const [selfData, spouseData] = hcmData?.hcm ?? [undefined, undefined];
     return {
-      self: selfData,
-      spouse: spouseData,
-      hasSpouse: hcmData?.hcm?.length === 2,
+      self: selfData ?? null,
+      spouse: spouseData?.salaryRequestEligible ? (spouseData ?? null) : null,
     };
   }, [hcmData]);
 
   const staffAccountId = useMemo(
-    () => staffAccountIdData?.user?.staffAccountId,
+    () => staffAccountIdData?.user?.staffAccountId ?? null,
     [staffAccountIdData],
   );
 
@@ -71,11 +105,11 @@ export const useLandingData = () => {
       return '';
     }
     const selfName = `${self.staffInfo.lastName}, ${self.staffInfo.preferredName}`;
-    if (!hasSpouse || !spouse?.staffInfo?.preferredName) {
+    if (!spouse || !spouse?.staffInfo?.preferredName) {
       return selfName;
     }
     return `${selfName} and ${spouse.staffInfo.preferredName}`;
-  }, [self, spouse, hasSpouse]);
+  }, [self, spouse]);
 
   const salaryData = useMemo(() => {
     const currentGrossSalary = self?.currentSalary.grossSalaryAmount ?? 0;
@@ -111,11 +145,6 @@ export const useLandingData = () => {
         0,
       ) ?? 0,
     [accountBalanceData],
-  );
-
-  const canCalculateSalary = useMemo(
-    () => (self?.staffInfo ? isFullTimeRmo(self.staffInfo) : false),
-    [self],
   );
 
   const salaryCategories = useMemo<SalaryCategory[]>(
@@ -214,12 +243,10 @@ export const useLandingData = () => {
     names,
     self,
     spouse,
-    hasSpouse,
     salaryData,
     salaryCategories,
     accountBalance,
-    hasInProgressCalculation,
-    canCalculateSalary,
+    inProgressCalculationId,
     loading:
       hcmLoading ||
       calculationLoading ||

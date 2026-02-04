@@ -83,15 +83,9 @@ export const FourOhThreeBSection: React.FC = () => {
                 <TableCell component="th" scope="row">
                   {t('Maximum Contribution Limit')}
                 </TableCell>
-                <FormattedTableCell
-                  percentage
-                  value={user?.maximumContributionLimit}
-                />
+                <FormattedTableCell value={user?.maximumContributionLimit} />
                 {spouse && (
-                  <FormattedTableCell
-                    percentage
-                    value={spouse.maximumContributionLimit}
-                  />
+                  <FormattedTableCell value={spouse.maximumContributionLimit} />
                 )}
               </TableRow>
             </TableBody>

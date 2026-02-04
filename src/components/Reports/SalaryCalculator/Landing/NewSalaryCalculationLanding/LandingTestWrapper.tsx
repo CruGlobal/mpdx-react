@@ -2,13 +2,7 @@ import { ThemeProvider } from '@emotion/react';
 import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import {
-  AssignmentCategoryEnum,
-  AssignmentStatusEnum,
-  PeopleGroupSupportTypeEnum,
-  SalaryRequestStatusEnum,
-  UserPersonTypeEnum,
-} from 'src/graphql/types.generated';
+import { SalaryRequestStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { HcmQuery } from '../../SalaryCalculatorContext/Hcm.generated';
 import { AccountBalanceQuery } from '../AccountBalance.generated';
@@ -18,21 +12,19 @@ import { LandingSalaryCalculationsQuery } from './LandingSalaryCalculations.gene
 interface LandingTestWrapperProps {
   onCall?: MockLinkCallHandler;
   children?: React.ReactNode;
-  assignmentCategory?: AssignmentCategoryEnum;
-  peopleGroupSupportType?: PeopleGroupSupportTypeEnum;
   hasInProgressCalculation?: boolean;
   hasApprovedCalculation?: boolean;
   hasLatestCalculation?: boolean;
+  salaryRequestEligible?: boolean;
 }
 
 export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
   onCall,
   children,
-  assignmentCategory,
-  peopleGroupSupportType,
   hasInProgressCalculation = false,
   hasApprovedCalculation = false,
   hasLatestCalculation = false,
+  salaryRequestEligible = true,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
@@ -49,14 +41,6 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
                 staffInfo: {
                   preferredName: 'John',
                   lastName: 'Doe',
-                  userPersonType: UserPersonTypeEnum.EmployeeStaff,
-                  assignmentStatus: AssignmentStatusEnum.ActivePayrollEligible,
-                  assignmentCategory:
-                    assignmentCategory ??
-                    AssignmentCategoryEnum.FullTimeRegular,
-                  peopleGroupSupportType:
-                    peopleGroupSupportType ??
-                    PeopleGroupSupportTypeEnum.SupportedRmo,
                 },
                 currentSalary: {
                   grossSalaryAmount: 55000,
@@ -67,19 +51,12 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
                   currentTaxDeferredContributionPercentage: 5,
                   maximumContributionLimit: 45,
                 },
+                salaryRequestEligible,
               },
               {
                 staffInfo: {
                   preferredName: 'Jane',
                   lastName: 'Doe',
-                  userPersonType: UserPersonTypeEnum.EmployeeStaff,
-                  assignmentStatus: AssignmentStatusEnum.ActivePayrollEligible,
-                  assignmentCategory:
-                    assignmentCategory ??
-                    AssignmentCategoryEnum.FullTimeRegular,
-                  peopleGroupSupportType:
-                    peopleGroupSupportType ??
-                    PeopleGroupSupportTypeEnum.SupportedRmo,
                 },
                 currentSalary: {
                   grossSalaryAmount: 10000,
@@ -90,16 +67,18 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
                   currentTaxDeferredContributionPercentage: 6,
                   maximumContributionLimit: 45,
                 },
+                salaryRequestEligible,
               },
             ],
           },
           LandingSalaryCalculations: {
-            inProgressCalculation: hasInProgressCalculation ? {} : null,
+            inProgressCalculation: hasInProgressCalculation
+              ? { id: 'in-progress-calc-1' }
+              : null,
             approvedCalculation: hasApprovedCalculation ? {} : null,
             latestCalculation: hasLatestCalculation
               ? {
                   id: 'pending-calc-1',
-                  effectiveDate: '2025-02-01',
                   status: SalaryRequestStatusEnum.Pending,
                   submittedAt: '2025-01-16T10:00:00Z',
                   changesRequestedAt: null,

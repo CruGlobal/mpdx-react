@@ -1,6 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -14,6 +15,12 @@ import {
 import { mockMHARequest } from '../mockData';
 import { CurrentRequest, getDotColor, getDotVariant } from './CurrentRequest';
 
+const deleteRequestMutation = jest
+  .fn()
+  .mockImplementation(({ onCompleted }) => {
+    onCompleted?.();
+    return Promise.resolve();
+  });
 const mutationSpy = jest.fn();
 const mockEnqueue = jest.fn();
 
@@ -40,7 +47,8 @@ const TestComponent: React.FC = () => {
           <MinisterHousingAllowanceContext.Provider
             value={
               {
-                requestId: 'request-id',
+                requestId: '1',
+                deleteRequestMutation,
               } as unknown as ContextType
             }
           >
@@ -68,8 +76,6 @@ describe('CurrentRequest Component', () => {
 
     expect(getByText('$15,000.00')).toBeInTheDocument();
 
-    screen.logTestingPlaygroundURL();
-
     expect(getByText(/Requested on: Oct 1, 2019/i)).toBeInTheDocument();
     expect(
       getByText(/Deadline for changes: Oct 23, 2019/i),
@@ -82,24 +88,20 @@ describe('CurrentRequest Component', () => {
     const { getByText, findByText } = render(<TestComponent />);
 
     const cancelButton = getByText('Cancel Request');
-    cancelButton.click();
+    userEvent.click(cancelButton);
 
     const confirmButton = await findByText('Yes, Cancel');
-    confirmButton.click();
+    userEvent.click(confirmButton);
 
     await waitFor(() => {
-      expect(mutationSpy).toHaveBeenCalledWith(
-        expect.objectContaining({
-          operation: expect.objectContaining({
-            operationName: 'DeleteMinistryHousingAllowanceRequest',
-            variables: {
-              input: {
-                requestId: '1',
-              },
-            },
-          }),
-        }),
-      );
+      expect(deleteRequestMutation).toHaveBeenCalledWith({
+        variables: {
+          input: {
+            requestId: '1',
+          },
+        },
+        onCompleted: expect.any(Function),
+      });
     });
 
     await waitFor(() => {

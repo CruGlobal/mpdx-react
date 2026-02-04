@@ -4,7 +4,10 @@ import { merge } from 'lodash';
 import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
-import { PayrollDate } from 'src/graphql/types.generated';
+import {
+  PayrollDate,
+  SalaryRequestStatusEnum,
+} from 'src/graphql/types.generated';
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
 import { PayrollDatesQuery } from './EffectiveDateStep/PayrollDates.generated';
@@ -40,9 +43,6 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
           currentApprovedOverallAmount: 20000,
           currentTakenAmount: 300,
         },
-        exceptionSalaryCap: {
-          amount: null,
-        },
       },
       {
         staffInfo: {
@@ -61,9 +61,6 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
           currentApprovedOverallAmount: 20000,
           currentTakenAmount: 500,
         },
-        exceptionSalaryCap: {
-          amount: null,
-        },
       },
     ],
   },
@@ -77,63 +74,80 @@ export type SalaryRequestMock = DeepPartial<
 
 export interface SalaryCalculatorTestWrapperProps {
   salaryRequestMock?: SalaryRequestMock;
+  hcmMock?: DeepPartial<HcmQuery['hcm'][number]>;
   onCall?: MockLinkCallHandler;
   children?: React.ReactNode;
   hasSpouse?: boolean;
   payrollDates?: PayrollDate[];
+  editing?: boolean;
 }
 
 export const SalaryCalculatorTestWrapper: React.FC<
   SalaryCalculatorTestWrapperProps
 > = ({
   salaryRequestMock,
+  hcmMock,
   onCall,
   children,
   hasSpouse = true,
   payrollDates = [],
-}) => (
-  <ThemeProvider theme={theme}>
-    <TestRouter>
-      <GqlMockedProvider<{
-        Hcm: HcmQuery;
-        PayrollDates: PayrollDatesQuery;
-        SalaryCalculation: SalaryCalculationQuery;
-        GoalCalculatorConstants: GoalCalculatorConstantsQuery;
-      }>
-        mocks={{
-          PayrollDates: {
-            payrollDates,
-          },
-          GoalCalculatorConstants: {
-            constant: {
-              mpdGoalGeographicConstants: [
-                { location: 'Atlanta, GA' },
-                { location: 'Miami, FL' },
-              ],
-            },
-          },
-          Hcm: {
-            hcm: hasSpouse ? [hcmUserMock, hcmSpouseMock] : [hcmUserMock],
-          },
-          SalaryCalculation: {
-            salaryRequest: merge(
-              {
-                id: 'salary-request-1',
-                calculations: {
-                  individualCap: 80000,
-                  familyCap: 125000,
-                  hardCap: 80000,
-                },
-              } satisfies SalaryRequestMock,
-              salaryRequestMock,
-              hasSpouse ? undefined : { spouseCalculations: null },
-            ) as NonNullable<SalaryRequestMock>,
+  editing = true,
+}) => {
+  const hcmUser = merge(hcmUserMock, hcmMock);
+  return (
+    <ThemeProvider theme={theme}>
+      <TestRouter
+        router={{
+          query: {
+            accountListId: 'account-list-1',
+            calculationId: 'salary-request-1',
+            ...(editing ? {} : { mode: 'view' }),
           },
         }}
-        onCall={onCall}
       >
-        <SalaryCalculatorProvider>{children}</SalaryCalculatorProvider>
-      </GqlMockedProvider>
-    </TestRouter>
-  </ThemeProvider>
-);
+        <GqlMockedProvider<{
+          Hcm: HcmQuery;
+          PayrollDates: PayrollDatesQuery;
+          SalaryCalculation: SalaryCalculationQuery;
+          GoalCalculatorConstants: GoalCalculatorConstantsQuery;
+        }>
+          mocks={{
+            PayrollDates: {
+              payrollDates,
+            },
+            GoalCalculatorConstants: {
+              constant: {
+                mpdGoalGeographicConstants: [
+                  { location: 'Atlanta, GA' },
+                  { location: 'Miami, FL' },
+                ],
+              },
+            },
+            Hcm: {
+              hcm: hasSpouse ? [hcmUser, hcmSpouseMock] : [hcmUser],
+            },
+            SalaryCalculation: {
+              salaryRequest: merge(
+                {
+                  id: 'salary-request-1',
+                  status: SalaryRequestStatusEnum.InProgress,
+                  calculations: {
+                    hardCap: 80000,
+                    exceptionCap: null,
+                    combinedCap: 125000,
+                  },
+                  progressiveApprovalTier: null,
+                } satisfies SalaryRequestMock,
+                salaryRequestMock,
+                hasSpouse ? undefined : { spouseCalculations: null },
+              ) as NonNullable<SalaryRequestMock>,
+            },
+          }}
+          onCall={onCall}
+        >
+          <SalaryCalculatorProvider>{children}</SalaryCalculatorProvider>
+        </GqlMockedProvider>
+      </TestRouter>
+    </ThemeProvider>
+  );
+};

@@ -1,0 +1,52 @@
+import { CompleteFormValues } from '../AdditionalSalaryRequest';
+import { SalaryInfoQuery } from '../AdditionalSalaryRequest.generated';
+
+export const defaultCompleteFormValues: CompleteFormValues = {
+  currentYearSalaryNotReceived: '0',
+  previousYearSalaryNotReceived: '0',
+  additionalSalaryWithinMax: '0',
+  adoption: '0',
+  traditional403bContribution: '0',
+  counselingNonMedical: '0',
+  healthcareExpensesExceedingLimit: '0',
+  babysittingMinistryEvents: '0',
+  childrenMinistryTripExpenses: '0',
+  childrenCollegeEducation: '0',
+  movingExpense: '0',
+  seminary: '0',
+  housingDownPayment: '0',
+  autoPurchase: '0',
+  expensesNotApprovedWithin90Days: '0',
+  deductTwelvePercent: false,
+  phoneNumber: '',
+  emailAddress: '',
+};
+
+export const defaultSalaryInfoData: SalaryInfoQuery = {
+  salaryInfo: {
+    id: 'salary-info-1',
+    year: 2024,
+    annualBase: 28500,
+    fourOhThreeBAnnualLimitForOverFifty: 0,
+    fourOhThreeBAnnualLimitForSixtyToSixtyThree: 0,
+    maxFamilyInt: 25000,
+    maxFamilyUss: 135000,
+    maxSingleInt: 80000,
+    maxSingleUss: 90000,
+    minReqSalary: 0,
+    secaestAt403bInt: 0,
+    secaestPt403bInt: 0,
+    secaEstimate: 0,
+    secaestNo403bInt: 0,
+    minRequiredSalary: 0,
+    raisingSupportMinReqSalary: 0,
+    maxAdoptionInt: 15000,
+    maxAdoptionUss: 15000,
+    maxAutoPurchaseInt: 25000,
+    maxAutoPurchaseUss: 25000,
+    maxCollegeInt: 21000,
+    maxCollegeUss: 21000,
+    maxHousingDownPaymentInt: 50000,
+    maxHousingDownPaymentUss: 50000,
+  },
+};

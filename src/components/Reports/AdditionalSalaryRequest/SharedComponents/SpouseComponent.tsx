@@ -17,7 +17,7 @@ export const SpouseComponent: React.FC = () => {
   const name = spouse?.staffInfo?.preferredName ?? '';
 
   const { currentSalaryCap, staffAccountBalance } =
-    requestData?.additionalSalaryRequest?.spouseCalculations || {};
+    requestData?.latestAdditionalSalaryRequest?.spouseCalculations || {};
 
   const remainingAllowableSalary =
     (currentSalaryCap ?? 0) - (staffAccountBalance ?? 0);

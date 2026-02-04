@@ -47,12 +47,14 @@ const defaultFormValues: CompleteFormValues = {
   expensesNotApprovedWithin90Days: '0',
   deductTwelvePercent: false,
   phoneNumber: '555-1234',
+  emailAddress: 'test@testerson.test',
 };
 
 const mockTrackMutation = jest.fn((mutation) => mutation);
 
 const defaultMockContextValue: AdditionalSalaryRequestType = {
   staffAccountId: 'staff-account-1',
+  staffAccountIdLoading: false,
   steps: [],
   currentIndex: 1,
   currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
@@ -60,9 +62,8 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   handlePreviousStep: jest.fn(),
   isDrawerOpen: true,
   toggleDrawer: jest.fn(),
-  requestsData: null,
   requestData: {
-    additionalSalaryRequest: {
+    latestAdditionalSalaryRequest: {
       id: 'request-id',
       calculations: {
         currentSalaryCap: 50000,
@@ -70,12 +71,15 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
       },
     },
   } as AdditionalSalaryRequestType['requestData'],
-  requestsError: undefined,
+  loading: false,
+  requestError: undefined,
   pageType: PageEnum.New,
   handleDeleteRequest: jest.fn(),
   requestId: 'request-id',
   user: undefined,
   spouse: undefined,
+  salaryInfo: undefined,
+  isInternational: false,
   isMutating: false,
   trackMutation: mockTrackMutation,
 };

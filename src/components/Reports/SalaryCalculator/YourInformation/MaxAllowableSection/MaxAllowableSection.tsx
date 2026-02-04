@@ -1,9 +1,8 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import {
   Alert,
   CardContent,
   CardHeader,
-  Checkbox,
   Divider,
   FormControlLabel,
   Stack,
@@ -19,6 +18,7 @@ import * as yup from 'yup';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { amount } from 'src/lib/yupHelpers';
+import { AutosaveCheckbox } from '../../Autosave/AutosaveCheckbox';
 import { AutosaveTextField } from '../../Autosave/AutosaveTextField';
 import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
 import {
@@ -30,18 +30,13 @@ import {
 export const MaxAllowableStep: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { calculation: salaryCalculation, hcm } = useSalaryCalculator();
-  const { calculations, spouseCalculations } = salaryCalculation ?? {};
-  const [splitting, setSplitting] = useState(false);
-
-  const schema = useMemo(
-    () =>
-      yup.object({
-        salaryCap: amount(t('Maximum Allowable Salary'), t),
-        spouseSalaryCap: amount(t('Spouse Maximum Allowable Salary'), t),
-      }),
-    [t],
-  );
+  const {
+    calculation: salaryCalculation,
+    hcmUser,
+    hcmSpouse,
+  } = useSalaryCalculator();
+  const { calculations, spouseCalculations, manuallySplitCap } =
+    salaryCalculation ?? {};
 
   const formatCap = (cap: number | null | undefined) => {
     if (typeof cap !== 'number') {
@@ -53,31 +48,39 @@ export const MaxAllowableStep: React.FC = () => {
     });
   };
 
-  const formattedSingleCap = formatCap(calculations?.individualCap);
-  const formattedFamilyCap = formatCap(calculations?.familyCap);
+  const formattedHardCap = formatCap(calculations?.hardCap);
+  const formattedCombinedCap = formatCap(calculations?.combinedCap);
 
-  const [self, spouse] = hcm ?? [];
   const calculatedCap = calculations?.calculatedCap ?? 0;
   const spouseCalculatedCap = spouseCalculations?.calculatedCap ?? 0;
-  const combinedCalculatedCap = calculatedCap + spouseCalculatedCap;
-  const exceptionCap = self?.exceptionSalaryCap.amount ?? 0;
-  const cap = Math.max(
-    exceptionCap,
-    (spouse ? calculations?.familyCap : calculations?.hardCap) ?? 0,
-  );
-  // If the user and their spouse's combined calculated cap exceeds their allowed cap as a
-  // family (taking into account an exception they might have), then they will need to split their
-  // family cap between the two of them
-  const overCap = spouse && combinedCalculatedCap > cap;
-  const formattedCap = currencyFormat(cap, 'USD', locale, {
+  const combinedCap = calculations?.combinedCap ?? 0;
+  const formattedCap = currencyFormat(combinedCap, 'USD', locale, {
     showTrailingZeros: true,
   });
-  const inputCombinedMaxSalary =
+  const inputCombinedCap =
     (salaryCalculation?.salaryCap ?? 0) +
     (salaryCalculation?.spouseSalaryCap ?? 0);
 
-  const name = self?.staffInfo.preferredName;
-  const spouseName = spouse?.staffInfo.preferredName;
+  const schema = useMemo(() => {
+    const maxMessage = t(
+      'Maximum Allowable Salary must not exceed cap of {{cap}}',
+      { cap: formattedHardCap },
+    );
+
+    return yup.object({
+      salaryCap: amount(t('Maximum Allowable Salary'), t, {
+        max: calculations?.hardCap,
+        maxMessage,
+      }),
+      spouseSalaryCap: amount(t('Spouse Maximum Allowable Salary'), t, {
+        max: calculations?.hardCap,
+        maxMessage,
+      }),
+    });
+  }, [t, calculations, formattedHardCap]);
+
+  const name = hcmUser?.staffInfo.preferredName;
+  const spouseName = hcmSpouse?.staffInfo.preferredName;
 
   return (
     <StepCard>
@@ -85,22 +88,31 @@ export const MaxAllowableStep: React.FC = () => {
       <CardContent>
         <Typography variant="body1">
           <Trans t={t}>
-            Your Maximum Allowable Salary (CAP) includes SECA, 403(b), MHA, and
-            any taxes (if applicable). It is calculated using your personal
-            information above.
+            Your Maximum Allowable Salary (CAP) is the maximum amount you can
+            request without requiring additional approval. It includes SECA,
+            403(b), and any taxes (if applicable) and is calculated using your
+            personal information above.
           </Trans>
         </Typography>
 
         <Typography variant="body1">
-          <Trans t={t}>
-            Maximum Allowable Salary may not exceed{' '}
-            {{ singleCap: formattedSingleCap }} for an individual and{' '}
-            {{ familyCap: formattedFamilyCap }} combined for a couple or a
-            widow(er).
-          </Trans>
+          {calculations?.exceptionCap ? (
+            <Trans t={t}>
+              You have a Board-approved Maximum Allowable Salary (CAP). Any
+              adjustment that may exceed this cap must be submitted for further
+              Board approval.
+            </Trans>
+          ) : (
+            <Trans t={t}>
+              Maximum Allowable Salary may not exceed{' '}
+              {{ hardCap: formattedHardCap }} for an individual and{' '}
+              {{ combinedCap: formattedCombinedCap }} combined for a couple or a
+              widow(er).
+            </Trans>
+          )}
         </Typography>
 
-        {overCap ? (
+        {salaryCalculation?.splitCapRequired ? (
           <>
             <Table>
               <TableHead>
@@ -119,10 +131,10 @@ export const MaxAllowableStep: React.FC = () => {
                   <TableCell>{t('Maximum Allowable Salary')}</TableCell>
                   <TableCell>
                     {t(
-                      '{{ familyCap }} (with neither exceeding {{ singleCap }})',
+                      '{{ combinedCap }} (with neither exceeding {{ singleCap }})',
                       {
-                        familyCap: formattedFamilyCap,
-                        singleCap: formattedSingleCap,
+                        combinedCap: formattedCombinedCap,
+                        singleCap: formattedHardCap,
                       },
                     )}
                   </TableCell>
@@ -131,19 +143,14 @@ export const MaxAllowableStep: React.FC = () => {
             </Table>
 
             <FormControlLabel
-              control={
-                <Checkbox
-                  value={splitting}
-                  onChange={(event) => setSplitting(event.target.checked)}
-                />
-              }
+              control={<AutosaveCheckbox fieldName="manuallySplitCap" />}
               label={t(
                 'Check if you prefer to split your Combined Maximum Allowable Salary between you and {{ spouseName }} here before requesting your new salary.',
                 { spouseName },
               )}
             />
 
-            {splitting && (
+            {manuallySplitCap && (
               <>
                 <Divider />
                 <Typography variant="body1">
@@ -181,7 +188,7 @@ export const MaxAllowableStep: React.FC = () => {
                   />
                 </Stack>
 
-                {inputCombinedMaxSalary > cap && (
+                {inputCombinedCap > combinedCap && (
                   <Alert severity="error">
                     <Trans t={t}>
                       Your combined maximum allowable salary exceeds your
@@ -199,7 +206,9 @@ export const MaxAllowableStep: React.FC = () => {
               <TableRow>
                 <FormattedTableCell value={t('Maximum Allowable Salary')} />
                 <FormattedTableCell value={calculatedCap} />
-                {spouse && <FormattedTableCell value={spouseCalculatedCap} />}
+                {hcmSpouse && (
+                  <FormattedTableCell value={spouseCalculatedCap} />
+                )}
               </TableRow>
             </TableBody>
           </Table>

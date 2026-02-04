@@ -14,8 +14,8 @@ import theme from 'src/theme';
 import { PageEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
-import { defaultCompleteFormValues } from '../CompleteForm/CompleteForm.mock';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
+import { defaultCompleteFormValues } from '../Shared/CompleteForm.mock';
 import { fieldConfig } from '../Shared/useAdditionalSalaryRequestForm';
 import { RequestPage } from './RequestPage';
 
@@ -34,7 +34,8 @@ const mockUseAdditionalSalaryRequest =
     typeof useAdditionalSalaryRequest
   >;
 
-const mockHandleDeleteRequest = jest.fn();
+const mockPush = jest.fn();
+const mockHandleDeleteRequest = jest.fn().mockResolvedValue(undefined);
 
 const mockSteps = [
   {
@@ -66,9 +67,8 @@ const defaultMockContextValue = {
   handlePreviousStep: jest.fn(),
   isDrawerOpen: true,
   toggleDrawer: jest.fn(),
-  requestsData: null,
   requestData: null,
-  requestsError: undefined,
+  requestError: undefined,
   pageType: PageEnum.New,
   handleDeleteRequest: mockHandleDeleteRequest,
   requestId: 'test-request-id',
@@ -84,6 +84,8 @@ const defaultMockContextValue = {
     },
   },
   spouse: undefined,
+  salaryInfo: undefined,
+  isInternational: false,
   isMutating: false,
   trackMutation: jest.fn(),
 };
@@ -91,6 +93,7 @@ const defaultMockContextValue = {
 const router = {
   query: { accountListId: 'account-list-1' },
   isReady: true,
+  push: mockPush,
 };
 
 const validationSchema = yup.object({
@@ -105,6 +108,10 @@ const validationSchema = yup.object({
     .string()
     .required('Telephone number is required')
     .matches(/^[\d\s\-\(\)\+]+$/, 'Please enter a valid telephone number'),
+  emailAddress: yup
+    .string()
+    .required('Email address is required')
+    .email('Please enter a valid email address'),
 });
 
 interface TestFormikWrapperProps {
@@ -150,6 +157,20 @@ describe('RequestPage', () => {
     );
   });
 
+  it('should load on complete form step', async () => {
+    mockUseAdditionalSalaryRequest.mockReturnValue({
+      ...defaultMockContextValue,
+      currentIndex: 1,
+      currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
+    } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+    const { findByRole } = render(<TestWrapper />);
+
+    expect(
+      await findByRole('heading', { name: 'Complete the Form' }),
+    ).toBeInTheDocument();
+  });
+
   it('renders the sidebar with title and steps', () => {
     const { getByRole, getAllByText } = render(<TestWrapper />);
 
@@ -159,20 +180,6 @@ describe('RequestPage', () => {
     expect(getAllByText('About this Form').length).toBeGreaterThanOrEqual(1);
     expect(getAllByText('Complete the Form').length).toBeGreaterThanOrEqual(1);
     expect(getAllByText('Receipt').length).toBeGreaterThanOrEqual(1);
-  });
-
-  it('renders NoStaffAccount when staffAccountId is missing', () => {
-    mockUseAdditionalSalaryRequest.mockReturnValue({
-      ...defaultMockContextValue,
-      staffAccountId: null,
-    } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
-
-    const { getByText, getByRole } = render(<TestWrapper />);
-
-    expect(getByText('Access to this feature is limited.')).toBeInTheDocument();
-    expect(
-      getByRole('link', { name: 'Back to Dashboard' }),
-    ).toBeInTheDocument();
   });
 
   it('shows continue button and hides back button on first form page', () => {
@@ -209,7 +216,7 @@ describe('RequestPage', () => {
     expect(queryByRole('button', { name: /^back$/i })).not.toBeInTheDocument();
   });
 
-  it('shows submit button on last form page except for View mode', () => {
+  it('shows submit button on last form page in New mode', () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
       ...defaultMockContextValue,
       currentIndex: 1,
@@ -217,9 +224,11 @@ describe('RequestPage', () => {
       pageType: PageEnum.New,
     } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
 
-    const { getByRole, rerender } = render(<TestWrapper />);
+    const { getByRole } = render(<TestWrapper />);
     expect(getByRole('button', { name: /submit/i })).toBeInTheDocument();
+  });
 
+  it('shows Summary component in View mode instead of form', () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
       ...defaultMockContextValue,
       currentIndex: 1,
@@ -227,18 +236,33 @@ describe('RequestPage', () => {
       pageType: PageEnum.View,
     } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
 
-    rerender(<TestWrapper />);
-    expect(getByRole('button', { name: /continue/i })).toBeInTheDocument();
+    const { getByRole, queryByRole } = render(<TestWrapper />);
+
+    // View mode shows Summary with "Back to Status" link, not direction buttons
+    expect(getByRole('link', { name: /back to status/i })).toBeInTheDocument();
+    expect(queryByRole('button', { name: /submit/i })).not.toBeInTheDocument();
+    expect(
+      queryByRole('button', { name: /continue/i }),
+    ).not.toBeInTheDocument();
   });
 
-  it('calls handleDeleteRequest when cancel is clicked', async () => {
+  it('calls handleDeleteRequest when discard is clicked and navigates back', async () => {
     const { getByRole } = render(<TestWrapper />);
 
-    const cancelButton = getByRole('button', { name: /cancel/i });
-    userEvent.click(cancelButton);
+    const discardButton = getByRole('button', { name: /discard/i });
+    userEvent.click(discardButton);
+
+    const confirmButton = getByRole('button', { name: /yes, discard/i });
+    userEvent.click(confirmButton);
 
     await waitFor(() => {
-      expect(mockHandleDeleteRequest).toHaveBeenCalledWith('test-request-id');
+      expect(mockHandleDeleteRequest).toHaveBeenCalledWith(
+        'test-request-id',
+        false,
+      );
+      expect(mockPush).toHaveBeenCalledWith(
+        '/accountLists/account-list-1/reports/additionalSalaryRequest',
+      );
     });
   });
 

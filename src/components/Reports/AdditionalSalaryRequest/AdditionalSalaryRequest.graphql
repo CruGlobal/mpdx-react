@@ -3,6 +3,7 @@ fragment AdditionalSalaryRequestFields on AdditionalSalaryRequest {
   currentYearSalaryNotReceived
   previousYearSalaryNotReceived
   phoneNumber
+  emailAddress
   status
   feedback
   user {
@@ -53,18 +54,41 @@ fragment AdditionalSalaryRequestDetailsFields on AdditionalSalaryRequest {
   }
 }
 
-query AdditionalSalaryRequest($requestId: ID!) {
-  additionalSalaryRequest(id: $requestId) {
+query AdditionalSalaryRequest {
+  latestAdditionalSalaryRequest(
+    status: [IN_PROGRESS, ACTION_REQUIRED, PENDING]
+  ) {
     ...AdditionalSalaryRequestDetailsFields
     createdAt
   }
 }
 
-query AdditionalSalaryRequests {
-  additionalSalaryRequests {
-    nodes {
-      ...AdditionalSalaryRequestDetailsFields
-    }
+query SalaryInfo($year: Int!) {
+  salaryInfo(year: $year) {
+    id
+    year
+    annualBase
+    fourOhThreeBAnnualLimitForOverFifty
+    fourOhThreeBAnnualLimitForSixtyToSixtyThree
+    maxFamilyInt
+    maxFamilyUss
+    maxSingleInt
+    maxSingleUss
+    minReqSalary
+    minRequiredSalary
+    raisingSupportMinReqSalary
+    secaEstimate
+    secaestAt403bInt
+    secaestNo403bInt
+    secaestPt403bInt
+    maxAdoptionInt
+    maxAdoptionUss
+    maxAutoPurchaseInt
+    maxAutoPurchaseUss
+    maxCollegeInt
+    maxCollegeUss
+    maxHousingDownPaymentInt
+    maxHousingDownPaymentUss
   }
 }
 

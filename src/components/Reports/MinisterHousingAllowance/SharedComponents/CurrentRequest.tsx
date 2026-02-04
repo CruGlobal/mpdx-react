@@ -17,7 +17,7 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { StatusCard } from '../../Shared/CalculationReports/StatusCard/StatusCard';
-import { useDeleteMinistryHousingAllowanceRequestMutation } from '../MinisterHousingAllowance.generated';
+import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
 import { getRequestUrl } from '../Shared/Helper/getRequestUrl';
 import { MHARequest } from './types';
 
@@ -32,6 +32,8 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
   const router = useRouter();
   const currency = 'USD';
   const { enqueueSnackbar } = useSnackbar();
+
+  const { deleteRequestMutation } = useMinisterHousingAllowance();
 
   const requestId = request.id;
 
@@ -61,12 +63,6 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
     ? DateTime.fromISO(deadlineDate) < DateTime.now()
     : false;
   const hideEditButton = !canEdit || pastDeadlineDate;
-
-  const [deleteRequestMutation] =
-    useDeleteMinistryHousingAllowanceRequestMutation({
-      refetchQueries: ['MinistryHousingAllowanceRequests'],
-      awaitRefetchQueries: true,
-    });
 
   const handleCancelRequest = async () => {
     await deleteRequestMutation({

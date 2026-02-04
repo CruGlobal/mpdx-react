@@ -10,10 +10,6 @@ query Hcm {
       age
       dependentChildrenWithHealthcareBenefits
       secaStatus
-      assignmentCategory
-      peopleGroupSupportType
-      userPersonType
-      assignmentStatus
       primaryPhoneNumber
       emailAddress
     }
@@ -30,8 +26,6 @@ query Hcm {
       currentApprovedOverallAmount
       currentTakenAmount
     }
-    exceptionSalaryCap {
-      amount
-    }
+    salaryRequestEligible
   }
 }

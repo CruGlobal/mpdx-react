@@ -1,11 +1,13 @@
-import { useRouter } from 'next/router';
-import React from 'react';
+import Link from 'next/link';
+import React, { useState } from 'react';
 import { Delete } from '@mui/icons-material';
 import { Box, Button, CardActions, IconButton } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { SubmitModal } from 'src/components/Reports/Shared/CalculationReports/SubmitModal/SubmitModal';
 import { SalaryRequestStatusEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
+import { useDeleteSalaryCalculation } from '../../../Shared/useDeleteSalaryCalculation';
 import type { LandingSalaryCalculationsQuery } from '../../NewSalaryCalculationLanding/LandingSalaryCalculations.generated';
 
 interface PendingRequestActionsProps {
@@ -16,16 +18,14 @@ export const PendingRequestActions: React.FC<PendingRequestActionsProps> = ({
   calculation,
 }) => {
   const { t } = useTranslation();
-  const router = useRouter();
   const accountListId = useAccountListId();
+  const { deleteSalaryCalculation } = useDeleteSalaryCalculation();
+  const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
 
-  const handleView = () => {
-    // TODO: implement proper view logic
-    router.push(`/accountLists/${accountListId}/reports/salaryCalculator/edit`);
-  };
-
-  const handleDelete = () => {
-    // TODO: implement delete logic
+  const handleDelete = async () => {
+    if (calculation) {
+      await deleteSalaryCalculation(calculation.id);
+    }
   };
 
   return (
@@ -38,17 +38,39 @@ export const PendingRequestActions: React.FC<PendingRequestActionsProps> = ({
       }}
     >
       <Box sx={{ display: 'flex', gap: 1 }}>
-        <Button variant="contained" onClick={handleView}>
-          {t('View Request')}
-        </Button>
+        {calculation && (
+          <Button
+            variant="contained"
+            color="primary"
+            component={Link}
+            href={`/accountLists/${accountListId}/reports/salaryCalculator/${calculation.id}?mode=view`}
+            data-testid="view-request"
+          >
+            {t('View Request')}
+          </Button>
+        )}
         {calculation?.status === SalaryRequestStatusEnum.ActionRequired && (
-          <Button variant="outlined" onClick={handleView}>
+          <Button
+            variant="outlined"
+            color="primary"
+            component={Link}
+            href={`/accountLists/${accountListId}/reports/salaryCalculator/${calculation.id}`}
+            data-testid="edit-request"
+          >
             {t('Edit Request')}
           </Button>
         )}
       </Box>
+      {removeDialogOpen && (
+        <SubmitModal
+          formTitle={t('Salary Calculation')}
+          handleClose={() => setRemoveDialogOpen(false)}
+          handleConfirm={handleDelete}
+          isCancel
+        />
+      )}
       <IconButton
-        onClick={handleDelete}
+        onClick={() => setRemoveDialogOpen(true)}
         sx={{ color: 'error.main' }}
         aria-label={t('Delete request')}
       >

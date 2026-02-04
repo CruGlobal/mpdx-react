@@ -9,15 +9,20 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { UpdateMinistryHousingAllowanceRequestMutation } from '../../MinisterHousingAllowance.generated';
+import {
+  DeleteMinistryHousingAllowanceRequestMutation,
+  UpdateMinistryHousingAllowanceRequestMutation,
+} from '../../MinisterHousingAllowance.generated';
 import {
   ContextType,
   MinisterHousingAllowanceContext,
+  MinisterHousingAllowanceProvider,
 } from '../../Shared/Context/MinisterHousingAllowanceContext';
 import { RentOwn } from './RentOwn';
 
 const submit = jest.fn();
 const mutationSpy = jest.fn();
+const mockPush = jest.fn();
 const updateMutation = jest.fn();
 const setHasCalcValues = jest.fn();
 const mockEnqueue = jest.fn();
@@ -39,23 +44,21 @@ interface TestComponentProps {
 
 const TestComponent: React.FC<TestComponentProps> = ({ contextValue }) => (
   <ThemeProvider theme={theme}>
-    <TestRouter>
-      <SnackbarProvider>
-        <GqlMockedProvider<{
-          UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
-        }>
-          onCall={mutationSpy}
-        >
-          <Formik initialValues={{}} onSubmit={submit}>
-            <MinisterHousingAllowanceContext.Provider
-              value={contextValue as ContextType}
-            >
-              <RentOwn />
-            </MinisterHousingAllowanceContext.Provider>
-          </Formik>
-        </GqlMockedProvider>
-      </SnackbarProvider>
-    </TestRouter>
+    <SnackbarProvider>
+      <GqlMockedProvider<{
+        UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
+      }>
+        onCall={mutationSpy}
+      >
+        <Formik initialValues={{}} onSubmit={submit}>
+          <MinisterHousingAllowanceContext.Provider
+            value={contextValue as ContextType}
+          >
+            <RentOwn />
+          </MinisterHousingAllowanceContext.Provider>
+        </Formik>
+      </GqlMockedProvider>
+    </SnackbarProvider>
   </ThemeProvider>
 );
 
@@ -137,5 +140,74 @@ describe('RentOwn', () => {
 
     expect(getByRole('radio', { name: 'Rent' })).not.toBeChecked();
     expect(getByRole('radio', { name: 'Own' })).not.toBeChecked();
+  });
+
+  it('should show discard modal when Discard is clicked', async () => {
+    const { getByRole, findByRole } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter
+          router={{
+            push: mockPush,
+            query: { accountListId: 'account-list-1' },
+          }}
+        >
+          <SnackbarProvider>
+            <GqlMockedProvider<{
+              DeleteMinistryHousingAllowanceRequest: DeleteMinistryHousingAllowanceRequestMutation;
+            }>
+              onCall={mutationSpy}
+            >
+              <MinisterHousingAllowanceProvider
+                requestId="request-id"
+                type={PageEnum.New}
+              >
+                <Formik initialValues={{}} onSubmit={submit}>
+                  <RentOwn />
+                </Formik>
+              </MinisterHousingAllowanceProvider>
+            </GqlMockedProvider>
+          </SnackbarProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    const discard = await findByRole('button', { name: /discard/i });
+
+    userEvent.click(discard);
+
+    await waitFor(() => {
+      expect(
+        getByRole('heading', {
+          name: 'Do you want to discard?',
+        }),
+      ).toBeInTheDocument();
+    });
+
+    const confirmDiscard = getByRole('button', { name: /yes, discard/i });
+    userEvent.click(confirmDiscard);
+
+    await waitFor(() => {
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'DeleteMinistryHousingAllowanceRequest',
+        {
+          input: {
+            requestId: 'request-id',
+          },
+        },
+      );
+    });
+
+    await waitFor(() => {
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        expect.stringContaining('Request discarded successfully.'),
+        { variant: 'success' },
+      );
+    });
+
+    await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith(
+        `/accountLists/account-list-1/reports/housingAllowance`,
+      );
+    });
   });
 });

@@ -7,6 +7,7 @@ import theme from 'src/theme';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import {
   AdditionalSalaryRequestQuery,
+  SalaryInfoQuery,
   SubmitAdditionalSalaryRequestMutation,
   UpdateAdditionalSalaryRequestMutation,
 } from '../AdditionalSalaryRequest.generated';
@@ -37,6 +38,7 @@ const mockHandleNextStep = jest.fn();
 
 const defaultMockContextValue: AdditionalSalaryRequestType = {
   staffAccountId: 'staff-account-1',
+  staffAccountIdLoading: false,
   steps: [],
   currentIndex: 1,
   currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
@@ -44,14 +46,26 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   handlePreviousStep: jest.fn(),
   isDrawerOpen: true,
   toggleDrawer: jest.fn(),
-  requestsData: null,
   requestData: null,
-  requestsError: undefined,
+  loading: false,
+  requestError: undefined,
   pageType: PageEnum.New,
   handleDeleteRequest: jest.fn(),
   requestId: 'test-request-id',
   user: undefined,
   spouse: undefined,
+  salaryInfo: {
+    id: '1',
+    maxAdoptionInt: 15000,
+    maxAdoptionUss: 15000,
+    maxAutoPurchaseInt: 25000,
+    maxAutoPurchaseUss: 25000,
+    maxCollegeInt: 21000,
+    maxCollegeUss: 21000,
+    maxHousingDownPaymentInt: 50000,
+    maxHousingDownPaymentUss: 50000,
+  },
+  isInternational: false,
   isMutating: false,
   trackMutation: jest.fn((mutation) => mutation),
 };
@@ -74,12 +88,14 @@ const defaultFormValues: CompleteFormValues = {
   expensesNotApprovedWithin90Days: '0',
   deductTwelvePercent: false,
   phoneNumber: '',
+  emailAddress: '',
 };
 
 const mutationSpy = jest.fn();
 
 type MocksType = {
   AdditionalSalaryRequest: AdditionalSalaryRequestQuery;
+  SalaryInfo: SalaryInfoQuery;
   UpdateAdditionalSalaryRequest: UpdateAdditionalSalaryRequestMutation;
   SubmitAdditionalSalaryRequest: SubmitAdditionalSalaryRequestMutation;
 };
@@ -94,6 +110,7 @@ const TestWrapper: React.FC<TestComponentProps> = ({ children, mocks }) => {
     <ThemeProvider theme={theme}>
       <GqlMockedProvider<{
         AdditionalSalaryRequest: AdditionalSalaryRequestQuery;
+        SalaryInfo: SalaryInfoQuery;
         UpdateAdditionalSalaryRequest: UpdateAdditionalSalaryRequestMutation;
         SubmitAdditionalSalaryRequest: SubmitAdditionalSalaryRequestMutation;
       }>
@@ -124,14 +141,24 @@ describe('useAdditionalSalaryRequestForm', () => {
       expect(fieldKeys).toContain('housingDownPayment');
     });
 
-    it('should have max values for adoption and housing down payment', () => {
+    it('should have salaryInfo keys for fields with dynamic max values', () => {
       const adoptionConfig = fieldConfig.find((f) => f.key === 'adoption');
       const housingConfig = fieldConfig.find(
         (f) => f.key === 'housingDownPayment',
       );
+      const autoConfig = fieldConfig.find((f) => f.key === 'autoPurchase');
+      const collegeConfig = fieldConfig.find(
+        (f) => f.key === 'childrenCollegeEducation',
+      );
 
-      expect(adoptionConfig?.max).toBe(15000);
-      expect(housingConfig?.max).toBe(50000);
+      expect(adoptionConfig?.salaryInfoIntKey).toBe('maxAdoptionInt');
+      expect(adoptionConfig?.salaryInfoUssKey).toBe('maxAdoptionUss');
+      expect(housingConfig?.salaryInfoIntKey).toBe('maxHousingDownPaymentInt');
+      expect(housingConfig?.salaryInfoUssKey).toBe('maxHousingDownPaymentUss');
+      expect(autoConfig?.salaryInfoIntKey).toBe('maxAutoPurchaseInt');
+      expect(autoConfig?.salaryInfoUssKey).toBe('maxAutoPurchaseUss');
+      expect(collegeConfig?.salaryInfoIntKey).toBe('maxCollegeInt');
+      expect(collegeConfig?.salaryInfoUssKey).toBe('maxCollegeUss');
     });
   });
 
@@ -175,7 +202,7 @@ describe('useAdditionalSalaryRequestForm', () => {
     it('should populate initial values from request data query', async () => {
       const mocks = {
         AdditionalSalaryRequest: {
-          additionalSalaryRequest: {
+          latestAdditionalSalaryRequest: {
             id: 'test-request-id',
             currentYearSalaryNotReceived: 500,
             previousYearSalaryNotReceived: 200,
@@ -345,6 +372,56 @@ describe('useAdditionalSalaryRequestForm', () => {
       expect(errors.housingDownPayment).toContain('Exceeds');
       expect(errors.housingDownPayment).toContain('$50,000.00');
     });
+
+    it('should validate auto purchase max amount of $25,000', async () => {
+      const { result } = renderHook(
+        () =>
+          useAdditionalSalaryRequestForm({
+            requestId: 'test-request-id',
+            initialValues: {
+              ...defaultFormValues,
+              autoPurchase: '30000',
+              phoneNumber: '555-123-4567',
+            },
+          }),
+        {
+          wrapper: TestWrapper,
+        },
+      );
+
+      let errors: Record<string, string> = {};
+      await act(async () => {
+        errors = await result.current.validateForm();
+      });
+
+      expect(errors.autoPurchase).toContain('Exceeds');
+      expect(errors.autoPurchase).toContain('$25,000.00');
+    });
+
+    it('should validate college max amount of $21,000', async () => {
+      const { result } = renderHook(
+        () =>
+          useAdditionalSalaryRequestForm({
+            requestId: 'test-request-id',
+            initialValues: {
+              ...defaultFormValues,
+              childrenCollegeEducation: '25000',
+              phoneNumber: '555-123-4567',
+            },
+          }),
+        {
+          wrapper: TestWrapper,
+        },
+      );
+
+      let errors: Record<string, string> = {};
+      await act(async () => {
+        errors = await result.current.validateForm();
+      });
+
+      expect(errors.childrenCollegeEducation).toContain('Exceeds');
+      expect(errors.childrenCollegeEducation).toContain('$21,000.00');
+    });
   });
 
   describe('onSubmit', () => {
@@ -364,7 +441,9 @@ describe('useAdditionalSalaryRequestForm', () => {
         await result.current.submitForm();
       });
 
-      expect(mutationSpy).not.toHaveBeenCalled();
+      expect(mutationSpy).not.toHaveGraphqlOperation(
+        'UpdateAdditionalSalaryRequest',
+      );
     });
 
     it('should call update and submit mutations on form submit', async () => {
@@ -375,6 +454,7 @@ describe('useAdditionalSalaryRequestForm', () => {
             initialValues: {
               ...defaultFormValues,
               phoneNumber: '555-123-4567',
+              emailAddress: 'test@example.com',
               currentYearSalaryNotReceived: '100',
             },
           }),
@@ -408,6 +488,7 @@ describe('useAdditionalSalaryRequestForm', () => {
               previousYearSalaryNotReceived: '200',
               adoption: '300',
               phoneNumber: '555-123-4567',
+              emailAddress: 'test@example.com',
             },
           }),
         {
@@ -443,6 +524,7 @@ describe('useAdditionalSalaryRequestForm', () => {
             initialValues: {
               ...defaultFormValues,
               phoneNumber: '555-123-4567',
+              emailAddress: 'test@example.com',
             },
           }),
         {
@@ -522,7 +604,7 @@ describe('useAdditionalSalaryRequestForm', () => {
     it('should enable reinitialize', async () => {
       const mocks = {
         AdditionalSalaryRequest: {
-          additionalSalaryRequest: {
+          latestAdditionalSalaryRequest: {
             id: 'test-request-id',
             currentYearSalaryNotReceived: 999,
             previousYearSalaryNotReceived: 0,
@@ -541,6 +623,7 @@ describe('useAdditionalSalaryRequestForm', () => {
             expensesNotApprovedWithin90Days: 0,
             deductTwelvePercent: false,
             phoneNumber: '',
+            emailAddress: '',
             calculations: {
               currentSalaryCap: 50000,
               staffAccountBalance: 20000,

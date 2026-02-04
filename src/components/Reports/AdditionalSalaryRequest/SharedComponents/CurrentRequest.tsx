@@ -15,14 +15,16 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { StatusCard } from '../../Shared/CalculationReports/StatusCard/StatusCard';
-import { AdditionalSalaryRequestsQuery } from '../AdditionalSalaryRequest.generated';
+import { AdditionalSalaryRequestQuery } from '../AdditionalSalaryRequest.generated';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { getDotColor } from '../Shared/Helper/getDotColor';
 import { getDotVariant } from '../Shared/Helper/getDotVariant';
 import { getRequestUrl } from '../Shared/Helper/getRequestUrl';
 
 interface CurrentRequestProps {
-  request: AdditionalSalaryRequestsQuery['additionalSalaryRequests']['nodes'][0];
+  request: NonNullable<
+    AdditionalSalaryRequestQuery['latestAdditionalSalaryRequest']
+  >;
 }
 
 export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
@@ -47,10 +49,9 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
       iconColor="warning.main"
       linkOneText={t('View Request')}
       linkOne={getRequestUrl(accountListId, id, 'view')}
-      linkTwoText={t('Edit Request')}
-      linkTwo={getRequestUrl(accountListId, id, 'edit')}
+      hideLinkTwoButton={true}
       isRequest={true}
-      handleConfirmCancel={() => handleDeleteRequest(id)}
+      handleConfirmCancel={() => handleDeleteRequest(id, true)}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <Typography

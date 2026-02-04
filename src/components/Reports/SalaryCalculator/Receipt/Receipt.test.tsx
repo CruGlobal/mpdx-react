@@ -21,7 +21,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
               approvalTimeframe: '1-2 weeks',
             },
           }
-        : null
+        : undefined
     }
   >
     <ReceiptStep />

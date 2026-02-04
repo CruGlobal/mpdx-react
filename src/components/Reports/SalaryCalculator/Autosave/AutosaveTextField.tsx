@@ -11,7 +11,7 @@ export interface AutosaveTextFieldProps
     // Don't allow overriding any props managed by useAutoSave
     keyof ReturnType<typeof useAutoSave> | 'variant'
   > {
-  fieldName: keyof SalaryRequestUpdateInput;
+  fieldName: Exclude<keyof SalaryRequestUpdateInput, 'manuallySplitCap'>;
   schema: yup.Schema;
 }
 

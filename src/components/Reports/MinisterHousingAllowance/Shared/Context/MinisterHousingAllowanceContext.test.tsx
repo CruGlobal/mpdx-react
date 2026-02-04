@@ -3,6 +3,8 @@ import { ThemeProvider } from '@emotion/react';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import userEvent from '@testing-library/user-event';
+import { SnackbarProvider } from 'notistack';
+import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
@@ -23,11 +25,15 @@ const TestComponent: React.FC<TestComponentProps> = ({
 }) => (
   <ThemeProvider theme={theme}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <GqlMockedProvider>
-        <MinisterHousingAllowanceProvider type={type}>
-          <TestConsumer />
-        </MinisterHousingAllowanceProvider>
-      </GqlMockedProvider>
+      <TestRouter>
+        <SnackbarProvider>
+          <GqlMockedProvider>
+            <MinisterHousingAllowanceProvider type={type}>
+              <TestConsumer />
+            </MinisterHousingAllowanceProvider>
+          </GqlMockedProvider>
+        </SnackbarProvider>
+      </TestRouter>
     </LocalizationProvider>
   </ThemeProvider>
 );

@@ -12,6 +12,7 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
+import { getModalText } from './getModalText';
 
 interface SubmitModalProps {
   formTitle: string;
@@ -21,6 +22,8 @@ interface SubmitModalProps {
   overrideContent?: string;
   overrideSubContent?: string;
   isCancel?: boolean;
+  isDiscard?: boolean;
+  isDiscardEdit?: boolean;
   deadlineDate?: string;
   actionRequired?: boolean;
 }
@@ -33,6 +36,8 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
   overrideContent,
   overrideSubContent,
   isCancel,
+  isDiscard,
+  isDiscardEdit,
   deadlineDate,
   actionRequired,
 }) => {
@@ -44,49 +49,31 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
     ? dateFormatShort(DateTime.fromISO(deadlineDate), locale)
     : null;
 
-  const title = overrideTitle
-    ? overrideTitle
-    : isCancel
-      ? t('Do you want to cancel?')
-      : actionRequired
-        ? t(`Are you ready to submit your updated ${formTitle}?`)
-        : t(`Are you ready to submit your ${formTitle}?`);
+  const {
+    title: defaultTitle,
+    contentTitle: defaultContentTitle,
+    contentText: defaultContentText,
+    cancelButtonText,
+    isError,
+  } = getModalText({
+    t,
+    formTitle,
+    isCancel: isCancel ?? false,
+    isDiscard: isDiscard ?? false,
+    isDiscardEdit: isDiscardEdit ?? false,
+    actionRequired: actionRequired ?? false,
+    formattedDeadlineDate,
+  });
 
-  const contentTitle = overrideContent
-    ? overrideContent
-    : isCancel
-      ? t(`You are cancelling this ${formTitle}.`)
-      : actionRequired
-        ? t(
-            `You are submitting changes to your Annual ${formTitle} for board approval.`,
-          )
-        : t(`You are submitting your ${formTitle} for board approval.`);
-
-  const contentText = overrideSubContent
-    ? overrideSubContent
-    : isCancel
-      ? t('Your work will not be saved.')
-      : actionRequired
-        ? t(
-            'This updated request will take the place of your previous request. Once submitted, you can return and make edits until {{date}}. After this date, your request will be processed as is.',
-            {
-              date: formattedDeadlineDate,
-              interpolation: { escapeValue: false },
-            },
-          )
-        : t(
-            `Once submitted, you can return and make edits until {{date}}. After this date, your request will be processed as is.`,
-            {
-              date: formattedDeadlineDate,
-              interpolation: { escapeValue: false },
-            },
-          );
+  const title = overrideTitle ?? defaultTitle;
+  const contentTitle = overrideContent ?? defaultContentTitle;
+  const contentText = overrideSubContent ?? defaultContentText;
 
   return (
     <Dialog open={true} onClose={handleClose} maxWidth="sm" fullWidth>
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
-        <Alert severity={isCancel ? 'error' : 'warning'}>
+        <Alert severity={isError ? 'error' : 'warning'}>
           <Box sx={{ display: 'flex', flexDirection: 'column' }}>
             <b>{contentTitle}</b>
             {contentText}
@@ -95,10 +82,10 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose} sx={{ color: 'text.secondary' }}>
-          <b>{isCancel ? t('NO') : t('GO BACK')}</b>
+          <b>{t('GO BACK')}</b>
         </Button>
-        <Button onClick={handleConfirm} color={isCancel ? 'error' : 'primary'}>
-          <b>{isCancel ? t('Yes, Cancel') : t('Yes, Continue')}</b>
+        <Button onClick={handleConfirm} color={isError ? 'error' : 'primary'}>
+          <b>{cancelButtonText}</b>
           <ChevronRight sx={{ ml: 1 }} />
         </Button>
       </DialogActions>

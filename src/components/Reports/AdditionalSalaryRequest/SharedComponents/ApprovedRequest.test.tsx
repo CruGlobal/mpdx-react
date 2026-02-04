@@ -1,13 +1,14 @@
 import { render } from '@testing-library/react';
 import { AsrStatusEnum } from 'src/graphql/types.generated';
-import { AdditionalSalaryRequestsQuery } from '../AdditionalSalaryRequest.generated';
+import { AdditionalSalaryRequestQuery } from '../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
 import { AdditionalSalaryRequestTestWrapper } from '../AdditionalSalaryRequestTestWrapper';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { ApprovedRequest } from './ApprovedRequest';
 
-type RequestType =
-  AdditionalSalaryRequestsQuery['additionalSalaryRequests']['nodes'][0];
+type RequestType = NonNullable<
+  AdditionalSalaryRequestQuery['latestAdditionalSalaryRequest']
+>;
 
 jest.mock('../Shared/AdditionalSalaryRequestContext', () => ({
   ...jest.requireActual('../Shared/AdditionalSalaryRequestContext'),
@@ -21,6 +22,7 @@ const mockUseAdditionalSalaryRequest =
 
 const mockRequest: RequestType = {
   id: 'request-123',
+  createdAt: '2025-06-01T00:00:00.000Z',
   totalAdditionalSalaryRequested: 5000,
   usingSpouseSalary: false,
   approvedAt: '2025-06-15T00:00:00.000Z',
@@ -68,6 +70,7 @@ const mockRequest: RequestType = {
 
 const mockContextValue = {
   staffAccountId: 'staff-1',
+  staffAccountIdLoading: false,
   steps: [],
   currentIndex: 0,
   currentStep: AdditionalSalaryRequestSectionEnum.AboutForm,
@@ -75,9 +78,9 @@ const mockContextValue = {
   handlePreviousStep: jest.fn(),
   isDrawerOpen: false,
   toggleDrawer: jest.fn(),
-  requestsData: null,
   requestData: null,
-  requestsError: undefined,
+  loading: false,
+  requestError: undefined,
   pageType: undefined,
   handleDeleteRequest: jest.fn(),
   requestId: undefined,
@@ -91,6 +94,8 @@ const mockContextValue = {
       preferredName: 'Jane',
     },
   } as never,
+  salaryInfo: undefined,
+  isInternational: false,
   isMutating: false,
   trackMutation: jest.fn(),
 };

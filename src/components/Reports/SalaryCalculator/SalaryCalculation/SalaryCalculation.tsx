@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
-import { AdditionalInfoCard } from './AdditionalInfoCard/AdditionalInfoCard';
+import { ApprovalProcessCard } from './ApprovalProcessCard/ApprovalProcessCard';
 import { RequestSummaryCard } from './RequestSummaryCard/RequestSummaryCard';
 import { RequestedSalaryCard } from './RequestedSalaryCard/RequestedSalaryCard';
 
@@ -18,7 +18,7 @@ export const SalaryCalculationStep: React.FC = () => {
       </Typography>
       <RequestedSalaryCard />
       <RequestSummaryCard />
-      <AdditionalInfoCard />
+      <ApprovalProcessCard />
     </>
   );
 };

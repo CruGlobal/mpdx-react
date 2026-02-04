@@ -1,14 +1,15 @@
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AsrStatusEnum } from 'src/graphql/types.generated';
-import { AdditionalSalaryRequestsQuery } from '../AdditionalSalaryRequest.generated';
+import { AdditionalSalaryRequestQuery } from '../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
 import { AdditionalSalaryRequestTestWrapper } from '../AdditionalSalaryRequestTestWrapper';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { CurrentRequest } from './CurrentRequest';
 
-type RequestType =
-  AdditionalSalaryRequestsQuery['additionalSalaryRequests']['nodes'][0];
+type RequestType = NonNullable<
+  AdditionalSalaryRequestQuery['latestAdditionalSalaryRequest']
+>;
 
 jest.mock('../Shared/AdditionalSalaryRequestContext', () => ({
   ...jest.requireActual('../Shared/AdditionalSalaryRequestContext'),
@@ -24,6 +25,7 @@ const mockHandleDeleteRequest = jest.fn();
 
 const mockRequest: RequestType = {
   id: 'request-123',
+  createdAt: '2025-06-01T00:00:00.000Z',
   totalAdditionalSalaryRequested: 5000,
   usingSpouseSalary: false,
   approvedAt: null,
@@ -71,6 +73,7 @@ const mockRequest: RequestType = {
 
 const mockContextValue = {
   staffAccountId: 'staff-1',
+  staffAccountIdLoading: false,
   steps: [],
   currentIndex: 0,
   currentStep: AdditionalSalaryRequestSectionEnum.AboutForm,
@@ -78,9 +81,9 @@ const mockContextValue = {
   handlePreviousStep: jest.fn(),
   isDrawerOpen: false,
   toggleDrawer: jest.fn(),
-  requestsData: null,
   requestData: null,
-  requestsError: undefined,
+  loading: false,
+  requestError: undefined,
   pageType: undefined,
   handleDeleteRequest: mockHandleDeleteRequest,
   requestId: undefined,
@@ -94,6 +97,8 @@ const mockContextValue = {
       preferredName: 'Jane',
     },
   } as never,
+  salaryInfo: undefined,
+  isInternational: false,
   isMutating: false,
   trackMutation: jest.fn(),
 };
@@ -124,11 +129,14 @@ describe('CurrentRequest', () => {
     expect(getByText('$5,000.00')).toBeInTheDocument();
   });
 
-  it('renders View Request and Edit Request links', () => {
-    const { getByText } = render(<TestComponent request={mockRequest} />);
+  it('renders View Request link', () => {
+    const { getByText, queryByText } = render(
+      <TestComponent request={mockRequest} />,
+    );
 
     expect(getByText('View Request')).toBeInTheDocument();
-    expect(getByText('Edit Request')).toBeInTheDocument();
+    // Edit Request link is hidden
+    expect(queryByText('Edit Request')).not.toBeInTheDocument();
   });
 
   describe('timeline status - InProgress', () => {
@@ -245,6 +253,6 @@ describe('CurrentRequest', () => {
     const confirmButton = getByRole('button', { name: /yes, cancel/i });
     userEvent.click(confirmButton);
 
-    expect(mockHandleDeleteRequest).toHaveBeenCalledWith('request-123');
+    expect(mockHandleDeleteRequest).toHaveBeenCalledWith('request-123', true);
   });
 });

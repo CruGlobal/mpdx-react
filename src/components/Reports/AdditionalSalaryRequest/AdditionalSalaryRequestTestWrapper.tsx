@@ -18,6 +18,8 @@ interface AdditionalSalaryRequestTestWrapperProps {
   initialValues?: CompleteFormValues;
   pageType?: 'new' | 'edit' | 'view';
   deductionPercentage?: number;
+  onCall?: jest.Mock;
+  mockPush?: jest.Mock;
 }
 
 const defaultInitialValues: CompleteFormValues = {
@@ -38,6 +40,7 @@ const defaultInitialValues: CompleteFormValues = {
   expensesNotApprovedWithin90Days: '0',
   deductTwelvePercent: false,
   phoneNumber: '',
+  emailAddress: '',
 };
 
 const validationSchema = yup.object({
@@ -52,6 +55,10 @@ const validationSchema = yup.object({
     .string()
     .required('Telephone number is required')
     .matches(/^[\d\s\-\(\)\+]+$/, 'Please enter a valid telephone number'),
+  emailAddress: yup
+    .string()
+    .required('Email address is required')
+    .email('Please enter a valid email address'),
 });
 
 const TestFormikWrapper: React.FC<{
@@ -78,6 +85,8 @@ export const AdditionalSalaryRequestTestWrapper: React.FC<
   initialValues,
   pageType = 'new',
   deductionPercentage = 0,
+  onCall,
+  mockPush,
 }) => {
   const requestValues = initialValues || defaultInitialValues;
 
@@ -91,12 +100,13 @@ export const AdditionalSalaryRequestTestWrapper: React.FC<
                 accountListId: 'account-list-1',
                 mode: pageType,
               },
+              push: mockPush,
             }}
           >
             <GqlMockedProvider
               mocks={{
                 AdditionalSalaryRequest: {
-                  additionalSalaryRequest: {
+                  latestAdditionalSalaryRequest: {
                     id: 'test-request-id',
                     ...Object.fromEntries(
                       Object.entries(requestValues)
@@ -104,7 +114,9 @@ export const AdditionalSalaryRequestTestWrapper: React.FC<
                           ([key]) => key !== 'traditional403bContribution',
                         )
                         .map(([key, value]) =>
-                          typeof value === 'string' && key !== 'phoneNumber'
+                          typeof value === 'string' &&
+                          key !== 'phoneNumber' &&
+                          key !== 'emailAddress'
                             ? [key, parseFloat(value) || 0]
                             : [key, value],
                         ),
@@ -113,6 +125,7 @@ export const AdditionalSalaryRequestTestWrapper: React.FC<
                   },
                 },
               }}
+              onCall={onCall}
             >
               <AdditionalSalaryRequestProvider requestId="test-request-id">
                 <TestFormikWrapper initialValues={initialValues}>
