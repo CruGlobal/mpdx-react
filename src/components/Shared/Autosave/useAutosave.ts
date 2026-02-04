@@ -70,18 +70,18 @@ export const useAutoSave = <Value extends string | number>({
 
       if (saveOnChange) {
         const { parsedValue, errorMessage } = parseValue(newValue);
-        if (!errorMessage && parsedValue !== value) {
+        if (errorMessage === null && parsedValue !== value) {
           saveValue(parsedValue);
         }
       }
     },
     onBlur: () => {
-      if (!saveOnChange && !errorMessage && parsedValue !== value) {
+      if (!saveOnChange && errorMessage === null && parsedValue !== value) {
         saveValue(parsedValue);
       }
     },
     disabled,
-    ...(!disabled && errorMessage
+    ...(!disabled && errorMessage !== null
       ? { error: true, helperText: errorMessage }
       : {}),
   } satisfies Partial<TextFieldProps>;
