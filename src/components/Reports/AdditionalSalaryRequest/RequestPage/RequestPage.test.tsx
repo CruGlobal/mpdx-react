@@ -166,6 +166,20 @@ describe('RequestPage', () => {
     );
   });
 
+  it('should load on complete form step', async () => {
+    mockUseAdditionalSalaryRequest.mockReturnValue({
+      ...defaultMockContextValue,
+      currentIndex: 1,
+      currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
+    } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+    const { findByRole } = render(<TestWrapper />);
+
+    expect(
+      await findByRole('heading', { name: 'Complete the Form' }),
+    ).toBeInTheDocument();
+  });
+
   it('renders the sidebar with title and steps', () => {
     const { getByRole, getAllByText } = render(<TestWrapper />);
 

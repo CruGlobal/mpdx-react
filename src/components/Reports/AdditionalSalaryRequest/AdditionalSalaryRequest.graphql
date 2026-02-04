@@ -70,6 +70,35 @@ query AdditionalSalaryRequests {
   }
 }
 
+query SalaryInfo($year: Int!) {
+  salaryInfo(year: $year) {
+    id
+    year
+    annualBase
+    fourOhThreeBAnnualLimitForOverFifty
+    fourOhThreeBAnnualLimitForSixtyToSixtyThree
+    maxFamilyInt
+    maxFamilyUss
+    maxSingleInt
+    maxSingleUss
+    minReqSalary
+    minRequiredSalary
+    raisingSupportMinReqSalary
+    secaEstimate
+    secaestAt403bInt
+    secaestNo403bInt
+    secaestPt403bInt
+    maxAdoptionInt
+    maxAdoptionUss
+    maxAutoPurchaseInt
+    maxAutoPurchaseUss
+    maxCollegeInt
+    maxCollegeUss
+    maxHousingDownPaymentInt
+    maxHousingDownPaymentUss
+  }
+}
+
 mutation CreateAdditionalSalaryRequest(
   $attributes: AdditionalSalaryRequestAttributesInput
 ) {

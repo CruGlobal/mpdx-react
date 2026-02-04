@@ -4,6 +4,7 @@ import React, { useMemo } from 'react';
 import { Box, List, ListItemText, Stack } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { Trans, useTranslation } from 'react-i18next';
+import Loading from 'src/components/Loading/Loading';
 import { DirectionButtons } from 'src/components/Reports/Shared/CalculationReports/DirectionButtons/DirectionButtons';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { NoStaffAccount } from 'src/components/Reports/Shared/NoStaffAccount/NoStaffAccount';
@@ -18,6 +19,7 @@ import {
   CompleteFormValues,
   mainContentWidth,
 } from '../AdditionalSalaryRequest';
+import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
 import { EditForm } from '../FormVersions/Edit/EditForm';
 import { NewForm } from '../FormVersions/New/NewForm';
 import { ViewForm } from '../FormVersions/View/ViewForm';
@@ -39,6 +41,8 @@ const MainContent: React.FC = () => {
     requestId,
     pageType,
     exceedsCap,
+    loading,
+    currentStep,
   } = useAdditionalSalaryRequest();
 
   const { submitForm, validateForm, submitCount, isValid, errors } =
@@ -100,6 +104,10 @@ const MainContent: React.FC = () => {
       </Box>
     </>
   );
+
+  if (loading && currentStep !== AdditionalSalaryRequestSectionEnum.AboutForm) {
+    return <Loading loading={loading} />;
+  }
 
   return (
     <Box px={theme.spacing(3)}>

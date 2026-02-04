@@ -77,13 +77,15 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
 
 interface TestComponentProps {
   contextOverrides?: Partial<AdditionalSalaryRequestType>;
+  initialValues?: Partial<CompleteFormValues>;
 }
 
-const TestFormikWrapper: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+const TestFormikWrapper: React.FC<{
+  children: React.ReactNode;
+  initialValues?: Partial<CompleteFormValues>;
+}> = ({ children, initialValues }) => {
   const formik = useFormik<CompleteFormValues>({
-    initialValues: defaultCompleteFormValues,
+    initialValues: { ...defaultCompleteFormValues, ...initialValues },
     validationSchema: defaultSchema,
     onSubmit: () => {},
     enableReinitialize: true,
@@ -97,6 +99,7 @@ const TestFormikWrapper: React.FC<{ children: React.ReactNode }> = ({
 
 const TestComponent: React.FC<TestComponentProps> = ({
   contextOverrides = {},
+  initialValues,
 }) => {
   const contextValue = { ...defaultMockContextValue, ...contextOverrides };
   mockUseAdditionalSalaryRequest.mockReturnValue(contextValue);
@@ -108,7 +111,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
       }>
         onCall={mutationSpy}
       >
-        <TestFormikWrapper>
+        <TestFormikWrapper initialValues={initialValues}>
           <AutosaveCustomTextField fieldName="currentYearSalaryNotReceived" />
         </TestFormikWrapper>
       </GqlMockedProvider>
@@ -122,7 +125,11 @@ describe('AutosaveCustomTextField', () => {
   });
 
   it('initializes with no errors', async () => {
-    const { getByRole } = render(<TestComponent />);
+    const { getByRole } = render(
+      <TestComponent
+        initialValues={{ currentYearSalaryNotReceived: undefined }}
+      />,
+    );
 
     const input = getByRole('textbox');
     await waitFor(() => expect(input).toHaveValue(''));
@@ -131,7 +138,11 @@ describe('AutosaveCustomTextField', () => {
   });
 
   it('shows validation error on invalid input', async () => {
-    const { getByRole, getByText } = render(<TestComponent />);
+    const { getByRole, getByText } = render(
+      <TestComponent
+        initialValues={{ currentYearSalaryNotReceived: undefined }}
+      />,
+    );
 
     const input = getByRole('textbox');
     userEvent.type(input, 'invalid');
@@ -143,7 +154,11 @@ describe('AutosaveCustomTextField', () => {
   });
 
   it('saves valid input on blur', async () => {
-    const { getByRole } = render(<TestComponent />);
+    const { getByRole } = render(
+      <TestComponent
+        initialValues={{ currentYearSalaryNotReceived: undefined }}
+      />,
+    );
 
     const input = getByRole('textbox');
     userEvent.type(input, '1500');
@@ -166,7 +181,11 @@ describe('AutosaveCustomTextField', () => {
   });
 
   it('saves null value', async () => {
-    const { getByRole } = render(<TestComponent />);
+    const { getByRole } = render(
+      <TestComponent
+        initialValues={{ currentYearSalaryNotReceived: undefined }}
+      />,
+    );
 
     const input = getByRole('textbox');
     userEvent.type(input, '1500');
