@@ -1,5 +1,11 @@
 import { useRouter } from 'next/router';
-import React, { createContext, useCallback, useMemo, useState } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from 'react';
 import { ApolloError } from '@apollo/client';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
@@ -19,7 +25,6 @@ import {
 import {
   AdditionalSalaryRequestQuery,
   useAdditionalSalaryRequestQuery,
-  useCreateAdditionalSalaryRequestMutation,
   useDeleteAdditionalSalaryRequestMutation,
 } from '../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
@@ -49,14 +54,13 @@ export type AdditionalSalaryRequestType = {
   isInternational: boolean;
   isMutating: boolean;
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
-  createNewRequest: () => Promise<string | undefined>;
 };
 
 const AdditionalSalaryRequestContext =
   createContext<AdditionalSalaryRequestType | null>(null);
 
 export const useAdditionalSalaryRequest = (): AdditionalSalaryRequestType => {
-  const context = React.useContext(AdditionalSalaryRequestContext);
+  const context = useContext(AdditionalSalaryRequestContext);
   if (context === null) {
     throw new Error(
       'Could not find AdditionalSalaryRequestContext. Make sure that your component is inside <AdditionalSalaryRequestProvider>.',
@@ -120,27 +124,6 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
 
   const [deleteAdditionalSalaryRequest] =
     useDeleteAdditionalSalaryRequestMutation();
-
-  const [createRequest] = useCreateAdditionalSalaryRequestMutation();
-
-  const createNewRequest = useCallback(async () => {
-    try {
-      const result = await createRequest({
-        variables: { attributes: {} },
-        refetchQueries: ['AdditionalSalaryRequest'],
-      });
-      return result.data?.createAdditionalSalaryRequest?.additionalSalaryRequest
-        .id;
-    } catch (err) {
-      enqueueSnackbar(
-        t('Error while creating ASR Request - {{error}}', {
-          error: err instanceof Error ? err.message : err,
-        }),
-        { variant: 'error' },
-      );
-      return undefined;
-    }
-  }, [createRequest, enqueueSnackbar, t]);
 
   const currentStep = sections[currentIndex];
 
@@ -223,7 +206,6 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       isInternational,
       isMutating,
       trackMutation,
-      createNewRequest,
     }),
     [
       staffAccountId,
@@ -248,7 +230,6 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       isInternational,
       isMutating,
       trackMutation,
-      createNewRequest,
     ],
   );
 

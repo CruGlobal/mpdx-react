@@ -72,7 +72,6 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   isInternational: false,
   isMutating: false,
   trackMutation: mockTrackMutation,
-  createNewRequest: jest.fn(),
 };
 
 interface TestComponentProps {

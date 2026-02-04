@@ -17,6 +17,7 @@ import {
   CompleteFormValues,
   mainContentWidth,
 } from '../AdditionalSalaryRequest';
+import { useCreateAdditionalSalaryRequestMutation } from '../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
 import { EditForm } from '../FormVersions/Edit/EditForm';
 import { NewForm } from '../FormVersions/New/NewForm';
@@ -38,9 +39,10 @@ const MainContent: React.FC = () => {
     pageType,
     loading,
     currentStep,
-    createNewRequest,
     trackMutation,
   } = useAdditionalSalaryRequest();
+
+  const [createRequest] = useCreateAdditionalSalaryRequestMutation();
 
   const { submitForm, validateForm, submitCount, isValid } =
     useFormikContext<CompleteFormValues>();
@@ -50,8 +52,15 @@ const MainContent: React.FC = () => {
   const reviewPage = currentIndex === steps.length - 1;
 
   const handleCreateAndContinue = async () => {
-    const id = await trackMutation(createNewRequest());
-    if (id) {
+    const result = await trackMutation(
+      createRequest({
+        variables: { attributes: {} },
+        refetchQueries: ['AdditionalSalaryRequest'],
+      }),
+    );
+    if (
+      result.data?.createAdditionalSalaryRequest?.additionalSalaryRequest.id
+    ) {
       handleNextStep();
     }
   };
