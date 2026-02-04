@@ -4,7 +4,10 @@ import { merge } from 'lodash';
 import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
-import { PayrollDate } from 'src/graphql/types.generated';
+import {
+  PayrollDate,
+  SalaryRequestStatusEnum,
+} from 'src/graphql/types.generated';
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
 import { PayrollDatesQuery } from './EffectiveDateStep/PayrollDates.generated';
@@ -82,6 +85,7 @@ export interface SalaryCalculatorTestWrapperProps {
   children?: React.ReactNode;
   hasSpouse?: boolean;
   payrollDates?: PayrollDate[];
+  editing?: boolean;
 }
 
 export const SalaryCalculatorTestWrapper: React.FC<
@@ -93,11 +97,20 @@ export const SalaryCalculatorTestWrapper: React.FC<
   children,
   hasSpouse = true,
   payrollDates = [],
+  editing = true,
 }) => {
   const hcmUser = merge(hcmUserMock, hcmMock);
   return (
     <ThemeProvider theme={theme}>
-      <TestRouter>
+      <TestRouter
+        router={{
+          query: {
+            accountListId: 'account-list-1',
+            calculationId: 'salary-request-1',
+            ...(editing ? {} : { mode: 'view' }),
+          },
+        }}
+      >
         <GqlMockedProvider<{
           Hcm: HcmQuery;
           PayrollDates: PayrollDatesQuery;
@@ -123,6 +136,7 @@ export const SalaryCalculatorTestWrapper: React.FC<
               salaryRequest: merge(
                 {
                   id: 'salary-request-1',
+                  status: SalaryRequestStatusEnum.InProgress,
                   calculations: {
                     individualCap: 80000,
                     familyCap: 125000,

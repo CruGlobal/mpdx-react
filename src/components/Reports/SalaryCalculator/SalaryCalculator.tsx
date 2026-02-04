@@ -9,19 +9,29 @@ import { StepsList } from '../Shared/CalculationReports/StepsList/StepsList';
 import { CurrentStep } from './CurrentStep';
 import { useSalaryCalculator } from './SalaryCalculatorContext/SalaryCalculatorContext';
 import { StepNavigation } from './StepNavigation/StepNavigation';
+import { SummaryStep } from './Summary/Summary';
 
-const MainContent: React.FC = () => (
-  <Stack gap={4} maxWidth={800}>
-    <CurrentStep />
-    <StepNavigation />
-  </Stack>
-);
+const MainContent: React.FC = () => {
+  const { editing } = useSalaryCalculator();
+  return (
+    <Stack gap={4} maxWidth={800}>
+      {editing ? <CurrentStep /> : <SummaryStep key="summary" />}
+      <StepNavigation />
+    </Stack>
+  );
+};
 
 export const SalaryCalculator: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const { steps, currentIndex, percentComplete, isDrawerOpen, toggleDrawer } =
-    useSalaryCalculator();
+  const {
+    steps,
+    currentIndex,
+    percentComplete,
+    isDrawerOpen,
+    toggleDrawer,
+    editing,
+  } = useSalaryCalculator();
 
   const iconPanelItems = useIconPanelItems(isDrawerOpen, toggleDrawer);
 
@@ -29,12 +39,13 @@ export const SalaryCalculator: React.FC = () => {
     <PanelLayout
       panelType={PanelTypeEnum.Other}
       percentComplete={percentComplete}
+      showPercentage={editing}
       steps={steps}
       currentIndex={currentIndex}
-      icons={iconPanelItems}
+      icons={editing ? iconPanelItems : []}
       sidebarContent={<StepsList steps={steps} />}
       sidebarTitle={t('Form Steps')}
-      isSidebarOpen={isDrawerOpen}
+      isSidebarOpen={editing && isDrawerOpen}
       sidebarAriaLabel={t('Salary Calculator Sections')}
       mainContent={<MainContent />}
       backHref={`/accountLists/${accountListId}/reports/salaryCalculator`}

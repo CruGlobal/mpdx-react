@@ -29,23 +29,26 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
     names,
     salaryData: { currentGrossSalary },
     accountBalance,
-    hasInProgressCalculation,
+    inProgressCalculationId,
   } = useLandingData();
 
   const [createSalaryCalculation, { loading: creatingCalculation }] =
     useCreateSalaryCalculationMutation();
 
   const handleStartCalculation = async () => {
-    if (!hasInProgressCalculation) {
-      await createSalaryCalculation({
-        variables: {
-          input: {
-            attributes: {},
-          },
-        },
+    const createCalculationResult = await createSalaryCalculation({
+      variables: {
+        input: { attributes: {} },
+      },
+    });
+
+    const newCalculationId =
+      createCalculationResult.data?.createSalaryRequest?.salaryRequest?.id;
+    if (newCalculationId) {
+      router.push({
+        pathname: `/accountLists/${accountListId}/reports/salaryCalculator/${newCalculationId}`,
       });
     }
-    router.push(`/accountLists/${accountListId}/reports/salaryCalculator/edit`);
   };
 
   if (loading) {
@@ -116,16 +119,25 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
         <SalaryInformationCard />
         {self?.salaryRequestEligible && (
           <Box sx={{ marginTop: theme.spacing(4) }}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleStartCalculation}
-              disabled={creatingCalculation}
-            >
-              {hasInProgressCalculation
-                ? t('Continue Salary Calculation')
-                : t('Calculate New Salary')}
-            </Button>
+            {inProgressCalculationId ? (
+              <Button
+                variant="contained"
+                color="primary"
+                component={Link}
+                href={`/accountLists/${accountListId}/reports/salaryCalculator/${inProgressCalculationId}`}
+              >
+                {t('Continue Salary Calculation')}
+              </Button>
+            ) : (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleStartCalculation}
+                disabled={creatingCalculation}
+              >
+                {t('Calculate New Salary')}
+              </Button>
+            )}
           </Box>
         )}
       </Box>

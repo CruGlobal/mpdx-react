@@ -42,7 +42,7 @@ export interface LandingData {
   };
   salaryCategories: SalaryCategory[];
   accountBalance: number;
-  hasInProgressCalculation: boolean;
+  inProgressCalculationId: string | null;
   loading: boolean;
   calculation: LandingSalaryCalculationsQuery['latestCalculation'];
   requestedOn: string;
@@ -64,7 +64,8 @@ export const useLandingData = (): LandingData => {
     useStaffAccountIdQuery();
 
   const approvedCalculation = calculationData?.approvedCalculation;
-  const hasInProgressCalculation = !!calculationData?.inProgressCalculation;
+  const inProgressCalculationId =
+    calculationData?.inProgressCalculation?.id ?? null;
   const latestCalculation = calculationData?.latestCalculation;
 
   const { requestedOn, processedOn } = useMemo(
@@ -245,7 +246,7 @@ export const useLandingData = (): LandingData => {
     salaryData,
     salaryCategories,
     accountBalance,
-    hasInProgressCalculation,
+    inProgressCalculationId,
     loading:
       hcmLoading ||
       calculationLoading ||

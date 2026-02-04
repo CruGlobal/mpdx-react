@@ -6,6 +6,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { ApprovalProcessCard } from '../SalaryCalculation/ApprovalProcessCard/ApprovalProcessCard';
 import { RequestSummaryCard } from '../SalaryCalculation/RequestSummaryCard/RequestSummaryCard';
+import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 import { ContactInfoForm } from './ContactInfoForm';
 import { MhaCard } from './MhaCard';
 import { SalaryCalculationCard } from './SalaryCalculationCard';
@@ -18,6 +19,7 @@ export const SummaryStep: React.FC = () => {
   const { t } = useTranslation();
   const [showCompleteCalculations, setShowCompleteCalculations] =
     useState(false);
+  const { editing } = useSalaryCalculator();
 
   return (
     <Stack gap={4} padding={4}>
@@ -83,7 +85,7 @@ export const SummaryStep: React.FC = () => {
         </>
       )}
 
-      <ContactInfoForm />
+      {editing && <ContactInfoForm />}
     </Stack>
   );
 };
