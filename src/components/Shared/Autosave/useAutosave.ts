@@ -1,8 +1,9 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { TextFieldProps } from '@mui/material';
 import { prepareDataForValidation } from 'formik';
 import * as yup from 'yup';
 import { useSyncedState } from 'src/hooks/useSyncedState';
+import { useOptionalAutosaveForm } from './AutosaveForm';
 
 interface UseAutoSaveOptions<Value extends string | number> {
   value: Value | null | undefined;
@@ -24,6 +25,14 @@ export const useAutoSave = <Value extends string | number>({
   const [internalValue, setInternalValue] = useSyncedState(
     value?.toString() ?? '',
   );
+  const autosaveForm = useOptionalAutosaveForm();
+
+  // Remove fields previously marked as invalid when the field is removed
+  useEffect(() => {
+    return () => {
+      autosaveForm?.markValid(fieldName);
+    };
+  }, [fieldName]);
 
   const parseValue = useCallback(
     (valueToValidate: string) => {
@@ -35,9 +44,11 @@ export const useAutoSave = <Value extends string | number>({
         });
         const parsedValue: Value | null =
           schema.validateSyncAt(fieldName, values) ?? null;
+        autosaveForm?.markValid(fieldName);
         return { parsedValue, errorMessage: null };
       } catch (error) {
         if (error instanceof yup.ValidationError) {
+          autosaveForm?.markInvalid(fieldName);
           return { parsedValue: null, errorMessage: error.message };
         }
         throw error;

@@ -2,17 +2,18 @@ import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import { Box, Button, Stack, Typography } from '@mui/material';
+import { Box, Button, ButtonProps, Stack, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { SubmitModal } from 'src/components/Reports/Shared/CalculationReports/SubmitModal/SubmitModal';
+import { useAutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 import { useDeleteSalaryCalculation } from '../Shared/useDeleteSalaryCalculation';
 import { useSubmitSalaryCalculationMutation } from './SubmitSalaryCalculation.generated';
 import { useSubmitDialogContent } from './useSubmitDialogContent';
 
-export const DiscardButton: React.FC = () => {
+export const DiscardButton: React.FC<ButtonProps> = (props) => {
   const { t } = useTranslation();
   const { push } = useRouter();
   const accountListId = useAccountListId();
@@ -34,6 +35,7 @@ export const DiscardButton: React.FC = () => {
   return (
     <>
       <Button
+        {...props}
         variant="text"
         onClick={() => setRemoveDialogOpen(true)}
         color="error"
@@ -52,16 +54,17 @@ export const DiscardButton: React.FC = () => {
   );
 };
 
-export const BackButton: React.FC = () => {
+export const BackButton: React.FC<ButtonProps> = (props) => {
   const { t } = useTranslation();
   const { handlePreviousStep, currentIndex } = useSalaryCalculator();
 
   return (
     <Button
+      {...props}
       variant="contained"
       startIcon={<ChevronLeftIcon />}
       onClick={handlePreviousStep}
-      disabled={currentIndex === 0}
+      disabled={props.disabled || currentIndex === 0}
       color="inherit"
     >
       <Typography fontWeight="bold">{t('Back')}</Typography>
@@ -69,23 +72,24 @@ export const BackButton: React.FC = () => {
   );
 };
 
-export const ContinueButton: React.FC = () => {
+export const ContinueButton: React.FC<ButtonProps> = (props) => {
   const { t } = useTranslation();
   const { steps, handleNextStep, currentIndex } = useSalaryCalculator();
 
   return (
     <Button
+      {...props}
       variant="contained"
       endIcon={<ChevronRightIcon />}
       onClick={handleNextStep}
-      disabled={currentIndex === steps.length - 1}
+      disabled={props.disabled || currentIndex === steps.length - 1}
     >
       <Typography fontWeight="bold">{t('Continue')}</Typography>
     </Button>
   );
 };
 
-export const SubmitButton: React.FC = () => {
+export const SubmitButton: React.FC<ButtonProps> = (props) => {
   const { t } = useTranslation();
   const { handleNextStep, calculation } = useSalaryCalculator();
   const [submit] = useSubmitSalaryCalculationMutation();
@@ -112,6 +116,7 @@ export const SubmitButton: React.FC = () => {
   return (
     <>
       <Button
+        {...props}
         variant="contained"
         endIcon={<ChevronRightIcon />}
         onClick={() => setSubmitDialogOpen(true)}
@@ -136,6 +141,7 @@ export const SubmitButton: React.FC = () => {
 export const StepNavigation: React.FC = () => {
   const theme = useTheme();
   const { currentIndex, steps, editing } = useSalaryCalculator();
+  const { allValid } = useAutosaveForm();
 
   if (!editing) {
     return null;
@@ -147,7 +153,11 @@ export const StepNavigation: React.FC = () => {
 
       <Stack direction="row" spacing={theme.spacing(1)}>
         <BackButton />
-        {currentIndex === 3 ? <SubmitButton /> : <ContinueButton />}
+        {currentIndex === 3 ? (
+          <SubmitButton disabled={!allValid} />
+        ) : (
+          <ContinueButton disabled={!allValid} />
+        )}
       </Stack>
     </Box>
   );
