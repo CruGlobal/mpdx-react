@@ -2,6 +2,7 @@
 fragment SalaryRequestFields on SalaryRequest {
   effectiveDate
   location
+  manuallySplitCap
   mhaAmount
   spouseMhaAmount
   salaryCap
