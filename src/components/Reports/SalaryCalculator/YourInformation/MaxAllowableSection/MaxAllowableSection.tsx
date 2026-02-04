@@ -38,15 +38,6 @@ export const MaxAllowableStep: React.FC = () => {
   const { calculations, spouseCalculations, manuallySplitCap } =
     salaryCalculation ?? {};
 
-  const schema = useMemo(
-    () =>
-      yup.object({
-        salaryCap: amount(t('Maximum Allowable Salary'), t),
-        spouseSalaryCap: amount(t('Spouse Maximum Allowable Salary'), t),
-      }),
-    [t],
-  );
-
   const formatCap = (cap: number | null | undefined) => {
     if (typeof cap !== 'number') {
       return '-';
@@ -69,6 +60,24 @@ export const MaxAllowableStep: React.FC = () => {
   const inputCombinedCap =
     (salaryCalculation?.salaryCap ?? 0) +
     (salaryCalculation?.spouseSalaryCap ?? 0);
+
+  const schema = useMemo(() => {
+    const maxMessage = t(
+      'Maximum Allowable Salary must not exceed cap of {{cap}}',
+      { cap: formattedHardCap },
+    );
+
+    return yup.object({
+      salaryCap: amount(t('Maximum Allowable Salary'), t, {
+        max: calculations?.hardCap,
+        maxMessage,
+      }),
+      spouseSalaryCap: amount(t('Spouse Maximum Allowable Salary'), t, {
+        max: calculations?.hardCap,
+        maxMessage,
+      }),
+    });
+  }, [t, calculations, formattedHardCap]);
 
   const name = hcmUser?.staffInfo.preferredName;
   const spouseName = hcmSpouse?.staffInfo.preferredName;

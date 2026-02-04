@@ -62,7 +62,40 @@ describe('MaxAllowableSection', () => {
 
   describe('when over combined cap', () => {
     it('should allow splitting max allowable amounts', async () => {
-      const { findByRole, getByRole } = render(<TestComponent />);
+      const { findByRole } = render(<TestComponent />);
+
+      userEvent.click(
+        await findByRole('checkbox', { name: /Check if you prefer to split/ }),
+      );
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('UpdateSalaryCalculation', {
+          input: { attributes: { manuallySplitCap: true } },
+        }),
+      );
+    });
+
+    it('should save cap amounts', async () => {
+      const { findByRole } = render(
+        <TestComponent salaryRequestMock={{ manuallySplitCap: true }} />,
+      );
+
+      const input = await findByRole('textbox', {
+        name: 'John Maximum Allowable Salary',
+      });
+      userEvent.clear(input);
+      userEvent.type(input, '70000');
+      input.blur();
+
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('UpdateSalaryCalculation', {
+          input: { attributes: { salaryCap: 70000 } },
+        }),
+      );
+    });
+
+    it('warns when cap exceeds hard cap', async () => {
+      const { findByRole, getByText, getByRole } = render(<TestComponent />);
 
       userEvent.click(
         await findByRole('checkbox', { name: /Check if you prefer to split/ }),
@@ -72,19 +105,12 @@ describe('MaxAllowableSection', () => {
         name: 'John Maximum Allowable Salary',
       });
       userEvent.clear(input);
-      userEvent.type(input, '85000');
+      userEvent.type(input, '95000');
       input.blur();
 
-      await waitFor(() =>
-        expect(mutationSpy).toHaveGraphqlOperation('UpdateSalaryCalculation', {
-          input: { attributes: { manuallySplitCap: true } },
-        }),
-      );
-      await waitFor(() =>
-        expect(mutationSpy).toHaveGraphqlOperation('UpdateSalaryCalculation', {
-          input: { attributes: { salaryCap: 85000 } },
-        }),
-      );
+      expect(
+        getByText('Maximum Allowable Salary must not exceed cap of $80,000'),
+      ).toBeInTheDocument();
     });
 
     it('warns when input total exceeds the cap', async () => {
@@ -98,14 +124,14 @@ describe('MaxAllowableSection', () => {
         name: 'John Maximum Allowable Salary',
       });
       userEvent.clear(input);
-      userEvent.type(input, '85000');
+      userEvent.type(input, '70000');
       input.blur();
 
       const spouseInput = getByRole('textbox', {
         name: 'Jane Maximum Allowable Salary',
       });
       userEvent.clear(spouseInput);
-      userEvent.type(spouseInput, '85000');
+      userEvent.type(spouseInput, '70000');
       spouseInput.blur();
 
       expect(await findByRole('alert')).toHaveTextContent(
