@@ -9,18 +9,13 @@ type LatestCalculation = LandingSalaryCalculationsQuery['latestCalculation'];
 
 const mockCalculation: LatestCalculation = {
   id: '1',
-  effectiveDate: '2025-02-01',
-  location: 'US',
   mhaAmount: null,
   spouseMhaAmount: null,
   salaryCap: null,
   spouseSalaryCap: null,
   salary: null,
   spouseSalary: null,
-  phoneNumber: null,
-  emailAddress: null,
   submittedAt: '2025-01-15T10:00:00Z',
-  updatedAt: '2025-01-15T10:00:00Z',
   changesRequestedAt: null,
   feedback: null,
   status: SalaryRequestStatusEnum.Pending,

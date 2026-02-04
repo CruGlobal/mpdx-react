@@ -79,7 +79,6 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
             latestCalculation: hasLatestCalculation
               ? {
                   id: 'pending-calc-1',
-                  effectiveDate: '2025-02-01',
                   status: SalaryRequestStatusEnum.Pending,
                   submittedAt: '2025-01-16T10:00:00Z',
                   changesRequestedAt: null,

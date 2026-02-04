@@ -1,3 +1,4 @@
+# These are all the salary request field that will be reload when a salary request is updated
 fragment SalaryRequestFields on SalaryRequest {
   effectiveDate
   location
@@ -13,6 +14,19 @@ fragment SalaryRequestFields on SalaryRequest {
   emailAddress
   submittedAt
   updatedAt
+  splitCapRequired
+  calculations {
+    ...CalculationFields
+  }
+  spouseCalculations {
+    ...CalculationFields
+  }
+  progressiveApprovalTier {
+    id
+    tier
+    approver
+    approvalTimeframe
+  }
 }
 
 fragment CalculationFields on SalaryRequestCalculations {
@@ -30,9 +44,9 @@ fragment CalculationFields on SalaryRequestCalculations {
   non403bFraction
   calculatedCap
   effectiveCap
-  individualCap
-  familyCap
   hardCap
+  exceptionCap
+  combinedCap
   minimumRequiredSalary
   minimumRequestedSalary
   requestedSeca
@@ -52,18 +66,6 @@ query SalaryCalculation($id: ID!) {
   salaryRequest(id: $id) {
     id
     ...SalaryRequestFields
-    calculations {
-      ...CalculationFields
-    }
-    spouseCalculations {
-      ...CalculationFields
-    }
-    progressiveApprovalTier {
-      id
-      tier
-      approver
-      approvalTimeframe
-    }
   }
 }
 
