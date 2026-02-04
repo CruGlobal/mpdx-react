@@ -144,7 +144,8 @@ const AdditionalSalaryRequestContent: React.FC = () => {
                   hasData={!!requestData}
                   isMutating={isMutating}
                   lastSavedAt={
-                    requestData?.latestAdditionalSalaryRequest?.updatedAt ?? null
+                    requestData?.latestAdditionalSalaryRequest?.updatedAt ??
+                    null
                   }
                 />
               )
