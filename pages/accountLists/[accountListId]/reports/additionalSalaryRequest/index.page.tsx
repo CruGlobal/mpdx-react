@@ -31,6 +31,8 @@ import { ReportPageWrapper } from 'src/components/Shared/styledComponents/Report
 import { AsrStatusEnum } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
+// TODO: Revert comments on this page
+
 const FormikRequestPage: React.FC = () => {
   const formik = useAdditionalSalaryRequestForm();
 

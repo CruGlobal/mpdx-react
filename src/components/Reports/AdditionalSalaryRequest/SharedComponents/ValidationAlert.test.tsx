@@ -62,7 +62,7 @@ const createValidationSchema = () =>
       .number()
       .test(
         'total-within-remaining-allowable-salary',
-        'Exceeds account balance',
+        'Exceeds account balance.',
         function (value) {
           const remainingAllowableSalary = 17500.0;
           return (value || 0) <= remainingAllowableSalary;

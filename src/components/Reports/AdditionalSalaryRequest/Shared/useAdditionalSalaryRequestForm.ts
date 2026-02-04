@@ -131,6 +131,7 @@ export const useAdditionalSalaryRequestForm = (
       emailAddress: request.emailAddress || user?.staffInfo?.emailAddress || '',
       totalAdditionalSalaryRequested:
         request.totalAdditionalSalaryRequested || '',
+      additionalInfo: request.additionalInfo || '',
     } as CompleteFormValues;
   }, [providedInitialValues, requestData?.latestAdditionalSalaryRequest, user]);
 
@@ -172,7 +173,7 @@ export const useAdditionalSalaryRequestForm = (
           .number()
           .test(
             'total-within-remaining-allowable-salary',
-            t('Exceeds account balance'),
+            t('Exceeds account balance.'),
             function (value) {
               return (value || 0) <= 17500;
             },
@@ -234,6 +235,7 @@ export const useAdditionalSalaryRequestForm = (
     validationSchema,
     onSubmit,
     enableReinitialize: true,
+    validateOnMount: true,
   });
 
   return { ...formik, validationSchema };

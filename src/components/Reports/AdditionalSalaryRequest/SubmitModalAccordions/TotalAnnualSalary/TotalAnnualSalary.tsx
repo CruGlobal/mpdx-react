@@ -72,7 +72,10 @@ export const TotalAnnualSalary: React.FC<TotalAnnualSalaryProps> = ({
               <InfoSharp sx={{ color: 'text.secondary' }} />
             </Tooltip>
           </Box>
-          <Typography>{`${currencyFormat(Number(totalAnnualSalary), currency, locale)}/${currencyFormat(maxAllowableSalary, currency, locale)}`}</Typography>
+          <Typography>
+            {currencyFormat(Number(totalAnnualSalary), currency, locale)}/
+            {currencyFormat(maxAllowableSalary, currency, locale)}
+          </Typography>
         </Box>
         <LinearProgress variant="determinate" value={100} color="warning" />
         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
