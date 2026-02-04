@@ -65,7 +65,7 @@ const validationSchema = yup.object({
     .number()
     .test(
       'total-within-remaining-allowable-salary',
-      'Exceeds account balance',
+      'Exceeds account balance.',
       function (value) {
         const remainingAllowableSalary = 17500.0;
         return (value || 0) <= remainingAllowableSalary;
@@ -82,6 +82,7 @@ const TestFormikWrapper: React.FC<{
     validationSchema,
     onSubmit: () => {},
     enableReinitialize: true,
+    validateOnMount: true,
   });
 
   // Add validationSchema to formik context so autosave fields can access it

@@ -136,7 +136,7 @@ export const AdditionalSalaryRequest: React.FC = () => {
                 {currencyFormat(total, currency, locale)}
                 {errors.totalAdditionalSalaryRequested && (
                   <Typography variant="body2" color="error">
-                    {t('Exceeds account balance.')}
+                    {errors.totalAdditionalSalaryRequested}
                   </Typography>
                 )}
               </TableCell>

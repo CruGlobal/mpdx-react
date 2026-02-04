@@ -148,7 +148,7 @@ describe('AdditionalSalaryRequest', () => {
     it('shows validation error for asr total amount', async () => {
       const invalidValues: CompleteFormValues = {
         ...defaultCompleteFormValues,
-        additionalSalaryWithinMax: '1000000',
+        totalAdditionalSalaryRequested: '1000000',
       };
 
       const { getByText } = render(

@@ -1,4 +1,4 @@
-import { useCallback, useLayoutEffect, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -181,7 +181,7 @@ export const useAdditionalSalaryRequestForm = ({
           .number()
           .test(
             'total-within-remaining-allowable-salary',
-            t('Exceeds account balance'),
+            t('Exceeds account balance.'),
             function (value) {
               return (value || 0) <= remainingAllowableSalary;
             },
@@ -247,11 +247,8 @@ export const useAdditionalSalaryRequestForm = ({
     validationSchema,
     onSubmit,
     enableReinitialize: true,
+    validateOnMount: true,
   });
-
-  useLayoutEffect(() => {
-    formik.validateForm();
-  }, [initialValues]);
 
   return { ...formik, validationSchema };
 };
