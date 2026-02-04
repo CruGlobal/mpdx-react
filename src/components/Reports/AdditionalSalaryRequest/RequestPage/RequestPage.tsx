@@ -19,7 +19,6 @@ import {
   CompleteFormValues,
   mainContentWidth,
 } from '../AdditionalSalaryRequest';
-import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
 import { EditForm } from '../FormVersions/Edit/EditForm';
 import { NewForm } from '../FormVersions/New/NewForm';
 import { ViewForm } from '../FormVersions/View/ViewForm';
@@ -42,7 +41,6 @@ const MainContent: React.FC = () => {
     pageType,
     exceedsCap,
     loading,
-    currentStep,
   } = useAdditionalSalaryRequest();
 
   const { submitForm, validateForm, submitCount, isValid, errors } =
@@ -105,7 +103,7 @@ const MainContent: React.FC = () => {
     </>
   );
 
-  if (loading && currentStep !== AdditionalSalaryRequestSectionEnum.AboutForm) {
+  if (loading) {
     return <Loading loading={loading} />;
   }
 
