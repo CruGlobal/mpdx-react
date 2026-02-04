@@ -51,10 +51,13 @@ export const AdditionalSalaryRequest: React.FC = () => {
     toggleDrawer,
     steps,
     currentIndex,
-    requestsError,
-    requestsData,
+    requestError,
+    requestData,
     user,
+    loading: requestLoading,
   } = useAdditionalSalaryRequest();
+
+  const request = requestData?.latestAdditionalSalaryRequest;
 
   const [createAdditionalSalaryRequest] =
     useCreateAdditionalSalaryRequestMutation();
@@ -69,7 +72,7 @@ export const AdditionalSalaryRequest: React.FC = () => {
           emailAddress: user?.staffInfo?.emailAddress,
         },
       },
-      refetchQueries: ['AdditionalSalaryRequests'],
+      refetchQueries: ['AdditionalSalaryRequest'],
       onCompleted: ({ createAdditionalSalaryRequest: newRequest }) => {
         enqueueSnackbar(
           t("Successfully created ASR Request. You'll be redirected shortly."),
@@ -100,23 +103,21 @@ export const AdditionalSalaryRequest: React.FC = () => {
 
   // Determine overall request status based on priority
   const allRequestStatus = useMemo((): string => {
-    if (!requestsData || requestsData.length === 0) {
+    if (!request) {
       return 'None';
     }
-    for (const request of requestsData) {
-      switch (request.status) {
-        case AsrStatusEnum.Approved:
-          return 'Approved';
-        case AsrStatusEnum.ActionRequired:
-          return 'Action Required';
-        case AsrStatusEnum.Pending:
-          return 'Pending';
-        case AsrStatusEnum.InProgress:
-          return 'In Progress';
-      }
+    switch (request.status) {
+      case AsrStatusEnum.Approved:
+        return 'Approved';
+      case AsrStatusEnum.ActionRequired:
+        return 'Action Required';
+      case AsrStatusEnum.Pending:
+        return 'Pending';
+      case AsrStatusEnum.InProgress:
+        return 'In Progress';
     }
     return 'None';
-  }, [requestsData]);
+  }, [request]);
 
   return (
     <PanelLayout
@@ -131,9 +132,9 @@ export const AdditionalSalaryRequest: React.FC = () => {
       sidebarAriaLabel={t('Additional Salary Request Sections')}
       mainContent={
         <Container sx={{ ml: 5 }}>
-          {requestsError ? (
-            <Notification type="error" message={requestsError.message} />
-          ) : !requestsData ? (
+          {requestError ? (
+            <Notification type="error" message={requestError.message} />
+          ) : requestLoading ? (
             <AdditionalSalaryRequestSkeleton />
           ) : (
             <Stack
@@ -145,13 +146,12 @@ export const AdditionalSalaryRequest: React.FC = () => {
             >
               <EligibleDisplay allRequestStatus={allRequestStatus} />
 
-              {requestsData.map((request) =>
-                request.status === AsrStatusEnum.Approved ? (
+              {request &&
+                (request.status === AsrStatusEnum.Approved ? (
                   <ApprovedRequest request={request} />
                 ) : (
-                  <CurrentRequest key={request.id} request={request} />
-                ),
-              )}
+                  <CurrentRequest request={request} />
+                ))}
               <Button
                 variant="contained"
                 color="primary"

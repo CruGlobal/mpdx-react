@@ -46,10 +46,9 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   handlePreviousStep: jest.fn(),
   isDrawerOpen: true,
   toggleDrawer: jest.fn(),
-  requestsData: null,
   requestData: null,
   loading: false,
-  requestsError: undefined,
+  requestError: undefined,
   pageType: PageEnum.New,
   handleDeleteRequest: jest.fn(),
   requestId: 'test-request-id',
@@ -205,7 +204,7 @@ describe('useAdditionalSalaryRequestForm', () => {
     it('should populate initial values from request data query', async () => {
       const mocks = {
         AdditionalSalaryRequest: {
-          additionalSalaryRequest: {
+          latestAdditionalSalaryRequest: {
             id: 'test-request-id',
             currentYearSalaryNotReceived: 500,
             previousYearSalaryNotReceived: 200,
@@ -474,7 +473,9 @@ describe('useAdditionalSalaryRequestForm', () => {
         await result.current.submitForm();
       });
 
-      expect(mutationSpy).not.toHaveBeenCalled();
+      expect(mutationSpy).not.toHaveGraphqlOperation(
+        'UpdateAdditionalSalaryRequest',
+      );
     });
 
     it('should call update and submit mutations on form submit', async () => {
@@ -635,7 +636,7 @@ describe('useAdditionalSalaryRequestForm', () => {
     it('should enable reinitialize', async () => {
       const mocks = {
         AdditionalSalaryRequest: {
-          additionalSalaryRequest: {
+          latestAdditionalSalaryRequest: {
             id: 'test-request-id',
             currentYearSalaryNotReceived: 999,
             previousYearSalaryNotReceived: 0,

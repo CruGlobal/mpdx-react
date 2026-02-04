@@ -1,4 +1,4 @@
-import { useRouter } from 'next/router';
+import Link from 'next/link';
 import React, { useState } from 'react';
 import { Delete } from '@mui/icons-material';
 import { Box, Button, CardActions, IconButton } from '@mui/material';
@@ -18,15 +18,9 @@ export const PendingRequestActions: React.FC<PendingRequestActionsProps> = ({
   calculation,
 }) => {
   const { t } = useTranslation();
-  const router = useRouter();
   const accountListId = useAccountListId();
   const { deleteSalaryCalculation } = useDeleteSalaryCalculation();
   const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
-
-  const handleView = () => {
-    // TODO: implement proper view logic
-    router.push(`/accountLists/${accountListId}/reports/salaryCalculator/edit`);
-  };
 
   const handleDelete = async () => {
     if (calculation) {
@@ -44,11 +38,25 @@ export const PendingRequestActions: React.FC<PendingRequestActionsProps> = ({
       }}
     >
       <Box sx={{ display: 'flex', gap: 1 }}>
-        <Button variant="contained" onClick={handleView}>
-          {t('View Request')}
-        </Button>
+        {calculation && (
+          <Button
+            variant="contained"
+            color="primary"
+            component={Link}
+            href={`/accountLists/${accountListId}/reports/salaryCalculator/${calculation.id}?mode=view`}
+            data-testid="view-request"
+          >
+            {t('View Request')}
+          </Button>
+        )}
         {calculation?.status === SalaryRequestStatusEnum.ActionRequired && (
-          <Button variant="outlined" onClick={handleView}>
+          <Button
+            variant="outlined"
+            color="primary"
+            component={Link}
+            href={`/accountLists/${accountListId}/reports/salaryCalculator/${calculation.id}`}
+            data-testid="edit-request"
+          >
             {t('Edit Request')}
           </Button>
         )}

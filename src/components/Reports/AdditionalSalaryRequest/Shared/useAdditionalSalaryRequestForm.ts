@@ -81,10 +81,7 @@ export const useAdditionalSalaryRequestForm = ({
 
   const { remainingAllowableSalary } = useFormData();
 
-  const { data: requestData } = useAdditionalSalaryRequestQuery({
-    variables: { requestId: requestId || '' },
-    skip: !requestId,
-  });
+  const { data: requestData } = useAdditionalSalaryRequestQuery();
 
   const [updateAdditionalSalaryRequest] =
     useUpdateAdditionalSalaryRequestMutation();
@@ -124,7 +121,7 @@ export const useAdditionalSalaryRequestForm = ({
       return providedInitialValues;
     }
 
-    const request = requestData?.additionalSalaryRequest;
+    const request = requestData?.latestAdditionalSalaryRequest;
     if (!request) {
       return defaultInitialValues;
     }
@@ -142,7 +139,7 @@ export const useAdditionalSalaryRequestForm = ({
       emailAddress: request.emailAddress || user?.staffInfo?.emailAddress || '',
       totalAdditionalSalaryRequested: request.totalAdditionalSalaryRequested,
     } as CompleteFormValues;
-  }, [providedInitialValues, requestData?.additionalSalaryRequest, user]);
+  }, [providedInitialValues, requestData?.latestAdditionalSalaryRequest, user]);
 
   const getMaxForField = useCallback(
     (field: (typeof fieldConfig)[number]): number | undefined => {

@@ -53,7 +53,7 @@ describe('ViewForm', () => {
     const { getByTestId } = renderComponent({
       contextOverrides: {
         requestData: {
-          additionalSalaryRequest: {
+          latestAdditionalSalaryRequest: {
             calculations: undefined,
           },
         },

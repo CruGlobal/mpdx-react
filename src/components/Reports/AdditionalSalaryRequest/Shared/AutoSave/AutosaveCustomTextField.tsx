@@ -20,7 +20,7 @@ export const AutosaveCustomTextField: React.FC<
   AutosaveCustomTextFieldProps
 > = ({ variant, fieldName, ...props }) => {
   const { pageType, requestData } = useAdditionalSalaryRequest();
-  const request = requestData?.additionalSalaryRequest;
+  const request = requestData?.latestAdditionalSalaryRequest;
   const formikContext = useFormikContext<CompleteFormValues>();
   const {
     setFieldValue,

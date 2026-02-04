@@ -118,7 +118,7 @@ export const AdditionalSalaryRequestTestWrapper: React.FC<
             <GqlMockedProvider
               mocks={{
                 AdditionalSalaryRequest: {
-                  additionalSalaryRequest: {
+                  latestAdditionalSalaryRequest: {
                     id: 'test-request-id',
                     ...Object.fromEntries(
                       Object.entries(requestValues)

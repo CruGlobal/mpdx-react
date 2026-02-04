@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
+import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { SalaryRequestStatusEnum } from 'src/graphql/types.generated';
@@ -18,35 +19,42 @@ const TestComponent: React.FC<TestComponentProps> = ({
   hasSpouse = true,
   submitted,
 }) => (
-  <GqlMockedProvider<{
-    Hcm: HcmQuery;
-    SalaryCalculation: SalaryCalculationQuery;
-    GetUser: GetUserQuery;
-  }>
-    mocks={{
-      Hcm: {
-        hcm: hasSpouse ? [hcmUserMock, hcmSpouseMock] : [hcmUserMock],
-      },
-      SalaryCalculation: {
-        salaryRequest: {
-          status: submitted
-            ? SalaryRequestStatusEnum.Pending
-            : SalaryRequestStatusEnum.InProgress,
-          effectiveDate: '2024-01-15',
-          submittedAt: '2025-01-01',
-        },
-      },
-      GetUser: {
-        user: {
-          staffAccountId: '123456',
-        },
-      },
+  <TestRouter
+    router={{
+      query: { calculationId: 'salary-request-1' },
     }}
   >
-    <SalaryCalculatorProvider>
-      <StaffInfoSummaryCard />
-    </SalaryCalculatorProvider>
-  </GqlMockedProvider>
+    <GqlMockedProvider<{
+      Hcm: HcmQuery;
+      SalaryCalculation: SalaryCalculationQuery;
+      GetUser: GetUserQuery;
+    }>
+      mocks={{
+        Hcm: {
+          hcm: hasSpouse ? [hcmUserMock, hcmSpouseMock] : [hcmUserMock],
+        },
+        SalaryCalculation: {
+          salaryRequest: {
+            id: 'salary-request-1',
+            status: submitted
+              ? SalaryRequestStatusEnum.Pending
+              : SalaryRequestStatusEnum.InProgress,
+            effectiveDate: '2024-01-15',
+            submittedAt: '2025-01-01',
+          },
+        },
+        GetUser: {
+          user: {
+            staffAccountId: '123456',
+          },
+        },
+      }}
+    >
+      <SalaryCalculatorProvider>
+        <StaffInfoSummaryCard />
+      </SalaryCalculatorProvider>
+    </GqlMockedProvider>
+  </TestRouter>
 );
 
 describe('StaffInfoSummaryCard', () => {

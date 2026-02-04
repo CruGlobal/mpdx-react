@@ -32,7 +32,8 @@ export const AdditionalSalaryRequest: React.FC = () => {
     useFormikContext<CompleteFormValues>();
 
   const traditional403bContribution =
-    requestData?.additionalSalaryRequest?.traditional403bContribution ?? 0;
+    requestData?.latestAdditionalSalaryRequest?.traditional403bContribution ??
+    0;
   const { total, maxAllowableSalary } = useSalaryCalculations({
     traditional403bContribution,
     values,

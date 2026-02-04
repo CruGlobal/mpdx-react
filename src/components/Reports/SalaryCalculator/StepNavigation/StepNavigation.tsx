@@ -119,11 +119,16 @@ export const SubmitButton: React.FC = () => {
 
 export const StepNavigation: React.FC = () => {
   const theme = useTheme();
-  const { currentIndex, steps } = useSalaryCalculator();
+  const { currentIndex, steps, editing } = useSalaryCalculator();
+
+  if (!editing) {
+    return null;
+  }
 
   return (
     <Box display="flex" justifyContent="space-between" alignItems="center">
       {currentIndex < steps.length - 1 && <DiscardButton />}
+
       <Stack direction="row" spacing={theme.spacing(1)}>
         <BackButton />
         {currentIndex === 3 ? <SubmitButton /> : <ContinueButton />}

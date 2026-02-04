@@ -23,10 +23,8 @@ const mockStaffAccount = {
 };
 
 const mockAdditionalSalaryRequests = {
-  AdditionalSalaryRequests: {
-    additionalSalaryRequests: {
-      nodes: [],
-    },
+  AdditionalSalaryRequest: {
+    latestAdditionalSalaryRequest: null,
   },
 };
 
@@ -34,6 +32,7 @@ const mockHcmData = {
   HcmData: {
     hcm: [
       {
+        salaryRequestEligible: true,
         staffInfo: {
           preferredName: 'Test User',
         },
@@ -79,7 +78,7 @@ describe('AdditionalSalaryRequest page', () => {
     const { findByRole } = render(<TestComponent />);
 
     expect(
-      await findByRole('heading', { name: 'Your Additional Salary Request' }),
+      await findByRole('heading', { name: 'About this Form' }),
     ).toBeInTheDocument();
   });
 

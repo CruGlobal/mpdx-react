@@ -17,7 +17,7 @@ describe('useFormData', () => {
   it('returns staff info and calculated balances', () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
       requestData: {
-        additionalSalaryRequest: {
+        latestAdditionalSalaryRequest: {
           calculations: {
             currentSalaryCap: 100000,
             staffAccountBalance: 40000,
@@ -51,7 +51,7 @@ describe('useFormData', () => {
   it('defaults balances to 0 when calculations are undefined', () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
       requestData: {
-        additionalSalaryRequest: {
+        latestAdditionalSalaryRequest: {
           calculations: undefined,
         },
       },
@@ -74,7 +74,7 @@ describe('useFormData', () => {
   it('handles undefined user gracefully', () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
       requestData: {
-        additionalSalaryRequest: {
+        latestAdditionalSalaryRequest: {
           calculations: {
             currentSalaryCap: 100000,
             staffAccountBalance: 40000,

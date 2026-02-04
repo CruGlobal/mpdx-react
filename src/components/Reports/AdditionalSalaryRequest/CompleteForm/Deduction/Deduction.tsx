@@ -28,7 +28,8 @@ export const Deduction: React.FC = () => {
   const saveField = useSaveField({ formValues });
 
   const traditional403bContribution =
-    requestData?.additionalSalaryRequest?.traditional403bContribution ?? 0;
+    requestData?.latestAdditionalSalaryRequest?.traditional403bContribution ??
+    0;
 
   const { calculatedDeduction, contribution403b, totalDeduction } =
     useSalaryCalculations({ traditional403bContribution, values: formValues });
