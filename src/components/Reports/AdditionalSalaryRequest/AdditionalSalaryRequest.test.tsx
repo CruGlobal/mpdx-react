@@ -10,7 +10,7 @@ import { AsrStatusEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { AdditionalSalaryRequest } from './AdditionalSalaryRequest';
-import { AdditionalSalaryRequestsQuery } from './AdditionalSalaryRequest.generated';
+import { AdditionalSalaryRequestQuery } from './AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestProvider } from './Shared/AdditionalSalaryRequestContext';
 
 const mutationSpy = jest.fn();
@@ -18,6 +18,7 @@ const accountListId = 'account-list-1';
 
 const mockRequest = {
   id: 'request-1',
+  createdAt: '2024-01-01T00:00:00Z',
   status: AsrStatusEnum.InProgress,
   totalAdditionalSalaryRequested: 5000,
   currentYearSalaryNotReceived: 1000,
@@ -67,6 +68,7 @@ const mockHcmData = {
   hcm: [
     {
       id: 'hcm-1',
+      salaryRequestEligible: true,
       staffInfo: {
         preferredName: 'John',
         emailAddress: 'john.doe@example.com',
@@ -78,7 +80,7 @@ const mockHcmData = {
 
 interface TestWrapperProps {
   mocks?: {
-    AdditionalSalaryRequests?: Partial<AdditionalSalaryRequestsQuery>;
+    AdditionalSalaryRequest?: Partial<AdditionalSalaryRequestQuery>;
   };
   onCall?: jest.Mock;
 }
@@ -88,10 +90,8 @@ const TestWrapper: React.FC<TestWrapperProps> = ({
   onCall = jest.fn(),
 }) => {
   const defaultMocks = {
-    AdditionalSalaryRequests: {
-      additionalSalaryRequests: {
-        nodes: [mockRequest],
-      },
+    AdditionalSalaryRequest: {
+      latestAdditionalSalaryRequest: mockRequest,
     },
     HcmData: mockHcmData,
     StaffAccountId: {
@@ -153,10 +153,8 @@ describe('AdditionalSalaryRequest', () => {
     const { findByText } = render(
       <TestWrapper
         mocks={{
-          AdditionalSalaryRequests: {
-            additionalSalaryRequests: {
-              nodes: [],
-            },
+          AdditionalSalaryRequest: {
+            latestAdditionalSalaryRequest: null,
           },
         }}
       />,
@@ -191,10 +189,8 @@ describe('AdditionalSalaryRequest', () => {
     const { findByText } = render(
       <TestWrapper
         mocks={{
-          AdditionalSalaryRequests: {
-            additionalSalaryRequests: {
-              nodes: [pendingRequest],
-            },
+          AdditionalSalaryRequest: {
+            latestAdditionalSalaryRequest: pendingRequest,
           },
         }}
       />,
@@ -213,10 +209,8 @@ describe('AdditionalSalaryRequest', () => {
     const { findByText } = render(
       <TestWrapper
         mocks={{
-          AdditionalSalaryRequests: {
-            additionalSalaryRequests: {
-              nodes: [approvedRequest],
-            },
+          AdditionalSalaryRequest: {
+            latestAdditionalSalaryRequest: approvedRequest,
           },
         }}
       />,
@@ -236,10 +230,8 @@ describe('AdditionalSalaryRequest', () => {
     const { findByText } = render(
       <TestWrapper
         mocks={{
-          AdditionalSalaryRequests: {
-            additionalSalaryRequests: {
-              nodes: [actionRequiredRequest],
-            },
+          AdditionalSalaryRequest: {
+            latestAdditionalSalaryRequest: actionRequiredRequest,
           },
         }}
       />,
@@ -268,10 +260,8 @@ describe('AdditionalSalaryRequest', () => {
     const { findByRole, findByText } = render(
       <TestWrapper
         mocks={{
-          AdditionalSalaryRequests: {
-            additionalSalaryRequests: {
-              nodes: [],
-            },
+          AdditionalSalaryRequest: {
+            latestAdditionalSalaryRequest: null,
           },
         }}
       />,
@@ -285,38 +275,6 @@ describe('AdditionalSalaryRequest', () => {
     ).toBeInTheDocument();
   });
 
-  it('displays multiple requests when available', async () => {
-    const inProgressRequest = {
-      ...mockRequest,
-      id: 'request-1',
-      status: AsrStatusEnum.InProgress,
-    };
-
-    const approvedRequest = {
-      ...mockRequest,
-      id: 'request-2',
-      status: AsrStatusEnum.Approved,
-      approvedAt: '2024-02-01T00:00:00Z',
-    };
-
-    const { findByText, findAllByTestId } = render(
-      <TestWrapper
-        mocks={{
-          AdditionalSalaryRequests: {
-            additionalSalaryRequests: {
-              nodes: [inProgressRequest, approvedRequest],
-            },
-          },
-        }}
-      />,
-    );
-
-    expect(await findByText('In Progress')).toBeInTheDocument();
-    expect(await findByText(/APPROVAL DATE/i)).toBeInTheDocument();
-    // Both requests should render cards with money icons
-    expect(await findAllByTestId('AttachMoneyIcon')).toHaveLength(2);
-  });
-
   it('determines allRequestStatus as Approved when there is an approved request', async () => {
     const approvedRequest = {
       ...mockRequest,
@@ -327,10 +285,8 @@ describe('AdditionalSalaryRequest', () => {
     const { findByText } = render(
       <TestWrapper
         mocks={{
-          AdditionalSalaryRequests: {
-            additionalSalaryRequests: {
-              nodes: [approvedRequest],
-            },
+          AdditionalSalaryRequest: {
+            latestAdditionalSalaryRequest: approvedRequest,
           },
         }}
       />,
@@ -349,10 +305,8 @@ describe('AdditionalSalaryRequest', () => {
     const { findByText } = render(
       <TestWrapper
         mocks={{
-          AdditionalSalaryRequests: {
-            additionalSalaryRequests: {
-              nodes: [actionRequiredRequest],
-            },
+          AdditionalSalaryRequest: {
+            latestAdditionalSalaryRequest: actionRequiredRequest,
           },
         }}
       />,
@@ -371,10 +325,8 @@ describe('AdditionalSalaryRequest', () => {
     const { findByText } = render(
       <TestWrapper
         mocks={{
-          AdditionalSalaryRequests: {
-            additionalSalaryRequests: {
-              nodes: [pendingRequest],
-            },
+          AdditionalSalaryRequest: {
+            latestAdditionalSalaryRequest: pendingRequest,
           },
         }}
       />,

@@ -51,9 +51,8 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   handlePreviousStep: jest.fn(),
   isDrawerOpen: true,
   toggleDrawer: jest.fn(),
-  requestsData: null,
   requestData: {
-    additionalSalaryRequest: {
+    latestAdditionalSalaryRequest: {
       id: 'request-id',
       currentYearSalaryNotReceived: null,
       calculations: {
@@ -63,7 +62,7 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
     },
   } as AdditionalSalaryRequestType['requestData'],
   loading: false,
-  requestsError: undefined,
+  requestError: undefined,
   pageType: PageEnum.New,
   handleDeleteRequest: jest.fn(),
   requestId: 'request-id',

@@ -3,7 +3,7 @@ import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 export const useFormData = () => {
   const { requestData, user } = useAdditionalSalaryRequest();
   const { currentSalaryCap, staffAccountBalance } =
-    requestData?.additionalSalaryRequest?.calculations || {};
+    requestData?.latestAdditionalSalaryRequest?.calculations || {};
   const {
     emailAddress: email,
     preferredName: name,
