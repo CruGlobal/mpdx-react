@@ -43,7 +43,7 @@ const FormikRequestPage: React.FC = () => {
       !loading &&
       !requestData &&
       !newRequestId &&
-      user?.salaryRequestEligible
+      user?.asrEit?.asrEligibility
     ) {
       createRequest({
         variables: { attributes: {} },
@@ -70,7 +70,7 @@ const FormikRequestPage: React.FC = () => {
 const AdditionalSalaryRequestRouter: React.FC = () => {
   const { requestData, loading, user } = useAdditionalSalaryRequest();
 
-  if (user?.salaryRequestEligible === false) {
+  if (user?.asrEit?.asrEligibility === false) {
     return <IneligiblePage />;
   }
 
@@ -112,7 +112,7 @@ const AdditionalSalaryRequestContent: React.FC = () => {
     status !== AsrStatusEnum.ActionRequired &&
     status !== AsrStatusEnum.Pending &&
     status !== AsrStatusEnum.InProgress &&
-    user?.salaryRequestEligible !== false;
+    user?.asrEit?.asrEligibility !== false;
 
   return (
     <SidePanelsLayout
