@@ -102,20 +102,20 @@ export const AdditionalSalaryRequest: React.FC = () => {
   // Determine overall request status based on priority
   const allRequestStatus = useMemo((): string => {
     if (!request) {
-      return 'None';
+      return t('None');
     }
     switch (request.status) {
       case AsrStatusEnum.Approved:
-        return 'Approved';
+        return t('Approved');
       case AsrStatusEnum.ActionRequired:
-        return 'Action Required';
+        return t('Action Required');
       case AsrStatusEnum.Pending:
-        return 'Pending';
+        return t('Pending');
       case AsrStatusEnum.InProgress:
-        return 'In Progress';
+        return t('In Progress');
     }
-    return 'None';
-  }, [request]);
+    return t('None');
+  }, [request, t]);
 
   return (
     <PanelLayout
