@@ -8,7 +8,7 @@ import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestCon
 import { CurrentRequest } from './CurrentRequest';
 
 type RequestType = NonNullable<
-  AdditionalSalaryRequestQuery['additionalSalaryRequest']
+  AdditionalSalaryRequestQuery['latestAdditionalSalaryRequest']
 >;
 
 jest.mock('../Shared/AdditionalSalaryRequestContext', () => ({

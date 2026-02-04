@@ -24,7 +24,7 @@ const mockStaffAccount = {
 
 const mockAdditionalSalaryRequests = {
   AdditionalSalaryRequest: {
-    additionalSalaryRequest: null,
+    latestAdditionalSalaryRequest: null,
   },
 };
 

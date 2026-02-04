@@ -87,7 +87,7 @@ const TestWrapper: React.FC<TestWrapperProps> = ({
 }) => {
   const defaultMocks = {
     AdditionalSalaryRequest: {
-      additionalSalaryRequest: mockRequest,
+      latestAdditionalSalaryRequest: mockRequest,
     },
     HcmData: mockHcmData,
     StaffAccountId: {
@@ -150,7 +150,7 @@ describe('AdditionalSalaryRequest', () => {
       <TestWrapper
         mocks={{
           AdditionalSalaryRequest: {
-            additionalSalaryRequest: null,
+            latestAdditionalSalaryRequest: null,
           },
         }}
       />,
@@ -186,7 +186,7 @@ describe('AdditionalSalaryRequest', () => {
       <TestWrapper
         mocks={{
           AdditionalSalaryRequest: {
-            additionalSalaryRequest: pendingRequest,
+            latestAdditionalSalaryRequest: pendingRequest,
           },
         }}
       />,
@@ -206,7 +206,7 @@ describe('AdditionalSalaryRequest', () => {
       <TestWrapper
         mocks={{
           AdditionalSalaryRequest: {
-            additionalSalaryRequest: approvedRequest,
+            latestAdditionalSalaryRequest: approvedRequest,
           },
         }}
       />,
@@ -227,7 +227,7 @@ describe('AdditionalSalaryRequest', () => {
       <TestWrapper
         mocks={{
           AdditionalSalaryRequest: {
-            additionalSalaryRequest: actionRequiredRequest,
+            latestAdditionalSalaryRequest: actionRequiredRequest,
           },
         }}
       />,
@@ -257,7 +257,7 @@ describe('AdditionalSalaryRequest', () => {
       <TestWrapper
         mocks={{
           AdditionalSalaryRequest: {
-            additionalSalaryRequest: null,
+            latestAdditionalSalaryRequest: null,
           },
         }}
       />,
@@ -282,7 +282,7 @@ describe('AdditionalSalaryRequest', () => {
       <TestWrapper
         mocks={{
           AdditionalSalaryRequest: {
-            additionalSalaryRequest: approvedRequest,
+            latestAdditionalSalaryRequest: approvedRequest,
           },
         }}
       />,
@@ -302,7 +302,7 @@ describe('AdditionalSalaryRequest', () => {
       <TestWrapper
         mocks={{
           AdditionalSalaryRequest: {
-            additionalSalaryRequest: actionRequiredRequest,
+            latestAdditionalSalaryRequest: actionRequiredRequest,
           },
         }}
       />,
@@ -322,7 +322,7 @@ describe('AdditionalSalaryRequest', () => {
       <TestWrapper
         mocks={{
           AdditionalSalaryRequest: {
-            additionalSalaryRequest: pendingRequest,
+            latestAdditionalSalaryRequest: pendingRequest,
           },
         }}
       />,

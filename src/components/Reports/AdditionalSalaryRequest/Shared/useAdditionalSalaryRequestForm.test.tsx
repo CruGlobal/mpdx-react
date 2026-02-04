@@ -199,7 +199,7 @@ describe('useAdditionalSalaryRequestForm', () => {
     it('should populate initial values from request data query', async () => {
       const mocks = {
         AdditionalSalaryRequest: {
-          additionalSalaryRequest: {
+          latestAdditionalSalaryRequest: {
             id: 'test-request-id',
             currentYearSalaryNotReceived: 500,
             previousYearSalaryNotReceived: 200,
@@ -551,7 +551,7 @@ describe('useAdditionalSalaryRequestForm', () => {
     it('should enable reinitialize', async () => {
       const mocks = {
         AdditionalSalaryRequest: {
-          additionalSalaryRequest: {
+          latestAdditionalSalaryRequest: {
             id: 'test-request-id',
             currentYearSalaryNotReceived: 999,
             previousYearSalaryNotReceived: 0,

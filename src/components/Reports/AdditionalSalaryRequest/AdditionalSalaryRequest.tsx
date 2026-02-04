@@ -93,7 +93,7 @@ export const AdditionalSalaryRequest: React.FC = () => {
     });
   }, [createAdditionalSalaryRequest, enqueueSnackbar, t, accountListId]);
 
-  const request = requestData?.additionalSalaryRequest;
+  const request = requestData?.latestAdditionalSalaryRequest;
 
   // Determine request status
   const allRequestStatus = useMemo((): string => {

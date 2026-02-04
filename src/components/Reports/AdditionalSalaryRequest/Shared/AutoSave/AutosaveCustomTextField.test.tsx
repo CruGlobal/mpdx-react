@@ -52,7 +52,7 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   isDrawerOpen: true,
   toggleDrawer: jest.fn(),
   requestData: {
-    additionalSalaryRequest: {
+    latestAdditionalSalaryRequest: {
       id: 'request-id',
       currentYearSalaryNotReceived: null,
       calculations: {

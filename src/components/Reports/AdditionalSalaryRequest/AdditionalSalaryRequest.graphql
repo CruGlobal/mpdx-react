@@ -55,7 +55,7 @@ fragment AdditionalSalaryRequestDetailsFields on AdditionalSalaryRequest {
 }
 
 query AdditionalSalaryRequest {
-  additionalSalaryRequest {
+  latestAdditionalSalaryRequest(status: [IN_PROGRESS, ACTION_REQUIRED, PENDING]) {
     ...AdditionalSalaryRequestDetailsFields
     createdAt
   }

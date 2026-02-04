@@ -116,7 +116,7 @@ export const useAdditionalSalaryRequestForm = ({
       return providedInitialValues;
     }
 
-    const request = requestData?.additionalSalaryRequest;
+    const request = requestData?.latestAdditionalSalaryRequest;
     if (!request) {
       return defaultInitialValues;
     }
@@ -133,7 +133,7 @@ export const useAdditionalSalaryRequestForm = ({
         request.phoneNumber || user?.staffInfo?.primaryPhoneNumber || '',
       emailAddress: request.emailAddress || user?.staffInfo?.emailAddress || '',
     } as CompleteFormValues;
-  }, [providedInitialValues, requestData?.additionalSalaryRequest, user]);
+  }, [providedInitialValues, requestData?.latestAdditionalSalaryRequest, user]);
 
   const getMaxForField = useCallback(
     (field: (typeof fieldConfig)[number]): number | undefined => {

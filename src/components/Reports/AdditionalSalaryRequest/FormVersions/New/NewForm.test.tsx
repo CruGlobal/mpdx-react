@@ -60,7 +60,7 @@ describe('NewForm', () => {
       const { getByTestId } = renderComponent({
         contextOverrides: {
           requestData: {
-            additionalSalaryRequest: {
+            latestAdditionalSalaryRequest: {
               calculations: undefined,
             },
           },
