@@ -121,7 +121,7 @@ describe('NewForm', () => {
     it('renders ContactInformation with email and phone fields', () => {
       const { getAllByText } = renderComponent();
 
-      expect(getAllByText('Email').length).toBeGreaterThanOrEqual(1);
+      expect(getAllByText('Email Address').length).toBeGreaterThanOrEqual(1);
       expect(getAllByText('Telephone Number').length).toBeGreaterThanOrEqual(1);
     });
   });

@@ -28,7 +28,7 @@ export const ContactInformation: React.FC = () => {
           fullWidth
           variant="outlined"
           fieldName="emailAddress"
-          label={t('Email')}
+          label={t('Email Address')}
           placeholder={t('Enter email address')}
           sx={{ flex: '1 1 65%' }}
         />

@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { createContext, useCallback, useMemo, useState } from 'react';
 import { ApolloError } from '@apollo/client';
+import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import {
@@ -36,6 +37,7 @@ export type AdditionalSalaryRequestType = {
   toggleDrawer: () => void;
   requestData?: AdditionalSalaryRequestQuery | null;
   loading: boolean;
+  currentYear?: number;
 
   requestError?: ApolloError;
   pageType: PageEnum | undefined;
@@ -107,12 +109,13 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     loading,
   } = useAdditionalSalaryRequestQuery();
 
+  const currentYear = useMemo(() => DateTime.now().year, []);
+  const { data: salaryInfoData } = useSalaryInfoQuery({
+    variables: { year: currentYear },
+  });
+
   const { data: staffAccountIdData, loading: staffAccountIdLoading } =
     useStaffAccountIdQuery();
-
-  const { data: salaryInfoData } = useSalaryInfoQuery({
-    variables: { year: new Date().getFullYear() },
-  });
 
   const [deleteAdditionalSalaryRequest] =
     useDeleteAdditionalSalaryRequestMutation();
@@ -188,6 +191,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       requestData,
       requestError,
       loading,
+      currentYear,
       pageType,
       handleDeleteRequest,
       requestId,
@@ -211,6 +215,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       requestData,
       requestError,
       loading,
+      currentYear,
       pageType,
       handleDeleteRequest,
       requestId,

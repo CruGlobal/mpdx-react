@@ -89,7 +89,7 @@ export const useAdditionalSalaryRequestForm = ({
   const createCurrencyValidation = useCallback(
     (fieldName: string, max?: number) => {
       let schema = amount(fieldName, t);
-      if (max) {
+      if (max !== null && max !== undefined) {
         schema = schema.max(
           max,
           t('Exceeds {{amount}} limit', {
@@ -125,7 +125,7 @@ export const useAdditionalSalaryRequestForm = ({
       ...Object.fromEntries(
         fieldConfig.map(({ key }) => [
           key,
-          String((request[key as keyof typeof request] as number) || 0),
+          String((request[key as keyof typeof request] as number) || ''),
         ]),
       ),
       deductTwelvePercent: request.deductTwelvePercent || false,

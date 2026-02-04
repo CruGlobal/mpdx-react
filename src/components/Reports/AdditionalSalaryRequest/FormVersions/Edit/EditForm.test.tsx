@@ -71,7 +71,7 @@ describe('EditForm', () => {
       1,
     );
     expect(getAllByText('Telephone Number').length).toBeGreaterThanOrEqual(1);
-    expect(getAllByText('Email').length).toBeGreaterThanOrEqual(1);
+    expect(getAllByText('Email Address').length).toBeGreaterThanOrEqual(1);
     expect(getByText('Total Annual Salary')).toBeInTheDocument();
   });
 
