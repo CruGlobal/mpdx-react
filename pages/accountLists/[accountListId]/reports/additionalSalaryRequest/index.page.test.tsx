@@ -32,6 +32,7 @@ const mockHcmData = {
   HcmData: {
     hcm: [
       {
+        salaryRequestEligible: true,
         staffInfo: {
           preferredName: 'Test User',
         },
