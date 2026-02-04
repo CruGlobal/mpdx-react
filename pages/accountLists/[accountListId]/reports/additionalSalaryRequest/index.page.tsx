@@ -53,7 +53,7 @@ const FormikRequestPage: React.FC = () => {
         refetchQueries: ['AdditionalSalaryRequest'],
       });
     }
-  }, [loading, requestData, requestError, creating, createRequest]);
+  }, [loading, requestData, requestError, creating, createRequest, user]);
 
   const requestId = requestData?.latestAdditionalSalaryRequest?.id ?? '';
   const formik = useAdditionalSalaryRequestForm({ requestId });
