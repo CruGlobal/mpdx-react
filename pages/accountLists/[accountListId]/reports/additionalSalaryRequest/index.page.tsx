@@ -37,29 +37,25 @@ const FormikRequestPage: React.FC = () => {
     useAdditionalSalaryRequest();
 
   const [createRequest] = useCreateAdditionalSalaryRequestMutation();
-  const [newRequestId, setNewRequestId] = useState<string | undefined>();
+  const [creating, setCreating] = useState(false);
 
   useEffect(() => {
     if (
       !loading &&
       !requestData &&
       !requestError &&
-      !newRequestId &&
+      !creating &&
       user?.asrEit?.asrEligibility
     ) {
-      (async () => {
-        const { data } = await createRequest({
-          variables: { attributes: {} },
-        });
-        setNewRequestId(
-          data?.createAdditionalSalaryRequest?.additionalSalaryRequest.id,
-        );
-      })();
+      setCreating(true);
+      createRequest({
+        variables: { attributes: {} },
+        refetchQueries: ['AdditionalSalaryRequest'],
+      });
     }
-  }, [loading, requestData, requestError, newRequestId, createRequest]);
+  }, [loading, requestData, requestError, creating, createRequest]);
 
-  const requestId =
-    requestData?.latestAdditionalSalaryRequest?.id ?? newRequestId ?? '';
+  const requestId = requestData?.latestAdditionalSalaryRequest?.id ?? '';
   const formik = useAdditionalSalaryRequestForm({ requestId });
 
   return (
