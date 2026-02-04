@@ -4,7 +4,7 @@ import { PayrollDate } from 'src/graphql/types.generated';
 import { SalaryCalculatorTestWrapper } from '../SalaryCalculatorTestWrapper';
 import { EffectiveDateStep } from './EffectiveDateStep';
 
-const currentYear = DateTime.fromMillis(Settings.now()).year;
+const currentYear = DateTime.now().year;
 
 const testDates: PayrollDate[] = [
   { regularProcessDate: `${currentYear}-01-15` },
@@ -44,7 +44,7 @@ describe('EffectiveDateStep', () => {
     const { findByRole } = render(<TestComponent />);
 
     expect(
-      await findByRole('combobox', { name: 'Select a future date' }),
+      await findByRole('combobox', { name: 'Effective date' }),
     ).toBeInTheDocument();
   });
 
@@ -62,7 +62,7 @@ describe('EffectiveDateStep', () => {
     const { findByRole } = render(<TestComponent />);
 
     const dropdown = await findByRole('combobox', {
-      name: 'Select a future date',
+      name: 'Effective date',
     });
     // The dropdown should be empty since hcm.effectiveDates doesn't exist yet
     expect(dropdown).toBeInTheDocument();
