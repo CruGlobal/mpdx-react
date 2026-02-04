@@ -56,4 +56,21 @@ describe('PrintTable', () => {
 
     expect(getByText('No ministry partners found.')).toBeInTheDocument();
   });
+
+  it('shpu;d render no designation state', async () => {
+    const { getByText } = render(
+      <ThemeProvider theme={theme}>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <GqlMockedProvider onCall={mutationSpy}>
+            <PrintTable
+              data={[]}
+              error={new Error('Designation account not found')}
+            />
+          </GqlMockedProvider>
+        </LocalizationProvider>
+      </ThemeProvider>,
+    );
+
+    expect(getByText('No designation account found.')).toBeInTheDocument();
+  });
 });

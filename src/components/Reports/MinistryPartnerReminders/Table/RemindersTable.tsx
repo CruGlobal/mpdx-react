@@ -1,5 +1,5 @@
 import React, { forwardRef } from 'react';
-import { HourglassDisabled } from '@mui/icons-material';
+import { ErrorOutline, HourglassDisabled } from '@mui/icons-material';
 import {
   Paper,
   Table,
@@ -42,8 +42,26 @@ const Body = forwardRef<HTMLTableSectionElement>((props, ref) => (
 ));
 Body.displayName = 'Body';
 
-const TableComponents: TableVirtuosoProps<HeaderProps, unknown>['components'] =
-  {
+interface RemindersTableProps {
+  data: ReminderData[];
+  error?: Error | null;
+}
+
+export const RemindersTable: React.FC<RemindersTableProps> = ({
+  data,
+  error,
+}) => {
+  const { t } = useTranslation();
+
+  const noDesignation = error?.message.includes(
+    'Designation account not found',
+  );
+  const isEmpty = !data.length;
+
+  const TableComponents: TableVirtuosoProps<
+    HeaderProps,
+    unknown
+  >['components'] = {
     Scroller,
     Table: (props) => (
       <Table
@@ -84,22 +102,24 @@ const TableComponents: TableVirtuosoProps<HeaderProps, unknown>['components'] =
       <TableRow>
         <TableCell colSpan={4}>
           <EmptyTable
-            title={'No ministry partners found'}
-            subtitle={'Add a ministry partner to get started'}
-            icon={HourglassDisabled}
+            title={
+              noDesignation
+                ? t('No designation account found')
+                : t('No ministry partners found')
+            }
+            subtitle={
+              noDesignation
+                ? t(
+                    'This account is not associated with a designation account number',
+                  )
+                : t('Add a ministry partner to get started')
+            }
+            icon={noDesignation ? ErrorOutline : HourglassDisabled}
           />
         </TableCell>
       </TableRow>
     ),
   };
-interface RemindersTableProps {
-  data: ReminderData[];
-}
-
-export const RemindersTable: React.FC<RemindersTableProps> = ({ data }) => {
-  const { t } = useTranslation();
-
-  const isEmpty = !data.length;
 
   return (
     <TableVirtuoso

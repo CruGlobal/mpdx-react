@@ -75,7 +75,7 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
 
   const designationNumber = userData?.user?.primaryDesignation ?? '';
 
-  const { data, loading } = useMinistryPartnerRemindersQuery({
+  const { data, loading, error } = useMinistryPartnerRemindersQuery({
     variables: {
       accountListId: accountListId ?? '',
       designationNumber,
@@ -253,11 +253,11 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
                       />
                     </LoadingBox>
                   ) : (
-                    <RemindersTable data={transformedData} />
+                    <RemindersTable data={transformedData} error={error} />
                   )}
                 </SimpleScreenOnly>
                 <SimplePrintOnly>
-                  <PrintTable data={transformedData} />
+                  <PrintTable data={transformedData} error={error} />
                 </SimplePrintOnly>
               </Box>
             </Container>

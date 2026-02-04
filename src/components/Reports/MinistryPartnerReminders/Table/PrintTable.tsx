@@ -16,12 +16,16 @@ import { ReminderData } from '../mockData';
 
 interface PrintTableProps {
   data: ReminderData[];
+  error?: Error | null;
 }
 
-export const PrintTable: React.FC<PrintTableProps> = ({ data }) => {
+export const PrintTable: React.FC<PrintTableProps> = ({ data, error }) => {
   const { t } = useTranslation();
   const locale = useLocale();
 
+  const noDesignation = error?.message.includes(
+    'Designation account not found',
+  );
   const isEmpty = data.length === 0;
 
   return (
@@ -36,7 +40,13 @@ export const PrintTable: React.FC<PrintTableProps> = ({ data }) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {isEmpty ? (
+          {noDesignation ? (
+            <TableRow>
+              <TableCell colSpan={4} align="center">
+                <Typography>{t('No designation account found.')}</Typography>
+              </TableCell>
+            </TableRow>
+          ) : isEmpty ? (
             <TableRow>
               <TableCell colSpan={4} align="center">
                 <Typography>{t('No ministry partners found.')}</Typography>
