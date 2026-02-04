@@ -33,31 +33,29 @@ import { AsrStatusEnum } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
 const FormikRequestPage: React.FC = () => {
-  const { requestData, loading, user } = useAdditionalSalaryRequest();
+  const { requestData, loading, user, requestError } =
+    useAdditionalSalaryRequest();
 
   const [createRequest] = useCreateAdditionalSalaryRequestMutation();
-  const [newRequestId, setNewRequestId] = useState<string | undefined>();
+  const [creating, setCreating] = useState(false);
 
   useEffect(() => {
     if (
       !loading &&
       !requestData &&
-      !newRequestId &&
-      user?.salaryRequestEligible
+      !requestError &&
+      !creating &&
+      user?.asrEit?.asrEligibility
     ) {
+      setCreating(true);
       createRequest({
         variables: { attributes: {} },
-        onCompleted: ({ createAdditionalSalaryRequest }) => {
-          setNewRequestId(
-            createAdditionalSalaryRequest?.additionalSalaryRequest.id,
-          );
-        },
+        refetchQueries: ['AdditionalSalaryRequest'],
       });
     }
-  }, [loading, requestData, newRequestId, createRequest]);
+  }, [loading, requestData, requestError, creating, createRequest, user]);
 
-  const requestId =
-    requestData?.latestAdditionalSalaryRequest?.id ?? newRequestId ?? '';
+  const requestId = requestData?.latestAdditionalSalaryRequest?.id ?? '';
   const formik = useAdditionalSalaryRequestForm({ requestId });
 
   return (
@@ -70,7 +68,7 @@ const FormikRequestPage: React.FC = () => {
 const AdditionalSalaryRequestRouter: React.FC = () => {
   const { requestData, loading, user } = useAdditionalSalaryRequest();
 
-  if (user?.salaryRequestEligible === false) {
+  if (user?.asrEit?.asrEligibility === false) {
     return <IneligiblePage />;
   }
 
@@ -96,7 +94,6 @@ const AdditionalSalaryRequestRouter: React.FC = () => {
 
 const AdditionalSalaryRequestContent: React.FC = () => {
   const [isNavListOpen, setNavListOpen] = useState(false);
-  const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
   const { t } = useTranslation();
 
   const { requestData, loading, isMutating, pageType, user } =
@@ -107,12 +104,14 @@ const AdditionalSalaryRequestContent: React.FC = () => {
   };
 
   const status = requestData?.latestAdditionalSalaryRequest?.status;
+  const showStatuses: AsrStatusEnum[] = [
+    AsrStatusEnum.ActionRequired,
+    AsrStatusEnum.Pending,
+  ];
   const showSavingStatus =
     pageType !== PageEnum.View &&
-    status !== AsrStatusEnum.ActionRequired &&
-    status !== AsrStatusEnum.Pending &&
-    status !== AsrStatusEnum.InProgress &&
-    user?.salaryRequestEligible !== false;
+    (!status || showStatuses.includes(status)) &&
+    user?.asrEit?.asrEligibility !== false;
 
   return (
     <SidePanelsLayout
@@ -122,8 +121,6 @@ const AdditionalSalaryRequestContent: React.FC = () => {
           isOpen={isNavListOpen}
           selectedId="salaryRequest"
           onClose={handleNavListToggle}
-          designationAccounts={designationAccounts}
-          setDesignationAccounts={setDesignationAccounts}
           navType={NavTypeEnum.Reports}
         />
       }
