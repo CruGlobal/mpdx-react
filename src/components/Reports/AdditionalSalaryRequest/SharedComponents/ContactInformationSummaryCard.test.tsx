@@ -24,7 +24,7 @@ const mockUseAdditionalSalaryRequest =
 
 const defaultMockContextValue = {
   requestData: {
-    additionalSalaryRequest: {
+    latestAdditionalSalaryRequest: {
       phoneNumber: '555-123-4567',
       emailAddress: 'test@example.com',
     },

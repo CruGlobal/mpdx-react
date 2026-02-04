@@ -28,7 +28,7 @@ const mockUseAdditionalSalaryRequest =
 
 const defaultMockContextValue = {
   requestData: {
-    additionalSalaryRequest: {
+    latestAdditionalSalaryRequest: {
       id: 'test-request-id',
       traditional403bContribution: 0.12,
       calculations: {
@@ -184,7 +184,7 @@ describe('TotalAnnualSalarySummaryCard', () => {
       const { container, getByText, getByRole } = renderComponent({
         contextOverrides: {
           requestData: {
-            additionalSalaryRequest: {
+            latestAdditionalSalaryRequest: {
               id: 'test-request-id',
               traditional403bContribution: 0.12,
               calculations: {
@@ -227,7 +227,7 @@ describe('TotalAnnualSalarySummaryCard', () => {
       const { container } = renderComponent({
         contextOverrides: {
           requestData: {
-            additionalSalaryRequest: {
+            latestAdditionalSalaryRequest: {
               id: 'test-request-id',
               traditional403bContribution: 0.12,
               calculations: {
