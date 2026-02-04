@@ -30,6 +30,7 @@ const janeDoe: HcmDataQuery['hcm'][number]['staffInfo'] = {
 };
 
 const noMhaAndNoException: HcmDataQuery['hcm'][number] = {
+  salaryRequestEligible: true,
   staffInfo: johnDoe,
   mhaRequest: {
     currentApprovedOverallAmount: null,

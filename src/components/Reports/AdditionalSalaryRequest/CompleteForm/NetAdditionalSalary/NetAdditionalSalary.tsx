@@ -24,7 +24,8 @@ export const NetAdditionalSalary: React.FC = () => {
   const { values } = useFormikContext<CompleteFormValues>();
 
   const traditional403bContribution =
-    requestData?.additionalSalaryRequest?.traditional403bContribution ?? 0;
+    requestData?.latestAdditionalSalaryRequest?.traditional403bContribution ??
+    0;
 
   const { netSalary } = useSalaryCalculations({
     traditional403bContribution,

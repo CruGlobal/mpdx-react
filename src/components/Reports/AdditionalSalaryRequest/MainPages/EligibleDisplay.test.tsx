@@ -46,10 +46,8 @@ const TestWrapper: React.FC<TestWrapperProps> = ({
             <GqlMockedProvider
               mocks={{
                 HcmData: hcmData,
-                AdditionalSalaryRequests: {
-                  additionalSalaryRequests: {
-                    nodes: [],
-                  },
+                AdditionalSalaryRequest: {
+                  latestAdditionalSalaryRequest: null,
                 },
                 StaffAccountId: {
                   user: {
