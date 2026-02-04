@@ -19,6 +19,7 @@ import {
 import {
   AdditionalSalaryRequestQuery,
   useAdditionalSalaryRequestQuery,
+  useCreateAdditionalSalaryRequestMutation,
   useDeleteAdditionalSalaryRequestMutation,
 } from '../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
@@ -38,7 +39,6 @@ export type AdditionalSalaryRequestType = {
   requestData?: AdditionalSalaryRequestQuery | null;
   loading: boolean;
   currentYear?: number;
-
   requestError?: ApolloError;
   pageType: PageEnum | undefined;
   handleDeleteRequest: (id: string, isCancel: boolean) => Promise<void>;
@@ -49,6 +49,7 @@ export type AdditionalSalaryRequestType = {
   isInternational: boolean;
   isMutating: boolean;
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
+  createNewRequest: () => Promise<string | undefined>;
 };
 
 const AdditionalSalaryRequestContext =
@@ -119,6 +120,27 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
 
   const [deleteAdditionalSalaryRequest] =
     useDeleteAdditionalSalaryRequestMutation();
+
+  const [createRequest] = useCreateAdditionalSalaryRequestMutation();
+
+  const createNewRequest = useCallback(async () => {
+    try {
+      const result = await createRequest({
+        variables: { attributes: {} },
+        refetchQueries: ['AdditionalSalaryRequest'],
+      });
+      return result.data?.createAdditionalSalaryRequest?.additionalSalaryRequest
+        .id;
+    } catch (err) {
+      enqueueSnackbar(
+        t('Error while creating ASR Request - {{error}}', {
+          error: err instanceof Error ? err.message : err,
+        }),
+        { variant: 'error' },
+      );
+      return undefined;
+    }
+  }, [createRequest, enqueueSnackbar, t]);
 
   const currentStep = sections[currentIndex];
 
@@ -201,6 +223,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       isInternational,
       isMutating,
       trackMutation,
+      createNewRequest,
     }),
     [
       staffAccountId,
@@ -225,6 +248,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       isInternational,
       isMutating,
       trackMutation,
+      createNewRequest,
     ],
   );
 
