@@ -96,7 +96,6 @@ const AdditionalSalaryRequestRouter: React.FC = () => {
 
 const AdditionalSalaryRequestContent: React.FC = () => {
   const [isNavListOpen, setNavListOpen] = useState(false);
-  const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
   const { t } = useTranslation();
 
   const { requestData, loading, isMutating, pageType, user } =
@@ -107,11 +106,13 @@ const AdditionalSalaryRequestContent: React.FC = () => {
   };
 
   const status = requestData?.latestAdditionalSalaryRequest?.status;
+  const showStatuses: AsrStatusEnum[] = [
+    AsrStatusEnum.ActionRequired,
+    AsrStatusEnum.Pending,
+  ];
   const showSavingStatus =
     pageType !== PageEnum.View &&
-    status !== AsrStatusEnum.ActionRequired &&
-    status !== AsrStatusEnum.Pending &&
-    status !== AsrStatusEnum.InProgress &&
+    (!status || showStatuses.includes(status)) &&
     user?.asrEit?.asrEligibility !== false;
 
   return (
@@ -122,8 +123,6 @@ const AdditionalSalaryRequestContent: React.FC = () => {
           isOpen={isNavListOpen}
           selectedId="salaryRequest"
           onClose={handleNavListToggle}
-          designationAccounts={designationAccounts}
-          setDesignationAccounts={setDesignationAccounts}
           navType={NavTypeEnum.Reports}
         />
       }
