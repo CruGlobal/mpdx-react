@@ -41,15 +41,18 @@ const TestComponent = ({
 );
 
 describe('PendingRequestActions', () => {
-  it('renders View Request button', () => {
+  it('renders View Request link with correct href', () => {
     const { getByRole } = render(
       <TestComponent calculation={mockCalculation} />,
     );
 
-    expect(getByRole('button', { name: 'View Request' })).toBeInTheDocument();
+    expect(getByRole('link', { name: 'View Request' })).toHaveAttribute(
+      'href',
+      '/accountLists/account-list-1/reports/salaryCalculator/1?mode=view',
+    );
   });
 
-  it('shows Edit Request button when status is ACTION_REQUIRED', () => {
+  it('shows Edit Request link with correct href when status is ACTION_REQUIRED', () => {
     const { getByRole } = render(
       <TestComponent
         calculation={{
@@ -59,17 +62,19 @@ describe('PendingRequestActions', () => {
       />,
     );
 
-    expect(getByRole('button', { name: 'View Request' })).toBeInTheDocument();
-    expect(getByRole('button', { name: 'Edit Request' })).toBeInTheDocument();
+    expect(getByRole('link', { name: 'Edit Request' })).toHaveAttribute(
+      'href',
+      '/accountLists/account-list-1/reports/salaryCalculator/1',
+    );
   });
 
-  it('does not show Edit Request button when status is PENDING', () => {
+  it('does not show Edit Request link when status is PENDING', () => {
     const { queryByRole } = render(
       <TestComponent calculation={mockCalculation} />,
     );
 
     expect(
-      queryByRole('button', { name: 'Edit Request' }),
+      queryByRole('link', { name: 'Edit Request' }),
     ).not.toBeInTheDocument();
   });
 

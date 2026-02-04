@@ -11,10 +11,12 @@ const TestComponent: React.FC = () => (
 
 describe('PendingRequestCard', () => {
   it('renders card with amount and buttons', async () => {
-    const { getByRole, getByTestId } = render(<TestComponent />);
+    const { getByRole, findByRole, getByTestId } = render(<TestComponent />);
 
     expect(getByTestId('gross-salary-amount')).toBeInTheDocument();
     expect(getByRole('button', { name: 'Download' })).toBeInTheDocument();
-    expect(getByRole('button', { name: 'View Request' })).toBeInTheDocument();
+    expect(
+      await findByRole('link', { name: 'View Request' }),
+    ).toBeInTheDocument();
   });
 });

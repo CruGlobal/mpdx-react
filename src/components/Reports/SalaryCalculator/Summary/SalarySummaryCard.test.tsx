@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { DeepPartial } from 'ts-essentials';
+import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { HcmQuery } from '../SalaryCalculatorContext/Hcm.generated';
 import { SalaryCalculationQuery } from '../SalaryCalculatorContext/SalaryCalculation.generated';
@@ -26,6 +27,7 @@ const approvedSalaryMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> =
 
 const defaultSalaryMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> =
   {
+    id: 'salary-request-1',
     salary: 30001,
     mhaAmount: 30002,
     salaryCap: 30003,
@@ -45,26 +47,32 @@ interface TestComponentProps {
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({ hasSpouse = true }) => (
-  <GqlMockedProvider<{
-    Hcm: HcmQuery;
-    SalaryCalculation: SalaryCalculationQuery;
-  }>
-    mocks={{
-      Hcm: {
-        hcm: hasSpouse ? [hcmUserMock, hcmSpouseMock] : [hcmUserMock],
-      },
-      SalaryCalculation: {
-        salaryRequest: defaultSalaryMock,
-      },
-      ApprovedSalaryCalculation: {
-        salaryRequest: approvedSalaryMock,
-      },
+  <TestRouter
+    router={{
+      query: { calculationId: 'salary-request-1' },
     }}
   >
-    <SalaryCalculatorProvider>
-      <SalarySummaryCard />
-    </SalaryCalculatorProvider>
-  </GqlMockedProvider>
+    <GqlMockedProvider<{
+      Hcm: HcmQuery;
+      SalaryCalculation: SalaryCalculationQuery;
+    }>
+      mocks={{
+        Hcm: {
+          hcm: hasSpouse ? [hcmUserMock, hcmSpouseMock] : [hcmUserMock],
+        },
+        SalaryCalculation: {
+          salaryRequest: defaultSalaryMock,
+        },
+        ApprovedSalaryCalculation: {
+          salaryRequest: approvedSalaryMock,
+        },
+      }}
+    >
+      <SalaryCalculatorProvider>
+        <SalarySummaryCard />
+      </SalaryCalculatorProvider>
+    </GqlMockedProvider>
+  </TestRouter>
 );
 
 describe('SalarySummaryCard', () => {
