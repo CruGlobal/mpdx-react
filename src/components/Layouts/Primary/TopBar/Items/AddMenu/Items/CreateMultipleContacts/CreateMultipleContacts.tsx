@@ -440,7 +440,7 @@ export const CreateMultipleContacts = ({
                               <ContactStatusSelect
                                 role="listbox"
                                 aria-label={t('Status')}
-                                value={contact.status}
+                                value={contact.status ?? ''}
                                 onChange={(e) =>
                                   setFieldValue(
                                     `contacts.${index}.status`,

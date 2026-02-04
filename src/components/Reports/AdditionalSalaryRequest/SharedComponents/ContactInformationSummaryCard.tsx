@@ -16,7 +16,7 @@ export const ContactInformationSummaryCard: React.FC = () => {
   const { t } = useTranslation();
   const { requestData } = useAdditionalSalaryRequest();
   const { phoneNumber, emailAddress: email } =
-    requestData?.additionalSalaryRequest ?? {};
+    requestData?.latestAdditionalSalaryRequest ?? {};
 
   return (
     <StepCard>

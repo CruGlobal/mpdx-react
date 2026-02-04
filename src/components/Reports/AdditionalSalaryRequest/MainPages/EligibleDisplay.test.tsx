@@ -47,7 +47,7 @@ const TestWrapper: React.FC<TestWrapperProps> = ({
               mocks={{
                 HcmData: hcmData,
                 AdditionalSalaryRequest: {
-                  additionalSalaryRequest: null,
+                  latestAdditionalSalaryRequest: null,
                 },
                 StaffAccountId: {
                   user: {

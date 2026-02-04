@@ -13,6 +13,7 @@ import { AdditionalSalaryRequest } from './AdditionalSalaryRequest';
 import { AdditionalSalaryRequestQuery } from './AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestProvider } from './Shared/AdditionalSalaryRequestContext';
 
+const mutationSpy = jest.fn();
 const accountListId = 'account-list-1';
 
 const mockRequest = {
@@ -69,6 +70,8 @@ const mockHcmData = {
       id: 'hcm-1',
       staffInfo: {
         preferredName: 'John',
+        emailAddress: 'john.doe@example.com',
+        primaryPhoneNumber: '555-123-4567',
       },
     },
   ],
@@ -87,7 +90,7 @@ const TestWrapper: React.FC<TestWrapperProps> = ({
 }) => {
   const defaultMocks = {
     AdditionalSalaryRequest: {
-      additionalSalaryRequest: mockRequest,
+      latestAdditionalSalaryRequest: mockRequest,
     },
     HcmData: mockHcmData,
     StaffAccountId: {
@@ -150,7 +153,7 @@ describe('AdditionalSalaryRequest', () => {
       <TestWrapper
         mocks={{
           AdditionalSalaryRequest: {
-            additionalSalaryRequest: null,
+            latestAdditionalSalaryRequest: null,
           },
         }}
       />,
@@ -186,7 +189,7 @@ describe('AdditionalSalaryRequest', () => {
       <TestWrapper
         mocks={{
           AdditionalSalaryRequest: {
-            additionalSalaryRequest: pendingRequest,
+            latestAdditionalSalaryRequest: pendingRequest,
           },
         }}
       />,
@@ -206,7 +209,7 @@ describe('AdditionalSalaryRequest', () => {
       <TestWrapper
         mocks={{
           AdditionalSalaryRequest: {
-            additionalSalaryRequest: approvedRequest,
+            latestAdditionalSalaryRequest: approvedRequest,
           },
         }}
       />,
@@ -227,7 +230,7 @@ describe('AdditionalSalaryRequest', () => {
       <TestWrapper
         mocks={{
           AdditionalSalaryRequest: {
-            additionalSalaryRequest: actionRequiredRequest,
+            latestAdditionalSalaryRequest: actionRequiredRequest,
           },
         }}
       />,
@@ -257,7 +260,7 @@ describe('AdditionalSalaryRequest', () => {
       <TestWrapper
         mocks={{
           AdditionalSalaryRequest: {
-            additionalSalaryRequest: null,
+            latestAdditionalSalaryRequest: null,
           },
         }}
       />,
@@ -282,7 +285,7 @@ describe('AdditionalSalaryRequest', () => {
       <TestWrapper
         mocks={{
           AdditionalSalaryRequest: {
-            additionalSalaryRequest: approvedRequest,
+            latestAdditionalSalaryRequest: approvedRequest,
           },
         }}
       />,
@@ -302,7 +305,7 @@ describe('AdditionalSalaryRequest', () => {
       <TestWrapper
         mocks={{
           AdditionalSalaryRequest: {
-            additionalSalaryRequest: actionRequiredRequest,
+            latestAdditionalSalaryRequest: actionRequiredRequest,
           },
         }}
       />,
@@ -322,7 +325,7 @@ describe('AdditionalSalaryRequest', () => {
       <TestWrapper
         mocks={{
           AdditionalSalaryRequest: {
-            additionalSalaryRequest: pendingRequest,
+            latestAdditionalSalaryRequest: pendingRequest,
           },
         }}
       />,
@@ -343,5 +346,28 @@ describe('AdditionalSalaryRequest', () => {
     expect(
       await findByLabelText('Additional Salary Request Sections'),
     ).toBeInTheDocument();
+  });
+
+  it('creates a request with hcm phone and email', async () => {
+    const { findByRole, findByText } = render(
+      <TestWrapper onCall={mutationSpy} />,
+    );
+
+    await findByText(/John currently has/i);
+
+    const createButton = await findByRole('button', { name: 'Create New ASR' });
+    userEvent.click(createButton);
+
+    await waitFor(() => {
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'CreateAdditionalSalaryRequest',
+        {
+          attributes: {
+            emailAddress: 'john.doe@example.com',
+            phoneNumber: '555-123-4567',
+          },
+        },
+      );
+    });
   });
 });

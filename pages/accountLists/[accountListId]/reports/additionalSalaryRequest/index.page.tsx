@@ -57,7 +57,7 @@ const FormikRequestPage: React.FC = () => {
   }, [loading, requestData, newRequestId, createRequest]);
 
   const requestId =
-    requestData?.additionalSalaryRequest?.id ?? newRequestId ?? '';
+    requestData?.latestAdditionalSalaryRequest?.id ?? newRequestId ?? '';
   const formik = useAdditionalSalaryRequestForm({ requestId });
 
   return (
@@ -82,7 +82,7 @@ const AdditionalSalaryRequestRouter: React.FC = () => {
     return <FormikRequestPage />;
   }
 
-  switch (requestData.additionalSalaryRequest?.status) {
+  switch (requestData.latestAdditionalSalaryRequest?.status) {
     case AsrStatusEnum.ActionRequired:
     case AsrStatusEnum.Pending:
       return <OverviewPage />;
@@ -106,7 +106,7 @@ const AdditionalSalaryRequestContent: React.FC = () => {
     setNavListOpen(!isNavListOpen);
   };
 
-  const status = requestData?.additionalSalaryRequest?.status;
+  const status = requestData?.latestAdditionalSalaryRequest?.status;
   const showSavingStatus =
     pageType !== PageEnum.View &&
     status !== AsrStatusEnum.ActionRequired &&
@@ -144,7 +144,7 @@ const AdditionalSalaryRequestContent: React.FC = () => {
                   hasData={!!requestData}
                   isMutating={isMutating}
                   lastSavedAt={
-                    requestData?.additionalSalaryRequest?.updatedAt ?? null
+                    requestData?.latestAdditionalSalaryRequest?.updatedAt ?? null
                   }
                 />
               )

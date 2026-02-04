@@ -6,7 +6,7 @@ import {
   Box,
   Button,
   Card,
-  CardActions,
+  CardActionArea,
   CardContent,
   CardHeader,
   Divider,
@@ -110,7 +110,7 @@ export const StatusCard: React.FC<StatusCardProps> = ({
       <CardContent sx={{ ...styling }}>{children}</CardContent>
       <Divider />
       {!hideActions && (
-        <CardActions sx={{ p: 2 }}>
+        <CardActionArea sx={{ p: 2 }}>
           <Button
             component={NextLink}
             href={linkOne ?? ''}
@@ -149,7 +149,7 @@ export const StatusCard: React.FC<StatusCardProps> = ({
               isCancel={true}
             />
           )}
-        </CardActions>
+        </CardActionArea>
       )}
     </Card>
   );

@@ -22,7 +22,7 @@ import { getDotVariant } from '../Shared/Helper/getDotVariant';
 import { getRequestUrl } from '../Shared/Helper/getRequestUrl';
 
 interface CurrentRequestProps {
-  request: NonNullable<AdditionalSalaryRequestQuery['additionalSalaryRequest']>;
+  request: NonNullable<AdditionalSalaryRequestQuery['latestAdditionalSalaryRequest']>;
 }
 
 export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
