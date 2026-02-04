@@ -33,8 +33,10 @@ export const RequestedSalaryCard: React.FC = () => {
   const schema = useMemo(
     () =>
       yup.object({
-        salary: amount(t('Requested salary'), t),
-        spouseSalary: amount(t('Spouse requested salary'), t),
+        salary: amount(t('Requested salary'), t, { required: true }),
+        spouseSalary: amount(t('Spouse requested salary'), t, {
+          required: true,
+        }),
       }),
     [t],
   );
