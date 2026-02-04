@@ -199,7 +199,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       currentYear,
       pageType,
       handleDeleteRequest,
-      requestId,
+      requestId: requestData?.latestAdditionalSalaryRequest?.id ?? requestId,
       user,
       spouse,
       salaryInfo,
