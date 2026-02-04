@@ -45,14 +45,14 @@ const FormikRequestPage: React.FC = () => {
       !newRequestId &&
       user?.asrEit?.asrEligibility
     ) {
-      createRequest({
-        variables: { attributes: {} },
-        onCompleted: ({ createAdditionalSalaryRequest }) => {
-          setNewRequestId(
-            createAdditionalSalaryRequest?.additionalSalaryRequest.id,
-          );
-        },
-      });
+      (async () => {
+        const { data } = await createRequest({
+          variables: { attributes: {} },
+        });
+        setNewRequestId(
+          data?.createAdditionalSalaryRequest?.additionalSalaryRequest.id,
+        );
+      })();
     }
   }, [loading, requestData, newRequestId, createRequest]);
 
