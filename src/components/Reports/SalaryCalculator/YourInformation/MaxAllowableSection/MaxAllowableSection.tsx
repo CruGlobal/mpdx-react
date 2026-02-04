@@ -1,9 +1,8 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import {
   Alert,
   CardContent,
   CardHeader,
-  Checkbox,
   Divider,
   FormControlLabel,
   Stack,
@@ -19,6 +18,7 @@ import * as yup from 'yup';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { amount } from 'src/lib/yupHelpers';
+import { AutosaveCheckbox } from '../../Autosave/AutosaveCheckbox';
 import { AutosaveTextField } from '../../Autosave/AutosaveTextField';
 import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
 import {
@@ -35,8 +35,8 @@ export const MaxAllowableStep: React.FC = () => {
     hcmUser,
     hcmSpouse,
   } = useSalaryCalculator();
-  const { calculations, spouseCalculations } = salaryCalculation ?? {};
-  const [splitting, setSplitting] = useState(false);
+  const { calculations, spouseCalculations, manuallySplitCap } =
+    salaryCalculation ?? {};
 
   const schema = useMemo(
     () =>
@@ -134,19 +134,14 @@ export const MaxAllowableStep: React.FC = () => {
             </Table>
 
             <FormControlLabel
-              control={
-                <Checkbox
-                  value={splitting}
-                  onChange={(event) => setSplitting(event.target.checked)}
-                />
-              }
+              control={<AutosaveCheckbox fieldName="manuallySplitCap" />}
               label={t(
                 'Check if you prefer to split your Combined Maximum Allowable Salary between you and {{ spouseName }} here before requesting your new salary.',
                 { spouseName },
               )}
             />
 
-            {splitting && (
+            {manuallySplitCap && (
               <>
                 <Divider />
                 <Typography variant="body1">

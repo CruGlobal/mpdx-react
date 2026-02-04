@@ -15,6 +15,7 @@ const defaultSalaryRequestMock: DeepPartial<
 > = {
   calculations: { calculatedCap: 75000 },
   spouseCalculations: { calculatedCap: 80000 },
+  manuallySplitCap: false,
   splitCapRequired: true,
 };
 
@@ -64,9 +65,7 @@ describe('MaxAllowableSection', () => {
       const { findByRole, getByRole } = render(<TestComponent />);
 
       userEvent.click(
-        await findByRole('checkbox', {
-          name: 'Check if you prefer to split your Combined Maximum Allowable Salary between you and Jane here before requesting your new salary.',
-        }),
+        await findByRole('checkbox', { name: /Check if you prefer to split/ }),
       );
 
       const input = getByRole('textbox', {
@@ -78,11 +77,12 @@ describe('MaxAllowableSection', () => {
 
       await waitFor(() =>
         expect(mutationSpy).toHaveGraphqlOperation('UpdateSalaryCalculation', {
-          input: {
-            attributes: {
-              salaryCap: 85000,
-            },
-          },
+          input: { attributes: { manuallySplitCap: true } },
+        }),
+      );
+      await waitFor(() =>
+        expect(mutationSpy).toHaveGraphqlOperation('UpdateSalaryCalculation', {
+          input: { attributes: { salaryCap: 85000 } },
         }),
       );
     });
