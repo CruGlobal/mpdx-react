@@ -98,6 +98,7 @@ const mockContextValue = {
   isInternational: false,
   isMutating: false,
   trackMutation: jest.fn(),
+  createNewRequest: jest.fn(),
 };
 
 const TestComponent: React.FC<{ request: RequestType }> = ({ request }) => (

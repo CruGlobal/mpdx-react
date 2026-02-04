@@ -11,7 +11,7 @@ interface DirectionButtonsProps {
   buttonTitle?: string;
   deadlineDate?: string;
   actionRequired?: boolean;
-  overrideNext?: () => void;
+  overrideNext?: () => void | Promise<void>;
   showBackButton?: boolean;
   isEdit?: boolean;
   //Formik validation for submit modal

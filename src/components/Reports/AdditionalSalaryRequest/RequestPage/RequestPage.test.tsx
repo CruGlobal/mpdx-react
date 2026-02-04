@@ -88,6 +88,7 @@ const defaultMockContextValue = {
   isInternational: false,
   isMutating: false,
   trackMutation: jest.fn(),
+  createNewRequest: jest.fn(),
 };
 
 const router = {

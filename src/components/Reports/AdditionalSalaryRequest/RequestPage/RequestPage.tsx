@@ -38,6 +38,8 @@ const MainContent: React.FC = () => {
     pageType,
     loading,
     currentStep,
+    createNewRequest,
+    trackMutation,
   } = useAdditionalSalaryRequest();
 
   const { submitForm, validateForm, submitCount, isValid } =
@@ -46,6 +48,13 @@ const MainContent: React.FC = () => {
   const isFirstFormPage = currentIndex === 0;
   const isLastFormPage = currentIndex === steps.length - 2;
   const reviewPage = currentIndex === steps.length - 1;
+
+  const handleCreateAndContinue = async () => {
+    const id = await trackMutation(createNewRequest());
+    if (id) {
+      handleNextStep();
+    }
+  };
 
   const handleDiscard = async () => {
     if (requestId) {
@@ -82,6 +91,9 @@ const MainContent: React.FC = () => {
                 submitCount={submitCount}
                 isValid={isValid}
                 isEdit={pageType === PageEnum.Edit}
+                overrideNext={
+                  isFirstFormPage ? handleCreateAndContinue : undefined
+                }
               />
             </Stack>
           )}
