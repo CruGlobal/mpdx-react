@@ -42,5 +42,6 @@ query HcmData {
       currentApprovedOverallAmount
       currentTakenAmount
     }
+    salaryRequestEligible
   }
 }
