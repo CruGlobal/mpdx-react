@@ -87,7 +87,7 @@ const defaultMockContextValue = {
   salaryInfo: undefined,
   isInternational: false,
   isMutating: false,
-  trackMutation: jest.fn(),
+  trackMutation: jest.fn((promise) => promise),
   createNewRequest: jest.fn(),
 };
 
@@ -275,5 +275,65 @@ describe('RequestPage', () => {
       'href',
       '/accountLists/account-list-1/reports/additionalSalaryRequest',
     );
+  });
+
+  it('calls createNewRequest and handleNextStep when Continue is clicked on first page', async () => {
+    const mockCreateNewRequest = jest.fn().mockResolvedValue('new-request-id');
+    const mockHandleNextStep = jest.fn();
+
+    mockUseAdditionalSalaryRequest.mockReturnValue({
+      ...defaultMockContextValue,
+      createNewRequest: mockCreateNewRequest,
+      handleNextStep: mockHandleNextStep,
+    } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+    const { getByRole } = render(<TestWrapper />);
+
+    userEvent.click(getByRole('button', { name: /continue/i }));
+
+    await waitFor(() => {
+      expect(mockCreateNewRequest).toHaveBeenCalled();
+      expect(mockHandleNextStep).toHaveBeenCalled();
+    });
+  });
+
+  it('does not call handleNextStep when createNewRequest fails', async () => {
+    const mockCreateNewRequest = jest.fn().mockResolvedValue(undefined);
+    const mockHandleNextStep = jest.fn();
+
+    mockUseAdditionalSalaryRequest.mockReturnValue({
+      ...defaultMockContextValue,
+      createNewRequest: mockCreateNewRequest,
+      handleNextStep: mockHandleNextStep,
+    } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+    const { getByRole } = render(<TestWrapper />);
+
+    userEvent.click(getByRole('button', { name: /continue/i }));
+
+    await waitFor(() => {
+      expect(mockCreateNewRequest).toHaveBeenCalled();
+      expect(mockHandleNextStep).not.toHaveBeenCalled();
+    });
+  });
+
+  it('does not use overrideNext on non-first pages', async () => {
+    const mockCreateNewRequest = jest.fn();
+
+    mockUseAdditionalSalaryRequest.mockReturnValue({
+      ...defaultMockContextValue,
+      currentIndex: 1,
+      currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
+      createNewRequest: mockCreateNewRequest,
+      pageType: PageEnum.Edit,
+    } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+    const { getByRole } = render(<TestWrapper />);
+
+    userEvent.click(getByRole('button', { name: /submit/i }));
+
+    await waitFor(() => {
+      expect(mockCreateNewRequest).not.toHaveBeenCalled();
+    });
   });
 });

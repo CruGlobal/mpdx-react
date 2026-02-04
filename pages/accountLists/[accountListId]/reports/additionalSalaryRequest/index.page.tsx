@@ -34,8 +34,7 @@ import useGetAppSettings from 'src/hooks/useGetAppSettings';
 const FormikRequestPage: React.FC = () => {
   const { requestData } = useAdditionalSalaryRequest();
 
-  const requestId =
-    requestData?.latestAdditionalSalaryRequest?.id ?? '';
+  const requestId = requestData?.latestAdditionalSalaryRequest?.id ?? '';
   const formik = useAdditionalSalaryRequestForm({ requestId });
 
   return (
