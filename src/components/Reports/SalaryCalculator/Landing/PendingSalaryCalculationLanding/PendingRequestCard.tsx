@@ -1,5 +1,6 @@
+import Link from 'next/link';
 import React from 'react';
-import { Download, PriceCheckSharp } from '@mui/icons-material';
+import { PriceCheckSharp, Print } from '@mui/icons-material';
 import {
   Avatar,
   Card,
@@ -9,6 +10,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
@@ -18,6 +20,7 @@ import { PendingRequestTimeline } from './components/PendingRequestTimeline';
 
 export const PendingRequestCard: React.FC = () => {
   const { t } = useTranslation();
+  const accountListId = useAccountListId();
   const {
     calculation,
     requestedOn,
@@ -27,10 +30,6 @@ export const PendingRequestCard: React.FC = () => {
   } = useLandingData();
 
   const locale = useLocale();
-
-  const handleDownload = () => {
-    // TODO: Download functionality to be done in MPDX-9204
-  };
 
   return (
     <Card sx={{ marginBlock: theme.spacing(3) }}>
@@ -43,9 +42,15 @@ export const PendingRequestCard: React.FC = () => {
         title={t('Pending Salary Calculation Form')}
         titleTypographyProps={{ variant: 'h6' }}
         action={
-          <IconButton aria-label={t('Download')} onClick={handleDownload}>
-            <Download />
-          </IconButton>
+          calculation && (
+            <IconButton
+              aria-label={t('Print')}
+              component={Link}
+              href={`/accountLists/${accountListId}/reports/salaryCalculator/${calculation.id}?mode=view&print=true`}
+            >
+              <Print />
+            </IconButton>
+          )
         }
       />
       <CardContent>

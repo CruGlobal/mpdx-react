@@ -33,6 +33,9 @@ const StickyHeader = styled(Box)(() => ({
   height: multiPageHeaderHeight,
   zIndex: '700',
   background: theme.palette.common.white,
+  '@media print': {
+    display: 'none',
+  },
 }));
 
 const NavListButton = styled(IconButton, {

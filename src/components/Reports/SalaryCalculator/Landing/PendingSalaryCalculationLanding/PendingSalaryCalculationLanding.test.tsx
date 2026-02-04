@@ -32,9 +32,10 @@ describe('PendingSalaryCalculationLanding', () => {
   it('displays PendingRequestCard', async () => {
     const { findByRole } = render(<TestComponent />);
 
-    expect(
-      await findByRole('button', { name: 'Download' }),
-    ).toBeInTheDocument();
+    expect(await findByRole('link', { name: 'Print' })).toHaveAttribute(
+      'href',
+      '/accountLists/account-list-1/reports/salaryCalculator/pending-calc-1?mode=view&print=true',
+    );
   });
 
   it('displays SalaryInformationCard', async () => {
