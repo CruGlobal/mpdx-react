@@ -1,11 +1,10 @@
 import Head from 'next/head';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { FormikProvider } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
-import { useCreateAdditionalSalaryRequestMutation } from 'src/components/Reports/AdditionalSalaryRequest/AdditionalSalaryRequest.generated';
 import { ContinuePage } from 'src/components/Reports/AdditionalSalaryRequest/MainPages/ContinuePage';
 import { IneligiblePage } from 'src/components/Reports/AdditionalSalaryRequest/MainPages/IneligiblePage';
 import { OverviewPage } from 'src/components/Reports/AdditionalSalaryRequest/MainPages/OverviewPage';
@@ -33,31 +32,9 @@ import { AsrStatusEnum } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
 const FormikRequestPage: React.FC = () => {
-  const { requestData, loading, user } = useAdditionalSalaryRequest();
+  const { requestData } = useAdditionalSalaryRequest();
 
-  const [createRequest] = useCreateAdditionalSalaryRequestMutation();
-  const [newRequestId, setNewRequestId] = useState<string | undefined>();
-
-  useEffect(() => {
-    if (
-      !loading &&
-      !requestData &&
-      !newRequestId &&
-      user?.salaryRequestEligible
-    ) {
-      createRequest({
-        variables: { attributes: {} },
-        onCompleted: ({ createAdditionalSalaryRequest }) => {
-          setNewRequestId(
-            createAdditionalSalaryRequest?.additionalSalaryRequest.id,
-          );
-        },
-      });
-    }
-  }, [loading, requestData, newRequestId, createRequest]);
-
-  const requestId =
-    requestData?.latestAdditionalSalaryRequest?.id ?? newRequestId ?? '';
+  const requestId = requestData?.latestAdditionalSalaryRequest?.id ?? '';
   const formik = useAdditionalSalaryRequestForm({ requestId });
 
   return (
