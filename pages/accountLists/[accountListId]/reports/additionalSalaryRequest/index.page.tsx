@@ -33,7 +33,8 @@ import { AsrStatusEnum } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
 const FormikRequestPage: React.FC = () => {
-  const { requestData, loading, user } = useAdditionalSalaryRequest();
+  const { requestData, loading, user, requestError } =
+    useAdditionalSalaryRequest();
 
   const [createRequest] = useCreateAdditionalSalaryRequestMutation();
   const [newRequestId, setNewRequestId] = useState<string | undefined>();
@@ -42,6 +43,7 @@ const FormikRequestPage: React.FC = () => {
     if (
       !loading &&
       !requestData &&
+      !requestError &&
       !newRequestId &&
       user?.asrEit?.asrEligibility
     ) {
@@ -54,7 +56,7 @@ const FormikRequestPage: React.FC = () => {
         );
       })();
     }
-  }, [loading, requestData, newRequestId, createRequest]);
+  }, [loading, requestData, requestError, newRequestId, createRequest]);
 
   const requestId =
     requestData?.latestAdditionalSalaryRequest?.id ?? newRequestId ?? '';
