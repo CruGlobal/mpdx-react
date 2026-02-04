@@ -43,9 +43,6 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
           currentApprovedOverallAmount: 20000,
           currentTakenAmount: 300,
         },
-        exceptionSalaryCap: {
-          amount: null,
-        },
       },
       {
         staffInfo: {
@@ -63,9 +60,6 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
         mhaRequest: {
           currentApprovedOverallAmount: 20000,
           currentTakenAmount: 500,
-        },
-        exceptionSalaryCap: {
-          amount: null,
         },
       },
     ],
@@ -138,9 +132,9 @@ export const SalaryCalculatorTestWrapper: React.FC<
                   id: 'salary-request-1',
                   status: SalaryRequestStatusEnum.InProgress,
                   calculations: {
-                    individualCap: 80000,
-                    familyCap: 125000,
                     hardCap: 80000,
+                    exceptionCap: null,
+                    combinedCap: 125000,
                   },
                   progressiveApprovalTier: null,
                 } satisfies SalaryRequestMock,

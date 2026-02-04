@@ -26,9 +26,6 @@ query Hcm {
       currentApprovedOverallAmount
       currentTakenAmount
     }
-    exceptionSalaryCap {
-      amount
-    }
     salaryRequestEligible
   }
 }
