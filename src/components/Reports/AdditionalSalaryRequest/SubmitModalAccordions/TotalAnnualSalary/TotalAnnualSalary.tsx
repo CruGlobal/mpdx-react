@@ -33,7 +33,7 @@ export const TotalAnnualSalary: React.FC<TotalAnnualSalaryProps> = ({
   const { values } = useFormikContext<CompleteFormValues>();
   const { requestData, user } = useAdditionalSalaryRequest();
 
-  const asrValues = requestData?.additionalSalaryRequest;
+  const asrValues = requestData?.latestAdditionalSalaryRequest;
   const calculations = asrValues?.calculations;
 
   const traditional403bContribution =
