@@ -69,6 +69,9 @@ const mockHcmData = {
     {
       id: 'hcm-1',
       salaryRequestEligible: true,
+      asrEit: {
+        asrEligibility: true,
+      },
       staffInfo: {
         preferredName: 'John',
         emailAddress: 'john.doe@example.com',
