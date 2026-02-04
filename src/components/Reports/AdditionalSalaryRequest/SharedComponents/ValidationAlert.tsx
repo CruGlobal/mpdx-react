@@ -39,13 +39,17 @@ export const ValidationAlert: React.FC = () => {
     return null;
   }
 
+  const hasFieldErrors = Object.keys(errors).some(
+    (key) => key !== 'totalAdditionalSalaryRequested',
+  );
+
   return (
     <Alert severity="error" sx={{ mt: 2, '& ul': { m: 0, pl: 3 } }}>
       {t('Your form is missing information.')}
       <ul>
-        {Object.keys(errors).some(
-          (key) => key !== 'totalAdditionalSalaryRequested',
-        ) && <li>{t('Please enter a value for all required fields.')}</li>}
+        {hasFieldErrors && (
+          <li>{t('Please enter a value for all required fields.')}</li>
+        )}
         {exceedingLimitFields.length > 0 && (
           <li>
             {t('The following fields exceed their limits: {{fields}}', {
