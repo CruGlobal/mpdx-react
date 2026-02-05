@@ -46,22 +46,16 @@ export const NoMhaSubmitMessage: React.FC<NoMhaSubmitMessageProps> = ({
         sx={{ marginBottom: theme.spacing(2) }}
         data-testid="no-mha-submit-message"
       >
-        {t(
-          isPlural
-            ? "Our records show that {{names}} do not have a Minister's Housing Allowance for the effective date of this salary calculation."
-            : "Our records show that {{names}} does not have a Minister's Housing Allowance for the effective date of this salary calculation.",
-          { names },
-        )}{' '}
-        {t(
-          isPlural
-            ? 'If {{names}} have not yet submitted an MHA Request form, it may be completed at their earliest convenience using'
-            : 'If {{names}} has not yet submitted an MHA Request form, it may be completed at their earliest convenience using',
-          { names },
-        )}{' '}
-        <Link href={`/accountLists/${accountListId}/reports/housingAllowance`}>
-          {t('this link')}
-        </Link>
-        .
+        <Trans t={t} values={{ names }}>
+          {isPlural
+            ? `Our records show that {{names}} do not have a Minister's Housing Allowance for the effective date of this salary calculation. If {{names}} have not yet submitted an MHA Request form, it may be completed at their earliest convenience using `
+            : `Our records show that {{names}} does not have a Minister's Housing Allowance for the effective date of this salary calculation. If {{names}} has not yet submitted an MHA Request form, it may be completed at their earliest convenience using `}
+          <Link
+            href={`/accountLists/${accountListId}/reports/housingAllowance`}
+          >
+            this link.
+          </Link>
+        </Trans>
       </Typography>
       <Typography
         variant="body1"

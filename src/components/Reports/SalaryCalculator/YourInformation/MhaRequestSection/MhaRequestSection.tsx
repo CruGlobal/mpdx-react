@@ -112,11 +112,11 @@ export const MhaRequestSection: React.FC = () => {
                 of this salary calculation.
               </Trans>
               {notEligibleName && (
-                <Trans t={t} values={{ name: notEligibleName }}>
-                  {'{{name}}'} has not completed the required IBS courses to
-                  meet eligibility criteria. For information about obtaining
-                  eligibility, contact Personnel Records at 407-826-2252 or{' '}
-                  <a href="mailto:MHA@cru.org">MHA@cru.org</a>.
+                <Trans t={t}>
+                  {{ name: notEligibleName }} has not completed the required IBS
+                  courses to meet eligibility criteria. For information about
+                  obtaining eligibility, contact Personnel Records at
+                  407-826-2252 or <a href="mailto:MHA@cru.org">MHA@cru.org</a>.
                 </Trans>
               )}
             </Typography>
