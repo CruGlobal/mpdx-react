@@ -58,7 +58,9 @@ const MainContent: React.FC = () => {
         refetchQueries: ['AdditionalSalaryRequest'],
       }),
     );
-    if (result.data?.createAdditionalSalaryRequest?.additionalSalaryRequest.id) {
+    if (
+      result.data?.createAdditionalSalaryRequest?.additionalSalaryRequest.id
+    ) {
       handleNextStep();
     }
   };
