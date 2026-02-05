@@ -16,8 +16,6 @@ import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 import { getTotal } from './Helper/getTotal';
 import { useFormData } from './useFormData';
 
-// TODO: Add "Field required" messages to amount schema in yupHelpers
-
 type SalaryInfo = NonNullable<SalaryInfoQuery['salaryInfo']>;
 
 // Field configuration: combines keys, labels, and optional salaryInfo key pairs for dynamic max values
@@ -93,7 +91,7 @@ export const useAdditionalSalaryRequestForm = (
 
   const createCurrencyValidation = useCallback(
     (fieldName: string, max?: number) => {
-      let schema = amount(fieldName, t);
+      let schema = amount(fieldName, t).required(t('Field required'));
       if (max !== null && max !== undefined) {
         schema = schema.max(
           max,

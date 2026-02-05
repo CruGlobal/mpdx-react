@@ -100,7 +100,7 @@ const validationSchema = yup.object({
   ...Object.fromEntries(
     fieldConfig.map(({ key, label }) => [
       key,
-      amount(label, (key: string) => key),
+      amount(label, (key: string) => key).required('Field required'),
     ]),
   ),
   deductTwelvePercent: yup.boolean(),
@@ -112,6 +112,8 @@ const validationSchema = yup.object({
     .string()
     .required('Email address is required')
     .email('Please enter a valid email address'),
+  totalAdditionalSalaryRequested: yup.number(),
+  additionalInfo: yup.string(),
 });
 
 interface TestFormikWrapperProps {
@@ -371,13 +373,14 @@ describe('RequestPage', () => {
       currentIndex: 1,
       currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
       pageType: PageEnum.New,
-      exceedsCap: true,
     } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
 
     const validFormValues: CompleteFormValues = {
       ...defaultCompleteFormValues,
+      currentYearSalaryNotReceived: '1000',
       phoneNumber: '123-456-7890',
       emailAddress: 'test@example.com',
+      additionalInfo: 'Test additional info for exceeds cap',
     };
 
     const { getByRole, getByText } = render(
