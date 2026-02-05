@@ -394,11 +394,8 @@ describe('useAdditionalSalaryRequestForm', () => {
       const { result } = renderHook(
         () =>
           useAdditionalSalaryRequestForm({
-            requestId: 'test-request-id',
-            initialValues: {
-              ...defaultFormValues,
-              phoneNumber: '555-123-4567',
-            },
+            ...defaultFormValues,
+            phoneNumber: '555-123-4567',
           }),
         {
           wrapper: TestWrapper,
