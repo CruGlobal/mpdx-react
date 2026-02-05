@@ -12,6 +12,7 @@ export interface SalaryCalculations {
   additionalSalaryReceivedThisYear: number;
   totalAnnualSalary: number;
   remainingInMaxAllowable: number;
+  exceedsCap: boolean;
 }
 
 interface CalculationsData {
@@ -20,20 +21,21 @@ interface CalculationsData {
 }
 
 export interface UseSalaryCalculationsProps {
-  traditional403bContribution: number;
   values: CompleteFormValues;
   calculations?: CalculationsData | null;
   grossSalaryAmount?: number | null;
 }
 
 export const useSalaryCalculations = ({
-  traditional403bContribution,
   values,
   calculations,
   grossSalaryAmount,
 }: UseSalaryCalculationsProps): SalaryCalculations => {
   return useMemo(() => {
     const total = getTotal(values);
+    const traditional403bContribution = Number(
+      values.traditional403bContribution,
+    );
 
     const calculatedDeduction = values.deductTaxDeferredPercent
       ? total * traditional403bContribution
@@ -56,6 +58,8 @@ export const useSalaryCalculations = ({
 
     const remainingInMaxAllowable = maxAllowableSalary - totalAnnualSalary;
 
+    const exceedsCap = total > remainingInMaxAllowable;
+
     return {
       total,
       calculatedDeduction,
@@ -66,6 +70,7 @@ export const useSalaryCalculations = ({
       additionalSalaryReceivedThisYear,
       totalAnnualSalary,
       remainingInMaxAllowable,
+      exceedsCap,
     };
-  }, [values, traditional403bContribution, calculations, grossSalaryAmount]);
+  }, [values, calculations, grossSalaryAmount]);
 };

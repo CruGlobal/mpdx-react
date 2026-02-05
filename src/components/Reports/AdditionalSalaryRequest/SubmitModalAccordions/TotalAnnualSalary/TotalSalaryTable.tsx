@@ -32,9 +32,6 @@ export const TotalSalaryTable: React.FC = () => {
   const asrValues = requestData?.latestAdditionalSalaryRequest;
   const calculations = asrValues?.calculations;
 
-  const traditional403bContribution =
-    asrValues?.traditional403bContribution ?? 0;
-
   const grossAnnualSalary = user?.currentSalary?.grossSalaryAmount ?? 0;
 
   const {
@@ -43,7 +40,6 @@ export const TotalSalaryTable: React.FC = () => {
     maxAllowableSalary,
     additionalSalaryReceivedThisYear,
   } = useSalaryCalculations({
-    traditional403bContribution,
     values,
     calculations,
     grossSalaryAmount: grossAnnualSalary,

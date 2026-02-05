@@ -1,3 +1,4 @@
+import { defaultCompleteFormValues } from '../../Shared/CompleteForm.mock';
 import { createRenderFormComponent, setupMockContext } from '../testUtils';
 import { EditForm } from './EditForm';
 
@@ -64,8 +65,9 @@ describe('EditForm', () => {
 
   it('renders all child components when user exceeds cap', () => {
     const { getByText, getAllByText } = renderComponent({
-      contextOverrides: {
-        exceedsCap: true,
+      initialValues: {
+        ...defaultCompleteFormValues,
+        additionalSalaryWithinMax: '10000',
       },
     });
 
@@ -86,11 +88,7 @@ describe('EditForm', () => {
   });
 
   it('should not render cap-related components when user does not exceed cap', () => {
-    const { queryByText } = renderComponent({
-      contextOverrides: {
-        exceedsCap: false,
-      },
-    });
+    const { queryByText } = renderComponent();
 
     expect(queryByText('Total Annual Salary')).not.toBeInTheDocument();
     expect(queryByText('Approval Process')).not.toBeInTheDocument();

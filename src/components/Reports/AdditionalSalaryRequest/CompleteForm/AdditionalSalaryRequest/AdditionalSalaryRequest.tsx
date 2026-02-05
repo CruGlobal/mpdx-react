@@ -26,15 +26,11 @@ export const AdditionalSalaryRequest: React.FC = () => {
   const locale = useLocale();
   const currency = 'USD';
 
-  const { requestData, pageType } = useAdditionalSalaryRequest();
+  const { pageType } = useAdditionalSalaryRequest();
   const categories = useCompleteFormCategories();
   const { values, errors, touched } = useFormikContext<CompleteFormValues>();
 
-  const traditional403bContribution =
-    requestData?.latestAdditionalSalaryRequest?.traditional403bContribution ??
-    0;
   const { total } = useSalaryCalculations({
-    traditional403bContribution,
     values,
   });
 

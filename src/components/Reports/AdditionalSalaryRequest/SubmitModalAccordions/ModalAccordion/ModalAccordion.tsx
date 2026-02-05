@@ -40,7 +40,7 @@ export const ModalAccordion: React.FC<ModalAccordionProps> = ({
   const accordion = (
     <Accordion
       expanded={isExpanded}
-      onChange={(_, newExpanded) => setIsExpanded(newExpanded)}
+      onChange={() => setIsExpanded(!isExpanded)}
     >
       <AccordionSummary
         expandIcon={<ExpandMoreIcon />}

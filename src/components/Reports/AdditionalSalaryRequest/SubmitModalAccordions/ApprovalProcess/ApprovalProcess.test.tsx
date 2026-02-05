@@ -1,8 +1,9 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { Formik } from 'formik';
+import { FormikProvider, useFormik } from 'formik';
 import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
+import * as yup from 'yup';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
@@ -37,7 +38,23 @@ const defaultMockContextValue = {
   trackMutation: mockTrackMutation,
 };
 
-const onSubmit = jest.fn();
+const validationSchema = yup.object({
+  additionalInfo: yup.string(),
+});
+
+const TestFormikWrapper: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const formik = useFormik({
+    initialValues: { additionalInfo: '' },
+    validationSchema,
+    onSubmit: () => {},
+  });
+
+  const formikWithSchema = { ...formik, validationSchema };
+
+  return <FormikProvider value={formikWithSchema}>{children}</FormikProvider>;
+};
 
 const TestComponent: React.FC<{
   onForm?: boolean;
@@ -48,12 +65,9 @@ const TestComponent: React.FC<{
         <TestRouter>
           <SnackbarProvider>
             <GqlMockedProvider>
-              <Formik
-                initialValues={{ additionalInfo: '' }}
-                onSubmit={onSubmit}
-              >
+              <TestFormikWrapper>
                 <ApprovalProcess onForm={onForm} />
-              </Formik>
+              </TestFormikWrapper>
             </GqlMockedProvider>
           </SnackbarProvider>
         </TestRouter>

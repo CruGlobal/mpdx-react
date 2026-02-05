@@ -21,18 +21,14 @@ import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 export const Deduction: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { requestData, pageType } = useAdditionalSalaryRequest();
+  const { pageType } = useAdditionalSalaryRequest();
   const { values: formValues, setFieldValue } =
     useFormikContext<CompleteFormValues>();
 
   const saveField = useSaveField({ formValues });
 
-  const traditional403bContribution =
-    requestData?.latestAdditionalSalaryRequest?.traditional403bContribution ??
-    0;
-
   const { calculatedDeduction, contribution403b, totalDeduction } =
-    useSalaryCalculations({ traditional403bContribution, values: formValues });
+    useSalaryCalculations({ values: formValues });
 
   const handleCheckboxChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,9 +64,9 @@ export const Deduction: React.FC = () => {
                   {t(
                     'Check this box if you would like {{percentage}}% of the amount requested above deducted from this Additional Salary Request.',
                     {
-                      percentage: (traditional403bContribution * 100).toFixed(
-                        0,
-                      ),
+                      percentage: (
+                        Number(formValues.traditional403bContribution) * 100
+                      ).toFixed(0),
                     },
                   )}
                 </Typography>

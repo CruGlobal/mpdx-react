@@ -1,10 +1,10 @@
 import { InfoSharp } from '@mui/icons-material';
-import { Box, CardContent, TextField, Typography, alpha } from '@mui/material';
+import { Box, CardContent, Typography, alpha } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { Trans, useTranslation } from 'react-i18next';
 import theme from 'src/theme';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
-import { useSaveField } from '../../Shared/AutoSave/useSaveField';
+import { AutosaveCustomTextField } from '../../Shared/AutoSave/AutosaveCustomTextField';
 import { ModalAccordion } from '../ModalAccordion/ModalAccordion';
 
 interface ApprovalProcessProps {
@@ -14,18 +14,11 @@ interface ApprovalProcessProps {
 export const ApprovalProcess: React.FC<ApprovalProcessProps> = ({ onForm }) => {
   const { t } = useTranslation();
 
-  const { errors, touched, values, handleChange, handleBlur, submitCount } =
+  const { errors, touched, submitCount } =
     useFormikContext<CompleteFormValues>();
-
-  const saveField = useSaveField({ formValues: values });
 
   const showError =
     (touched.additionalInfo || submitCount > 0) && !!errors.additionalInfo;
-
-  const handleBlurWithSave = (event: React.FocusEvent<HTMLTextAreaElement>) => {
-    handleBlur(event);
-    saveField({ additionalInfo: event.target.value });
-  };
 
   return (
     <ModalAccordion
@@ -47,18 +40,13 @@ export const ApprovalProcess: React.FC<ApprovalProcessProps> = ({ onForm }) => {
           </Typography>
         </Trans>
         <Box sx={{ mt: 2 }}>
-          <TextField
-            name="additionalInfo"
-            value={values.additionalInfo}
-            onChange={handleChange}
-            onBlur={handleBlurWithSave}
-            error={showError}
-            helperText={showError && errors.additionalInfo}
+          <AutosaveCustomTextField
+            fieldName="additionalInfo"
+            variant="outlined"
             multiline
             rows={6}
             fullWidth
             inputProps={{ style: { overflowY: 'auto' } }}
-            FormHelperTextProps={{ sx: { ml: 0 } }}
           />
         </Box>
       </CardContent>

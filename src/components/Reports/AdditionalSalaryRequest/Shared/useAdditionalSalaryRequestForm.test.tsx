@@ -102,6 +102,20 @@ type MocksType = {
   SubmitAdditionalSalaryRequest: SubmitAdditionalSalaryRequestMutation;
 };
 
+const defaultGqlMocks: DeepPartial<MocksType> = {
+  AdditionalSalaryRequest: {
+    latestAdditionalSalaryRequest: {
+      id: 'test-request-id',
+      calculations: {
+        maxAmountAndReason: {
+          amount: 100000,
+        },
+        pendingAsrAmount: 0,
+      },
+    },
+  },
+};
+
 interface TestComponentProps {
   children: React.ReactElement;
   mocks?: DeepPartial<MocksType>;
@@ -116,7 +130,7 @@ const TestWrapper: React.FC<TestComponentProps> = ({ children, mocks }) => {
         UpdateAdditionalSalaryRequest: UpdateAdditionalSalaryRequestMutation;
         SubmitAdditionalSalaryRequest: SubmitAdditionalSalaryRequestMutation;
       }>
-        mocks={mocks}
+        mocks={mocks ?? defaultGqlMocks}
         onCall={mutationSpy}
       >
         {children}
@@ -386,16 +400,12 @@ describe('useAdditionalSalaryRequestForm', () => {
     });
 
     it('should validate additional info when exceedsCap is true', async () => {
-      mockUseAdditionalSalaryRequest.mockReturnValue({
-        ...defaultMockContextValue,
-        exceedsCap: true,
-      });
-
       const { result } = renderHook(
         () =>
           useAdditionalSalaryRequestForm({
             ...defaultFormValues,
             phoneNumber: '555-123-4567',
+            additionalSalaryWithinMax: '10000',
           }),
         {
           wrapper: TestWrapper,
@@ -447,6 +457,11 @@ describe('useAdditionalSalaryRequestForm', () => {
         },
       );
 
+      await waitFor(async () => {
+        const errors = await result.current.validateForm();
+        expect(errors).toEqual({});
+      });
+
       await act(async () => {
         await result.current.submitForm();
       });
@@ -476,6 +491,11 @@ describe('useAdditionalSalaryRequestForm', () => {
           wrapper: TestWrapper,
         },
       );
+
+      await waitFor(async () => {
+        const errors = await result.current.validateForm();
+        expect(errors).toEqual({});
+      });
 
       await act(async () => {
         await result.current.submitForm();
@@ -509,6 +529,11 @@ describe('useAdditionalSalaryRequestForm', () => {
           wrapper: TestWrapper,
         },
       );
+
+      await waitFor(async () => {
+        const errors = await result.current.validateForm();
+        expect(errors).toEqual({});
+      });
 
       await act(async () => {
         await result.current.submitForm();

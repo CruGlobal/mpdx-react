@@ -36,14 +36,10 @@ export const TotalAnnualSalary: React.FC<TotalAnnualSalaryProps> = ({
   const asrValues = requestData?.latestAdditionalSalaryRequest;
   const calculations = asrValues?.calculations;
 
-  const traditional403bContribution =
-    asrValues?.traditional403bContribution ?? 0;
-
   const grossAnnualSalary = user?.currentSalary?.grossSalaryAmount ?? 0;
 
   const { remainingInMaxAllowable, totalAnnualSalary, maxAllowableSalary } =
     useSalaryCalculations({
-      traditional403bContribution,
       values,
       calculations,
       grossSalaryAmount: grossAnnualSalary,
