@@ -164,15 +164,9 @@ describe('useAdditionalSalaryRequestForm', () => {
 
   describe('initialValues', () => {
     it('should return default initial values when no request data exists', async () => {
-      const { result } = renderHook(
-        () =>
-          useAdditionalSalaryRequestForm({
-            requestId: 'test-request-id',
-          }),
-        {
-          wrapper: TestWrapper,
-        },
-      );
+      const { result } = renderHook(() => useAdditionalSalaryRequestForm(), {
+        wrapper: TestWrapper,
+      });
 
       expect(result.current.values).toEqual(defaultFormValues);
     });
@@ -185,11 +179,7 @@ describe('useAdditionalSalaryRequestForm', () => {
       };
 
       const { result } = renderHook(
-        () =>
-          useAdditionalSalaryRequestForm({
-            requestId: 'test-request-id',
-            initialValues: providedValues,
-          }),
+        () => useAdditionalSalaryRequestForm(providedValues),
         {
           wrapper: TestWrapper,
         },
@@ -235,17 +225,11 @@ describe('useAdditionalSalaryRequestForm', () => {
         },
       };
 
-      const { result } = renderHook(
-        () =>
-          useAdditionalSalaryRequestForm({
-            requestId: 'test-request-id',
-          }),
-        {
-          wrapper: ({ children }) => (
-            <TestWrapper mocks={mocks}>{children}</TestWrapper>
-          ),
-        },
-      );
+      const { result } = renderHook(() => useAdditionalSalaryRequestForm(), {
+        wrapper: ({ children }) => (
+          <TestWrapper mocks={mocks}>{children}</TestWrapper>
+        ),
+      });
 
       await waitFor(() => {
         expect(result.current.values.currentYearSalaryNotReceived).toBe('500');
@@ -259,15 +243,9 @@ describe('useAdditionalSalaryRequestForm', () => {
 
   describe('validation', () => {
     it('should require phone number', async () => {
-      const { result } = renderHook(
-        () =>
-          useAdditionalSalaryRequestForm({
-            requestId: 'test-request-id',
-          }),
-        {
-          wrapper: TestWrapper,
-        },
-      );
+      const { result } = renderHook(() => useAdditionalSalaryRequestForm(), {
+        wrapper: TestWrapper,
+      });
 
       let errors: Record<string, string> = {};
       await act(async () => {
@@ -281,11 +259,8 @@ describe('useAdditionalSalaryRequestForm', () => {
       const { result } = renderHook(
         () =>
           useAdditionalSalaryRequestForm({
-            requestId: 'test-request-id',
-            initialValues: {
-              ...defaultFormValues,
-              phoneNumber: 'invalid-phone!@#',
-            },
+            ...defaultFormValues,
+            phoneNumber: 'invalid-phone!@#',
           }),
         {
           wrapper: TestWrapper,
@@ -304,11 +279,8 @@ describe('useAdditionalSalaryRequestForm', () => {
       const { result } = renderHook(
         () =>
           useAdditionalSalaryRequestForm({
-            requestId: 'test-request-id',
-            initialValues: {
-              ...defaultFormValues,
-              phoneNumber: '555-123-4567',
-            },
+            ...defaultFormValues,
+            phoneNumber: '555-123-4567',
           }),
         {
           wrapper: TestWrapper,
@@ -327,12 +299,9 @@ describe('useAdditionalSalaryRequestForm', () => {
       const { result } = renderHook(
         () =>
           useAdditionalSalaryRequestForm({
-            requestId: 'test-request-id',
-            initialValues: {
-              ...defaultFormValues,
-              adoption: '20000',
-              phoneNumber: '555-123-4567',
-            },
+            ...defaultFormValues,
+            adoption: '20000',
+            phoneNumber: '555-123-4567',
           }),
         {
           wrapper: TestWrapper,
@@ -352,12 +321,9 @@ describe('useAdditionalSalaryRequestForm', () => {
       const { result } = renderHook(
         () =>
           useAdditionalSalaryRequestForm({
-            requestId: 'test-request-id',
-            initialValues: {
-              ...defaultFormValues,
-              housingDownPayment: '60000',
-              phoneNumber: '555-123-4567',
-            },
+            ...defaultFormValues,
+            housingDownPayment: '60000',
+            phoneNumber: '555-123-4567',
           }),
         {
           wrapper: TestWrapper,
@@ -377,12 +343,9 @@ describe('useAdditionalSalaryRequestForm', () => {
       const { result } = renderHook(
         () =>
           useAdditionalSalaryRequestForm({
-            requestId: 'test-request-id',
-            initialValues: {
-              ...defaultFormValues,
-              autoPurchase: '30000',
-              phoneNumber: '555-123-4567',
-            },
+            ...defaultFormValues,
+            autoPurchase: '30000',
+            phoneNumber: '555-123-4567',
           }),
         {
           wrapper: TestWrapper,
@@ -402,12 +365,9 @@ describe('useAdditionalSalaryRequestForm', () => {
       const { result } = renderHook(
         () =>
           useAdditionalSalaryRequestForm({
-            requestId: 'test-request-id',
-            initialValues: {
-              ...defaultFormValues,
-              childrenCollegeEducation: '25000',
-              phoneNumber: '555-123-4567',
-            },
+            ...defaultFormValues,
+            childrenCollegeEducation: '25000',
+            phoneNumber: '555-123-4567',
           }),
         {
           wrapper: TestWrapper,
@@ -426,15 +386,13 @@ describe('useAdditionalSalaryRequestForm', () => {
 
   describe('onSubmit', () => {
     it('should not submit when requestId is empty', async () => {
-      const { result } = renderHook(
-        () =>
-          useAdditionalSalaryRequestForm({
-            requestId: '',
-          }),
-        {
-          wrapper: TestWrapper,
-        },
-      );
+      mockUseAdditionalSalaryRequest.mockReturnValue({
+        ...defaultMockContextValue,
+        requestId: '',
+      });
+      const { result } = renderHook(() => useAdditionalSalaryRequestForm(), {
+        wrapper: TestWrapper,
+      });
 
       await act(async () => {
         result.current.setFieldValue('phoneNumber', '555-123-4567');
@@ -450,13 +408,10 @@ describe('useAdditionalSalaryRequestForm', () => {
       const { result } = renderHook(
         () =>
           useAdditionalSalaryRequestForm({
-            requestId: 'test-request-id',
-            initialValues: {
-              ...defaultFormValues,
-              phoneNumber: '555-123-4567',
-              emailAddress: 'test@example.com',
-              currentYearSalaryNotReceived: '100',
-            },
+            ...defaultFormValues,
+            phoneNumber: '555-123-4567',
+            emailAddress: 'test@example.com',
+            currentYearSalaryNotReceived: '100',
           }),
         {
           wrapper: TestWrapper,
@@ -481,15 +436,12 @@ describe('useAdditionalSalaryRequestForm', () => {
       const { result } = renderHook(
         () =>
           useAdditionalSalaryRequestForm({
-            requestId: 'test-request-id',
-            initialValues: {
-              ...defaultFormValues,
-              currentYearSalaryNotReceived: '100',
-              previousYearSalaryNotReceived: '200',
-              adoption: '300',
-              phoneNumber: '555-123-4567',
-              emailAddress: 'test@example.com',
-            },
+            ...defaultFormValues,
+            currentYearSalaryNotReceived: '100',
+            previousYearSalaryNotReceived: '200',
+            adoption: '300',
+            phoneNumber: '555-123-4567',
+            emailAddress: 'test@example.com',
           }),
         {
           wrapper: TestWrapper,
@@ -520,12 +472,9 @@ describe('useAdditionalSalaryRequestForm', () => {
       const { result } = renderHook(
         () =>
           useAdditionalSalaryRequestForm({
-            requestId: 'test-request-id',
-            initialValues: {
-              ...defaultFormValues,
-              phoneNumber: '555-123-4567',
-              emailAddress: 'test@example.com',
-            },
+            ...defaultFormValues,
+            phoneNumber: '555-123-4567',
+            emailAddress: 'test@example.com',
           }),
         {
           wrapper: TestWrapper,
@@ -550,15 +499,9 @@ describe('useAdditionalSalaryRequestForm', () => {
 
   describe('formik integration', () => {
     it('should return formik methods', () => {
-      const { result } = renderHook(
-        () =>
-          useAdditionalSalaryRequestForm({
-            requestId: 'test-request-id',
-          }),
-        {
-          wrapper: TestWrapper,
-        },
-      );
+      const { result } = renderHook(() => useAdditionalSalaryRequestForm(), {
+        wrapper: TestWrapper,
+      });
 
       expect(result.current.handleChange).toBeDefined();
       expect(result.current.handleBlur).toBeDefined();
@@ -570,15 +513,9 @@ describe('useAdditionalSalaryRequestForm', () => {
     });
 
     it('should return validationSchema', () => {
-      const { result } = renderHook(
-        () =>
-          useAdditionalSalaryRequestForm({
-            requestId: 'test-request-id',
-          }),
-        {
-          wrapper: TestWrapper,
-        },
-      );
+      const { result } = renderHook(() => useAdditionalSalaryRequestForm(), {
+        wrapper: TestWrapper,
+      });
 
       expect(result.current.validationSchema).toBeDefined();
     });
@@ -587,11 +524,8 @@ describe('useAdditionalSalaryRequestForm', () => {
       const { result } = renderHook(
         () =>
           useAdditionalSalaryRequestForm({
-            requestId: 'test-request-id',
-            initialValues: {
-              ...defaultFormValues,
-              currentYearSalaryNotReceived: '100',
-            },
+            ...defaultFormValues,
+            currentYearSalaryNotReceived: '100',
           }),
         {
           wrapper: TestWrapper,
@@ -638,17 +572,11 @@ describe('useAdditionalSalaryRequestForm', () => {
         },
       };
 
-      const { result } = renderHook(
-        () =>
-          useAdditionalSalaryRequestForm({
-            requestId: 'test-request-id',
-          }),
-        {
-          wrapper: ({ children }) => (
-            <TestWrapper mocks={mocks}>{children}</TestWrapper>
-          ),
-        },
-      );
+      const { result } = renderHook(() => useAdditionalSalaryRequestForm(), {
+        wrapper: ({ children }) => (
+          <TestWrapper mocks={mocks}>{children}</TestWrapper>
+        ),
+      });
 
       await waitFor(() => {
         expect(result.current.values.currentYearSalaryNotReceived).toBe('999');

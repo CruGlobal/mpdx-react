@@ -1,5 +1,11 @@
 import { useRouter } from 'next/router';
-import React, { createContext, useCallback, useMemo, useState } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from 'react';
 import { ApolloError } from '@apollo/client';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
@@ -38,7 +44,6 @@ export type AdditionalSalaryRequestType = {
   requestData?: AdditionalSalaryRequestQuery | null;
   loading: boolean;
   currentYear?: number;
-
   requestError?: ApolloError;
   pageType: PageEnum | undefined;
   handleDeleteRequest: (id: string, isCancel: boolean) => Promise<void>;
@@ -55,7 +60,7 @@ const AdditionalSalaryRequestContext =
   createContext<AdditionalSalaryRequestType | null>(null);
 
 export const useAdditionalSalaryRequest = (): AdditionalSalaryRequestType => {
-  const context = React.useContext(AdditionalSalaryRequestContext);
+  const context = useContext(AdditionalSalaryRequestContext);
   if (context === null) {
     throw new Error(
       'Could not find AdditionalSalaryRequestContext. Make sure that your component is inside <AdditionalSalaryRequestProvider>.',
