@@ -50,11 +50,9 @@ export const useMhaRequestData = () => {
     return yup.object(baseSchema);
   }, [t, hasSpouse, approvedAmount]);
 
-  // Multiply by 24 to annualize the monthly amounts from HCM
-  const currentAmountForStaff =
-    (hcmUser?.mhaRequest.currentTakenAmount ?? 0) * 24;
+  const currentAmountForStaff = hcmUser?.mhaRequest.currentTakenAmount ?? 0;
   const spouseCurrentAmountForStaff =
-    (hcmSpouse?.mhaRequest.currentTakenAmount ?? 0) * 24;
+    hcmSpouse?.mhaRequest.currentTakenAmount ?? 0;
 
   const newRequestedMhaValue = calculation?.mhaAmount ?? 0;
   const newRequestedSpouseMhaValue = calculation?.spouseMhaAmount ?? 0;
