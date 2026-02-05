@@ -25,7 +25,7 @@ export const useAutoSave = <Value extends string | number>({
   const [internalValue, setInternalValue] = useSyncedState(
     value?.toString() ?? '',
   );
-  const autosaveForm = useOptionalAutosaveForm();
+  const { markValid, markInvalid } = useOptionalAutosaveForm() ?? {};
 
   const parseValue = useCallback(
     (valueToValidate: string) => {
@@ -55,16 +55,16 @@ export const useAutoSave = <Value extends string | number>({
 
   useEffect(() => {
     if (errorMessage === null) {
-      autosaveForm?.markValid(fieldName);
+      markValid?.(fieldName);
     } else {
-      autosaveForm?.markInvalid(fieldName);
+      markInvalid?.(fieldName);
     }
 
     // Remove fields previously marked as invalid when the field is removed
     return () => {
-      autosaveForm?.markValid(fieldName);
+      markValid?.(fieldName);
     };
-  }, [fieldName, errorMessage]);
+  }, [fieldName, errorMessage, markValid, markInvalid]);
 
   return {
     value: internalValue,
