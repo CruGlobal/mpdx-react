@@ -64,15 +64,10 @@ export const fieldConfig: Array<{
   },
 ];
 
-interface UseAdditionalSalaryRequestFormProps {
-  requestId: string;
-  initialValues?: CompleteFormValues;
-}
-
-export const useAdditionalSalaryRequestForm = ({
-  requestId,
-  initialValues: providedInitialValues,
-}: UseAdditionalSalaryRequestFormProps) => {
+export const useAdditionalSalaryRequestForm = (
+  providedInitialValues?: CompleteFormValues,
+) => {
+  const { requestId } = useAdditionalSalaryRequest();
   const { t } = useTranslation();
   const locale = useLocale();
   const { handleNextStep, user, salaryInfo, isInternational } =

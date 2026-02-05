@@ -17,6 +17,7 @@ import {
   CompleteFormValues,
   mainContentWidth,
 } from '../AdditionalSalaryRequest';
+import { useCreateAdditionalSalaryRequestMutation } from '../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
 import { EditForm } from '../FormVersions/Edit/EditForm';
 import { NewForm } from '../FormVersions/New/NewForm';
@@ -38,7 +39,10 @@ const MainContent: React.FC = () => {
     pageType,
     loading,
     currentStep,
+    trackMutation,
   } = useAdditionalSalaryRequest();
+
+  const [createRequest] = useCreateAdditionalSalaryRequestMutation();
 
   const { submitForm, validateForm, submitCount, isValid } =
     useFormikContext<CompleteFormValues>();
@@ -46,6 +50,20 @@ const MainContent: React.FC = () => {
   const isFirstFormPage = currentIndex === 0;
   const isLastFormPage = currentIndex === steps.length - 2;
   const reviewPage = currentIndex === steps.length - 1;
+
+  const handleCreateAndContinue = async () => {
+    const result = await trackMutation(
+      createRequest({
+        variables: { attributes: {} },
+        refetchQueries: ['AdditionalSalaryRequest'],
+      }),
+    );
+    if (
+      result.data?.createAdditionalSalaryRequest?.additionalSalaryRequest.id
+    ) {
+      handleNextStep();
+    }
+  };
 
   const handleDiscard = async () => {
     if (requestId) {
@@ -75,13 +93,16 @@ const MainContent: React.FC = () => {
                 handleNextStep={handleNextStep}
                 handlePreviousStep={handlePreviousStep}
                 showBackButton={!isFirstFormPage}
-                handleDiscard={handleDiscard}
+                handleDiscard={requestId ? handleDiscard : undefined}
                 isSubmission={isLastFormPage}
                 submitForm={submitForm}
                 validateForm={validateForm}
                 submitCount={submitCount}
                 isValid={isValid}
                 isEdit={pageType === PageEnum.Edit}
+                overrideNext={
+                  isFirstFormPage ? handleCreateAndContinue : undefined
+                }
               />
             </Stack>
           )}

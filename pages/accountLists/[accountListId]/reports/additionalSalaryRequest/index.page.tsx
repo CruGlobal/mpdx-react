@@ -1,11 +1,10 @@
 import Head from 'next/head';
-import React, { useEffect, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { FormikProvider } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
-import { useCreateAdditionalSalaryRequestMutation } from 'src/components/Reports/AdditionalSalaryRequest/AdditionalSalaryRequest.generated';
 import { ContinuePage } from 'src/components/Reports/AdditionalSalaryRequest/MainPages/ContinuePage';
 import { IneligiblePage } from 'src/components/Reports/AdditionalSalaryRequest/MainPages/IneligiblePage';
 import { OverviewPage } from 'src/components/Reports/AdditionalSalaryRequest/MainPages/OverviewPage';
@@ -33,30 +32,7 @@ import { AsrStatusEnum } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
 const FormikRequestPage: React.FC = () => {
-  const { requestData, loading, user, requestError } =
-    useAdditionalSalaryRequest();
-
-  const [createRequest] = useCreateAdditionalSalaryRequestMutation();
-  const [creating, setCreating] = useState(false);
-
-  useEffect(() => {
-    if (
-      !loading &&
-      !requestData &&
-      !requestError &&
-      !creating &&
-      user?.asrEit?.asrEligibility
-    ) {
-      setCreating(true);
-      createRequest({
-        variables: { attributes: {} },
-        refetchQueries: ['AdditionalSalaryRequest'],
-      });
-    }
-  }, [loading, requestData, requestError, creating, createRequest, user]);
-
-  const requestId = requestData?.latestAdditionalSalaryRequest?.id ?? '';
-  const formik = useAdditionalSalaryRequestForm({ requestId });
+  const formik = useAdditionalSalaryRequestForm();
 
   return (
     <FormikProvider value={formik}>
@@ -65,29 +41,62 @@ const FormikRequestPage: React.FC = () => {
   );
 };
 
-const AdditionalSalaryRequestRouter: React.FC = () => {
+type InitialRoute = 'ineligible' | 'overview' | 'continue' | 'request';
+
+const useInitialRoute = (): InitialRoute | null => {
   const { requestData, loading, user } = useAdditionalSalaryRequest();
+  const initialRouteRef = useRef<InitialRoute | null>(null);
+
+  if (initialRouteRef.current !== null) {
+    return initialRouteRef.current;
+  }
 
   if (user?.asrEit?.asrEligibility === false) {
-    return <IneligiblePage />;
+    initialRouteRef.current = 'ineligible';
+    return initialRouteRef.current;
   }
 
   if (loading) {
-    return <Loading loading />;
+    return null;
   }
 
   if (!requestData) {
-    return <FormikRequestPage />;
+    initialRouteRef.current = 'request';
+    return initialRouteRef.current;
   }
 
   switch (requestData.latestAdditionalSalaryRequest?.status) {
     case AsrStatusEnum.ActionRequired:
     case AsrStatusEnum.Pending:
-      return <OverviewPage />;
+      initialRouteRef.current = 'overview';
+      break;
     case AsrStatusEnum.InProgress:
-      return <ContinuePage />;
+      initialRouteRef.current = 'continue';
+      break;
     case AsrStatusEnum.Approved:
     default:
+      initialRouteRef.current = 'request';
+      break;
+  }
+
+  return initialRouteRef.current;
+};
+
+const AdditionalSalaryRequestRouter: React.FC = () => {
+  const initialRoute = useInitialRoute();
+
+  if (!initialRoute) {
+    return <Loading loading />;
+  }
+
+  switch (initialRoute) {
+    case 'ineligible':
+      return <IneligiblePage />;
+    case 'overview':
+      return <OverviewPage />;
+    case 'continue':
+      return <ContinuePage />;
+    case 'request':
       return <FormikRequestPage />;
   }
 };
