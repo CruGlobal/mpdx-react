@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { AdditionalSalaryRequestAttributesInput } from 'src/graphql/types.generated';
-import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { useUpdateAdditionalSalaryRequestMutation } from '../../AdditionalSalaryRequest.generated';
+import { CompleteFormValues } from '../../MainPages/OverviewPage';
 import { useAdditionalSalaryRequest } from '../AdditionalSalaryRequestContext';
 import { getTotal } from '../Helper/getTotal';
 

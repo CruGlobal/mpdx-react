@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Alert } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
-import { CompleteFormValues } from '../AdditionalSalaryRequest';
+import { CompleteFormValues } from '../MainPages/OverviewPage';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { fieldConfig } from '../Shared/useAdditionalSalaryRequestForm';
 

@@ -5,12 +5,12 @@ import * as yup from 'yup';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { amount } from 'src/lib/yupHelpers';
-import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import {
   useAdditionalSalaryRequestQuery,
   useSubmitAdditionalSalaryRequestMutation,
   useUpdateAdditionalSalaryRequestMutation,
 } from '../AdditionalSalaryRequest.generated';
+import { CompleteFormValues } from '../MainPages/OverviewPage';
 import { SalaryInfoQuery } from '../SalaryInfo.generated';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 import { getTotal } from './Helper/getTotal';

@@ -9,9 +9,9 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { AsrStatusEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
-import { AdditionalSalaryRequest } from './AdditionalSalaryRequest';
-import { AdditionalSalaryRequestQuery } from './AdditionalSalaryRequest.generated';
-import { AdditionalSalaryRequestProvider } from './Shared/AdditionalSalaryRequestContext';
+import { AdditionalSalaryRequestQuery } from '../AdditionalSalaryRequest.generated';
+import { AdditionalSalaryRequestProvider } from '../Shared/AdditionalSalaryRequestContext';
+import { OverviewPage } from './OverviewPage';
 
 const mutationSpy = jest.fn();
 const accountListId = 'account-list-1';
@@ -118,7 +118,7 @@ const TestWrapper: React.FC<TestWrapperProps> = ({
           >
             <GqlMockedProvider mocks={defaultMocks} onCall={onCall}>
               <AdditionalSalaryRequestProvider>
-                <AdditionalSalaryRequest />
+                <OverviewPage />
               </AdditionalSalaryRequestProvider>
             </GqlMockedProvider>
           </TestRouter>
@@ -128,7 +128,7 @@ const TestWrapper: React.FC<TestWrapperProps> = ({
   );
 };
 
-describe('AdditionalSalaryRequest', () => {
+describe('OverviewPage', () => {
   it('renders the Additional Salary Request page title', async () => {
     const { findByText } = render(<TestWrapper />);
 

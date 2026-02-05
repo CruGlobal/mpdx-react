@@ -13,15 +13,15 @@ import { PanelLayout } from '../../Shared/CalculationReports/PanelLayout/PanelLa
 import { useIconPanelItems } from '../../Shared/CalculationReports/PanelLayout/useIconPanelItems';
 import { PanelTypeEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { StepsList } from '../../Shared/CalculationReports/StepsList/StepsList';
-import {
-  CompleteFormValues,
-  mainContentWidth,
-} from '../AdditionalSalaryRequest';
 import { useCreateAdditionalSalaryRequestMutation } from '../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
 import { EditForm } from '../FormVersions/Edit/EditForm';
 import { NewForm } from '../FormVersions/New/NewForm';
 import { ViewForm } from '../FormVersions/View/ViewForm';
+import {
+  CompleteFormValues,
+  mainContentWidth,
+} from '../MainPages/OverviewPage';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { calculateCompletionPercentage } from '../Shared/calculateCompletionPercentage';
 import { StepList } from '../SharedComponents/StepList';

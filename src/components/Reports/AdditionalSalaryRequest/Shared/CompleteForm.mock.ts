@@ -1,5 +1,5 @@
-import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { SalaryInfoQuery } from '../AdditionalSalaryRequest.generated';
+import { CompleteFormValues } from '../MainPages/OverviewPage';
 
 export const defaultCompleteFormValues: CompleteFormValues = {
   currentYearSalaryNotReceived: '0',

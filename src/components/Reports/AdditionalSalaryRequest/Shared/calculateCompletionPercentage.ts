@@ -1,4 +1,4 @@
-import { CompleteFormValues } from '../AdditionalSalaryRequest';
+import { CompleteFormValues } from '../MainPages/OverviewPage';
 
 export const calculateCompletionPercentage = (
   values: CompleteFormValues,
