@@ -1,16 +1,15 @@
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useMemo } from 'react';
-import { Box, List, ListItemText, Stack } from '@mui/material';
+import { Box, Stack } from '@mui/material';
 import { useFormikContext } from 'formik';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import Loading from 'src/components/Loading/Loading';
 import { DirectionButtons } from 'src/components/Reports/Shared/CalculationReports/DirectionButtons/DirectionButtons';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { NoStaffAccount } from 'src/components/Reports/Shared/NoStaffAccount/NoStaffAccount';
+import { AsrStatusEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
-import { StyledListItem } from '../../SavingsFundTransfer/styledComponents/StyledListItem';
 import { PanelLayout } from '../../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { useIconPanelItems } from '../../Shared/CalculationReports/PanelLayout/useIconPanelItems';
 import { PanelTypeEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
@@ -26,7 +25,9 @@ import { NewForm } from '../FormVersions/New/NewForm';
 import { ViewForm } from '../FormVersions/View/ViewForm';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { calculateCompletionPercentage } from '../Shared/calculateCompletionPercentage';
+import { useSalaryCalculations } from '../Shared/useSalaryCalculations';
 import { StepList } from '../SharedComponents/StepList';
+import { CapSubContent } from './CapSubContent';
 
 const MainContent: React.FC = () => {
   const { t } = useTranslation();
@@ -40,21 +41,35 @@ const MainContent: React.FC = () => {
     steps,
     handleDeleteRequest,
     requestId,
+    requestData,
     pageType,
-    exceedsCap,
+    traditional403bContribution,
     loading,
     trackMutation,
+    user,
   } = useAdditionalSalaryRequest();
+
+  const status = requestData?.latestAdditionalSalaryRequest?.status;
 
   const [createRequest] = useCreateAdditionalSalaryRequestMutation();
 
-  const { submitForm, validateForm, submitCount, isValid, errors } =
+  const { values, submitForm, validateForm, submitCount, isValid, errors } =
     useFormikContext<CompleteFormValues>();
 
   const handleCreateAndContinue = async () => {
+    if (status === AsrStatusEnum.InProgress && requestId) {
+      handleNextStep();
+      return;
+    }
+
     const result = await trackMutation(
       createRequest({
-        variables: { attributes: {} },
+        variables: {
+          attributes: {
+            phoneNumber: user?.staffInfo?.primaryPhoneNumber,
+            emailAddress: user?.staffInfo.emailAddress,
+          },
+        },
         refetchQueries: ['AdditionalSalaryRequest'],
       }),
     );
@@ -64,6 +79,11 @@ const MainContent: React.FC = () => {
       handleNextStep();
     }
   };
+
+  const { exceedsCap } = useSalaryCalculations({
+    traditional403bContribution: traditional403bContribution ?? 0,
+    values,
+  });
 
   const handleDiscard = async () => {
     if (requestId) {
@@ -86,43 +106,8 @@ const MainContent: React.FC = () => {
   const capContent = t(
     'Your request causes your Total Requested Salary to exceed your Maximum Allowable Salary.',
   );
-  const capSubContent = (
-    <>
-      <Trans i18nKey="contactPayrollToIncreaseCap" parent="span">
-        Please complete the Approval Process section below and we will review
-        your request through our{' '}
-        <Link
-          href="/"
-          style={{ display: 'inline', color: theme.palette.primary.main }}
-        >
-          Progressive Approvals
-        </Link>{' '}
-        process. Please note:
-      </Trans>
-      <Box>
-        <List sx={{ listStyleType: 'disc', pl: 4 }} disablePadding>
-          <StyledListItem sx={{ py: 0 }}>
-            <ListItemText
-              primary={t(
-                'For the [Amount] you are requesting, this will take [time frame] as it needs to be signed off by [approvers].',
-              )}
-              primaryTypographyProps={{ variant: 'body2' }}
-            />
-          </StyledListItem>
-          <StyledListItem sx={{ py: 0 }}>
-            <ListItemText
-              primary={t(
-                'No additional salary can be requested while this request is pending.',
-              )}
-              primaryTypographyProps={{ variant: 'body2' }}
-            />
-          </StyledListItem>
-        </List>
-      </Box>
-    </>
-  );
 
-  if (loading) {
+  if (loading && !requestData) {
     return <Loading loading={loading} />;
   }
 
@@ -142,11 +127,13 @@ const MainContent: React.FC = () => {
                 overrideTitle={exceedsCap ? capTitle : undefined}
                 overrideContent={exceedsCap ? capContent : undefined}
                 overrideSubContent={
-                  exceedsCap
-                    ? capSubContent
-                    : isEdit
-                      ? t('Your updated request will be sent to payroll.')
-                      : t('Your request will be sent to payroll.')
+                  exceedsCap ? (
+                    <CapSubContent />
+                  ) : isEdit ? (
+                    t('Your updated request will be sent to payroll.')
+                  ) : (
+                    t('Your request will be sent to payroll.')
+                  )
                 }
                 handleNextStep={handleNextStep}
                 handlePreviousStep={handlePreviousStep}

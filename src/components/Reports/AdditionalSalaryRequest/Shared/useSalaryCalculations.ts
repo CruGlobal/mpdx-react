@@ -12,6 +12,7 @@ export interface SalaryCalculations {
   additionalSalaryReceivedThisYear: number;
   totalAnnualSalary: number;
   remainingInMaxAllowable: number;
+  exceedsCap: boolean;
 }
 
 interface CalculationsData {
@@ -56,6 +57,8 @@ export const useSalaryCalculations = ({
 
     const remainingInMaxAllowable = maxAllowableSalary - totalAnnualSalary;
 
+    const exceedsCap = total > remainingInMaxAllowable;
+
     return {
       total,
       calculatedDeduction,
@@ -66,6 +69,7 @@ export const useSalaryCalculations = ({
       additionalSalaryReceivedThisYear,
       totalAnnualSalary,
       remainingInMaxAllowable,
+      exceedsCap,
     };
   }, [values, traditional403bContribution, calculations, grossSalaryAmount]);
 };

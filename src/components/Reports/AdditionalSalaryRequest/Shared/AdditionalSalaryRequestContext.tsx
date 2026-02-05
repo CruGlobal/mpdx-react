@@ -55,8 +55,7 @@ export type AdditionalSalaryRequestType = {
   isMutating: boolean;
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
 
-  exceedsCap?: boolean;
-  setExceedsCap?: (value: boolean) => void;
+  traditional403bContribution?: number;
 };
 
 const AdditionalSalaryRequestContext =
@@ -118,7 +117,9 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     loading,
   } = useAdditionalSalaryRequestQuery();
 
-  const [exceedsCap, setExceedsCap] = useState<boolean>(false);
+  const traditional403bContribution =
+    requestData?.latestAdditionalSalaryRequest?.traditional403bContribution ??
+    0;
 
   const currentYear = useMemo(() => DateTime.now().year, []);
   const { data: salaryInfoData } = useSalaryInfoQuery({
@@ -212,8 +213,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       isInternational,
       isMutating,
       trackMutation,
-      exceedsCap,
-      setExceedsCap,
+      traditional403bContribution,
     }),
     [
       staffAccountId,
@@ -238,8 +238,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       isInternational,
       isMutating,
       trackMutation,
-      exceedsCap,
-      setExceedsCap,
+      traditional403bContribution,
     ],
   );
 

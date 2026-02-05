@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   CardContent,
   CardHeader,
@@ -26,29 +26,15 @@ export const AdditionalSalaryRequest: React.FC = () => {
   const locale = useLocale();
   const currency = 'USD';
 
-  const { requestData, pageType, setExceedsCap } = useAdditionalSalaryRequest();
+  const { pageType, traditional403bContribution } =
+    useAdditionalSalaryRequest();
   const categories = useCompleteFormCategories();
-  const { values, errors, touched, setFieldValue, setFieldTouched } =
-    useFormikContext<CompleteFormValues>();
+  const { values, errors, touched } = useFormikContext<CompleteFormValues>();
 
-  const traditional403bContribution =
-    requestData?.latestAdditionalSalaryRequest?.traditional403bContribution ??
-    0;
-  const { total, maxAllowableSalary } = useSalaryCalculations({
-    traditional403bContribution,
+  const { total } = useSalaryCalculations({
+    traditional403bContribution: traditional403bContribution ?? 0,
     values,
   });
-
-  useEffect(() => {
-    if (setExceedsCap) {
-      setExceedsCap(total > maxAllowableSalary);
-    }
-  }, [total, setExceedsCap, maxAllowableSalary]);
-
-  useEffect(() => {
-    setFieldValue('totalAdditionalSalaryRequested', total);
-    setFieldTouched('totalAdditionalSalaryRequested', true);
-  }, [total, setFieldValue, setFieldTouched]);
 
   return (
     <StepCard
