@@ -12,6 +12,7 @@ import { InProgressDisplay } from './InProgressDisplay';
 
 const mutationSpy = jest.fn();
 const mockEnqueue = jest.fn();
+const mockPush = jest.fn();
 
 jest.mock('notistack', () => ({
   ...jest.requireActual('notistack'),
@@ -66,7 +67,9 @@ const TestComponent: React.FC<TestComponentProps> = ({
 
   return (
     <ThemeProvider theme={theme}>
-      <TestRouter>
+      <TestRouter
+        router={{ query: { accountListId: 'account-list-1' }, push: mockPush }}
+      >
         <SnackbarProvider>
           <GqlMockedProvider
             mocks={{
@@ -93,7 +96,7 @@ describe('InProgressDisplay', () => {
     expect(getByText('Your Additional Salary Request')).toBeInTheDocument();
     expect(
       getByText(
-        'You have a seated Additional Salary Request in progress that has not been submitted.',
+        'You have a saved Additional Salary Request in progress that has not been submitted.',
       ),
     ).toBeInTheDocument();
     expect(getByText('Continue Request')).toBeInTheDocument();
@@ -116,8 +119,8 @@ describe('InProgressDisplay', () => {
     const { getByText } = render(<TestComponent />);
 
     const continueButton = getByText('Continue Request');
-    expect(continueButton.getAttribute('href')).toContain(
-      '/reports/additionalSalaryRequest?mode=edit',
+    expect(continueButton.getAttribute('href')).toBe(
+      '/accountLists/account-list-1/reports/additionalSalaryRequest?mode=edit',
     );
   });
 
@@ -125,10 +128,6 @@ describe('InProgressDisplay', () => {
     const { getByText } = render(<TestComponent />);
 
     const discardButton = getByText('Discard & Start Over');
-    expect(discardButton.getAttribute('href')).toContain(
-      '/reports/additionalSalaryRequest',
-    );
-
     userEvent.click(discardButton);
 
     await waitFor(() => {
@@ -141,6 +140,9 @@ describe('InProgressDisplay', () => {
       expect(mockEnqueue).toHaveBeenCalledWith(
         'Additional Salary Request discarded successfully.',
         { variant: 'success' },
+      );
+      expect(mockPush).toHaveBeenCalledWith(
+        '/accountLists/account-list-1/reports/additionalSalaryRequest',
       );
     });
   });

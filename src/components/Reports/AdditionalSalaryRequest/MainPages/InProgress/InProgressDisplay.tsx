@@ -24,7 +24,7 @@ const InProgressMainContent: React.FC = () => {
       </Typography>
       <Typography variant="body1" sx={{ mt: 3 }}>
         {t(
-          'You have a seated Additional Salary Request in progress that has not been submitted.',
+          'You have a saved Additional Salary Request in progress that has not been submitted.',
         )}
       </Typography>
       <Box sx={{ mt: 4, display: 'flex', gap: 1 }}>
@@ -36,9 +36,8 @@ const InProgressMainContent: React.FC = () => {
           {t('Continue Request')}
         </Button>
         <Button
-          component={NextLink}
+          component="button"
           variant="outlined"
-          href={`/accountLists/${accountListId}/reports/additionalSalaryRequest`}
           onClick={() => handleDeleteRequest(requestId ?? '', false)}
         >
           {t('Discard & Start Over')}

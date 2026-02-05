@@ -84,6 +84,9 @@ const useInitialRoute = (): InitialRoute | null => {
 
 const AdditionalSalaryRequestRouter: React.FC = () => {
   const initialRoute = useInitialRoute();
+  const { pageType } = useAdditionalSalaryRequest();
+
+  const isEdit = pageType === PageEnum.Edit;
 
   if (!initialRoute) {
     return <Loading loading />;
@@ -95,7 +98,7 @@ const AdditionalSalaryRequestRouter: React.FC = () => {
     case 'overview':
       return <OverviewPage />;
     case 'continue':
-      return <InProgressDisplay />;
+      return isEdit ? <FormikRequestPage /> : <InProgressDisplay />;
     case 'request':
       return <FormikRequestPage />;
   }
