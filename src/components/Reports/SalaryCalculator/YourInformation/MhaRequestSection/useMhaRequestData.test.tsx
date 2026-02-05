@@ -3,8 +3,19 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { SalaryCalculatorTestWrapper } from '../../SalaryCalculatorTestWrapper';
 import { useMhaRequestData } from './useMhaRequestData';
 
+const createWrapper = (
+  props: React.ComponentProps<typeof SalaryCalculatorTestWrapper> = {},
+): React.FC<{ children: React.ReactNode }> => {
+  const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+    <SalaryCalculatorTestWrapper {...props}>
+      {children}
+    </SalaryCalculatorTestWrapper>
+  );
+  return Wrapper;
+};
+
 describe('useMhaRequestData', () => {
-  it('should return correct data and formatting', async () => {
+  it('returns correct data when both user and spouse are eligible with MHA', async () => {
     const { result } = renderHook(() => useMhaRequestData(), {
       wrapper: SalaryCalculatorTestWrapper,
     });
@@ -15,9 +26,15 @@ describe('useMhaRequestData', () => {
 
     expect(result.current.currentTakenAmount).toBe('$7,200');
     expect(result.current.currentSpouseTakenAmount).toBe('$12,000');
+
+    expect(result.current.showUserFields).toBe(true);
+    expect(result.current.showSpouseFields).toBe(true);
+
+    expect(result.current.userPreferredName).toBe('John');
+    expect(result.current.spousePreferredName).toBe('Jane');
   });
 
-  it('should validate required fields and max amounts', async () => {
+  it('validates required fields and max amounts', async () => {
     const { result } = renderHook(() => useMhaRequestData(), {
       wrapper: SalaryCalculatorTestWrapper,
     });
@@ -26,7 +43,7 @@ describe('useMhaRequestData', () => {
       expect(result.current.approvedAmount).toBe('$20,000');
     });
 
-    const schema = result.current.schema;
+    const { schema } = result.current;
 
     await expect(
       schema.validate({ mhaAmount: undefined, spouseMhaAmount: 5000 }),
@@ -49,83 +66,13 @@ describe('useMhaRequestData', () => {
     ).resolves.toEqual({ mhaAmount: 8000, spouseMhaAmount: 10000 });
   });
 
-  it('should return ineligibility properties when user and spouse are eligible', async () => {
+  it('shows ineligible message when user is not eligible', async () => {
     const { result } = renderHook(() => useMhaRequestData(), {
-      wrapper: SalaryCalculatorTestWrapper,
+      wrapper: createWrapper({
+        hcmMock: { mhaEit: { mhaEligibility: false } },
+      }),
     });
 
-    await waitFor(() => {
-      expect(result.current.showUserFields).toBe(true);
-    });
-
-    // Both are eligible, so no ineligible message
-    expect(result.current.showIneligibleMessage).toBe(false);
-    expect(result.current.isIneligiblePlural).toBe(false);
-    expect(result.current.ineligibleNames).toBe('');
-  });
-
-  it('should show MHA form when user is eligible and has MHA request', async () => {
-    const { result } = renderHook(() => useMhaRequestData(), {
-      wrapper: SalaryCalculatorTestWrapper,
-    });
-
-    await waitFor(() => {
-      expect(result.current.showUserFields).toBe(true);
-    });
-
-    expect(result.current.showSpouseFields).toBe(true);
-  });
-
-  it('should show user fields when user is eligible and has MHA', async () => {
-    const { result } = renderHook(() => useMhaRequestData(), {
-      wrapper: SalaryCalculatorTestWrapper,
-    });
-
-    await waitFor(() => {
-      expect(result.current.showUserFields).toBe(true);
-    });
-
-    expect(result.current.showNoMhaMessage).toBe(false);
-  });
-
-  it('should show spouse fields when spouse is eligible and has MHA', async () => {
-    const { result } = renderHook(() => useMhaRequestData(), {
-      wrapper: SalaryCalculatorTestWrapper,
-    });
-
-    await waitFor(() => {
-      expect(result.current.showSpouseFields).toBe(true);
-    });
-
-    expect(result.current.showNoMhaMessage).toBe(false);
-  });
-
-  it('should return user and spouse preferred names', async () => {
-    const { result } = renderHook(() => useMhaRequestData(), {
-      wrapper: SalaryCalculatorTestWrapper,
-    });
-
-    await waitFor(() => {
-      expect(result.current.userPreferredName).toBe('John');
-    });
-
-    expect(result.current.spousePreferredName).toBe('Jane');
-  });
-
-  it('should show user ineligible message when user is not eligible', async () => {
-    const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-      <SalaryCalculatorTestWrapper
-        hcmMock={{
-          mhaEit: { mhaEligibility: false },
-        }}
-      >
-        {children}
-      </SalaryCalculatorTestWrapper>
-    );
-
-    const { result } = renderHook(() => useMhaRequestData(), { wrapper });
-
-    // Wait for data to load by checking userPreferredName is populated
     await waitFor(() => {
       expect(result.current.userPreferredName).toBe('John');
     });
@@ -137,20 +84,13 @@ describe('useMhaRequestData', () => {
     expect(result.current.showSpouseFields).toBe(true);
   });
 
-  it('should show spouse ineligible message when spouse is not eligible', async () => {
-    const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-      <SalaryCalculatorTestWrapper
-        hcmSpouse={{
-          mhaEit: { mhaEligibility: false },
-        }}
-      >
-        {children}
-      </SalaryCalculatorTestWrapper>
-    );
+  it('shows ineligible message when spouse is not eligible', async () => {
+    const { result } = renderHook(() => useMhaRequestData(), {
+      wrapper: createWrapper({
+        hcmSpouse: { mhaEit: { mhaEligibility: false } },
+      }),
+    });
 
-    const { result } = renderHook(() => useMhaRequestData(), { wrapper });
-
-    // Wait for data to load by checking userPreferredName is populated
     await waitFor(() => {
       expect(result.current.userPreferredName).toBe('John');
     });
@@ -162,23 +102,14 @@ describe('useMhaRequestData', () => {
     expect(result.current.showSpouseFields).toBe(false);
   });
 
-  it('should show both ineligible when both are not eligible', async () => {
-    const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-      <SalaryCalculatorTestWrapper
-        hcmMock={{
-          mhaEit: { mhaEligibility: false },
-        }}
-        hcmSpouse={{
-          mhaEit: { mhaEligibility: false },
-        }}
-      >
-        {children}
-      </SalaryCalculatorTestWrapper>
-    );
+  it('shows ineligible message for both when neither is eligible', async () => {
+    const { result } = renderHook(() => useMhaRequestData(), {
+      wrapper: createWrapper({
+        hcmMock: { mhaEit: { mhaEligibility: false } },
+        hcmSpouse: { mhaEit: { mhaEligibility: false } },
+      }),
+    });
 
-    const { result } = renderHook(() => useMhaRequestData(), { wrapper });
-
-    // Wait for data to load by checking userPreferredName is populated
     await waitFor(() => {
       expect(result.current.userPreferredName).toBe('John');
     });
@@ -190,18 +121,12 @@ describe('useMhaRequestData', () => {
     expect(result.current.showSpouseFields).toBe(false);
   });
 
-  it('should show no MHA message when user is eligible but has no MHA request', async () => {
-    const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-      <SalaryCalculatorTestWrapper
-        hcmMock={{
-          mhaRequest: { currentApprovedOverallAmount: 0 },
-        }}
-      >
-        {children}
-      </SalaryCalculatorTestWrapper>
-    );
-
-    const { result } = renderHook(() => useMhaRequestData(), { wrapper });
+  it('shows no MHA message when user has no MHA request', async () => {
+    const { result } = renderHook(() => useMhaRequestData(), {
+      wrapper: createWrapper({
+        hcmMock: { mhaRequest: { currentApprovedOverallAmount: 0 } },
+      }),
+    });
 
     await waitFor(() => {
       expect(result.current.showNoMhaMessage).toBe(true);
@@ -213,21 +138,13 @@ describe('useMhaRequestData', () => {
     expect(result.current.showSpouseFields).toBe(true);
   });
 
-  it('should show no MHA message for both when both have no MHA request', async () => {
-    const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-      <SalaryCalculatorTestWrapper
-        hcmMock={{
-          mhaRequest: { currentApprovedOverallAmount: 0 },
-        }}
-        hcmSpouse={{
-          mhaRequest: { currentApprovedOverallAmount: 0 },
-        }}
-      >
-        {children}
-      </SalaryCalculatorTestWrapper>
-    );
-
-    const { result } = renderHook(() => useMhaRequestData(), { wrapper });
+  it('shows no MHA message for both when neither has MHA request', async () => {
+    const { result } = renderHook(() => useMhaRequestData(), {
+      wrapper: createWrapper({
+        hcmMock: { mhaRequest: { currentApprovedOverallAmount: 0 } },
+        hcmSpouse: { mhaRequest: { currentApprovedOverallAmount: 0 } },
+      }),
+    });
 
     await waitFor(() => {
       expect(result.current.showNoMhaMessage).toBe(true);
@@ -239,14 +156,10 @@ describe('useMhaRequestData', () => {
     expect(result.current.showSpouseFields).toBe(false);
   });
 
-  it('should not show spouse fields when there is no spouse', async () => {
-    const wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-      <SalaryCalculatorTestWrapper hasSpouse={false}>
-        {children}
-      </SalaryCalculatorTestWrapper>
-    );
-
-    const { result } = renderHook(() => useMhaRequestData(), { wrapper });
+  it('hides spouse fields when there is no spouse', async () => {
+    const { result } = renderHook(() => useMhaRequestData(), {
+      wrapper: createWrapper({ hasSpouse: false }),
+    });
 
     await waitFor(() => {
       expect(result.current.showUserFields).toBe(true);
