@@ -94,8 +94,9 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
         return PageEnum.Edit;
       case 'view':
         return PageEnum.View;
+      // If a user does not have an asr, default to 'new' page
       default:
-        return undefined;
+        return PageEnum.New;
     }
   }, [mode]);
 
@@ -199,7 +200,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       currentYear,
       pageType,
       handleDeleteRequest,
-      requestId,
+      requestId: requestData?.latestAdditionalSalaryRequest?.id ?? requestId,
       user,
       spouse,
       salaryInfo,

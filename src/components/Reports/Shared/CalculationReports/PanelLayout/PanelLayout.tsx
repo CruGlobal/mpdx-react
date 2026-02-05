@@ -133,7 +133,9 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
                     {item.icon}
                   </IconButton>
                 ))}
-                <BackArrow backHref={backHref} backTitle={backTitle} />
+                {backHref && (
+                  <BackArrow backHref={backHref} backTitle={backTitle} />
+                )}
               </>
             )}
           </Stack>

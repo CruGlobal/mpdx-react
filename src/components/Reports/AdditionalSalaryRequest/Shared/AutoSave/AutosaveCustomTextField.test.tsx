@@ -203,12 +203,12 @@ describe('AutosaveCustomTextField', () => {
     expect(input).toBeDisabled();
   });
 
-  it('is disabled when requestData is missing', async () => {
+  it('is not disabled when requestData is missing', async () => {
     const { getByRole } = render(
       <TestComponent contextOverrides={{ requestData: undefined }} />,
     );
 
     const input = getByRole('textbox');
-    expect(input).toBeDisabled();
+    expect(input).not.toBeDisabled();
   });
 });
