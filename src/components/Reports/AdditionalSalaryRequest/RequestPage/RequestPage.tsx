@@ -20,6 +20,7 @@ import {
   mainContentWidth,
 } from '../AdditionalSalaryRequest';
 import { useCreateAdditionalSalaryRequestMutation } from '../AdditionalSalaryRequest.generated';
+import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
 import { EditForm } from '../FormVersions/Edit/EditForm';
 import { NewForm } from '../FormVersions/New/NewForm';
 import { ViewForm } from '../FormVersions/View/ViewForm';
