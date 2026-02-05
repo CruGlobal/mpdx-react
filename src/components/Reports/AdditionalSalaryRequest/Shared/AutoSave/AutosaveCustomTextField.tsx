@@ -3,7 +3,7 @@ import { TextField, TextFieldProps } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useCustomAutoSave } from 'src/components/Reports/Shared/CalculationReports/CustomAutosave/useCustomAutosave';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
-import { CompleteFormValues } from '../../AdditionalSalaryRequest';
+import { CompleteFormValues } from '../../MainPages/OverviewPage';
 import { useAdditionalSalaryRequest } from '../AdditionalSalaryRequestContext';
 import { useSaveField } from './useSaveField';
 

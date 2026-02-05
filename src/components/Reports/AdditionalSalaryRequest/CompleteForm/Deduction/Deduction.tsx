@@ -13,7 +13,7 @@ import { FormCard } from 'src/components/Reports/Shared/CalculationReports/FormC
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
-import { CompleteFormValues } from '../../AdditionalSalaryRequest';
+import { CompleteFormValues } from '../../MainPages/OverviewPage';
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
 import { useSaveField } from '../../Shared/AutoSave/useSaveField';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';

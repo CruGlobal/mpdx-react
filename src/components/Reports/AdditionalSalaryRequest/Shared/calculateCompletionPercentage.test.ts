@@ -1,4 +1,4 @@
-import { CompleteFormValues } from '../AdditionalSalaryRequest';
+import { CompleteFormValues } from '../MainPages/OverviewPage';
 import { defaultCompleteFormValues } from './CompleteForm.mock';
 import { calculateCompletionPercentage } from './calculateCompletionPercentage';
 

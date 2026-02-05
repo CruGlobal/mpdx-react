@@ -1,7 +1,7 @@
 import React, { createElement } from 'react';
 import { renderHook } from '@testing-library/react';
 import { Formik } from 'formik';
-import { CompleteFormValues } from '../AdditionalSalaryRequest';
+import { CompleteFormValues } from '../MainPages/OverviewPage';
 import { useSalaryCalculations } from './useSalaryCalculations';
 
 const FormikWrapper = ({

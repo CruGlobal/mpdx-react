@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
-import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { AdditionalSalaryRequestTestWrapper } from '../../AdditionalSalaryRequestTestWrapper';
+import { CompleteFormValues } from '../../MainPages/OverviewPage';
 import { defaultCompleteFormValues } from '../../Shared/CompleteForm.mock';
 import { AdditionalSalaryRequest } from './AdditionalSalaryRequest';
 

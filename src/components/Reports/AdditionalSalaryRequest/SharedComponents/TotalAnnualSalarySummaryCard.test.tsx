@@ -6,7 +6,7 @@ import { FormikProvider, useFormik } from 'formik';
 import { I18nextProvider } from 'react-i18next';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
-import { CompleteFormValues } from '../AdditionalSalaryRequest';
+import { CompleteFormValues } from '../MainPages/OverviewPage';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { defaultCompleteFormValues } from '../Shared/CompleteForm.mock';
 import { TotalAnnualSalarySummaryCard } from './TotalAnnualSalarySummaryCard';

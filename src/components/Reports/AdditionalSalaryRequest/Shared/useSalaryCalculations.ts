@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { CompleteFormValues } from '../AdditionalSalaryRequest';
+import { CompleteFormValues } from '../MainPages/OverviewPage';
 import { getTotal } from './Helper/getTotal';
 
 export interface SalaryCalculations {
