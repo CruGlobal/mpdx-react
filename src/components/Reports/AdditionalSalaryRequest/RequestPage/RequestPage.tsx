@@ -61,6 +61,11 @@ const MainContent: React.FC = () => {
     if (
       result.data?.createAdditionalSalaryRequest?.additionalSalaryRequest.id
     ) {
+      router.replace(
+        `/accountLists/${accountListId}/reports/additionalSalaryRequest?mode=edit`,
+        undefined,
+        { shallow: true },
+      );
       handleNextStep();
     }
   };
