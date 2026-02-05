@@ -7,9 +7,9 @@ import * as yup from 'yup';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import theme from 'src/theme';
-import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { UpdateAdditionalSalaryRequestMutation } from '../../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSectionEnum } from '../../AdditionalSalaryRequestHelper';
+import { CompleteFormValues } from '../../MainPages/OverviewPage';
 import {
   AdditionalSalaryRequestType,
   useAdditionalSalaryRequest,

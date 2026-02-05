@@ -44,17 +44,18 @@ const FormikRequestPage: React.FC = () => {
 type InitialRoute = 'ineligible' | 'overview' | 'continue' | 'request';
 
 const useInitialRoute = (): InitialRoute | null => {
-  const { requestData, loading, user } = useAdditionalSalaryRequest();
+  const { requestData, loading } = useAdditionalSalaryRequest();
   const initialRouteRef = useRef<InitialRoute | null>(null);
 
   if (initialRouteRef.current !== null) {
     return initialRouteRef.current;
   }
 
-  if (user?.asrEit?.asrEligibility === false) {
-    initialRouteRef.current = 'ineligible';
-    return initialRouteRef.current;
-  }
+  // TODO rework eligibility check
+  // if (user?.asrEit?.asrEligibility === false) {
+  //   initialRouteRef.current = 'ineligible';
+  //   return initialRouteRef.current;
+  // }
 
   if (loading) {
     return null;
@@ -85,7 +86,6 @@ const useInitialRoute = (): InitialRoute | null => {
 const AdditionalSalaryRequestRouter: React.FC = () => {
   const initialRoute = useInitialRoute();
   const { pageType } = useAdditionalSalaryRequest();
-
   const isEdit = pageType === PageEnum.Edit;
 
   if (!initialRoute) {
@@ -108,7 +108,7 @@ const AdditionalSalaryRequestContent: React.FC = () => {
   const [isNavListOpen, setNavListOpen] = useState(false);
   const { t } = useTranslation();
 
-  const { requestData, loading, isMutating, pageType, user } =
+  const { requestData, loading, isMutating, pageType } =
     useAdditionalSalaryRequest();
 
   const handleNavListToggle = () => {
@@ -116,14 +116,12 @@ const AdditionalSalaryRequestContent: React.FC = () => {
   };
 
   const status = requestData?.latestAdditionalSalaryRequest?.status;
-  const showStatuses: AsrStatusEnum[] = [
-    AsrStatusEnum.ActionRequired,
-    AsrStatusEnum.Pending,
-  ];
-  const showSavingStatus =
-    pageType !== PageEnum.View &&
-    (!status || showStatuses.includes(status)) &&
-    user?.asrEit?.asrEligibility !== false;
+  const pageTypeIsEditable = pageType && pageType !== PageEnum.View;
+  const statusIsEditable =
+    status &&
+    ![AsrStatusEnum.ActionRequired, AsrStatusEnum.Pending].includes(status);
+
+  const showSavingStatus = statusIsEditable && pageTypeIsEditable;
 
   return (
     <SidePanelsLayout

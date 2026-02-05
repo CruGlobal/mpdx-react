@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Skeleton, Stack } from '@mui/material';
 import theme from 'src/theme';
-import { mainContentWidth } from './AdditionalSalaryRequest';
+import { mainContentWidth } from './MainPages/OverviewPage';
 
 export const AdditionalSalaryRequestSkeleton: React.FC = () => {
   return (
