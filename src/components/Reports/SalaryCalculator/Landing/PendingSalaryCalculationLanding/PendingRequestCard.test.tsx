@@ -10,13 +10,21 @@ const TestComponent: React.FC = () => (
 );
 
 describe('PendingRequestCard', () => {
-  it('renders card with amount and buttons', async () => {
-    const { getByRole, findByRole, getByTestId } = render(<TestComponent />);
+  it('renders card with amount and view link', async () => {
+    const { findByRole, getByTestId } = render(<TestComponent />);
 
     expect(getByTestId('gross-salary-amount')).toBeInTheDocument();
-    expect(getByRole('button', { name: 'Download' })).toBeInTheDocument();
     expect(
       await findByRole('link', { name: 'View Request' }),
     ).toBeInTheDocument();
+  });
+
+  it('renders print link with correct href', async () => {
+    const { findByRole } = render(<TestComponent />);
+
+    expect(await findByRole('link', { name: 'Print' })).toHaveAttribute(
+      'href',
+      '/accountLists/account-list-1/reports/salaryCalculator/pending-calc-1?mode=view&print=true',
+    );
   });
 });

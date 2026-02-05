@@ -19,6 +19,7 @@ import {
   CompleteFormValues,
   mainContentWidth,
 } from '../AdditionalSalaryRequest';
+import { useCreateAdditionalSalaryRequestMutation } from '../AdditionalSalaryRequest.generated';
 import { EditForm } from '../FormVersions/Edit/EditForm';
 import { NewForm } from '../FormVersions/New/NewForm';
 import { ViewForm } from '../FormVersions/View/ViewForm';
@@ -41,10 +42,27 @@ const MainContent: React.FC = () => {
     pageType,
     exceedsCap,
     loading,
+    trackMutation,
   } = useAdditionalSalaryRequest();
+
+  const [createRequest] = useCreateAdditionalSalaryRequestMutation();
 
   const { submitForm, validateForm, submitCount, isValid, errors } =
     useFormikContext<CompleteFormValues>();
+
+  const handleCreateAndContinue = async () => {
+    const result = await trackMutation(
+      createRequest({
+        variables: { attributes: {} },
+        refetchQueries: ['AdditionalSalaryRequest'],
+      }),
+    );
+    if (
+      result.data?.createAdditionalSalaryRequest?.additionalSalaryRequest.id
+    ) {
+      handleNextStep();
+    }
+  };
 
   const handleDiscard = async () => {
     if (requestId) {
@@ -132,7 +150,7 @@ const MainContent: React.FC = () => {
                 handleNextStep={handleNextStep}
                 handlePreviousStep={handlePreviousStep}
                 showBackButton={!isFirstFormPage}
-                handleDiscard={handleDiscard}
+                handleDiscard={requestId ? handleDiscard : undefined}
                 isSubmission={isLastFormPage}
                 submitForm={submitForm}
                 validateForm={validateForm}
@@ -142,6 +160,9 @@ const MainContent: React.FC = () => {
                 isEdit={isEdit}
                 exceedsCap={exceedsCap}
                 disableSubmit={exceedsCap && !!errors.additionalInfo}
+                overrideNext={
+                  isFirstFormPage ? handleCreateAndContinue : undefined
+                }
               />
             </Stack>
           )}

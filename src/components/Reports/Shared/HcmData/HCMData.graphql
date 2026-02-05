@@ -42,6 +42,9 @@ query HcmData {
     mhaEit {
       mhaEligibility
     }
+    asrEit {
+      asrEligibility
+    }
     mhaRequest {
       currentApprovedOverallAmount
       currentTakenAmount

@@ -87,7 +87,7 @@ const defaultMockContextValue = {
   salaryInfo: undefined,
   isInternational: false,
   isMutating: false,
-  trackMutation: jest.fn(),
+  trackMutation: jest.fn((promise) => promise),
 };
 
 const router = {
@@ -392,5 +392,121 @@ describe('RequestPage', () => {
     expect(
       getByText(/please complete the approval process section/i),
     ).toBeInTheDocument();
+  });
+
+  it('calls createNewRequest and handleNextStep when Continue is clicked on first page', async () => {
+    const mockHandleNextStep = jest.fn();
+    const mutationSpy = jest.fn();
+
+    mockUseAdditionalSalaryRequest.mockReturnValue({
+      ...defaultMockContextValue,
+      handleNextStep: mockHandleNextStep,
+    } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+    const { getByRole } = render(
+      <ThemeProvider theme={theme}>
+        <SnackbarProvider>
+          <I18nextProvider i18n={i18n}>
+            <TestRouter router={router}>
+              <GqlMockedProvider
+                mocks={{
+                  CreateAdditionalSalaryRequest: {
+                    createAdditionalSalaryRequest: {
+                      additionalSalaryRequest: { id: 'new-request-id' },
+                    },
+                  },
+                }}
+                onCall={mutationSpy}
+              >
+                <TestFormikWrapper>
+                  <RequestPage />
+                </TestFormikWrapper>
+              </GqlMockedProvider>
+            </TestRouter>
+          </I18nextProvider>
+        </SnackbarProvider>
+      </ThemeProvider>,
+    );
+
+    userEvent.click(getByRole('button', { name: /continue/i }));
+
+    await waitFor(() => {
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'CreateAdditionalSalaryRequest',
+      );
+      expect(mockHandleNextStep).toHaveBeenCalled();
+    });
+  });
+
+  it('does not call handleNextStep when createNewRequest fails', async () => {
+    const mockHandleNextStep = jest.fn();
+
+    mockUseAdditionalSalaryRequest.mockReturnValue({
+      ...defaultMockContextValue,
+      handleNextStep: mockHandleNextStep,
+    } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+    const { getByRole } = render(
+      <ThemeProvider theme={theme}>
+        <SnackbarProvider>
+          <I18nextProvider i18n={i18n}>
+            <TestRouter router={router}>
+              <GqlMockedProvider
+                mocks={{
+                  CreateAdditionalSalaryRequest: {
+                    createAdditionalSalaryRequest: null,
+                  },
+                }}
+              >
+                <TestFormikWrapper>
+                  <RequestPage />
+                </TestFormikWrapper>
+              </GqlMockedProvider>
+            </TestRouter>
+          </I18nextProvider>
+        </SnackbarProvider>
+      </ThemeProvider>,
+    );
+
+    userEvent.click(getByRole('button', { name: /continue/i }));
+
+    await waitFor(() => {
+      expect(mockHandleNextStep).not.toHaveBeenCalled();
+    });
+  });
+
+  it('does not use overrideNext on non-first pages', async () => {
+    const mutationSpy = jest.fn();
+
+    mockUseAdditionalSalaryRequest.mockReturnValue({
+      ...defaultMockContextValue,
+      currentIndex: 1,
+      currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
+      pageType: PageEnum.Edit,
+    } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+    const { getByRole } = render(
+      <ThemeProvider theme={theme}>
+        <SnackbarProvider>
+          <I18nextProvider i18n={i18n}>
+            <TestRouter router={router}>
+              <GqlMockedProvider onCall={mutationSpy}>
+                <TestFormikWrapper>
+                  <RequestPage />
+                </TestFormikWrapper>
+              </GqlMockedProvider>
+            </TestRouter>
+          </I18nextProvider>
+        </SnackbarProvider>
+      </ThemeProvider>,
+    );
+
+    userEvent.click(getByRole('button', { name: /submit/i }));
+
+    await waitFor(() => {
+      expect(mutationSpy).not.toHaveGraphqlOperation(
+        'CreateAdditionalSalaryRequest',
+      );
+    });
   });
 });

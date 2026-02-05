@@ -165,10 +165,10 @@ export const SalaryCapCard: React.FC = () => {
                   {t('Line 7 × Line 8b')}
                   <br />
                   {t(
-                    'For a couple, the combined CAPs cannot exceed {{familyCap}}, with neither individual exceeding {{individualCap}}.',
+                    'For a couple, the combined CAPs cannot exceed {{combinedCap}}, with neither individual exceeding {{hardCap}}.',
                     {
-                      familyCap: formatCurrency(calcs?.familyCap),
-                      individualCap: formatCurrency(calcs?.individualCap),
+                      combinedCap: formatCurrency(calcs?.combinedCap),
+                      hardCap: formatCurrency(calcs?.hardCap),
                     },
                   )}
                 </span>
@@ -189,10 +189,10 @@ export const SalaryCapCard: React.FC = () => {
               <TableCell scope="row" className="sub-item">
                 b. {t('Minimum')}
               </TableCell>
-              <TableCell>{formatCurrency(calculation?.salaryCap)}</TableCell>
+              <TableCell>{formatCurrency(calcs?.effectiveCap)}</TableCell>
               {hasSpouse && (
                 <TableCell align="right">
-                  {formatCurrency(calculation.spouseSalaryCap)}
+                  {formatCurrency(spouseCalcs.effectiveCap)}
                 </TableCell>
               )}
             </TableRow>

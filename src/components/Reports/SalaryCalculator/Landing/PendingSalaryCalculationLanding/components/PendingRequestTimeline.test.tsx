@@ -15,19 +15,14 @@ const createCalculation = (
 ): LatestCalculation => ({
   id: '1',
   status,
-  effectiveDate: '2025-02-01',
-  location: 'US',
   mhaAmount: null,
   spouseMhaAmount: null,
   salaryCap: null,
   spouseSalaryCap: null,
   salary: null,
   spouseSalary: null,
-  phoneNumber: null,
-  emailAddress: null,
   submittedAt: '2025-01-15T10:00:00Z',
   changesRequestedAt: null,
-  updatedAt: '2025-01-15T10:00:00Z',
   feedback,
 });
 
