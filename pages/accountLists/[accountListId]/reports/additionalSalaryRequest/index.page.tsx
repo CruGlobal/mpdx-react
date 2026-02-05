@@ -51,6 +51,7 @@ const useInitialRoute = (): InitialRoute | null => {
     return initialRouteRef.current;
   }
 
+  // TODO rework eligibility check
   // if (user?.asrEit?.asrEligibility === false) {
   //   initialRouteRef.current = 'ineligible';
   //   return initialRouteRef.current;
@@ -118,9 +119,7 @@ const AdditionalSalaryRequestContent: React.FC = () => {
   const pageTypeIsEditable = pageType && pageType !== PageEnum.View;
   const statusIsEditable =
     status &&
-    ![AsrStatusEnum.ActionRequired, AsrStatusEnum.ActionRequired].includes(
-      status,
-    );
+    ![AsrStatusEnum.ActionRequired, AsrStatusEnum.Pending].includes(status);
 
   const showSavingStatus = statusIsEditable && pageTypeIsEditable;
 
