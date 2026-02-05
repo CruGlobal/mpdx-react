@@ -27,6 +27,7 @@ interface StatusCardProps {
   children: React.ReactNode;
   linkOneText?: string;
   linkOne?: string;
+  handleLinkOne?: () => void;
   linkTwoText?: string;
   linkTwo?: string;
   isRequest?: boolean;
@@ -48,6 +49,7 @@ export const StatusCard: React.FC<StatusCardProps> = ({
   children,
   linkOneText,
   linkOne,
+  handleLinkOne,
   linkTwoText,
   linkTwo,
   isRequest,
@@ -112,8 +114,9 @@ export const StatusCard: React.FC<StatusCardProps> = ({
       {!hideActions && (
         <CardActionArea sx={{ p: 2 }}>
           <Button
-            component={NextLink}
-            href={linkOne ?? ''}
+            component={linkOne ? NextLink : 'button'}
+            href={linkOne}
+            onClick={handleLinkOne}
             variant={isRequest ? 'contained' : 'outlined'}
             sx={{ px: 2, py: 1, mr: 1 }}
           >

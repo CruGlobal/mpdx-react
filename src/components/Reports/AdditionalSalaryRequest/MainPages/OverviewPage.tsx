@@ -1,6 +1,5 @@
-import React, { useCallback, useMemo } from 'react';
-import { Button, Container, Stack } from '@mui/material';
-import { useSnackbar } from 'notistack';
+import React, { useMemo } from 'react';
+import { Container, Stack } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Notification } from 'src/components/Notification/Notification';
 import { AsrStatusEnum } from 'src/graphql/types.generated';
@@ -9,10 +8,8 @@ import theme from 'src/theme';
 import { PanelLayout } from '../../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { useIconPanelItems } from '../../Shared/CalculationReports/PanelLayout/useIconPanelItems';
 import { PanelTypeEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
-import { useCreateAdditionalSalaryRequestMutation } from '../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSkeleton } from '../AdditionalSalaryRequestSkeleton';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
-import { getRequestUrl } from '../Shared/Helper/getRequestUrl';
 import { ApprovedRequest } from '../SharedComponents/ApprovedRequest';
 import { CurrentRequest } from '../SharedComponents/CurrentRequest';
 import { EligibleDisplay } from './EligibleDisplay';
@@ -43,7 +40,6 @@ export interface CompleteFormValues {
 export const OverviewPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const { enqueueSnackbar } = useSnackbar();
   const {
     isDrawerOpen,
     toggleDrawer,
@@ -51,53 +47,11 @@ export const OverviewPage: React.FC = () => {
     currentIndex,
     requestError,
     requestData,
-    user,
     loading: requestLoading,
   } = useAdditionalSalaryRequest();
 
   const request = requestData?.latestAdditionalSalaryRequest;
-
-  const [createAdditionalSalaryRequest] =
-    useCreateAdditionalSalaryRequestMutation();
-
   const iconPanelItems = useIconPanelItems(isDrawerOpen, toggleDrawer);
-
-  const handleCreateAsrRequest = useCallback(() => {
-    createAdditionalSalaryRequest({
-      variables: {
-        attributes: {
-          phoneNumber: user?.staffInfo?.primaryPhoneNumber,
-          emailAddress: user?.staffInfo?.emailAddress,
-        },
-      },
-      refetchQueries: ['AdditionalSalaryRequest'],
-      onCompleted: ({ createAdditionalSalaryRequest: newRequest }) => {
-        enqueueSnackbar(
-          t("Successfully created ASR Request. You'll be redirected shortly."),
-          {
-            variant: 'success',
-          },
-        );
-        const asrRequestId = newRequest?.additionalSalaryRequest.id;
-        const requestLink = getRequestUrl(accountListId, asrRequestId, 'new');
-
-        // Wait 1 second before redirecting
-        setTimeout(() => {
-          window.location.href = requestLink;
-        }, 1000);
-      },
-      onError: (err) => {
-        enqueueSnackbar(
-          t('Error while creating ASR Request - {{error}}', {
-            error: err.message,
-          }),
-          {
-            variant: 'error',
-          },
-        );
-      },
-    });
-  }, [createAdditionalSalaryRequest, enqueueSnackbar, t, accountListId, user]);
 
   // Determine overall request status based on priority
   const allRequestStatus = useMemo((): string => {
@@ -150,14 +104,6 @@ export const OverviewPage: React.FC = () => {
                 ) : (
                   <CurrentRequest request={request} />
                 ))}
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleCreateAsrRequest}
-                sx={{ alignSelf: 'flex-start' }}
-              >
-                {t('Create New ASR')}
-              </Button>
             </Stack>
           )}
         </Container>

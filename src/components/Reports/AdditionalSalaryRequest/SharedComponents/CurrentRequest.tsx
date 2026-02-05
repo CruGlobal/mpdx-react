@@ -19,7 +19,6 @@ import { AdditionalSalaryRequestQuery } from '../AdditionalSalaryRequest.generat
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { getDotColor } from '../Shared/Helper/getDotColor';
 import { getDotVariant } from '../Shared/Helper/getDotVariant';
-import { getRequestUrl } from '../Shared/Helper/getRequestUrl';
 
 interface CurrentRequestProps {
   request: NonNullable<
@@ -48,7 +47,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
       icon={AttachMoney}
       iconColor="warning.main"
       linkOneText={t('View Request')}
-      linkOne={getRequestUrl(accountListId, id, 'view')}
+      linkOne={`/accountLists/${accountListId}/reports/additionalSalaryRequest?mode=view`}
       hideLinkTwoButton={true}
       isRequest={true}
       handleConfirmCancel={() => handleDeleteRequest(id, true)}

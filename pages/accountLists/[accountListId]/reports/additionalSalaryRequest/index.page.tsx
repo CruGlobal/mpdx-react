@@ -85,7 +85,6 @@ const useInitialRoute = (): InitialRoute | null => {
 const AdditionalSalaryRequestRouter: React.FC = () => {
   const initialRoute = useInitialRoute();
   const { pageType } = useAdditionalSalaryRequest();
-
   const isEdit = pageType === PageEnum.Edit;
 
   if (!initialRoute) {
