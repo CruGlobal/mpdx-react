@@ -27,13 +27,6 @@ export const useAutoSave = <Value extends string | number>({
   );
   const autosaveForm = useOptionalAutosaveForm();
 
-  // Remove fields previously marked as invalid when the field is removed
-  useEffect(() => {
-    return () => {
-      autosaveForm?.markValid(fieldName);
-    };
-  }, [fieldName]);
-
   const parseValue = useCallback(
     (valueToValidate: string) => {
       try {
@@ -44,11 +37,9 @@ export const useAutoSave = <Value extends string | number>({
         });
         const parsedValue: Value | null =
           schema.validateSyncAt(fieldName, values) ?? null;
-        autosaveForm?.markValid(fieldName);
         return { parsedValue, errorMessage: null };
       } catch (error) {
         if (error instanceof yup.ValidationError) {
-          autosaveForm?.markInvalid(fieldName);
           return { parsedValue: null, errorMessage: error.message };
         }
         throw error;
@@ -61,6 +52,19 @@ export const useAutoSave = <Value extends string | number>({
     () => parseValue(internalValue),
     [parseValue, internalValue],
   );
+
+  useEffect(() => {
+    if (errorMessage === null) {
+      autosaveForm?.markValid(fieldName);
+    } else {
+      autosaveForm?.markInvalid(fieldName);
+    }
+
+    // Remove fields previously marked as invalid when the field is removed
+    return () => {
+      autosaveForm?.markValid(fieldName);
+    };
+  }, [fieldName, errorMessage]);
 
   return {
     value: internalValue,
