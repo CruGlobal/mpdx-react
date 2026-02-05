@@ -388,7 +388,6 @@ describe('useAdditionalSalaryRequestForm', () => {
     it('should validate additional info when exceedsCap is true', async () => {
       mockUseAdditionalSalaryRequest.mockReturnValue({
         ...defaultMockContextValue,
-        exceedsCap: true,
       });
 
       const { result } = renderHook(
