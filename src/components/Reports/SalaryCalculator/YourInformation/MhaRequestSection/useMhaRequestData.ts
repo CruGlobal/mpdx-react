@@ -10,7 +10,7 @@ import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalcula
 export const useMhaRequestData = () => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { hcmSpouse, calculation } = useSalaryCalculator();
+  const { calculation } = useSalaryCalculator();
 
   // Fetch MHA data with the effective date from the salary calculation
   const effectiveDate = calculation?.effectiveDate;
@@ -20,11 +20,8 @@ export const useMhaRequestData = () => {
   });
 
   const mhaUser = mhaData?.hcm[0] ?? null;
-  const mhaSpouseData = mhaData?.hcm[1] ?? null;
+  const mhaSpouse = mhaData?.hcm[1] ?? null;
   // Only use spouse MHA data if the spouse exists in the salary calculator context
-  const mhaSpouse = hcmSpouse ? mhaSpouseData : null;
-
-  const hasSpouse = !!hcmSpouse;
 
   // User MHA eligibility and request status
   const userEligibleForMha = mhaUser?.mhaEit.mhaEligibility ?? false;
@@ -38,22 +35,17 @@ export const useMhaRequestData = () => {
 
   // Show "no MHA" message for eligible people who don't have an MHA
   const showUserNoMhaMessage = userEligibleForMha && !userHasMhaRequest;
-  const showSpouseNoMhaMessage =
-    hasSpouse && spouseEligibleForMha && !spouseHasMhaRequest;
+  const showSpouseNoMhaMessage = spouseEligibleForMha && !spouseHasMhaRequest;
 
   // Show "not eligible" message when one person is not eligible but the other has MHA
   const showUserNotEligibleMessage =
     !userEligibleForMha && spouseEligibleForMha && spouseHasMhaRequest;
   const showSpouseNotEligibleMessage =
-    hasSpouse &&
-    !spouseEligibleForMha &&
-    userEligibleForMha &&
-    userHasMhaRequest;
+    !spouseEligibleForMha && userEligibleForMha && userHasMhaRequest;
 
   // Determine which fields should be shown
   const showUserFields = userEligibleForMha && userHasMhaRequest;
-  const showSpouseFields =
-    hasSpouse && spouseEligibleForMha && spouseHasMhaRequest;
+  const showSpouseFields = spouseEligibleForMha && spouseHasMhaRequest;
 
   const userPreferredName = mhaUser?.staffInfo.preferredName ?? '';
   const spousePreferredName = mhaSpouse?.staffInfo.preferredName ?? '';
@@ -83,7 +75,7 @@ export const useMhaRequestData = () => {
 
   // Ineligibility messages (for NoMhaSubmitMessage)
   const showUserIneligibleMessage = !userEligibleForMha;
-  const showSpouseIneligibleMessage = hasSpouse && !spouseEligibleForMha;
+  const showSpouseIneligibleMessage = !spouseEligibleForMha;
   const showIneligibleMessage =
     showUserIneligibleMessage || showSpouseIneligibleMessage;
   const isIneligiblePlural =
@@ -116,7 +108,7 @@ export const useMhaRequestData = () => {
         .required(t('MHA Amount is required')),
     };
 
-    if (hasSpouse) {
+    if (mhaSpouse) {
       return yup.object({
         ...baseSchema,
         spouseMhaAmount: amount(t('Spouse New Requested MHA'), t)
@@ -132,7 +124,7 @@ export const useMhaRequestData = () => {
     }
 
     return yup.object(baseSchema);
-  }, [t, hasSpouse, approvedAmount]);
+  }, [t, mhaSpouse, approvedAmount]);
 
   // Multiply by 24 to annualize the monthly amounts from HCM
   const currentAmountForStaff =
@@ -144,10 +136,10 @@ export const useMhaRequestData = () => {
   const newRequestedSpouseMhaValue = calculation?.spouseMhaAmount ?? 0;
   const totalRequestedMhaValue = useMemo(
     () =>
-      hasSpouse
+      mhaSpouse
         ? newRequestedMhaValue + newRequestedSpouseMhaValue
         : newRequestedMhaValue,
-    [hasSpouse, newRequestedMhaValue, newRequestedSpouseMhaValue],
+    [mhaSpouse, newRequestedMhaValue, newRequestedSpouseMhaValue],
   );
 
   const progressPercentage = useMemo(
