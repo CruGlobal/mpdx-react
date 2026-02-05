@@ -112,16 +112,12 @@ export const MhaRequestSection: React.FC = () => {
                 of this salary calculation.
               </Trans>
               {notEligibleName && (
-                <>
-                  {' '}
-                  <Trans t={t} values={{ name: notEligibleName }}>
-                    {'{{name}}'} has not completed the required IBS courses to
-                    meet eligibility criteria. For information about obtaining
-                    eligibility, contact Personnel Records at 407-826-2252 or{' '}
-                    {/* eslint-disable-next-line jsx-a11y/anchor-has-content */}
-                    <a href="mailto:MHA@cru.org">MHA@cru.org</a>.
-                  </Trans>
-                </>
+                <Trans t={t} values={{ name: notEligibleName }}>
+                  {'{{name}}'} has not completed the required IBS courses to
+                  meet eligibility criteria. For information about obtaining
+                  eligibility, contact Personnel Records at 407-826-2252 or{' '}
+                  <a href="mailto:MHA@cru.org">MHA@cru.org</a>.
+                </Trans>
               )}
             </Typography>
             <Typography variant="body1" sx={{ marginBottom: theme.spacing(3) }}>
@@ -232,11 +228,7 @@ export const MhaRequestSection: React.FC = () => {
                 <Typography variant="body2">
                   {showUserFields && showSpouseFields
                     ? t('Combined MHA Requested')
-                    : showSpouseFields
-                      ? t("{{name}}'s MHA Requested", {
-                          name: spousePreferredName,
-                        })
-                      : t('New MHA Requested')}
+                    : t('New MHA Requested')}
                 </Typography>
                 <Typography variant="body2">
                   {totalRequestedMhaValue} / {approvedAmount}
