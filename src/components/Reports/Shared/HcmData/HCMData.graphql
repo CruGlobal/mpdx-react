@@ -26,6 +26,10 @@ query HcmData {
     mhaEit {
       mhaEligibility
     }
+    asrEit {
+      asrEligibility
+      ineligibilityReason
+    }
     exceptionSalaryCap {
       amount
       effectiveDate
