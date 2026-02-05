@@ -181,11 +181,17 @@ export const RequestPage: React.FC = () => {
     toggleDrawer,
     steps,
     currentIndex,
+    currentStep,
     staffAccountId,
     staffAccountIdLoading,
   } = useAdditionalSalaryRequest();
   const { values } = useFormikContext<CompleteFormValues>();
   const iconPanelItems = useIconPanelItems(isDrawerOpen, toggleDrawer);
+
+  const isNew = pageType === PageEnum.New;
+  const isAboutFormStep =
+    currentStep === AdditionalSalaryRequestSectionEnum.AboutForm;
+  const hideBackHref = isNew && isAboutFormStep;
 
   const percentComplete = useMemo(
     () => calculateCompletionPercentage(values),
@@ -215,7 +221,11 @@ export const RequestPage: React.FC = () => {
       isSidebarOpen={isDrawerOpen}
       sidebarAriaLabel={t('Additional Salary Request Sections')}
       mainContent={<MainContent />}
-      backHref={`/accountLists/${accountListId}/reports/additionalSalaryRequest`}
+      backHref={
+        hideBackHref
+          ? ''
+          : `/accountLists/${accountListId}/reports/additionalSalaryRequest`
+      }
     />
   );
 };

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
-import { ContinuePage } from 'src/components/Reports/AdditionalSalaryRequest/MainPages/ContinuePage';
+import { InProgressDisplay } from 'src/components/Reports/AdditionalSalaryRequest/MainPages/InProgress/InProgressDisplay';
 import { IneligiblePage } from 'src/components/Reports/AdditionalSalaryRequest/MainPages/IneligiblePage';
 import { OverviewPage } from 'src/components/Reports/AdditionalSalaryRequest/MainPages/OverviewPage';
 import { RequestPage } from 'src/components/Reports/AdditionalSalaryRequest/RequestPage/RequestPage';
@@ -86,6 +86,9 @@ const useInitialRoute = (): InitialRoute | null => {
 
 const AdditionalSalaryRequestRouter: React.FC = () => {
   const initialRoute = useInitialRoute();
+  const { pageType } = useAdditionalSalaryRequest();
+
+  const isEdit = pageType === PageEnum.Edit;
 
   if (!initialRoute) {
     return <Loading loading />;
@@ -97,7 +100,7 @@ const AdditionalSalaryRequestRouter: React.FC = () => {
     case 'overview':
       return <OverviewPage />;
     case 'continue':
-      return <ContinuePage />;
+      return isEdit ? <FormikRequestPage /> : <InProgressDisplay />;
     case 'request':
       return <FormikRequestPage />;
   }

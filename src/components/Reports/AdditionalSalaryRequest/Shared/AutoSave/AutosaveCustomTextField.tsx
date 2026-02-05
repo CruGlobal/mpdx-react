@@ -45,7 +45,7 @@ export const AutosaveCustomTextField: React.FC<
     setFieldValue,
     setFieldTouched,
     submitCount,
-    disabled: !request || pageType === PageEnum.View,
+    disabled: pageType === PageEnum.View,
     stringFields,
   });
 

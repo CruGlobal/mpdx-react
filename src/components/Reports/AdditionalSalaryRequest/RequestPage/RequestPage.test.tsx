@@ -275,6 +275,13 @@ describe('RequestPage', () => {
   });
 
   it('has correct back href to ASR landing page', () => {
+    mockUseAdditionalSalaryRequest.mockReturnValue({
+      ...defaultMockContextValue,
+      currentIndex: 1,
+      currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
+      pageType: PageEnum.Edit,
+    } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
     const { getByRole } = render(<TestWrapper />);
 
     const backLink = getByRole('link', { name: /back to dashboard/i });
@@ -508,5 +515,19 @@ describe('RequestPage', () => {
         'CreateAdditionalSalaryRequest',
       );
     });
+  });
+
+  it('hides back href on About this Form step in New mode', () => {
+    mockUseAdditionalSalaryRequest.mockReturnValue({
+      ...defaultMockContextValue,
+      currentIndex: 0,
+      currentStep: AdditionalSalaryRequestSectionEnum.AboutForm,
+      pageType: PageEnum.New,
+    } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+    const { queryByRole } = render(<TestWrapper />);
+
+    const backLink = queryByRole('link', { name: /back to dashboard/i });
+    expect(backLink).not.toBeInTheDocument();
   });
 });
