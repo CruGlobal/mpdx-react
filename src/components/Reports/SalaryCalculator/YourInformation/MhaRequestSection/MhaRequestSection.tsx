@@ -170,7 +170,9 @@ export const MhaRequestSection: React.FC = () => {
             )}
 
             <Box sx={{ marginBottom: theme.spacing(2) }}>
-              <StyledFieldGridBox hasSpouse={showUserFields && showSpouseFields}>
+              <StyledFieldGridBox
+                hasSpouse={showUserFields && showSpouseFields}
+              >
                 {showUserFields && (
                   <Box>
                     <TextField
@@ -199,7 +201,9 @@ export const MhaRequestSection: React.FC = () => {
             </Box>
 
             <Box sx={{ marginBottom: theme.spacing(3) }}>
-              <StyledFieldGridBox hasSpouse={showUserFields && showSpouseFields}>
+              <StyledFieldGridBox
+                hasSpouse={showUserFields && showSpouseFields}
+              >
                 {showUserFields && (
                   <Box>
                     <AutosaveTextField
