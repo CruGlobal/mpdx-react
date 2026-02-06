@@ -7,6 +7,7 @@ import {
   Card,
   Typography,
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 
 interface ModalAccordionProps {
   backgroundColor?: string;
@@ -29,6 +30,7 @@ export const ModalAccordion: React.FC<ModalAccordionProps> = ({
   expanded = false,
   onForm,
 }) => {
+  const { t } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(expanded);
 
   useEffect(() => {
@@ -48,7 +50,7 @@ export const ModalAccordion: React.FC<ModalAccordionProps> = ({
           backgroundColor: backgroundColor,
         }}
         aria-label={
-          isExpanded ? 'Collapse salary details' : 'Expand salary details'
+          isExpanded ? t('Collapse salary details') : t('Expand salary details')
         }
       >
         <Icon sx={{ mr: 1, color: titleColor }} />

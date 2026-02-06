@@ -59,7 +59,7 @@ const MainContent: React.FC = () => {
           variables: {
             attributes: {
               phoneNumber: user?.staffInfo?.primaryPhoneNumber,
-              emailAddress: user?.staffInfo.emailAddress,
+              emailAddress: user?.staffInfo?.emailAddress,
             },
           },
           refetchQueries: ['AdditionalSalaryRequest'],

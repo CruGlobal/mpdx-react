@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import {
   Table,
+  TableBody,
   TableCell,
   TableHead,
   TableRow,
@@ -15,11 +16,15 @@ import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 
-const StyledTableCell = styled(TableCell)(() => {
-  return {
-    fontWeight: 'normal',
-  };
-});
+const StyledDescriptionTableCell = styled(TableCell)(() => ({
+  fontWeight: 'normal',
+  width: '70%',
+}));
+
+const StyledAmountTableCell = styled(TableCell)(() => ({
+  fontWeight: 'normal',
+  width: '30%',
+}));
 
 export const TotalSalaryTable: React.FC = () => {
   const { t } = useTranslation();
@@ -90,19 +95,23 @@ export const TotalSalaryTable: React.FC = () => {
             {t('Amount')}
           </TableCell>
         </TableRow>
+      </TableHead>
+      <TableBody>
         {summaryItems.map(({ id, label, description, value }) => (
           <TableRow key={id}>
-            <StyledTableCell>
+            <StyledDescriptionTableCell>
               <Typography variant="body2">{label}</Typography>
               {description && (
-                <Typography variant="caption">{description}</Typography>
+                <Typography variant="caption" color="text.secondary">
+                  {description}
+                </Typography>
               )}
-            </StyledTableCell>
-            <StyledTableCell>
+            </StyledDescriptionTableCell>
+            <StyledAmountTableCell>
               {currencyFormat(value, currency, locale, {
                 showTrailingZeros: true,
               })}
-            </StyledTableCell>
+            </StyledAmountTableCell>
           </TableRow>
         ))}
         <TableRow
@@ -111,14 +120,18 @@ export const TotalSalaryTable: React.FC = () => {
             backgroundColor: 'rgba(0, 0, 0, 0.04)',
           }}
         >
-          <TableCell>{t('Total Annual Salary:')}</TableCell>
-          <TableCell sx={{ color: 'warning.dark' }}>
+          <TableCell>
+            <Typography variant="body2" fontWeight="bold">
+              {t('Total Annual Salary:')}
+            </Typography>
+          </TableCell>
+          <TableCell sx={{ color: 'warning.dark', fontWeight: 'bold' }}>
             {currencyFormat(totalAnnualSalary, currency, locale, {
               showTrailingZeros: true,
             })}
           </TableCell>
         </TableRow>
-      </TableHead>
+      </TableBody>
     </Table>
   );
 };
