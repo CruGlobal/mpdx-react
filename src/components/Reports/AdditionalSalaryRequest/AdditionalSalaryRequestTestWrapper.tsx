@@ -122,20 +122,27 @@ export const AdditionalSalaryRequestTestWrapper: React.FC<
                   latestAdditionalSalaryRequest: {
                     id: 'test-request-id',
                     ...Object.fromEntries(
-                      Object.entries(requestValues)
-                        .filter(
-                          ([key]) => key !== 'traditional403bContribution',
-                        )
-                        .map(([key, value]) =>
-                          typeof value === 'string' &&
-                          key !== 'phoneNumber' &&
-                          key !== 'emailAddress'
-                            ? [key, parseFloat(value) || 0]
-                            : [key, value],
-                        ),
+                      Object.entries(requestValues).map(([key, value]) =>
+                        typeof value === 'string' &&
+                        key !== 'phoneNumber' &&
+                        key !== 'emailAddress' &&
+                        key !== 'additionalInfo'
+                          ? [key, parseFloat(value) || 0]
+                          : [key, value],
+                      ),
                     ),
-                    traditional403bContribution: deductionPercentage,
                   },
+                },
+                HcmData: {
+                  hcm: [
+                    {
+                      id: 'hcm-1',
+                      fourOThreeB: {
+                        currentTaxDeferredContributionPercentage:
+                          deductionPercentage,
+                      },
+                    },
+                  ],
                 },
               }}
               onCall={onCall}

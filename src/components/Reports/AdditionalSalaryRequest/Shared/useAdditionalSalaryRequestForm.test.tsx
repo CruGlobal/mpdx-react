@@ -68,6 +68,7 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   isInternational: false,
   isMutating: false,
   trackMutation: jest.fn((mutation) => mutation),
+  traditional403bPercentage: 0,
 };
 
 const defaultFormValues: CompleteFormValues = {

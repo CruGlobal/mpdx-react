@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
+import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 import { getTotal } from './Helper/getTotal';
 
 export interface SalaryCalculations {
@@ -31,14 +32,13 @@ export const useSalaryCalculations = ({
   calculations,
   grossSalaryAmount,
 }: UseSalaryCalculationsProps): SalaryCalculations => {
+  const { traditional403bPercentage } = useAdditionalSalaryRequest();
+
   return useMemo(() => {
     const total = getTotal(values);
-    const traditional403bContribution = Number(
-      values.traditional403bContribution,
-    );
 
     const calculatedDeduction = values.deductTaxDeferredPercent
-      ? total * traditional403bContribution
+      ? total * traditional403bPercentage
       : 0;
 
     const contribution403b = Number(values.traditional403bContribution || 0);
@@ -72,5 +72,5 @@ export const useSalaryCalculations = ({
       remainingInMaxAllowable,
       exceedsCap,
     };
-  }, [values, calculations, grossSalaryAmount]);
+  }, [values, calculations, grossSalaryAmount, traditional403bPercentage]);
 };
