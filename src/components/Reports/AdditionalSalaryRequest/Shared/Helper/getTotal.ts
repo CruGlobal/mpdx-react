@@ -4,6 +4,7 @@ const numericFields = [
   'additionalSalaryWithinMax',
   'adoption',
   'traditional403bContribution',
+  'roth403bContribution',
   'counselingNonMedical',
   'healthcareExpensesExceedingLimit',
   'babysittingMinistryEvents',

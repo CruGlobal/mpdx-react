@@ -25,6 +25,7 @@ export interface CompleteFormValues {
   additionalSalaryWithinMax: string;
   adoption: string;
   traditional403bContribution: string;
+  roth403bContribution: string;
   counselingNonMedical: string;
   healthcareExpensesExceedingLimit: string;
   babysittingMinistryEvents: string;
