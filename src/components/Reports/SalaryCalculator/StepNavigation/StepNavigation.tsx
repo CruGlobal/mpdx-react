@@ -10,6 +10,7 @@ import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 import { useDeleteSalaryCalculation } from '../Shared/useDeleteSalaryCalculation';
 import { useSubmitSalaryCalculationMutation } from './SubmitSalaryCalculation.generated';
+import { useSubmitDialogContent } from './useSubmitDialogContent';
 
 export const DiscardButton: React.FC = () => {
   const { t } = useTranslation();
@@ -88,6 +89,8 @@ export const SubmitButton: React.FC = () => {
   const { t } = useTranslation();
   const { handleNextStep, calculation } = useSalaryCalculator();
   const [submit] = useSubmitSalaryCalculationMutation();
+  const [submitDialogOpen, setSubmitDialogOpen] = useState(false);
+  const { title, content, subContent } = useSubmitDialogContent();
 
   const handleSubmit = async () => {
     if (calculation) {
@@ -107,13 +110,26 @@ export const SubmitButton: React.FC = () => {
   }
 
   return (
-    <Button
-      variant="contained"
-      endIcon={<ChevronRightIcon />}
-      onClick={handleSubmit}
-    >
-      <Typography fontWeight="bold">{t('Submit')}</Typography>
-    </Button>
+    <>
+      <Button
+        variant="contained"
+        endIcon={<ChevronRightIcon />}
+        onClick={() => setSubmitDialogOpen(true)}
+      >
+        <Typography fontWeight="bold">{t('Submit')}</Typography>
+      </Button>
+
+      {submitDialogOpen && (
+        <SubmitModal
+          formTitle={t('Salary Calculation Form')}
+          handleClose={() => setSubmitDialogOpen(false)}
+          handleConfirm={handleSubmit}
+          overrideTitle={title}
+          overrideContent={content}
+          overrideSubContent={subContent}
+        />
+      )}
+    </>
   );
 };
 
