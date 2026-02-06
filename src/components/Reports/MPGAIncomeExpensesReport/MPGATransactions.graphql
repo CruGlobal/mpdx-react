@@ -1,4 +1,4 @@
-query ReportsStaffExpenses(
+query MPGATransactions(
   $fundTypes: [String!]
   $startMonth: ISO8601Date
   $endMonth: ISO8601Date
