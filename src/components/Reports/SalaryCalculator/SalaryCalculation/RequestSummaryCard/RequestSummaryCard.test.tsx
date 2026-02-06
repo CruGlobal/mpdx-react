@@ -17,6 +17,7 @@ const defaultSalaryMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> =
       contributing403bAmount: 10003,
       requestedGross: 10004,
       effectiveCap: 10005,
+      combinedCap: 10006,
     },
     spouseCalculations: {
       annualBase: 20001,
@@ -167,7 +168,7 @@ This may affect your selected effective date.',
       expect(
         getByTestId('RequestSummaryCard-requestedVsMax'),
       ).toHaveTextContent(
-        'Combined Gross Salary / Max Allowable Salary$30,008.00 / $30,010.00',
+        'Combined Gross Salary / Max Allowable Salary$30,008.00 / $10,006.00',
       ),
     );
   });
@@ -177,7 +178,7 @@ This may affect your selected effective date.',
 
     await waitFor(() =>
       expect(getByTestId('RequestSummaryCard-remaining')).toHaveTextContent(
-        'Remaining in Combined Max Allowable Salary$2.00',
+        'Remaining in Combined Max Allowable Salary-$20,002.00',
       ),
     );
   });
@@ -254,12 +255,12 @@ This may affect your selected effective date.',
         expect(
           getByTestId('RequestSummaryCard-requestedVsMax'),
         ).toHaveTextContent(
-          'Your Gross Requested Salary / Max Allowable Salary$10,004.00 / $10,005.00',
+          'Your Gross Requested Salary / Max Allowable Salary$10,004.00 / $10,006.00',
         ),
       );
 
       expect(getByTestId('RequestSummaryCard-remaining')).toHaveTextContent(
-        'Remaining in Max Allowable Salary$1.00',
+        'Remaining in Max Allowable Salary$2.00',
       );
 
       await waitFor(() =>
