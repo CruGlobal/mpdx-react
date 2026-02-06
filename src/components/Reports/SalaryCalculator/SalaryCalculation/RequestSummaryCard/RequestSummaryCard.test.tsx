@@ -29,6 +29,7 @@ const defaultSalaryMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> =
 
 const TestComponent: React.FC<SalaryCalculatorTestWrapperProps> = (props) => (
   <SalaryCalculatorTestWrapper
+    hcmMock={{ exceptionSalaryCap: { boardCapException: false } }}
     {...props}
     salaryRequestMock={merge({}, defaultSalaryMock, props.salaryRequestMock)}
   >
