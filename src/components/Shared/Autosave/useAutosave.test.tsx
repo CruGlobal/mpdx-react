@@ -3,29 +3,25 @@ import { MenuItem, TextField } from '@mui/material';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as yup from 'yup';
+import i18next from 'src/lib/i18n';
+import { amount } from 'src/lib/yupHelpers';
 import { useAutoSave } from './useAutosave';
-
-const positiveNumber = () =>
-  yup
-    .number()
-    .typeError('Field must be a number')
-    .min(0, 'Field must be positive');
-
-const defaultSchema = yup.object({
-  field: positiveNumber(),
-});
 
 const saveValue = jest.fn().mockResolvedValue(undefined);
 
 interface TestComponentProps {
   disabled?: boolean;
-  schema?: yup.Schema;
+  required?: boolean;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   disabled = false,
-  schema = defaultSchema,
+  required = false,
 }) => {
+  const schema = yup.object({
+    field: amount('Field', i18next.t, { required }),
+  });
+
   const props = useAutoSave({
     value: 100,
     saveValue,
@@ -38,11 +34,15 @@ const TestComponent: React.FC<TestComponentProps> = ({
 };
 
 const SelectTestComponent: React.FC = () => {
+  const schema = yup.object({
+    field: amount('Field', i18next.t),
+  });
+
   const props = useAutoSave({
     value: 100,
     saveValue,
     fieldName: 'field',
-    schema: defaultSchema,
+    schema,
     saveOnChange: true,
   });
 
@@ -110,10 +110,7 @@ describe('AutosaveTextField', () => {
   });
 
   it('disables the input and pauses validation when disabled', () => {
-    const schema = yup.object({
-      field: positiveNumber().required(),
-    });
-    const { getByRole } = render(<TestComponent disabled schema={schema} />);
+    const { getByRole } = render(<TestComponent disabled required />);
 
     const input = getByRole('textbox', { name: 'Field' });
     expect(input).toBeDisabled();

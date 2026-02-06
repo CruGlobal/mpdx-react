@@ -87,7 +87,7 @@ const defaultFormValues: CompleteFormValues = {
   housingDownPayment: '0',
   autoPurchase: '0',
   expensesNotApprovedWithin90Days: '0',
-  deductTwelvePercent: false,
+  deductTaxDeferredPercent: false,
   phoneNumber: '',
   totalAdditionalSalaryRequested: '0',
   emailAddress: '',
@@ -226,7 +226,7 @@ describe('useAdditionalSalaryRequestForm', () => {
             housingDownPayment: 0,
             autoPurchase: 0,
             expensesNotApprovedWithin90Days: 0,
-            deductTwelvePercent: true,
+            deductTaxDeferredPercent: true,
             phoneNumber: '123-456-7890',
             calculations: {
               currentSalaryCap: 50000,
@@ -253,7 +253,7 @@ describe('useAdditionalSalaryRequestForm', () => {
       });
 
       expect(result.current.values.previousYearSalaryNotReceived).toBe('200');
-      expect(result.current.values.deductTwelvePercent).toBe(true);
+      expect(result.current.values.deductTaxDeferredPercent).toBe(true);
       expect(result.current.values.phoneNumber).toBe('123-456-7890');
     });
   });
@@ -610,7 +610,7 @@ describe('useAdditionalSalaryRequestForm', () => {
             housingDownPayment: 0,
             autoPurchase: 0,
             expensesNotApprovedWithin90Days: 0,
-            deductTwelvePercent: false,
+            deductTaxDeferredPercent: false,
             phoneNumber: '',
             emailAddress: '',
             calculations: {

@@ -28,6 +28,8 @@ export const AutosaveTextField: React.FC<AutosaveTextFieldProps> = ({
     saveValue: (value) => saveField({ [fieldName]: value }),
     fieldName,
     schema,
+    // Select boxes should save on change instead of on blur
+    saveOnChange: props.select,
     disabled: !calculation,
   });
 

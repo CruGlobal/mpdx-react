@@ -37,7 +37,7 @@ export const useSalaryCalculations = ({
   return useMemo(() => {
     const total = getTotal(values);
 
-    const calculatedDeduction = values.deductTwelvePercent
+    const calculatedDeduction = values.deductTaxDeferredPercent
       ? total * traditional403bPercentage
       : 0;
 

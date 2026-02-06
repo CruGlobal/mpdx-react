@@ -1,8 +1,9 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { TextFieldProps } from '@mui/material';
 import { prepareDataForValidation } from 'formik';
 import * as yup from 'yup';
 import { useSyncedState } from 'src/hooks/useSyncedState';
+import { useOptionalAutosaveForm } from './AutosaveForm';
 
 interface UseAutoSaveOptions<Value extends string | number> {
   value: Value | null | undefined;
@@ -24,6 +25,7 @@ export const useAutoSave = <Value extends string | number>({
   const [internalValue, setInternalValue] = useSyncedState(
     value?.toString() ?? '',
   );
+  const { markValid, markInvalid } = useOptionalAutosaveForm() ?? {};
 
   const parseValue = useCallback(
     (valueToValidate: string) => {
@@ -51,6 +53,19 @@ export const useAutoSave = <Value extends string | number>({
     [parseValue, internalValue],
   );
 
+  useEffect(() => {
+    if (errorMessage === null) {
+      markValid?.(fieldName);
+    } else {
+      markInvalid?.(fieldName);
+    }
+
+    // Remove fields previously marked as invalid when the field is removed
+    return () => {
+      markValid?.(fieldName);
+    };
+  }, [fieldName, errorMessage, markValid, markInvalid]);
+
   return {
     value: internalValue,
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -59,18 +74,18 @@ export const useAutoSave = <Value extends string | number>({
 
       if (saveOnChange) {
         const { parsedValue, errorMessage } = parseValue(newValue);
-        if (!errorMessage && parsedValue !== value) {
+        if (errorMessage === null && parsedValue !== value) {
           saveValue(parsedValue);
         }
       }
     },
     onBlur: () => {
-      if (!saveOnChange && !errorMessage && parsedValue !== value) {
+      if (!saveOnChange && errorMessage === null && parsedValue !== value) {
         saveValue(parsedValue);
       }
     },
     disabled,
-    ...(!disabled && errorMessage
+    ...(!disabled && errorMessage !== null
       ? { error: true, helperText: errorMessage }
       : {}),
   } satisfies Partial<TextFieldProps>;

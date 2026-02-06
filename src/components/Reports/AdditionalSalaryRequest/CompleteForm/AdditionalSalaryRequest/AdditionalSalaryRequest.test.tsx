@@ -98,7 +98,7 @@ describe('AdditionalSalaryRequest', () => {
       const valuesWithBoolean: CompleteFormValues = {
         ...defaultCompleteFormValues,
         additionalSalaryWithinMax: '10000',
-        deductTwelvePercent: true,
+        deductTaxDeferredPercent: true,
         phoneNumber: '555-1234',
       };
 

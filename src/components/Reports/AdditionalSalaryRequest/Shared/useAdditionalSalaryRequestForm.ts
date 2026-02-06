@@ -109,9 +109,9 @@ export const useAdditionalSalaryRequestForm = (
 
   const defaultInitialValues: CompleteFormValues = {
     ...Object.fromEntries(fieldConfig.map(({ key }) => [key, '0'])),
-    deductTwelvePercent: false,
     totalAdditionalSalaryRequested: '0',
     additionalInfo: '',
+    deductTaxDeferredPercent: false,
     phoneNumber: user?.staffInfo?.primaryPhoneNumber || '',
     emailAddress: user?.staffInfo?.emailAddress || '',
   } as CompleteFormValues;
@@ -133,7 +133,7 @@ export const useAdditionalSalaryRequestForm = (
           String((request[key as keyof typeof request] as number) ?? ''),
         ]),
       ),
-      deductTwelvePercent: request.deductTwelvePercent || false,
+      deductTaxDeferredPercent: request.deductTaxDeferredPercent || false,
       phoneNumber:
         request.phoneNumber || user?.staffInfo?.primaryPhoneNumber || '',
       emailAddress: request.emailAddress || user?.staffInfo?.emailAddress || '',
@@ -165,7 +165,7 @@ export const useAdditionalSalaryRequestForm = (
             createCurrencyValidation(t(field.label), getMaxForField(field)),
           ]),
         ),
-        deductTwelvePercent: yup.boolean(),
+        deductTaxDeferredPercent: yup.boolean(),
         phoneNumber: yup
           .string()
           .required(t('Telephone number is required'))
