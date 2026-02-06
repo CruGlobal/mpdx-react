@@ -56,7 +56,7 @@ describe('NoMhaSubmitMessage', () => {
       </TestWrapper>,
     );
 
-    const link = getByRole('link', { name: 'this link' });
+    const link = getByRole('link', { name: 'this link.' });
     expect(link).toHaveAttribute(
       'href',
       `/accountLists/${accountListId}/reports/housingAllowance`,

@@ -26,9 +26,9 @@ export const useMhaRequestData = () => {
   const showSpouseNoMhaMessage = spouseEligible && !spouseHasApprovedMha;
 
   // Show "not eligible" message when one person is not eligible but the other has MHA
-  const showUserNotEligibleMessage =
+  const showUserIneligibleSpouseApprovedMessage =
     !userEligible && spouseEligible && spouseHasApprovedMha;
-  const showSpouseNotEligibleMessage =
+  const showSpouseIneligibleUserApprovedMessage =
     !spouseEligible && userEligible && userHasApprovedMha;
   // Determine which fields should be shown
   const showUserFields = userEligible && userHasApprovedMha;
@@ -50,10 +50,10 @@ export const useMhaRequestData = () => {
   const noMhaNames = getNoMhaNames();
 
   const getNotEligibleName = () => {
-    if (showUserNotEligibleMessage) {
+    if (showUserIneligibleSpouseApprovedMessage) {
       return userPreferredName;
     }
-    if (showSpouseNotEligibleMessage) {
+    if (showSpouseIneligibleUserApprovedMessage) {
       return spousePreferredName;
     }
     return null;
