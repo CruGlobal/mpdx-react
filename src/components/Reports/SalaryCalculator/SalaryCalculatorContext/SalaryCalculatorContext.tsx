@@ -83,6 +83,7 @@ export const SalaryCalculatorProvider: React.FC<
 
   const { data: hcmData } = useHcmQuery({
     variables: { effectiveDate: calculation?.effectiveDate },
+    skip: !calculation,
   });
 
   const { trackMutation, isMutating } = useTrackMutation();
@@ -141,7 +142,7 @@ export const SalaryCalculatorProvider: React.FC<
     editing,
   ]);
 
-  if (!calculationData) {
+  if (!calculationData || !hcmData) {
     return (
       <Box
         display="flex"
