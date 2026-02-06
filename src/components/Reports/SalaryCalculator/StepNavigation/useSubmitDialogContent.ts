@@ -32,7 +32,7 @@ export const useSubmitDialogContent = (): DialogContent => {
   let subContent: string;
   if (hasBoardCapException) {
     subContent = t(
-      "You have a Board approved Maximum Allowable Salary (CAP) and the salary request you submitted exceeds that amount. As a result we need to get their approval for this request. We'll forward your request to them and get back to you with their decision.",
+      "You have a Board approved Maximum Allowable Salary (CAP) and your salary request exceeds that amount. As a result we need to get their approval for this request. We'll forward your request to them and get back to you with their decision.",
     );
   } else {
     const combinedGross =
