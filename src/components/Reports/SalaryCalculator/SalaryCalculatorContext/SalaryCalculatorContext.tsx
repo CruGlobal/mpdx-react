@@ -76,12 +76,17 @@ export const SalaryCalculatorProvider: React.FC<
   const { mode } = query;
   const calculationId = getQueryParam(query, 'calculationId') || '';
 
-  const { data: hcmData } = useHcmQuery();
   const { data: calculationData, loading } = useSalaryCalculationQuery({
     variables: { id: calculationId },
   });
-  const { trackMutation, isMutating } = useTrackMutation();
   const calculation = calculationData?.salaryRequest ?? null;
+
+  const { data: hcmData } = useHcmQuery({
+    variables: { effectiveDate: calculation?.effectiveDate },
+    skip: !calculation,
+  });
+
+  const { trackMutation, isMutating } = useTrackMutation();
 
   const statusAllowsEditing =
     calculation?.status === SalaryRequestStatusEnum.InProgress ||

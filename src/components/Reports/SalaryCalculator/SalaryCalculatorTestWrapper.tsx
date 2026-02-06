@@ -44,6 +44,9 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
           currentApprovedOverallAmount: 20000,
           currentTakenAmount: 300,
         },
+        mhaEit: {
+          mhaEligibility: true,
+        },
         exceptionSalaryCap: {
           boardCapException: false,
         },
@@ -66,6 +69,9 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
           currentApprovedOverallAmount: 20000,
           currentTakenAmount: 500,
         },
+        mhaEit: {
+          mhaEligibility: true,
+        },
         exceptionSalaryCap: {
           boardCapException: false,
         },
@@ -82,7 +88,8 @@ export type SalaryRequestMock = DeepPartial<
 
 export interface SalaryCalculatorTestWrapperProps {
   salaryRequestMock?: SalaryRequestMock;
-  hcmMock?: DeepPartial<HcmQuery['hcm'][number]>;
+  hcmUser?: DeepPartial<HcmQuery['hcm'][number]>;
+  hcmSpouse?: DeepPartial<HcmQuery['hcm'][number]>;
   onCall?: MockLinkCallHandler;
   children?: React.ReactNode;
   hasSpouse?: boolean;
@@ -94,14 +101,18 @@ export const SalaryCalculatorTestWrapper: React.FC<
   SalaryCalculatorTestWrapperProps
 > = ({
   salaryRequestMock,
-  hcmMock,
+  hcmUser,
+  hcmSpouse,
   onCall,
   children,
   hasSpouse = true,
   payrollDates = [],
   editing = true,
 }) => {
-  const hcmUser = merge(hcmUserMock, hcmMock);
+  const hcmUserMerged = hcmUser ? merge({}, hcmUserMock, hcmUser) : hcmUserMock;
+  const hcmSpouseMerged = hcmSpouse
+    ? merge({}, hcmSpouseMock, hcmSpouse)
+    : hcmSpouseMock;
   return (
     <ThemeProvider theme={theme}>
       <TestRouter
@@ -132,13 +143,16 @@ export const SalaryCalculatorTestWrapper: React.FC<
               },
             },
             Hcm: {
-              hcm: hasSpouse ? [hcmUser, hcmSpouseMock] : [hcmUser],
+              hcm: hasSpouse
+                ? [hcmUserMerged, hcmSpouseMerged]
+                : [hcmUserMerged],
             },
             SalaryCalculation: {
               salaryRequest: merge(
                 {
                   id: 'salary-request-1',
                   status: SalaryRequestStatusEnum.InProgress,
+                  effectiveDate: '2025-01-01',
                   calculations: {
                     hardCap: 80000,
                     exceptionCap: null,

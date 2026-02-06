@@ -8,7 +8,7 @@ import { useSubmitDialogContent } from './useSubmitDialogContent';
 
 interface TestWrapperProps {
   salaryRequestMock?: SalaryRequestMock;
-  hcmMock?: {
+  hcmUser?: {
     exceptionSalaryCap?: { amount?: number; boardCapException?: boolean };
   };
   children?: React.ReactNode;
@@ -16,12 +16,12 @@ interface TestWrapperProps {
 
 const TestWrapper: React.FC<TestWrapperProps> = ({
   salaryRequestMock,
-  hcmMock,
+  hcmUser,
   children,
 }) => (
   <SalaryCalculatorTestWrapper
     salaryRequestMock={salaryRequestMock}
-    hcmMock={hcmMock}
+    hcmUser={hcmUser}
   >
     {children}
   </SalaryCalculatorTestWrapper>
@@ -35,7 +35,7 @@ describe('useSubmitDialogContent', () => {
           salaryRequestMock={{
             progressiveApprovalTier: null,
           }}
-          hcmMock={{
+          hcmUser={{
             exceptionSalaryCap: { boardCapException: false },
           }}
         >
@@ -68,7 +68,7 @@ describe('useSubmitDialogContent', () => {
               approver: 'Division Head',
             },
           }}
-          hcmMock={{
+          hcmUser={{
             exceptionSalaryCap: { boardCapException: false },
           }}
         >
@@ -101,7 +101,7 @@ describe('useSubmitDialogContent', () => {
               requestedGross: 30000,
             },
           }}
-          hcmMock={{
+          hcmUser={{
             exceptionSalaryCap: { boardCapException: false },
           }}
         >
@@ -128,7 +128,7 @@ describe('useSubmitDialogContent', () => {
           salaryRequestMock={{
             progressiveApprovalTier: null,
           }}
-          hcmMock={{
+          hcmUser={{
             exceptionSalaryCap: { boardCapException: true },
           }}
         >
