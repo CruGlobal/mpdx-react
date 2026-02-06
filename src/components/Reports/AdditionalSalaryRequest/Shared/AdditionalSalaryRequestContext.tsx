@@ -96,7 +96,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
         return PageEnum.View;
       // If a user does not have an asr, default to 'new' page
       default:
-        return PageEnum.New;
+        return undefined;
     }
   }, [mode]);
 

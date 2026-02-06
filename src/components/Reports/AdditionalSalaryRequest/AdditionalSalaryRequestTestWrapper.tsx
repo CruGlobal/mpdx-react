@@ -8,7 +8,7 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import i18n from 'src/lib/i18n';
 import { amount } from 'src/lib/yupHelpers';
 import theme from 'src/theme';
-import { CompleteFormValues } from './AdditionalSalaryRequest';
+import { CompleteFormValues } from './MainPages/OverviewPage';
 import { AdditionalSalaryRequestProvider } from './Shared/AdditionalSalaryRequestContext';
 import { fieldConfig } from './Shared/useAdditionalSalaryRequestForm';
 // ...existing code...
