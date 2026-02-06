@@ -80,7 +80,7 @@ export type SalaryRequestMock = DeepPartial<
 
 export interface SalaryCalculatorTestWrapperProps {
   salaryRequestMock?: SalaryRequestMock;
-  hcmMock?: DeepPartial<HcmQuery['hcm'][number]>;
+  hcmUser?: DeepPartial<HcmQuery['hcm'][number]>;
   hcmSpouse?: DeepPartial<HcmQuery['hcm'][number]>;
   onCall?: MockLinkCallHandler;
   children?: React.ReactNode;
@@ -93,7 +93,7 @@ export const SalaryCalculatorTestWrapper: React.FC<
   SalaryCalculatorTestWrapperProps
 > = ({
   salaryRequestMock,
-  hcmMock,
+  hcmUser,
   hcmSpouse,
   onCall,
   children,
@@ -101,7 +101,7 @@ export const SalaryCalculatorTestWrapper: React.FC<
   payrollDates = [],
   editing = true,
 }) => {
-  const hcmUserMerged = hcmMock ? merge({}, hcmUserMock, hcmMock) : hcmUserMock;
+  const hcmUserMerged = hcmUser ? merge({}, hcmUserMock, hcmUser) : hcmUserMock;
   const hcmSpouseMerged = hcmSpouse
     ? merge({}, hcmSpouseMock, hcmSpouse)
     : hcmSpouseMock;
