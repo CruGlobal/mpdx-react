@@ -1,12 +1,20 @@
 import Link from 'next/link';
 import React from 'react';
 import { Box, List, ListItemText } from '@mui/material';
+import { useFormikContext } from 'formik';
 import { Trans, useTranslation } from 'react-i18next';
+import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { StyledListItem } from '../../SavingsFundTransfer/styledComponents/StyledListItem';
+import { CompleteFormValues } from '../AdditionalSalaryRequest';
 
 export const CapSubContent: React.FC = () => {
   const { t } = useTranslation();
+  const locale = useLocale();
+  const currency = 'USD';
+
+  const { values } = useFormikContext<CompleteFormValues>();
 
   return (
     <>
@@ -26,7 +34,15 @@ export const CapSubContent: React.FC = () => {
           <StyledListItem sx={{ py: 0 }}>
             <ListItemText
               primary={t(
-                'For the [Amount] you are requesting, this will take [time frame] as it needs to be signed off by [approvers].',
+                'For the {{amount}} you are requesting, this will take [time frame] as it needs to be signed off by [approvers].',
+                {
+                  amount: currencyFormat(
+                    Number(values.totalAdditionalSalaryRequested),
+                    currency,
+                    locale,
+                    { showTrailingZeros: true },
+                  ),
+                },
               )}
               primaryTypographyProps={{ variant: 'body2' }}
             />

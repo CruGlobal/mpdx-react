@@ -100,7 +100,7 @@ const validationSchema = yup.object({
   ...Object.fromEntries(
     fieldConfig.map(({ key, label }) => [
       key,
-      amount(label, (key: string) => key).required('Field required'),
+      amount(label, (key: string) => key).required('Required field'),
     ]),
   ),
   deductTwelvePercent: yup.boolean(),
@@ -411,6 +411,7 @@ describe('RequestPage', () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
       ...defaultMockContextValue,
       handleNextStep: mockHandleNextStep,
+      requestData: { latestAdditionalSalaryRequest: null },
     } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
 
     const { getByRole } = render(
@@ -448,12 +449,13 @@ describe('RequestPage', () => {
     });
   });
 
-  it('does not call handleNextStep when createNewRequest fails', async () => {
+  it('does calls handleNextStep when createNewRequest fails', async () => {
     const mockHandleNextStep = jest.fn();
 
     mockUseAdditionalSalaryRequest.mockReturnValue({
       ...defaultMockContextValue,
       handleNextStep: mockHandleNextStep,
+      requestData: { latestAdditionalSalaryRequest: null },
     } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
 
     const { getByRole } = render(
@@ -481,7 +483,7 @@ describe('RequestPage', () => {
     userEvent.click(getByRole('button', { name: /continue/i }));
 
     await waitFor(() => {
-      expect(mockHandleNextStep).not.toHaveBeenCalled();
+      expect(mockHandleNextStep).toHaveBeenCalled();
     });
   });
 

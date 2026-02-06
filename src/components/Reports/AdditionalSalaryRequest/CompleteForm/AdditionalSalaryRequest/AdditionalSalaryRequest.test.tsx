@@ -182,7 +182,7 @@ describe('AdditionalSalaryRequest', () => {
       input.focus();
       await userEvent.tab();
 
-      expect(await findByText('Required field.')).toBeInTheDocument();
+      expect(await findByText('Required field')).toBeInTheDocument();
     });
   });
 });

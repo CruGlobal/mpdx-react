@@ -91,7 +91,7 @@ export const useAdditionalSalaryRequestForm = (
 
   const createCurrencyValidation = useCallback(
     (fieldName: string, max?: number) => {
-      let schema = amount(fieldName, t).required(t('Field required'));
+      let schema = amount(fieldName, t).required(t('Required field'));
       if (max !== null && max !== undefined) {
         schema = schema.max(
           max,

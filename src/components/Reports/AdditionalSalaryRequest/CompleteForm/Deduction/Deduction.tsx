@@ -21,7 +21,7 @@ import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 export const Deduction: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { pageType } = useAdditionalSalaryRequest();
+  const { pageType, traditional403bPercentage } = useAdditionalSalaryRequest();
   const { values: formValues, setFieldValue } =
     useFormikContext<CompleteFormValues>();
 
@@ -64,9 +64,7 @@ export const Deduction: React.FC = () => {
                   {t(
                     'Check this box if you would like {{percentage}}% of the amount requested above deducted from this Additional Salary Request.',
                     {
-                      percentage: (
-                        Number(formValues.traditional403bContribution) * 100
-                      ).toFixed(0),
+                      percentage: (traditional403bPercentage * 100).toFixed(0),
                     },
                   )}
                 </Typography>
