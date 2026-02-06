@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { ReportsStaffExpensesQuery } from '../PartnerGivingAnalysis.generated';
+import { FundBalancesQuery } from '../../SavingsFundTransfer/ReportsSavingsFund.generated';
 import { BalanceCard } from './BalanceCard';
 
 const mutationSpy = jest.fn();
@@ -12,10 +12,10 @@ interface ComponentProps {
 
 const Components = ({ balance = 15000 }: ComponentProps) => (
   <GqlMockedProvider<{
-    ReportsStaffExpenses: ReportsStaffExpensesQuery;
+    FundBalances: FundBalancesQuery;
   }>
     mocks={{
-      ReportsStaffExpenses: {
+      FundBalances: {
         reportsStaffExpenses: {
           funds: [
             {
@@ -53,7 +53,7 @@ describe('BalanceCard', () => {
     render(<Components />);
 
     await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation('ReportsStaffExpenses', {
+      expect(mutationSpy).toHaveGraphqlOperation('FundBalances', {
         fundTypes: ['Primary'],
       }),
     );

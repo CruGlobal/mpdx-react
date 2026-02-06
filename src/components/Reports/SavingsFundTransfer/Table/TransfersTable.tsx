@@ -77,7 +77,7 @@ export const TransfersTable: React.FC<TransfersTableProps> = ({
   const { enqueueSnackbar } = useSnackbar();
 
   const [updateRecurringTransfer] = useUpdateRecurringTransferMutation({
-    refetchQueries: ['ReportsSavingsFundTransfer', 'ReportsStaffExpenses'],
+    refetchQueries: ['ReportsSavingsFundTransfer', 'FundBalances'],
     awaitRefetchQueries: true,
   });
 

@@ -154,15 +154,15 @@ export const TransferModal: React.FC<TransferModalProps> = ({
   const [submitting, setSubmitting] = useState(false);
 
   const [createRecurringTransfer] = useCreateRecurringTransferMutation({
-    refetchQueries: ['ReportsSavingsFundTransfer', 'ReportsStaffExpenses'],
+    refetchQueries: ['ReportsSavingsFundTransfer', 'FundBalances'],
     awaitRefetchQueries: true,
   });
   const [createTransferMutation] = useCreateTransferMutation({
-    refetchQueries: ['ReportsSavingsFundTransfer', 'ReportsStaffExpenses'],
+    refetchQueries: ['ReportsSavingsFundTransfer', 'FundBalances'],
     awaitRefetchQueries: true,
   });
   const [updateRecurringTransfer] = useUpdateRecurringTransferMutation({
-    refetchQueries: ['ReportsSavingsFundTransfer', 'ReportsStaffExpenses'],
+    refetchQueries: ['ReportsSavingsFundTransfer', 'FundBalances'],
     awaitRefetchQueries: true,
   });
 

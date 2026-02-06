@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { useReportsStaffExpensesQuery } from '../PartnerGivingAnalysis.generated';
+import { useFundBalancesQuery } from '../../SavingsFundTransfer/ReportsSavingsFund.generated';
 import { CardSkeleton } from './CardSkeleton';
 
 const StyledCard = styled(Card)(() => ({
@@ -44,7 +44,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
   const locale = useLocale();
   const isMobile = useMediaQuery(theme.breakpoints.down('lg'));
 
-  const { data, loading } = useReportsStaffExpensesQuery({
+  const { data, loading } = useFundBalancesQuery({
     variables: {
       fundTypes: [FundTypeEnum.Primary],
     },
