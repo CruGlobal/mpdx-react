@@ -53,10 +53,10 @@ describe('calculateCompletionPercentage', () => {
     expect(calculateCompletionPercentage(values)).toBe(100);
   });
 
-  it('should exclude deductTwelvePercent from calculation', () => {
+  it('should exclude deductTaxDeferredPercent from calculation', () => {
     const values = createFormValues({
       currentYearSalaryNotReceived: '50000',
-      deductTwelvePercent: true,
+      deductTaxDeferredPercent: true,
     });
     expect(calculateCompletionPercentage(values)).toBe(6);
   });

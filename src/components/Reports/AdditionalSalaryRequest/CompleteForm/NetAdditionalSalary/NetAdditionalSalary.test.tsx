@@ -82,7 +82,7 @@ describe('NetAdditionalSalary', () => {
     const valuesWithDeduction: CompleteFormValues = {
       ...defaultCompleteFormValues,
       additionalSalaryWithinMax: '10000',
-      deductTwelvePercent: true,
+      deductTaxDeferredPercent: true,
     };
 
     const { findByText } = render(
@@ -101,7 +101,7 @@ describe('NetAdditionalSalary', () => {
       ...defaultCompleteFormValues,
       additionalSalaryWithinMax: '10000',
       traditional403bContribution: '1000',
-      deductTwelvePercent: true,
+      deductTaxDeferredPercent: true,
     };
 
     const { findByText } = render(
@@ -167,7 +167,7 @@ describe('NetAdditionalSalary', () => {
     const valuesWithoutDeduction: CompleteFormValues = {
       ...defaultCompleteFormValues,
       additionalSalaryWithinMax: '10000',
-      deductTwelvePercent: false,
+      deductTaxDeferredPercent: false,
     };
 
     const { getByText } = render(

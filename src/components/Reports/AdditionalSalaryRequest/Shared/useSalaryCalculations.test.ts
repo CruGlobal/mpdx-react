@@ -34,7 +34,7 @@ describe('useSalaryCalculations', () => {
     housingDownPayment: '0',
     autoPurchase: '0',
     expensesNotApprovedWithin90Days: '0',
-    deductTwelvePercent: false,
+    deductTaxDeferredPercent: false,
     phoneNumber: '',
     emailAddress: '',
   };
@@ -46,7 +46,7 @@ describe('useSalaryCalculations', () => {
       previousYearSalaryNotReceived: '3000',
       adoption: '2000',
       traditional403bContribution: '1000',
-      deductTwelvePercent: true,
+      deductTaxDeferredPercent: true,
     };
 
     const { result } = renderHook(
@@ -70,7 +70,7 @@ describe('useSalaryCalculations', () => {
       ...baseValues,
       currentYearSalaryNotReceived: '10000',
       traditional403bContribution: '500',
-      deductTwelvePercent: false,
+      deductTaxDeferredPercent: false,
     };
 
     const { result } = renderHook(
@@ -91,7 +91,7 @@ describe('useSalaryCalculations', () => {
     const values: CompleteFormValues = {
       ...baseValues,
       currentYearSalaryNotReceived: '5000',
-      deductTwelvePercent: true,
+      deductTaxDeferredPercent: true,
       traditional403bContribution: '',
     };
 
@@ -109,12 +109,12 @@ describe('useSalaryCalculations', () => {
     expect(result.current.netSalary).toBe(4400); // 5000 - 600
   });
 
-  it('excludes deductTwelvePercent from total calculation', () => {
+  it('excludes deductTaxDeferredPercent from total calculation', () => {
     const values: CompleteFormValues = {
       ...baseValues,
       currentYearSalaryNotReceived: '1000',
       previousYearSalaryNotReceived: '2000',
-      deductTwelvePercent: true,
+      deductTaxDeferredPercent: true,
     };
 
     const { result } = renderHook(
@@ -124,7 +124,7 @@ describe('useSalaryCalculations', () => {
       },
     );
 
-    // Should not include deductTwelvePercent boolean in total
+    // Should not include deductTaxDeferredPercent boolean in total
     expect(result.current.total).toBe(3000); // 1000 + 2000
   });
 
@@ -145,7 +145,7 @@ describe('useSalaryCalculations', () => {
       housingDownPayment: '1000',
       autoPurchase: '1000',
       expensesNotApprovedWithin90Days: '1000',
-      deductTwelvePercent: false,
+      deductTaxDeferredPercent: false,
       phoneNumber: '',
       emailAddress: '',
     };
@@ -158,7 +158,7 @@ describe('useSalaryCalculations', () => {
     );
 
     expect(result.current.total).toBe(15000); // 15 fields * 1000
-    expect(result.current.calculatedDeduction).toBe(0); // deductTwelvePercent is false
+    expect(result.current.calculatedDeduction).toBe(0); // deductTaxDeferredPercent is false
     expect(result.current.contribution403b).toBe(1000);
     expect(result.current.totalDeduction).toBe(1000);
     expect(result.current.netSalary).toBe(14000); // 15000 - 1000
@@ -167,7 +167,7 @@ describe('useSalaryCalculations', () => {
   it('handles zero values correctly', () => {
     const values: CompleteFormValues = {
       ...baseValues,
-      deductTwelvePercent: false,
+      deductTaxDeferredPercent: false,
     };
 
     const { result } = renderHook(

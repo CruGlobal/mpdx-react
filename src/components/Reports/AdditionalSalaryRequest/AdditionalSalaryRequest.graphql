@@ -31,7 +31,7 @@ fragment AdditionalSalaryRequestDetailsFields on AdditionalSalaryRequest {
   autoPurchase
   expensesNotApprovedWithin90Days
   totalAdditionalSalaryRequested
-  deductTwelvePercent
+  deductTaxDeferredPercent
   traditional403bContributionRequested
   usingSpouseSalary
   phoneNumber

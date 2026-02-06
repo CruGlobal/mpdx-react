@@ -146,7 +146,7 @@ describe('Deduction', () => {
       ...defaultCompleteFormValues,
       additionalSalaryWithinMax: '10000',
       traditional403bContribution: '3000',
-      deductTwelvePercent: true,
+      deductTaxDeferredPercent: true,
     };
 
     const { getByLabelText, findByText } = render(
@@ -177,7 +177,7 @@ describe('Deduction', () => {
       additionalSalaryWithinMax: '5000',
       adoption: '2000',
       counselingNonMedical: '3000',
-      deductTwelvePercent: true,
+      deductTaxDeferredPercent: true,
     };
 
     const { getByLabelText, findByText } = render(
@@ -198,11 +198,11 @@ describe('Deduction', () => {
     });
   });
 
-  it('does not include deductTwelvePercent boolean in calculation', async () => {
+  it('does not include deductTaxDeferredPercent boolean in calculation', async () => {
     const valuesWithBoolean: CompleteFormValues = {
       ...defaultCompleteFormValues,
       additionalSalaryWithinMax: '10000',
-      deductTwelvePercent: true,
+      deductTaxDeferredPercent: true,
     };
 
     const { getByLabelText, findByText } = render(
@@ -229,7 +229,7 @@ describe('Deduction', () => {
       additionalSalaryWithinMax: '5000',
       adoption: '',
       counselingNonMedical: '',
-      deductTwelvePercent: true,
+      deductTaxDeferredPercent: true,
     };
 
     const { getByLabelText, findByText } = render(

@@ -17,7 +17,7 @@ export const defaultCompleteFormValues: CompleteFormValues = {
   housingDownPayment: '0',
   autoPurchase: '0',
   expensesNotApprovedWithin90Days: '0',
-  deductTwelvePercent: false,
+  deductTaxDeferredPercent: false,
   phoneNumber: '',
   emailAddress: '',
 };

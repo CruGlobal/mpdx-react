@@ -42,7 +42,7 @@ const mockRequest: RequestType = {
   housingDownPayment: 0,
   autoPurchase: 0,
   expensesNotApprovedWithin90Days: 0,
-  deductTwelvePercent: false,
+  deductTaxDeferredPercent: false,
   phoneNumber: '123-456-7890',
   personNumber: 'person-123',
   updatedAt: '2025-06-15T00:00:00.000Z',
