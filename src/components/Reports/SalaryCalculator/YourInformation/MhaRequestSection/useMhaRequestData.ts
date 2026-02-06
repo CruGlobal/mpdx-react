@@ -13,42 +13,29 @@ export const useMhaRequestData = () => {
 
   const hasSpouse = !!hcmSpouse;
 
-  const approvedAmount = hcmUser?.mhaRequest.currentApprovedOverallAmount ?? 0;
+  const approvedAmount = hcmUser?.mhaRequest.currentApprovedOverallAmount;
   const approvedAmountFormatted = useMemo(
-    () => currencyFormat(approvedAmount, 'USD', locale),
+    () => currencyFormat(approvedAmount ?? 0, 'USD', locale),
     [approvedAmount, locale],
   );
 
   const schema = useMemo(() => {
-    const baseSchema = {
-      mhaAmount: amount(t('New Requested MHA'), t)
-        .max(
-          approvedAmount,
-          t(
-            'New Requested MHA cannot exceed Board Approved MHA Amount of {{amount}}',
-            { amount: approvedAmountFormatted },
-          ),
-        )
-        .required(t('MHA Amount is required')),
-    };
+    const mhaMaxMessage = t(
+      'New Requested MHA cannot exceed Board Approved MHA Amount of {{amount}}',
+      { amount: approvedAmountFormatted },
+    );
 
-    if (hasSpouse) {
-      return yup.object({
-        ...baseSchema,
-        spouseMhaAmount: amount(t('Spouse New Requested MHA'), t)
-          .max(
-            approvedAmount,
-            t(
-              'New Requested MHA cannot exceed Board Approved MHA Amount of {{amount}}',
-              { amount: approvedAmountFormatted },
-            ),
-          )
-          .required(t('Spouse MHA Amount is required')),
-      });
-    }
-
-    return yup.object(baseSchema);
-  }, [t, hasSpouse, approvedAmount]);
+    return yup.object({
+      mhaAmount: amount(t('New Requested MHA'), t, {
+        max: approvedAmount,
+        maxMessage: mhaMaxMessage,
+      }),
+      spouseMhaAmount: amount(t('Spouse New Requested MHA'), t, {
+        max: approvedAmount,
+        maxMessage: mhaMaxMessage,
+      }),
+    });
+  }, [t, approvedAmount, approvedAmountFormatted]);
 
   // Multiply by 24 to annualize the monthly amounts from HCM
   const currentAmountForStaff =
@@ -68,12 +55,12 @@ export const useMhaRequestData = () => {
 
   const progressPercentage = useMemo(
     () =>
-      approvedAmount > 0 ? (totalRequestedMhaValue / approvedAmount) * 100 : 0,
+      approvedAmount ? (totalRequestedMhaValue / approvedAmount) * 100 : 0,
     [totalRequestedMhaValue, approvedAmount],
   );
 
   const difference = useMemo(
-    () => approvedAmount - totalRequestedMhaValue,
+    () => (approvedAmount ?? 0) - totalRequestedMhaValue,
     [approvedAmount, totalRequestedMhaValue],
   );
 

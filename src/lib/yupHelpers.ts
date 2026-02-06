@@ -29,6 +29,9 @@ export const integer = (fieldName: string, t: TFunction) =>
     .min(0, t('{{fieldName}} must be positive', { fieldName }));
 
 interface AmountOptions {
+  required?: boolean;
+  min?: number | null | undefined;
+  minMessage?: string;
   max?: number | null | undefined;
   maxMessage?: string;
 }
@@ -38,13 +41,24 @@ export const amount = (
   t: TFunction,
   options?: AmountOptions,
 ) => {
-  const schema = yup
+  let schema = yup
     .number()
     .typeError(t('{{fieldName}} must be a number', { fieldName }))
     .min(0, t('{{fieldName}} must be positive', { fieldName }));
-  return typeof options?.max === 'number'
-    ? schema.max(options.max, options.maxMessage)
-    : schema;
+
+  if (options?.required) {
+    schema = schema.required(t('{{fieldName}} is required', { fieldName }));
+  }
+
+  if (typeof options?.min === 'number') {
+    schema = schema.min(options.min, options.minMessage);
+  }
+
+  if (typeof options?.max === 'number') {
+    schema = schema.max(options.max, options.maxMessage);
+  }
+
+  return schema;
 };
 
 export const percentage = (fieldName: string, t: TFunction) =>

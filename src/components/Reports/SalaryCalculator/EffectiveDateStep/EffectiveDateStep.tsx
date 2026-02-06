@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Box, MenuItem, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
@@ -6,7 +6,7 @@ import * as yup from 'yup';
 import theme from 'src/theme';
 import { AutosaveTextField } from '../Autosave/AutosaveTextField';
 import { EffectiveDateBanner } from './EffectiveDateBanner/EffectiveDateBanner';
-import { DateOption, useEffectiveDateOptions } from './useEffectiveDateOptions';
+import { useEffectiveDateOptions } from './useEffectiveDateOptions';
 
 export const EffectiveDateStep: React.FC = () => {
   const { t } = useTranslation();
@@ -38,7 +38,7 @@ export const EffectiveDateStep: React.FC = () => {
     return !hasNextYearDates;
   }, [dateOptions]);
 
-  const [showAlert, setShowAlert] = React.useState(shouldShowBanner);
+  const [showAlert, setShowAlert] = useState(shouldShowBanner);
 
   useEffect(() => {
     setShowAlert(shouldShowBanner);
@@ -49,9 +49,13 @@ export const EffectiveDateStep: React.FC = () => {
       yup.object({
         effectiveDate: yup
           .string()
+          .oneOf(
+            dateOptions.map((option) => option.value),
+            t('Please choose an effective date from the list'),
+          )
           .required(t('Please select an effective date')),
       }),
-    [t],
+    [t, dateOptions],
   );
 
   return (
@@ -78,7 +82,7 @@ export const EffectiveDateStep: React.FC = () => {
           select
           fieldName="effectiveDate"
           schema={schema}
-          label={t('Select a future date')}
+          label={t('Effective date')}
           required
           SelectProps={{
             MenuProps: {
@@ -90,7 +94,7 @@ export const EffectiveDateStep: React.FC = () => {
             },
           }}
         >
-          {dateOptions.map((option: DateOption) => (
+          {dateOptions.map((option) => (
             <MenuItem key={option.value} value={option.value}>
               {option.label}
             </MenuItem>

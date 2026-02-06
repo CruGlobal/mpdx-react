@@ -1,6 +1,7 @@
 import React from 'react';
 import { Stack } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { AutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { PanelLayout } from '../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { useIconPanelItems } from '../Shared/CalculationReports/PanelLayout/useIconPanelItems';
@@ -15,8 +16,10 @@ const MainContent: React.FC = () => {
   const { editing } = useSalaryCalculator();
   return (
     <Stack gap={4} maxWidth={800}>
-      {editing ? <CurrentStep /> : <SummaryStep key="summary" />}
-      <StepNavigation />
+      <AutosaveForm>
+        {editing ? <CurrentStep /> : <SummaryStep key="summary" />}
+        <StepNavigation />
+      </AutosaveForm>
     </Stack>
   );
 };

@@ -30,15 +30,6 @@ export const RequestedSalaryCard: React.FC = () => {
   } = useSalaryCalculator();
   const locale = useLocale();
 
-  const schema = useMemo(
-    () =>
-      yup.object({
-        salary: amount(t('Requested salary'), t),
-        spouseSalary: amount(t('Spouse requested salary'), t),
-      }),
-    [t],
-  );
-
   const minimumSalaryValue =
     salaryCalculation?.calculations.minimumRequestedSalary ?? 0;
   const spouseMinimumSalaryValue =
@@ -57,6 +48,33 @@ export const RequestedSalaryCard: React.FC = () => {
     spouseMinimumSalaryValue,
     'USD',
     locale,
+  );
+
+  const schema = useMemo(
+    () =>
+      yup.object({
+        salary: amount(t('Requested salary'), t, {
+          required: true,
+          min: minimumSalaryValue,
+          minMessage: t('Requested salary must be at least {{min}}', {
+            min: minimumSalary,
+          }),
+        }),
+        spouseSalary: amount(t('Spouse requested salary'), t, {
+          required: true,
+          min: spouseMinimumSalaryValue,
+          minMessage: t('Spouse requested salary must be at least {{min}}', {
+            min: spouseMinimumSalary,
+          }),
+        }),
+      }),
+    [
+      t,
+      minimumSalaryValue,
+      minimumSalary,
+      spouseMinimumSalaryValue,
+      spouseMinimumSalary,
+    ],
   );
 
   return (

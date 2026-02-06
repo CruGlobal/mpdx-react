@@ -29,10 +29,6 @@ describe('useMhaRequestData', () => {
     const schema = result.current.schema;
 
     await expect(
-      schema.validate({ mhaAmount: undefined, spouseMhaAmount: 5000 }),
-    ).rejects.toThrow('MHA Amount is required');
-
-    await expect(
       schema.validate({ mhaAmount: 25000, spouseMhaAmount: 5000 }),
     ).rejects.toThrow(
       'New Requested MHA cannot exceed Board Approved MHA Amount of $20,000',
