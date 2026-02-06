@@ -13,22 +13,15 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
-import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 import { StepCard } from '../../SharedComponents/StepCard';
 
 export const NetAdditionalSalary: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { requestData } = useAdditionalSalaryRequest();
   const { values } = useFormikContext<CompleteFormValues>();
 
-  const traditional403bContribution =
-    requestData?.latestAdditionalSalaryRequest?.traditional403bContribution ??
-    0;
-
   const { netSalary } = useSalaryCalculations({
-    traditional403bContribution,
     values,
   });
 

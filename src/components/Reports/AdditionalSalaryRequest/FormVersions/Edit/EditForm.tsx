@@ -11,7 +11,6 @@ import { AdditionalSalaryRequest } from '../../CompleteForm/AdditionalSalaryRequ
 import { ContactInformation } from '../../CompleteForm/ContactInformation/ContactInformation';
 import { Deduction } from '../../CompleteForm/Deduction/Deduction';
 import { NetAdditionalSalary } from '../../CompleteForm/NetAdditionalSalary/NetAdditionalSalary';
-import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
 import { useFormData } from '../../Shared/useFormData';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 import { ValidationAlert } from '../../SharedComponents/ValidationAlert';
@@ -20,7 +19,6 @@ import { TotalAnnualSalary } from '../../SubmitModalAccordions/TotalAnnualSalary
 
 export const EditForm: React.FC = () => {
   const { t } = useTranslation();
-  const { traditional403bContribution } = useAdditionalSalaryRequest();
   const { values } = useFormikContext<CompleteFormValues>();
   const {
     name,
@@ -30,7 +28,6 @@ export const EditForm: React.FC = () => {
   } = useFormData();
 
   const { exceedsCap } = useSalaryCalculations({
-    traditional403bContribution: traditional403bContribution ?? 0,
     values,
   });
 

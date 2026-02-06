@@ -130,7 +130,7 @@ export const useAdditionalSalaryRequestForm = (
       ...Object.fromEntries(
         fieldConfig.map(({ key }) => [
           key,
-          String((request[key as keyof typeof request] as number) || ''),
+          String((request[key as keyof typeof request] as number) ?? ''),
         ]),
       ),
       deductTwelvePercent: request.deductTwelvePercent || false,
@@ -232,13 +232,13 @@ export const useAdditionalSalaryRequestForm = (
               Object.entries(values).map(([key, value]) =>
                 typeof value === 'string' &&
                 key !== 'phoneNumber' &&
-                key !== 'emailAddress'
+                key !== 'emailAddress' &&
+                key !== 'additionalInfo'
                   ? [key, parseFloat(value) || 0]
                   : [key, value],
               ),
             ),
             totalAdditionalSalaryRequested: getTotal(values),
-            additionalInfo: values.additionalInfo,
           },
         },
         onCompleted: () => {

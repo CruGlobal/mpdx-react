@@ -7,7 +7,6 @@ import Loading from 'src/components/Loading/Loading';
 import { DirectionButtons } from 'src/components/Reports/Shared/CalculationReports/DirectionButtons/DirectionButtons';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { NoStaffAccount } from 'src/components/Reports/Shared/NoStaffAccount/NoStaffAccount';
-import { AsrStatusEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import { PanelLayout } from '../../Shared/CalculationReports/PanelLayout/PanelLayout';
@@ -43,45 +42,34 @@ const MainContent: React.FC = () => {
     requestId,
     requestData,
     pageType,
-    traditional403bContribution,
     loading,
     trackMutation,
     user,
   } = useAdditionalSalaryRequest();
-
-  const status = requestData?.latestAdditionalSalaryRequest?.status;
 
   const [createRequest] = useCreateAdditionalSalaryRequestMutation();
 
   const { values, submitForm, validateForm, submitCount, isValid, errors } =
     useFormikContext<CompleteFormValues>();
 
-  const handleCreateAndContinue = async () => {
-    if (status === AsrStatusEnum.InProgress && requestId) {
-      handleNextStep();
-      return;
-    }
-
-    const result = await trackMutation(
-      createRequest({
-        variables: {
-          attributes: {
-            phoneNumber: user?.staffInfo?.primaryPhoneNumber,
-            emailAddress: user?.staffInfo.emailAddress,
+  const handleContinue = async () => {
+    if (requestData?.latestAdditionalSalaryRequest === null) {
+      trackMutation(
+        createRequest({
+          variables: {
+            attributes: {
+              phoneNumber: user?.staffInfo?.primaryPhoneNumber,
+              emailAddress: user?.staffInfo.emailAddress,
+            },
           },
-        },
-        refetchQueries: ['AdditionalSalaryRequest'],
-      }),
-    );
-    if (
-      result.data?.createAdditionalSalaryRequest?.additionalSalaryRequest.id
-    ) {
-      handleNextStep();
+          refetchQueries: ['AdditionalSalaryRequest'],
+        }),
+      );
     }
+    handleNextStep();
   };
 
   const { exceedsCap } = useSalaryCalculations({
-    traditional403bContribution: traditional403bContribution ?? 0,
     values,
   });
 
@@ -148,9 +136,7 @@ const MainContent: React.FC = () => {
                 isEdit={isEdit}
                 exceedsCap={exceedsCap}
                 disableSubmit={exceedsCap && !!errors.additionalInfo}
-                overrideNext={
-                  isFirstFormPage ? handleCreateAndContinue : undefined
-                }
+                overrideNext={isFirstFormPage ? handleContinue : undefined}
               />
             </Stack>
           )}

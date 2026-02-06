@@ -54,8 +54,6 @@ export type AdditionalSalaryRequestType = {
   isInternational: boolean;
   isMutating: boolean;
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
-
-  traditional403bContribution?: number;
 };
 
 const AdditionalSalaryRequestContext =
@@ -116,10 +114,6 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     error: requestError,
     loading,
   } = useAdditionalSalaryRequestQuery();
-
-  const traditional403bContribution =
-    requestData?.latestAdditionalSalaryRequest?.traditional403bContribution ??
-    0;
 
   const currentYear = useMemo(() => DateTime.now().year, []);
   const { data: salaryInfoData } = useSalaryInfoQuery({
@@ -213,7 +207,6 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       isInternational,
       isMutating,
       trackMutation,
-      traditional403bContribution,
     }),
     [
       staffAccountId,
@@ -238,7 +231,6 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       isInternational,
       isMutating,
       trackMutation,
-      traditional403bContribution,
     ],
   );
 

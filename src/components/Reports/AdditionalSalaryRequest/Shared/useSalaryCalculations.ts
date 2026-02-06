@@ -21,20 +21,21 @@ interface CalculationsData {
 }
 
 export interface UseSalaryCalculationsProps {
-  traditional403bContribution: number;
   values: CompleteFormValues;
   calculations?: CalculationsData | null;
   grossSalaryAmount?: number | null;
 }
 
 export const useSalaryCalculations = ({
-  traditional403bContribution,
   values,
   calculations,
   grossSalaryAmount,
 }: UseSalaryCalculationsProps): SalaryCalculations => {
   return useMemo(() => {
     const total = getTotal(values);
+    const traditional403bContribution = Number(
+      values.traditional403bContribution,
+    );
 
     const calculatedDeduction = values.deductTwelvePercent
       ? total * traditional403bContribution
@@ -71,5 +72,5 @@ export const useSalaryCalculations = ({
       remainingInMaxAllowable,
       exceedsCap,
     };
-  }, [values, traditional403bContribution, calculations, grossSalaryAmount]);
+  }, [values, calculations, grossSalaryAmount]);
 };
