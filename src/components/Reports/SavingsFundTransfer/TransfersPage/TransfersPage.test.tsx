@@ -14,8 +14,8 @@ import theme from 'src/theme';
 import { StaffAccountQuery } from '../../StaffAccount.generated';
 import { StaffSavingFundContext } from '../../StaffSavingFund/StaffSavingFundContext';
 import {
+  FundBalancesQuery,
   ReportsSavingsFundTransferQuery,
-  ReportsStaffExpensesQuery,
 } from '../ReportsSavingsFund.generated';
 import { TransfersPage } from './TransfersPage';
 
@@ -89,7 +89,7 @@ const mock = {
       },
     ],
   },
-  ReportsStaffExpenses: {
+  FundBalances: {
     reportsStaffExpenses: {
       funds: [
         {
@@ -119,7 +119,7 @@ const emptyMock = {
   ReportsSavingsFundTransfer: {
     reportsSavingsFundTransfer: [],
   },
-  ReportsStaffExpenses: {
+  FundBalances: {
     reportsStaffExpenses: {
       funds: [
         {
@@ -178,7 +178,7 @@ const Components = ({
             <GqlMockedProvider<{
               StaffAccount: StaffAccountQuery;
               ReportsSavingsFundTransfer: ReportsSavingsFundTransferQuery;
-              ReportsStaffExpenses: ReportsStaffExpensesQuery;
+              FundBalances: FundBalancesQuery;
             }>
               mocks={mock}
               onCall={mutationSpy}
@@ -270,7 +270,7 @@ describe('TransfersPage', () => {
               <I18nextProvider i18n={i18n}>
                 <GqlMockedProvider<{
                   ReportsSavingsFundTransfer: ReportsSavingsFundTransferQuery;
-                  ReportsStaffExpenses: ReportsStaffExpensesQuery;
+                  FundBalances: FundBalancesQuery;
                 }>
                   mocks={emptyMock}
                   onCall={mutationSpy}
@@ -377,7 +377,7 @@ describe('TransfersPage', () => {
 
     expect(
       within(fromAccount).getByText(
-        mock.ReportsStaffExpenses.reportsStaffExpenses.funds[1].fundType,
+        mock.FundBalances.reportsStaffExpenses.funds[1].fundType,
         {
           selector: 'b',
         },
@@ -385,7 +385,7 @@ describe('TransfersPage', () => {
     ).toBeInTheDocument();
     expect(
       within(toAccount).queryByText(
-        mock.ReportsStaffExpenses.reportsStaffExpenses.funds[1].fundType,
+        mock.FundBalances.reportsStaffExpenses.funds[1].fundType,
         {
           selector: 'b',
         },

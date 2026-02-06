@@ -7,11 +7,11 @@ import theme from 'src/theme';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import {
   AdditionalSalaryRequestQuery,
-  SalaryInfoQuery,
   SubmitAdditionalSalaryRequestMutation,
   UpdateAdditionalSalaryRequestMutation,
 } from '../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
+import { SalaryInfoQuery } from '../SalaryInfo.generated';
 import {
   AdditionalSalaryRequestType,
   useAdditionalSalaryRequest,

@@ -8,7 +8,6 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { ContactsQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
 import { GetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import theme from 'src/theme';
@@ -17,6 +16,7 @@ import {
   AppealsContext,
   AppealsType,
 } from '../../AppealsContext/AppealsContext';
+import { AppealsContactsQuery } from '../../AppealsContext/contacts.generated';
 import { defaultContact } from '../../List/ContactRow/ContactRowMock';
 import { ContactFlowColumn } from './ContactFlowColumn';
 
@@ -48,11 +48,11 @@ const Components = ({
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <GqlMockedProvider<{
-            Contacts: ContactsQuery;
+            AppealsContacts: AppealsContactsQuery;
             GetIdsForMassSelection: GetIdsForMassSelectionQuery;
           }>
             mocks={{
-              Contacts: {
+              AppealsContacts: {
                 contacts: {
                   nodes: [
                     defaultContact,
