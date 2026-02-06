@@ -23,6 +23,7 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
   mocks: {
     hcm: [
       {
+        salaryRequestEligible: true,
         staffInfo: {
           preferredName: 'John',
           lastName: 'Doe',
@@ -43,8 +44,12 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
           currentApprovedOverallAmount: 20000,
           currentTakenAmount: 300,
         },
+        exceptionSalaryCap: {
+          boardCapException: false,
+        },
       },
       {
+        salaryRequestEligible: true,
         staffInfo: {
           preferredName: 'Jane',
           lastName: 'Doe',
@@ -60,6 +65,9 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
         mhaRequest: {
           currentApprovedOverallAmount: 20000,
           currentTakenAmount: 500,
+        },
+        exceptionSalaryCap: {
+          boardCapException: false,
         },
       },
     ],

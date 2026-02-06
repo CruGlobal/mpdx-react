@@ -27,5 +27,8 @@ query Hcm {
       currentTakenAmount
     }
     salaryRequestEligible
+    exceptionSalaryCap {
+      boardCapException
+    }
   }
 }
