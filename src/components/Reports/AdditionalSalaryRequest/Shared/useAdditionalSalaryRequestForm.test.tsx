@@ -77,6 +77,7 @@ const defaultFormValues: CompleteFormValues = {
   additionalSalaryWithinMax: '0',
   adoption: '0',
   traditional403bContribution: '0',
+  roth403bContribution: '0',
   counselingNonMedical: '0',
   healthcareExpensesExceedingLimit: '0',
   babysittingMinistryEvents: '0',
@@ -148,7 +149,7 @@ describe('useAdditionalSalaryRequestForm', () => {
 
   describe('fieldConfig', () => {
     it('should have all expected field configurations', () => {
-      expect(fieldConfig).toHaveLength(15);
+      expect(fieldConfig).toHaveLength(16);
 
       const fieldKeys = fieldConfig.map((f) => f.key);
       expect(fieldKeys).toContain('currentYearSalaryNotReceived');
