@@ -151,7 +151,7 @@ describe('MaxAllowableSection', () => {
 
     expect(
       await findByText(
-        'You have a Board-approved Maximum Allowable Salary (CAP).',
+        'You have a previously approved Maximum Allowable Salary (CAP).',
         { exact: false },
       ),
     ).toBeInTheDocument();
