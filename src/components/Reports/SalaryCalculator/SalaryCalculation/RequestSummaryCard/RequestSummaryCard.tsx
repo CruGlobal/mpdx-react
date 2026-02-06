@@ -59,7 +59,7 @@ export const RequestSummaryCard: React.FC = () => {
     !!progressiveApprovalTier &&
     progressiveApprovalTier?.tier !== ProgressiveApprovalTierEnum.DivisionHead;
   const boardCapException = hcmUser?.exceptionSalaryCap.boardCapException;
-  const { combinedCap, combinedGross, overCapName, overCapSalary } = useCaps();
+  const { combinedGross, overCapName, overCapSalary } = useCaps();
 
   const { formatCurrency } = useFormatters();
 
@@ -67,6 +67,7 @@ export const RequestSummaryCard: React.FC = () => {
   const spouseCalcs = calculation?.spouseCalculations;
   const hasSpouse = !!hcmSpouse && !!spouseCalcs;
 
+  const combinedCap = calcs?.combinedCap ?? 0;
   const combinedSeca =
     (calcs?.requestedSeca ?? 0) + (spouseCalcs?.requestedSeca ?? 0);
   const combined403b =

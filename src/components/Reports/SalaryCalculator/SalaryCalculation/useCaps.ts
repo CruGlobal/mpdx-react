@@ -2,9 +2,6 @@ import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculator
 import { useFormatters } from '../Shared/useFormatters';
 
 interface UseCapsResult {
-  /** The sum of the users' effective caps */
-  combinedCap: number;
-
   /** The sum of the users' requested gross salaries */
   combinedGross: number;
 
@@ -22,8 +19,6 @@ export const useCaps = (): UseCapsResult => {
   const calcs = calculation?.calculations;
   const spouseCalcs = calculation?.spouseCalculations;
 
-  const combinedCap =
-    (calcs?.effectiveCap ?? 0) + (spouseCalcs?.effectiveCap ?? 0);
   const combinedGross =
     (calcs?.requestedGross ?? 0) + (spouseCalcs?.requestedGross ?? 0);
 
@@ -43,7 +38,6 @@ export const useCaps = (): UseCapsResult => {
       : null;
 
   return {
-    combinedCap,
     combinedGross,
     overCapName,
     overCapSalary,
