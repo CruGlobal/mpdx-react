@@ -30,5 +30,8 @@ query Hcm($effectiveDate: ISO8601Date) {
       mhaEligibility
     }
     salaryRequestEligible
+    exceptionSalaryCap {
+      boardCapException
+    }
   }
 }

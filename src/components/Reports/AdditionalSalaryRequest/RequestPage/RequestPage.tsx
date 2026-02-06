@@ -17,6 +17,7 @@ import {
   CompleteFormValues,
   mainContentWidth,
 } from '../AdditionalSalaryRequest';
+import { useCreateAdditionalSalaryRequestMutation } from '../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
 import { EditForm } from '../FormVersions/Edit/EditForm';
 import { NewForm } from '../FormVersions/New/NewForm';
@@ -38,7 +39,10 @@ const MainContent: React.FC = () => {
     pageType,
     loading,
     currentStep,
+    trackMutation,
   } = useAdditionalSalaryRequest();
+
+  const [createRequest] = useCreateAdditionalSalaryRequestMutation();
 
   const { submitForm, validateForm, submitCount, isValid } =
     useFormikContext<CompleteFormValues>();
@@ -46,6 +50,20 @@ const MainContent: React.FC = () => {
   const isFirstFormPage = currentIndex === 0;
   const isLastFormPage = currentIndex === steps.length - 2;
   const reviewPage = currentIndex === steps.length - 1;
+
+  const handleCreateAndContinue = async () => {
+    const result = await trackMutation(
+      createRequest({
+        variables: { attributes: {} },
+        refetchQueries: ['AdditionalSalaryRequest'],
+      }),
+    );
+    if (
+      result.data?.createAdditionalSalaryRequest?.additionalSalaryRequest.id
+    ) {
+      handleNextStep();
+    }
+  };
 
   const handleDiscard = async () => {
     if (requestId) {
@@ -75,13 +93,16 @@ const MainContent: React.FC = () => {
                 handleNextStep={handleNextStep}
                 handlePreviousStep={handlePreviousStep}
                 showBackButton={!isFirstFormPage}
-                handleDiscard={handleDiscard}
+                handleDiscard={requestId ? handleDiscard : undefined}
                 isSubmission={isLastFormPage}
                 submitForm={submitForm}
                 validateForm={validateForm}
                 submitCount={submitCount}
                 isValid={isValid}
                 isEdit={pageType === PageEnum.Edit}
+                overrideNext={
+                  isFirstFormPage ? handleCreateAndContinue : undefined
+                }
               />
             </Stack>
           )}
@@ -100,11 +121,17 @@ export const RequestPage: React.FC = () => {
     toggleDrawer,
     steps,
     currentIndex,
+    currentStep,
     staffAccountId,
     staffAccountIdLoading,
   } = useAdditionalSalaryRequest();
   const { values } = useFormikContext<CompleteFormValues>();
   const iconPanelItems = useIconPanelItems(isDrawerOpen, toggleDrawer);
+
+  const isNew = pageType === PageEnum.New;
+  const isAboutFormStep =
+    currentStep === AdditionalSalaryRequestSectionEnum.AboutForm;
+  const hideBackHref = isNew && isAboutFormStep;
 
   const percentComplete = useMemo(
     () => calculateCompletionPercentage(values),
@@ -134,7 +161,11 @@ export const RequestPage: React.FC = () => {
       isSidebarOpen={isDrawerOpen}
       sidebarAriaLabel={t('Additional Salary Request Sections')}
       mainContent={<MainContent />}
-      backHref={`/accountLists/${accountListId}/reports/additionalSalaryRequest`}
+      backHref={
+        hideBackHref
+          ? ''
+          : `/accountLists/${accountListId}/reports/additionalSalaryRequest`
+      }
     />
   );
 };

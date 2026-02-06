@@ -63,6 +63,7 @@ describe('SubmitButton', () => {
     );
 
     userEvent.click(await findByText('Submit'));
+    userEvent.click(await findByText('Yes, Continue'));
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('SubmitSalaryCalculation', {
