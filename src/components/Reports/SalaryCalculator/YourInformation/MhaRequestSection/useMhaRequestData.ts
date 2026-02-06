@@ -43,7 +43,10 @@ export const useMhaRequestData = () => {
 
   const getNoMhaNames = () => {
     if (isNoMhaPlural) {
-      return `${userPreferredName} ${t('and')} ${spousePreferredName}`;
+      return t('{{userPreferredName}} and {{spousePreferredName}}', {
+        userPreferredName,
+        spousePreferredName,
+      });
     }
     return showUserNoMhaMessage ? userPreferredName : spousePreferredName;
   };
@@ -70,7 +73,10 @@ export const useMhaRequestData = () => {
 
   const getIneligibleNames = () => {
     if (isIneligiblePlural) {
-      return `${userPreferredName} ${t('and')} ${spousePreferredName}`;
+      return t('{{userPreferredName}} and {{spousePreferredName}}', {
+        userPreferredName,
+        spousePreferredName,
+      });
     }
     return showUserIneligibleMessage ? userPreferredName : spousePreferredName;
   };
