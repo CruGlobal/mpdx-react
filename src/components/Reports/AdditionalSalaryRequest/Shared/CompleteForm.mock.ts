@@ -19,7 +19,9 @@ export const defaultCompleteFormValues: CompleteFormValues = {
   expensesNotApprovedWithin90Days: '0',
   deductTaxDeferredPercent: false,
   phoneNumber: '',
+  totalAdditionalSalaryRequested: '0',
   emailAddress: '',
+  additionalInfo: '',
 };
 
 export const defaultSalaryInfoData: SalaryInfoQuery = {

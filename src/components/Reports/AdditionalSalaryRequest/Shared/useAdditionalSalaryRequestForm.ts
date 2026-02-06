@@ -14,6 +14,7 @@ import {
 import { SalaryInfoQuery } from '../SalaryInfo.generated';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 import { getTotal } from './Helper/getTotal';
+import { useFormData } from './useFormData';
 
 type SalaryInfo = NonNullable<SalaryInfoQuery['salaryInfo']>;
 
@@ -73,7 +74,14 @@ export const useAdditionalSalaryRequestForm = (
   const { handleNextStep, user, salaryInfo, isInternational } =
     useAdditionalSalaryRequest();
 
+  const { remainingAllowableSalary } = useFormData();
+
   const { data: requestData } = useAdditionalSalaryRequestQuery();
+
+  const calculations = requestData?.latestAdditionalSalaryRequest?.calculations;
+  const grossSalaryAmount = user?.currentSalary?.grossSalaryAmount ?? 0;
+  const maxAllowableSalary = calculations?.maxAmountAndReason?.amount ?? 0;
+  const additionalSalaryReceivedThisYear = calculations?.pendingAsrAmount ?? 0;
 
   const [updateAdditionalSalaryRequest] =
     useUpdateAdditionalSalaryRequestMutation();
@@ -83,7 +91,7 @@ export const useAdditionalSalaryRequestForm = (
 
   const createCurrencyValidation = useCallback(
     (fieldName: string, max?: number) => {
-      let schema = amount(fieldName, t);
+      let schema = amount(fieldName, t).required(t('Required field'));
       if (max !== null && max !== undefined) {
         schema = schema.max(
           max,
@@ -101,6 +109,8 @@ export const useAdditionalSalaryRequestForm = (
 
   const defaultInitialValues: CompleteFormValues = {
     ...Object.fromEntries(fieldConfig.map(({ key }) => [key, '0'])),
+    totalAdditionalSalaryRequested: '0',
+    additionalInfo: '',
     deductTaxDeferredPercent: false,
     phoneNumber: user?.staffInfo?.primaryPhoneNumber || '',
     emailAddress: user?.staffInfo?.emailAddress || '',
@@ -120,13 +130,16 @@ export const useAdditionalSalaryRequestForm = (
       ...Object.fromEntries(
         fieldConfig.map(({ key }) => [
           key,
-          String((request[key as keyof typeof request] as number) || ''),
+          String((request[key as keyof typeof request] as number) ?? ''),
         ]),
       ),
       deductTaxDeferredPercent: request.deductTaxDeferredPercent || false,
       phoneNumber:
         request.phoneNumber || user?.staffInfo?.primaryPhoneNumber || '',
       emailAddress: request.emailAddress || user?.staffInfo?.emailAddress || '',
+      totalAdditionalSalaryRequested:
+        request.totalAdditionalSalaryRequested || '',
+      additionalInfo: request.additionalInfo || '',
     } as CompleteFormValues;
   }, [providedInitialValues, requestData?.latestAdditionalSalaryRequest, user]);
 
@@ -164,8 +177,45 @@ export const useAdditionalSalaryRequestForm = (
           .string()
           .required(t('Email address is required'))
           .email(t('Please enter a valid email address')),
+        totalAdditionalSalaryRequested: yup
+          .number()
+          .test(
+            'total-within-remaining-allowable-salary',
+            t('Exceeds account balance.'),
+            function () {
+              const total = getTotal(this.parent as CompleteFormValues);
+              return total <= remainingAllowableSalary;
+            },
+          ),
+        additionalInfo: yup
+          .string()
+          .test(
+            'required-when-exceeds-cap',
+            t('Additional info is required for requests exceeding your cap.'),
+            function (value) {
+              const total = getTotal(this.parent as CompleteFormValues);
+              const totalAnnualSalary =
+                grossSalaryAmount + additionalSalaryReceivedThisYear + total;
+              const remainingInMaxAllowable =
+                maxAllowableSalary - totalAnnualSalary;
+              const exceedsCap = total > remainingInMaxAllowable;
+
+              if (exceedsCap) {
+                return !!value && value.trim().length > 0;
+              }
+              return true;
+            },
+          ),
       }),
-    [createCurrencyValidation, t, getMaxForField],
+    [
+      createCurrencyValidation,
+      t,
+      remainingAllowableSalary,
+      locale,
+      grossSalaryAmount,
+      maxAllowableSalary,
+      additionalSalaryReceivedThisYear,
+    ],
   );
 
   const onSubmit = useCallback(
@@ -182,7 +232,8 @@ export const useAdditionalSalaryRequestForm = (
               Object.entries(values).map(([key, value]) =>
                 typeof value === 'string' &&
                 key !== 'phoneNumber' &&
-                key !== 'emailAddress'
+                key !== 'emailAddress' &&
+                key !== 'additionalInfo'
                   ? [key, parseFloat(value) || 0]
                   : [key, value],
               ),
@@ -215,6 +266,7 @@ export const useAdditionalSalaryRequestForm = (
     validationSchema,
     onSubmit,
     enableReinitialize: true,
+    validateOnMount: true,
   });
 
   return { ...formik, validationSchema };

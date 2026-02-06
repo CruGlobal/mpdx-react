@@ -44,7 +44,7 @@ describe('Deduction', () => {
 
   it('displays the checkbox label text with percentage', async () => {
     const { findByText, getByText } = render(
-      <TestWrapper deductionPercentage={0.12} />,
+      <TestWrapper deductionPercentage={12} />,
     );
 
     expect(
@@ -82,10 +82,7 @@ describe('Deduction', () => {
     };
 
     const { getByRole, findByText, getByLabelText } = render(
-      <TestWrapper
-        initialValues={valuesWithSalary}
-        deductionPercentage={0.12}
-      />,
+      <TestWrapper initialValues={valuesWithSalary} deductionPercentage={12} />,
     );
 
     // Wait for GraphQL data to load
@@ -150,7 +147,7 @@ describe('Deduction', () => {
     };
 
     const { getByLabelText, findByText } = render(
-      <TestWrapper initialValues={valuesWithBoth} deductionPercentage={0.12} />,
+      <TestWrapper initialValues={valuesWithBoth} deductionPercentage={12} />,
     );
 
     // Wait for GraphQL data to load
@@ -183,7 +180,7 @@ describe('Deduction', () => {
     const { getByLabelText, findByText } = render(
       <TestWrapper
         initialValues={valuesWithMultiple}
-        deductionPercentage={0.12}
+        deductionPercentage={12}
       />,
     );
 
@@ -208,7 +205,7 @@ describe('Deduction', () => {
     const { getByLabelText, findByText } = render(
       <TestWrapper
         initialValues={valuesWithBoolean}
-        deductionPercentage={0.12}
+        deductionPercentage={12}
       />,
     );
 
@@ -233,10 +230,7 @@ describe('Deduction', () => {
     };
 
     const { getByLabelText, findByText } = render(
-      <TestWrapper
-        initialValues={valuesWithEmpty}
-        deductionPercentage={0.12}
-      />,
+      <TestWrapper initialValues={valuesWithEmpty} deductionPercentage={12} />,
     );
 
     // Wait for GraphQL data to load

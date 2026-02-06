@@ -61,6 +61,8 @@ const validationSchema = yup.object({
     .string()
     .required('Email address is required')
     .email('Please enter a valid email address'),
+  totalAdditionalSalaryRequested: yup.string(),
+  additionalInfo: yup.string(),
 });
 
 interface TestFormikWrapperProps {

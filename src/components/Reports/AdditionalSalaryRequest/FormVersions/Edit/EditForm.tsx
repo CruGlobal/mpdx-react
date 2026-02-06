@@ -1,24 +1,35 @@
 import React from 'react';
 import { Stack, Typography } from '@mui/material';
+import { useFormikContext } from 'formik';
 import { Trans, useTranslation } from 'react-i18next';
 import { NameDisplay } from '../../../Shared/CalculationReports/NameDisplay/NameDisplay';
-import { mainContentWidth } from '../../AdditionalSalaryRequest';
+import {
+  CompleteFormValues,
+  mainContentWidth,
+} from '../../AdditionalSalaryRequest';
 import { AdditionalSalaryRequest } from '../../CompleteForm/AdditionalSalaryRequest/AdditionalSalaryRequest';
 import { ContactInformation } from '../../CompleteForm/ContactInformation/ContactInformation';
 import { Deduction } from '../../CompleteForm/Deduction/Deduction';
 import { NetAdditionalSalary } from '../../CompleteForm/NetAdditionalSalary/NetAdditionalSalary';
 import { useFormData } from '../../Shared/useFormData';
-import { TotalAnnualSalarySummaryCard } from '../../SharedComponents/TotalAnnualSalarySummaryCard';
+import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 import { ValidationAlert } from '../../SharedComponents/ValidationAlert';
+import { ApprovalProcess } from '../../SubmitModalAccordions/ApprovalProcess/ApprovalProcess';
+import { TotalAnnualSalary } from '../../SubmitModalAccordions/TotalAnnualSalary/TotalAnnualSalary';
 
 export const EditForm: React.FC = () => {
   const { t } = useTranslation();
+  const { values } = useFormikContext<CompleteFormValues>();
   const {
     name,
     accountNumber,
     primaryAccountBalance,
     remainingAllowableSalary,
   } = useFormData();
+
+  const { exceedsCap } = useSalaryCalculations({
+    values,
+  });
 
   return (
     <Stack gap={4} padding={4} width={mainContentWidth}>
@@ -44,7 +55,12 @@ export const EditForm: React.FC = () => {
       <AdditionalSalaryRequest />
       <Deduction />
       <NetAdditionalSalary />
-      <TotalAnnualSalarySummaryCard />
+      {exceedsCap && (
+        <>
+          <TotalAnnualSalary onForm />
+          <ApprovalProcess onForm />
+        </>
+      )}
       <Typography variant="body1" paragraph>
         <Trans t={t}>
           If the above information is correct, please confirm your telephone

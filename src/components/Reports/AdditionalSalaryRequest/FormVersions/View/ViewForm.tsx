@@ -1,26 +1,37 @@
 import NextLink from 'next/link';
 import { Button, Stack, Typography } from '@mui/material';
+import { useFormikContext } from 'formik';
 import { Trans, useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { NameDisplay } from '../../../Shared/CalculationReports/NameDisplay/NameDisplay';
-import { mainContentWidth } from '../../AdditionalSalaryRequest';
+import {
+  CompleteFormValues,
+  mainContentWidth,
+} from '../../AdditionalSalaryRequest';
 import { AdditionalSalaryRequest } from '../../CompleteForm/AdditionalSalaryRequest/AdditionalSalaryRequest';
 import { Deduction } from '../../CompleteForm/Deduction/Deduction';
 import { NetAdditionalSalary } from '../../CompleteForm/NetAdditionalSalary/NetAdditionalSalary';
 import { useFormData } from '../../Shared/useFormData';
+import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 import { ContactInformationSummaryCard } from '../../SharedComponents/ContactInformationSummaryCard';
 import { SpouseComponent } from '../../SharedComponents/SpouseComponent';
-import { TotalAnnualSalarySummaryCard } from '../../SharedComponents/TotalAnnualSalarySummaryCard';
+import { ApprovalProcess } from '../../SubmitModalAccordions/ApprovalProcess/ApprovalProcess';
+import { TotalAnnualSalary } from '../../SubmitModalAccordions/TotalAnnualSalary/TotalAnnualSalary';
 
 export const ViewForm: React.FC = () => {
   const accountListId = useAccountListId();
   const { t } = useTranslation();
+  const { values } = useFormikContext<CompleteFormValues>();
   const {
     name,
     accountNumber,
     primaryAccountBalance,
     remainingAllowableSalary,
   } = useFormData();
+
+  const { exceedsCap } = useSalaryCalculations({
+    values,
+  });
 
   return (
     <Stack gap={4} padding={4} width={mainContentWidth}>
@@ -47,7 +58,12 @@ export const ViewForm: React.FC = () => {
       <Deduction />
       <NetAdditionalSalary />
       <ContactInformationSummaryCard />
-      <TotalAnnualSalarySummaryCard />
+      {exceedsCap && (
+        <>
+          <TotalAnnualSalary onForm />
+          <ApprovalProcess onForm />
+        </>
+      )}
 
       <Button
         component={NextLink}

@@ -40,14 +40,16 @@ const defaultInitialValues: CompleteFormValues = {
   expensesNotApprovedWithin90Days: '0',
   deductTaxDeferredPercent: false,
   phoneNumber: '',
+  totalAdditionalSalaryRequested: '0',
   emailAddress: '',
+  additionalInfo: '',
 };
 
 const validationSchema = yup.object({
   ...Object.fromEntries(
     fieldConfig.map(({ key, label }) => [
       key,
-      amount(label, (key: string) => key),
+      amount(label, (key: string) => key).required('Required field'),
     ]),
   ),
   deductTaxDeferredPercent: yup.boolean(),
@@ -59,6 +61,16 @@ const validationSchema = yup.object({
     .string()
     .required('Email address is required')
     .email('Please enter a valid email address'),
+  totalAdditionalSalaryRequested: yup
+    .number()
+    .test(
+      'total-within-remaining-allowable-salary',
+      'Exceeds account balance.',
+      function (value) {
+        const remainingAllowableSalary = 17500.0;
+        return (value || 0) <= remainingAllowableSalary;
+      },
+    ),
 });
 
 const TestFormikWrapper: React.FC<{
@@ -70,6 +82,7 @@ const TestFormikWrapper: React.FC<{
     validationSchema,
     onSubmit: () => {},
     enableReinitialize: true,
+    validateOnMount: true,
   });
 
   // Add validationSchema to formik context so autosave fields can access it
@@ -109,20 +122,27 @@ export const AdditionalSalaryRequestTestWrapper: React.FC<
                   latestAdditionalSalaryRequest: {
                     id: 'test-request-id',
                     ...Object.fromEntries(
-                      Object.entries(requestValues)
-                        .filter(
-                          ([key]) => key !== 'traditional403bContribution',
-                        )
-                        .map(([key, value]) =>
-                          typeof value === 'string' &&
-                          key !== 'phoneNumber' &&
-                          key !== 'emailAddress'
-                            ? [key, parseFloat(value) || 0]
-                            : [key, value],
-                        ),
+                      Object.entries(requestValues).map(([key, value]) =>
+                        typeof value === 'string' &&
+                        key !== 'phoneNumber' &&
+                        key !== 'emailAddress' &&
+                        key !== 'additionalInfo'
+                          ? [key, parseFloat(value) || 0]
+                          : [key, value],
+                      ),
                     ),
-                    traditional403bContribution: deductionPercentage,
                   },
+                },
+                HcmData: {
+                  hcm: [
+                    {
+                      id: 'hcm-1',
+                      fourOThreeB: {
+                        currentTaxDeferredContributionPercentage:
+                          deductionPercentage,
+                      },
+                    },
+                  ],
                 },
               }}
               onCall={onCall}

@@ -47,7 +47,9 @@ const defaultFormValues: CompleteFormValues = {
   expensesNotApprovedWithin90Days: '0',
   deductTaxDeferredPercent: false,
   phoneNumber: '555-1234',
+  totalAdditionalSalaryRequested: '100',
   emailAddress: 'test@testerson.test',
+  additionalInfo: '',
 };
 
 const mockTrackMutation = jest.fn((mutation) => mutation);
@@ -82,6 +84,7 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   isInternational: false,
   isMutating: false,
   trackMutation: mockTrackMutation,
+  traditional403bPercentage: 0,
 };
 
 interface TestComponentProps {

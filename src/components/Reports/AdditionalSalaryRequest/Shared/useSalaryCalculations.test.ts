@@ -2,7 +2,21 @@ import React, { createElement } from 'react';
 import { renderHook } from '@testing-library/react';
 import { Formik } from 'formik';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
+import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 import { useSalaryCalculations } from './useSalaryCalculations';
+
+jest.mock('./AdditionalSalaryRequestContext');
+
+const mockUseAdditionalSalaryRequest =
+  useAdditionalSalaryRequest as jest.MockedFunction<
+    typeof useAdditionalSalaryRequest
+  >;
+
+beforeEach(() => {
+  mockUseAdditionalSalaryRequest.mockReturnValue({
+    traditional403bPercentage: 0.12,
+  } as ReturnType<typeof useAdditionalSalaryRequest>);
+});
 
 const FormikWrapper = ({
   children,
@@ -16,7 +30,7 @@ const FormikWrapper = ({
     { initialValues: values, onSubmit: () => {} },
     children,
   );
-const traditional403bContribution = 0.12;
+
 describe('useSalaryCalculations', () => {
   const baseValues: CompleteFormValues = {
     currentYearSalaryNotReceived: '0',
@@ -36,7 +50,9 @@ describe('useSalaryCalculations', () => {
     expensesNotApprovedWithin90Days: '0',
     deductTaxDeferredPercent: false,
     phoneNumber: '',
+    totalAdditionalSalaryRequested: '0',
     emailAddress: '',
+    additionalInfo: '',
   };
 
   it('calculates all salary values correctly with default percentage enabled', () => {
@@ -49,12 +65,9 @@ describe('useSalaryCalculations', () => {
       deductTaxDeferredPercent: true,
     };
 
-    const { result } = renderHook(
-      () => useSalaryCalculations({ traditional403bContribution, values }),
-      {
-        wrapper: ({ children }) => FormikWrapper({ children, values }),
-      },
-    );
+    const { result } = renderHook(() => useSalaryCalculations({ values }), {
+      wrapper: ({ children }) => FormikWrapper({ children, values }),
+    });
 
     expect(result.current.total).toBe(11000); // 5000 + 3000 + 2000 + 1000
     expect(result.current.calculatedDeduction).toBe(1320); // 11000 * 0.12
@@ -73,12 +86,9 @@ describe('useSalaryCalculations', () => {
       deductTaxDeferredPercent: false,
     };
 
-    const { result } = renderHook(
-      () => useSalaryCalculations({ traditional403bContribution, values }),
-      {
-        wrapper: ({ children }) => FormikWrapper({ children, values }),
-      },
-    );
+    const { result } = renderHook(() => useSalaryCalculations({ values }), {
+      wrapper: ({ children }) => FormikWrapper({ children, values }),
+    });
 
     expect(result.current.total).toBe(10500); // 10000 + 500
     expect(result.current.calculatedDeduction).toBe(0);
@@ -95,12 +105,9 @@ describe('useSalaryCalculations', () => {
       traditional403bContribution: '',
     };
 
-    const { result } = renderHook(
-      () => useSalaryCalculations({ traditional403bContribution, values }),
-      {
-        wrapper: ({ children }) => FormikWrapper({ children, values }),
-      },
-    );
+    const { result } = renderHook(() => useSalaryCalculations({ values }), {
+      wrapper: ({ children }) => FormikWrapper({ children, values }),
+    });
 
     expect(result.current.total).toBe(5000);
     expect(result.current.calculatedDeduction).toBe(600); // 5000 * 0.12
@@ -117,12 +124,9 @@ describe('useSalaryCalculations', () => {
       deductTaxDeferredPercent: true,
     };
 
-    const { result } = renderHook(
-      () => useSalaryCalculations({ traditional403bContribution, values }),
-      {
-        wrapper: ({ children }) => FormikWrapper({ children, values }),
-      },
-    );
+    const { result } = renderHook(() => useSalaryCalculations({ values }), {
+      wrapper: ({ children }) => FormikWrapper({ children, values }),
+    });
 
     // Should not include deductTaxDeferredPercent boolean in total
     expect(result.current.total).toBe(3000); // 1000 + 2000
@@ -147,15 +151,14 @@ describe('useSalaryCalculations', () => {
       expensesNotApprovedWithin90Days: '1000',
       deductTaxDeferredPercent: false,
       phoneNumber: '',
+      totalAdditionalSalaryRequested: '15000',
       emailAddress: '',
+      additionalInfo: '',
     };
 
-    const { result } = renderHook(
-      () => useSalaryCalculations({ traditional403bContribution, values }),
-      {
-        wrapper: ({ children }) => FormikWrapper({ children, values }),
-      },
-    );
+    const { result } = renderHook(() => useSalaryCalculations({ values }), {
+      wrapper: ({ children }) => FormikWrapper({ children, values }),
+    });
 
     expect(result.current.total).toBe(15000); // 15 fields * 1000
     expect(result.current.calculatedDeduction).toBe(0); // deductTaxDeferredPercent is false
@@ -170,12 +173,9 @@ describe('useSalaryCalculations', () => {
       deductTaxDeferredPercent: false,
     };
 
-    const { result } = renderHook(
-      () => useSalaryCalculations({ traditional403bContribution, values }),
-      {
-        wrapper: ({ children }) => FormikWrapper({ children, values }),
-      },
-    );
+    const { result } = renderHook(() => useSalaryCalculations({ values }), {
+      wrapper: ({ children }) => FormikWrapper({ children, values }),
+    });
 
     expect(result.current.total).toBe(0);
     expect(result.current.calculatedDeduction).toBe(0);
@@ -200,7 +200,6 @@ describe('useSalaryCalculations', () => {
     const { result } = renderHook(
       () =>
         useSalaryCalculations({
-          traditional403bContribution,
           values,
           calculations,
           grossSalaryAmount: 50000,
@@ -233,7 +232,6 @@ describe('useSalaryCalculations', () => {
     const { result } = renderHook(
       () =>
         useSalaryCalculations({
-          traditional403bContribution,
           values,
           calculations,
           grossSalaryAmount: 50000,

@@ -26,15 +26,11 @@ export const AdditionalSalaryRequest: React.FC = () => {
   const locale = useLocale();
   const currency = 'USD';
 
-  const { requestData, pageType } = useAdditionalSalaryRequest();
+  const { pageType } = useAdditionalSalaryRequest();
   const categories = useCompleteFormCategories();
-  const { values } = useFormikContext<CompleteFormValues>();
+  const { values, errors, touched } = useFormikContext<CompleteFormValues>();
 
-  const traditional403bContribution =
-    requestData?.latestAdditionalSalaryRequest?.traditional403bContribution ??
-    0;
   const { total } = useSalaryCalculations({
-    traditional403bContribution,
     values,
   });
 
@@ -75,6 +71,11 @@ export const AdditionalSalaryRequest: React.FC = () => {
                   sx={{
                     width: '30%',
                     textAlign: 'center',
+                    border:
+                      touched[key as keyof CompleteFormValues] &&
+                      errors[key as keyof CompleteFormValues]
+                        ? '2px solid red'
+                        : '',
                   }}
                 >
                   {pageType === PageEnum.View ? (
@@ -106,10 +107,22 @@ export const AdditionalSalaryRequest: React.FC = () => {
                 {t('Total Additional Salary Requested')}
               </TableCell>
               <TableCell
-                sx={{ width: '30%', fontWeight: 'bold', textAlign: 'center' }}
+                sx={{
+                  width: '30%',
+                  fontWeight: 'bold',
+                  textAlign: 'center',
+                  outline: errors.totalAdditionalSalaryRequested
+                    ? '2px solid red'
+                    : 'none',
+                }}
                 data-testid="total-amount"
               >
                 {currencyFormat(total, currency, locale)}
+                {errors.totalAdditionalSalaryRequested && (
+                  <Typography variant="body2" color="error">
+                    {errors.totalAdditionalSalaryRequested}
+                  </Typography>
+                )}
               </TableCell>
             </TableRow>
           </TableBody>

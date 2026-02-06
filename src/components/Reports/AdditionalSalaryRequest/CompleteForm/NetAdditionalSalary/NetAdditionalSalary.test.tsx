@@ -88,7 +88,7 @@ describe('NetAdditionalSalary', () => {
     const { findByText } = render(
       <TestWrapper
         initialValues={valuesWithDeduction}
-        deductionPercentage={0.12}
+        deductionPercentage={12}
       />,
     );
 
@@ -105,7 +105,7 @@ describe('NetAdditionalSalary', () => {
     };
 
     const { findByText } = render(
-      <TestWrapper initialValues={valuesWithBoth} deductionPercentage={0.12} />,
+      <TestWrapper initialValues={valuesWithBoth} deductionPercentage={12} />,
     );
 
     // Total = $10,000 + $1,000 = $11,000

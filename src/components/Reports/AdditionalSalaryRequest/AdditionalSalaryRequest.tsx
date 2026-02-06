@@ -37,6 +37,8 @@ export interface CompleteFormValues {
   expensesNotApprovedWithin90Days: string;
   deductTaxDeferredPercent: boolean;
   phoneNumber: string;
+  totalAdditionalSalaryRequested: string;
+  additionalInfo: string;
   emailAddress: string;
 }
 
