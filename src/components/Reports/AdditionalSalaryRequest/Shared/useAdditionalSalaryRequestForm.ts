@@ -33,7 +33,11 @@ export const fieldConfig: Array<{
     salaryInfoIntKey: 'maxAdoptionInt',
     salaryInfoUssKey: 'maxAdoptionUss',
   },
-  { key: 'traditional403bContribution', label: '403(b) Contribution' },
+  {
+    key: 'traditional403bContribution',
+    label: '403(b) Contribution - Traditional',
+  },
+  { key: 'roth403bContribution', label: '403(b) Contribution - Roth' },
   { key: 'counselingNonMedical', label: 'Counseling' },
   { key: 'healthcareExpensesExceedingLimit', label: 'Healthcare Expenses' },
   { key: 'babysittingMinistryEvents', label: 'Babysitting' },
@@ -109,6 +113,7 @@ export const useAdditionalSalaryRequestForm = (
     totalAdditionalSalaryRequested: '0',
     additionalInfo: '',
     deductTaxDeferredPercent: false,
+    deductRothPercent: false,
     phoneNumber: user?.staffInfo?.primaryPhoneNumber || '',
     emailAddress: user?.staffInfo?.emailAddress || '',
   } as CompleteFormValues;
@@ -131,6 +136,7 @@ export const useAdditionalSalaryRequestForm = (
         ]),
       ),
       deductTaxDeferredPercent: request.deductTaxDeferredPercent || false,
+      deductRothPercent: request.deductRothPercent || false,
       phoneNumber:
         request.phoneNumber || user?.staffInfo?.primaryPhoneNumber || '',
       emailAddress: request.emailAddress || user?.staffInfo?.emailAddress || '',
@@ -163,6 +169,7 @@ export const useAdditionalSalaryRequestForm = (
           ]),
         ),
         deductTaxDeferredPercent: yup.boolean(),
+        deductRothPercent: yup.boolean(),
         phoneNumber: yup
           .string()
           .required(t('Telephone number is required'))
