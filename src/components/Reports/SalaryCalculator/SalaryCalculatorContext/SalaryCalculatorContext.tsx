@@ -142,7 +142,7 @@ export const SalaryCalculatorProvider: React.FC<
     editing,
   ]);
 
-  if (!calculationData || !hcmData) {
+  if (!calculationData) {
     return (
       <Box
         display="flex"

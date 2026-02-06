@@ -223,9 +223,11 @@ This may affect your selected effective date.',
         'Remaining in Max Allowable Salary$1.00',
       );
 
-      expect(
-        getAllByRole('columnheader').map((cell) => cell.textContent),
-      ).toEqual(['Description', 'John']);
+      await waitFor(() =>
+        expect(
+          getAllByRole('columnheader').map((cell) => cell.textContent),
+        ).toEqual(['Description', 'John']),
+      );
 
       expect(getAllByRole('rowheader').map((cell) => cell.textContent)).toEqual(
         [
