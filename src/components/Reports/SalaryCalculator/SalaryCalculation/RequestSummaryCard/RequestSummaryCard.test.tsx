@@ -45,6 +45,25 @@ describe('RequestSummaryCard', () => {
     );
   });
 
+  describe('board cap exception', () => {
+    it('renders status message and textfield', async () => {
+      const { findByTestId } = render(
+        <TestComponent
+          hcmMock={{
+            exceptionSalaryCap: { boardCapException: true },
+          }}
+        />,
+      );
+
+      expect(await findByTestId('RequestSummaryCard-status')).toHaveTextContent(
+        "You have a Board approved Maximum Allowable Salary (CAP) \
+and the salary request you submitted exceeds that amount. \
+As a result we need to get their approval for this request. \
+We'll forward your request to them and get back to you with their decision.",
+      );
+    });
+  });
+
   describe('user over cap', () => {
     it('renders status message', async () => {
       const { getByTestId } = render(
