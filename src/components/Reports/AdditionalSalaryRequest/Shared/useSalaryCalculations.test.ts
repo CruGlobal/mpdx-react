@@ -2,9 +2,21 @@ import React, { createElement } from 'react';
 import { renderHook } from '@testing-library/react';
 import { Formik } from 'formik';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
+import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 import { useSalaryCalculations } from './useSalaryCalculations';
 
-//TODO: Fix these tests after updating 403b
+jest.mock('./AdditionalSalaryRequestContext');
+
+const mockUseAdditionalSalaryRequest =
+  useAdditionalSalaryRequest as jest.MockedFunction<
+    typeof useAdditionalSalaryRequest
+  >;
+
+beforeEach(() => {
+  mockUseAdditionalSalaryRequest.mockReturnValue({
+    traditional403bPercentage: 0.12,
+  } as ReturnType<typeof useAdditionalSalaryRequest>);
+});
 
 const FormikWrapper = ({
   children,
@@ -18,7 +30,7 @@ const FormikWrapper = ({
     { initialValues: values, onSubmit: () => {} },
     children,
   );
-//const traditional403bContribution = 0.12;
+
 describe('useSalaryCalculations', () => {
   const baseValues: CompleteFormValues = {
     currentYearSalaryNotReceived: '0',
@@ -43,28 +55,28 @@ describe('useSalaryCalculations', () => {
     additionalInfo: '',
   };
 
-  // it('calculates all salary values correctly with default percentage enabled', () => {
-  //   const values: CompleteFormValues = {
-  //     ...baseValues,
-  //     currentYearSalaryNotReceived: '5000',
-  //     previousYearSalaryNotReceived: '3000',
-  //     adoption: '2000',
-  //     traditional403bContribution: '1000',
-  //     deductTwelvePercent: true,
-  //   };
+  it('calculates all salary values correctly with default percentage enabled', () => {
+    const values: CompleteFormValues = {
+      ...baseValues,
+      currentYearSalaryNotReceived: '5000',
+      previousYearSalaryNotReceived: '3000',
+      adoption: '2000',
+      traditional403bContribution: '1000',
+      deductTwelvePercent: true,
+    };
 
-  //   const { result } = renderHook(() => useSalaryCalculations({ values }), {
-  //     wrapper: ({ children }) => FormikWrapper({ children, values }),
-  //   });
+    const { result } = renderHook(() => useSalaryCalculations({ values }), {
+      wrapper: ({ children }) => FormikWrapper({ children, values }),
+    });
 
-  //   expect(result.current.total).toBe(11000); // 5000 + 3000 + 2000 + 1000
-  //   expect(result.current.calculatedDeduction).toBe(1320); // 11000 * 0.12
-  //   expect(result.current.contribution403b).toBe(1000);
-  //   expect(result.current.totalDeduction).toBe(2320); // 1320 + 1000
-  //   expect(result.current.netSalary).toBe(8680); // 11000 - 2320
-  //   expect(result.current.totalAnnualSalary).toBe(11000); // No calculations data, so just total
-  //   expect(result.current.remainingInMaxAllowable).toBe(-11000); // 0 - 11000
-  // });
+    expect(result.current.total).toBe(11000); // 5000 + 3000 + 2000 + 1000
+    expect(result.current.calculatedDeduction).toBe(1320); // 11000 * 0.12
+    expect(result.current.contribution403b).toBe(1000);
+    expect(result.current.totalDeduction).toBe(2320); // 1320 + 1000
+    expect(result.current.netSalary).toBe(8680); // 11000 - 2320
+    expect(result.current.totalAnnualSalary).toBe(11000); // No calculations data, so just total
+    expect(result.current.remainingInMaxAllowable).toBe(-11000); // 0 - 11000
+  });
 
   it('calculates all salary values correctly with default percentage disabled', () => {
     const values: CompleteFormValues = {
@@ -85,24 +97,24 @@ describe('useSalaryCalculations', () => {
     expect(result.current.netSalary).toBe(10000); // 10500 - 500
   });
 
-  // it('handles empty traditional403bContribution value', () => {
-  //   const values: CompleteFormValues = {
-  //     ...baseValues,
-  //     currentYearSalaryNotReceived: '5000',
-  //     deductTwelvePercent: true,
-  //     traditional403bContribution: '',
-  //   };
+  it('handles empty traditional403bContribution value', () => {
+    const values: CompleteFormValues = {
+      ...baseValues,
+      currentYearSalaryNotReceived: '5000',
+      deductTwelvePercent: true,
+      traditional403bContribution: '',
+    };
 
-  //   const { result } = renderHook(() => useSalaryCalculations({ values }), {
-  //     wrapper: ({ children }) => FormikWrapper({ children, values }),
-  //   });
+    const { result } = renderHook(() => useSalaryCalculations({ values }), {
+      wrapper: ({ children }) => FormikWrapper({ children, values }),
+    });
 
-  //   expect(result.current.total).toBe(5000);
-  //   expect(result.current.calculatedDeduction).toBe(600); // 5000 * 0.12
-  //   expect(result.current.contribution403b).toBe(0);
-  //   expect(result.current.totalDeduction).toBe(600);
-  //   expect(result.current.netSalary).toBe(4400); // 5000 - 600
-  // });
+    expect(result.current.total).toBe(5000);
+    expect(result.current.calculatedDeduction).toBe(600); // 5000 * 0.12
+    expect(result.current.contribution403b).toBe(0);
+    expect(result.current.totalDeduction).toBe(600);
+    expect(result.current.netSalary).toBe(4400); // 5000 - 600
+  });
 
   it('excludes deductTwelvePercent from total calculation', () => {
     const values: CompleteFormValues = {

@@ -72,5 +72,5 @@ export const useSalaryCalculations = ({
       remainingInMaxAllowable,
       exceedsCap,
     };
-  }, [values, calculations, grossSalaryAmount]);
+  }, [values, calculations, grossSalaryAmount, traditional403bPercentage]);
 };
