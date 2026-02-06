@@ -69,7 +69,7 @@ describe('useMhaRequestData', () => {
   it('shows ineligible message when user is not eligible', async () => {
     const { result } = renderHook(() => useMhaRequestData(), {
       wrapper: createWrapper({
-        hcmMock: { mhaEit: { mhaEligibility: false } },
+        hcmUser: { mhaEit: { mhaEligibility: false } },
       }),
     });
 
@@ -105,7 +105,7 @@ describe('useMhaRequestData', () => {
   it('shows ineligible message for both when neither is eligible', async () => {
     const { result } = renderHook(() => useMhaRequestData(), {
       wrapper: createWrapper({
-        hcmMock: { mhaEit: { mhaEligibility: false } },
+        hcmUser: { mhaEit: { mhaEligibility: false } },
         hcmSpouse: { mhaEit: { mhaEligibility: false } },
       }),
     });
@@ -124,7 +124,7 @@ describe('useMhaRequestData', () => {
   it('shows no MHA message when user has no MHA request', async () => {
     const { result } = renderHook(() => useMhaRequestData(), {
       wrapper: createWrapper({
-        hcmMock: { mhaRequest: { currentApprovedOverallAmount: 0 } },
+        hcmUser: { mhaRequest: { currentApprovedOverallAmount: 0 } },
       }),
     });
 
@@ -141,7 +141,7 @@ describe('useMhaRequestData', () => {
   it('shows no MHA message for both when neither has MHA request', async () => {
     const { result } = renderHook(() => useMhaRequestData(), {
       wrapper: createWrapper({
-        hcmMock: { mhaRequest: { currentApprovedOverallAmount: 0 } },
+        hcmUser: { mhaRequest: { currentApprovedOverallAmount: 0 } },
         hcmSpouse: { mhaRequest: { currentApprovedOverallAmount: 0 } },
       }),
     });

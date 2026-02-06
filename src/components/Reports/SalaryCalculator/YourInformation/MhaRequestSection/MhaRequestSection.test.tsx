@@ -57,7 +57,7 @@ describe('MhaRequestSection', () => {
     it('should render messages when both user and spouse have no MHA', async () => {
       const { findByTestId } = render(
         <TestComponent
-          hcmMock={{
+          hcmUser={{
             mhaRequest: { currentApprovedOverallAmount: 0 },
           }}
           hcmSpouse={{
@@ -73,7 +73,7 @@ describe('MhaRequestSection', () => {
     it('should render message when only user has no MHA', async () => {
       const { findByTestId } = render(
         <TestComponent
-          hcmMock={{
+          hcmUser={{
             mhaRequest: { currentApprovedOverallAmount: 0 },
           }}
           hcmSpouse={{
@@ -89,7 +89,7 @@ describe('MhaRequestSection', () => {
     it('should render message when only spouse has no MHA', async () => {
       const { findByTestId } = render(
         <TestComponent
-          hcmMock={{
+          hcmUser={{
             mhaRequest: { currentApprovedOverallAmount: 20000 },
           }}
           hcmSpouse={{
@@ -105,7 +105,7 @@ describe('MhaRequestSection', () => {
     it('should not render no MHA messages when both have MHA', async () => {
       const { queryByTestId, findByTestId } = render(
         <TestComponent
-          hcmMock={{
+          hcmUser={{
             mhaRequest: { currentApprovedOverallAmount: 20000 },
           }}
           hcmSpouse={{
