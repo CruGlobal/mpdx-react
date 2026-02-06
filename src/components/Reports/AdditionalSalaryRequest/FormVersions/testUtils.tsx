@@ -53,7 +53,7 @@ const validationSchema = yup.object({
       amount(label, (key: string) => key),
     ]),
   ),
-  deductTwelvePercent: yup.boolean(),
+  deductTaxDeferredPercent: yup.boolean(),
   phoneNumber: phoneNumber((key: string) => key).required(
     'Telephone number is required',
   ),

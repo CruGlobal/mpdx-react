@@ -38,7 +38,7 @@ const defaultInitialValues: CompleteFormValues = {
   housingDownPayment: '0',
   autoPurchase: '0',
   expensesNotApprovedWithin90Days: '0',
-  deductTwelvePercent: false,
+  deductTaxDeferredPercent: false,
   phoneNumber: '',
   emailAddress: '',
 };
@@ -50,7 +50,7 @@ const validationSchema = yup.object({
       amount(label, (key: string) => key),
     ]),
   ),
-  deductTwelvePercent: yup.boolean(),
+  deductTaxDeferredPercent: yup.boolean(),
   phoneNumber: yup
     .string()
     .required('Telephone number is required')
