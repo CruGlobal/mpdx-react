@@ -17,6 +17,7 @@ const defaultSalaryMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> =
       contributing403bAmount: 10003,
       requestedGross: 10004,
       effectiveCap: 10005,
+      combinedCap: 10006,
     },
     spouseCalculations: {
       annualBase: 20001,
@@ -29,6 +30,7 @@ const defaultSalaryMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> =
 
 const TestComponent: React.FC<SalaryCalculatorTestWrapperProps> = (props) => (
   <SalaryCalculatorTestWrapper
+    hcmMock={{ exceptionSalaryCap: { boardCapException: false } }}
     {...props}
     salaryRequestMock={merge({}, defaultSalaryMock, props.salaryRequestMock)}
   >
@@ -43,6 +45,25 @@ describe('RequestSummaryCard', () => {
     expect(await findByTestId('RequestSummaryCard-status')).toHaveTextContent(
       'Your gross request is within your Maximum Allowable Salary.',
     );
+  });
+
+  describe('board cap exception', () => {
+    it('renders status message and textfield', async () => {
+      const { findByTestId } = render(
+        <TestComponent
+          hcmMock={{
+            exceptionSalaryCap: { boardCapException: true },
+          }}
+        />,
+      );
+
+      expect(await findByTestId('RequestSummaryCard-status')).toHaveTextContent(
+        "You have a Board approved Maximum Allowable Salary (CAP) \
+and the salary request you submitted exceeds that amount. \
+As a result we need to get their approval for this request. \
+We'll forward your request to them and get back to you with their decision.",
+      );
+    });
   });
 
   describe('user over cap', () => {
@@ -128,7 +149,7 @@ This may affect your selected effective date.',
       expect(
         getByTestId('RequestSummaryCard-requestedVsMax'),
       ).toHaveTextContent(
-        'Combined Gross Salary / Max Allowable Salary$30,008.00 / $30,010.00',
+        'Combined Gross Salary / Max Allowable Salary$30,008.00 / $10,006.00',
       ),
     );
   });
@@ -138,7 +159,7 @@ This may affect your selected effective date.',
 
     await waitFor(() =>
       expect(getByTestId('RequestSummaryCard-remaining')).toHaveTextContent(
-        'Remaining in Combined Max Allowable Salary$2.00',
+        'Remaining in Combined Max Allowable Salary-$20,002.00',
       ),
     );
   });
@@ -215,12 +236,12 @@ This may affect your selected effective date.',
         expect(
           getByTestId('RequestSummaryCard-requestedVsMax'),
         ).toHaveTextContent(
-          'Your Gross Requested Salary / Max Allowable Salary$10,004.00 / $10,005.00',
+          'Your Gross Requested Salary / Max Allowable Salary$10,004.00 / $10,006.00',
         ),
       );
 
       expect(getByTestId('RequestSummaryCard-remaining')).toHaveTextContent(
-        'Remaining in Max Allowable Salary$1.00',
+        'Remaining in Max Allowable Salary$2.00',
       );
 
       expect(

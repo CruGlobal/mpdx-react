@@ -24,8 +24,9 @@ export const ReceiptStep: React.FC = () => {
   const accountListId = useAccountListId();
   const { t } = useTranslation();
   const { formatCurrency } = useFormatters();
-  const { calculation } = useSalaryCalculator();
+  const { hcmUser, calculation } = useSalaryCalculator();
   const progressiveApprovalTier = calculation?.progressiveApprovalTier;
+  const boardCapException = hcmUser?.exceptionSalaryCap.boardCapException;
   const { combinedGross } = useCaps();
 
   const [showReceipt, setShowReceipt] = useState(false);
@@ -43,7 +44,14 @@ export const ReceiptStep: React.FC = () => {
           {t("You've successfully submitted your Salary Calculation Form!")}
         </Typography>
         <Typography data-testid="Receipt-message" variant="body2">
-          {progressiveApprovalTier ? (
+          {boardCapException ? (
+            <Trans t={t}>
+              You have a Board approved Maximum Allowable Salary (CAP) and the
+              salary request you submitted exceeds that amount. As a result we
+              need to get their approval for this request. We&apos;ll forward
+              your request to them and get back to you with their decision.
+            </Trans>
+          ) : progressiveApprovalTier ? (
             <Trans t={t}>
               Because your request exceeds your maximum allowable salary it will
               require additional approvals. For the {{ requestedAmount }} you

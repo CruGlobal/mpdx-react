@@ -98,9 +98,9 @@ export const MaxAllowableStep: React.FC = () => {
         <Typography variant="body1">
           {calculations?.exceptionCap ? (
             <Trans t={t}>
-              You have a Board-approved Maximum Allowable Salary (CAP). Any
+              You have a previously approved Maximum Allowable Salary (CAP). Any
               adjustment that may exceed this cap must be submitted for further
-              Board approval.
+              approval.
             </Trans>
           ) : (
             <Trans t={t}>
