@@ -1,5 +1,5 @@
 import React, { forwardRef, useMemo } from 'react';
-import { HourglassDisabled } from '@mui/icons-material';
+import { ErrorOutline, HourglassDisabled } from '@mui/icons-material';
 import {
   Paper,
   Table,
@@ -9,18 +9,20 @@ import {
   TableHead,
   TableRow,
 } from '@mui/material';
-import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { TableVirtuoso, TableVirtuosoProps } from 'react-virtuoso';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { headerHeight } from 'src/components/Shared/Header/ListHeader';
+import { MinistryPartnerReminderFrequencyEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { EmptyTable } from '../../Shared/EmptyTable/EmptyTable';
-import { ReminderData, ReminderStatusEnum } from '../mockData';
+import { ReminderData } from '../mockData';
 import { RemindersTableRow } from './RemindersTableRow';
 
+const tableVirtuosoPadding = '62px';
+
 export type RowValues = {
-  status: Record<string, ReminderStatusEnum>;
+  status: Record<string, MinistryPartnerReminderFrequencyEnum>;
 };
 interface HeaderProps {
   partner: string;
@@ -40,116 +42,111 @@ const Body = forwardRef<HTMLTableSectionElement>((props, ref) => (
 ));
 Body.displayName = 'Body';
 
-const TableComponents: TableVirtuosoProps<HeaderProps, unknown>['components'] =
-  {
-    Scroller,
-    Table: (props) => (
-      <Table
-        {...props}
-        sx={{
-          '& .MuiTableCell-root': { borderBottom: 'none' },
-          '& .MuiTableCell-head': {
-            position: 'sticky',
-            top: 0,
-            zIndex: (t) => t.zIndex.appBar,
-            backgroundColor: 'background.paper',
-            boxShadow: (t) => `inset 0 -1px 0 ${t.palette.divider}`,
-          },
-          tableLayout: 'fixed',
-          minWidth: 730,
-        }}
-      />
-    ),
-    TableHead,
-    TableBody: Body,
-    TableRow: (props) => {
-      const index = props['data-index'] ?? 0;
-      const even = index % 2 === 0;
-      return (
-        <TableRow
-          {...props}
-          style={{
-            ...props.style,
-            backgroundColor: even
-              ? theme.palette.chipBlueLight.main
-              : 'inherit',
-          }}
-        />
-      );
-    },
-
-    EmptyPlaceholder: () => (
-      <TableRow>
-        <TableCell colSpan={4}>
-          <EmptyTable
-            title={'No ministry partners to display'}
-            subtitle={'Add a ministry partner to get started'}
-            icon={HourglassDisabled}
-          />
-        </TableCell>
-      </TableRow>
-    ),
-  };
 interface RemindersTableProps {
   data: ReminderData[];
-  hasNextPage: boolean;
-  endCursor: string;
-  fetchMore: (args: { variables: { after: string } }) => void;
+  error?: Error | null;
 }
 
 export const RemindersTable: React.FC<RemindersTableProps> = ({
   data,
-  hasNextPage,
-  endCursor,
-  fetchMore,
+  error,
 }) => {
   const { t } = useTranslation();
 
+  const noDesignation = error?.message.includes(
+    'Designation account not found',
+  );
   const isEmpty = !data.length;
 
-  const initialValues = useMemo(
+  const TableComponents: TableVirtuosoProps<
+    HeaderProps,
+    unknown
+  >['components'] = useMemo(
     () => ({
-      status: Object.fromEntries(
-        data.map((row) => [
-          row.id,
-          row.status ?? ReminderStatusEnum.NotReminded,
-        ]),
+      Scroller,
+      Table: (props) => (
+        <Table
+          {...props}
+          sx={{
+            '& .MuiTableCell-root': { borderBottom: 'none' },
+            '& .MuiTableCell-head': {
+              position: 'sticky',
+              top: 0,
+              zIndex: (t) => t.zIndex.appBar,
+              backgroundColor: 'background.paper',
+              boxShadow: (t) => `inset 0 -1px 0 ${t.palette.divider}`,
+            },
+            tableLayout: 'fixed',
+            minWidth: 730,
+          }}
+        />
+      ),
+      TableHead,
+      TableBody: Body,
+      TableRow: (props) => {
+        const index = props['data-index'] ?? 0;
+        const even = index % 2 === 0;
+        return (
+          <TableRow
+            {...props}
+            style={{
+              ...props.style,
+              backgroundColor: even
+                ? theme.palette.chipBlueLight.main
+                : 'inherit',
+            }}
+          />
+        );
+      },
+
+      EmptyPlaceholder: () => (
+        <TableRow>
+          <TableCell colSpan={4}>
+            <EmptyTable
+              title={
+                noDesignation
+                  ? t('No designation account found')
+                  : t('No ministry partners found')
+              }
+              subtitle={
+                noDesignation
+                  ? t(
+                      'This account is not associated with a designation account number',
+                    )
+                  : t('Add a ministry partner to get started')
+              }
+              icon={noDesignation ? ErrorOutline : HourglassDisabled}
+            />
+          </TableCell>
+        </TableRow>
       ),
     }),
-    [data],
+    [noDesignation, t],
   );
 
   return (
-    <Formik<RowValues> initialValues={initialValues} onSubmit={() => {}}>
-      <TableVirtuoso
-        data={data}
-        style={{
-          height: isEmpty
-            ? 390
-            : `calc(100vh - ${navBarHeight} - ${headerHeight} - 62px)`,
-          scrollbarWidth: 'none',
-        }}
-        components={TableComponents}
-        fixedHeaderContent={() => (
-          <TableRow>
-            <TableCell sx={{ width: '35%' }}>{t('Ministry Partner')}</TableCell>
-            <TableCell sx={{ width: '20%' }}>{t('Last Gift')}</TableCell>
-            <TableCell sx={{ width: '20%' }}>{t('Last Reminder')}</TableCell>
-            <TableCell id="status-col" sx={{ width: '25%' }}>
-              {t('Reminder Status')}
-            </TableCell>
-          </TableRow>
-        )}
-        itemContent={(_, row) => (
-          <RemindersTableRow key={row.id} id={row.id} row={row} />
-        )}
-        endReached={() =>
-          hasNextPage &&
-          fetchMore({
-            variables: { after: endCursor },
-          })
-        }
-      />
-    </Formik>
+    <TableVirtuoso
+      data={data}
+      style={{
+        height: isEmpty
+          ? 390
+          : `calc(100vh - ${navBarHeight} - ${headerHeight} - ${tableVirtuosoPadding})`,
+        scrollbarWidth: 'none',
+      }}
+      components={TableComponents}
+      fixedHeaderContent={() => (
+        <TableRow>
+          <TableCell sx={{ width: '35%' }}>{t('Ministry Partner')}</TableCell>
+          <TableCell sx={{ width: '20%' }}>{t('Last Gift')}</TableCell>
+          <TableCell sx={{ width: '20%' }}>{t('Last Reminder')}</TableCell>
+          <TableCell id="status-col" sx={{ width: '25%' }}>
+            {t('Reminder Status')}
+          </TableCell>
+        </TableRow>
+      )}
+      itemContent={(_, row) => (
+        <RemindersTableRow key={row.id} id={row.id} row={row} />
+      )}
+    />
   );
 };

@@ -1,19 +1,30 @@
-import { PledgeFrequencyEnum } from 'src/graphql/types.generated';
+import { MinistryPartnerReminderFrequencyEnum } from 'src/graphql/types.generated';
 import { ReminderStatusEnum } from '../mockData';
 
+const enumMap: Record<
+  MinistryPartnerReminderFrequencyEnum,
+  ReminderStatusEnum
+> = {
+  [MinistryPartnerReminderFrequencyEnum.NotReminded]:
+    ReminderStatusEnum.NotReminded,
+  [MinistryPartnerReminderFrequencyEnum.Monthly]: ReminderStatusEnum.Monthly,
+  [MinistryPartnerReminderFrequencyEnum.Bimonthly]:
+    ReminderStatusEnum.BiMonthly,
+  [MinistryPartnerReminderFrequencyEnum.Quarterly]:
+    ReminderStatusEnum.Quarterly,
+  [MinistryPartnerReminderFrequencyEnum.SemiAnnually]:
+    ReminderStatusEnum.SemiAnnual,
+  [MinistryPartnerReminderFrequencyEnum.Annually]: ReminderStatusEnum.Annual,
+  [MinistryPartnerReminderFrequencyEnum.DoNotRemind]:
+    ReminderStatusEnum.DoNotRemind,
+};
+
 export function getReminderStatus(
-  pledgeFrequency: PledgeFrequencyEnum | undefined,
+  reminderFrequency: MinistryPartnerReminderFrequencyEnum | undefined,
 ): ReminderStatusEnum {
-  if (pledgeFrequency === PledgeFrequencyEnum.Monthly) {
-    return ReminderStatusEnum.Monthly;
-  } else if (pledgeFrequency === PledgeFrequencyEnum.Every_2Months) {
-    return ReminderStatusEnum.BiMonthly;
-  } else if (pledgeFrequency === PledgeFrequencyEnum.Quarterly) {
-    return ReminderStatusEnum.Quarterly;
-  } else if (pledgeFrequency === PledgeFrequencyEnum.Every_6Months) {
-    return ReminderStatusEnum.SemiAnnual;
-  } else if (pledgeFrequency === PledgeFrequencyEnum.Annual) {
-    return ReminderStatusEnum.Annual;
+  if (!reminderFrequency) {
+    return ReminderStatusEnum.NotReminded;
   }
-  return ReminderStatusEnum.NotReminded;
+
+  return enumMap[reminderFrequency];
 }
