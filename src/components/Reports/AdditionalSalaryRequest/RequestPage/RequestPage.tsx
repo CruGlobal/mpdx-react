@@ -43,6 +43,7 @@ const MainContent: React.FC = () => {
     loading,
     trackMutation,
     user,
+    setIsNewAsr,
   } = useAdditionalSalaryRequest();
 
   const [createRequest] = useCreateAdditionalSalaryRequestMutation();
@@ -60,10 +61,11 @@ const MainContent: React.FC = () => {
               emailAddress: user?.staffInfo?.emailAddress,
             },
           },
-          // refetchQueries: ['AdditionalSalaryRequest'],
+          refetchQueries: ['AdditionalSalaryRequest'],
         }),
       );
       setPageType(PageEnum.New);
+      setIsNewAsr(true);
     } else {
       setPageType(PageEnum.Edit);
     }

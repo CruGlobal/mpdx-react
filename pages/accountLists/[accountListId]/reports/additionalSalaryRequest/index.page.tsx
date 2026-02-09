@@ -5,9 +5,9 @@ import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
+import { AdditionalSalaryRequest } from 'src/components/Reports/AdditionalSalaryRequest/AdditionalSalaryRequest';
 import { InProgressDisplay } from 'src/components/Reports/AdditionalSalaryRequest/MainPages/InProgress/InProgressDisplay';
 import { IneligiblePage } from 'src/components/Reports/AdditionalSalaryRequest/MainPages/IneligiblePage';
-import { OverviewPage } from 'src/components/Reports/AdditionalSalaryRequest/MainPages/OverviewPage';
 import { RequestPage } from 'src/components/Reports/AdditionalSalaryRequest/RequestPage/RequestPage';
 import {
   AdditionalSalaryRequestProvider,
@@ -43,10 +43,10 @@ const FormikRequestPage: React.FC = () => {
   );
 };
 
-type RouteType = 'ineligible' | 'overview' | 'continue' | 'request';
+type RouteType = 'ineligible' | 'overview' | 'continue' | 'request' | 'view';
 
 const useCurrentRoute = (): RouteType | null => {
-  const { requestData, loading } = useAdditionalSalaryRequest();
+  const { requestData, loading, pageType } = useAdditionalSalaryRequest();
 
   // if (user?.asrEit?.asrEligibility === false) {
   //   return 'ineligible';
@@ -54,6 +54,10 @@ const useCurrentRoute = (): RouteType | null => {
 
   if (loading) {
     return null;
+  }
+
+  if (pageType === PageEnum.View) {
+    return 'request';
   }
 
   if (!requestData) {
@@ -74,7 +78,7 @@ const useCurrentRoute = (): RouteType | null => {
 
 const AdditionalSalaryRequestRouter: React.FC = () => {
   const currentRoute = useCurrentRoute();
-  const { pageType } = useAdditionalSalaryRequest();
+  const { pageType, isNewAsr } = useAdditionalSalaryRequest();
 
   const isEdit = pageType === PageEnum.Edit;
 
@@ -86,9 +90,10 @@ const AdditionalSalaryRequestRouter: React.FC = () => {
     case 'ineligible':
       return <IneligiblePage />;
     case 'overview':
-      return <OverviewPage />;
+      return <AdditionalSalaryRequest />;
     case 'continue':
-      return isEdit ? <FormikRequestPage /> : <InProgressDisplay />;
+      return isEdit || isNewAsr ? <FormikRequestPage /> : <InProgressDisplay />;
+    case 'view':
     case 'request':
       return <FormikRequestPage />;
   }

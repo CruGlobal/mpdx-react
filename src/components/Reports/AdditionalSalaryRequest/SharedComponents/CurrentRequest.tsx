@@ -47,7 +47,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
       icon={AttachMoney}
       iconColor="warning.main"
       linkOneText={t('View Request')}
-      onLinkOneClick={() => setPageType(PageEnum.View)}
+      handleLinkOne={() => setPageType(PageEnum.View)}
       hideLinkTwoButton={true}
       isRequest={true}
       handleConfirmCancel={() => handleDeleteRequest(id, true)}

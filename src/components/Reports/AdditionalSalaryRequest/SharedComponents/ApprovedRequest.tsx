@@ -37,7 +37,7 @@ export const ApprovedRequest: React.FC<ApprovedRequestProps> = ({
       icon={AttachMoney}
       iconColor="success.main"
       linkOneText={t('View Current ASR')}
-      onLinkOneClick={() => setPageType(PageEnum.View)}
+      handleLinkOne={() => setPageType(PageEnum.View)}
       linkTwoText={t("Duplicate Last Year's ASR")}
       linkTwo=""
       isRequest={false}

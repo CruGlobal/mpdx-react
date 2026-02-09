@@ -55,6 +55,8 @@ export type AdditionalSalaryRequestType = {
   roth403bPercentage: number;
   isMutating: boolean;
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
+  isNewAsr: boolean;
+  setIsNewAsr: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const AdditionalSalaryRequestContext =
@@ -89,6 +91,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   const [pageType, setPageType] = useState<PageEnum>(
     initialPageType ?? PageEnum.New,
   );
+
+  const [isNewAsr, setIsNewAsr] = useState(false);
 
   const {
     steps,
@@ -137,6 +141,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
           if (!isCancel) {
             resetSteps();
             setPageType(PageEnum.New);
+            setIsNewAsr(true);
           }
 
           enqueueSnackbar(
@@ -201,6 +206,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       roth403bPercentage,
       isMutating,
       trackMutation,
+      isNewAsr,
+      setIsNewAsr,
     }),
     [
       staffAccountId,
@@ -228,6 +235,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       roth403bPercentage,
       isMutating,
       trackMutation,
+      isNewAsr,
     ],
   );
 
