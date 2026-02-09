@@ -6,7 +6,7 @@ import * as yup from 'yup';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import i18n from 'src/lib/i18n';
-import { amount } from 'src/lib/yupHelpers';
+import { amount, phoneNumber } from 'src/lib/yupHelpers';
 import theme from 'src/theme';
 import { CompleteFormValues } from './AdditionalSalaryRequest';
 import { AdditionalSalaryRequestProvider } from './Shared/AdditionalSalaryRequestContext';
@@ -57,10 +57,9 @@ const validationSchema = yup.object({
   ),
   deductTaxDeferredPercent: yup.boolean(),
   deductRothPercent: yup.boolean(),
-  phoneNumber: yup
-    .string()
-    .required('Telephone number is required')
-    .matches(/^[\d\s\-\(\)\+]+$/, 'Please enter a valid telephone number'),
+  phoneNumber: phoneNumber(i18n.t).required(
+    i18n.t('Phone Number is required.'),
+  ),
   emailAddress: yup
     .string()
     .required('Email address is required')
