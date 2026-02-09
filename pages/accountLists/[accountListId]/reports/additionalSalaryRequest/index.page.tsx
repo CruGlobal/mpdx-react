@@ -46,17 +46,17 @@ const FormikRequestPage: React.FC = () => {
 type InitialRoute = 'ineligible' | 'overview' | 'continue' | 'request';
 
 const useInitialRoute = (): InitialRoute | null => {
-  const { requestData, loading, user } = useAdditionalSalaryRequest();
+  const { requestData, loading } = useAdditionalSalaryRequest();
   const initialRouteRef = useRef<InitialRoute | null>(null);
 
   if (initialRouteRef.current !== null) {
     return initialRouteRef.current;
   }
 
-  if (user?.asrEit?.asrEligibility === false) {
-    initialRouteRef.current = 'ineligible';
-    return initialRouteRef.current;
-  }
+  // if (user?.asrEit?.asrEligibility === false) {
+  //   initialRouteRef.current = 'ineligible';
+  //   return initialRouteRef.current;
+  // }
 
   if (loading) {
     return null;
