@@ -39,6 +39,7 @@ const mockContextValue = {
   trackMutation: jest.fn(),
   loading: false,
   traditional403bPercentage: 0,
+  roth403bPercentage: 0,
 };
 
 describe('StepList', () => {

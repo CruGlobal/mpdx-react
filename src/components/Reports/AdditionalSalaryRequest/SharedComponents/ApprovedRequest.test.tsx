@@ -43,6 +43,7 @@ const mockRequest: RequestType = {
   autoPurchase: 0,
   expensesNotApprovedWithin90Days: 0,
   deductTaxDeferredPercent: false,
+  deductRothPercent: false,
   phoneNumber: '123-456-7890',
   personNumber: 'person-123',
   updatedAt: '2025-06-15T00:00:00.000Z',
@@ -100,6 +101,7 @@ const mockContextValue = {
   trackMutation: jest.fn(),
   remainingAllowableSalary: 0,
   traditional403bPercentage: 0,
+  roth403bPercentage: 0,
 };
 
 const TestComponent: React.FC<{ request: RequestType }> = ({ request }) => (

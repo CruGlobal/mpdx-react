@@ -69,6 +69,7 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   isMutating: false,
   trackMutation: jest.fn((mutation) => mutation),
   traditional403bPercentage: 0,
+  roth403bPercentage: 0,
 };
 
 const defaultFormValues: CompleteFormValues = {
@@ -89,6 +90,7 @@ const defaultFormValues: CompleteFormValues = {
   autoPurchase: '0',
   expensesNotApprovedWithin90Days: '0',
   deductTaxDeferredPercent: false,
+  deductRothPercent: false,
   phoneNumber: '',
   totalAdditionalSalaryRequested: '0',
   emailAddress: '',

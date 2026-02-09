@@ -37,6 +37,7 @@ export interface CompleteFormValues {
   autoPurchase: string;
   expensesNotApprovedWithin90Days: string;
   deductTaxDeferredPercent: boolean;
+  deductRothPercent: boolean;
   phoneNumber: string;
   totalAdditionalSalaryRequested: string;
   additionalInfo: string;
