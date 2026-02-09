@@ -112,8 +112,8 @@ const MainContent: React.FC = () => {
             <Stack direction="column" width={mainContentWidth}>
               <DirectionButtons
                 formTitle={t('Additional Salary Request')}
-                overrideTitle={capTitle}
-                overrideContent={capContent}
+                overrideTitle={exceedsCap ? capTitle : undefined}
+                overrideContent={exceedsCap ? capContent : undefined}
                 overrideSubContent={
                   exceedsCap ? (
                     <CapSubContent />

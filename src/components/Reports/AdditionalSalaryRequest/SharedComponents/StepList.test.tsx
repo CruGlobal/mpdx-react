@@ -1,4 +1,6 @@
 import { render, waitFor } from '@testing-library/react';
+import { PageEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
+import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
 import { AdditionalSalaryRequestTestWrapper } from '../AdditionalSalaryRequestTestWrapper';
 import { EditForm } from '../FormVersions/Edit/EditForm';
@@ -10,6 +12,31 @@ jest.mock('../Shared/AdditionalSalaryRequestContext', () => ({
   ...jest.requireActual('../Shared/AdditionalSalaryRequestContext'),
   useAdditionalSalaryRequest: jest.fn(),
 }));
+
+const defaultInitialValues: CompleteFormValues = {
+  currentYearSalaryNotReceived: '0',
+  previousYearSalaryNotReceived: '0',
+  additionalSalaryWithinMax: '0',
+  adoption: '0',
+  traditional403bContribution: '0',
+  roth403bContribution: '0',
+  counselingNonMedical: '0',
+  healthcareExpensesExceedingLimit: '0',
+  babysittingMinistryEvents: '0',
+  childrenMinistryTripExpenses: '0',
+  childrenCollegeEducation: '0',
+  movingExpense: '0',
+  seminary: '0',
+  housingDownPayment: '0',
+  autoPurchase: '0',
+  expensesNotApprovedWithin90Days: '0',
+  deductTaxDeferredPercent: false,
+  deductRothPercent: false,
+  phoneNumber: '',
+  totalAdditionalSalaryRequested: '0',
+  emailAddress: '',
+  additionalInfo: '',
+};
 
 const mockUseAdditionalSalaryRequest =
   useAdditionalSalaryRequest as jest.MockedFunction<
@@ -88,11 +115,14 @@ describe('StepList', () => {
 
       const { getByText } = render(<TestComponent />);
 
-      await waitFor(() =>
+      await waitFor(() => {
         expect(
           getByText('Thank you for Submitting your Additional Salary Request!'),
-        ).toBeInTheDocument(),
-      );
+        ).toBeInTheDocument();
+        expect(
+          getByText(/your request has been sent to payroll/i),
+        ).toBeInTheDocument();
+      });
     });
   });
 
@@ -133,15 +163,19 @@ describe('StepList', () => {
       mockUseAdditionalSalaryRequest.mockReturnValue({
         ...mockContextValue,
         currentIndex: 2,
+        pageType: PageEnum.Edit,
       });
 
       const { getByText } = render(<TestComponent />);
 
-      await waitFor(() =>
+      await waitFor(() => {
         expect(
-          getByText('Thank you for Submitting your Additional Salary Request!'),
-        ).toBeInTheDocument(),
-      );
+          getByText('Thank you for updating your Additional Salary Request!'),
+        ).toBeInTheDocument();
+        expect(
+          getByText(/we will review your updated request/i),
+        ).toBeInTheDocument();
+      });
     });
   });
 
@@ -162,5 +196,33 @@ describe('StepList', () => {
     expect(
       queryByText('Thank you for Submitting your Additional Salary Request!'),
     ).not.toBeInTheDocument();
+  });
+
+  describe('Exceeds cap', () => {
+    it('renders exceeds cap text when true', async () => {
+      mockUseAdditionalSalaryRequest.mockReturnValue({
+        ...mockContextValue,
+        currentIndex: 2,
+      });
+
+      const { getByText } = render(
+        <AdditionalSalaryRequestTestWrapper
+          initialValues={{
+            ...defaultInitialValues,
+            currentYearSalaryNotReceived: '1000',
+          }}
+        >
+          <StepList FormComponent={NewForm} />
+        </AdditionalSalaryRequestTestWrapper>,
+      );
+
+      await waitFor(() => {
+        expect(
+          getByText(
+            /because your request exceeds your remaining allowable salary/i,
+          ),
+        ).toBeInTheDocument();
+      });
+    });
   });
 });

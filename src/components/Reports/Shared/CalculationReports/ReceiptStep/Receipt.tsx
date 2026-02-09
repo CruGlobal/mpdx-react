@@ -1,7 +1,7 @@
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import { Dispatch, SetStateAction } from 'react';
-import { Edit, RemoveRedEyeSharp } from '@mui/icons-material';
+import { RemoveRedEyeSharp, SwapHorizSharp } from '@mui/icons-material';
 import { Alert, Box, Button, Link, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
@@ -12,7 +12,7 @@ interface ReceiptProps {
   formTitle: string;
   buttonText: string;
   buttonLink: string;
-  alertText?: string;
+  alertText?: string | React.ReactNode;
   linkOne?: string;
   linkOneText?: string;
   viewLink?: string;
@@ -79,23 +79,25 @@ export const Receipt: React.FC<ReceiptProps> = ({
           </Typography>
         </Box>
       </Alert>
-      {linkOne && (
-        <Box sx={{ mt: 4 }}>
-          <Edit
+      <Box sx={{ mt: 4 }}>
+        {linkOne && (
+          <>
+            <SwapHorizSharp
+              fontSize="small"
+              sx={{ verticalAlign: 'middle', opacity: 0.56 }}
+            />{' '}
+            <Link href={linkOne}>{linkOneText}</Link>
+          </>
+        )}
+        <Box sx={{ mt: linkOne ? 2 : 0 }}>
+          <RemoveRedEyeSharp
             fontSize="small"
             sx={{ verticalAlign: 'middle', opacity: 0.56 }}
           />{' '}
-          <Link href={linkOne}>{linkOneText}</Link>
+          <Link onClick={handlePrint} sx={{ cursor: 'pointer' }}>
+            {t(`View or print a copy of your submitted ${formTitle}`)}
+          </Link>
         </Box>
-      )}
-      <Box sx={{ mt: 4 }}>
-        <RemoveRedEyeSharp
-          fontSize="small"
-          sx={{ verticalAlign: 'middle', opacity: 0.56 }}
-        />{' '}
-        <Link onClick={handlePrint} sx={{ cursor: 'pointer' }}>
-          {t(`View or print a copy of your submitted ${formTitle}`)}
-        </Link>
       </Box>
       <Box sx={{ mt: 4 }}>
         <Button component={NextLink} href={buttonLink} variant="contained">

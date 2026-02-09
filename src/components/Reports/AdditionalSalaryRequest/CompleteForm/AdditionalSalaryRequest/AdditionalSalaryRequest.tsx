@@ -28,7 +28,7 @@ export const AdditionalSalaryRequest: React.FC = () => {
 
   const { pageType } = useAdditionalSalaryRequest();
   const categories = useCompleteFormCategories();
-  const { values, errors, touched } = useFormikContext<CompleteFormValues>();
+  const { values, errors } = useFormikContext<CompleteFormValues>();
 
   const { total } = useSalaryCalculations({
     values,
@@ -72,8 +72,14 @@ export const AdditionalSalaryRequest: React.FC = () => {
                     width: '30%',
                     textAlign: 'center',
                     border:
-                      touched[key as keyof CompleteFormValues] &&
-                      errors[key as keyof CompleteFormValues]
+                      [
+                        'adoption',
+                        'childrenCollegeEducation',
+                        'housingDownPayment',
+                        'autoPurchase',
+                      ].includes(key) &&
+                      errors[key as keyof CompleteFormValues] &&
+                      values[key] !== null
                         ? '2px solid red'
                         : '',
                   }}
