@@ -50,6 +50,7 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   loading: false,
   requestError: undefined,
   pageType: PageEnum.New,
+  setPageType: jest.fn(),
   handleDeleteRequest: jest.fn(),
   requestId: 'test-request-id',
   user: undefined,

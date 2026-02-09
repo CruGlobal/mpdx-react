@@ -70,6 +70,7 @@ const defaultMockContextValue = {
   requestData: null,
   requestError: undefined,
   pageType: PageEnum.New,
+  setPageType: jest.fn(),
   handleDeleteRequest: mockHandleDeleteRequest,
   requestId: 'test-request-id',
   user: {
@@ -255,7 +256,7 @@ describe('RequestPage', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('calls handleDeleteRequest when discard is clicked and navigates back', async () => {
+  it('calls handleDeleteRequest when discard is clicked', async () => {
     const { getByRole } = render(<TestWrapper />);
 
     const discardButton = getByRole('button', { name: /discard/i });
@@ -268,9 +269,6 @@ describe('RequestPage', () => {
       expect(mockHandleDeleteRequest).toHaveBeenCalledWith(
         'test-request-id',
         false,
-      );
-      expect(mockPush).toHaveBeenCalledWith(
-        '/accountLists/account-list-1/reports/additionalSalaryRequest',
       );
     });
   });

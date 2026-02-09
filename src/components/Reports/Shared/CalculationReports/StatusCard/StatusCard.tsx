@@ -27,6 +27,7 @@ interface StatusCardProps {
   children: React.ReactNode;
   linkOneText?: string;
   linkOne?: string;
+  onLinkOneClick?: () => void;
   linkTwoText?: string;
   linkTwo?: string;
   isRequest?: boolean;
@@ -48,6 +49,7 @@ export const StatusCard: React.FC<StatusCardProps> = ({
   children,
   linkOneText,
   linkOne,
+  onLinkOneClick,
   linkTwoText,
   linkTwo,
   isRequest,
@@ -114,6 +116,7 @@ export const StatusCard: React.FC<StatusCardProps> = ({
           <Button
             component={NextLink}
             href={linkOne ?? ''}
+            onClick={onLinkOneClick}
             variant={isRequest ? 'contained' : 'outlined'}
             sx={{ px: 2, py: 1, mr: 1 }}
           >

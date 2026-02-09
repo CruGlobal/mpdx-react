@@ -2,13 +2,12 @@ import { AttachMoney } from '@mui/icons-material';
 import { Grid, Skeleton, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormatShort } from 'src/lib/intlFormat';
+import { PageEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { StatusCard } from '../../Shared/CalculationReports/StatusCard/StatusCard';
 import { AdditionalSalaryRequestQuery } from '../AdditionalSalaryRequest.generated';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
-import { getRequestUrl } from '../Shared/Helper/getRequestUrl';
 
 interface ApprovedRequestProps {
   request: NonNullable<
@@ -21,13 +20,12 @@ export const ApprovedRequest: React.FC<ApprovedRequestProps> = ({
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const accountListId = useAccountListId();
   const currency = 'USD';
 
-  const { user, spouse } = useAdditionalSalaryRequest();
+  const { user, spouse, setPageType } = useAdditionalSalaryRequest();
   const preferredName = user?.staffInfo?.preferredName;
   const spousePreferredName = spouse?.staffInfo?.preferredName;
-  const { id, totalAdditionalSalaryRequested, usingSpouseSalary, approvedAt } =
+  const { totalAdditionalSalaryRequested, usingSpouseSalary, approvedAt } =
     request;
 
   return (
@@ -39,7 +37,7 @@ export const ApprovedRequest: React.FC<ApprovedRequestProps> = ({
       icon={AttachMoney}
       iconColor="success.main"
       linkOneText={t('View Current ASR')}
-      linkOne={getRequestUrl(accountListId, id, 'view')}
+      onLinkOneClick={() => setPageType(PageEnum.View)}
       linkTwoText={t("Duplicate Last Year's ASR")}
       linkTwo=""
       isRequest={false}

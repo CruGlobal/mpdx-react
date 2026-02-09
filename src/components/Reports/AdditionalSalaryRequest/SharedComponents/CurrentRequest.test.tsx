@@ -1,5 +1,6 @@
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { AsrStatusEnum } from 'src/graphql/types.generated';
 import { AdditionalSalaryRequestQuery } from '../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
@@ -84,7 +85,8 @@ const mockContextValue = {
   requestData: null,
   loading: false,
   requestError: undefined,
-  pageType: undefined,
+  pageType: PageEnum.New,
+  setPageType: jest.fn(),
   handleDeleteRequest: mockHandleDeleteRequest,
   requestId: undefined,
   user: {

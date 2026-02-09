@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 import React, { useMemo } from 'react';
 import { Box, Stack } from '@mui/material';
 import { useFormikContext } from 'formik';
@@ -30,8 +29,6 @@ import { CapSubContent } from './CapSubContent';
 
 const MainContent: React.FC = () => {
   const { t } = useTranslation();
-  const router = useRouter();
-  const accountListId = useAccountListId();
 
   const {
     handlePreviousStep,
@@ -42,6 +39,7 @@ const MainContent: React.FC = () => {
     requestId,
     requestData,
     pageType,
+    setPageType,
     loading,
     trackMutation,
     user,
@@ -62,9 +60,12 @@ const MainContent: React.FC = () => {
               emailAddress: user?.staffInfo?.emailAddress,
             },
           },
-          refetchQueries: ['AdditionalSalaryRequest'],
+          // refetchQueries: ['AdditionalSalaryRequest'],
         }),
       );
+      setPageType(PageEnum.New);
+    } else {
+      setPageType(PageEnum.Edit);
     }
     handleNextStep();
   };
@@ -76,9 +77,6 @@ const MainContent: React.FC = () => {
   const handleDiscard = async () => {
     if (requestId) {
       await handleDeleteRequest(requestId, false);
-      router.push(
-        `/accountLists/${accountListId}/reports/additionalSalaryRequest`,
-      );
     }
   };
 

@@ -1,4 +1,5 @@
 import { render, waitFor } from '@testing-library/react';
+import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
 import { AdditionalSalaryRequestTestWrapper } from '../AdditionalSalaryRequestTestWrapper';
 import { EditForm } from '../FormVersions/Edit/EditForm';
@@ -28,7 +29,8 @@ const mockContextValue = {
   toggleDrawer: jest.fn(),
   requestData: null,
   requestError: undefined,
-  pageType: undefined,
+  pageType: PageEnum.New,
+  setPageType: jest.fn(),
   handleDeleteRequest: jest.fn(),
   requestId: undefined,
   user: undefined,
@@ -98,7 +100,7 @@ describe('StepList', () => {
 
   describe('with EditForm', () => {
     const TestComponent: React.FC = () => (
-      <AdditionalSalaryRequestTestWrapper pageType="edit">
+      <AdditionalSalaryRequestTestWrapper pageType={PageEnum.Edit}>
         <StepList FormComponent={EditForm} />
       </AdditionalSalaryRequestTestWrapper>
     );

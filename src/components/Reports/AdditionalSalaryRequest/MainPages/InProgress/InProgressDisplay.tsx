@@ -1,20 +1,20 @@
-import NextLink from 'next/link';
 import { SwapHorizSharp } from '@mui/icons-material';
 import { Box, Button, Link, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import { PanelLayout } from '../../../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { useIconPanelItems } from '../../../Shared/CalculationReports/PanelLayout/useIconPanelItems';
-import { PanelTypeEnum } from '../../../Shared/CalculationReports/Shared/sharedTypes';
+import {
+  PageEnum,
+  PanelTypeEnum,
+} from '../../../Shared/CalculationReports/Shared/sharedTypes';
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
 
 // TODO: Implement spouse request link
 
 const InProgressMainContent: React.FC = () => {
   const { t } = useTranslation();
-  const accountListId = useAccountListId();
 
-  const { handleDeleteRequest, requestId, spouse } =
+  const { handleDeleteRequest, requestId, spouse, setPageType } =
     useAdditionalSalaryRequest();
 
   return (
@@ -29,9 +29,8 @@ const InProgressMainContent: React.FC = () => {
       </Typography>
       <Box sx={{ mt: 4, display: 'flex', gap: 1 }}>
         <Button
-          component={NextLink}
-          href={`/accountLists/${accountListId}/reports/additionalSalaryRequest?mode=edit`}
           variant="contained"
+          onClick={() => setPageType(PageEnum.Edit)}
         >
           {t('Continue Request')}
         </Button>

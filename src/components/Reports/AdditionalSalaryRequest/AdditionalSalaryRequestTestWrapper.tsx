@@ -5,18 +5,18 @@ import { I18nextProvider } from 'react-i18next';
 import * as yup from 'yup';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import i18n from 'src/lib/i18n';
 import { amount, phoneNumber } from 'src/lib/yupHelpers';
 import theme from 'src/theme';
 import { CompleteFormValues } from './AdditionalSalaryRequest';
 import { AdditionalSalaryRequestProvider } from './Shared/AdditionalSalaryRequestContext';
 import { fieldConfig } from './Shared/useAdditionalSalaryRequestForm';
-// ...existing code...
 
 interface AdditionalSalaryRequestTestWrapperProps {
   children?: React.ReactNode;
   initialValues?: CompleteFormValues;
-  pageType?: 'new' | 'edit' | 'view';
+  pageType?: PageEnum;
   traditionalDeductionPercentage?: number;
   rothDeductionPercentage?: number;
   onCall?: jest.Mock;
@@ -99,7 +99,7 @@ export const AdditionalSalaryRequestTestWrapper: React.FC<
 > = ({
   children,
   initialValues,
-  pageType = 'new',
+  pageType = PageEnum.New,
   traditionalDeductionPercentage = 0,
   rothDeductionPercentage = 0,
   onCall,
@@ -115,7 +115,6 @@ export const AdditionalSalaryRequestTestWrapper: React.FC<
             router={{
               query: {
                 accountListId: 'account-list-1',
-                mode: pageType,
               },
               push: mockPush,
             }}
@@ -153,7 +152,10 @@ export const AdditionalSalaryRequestTestWrapper: React.FC<
               }}
               onCall={onCall}
             >
-              <AdditionalSalaryRequestProvider requestId="test-request-id">
+              <AdditionalSalaryRequestProvider
+                requestId="test-request-id"
+                initialPageType={pageType}
+              >
                 <TestFormikWrapper initialValues={initialValues}>
                   {children}
                 </TestFormikWrapper>

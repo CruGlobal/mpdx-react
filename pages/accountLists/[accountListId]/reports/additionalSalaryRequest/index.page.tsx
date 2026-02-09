@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { FormikProvider } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
@@ -43,19 +43,13 @@ const FormikRequestPage: React.FC = () => {
   );
 };
 
-type InitialRoute = 'ineligible' | 'overview' | 'continue' | 'request';
+type RouteType = 'ineligible' | 'overview' | 'continue' | 'request';
 
-const useInitialRoute = (): InitialRoute | null => {
+const useCurrentRoute = (): RouteType | null => {
   const { requestData, loading } = useAdditionalSalaryRequest();
-  const initialRouteRef = useRef<InitialRoute | null>(null);
-
-  if (initialRouteRef.current !== null) {
-    return initialRouteRef.current;
-  }
 
   // if (user?.asrEit?.asrEligibility === false) {
-  //   initialRouteRef.current = 'ineligible';
-  //   return initialRouteRef.current;
+  //   return 'ineligible';
   // }
 
   if (loading) {
@@ -63,38 +57,32 @@ const useInitialRoute = (): InitialRoute | null => {
   }
 
   if (!requestData) {
-    initialRouteRef.current = 'request';
-    return initialRouteRef.current;
+    return 'request';
   }
 
   switch (requestData.latestAdditionalSalaryRequest?.status) {
     case AsrStatusEnum.ActionRequired:
     case AsrStatusEnum.Pending:
-      initialRouteRef.current = 'overview';
-      break;
+      return 'overview';
     case AsrStatusEnum.InProgress:
-      initialRouteRef.current = 'continue';
-      break;
+      return 'continue';
     case AsrStatusEnum.Approved:
     default:
-      initialRouteRef.current = 'request';
-      break;
+      return 'request';
   }
-
-  return initialRouteRef.current;
 };
 
 const AdditionalSalaryRequestRouter: React.FC = () => {
-  const initialRoute = useInitialRoute();
+  const currentRoute = useCurrentRoute();
   const { pageType } = useAdditionalSalaryRequest();
 
   const isEdit = pageType === PageEnum.Edit;
 
-  if (!initialRoute) {
+  if (!currentRoute) {
     return <Loading loading />;
   }
 
-  switch (initialRoute) {
+  switch (currentRoute) {
     case 'ineligible':
       return <IneligiblePage />;
     case 'overview':

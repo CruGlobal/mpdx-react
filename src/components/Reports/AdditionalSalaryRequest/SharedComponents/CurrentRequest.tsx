@@ -11,15 +11,14 @@ import { Box, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { AsrStatusEnum } from 'src/graphql/types.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
+import { PageEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { StatusCard } from '../../Shared/CalculationReports/StatusCard/StatusCard';
 import { AdditionalSalaryRequestQuery } from '../AdditionalSalaryRequest.generated';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { getDotColor } from '../Shared/Helper/getDotColor';
 import { getDotVariant } from '../Shared/Helper/getDotVariant';
-import { getRequestUrl } from '../Shared/Helper/getRequestUrl';
 
 interface CurrentRequestProps {
   request: NonNullable<
@@ -30,8 +29,8 @@ interface CurrentRequestProps {
 export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const accountListId = useAccountListId();
-  const { user, handleDeleteRequest } = useAdditionalSalaryRequest();
+  const { user, handleDeleteRequest, setPageType } =
+    useAdditionalSalaryRequest();
   const preferredName = user?.staffInfo?.preferredName;
 
   const { id, status, totalAdditionalSalaryRequested, submittedAt } = request;
@@ -48,7 +47,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
       icon={AttachMoney}
       iconColor="warning.main"
       linkOneText={t('View Request')}
-      linkOne={getRequestUrl(accountListId, id, 'view')}
+      onLinkOneClick={() => setPageType(PageEnum.View)}
       hideLinkTwoButton={true}
       isRequest={true}
       handleConfirmCancel={() => handleDeleteRequest(id, true)}
