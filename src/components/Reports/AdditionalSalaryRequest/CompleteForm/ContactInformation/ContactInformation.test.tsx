@@ -49,7 +49,7 @@ describe('ContactInformation', () => {
   it('displays telephone number from initial values', async () => {
     const valuesWithPhone: CompleteFormValues = {
       ...defaultCompleteFormValues,
-      phoneNumber: '555-1234',
+      phoneNumber: '407-555-1234',
     };
 
     const { getByLabelText } = render(
@@ -57,7 +57,7 @@ describe('ContactInformation', () => {
     );
 
     await waitFor(() => {
-      expect(getByLabelText('Telephone Number')).toHaveValue('555-1234');
+      expect(getByLabelText('Telephone Number')).toHaveValue('407-555-1234');
     });
   });
 
@@ -82,10 +82,10 @@ describe('ContactInformation', () => {
     const phoneInput = getByLabelText('Telephone Number');
     await waitFor(() => expect(phoneInput).toBeEnabled());
 
-    userEvent.type(phoneInput, '555-5678');
+    userEvent.type(phoneInput, '407-555-5678');
 
     await waitFor(() => {
-      expect(phoneInput).toHaveValue('555-5678');
+      expect(phoneInput).toHaveValue('407-555-5678');
     });
   });
 
@@ -110,9 +110,7 @@ describe('ContactInformation', () => {
     userEvent.click(phoneInput);
     userEvent.tab();
 
-    expect(
-      await findByText('Telephone number is required'),
-    ).toBeInTheDocument();
+    expect(await findByText('Phone Number is required.')).toBeInTheDocument();
   });
 
   it('clears validation error when telephone number is entered', async () => {
@@ -123,16 +121,12 @@ describe('ContactInformation', () => {
     userEvent.click(phoneInput);
     userEvent.tab();
 
-    expect(
-      await findByText('Telephone number is required'),
-    ).toBeInTheDocument();
+    expect(await findByText('Phone Number is required.')).toBeInTheDocument();
 
-    userEvent.type(phoneInput, '555-9999');
+    userEvent.type(phoneInput, '407-555-9999');
 
     await waitFor(() => {
-      expect(
-        queryByText('Telephone number is required'),
-      ).not.toBeInTheDocument();
+      expect(queryByText('Phone Number is required.')).not.toBeInTheDocument();
     });
   });
 });
