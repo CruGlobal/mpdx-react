@@ -21,7 +21,7 @@ describe('ApprovalProcessCard', () => {
 
   describe('user over cap', () => {
     it('renders status message and textfield', async () => {
-      const { getByRole, findByTestId } = render(
+      const { getByRole, getByTestId } = render(
         <TestComponent
           salaryRequestMock={{
             calculations: { requestedGross: 40000 },
@@ -33,11 +33,10 @@ describe('ApprovalProcessCard', () => {
         />,
       );
 
-      expect(
-        await findByTestId('ApprovalProcessCard-status'),
-      ).toHaveTextContent(
-        "John's Gross Requested Salary exceeds their individual Maximum Allowable Salary. \
-If this is correct, please provide reasoning for why John's Salary should exceed $40,000.00 or make changes to your Requested Salary above.",
+      await waitFor(() =>
+        expect(getByTestId('ApprovalProcessCard-status')).toHaveTextContent(
+          "John's Gross Requested Salary exceeds their individual Maximum Allowable Salary. If this is correct, please provide reasoning for why John's Salary should exceed $40,000.00 or make changes to your Requested Salary above.",
+        ),
       );
       expect(
         getByRole('textbox', { name: 'Additional info' }),
@@ -47,7 +46,7 @@ If this is correct, please provide reasoning for why John's Salary should exceed
 
   describe('spouse over cap', () => {
     it('renders status message and textfield', async () => {
-      const { getByRole, findByTestId } = render(
+      const { getByRole, getByTestId } = render(
         <TestComponent
           salaryRequestMock={{
             calculations: { effectiveCap: 50000 },
@@ -59,11 +58,10 @@ If this is correct, please provide reasoning for why John's Salary should exceed
         />,
       );
 
-      expect(
-        await findByTestId('ApprovalProcessCard-status'),
-      ).toHaveTextContent(
-        "Jane's Gross Requested Salary exceeds their individual Maximum Allowable Salary. \
-If this is correct, please provide reasoning for why Jane's Salary should exceed $40,000.00 or make changes to your Requested Salary above.",
+      await waitFor(() =>
+        expect(getByTestId('ApprovalProcessCard-status')).toHaveTextContent(
+          "Jane's Gross Requested Salary exceeds their individual Maximum Allowable Salary. If this is correct, please provide reasoning for why Jane's Salary should exceed $40,000.00 or make changes to your Requested Salary above.",
+        ),
       );
       expect(
         getByRole('textbox', { name: 'Additional info' }),
@@ -73,7 +71,7 @@ If this is correct, please provide reasoning for why Jane's Salary should exceed
 
   describe('combined over cap', () => {
     it('renders status message and textfield', async () => {
-      const { getByRole, findByTestId } = render(
+      const { getByRole, getByTestId } = render(
         <TestComponent
           salaryRequestMock={{
             calculations: { requestedGross: 100_000 },
@@ -84,10 +82,10 @@ If this is correct, please provide reasoning for why Jane's Salary should exceed
         />,
       );
 
-      expect(
-        await findByTestId('ApprovalProcessCard-status'),
-      ).toHaveTextContent(
-        "Since you are requesting above your and Jane's combined Maximum Allowable Salary, you will need to provide the information below.",
+      await waitFor(() =>
+        expect(getByTestId('ApprovalProcessCard-status')).toHaveTextContent(
+          "Since you are requesting above your and Jane's combined Maximum Allowable Salary, you will need to provide the information below.",
+        ),
       );
       expect(
         getByRole('textbox', { name: 'Additional info' }),

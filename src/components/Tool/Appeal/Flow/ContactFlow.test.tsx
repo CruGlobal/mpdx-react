@@ -10,12 +10,12 @@ import { I18nextProvider } from 'react-i18next';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { ContactsQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
 import { PledgeStatusEnum, StatusEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { AppealsContext, AppealsType } from '../AppealsContext/AppealsContext';
+import { AppealsContactsQuery } from '../AppealsContext/contacts.generated';
 import { UpdateAccountListPledgeMutation } from '../Modals/PledgeModal/ContactPledge.generated';
 import { appealInfo } from '../appealMockData';
 import { ContactFlow, ContactFlowProps } from './ContactFlow';
@@ -93,11 +93,11 @@ const Components = ({
           <ThemeProvider theme={theme}>
             <TestRouter router={router}>
               <GqlMockedProvider<{
-                Contacts: ContactsQuery;
+                AppealsContacts: AppealsContactsQuery;
                 UpdateAccountListPledge: UpdateAccountListPledgeMutation;
               }>
                 mocks={{
-                  Contacts: {
+                  AppealsContacts: {
                     contacts: {
                       nodes: [contact],
                       pageInfo: { endCursor: 'Mg', hasNextPage: false },

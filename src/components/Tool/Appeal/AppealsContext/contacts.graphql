@@ -1,4 +1,4 @@
-query Contacts(
+query AppealsContacts(
   $accountListId: ID!
   $contactsFilters: ContactFilterSetInput
   $after: String

@@ -225,7 +225,7 @@ describe('ContactsPageContext', () => {
       );
 
       await waitFor(() =>
-        expect(mutationSpy).toHaveGraphqlOperation('Contacts', {
+        expect(mutationSpy).toHaveGraphqlOperation('AppealsContacts', {
           contactsFilters: { appealStatus: AppealStatusEnum.Asked },
         }),
       );
@@ -241,7 +241,7 @@ describe('ContactsPageContext', () => {
       );
 
       await waitFor(() =>
-        expect(mutationSpy).not.toHaveGraphqlOperation('Contacts', {
+        expect(mutationSpy).not.toHaveGraphqlOperation('AppealsContacts', {
           contactsFilters: { appealStatus: AppealStatusEnum.Asked },
         }),
       );
@@ -256,7 +256,7 @@ describe('ContactsPageContext', () => {
     );
 
     await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation('Contacts', {
+      expect(mutationSpy).toHaveGraphqlOperation('AppealsContacts', {
         contactsFilters: { wildcardSearch: 'John' },
       }),
     );

@@ -10,7 +10,7 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactFiltersQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { ListHeaderCheckBoxState } from 'src/components/Shared/Header/ListHeader';
 import { AppealQuery } from 'src/components/Tool/Appeal/AppealDetails/AppealsMainPanel/AppealInfo.generated';
-import { ContactsQuery } from 'src/components/Tool/Appeal/AppealsContext/contacts.generated';
+import { AppealsContactsQuery } from 'src/components/Tool/Appeal/AppealsContext/contacts.generated';
 import {
   PledgeFrequencyEnum,
   SendNewsletterEnum,
@@ -96,12 +96,12 @@ const Components = ({ router = defaultRouter }: { router?: object }) => (
     <TestRouter router={router}>
       <DndProvider backend={HTML5Backend}>
         <GqlMockedProvider<{
-          Contacts: ContactsQuery;
+          AppealsContacts: AppealsContactsQuery;
           Appeal: AppealQuery;
           ContactFilters: ContactFiltersQuery;
         }>
           mocks={{
-            Contacts: mockResponse,
+            AppealsContacts: mockResponse,
             Appeal: mockAppealResponse,
             ContactFilters: {
               userOptions: [],

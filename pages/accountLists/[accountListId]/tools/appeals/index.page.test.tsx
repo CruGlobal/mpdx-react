@@ -8,7 +8,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ListHeaderCheckBoxState } from 'src/components/Shared/Header/ListHeader';
 import { AppealQuery } from 'src/components/Tool/Appeal/AppealDetails/AppealsMainPanel/AppealInfo.generated';
-import { ContactsQuery } from 'src/components/Tool/Appeal/AppealsContext/contacts.generated';
+import { AppealsContactsQuery } from 'src/components/Tool/Appeal/AppealsContext/contacts.generated';
 import {
   PledgeFrequencyEnum,
   SendNewsletterEnum,
@@ -93,9 +93,12 @@ const Components = ({ router = defaultRouter }: { router?: object }) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
       <DndProvider backend={HTML5Backend}>
-        <GqlMockedProvider<{ Contacts: ContactsQuery; Appeal: AppealQuery }>
+        <GqlMockedProvider<{
+          AppealsContacts: AppealsContactsQuery;
+          Appeal: AppealQuery;
+        }>
           mocks={{
-            Contacts: mockResponse,
+            AppealsContacts: mockResponse,
             Appeal: mockAppealResponse,
           }}
         >
