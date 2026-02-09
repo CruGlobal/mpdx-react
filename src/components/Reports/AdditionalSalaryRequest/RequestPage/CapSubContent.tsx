@@ -9,6 +9,8 @@ import theme from 'src/theme';
 import { StyledListItem } from '../../SavingsFundTransfer/styledComponents/StyledListItem';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 
+//TODO: Add link for Progressive Approvals
+
 export const CapSubContent: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -18,7 +20,7 @@ export const CapSubContent: React.FC = () => {
 
   return (
     <>
-      <Trans i18nKey="contactPayrollToIncreaseCap" parent="span">
+      <Trans t={t} parent="span">
         Please complete the Approval Process section below and we will review
         your request through our{' '}
         <Link
