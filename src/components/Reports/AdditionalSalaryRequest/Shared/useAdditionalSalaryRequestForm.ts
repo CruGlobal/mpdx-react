@@ -172,6 +172,7 @@ export const useAdditionalSalaryRequestForm = (
           ]),
         ),
         deductTaxDeferredPercent: yup.boolean(),
+        deductRothPercent: yup.boolean(),
         phoneNumber: yup
           .string()
           .required(t('Telephone number is required'))
