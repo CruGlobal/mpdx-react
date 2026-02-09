@@ -18,7 +18,7 @@ import { ContactFilterSetInput } from 'src/graphql/types.generated';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useMassSelection } from 'src/hooks/useMassSelection';
-import { useContactsQuery } from './contacts.generated';
+import { useAppealsContactsQuery } from './contacts.generated';
 import { useContactsCountQuery } from './contactsCount.generated';
 
 export enum AppealStatusEnum {
@@ -67,7 +67,7 @@ export interface AppealsType
   deselectMultipleIds: (ids: string[]) => void;
   viewMode: AppealsViewModeEnum | null;
   setViewMode: (viewMode: AppealsViewModeEnum) => void;
-  contactsQueryResult: ReturnType<typeof useContactsQuery>;
+  contactsQueryResult: ReturnType<typeof useAppealsContactsQuery>;
   appealId: string | undefined;
   listAppealStatus: AppealStatusEnum;
   setListAppealStatus: Dispatch<SetStateAction<AppealStatusEnum>>;
@@ -145,7 +145,7 @@ export const AppealsProvider: React.FC<AppealsContextProps> = ({
     [viewMode, listAppealStatus, combinedFilters, defaultFilters],
   );
 
-  const contactsQueryResult = useContactsQuery({
+  const contactsQueryResult = useAppealsContactsQuery({
     variables: {
       accountListId: accountListId ?? '',
       contactsFilters,

@@ -34,7 +34,7 @@ query ReportsSavingsFundTransfer(
   }
 }
 
-query ReportsStaffExpenses($fundTypes: [String!]) {
+query FundBalances($fundTypes: [String!]) {
   reportsStaffExpenses(fundTypes: $fundTypes) {
     funds {
       ...FundFields

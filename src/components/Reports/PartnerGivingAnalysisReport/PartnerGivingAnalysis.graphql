@@ -32,11 +32,3 @@ fragment PartnerGivingFields on PartnerGivingAnalysisContact {
   donationPeriodCount
   donationPeriodSum
 }
-
-query ReportsStaffExpenses($fundTypes: [String!]) {
-  reportsStaffExpenses(fundTypes: $fundTypes) {
-    funds {
-      ...FundFields
-    }
-  }
-}

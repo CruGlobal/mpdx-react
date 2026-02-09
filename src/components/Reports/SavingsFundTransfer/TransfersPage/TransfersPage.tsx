@@ -31,8 +31,8 @@ import { CardSkeleton } from '../BalanceCard/CardSkeleton';
 import { filteredTransfers } from '../Helper/filterTransfers';
 import { getStatusLabel } from '../Helper/getStatus';
 import {
+  useFundBalancesQuery,
   useReportsSavingsFundTransferQuery,
-  useReportsStaffExpensesQuery,
 } from '../ReportsSavingsFund.generated';
 import { PrintTable } from '../Table/PrintTable';
 import { TransfersTable } from '../Table/TransfersTable';
@@ -84,7 +84,7 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
 
   const { data: reportData, loading: reportLoading } =
     useReportsSavingsFundTransferQuery();
-  const { data: fundsData, error: fundsError } = useReportsStaffExpensesQuery({
+  const { data: fundsData, error: fundsError } = useFundBalancesQuery({
     variables: {
       fundTypes: [
         FundTypeEnum.Primary,

@@ -32,7 +32,7 @@ import { PrintOnlyReport } from './DisplayModes/PrintOnlyReport';
 import { ScreenOnlyReport } from './DisplayModes/ScreenOnlyReport';
 import { FundTypes, Funds } from './Helper/MPGAReportEnum';
 import { convertMonths } from './Helper/convertMonths';
-import { useReportsStaffExpensesQuery } from './ReportsStaffExpenses.generated';
+import { useMpgaTransactionsQuery } from './MPGATransactions.generated';
 import { TotalsProvider } from './TotalsContext/TotalsContext';
 import { AllData } from './mockData';
 import { PrintOnly, StyledHeaderBox } from './styledComponents';
@@ -61,7 +61,7 @@ export const MPGAIncomeExpensesReport: React.FC<
 
   const { data: staffAccountData, error } = useStaffAccountQuery();
 
-  const { data: reportData } = useReportsStaffExpensesQuery({
+  const { data: reportData } = useMpgaTransactionsQuery({
     variables: {
       fundTypes: [FundTypes.Primary],
       startMonth: start,
