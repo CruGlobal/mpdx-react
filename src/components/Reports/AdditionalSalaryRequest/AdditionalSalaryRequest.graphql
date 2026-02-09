@@ -33,6 +33,7 @@ fragment AdditionalSalaryRequestDetailsFields on AdditionalSalaryRequest {
   totalAdditionalSalaryRequested
   additionalInfo
   deductTaxDeferredPercent
+  deductRothPercent
   traditional403bContributionRequested
   usingSpouseSalary
   phoneNumber

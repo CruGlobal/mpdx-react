@@ -5,7 +5,7 @@ import { FormikProvider, useFormik } from 'formik';
 import { I18nextProvider } from 'react-i18next';
 import * as yup from 'yup';
 import i18n from 'src/lib/i18n';
-import { amount } from 'src/lib/yupHelpers';
+import { amount, phoneNumber } from 'src/lib/yupHelpers';
 import theme from 'src/theme';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
@@ -56,7 +56,9 @@ const createValidationSchema = () =>
       }),
     ),
     deductTaxDeferredPercent: yup.boolean(),
-    phoneNumber: yup.string().required('Telephone number is required'),
+    phoneNumber: phoneNumber(i18n.t).required(
+      i18n.t('Phone Number is required.'),
+    ),
     emailAddress: yup.string(),
     totalAdditionalSalaryRequested: yup
       .number()
@@ -144,7 +146,7 @@ describe('ValidationAlert', () => {
   it('renders nothing when form is valid and submitted', async () => {
     const validValues: CompleteFormValues = {
       ...defaultCompleteFormValues,
-      phoneNumber: '555-1234',
+      phoneNumber: '407-555-1234',
     };
 
     const { queryByRole, findByRole } = renderComponent({

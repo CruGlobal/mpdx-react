@@ -7,16 +7,19 @@ import { NetAdditionalSalary } from './NetAdditionalSalary';
 
 interface TestWrapperProps {
   initialValues?: CompleteFormValues;
-  deductionPercentage?: number;
+  traditionalDeductionPercentage?: number;
+  rothDeductionPercentage?: number;
 }
 
 const TestWrapper: React.FC<TestWrapperProps> = ({
   initialValues = defaultCompleteFormValues,
-  deductionPercentage = 0,
+  traditionalDeductionPercentage = 0,
+  rothDeductionPercentage = 0,
 }) => (
   <AdditionalSalaryRequestTestWrapper
     initialValues={initialValues}
-    deductionPercentage={deductionPercentage}
+    traditionalDeductionPercentage={traditionalDeductionPercentage}
+    rothDeductionPercentage={rothDeductionPercentage}
   >
     <NetAdditionalSalary />
   </AdditionalSalaryRequestTestWrapper>
@@ -66,6 +69,7 @@ describe('NetAdditionalSalary', () => {
       ...defaultCompleteFormValues,
       additionalSalaryWithinMax: '10000',
       traditional403bContribution: '2000',
+      roth403bContribution: '0',
     };
 
     const { getByText } = render(
@@ -78,22 +82,42 @@ describe('NetAdditionalSalary', () => {
     expect(getByText('$10,000')).toBeInTheDocument();
   });
 
+  it('calculates net salary with roth403bContribution deducted', async () => {
+    const valuesWithRothContribution: CompleteFormValues = {
+      ...defaultCompleteFormValues,
+      additionalSalaryWithinMax: '10000',
+      traditional403bContribution: '0',
+      roth403bContribution: '1500',
+    };
+
+    const { getByText } = render(
+      <TestWrapper initialValues={valuesWithRothContribution} />,
+    );
+
+    // Total = $10,000 + $1,500 = $11,500
+    // Deduction = $1,500 (roth403bContribution)
+    // Net = $11,500 - $1,500 = $10,000
+    expect(getByText('$10,000')).toBeInTheDocument();
+  });
+
   it('calculates net salary with percentage deduction when checkbox is checked', async () => {
     const valuesWithDeduction: CompleteFormValues = {
       ...defaultCompleteFormValues,
       additionalSalaryWithinMax: '10000',
       deductTaxDeferredPercent: true,
+      deductRothPercent: true,
     };
 
     const { findByText } = render(
       <TestWrapper
         initialValues={valuesWithDeduction}
-        deductionPercentage={12}
+        traditionalDeductionPercentage={12}
+        rothDeductionPercentage={8}
       />,
     );
 
-    // Net = $10,000 - (12% of $10,000) = $10,000 - $1,200 = $8,800
-    expect(await findByText('$8,800')).toBeInTheDocument();
+    // Net = $10,000 - (12% of $10,000 + 8% of $10,000) = $10,000 - $1,200 - $800 = $8,000
+    expect(await findByText('$8,000')).toBeInTheDocument();
   });
 
   it('calculates net salary with both percentage and traditional403b deductions', async () => {
@@ -101,18 +125,24 @@ describe('NetAdditionalSalary', () => {
       ...defaultCompleteFormValues,
       additionalSalaryWithinMax: '10000',
       traditional403bContribution: '1000',
+      roth403bContribution: '100',
       deductTaxDeferredPercent: true,
+      deductRothPercent: true,
     };
 
     const { findByText } = render(
-      <TestWrapper initialValues={valuesWithBoth} deductionPercentage={12} />,
+      <TestWrapper
+        initialValues={valuesWithBoth}
+        traditionalDeductionPercentage={12}
+        rothDeductionPercentage={8}
+      />,
     );
 
-    // Total = $10,000 + $1,000 = $11,000
-    // Calculated deduction = 12% of $11,000 = $1,320
-    // Total deduction = $1,320 + $1,000 = $2,320
-    // Net = $11,000 - $2,320 = $8,680
-    expect(await findByText('$8,680')).toBeInTheDocument();
+    // Total = $10,000 + $1,000 + $100 = $11,100
+    // Calculated deduction = 12% of $11,100 + 8% of $11,100 = $1,332 + $888 = $2,220
+    // Total deduction = $2,220 + $1,000 + $100 = $3,320
+    // Net = $11,100 - $3,320 = $7,780
+    expect(await findByText('$7,780')).toBeInTheDocument();
   });
 
   it('includes all salary fields in the total calculation', async () => {
@@ -168,12 +198,14 @@ describe('NetAdditionalSalary', () => {
       ...defaultCompleteFormValues,
       additionalSalaryWithinMax: '10000',
       deductTaxDeferredPercent: false,
+      deductRothPercent: false,
     };
 
     const { getByText } = render(
       <TestWrapper
         initialValues={valuesWithoutDeduction}
-        deductionPercentage={0.12}
+        traditionalDeductionPercentage={12}
+        rothDeductionPercentage={8}
       />,
     );
 

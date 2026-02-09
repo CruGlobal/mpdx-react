@@ -73,6 +73,7 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   isMutating: false,
   trackMutation: mockTrackMutation,
   traditional403bPercentage: 0,
+  roth403bPercentage: 0,
 };
 
 interface TestComponentProps {

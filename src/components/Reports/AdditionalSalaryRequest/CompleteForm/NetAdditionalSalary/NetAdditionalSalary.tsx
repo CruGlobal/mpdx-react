@@ -42,7 +42,10 @@ export const NetAdditionalSalary: React.FC = () => {
                   )}
                 </Typography>
               </TableCell>
-              <TableCell sx={{ width: '30%', fontSize: 16 }}>
+              <TableCell
+                sx={{ width: '30%', fontSize: 16, fontWeight: 'bold' }}
+                aria-label="Net additional salary amount"
+              >
                 {currencyFormat(netSalary, 'USD', locale)}
               </TableCell>
             </TableRow>

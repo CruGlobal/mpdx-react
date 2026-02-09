@@ -69,6 +69,7 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   isMutating: false,
   trackMutation: jest.fn((mutation) => mutation),
   traditional403bPercentage: 0,
+  roth403bPercentage: 0,
 };
 
 const defaultFormValues: CompleteFormValues = {
@@ -77,6 +78,7 @@ const defaultFormValues: CompleteFormValues = {
   additionalSalaryWithinMax: '0',
   adoption: '0',
   traditional403bContribution: '0',
+  roth403bContribution: '0',
   counselingNonMedical: '0',
   healthcareExpensesExceedingLimit: '0',
   babysittingMinistryEvents: '0',
@@ -88,6 +90,7 @@ const defaultFormValues: CompleteFormValues = {
   autoPurchase: '0',
   expensesNotApprovedWithin90Days: '0',
   deductTaxDeferredPercent: false,
+  deductRothPercent: false,
   phoneNumber: '',
   totalAdditionalSalaryRequested: '0',
   emailAddress: '',
@@ -148,7 +151,7 @@ describe('useAdditionalSalaryRequestForm', () => {
 
   describe('fieldConfig', () => {
     it('should have all expected field configurations', () => {
-      expect(fieldConfig).toHaveLength(15);
+      expect(fieldConfig).toHaveLength(16);
 
       const fieldKeys = fieldConfig.map((f) => f.key);
       expect(fieldKeys).toContain('currentYearSalaryNotReceived');
@@ -269,7 +272,7 @@ describe('useAdditionalSalaryRequestForm', () => {
         errors = await result.current.validateForm();
       });
 
-      expect(errors.phoneNumber).toBe('Telephone number is required');
+      expect(errors.phoneNumber).toBe('Phone Number is required.');
     });
 
     it('should validate phone number format', async () => {
@@ -289,7 +292,7 @@ describe('useAdditionalSalaryRequestForm', () => {
         errors = await result.current.validateForm();
       });
 
-      expect(errors.phoneNumber).toBe('Please enter a valid telephone number');
+      expect(errors.phoneNumber).toBe('Invalid phone number');
     });
 
     it('should accept valid phone number formats', async () => {

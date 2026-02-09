@@ -15,6 +15,7 @@ const mockUseAdditionalSalaryRequest =
 beforeEach(() => {
   mockUseAdditionalSalaryRequest.mockReturnValue({
     traditional403bPercentage: 0.12,
+    roth403bPercentage: 0.1,
   } as ReturnType<typeof useAdditionalSalaryRequest>);
 });
 
@@ -38,6 +39,7 @@ describe('useSalaryCalculations', () => {
     additionalSalaryWithinMax: '0',
     adoption: '0',
     traditional403bContribution: '0',
+    roth403bContribution: '0',
     counselingNonMedical: '0',
     healthcareExpensesExceedingLimit: '0',
     babysittingMinistryEvents: '0',
@@ -49,6 +51,7 @@ describe('useSalaryCalculations', () => {
     autoPurchase: '0',
     expensesNotApprovedWithin90Days: '0',
     deductTaxDeferredPercent: false,
+    deductRothPercent: false,
     phoneNumber: '',
     totalAdditionalSalaryRequested: '0',
     emailAddress: '',
@@ -62,20 +65,23 @@ describe('useSalaryCalculations', () => {
       previousYearSalaryNotReceived: '3000',
       adoption: '2000',
       traditional403bContribution: '1000',
+      roth403bContribution: '100',
       deductTaxDeferredPercent: true,
+      deductRothPercent: true,
     };
 
     const { result } = renderHook(() => useSalaryCalculations({ values }), {
       wrapper: ({ children }) => FormikWrapper({ children, values }),
     });
 
-    expect(result.current.total).toBe(11000); // 5000 + 3000 + 2000 + 1000
-    expect(result.current.calculatedDeduction).toBe(1320); // 11000 * 0.12
-    expect(result.current.contribution403b).toBe(1000);
-    expect(result.current.totalDeduction).toBe(2320); // 1320 + 1000
-    expect(result.current.netSalary).toBe(8680); // 11000 - 2320
-    expect(result.current.totalAnnualSalary).toBe(11000); // No calculations data, so just total
-    expect(result.current.remainingInMaxAllowable).toBe(-11000); // 0 - 11000
+    expect(result.current.total).toBe(11100); // 5000 + 3000 + 2000 + 1000 + 100
+    expect(result.current.calculatedTraditionalDeduction).toBe(1332); // 11100 * 0.12
+    expect(result.current.calculatedRothDeduction).toBe(1110); // 11100 * 0.10
+    expect(result.current.contribution403b).toBe(1100);
+    expect(result.current.totalDeduction).toBe(3542); // (1332 + 1110) + 1100
+    expect(result.current.netSalary).toBe(7558); // 11100 - 3542
+    expect(result.current.totalAnnualSalary).toBe(11100); // No calculations data, so just total
+    expect(result.current.remainingInMaxAllowable).toBe(-11100); // 0 - 11100
   });
 
   it('calculates all salary values correctly with default percentage disabled', () => {
@@ -83,18 +89,21 @@ describe('useSalaryCalculations', () => {
       ...baseValues,
       currentYearSalaryNotReceived: '10000',
       traditional403bContribution: '500',
+      roth403bContribution: '500',
       deductTaxDeferredPercent: false,
+      deductRothPercent: false,
     };
 
     const { result } = renderHook(() => useSalaryCalculations({ values }), {
       wrapper: ({ children }) => FormikWrapper({ children, values }),
     });
 
-    expect(result.current.total).toBe(10500); // 10000 + 500
-    expect(result.current.calculatedDeduction).toBe(0);
-    expect(result.current.contribution403b).toBe(500);
-    expect(result.current.totalDeduction).toBe(500);
-    expect(result.current.netSalary).toBe(10000); // 10500 - 500
+    expect(result.current.total).toBe(11000); // 10000 + 1000
+    expect(result.current.calculatedTraditionalDeduction).toBe(0);
+    expect(result.current.calculatedRothDeduction).toBe(0);
+    expect(result.current.contribution403b).toBe(1000);
+    expect(result.current.totalDeduction).toBe(1000);
+    expect(result.current.netSalary).toBe(10000); // 11000 - 1000
   });
 
   it('handles empty traditional403bContribution value', () => {
@@ -110,10 +119,29 @@ describe('useSalaryCalculations', () => {
     });
 
     expect(result.current.total).toBe(5000);
-    expect(result.current.calculatedDeduction).toBe(600); // 5000 * 0.12
+    expect(result.current.calculatedTraditionalDeduction).toBe(600); // 5000 * 0.12
     expect(result.current.contribution403b).toBe(0);
     expect(result.current.totalDeduction).toBe(600);
     expect(result.current.netSalary).toBe(4400); // 5000 - 600
+  });
+
+  it('handles empty roth403bContribution value', () => {
+    const values: CompleteFormValues = {
+      ...baseValues,
+      currentYearSalaryNotReceived: '5000',
+      deductRothPercent: true,
+      roth403bContribution: '',
+    };
+
+    const { result } = renderHook(() => useSalaryCalculations({ values }), {
+      wrapper: ({ children }) => FormikWrapper({ children, values }),
+    });
+
+    expect(result.current.total).toBe(5000);
+    expect(result.current.calculatedRothDeduction).toBe(500); // 5000 * 0.10
+    expect(result.current.contribution403b).toBe(0);
+    expect(result.current.totalDeduction).toBe(500);
+    expect(result.current.netSalary).toBe(4500); // 5000 - 500
   });
 
   it('excludes deductTaxDeferredPercent from total calculation', () => {
@@ -132,6 +160,22 @@ describe('useSalaryCalculations', () => {
     expect(result.current.total).toBe(3000); // 1000 + 2000
   });
 
+  it('excludes deductRothPercent from total calculation', () => {
+    const values: CompleteFormValues = {
+      ...baseValues,
+      currentYearSalaryNotReceived: '1000',
+      previousYearSalaryNotReceived: '2000',
+      deductRothPercent: true,
+    };
+
+    const { result } = renderHook(() => useSalaryCalculations({ values }), {
+      wrapper: ({ children }) => FormikWrapper({ children, values }),
+    });
+
+    // Should not include deductRothPercent boolean in total
+    expect(result.current.total).toBe(3000); // 1000 + 2000
+  });
+
   it('handles all fields with values', () => {
     const values: CompleteFormValues = {
       currentYearSalaryNotReceived: '1000',
@@ -139,6 +183,7 @@ describe('useSalaryCalculations', () => {
       additionalSalaryWithinMax: '1000',
       adoption: '1000',
       traditional403bContribution: '1000',
+      roth403bContribution: '1000',
       counselingNonMedical: '1000',
       healthcareExpensesExceedingLimit: '1000',
       babysittingMinistryEvents: '1000',
@@ -150,6 +195,7 @@ describe('useSalaryCalculations', () => {
       autoPurchase: '1000',
       expensesNotApprovedWithin90Days: '1000',
       deductTaxDeferredPercent: false,
+      deductRothPercent: false,
       phoneNumber: '',
       totalAdditionalSalaryRequested: '15000',
       emailAddress: '',
@@ -160,17 +206,19 @@ describe('useSalaryCalculations', () => {
       wrapper: ({ children }) => FormikWrapper({ children, values }),
     });
 
-    expect(result.current.total).toBe(15000); // 15 fields * 1000
-    expect(result.current.calculatedDeduction).toBe(0); // deductTaxDeferredPercent is false
-    expect(result.current.contribution403b).toBe(1000);
-    expect(result.current.totalDeduction).toBe(1000);
-    expect(result.current.netSalary).toBe(14000); // 15000 - 1000
+    expect(result.current.total).toBe(16000); // 16 fields * 1000
+    expect(result.current.calculatedTraditionalDeduction).toBe(0); // deductTaxDeferredPercent is false
+    expect(result.current.calculatedRothDeduction).toBe(0); // deductRothPercent is false
+    expect(result.current.contribution403b).toBe(2000);
+    expect(result.current.totalDeduction).toBe(2000);
+    expect(result.current.netSalary).toBe(14000); // 16000 - 2000
   });
 
   it('handles zero values correctly', () => {
     const values: CompleteFormValues = {
       ...baseValues,
       deductTaxDeferredPercent: false,
+      deductRothPercent: false,
     };
 
     const { result } = renderHook(() => useSalaryCalculations({ values }), {
@@ -178,7 +226,8 @@ describe('useSalaryCalculations', () => {
     });
 
     expect(result.current.total).toBe(0);
-    expect(result.current.calculatedDeduction).toBe(0);
+    expect(result.current.calculatedTraditionalDeduction).toBe(0);
+    expect(result.current.calculatedRothDeduction).toBe(0);
     expect(result.current.contribution403b).toBe(0);
     expect(result.current.totalDeduction).toBe(0);
     expect(result.current.netSalary).toBe(0);

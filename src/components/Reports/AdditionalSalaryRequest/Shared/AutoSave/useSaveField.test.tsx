@@ -35,6 +35,7 @@ const defaultFormValues: CompleteFormValues = {
   additionalSalaryWithinMax: '0',
   adoption: '0',
   traditional403bContribution: '0',
+  roth403bContribution: '0',
   counselingNonMedical: '0',
   healthcareExpensesExceedingLimit: '0',
   babysittingMinistryEvents: '0',
@@ -46,6 +47,7 @@ const defaultFormValues: CompleteFormValues = {
   autoPurchase: '0',
   expensesNotApprovedWithin90Days: '0',
   deductTaxDeferredPercent: false,
+  deductRothPercent: false,
   phoneNumber: '555-1234',
   totalAdditionalSalaryRequested: '100',
   emailAddress: 'test@testerson.test',
@@ -85,6 +87,7 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   isMutating: false,
   trackMutation: mockTrackMutation,
   traditional403bPercentage: 0,
+  roth403bPercentage: 0,
 };
 
 interface TestComponentProps {

@@ -3,8 +3,9 @@ import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useLocale } from 'src/hooks/useLocale';
+import i18n from 'src/lib/i18n';
 import { currencyFormat } from 'src/lib/intlFormat';
-import { amount } from 'src/lib/yupHelpers';
+import { amount, phoneNumber } from 'src/lib/yupHelpers';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import {
   useAdditionalSalaryRequestQuery,
@@ -34,7 +35,11 @@ export const fieldConfig: Array<{
     salaryInfoIntKey: 'maxAdoptionInt',
     salaryInfoUssKey: 'maxAdoptionUss',
   },
-  { key: 'traditional403bContribution', label: '403(b) Contribution' },
+  {
+    key: 'traditional403bContribution',
+    label: '403(b) Contribution - Traditional',
+  },
+  { key: 'roth403bContribution', label: '403(b) Contribution - Roth' },
   { key: 'counselingNonMedical', label: 'Counseling' },
   { key: 'healthcareExpensesExceedingLimit', label: 'Healthcare Expenses' },
   { key: 'babysittingMinistryEvents', label: 'Babysitting' },
@@ -112,6 +117,7 @@ export const useAdditionalSalaryRequestForm = (
     totalAdditionalSalaryRequested: '0',
     additionalInfo: '',
     deductTaxDeferredPercent: false,
+    deductRothPercent: false,
     phoneNumber: user?.staffInfo?.primaryPhoneNumber || '',
     emailAddress: user?.staffInfo?.emailAddress || '',
   } as CompleteFormValues;
@@ -134,6 +140,7 @@ export const useAdditionalSalaryRequestForm = (
         ]),
       ),
       deductTaxDeferredPercent: request.deductTaxDeferredPercent || false,
+      deductRothPercent: request.deductRothPercent || false,
       phoneNumber:
         request.phoneNumber || user?.staffInfo?.primaryPhoneNumber || '',
       emailAddress: request.emailAddress || user?.staffInfo?.emailAddress || '',
@@ -166,13 +173,10 @@ export const useAdditionalSalaryRequestForm = (
           ]),
         ),
         deductTaxDeferredPercent: yup.boolean(),
-        phoneNumber: yup
-          .string()
-          .required(t('Telephone number is required'))
-          .matches(
-            /^[\d\s\-\(\)\+]+$/,
-            t('Please enter a valid telephone number'),
-          ),
+        deductRothPercent: yup.boolean(),
+        phoneNumber: phoneNumber(i18n.t).required(
+          i18n.t('Phone Number is required.'),
+        ),
         emailAddress: yup
           .string()
           .required(t('Email address is required'))
