@@ -3,8 +3,9 @@ import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useLocale } from 'src/hooks/useLocale';
+import i18n from 'src/lib/i18n';
 import { currencyFormat } from 'src/lib/intlFormat';
-import { amount } from 'src/lib/yupHelpers';
+import { amount, phoneNumber } from 'src/lib/yupHelpers';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import {
   useAdditionalSalaryRequestQuery,
@@ -170,13 +171,9 @@ export const useAdditionalSalaryRequestForm = (
         ),
         deductTaxDeferredPercent: yup.boolean(),
         deductRothPercent: yup.boolean(),
-        phoneNumber: yup
-          .string()
-          .required(t('Telephone number is required'))
-          .matches(
-            /^[\d\s\-\(\)\+]+$/,
-            t('Please enter a valid telephone number'),
-          ),
+        phoneNumber: phoneNumber(i18n.t).required(
+          i18n.t('Phone Number is required.'),
+        ),
         emailAddress: yup
           .string()
           .required(t('Email address is required'))

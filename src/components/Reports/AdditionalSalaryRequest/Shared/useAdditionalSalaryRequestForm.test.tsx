@@ -272,7 +272,7 @@ describe('useAdditionalSalaryRequestForm', () => {
         errors = await result.current.validateForm();
       });
 
-      expect(errors.phoneNumber).toBe('Telephone number is required');
+      expect(errors.phoneNumber).toBe('Phone Number is required.');
     });
 
     it('should validate phone number format', async () => {
@@ -292,7 +292,7 @@ describe('useAdditionalSalaryRequestForm', () => {
         errors = await result.current.validateForm();
       });
 
-      expect(errors.phoneNumber).toBe('Please enter a valid telephone number');
+      expect(errors.phoneNumber).toBe('Invalid phone number');
     });
 
     it('should accept valid phone number formats', async () => {

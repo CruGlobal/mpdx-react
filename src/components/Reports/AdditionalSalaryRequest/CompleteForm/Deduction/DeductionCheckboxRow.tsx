@@ -67,12 +67,19 @@ export const DeductionCheckboxRow: React.FC<DeductionCheckboxRowProps> = ({
           label={
             <Box>
               <Typography variant="body1">
-                {t(
-                  'Check this box if you would like {{percentage}}% of your Additional Salary Request contributed to your Traditional 403(b).',
-                  {
-                    percentage: (percentage * 100).toFixed(0),
-                  },
-                )}
+                {isTraditional
+                  ? t(
+                      'Check this box if you would like {{percentage}}% of your Additional Salary Request contributed to your Traditional 403(b).',
+                      {
+                        percentage: (percentage * 100).toFixed(0),
+                      },
+                    )
+                  : t(
+                      'Check this box if you would like {{percentage}}% of your Additional Salary Request contributed to your Roth 403(b).',
+                      {
+                        percentage: (percentage * 100).toFixed(0),
+                      },
+                    )}
               </Typography>
               <Typography
                 variant="body2"
