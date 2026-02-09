@@ -46,7 +46,7 @@ const defaultFormValues: CompleteFormValues = {
   housingDownPayment: '0',
   autoPurchase: '0',
   expensesNotApprovedWithin90Days: '0',
-  deductTwelvePercent: false,
+  deductTaxDeferredPercent: false,
   phoneNumber: '555-1234',
   totalAdditionalSalaryRequested: '100',
   emailAddress: 'test@testerson.test',

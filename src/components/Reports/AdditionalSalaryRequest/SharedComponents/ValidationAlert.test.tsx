@@ -55,7 +55,7 @@ const createValidationSchema = () =>
         return [key, schema];
       }),
     ),
-    deductTwelvePercent: yup.boolean(),
+    deductTaxDeferredPercent: yup.boolean(),
     phoneNumber: yup.string().required('Telephone number is required'),
     emailAddress: yup.string(),
     totalAdditionalSalaryRequested: yup

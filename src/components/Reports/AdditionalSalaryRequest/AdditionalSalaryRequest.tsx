@@ -36,7 +36,7 @@ export interface CompleteFormValues {
   housingDownPayment: string;
   autoPurchase: string;
   expensesNotApprovedWithin90Days: string;
-  deductTwelvePercent: boolean;
+  deductTaxDeferredPercent: boolean;
   phoneNumber: string;
   totalAdditionalSalaryRequested: string;
   additionalInfo: string;

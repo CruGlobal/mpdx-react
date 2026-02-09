@@ -1,13 +1,19 @@
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { SalaryCalculatorTestWrapper } from '../SalaryCalculatorTestWrapper';
+import { AutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
+import {
+  SalaryCalculatorTestWrapper,
+  SalaryCalculatorTestWrapperProps,
+} from '../SalaryCalculatorTestWrapper';
 import { DiscardButton, StepNavigation, SubmitButton } from './StepNavigation';
 
 const mutationSpy = jest.fn();
 
-const TestComponent: React.FC = () => (
-  <SalaryCalculatorTestWrapper>
-    <StepNavigation />
+const TestComponent: React.FC<SalaryCalculatorTestWrapperProps> = (props) => (
+  <SalaryCalculatorTestWrapper {...props}>
+    <AutosaveForm>
+      <StepNavigation />
+    </AutosaveForm>
   </SalaryCalculatorTestWrapper>
 );
 
@@ -19,11 +25,7 @@ describe('StepNavigation', () => {
   });
 
   it('does not render buttons in view mode', async () => {
-    const { queryByRole } = render(
-      <SalaryCalculatorTestWrapper editing={false}>
-        <StepNavigation />
-      </SalaryCalculatorTestWrapper>,
-    );
+    const { queryByRole } = render(<TestComponent editing={false} />);
 
     // Wait for loading to complete
     await waitFor(() =>
@@ -63,6 +65,7 @@ describe('SubmitButton', () => {
     );
 
     userEvent.click(await findByText('Submit'));
+    userEvent.click(await findByText('Yes, Continue'));
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('SubmitSalaryCalculation', {

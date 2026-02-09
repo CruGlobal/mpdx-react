@@ -33,8 +33,8 @@ export const Deduction: React.FC = () => {
   const handleCheckboxChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const checked = e.target.checked;
-      setFieldValue('deductTwelvePercent', checked);
-      saveField({ deductTwelvePercent: checked });
+      setFieldValue('deductTaxDeferredPercent', checked);
+      saveField({ deductTaxDeferredPercent: checked });
     },
     [setFieldValue, saveField],
   );
@@ -47,7 +47,7 @@ export const Deduction: React.FC = () => {
             sx={{ alignItems: 'flex-start', ml: 0 }}
             control={
               <Checkbox
-                checked={formValues.deductTwelvePercent || false}
+                checked={formValues.deductTaxDeferredPercent || false}
                 onChange={handleCheckboxChange}
                 disabled={pageType === PageEnum.View}
                 sx={{ mt: -0.5 }}
