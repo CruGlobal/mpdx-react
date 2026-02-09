@@ -5,7 +5,8 @@ import { getTotal } from './Helper/getTotal';
 
 export interface SalaryCalculations {
   total: number;
-  calculatedDeduction: number;
+  calculatedTraditionalDeduction: number;
+  calculatedRothDeduction: number;
   contribution403b: number;
   totalDeduction: number;
   netSalary: number;
@@ -32,16 +33,26 @@ export const useSalaryCalculations = ({
   calculations,
   grossSalaryAmount,
 }: UseSalaryCalculationsProps): SalaryCalculations => {
-  const { traditional403bPercentage } = useAdditionalSalaryRequest();
+  const { traditional403bPercentage, roth403bPercentage } =
+    useAdditionalSalaryRequest();
 
   return useMemo(() => {
     const total = getTotal(values);
 
-    const calculatedDeduction = values.deductTaxDeferredPercent
+    const calculatedTraditionalDeduction = values.deductTaxDeferredPercent
       ? total * traditional403bPercentage
       : 0;
 
-    const contribution403b = Number(values.traditional403bContribution || 0);
+    const calculatedRothDeduction = values.deductRothPercent
+      ? total * roth403bPercentage
+      : 0;
+
+    const calculatedDeduction =
+      calculatedTraditionalDeduction + calculatedRothDeduction;
+
+    const contribution403b =
+      Number(values.traditional403bContribution || 0) +
+      Number(values.roth403bContribution || 0);
 
     const totalDeduction = calculatedDeduction + contribution403b;
 
@@ -62,7 +73,8 @@ export const useSalaryCalculations = ({
 
     return {
       total,
-      calculatedDeduction,
+      calculatedTraditionalDeduction,
+      calculatedRothDeduction,
       contribution403b,
       totalDeduction,
       netSalary,
@@ -72,5 +84,5 @@ export const useSalaryCalculations = ({
       remainingInMaxAllowable,
       exceedsCap,
     };
-  }, [values, calculations, grossSalaryAmount, traditional403bPercentage]);
+  }, [values, calculations, grossSalaryAmount, traditional403bPercentage, roth403bPercentage]);
 };

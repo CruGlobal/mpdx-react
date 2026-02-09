@@ -21,20 +21,34 @@ import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 export const Deduction: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { pageType, traditional403bPercentage } = useAdditionalSalaryRequest();
+  const { pageType, traditional403bPercentage, roth403bPercentage } =
+    useAdditionalSalaryRequest();
   const { values: formValues, setFieldValue } =
     useFormikContext<CompleteFormValues>();
 
   const saveField = useSaveField({ formValues });
 
-  const { calculatedDeduction, contribution403b, totalDeduction } =
-    useSalaryCalculations({ values: formValues });
+  const {
+    calculatedTraditionalDeduction,
+    calculatedRothDeduction,
+    contribution403b,
+    totalDeduction,
+  } = useSalaryCalculations({ values: formValues });
 
-  const handleCheckboxChange = useCallback(
+  const handleTraditionalCheckboxChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const checked = e.target.checked;
       setFieldValue('deductTaxDeferredPercent', checked);
       saveField({ deductTaxDeferredPercent: checked });
+    },
+    [setFieldValue, saveField],
+  );
+
+  const handleRothCheckboxChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const checked = e.target.checked;
+      setFieldValue('deductRothPercent', checked);
+      saveField({ deductRothPercent: checked });
     },
     [setFieldValue, saveField],
   );
@@ -48,12 +62,12 @@ export const Deduction: React.FC = () => {
             control={
               <Checkbox
                 checked={formValues.deductTaxDeferredPercent || false}
-                onChange={handleCheckboxChange}
+                onChange={handleTraditionalCheckboxChange}
                 disabled={pageType === PageEnum.View}
                 sx={{ mt: -0.5 }}
                 inputProps={{
                   'aria-label': t(
-                    'Use default Percentage for 403(b) deduction',
+                    'Use default Percentage for 403(b) Traditional deduction',
                   ),
                 }}
               />
@@ -62,7 +76,7 @@ export const Deduction: React.FC = () => {
               <Box>
                 <Typography variant="body1">
                   {t(
-                    'Check this box if you would like {{percentage}}% of the amount requested above deducted from this Additional Salary Request.',
+                    'Check this box if you would like {{percentage}}% of your Additional Salary Request contributed to your Traditional 403(b).',
                     {
                       percentage: (traditional403bPercentage * 100).toFixed(0),
                     },
@@ -83,9 +97,56 @@ export const Deduction: React.FC = () => {
         </TableCell>
         <TableCell
           sx={{ width: '30%', fontSize: 16 }}
-          aria-label="Calculated deduction amount"
+          aria-label="Calculated traditional deduction amount"
         >
-          {currencyFormat(calculatedDeduction, 'USD', locale)}
+          {currencyFormat(calculatedTraditionalDeduction, 'USD', locale)}
+        </TableCell>
+      </TableRow>
+      <TableRow>
+        <TableCell sx={{ width: '70%' }}>
+          <FormControlLabel
+            sx={{ alignItems: 'flex-start', ml: 0 }}
+            control={
+              <Checkbox
+                checked={formValues.deductRothPercent || false}
+                onChange={handleRothCheckboxChange}
+                disabled={pageType === PageEnum.View}
+                sx={{ mt: -0.5 }}
+                inputProps={{
+                  'aria-label': t(
+                    'Use default Percentage for 403(b) Roth deduction',
+                  ),
+                }}
+              />
+            }
+            label={
+              <Box>
+                <Typography variant="body1">
+                  {t(
+                    'Check this box if you would like {{percentage}}% of your Additional Salary Request contributed to your Roth 403(b).',
+                    {
+                      percentage: (roth403bPercentage * 100).toFixed(0),
+                    },
+                  )}
+                </Typography>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ mt: 0.5 }}
+                >
+                  {t(
+                    'This is your regular 403(b) percentage contribution as selected on your latest Salary Calculation Form.',
+                  )}
+                </Typography>
+              </Box>
+            }
+          />
+        </TableCell>
+        <TableCell
+          sx={{ width: '30%', fontSize: 16 }}
+          aria-label="Calculated roth deduction amount"
+        >
+          {currencyFormat(calculatedRothDeduction, 'USD', locale)}
         </TableCell>
       </TableRow>
       <TableRow>
@@ -94,9 +155,7 @@ export const Deduction: React.FC = () => {
             {t('403(b) Contribution Requested as Additional Salary')}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {t(
-              'This is the sum of the Roth and Traditional amount you entered in the request above.',
-            )}
+            {t('This is the amount you requested above.')}
           </Typography>
         </TableCell>
         <TableCell sx={{ width: '30%', fontSize: 16 }}>
