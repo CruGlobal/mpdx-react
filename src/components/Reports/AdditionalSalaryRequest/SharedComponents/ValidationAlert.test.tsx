@@ -146,7 +146,7 @@ describe('ValidationAlert', () => {
   it('renders nothing when form is valid and submitted', async () => {
     const validValues: CompleteFormValues = {
       ...defaultCompleteFormValues,
-      phoneNumber: '555-1234',
+      phoneNumber: '407-555-1234',
     };
 
     const { queryByRole, findByRole } = renderComponent({
