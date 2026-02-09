@@ -116,6 +116,7 @@ export const useAdditionalSalaryRequestForm = (
     totalAdditionalSalaryRequested: '0',
     additionalInfo: '',
     deductTaxDeferredPercent: false,
+    deductRothPercent: false,
     phoneNumber: user?.staffInfo?.primaryPhoneNumber || '',
     emailAddress: user?.staffInfo?.emailAddress || '',
   } as CompleteFormValues;
@@ -138,6 +139,7 @@ export const useAdditionalSalaryRequestForm = (
         ]),
       ),
       deductTaxDeferredPercent: request.deductTaxDeferredPercent || false,
+      deductRothPercent: request.deductRothPercent || false,
       phoneNumber:
         request.phoneNumber || user?.staffInfo?.primaryPhoneNumber || '',
       emailAddress: request.emailAddress || user?.staffInfo?.emailAddress || '',

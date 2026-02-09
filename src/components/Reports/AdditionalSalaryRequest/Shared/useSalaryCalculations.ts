@@ -84,5 +84,11 @@ export const useSalaryCalculations = ({
       remainingInMaxAllowable,
       exceedsCap,
     };
-  }, [values, calculations, grossSalaryAmount, traditional403bPercentage, roth403bPercentage]);
+  }, [
+    values,
+    calculations,
+    grossSalaryAmount,
+    traditional403bPercentage,
+    roth403bPercentage,
+  ]);
 };
