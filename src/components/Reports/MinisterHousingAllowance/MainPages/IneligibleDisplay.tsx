@@ -23,7 +23,8 @@ export const IneligibleDisplay: React.FC = () => {
           <p style={{ lineHeight: 1.5 }}>
             Our records indicate that you have not applied for Minister&apos;s
             Housing Allowance. If you would like information about applying for
-            one, contact Personnel Records at 407-826-2252 or{' '}
+            one, contact Personnel Records at{' '}
+            <a href="tel:407-826-2230">(407) 826-2230</a> or{' '}
             <a href="mailto:MHA@cru.org">MHA@cru.org</a>.
           </p>
         </Trans>
@@ -39,7 +40,8 @@ export const IneligibleDisplay: React.FC = () => {
                 Once approved, when you calculate your salary, you will see the
                 approved amount that can be applied to {preferredName}&apos;s
                 salary. If you believe this is incorrect, please contact
-                Personnel Records at 407-826-2252 or{' '}
+                Personnel Records at{' '}
+                <a href="tel:407-826-2230">(407) 826-2230</a> or{' '}
                 <a href="mailto:MHA@cru.org">MHA@cru.org</a>.
               </p>
             </Trans>

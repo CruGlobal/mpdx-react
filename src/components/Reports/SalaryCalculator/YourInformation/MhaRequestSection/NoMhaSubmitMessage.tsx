@@ -32,13 +32,25 @@ export const NoMhaSubmitMessage: React.FC<NoMhaSubmitMessageProps> = ({
           sx={{ marginBottom: theme.spacing(2) }}
           data-testid="ineligible-message"
         >
-          {t(
-            isIneligiblePlural
-              ? '{{names}} have not completed the required IBS courses to meet eligibility criteria. For information about obtaining eligibility, contact Personnel Records at 407-826-2252 or'
-              : '{{names}} has not completed the required IBS courses to meet eligibility criteria. For information about obtaining eligibility, contact Personnel Records at 407-826-2252 or',
-            { names: ineligibleNames },
-          )}{' '}
-          <a href="mailto:MHA@cru.org">MHA@cru.org</a>.
+          {isIneligiblePlural ? (
+            <Trans t={t}>
+              {{ names: ineligibleNames }} have not completed the required IBS
+              courses to meet eligibility criteria. For information about
+              obtaining eligibility, contact Personnel Records at{' '}
+              <a href="tel:407-826-2230">(407) 826-2230</a>
+              or
+              <a href="mailto:MHA@cru.org">MHA@cru.org</a>.
+            </Trans>
+          ) : (
+            <Trans t={t}>
+              {{ names: ineligibleNames }} has not completed the required IBS
+              courses to meet eligibility criteria. For information about
+              obtaining eligibility, contact Personnel Records at{' '}
+              <a href="tel:407-826-2230">(407) 826-2230</a>
+              or
+              <a href="mailto:MHA@cru.org">MHA@cru.org</a>.
+            </Trans>
+          )}
         </Typography>
       )}
       <Typography
@@ -46,27 +58,50 @@ export const NoMhaSubmitMessage: React.FC<NoMhaSubmitMessageProps> = ({
         sx={{ marginBottom: theme.spacing(2) }}
         data-testid="no-mha-submit-message"
       >
-        <Trans t={t} values={{ names }}>
-          {isPlural
-            ? `Our records show that {{names}} do not have a Minister's Housing Allowance for the effective date of this salary calculation. If {{names}} have not yet submitted an MHA Request form, it may be completed at their earliest convenience using `
-            : `Our records show that {{names}} does not have a Minister's Housing Allowance for the effective date of this salary calculation. If {{names}} has not yet submitted an MHA Request form, it may be completed at their earliest convenience using `}
-          <Link
-            href={`/accountLists/${accountListId}/reports/housingAllowance`}
-          >
-            this link.
-          </Link>
-        </Trans>
+        {isPlural ? (
+          <Trans t={t}>
+            Our records show that {{ names }} do not have a Minister&apos;s
+            Housing Allowance for the effective date of this salary calculation.
+            If {{ names }} have not yet submitted an MHA Request form, it may be
+            completed at their earliest convenience using
+            <Link
+              href={`/accountLists/${accountListId}/reports/housingAllowance`}
+            >
+              this link.
+            </Link>
+          </Trans>
+        ) : (
+          <Trans t={t}>
+            Our records show that {{ names }} does not have a Minister&apos;s
+            Housing Allowance for the effective date of this salary calculation.
+            If {{ names }} has not yet submitted an MHA Request form, it may be
+            completed at their earliest convenience using
+            <Link
+              href={`/accountLists/${accountListId}/reports/housingAllowance`}
+            >
+              this link.
+            </Link>
+          </Trans>
+        )}
       </Typography>
       <Typography
         variant="body1"
         sx={{ marginBottom: theme.spacing(2) }}
         data-testid="no-mha-pending-message"
       >
-        <Trans t={t} values={{ names }}>
-          {isPlural
-            ? 'If {{names}} have a pending MHA Request, it will not apply to this salary calculation but a new Salary Calculation Form can be submitted after it is approved.'
-            : 'If {{names}} has a pending MHA Request, it will not apply to this salary calculation but a new Salary Calculation Form can be submitted after it is approved.'}
-        </Trans>
+        {isPlural ? (
+          <Trans t={t}>
+            If {{ names }} have a pending MHA Request, it will not apply to this
+            salary calculation but a new Salary Calculation Form can be
+            submitted after it is approved.
+          </Trans>
+        ) : (
+          <Trans t={t}>
+            If {{ names }} has a pending MHA Request, it will not apply to this
+            salary calculation but a new Salary Calculation Form can be
+            submitted after it is approved.
+          </Trans>
+        )}
       </Typography>
     </>
   );

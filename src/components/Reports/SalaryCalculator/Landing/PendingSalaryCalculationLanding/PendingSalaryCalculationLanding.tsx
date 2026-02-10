@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Container, Typography, useTheme } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useTranslation } from 'react-i18next';
+import { Trans, useTranslation } from 'react-i18next';
 import Loading from 'src/components/Loading/Loading';
 import { NameDisplay } from 'src/components/Reports/Shared/CalculationReports/NameDisplay/NameDisplay';
 import { NoStaffAccount } from 'src/components/Reports/Shared/NoStaffAccount/NoStaffAccount';
@@ -36,11 +36,12 @@ export const PendingSalaryCalculationLanding: React.FC = () => {
             {t('Your Salary Calculation Form')}
           </Typography>
           <Typography>
-            {t(
-              `We see that {{ names }} currently has a pending Salary Calculation Form  in our system. You may review the status of that form below. 
-              If you have any questions regarding a pending request please contact [HR Services] at [Phone] or [Email].`,
-              { names },
-            )}
+            <Trans t={t}>
+              We see that {{ names }} currently has a pending Salary Calculation
+              Form in our system. You may review the status of that form below.
+              If you have any questions regarding a pending request please
+              contact [HR Services] at [Phone] or [Email].
+            </Trans>
           </Typography>
         </Box>
 

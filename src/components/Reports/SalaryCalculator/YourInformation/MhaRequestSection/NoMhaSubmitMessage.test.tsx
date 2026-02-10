@@ -1,14 +1,16 @@
 import { ThemeProvider } from '@emotion/react';
 import { render } from '@testing-library/react';
+import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
+import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { NoMhaSubmitMessage } from './NoMhaSubmitMessage';
 
-const accountListId = 'account-list-1';
-
 const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <ThemeProvider theme={theme}>
-    <TestRouter router={{ query: { accountListId } }}>{children}</TestRouter>
+    <I18nextProvider i18n={i18n}>
+      <TestRouter>{children}</TestRouter>
+    </I18nextProvider>
   </ThemeProvider>
 );
 
@@ -59,7 +61,7 @@ describe('NoMhaSubmitMessage', () => {
     const link = getByRole('link', { name: 'this link.' });
     expect(link).toHaveAttribute(
       'href',
-      `/accountLists/${accountListId}/reports/housingAllowance`,
+      `/accountLists/account-list-1/reports/housingAllowance`,
     );
   });
 

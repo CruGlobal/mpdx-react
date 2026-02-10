@@ -107,8 +107,9 @@ export const MhaRequestSection: React.FC = () => {
                 <Trans t={t}>
                   {{ name: ineligibleName }} has not completed the required IBS
                   courses to meet eligibility criteria. For information about
-                  obtaining eligibility, contact Personnel Records at
-                  407-826-2252 or <a href="mailto:MHA@cru.org">MHA@cru.org</a>.
+                  obtaining eligibility, contact Personnel Records at{' '}
+                  <a href="tel:407-826-2230">(407) 826-2230</a> or{' '}
+                  <a href="mailto:MHA@cru.org">MHA@cru.org</a>.
                 </Trans>
               )}
             </Typography>
