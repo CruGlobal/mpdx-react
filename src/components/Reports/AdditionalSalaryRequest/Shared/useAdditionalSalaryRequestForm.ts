@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -79,20 +79,17 @@ export const useAdditionalSalaryRequestForm = (
   const { handleNextStep, user, salaryInfo, isInternational } =
     useAdditionalSalaryRequest();
 
-  const { remainingAllowableSalary } = useFormData();
+  const { primaryAccountBalance, remainingAllowableSalary } = useFormData();
 
   const { data: requestData } = useAdditionalSalaryRequestQuery();
-
-  const calculations = requestData?.latestAdditionalSalaryRequest?.calculations;
-  const grossSalaryAmount = user?.currentSalary?.grossSalaryAmount ?? 0;
-  const maxAllowableSalary = calculations?.maxAmountAndReason?.amount ?? 0;
-  const additionalSalaryReceivedThisYear = calculations?.pendingAsrAmount ?? 0;
 
   const [updateAdditionalSalaryRequest] =
     useUpdateAdditionalSalaryRequestMutation();
 
   const [submitAdditionalSalaryRequest] =
     useSubmitAdditionalSalaryRequestMutation();
+
+  const lastValidTotalRef = useRef<number>(0);
 
   const createCurrencyValidation = useCallback(
     (fieldName: string, max?: number) => {
@@ -188,7 +185,13 @@ export const useAdditionalSalaryRequestForm = (
             t('Exceeds account balance.'),
             function () {
               const total = getTotal(this.parent as CompleteFormValues);
-              return total <= remainingAllowableSalary;
+
+              if (total > 0) {
+                lastValidTotalRef.current = total;
+              }
+              const stableTotal = total > 0 ? total : lastValidTotalRef.current;
+
+              return stableTotal <= primaryAccountBalance;
             },
           ),
         additionalInfo: yup
@@ -198,11 +201,15 @@ export const useAdditionalSalaryRequestForm = (
             t('Additional info is required for requests exceeding your cap.'),
             function (value) {
               const total = getTotal(this.parent as CompleteFormValues);
-              const totalAnnualSalary =
-                grossSalaryAmount + additionalSalaryReceivedThisYear + total;
-              const remainingInMaxAllowable =
-                maxAllowableSalary - totalAnnualSalary;
-              const exceedsCap = total > remainingInMaxAllowable;
+
+              if (total > 0) {
+                lastValidTotalRef.current = total;
+              }
+              const stableTotal = total > 0 ? total : lastValidTotalRef.current;
+
+              const exceedsCap =
+                stableTotal > remainingAllowableSalary &&
+                stableTotal < primaryAccountBalance;
 
               if (exceedsCap) {
                 return !!value && value.trim().length > 0;
@@ -214,11 +221,9 @@ export const useAdditionalSalaryRequestForm = (
     [
       createCurrencyValidation,
       t,
+      primaryAccountBalance,
       remainingAllowableSalary,
       locale,
-      grossSalaryAmount,
-      maxAllowableSalary,
-      additionalSalaryReceivedThisYear,
     ],
   );
 
