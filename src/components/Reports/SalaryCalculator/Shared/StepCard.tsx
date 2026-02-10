@@ -21,9 +21,6 @@ export const StepCard = styled(Card)(({ theme }) => ({
     flexDirection: 'column',
     gap: theme.spacing(2),
     padding: theme.spacing(2),
-    '> .MuiTypography-root': {
-      paddingLeft: theme.spacing(1),
-    },
     '> .MuiDivider-root': {
       marginBlock: theme.spacing(2),
     },

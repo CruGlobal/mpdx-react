@@ -56,7 +56,7 @@ export const ApprovalProcessCard: React.FC = () => {
         }
       />
       <CardContent>
-        <Typography paragraph data-testid="ApprovalProcessCard-status">
+        <Typography data-testid="ApprovalProcessCard-status">
           {approvalRequired ? (
             <Trans t={t}>
               Since you are requesting above your and {{ spouse: spouseName }}
@@ -73,7 +73,7 @@ export const ApprovalProcessCard: React.FC = () => {
             </Trans>
           )}
         </Typography>
-        <Typography paragraph>
+        <Typography>
           {tier === ProgressiveApprovalTierEnum.DivisionHead ? (
             <Trans t={t}>
               Since your combined request is still within your combined Max
@@ -88,6 +88,9 @@ export const ApprovalProcessCard: React.FC = () => {
         </Typography>
 
         <AutosaveTextField
+          sx={(theme) => ({
+            marginTop: theme.spacing(1),
+          })}
           fieldName="additionalInfo"
           schema={schema}
           label={t('Additional info')}
