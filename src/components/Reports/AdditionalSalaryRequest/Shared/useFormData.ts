@@ -1,7 +1,7 @@
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 
 export const useFormData = () => {
-  const { requestData, user } = useAdditionalSalaryRequest();
+  const { user, requestData } = useAdditionalSalaryRequest();
   const { currentSalaryCap, staffAccountBalance } =
     requestData?.latestAdditionalSalaryRequest?.calculations || {};
   const {
