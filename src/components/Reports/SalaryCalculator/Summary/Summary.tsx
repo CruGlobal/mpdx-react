@@ -93,7 +93,7 @@ export const SummaryStep: React.FC = () => {
       <RequestSummaryCard />
       <ApprovalProcessCard />
 
-      <SimpleScreenOnly>
+      <SimpleScreenOnly sx={{ display: 'contents' }}>
         <Button
           endIcon={showCompleteCalculations ? <ExpandLess /> : <ExpandMore />}
           onClick={() => setShowCompleteCalculations(!showCompleteCalculations)}
