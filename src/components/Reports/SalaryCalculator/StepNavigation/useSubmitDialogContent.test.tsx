@@ -1,46 +1,22 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { ProgressiveApprovalTierEnum } from 'src/graphql/types.generated';
-import {
-  SalaryCalculatorTestWrapper,
-  SalaryRequestMock,
-} from '../SalaryCalculatorTestWrapper';
+import { SalaryCalculatorTestWrapper } from '../SalaryCalculatorTestWrapper';
 import { useSubmitDialogContent } from './useSubmitDialogContent';
-
-interface TestWrapperProps {
-  salaryRequestMock?: SalaryRequestMock;
-  hcmUser?: {
-    exceptionSalaryCap?: { amount?: number; boardCapException?: boolean };
-  };
-  children?: React.ReactNode;
-}
-
-const TestWrapper: React.FC<TestWrapperProps> = ({
-  salaryRequestMock,
-  hcmUser,
-  children,
-}) => (
-  <SalaryCalculatorTestWrapper
-    salaryRequestMock={salaryRequestMock}
-    hcmUser={hcmUser}
-  >
-    {children}
-  </SalaryCalculatorTestWrapper>
-);
 
 describe('useSubmitDialogContent', () => {
   it('returns standard submit content when no approval is required', async () => {
     const { result } = renderHook(() => useSubmitDialogContent(), {
       wrapper: ({ children }) => (
-        <TestWrapper
+        <SalaryCalculatorTestWrapper
           salaryRequestMock={{
             progressiveApprovalTier: null,
           }}
           hcmUser={{
-            exceptionSalaryCap: { boardCapException: false },
+            exceptionSalaryCap: { boardCapException: true },
           }}
         >
           {children}
-        </TestWrapper>
+        </SalaryCalculatorTestWrapper>
       ),
     });
 
@@ -60,7 +36,7 @@ describe('useSubmitDialogContent', () => {
   it('returns standard submit content when tier is DivisionHead', async () => {
     const { result } = renderHook(() => useSubmitDialogContent(), {
       wrapper: ({ children }) => (
-        <TestWrapper
+        <SalaryCalculatorTestWrapper
           salaryRequestMock={{
             progressiveApprovalTier: {
               tier: ProgressiveApprovalTierEnum.DivisionHead,
@@ -73,7 +49,7 @@ describe('useSubmitDialogContent', () => {
           }}
         >
           {children}
-        </TestWrapper>
+        </SalaryCalculatorTestWrapper>
       ),
     });
 
@@ -87,7 +63,7 @@ describe('useSubmitDialogContent', () => {
   it('returns approval required content when progressive approval tier is not DivisionHead', async () => {
     const { result } = renderHook(() => useSubmitDialogContent(), {
       wrapper: ({ children }) => (
-        <TestWrapper
+        <SalaryCalculatorTestWrapper
           salaryRequestMock={{
             progressiveApprovalTier: {
               tier: ProgressiveApprovalTierEnum.VicePresident,
@@ -106,7 +82,7 @@ describe('useSubmitDialogContent', () => {
           }}
         >
           {children}
-        </TestWrapper>
+        </SalaryCalculatorTestWrapper>
       ),
     });
 
@@ -124,16 +100,18 @@ describe('useSubmitDialogContent', () => {
   it('returns board cap exception content when user has exception salary cap', async () => {
     const { result } = renderHook(() => useSubmitDialogContent(), {
       wrapper: ({ children }) => (
-        <TestWrapper
+        <SalaryCalculatorTestWrapper
           salaryRequestMock={{
-            progressiveApprovalTier: null,
+            progressiveApprovalTier: {
+              tier: ProgressiveApprovalTierEnum.BoardCompensationCommittee,
+            },
           }}
           hcmUser={{
             exceptionSalaryCap: { boardCapException: true },
           }}
         >
           {children}
-        </TestWrapper>
+        </SalaryCalculatorTestWrapper>
       ),
     });
 

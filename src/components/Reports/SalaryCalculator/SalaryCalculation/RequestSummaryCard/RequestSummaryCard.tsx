@@ -58,7 +58,8 @@ export const RequestSummaryCard: React.FC = () => {
   const approvalRequired =
     !!progressiveApprovalTier &&
     progressiveApprovalTier?.tier !== ProgressiveApprovalTierEnum.DivisionHead;
-  const { combinedCap, combinedGross, overCapName, overCapSalary } = useCaps();
+  const boardCapException = hcmUser?.exceptionSalaryCap.boardCapException;
+  const { combinedGross, overCapName, overCapSalary } = useCaps();
 
   const { formatCurrency } = useFormatters();
 
@@ -66,6 +67,7 @@ export const RequestSummaryCard: React.FC = () => {
   const spouseCalcs = calculation?.spouseCalculations;
   const hasSpouse = !!hcmSpouse && !!spouseCalcs;
 
+  const combinedCap = calcs?.combinedCap ?? 0;
   const combinedSeca =
     (calcs?.requestedSeca ?? 0) + (spouseCalcs?.requestedSeca ?? 0);
   const combined403b =
@@ -93,6 +95,13 @@ export const RequestSummaryCard: React.FC = () => {
   const combinedModifier = hasSpouse ? t('Combined') : '';
   const statusMessage = !progressiveApprovalTier ? (
     t('Your gross request is within your Maximum Allowable Salary.')
+  ) : boardCapException ? (
+    <Trans t={t}>
+      You have a Board approved Maximum Allowable Salary (CAP) and your salary
+      request exceeds that amount. As a result we need to get their approval for
+      this request. We&apos;ll forward your request to them and get back to you
+      with their decision.
+    </Trans>
   ) : approvalRequired ? (
     <Trans t={t}>
       Your {{ combined: combinedModifier }} Gross Requested Salary exceeds your{' '}

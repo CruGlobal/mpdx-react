@@ -109,10 +109,8 @@ export const SalaryCalculatorTestWrapper: React.FC<
   payrollDates = [],
   editing = true,
 }) => {
-  const hcmUserMerged = hcmUser ? merge({}, hcmUserMock, hcmUser) : hcmUserMock;
-  const hcmSpouseMerged = hcmSpouse
-    ? merge({}, hcmSpouseMock, hcmSpouse)
-    : hcmSpouseMock;
+  const hcmUserMerged = merge({}, hcmUserMock, hcmUser);
+  const hcmSpouseMerged = merge({}, hcmSpouseMock, hcmSpouse);
   return (
     <ThemeProvider theme={theme}>
       <TestRouter
@@ -162,7 +160,7 @@ export const SalaryCalculatorTestWrapper: React.FC<
                 } satisfies SalaryRequestMock,
                 salaryRequestMock,
                 hasSpouse ? undefined : { spouseCalculations: null },
-              ) as NonNullable<SalaryRequestMock>,
+              ),
             },
           }}
           onCall={onCall}
