@@ -34,8 +34,8 @@ const mockFunds: Fund[] = [
 const defaultProps = {
   funds: mockFunds,
   selectedFundType: null,
-  startingBalance: 1000,
-  endingBalance: 1500,
+  startBalance: 1000,
+  endBalance: 1500,
   transferTotals: {
     Primary: { in: 500, out: 100 },
     Savings: { in: 300, out: 50 },

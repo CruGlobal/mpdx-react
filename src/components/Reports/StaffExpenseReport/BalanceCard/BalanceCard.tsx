@@ -40,8 +40,8 @@ interface BalanceCardProps {
   title: string;
   icon: React.ComponentType;
   iconBgColor?: string;
-  startingBalance: number;
-  endingBalance: number;
+  startBalance: number;
+  endBalance: number;
   transfersIn: number;
   transfersOut: number;
   onClick: (fundType: string) => void;
@@ -67,8 +67,8 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
   title,
   icon: Icon,
   iconBgColor,
-  startingBalance,
-  endingBalance,
+  startBalance,
+  endBalance,
   transfersIn,
   transfersOut,
   onClick,
@@ -88,7 +88,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
       <Box display="flex" flexDirection="column" mt={3} mb={2}>
         <Typography>
           {t('Starting Balance: ')}
-          {currencyFormat(startingBalance, 'USD', locale)}
+          {currencyFormat(startBalance, 'USD', locale)}
         </Typography>
         <Typography>
           {t('+ Transfers in: ')}
@@ -100,7 +100,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
         </Typography>
         <Typography>
           {t('= Ending Balance: ')}
-          {currencyFormat(endingBalance, 'USD', locale)}
+          {currencyFormat(endBalance, 'USD', locale)}
         </Typography>
       </Box>
 
