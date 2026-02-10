@@ -21,7 +21,7 @@ export const useSubmitDialogContent = (): DialogContent => {
   const hasBoardCapException =
     hcmUser?.exceptionSalaryCap.boardCapException ?? false;
 
-  if (!(approvalRequired || hasBoardCapException)) {
+  if (!approvalRequired) {
     return {
       title: t('Are you ready to submit your Salary Calculation Form?'),
       content: t('You are submitting your Salary Calculation Form.'),
