@@ -105,7 +105,7 @@ export const PersonalInformationSection: React.FC = () => {
             correct, please contact HR Services with the correct information at
             <a href="tel:888-278-7233">(888) 278-7233</a> or
             <a href="tel:407-826-2287">(407) 826-2287</a>. Email:{' '}
-            {/* TODO: Update email address once provided by stakeholders (refer to Figma) */}
+            {/* TODO (MPDX-9298): Update email address once provided by stakeholders (refer to Figma) */}
             <Link href="mailto:--@cru.org">--@cru.org</Link>
           </Trans>
         </Typography>

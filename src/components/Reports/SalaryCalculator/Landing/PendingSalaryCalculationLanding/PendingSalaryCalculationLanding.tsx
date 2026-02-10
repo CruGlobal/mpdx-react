@@ -27,7 +27,7 @@ export const PendingSalaryCalculationLanding: React.FC = () => {
     return <NoStaffAccount />;
   }
 
-  // TODO: Update text with correct HR contact info when available.
+  // TODO (MPDX-9298): Update text with correct HR contact info when available.
   return (
     <StyledContainer>
       <Box>
