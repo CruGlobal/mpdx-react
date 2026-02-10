@@ -48,7 +48,9 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
       iconColor="warning.main"
       linkOneText={t('View Request')}
       handleLinkOne={() => setPageType(PageEnum.View)}
-      hideLinkTwoButton={true}
+      hideLinkTwoButton={status !== AsrStatusEnum.ActionRequired}
+      linkTwoText={t('Edit Request')}
+      handleLinkTwo={() => setPageType(PageEnum.Edit)}
       isRequest={true}
       handleConfirmCancel={() => handleDeleteRequest(id, true)}
     >
