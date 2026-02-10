@@ -103,7 +103,7 @@ const AdditionalSalaryRequestContent: React.FC = () => {
   const [isNavListOpen, setNavListOpen] = useState(false);
   const { t } = useTranslation();
 
-  const { requestData, loading, isMutating, pageType, user } =
+  const { requestData, loading, isMutating, pageType, currentIndex, steps } =
     useAdditionalSalaryRequest();
 
   const handleNavListToggle = () => {
@@ -111,14 +111,21 @@ const AdditionalSalaryRequestContent: React.FC = () => {
   };
 
   const status = requestData?.latestAdditionalSalaryRequest?.status;
+
+  const isFirstFormPage = currentIndex === 0;
+  const reviewPage = currentIndex === steps.length - 1;
+  const isFormPage = !isFirstFormPage && !reviewPage;
+
   const showStatuses: AsrStatusEnum[] = [
     AsrStatusEnum.ActionRequired,
     AsrStatusEnum.Pending,
+    AsrStatusEnum.InProgress,
   ];
   const showSavingStatus =
     pageType !== PageEnum.View &&
-    (!status || showStatuses.includes(status)) &&
-    user?.asrEit?.asrEligibility !== false;
+    status &&
+    showStatuses.includes(status) &&
+    isFormPage;
 
   return (
     <SidePanelsLayout
