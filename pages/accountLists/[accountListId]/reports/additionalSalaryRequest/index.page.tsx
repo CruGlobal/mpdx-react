@@ -56,7 +56,7 @@ const useCurrentRoute = (): RouteType | null => {
     return null;
   }
 
-  if (pageType === PageEnum.View) {
+  if (pageType === PageEnum.View || pageType === PageEnum.Edit) {
     return 'request';
   }
 

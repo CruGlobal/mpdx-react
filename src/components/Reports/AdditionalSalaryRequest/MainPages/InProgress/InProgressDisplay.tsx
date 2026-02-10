@@ -28,10 +28,7 @@ const InProgressMainContent: React.FC = () => {
         )}
       </Typography>
       <Box sx={{ mt: 4, display: 'flex', gap: 1 }}>
-        <Button
-          variant="contained"
-          onClick={() => setPageType(PageEnum.Edit)}
-        >
+        <Button variant="contained" onClick={() => setPageType(PageEnum.Edit)}>
           {t('Continue Request')}
         </Button>
         <Button
