@@ -15,6 +15,7 @@ fragment AdditionalSalaryRequestFields on AdditionalSalaryRequest {
 
 fragment AdditionalSalaryRequestDetailsFields on AdditionalSalaryRequest {
   ...AdditionalSalaryRequestFields
+  changesRequestedAt
   personNumber
   additionalSalaryWithinMax
   adoption

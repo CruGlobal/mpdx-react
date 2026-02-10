@@ -33,10 +33,13 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
     useAdditionalSalaryRequest();
   const preferredName = user?.staffInfo?.preferredName;
 
-  const { id, status, totalAdditionalSalaryRequested, submittedAt } = request;
-
-  // TODO remove submittedAt and processedDate placeholders and grab from request once available
-  const processedDate = new Date().toISOString();
+  const {
+    id,
+    status,
+    totalAdditionalSalaryRequested,
+    submittedAt,
+    changesRequestedAt,
+  } = request;
 
   return (
     <StatusCard
@@ -118,8 +121,8 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
                   <Box component="span" sx={{ fontWeight: 'bold' }}>
                     {t('Request processed on:')}
                   </Box>
-                  {processedDate &&
-                    ` ${dateFormat(DateTime.fromISO(processedDate), locale)}`}
+                  {changesRequestedAt &&
+                    ` ${dateFormat(DateTime.fromISO(changesRequestedAt), locale)}`}
                 </Typography>
               ) : (
                 <Typography sx={{ fontWeight: 'bold' }}>
