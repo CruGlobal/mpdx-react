@@ -310,8 +310,6 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                 <BalanceCardList
                   funds={allFunds}
                   selectedFundType={selectedFundType}
-                  startingBalance={data?.reportsStaffExpenses.startBalance ?? 0}
-                  endingBalance={data?.reportsStaffExpenses.endBalance ?? 0}
                   transferTotals={transferTotals}
                   onCardClick={handleCardClick}
                   loading={loading}
@@ -325,8 +323,8 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                     icon={getIconForFundType(selectedFundType)}
                     iconColor={getIconColorForFundType(selectedFundType, theme)}
                     title={selectedFundType}
-                    startBalance={data?.reportsStaffExpenses.startBalance ?? 0}
-                    endBalance={data?.reportsStaffExpenses.endBalance ?? 0}
+                    startBalance={selectedFund.startBalance ?? 0}
+                    endBalance={selectedFund.endBalance ?? 0}
                     transfersIn={transferTotals[selectedFundType]?.in}
                     transfersOut={transferTotals[selectedFundType]?.out}
                   />

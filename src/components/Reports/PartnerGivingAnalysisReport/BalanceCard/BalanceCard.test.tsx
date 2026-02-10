@@ -7,10 +7,10 @@ import { BalanceCard } from './BalanceCard';
 const mutationSpy = jest.fn();
 
 interface ComponentProps {
-  balance?: number;
+  endBalance?: number;
 }
 
-const Components = ({ balance = 15000 }: ComponentProps) => (
+const Components = ({ endBalance = 15000 }: ComponentProps) => (
   <GqlMockedProvider<{
     FundBalances: FundBalancesQuery;
   }>
@@ -20,7 +20,7 @@ const Components = ({ balance = 15000 }: ComponentProps) => (
           funds: [
             {
               fundType: 'Primary',
-              balance,
+              endBalance,
             },
           ],
         },
@@ -62,7 +62,7 @@ describe('BalanceCard', () => {
   describe('Handle formatting', () => {
     it('should format positive balance amount correctly', async () => {
       const { getByText, queryByTestId } = render(
-        <Components balance={1234567.89} />,
+        <Components endBalance={1234567.89} />,
       );
 
       await waitFor(() => {
@@ -73,7 +73,9 @@ describe('BalanceCard', () => {
     });
 
     it('should handle zero balance amount', async () => {
-      const { getByText, queryByTestId } = render(<Components balance={0} />);
+      const { getByText, queryByTestId } = render(
+        <Components endBalance={0} />,
+      );
 
       await waitFor(() => {
         expect(queryByTestId('CardSkeleton')).not.toBeInTheDocument();
@@ -84,7 +86,7 @@ describe('BalanceCard', () => {
 
     it('should format negative balance amount', async () => {
       const { getByText, queryByTestId } = render(
-        <Components balance={-500} />,
+        <Components endBalance={-500} />,
       );
 
       await waitFor(() => {

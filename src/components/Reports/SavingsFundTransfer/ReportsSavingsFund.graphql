@@ -45,6 +45,6 @@ query FundBalances($fundTypes: [String!]) {
 fragment FundFields on Fund {
   id
   fundType
-  balance
+  endBalance
   deficitLimit
 }

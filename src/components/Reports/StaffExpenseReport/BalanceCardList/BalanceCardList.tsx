@@ -19,8 +19,6 @@ const StyledCardsBox = styled(Box)(({ theme }) => ({
 export interface BalanceCardListProps {
   funds: Fund[];
   selectedFundType: string | null;
-  startingBalance: number;
-  endingBalance: number;
   transferTotals: Record<string, { in: number; out: number }>;
   onCardClick: (fundType: string) => void;
   loading: boolean;
@@ -29,8 +27,6 @@ export interface BalanceCardListProps {
 export const BalanceCardList: React.FC<BalanceCardListProps> = ({
   funds,
   selectedFundType,
-  startingBalance,
-  endingBalance,
   transferTotals,
   onCardClick,
   loading,
@@ -57,8 +53,8 @@ export const BalanceCardList: React.FC<BalanceCardListProps> = ({
             iconBgColor={getIconColorForFundType(fund.fundType, theme)}
             title={fund.fundType}
             isSelected={selectedFundType === fund.fundType}
-            startingBalance={startingBalance}
-            endingBalance={endingBalance}
+            startingBalance={fund.startingBalance ?? 0}
+            endingBalance={fund.endingBalance ?? 0}
             transfersIn={transferTotals[fund.fundType]?.in}
             transfersOut={transferTotals[fund.fundType]?.out}
             onClick={onCardClick}
