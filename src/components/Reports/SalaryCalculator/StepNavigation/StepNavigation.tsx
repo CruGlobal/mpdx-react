@@ -143,13 +143,14 @@ export const StepNavigation: React.FC = () => {
   const { currentIndex, steps, editing } = useSalaryCalculator();
   const { allValid } = useAutosaveForm();
 
-  if (!editing) {
+  // We don't want to render navigation if on view mode or the receipt step
+  if (!editing || currentIndex === steps.length - 1) {
     return null;
   }
 
   return (
     <Box display="flex" justifyContent="space-between" alignItems="center">
-      {currentIndex < steps.length - 1 && <DiscardButton />}
+      <DiscardButton />
 
       <Stack direction="row" spacing={theme.spacing(1)}>
         <BackButton />

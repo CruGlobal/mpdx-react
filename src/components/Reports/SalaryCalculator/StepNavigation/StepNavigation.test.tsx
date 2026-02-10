@@ -36,6 +36,26 @@ describe('StepNavigation', () => {
     expect(queryByRole('button', { name: 'Continue' })).not.toBeInTheDocument();
     expect(queryByRole('button', { name: 'Discard' })).not.toBeInTheDocument();
   });
+
+  it('does not render buttons on the receipt step', async () => {
+    const { findByRole, queryByRole } = render(
+      <TestComponent onCall={mutationSpy} />,
+    );
+
+    userEvent.click(await findByRole('button', { name: 'Continue' }));
+    userEvent.click(await findByRole('button', { name: 'Continue' }));
+    userEvent.click(await findByRole('button', { name: 'Continue' }));
+    userEvent.click(await findByRole('button', { name: 'Submit' }));
+    userEvent.click(await findByRole('button', { name: 'Yes, Continue' }));
+
+    await waitFor(() => {
+      expect(queryByRole('button', { name: 'Back' })).not.toBeInTheDocument();
+    });
+
+    expect(queryByRole('button', { name: 'Continue' })).not.toBeInTheDocument();
+    expect(queryByRole('button', { name: 'Submit' })).not.toBeInTheDocument();
+    expect(queryByRole('button', { name: 'Discard' })).not.toBeInTheDocument();
+  });
 });
 
 describe('DiscardButton', () => {
