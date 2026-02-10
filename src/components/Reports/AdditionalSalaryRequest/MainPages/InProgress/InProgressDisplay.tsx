@@ -14,7 +14,7 @@ import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequest
 const InProgressMainContent: React.FC = () => {
   const { t } = useTranslation();
 
-  const { handleDeleteRequest, requestId, spouse, setPageType } =
+  const { handleDeleteRequest, requestId, spouse, setPageType, goToStep } =
     useAdditionalSalaryRequest();
 
   return (
@@ -28,7 +28,13 @@ const InProgressMainContent: React.FC = () => {
         )}
       </Typography>
       <Box sx={{ mt: 4, display: 'flex', gap: 1 }}>
-        <Button variant="contained" onClick={() => setPageType(PageEnum.Edit)}>
+        <Button
+          variant="contained"
+          onClick={() => {
+            setPageType(PageEnum.Edit);
+            goToStep(1);
+          }}
+        >
           {t('Continue Request')}
         </Button>
         <Button

@@ -29,7 +29,7 @@ interface CurrentRequestProps {
 export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { user, handleDeleteRequest, setPageType } =
+  const { user, handleDeleteRequest, setPageType, goToStep } =
     useAdditionalSalaryRequest();
   const preferredName = user?.staffInfo?.preferredName;
 
@@ -50,7 +50,10 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
       handleLinkOne={() => setPageType(PageEnum.View)}
       hideLinkTwoButton={status !== AsrStatusEnum.ActionRequired}
       linkTwoText={t('Edit Request')}
-      handleLinkTwo={() => setPageType(PageEnum.Edit)}
+      handleLinkTwo={() => {
+        setPageType(PageEnum.Edit);
+        goToStep(1);
+      }}
       isRequest={true}
       handleConfirmCancel={() => handleDeleteRequest(id, true)}
     >

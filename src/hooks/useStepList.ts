@@ -147,11 +147,23 @@ export function useStepList(formType: FormEnum, type?: PageEnum) {
     setCurrentIndex(0);
   }, []);
 
+  const goToStep = useCallback((targetIndex: number) => {
+    setSteps((prevSteps) =>
+      prevSteps.map((step, index) => ({
+        ...step,
+        current: index === targetIndex,
+        complete: index < targetIndex,
+      })),
+    );
+    setCurrentIndex(targetIndex);
+  }, []);
+
   return {
     steps,
     handleNextStep,
     handlePreviousStep,
     resetSteps,
+    goToStep,
     currentIndex,
     percentComplete,
   };

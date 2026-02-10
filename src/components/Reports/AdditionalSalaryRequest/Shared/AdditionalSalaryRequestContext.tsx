@@ -37,6 +37,7 @@ export type AdditionalSalaryRequestType = {
   currentStep: AdditionalSalaryRequestSectionEnum;
   handleNextStep: () => void;
   handlePreviousStep: () => void;
+  goToStep: (targetIndex: number) => void;
   isDrawerOpen: boolean;
   toggleDrawer: () => void;
   requestData?: AdditionalSalaryRequestQuery | null;
@@ -99,6 +100,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     handleNextStep: nextStep,
     handlePreviousStep: previousStep,
     resetSteps,
+    goToStep,
     currentIndex,
   } = useStepList(FormEnum.AdditionalSalary);
 
@@ -188,6 +190,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       currentStep,
       handleNextStep,
       handlePreviousStep,
+      goToStep,
       isDrawerOpen,
       toggleDrawer,
       requestData,
@@ -217,6 +220,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       currentStep,
       handleNextStep,
       handlePreviousStep,
+      goToStep,
       isDrawerOpen,
       toggleDrawer,
       requestData,
