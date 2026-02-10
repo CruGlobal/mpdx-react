@@ -104,11 +104,9 @@ export const useMhaRequestData = () => {
     });
   }, [t, approvedAmount, approvedAmountFormatted]);
 
-  // Multiply by 24 to annualize the monthly amounts from HCM
-  const currentAmountForStaff =
-    (hcmUser?.mhaRequest.currentTakenAmount ?? 0) * 24;
-  const spouseCurrentAmountForStaff =
-    (hcmSpouse?.mhaRequest.currentTakenAmount ?? 0) * 24;
+  const currentTakenAmount = hcmUser?.mhaRequest.currentTakenAmount ?? 0;
+  const currentSpouseTakenAmount =
+    hcmSpouse?.mhaRequest.currentTakenAmount ?? 0;
 
   const newRequestedMhaValue = calculation?.mhaAmount ?? 0;
   const newRequestedSpouseMhaValue = calculation?.spouseMhaAmount ?? 0;
@@ -132,12 +130,12 @@ export const useMhaRequestData = () => {
   );
 
   const currentTakenAmountFormatted = useMemo(
-    () => currencyFormat(currentAmountForStaff, 'USD', locale),
-    [currentAmountForStaff, locale],
+    () => currencyFormat(currentTakenAmount, 'USD', locale),
+    [currentTakenAmount, locale],
   );
-  const currentApprovedSpouseTakenAmountFormatted = useMemo(
-    () => currencyFormat(spouseCurrentAmountForStaff, 'USD', locale),
-    [spouseCurrentAmountForStaff, locale],
+  const currentSpouseTakenAmountFormatted = useMemo(
+    () => currencyFormat(currentSpouseTakenAmount, 'USD', locale),
+    [currentSpouseTakenAmount, locale],
   );
   const totalRequestedMhaFormatted = useMemo(
     () => currencyFormat(totalRequestedMhaValue, 'USD', locale),
@@ -151,7 +149,7 @@ export const useMhaRequestData = () => {
   return {
     schema,
     currentTakenAmount: currentTakenAmountFormatted,
-    currentSpouseTakenAmount: currentApprovedSpouseTakenAmountFormatted,
+    currentSpouseTakenAmount: currentSpouseTakenAmountFormatted,
     totalRequestedMhaValue: totalRequestedMhaFormatted,
     difference: differenceFormatted,
     approvedAmount: approvedAmountFormatted,
