@@ -53,7 +53,7 @@ const MainContent: React.FC = () => {
 
   const handleContinue = async () => {
     if (requestData?.latestAdditionalSalaryRequest === null) {
-      trackMutation(
+      await trackMutation(
         createRequest({
           variables: {
             attributes: {
