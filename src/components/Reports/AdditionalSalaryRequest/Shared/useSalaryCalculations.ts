@@ -36,7 +36,7 @@ export const useSalaryCalculations = ({
 }: UseSalaryCalculationsProps): SalaryCalculations => {
   const { traditional403bPercentage, roth403bPercentage } =
     useAdditionalSalaryRequest();
-  const { primaryAccountBalance, remainingAllowableSalary } = useFormData();
+  const { remainingAllowableSalary } = useFormData();
 
   return useMemo(() => {
     const total = getTotal(values);
@@ -71,8 +71,7 @@ export const useSalaryCalculations = ({
 
     const remainingInMaxAllowable = maxAllowableSalary - totalAnnualSalary;
 
-    const exceedsCap =
-      total > remainingAllowableSalary && total < primaryAccountBalance;
+    const exceedsCap = total > remainingAllowableSalary;
 
     return {
       total,

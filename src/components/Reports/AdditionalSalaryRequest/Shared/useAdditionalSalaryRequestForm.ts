@@ -207,9 +207,7 @@ export const useAdditionalSalaryRequestForm = (
               }
               const stableTotal = total > 0 ? total : lastValidTotalRef.current;
 
-              const exceedsCap =
-                stableTotal > remainingAllowableSalary &&
-                stableTotal < primaryAccountBalance;
+              const exceedsCap = stableTotal > remainingAllowableSalary;
 
               if (exceedsCap) {
                 return !!value && value.trim().length > 0;

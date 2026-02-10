@@ -31,8 +31,6 @@ import { ReportPageWrapper } from 'src/components/Shared/styledComponents/Report
 import { AsrStatusEnum } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
-// TODO: Revert comments on this page
-
 const FormikRequestPage: React.FC = () => {
   const formik = useAdditionalSalaryRequestForm();
 
@@ -46,17 +44,17 @@ const FormikRequestPage: React.FC = () => {
 type InitialRoute = 'ineligible' | 'overview' | 'continue' | 'request';
 
 const useInitialRoute = (): InitialRoute | null => {
-  const { requestData, loading } = useAdditionalSalaryRequest();
+  const { requestData, loading, user } = useAdditionalSalaryRequest();
   const initialRouteRef = useRef<InitialRoute | null>(null);
 
   if (initialRouteRef.current !== null) {
     return initialRouteRef.current;
   }
 
-  // if (user?.asrEit?.asrEligibility === false) {
-  //   initialRouteRef.current = 'ineligible';
-  //   return initialRouteRef.current;
-  // }
+  if (user?.asrEit?.asrEligibility === false) {
+    initialRouteRef.current = 'ineligible';
+    return initialRouteRef.current;
+  }
 
   if (loading) {
     return null;
