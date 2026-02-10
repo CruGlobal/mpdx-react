@@ -60,11 +60,13 @@ const mockSteps = [
 
 const defaultMockContextValue = {
   staffAccountId: 'staff-account-1',
+  staffAccountIdLoading: false,
   steps: mockSteps,
   currentIndex: 0,
   currentStep: AdditionalSalaryRequestSectionEnum.AboutForm,
   handleNextStep: jest.fn(),
   handlePreviousStep: jest.fn(),
+  goToStep: jest.fn(),
   isDrawerOpen: true,
   toggleDrawer: jest.fn(),
   requestData: null,
@@ -89,6 +91,10 @@ const defaultMockContextValue = {
   isInternational: false,
   isMutating: false,
   trackMutation: jest.fn((promise) => promise),
+  traditional403bPercentage: 0,
+  roth403bPercentage: 0,
+  isNewAsr: false,
+  setIsNewAsr: jest.fn(),
 };
 
 const router = {
@@ -248,8 +254,10 @@ describe('RequestPage', () => {
 
     const { getByRole, queryByRole } = render(<TestWrapper />);
 
-    // View mode shows Summary with "Back to Status" link, not direction buttons
-    expect(getByRole('link', { name: /back to status/i })).toBeInTheDocument();
+    // View mode shows Summary with "Back to Status" button, not direction buttons
+    expect(
+      getByRole('button', { name: /back to status/i }),
+    ).toBeInTheDocument();
     expect(queryByRole('button', { name: /submit/i })).not.toBeInTheDocument();
     expect(
       queryByRole('button', { name: /continue/i }),
@@ -257,6 +265,12 @@ describe('RequestPage', () => {
   });
 
   it('calls handleDeleteRequest when discard is clicked', async () => {
+    mockUseAdditionalSalaryRequest.mockReturnValue({
+      ...defaultMockContextValue,
+      currentIndex: 1,
+      currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
+    } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
     const { getByRole } = render(<TestWrapper />);
 
     const discardButton = getByRole('button', { name: /discard/i });

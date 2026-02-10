@@ -25,6 +25,7 @@ const mockContextValue = {
   currentStep: AdditionalSalaryRequestSectionEnum.AboutForm,
   handleNextStep: jest.fn(),
   handlePreviousStep: jest.fn(),
+  goToStep: jest.fn(),
   isDrawerOpen: false,
   toggleDrawer: jest.fn(),
   requestData: null,
@@ -42,6 +43,8 @@ const mockContextValue = {
   loading: false,
   traditional403bPercentage: 0,
   roth403bPercentage: 0,
+  isNewAsr: false,
+  setIsNewAsr: jest.fn(),
 };
 
 describe('StepList', () => {

@@ -44,6 +44,7 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
   handleNextStep: mockHandleNextStep,
   handlePreviousStep: jest.fn(),
+  goToStep: jest.fn(),
   isDrawerOpen: true,
   toggleDrawer: jest.fn(),
   requestData: null,
@@ -71,6 +72,8 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   trackMutation: jest.fn((mutation) => mutation),
   traditional403bPercentage: 0,
   roth403bPercentage: 0,
+  isNewAsr: false,
+  setIsNewAsr: jest.fn(),
 };
 
 const defaultFormValues: CompleteFormValues = {

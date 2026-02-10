@@ -32,11 +32,7 @@ describe('ViewForm', () => {
     expect(getByText('Doe, John')).toBeInTheDocument();
     expect(getByText('00123456')).toBeInTheDocument();
 
-    const backButton = getByRole('link', { name: /back to status/i });
-    expect(backButton).toHaveAttribute(
-      'href',
-      '/accountLists/account-list-1/reports/additionalSalaryRequest',
-    );
+    expect(getByRole('button', { name: /back to status/i })).toBeInTheDocument();
   });
 
   it('displays financial balances from context', () => {
