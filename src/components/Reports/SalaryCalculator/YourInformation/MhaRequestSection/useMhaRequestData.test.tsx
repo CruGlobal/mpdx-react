@@ -1,10 +1,13 @@
 import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
-import { SalaryCalculatorTestWrapper } from '../../SalaryCalculatorTestWrapper';
+import {
+  SalaryCalculatorTestWrapper,
+  SalaryCalculatorTestWrapperProps,
+} from '../../SalaryCalculatorTestWrapper';
 import { useMhaRequestData } from './useMhaRequestData';
 
 const createWrapper = (
-  props: React.ComponentProps<typeof SalaryCalculatorTestWrapper> = {},
+  props: SalaryCalculatorTestWrapperProps,
 ): React.FC<{ children: React.ReactNode }> => {
   const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
     <SalaryCalculatorTestWrapper {...props}>
