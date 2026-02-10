@@ -87,6 +87,7 @@ const MainContent: React.FC = () => {
   const isFirstFormPage = currentIndex === 0;
   const isLastFormPage = currentIndex === steps.length - 2;
   const reviewPage = currentIndex === steps.length - 1;
+  const isFormPage = !isFirstFormPage && !reviewPage;
 
   const capTitle = t(
     'Your request requires additional approval. Please fill in the information below to continue.',
@@ -126,7 +127,9 @@ const MainContent: React.FC = () => {
                 handleNextStep={handleNextStep}
                 handlePreviousStep={handlePreviousStep}
                 showBackButton={!isFirstFormPage}
-                handleDiscard={requestId ? handleDiscard : undefined}
+                handleDiscard={
+                  requestId && isFormPage ? handleDiscard : undefined
+                }
                 isSubmission={isLastFormPage}
                 submitForm={submitForm}
                 validateForm={validateForm}
