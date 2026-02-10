@@ -125,15 +125,15 @@ describe('MPRemindersReport', () => {
     await waitFor(() => expect(onNavListToggle).toHaveBeenCalled());
   });
 
-  it('should show saved snackbar when save is clicked', async () => {
+  it('should show saved snackbar when save is clicked with no changes', async () => {
     mockEnqueue.mockClear();
     const { getByRole } = render(<TestComponent />);
 
     userEvent.click(getByRole('button', { name: 'Save' }));
 
     await waitFor(() =>
-      expect(mockEnqueue).toHaveBeenCalledWith('Changes saved', {
-        variant: 'success',
+      expect(mockEnqueue).toHaveBeenCalledWith('No changes have been made', {
+        variant: 'info',
       }),
     );
   });
@@ -162,7 +162,6 @@ describe('MPRemindersReport', () => {
   });
 
   it('should call update mutation when changing reminder status and clicking save', async () => {
-    mutationSpy.mockClear();
     const { findAllByText, getByRole } = render(<TestComponent />);
 
     const names = await findAllByText('Doe, John');
@@ -193,6 +192,9 @@ describe('MPRemindersReport', () => {
           },
         },
       );
+      expect(mockEnqueue).toHaveBeenCalledWith('Changes saved', {
+        variant: 'success',
+      });
     });
   });
 });

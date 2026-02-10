@@ -90,12 +90,19 @@ export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
   };
 
   const handleSave = async (values: RowValues) => {
-    const updates = Object.entries(values.status).map(([id, statusCd]) => {
-      return {
-        rowId: id,
-        statusCd,
-      };
-    });
+    const updates = Object.entries(values.status)
+      .filter(([id, statusCd]) => initialValues.status[id] !== statusCd)
+      .map(([id, statusCd]) => {
+        return {
+          rowId: id,
+          statusCd,
+        };
+      });
+
+    if (updates.length === 0) {
+      enqueueSnackbar(t('No changes have been made'), { variant: 'info' });
+      return;
+    }
 
     await updateMutation({
       variables: {
