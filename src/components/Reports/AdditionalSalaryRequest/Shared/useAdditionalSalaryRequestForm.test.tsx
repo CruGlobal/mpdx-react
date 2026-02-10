@@ -3,6 +3,7 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import { DeepPartial } from 'ts-essentials';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
+import { HcmDataQuery } from 'src/components/Reports/Shared/HcmData/HCMData.generated';
 import theme from 'src/theme';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import {
@@ -46,13 +47,37 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   handlePreviousStep: jest.fn(),
   isDrawerOpen: true,
   toggleDrawer: jest.fn(),
-  requestData: null,
+  requestData: {
+    latestAdditionalSalaryRequest: {
+      phoneNumber: '555-123-4567',
+      traditional403bContribution: 0.12,
+      calculations: {
+        currentSalaryCap: 100000,
+        staffAccountBalance: 50000,
+        maxAmountAndReason: { amount: 100000 },
+        predictedYearIncome: 50000,
+        pendingAsrAmount: 0,
+      },
+    },
+  } as unknown as AdditionalSalaryRequestQuery,
   loading: false,
   requestError: undefined,
   pageType: PageEnum.New,
   handleDeleteRequest: jest.fn(),
   requestId: 'test-request-id',
-  user: undefined,
+  user: {
+    staffInfo: {
+      id: 'staff-1',
+      firstName: 'John',
+      lastName: 'Doe',
+      preferredName: 'Doe, John',
+      personNumber: '00123456',
+      emailAddress: 'john.doe@example.com',
+    },
+    currentSalary: {
+      grossSalaryAmount: 40000,
+    },
+  } as unknown as HcmDataQuery['hcm'][0],
   spouse: undefined,
   salaryInfo: {
     id: '1',
@@ -111,6 +136,8 @@ const defaultGqlMocks: DeepPartial<MocksType> = {
     latestAdditionalSalaryRequest: {
       id: 'test-request-id',
       calculations: {
+        currentSalaryCap: 100000,
+        staffAccountBalance: 50000,
         maxAmountAndReason: {
           amount: 100000,
         },
@@ -184,6 +211,11 @@ describe('useAdditionalSalaryRequestForm', () => {
 
   describe('initialValues', () => {
     it('should return default initial values when no request data exists', async () => {
+      mockUseAdditionalSalaryRequest.mockReturnValue({
+        ...defaultMockContextValue,
+        user: undefined,
+      });
+
       const { result } = renderHook(() => useAdditionalSalaryRequestForm(), {
         wrapper: TestWrapper,
       });
@@ -409,7 +441,7 @@ describe('useAdditionalSalaryRequestForm', () => {
           useAdditionalSalaryRequestForm({
             ...defaultFormValues,
             phoneNumber: '555-123-4567',
-            additionalSalaryWithinMax: '10000',
+            additionalSalaryWithinMax: '70000',
           }),
         {
           wrapper: TestWrapper,
