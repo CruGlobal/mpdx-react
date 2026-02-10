@@ -46,11 +46,11 @@ const FormikRequestPage: React.FC = () => {
 type RouteType = 'ineligible' | 'overview' | 'continue' | 'request' | 'view';
 
 const useCurrentRoute = (): RouteType | null => {
-  const { requestData, loading, pageType } = useAdditionalSalaryRequest();
+  const { requestData, loading, pageType, user } = useAdditionalSalaryRequest();
 
-  // if (user?.asrEit?.asrEligibility === false) {
-  //   return 'ineligible';
-  // }
+  if (user?.asrEit?.asrEligibility === false) {
+    return 'ineligible';
+  }
 
   if (loading) {
     return null;
