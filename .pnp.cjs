@@ -84,6 +84,7 @@ const RAW_RUNTIME_STATE =
           ["concurrently", "npm:8.2.2"],\
           ["css-mediaquery", "npm:0.1.2"],\
           ["dnd-core", "npm:16.0.1"],\
+          ["dotenv", "npm:16.0.1"],\
           ["eslint", "npm:8.57.0"],\
           ["eslint-config-prettier", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:8.5.0"],\
           ["eslint-plugin-import", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.26.0"],\
@@ -19074,6 +19075,7 @@ const RAW_RUNTIME_STATE =
           ["concurrently", "npm:8.2.2"],\
           ["css-mediaquery", "npm:0.1.2"],\
           ["dnd-core", "npm:16.0.1"],\
+          ["dotenv", "npm:16.0.1"],\
           ["eslint", "npm:8.57.0"],\
           ["eslint-config-prettier", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:8.5.0"],\
           ["eslint-plugin-import", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.26.0"],\
