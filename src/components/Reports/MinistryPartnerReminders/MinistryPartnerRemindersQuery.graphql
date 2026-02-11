@@ -1,0 +1,26 @@
+query MinistryPartnerReminders(
+  $accountListId: ID!
+  $designationNumber: String!
+) {
+  ministryPartnerReminders(
+    accountListId: $accountListId
+    designationNumber: $designationNumber
+  ) {
+    id
+    designationId
+    donorName
+    donorId
+    donorAccountNumber
+    lastGiftDate
+    lastReminderDate
+    frequency
+  }
+}
+
+mutation UpdateMinistryPartnerReminders(
+  $input: UpdateMinistryPartnerRemindersInput!
+) {
+  updateMinistryPartnerReminders(input: $input) {
+    updatedCount
+  }
+}
