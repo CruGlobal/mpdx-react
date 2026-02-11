@@ -2,7 +2,6 @@ import { renderHook } from '@testing-library/react';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 import { useFormData } from './useFormData';
 
-
 jest.mock('./AdditionalSalaryRequestContext', () => ({
   useAdditionalSalaryRequest: jest.fn(),
 }));

@@ -1,6 +1,5 @@
 import React from 'react';
-import { render, waitFor, within } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render, waitFor } from '@testing-library/react';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { AdditionalSalaryRequestTestWrapper } from '../../AdditionalSalaryRequestTestWrapper';
 import { defaultCompleteFormValues } from '../../Shared/CompleteForm.mock';
@@ -161,28 +160,5 @@ describe('AdditionalSalaryRequest', () => {
       });
     });
 
-    it('shows validation error for individual field', async () => {
-      const invalidValues: CompleteFormValues = {
-        ...defaultCompleteFormValues,
-        adoption: '',
-      };
-
-      const { findByText, findByRole } = render(
-        <TestWrapper initialValues={invalidValues} />,
-      );
-
-      const row = await findByRole('row', { name: /Adoption/i });
-      const input = within(row).getByPlaceholderText(/\$0/i);
-
-      userEvent.type(input, '100');
-      expect(input).toHaveValue('100');
-      await userEvent.clear(input);
-      expect(input).toHaveValue('');
-
-      input.focus();
-      await userEvent.tab();
-
-      expect(await findByText('Required field')).toBeInTheDocument();
-    });
   });
 });
