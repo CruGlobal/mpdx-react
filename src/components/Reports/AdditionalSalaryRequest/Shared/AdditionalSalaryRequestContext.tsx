@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 import React, {
   createContext,
   useCallback,
@@ -14,7 +13,6 @@ import {
   FormEnum,
   PageEnum,
 } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useStepList } from 'src/hooks/useStepList';
 import { useTrackMutation } from 'src/hooks/useTrackMutation';
 import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
@@ -39,13 +37,15 @@ export type AdditionalSalaryRequestType = {
   currentStep: AdditionalSalaryRequestSectionEnum;
   handleNextStep: () => void;
   handlePreviousStep: () => void;
+  goToStep: (targetIndex: number) => void;
   isDrawerOpen: boolean;
   toggleDrawer: () => void;
   requestData?: AdditionalSalaryRequestQuery | null;
   loading: boolean;
   currentYear?: number;
   requestError?: ApolloError;
-  pageType: PageEnum | undefined;
+  pageType: PageEnum;
+  setPageType: (pageType: PageEnum) => void;
   handleDeleteRequest: (id: string, isCancel: boolean) => Promise<void>;
   requestId?: string;
   user: HcmDataQuery['hcm'][0] | undefined;
@@ -56,6 +56,8 @@ export type AdditionalSalaryRequestType = {
   roth403bPercentage: number;
   isMutating: boolean;
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
+  isNewAsr: boolean;
+  setIsNewAsr: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const AdditionalSalaryRequestContext =
@@ -73,6 +75,7 @@ export const useAdditionalSalaryRequest = (): AdditionalSalaryRequestType => {
 
 interface Props {
   requestId?: string;
+  initialPageType?: PageEnum;
   children?: React.ReactNode;
 }
 
@@ -80,32 +83,24 @@ const sections = Object.values(AdditionalSalaryRequestSectionEnum);
 
 export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   requestId,
+  initialPageType,
   children,
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const accountListId = useAccountListId();
-  const router = useRouter();
-  const { mode } = router.query;
 
-  const pageType = useMemo(() => {
-    switch (mode) {
-      case 'new':
-        return PageEnum.New;
-      case 'edit':
-        return PageEnum.Edit;
-      case 'view':
-        return PageEnum.View;
-      // If a user does not have an asr, default to 'new' page
-      default:
-        return PageEnum.New;
-    }
-  }, [mode]);
+  const [pageType, setPageType] = useState<PageEnum>(
+    initialPageType ?? PageEnum.New,
+  );
+
+  const [isNewAsr, setIsNewAsr] = useState(false);
 
   const {
     steps,
     handleNextStep: nextStep,
     handlePreviousStep: previousStep,
+    resetSteps,
+    goToStep,
     currentIndex,
   } = useStepList(FormEnum.AdditionalSalary);
 
@@ -142,17 +137,13 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     async (id: string, isCancel: boolean) => {
       await deleteAdditionalSalaryRequest({
         variables: { id },
-        update: (cache) => {
-          cache.evict({
-            id: cache.identify({ __typename: 'AdditionalSalaryRequest', id }),
-          });
-          cache.gc();
-        },
+        refetchQueries: ['AdditionalSalaryRequest'],
+        awaitRefetchQueries: true,
         onCompleted: () => {
           if (!isCancel) {
-            router.push(
-              `/accountLists/${accountListId}/reports/additionalSalaryRequest`,
-            );
+            resetSteps();
+            setPageType(PageEnum.New);
+            setIsNewAsr(true);
           }
 
           enqueueSnackbar(
@@ -166,7 +157,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
         },
       });
     },
-    [deleteAdditionalSalaryRequest, enqueueSnackbar, accountListId, router, t],
+    [deleteAdditionalSalaryRequest, enqueueSnackbar, resetSteps, t],
   );
 
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
@@ -199,6 +190,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       currentStep,
       handleNextStep,
       handlePreviousStep,
+      goToStep,
       isDrawerOpen,
       toggleDrawer,
       requestData,
@@ -206,6 +198,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       loading,
       currentYear,
       pageType,
+      setPageType,
       handleDeleteRequest,
       requestId: requestData?.latestAdditionalSalaryRequest?.id ?? requestId,
       user,
@@ -216,6 +209,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       roth403bPercentage,
       isMutating,
       trackMutation,
+      isNewAsr,
+      setIsNewAsr,
     }),
     [
       staffAccountId,
@@ -225,6 +220,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       currentStep,
       handleNextStep,
       handlePreviousStep,
+      goToStep,
       isDrawerOpen,
       toggleDrawer,
       requestData,
@@ -232,6 +228,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       loading,
       currentYear,
       pageType,
+      setPageType,
       handleDeleteRequest,
       requestId,
       user,
@@ -242,6 +239,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       roth403bPercentage,
       isMutating,
       trackMutation,
+      isNewAsr,
     ],
   );
 

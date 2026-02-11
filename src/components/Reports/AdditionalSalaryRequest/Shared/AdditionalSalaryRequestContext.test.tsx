@@ -124,9 +124,6 @@ describe('AdditionalSalaryRequestContext', () => {
         'Additional Salary Request discarded successfully.',
         { variant: 'success' },
       );
-      expect(mockPush).toHaveBeenCalledWith(
-        '/accountLists/account-list-1/reports/additionalSalaryRequest',
-      );
     });
   });
 });
