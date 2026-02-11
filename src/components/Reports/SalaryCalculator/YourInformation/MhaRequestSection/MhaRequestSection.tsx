@@ -9,6 +9,7 @@ import {
   styled,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import { Stack } from '@mui/system';
 import { Trans, useTranslation } from 'react-i18next';
 import { AutosaveTextField } from '../../Autosave/AutosaveTextField';
 import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
@@ -16,19 +17,8 @@ import { StepCard } from '../../Shared/StepCard';
 import { NoMhaSubmitMessage } from './NoMhaSubmitMessage';
 import { useMhaRequestData } from './useMhaRequestData';
 
-const StyledNameHeadersBox = styled(Box)(({ theme }) => ({
-  display: 'grid',
-  gridTemplateColumns: '1fr 1fr',
-  gap: theme.spacing(2),
-  marginTop: theme.spacing(4),
-  marginBottom: theme.spacing(1),
-}));
-
-const StyledFieldGridBox = styled(Box, {
-  shouldForwardProp: (prop) => prop !== 'hasSpouse',
-})<{ hasSpouse?: boolean }>(({ theme, hasSpouse }) => ({
-  display: 'grid',
-  gridTemplateColumns: hasSpouse ? '1fr 1fr' : '1fr',
+const SpouseLayout = styled(Box)(({ theme }) => ({
+  display: 'flex',
   gap: theme.spacing(2),
 }));
 
@@ -71,7 +61,13 @@ export const MhaRequestSection: React.FC = () => {
   } = useMhaRequestData();
 
   return (
-    <StepCard>
+    <StepCard
+      sx={{
+        '.MuiCardContent-root': {
+          gap: theme.spacing(4),
+        },
+      }}
+    >
       <CardHeader title={t('MHA Request')} />
       <CardContent>
         {showNoMhaMessage && !showUserFields && !showSpouseFields && (
@@ -86,11 +82,7 @@ export const MhaRequestSection: React.FC = () => {
 
         {(showUserFields || showSpouseFields) && (
           <>
-            <Typography
-              variant="body1"
-              sx={{ marginBottom: theme.spacing(3) }}
-              data-testid="board-approved-amount"
-            >
+            <Typography variant="body1" data-testid="board-approved-amount">
               <strong>
                 {showUserFields && showSpouseFields
                   ? t(
@@ -115,12 +107,13 @@ export const MhaRequestSection: React.FC = () => {
                 <Trans t={t}>
                   {{ name: ineligibleName }} has not completed the required IBS
                   courses to meet eligibility criteria. For information about
-                  obtaining eligibility, contact Personnel Records at
-                  407-826-2252 or <a href="mailto:MHA@cru.org">MHA@cru.org</a>.
+                  obtaining eligibility, contact Personnel Records at{' '}
+                  <a href="tel:407-826-2230">(407) 826-2230</a> or{' '}
+                  <a href="mailto:MHA@cru.org">MHA@cru.org</a>.
                 </Trans>
               )}
             </Typography>
-            <Typography variant="body1" sx={{ marginBottom: theme.spacing(3) }}>
+            <Typography variant="body1">
               <Trans t={t}>
                 Please enter the amount of your salary you would like to request
                 as MHA below. If you have a pending MHA Request for a new
@@ -144,84 +137,63 @@ export const MhaRequestSection: React.FC = () => {
         {(showUserFields || showSpouseFields) && (
           <>
             {showUserFields && showSpouseFields && (
-              <StyledNameHeadersBox>
+              <SpouseLayout>
                 <Typography variant="subtitle1">
                   {hcmUser?.staffInfo.preferredName}
                 </Typography>
                 <Typography variant="subtitle1">
                   {hcmSpouse?.staffInfo.preferredName}
                 </Typography>
-              </StyledNameHeadersBox>
+              </SpouseLayout>
             )}
             {!showUserFields && showSpouseFields && (
-              <Typography
-                variant="subtitle1"
-                sx={{
-                  marginTop: theme.spacing(4),
-                  marginBottom: theme.spacing(1),
-                }}
-              >
+              <Typography variant="subtitle1">
                 {hcmSpouse?.staffInfo.preferredName}
               </Typography>
             )}
 
-            <Box sx={{ marginBottom: theme.spacing(2) }}>
-              <StyledFieldGridBox
-                hasSpouse={showUserFields && showSpouseFields}
-              >
+            <Stack gap={3}>
+              <SpouseLayout>
                 {showUserFields && (
-                  <Box>
-                    <TextField
-                      label={t('Current MHA')}
-                      size="small"
-                      fullWidth
-                      value={currentTakenAmount}
-                      disabled
-                      inputProps={{ 'data-testid': 'current-mha-staff' }}
-                    />
-                  </Box>
+                  <TextField
+                    label={t('Current MHA')}
+                    size="small"
+                    fullWidth
+                    value={currentTakenAmount}
+                    disabled
+                    inputProps={{ 'data-testid': 'current-mha-staff' }}
+                  />
                 )}
                 {showSpouseFields && (
-                  <Box>
-                    <TextField
-                      label={t('Current MHA')}
-                      size="small"
-                      fullWidth
-                      value={currentSpouseTakenAmount}
-                      disabled
-                      inputProps={{ 'data-testid': 'current-mha-spouse' }}
-                    />
-                  </Box>
+                  <TextField
+                    label={t('Current MHA')}
+                    size="small"
+                    fullWidth
+                    value={currentSpouseTakenAmount}
+                    disabled
+                    inputProps={{ 'data-testid': 'current-mha-spouse' }}
+                  />
                 )}
-              </StyledFieldGridBox>
-            </Box>
-
-            <Box sx={{ marginBottom: theme.spacing(3) }}>
-              <StyledFieldGridBox
-                hasSpouse={showUserFields && showSpouseFields}
-              >
+              </SpouseLayout>
+              <SpouseLayout>
                 {showUserFields && (
-                  <Box>
-                    <AutosaveTextField
-                      label={t('New Requested MHA')}
-                      fieldName="mhaAmount"
-                      schema={schema}
-                      required
-                    />
-                  </Box>
+                  <AutosaveTextField
+                    label={t('New Requested MHA')}
+                    fieldName="mhaAmount"
+                    schema={schema}
+                    required
+                  />
                 )}
                 {showSpouseFields && (
-                  <Box>
-                    <AutosaveTextField
-                      label={t('New Requested MHA')}
-                      fieldName="spouseMhaAmount"
-                      schema={schema}
-                      required
-                    />
-                  </Box>
+                  <AutosaveTextField
+                    label={t('New Requested MHA')}
+                    fieldName="spouseMhaAmount"
+                    schema={schema}
+                    required
+                  />
                 )}
-              </StyledFieldGridBox>
-            </Box>
+              </SpouseLayout>
+            </Stack>
 
             <Box>
               <StyledProgressHeaderBox>
