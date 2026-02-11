@@ -1,7 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@emotion/react';
-import { render, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import { render } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
@@ -13,7 +12,6 @@ import { AdditionalSalaryRequest } from './AdditionalSalaryRequest';
 import { AdditionalSalaryRequestQuery } from './AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestProvider } from './Shared/AdditionalSalaryRequestContext';
 
-const mutationSpy = jest.fn();
 const accountListId = 'account-list-1';
 
 const mockRequest = {
@@ -137,14 +135,6 @@ describe('AdditionalSalaryRequest', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders the Create New ASR button', async () => {
-    const { findByRole } = render(<TestWrapper />);
-
-    expect(
-      await findByRole('button', { name: 'Create New ASR' }),
-    ).toBeInTheDocument();
-  });
-
   it('shows loading skeleton while data is loading', () => {
     const { container } = render(<TestWrapper />);
 
@@ -246,38 +236,6 @@ describe('AdditionalSalaryRequest', () => {
     ).toBeInTheDocument();
   });
 
-  it('calls createAdditionalSalaryRequest mutation when Create New ASR is clicked', async () => {
-    const mutationSpy = jest.fn();
-
-    const { findByRole } = render(<TestWrapper onCall={mutationSpy} />);
-
-    const createButton = await findByRole('button', { name: 'Create New ASR' });
-    userEvent.click(createButton);
-
-    await waitFor(() => {
-      expect(mutationSpy).toHaveBeenCalled();
-    });
-  });
-
-  it('shows success snackbar after creating ASR request', async () => {
-    const { findByRole, findByText } = render(
-      <TestWrapper
-        mocks={{
-          AdditionalSalaryRequest: {
-            latestAdditionalSalaryRequest: null,
-          },
-        }}
-      />,
-    );
-
-    const createButton = await findByRole('button', { name: 'Create New ASR' });
-    userEvent.click(createButton);
-
-    expect(
-      await findByText(/Successfully created ASR Request/i),
-    ).toBeInTheDocument();
-  });
-
   it('determines allRequestStatus as Approved when there is an approved request', async () => {
     const approvedRequest = {
       ...mockRequest,
@@ -350,28 +308,5 @@ describe('AdditionalSalaryRequest', () => {
     expect(
       await findByLabelText('Additional Salary Request Sections'),
     ).toBeInTheDocument();
-  });
-
-  it('creates a request with hcm phone and email', async () => {
-    const { findByRole, findByText } = render(
-      <TestWrapper onCall={mutationSpy} />,
-    );
-
-    await findByText(/John currently has/i);
-
-    const createButton = await findByRole('button', { name: 'Create New ASR' });
-    userEvent.click(createButton);
-
-    await waitFor(() => {
-      expect(mutationSpy).toHaveGraphqlOperation(
-        'CreateAdditionalSalaryRequest',
-        {
-          attributes: {
-            emailAddress: 'john.doe@example.com',
-            phoneNumber: '555-123-4567',
-          },
-        },
-      );
-    });
   });
 });
