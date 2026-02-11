@@ -99,6 +99,7 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   roth403bPercentage: 0,
   isNewAsr: false,
   setIsNewAsr: jest.fn(),
+  maxAdditionalAllowableSalary: 100000,
 };
 
 const defaultFormValues: CompleteFormValues = {
@@ -438,6 +439,11 @@ describe('useAdditionalSalaryRequestForm', () => {
     });
 
     it('should validate additional info when exceedsCap is true', async () => {
+      mockUseAdditionalSalaryRequest.mockReturnValue({
+        ...defaultMockContextValue,
+        maxAdditionalAllowableSalary: 50000,
+      });
+
       const { result } = renderHook(
         () =>
           useAdditionalSalaryRequestForm({

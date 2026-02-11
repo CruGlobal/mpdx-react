@@ -40,6 +40,7 @@ export const defaultMockContextValue = {
     },
   },
   user: mockUser,
+  maxAdditionalAllowableSalary: 60000,
 };
 
 export const router = {

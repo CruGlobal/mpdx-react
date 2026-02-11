@@ -42,6 +42,7 @@ const defaultMockContextValue = {
       grossSalaryAmount: 50000,
     },
   },
+  maxAdditionalAllowableSalary: 100000,
 };
 
 interface TestWrapperProps {

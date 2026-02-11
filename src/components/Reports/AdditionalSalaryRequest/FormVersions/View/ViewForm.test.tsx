@@ -52,12 +52,13 @@ describe('ViewForm', () => {
             calculations: undefined,
           },
         },
+        maxAdditionalAllowableSalary: -40000,
       },
     });
 
     // staffAccountBalance defaults to 0 when calculations are undefined
     expect(getByTestId('amount-one')).toHaveTextContent('$0.00');
-    // remainingAllowableSalary = (currentSalaryCap ?? 0) - grossSalaryAmount = 0 - 40000
+    // maxAdditionalAllowableSalary calculation done in backend
     expect(getByTestId('amount-two')).toHaveTextContent('-$40,000.00');
   });
 

@@ -11,7 +11,7 @@ import { AdditionalSalaryRequest } from '../../CompleteForm/AdditionalSalaryRequ
 import { ContactInformation } from '../../CompleteForm/ContactInformation/ContactInformation';
 import { Deduction } from '../../CompleteForm/Deduction/Deduction';
 import { NetAdditionalSalary } from '../../CompleteForm/NetAdditionalSalary/NetAdditionalSalary';
-import { useFormData } from '../../Shared/useFormData';
+import { useFormUserInfo } from '../../Shared/useFormUserInfo';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 import { SpouseComponent } from '../../SharedComponents/SpouseComponent';
 import { ValidationAlert } from '../../SharedComponents/ValidationAlert';
@@ -21,14 +21,9 @@ import { TotalAnnualSalary } from '../../SubmitModalAccordions/TotalAnnualSalary
 export const NewForm: React.FC = () => {
   const { t } = useTranslation();
   const { values } = useFormikContext<CompleteFormValues>();
-  const {
-    name,
-    accountNumber,
-    primaryAccountBalance,
-    remainingAllowableSalary,
-  } = useFormData();
+  const { name, accountNumber, primaryAccountBalance } = useFormUserInfo();
 
-  const { exceedsCap } = useSalaryCalculations({
+  const { exceedsCap, maxAdditionalAllowableSalary } = useSalaryCalculations({
     values,
   });
 
@@ -41,7 +36,7 @@ export const NewForm: React.FC = () => {
         titleOne={t('Primary Account Balance')}
         amountOne={primaryAccountBalance}
         titleTwo={t('Your Remaining Allowable Salary')}
-        amountTwo={remainingAllowableSalary}
+        amountTwo={maxAdditionalAllowableSalary}
         spouseComponent={<SpouseComponent />}
         showContent
       />

@@ -11,7 +11,7 @@ import { AdditionalSalaryRequest } from '../../CompleteForm/AdditionalSalaryRequ
 import { ContactInformation } from '../../CompleteForm/ContactInformation/ContactInformation';
 import { Deduction } from '../../CompleteForm/Deduction/Deduction';
 import { NetAdditionalSalary } from '../../CompleteForm/NetAdditionalSalary/NetAdditionalSalary';
-import { useFormData } from '../../Shared/useFormData';
+import { useFormUserInfo } from '../../Shared/useFormUserInfo';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 import { ValidationAlert } from '../../SharedComponents/ValidationAlert';
 import { ApprovalProcess } from '../../SubmitModalAccordions/ApprovalProcess/ApprovalProcess';
@@ -20,14 +20,10 @@ import { TotalAnnualSalary } from '../../SubmitModalAccordions/TotalAnnualSalary
 export const EditForm: React.FC = () => {
   const { t } = useTranslation();
   const { values } = useFormikContext<CompleteFormValues>();
-  const {
-    name,
-    accountNumber,
-    primaryAccountBalance,
-    remainingAllowableSalary,
-  } = useFormData();
 
-  const { exceedsCap } = useSalaryCalculations({
+  const { name, accountNumber, primaryAccountBalance } = useFormUserInfo();
+
+  const { exceedsCap, maxAdditionalAllowableSalary } = useSalaryCalculations({
     values,
   });
 
@@ -40,7 +36,7 @@ export const EditForm: React.FC = () => {
         titleOne={t('Primary Account Balance')}
         amountOne={primaryAccountBalance}
         titleTwo={t('Your Remaining Allowable Salary')}
-        amountTwo={remainingAllowableSalary}
+        amountTwo={maxAdditionalAllowableSalary}
         showContent
       />
       <Typography variant="body1" paragraph>

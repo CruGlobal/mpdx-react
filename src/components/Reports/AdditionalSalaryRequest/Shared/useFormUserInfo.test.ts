@@ -1,6 +1,6 @@
 import { renderHook } from '@testing-library/react';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
-import { useFormData } from './useFormData';
+import { useFormUserInfo } from './useFormUserInfo';
 
 jest.mock('./AdditionalSalaryRequestContext', () => ({
   useAdditionalSalaryRequest: jest.fn(),
@@ -11,7 +11,7 @@ const mockUseAdditionalSalaryRequest =
     typeof useAdditionalSalaryRequest
   >;
 
-describe('useFormData', () => {
+describe('useFormUserInfo', () => {
   it('returns staff info and calculated balances', () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
       requestData: {
@@ -34,14 +34,12 @@ describe('useFormData', () => {
       },
     } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
 
-    const { result } = renderHook(() => useFormData());
+    const { result } = renderHook(() => useFormUserInfo());
 
     expect(result.current.name).toBe('Doe, John');
     expect(result.current.accountNumber).toBe('00123456');
     expect(result.current.email).toBe('john.doe@example.com');
     expect(result.current.primaryAccountBalance).toBe(40000);
-    // remainingAllowableSalary = currentSalaryCap (100000) - grossSalaryAmount (40000)
-    expect(result.current.remainingAllowableSalary).toBe(60000);
   });
 
   it('defaults balances to 0 when calculations are undefined', () => {
@@ -58,11 +56,9 @@ describe('useFormData', () => {
       },
     } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
 
-    const { result } = renderHook(() => useFormData());
+    const { result } = renderHook(() => useFormUserInfo());
 
     expect(result.current.primaryAccountBalance).toBe(0);
-    // remainingAllowableSalary = 0 - 40000
-    expect(result.current.remainingAllowableSalary).toBe(-40000);
   });
 
   it('handles undefined user gracefully', () => {
@@ -78,14 +74,12 @@ describe('useFormData', () => {
       user: undefined,
     } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
 
-    const { result } = renderHook(() => useFormData());
+    const { result } = renderHook(() => useFormUserInfo());
 
     expect(result.current.name).toBeUndefined();
     expect(result.current.accountNumber).toBeUndefined();
     expect(result.current.email).toBeUndefined();
     expect(result.current.primaryAccountBalance).toBe(40000);
-    // grossSalaryAmount defaults to 0 when user is undefined
-    expect(result.current.remainingAllowableSalary).toBe(100000);
   });
 
   it('handles undefined requestData gracefully', () => {
@@ -94,9 +88,8 @@ describe('useFormData', () => {
       user: undefined,
     } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
 
-    const { result } = renderHook(() => useFormData());
+    const { result } = renderHook(() => useFormUserInfo());
 
     expect(result.current.primaryAccountBalance).toBe(0);
-    expect(result.current.remainingAllowableSalary).toBe(0);
   });
 });

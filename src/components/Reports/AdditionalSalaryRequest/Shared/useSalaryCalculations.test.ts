@@ -16,6 +16,8 @@ beforeEach(() => {
   mockUseAdditionalSalaryRequest.mockReturnValue({
     traditional403bPercentage: 0.12,
     roth403bPercentage: 0.1,
+    maxAdditionalAllowableSalary: 0,
+    user: undefined,
   } as ReturnType<typeof useAdditionalSalaryRequest>);
 });
 
@@ -81,7 +83,7 @@ describe('useSalaryCalculations', () => {
     expect(result.current.totalDeduction).toBe(3542); // (1332 + 1110) + 1100
     expect(result.current.netSalary).toBe(7558); // 11100 - 3542
     expect(result.current.totalAnnualSalary).toBe(11100); // No calculations data, so just total
-    expect(result.current.remainingInMaxAllowable).toBe(-11100); // 0 - 11100
+    expect(result.current.maxAdditionalAllowableSalary).toBe(0); // From context default
   });
 
   it('calculates all salary values correctly with default percentage disabled', () => {
@@ -232,17 +234,25 @@ describe('useSalaryCalculations', () => {
     expect(result.current.totalDeduction).toBe(0);
     expect(result.current.netSalary).toBe(0);
     expect(result.current.totalAnnualSalary).toBe(0);
-    expect(result.current.remainingInMaxAllowable).toBe(0);
+    expect(result.current.maxAdditionalAllowableSalary).toBe(0);
   });
 
-  it('calculates totalAnnualSalary and remainingInMaxAllowable with calculations data', () => {
+  it('calculates totalAnnualSalary and maxAdditionalAllowableSalary with calculations data', () => {
+    mockUseAdditionalSalaryRequest.mockReturnValue({
+      traditional403bPercentage: 0.12,
+      roth403bPercentage: 0.1,
+      maxAdditionalAllowableSalary: 35000,
+      user: {
+        currentSalary: { grossSalaryAmount: 50000 },
+      },
+    } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
     const values: CompleteFormValues = {
       ...baseValues,
       currentYearSalaryNotReceived: '5000',
     };
 
     const calculations = {
-      maxAmountAndReason: { amount: 100000 },
       pendingAsrAmount: 10000,
     };
 
@@ -251,7 +261,6 @@ describe('useSalaryCalculations', () => {
         useSalaryCalculations({
           values,
           calculations,
-          grossSalaryAmount: 50000,
         }),
       {
         wrapper: ({ children }) => FormikWrapper({ children, values }),
@@ -262,19 +271,27 @@ describe('useSalaryCalculations', () => {
     // totalAnnualSalary = grossAnnualSalary + additionalSalaryReceivedThisYear + total
     // = 50000 + 10000 + 5000 = 65000
     expect(result.current.totalAnnualSalary).toBe(65000);
-    // remainingInMaxAllowable = maxAllowableSalary - totalAnnualSalary
+    // maxAdditionalAllowableSalary = maxAllowableSalary - totalAnnualSalary
     // = 100000 - 65000 = 35000
-    expect(result.current.remainingInMaxAllowable).toBe(35000);
+    expect(result.current.maxAdditionalAllowableSalary).toBe(35000);
   });
 
-  it('handles negative remainingInMaxAllowable when over max', () => {
+  it('handles negative maxAdditionalAllowableSalary when over max', () => {
+    mockUseAdditionalSalaryRequest.mockReturnValue({
+      traditional403bPercentage: 0.12,
+      roth403bPercentage: 0.1,
+      maxAdditionalAllowableSalary: -10000,
+      user: {
+        currentSalary: { grossSalaryAmount: 50000 },
+      },
+    } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
     const values: CompleteFormValues = {
       ...baseValues,
       currentYearSalaryNotReceived: '30000',
     };
 
     const calculations = {
-      maxAmountAndReason: { amount: 80000 },
       pendingAsrAmount: 10000,
     };
 
@@ -283,7 +300,6 @@ describe('useSalaryCalculations', () => {
         useSalaryCalculations({
           values,
           calculations,
-          grossSalaryAmount: 50000,
         }),
       {
         wrapper: ({ children }) => FormikWrapper({ children, values }),
@@ -293,7 +309,7 @@ describe('useSalaryCalculations', () => {
     expect(result.current.total).toBe(30000);
     // totalAnnualSalary = 50000 + 10000 + 30000 = 90000
     expect(result.current.totalAnnualSalary).toBe(90000);
-    // remainingInMaxAllowable = 80000 - 90000 = -10000
-    expect(result.current.remainingInMaxAllowable).toBe(-10000);
+    // maxAdditionalAllowableSalary = 80000 - 90000 = -10000
+    expect(result.current.maxAdditionalAllowableSalary).toBe(-10000);
   });
 });

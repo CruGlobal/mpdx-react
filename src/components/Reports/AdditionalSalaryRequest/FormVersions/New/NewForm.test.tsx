@@ -65,11 +65,12 @@ describe('NewForm', () => {
               calculations: undefined,
             },
           },
+          maxAdditionalAllowableSalary: -40000,
         },
       });
 
       expect(getByTestId('amount-one')).toHaveTextContent('$0.00');
-      // remainingAllowableSalary = (currentSalaryCap ?? 0) - grossSalaryAmount = 0 - 40000
+      // maxAdditionalAllowableSalary calculated in backend
       expect(getByTestId('amount-two')).toHaveTextContent('-$40,000.00');
     });
   });
