@@ -82,14 +82,14 @@ describe('ViewForm', () => {
       1,
     );
     expect(getByText('Contact Information')).toBeInTheDocument();
-    expect(getByText('Total Annual Salary')).toBeInTheDocument();
+    expect(getByText('Total Salary Requested')).toBeInTheDocument();
     expect(getByText('Approval Process')).toBeInTheDocument();
   });
 
-  it('should not render total annual salary or approval process when under cap', () => {
+  it('should not render total salary requested or approval process when under cap', () => {
     const { queryByText } = renderComponent();
 
-    expect(queryByText('Total Annual Salary')).not.toBeInTheDocument();
+    expect(queryByText('Total Salary Requested')).not.toBeInTheDocument();
     expect(queryByText('Approval Process')).not.toBeInTheDocument();
   });
 

@@ -120,7 +120,7 @@ export const TotalSalaryTable: React.FC = () => {
         >
           <TableCell>
             <Typography variant="body2" fontWeight="bold">
-              {t('Total Annual Salary:')}
+              {t('Total Salary Requested:')}
             </Typography>
           </TableCell>
           <TableCell sx={{ color: 'warning.dark', fontWeight: 'bold' }}>

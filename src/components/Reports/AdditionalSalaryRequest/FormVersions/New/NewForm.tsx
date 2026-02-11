@@ -16,7 +16,7 @@ import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 import { SpouseComponent } from '../../SharedComponents/SpouseComponent';
 import { ValidationAlert } from '../../SharedComponents/ValidationAlert';
 import { ApprovalProcess } from '../../SubmitModalAccordions/ApprovalProcess/ApprovalProcess';
-import { TotalAnnualSalary } from '../../SubmitModalAccordions/TotalAnnualSalary/TotalAnnualSalary';
+import { TotalSalaryRequested } from '../../SubmitModalAccordions/TotalSalaryRequested/TotalSalaryRequested';
 
 export const NewForm: React.FC = () => {
   const { t } = useTranslation();
@@ -55,7 +55,7 @@ export const NewForm: React.FC = () => {
       <NetAdditionalSalary />
       {exceedsCap && (
         <>
-          <TotalAnnualSalary onForm />
+          <TotalSalaryRequested onForm />
           <ApprovalProcess onForm />
         </>
       )}

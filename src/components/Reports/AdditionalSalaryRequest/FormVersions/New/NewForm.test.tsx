@@ -128,14 +128,14 @@ describe('NewForm', () => {
         },
       });
 
-      expect(getByText('Total Annual Salary')).toBeInTheDocument();
+      expect(getByText('Total Salary Requested')).toBeInTheDocument();
       expect(getByText('Approval Process')).toBeInTheDocument();
     });
 
     it('does not render exceeded cap components when not exceeded', () => {
       const { queryByText } = renderComponent();
 
-      expect(queryByText('Total Annual Salary')).not.toBeInTheDocument();
+      expect(queryByText('Total Salary Requested')).not.toBeInTheDocument();
       expect(queryByText('Approval Process')).not.toBeInTheDocument();
     });
 

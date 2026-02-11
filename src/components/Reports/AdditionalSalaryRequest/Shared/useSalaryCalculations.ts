@@ -18,7 +18,6 @@ export interface SalaryCalculations {
 }
 
 interface CalculationsData {
-  maxAmountAndReason?: { amount?: number | null } | null;
   pendingAsrAmount?: number | null;
 }
 
@@ -37,6 +36,7 @@ export const useSalaryCalculations = ({
     maxAdditionalAllowableSalary,
     user,
   } = useAdditionalSalaryRequest();
+  const grossAnnualSalary = user?.currentSalary?.grossSalaryAmount ?? 0;
 
   return useMemo(() => {
     const total = getTotal(values);
@@ -61,7 +61,6 @@ export const useSalaryCalculations = ({
     const netSalary = total - totalDeduction;
 
     // Annual salary calculations
-    const grossAnnualSalary = user?.currentSalary?.grossSalaryAmount ?? 0;
     const additionalSalaryReceivedThisYear =
       calculations?.pendingAsrAmount ?? 0;
 
@@ -86,7 +85,7 @@ export const useSalaryCalculations = ({
   }, [
     values,
     calculations,
-    user,
+    grossAnnualSalary,
     traditional403bPercentage,
     roth403bPercentage,
   ]);

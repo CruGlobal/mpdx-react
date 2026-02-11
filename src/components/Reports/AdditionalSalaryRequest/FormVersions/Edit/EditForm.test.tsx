@@ -79,13 +79,13 @@ describe('EditForm', () => {
     );
     expect(getAllByText('Telephone Number').length).toBeGreaterThanOrEqual(1);
     expect(getAllByText('Email Address').length).toBeGreaterThanOrEqual(1);
-    expect(getByText('Total Annual Salary')).toBeInTheDocument();
+    expect(getByText('Total Salary Requested')).toBeInTheDocument();
   });
 
   it('should not render cap-related components when user does not exceed cap', () => {
     const { queryByText } = renderComponent();
 
-    expect(queryByText('Total Annual Salary')).not.toBeInTheDocument();
+    expect(queryByText('Total Salary Requested')).not.toBeInTheDocument();
     expect(queryByText('Approval Process')).not.toBeInTheDocument();
   });
 

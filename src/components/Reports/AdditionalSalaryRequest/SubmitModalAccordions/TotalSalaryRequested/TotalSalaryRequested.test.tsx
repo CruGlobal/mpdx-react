@@ -9,7 +9,7 @@ import theme from 'src/theme';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
 import { defaultCompleteFormValues } from '../../Shared/CompleteForm.mock';
-import { TotalAnnualSalary } from './TotalAnnualSalary';
+import { TotalSalaryRequested } from './TotalSalaryRequested';
 
 jest.mock('../../Shared/AdditionalSalaryRequestContext', () => {
   const originalModule = jest.requireActual(
@@ -84,14 +84,14 @@ const renderComponent = ({
     <ThemeProvider theme={theme}>
       <I18nextProvider i18n={i18n}>
         <TestFormikWrapper initialValues={initialValues}>
-          <TotalAnnualSalary onForm={onForm} />
+          <TotalSalaryRequested onForm={onForm} />
         </TestFormikWrapper>
       </I18nextProvider>
     </ThemeProvider>,
   );
 };
 
-describe('TotalAnnualSalary', () => {
+describe('TotalSalaryRequested', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -101,7 +101,7 @@ describe('TotalAnnualSalary', () => {
 
     expect(queryByTestId('card')).not.toBeInTheDocument();
 
-    expect(getByText('Total Annual Salary')).toBeInTheDocument();
+    expect(getByText('Total Salary Requested')).toBeInTheDocument();
     expect(getByText('A review of your income')).toBeInTheDocument();
 
     const expandButton = getByRole('button', {
@@ -110,7 +110,9 @@ describe('TotalAnnualSalary', () => {
     userEvent.click(expandButton);
 
     await waitFor(() => {
-      expect(getByText('Total Salary Requested')).toBeInTheDocument();
+      expect(
+        getByText('Total Salary Requested / Max Allowable Salary'),
+      ).toBeInTheDocument();
     });
 
     expect(
@@ -126,7 +128,7 @@ describe('TotalAnnualSalary', () => {
       getByText('Additional Salary Received This Year'),
     ).toBeInTheDocument();
     expect(getByText('Additional Salary on this Request')).toBeInTheDocument();
-    expect(getByText('Total Annual Salary:')).toBeInTheDocument();
+    expect(getByText('Total Salary Requested:')).toBeInTheDocument();
 
     expect(
       getByText('Does not include payments received for backpay.'),
@@ -141,7 +143,7 @@ describe('TotalAnnualSalary', () => {
 
     expect(getByTestId('card')).toBeInTheDocument();
 
-    expect(getByText('Total Annual Salary')).toBeInTheDocument();
+    expect(getByText('Total Salary Requested')).toBeInTheDocument();
     expect(getByText('A review of your income')).toBeInTheDocument();
   });
 
@@ -154,7 +156,9 @@ describe('TotalAnnualSalary', () => {
     userEvent.click(expandButton);
 
     await waitFor(() => {
-      expect(getByText('Total Salary Requested')).toBeInTheDocument();
+      expect(
+        getByText('Total Salary Requested / Max Allowable Salary'),
+      ).toBeInTheDocument();
     });
 
     expect(getByRole('table')).toBeInTheDocument();
@@ -197,7 +201,9 @@ describe('TotalAnnualSalary', () => {
     userEvent.click(expandButton);
 
     await waitFor(() => {
-      expect(getByText('Total Salary Requested')).toBeInTheDocument();
+      expect(
+        getByText('Total Salary Requested / Max Allowable Salary'),
+      ).toBeInTheDocument();
     });
 
     // Additional salary on this request should be $10,000.00

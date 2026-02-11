@@ -73,12 +73,16 @@ export const fieldConfig: Array<{
 export const useAdditionalSalaryRequestForm = (
   providedInitialValues?: CompleteFormValues,
 ) => {
-  const { requestId, maxAdditionalAllowableSalary } =
-    useAdditionalSalaryRequest();
   const { t } = useTranslation();
   const locale = useLocale();
-  const { handleNextStep, user, salaryInfo, isInternational } =
-    useAdditionalSalaryRequest();
+  const {
+    handleNextStep,
+    user,
+    salaryInfo,
+    isInternational,
+    requestId,
+    maxAdditionalAllowableSalary,
+  } = useAdditionalSalaryRequest();
 
   const { primaryAccountBalance } = useFormUserInfo();
 

@@ -12,7 +12,7 @@ import {
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { ApprovalProcess } from 'src/components/Reports/AdditionalSalaryRequest/SubmitModalAccordions/ApprovalProcess/ApprovalProcess';
-import { TotalAnnualSalary } from 'src/components/Reports/AdditionalSalaryRequest/SubmitModalAccordions/TotalAnnualSalary/TotalAnnualSalary';
+import { TotalSalaryRequested } from 'src/components/Reports/AdditionalSalaryRequest/SubmitModalAccordions/TotalSalaryRequested/TotalSalaryRequested';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { getModalText } from './getModalText';
@@ -88,7 +88,7 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
         </Alert>
         {exceedsCap && (
           <Box mt={2}>
-            <TotalAnnualSalary />
+            <TotalSalaryRequested />
             <Box sx={{ mt: 2 }}>
               <ApprovalProcess />
             </Box>

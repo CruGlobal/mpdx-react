@@ -16,7 +16,7 @@ import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 import { ContactInformationSummaryCard } from '../../SharedComponents/ContactInformationSummaryCard';
 import { SpouseComponent } from '../../SharedComponents/SpouseComponent';
 import { ApprovalProcess } from '../../SubmitModalAccordions/ApprovalProcess/ApprovalProcess';
-import { TotalAnnualSalary } from '../../SubmitModalAccordions/TotalAnnualSalary/TotalAnnualSalary';
+import { TotalSalaryRequested } from '../../SubmitModalAccordions/TotalSalaryRequested/TotalSalaryRequested';
 
 export const ViewForm: React.FC = () => {
   const { t } = useTranslation();
@@ -55,7 +55,7 @@ export const ViewForm: React.FC = () => {
       <ContactInformationSummaryCard />
       {exceedsCap && (
         <>
-          <TotalAnnualSalary onForm />
+          <TotalSalaryRequested onForm />
           <ApprovalProcess onForm />
         </>
       )}
