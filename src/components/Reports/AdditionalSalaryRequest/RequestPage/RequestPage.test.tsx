@@ -107,7 +107,7 @@ const validationSchema = yup.object({
   ...Object.fromEntries(
     fieldConfig.map(({ key, label }) => [
       key,
-      amount(label, (key: string) => key).required('Required field'),
+      amount(label, (key: string) => key),
     ]),
   ),
   deductTaxDeferredPercent: yup.boolean(),

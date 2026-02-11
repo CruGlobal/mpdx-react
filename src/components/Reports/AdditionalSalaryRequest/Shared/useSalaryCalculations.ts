@@ -71,8 +71,6 @@ export const useSalaryCalculations = ({
 
     const remainingInMaxAllowable = maxAllowableSalary - totalAnnualSalary;
 
-    // total ASR total
-    // remainingInMaxAllowable max_amount = salary_cap - year_income - pending_asr
     const exceedsCap = total > remainingAllowableSalary;
 
     return {

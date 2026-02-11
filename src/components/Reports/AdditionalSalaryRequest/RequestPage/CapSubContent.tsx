@@ -18,7 +18,7 @@ export const CapSubContent: React.FC = () => {
 
   return (
     <>
-      <Trans i18nKey="contactPayrollToIncreaseCap" parent="span">
+      <Trans t={t} parent="span">
         Please complete the Approval Process section below and we will review
         your request through our{' '}
         <Link

@@ -83,11 +83,6 @@ export const useAdditionalSalaryRequestForm = (
 
   const { data: requestData } = useAdditionalSalaryRequestQuery();
 
-  const calculations = requestData?.latestAdditionalSalaryRequest?.calculations;
-  const grossSalaryAmount = user?.currentSalary?.grossSalaryAmount ?? 0;
-  const maxAllowableSalary = calculations?.maxAmountAndReason?.amount ?? 0;
-  const additionalSalaryReceivedThisYear = calculations?.pendingAsrAmount ?? 0;
-
   const [updateAdditionalSalaryRequest] =
     useUpdateAdditionalSalaryRequestMutation();
 
@@ -98,7 +93,7 @@ export const useAdditionalSalaryRequestForm = (
 
   const createCurrencyValidation = useCallback(
     (fieldName: string, max?: number) => {
-      let schema = amount(fieldName, t).required(t('Required field'));
+      let schema = amount(fieldName, t);
       if (max !== null && max !== undefined) {
         schema = schema.max(
           max,
@@ -206,11 +201,12 @@ export const useAdditionalSalaryRequestForm = (
             t('Additional info is required for requests exceeding your cap.'),
             function (value) {
               const total = getTotal(this.parent as CompleteFormValues);
-              const totalAnnualSalary =
-                grossSalaryAmount + additionalSalaryReceivedThisYear + total;
-              const remainingInMaxAllowable =
-                maxAllowableSalary - totalAnnualSalary;
-              const exceedsCap = total > remainingInMaxAllowable;
+              if (total > 0) {
+                lastValidTotalRef.current = total;
+              }
+              const stableTotal = total > 0 ? total : lastValidTotalRef.current;
+
+              const exceedsCap = stableTotal > remainingAllowableSalary;
 
               if (exceedsCap) {
                 return !!value && value.trim().length > 0;
@@ -222,11 +218,9 @@ export const useAdditionalSalaryRequestForm = (
     [
       createCurrencyValidation,
       t,
+      primaryAccountBalance,
       remainingAllowableSalary,
       locale,
-      grossSalaryAmount,
-      maxAllowableSalary,
-      additionalSalaryReceivedThisYear,
     ],
   );
 
