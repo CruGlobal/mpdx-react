@@ -159,6 +159,5 @@ describe('AdditionalSalaryRequest', () => {
         expect(getByText('Exceeds account balance.')).toBeInTheDocument();
       });
     });
-
   });
 });
