@@ -287,7 +287,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
           const locale = useLocale();
 
           const fund = funds.find((f) => f.fundType === transferFrom);
-          const projected = fund ? fund.balance - amount : null;
+          const projected = fund ? fund.endBalance - amount : null;
           const showAlert =
             !!fund &&
             projected !== null &&

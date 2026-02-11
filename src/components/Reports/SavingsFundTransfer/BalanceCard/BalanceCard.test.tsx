@@ -24,7 +24,7 @@ const mockHandleOpenTransferModal = jest.fn();
 const defaultFund = {
   id: crypto.randomUUID(),
   fundType: 'Primary',
-  balance: 15000,
+  endBalance: 15000,
   deficitLimit: 0,
 };
 
@@ -130,7 +130,7 @@ describe('BalanceCard', () => {
         <Components
           fund={{
             ...defaultFund,
-            balance: 1234567.89,
+            endBalance: 1234567.89,
           }}
         />,
       );
@@ -143,7 +143,7 @@ describe('BalanceCard', () => {
         <Components
           fund={{
             ...defaultFund,
-            balance: 0,
+            endBalance: 0,
           }}
         />,
       );
@@ -156,7 +156,7 @@ describe('BalanceCard', () => {
         <Components
           fund={{
             ...defaultFund,
-            balance: -500,
+            endBalance: -500,
           }}
         />,
       );
@@ -170,7 +170,7 @@ describe('BalanceCard', () => {
         <Components
           fund={{
             ...defaultFund,
-            balance: 1234.567,
+            endBalance: 1234.567,
           }}
         />,
       );
@@ -214,7 +214,7 @@ describe('BalanceCard', () => {
       <Components
         fund={{
           ...defaultFund,
-          balance: -100,
+          endBalance: -100,
         }}
       />,
     );

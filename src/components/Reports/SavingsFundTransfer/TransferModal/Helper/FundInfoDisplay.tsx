@@ -9,7 +9,7 @@ import {
 import { FundFieldsFragment } from '../../ReportsSavingsFund.generated';
 import { FundTypeEnum } from '../../mockData';
 
-type Fund = Pick<FundFieldsFragment, 'fundType' | 'balance'>;
+type Fund = Pick<FundFieldsFragment, 'fundType' | 'endBalance'>;
 
 interface FundInfoDisplayProps {
   fund?: Fund;
@@ -41,13 +41,13 @@ export const FundInfoDisplay: React.FC<FundInfoDisplayProps> = ({ fund }) => {
         </Typography>
         <Typography
           component="span"
-          sx={{ color: fund.balance < 0 ? 'error.main' : 'text.primary' }}
+          sx={{ color: fund.endBalance < 0 ? 'error.main' : 'text.primary' }}
         >
-          {fund.balance < 0 ? ' (' : ' '}
-          {currencyFormat(Math.abs(fund.balance), 'USD', locale, {
+          {fund.endBalance < 0 ? ' (' : ' '}
+          {currencyFormat(Math.abs(fund.endBalance), 'USD', locale, {
             showTrailingZeros: true,
           })}
-          {fund.balance < 0 ? ')' : ' available'}
+          {fund.endBalance < 0 ? ')' : ' available'}
         </Typography>
       </Box>
     </Box>

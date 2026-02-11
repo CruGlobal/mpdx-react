@@ -126,13 +126,13 @@ export const fundsMock = [
   {
     id: '1',
     fundType: 'Staff Account',
-    balance: 15000,
+    endBalance: 15000,
     deficitLimit: 0,
   },
   {
     id: '2',
     fundType: 'Staff Savings',
-    balance: 2500,
+    endBalance: 2500,
     deficitLimit: 0,
   },
 ];

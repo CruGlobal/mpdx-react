@@ -15,7 +15,7 @@ import {
 const mockFund: Fund = {
   id: 'fund-1',
   fundType: 'Primary',
-  balance: 1000,
+  endBalance: 1000,
   deficitLimit: 0,
   total: -500,
   categories: [
