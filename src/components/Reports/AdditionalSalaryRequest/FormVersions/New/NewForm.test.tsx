@@ -1,3 +1,4 @@
+import { defaultCompleteFormValues } from '../../Shared/CompleteForm.mock';
 import {
   createRenderFormComponent,
   defaultMockContextValue,
@@ -116,6 +117,25 @@ describe('NewForm', () => {
       expect(
         getAllByText('Net Additional Salary').length,
       ).toBeGreaterThanOrEqual(1);
+    });
+
+    it('renders exceeded cap components', () => {
+      const { getByText } = renderComponent({
+        initialValues: {
+          ...defaultCompleteFormValues,
+          additionalSalaryWithinMax: '70000',
+        },
+      });
+
+      expect(getByText('Total Annual Salary')).toBeInTheDocument();
+      expect(getByText('Approval Process')).toBeInTheDocument();
+    });
+
+    it('does not render exceeded cap components when not exceeded', () => {
+      const { queryByText } = renderComponent();
+
+      expect(queryByText('Total Annual Salary')).not.toBeInTheDocument();
+      expect(queryByText('Approval Process')).not.toBeInTheDocument();
     });
 
     it('renders ContactInformation with email and phone fields', () => {

@@ -32,13 +32,8 @@ export const AutosaveCustomTextField: React.FC<
 
   const saveField = useSaveField({ formValues });
 
-  const stringFields = ['phoneNumber', 'emailAddress'];
-  const isStringField = stringFields.includes(fieldName as string);
-
   const fieldProps = useCustomAutoSave({
-    value: isStringField
-      ? (request?.[fieldName] ?? formValues[fieldName])
-      : request?.[fieldName],
+    value: request?.[fieldName],
     saveValue: (value) => saveField({ [fieldName]: value }),
     fieldName: fieldName as string,
     schema,
@@ -46,8 +41,23 @@ export const AutosaveCustomTextField: React.FC<
     setFieldTouched,
     submitCount,
     disabled: pageType === PageEnum.View,
-    stringFields,
+    stringFields: ['phoneNumber', 'emailAddress', 'additionalInfo'],
   });
 
-  return <TextField variant={variant} {...fieldProps} {...props} />;
+  return (
+    <TextField
+      variant={variant}
+      {...fieldProps}
+      {...props}
+      FormHelperTextProps={{
+        sx:
+          fieldName === 'additionalInfo' ||
+          fieldName === 'phoneNumber' ||
+          fieldName === 'emailAddress'
+            ? { marginLeft: 0 }
+            : { textAlign: 'center' },
+        ...props.FormHelperTextProps,
+      }}
+    />
+  );
 };

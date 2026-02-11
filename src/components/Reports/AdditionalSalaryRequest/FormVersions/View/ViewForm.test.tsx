@@ -1,3 +1,4 @@
+import { defaultCompleteFormValues } from '../../Shared/CompleteForm.mock';
 import { createRenderFormComponent, setupMockContext } from '../testUtils';
 import { ViewForm } from './ViewForm';
 
@@ -62,8 +63,13 @@ describe('ViewForm', () => {
     expect(getByTestId('amount-two')).toHaveTextContent('-$40,000.00');
   });
 
-  it('renders all child components', () => {
-    const { getByText, getAllByText } = renderComponent();
+  it('renders all child components when user exceeds cap', () => {
+    const { getByText, getAllByText } = renderComponent({
+      initialValues: {
+        ...defaultCompleteFormValues,
+        additionalSalaryWithinMax: '70000',
+      },
+    });
 
     expect(
       getByText('Additional Salary Request', {
@@ -78,6 +84,14 @@ describe('ViewForm', () => {
     );
     expect(getByText('Contact Information')).toBeInTheDocument();
     expect(getByText('Total Annual Salary')).toBeInTheDocument();
+    expect(getByText('Approval Process')).toBeInTheDocument();
+  });
+
+  it('should not render total annual salary or approval process when under cap', () => {
+    const { queryByText } = renderComponent();
+
+    expect(queryByText('Total Annual Salary')).not.toBeInTheDocument();
+    expect(queryByText('Approval Process')).not.toBeInTheDocument();
   });
 
   it('handles missing user gracefully', () => {

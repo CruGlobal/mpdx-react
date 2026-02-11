@@ -198,6 +198,7 @@ export const RentOwn: React.FC = () => {
         )}
       </Box>
       <DirectionButtons
+        formTitle={t('MHA Request')}
         overrideNext={handleNext}
         handlePreviousStep={handlePreviousStep}
         handleDiscard={handleDiscard}

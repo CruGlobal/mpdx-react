@@ -1,10 +1,11 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useLocale } from 'src/hooks/useLocale';
+import i18n from 'src/lib/i18n';
 import { currencyFormat } from 'src/lib/intlFormat';
-import { amount } from 'src/lib/yupHelpers';
+import { amount, phoneNumber } from 'src/lib/yupHelpers';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import {
   useAdditionalSalaryRequestQuery,
@@ -14,6 +15,7 @@ import {
 import { SalaryInfoQuery } from '../SalaryInfo.generated';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 import { getTotal } from './Helper/getTotal';
+import { useFormData } from './useFormData';
 
 type SalaryInfo = NonNullable<SalaryInfoQuery['salaryInfo']>;
 
@@ -33,7 +35,11 @@ export const fieldConfig: Array<{
     salaryInfoIntKey: 'maxAdoptionInt',
     salaryInfoUssKey: 'maxAdoptionUss',
   },
-  { key: 'traditional403bContribution', label: '403(b) Contribution' },
+  {
+    key: 'traditional403bContribution',
+    label: '403(b) Contribution - Traditional',
+  },
+  { key: 'roth403bContribution', label: '403(b) Contribution - Roth' },
   { key: 'counselingNonMedical', label: 'Counseling' },
   { key: 'healthcareExpensesExceedingLimit', label: 'Healthcare Expenses' },
   { key: 'babysittingMinistryEvents', label: 'Babysitting' },
@@ -73,6 +79,8 @@ export const useAdditionalSalaryRequestForm = (
   const { handleNextStep, user, salaryInfo, isInternational } =
     useAdditionalSalaryRequest();
 
+  const { primaryAccountBalance, remainingAllowableSalary } = useFormData();
+
   const { data: requestData } = useAdditionalSalaryRequestQuery();
 
   const [updateAdditionalSalaryRequest] =
@@ -80,6 +88,8 @@ export const useAdditionalSalaryRequestForm = (
 
   const [submitAdditionalSalaryRequest] =
     useSubmitAdditionalSalaryRequestMutation();
+
+  const lastValidTotalRef = useRef<number>(0);
 
   const createCurrencyValidation = useCallback(
     (fieldName: string, max?: number) => {
@@ -101,7 +111,10 @@ export const useAdditionalSalaryRequestForm = (
 
   const defaultInitialValues: CompleteFormValues = {
     ...Object.fromEntries(fieldConfig.map(({ key }) => [key, '0'])),
+    totalAdditionalSalaryRequested: '0',
+    additionalInfo: '',
     deductTaxDeferredPercent: false,
+    deductRothPercent: false,
     phoneNumber: user?.staffInfo?.primaryPhoneNumber || '',
     emailAddress: user?.staffInfo?.emailAddress || '',
   } as CompleteFormValues;
@@ -120,13 +133,17 @@ export const useAdditionalSalaryRequestForm = (
       ...Object.fromEntries(
         fieldConfig.map(({ key }) => [
           key,
-          String((request[key as keyof typeof request] as number) || ''),
+          String((request[key as keyof typeof request] as number) ?? ''),
         ]),
       ),
       deductTaxDeferredPercent: request.deductTaxDeferredPercent || false,
+      deductRothPercent: request.deductRothPercent || false,
       phoneNumber:
         request.phoneNumber || user?.staffInfo?.primaryPhoneNumber || '',
       emailAddress: request.emailAddress || user?.staffInfo?.emailAddress || '',
+      totalAdditionalSalaryRequested:
+        request.totalAdditionalSalaryRequested || '',
+      additionalInfo: request.additionalInfo || '',
     } as CompleteFormValues;
   }, [providedInitialValues, requestData?.latestAdditionalSalaryRequest, user]);
 
@@ -153,19 +170,59 @@ export const useAdditionalSalaryRequestForm = (
           ]),
         ),
         deductTaxDeferredPercent: yup.boolean(),
-        phoneNumber: yup
-          .string()
-          .required(t('Telephone number is required'))
-          .matches(
-            /^[\d\s\-\(\)\+]+$/,
-            t('Please enter a valid telephone number'),
-          ),
+        deductRothPercent: yup.boolean(),
+        phoneNumber: phoneNumber(i18n.t).required(
+          i18n.t('Phone Number is required.'),
+        ),
         emailAddress: yup
           .string()
           .required(t('Email address is required'))
           .email(t('Please enter a valid email address')),
+        totalAdditionalSalaryRequested: yup
+          .number()
+          .test(
+            'total-within-remaining-allowable-salary',
+            t('Exceeds account balance.'),
+            function () {
+              const total = getTotal(this.parent as CompleteFormValues);
+
+              if (total > 0) {
+                lastValidTotalRef.current = total;
+              }
+              const stableTotal = total > 0 ? total : lastValidTotalRef.current;
+
+              return stableTotal <= primaryAccountBalance;
+            },
+          ),
+        additionalInfo: yup
+          .string()
+          .test(
+            'required-when-exceeds-cap',
+            t('Additional info is required for requests exceeding your cap.'),
+            function (value) {
+              const total = getTotal(this.parent as CompleteFormValues);
+
+              if (total > 0) {
+                lastValidTotalRef.current = total;
+              }
+              const stableTotal = total > 0 ? total : lastValidTotalRef.current;
+
+              const exceedsCap = stableTotal > remainingAllowableSalary;
+
+              if (exceedsCap) {
+                return !!value && value.trim().length > 0;
+              }
+              return true;
+            },
+          ),
       }),
-    [createCurrencyValidation, t, getMaxForField],
+    [
+      createCurrencyValidation,
+      t,
+      primaryAccountBalance,
+      remainingAllowableSalary,
+      locale,
+    ],
   );
 
   const onSubmit = useCallback(
@@ -182,7 +239,8 @@ export const useAdditionalSalaryRequestForm = (
               Object.entries(values).map(([key, value]) =>
                 typeof value === 'string' &&
                 key !== 'phoneNumber' &&
-                key !== 'emailAddress'
+                key !== 'emailAddress' &&
+                key !== 'additionalInfo'
                   ? [key, parseFloat(value) || 0]
                   : [key, value],
               ),
@@ -215,6 +273,7 @@ export const useAdditionalSalaryRequestForm = (
     validationSchema,
     onSubmit,
     enableReinitialize: true,
+    validateOnMount: true,
   });
 
   return { ...formik, validationSchema };

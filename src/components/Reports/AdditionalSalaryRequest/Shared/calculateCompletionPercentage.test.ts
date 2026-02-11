@@ -12,6 +12,7 @@ describe('calculateCompletionPercentage', () => {
     additionalSalaryWithinMax: '',
     adoption: '',
     traditional403bContribution: '',
+    roth403bContribution: '',
     counselingNonMedical: '',
     healthcareExpensesExceedingLimit: '',
     babysittingMinistryEvents: '',
@@ -37,6 +38,7 @@ describe('calculateCompletionPercentage', () => {
       additionalSalaryWithinMax: '5000',
       adoption: '1000',
       traditional403bContribution: '2000',
+      roth403bContribution: '1500',
       counselingNonMedical: '500',
       healthcareExpensesExceedingLimit: '1500',
       babysittingMinistryEvents: '800',
@@ -49,6 +51,8 @@ describe('calculateCompletionPercentage', () => {
       expensesNotApprovedWithin90Days: '750',
       phoneNumber: '555-1234',
       emailAddress: 'test@example.com',
+      additionalInfo: 'Some additional info',
+      totalAdditionalSalaryRequested: '20000',
     });
     expect(calculateCompletionPercentage(values)).toBe(100);
   });
@@ -57,8 +61,9 @@ describe('calculateCompletionPercentage', () => {
     const values = createFormValues({
       currentYearSalaryNotReceived: '50000',
       deductTaxDeferredPercent: true,
+      deductRothPercent: true,
     });
-    expect(calculateCompletionPercentage(values)).toBe(6);
+    expect(calculateCompletionPercentage(values)).toBe(5);
   });
 
   it('should treat zero values as unfilled', () => {
@@ -67,7 +72,7 @@ describe('calculateCompletionPercentage', () => {
       previousYearSalaryNotReceived: '0',
       additionalSalaryWithinMax: '50000',
     });
-    expect(calculateCompletionPercentage(values)).toBe(6);
+    expect(calculateCompletionPercentage(values)).toBe(5);
   });
 
   it('should handle decimal values correctly', () => {
@@ -75,6 +80,6 @@ describe('calculateCompletionPercentage', () => {
       currentYearSalaryNotReceived: '50000.50',
       previousYearSalaryNotReceived: '48000.75',
     });
-    expect(calculateCompletionPercentage(values)).toBe(12);
+    expect(calculateCompletionPercentage(values)).toBe(10);
   });
 });

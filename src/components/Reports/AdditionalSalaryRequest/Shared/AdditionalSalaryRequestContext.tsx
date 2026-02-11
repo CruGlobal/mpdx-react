@@ -52,6 +52,8 @@ export type AdditionalSalaryRequestType = {
   spouse: HcmDataQuery['hcm'][1] | undefined;
   salaryInfo: SalaryInfoQuery['salaryInfo'] | undefined;
   isInternational: boolean;
+  traditional403bPercentage: number;
+  roth403bPercentage: number;
   isMutating: boolean;
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
 };
@@ -177,6 +179,11 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   const [user, spouse] = hcmData?.hcm ?? [];
   const salaryInfo = salaryInfoData?.salaryInfo;
   const isInternational = user?.staffInfo?.isInternational ?? false;
+  const taxDeferred =
+    user?.fourOThreeB.currentTaxDeferredContributionPercentage ?? 0;
+  const roth = user?.fourOThreeB.currentRothContributionPercentage ?? 0;
+  const traditional403bPercentage = taxDeferred / 100;
+  const roth403bPercentage = roth / 100;
 
   const staffAccountId = useMemo(
     () => staffAccountIdData?.user?.staffAccountId,
@@ -205,6 +212,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       spouse,
       salaryInfo,
       isInternational,
+      traditional403bPercentage,
+      roth403bPercentage,
       isMutating,
       trackMutation,
     }),
@@ -229,6 +238,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       spouse,
       salaryInfo,
       isInternational,
+      traditional403bPercentage,
+      roth403bPercentage,
       isMutating,
       trackMutation,
     ],

@@ -35,7 +35,7 @@ describe('AdditionalSalaryRequest', () => {
       const { getAllByRole, getByText } = render(<TestWrapper />);
 
       const inputs = getAllByRole('textbox');
-      expect(inputs).toHaveLength(15);
+      expect(inputs).toHaveLength(16);
 
       // Verify key category labels are present
       expect(
@@ -143,6 +143,21 @@ describe('AdditionalSalaryRequest', () => {
       rerender(<TestWrapper initialValues={updatedValues} />);
 
       expect(getByTestId('total-amount')).toHaveTextContent('$7,500');
+    });
+
+    it('shows validation error for asr total amount', async () => {
+      const invalidValues: CompleteFormValues = {
+        ...defaultCompleteFormValues,
+        totalAdditionalSalaryRequested: '1000000',
+      };
+
+      const { getByText } = render(
+        <TestWrapper initialValues={invalidValues} />,
+      );
+
+      await waitFor(() => {
+        expect(getByText('Exceeds account balance.')).toBeInTheDocument();
+      });
     });
   });
 });

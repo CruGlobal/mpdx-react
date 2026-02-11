@@ -3,6 +3,7 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import { DeepPartial } from 'ts-essentials';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
+import { HcmDataQuery } from 'src/components/Reports/Shared/HcmData/HCMData.generated';
 import theme from 'src/theme';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import {
@@ -46,13 +47,37 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   handlePreviousStep: jest.fn(),
   isDrawerOpen: true,
   toggleDrawer: jest.fn(),
-  requestData: null,
+  requestData: {
+    latestAdditionalSalaryRequest: {
+      phoneNumber: '555-123-4567',
+      traditional403bContribution: 0.12,
+      calculations: {
+        currentSalaryCap: 100000,
+        staffAccountBalance: 50000,
+        maxAmountAndReason: { amount: 100000 },
+        predictedYearIncome: 50000,
+        pendingAsrAmount: 0,
+      },
+    },
+  } as unknown as AdditionalSalaryRequestQuery,
   loading: false,
   requestError: undefined,
   pageType: PageEnum.New,
   handleDeleteRequest: jest.fn(),
   requestId: 'test-request-id',
-  user: undefined,
+  user: {
+    staffInfo: {
+      id: 'staff-1',
+      firstName: 'John',
+      lastName: 'Doe',
+      preferredName: 'Doe, John',
+      personNumber: '00123456',
+      emailAddress: 'john.doe@example.com',
+    },
+    currentSalary: {
+      grossSalaryAmount: 40000,
+    },
+  } as unknown as HcmDataQuery['hcm'][0],
   spouse: undefined,
   salaryInfo: {
     id: '1',
@@ -68,6 +93,8 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   isInternational: false,
   isMutating: false,
   trackMutation: jest.fn((mutation) => mutation),
+  traditional403bPercentage: 0,
+  roth403bPercentage: 0,
 };
 
 const defaultFormValues: CompleteFormValues = {
@@ -76,6 +103,7 @@ const defaultFormValues: CompleteFormValues = {
   additionalSalaryWithinMax: '0',
   adoption: '0',
   traditional403bContribution: '0',
+  roth403bContribution: '0',
   counselingNonMedical: '0',
   healthcareExpensesExceedingLimit: '0',
   babysittingMinistryEvents: '0',
@@ -87,8 +115,11 @@ const defaultFormValues: CompleteFormValues = {
   autoPurchase: '0',
   expensesNotApprovedWithin90Days: '0',
   deductTaxDeferredPercent: false,
+  deductRothPercent: false,
   phoneNumber: '',
   emailAddress: '',
+  totalAdditionalSalaryRequested: '0',
+  additionalInfo: '',
 };
 
 const mutationSpy = jest.fn();
@@ -98,6 +129,22 @@ type MocksType = {
   SalaryInfo: SalaryInfoQuery;
   UpdateAdditionalSalaryRequest: UpdateAdditionalSalaryRequestMutation;
   SubmitAdditionalSalaryRequest: SubmitAdditionalSalaryRequestMutation;
+};
+
+const defaultGqlMocks: DeepPartial<MocksType> = {
+  AdditionalSalaryRequest: {
+    latestAdditionalSalaryRequest: {
+      id: 'test-request-id',
+      calculations: {
+        currentSalaryCap: 100000,
+        staffAccountBalance: 50000,
+        maxAmountAndReason: {
+          amount: 100000,
+        },
+        pendingAsrAmount: 0,
+      },
+    },
+  },
 };
 
 interface TestComponentProps {
@@ -114,7 +161,7 @@ const TestWrapper: React.FC<TestComponentProps> = ({ children, mocks }) => {
         UpdateAdditionalSalaryRequest: UpdateAdditionalSalaryRequestMutation;
         SubmitAdditionalSalaryRequest: SubmitAdditionalSalaryRequestMutation;
       }>
-        mocks={mocks}
+        mocks={mocks ?? defaultGqlMocks}
         onCall={mutationSpy}
       >
         {children}
@@ -131,7 +178,7 @@ describe('useAdditionalSalaryRequestForm', () => {
 
   describe('fieldConfig', () => {
     it('should have all expected field configurations', () => {
-      expect(fieldConfig).toHaveLength(15);
+      expect(fieldConfig).toHaveLength(16);
 
       const fieldKeys = fieldConfig.map((f) => f.key);
       expect(fieldKeys).toContain('currentYearSalaryNotReceived');
@@ -164,6 +211,11 @@ describe('useAdditionalSalaryRequestForm', () => {
 
   describe('initialValues', () => {
     it('should return default initial values when no request data exists', async () => {
+      mockUseAdditionalSalaryRequest.mockReturnValue({
+        ...defaultMockContextValue,
+        user: undefined,
+      });
+
       const { result } = renderHook(() => useAdditionalSalaryRequestForm(), {
         wrapper: TestWrapper,
       });
@@ -252,7 +304,7 @@ describe('useAdditionalSalaryRequestForm', () => {
         errors = await result.current.validateForm();
       });
 
-      expect(errors.phoneNumber).toBe('Telephone number is required');
+      expect(errors.phoneNumber).toBe('Phone Number is required.');
     });
 
     it('should validate phone number format', async () => {
@@ -272,7 +324,7 @@ describe('useAdditionalSalaryRequestForm', () => {
         errors = await result.current.validateForm();
       });
 
-      expect(errors.phoneNumber).toBe('Please enter a valid telephone number');
+      expect(errors.phoneNumber).toBe('Invalid phone number');
     });
 
     it('should accept valid phone number formats', async () => {
@@ -382,6 +434,29 @@ describe('useAdditionalSalaryRequestForm', () => {
       expect(errors.childrenCollegeEducation).toContain('Exceeds');
       expect(errors.childrenCollegeEducation).toContain('$21,000.00');
     });
+
+    it('should validate additional info when exceedsCap is true', async () => {
+      const { result } = renderHook(
+        () =>
+          useAdditionalSalaryRequestForm({
+            ...defaultFormValues,
+            phoneNumber: '555-123-4567',
+            additionalSalaryWithinMax: '70000',
+          }),
+        {
+          wrapper: TestWrapper,
+        },
+      );
+
+      let errors: Record<string, string> = {};
+      await act(async () => {
+        errors = await result.current.validateForm();
+      });
+
+      expect(errors.additionalInfo).toBe(
+        'Additional info is required for requests exceeding your cap.',
+      );
+    });
   });
 
   describe('onSubmit', () => {
@@ -418,6 +493,11 @@ describe('useAdditionalSalaryRequestForm', () => {
         },
       );
 
+      await waitFor(async () => {
+        const errors = await result.current.validateForm();
+        expect(errors).toEqual({});
+      });
+
       await act(async () => {
         await result.current.submitForm();
       });
@@ -447,6 +527,11 @@ describe('useAdditionalSalaryRequestForm', () => {
           wrapper: TestWrapper,
         },
       );
+
+      await waitFor(async () => {
+        const errors = await result.current.validateForm();
+        expect(errors).toEqual({});
+      });
 
       await act(async () => {
         await result.current.submitForm();
@@ -480,6 +565,11 @@ describe('useAdditionalSalaryRequestForm', () => {
           wrapper: TestWrapper,
         },
       );
+
+      await waitFor(async () => {
+        const errors = await result.current.validateForm();
+        expect(errors).toEqual({});
+      });
 
       await act(async () => {
         await result.current.submitForm();

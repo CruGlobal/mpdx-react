@@ -24,11 +24,15 @@ import { NewForm } from '../FormVersions/New/NewForm';
 import { ViewForm } from '../FormVersions/View/ViewForm';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { calculateCompletionPercentage } from '../Shared/calculateCompletionPercentage';
+import { useSalaryCalculations } from '../Shared/useSalaryCalculations';
 import { StepList } from '../SharedComponents/StepList';
+import { CapSubContent } from './CapSubContent';
 
 const MainContent: React.FC = () => {
+  const { t } = useTranslation();
   const router = useRouter();
   const accountListId = useAccountListId();
+
   const {
     handlePreviousStep,
     handleNextStep,
@@ -36,34 +40,38 @@ const MainContent: React.FC = () => {
     steps,
     handleDeleteRequest,
     requestId,
+    requestData,
     pageType,
     loading,
-    currentStep,
     trackMutation,
+    user,
   } = useAdditionalSalaryRequest();
 
   const [createRequest] = useCreateAdditionalSalaryRequestMutation();
 
-  const { submitForm, validateForm, submitCount, isValid } =
+  const { values, submitForm, validateForm, submitCount, isValid, errors } =
     useFormikContext<CompleteFormValues>();
 
-  const isFirstFormPage = currentIndex === 0;
-  const isLastFormPage = currentIndex === steps.length - 2;
-  const reviewPage = currentIndex === steps.length - 1;
-
-  const handleCreateAndContinue = async () => {
-    const result = await trackMutation(
-      createRequest({
-        variables: { attributes: {} },
-        refetchQueries: ['AdditionalSalaryRequest'],
-      }),
-    );
-    if (
-      result.data?.createAdditionalSalaryRequest?.additionalSalaryRequest.id
-    ) {
-      handleNextStep();
+  const handleContinue = async () => {
+    if (requestData?.latestAdditionalSalaryRequest === null) {
+      trackMutation(
+        createRequest({
+          variables: {
+            attributes: {
+              phoneNumber: user?.staffInfo?.primaryPhoneNumber,
+              emailAddress: user?.staffInfo?.emailAddress,
+            },
+          },
+          refetchQueries: ['AdditionalSalaryRequest'],
+        }),
+      );
     }
+    handleNextStep();
   };
+
+  const { exceedsCap } = useSalaryCalculations({
+    values,
+  });
 
   const handleDiscard = async () => {
     if (requestId) {
@@ -74,7 +82,20 @@ const MainContent: React.FC = () => {
     }
   };
 
-  if (loading && currentStep !== AdditionalSalaryRequestSectionEnum.AboutForm) {
+  const isEdit = pageType === PageEnum.Edit;
+
+  const isFirstFormPage = currentIndex === 0;
+  const isLastFormPage = currentIndex === steps.length - 2;
+  const reviewPage = currentIndex === steps.length - 1;
+
+  const capTitle = t(
+    'Your request requires additional approval. Please fill in the information below to continue.',
+  );
+  const capContent = t(
+    'Your request causes your Total Requested Salary to exceed your Maximum Allowable Salary.',
+  );
+
+  if (loading && !requestData) {
     return <Loading loading={loading} />;
   }
 
@@ -90,6 +111,18 @@ const MainContent: React.FC = () => {
           {!reviewPage && (
             <Stack direction="column" width={mainContentWidth}>
               <DirectionButtons
+                formTitle={t('Additional Salary Request')}
+                overrideTitle={exceedsCap ? capTitle : undefined}
+                overrideContent={exceedsCap ? capContent : undefined}
+                overrideSubContent={
+                  exceedsCap ? (
+                    <CapSubContent />
+                  ) : isEdit ? (
+                    t('Your updated request will be sent to payroll.')
+                  ) : (
+                    t('Your request will be sent to payroll.')
+                  )
+                }
                 handleNextStep={handleNextStep}
                 handlePreviousStep={handlePreviousStep}
                 showBackButton={!isFirstFormPage}
@@ -99,10 +132,11 @@ const MainContent: React.FC = () => {
                 validateForm={validateForm}
                 submitCount={submitCount}
                 isValid={isValid}
-                isEdit={pageType === PageEnum.Edit}
-                overrideNext={
-                  isFirstFormPage ? handleCreateAndContinue : undefined
-                }
+                actionRequired={isEdit}
+                isEdit={isEdit}
+                exceedsCap={exceedsCap}
+                disableSubmit={exceedsCap && !!errors.additionalInfo}
+                overrideNext={isFirstFormPage ? handleContinue : undefined}
               />
             </Stack>
           )}

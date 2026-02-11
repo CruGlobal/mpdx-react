@@ -3,8 +3,6 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 
-// TODO Get these fields from the API when available
-
 interface Category {
   key: string;
   label: string;
@@ -48,9 +46,16 @@ export const useCompleteFormCategories = (): Category[] => {
     },
     {
       key: 'traditional403bContribution',
-      label: t('403(b) Contribution'),
+      label: t('403(b) Contribution - Traditional'),
       description: t(
-        '100% of what you enter here will be contributed to your 403(b)',
+        '100% of what you enter here will be contributed to a Traditional 403(b)',
+      ),
+    },
+    {
+      key: 'roth403bContribution',
+      label: t('403(b) Contribution - Roth'),
+      description: t(
+        '100% of what you enter here will be contributed to a Roth 403(b)',
       ),
     },
     {

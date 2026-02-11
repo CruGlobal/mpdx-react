@@ -9,7 +9,7 @@ import * as yup from 'yup';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import i18n from 'src/lib/i18n';
-import { amount } from 'src/lib/yupHelpers';
+import { amount, phoneNumber } from 'src/lib/yupHelpers';
 import theme from 'src/theme';
 import { PageEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
@@ -104,23 +104,28 @@ const validationSchema = yup.object({
     ]),
   ),
   deductTaxDeferredPercent: yup.boolean(),
-  phoneNumber: yup
-    .string()
-    .required('Telephone number is required')
-    .matches(/^[\d\s\-\(\)\+]+$/, 'Please enter a valid telephone number'),
+  phoneNumber: phoneNumber(i18n.t).required(
+    i18n.t('Phone Number is required.'),
+  ),
   emailAddress: yup
     .string()
     .required('Email address is required')
     .email('Please enter a valid email address'),
+  totalAdditionalSalaryRequested: yup.number(),
+  additionalInfo: yup.string(),
 });
 
 interface TestFormikWrapperProps {
   children: React.ReactNode;
+  initialValues?: CompleteFormValues;
 }
 
-const TestFormikWrapper: React.FC<TestFormikWrapperProps> = ({ children }) => {
+const TestFormikWrapper: React.FC<TestFormikWrapperProps> = ({
+  children,
+  initialValues = defaultCompleteFormValues,
+}) => {
   const formik = useFormik<CompleteFormValues>({
-    initialValues: defaultCompleteFormValues,
+    initialValues,
     validationSchema,
     onSubmit: jest.fn(),
     enableReinitialize: true,
@@ -131,13 +136,17 @@ const TestFormikWrapper: React.FC<TestFormikWrapperProps> = ({ children }) => {
   return <FormikProvider value={formikWithSchema}>{children}</FormikProvider>;
 };
 
-const TestWrapper: React.FC = () => (
+interface TestWrapperProps {
+  initialValues?: CompleteFormValues;
+}
+
+const TestWrapper: React.FC<TestWrapperProps> = ({ initialValues }) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
       <I18nextProvider i18n={i18n}>
         <TestRouter router={router}>
           <GqlMockedProvider>
-            <TestFormikWrapper>
+            <TestFormikWrapper initialValues={initialValues}>
               <RequestPage />
             </TestFormikWrapper>
           </GqlMockedProvider>
@@ -283,6 +292,117 @@ describe('RequestPage', () => {
     );
   });
 
+  it('shows submit modal when submit clicked on new page', async () => {
+    mockUseAdditionalSalaryRequest.mockReturnValue({
+      ...defaultMockContextValue,
+      currentIndex: 1,
+      currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
+      pageType: PageEnum.New,
+    } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+    const validFormValues: CompleteFormValues = {
+      ...defaultCompleteFormValues,
+      phoneNumber: '123-456-7890',
+      emailAddress: 'test@example.com',
+    };
+
+    const { getByRole, getByText } = render(
+      <TestWrapper initialValues={validFormValues} />,
+    );
+
+    const submitButton = getByRole('button', { name: /submit/i });
+    userEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(
+        getByText('Are you ready to submit your Additional Salary Request?'),
+      ).toBeInTheDocument();
+    });
+
+    expect(
+      getByText('You are submitting your Additional Salary Request.'),
+    ).toBeInTheDocument();
+    expect(
+      getByText('Your request will be sent to payroll.'),
+    ).toBeInTheDocument();
+  });
+
+  it('shows submit modal when submit clicked on edit page', async () => {
+    mockUseAdditionalSalaryRequest.mockReturnValue({
+      ...defaultMockContextValue,
+      currentIndex: 1,
+      currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
+      pageType: PageEnum.Edit,
+    } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+    const validFormValues: CompleteFormValues = {
+      ...defaultCompleteFormValues,
+      phoneNumber: '123-456-7890',
+      emailAddress: 'test@example.com',
+    };
+
+    const { getByRole, getByText } = render(
+      <TestWrapper initialValues={validFormValues} />,
+    );
+
+    const submitButton = getByRole('button', { name: /submit/i });
+    userEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(
+        getByText(
+          'Are you ready to submit your updated Additional Salary Request?',
+        ),
+      ).toBeInTheDocument();
+    });
+
+    expect(
+      getByText(
+        'You are submitting changes to your Additional Salary Request.',
+      ),
+    ).toBeInTheDocument();
+    expect(
+      getByText('Your updated request will be sent to payroll.'),
+    ).toBeInTheDocument();
+  });
+
+  it('shows submit modal when submit clicked with exceeded cap', async () => {
+    mockUseAdditionalSalaryRequest.mockReturnValue({
+      ...defaultMockContextValue,
+      currentIndex: 1,
+      currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
+      pageType: PageEnum.New,
+    } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+    const validFormValues: CompleteFormValues = {
+      ...defaultCompleteFormValues,
+      currentYearSalaryNotReceived: '1000',
+      phoneNumber: '123-456-7890',
+      emailAddress: 'test@example.com',
+      additionalInfo: 'Test additional info for exceeds cap',
+    };
+
+    const { getByRole, getByText } = render(
+      <TestWrapper initialValues={validFormValues} />,
+    );
+
+    const submitButton = getByRole('button', { name: /submit/i });
+    userEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(
+        getByText(/your request requires additional approval./i),
+      ).toBeInTheDocument();
+    });
+
+    expect(
+      getByText(/your request causes your total requested salary to exceed/i),
+    ).toBeInTheDocument();
+    expect(
+      getByText(/please complete the approval process section/i),
+    ).toBeInTheDocument();
+  });
+
   it('calls createNewRequest and handleNextStep when Continue is clicked on first page', async () => {
     const mockHandleNextStep = jest.fn();
     const mutationSpy = jest.fn();
@@ -290,6 +410,7 @@ describe('RequestPage', () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
       ...defaultMockContextValue,
       handleNextStep: mockHandleNextStep,
+      requestData: { latestAdditionalSalaryRequest: null },
     } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
 
     const { getByRole } = render(
@@ -327,12 +448,13 @@ describe('RequestPage', () => {
     });
   });
 
-  it('does not call handleNextStep when createNewRequest fails', async () => {
+  it('does calls handleNextStep when createNewRequest fails', async () => {
     const mockHandleNextStep = jest.fn();
 
     mockUseAdditionalSalaryRequest.mockReturnValue({
       ...defaultMockContextValue,
       handleNextStep: mockHandleNextStep,
+      requestData: { latestAdditionalSalaryRequest: null },
     } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
 
     const { getByRole } = render(
@@ -360,7 +482,7 @@ describe('RequestPage', () => {
     userEvent.click(getByRole('button', { name: /continue/i }));
 
     await waitFor(() => {
-      expect(mockHandleNextStep).not.toHaveBeenCalled();
+      expect(mockHandleNextStep).toHaveBeenCalled();
     });
   });
 

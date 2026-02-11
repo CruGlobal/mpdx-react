@@ -6,7 +6,7 @@ import * as yup from 'yup';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import i18n from 'src/lib/i18n';
-import { amount } from 'src/lib/yupHelpers';
+import { amount, phoneNumber } from 'src/lib/yupHelpers';
 import theme from 'src/theme';
 import { CompleteFormValues } from './AdditionalSalaryRequest';
 import { AdditionalSalaryRequestProvider } from './Shared/AdditionalSalaryRequestContext';
@@ -17,7 +17,8 @@ interface AdditionalSalaryRequestTestWrapperProps {
   children?: React.ReactNode;
   initialValues?: CompleteFormValues;
   pageType?: 'new' | 'edit' | 'view';
-  deductionPercentage?: number;
+  traditionalDeductionPercentage?: number;
+  rothDeductionPercentage?: number;
   onCall?: jest.Mock;
   mockPush?: jest.Mock;
 }
@@ -28,6 +29,7 @@ const defaultInitialValues: CompleteFormValues = {
   additionalSalaryWithinMax: '0',
   adoption: '0',
   traditional403bContribution: '0',
+  roth403bContribution: '0',
   counselingNonMedical: '0',
   healthcareExpensesExceedingLimit: '0',
   babysittingMinistryEvents: '0',
@@ -39,8 +41,11 @@ const defaultInitialValues: CompleteFormValues = {
   autoPurchase: '0',
   expensesNotApprovedWithin90Days: '0',
   deductTaxDeferredPercent: false,
+  deductRothPercent: false,
   phoneNumber: '',
   emailAddress: '',
+  totalAdditionalSalaryRequested: '0',
+  additionalInfo: '',
 };
 
 const validationSchema = yup.object({
@@ -51,14 +56,24 @@ const validationSchema = yup.object({
     ]),
   ),
   deductTaxDeferredPercent: yup.boolean(),
-  phoneNumber: yup
-    .string()
-    .required('Telephone number is required')
-    .matches(/^[\d\s\-\(\)\+]+$/, 'Please enter a valid telephone number'),
+  deductRothPercent: yup.boolean(),
+  phoneNumber: phoneNumber(i18n.t).required(
+    i18n.t('Phone Number is required.'),
+  ),
   emailAddress: yup
     .string()
     .required('Email address is required')
     .email('Please enter a valid email address'),
+  totalAdditionalSalaryRequested: yup
+    .number()
+    .test(
+      'total-within-remaining-allowable-salary',
+      'Exceeds account balance.',
+      function (value) {
+        const remainingAllowableSalary = 17500.0;
+        return (value || 0) <= remainingAllowableSalary;
+      },
+    ),
 });
 
 const TestFormikWrapper: React.FC<{
@@ -70,6 +85,7 @@ const TestFormikWrapper: React.FC<{
     validationSchema,
     onSubmit: () => {},
     enableReinitialize: true,
+    validateOnMount: true,
   });
 
   // Add validationSchema to formik context so autosave fields can access it
@@ -84,7 +100,8 @@ export const AdditionalSalaryRequestTestWrapper: React.FC<
   children,
   initialValues,
   pageType = 'new',
-  deductionPercentage = 0,
+  traditionalDeductionPercentage = 0,
+  rothDeductionPercentage = 0,
   onCall,
   mockPush,
 }) => {
@@ -109,20 +126,29 @@ export const AdditionalSalaryRequestTestWrapper: React.FC<
                   latestAdditionalSalaryRequest: {
                     id: 'test-request-id',
                     ...Object.fromEntries(
-                      Object.entries(requestValues)
-                        .filter(
-                          ([key]) => key !== 'traditional403bContribution',
-                        )
-                        .map(([key, value]) =>
-                          typeof value === 'string' &&
-                          key !== 'phoneNumber' &&
-                          key !== 'emailAddress'
-                            ? [key, parseFloat(value) || 0]
-                            : [key, value],
-                        ),
+                      Object.entries(requestValues).map(([key, value]) =>
+                        typeof value === 'string' &&
+                        key !== 'phoneNumber' &&
+                        key !== 'emailAddress' &&
+                        key !== 'additionalInfo'
+                          ? [key, parseFloat(value) || 0]
+                          : [key, value],
+                      ),
                     ),
-                    traditional403bContribution: deductionPercentage,
                   },
+                },
+                HcmData: {
+                  hcm: [
+                    {
+                      id: 'hcm-1',
+                      fourOThreeB: {
+                        currentTaxDeferredContributionPercentage:
+                          traditionalDeductionPercentage,
+                        currentRothContributionPercentage:
+                          rothDeductionPercentage,
+                      },
+                    },
+                  ],
                 },
               }}
               onCall={onCall}

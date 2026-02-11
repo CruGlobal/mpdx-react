@@ -1,10 +1,13 @@
 import { useMemo } from 'react';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
+import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 import { getTotal } from './Helper/getTotal';
+import { useFormData } from './useFormData';
 
 export interface SalaryCalculations {
   total: number;
-  calculatedDeduction: number;
+  calculatedTraditionalDeduction: number;
+  calculatedRothDeduction: number;
   contribution403b: number;
   totalDeduction: number;
   netSalary: number;
@@ -12,6 +15,7 @@ export interface SalaryCalculations {
   additionalSalaryReceivedThisYear: number;
   totalAnnualSalary: number;
   remainingInMaxAllowable: number;
+  exceedsCap: boolean;
 }
 
 interface CalculationsData {
@@ -20,26 +24,37 @@ interface CalculationsData {
 }
 
 export interface UseSalaryCalculationsProps {
-  traditional403bContribution: number;
   values: CompleteFormValues;
   calculations?: CalculationsData | null;
   grossSalaryAmount?: number | null;
 }
 
 export const useSalaryCalculations = ({
-  traditional403bContribution,
   values,
   calculations,
   grossSalaryAmount,
 }: UseSalaryCalculationsProps): SalaryCalculations => {
+  const { traditional403bPercentage, roth403bPercentage } =
+    useAdditionalSalaryRequest();
+  const { remainingAllowableSalary } = useFormData();
+
   return useMemo(() => {
     const total = getTotal(values);
 
-    const calculatedDeduction = values.deductTaxDeferredPercent
-      ? total * traditional403bContribution
+    const calculatedTraditionalDeduction = values.deductTaxDeferredPercent
+      ? Math.round(total * traditional403bPercentage)
       : 0;
 
-    const contribution403b = Number(values.traditional403bContribution || 0);
+    const calculatedRothDeduction = values.deductRothPercent
+      ? Math.round(total * roth403bPercentage)
+      : 0;
+
+    const calculatedDeduction =
+      calculatedTraditionalDeduction + calculatedRothDeduction;
+
+    const contribution403b =
+      Number(values.traditional403bContribution || 0) +
+      Number(values.roth403bContribution || 0);
 
     const totalDeduction = calculatedDeduction + contribution403b;
 
@@ -56,9 +71,12 @@ export const useSalaryCalculations = ({
 
     const remainingInMaxAllowable = maxAllowableSalary - totalAnnualSalary;
 
+    const exceedsCap = total > remainingAllowableSalary;
+
     return {
       total,
-      calculatedDeduction,
+      calculatedTraditionalDeduction,
+      calculatedRothDeduction,
       contribution403b,
       totalDeduction,
       netSalary,
@@ -66,6 +84,13 @@ export const useSalaryCalculations = ({
       additionalSalaryReceivedThisYear,
       totalAnnualSalary,
       remainingInMaxAllowable,
+      exceedsCap,
     };
-  }, [values, traditional403bContribution, calculations, grossSalaryAmount]);
+  }, [
+    values,
+    calculations,
+    grossSalaryAmount,
+    traditional403bPercentage,
+    roth403bPercentage,
+  ]);
 };

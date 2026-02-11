@@ -35,6 +35,7 @@ const defaultFormValues: CompleteFormValues = {
   additionalSalaryWithinMax: '0',
   adoption: '0',
   traditional403bContribution: '0',
+  roth403bContribution: '0',
   counselingNonMedical: '0',
   healthcareExpensesExceedingLimit: '0',
   babysittingMinistryEvents: '0',
@@ -46,8 +47,11 @@ const defaultFormValues: CompleteFormValues = {
   autoPurchase: '0',
   expensesNotApprovedWithin90Days: '0',
   deductTaxDeferredPercent: false,
+  deductRothPercent: false,
   phoneNumber: '555-1234',
   emailAddress: 'test@testerson.test',
+  totalAdditionalSalaryRequested: '100',
+  additionalInfo: '',
 };
 
 const mockTrackMutation = jest.fn((mutation) => mutation);
@@ -82,6 +86,8 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   isInternational: false,
   isMutating: false,
   trackMutation: mockTrackMutation,
+  traditional403bPercentage: 0,
+  roth403bPercentage: 0,
 };
 
 interface TestComponentProps {

@@ -1,3 +1,4 @@
+import React from 'react';
 import { ChevronRight } from '@mui/icons-material';
 import {
   Alert,
@@ -10,6 +11,8 @@ import {
 } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { ApprovalProcess } from 'src/components/Reports/AdditionalSalaryRequest/SubmitModalAccordions/ApprovalProcess/ApprovalProcess';
+import { TotalAnnualSalary } from 'src/components/Reports/AdditionalSalaryRequest/SubmitModalAccordions/TotalAnnualSalary/TotalAnnualSalary';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { getModalText } from './getModalText';
@@ -20,12 +23,14 @@ interface SubmitModalProps {
   handleConfirm: () => void;
   overrideTitle?: string;
   overrideContent?: string;
-  overrideSubContent?: string;
+  overrideSubContent?: React.ReactNode;
   isCancel?: boolean;
   isDiscard?: boolean;
   isDiscardEdit?: boolean;
   deadlineDate?: string;
   actionRequired?: boolean;
+  exceedsCap?: boolean;
+  disableSubmit?: boolean;
 }
 
 export const SubmitModal: React.FC<SubmitModalProps> = ({
@@ -40,6 +45,8 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
   isDiscardEdit,
   deadlineDate,
   actionRequired,
+  exceedsCap,
+  disableSubmit,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -79,13 +86,25 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
             {contentText}
           </Box>
         </Alert>
+        {exceedsCap && (
+          <Box mt={2}>
+            <TotalAnnualSalary />
+            <Box sx={{ mt: 2 }}>
+              <ApprovalProcess />
+            </Box>
+          </Box>
+        )}
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose} sx={{ color: 'text.secondary' }}>
           <b>{t('GO BACK')}</b>
         </Button>
-        <Button onClick={handleConfirm} color={isError ? 'error' : 'primary'}>
-          <b>{cancelButtonText}</b>
+        <Button
+          onClick={handleConfirm}
+          color={isError ? 'error' : 'primary'}
+          disabled={disableSubmit}
+        >
+          <b>{exceedsCap ? t('Submit For Approval') : cancelButtonText}</b>
           <ChevronRight sx={{ ml: 1 }} />
         </Button>
       </DialogActions>
