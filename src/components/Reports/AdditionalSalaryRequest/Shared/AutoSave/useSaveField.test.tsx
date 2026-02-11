@@ -49,8 +49,8 @@ const defaultFormValues: CompleteFormValues = {
   deductTaxDeferredPercent: false,
   deductRothPercent: false,
   phoneNumber: '555-1234',
-  totalAdditionalSalaryRequested: '100',
   emailAddress: 'test@testerson.test',
+  totalAdditionalSalaryRequested: '100',
   additionalInfo: '',
 };
 

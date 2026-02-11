@@ -2,8 +2,6 @@ import { defaultCompleteFormValues } from '../../Shared/CompleteForm.mock';
 import { createRenderFormComponent, setupMockContext } from '../testUtils';
 import { ViewForm } from './ViewForm';
 
-// TODO: Remove temporary hardcoded values
-
 jest.mock('../../Shared/AdditionalSalaryRequestContext', () => {
   const originalModule = jest.requireActual(
     '../../Shared/AdditionalSalaryRequestContext',
@@ -32,7 +30,9 @@ describe('ViewForm', () => {
     expect(getByText('Doe, John')).toBeInTheDocument();
     expect(getByText('00123456')).toBeInTheDocument();
 
-    expect(getByRole('button', { name: /back to status/i })).toBeInTheDocument();
+    expect(
+      getByRole('button', { name: /back to status/i }),
+    ).toBeInTheDocument();
   });
 
   it('displays financial balances from context', () => {
@@ -69,7 +69,7 @@ describe('ViewForm', () => {
     const { getByText, getAllByText } = renderComponent({
       initialValues: {
         ...defaultCompleteFormValues,
-        additionalSalaryWithinMax: '10000',
+        additionalSalaryWithinMax: '70000',
       },
     });
 

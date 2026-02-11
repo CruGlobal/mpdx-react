@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useRef } from 'react';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -79,7 +79,7 @@ export const useAdditionalSalaryRequestForm = (
   const { handleNextStep, user, salaryInfo, isInternational } =
     useAdditionalSalaryRequest();
 
-  const { remainingAllowableSalary } = useFormData();
+  const { primaryAccountBalance, remainingAllowableSalary } = useFormData();
 
   const { data: requestData } = useAdditionalSalaryRequestQuery();
 
@@ -93,6 +93,8 @@ export const useAdditionalSalaryRequestForm = (
 
   const [submitAdditionalSalaryRequest] =
     useSubmitAdditionalSalaryRequestMutation();
+
+  const lastValidTotalRef = useRef<number>(0);
 
   const createCurrencyValidation = useCallback(
     (fieldName: string, max?: number) => {
@@ -188,7 +190,13 @@ export const useAdditionalSalaryRequestForm = (
             t('Exceeds account balance.'),
             function () {
               const total = getTotal(this.parent as CompleteFormValues);
-              return total <= remainingAllowableSalary;
+
+              if (total > 0) {
+                lastValidTotalRef.current = total;
+              }
+              const stableTotal = total > 0 ? total : lastValidTotalRef.current;
+
+              return stableTotal <= primaryAccountBalance;
             },
           ),
         additionalInfo: yup

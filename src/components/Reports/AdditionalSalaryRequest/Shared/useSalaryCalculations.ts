@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 import { getTotal } from './Helper/getTotal';
+import { useFormData } from './useFormData';
 
 export interface SalaryCalculations {
   total: number;
@@ -35,6 +36,7 @@ export const useSalaryCalculations = ({
 }: UseSalaryCalculationsProps): SalaryCalculations => {
   const { traditional403bPercentage, roth403bPercentage } =
     useAdditionalSalaryRequest();
+  const { remainingAllowableSalary } = useFormData();
 
   return useMemo(() => {
     const total = getTotal(values);
@@ -69,7 +71,9 @@ export const useSalaryCalculations = ({
 
     const remainingInMaxAllowable = maxAllowableSalary - totalAnnualSalary;
 
-    const exceedsCap = total > remainingInMaxAllowable;
+    // total ASR total
+    // remainingInMaxAllowable max_amount = salary_cap - year_income - pending_asr
+    const exceedsCap = total > remainingAllowableSalary;
 
     return {
       total,

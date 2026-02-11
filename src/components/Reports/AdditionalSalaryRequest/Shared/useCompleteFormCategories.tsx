@@ -3,8 +3,6 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 
-// TODO Get these fields from the API when available
-
 interface Category {
   key: string;
   label: string;

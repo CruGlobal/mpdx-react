@@ -1,5 +1,5 @@
-query Hcm {
-  hcm {
+query Hcm($effectiveDate: ISO8601Date) {
+  hcm(effectiveDate: $effectiveDate) {
     staffInfo {
       id
       preferredName
@@ -25,6 +25,9 @@ query Hcm {
     mhaRequest {
       currentApprovedOverallAmount
       currentTakenAmount
+    }
+    mhaEit {
+      mhaEligibility
     }
     salaryRequestEligible
     exceptionSalaryCap {

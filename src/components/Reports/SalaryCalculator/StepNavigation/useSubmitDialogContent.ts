@@ -21,7 +21,7 @@ export const useSubmitDialogContent = (): DialogContent => {
   const hasBoardCapException =
     hcmUser?.exceptionSalaryCap.boardCapException ?? false;
 
-  if (!(approvalRequired || hasBoardCapException)) {
+  if (!approvalRequired) {
     return {
       title: t('Are you ready to submit your Salary Calculation Form?'),
       content: t('You are submitting your Salary Calculation Form.'),
@@ -32,7 +32,7 @@ export const useSubmitDialogContent = (): DialogContent => {
   let subContent: string;
   if (hasBoardCapException) {
     subContent = t(
-      "You have a Board approved Maximum Allowable Salary (CAP) and the salary request you submitted exceeds that amount. As a result we need to get their approval for this request. We'll forward your request to them and get back to you with their decision.",
+      "You have a Board approved Maximum Allowable Salary (CAP) and your salary request exceeds that amount. As a result we need to get their approval for this request. We'll forward your request to them and get back to you with their decision.",
     );
   } else {
     const combinedGross =

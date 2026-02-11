@@ -6,8 +6,6 @@ import {
 } from '../testUtils';
 import { NewForm } from './NewForm';
 
-//TODO: Remove temporary hardcoded values
-
 jest.mock('../../Shared/AdditionalSalaryRequestContext', () => {
   const originalModule = jest.requireActual(
     '../../Shared/AdditionalSalaryRequestContext',
@@ -129,7 +127,7 @@ describe('NewForm', () => {
       const { getByText } = renderComponent({
         initialValues: {
           ...defaultCompleteFormValues,
-          additionalSalaryWithinMax: '10000',
+          additionalSalaryWithinMax: '70000',
         },
       });
 

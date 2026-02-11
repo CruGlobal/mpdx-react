@@ -2,8 +2,6 @@ import { defaultCompleteFormValues } from '../../Shared/CompleteForm.mock';
 import { createRenderFormComponent, setupMockContext } from '../testUtils';
 import { EditForm } from './EditForm';
 
-//TODO: Remove temporary hardcoded values
-
 jest.mock('../../Shared/AdditionalSalaryRequestContext', () => {
   const originalModule = jest.requireActual(
     '../../Shared/AdditionalSalaryRequestContext',
@@ -67,7 +65,7 @@ describe('EditForm', () => {
     const { getByText, getAllByText } = renderComponent({
       initialValues: {
         ...defaultCompleteFormValues,
-        additionalSalaryWithinMax: '10000',
+        additionalSalaryWithinMax: '70000',
       },
     });
 

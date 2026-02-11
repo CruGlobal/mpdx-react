@@ -9,9 +9,76 @@ import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalcula
 export const useMhaRequestData = () => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { hcmUser, hcmSpouse, calculation } = useSalaryCalculator();
+  const { calculation, hcmUser, hcmSpouse } = useSalaryCalculator();
 
-  const hasSpouse = !!hcmSpouse;
+  // User MHA eligibility and request status
+  const userEligible = hcmUser?.mhaEit.mhaEligibility ?? false;
+  const userHasApprovedMha = !!hcmUser?.mhaRequest.currentApprovedOverallAmount;
+
+  // Spouse MHA eligibility and request status
+  const spouseEligible = hcmSpouse?.mhaEit.mhaEligibility ?? false;
+  const spouseHasApprovedMha =
+    !!hcmSpouse?.mhaRequest.currentApprovedOverallAmount;
+  // Show "no MHA" message for eligible people who don't have an MHA
+  const showUserNoMhaMessage = userEligible && !userHasApprovedMha;
+  const showSpouseNoMhaMessage = spouseEligible && !spouseHasApprovedMha;
+
+  // Show "not eligible" message when one person is not eligible but the other has MHA
+  const showUserIneligibleSpouseApprovedMessage =
+    !userEligible && spouseEligible && spouseHasApprovedMha;
+  const showSpouseIneligibleUserApprovedMessage =
+    !spouseEligible && userEligible && userHasApprovedMha;
+  // Determine which fields should be shown
+  const showUserFields = userEligible && userHasApprovedMha;
+  const showSpouseFields = spouseEligible && spouseHasApprovedMha;
+
+  const userPreferredName = hcmUser?.staffInfo.preferredName ?? '';
+  const spousePreferredName = hcmSpouse?.staffInfo.preferredName ?? '';
+
+  // Computed text values for the component
+  const showNoMhaMessage = showUserNoMhaMessage || showSpouseNoMhaMessage;
+  const isNoMhaPlural = showUserNoMhaMessage && showSpouseNoMhaMessage;
+
+  const getNoMhaNames = () => {
+    if (isNoMhaPlural) {
+      return t('{{userPreferredName}} and {{spousePreferredName}}', {
+        userPreferredName,
+        spousePreferredName,
+      });
+    }
+    return showUserNoMhaMessage ? userPreferredName : spousePreferredName;
+  };
+  const noMhaNames = getNoMhaNames();
+
+  const getIneligibleName = () => {
+    if (showUserIneligibleSpouseApprovedMessage) {
+      return userPreferredName;
+    }
+    if (showSpouseIneligibleUserApprovedMessage) {
+      return spousePreferredName;
+    }
+    return null;
+  };
+  const ineligibleName = getIneligibleName();
+
+  // Ineligibility messages (for NoMhaSubmitMessage)
+  const showUserIneligibleMessage = !userEligible;
+  const showSpouseIneligibleMessage = !spouseEligible;
+  const showIneligibleMessage =
+    showUserIneligibleMessage || showSpouseIneligibleMessage;
+  const isIneligiblePlural =
+    showUserIneligibleMessage && showSpouseIneligibleMessage;
+
+  const getIneligibleNames = () => {
+    if (isIneligiblePlural) {
+      return t('{{userPreferredName}} and {{spousePreferredName}}', {
+        userPreferredName,
+        spousePreferredName,
+      });
+    }
+    return showUserIneligibleMessage ? userPreferredName : spousePreferredName;
+  };
+  const ineligibleNames = showIneligibleMessage ? getIneligibleNames() : '';
 
   const approvedAmount = hcmUser?.mhaRequest.currentApprovedOverallAmount;
   const approvedAmountFormatted = useMemo(
@@ -37,20 +104,18 @@ export const useMhaRequestData = () => {
     });
   }, [t, approvedAmount, approvedAmountFormatted]);
 
-  // Multiply by 24 to annualize the monthly amounts from HCM
-  const currentAmountForStaff =
-    (hcmUser?.mhaRequest.currentTakenAmount ?? 0) * 24;
-  const spouseCurrentAmountForStaff =
-    (hcmSpouse?.mhaRequest.currentTakenAmount ?? 0) * 24;
+  const currentTakenAmount = hcmUser?.mhaRequest.currentTakenAmount ?? 0;
+  const currentSpouseTakenAmount =
+    hcmSpouse?.mhaRequest.currentTakenAmount ?? 0;
 
   const newRequestedMhaValue = calculation?.mhaAmount ?? 0;
   const newRequestedSpouseMhaValue = calculation?.spouseMhaAmount ?? 0;
   const totalRequestedMhaValue = useMemo(
     () =>
-      hasSpouse
+      hcmSpouse
         ? newRequestedMhaValue + newRequestedSpouseMhaValue
         : newRequestedMhaValue,
-    [hasSpouse, newRequestedMhaValue, newRequestedSpouseMhaValue],
+    [hcmSpouse, newRequestedMhaValue, newRequestedSpouseMhaValue],
   );
 
   const progressPercentage = useMemo(
@@ -65,12 +130,12 @@ export const useMhaRequestData = () => {
   );
 
   const currentTakenAmountFormatted = useMemo(
-    () => currencyFormat(currentAmountForStaff, 'USD', locale),
-    [currentAmountForStaff, locale],
+    () => currencyFormat(currentTakenAmount, 'USD', locale),
+    [currentTakenAmount, locale],
   );
-  const currentApprovedSpouseTakenAmountFormatted = useMemo(
-    () => currencyFormat(spouseCurrentAmountForStaff, 'USD', locale),
-    [spouseCurrentAmountForStaff, locale],
+  const currentSpouseTakenAmountFormatted = useMemo(
+    () => currencyFormat(currentSpouseTakenAmount, 'USD', locale),
+    [currentSpouseTakenAmount, locale],
   );
   const totalRequestedMhaFormatted = useMemo(
     () => currencyFormat(totalRequestedMhaValue, 'USD', locale),
@@ -82,13 +147,23 @@ export const useMhaRequestData = () => {
   );
 
   return {
-    hasSpouse,
     schema,
     currentTakenAmount: currentTakenAmountFormatted,
-    currentSpouseTakenAmount: currentApprovedSpouseTakenAmountFormatted,
+    currentSpouseTakenAmount: currentSpouseTakenAmountFormatted,
     totalRequestedMhaValue: totalRequestedMhaFormatted,
     difference: differenceFormatted,
     approvedAmount: approvedAmountFormatted,
     progressPercentage,
+    showNoMhaMessage,
+    isNoMhaPlural,
+    noMhaNames,
+    ineligibleName,
+    showUserFields,
+    showSpouseFields,
+    userPreferredName,
+    spousePreferredName,
+    showIneligibleMessage,
+    isIneligiblePlural,
+    ineligibleNames,
   };
 };

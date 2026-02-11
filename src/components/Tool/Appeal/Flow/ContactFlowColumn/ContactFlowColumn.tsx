@@ -32,7 +32,7 @@ import {
 import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { appealHeaderInfoHeight } from '../../AppealDetails/AppealHeaderInfo/AppealHeaderInfo';
-import { useContactsQuery } from '../../AppealsContext/contacts.generated';
+import { useAppealsContactsQuery } from '../../AppealsContext/contacts.generated';
 import {
   DynamicAddContactToAppealModal,
   preloadAddContactToAppealModal,
@@ -88,7 +88,7 @@ export const ContactFlowColumn: React.FC<Props> = ({
     [appealsFilters, appealId, appealStatus],
   );
 
-  const { data, loading, fetchMore } = useContactsQuery({
+  const { data, loading, fetchMore } = useAppealsContactsQuery({
     variables: {
       accountListId: accountListId ?? '',
       contactsFilters,

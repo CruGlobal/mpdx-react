@@ -55,7 +55,9 @@ describe('MaxAllowableSection', () => {
       );
 
       expect(await findByRole('cell', { name: '$50,000' })).toBeInTheDocument();
-      expect(getByRole('cell', { name: '$60,000' })).toBeInTheDocument();
+      await waitFor(() =>
+        expect(getByRole('cell', { name: '$60,000' })).toBeInTheDocument(),
+      );
       expect(queryByRole('checkbox')).not.toBeInTheDocument();
     });
   });
@@ -149,7 +151,7 @@ describe('MaxAllowableSection', () => {
 
     expect(
       await findByText(
-        'You have a Board-approved Maximum Allowable Salary (CAP).',
+        'You have a previously approved Maximum Allowable Salary (CAP).',
         { exact: false },
       ),
     ).toBeInTheDocument();
