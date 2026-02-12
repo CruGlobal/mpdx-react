@@ -142,8 +142,8 @@ describe('AdditionalSalaryRequest', () => {
     expect(container.querySelector('.MuiSkeleton-root')).toBeInTheDocument();
   });
 
-  it('displays no request message when there are no requests', async () => {
-    const { findByText } = render(
+  it('displays title when there are no requests', async () => {
+    const { findByText, queryByText } = render(
       <TestWrapper
         mocks={{
           AdditionalSalaryRequest: {
@@ -153,16 +153,33 @@ describe('AdditionalSalaryRequest', () => {
       />,
     );
 
+    // Title should still be displayed
     expect(
-      await findByText(/No Additional Salary Request has been created yet/i),
+      await findByText('Your Additional Salary Request'),
     ).toBeInTheDocument();
+    // No pending request message should be shown
+    expect(queryByText(/currently has a pending request/i)).toBeNull();
   });
 
-  it('displays pending request message when there is a request', async () => {
-    const { findByText } = render(<TestWrapper />);
+  it('displays pending request message when status is pending', async () => {
+    const pendingRequest = {
+      ...mockRequest,
+      status: AsrStatusEnum.Pending,
+      submittedAt: '2024-01-15T00:00:00Z',
+    };
+
+    const { findByText } = render(
+      <TestWrapper
+        mocks={{
+          AdditionalSalaryRequest: {
+            latestAdditionalSalaryRequest: pendingRequest,
+          },
+        }}
+      />,
+    );
 
     expect(
-      await findByText(/currently has an Additional Salary Request/i),
+      await findByText(/currently has a pending request/i),
     ).toBeInTheDocument();
   });
 
@@ -236,7 +253,7 @@ describe('AdditionalSalaryRequest', () => {
     ).toBeInTheDocument();
   });
 
-  it('determines allRequestStatus as Approved when there is an approved request', async () => {
+  it('displays approved request card title for approved status', async () => {
     const approvedRequest = {
       ...mockRequest,
       status: AsrStatusEnum.Approved,
@@ -253,10 +270,12 @@ describe('AdditionalSalaryRequest', () => {
       />,
     );
 
-    expect(await findByText(/status of Approved/i)).toBeInTheDocument();
+    expect(
+      await findByText(/Approved Additional Salary Request/i),
+    ).toBeInTheDocument();
   });
 
-  it('determines allRequestStatus as Action Required when request needs action', async () => {
+  it('displays action required message when request needs action', async () => {
     const actionRequiredRequest = {
       ...mockRequest,
       status: AsrStatusEnum.ActionRequired,
@@ -273,10 +292,12 @@ describe('AdditionalSalaryRequest', () => {
       />,
     );
 
-    expect(await findByText(/status of Action Required/i)).toBeInTheDocument();
+    expect(
+      await findByText(/Action is required to complete your pending request/i),
+    ).toBeInTheDocument();
   });
 
-  it('determines allRequestStatus as Pending when request is pending', async () => {
+  it('displays pending message when request is pending', async () => {
     const pendingRequest = {
       ...mockRequest,
       status: AsrStatusEnum.Pending,
@@ -293,13 +314,17 @@ describe('AdditionalSalaryRequest', () => {
       />,
     );
 
-    expect(await findByText(/status of Pending/i)).toBeInTheDocument();
+    expect(
+      await findByText(/currently has a pending request/i),
+    ).toBeInTheDocument();
   });
 
-  it('determines allRequestStatus as In Progress when request is in progress', async () => {
+  it('displays pending request card for in progress status', async () => {
     const { findByText } = render(<TestWrapper />);
 
-    expect(await findByText(/status of In Progress/i)).toBeInTheDocument();
+    expect(
+      await findByText(/Pending Additional Salary Request/i),
+    ).toBeInTheDocument();
   });
 
   it('renders sidebar with correct title', async () => {
