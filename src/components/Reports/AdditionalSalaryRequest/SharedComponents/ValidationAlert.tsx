@@ -35,9 +35,8 @@ export const ValidationAlert: React.FC = () => {
       .map(({ label }) => t(label));
   }, [submitCount, salaryInfo, isInternational, values, t]);
 
-  // Additional info is the only field required (when a user exceeds their cap)
-  const hasRequiredErrors = Object.keys(errors).some(
-    (key) => key === 'additionalInfo',
+  const hasRequiredErrors = Object.keys(errors).some((key) =>
+    ['phoneNumber', 'emailAddress', 'additionalInfo'].includes(key),
   );
 
   const hasErrors =
@@ -60,6 +59,7 @@ export const ValidationAlert: React.FC = () => {
           <li>
             {t('The following fields exceed their limits: {{fields}}', {
               fields: exceedingLimitFields.join(', '),
+              interpolation: { escapeValue: false },
             })}
           </li>
         )}
