@@ -91,7 +91,10 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
       sx={{
         mt: 5,
         display: 'flex',
-        justifyContent: 'space-between',
+        justifyContent:
+          !handleDiscard && !showBackButton && !isSubmission
+            ? 'flex-end'
+            : 'space-between',
       }}
     >
       {handleDiscard && (
