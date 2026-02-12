@@ -1,8 +1,7 @@
-import NextLink from 'next/link';
 import { Button, Stack, Typography } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { Trans, useTranslation } from 'react-i18next';
-import { useAccountListId } from 'src/hooks/useAccountListId';
+import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { NameDisplay } from '../../../Shared/CalculationReports/NameDisplay/NameDisplay';
 import {
   CompleteFormValues,
@@ -11,6 +10,7 @@ import {
 import { AdditionalSalaryRequest } from '../../CompleteForm/AdditionalSalaryRequest/AdditionalSalaryRequest';
 import { Deduction } from '../../CompleteForm/Deduction/Deduction';
 import { NetAdditionalSalary } from '../../CompleteForm/NetAdditionalSalary/NetAdditionalSalary';
+import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
 import { useFormData } from '../../Shared/useFormData';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 import { ContactInformationSummaryCard } from '../../SharedComponents/ContactInformationSummaryCard';
@@ -19,8 +19,8 @@ import { ApprovalProcess } from '../../SubmitModalAccordions/ApprovalProcess/App
 import { TotalAnnualSalary } from '../../SubmitModalAccordions/TotalAnnualSalary/TotalAnnualSalary';
 
 export const ViewForm: React.FC = () => {
-  const accountListId = useAccountListId();
   const { t } = useTranslation();
+  const { setPageType } = useAdditionalSalaryRequest();
   const { values } = useFormikContext<CompleteFormValues>();
   const {
     name,
@@ -66,8 +66,7 @@ export const ViewForm: React.FC = () => {
       )}
 
       <Button
-        component={NextLink}
-        href={`/accountLists/${accountListId}/reports/additionalSalaryRequest`}
+        onClick={() => setPageType(PageEnum.New)}
         variant="contained"
         sx={{ alignSelf: 'flex-end' }}
       >

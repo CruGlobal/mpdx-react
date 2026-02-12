@@ -123,7 +123,7 @@ export const AdditionalSalaryRequest: React.FC = () => {
                 }}
                 data-testid="total-amount"
               >
-                {currencyFormat(total, 'USD', locale)}
+                {currencyFormat(total, currency, locale)}
                 {errors.totalAdditionalSalaryRequested && (
                   <Typography variant="body2" color="error">
                     {errors.totalAdditionalSalaryRequested}

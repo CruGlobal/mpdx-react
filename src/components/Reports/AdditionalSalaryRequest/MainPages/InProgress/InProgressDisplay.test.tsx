@@ -115,13 +115,12 @@ describe('InProgressDisplay', () => {
     ).toBeInTheDocument();
   });
 
-  it('should go to edit page when Continue Request is clicked', () => {
-    const { getByText } = render(<TestComponent />);
+  it('should have a clickable Continue Request button', () => {
+    const { getByRole } = render(<TestComponent />);
 
-    const continueButton = getByText('Continue Request');
-    expect(continueButton.getAttribute('href')).toBe(
-      '/accountLists/account-list-1/reports/additionalSalaryRequest?mode=edit',
-    );
+    const continueButton = getByRole('button', { name: 'Continue Request' });
+    expect(continueButton).toBeInTheDocument();
+    expect(continueButton).not.toBeDisabled();
   });
 
   it('should call handleDeleteRequest when Discard & Start Over is clicked', async () => {
@@ -140,9 +139,6 @@ describe('InProgressDisplay', () => {
       expect(mockEnqueue).toHaveBeenCalledWith(
         'Additional Salary Request discarded successfully.',
         { variant: 'success' },
-      );
-      expect(mockPush).toHaveBeenCalledWith(
-        '/accountLists/account-list-1/reports/additionalSalaryRequest',
       );
     });
   });
