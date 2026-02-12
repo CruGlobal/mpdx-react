@@ -63,7 +63,7 @@ const AdditionalSalaryRequestRouter: React.FC = () => {
     case AsrStatusEnum.ActionRequired:
     case AsrStatusEnum.Pending:
       // ActionRequred normally returns the <AdditionalSalaryRequest /> component accept when pageType is View or Edit
-      return pageType !== PageEnum.New ? (
+      return pageType === PageEnum.Edit || pageType === PageEnum.View ? (
         <FormikRequestPage />
       ) : (
         <AdditionalSalaryRequest />

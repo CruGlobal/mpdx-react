@@ -6,7 +6,7 @@ import Loading from 'src/components/Loading/Loading';
 import { DirectionButtons } from 'src/components/Reports/Shared/CalculationReports/DirectionButtons/DirectionButtons';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { NoStaffAccount } from 'src/components/Reports/Shared/NoStaffAccount/NoStaffAccount';
-import { useAccountListId } from 'src/hooks/useAccountListId';
+import { AsrStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { PanelLayout } from '../../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { useIconPanelItems } from '../../Shared/CalculationReports/PanelLayout/useIconPanelItems';
@@ -17,7 +17,6 @@ import {
   mainContentWidth,
 } from '../AdditionalSalaryRequest';
 import { useCreateAdditionalSalaryRequestMutation } from '../AdditionalSalaryRequest.generated';
-import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
 import { EditForm } from '../FormVersions/Edit/EditForm';
 import { NewForm } from '../FormVersions/New/NewForm';
 import { ViewForm } from '../FormVersions/View/ViewForm';
@@ -151,25 +150,22 @@ const MainContent: React.FC = () => {
 
 export const RequestPage: React.FC = () => {
   const { t } = useTranslation();
-  const accountListId = useAccountListId();
   const {
     pageType,
     isDrawerOpen,
     toggleDrawer,
     steps,
     currentIndex,
-    currentStep,
     staffAccountId,
     staffAccountIdLoading,
+    requestData,
+    setPageType,
   } = useAdditionalSalaryRequest();
   const { values } = useFormikContext<CompleteFormValues>();
   const iconPanelItems = useIconPanelItems(isDrawerOpen, toggleDrawer);
-
-  const isNew = pageType === PageEnum.New;
-  const isAboutFormStep =
-    currentStep === AdditionalSalaryRequestSectionEnum.AboutForm;
-  const hideBackHref = isNew && isAboutFormStep;
-
+  const status = requestData?.latestAdditionalSalaryRequest?.status;
+  const showBackButton =
+    status === AsrStatusEnum.ActionRequired || status === AsrStatusEnum.Pending;
   const percentComplete = useMemo(
     () => calculateCompletionPercentage(values),
     [values],
@@ -198,11 +194,7 @@ export const RequestPage: React.FC = () => {
       isSidebarOpen={isDrawerOpen}
       sidebarAriaLabel={t('Additional Salary Request Sections')}
       mainContent={<MainContent />}
-      backHref={
-        hideBackHref
-          ? ''
-          : `/accountLists/${accountListId}/reports/additionalSalaryRequest`
-      }
+      onBack={showBackButton ? () => setPageType(PageEnum.Reset) : undefined}
     />
   );
 };

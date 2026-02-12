@@ -173,7 +173,7 @@ describe('PanelLayout', () => {
   });
 
   it('handles empty icon panel items gracefully', () => {
-    const { getByTestId, getAllByRole } = render(
+    const { getByTestId, queryAllByRole } = render(
       <TestComponent
         panelType={PanelTypeEnum.Other}
         icons={[]}
@@ -182,6 +182,7 @@ describe('PanelLayout', () => {
     );
 
     expect(getByTestId('main-content')).toBeInTheDocument();
-    expect(getAllByRole('button')).toHaveLength(1);
+    // With empty icons array, no icon buttons should render
+    expect(queryAllByRole('button')).toHaveLength(0);
   });
 });

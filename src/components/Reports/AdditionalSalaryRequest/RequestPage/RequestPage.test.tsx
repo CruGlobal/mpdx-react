@@ -287,21 +287,31 @@ describe('RequestPage', () => {
     });
   });
 
-  it('has correct back href to ASR landing page', () => {
+  it('shows back button and calls setPageType when status is pending', () => {
+    const mockSetPageType = jest.fn();
     mockUseAdditionalSalaryRequest.mockReturnValue({
       ...defaultMockContextValue,
       currentIndex: 1,
       currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
       pageType: PageEnum.Edit,
+      setPageType: mockSetPageType,
+      requestData: {
+        latestAdditionalSalaryRequest: {
+          status: 'PENDING',
+          calculations: {
+            currentSalaryCap: 50000,
+            staffAccountBalance: 0,
+          },
+        },
+      },
     } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
 
     const { getByRole } = render(<TestWrapper />);
 
-    const backLink = getByRole('link', { name: /back to dashboard/i });
-    expect(backLink).toHaveAttribute(
-      'href',
-      '/accountLists/account-list-1/reports/additionalSalaryRequest',
-    );
+    const backButton = getByRole('button', { name: /back to dashboard/i });
+    userEvent.click(backButton);
+
+    expect(mockSetPageType).toHaveBeenCalledWith(PageEnum.Reset);
   });
 
   it('shows submit modal when submit clicked on new page', async () => {
