@@ -99,7 +99,6 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   roth403bPercentage: 0,
   isNewAsr: false,
   setIsNewAsr: jest.fn(),
-  maxAdditionalAllowableSalary: 100000,
 };
 
 const defaultFormValues: CompleteFormValues = {
@@ -141,9 +140,7 @@ const defaultGqlMocks: DeepPartial<MocksType> = {
     latestAdditionalSalaryRequest: {
       id: 'test-request-id',
       calculations: {
-        maxAmountAndReason: {
-          amount: 100000,
-        },
+        currentSalaryCap: 100000,
         pendingAsrAmount: 0,
       },
     },
@@ -439,11 +436,6 @@ describe('useAdditionalSalaryRequestForm', () => {
     });
 
     it('should validate additional info when exceedsCap is true', async () => {
-      mockUseAdditionalSalaryRequest.mockReturnValue({
-        ...defaultMockContextValue,
-        maxAdditionalAllowableSalary: 50000,
-      });
-
       const { result } = renderHook(
         () =>
           useAdditionalSalaryRequestForm({

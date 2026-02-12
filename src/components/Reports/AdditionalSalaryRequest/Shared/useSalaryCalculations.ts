@@ -12,7 +12,6 @@ export interface SalaryCalculations {
   netSalary: number;
   additionalSalaryReceivedThisYear: number;
   totalAnnualSalary: number;
-  maxAdditionalAllowableSalary: number;
   grossAnnualSalary: number;
   exceedsCap: boolean;
 }
@@ -30,12 +29,11 @@ export const useSalaryCalculations = ({
   values,
   calculations,
 }: UseSalaryCalculationsProps): SalaryCalculations => {
-  const {
-    traditional403bPercentage,
-    roth403bPercentage,
-    maxAdditionalAllowableSalary,
-    user,
-  } = useAdditionalSalaryRequest();
+  const { traditional403bPercentage, roth403bPercentage, requestData, user } =
+    useAdditionalSalaryRequest();
+  const individualCap =
+    requestData?.latestAdditionalSalaryRequest?.calculations.currentSalaryCap ??
+    0;
   const grossAnnualSalary = user?.currentSalary?.grossSalaryAmount ?? 0;
 
   return useMemo(() => {
@@ -67,7 +65,7 @@ export const useSalaryCalculations = ({
     const totalAnnualSalary =
       grossAnnualSalary + additionalSalaryReceivedThisYear + total;
 
-    const exceedsCap = total > maxAdditionalAllowableSalary;
+    const exceedsCap = total > individualCap;
 
     return {
       total,
@@ -76,7 +74,6 @@ export const useSalaryCalculations = ({
       contribution403b,
       totalDeduction,
       netSalary,
-      maxAdditionalAllowableSalary,
       grossAnnualSalary,
       additionalSalaryReceivedThisYear,
       totalAnnualSalary,

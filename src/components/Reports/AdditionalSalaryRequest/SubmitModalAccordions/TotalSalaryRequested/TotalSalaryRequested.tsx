@@ -29,19 +29,18 @@ export const TotalSalaryRequested: React.FC<TotalAnnualSalaryProps> = ({
   const currency = 'USD';
 
   const { values } = useFormikContext<CompleteFormValues>();
-  const { requestData, maxAdditionalAllowableSalary } =
-    useAdditionalSalaryRequest();
+  const { requestData } = useAdditionalSalaryRequest();
 
   const asrValues = requestData?.latestAdditionalSalaryRequest;
   const calculations = asrValues?.calculations;
+  const individualCap = calculations?.currentSalaryCap ?? 0;
 
   const { totalAnnualSalary } = useSalaryCalculations({
     values,
     calculations,
   });
 
-  const remainingInMaxAllowable =
-    maxAdditionalAllowableSalary - totalAnnualSalary;
+  const remainingInMaxAllowable = individualCap - totalAnnualSalary;
 
   return (
     <ModalAccordion
@@ -61,7 +60,7 @@ export const TotalSalaryRequested: React.FC<TotalAnnualSalaryProps> = ({
           </Box>
           <Typography>
             {currencyFormat(Number(totalAnnualSalary), currency, locale)}/
-            {currencyFormat(maxAdditionalAllowableSalary, currency, locale)}
+            {currencyFormat(individualCap, currency, locale)}
           </Typography>
         </Box>
         <LinearProgress variant="determinate" value={100} color="warning" />

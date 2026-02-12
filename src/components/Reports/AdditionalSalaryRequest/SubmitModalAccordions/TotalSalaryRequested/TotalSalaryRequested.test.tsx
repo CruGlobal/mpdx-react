@@ -32,7 +32,7 @@ const defaultMockContextValue = {
       id: 'test-request-id',
       traditional403bContribution: 0.12,
       calculations: {
-        maxAmountAndReason: { amount: 100000 },
+        currentSalaryCap: 100000,
         pendingAsrAmount: 5000,
       },
     },
@@ -42,7 +42,6 @@ const defaultMockContextValue = {
       grossSalaryAmount: 50000,
     },
   },
-  maxAdditionalAllowableSalary: 100000,
 };
 
 interface TestWrapperProps {

@@ -106,7 +106,6 @@ const mockContextValue = {
   roth403bPercentage: 0,
   isNewAsr: false,
   setIsNewAsr: jest.fn(),
-  maxAdditionalAllowableSalary: 0,
 };
 
 const TestComponent: React.FC<{ request: RequestType }> = ({ request }) => (

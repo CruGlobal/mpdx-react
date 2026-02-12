@@ -31,12 +31,12 @@ export const TotalSalaryTable: React.FC = () => {
   const locale = useLocale();
   const currency = 'USD';
 
-  const { requestData, maxAdditionalAllowableSalary } =
-    useAdditionalSalaryRequest();
+  const { requestData } = useAdditionalSalaryRequest();
   const { values } = useFormikContext<CompleteFormValues>();
 
   const asrValues = requestData?.latestAdditionalSalaryRequest;
   const calculations = asrValues?.calculations;
+  const individualCap = calculations?.currentSalaryCap ?? 0;
 
   const {
     total,
@@ -53,7 +53,7 @@ export const TotalSalaryTable: React.FC = () => {
       {
         id: 'maxAllowable',
         label: t('Maximum Allowable Salary'),
-        value: maxAdditionalAllowableSalary,
+        value: individualCap,
       },
       {
         id: 'grossAnnual',
@@ -75,7 +75,7 @@ export const TotalSalaryTable: React.FC = () => {
     ],
     [
       t,
-      maxAdditionalAllowableSalary,
+      individualCap,
       grossAnnualSalary,
       additionalSalaryReceivedThisYear,
       total,

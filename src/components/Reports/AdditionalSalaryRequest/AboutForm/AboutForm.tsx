@@ -10,12 +10,14 @@ import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSa
 import { SpouseComponent } from '../SharedComponents/SpouseComponent';
 
 export const AboutForm: React.FC = () => {
-  const { currentIndex, maxAdditionalAllowableSalary } =
-    useAdditionalSalaryRequest();
+  const { currentIndex, requestData } = useAdditionalSalaryRequest();
   const { t } = useTranslation();
   const theme = useTheme();
 
   const { name, accountNumber, primaryAccountBalance } = useFormUserInfo();
+  const individualCap =
+    requestData?.latestAdditionalSalaryRequest?.calculations.currentSalaryCap ??
+    0;
 
   return (
     <AdditionalSalaryRequestSection title={getHeader(currentIndex)}>
@@ -92,7 +94,7 @@ export const AboutForm: React.FC = () => {
         titleOne={t('Primary Account Balance')}
         amountOne={primaryAccountBalance}
         titleTwo={t('Your Remaining Allowable Salary')}
-        amountTwo={maxAdditionalAllowableSalary}
+        amountTwo={individualCap}
         spouseComponent={<SpouseComponent />}
         showContent
       />

@@ -75,18 +75,15 @@ export const useAdditionalSalaryRequestForm = (
 ) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const {
-    handleNextStep,
-    user,
-    salaryInfo,
-    isInternational,
-    requestId,
-    maxAdditionalAllowableSalary,
-  } = useAdditionalSalaryRequest();
+  const { handleNextStep, user, salaryInfo, isInternational, requestId } =
+    useAdditionalSalaryRequest();
 
   const { primaryAccountBalance } = useFormUserInfo();
 
   const { data: requestData } = useAdditionalSalaryRequestQuery();
+  const individualCap =
+    requestData?.latestAdditionalSalaryRequest?.calculations.currentSalaryCap ??
+    0;
 
   const [updateAdditionalSalaryRequest] =
     useUpdateAdditionalSalaryRequestMutation();
@@ -211,7 +208,7 @@ export const useAdditionalSalaryRequestForm = (
               }
               const stableTotal = total > 0 ? total : lastValidTotalRef.current;
 
-              const exceedsCap = stableTotal > maxAdditionalAllowableSalary;
+              const exceedsCap = stableTotal > individualCap;
 
               if (exceedsCap) {
                 return !!value && value.trim().length > 0;
@@ -220,13 +217,7 @@ export const useAdditionalSalaryRequestForm = (
             },
           ),
       }),
-    [
-      createCurrencyValidation,
-      t,
-      primaryAccountBalance,
-      maxAdditionalAllowableSalary,
-      locale,
-    ],
+    [createCurrencyValidation, t, primaryAccountBalance, individualCap, locale],
   );
 
   const onSubmit = useCallback(

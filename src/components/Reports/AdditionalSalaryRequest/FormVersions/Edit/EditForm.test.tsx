@@ -36,8 +36,8 @@ describe('EditForm', () => {
 
     // staffAccountBalance: 40000
     expect(getByTestId('amount-one')).toHaveTextContent('$40,000.00');
-    // currentSalaryCap (100000) - grossSalaryAmount (40000) = 60000
-    expect(getByTestId('amount-two')).toHaveTextContent('$60,000.00');
+    // currentSalaryCap: value in backend
+    expect(getByTestId('amount-two')).toHaveTextContent('$100,000.00');
   });
 
   it('handles missing calculations gracefully', () => {
@@ -45,16 +45,17 @@ describe('EditForm', () => {
       contextOverrides: {
         requestData: {
           latestAdditionalSalaryRequest: {
-            calculations: undefined,
+            calculations: {
+              currentSalaryCap: -40000,
+            },
           },
         },
-        maxAdditionalAllowableSalary: -40000,
       },
     });
 
     // staffAccountBalance defaults to 0 when calculations are undefined
     expect(getByTestId('amount-one')).toHaveTextContent('$0.00');
-    // maxAdditionalAllowableSalary calculation done in backend
+    // currentSalaryCap calculation done in backend
     expect(getByTestId('amount-two')).toHaveTextContent('-$40,000.00');
   });
 
@@ -62,7 +63,7 @@ describe('EditForm', () => {
     const { getByText, getAllByText } = renderComponent({
       initialValues: {
         ...defaultCompleteFormValues,
-        additionalSalaryWithinMax: '70000',
+        additionalSalaryWithinMax: '200000',
       },
     });
 

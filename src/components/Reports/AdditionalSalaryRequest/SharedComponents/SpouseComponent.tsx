@@ -19,7 +19,7 @@ export const SpouseComponent: React.FC = () => {
   const { currentSalaryCap, staffAccountBalance } =
     requestData?.latestAdditionalSalaryRequest?.spouseCalculations || {};
 
-  const spouseMaxAdditionalAllowableSalary =
+  const spouseIndividualCap =
     (currentSalaryCap ?? 0) - (staffAccountBalance ?? 0);
   return (
     <Box>
@@ -42,11 +42,7 @@ export const SpouseComponent: React.FC = () => {
 
       <Typography variant="caption" color="text.secondary">
         {t('Up to her remaining allowable salary of {{amount}}', {
-          amount: currencyFormat(
-            spouseMaxAdditionalAllowableSalary,
-            currency,
-            locale,
-          ),
+          amount: currencyFormat(spouseIndividualCap, currency, locale),
         })}
       </Typography>
     </Box>

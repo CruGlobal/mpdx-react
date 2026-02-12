@@ -54,7 +54,6 @@ export type AdditionalSalaryRequestType = {
   isInternational: boolean;
   traditional403bPercentage: number;
   roth403bPercentage: number;
-  maxAdditionalAllowableSalary: number;
   isMutating: boolean;
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
   isNewAsr: boolean;
@@ -112,10 +111,6 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     error: requestError,
     loading,
   } = useAdditionalSalaryRequestQuery();
-
-  const maxAdditionalAllowableSalary =
-    requestData?.latestAdditionalSalaryRequest?.calculations.maxAmountAndReason
-      ?.amount ?? 0;
 
   const currentYear = useMemo(() => DateTime.now().year, []);
   const { data: salaryInfoData } = useSalaryInfoQuery({
@@ -212,7 +207,6 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       isInternational,
       traditional403bPercentage,
       roth403bPercentage,
-      maxAdditionalAllowableSalary,
       isMutating,
       trackMutation,
       isNewAsr,
@@ -243,7 +237,6 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       isInternational,
       traditional403bPercentage,
       roth403bPercentage,
-      maxAdditionalAllowableSalary,
       isMutating,
       trackMutation,
       isNewAsr,
