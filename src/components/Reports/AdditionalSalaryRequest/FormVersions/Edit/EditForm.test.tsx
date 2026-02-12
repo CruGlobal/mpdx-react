@@ -36,7 +36,7 @@ describe('EditForm', () => {
 
     // staffAccountBalance: 40000
     expect(getByTestId('amount-one')).toHaveTextContent('$40,000.00');
-    // currentSalaryCap (100000) - staffAccountBalance (40000) = 60000
+    // currentSalaryCap (100000) - grossSalaryAmount (40000) = 60000
     expect(getByTestId('amount-two')).toHaveTextContent('$60,000.00');
   });
 
