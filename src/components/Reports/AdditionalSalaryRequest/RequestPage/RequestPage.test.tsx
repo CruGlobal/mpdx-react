@@ -384,6 +384,13 @@ describe('RequestPage', () => {
       currentIndex: 1,
       currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
       pageType: PageEnum.New,
+      requestData: {
+        latestAdditionalSalaryRequest: {
+          calculations: {
+            currentSalaryCap: 50,
+          },
+        },
+      },
     } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
 
     const validFormValues: CompleteFormValues = {

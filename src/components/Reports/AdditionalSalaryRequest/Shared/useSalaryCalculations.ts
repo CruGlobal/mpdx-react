@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 import { getTotal } from './Helper/getTotal';
-import { useFormData } from './useFormData';
 
 export interface SalaryCalculations {
   total: number;
@@ -11,32 +10,31 @@ export interface SalaryCalculations {
   contribution403b: number;
   totalDeduction: number;
   netSalary: number;
-  maxAllowableSalary: number;
   additionalSalaryReceivedThisYear: number;
   totalAnnualSalary: number;
-  remainingInMaxAllowable: number;
+  grossAnnualSalary: number;
   exceedsCap: boolean;
 }
 
 interface CalculationsData {
-  maxAmountAndReason?: { amount?: number | null } | null;
   pendingAsrAmount?: number | null;
 }
 
 export interface UseSalaryCalculationsProps {
   values: CompleteFormValues;
   calculations?: CalculationsData | null;
-  grossSalaryAmount?: number | null;
 }
 
 export const useSalaryCalculations = ({
   values,
   calculations,
-  grossSalaryAmount,
 }: UseSalaryCalculationsProps): SalaryCalculations => {
-  const { traditional403bPercentage, roth403bPercentage } =
+  const { traditional403bPercentage, roth403bPercentage, requestData, user } =
     useAdditionalSalaryRequest();
-  const { remainingAllowableSalary } = useFormData();
+  const individualCap =
+    requestData?.latestAdditionalSalaryRequest?.calculations.currentSalaryCap ??
+    0;
+  const grossAnnualSalary = user?.currentSalary?.grossSalaryAmount ?? 0;
 
   return useMemo(() => {
     const total = getTotal(values);
@@ -61,17 +59,13 @@ export const useSalaryCalculations = ({
     const netSalary = total - totalDeduction;
 
     // Annual salary calculations
-    const maxAllowableSalary = calculations?.maxAmountAndReason?.amount ?? 0;
-    const grossAnnualSalary = grossSalaryAmount ?? 0;
     const additionalSalaryReceivedThisYear =
       calculations?.pendingAsrAmount ?? 0;
 
     const totalAnnualSalary =
       grossAnnualSalary + additionalSalaryReceivedThisYear + total;
 
-    const remainingInMaxAllowable = maxAllowableSalary - totalAnnualSalary;
-
-    const exceedsCap = total > remainingAllowableSalary;
+    const exceedsCap = total > individualCap;
 
     return {
       total,
@@ -80,16 +74,15 @@ export const useSalaryCalculations = ({
       contribution403b,
       totalDeduction,
       netSalary,
-      maxAllowableSalary,
+      grossAnnualSalary,
       additionalSalaryReceivedThisYear,
       totalAnnualSalary,
-      remainingInMaxAllowable,
       exceedsCap,
     };
   }, [
     values,
     calculations,
-    grossSalaryAmount,
+    grossAnnualSalary,
     traditional403bPercentage,
     roth403bPercentage,
   ]);
