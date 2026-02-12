@@ -58,6 +58,8 @@ export const MhaRequestSection: React.FC = () => {
     showIneligibleMessage,
     isIneligiblePlural,
     ineligibleNames,
+    showUnavailableMessage,
+    showPartiallyUnavailableMessage,
   } = useMhaRequestData();
 
   return (
@@ -70,13 +72,14 @@ export const MhaRequestSection: React.FC = () => {
     >
       <CardHeader title={t('MHA Request')} />
       <CardContent>
-        {showNoMhaMessage && !showUserFields && !showSpouseFields && (
+        {showUnavailableMessage && (
           <NoMhaSubmitMessage
             isPlural={isNoMhaPlural}
             names={noMhaNames}
             showIneligibleMessage={showIneligibleMessage}
             isIneligiblePlural={isIneligiblePlural}
             ineligibleNames={ineligibleNames}
+            showNoMhaMessage={showNoMhaMessage}
           />
         )}
 
@@ -102,7 +105,7 @@ export const MhaRequestSection: React.FC = () => {
               <Trans t={t}>
                 This is the amount you are approved for as of the effective date
                 of this salary calculation.
-              </Trans>
+              </Trans>{' '}
               {ineligibleName && (
                 <Trans t={t}>
                   {{ name: ineligibleName }} has not completed the required IBS
@@ -122,13 +125,14 @@ export const MhaRequestSection: React.FC = () => {
               </Trans>
             </Typography>
 
-            {showNoMhaMessage && (
+            {showPartiallyUnavailableMessage && (
               <NoMhaSubmitMessage
                 isPlural={isNoMhaPlural}
                 names={noMhaNames}
                 showIneligibleMessage={showIneligibleMessage}
                 isIneligiblePlural={isIneligiblePlural}
                 ineligibleNames={ineligibleNames}
+                showNoMhaMessage={showNoMhaMessage}
               />
             )}
           </>

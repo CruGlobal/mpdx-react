@@ -46,7 +46,13 @@ export const useMhaRequestData = () => {
         spousePreferredName,
       });
     }
-    return showUserNoMhaMessage ? userPreferredName : spousePreferredName;
+    if (showUserNoMhaMessage) {
+      return userPreferredName;
+    }
+    if (showSpouseNoMhaMessage) {
+      return spousePreferredName;
+    }
+    return '';
   };
   const noMhaNames = getNoMhaNames();
 
@@ -68,6 +74,12 @@ export const useMhaRequestData = () => {
     showUserIneligibleMessage || showSpouseIneligibleMessage;
   const isIneligiblePlural =
     showUserIneligibleMessage && showSpouseIneligibleMessage;
+  const showUnavailableMessage =
+    !showUserFields &&
+    !showSpouseFields &&
+    (showNoMhaMessage || showIneligibleMessage);
+  const showPartiallyUnavailableMessage =
+    showNoMhaMessage || showIneligibleMessage;
 
   const getIneligibleNames = () => {
     if (isIneligiblePlural) {
@@ -202,5 +214,7 @@ export const useMhaRequestData = () => {
     showIneligibleMessage,
     isIneligiblePlural,
     ineligibleNames,
+    showUnavailableMessage,
+    showPartiallyUnavailableMessage,
   };
 };

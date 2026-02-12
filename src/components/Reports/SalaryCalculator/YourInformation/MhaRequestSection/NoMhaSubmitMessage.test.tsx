@@ -18,7 +18,11 @@ describe('NoMhaSubmitMessage', () => {
   it('should render singular message when isPlural is false', () => {
     const { getByText } = render(
       <TestWrapper>
-        <NoMhaSubmitMessage isPlural={false} names="John" />
+        <NoMhaSubmitMessage
+          isPlural={false}
+          names="John"
+          showNoMhaMessage={true}
+        />
       </TestWrapper>,
     );
 
@@ -36,7 +40,11 @@ describe('NoMhaSubmitMessage', () => {
   it('should render plural message when isPlural is true', () => {
     const { getByText } = render(
       <TestWrapper>
-        <NoMhaSubmitMessage isPlural={true} names="John and Jane" />
+        <NoMhaSubmitMessage
+          isPlural={true}
+          names="John and Jane"
+          showNoMhaMessage={true}
+        />
       </TestWrapper>,
     );
 
@@ -54,7 +62,11 @@ describe('NoMhaSubmitMessage', () => {
   it('should render link to housing allowance page', () => {
     const { getByRole } = render(
       <TestWrapper>
-        <NoMhaSubmitMessage isPlural={false} names="John" />
+        <NoMhaSubmitMessage
+          isPlural={false}
+          names="John"
+          showNoMhaMessage={true}
+        />
       </TestWrapper>,
     );
 
