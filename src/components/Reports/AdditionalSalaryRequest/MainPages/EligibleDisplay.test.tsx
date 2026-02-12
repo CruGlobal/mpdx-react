@@ -5,6 +5,7 @@ import { SnackbarProvider } from 'notistack';
 import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { AsrStatusEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { AdditionalSalaryRequestProvider } from '../Shared/AdditionalSalaryRequestContext';
@@ -13,12 +14,12 @@ import { EligibleDisplay } from './EligibleDisplay';
 const accountListId = 'account-list-1';
 
 interface TestWrapperProps {
-  allRequestStatus: string;
+  status?: AsrStatusEnum;
   preferredName?: string;
 }
 
 const TestWrapper: React.FC<TestWrapperProps> = ({
-  allRequestStatus,
+  status,
   preferredName = 'John',
 }) => {
   const hcmData = {
@@ -47,7 +48,12 @@ const TestWrapper: React.FC<TestWrapperProps> = ({
               mocks={{
                 HcmData: hcmData,
                 AdditionalSalaryRequest: {
-                  latestAdditionalSalaryRequest: null,
+                  latestAdditionalSalaryRequest: status
+                    ? {
+                        id: 'asr-1',
+                        status,
+                      }
+                    : null,
                 },
                 StaffAccountId: {
                   user: {
@@ -57,7 +63,7 @@ const TestWrapper: React.FC<TestWrapperProps> = ({
               }}
             >
               <AdditionalSalaryRequestProvider>
-                <EligibleDisplay allRequestStatus={allRequestStatus} />
+                <EligibleDisplay />
               </AdditionalSalaryRequestProvider>
             </GqlMockedProvider>
           </SnackbarProvider>
@@ -69,86 +75,37 @@ const TestWrapper: React.FC<TestWrapperProps> = ({
 
 describe('EligibleDisplay', () => {
   it('renders the page title', async () => {
-    const { findByText } = render(<TestWrapper allRequestStatus="None" />);
+    const { findByText } = render(
+      <TestWrapper status={AsrStatusEnum.Pending} />,
+    );
 
     expect(
       await findByText('Your Additional Salary Request'),
     ).toBeInTheDocument();
   });
 
-  it('displays no request message when allRequestStatus is None', async () => {
-    const { findByText } = render(<TestWrapper allRequestStatus="None" />);
-
-    expect(
-      await findByText(/No Additional Salary Request has been created yet/i),
-    ).toBeInTheDocument();
-  });
-
-  it('displays create ASR instruction when allRequestStatus is None', async () => {
-    const { findByText } = render(<TestWrapper allRequestStatus="None" />);
-
-    expect(
-      await findByText(/You may create one by clicking/i),
-    ).toBeInTheDocument();
-  });
-
-  it('displays pending request message when status is In Progress', async () => {
-    const { findByText } = render(
-      <TestWrapper allRequestStatus="In Progress" />,
-    );
-
-    expect(
-      await findByText(/currently has an Additional Salary Request/i),
-    ).toBeInTheDocument();
-  });
-
-  it('displays the status in the pending message', async () => {
-    const { findByText } = render(
-      <TestWrapper allRequestStatus="In Progress" />,
-    );
-
-    expect(await findByText(/status of In Progress/i)).toBeInTheDocument();
-  });
-
   it('displays pending request message when status is Pending', async () => {
-    const { findByText } = render(<TestWrapper allRequestStatus="Pending" />);
-
-    expect(
-      await findByText(/currently has an Additional Salary Request/i),
-    ).toBeInTheDocument();
-    expect(await findByText(/status of Pending/i)).toBeInTheDocument();
-  });
-
-  it('displays pending request message when status is Approved', async () => {
-    const { findByText } = render(<TestWrapper allRequestStatus="Approved" />);
-
-    expect(
-      await findByText(/currently has an Additional Salary Request/i),
-    ).toBeInTheDocument();
-    expect(await findByText(/status of Approved/i)).toBeInTheDocument();
-  });
-
-  it('displays pending request message when status is Action Required', async () => {
     const { findByText } = render(
-      <TestWrapper allRequestStatus="Action Required" />,
+      <TestWrapper status={AsrStatusEnum.Pending} />,
     );
 
     expect(
-      await findByText(/currently has an Additional Salary Request/i),
+      await findByText(/currently has a pending request/i),
     ).toBeInTheDocument();
-    expect(await findByText(/status of Action Required/i)).toBeInTheDocument();
   });
 
   it('displays the user preferred name in the pending message', async () => {
     const { findByText } = render(
-      <TestWrapper allRequestStatus="In Progress" preferredName="Jane" />,
+      <TestWrapper status={AsrStatusEnum.Pending} preferredName="Jane" />,
     );
 
     expect(await findByText(/Jane currently has/i)).toBeInTheDocument();
   });
 
-  it('displays note about single request at a time for None status', async () => {
-    const { findByText } = render(<TestWrapper allRequestStatus="None" />);
+  it('displays note about single request at a time for pending status', async () => {
+    const { findByText } = render(
+      <TestWrapper status={AsrStatusEnum.Pending} />,
+    );
 
     expect(
       await findByText(
@@ -157,15 +114,13 @@ describe('EligibleDisplay', () => {
     ).toBeInTheDocument();
   });
 
-  it('displays note about single request at a time for existing status', async () => {
+  it('displays action required message when status is ActionRequired', async () => {
     const { findByText } = render(
-      <TestWrapper allRequestStatus="In Progress" />,
+      <TestWrapper status={AsrStatusEnum.ActionRequired} />,
     );
 
     expect(
-      await findByText(
-        /you may only process one additional salary request at a time/i,
-      ),
+      await findByText(/Action is required to complete your pending request/i),
     ).toBeInTheDocument();
   });
 });
