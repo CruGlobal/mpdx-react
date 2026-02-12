@@ -45,6 +45,7 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
   handleNextStep: mockHandleNextStep,
   handlePreviousStep: jest.fn(),
+  goToStep: jest.fn(),
   isDrawerOpen: true,
   toggleDrawer: jest.fn(),
   requestData: {
@@ -63,6 +64,7 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   loading: false,
   requestError: undefined,
   pageType: PageEnum.New,
+  setPageType: jest.fn(),
   handleDeleteRequest: jest.fn(),
   requestId: 'test-request-id',
   user: {
@@ -95,6 +97,8 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   trackMutation: jest.fn((mutation) => mutation),
   traditional403bPercentage: 0,
   roth403bPercentage: 0,
+  isNewAsr: false,
+  setIsNewAsr: jest.fn(),
 };
 
 const defaultFormValues: CompleteFormValues = {
@@ -136,8 +140,6 @@ const defaultGqlMocks: DeepPartial<MocksType> = {
     latestAdditionalSalaryRequest: {
       id: 'test-request-id',
       calculations: {
-        currentSalaryCap: 100000,
-        staffAccountBalance: 50000,
         maxAmountAndReason: {
           amount: 100000,
         },

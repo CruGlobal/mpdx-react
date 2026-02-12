@@ -11,15 +11,14 @@ import { Box, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { AsrStatusEnum } from 'src/graphql/types.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
+import { PageEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { StatusCard } from '../../Shared/CalculationReports/StatusCard/StatusCard';
 import { AdditionalSalaryRequestQuery } from '../AdditionalSalaryRequest.generated';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { getDotColor } from '../Shared/Helper/getDotColor';
 import { getDotVariant } from '../Shared/Helper/getDotVariant';
-import { getRequestUrl } from '../Shared/Helper/getRequestUrl';
 
 interface CurrentRequestProps {
   request: NonNullable<
@@ -30,14 +29,17 @@ interface CurrentRequestProps {
 export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const accountListId = useAccountListId();
-  const { user, handleDeleteRequest } = useAdditionalSalaryRequest();
+  const { user, handleDeleteRequest, setPageType, goToStep } =
+    useAdditionalSalaryRequest();
   const preferredName = user?.staffInfo?.preferredName;
 
-  const { id, status, totalAdditionalSalaryRequested, submittedAt } = request;
-
-  // TODO remove submittedAt and processedDate placeholders and grab from request once available
-  const processedDate = new Date().toISOString();
+  const {
+    id,
+    status,
+    totalAdditionalSalaryRequested,
+    submittedAt,
+    changesRequestedAt,
+  } = request;
 
   return (
     <StatusCard
@@ -48,8 +50,13 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
       icon={AttachMoney}
       iconColor="warning.main"
       linkOneText={t('View Request')}
-      linkOne={getRequestUrl(accountListId, id, 'view')}
-      hideLinkTwoButton={true}
+      handleLinkOne={() => setPageType(PageEnum.View)}
+      hideLinkTwoButton={status !== AsrStatusEnum.ActionRequired}
+      linkTwoText={t('Edit Request')}
+      handleLinkTwo={() => {
+        setPageType(PageEnum.Edit);
+        goToStep(1);
+      }}
       isRequest={true}
       handleConfirmCancel={() => handleDeleteRequest(id, true)}
     >
@@ -114,8 +121,8 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
                   <Box component="span" sx={{ fontWeight: 'bold' }}>
                     {t('Request processed on:')}
                   </Box>
-                  {processedDate &&
-                    ` ${dateFormat(DateTime.fromISO(processedDate), locale)}`}
+                  {changesRequestedAt &&
+                    ` ${dateFormat(DateTime.fromISO(changesRequestedAt), locale)}`}
                 </Typography>
               ) : (
                 <Typography sx={{ fontWeight: 'bold' }}>

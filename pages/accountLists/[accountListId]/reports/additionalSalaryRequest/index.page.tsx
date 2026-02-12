@@ -1,13 +1,13 @@
 import Head from 'next/head';
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { FormikProvider } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
+import { AdditionalSalaryRequest } from 'src/components/Reports/AdditionalSalaryRequest/AdditionalSalaryRequest';
 import { InProgressDisplay } from 'src/components/Reports/AdditionalSalaryRequest/MainPages/InProgress/InProgressDisplay';
 import { IneligiblePage } from 'src/components/Reports/AdditionalSalaryRequest/MainPages/IneligiblePage';
-import { OverviewPage } from 'src/components/Reports/AdditionalSalaryRequest/MainPages/OverviewPage';
 import { RequestPage } from 'src/components/Reports/AdditionalSalaryRequest/RequestPage/RequestPage';
 import {
   AdditionalSalaryRequestProvider,
@@ -41,65 +41,37 @@ const FormikRequestPage: React.FC = () => {
   );
 };
 
-type InitialRoute = 'ineligible' | 'overview' | 'continue' | 'request';
+const AdditionalSalaryRequestRouter: React.FC = () => {
+  const { pageType, isNewAsr, requestData, loading, user } =
+    useAdditionalSalaryRequest();
 
-const useInitialRoute = (): InitialRoute | null => {
-  const { requestData, loading, user } = useAdditionalSalaryRequest();
-  const initialRouteRef = useRef<InitialRoute | null>(null);
+  const isEdit = pageType === PageEnum.Edit;
 
-  if (initialRouteRef.current !== null) {
-    return initialRouteRef.current;
+  if (loading) {
+    return <Loading loading />;
   }
 
   if (user?.asrEit?.asrEligibility === false) {
-    initialRouteRef.current = 'ineligible';
-    return initialRouteRef.current;
-  }
-
-  if (loading) {
-    return null;
+    return <IneligiblePage />;
   }
 
   if (!requestData) {
-    initialRouteRef.current = 'request';
-    return initialRouteRef.current;
+    return <FormikRequestPage />;
   }
 
   switch (requestData.latestAdditionalSalaryRequest?.status) {
     case AsrStatusEnum.ActionRequired:
     case AsrStatusEnum.Pending:
-      initialRouteRef.current = 'overview';
-      break;
+      // ActionRequred normally returns the <AdditionalSalaryRequest /> component accept when pageType is View or Edit
+      return pageType !== PageEnum.New ? (
+        <FormikRequestPage />
+      ) : (
+        <AdditionalSalaryRequest />
+      );
     case AsrStatusEnum.InProgress:
-      initialRouteRef.current = 'continue';
-      break;
+      return isEdit || isNewAsr ? <FormikRequestPage /> : <InProgressDisplay />;
     case AsrStatusEnum.Approved:
     default:
-      initialRouteRef.current = 'request';
-      break;
-  }
-
-  return initialRouteRef.current;
-};
-
-const AdditionalSalaryRequestRouter: React.FC = () => {
-  const initialRoute = useInitialRoute();
-  const { pageType } = useAdditionalSalaryRequest();
-
-  const isEdit = pageType === PageEnum.Edit;
-
-  if (!initialRoute) {
-    return <Loading loading />;
-  }
-
-  switch (initialRoute) {
-    case 'ineligible':
-      return <IneligiblePage />;
-    case 'overview':
-      return <OverviewPage />;
-    case 'continue':
-      return isEdit ? <FormikRequestPage /> : <InProgressDisplay />;
-    case 'request':
       return <FormikRequestPage />;
   }
 };
@@ -108,7 +80,7 @@ const AdditionalSalaryRequestContent: React.FC = () => {
   const [isNavListOpen, setNavListOpen] = useState(false);
   const { t } = useTranslation();
 
-  const { requestData, loading, isMutating, pageType, user } =
+  const { requestData, loading, isMutating, pageType, currentIndex } =
     useAdditionalSalaryRequest();
 
   const handleNavListToggle = () => {
@@ -116,14 +88,19 @@ const AdditionalSalaryRequestContent: React.FC = () => {
   };
 
   const status = requestData?.latestAdditionalSalaryRequest?.status;
+
+  const isFormPage = currentIndex === 1;
+
   const showStatuses: AsrStatusEnum[] = [
     AsrStatusEnum.ActionRequired,
     AsrStatusEnum.Pending,
+    AsrStatusEnum.InProgress,
   ];
   const showSavingStatus =
     pageType !== PageEnum.View &&
-    (!status || showStatuses.includes(status)) &&
-    user?.asrEit?.asrEligibility !== false;
+    status &&
+    showStatuses.includes(status) &&
+    isFormPage;
 
   return (
     <SidePanelsLayout

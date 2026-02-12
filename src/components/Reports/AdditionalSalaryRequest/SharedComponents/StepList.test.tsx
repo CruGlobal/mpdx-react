@@ -51,11 +51,13 @@ const mockContextValue = {
   currentStep: AdditionalSalaryRequestSectionEnum.AboutForm,
   handleNextStep: jest.fn(),
   handlePreviousStep: jest.fn(),
+  goToStep: jest.fn(),
   isDrawerOpen: false,
   toggleDrawer: jest.fn(),
   requestData: null,
   requestError: undefined,
-  pageType: undefined,
+  pageType: PageEnum.New,
+  setPageType: jest.fn(),
   handleDeleteRequest: jest.fn(),
   requestId: undefined,
   user: undefined,
@@ -67,6 +69,8 @@ const mockContextValue = {
   loading: false,
   traditional403bPercentage: 0,
   roth403bPercentage: 0,
+  isNewAsr: false,
+  setIsNewAsr: jest.fn(),
 };
 
 describe('StepList', () => {
@@ -128,7 +132,7 @@ describe('StepList', () => {
 
   describe('with EditForm', () => {
     const TestComponent: React.FC = () => (
-      <AdditionalSalaryRequestTestWrapper pageType="edit">
+      <AdditionalSalaryRequestTestWrapper pageType={PageEnum.Edit}>
         <StepList FormComponent={EditForm} />
       </AdditionalSalaryRequestTestWrapper>
     );

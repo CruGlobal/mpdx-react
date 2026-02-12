@@ -9,9 +9,6 @@ import theme from 'src/theme';
 import { StyledListItem } from '../../SavingsFundTransfer/styledComponents/StyledListItem';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 
-//TODO: Get values for bracketed words
-//TODO: Add link for Progressive Approvals
-
 export const CapSubContent: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();

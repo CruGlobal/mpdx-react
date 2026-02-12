@@ -1,4 +1,3 @@
-import { useRouter } from 'next/router';
 import React, { useMemo } from 'react';
 import { Box, Stack } from '@mui/material';
 import { useFormikContext } from 'formik';
@@ -30,8 +29,6 @@ import { CapSubContent } from './CapSubContent';
 
 const MainContent: React.FC = () => {
   const { t } = useTranslation();
-  const router = useRouter();
-  const accountListId = useAccountListId();
 
   const {
     handlePreviousStep,
@@ -42,9 +39,11 @@ const MainContent: React.FC = () => {
     requestId,
     requestData,
     pageType,
+    setPageType,
     loading,
     trackMutation,
     user,
+    setIsNewAsr,
   } = useAdditionalSalaryRequest();
 
   const [createRequest] = useCreateAdditionalSalaryRequestMutation();
@@ -54,7 +53,7 @@ const MainContent: React.FC = () => {
 
   const handleContinue = async () => {
     if (requestData?.latestAdditionalSalaryRequest === null) {
-      trackMutation(
+      await trackMutation(
         createRequest({
           variables: {
             attributes: {
@@ -65,6 +64,10 @@ const MainContent: React.FC = () => {
           refetchQueries: ['AdditionalSalaryRequest'],
         }),
       );
+      setPageType(PageEnum.New);
+      setIsNewAsr(true);
+    } else {
+      setPageType(PageEnum.Edit);
     }
     handleNextStep();
   };
@@ -76,9 +79,6 @@ const MainContent: React.FC = () => {
   const handleDiscard = async () => {
     if (requestId) {
       await handleDeleteRequest(requestId, false);
-      router.push(
-        `/accountLists/${accountListId}/reports/additionalSalaryRequest`,
-      );
     }
   };
 
@@ -87,6 +87,7 @@ const MainContent: React.FC = () => {
   const isFirstFormPage = currentIndex === 0;
   const isLastFormPage = currentIndex === steps.length - 2;
   const reviewPage = currentIndex === steps.length - 1;
+  const isFormPage = !isFirstFormPage && !reviewPage;
 
   const capTitle = t(
     'Your request requires additional approval. Please fill in the information below to continue.',
@@ -126,7 +127,9 @@ const MainContent: React.FC = () => {
                 handleNextStep={handleNextStep}
                 handlePreviousStep={handlePreviousStep}
                 showBackButton={!isFirstFormPage}
-                handleDiscard={requestId ? handleDiscard : undefined}
+                handleDiscard={
+                  requestId && isFormPage ? handleDiscard : undefined
+                }
                 isSubmission={isLastFormPage}
                 submitForm={submitForm}
                 validateForm={validateForm}
