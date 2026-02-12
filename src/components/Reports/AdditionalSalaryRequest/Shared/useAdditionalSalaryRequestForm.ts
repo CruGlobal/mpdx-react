@@ -267,7 +267,6 @@ export const useAdditionalSalaryRequestForm = (
     initialValues,
     validationSchema,
     onSubmit,
-    enableReinitialize: true,
     validateOnMount: true,
   });
 

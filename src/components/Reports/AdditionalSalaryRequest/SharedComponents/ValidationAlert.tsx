@@ -8,7 +8,7 @@ import { fieldConfig } from '../Shared/useAdditionalSalaryRequestForm';
 
 export const ValidationAlert: React.FC = () => {
   const { t } = useTranslation();
-  const { submitCount, isValid, values, errors } =
+  const { submitCount, values, errors } =
     useFormikContext<CompleteFormValues>();
   const { salaryInfo, isInternational } = useAdditionalSalaryRequest();
 
@@ -35,19 +35,25 @@ export const ValidationAlert: React.FC = () => {
       .map(({ label }) => t(label));
   }, [submitCount, salaryInfo, isInternational, values, t]);
 
-  if (!submitCount || isValid) {
+  // Additional info is the only field required (when a user exceeds their cap)
+  const hasRequiredErrors = Object.keys(errors).some(
+    (key) => key === 'additionalInfo',
+  );
+
+  const hasErrors =
+    hasRequiredErrors ||
+    exceedingLimitFields.length > 0 ||
+    !!errors.totalAdditionalSalaryRequested;
+
+  if (!submitCount || !hasErrors) {
     return null;
   }
-
-  const hasFieldErrors = Object.keys(errors).some(
-    (key) => key !== 'totalAdditionalSalaryRequested',
-  );
 
   return (
     <Alert severity="error" sx={{ mt: 2, '& ul': { m: 0, pl: 3 } }}>
       {t('Your form is missing information.')}
       <ul>
-        {hasFieldErrors && (
+        {hasRequiredErrors && (
           <li>{t('Please enter a value for all required fields.')}</li>
         )}
         {exceedingLimitFields.length > 0 && (
