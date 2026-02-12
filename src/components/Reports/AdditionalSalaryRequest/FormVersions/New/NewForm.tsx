@@ -11,22 +11,22 @@ import { AdditionalSalaryRequest } from '../../CompleteForm/AdditionalSalaryRequ
 import { ContactInformation } from '../../CompleteForm/ContactInformation/ContactInformation';
 import { Deduction } from '../../CompleteForm/Deduction/Deduction';
 import { NetAdditionalSalary } from '../../CompleteForm/NetAdditionalSalary/NetAdditionalSalary';
-import { useFormData } from '../../Shared/useFormData';
+import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
+import { useFormUserInfo } from '../../Shared/useFormUserInfo';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 import { SpouseComponent } from '../../SharedComponents/SpouseComponent';
 import { ValidationAlert } from '../../SharedComponents/ValidationAlert';
 import { ApprovalProcess } from '../../SubmitModalAccordions/ApprovalProcess/ApprovalProcess';
-import { TotalAnnualSalary } from '../../SubmitModalAccordions/TotalAnnualSalary/TotalAnnualSalary';
+import { TotalSalaryRequested } from '../../SubmitModalAccordions/TotalSalaryRequested/TotalSalaryRequested';
 
 export const NewForm: React.FC = () => {
   const { t } = useTranslation();
+  const { requestData } = useAdditionalSalaryRequest();
   const { values } = useFormikContext<CompleteFormValues>();
-  const {
-    name,
-    accountNumber,
-    primaryAccountBalance,
-    remainingAllowableSalary,
-  } = useFormData();
+  const { name, accountNumber, primaryAccountBalance } = useFormUserInfo();
+  const individualCap =
+    requestData?.latestAdditionalSalaryRequest?.calculations.currentSalaryCap ??
+    0;
 
   const { exceedsCap } = useSalaryCalculations({
     values,
@@ -41,7 +41,7 @@ export const NewForm: React.FC = () => {
         titleOne={t('Primary Account Balance')}
         amountOne={primaryAccountBalance}
         titleTwo={t('Your Remaining Allowable Salary')}
-        amountTwo={remainingAllowableSalary}
+        amountTwo={individualCap}
         spouseComponent={<SpouseComponent />}
         showContent
       />
@@ -60,7 +60,7 @@ export const NewForm: React.FC = () => {
       <NetAdditionalSalary />
       {exceedsCap && (
         <>
-          <TotalAnnualSalary onForm />
+          <TotalSalaryRequested onForm />
           <ApprovalProcess onForm />
         </>
       )}

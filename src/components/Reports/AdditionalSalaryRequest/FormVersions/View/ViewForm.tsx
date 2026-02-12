@@ -11,23 +11,21 @@ import { AdditionalSalaryRequest } from '../../CompleteForm/AdditionalSalaryRequ
 import { Deduction } from '../../CompleteForm/Deduction/Deduction';
 import { NetAdditionalSalary } from '../../CompleteForm/NetAdditionalSalary/NetAdditionalSalary';
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
-import { useFormData } from '../../Shared/useFormData';
+import { useFormUserInfo } from '../../Shared/useFormUserInfo';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 import { ContactInformationSummaryCard } from '../../SharedComponents/ContactInformationSummaryCard';
 import { SpouseComponent } from '../../SharedComponents/SpouseComponent';
 import { ApprovalProcess } from '../../SubmitModalAccordions/ApprovalProcess/ApprovalProcess';
-import { TotalAnnualSalary } from '../../SubmitModalAccordions/TotalAnnualSalary/TotalAnnualSalary';
+import { TotalSalaryRequested } from '../../SubmitModalAccordions/TotalSalaryRequested/TotalSalaryRequested';
 
 export const ViewForm: React.FC = () => {
   const { t } = useTranslation();
-  const { setPageType } = useAdditionalSalaryRequest();
+  const { requestData, setPageType } = useAdditionalSalaryRequest();
   const { values } = useFormikContext<CompleteFormValues>();
-  const {
-    name,
-    accountNumber,
-    primaryAccountBalance,
-    remainingAllowableSalary,
-  } = useFormData();
+  const { name, accountNumber, primaryAccountBalance } = useFormUserInfo();
+  const individualCap =
+    requestData?.latestAdditionalSalaryRequest?.calculations.currentSalaryCap ??
+    0;
 
   const { exceedsCap } = useSalaryCalculations({
     values,
@@ -42,7 +40,7 @@ export const ViewForm: React.FC = () => {
         titleOne={t('Primary Account Balance')}
         amountOne={primaryAccountBalance}
         titleTwo={t('Your Remaining Allowable Salary')}
-        amountTwo={remainingAllowableSalary}
+        amountTwo={individualCap}
         spouseComponent={<SpouseComponent />}
         showContent
       />
@@ -60,7 +58,7 @@ export const ViewForm: React.FC = () => {
       <ContactInformationSummaryCard />
       {exceedsCap && (
         <>
-          <TotalAnnualSalary onForm />
+          <TotalSalaryRequested onForm />
           <ApprovalProcess onForm />
         </>
       )}

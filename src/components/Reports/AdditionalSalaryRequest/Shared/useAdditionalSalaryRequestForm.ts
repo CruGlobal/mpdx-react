@@ -15,7 +15,7 @@ import {
 import { SalaryInfoQuery } from '../SalaryInfo.generated';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 import { getTotal } from './Helper/getTotal';
-import { useFormData } from './useFormData';
+import { useFormUserInfo } from './useFormUserInfo';
 
 type SalaryInfo = NonNullable<SalaryInfoQuery['salaryInfo']>;
 
@@ -73,15 +73,17 @@ export const fieldConfig: Array<{
 export const useAdditionalSalaryRequestForm = (
   providedInitialValues?: CompleteFormValues,
 ) => {
-  const { requestId } = useAdditionalSalaryRequest();
   const { t } = useTranslation();
   const locale = useLocale();
-  const { handleNextStep, user, salaryInfo, isInternational } =
+  const { handleNextStep, user, salaryInfo, isInternational, requestId } =
     useAdditionalSalaryRequest();
 
-  const { primaryAccountBalance, remainingAllowableSalary } = useFormData();
+  const { primaryAccountBalance } = useFormUserInfo();
 
   const { data: requestData } = useAdditionalSalaryRequestQuery();
+  const individualCap =
+    requestData?.latestAdditionalSalaryRequest?.calculations.currentSalaryCap ??
+    0;
 
   const [updateAdditionalSalaryRequest] =
     useUpdateAdditionalSalaryRequestMutation();
@@ -206,7 +208,7 @@ export const useAdditionalSalaryRequestForm = (
               }
               const stableTotal = total > 0 ? total : lastValidTotalRef.current;
 
-              const exceedsCap = stableTotal > remainingAllowableSalary;
+              const exceedsCap = stableTotal > individualCap;
 
               if (exceedsCap) {
                 return !!value && value.trim().length > 0;
@@ -215,13 +217,7 @@ export const useAdditionalSalaryRequestForm = (
             },
           ),
       }),
-    [
-      createCurrencyValidation,
-      t,
-      primaryAccountBalance,
-      remainingAllowableSalary,
-      locale,
-    ],
+    [createCurrencyValidation, t, primaryAccountBalance, individualCap, locale],
   );
 
   const onSubmit = useCallback(

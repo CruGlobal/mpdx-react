@@ -1,10 +1,8 @@
-import { InfoSharp } from '@mui/icons-material';
 import Warning from '@mui/icons-material/Warning';
 import {
   Box,
   CardContent,
   LinearProgress,
-  Tooltip,
   Typography,
   alpha,
 } from '@mui/material';
@@ -23,7 +21,7 @@ interface TotalAnnualSalaryProps {
   onForm?: boolean;
 }
 
-export const TotalAnnualSalary: React.FC<TotalAnnualSalaryProps> = ({
+export const TotalSalaryRequested: React.FC<TotalAnnualSalaryProps> = ({
   onForm,
 }) => {
   const { t } = useTranslation();
@@ -31,25 +29,24 @@ export const TotalAnnualSalary: React.FC<TotalAnnualSalaryProps> = ({
   const currency = 'USD';
 
   const { values } = useFormikContext<CompleteFormValues>();
-  const { requestData, user } = useAdditionalSalaryRequest();
+  const { requestData } = useAdditionalSalaryRequest();
 
   const asrValues = requestData?.latestAdditionalSalaryRequest;
   const calculations = asrValues?.calculations;
+  const individualCap = calculations?.currentSalaryCap ?? 0;
 
-  const grossAnnualSalary = user?.currentSalary?.grossSalaryAmount ?? 0;
+  const { totalAnnualSalary } = useSalaryCalculations({
+    values,
+    calculations,
+  });
 
-  const { remainingInMaxAllowable, totalAnnualSalary, maxAllowableSalary } =
-    useSalaryCalculations({
-      values,
-      calculations,
-      grossSalaryAmount: grossAnnualSalary,
-    });
+  const remainingInMaxAllowable = individualCap - totalAnnualSalary;
 
   return (
     <ModalAccordion
       backgroundColor={alpha(theme.palette.warning.light, 0.1)}
       icon={Warning}
-      title={t('Total Annual Salary')}
+      title={t('Total Salary Requested')}
       titleColor="warning.dark"
       subtitle={t('A review of your income')}
       onForm={onForm}
@@ -58,19 +55,12 @@ export const TotalAnnualSalary: React.FC<TotalAnnualSalaryProps> = ({
         <Box sx={{ mb: 1, display: 'flex', justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Typography variant="body1" sx={{ mr: 1 }}>
-              {t('Total Salary Requested')}
+              {t('Total Salary Requested / Max Allowable Salary')}
             </Typography>
-            <Tooltip
-              title={t(
-                'This shows how much of your maximum allowable salary you are using.',
-              )}
-            >
-              <InfoSharp sx={{ color: 'text.secondary' }} />
-            </Tooltip>
           </Box>
           <Typography>
             {currencyFormat(Number(totalAnnualSalary), currency, locale)}/
-            {currencyFormat(maxAllowableSalary, currency, locale)}
+            {currencyFormat(individualCap, currency, locale)}
           </Typography>
         </Box>
         <LinearProgress variant="determinate" value={100} color="warning" />

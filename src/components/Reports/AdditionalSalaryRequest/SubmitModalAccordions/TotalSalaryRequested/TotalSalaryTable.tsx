@@ -31,23 +31,21 @@ export const TotalSalaryTable: React.FC = () => {
   const locale = useLocale();
   const currency = 'USD';
 
-  const { requestData, user } = useAdditionalSalaryRequest();
+  const { requestData } = useAdditionalSalaryRequest();
   const { values } = useFormikContext<CompleteFormValues>();
 
   const asrValues = requestData?.latestAdditionalSalaryRequest;
   const calculations = asrValues?.calculations;
-
-  const grossAnnualSalary = user?.currentSalary?.grossSalaryAmount ?? 0;
+  const individualCap = calculations?.currentSalaryCap ?? 0;
 
   const {
     total,
     totalAnnualSalary,
-    maxAllowableSalary,
     additionalSalaryReceivedThisYear,
+    grossAnnualSalary,
   } = useSalaryCalculations({
     values,
     calculations,
-    grossSalaryAmount: grossAnnualSalary,
   });
 
   const summaryItems = useMemo(
@@ -55,7 +53,7 @@ export const TotalSalaryTable: React.FC = () => {
       {
         id: 'maxAllowable',
         label: t('Maximum Allowable Salary'),
-        value: maxAllowableSalary,
+        value: individualCap,
       },
       {
         id: 'grossAnnual',
@@ -77,7 +75,7 @@ export const TotalSalaryTable: React.FC = () => {
     ],
     [
       t,
-      maxAllowableSalary,
+      individualCap,
       grossAnnualSalary,
       additionalSalaryReceivedThisYear,
       total,
@@ -122,7 +120,7 @@ export const TotalSalaryTable: React.FC = () => {
         >
           <TableCell>
             <Typography variant="body2" fontWeight="bold">
-              {t('Total Annual Salary:')}
+              {t('Total Salary Requested:')}
             </Typography>
           </TableCell>
           <TableCell sx={{ color: 'warning.dark', fontWeight: 'bold' }}>

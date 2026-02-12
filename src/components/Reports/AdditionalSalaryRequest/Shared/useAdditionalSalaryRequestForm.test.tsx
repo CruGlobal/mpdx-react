@@ -140,9 +140,7 @@ const defaultGqlMocks: DeepPartial<MocksType> = {
     latestAdditionalSalaryRequest: {
       id: 'test-request-id',
       calculations: {
-        maxAmountAndReason: {
-          amount: 100000,
-        },
+        currentSalaryCap: 100000,
         pendingAsrAmount: 0,
       },
     },
