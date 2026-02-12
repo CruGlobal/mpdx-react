@@ -197,8 +197,8 @@ describe('useSalaryCalculations', () => {
       deductTaxDeferredPercent: false,
       deductRothPercent: false,
       phoneNumber: '',
-      totalAdditionalSalaryRequested: '15000',
       emailAddress: '',
+      totalAdditionalSalaryRequested: '15000',
       additionalInfo: '',
     };
 
