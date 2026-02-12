@@ -5,8 +5,8 @@ import { Trans, useTranslation } from 'react-i18next';
 import theme from 'src/theme';
 import { StyledListItem } from '../../SavingsFundTransfer/styledComponents/StyledListItem';
 
-//TODO: Add link for Progressive Approvals
-//TODO: Get number of days for approval time frame
+//TODO [MPDX-9303]: Add link for Progressive Approvals
+//TODO [MPDX-9303]: Get number of days for approval time frame
 
 interface BulletListProps {
   listItems: string[];

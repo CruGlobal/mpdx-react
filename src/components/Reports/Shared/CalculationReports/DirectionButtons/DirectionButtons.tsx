@@ -91,15 +91,21 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
       sx={{
         mt: 5,
         display: 'flex',
-        justifyContent: 'space-between',
+        justifyContent:
+          !handleDiscard && !showBackButton && !isSubmission
+            ? 'flex-end'
+            : 'space-between',
       }}
     >
-      <Button
-        sx={{ color: 'error.light', px: 2, py: 1, fontWeight: 'bold' }}
-        onClick={() => setOpenDiscardModal(true)}
-      >
-        {isEdit ? t('Discard Changes') : t('Discard')}
-      </Button>
+      {handleDiscard && (
+        <Button
+          sx={{ color: 'error.light', px: 2, py: 1, fontWeight: 'bold' }}
+          onClick={() => setOpenDiscardModal(true)}
+        >
+          {isEdit ? t('Discard Changes') : t('Discard')}
+        </Button>
+      )}
+
       <Box sx={{ display: 'flex', gap: 2 }}>
         {showBackButton && (
           <Button

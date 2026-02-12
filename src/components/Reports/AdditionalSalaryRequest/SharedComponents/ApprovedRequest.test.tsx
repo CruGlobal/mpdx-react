@@ -1,4 +1,5 @@
 import { render } from '@testing-library/react';
+import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { AsrStatusEnum } from 'src/graphql/types.generated';
 import { AdditionalSalaryRequestQuery } from '../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
@@ -77,12 +78,14 @@ const mockContextValue = {
   currentStep: AdditionalSalaryRequestSectionEnum.AboutForm,
   handleNextStep: jest.fn(),
   handlePreviousStep: jest.fn(),
+  goToStep: jest.fn(),
   isDrawerOpen: false,
   toggleDrawer: jest.fn(),
   requestData: null,
   loading: false,
   requestError: undefined,
-  pageType: undefined,
+  pageType: PageEnum.New,
+  setPageType: jest.fn(),
   handleDeleteRequest: jest.fn(),
   requestId: undefined,
   user: {
@@ -102,6 +105,8 @@ const mockContextValue = {
   remainingAllowableSalary: 0,
   traditional403bPercentage: 0,
   roth403bPercentage: 0,
+  isNewAsr: false,
+  setIsNewAsr: jest.fn(),
 };
 
 const TestComponent: React.FC<{ request: RequestType }> = ({ request }) => (
