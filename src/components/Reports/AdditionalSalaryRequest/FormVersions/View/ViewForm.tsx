@@ -66,7 +66,7 @@ export const ViewForm: React.FC = () => {
       )}
 
       <Button
-        onClick={() => setPageType(PageEnum.New)}
+        onClick={() => setPageType(PageEnum.Reset)}
         variant="contained"
         sx={{ alignSelf: 'flex-end' }}
       >

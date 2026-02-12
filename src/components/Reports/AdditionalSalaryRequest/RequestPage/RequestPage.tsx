@@ -194,7 +194,7 @@ export const RequestPage: React.FC = () => {
       isSidebarOpen={isDrawerOpen}
       sidebarAriaLabel={t('Additional Salary Request Sections')}
       mainContent={<MainContent />}
-      onBack={showBackButton ? () => setPageType(PageEnum.New) : undefined}
+      onBack={showBackButton ? () => setPageType(PageEnum.Reset) : undefined}
     />
   );
 };
