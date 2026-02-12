@@ -55,7 +55,7 @@ export const SummaryStep: React.FC = () => {
           </Typography>
         )}
 
-        <Typography variant="body1" sx={{ ul: { pl: 2 } }}>
+        <Typography variant="body1" component="div" sx={{ ul: { pl: 2 } }}>
           <Trans t={t}>
             As you review the information here, please take note:
             <ul>
