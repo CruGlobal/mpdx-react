@@ -23,6 +23,7 @@ export const BackArrow: React.FC<BackArrowProps> = ({
       <IconButton
         title={label}
         onClick={onBack}
+        aria-label={label}
         sx={(theme) => ({
           color: theme.palette.mpdxGrayDark.main,
         })}
