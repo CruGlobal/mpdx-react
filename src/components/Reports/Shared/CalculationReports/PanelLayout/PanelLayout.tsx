@@ -29,7 +29,8 @@ export interface PanelLayoutProps {
   showPercentage?: boolean;
   icons?: IconPanelItem[];
   sidebarContent?: React.ReactNode;
-  backHref: string;
+  backHref?: string;
+  onBack?: () => void;
   backTitle?: string;
   sidebarTitle?: string;
   isSidebarOpen?: boolean;
@@ -47,6 +48,7 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
   icons,
   sidebarContent,
   backHref,
+  onBack,
   backTitle,
   sidebarTitle,
   isSidebarOpen = false,
@@ -63,8 +65,12 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
       {panelType === PanelTypeEnum.Empty ? (
         <>
           <Stack direction="column" width={iconPanelWidth}>
-            {backHref && (
-              <BackArrow backHref={backHref} backTitle={backTitle} />
+            {(backHref || onBack) && (
+              <BackArrow
+                backHref={backHref}
+                onBack={onBack}
+                backTitle={backTitle}
+              />
             )}
           </Stack>
           <Divider orientation="vertical" flexItem />
@@ -133,8 +139,12 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
                     {item.icon}
                   </IconButton>
                 ))}
-                {backHref && (
-                  <BackArrow backHref={backHref} backTitle={backTitle} />
+                {(backHref || onBack) && (
+                  <BackArrow
+                    backHref={backHref}
+                    onBack={onBack}
+                    backTitle={backTitle}
+                  />
                 )}
               </>
             )}
