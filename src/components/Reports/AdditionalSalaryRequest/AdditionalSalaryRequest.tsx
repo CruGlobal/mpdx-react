@@ -1,4 +1,3 @@
-import React, { useMemo } from 'react';
 import { Container, Stack } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Notification } from 'src/components/Notification/Notification';
@@ -57,25 +56,6 @@ export const AdditionalSalaryRequest: React.FC = () => {
   const request = requestData?.latestAdditionalSalaryRequest;
 
   const iconPanelItems = useIconPanelItems(isDrawerOpen, toggleDrawer);
-
-  // Determine overall request status based on priority
-  const allRequestStatus = useMemo((): string => {
-    if (!request) {
-      return t('None');
-    }
-    switch (request.status) {
-      case AsrStatusEnum.Approved:
-        return t('Approved');
-      case AsrStatusEnum.ActionRequired:
-        return t('Action Required');
-      case AsrStatusEnum.Pending:
-        return t('Pending');
-      case AsrStatusEnum.InProgress:
-        return t('In Progress');
-    }
-    return t('None');
-  }, [request, t]);
-
   return (
     <PanelLayout
       panelType={PanelTypeEnum.Other}
@@ -101,7 +81,7 @@ export const AdditionalSalaryRequest: React.FC = () => {
               }}
               width={mainContentWidth}
             >
-              <EligibleDisplay allRequestStatus={allRequestStatus} />
+              <EligibleDisplay />
 
               {request &&
                 (request.status === AsrStatusEnum.Approved ? (
