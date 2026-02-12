@@ -37,32 +37,85 @@ describe('useMhaRequestData', () => {
     expect(result.current.spousePreferredName).toBe('Jane');
   });
 
-  it('validates required fields and max amounts', async () => {
+  it('rejects when individual amount exceeds approved amount', async () => {
     const { result } = renderHook(() => useMhaRequestData(), {
-      wrapper: SalaryCalculatorTestWrapper,
+      wrapper: createWrapper({
+        salaryRequestMock: { mhaAmount: 25000 },
+        hasSpouse: false,
+      }),
     });
 
     await waitFor(() => {
       expect(result.current.approvedAmount).toBe('$20,000');
     });
 
-    const { schema } = result.current;
-
     await expect(
-      schema.validate({ mhaAmount: 25000, spouseMhaAmount: 5000 }),
+      result.current.schema.validate({
+        mhaAmount: 25000,
+        spouseMhaAmount: 0,
+      }),
     ).rejects.toThrow(
       'New Requested MHA cannot exceed Board Approved MHA Amount of $20,000',
     );
+  });
+
+  it('rejects when combined amounts exceed approved amount', async () => {
+    const { result } = renderHook(() => useMhaRequestData(), {
+      wrapper: createWrapper({
+        salaryRequestMock: { mhaAmount: 12000, spouseMhaAmount: 12000 },
+      }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.approvedAmount).toBe('$20,000');
+    });
 
     await expect(
-      schema.validate({ mhaAmount: 5000, spouseMhaAmount: 25000 }),
+      result.current.schema.validate({
+        mhaAmount: 12000,
+        spouseMhaAmount: 12000,
+      }),
     ).rejects.toThrow(
-      'New Requested MHA cannot exceed Board Approved MHA Amount of $20,000',
+      'Combined MHA amounts cannot exceed Board Approved MHA Amount of $20,000',
     );
+  });
+
+  it('allows amounts within approved limits', async () => {
+    const { result } = renderHook(() => useMhaRequestData(), {
+      wrapper: createWrapper({
+        salaryRequestMock: { mhaAmount: 8000, spouseMhaAmount: 10000 },
+      }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.approvedAmount).toBe('$20,000');
+    });
 
     await expect(
-      schema.validate({ mhaAmount: 8000, spouseMhaAmount: 10000 }),
+      result.current.schema.validate({
+        mhaAmount: 8000,
+        spouseMhaAmount: 10000,
+      }),
     ).resolves.toEqual({ mhaAmount: 8000, spouseMhaAmount: 10000 });
+  });
+
+  it('allows full approved amount to one person', async () => {
+    const { result } = renderHook(() => useMhaRequestData(), {
+      wrapper: createWrapper({
+        salaryRequestMock: { mhaAmount: 20000, spouseMhaAmount: 0 },
+      }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.approvedAmount).toBe('$20,000');
+    });
+
+    await expect(
+      result.current.schema.validate({
+        mhaAmount: 20000,
+        spouseMhaAmount: 0,
+      }),
+    ).resolves.toEqual({ mhaAmount: 20000, spouseMhaAmount: 0 });
   });
 
   it('shows ineligible message when user is not eligible', async () => {
