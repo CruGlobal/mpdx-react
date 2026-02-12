@@ -2,7 +2,6 @@ import { Container, Stack } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Notification } from 'src/components/Notification/Notification';
 import { AsrStatusEnum } from 'src/graphql/types.generated';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import { PanelLayout } from '../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { useIconPanelItems } from '../Shared/CalculationReports/PanelLayout/useIconPanelItems';
@@ -42,7 +41,6 @@ export interface CompleteFormValues {
 
 export const AdditionalSalaryRequest: React.FC = () => {
   const { t } = useTranslation();
-  const accountListId = useAccountListId();
   const {
     isDrawerOpen,
     toggleDrawer,
@@ -93,7 +91,6 @@ export const AdditionalSalaryRequest: React.FC = () => {
           )}
         </Container>
       }
-      backHref={`/accountLists/${accountListId}`}
     />
   );
 };
