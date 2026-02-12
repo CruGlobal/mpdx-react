@@ -31,8 +31,6 @@ import { ReportPageWrapper } from 'src/components/Shared/styledComponents/Report
 import { AsrStatusEnum } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
-// TODO: Revert comments on this page
-
 const FormikRequestPage: React.FC = () => {
   const formik = useAdditionalSalaryRequestForm();
 
@@ -56,11 +54,11 @@ const useCurrentRoute = (): RouteType | null => {
     return null;
   }
 
-  if (pageType === PageEnum.View || pageType === PageEnum.Edit) {
-    return 'request';
-  }
-
-  if (!requestData) {
+  if (
+    pageType === PageEnum.View ||
+    pageType === PageEnum.Edit ||
+    !requestData
+  ) {
     return 'request';
   }
 
@@ -103,7 +101,7 @@ const AdditionalSalaryRequestContent: React.FC = () => {
   const [isNavListOpen, setNavListOpen] = useState(false);
   const { t } = useTranslation();
 
-  const { requestData, loading, isMutating, pageType, currentIndex, steps } =
+  const { requestData, loading, isMutating, pageType, currentIndex } =
     useAdditionalSalaryRequest();
 
   const handleNavListToggle = () => {
@@ -112,9 +110,7 @@ const AdditionalSalaryRequestContent: React.FC = () => {
 
   const status = requestData?.latestAdditionalSalaryRequest?.status;
 
-  const isFirstFormPage = currentIndex === 0;
-  const reviewPage = currentIndex === steps.length - 1;
-  const isFormPage = !isFirstFormPage && !reviewPage;
+  const isFormPage = currentIndex === 1;
 
   const showStatuses: AsrStatusEnum[] = [
     AsrStatusEnum.ActionRequired,

@@ -240,6 +240,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       isMutating,
       trackMutation,
       isNewAsr,
+      setIsNewAsr,
     ],
   );
 

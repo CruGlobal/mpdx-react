@@ -43,8 +43,8 @@ const defaultInitialValues: CompleteFormValues = {
   deductTaxDeferredPercent: false,
   deductRothPercent: false,
   phoneNumber: '',
-  totalAdditionalSalaryRequested: '0',
   emailAddress: '',
+  totalAdditionalSalaryRequested: '0',
   additionalInfo: '',
 };
 
