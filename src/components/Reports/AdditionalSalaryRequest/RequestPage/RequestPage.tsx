@@ -164,7 +164,7 @@ export const RequestPage: React.FC = () => {
   const { values } = useFormikContext<CompleteFormValues>();
   const iconPanelItems = useIconPanelItems(isDrawerOpen, toggleDrawer);
   const status = requestData?.latestAdditionalSalaryRequest?.status;
-  const showStatus =
+  const showBackButton =
     status === AsrStatusEnum.ActionRequired || status === AsrStatusEnum.Pending;
   const percentComplete = useMemo(
     () => calculateCompletionPercentage(values),
@@ -194,7 +194,7 @@ export const RequestPage: React.FC = () => {
       isSidebarOpen={isDrawerOpen}
       sidebarAriaLabel={t('Additional Salary Request Sections')}
       mainContent={<MainContent />}
-      onBack={showStatus ? () => setPageType(PageEnum.New) : undefined}
+      onBack={showBackButton ? () => setPageType(PageEnum.New) : undefined}
     />
   );
 };
