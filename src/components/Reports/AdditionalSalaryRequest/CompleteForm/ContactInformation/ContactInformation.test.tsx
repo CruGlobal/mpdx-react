@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { AdditionalSalaryRequestTestWrapper } from '../../AdditionalSalaryRequestTestWrapper';
 import { defaultCompleteFormValues } from '../../Shared/CompleteForm.mock';
@@ -8,12 +9,12 @@ import { ContactInformation } from './ContactInformation';
 
 interface TestWrapperProps {
   initialValues?: CompleteFormValues;
-  pageType?: 'new' | 'edit' | 'view';
+  pageType?: PageEnum;
 }
 
 const TestWrapper: React.FC<TestWrapperProps> = ({
   initialValues = defaultCompleteFormValues,
-  pageType = 'edit',
+  pageType = PageEnum.Edit,
 }) => (
   <AdditionalSalaryRequestTestWrapper
     initialValues={initialValues}

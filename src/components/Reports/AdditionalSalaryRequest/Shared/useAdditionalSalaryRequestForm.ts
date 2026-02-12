@@ -201,7 +201,6 @@ export const useAdditionalSalaryRequestForm = (
             t('Additional info is required for requests exceeding your cap.'),
             function (value) {
               const total = getTotal(this.parent as CompleteFormValues);
-
               if (total > 0) {
                 lastValidTotalRef.current = total;
               }

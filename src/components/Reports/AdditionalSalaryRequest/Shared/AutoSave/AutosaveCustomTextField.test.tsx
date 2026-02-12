@@ -49,6 +49,7 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
   handleNextStep: jest.fn(),
   handlePreviousStep: jest.fn(),
+  goToStep: jest.fn(),
   isDrawerOpen: true,
   toggleDrawer: jest.fn(),
   requestData: {
@@ -64,6 +65,7 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   loading: false,
   requestError: undefined,
   pageType: PageEnum.New,
+  setPageType: jest.fn(),
   handleDeleteRequest: jest.fn(),
   requestId: 'request-id',
   user: undefined,
@@ -74,6 +76,8 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   trackMutation: mockTrackMutation,
   traditional403bPercentage: 0,
   roth403bPercentage: 0,
+  isNewAsr: false,
+  setIsNewAsr: jest.fn(),
 };
 
 interface TestComponentProps {
