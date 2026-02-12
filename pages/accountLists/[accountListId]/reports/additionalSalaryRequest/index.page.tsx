@@ -41,17 +41,18 @@ const FormikRequestPage: React.FC = () => {
   );
 };
 
-type RouteType = 'ineligible' | 'overview' | 'continue' | 'request' | 'view';
+const AdditionalSalaryRequestRouter: React.FC = () => {
+  const { pageType, isNewAsr, requestData, loading, user } =
+    useAdditionalSalaryRequest();
 
-const useCurrentRoute = (): RouteType | null => {
-  const { requestData, loading, pageType, user } = useAdditionalSalaryRequest();
-
-  if (user?.asrEit?.asrEligibility === false) {
-    return 'ineligible';
-  }
+  const isEdit = pageType === PageEnum.Edit;
 
   if (loading) {
-    return null;
+    return <Loading loading />;
+  }
+
+  if (user?.asrEit?.asrEligibility === false) {
+    return <IneligiblePage />;
   }
 
   if (
@@ -59,40 +60,17 @@ const useCurrentRoute = (): RouteType | null => {
     pageType === PageEnum.Edit ||
     !requestData
   ) {
-    return 'request';
+    return <FormikRequestPage />;
   }
 
   switch (requestData.latestAdditionalSalaryRequest?.status) {
     case AsrStatusEnum.ActionRequired:
     case AsrStatusEnum.Pending:
-      return 'overview';
+      return <AdditionalSalaryRequest />;
     case AsrStatusEnum.InProgress:
-      return 'continue';
+      return isEdit || isNewAsr ? <FormikRequestPage /> : <InProgressDisplay />;
     case AsrStatusEnum.Approved:
     default:
-      return 'request';
-  }
-};
-
-const AdditionalSalaryRequestRouter: React.FC = () => {
-  const currentRoute = useCurrentRoute();
-  const { pageType, isNewAsr } = useAdditionalSalaryRequest();
-
-  const isEdit = pageType === PageEnum.Edit;
-
-  if (!currentRoute) {
-    return <Loading loading />;
-  }
-
-  switch (currentRoute) {
-    case 'ineligible':
-      return <IneligiblePage />;
-    case 'overview':
-      return <AdditionalSalaryRequest />;
-    case 'continue':
-      return isEdit || isNewAsr ? <FormikRequestPage /> : <InProgressDisplay />;
-    case 'view':
-    case 'request':
       return <FormikRequestPage />;
   }
 };
