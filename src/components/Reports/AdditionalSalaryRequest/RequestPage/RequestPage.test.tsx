@@ -298,6 +298,10 @@ describe('RequestPage', () => {
       requestData: {
         latestAdditionalSalaryRequest: {
           status: 'PENDING',
+          calculations: {
+            currentSalaryCap: 50000,
+            staffAccountBalance: 0,
+          },
         },
       },
     } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
@@ -307,7 +311,7 @@ describe('RequestPage', () => {
     const backButton = getByRole('button', { name: /back to dashboard/i });
     userEvent.click(backButton);
 
-    expect(mockSetPageType).toHaveBeenCalledWith(PageEnum.New);
+    expect(mockSetPageType).toHaveBeenCalledWith(PageEnum.Reset);
   });
 
   it('shows submit modal when submit clicked on new page', async () => {
