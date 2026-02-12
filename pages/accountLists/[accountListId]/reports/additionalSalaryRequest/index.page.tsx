@@ -55,6 +55,7 @@ const AdditionalSalaryRequestRouter: React.FC = () => {
     return <IneligiblePage />;
   }
 
+  // ActionRequred normally returns the <AdditionalSalaryRequest /> component accept when pageType is View or Edit
   if (
     pageType === PageEnum.View ||
     pageType === PageEnum.Edit ||
