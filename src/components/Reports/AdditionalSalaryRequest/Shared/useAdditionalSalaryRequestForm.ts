@@ -95,7 +95,7 @@ export const useAdditionalSalaryRequestForm = (
 
   const createCurrencyValidation = useCallback(
     (fieldName: string, max?: number) => {
-      let schema = amount(fieldName, t);
+      let schema = amount(fieldName, t).nullable();
       if (max !== null && max !== undefined) {
         schema = schema.max(
           max,
@@ -121,33 +121,36 @@ export const useAdditionalSalaryRequestForm = (
     emailAddress: user?.staffInfo?.emailAddress || '',
   } as CompleteFormValues;
 
-  const initialValues: CompleteFormValues = useMemo(() => {
+  const initialValuesRef = useRef<CompleteFormValues | null>(null);
+
+  if (!initialValuesRef.current) {
     if (providedInitialValues) {
-      return providedInitialValues;
+      initialValuesRef.current = providedInitialValues;
+    } else {
+      const request = requestData?.latestAdditionalSalaryRequest;
+      if (request) {
+        initialValuesRef.current = {
+          ...Object.fromEntries(
+            fieldConfig.map(({ key }) => [
+              key,
+              String((request[key as keyof typeof request] as number) ?? ''),
+            ]),
+          ),
+          deductTaxDeferredPercent: request.deductTaxDeferredPercent || false,
+          deductRothPercent: request.deductRothPercent || false,
+          phoneNumber:
+            request.phoneNumber || user?.staffInfo?.primaryPhoneNumber || '',
+          emailAddress:
+            request.emailAddress || user?.staffInfo?.emailAddress || '',
+          totalAdditionalSalaryRequested:
+            request.totalAdditionalSalaryRequested || '',
+          additionalInfo: request.additionalInfo || '',
+        } as CompleteFormValues;
+      }
     }
+  }
 
-    const request = requestData?.latestAdditionalSalaryRequest;
-    if (!request) {
-      return defaultInitialValues;
-    }
-
-    return {
-      ...Object.fromEntries(
-        fieldConfig.map(({ key }) => [
-          key,
-          String((request[key as keyof typeof request] as number) ?? ''),
-        ]),
-      ),
-      deductTaxDeferredPercent: request.deductTaxDeferredPercent || false,
-      deductRothPercent: request.deductRothPercent || false,
-      phoneNumber:
-        request.phoneNumber || user?.staffInfo?.primaryPhoneNumber || '',
-      emailAddress: request.emailAddress || user?.staffInfo?.emailAddress || '',
-      totalAdditionalSalaryRequested:
-        request.totalAdditionalSalaryRequested || '',
-      additionalInfo: request.additionalInfo || '',
-    } as CompleteFormValues;
-  }, [providedInitialValues, requestData?.latestAdditionalSalaryRequest, user]);
+  const initialValues = initialValuesRef.current ?? defaultInitialValues;
 
   const getMaxForField = useCallback(
     (field: (typeof fieldConfig)[number]): number | undefined => {
@@ -188,12 +191,11 @@ export const useAdditionalSalaryRequestForm = (
             function () {
               const total = getTotal(this.parent as CompleteFormValues);
 
-              if (total > 0) {
+              if (total >= 0) {
                 lastValidTotalRef.current = total;
               }
-              const stableTotal = total > 0 ? total : lastValidTotalRef.current;
 
-              return stableTotal <= primaryAccountBalance;
+              return lastValidTotalRef.current <= primaryAccountBalance;
             },
           ),
         additionalInfo: yup
