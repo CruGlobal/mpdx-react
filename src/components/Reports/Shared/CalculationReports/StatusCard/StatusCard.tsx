@@ -37,7 +37,6 @@ interface StatusCardProps {
   handleConfirmCancel: () => void;
   handleLinkTwo?: () => void;
   styling?: SxProps<Theme>;
-  disableCancel?: boolean;
 }
 
 export const StatusCard: React.FC<StatusCardProps> = ({
@@ -60,7 +59,6 @@ export const StatusCard: React.FC<StatusCardProps> = ({
   handleConfirmCancel,
   handleLinkTwo,
   styling,
-  disableCancel,
 }) => {
   const { t } = useTranslation();
 
@@ -134,23 +132,22 @@ export const StatusCard: React.FC<StatusCardProps> = ({
               {linkTwoText}
             </Button>
           )}
-          {isRequest ||
-            (disableCancel && (
-              <Box sx={{ float: 'right' }}>
-                <Button
-                  sx={{
-                    color: 'error.light',
-                    px: 2,
-                    py: 1,
-                    fontWeight: 'bold',
-                  }}
-                  onClick={() => setOpenCancel(true)}
-                >
-                  <Cancel sx={{ mr: 0.5 }} />
-                  {t('Cancel Request')}
-                </Button>
-              </Box>
-            ))}
+          {isRequest && (
+            <Box sx={{ float: 'right' }}>
+              <Button
+                sx={{
+                  color: 'error.light',
+                  px: 2,
+                  py: 1,
+                  fontWeight: 'bold',
+                }}
+                onClick={() => setOpenCancel(true)}
+              >
+                <Cancel sx={{ mr: 0.5 }} />
+                {t('Cancel Request')}
+              </Button>
+            </Box>
+          )}
           {openCancel && (
             <SubmitModal
               formTitle={formType}
