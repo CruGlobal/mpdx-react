@@ -55,8 +55,6 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
       calculations: {
         currentSalaryCap: 100000,
         staffAccountBalance: 50000,
-        maxAmountAndReason: { amount: 100000 },
-        predictedYearIncome: 50000,
         pendingAsrAmount: 0,
       },
     },
@@ -266,12 +264,7 @@ describe('useAdditionalSalaryRequestForm', () => {
             calculations: {
               currentSalaryCap: 50000,
               staffAccountBalance: 20000,
-              predictedYearIncome: 40000,
               pendingAsrAmount: 0,
-              maxAmountAndReason: {
-                amount: 10000,
-                reason: 'Test reason',
-              },
             },
           },
         },
@@ -671,12 +664,6 @@ describe('useAdditionalSalaryRequestForm', () => {
             calculations: {
               currentSalaryCap: 50000,
               staffAccountBalance: 20000,
-              predictedYearIncome: 40000,
-              pendingAsrAmount: 0,
-              maxAmountAndReason: {
-                amount: 10000,
-                reason: 'Test reason',
-              },
             },
           },
         },

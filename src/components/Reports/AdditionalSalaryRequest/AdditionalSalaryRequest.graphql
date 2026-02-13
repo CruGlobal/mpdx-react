@@ -45,12 +45,7 @@ fragment AdditionalSalaryRequestDetailsFields on AdditionalSalaryRequest {
     currentSalaryCap
     combinedCap
     staffAccountBalance
-    predictedYearIncome
     pendingAsrAmount
-    maxAmountAndReason {
-      amount
-      reason
-    }
   }
   spouseCalculations {
     currentSalaryCap

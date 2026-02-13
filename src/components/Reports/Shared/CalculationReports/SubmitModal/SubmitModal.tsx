@@ -88,7 +88,7 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
             {contentText}
           </Box>
         </Alert>
-        {additionalApproval && (
+        {additionalApproval && !splitCap && (
           <Box mt={2}>
             <TotalSalaryRequested />
             <Box sx={{ mt: 2 }}>

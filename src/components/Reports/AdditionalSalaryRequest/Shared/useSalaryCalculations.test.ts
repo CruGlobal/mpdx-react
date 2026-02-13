@@ -318,14 +318,18 @@ describe('useSalaryCalculations', () => {
   });
 
   describe('Married', () => {
-    it('handles spouseExceedsCap when over max', () => {
+    it('handles additionalApproval when both user and spouse exceed their individual caps', () => {
       mockUseAdditionalSalaryRequest.mockReturnValue({
         traditional403bPercentage: 0.12,
         roth403bPercentage: 0.1,
+        user: { currentSalary: { grossSalaryAmount: 50000 } },
         spouse: { currentSalary: { grossSalaryAmount: 40000 } },
         requestData: {
           latestAdditionalSalaryRequest: {
-            calculations: { currentSalaryCap: 10000 },
+            calculations: {
+              currentSalaryCap: 10000,
+              combinedCap: 25000,
+            },
             spouseCalculations: {
               currentSalaryCap: 10000,
               pendingAsrAmount: 15000,
@@ -344,18 +348,24 @@ describe('useSalaryCalculations', () => {
       });
 
       // User: 15000 > 10000 (exceeds), Spouse: 15000 > 10000 (exceeds)
-      // additionalApproval = exceedsCap && spouseExceedsCap = true && true = true
+      // additionalApproval = (exceedsCap && spouseExceedsCap) = true
+      expect(result.current.exceedsCap).toBe(true);
       expect(result.current.additionalApproval).toBe(true);
+      expect(result.current.splitCap).toBe(false);
     });
 
-    it('handles splitCap when user exceeds but spouse does not', () => {
+    it('handles splitCap when user exceeds but spouse does not and over combined cap', () => {
       mockUseAdditionalSalaryRequest.mockReturnValue({
         traditional403bPercentage: 0.12,
         roth403bPercentage: 0.1,
+        user: { currentSalary: { grossSalaryAmount: 50000 } },
         spouse: { currentSalary: { grossSalaryAmount: 40000 } },
         requestData: {
           latestAdditionalSalaryRequest: {
-            calculations: { currentSalaryCap: 10000 },
+            calculations: {
+              currentSalaryCap: 10000,
+              combinedCap: 100000,
+            },
             spouseCalculations: {
               currentSalaryCap: 10000,
               pendingAsrAmount: 7000,
@@ -374,7 +384,54 @@ describe('useSalaryCalculations', () => {
       });
 
       // User: 15000 > 10000 (exceeds), Spouse: 7000 < 10000 (does not exceed)
-      // splitCap = exceedsCap && !spouseExceedsCap = true && true = true
+      // totalAnnualSalary = 50000 + 0 + 15000 = 65000
+      // spouseTotalAnnualSalary = 40000 + 7000 = 47000
+      // underCombinedCap = 100000 > (65000 + 47000) = 100000 > 112000 = false
+      // splitCap = exceedsCap && !spouseExceedsCap && underCombinedCap = true && true && false = false
+      // additionalApproval = (exceedsCap && spouseExceedsCap) || (exceedsCap && !spouseExceedsCap && !underCombinedCap)
+      //                    = (true && false) || (true && true && true) = true
+      expect(result.current.exceedsCap).toBe(true);
+      expect(result.current.splitCap).toBe(false);
+      expect(result.current.additionalApproval).toBe(true);
+    });
+
+    it('handles splitCap when user exceeds, spouse does not, and under combined cap', () => {
+      mockUseAdditionalSalaryRequest.mockReturnValue({
+        traditional403bPercentage: 0.12,
+        roth403bPercentage: 0.1,
+        user: { currentSalary: { grossSalaryAmount: 50000 } },
+        spouse: { currentSalary: { grossSalaryAmount: 40000 } },
+        requestData: {
+          latestAdditionalSalaryRequest: {
+            calculations: {
+              currentSalaryCap: 10000,
+              combinedCap: 120000,
+            },
+            spouseCalculations: {
+              currentSalaryCap: 10000,
+              pendingAsrAmount: 5000,
+            },
+          },
+        },
+      } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+      const values: CompleteFormValues = {
+        ...baseValues,
+        currentYearSalaryNotReceived: '12000',
+      };
+
+      const { result } = renderHook(() => useSalaryCalculations({ values }), {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      });
+
+      // User: 12000 > 10000 (exceeds), Spouse: 5000 < 10000 (does not exceed)
+      // totalAnnualSalary = 50000 + 0 + 12000 = 62000
+      // spouseTotalAnnualSalary = 40000 + 5000 = 45000
+      // underCombinedCap = 120000 > (62000 + 45000) = 120000 > 107000 = true
+      // splitCap = exceedsCap && !spouseExceedsCap && underCombinedCap = true && true && true = true
+      // additionalApproval = (exceedsCap && spouseExceedsCap) || (exceedsCap && !spouseExceedsCap && !underCombinedCap)
+      //                    = (true && false) || (true && true && false) = false
+      expect(result.current.exceedsCap).toBe(true);
       expect(result.current.splitCap).toBe(true);
       expect(result.current.additionalApproval).toBe(false);
     });

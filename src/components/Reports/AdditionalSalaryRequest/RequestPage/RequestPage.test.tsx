@@ -449,6 +449,7 @@ describe('RequestPage', () => {
         latestAdditionalSalaryRequest: {
           calculations: {
             currentSalaryCap: 500,
+            combinedCap: 100000,
           },
           spouseCalculations: {
             currentSalaryCap: 500,

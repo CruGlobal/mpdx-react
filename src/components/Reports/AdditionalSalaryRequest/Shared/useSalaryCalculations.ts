@@ -40,15 +40,21 @@ export const useSalaryCalculations = ({
     user,
     spouse,
   } = useAdditionalSalaryRequest();
-  const individualCap =
-    requestData?.latestAdditionalSalaryRequest?.calculations.currentSalaryCap ??
-    5000;
+  // const individualCap =
+  //   requestData?.latestAdditionalSalaryRequest?.calculations.currentSalaryCap ??
+  //   5000;
+  const individualCap = 5000;
   const spouseIndividualCap = spouse
     ? (requestData?.latestAdditionalSalaryRequest?.spouseCalculations
         ?.currentSalaryCap ?? 5000)
     : null;
+  const combinedCap = spouse
+    ? (requestData?.latestAdditionalSalaryRequest?.calculations.combinedCap ??
+      0)
+    : null;
 
   const grossAnnualSalary = user?.currentSalary?.grossSalaryAmount ?? 0;
+  const spouseGrossAnnualSalary = spouse?.currentSalary?.grossSalaryAmount ?? 0;
 
   return useMemo(() => {
     const total = getTotal(values);
@@ -79,22 +85,30 @@ export const useSalaryCalculations = ({
       grossAnnualSalary + additionalSalaryReceivedThisYear + total;
 
     // Spouse annual salary calculations
-    const spouseTotal = spouse
+    const spouseTotalThisYear = spouse
       ? requestData?.latestAdditionalSalaryRequest?.spouseCalculations
           ?.pendingAsrAmount
       : null;
+    const spouseTotalAnnualSalary =
+      spouseGrossAnnualSalary + (spouseTotalThisYear ?? 0);
 
     // Exceeding cap calculations
     const exceedsCap = total > individualCap;
     const spouseExceedsCap =
       spouse && spouseIndividualCap !== null
-        ? (spouseTotal ?? 0) > spouseIndividualCap
+        ? (spouseTotalThisYear ?? 0) > spouseIndividualCap
         : undefined;
 
+    const underCombinedCap =
+      (combinedCap ?? 0) > totalAnnualSalary + spouseTotalAnnualSalary;
+
     const isMarried = spouseExceedsCap !== undefined;
-    const splitCap = isMarried ? exceedsCap && !spouseExceedsCap : undefined;
+    const splitCap = isMarried
+      ? exceedsCap && !spouseExceedsCap && underCombinedCap
+      : undefined;
     const additionalApproval = isMarried
-      ? exceedsCap && spouseExceedsCap
+      ? (exceedsCap && spouseExceedsCap) ||
+        (exceedsCap && !spouseExceedsCap && !underCombinedCap)
       : undefined;
 
     return {
@@ -117,5 +131,10 @@ export const useSalaryCalculations = ({
     grossAnnualSalary,
     traditional403bPercentage,
     roth403bPercentage,
+    individualCap,
+    spouseIndividualCap,
+    combinedCap,
+    spouse,
+    requestData,
   ]);
 };
