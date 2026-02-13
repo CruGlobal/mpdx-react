@@ -102,7 +102,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     resetSteps,
     goToStep,
     currentIndex,
-  } = useStepList(FormEnum.AdditionalSalary);
+  } = useStepList(FormEnum.AdditionalSalary, undefined, 0);
 
   const { data: hcmData } = useHcmDataQuery();
 
