@@ -28,6 +28,11 @@ export const ApprovedRequest: React.FC<ApprovedRequestProps> = ({
   const { totalAdditionalSalaryRequested, usingSpouseSalary, approvedAt } =
     request;
 
+  const handlePrint = () => {
+    setPageType(PageEnum.View);
+    setTimeout(() => window.print(), 500);
+  };
+
   return (
     <StatusCard
       formType={t('ASR Request')}
@@ -41,6 +46,7 @@ export const ApprovedRequest: React.FC<ApprovedRequestProps> = ({
       linkTwoText={t("Duplicate Last Year's ASR")}
       linkTwo=""
       isRequest={false}
+      handlePrint={handlePrint}
       handleConfirmCancel={() => {}}
     >
       <Grid container spacing={2}>

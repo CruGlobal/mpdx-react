@@ -41,6 +41,11 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
     changesRequestedAt,
   } = request;
 
+  const handlePrint = () => {
+    setPageType(PageEnum.View);
+    setTimeout(() => window.print(), 500);
+  };
+
   return (
     <StatusCard
       formType={t('ASR Request')}
@@ -58,6 +63,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
         goToStep(1);
       }}
       isRequest={true}
+      handlePrint={handlePrint}
       handleConfirmCancel={() => handleDeleteRequest(id, true)}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
