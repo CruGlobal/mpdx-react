@@ -25,6 +25,7 @@ import { calculateCompletionPercentage } from '../Shared/calculateCompletionPerc
 import { useSalaryCalculations } from '../Shared/useSalaryCalculations';
 import { StepList } from '../SharedComponents/StepList';
 import { CapSubContent } from './CapSubContent';
+import { SplitCapSubContent } from './SplitCapSubContent';
 
 const MainContent: React.FC = () => {
   const { t } = useTranslation();
@@ -42,6 +43,7 @@ const MainContent: React.FC = () => {
     loading,
     trackMutation,
     user,
+    spouse,
     setIsNewAsr,
   } = useAdditionalSalaryRequest();
 
@@ -71,7 +73,7 @@ const MainContent: React.FC = () => {
     handleNextStep();
   };
 
-  const { exceedsCap } = useSalaryCalculations({
+  const { exceedsCap, splitCap, additionalApproval } = useSalaryCalculations({
     values,
   });
 
@@ -95,6 +97,13 @@ const MainContent: React.FC = () => {
     'Your request causes your Total Requested Salary to exceed your Maximum Allowable Salary.',
   );
 
+  const splitCapTitle = t(
+    'Your Total Additional Salary Request exceeds your remaining allowable salary.',
+  );
+  const splitCapContent = t(
+    'Please make adjustments to your request to continue.',
+  );
+
   if (loading && !requestData) {
     return <Loading loading={loading} />;
   }
@@ -112,10 +121,26 @@ const MainContent: React.FC = () => {
             <Stack direction="column" width={mainContentWidth}>
               <DirectionButtons
                 formTitle={t('Additional Salary Request')}
-                overrideTitle={exceedsCap ? capTitle : undefined}
-                overrideContent={exceedsCap ? capContent : undefined}
+                overrideTitle={
+                  splitCap
+                    ? splitCapTitle
+                    : additionalApproval || exceedsCap
+                      ? capTitle
+                      : undefined
+                }
+                overrideContent={
+                  splitCap
+                    ? splitCapContent
+                    : additionalApproval || exceedsCap
+                      ? capContent
+                      : undefined
+                }
                 overrideSubContent={
-                  exceedsCap ? (
+                  splitCap ? (
+                    <SplitCapSubContent
+                      spouseName={spouse?.staffInfo.firstName ?? ''}
+                    />
+                  ) : additionalApproval || exceedsCap ? (
                     <CapSubContent />
                   ) : isEdit ? (
                     t('Your updated request will be sent to payroll.')
@@ -136,8 +161,14 @@ const MainContent: React.FC = () => {
                 isValid={isValid}
                 actionRequired={isEdit}
                 isEdit={isEdit}
-                exceedsCap={exceedsCap}
-                disableSubmit={exceedsCap && !!errors.additionalInfo}
+                additionalApproval={
+                  additionalApproval ? additionalApproval : exceedsCap
+                }
+                splitCap={splitCap}
+                disableSubmit={
+                  (splitCap && !!errors.additionalInfo) ||
+                  (exceedsCap && !!errors.additionalInfo)
+                }
                 overrideNext={isFirstFormPage ? handleContinue : undefined}
               />
             </Stack>

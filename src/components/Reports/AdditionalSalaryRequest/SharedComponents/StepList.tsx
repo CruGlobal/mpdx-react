@@ -19,25 +19,26 @@ interface StepListProps {
 }
 
 export const StepList: React.FC<StepListProps> = ({ FormComponent }) => {
-  const { currentIndex, pageType } = useAdditionalSalaryRequest();
+  const { currentIndex, pageType, spouse } = useAdditionalSalaryRequest();
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const isEdit = pageType === PageEnum.Edit;
 
   const { values } = useFormikContext<CompleteFormValues>();
-  const { exceedsCap } = useSalaryCalculations({
+  const { exceedsCap, splitCap } = useSalaryCalculations({
     values,
   });
 
-  const alertText = exceedsCap ? (
-    <ExceedsCapAlertText />
-  ) : isEdit ? (
-    <EditAlertText />
-  ) : (
-    t(
-      'Your request has been sent to payroll and you will receive your additional salary separately from your regular paycheck by 9/25/2025.',
-    )
-  );
+  const alertText =
+    (exceedsCap && !spouse) || splitCap ? (
+      <ExceedsCapAlertText />
+    ) : isEdit ? (
+      <EditAlertText />
+    ) : (
+      t(
+        'Your request has been sent to payroll and you will receive your additional salary separately from your regular paycheck by 9/25/2025.',
+      )
+    );
 
   const pageLink = `/accountLists/${accountListId}/reports/additionalSalaryRequest`;
 

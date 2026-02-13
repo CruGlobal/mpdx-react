@@ -388,7 +388,7 @@ describe('RequestPage', () => {
     ).toBeInTheDocument();
   });
 
-  it('shows submit modal when submit clicked with exceeded cap', async () => {
+  it('shows submit modal when submit clicked with single user exceeding cap', async () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
       ...defaultMockContextValue,
       currentIndex: 1,
@@ -398,6 +398,118 @@ describe('RequestPage', () => {
         latestAdditionalSalaryRequest: {
           calculations: {
             currentSalaryCap: 50,
+          },
+        },
+      },
+    } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+    const validFormValues: CompleteFormValues = {
+      ...defaultCompleteFormValues,
+      currentYearSalaryNotReceived: '1000',
+      phoneNumber: '123-456-7890',
+      emailAddress: 'test@example.com',
+      additionalInfo: 'Test additional info for exceeds cap',
+    };
+
+    const { getByRole, getByText } = render(
+      <TestWrapper initialValues={validFormValues} />,
+    );
+
+    const submitButton = getByRole('button', { name: /submit/i });
+    userEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(
+        getByText(/your request requires additional approval./i),
+      ).toBeInTheDocument();
+    });
+
+    expect(
+      getByText(/your request causes your total requested salary to exceed/i),
+    ).toBeInTheDocument();
+    expect(
+      getByText(/please complete the approval process section/i),
+    ).toBeInTheDocument();
+  });
+
+  it('shows submit modal when submit clicked with married user exceeding cap and spouse under cap', async () => {
+    mockUseAdditionalSalaryRequest.mockReturnValue({
+      ...defaultMockContextValue,
+      currentIndex: 1,
+      currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
+      pageType: PageEnum.New,
+      spouse: {
+        currentSalary: { grossSalaryAmount: 40000 },
+        staffInfo: {
+          firstName: 'Jane',
+          lastName: 'Doe',
+        },
+      },
+      requestData: {
+        latestAdditionalSalaryRequest: {
+          calculations: {
+            currentSalaryCap: 500,
+          },
+          spouseCalculations: {
+            currentSalaryCap: 500,
+            pendingAsrAmount: 100,
+          },
+        },
+      },
+    } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+    const validFormValues: CompleteFormValues = {
+      ...defaultCompleteFormValues,
+      currentYearSalaryNotReceived: '1000',
+      phoneNumber: '123-456-7890',
+      emailAddress: 'test@example.com',
+      additionalInfo: 'Test additional info for exceeds cap',
+    };
+
+    const { getByRole, getByText, getAllByText } = render(
+      <TestWrapper initialValues={validFormValues} />,
+    );
+
+    const submitButton = getByRole('button', { name: /submit/i });
+    userEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(
+        getByText(
+          /your total additional salary request exceeds your remaining allowable salary/i,
+        ),
+      ).toBeInTheDocument();
+    });
+
+    expect(
+      getAllByText(/please make adjustments to your request to continue/i),
+    ).toHaveLength(2);
+    expect(
+      getByText(/you may make a separate request up to Jane's/i),
+    ).toBeInTheDocument();
+  });
+
+  it('shows submit modal when submit clicked with married user exceeding cap and spouse over cap', async () => {
+    mockUseAdditionalSalaryRequest.mockReturnValue({
+      ...defaultMockContextValue,
+      currentIndex: 1,
+      currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
+      pageType: PageEnum.New,
+      spouse: {
+        currentSalary: { grossSalaryAmount: 40000 },
+        staffInfo: {
+          firstName: 'Jane',
+          lastName: 'Doe',
+        },
+      },
+      requestData: {
+        latestAdditionalSalaryRequest: {
+          calculations: {
+            currentSalaryCap: 500,
+          },
+          spouseCalculations: {
+            currentSalaryCap: 500,
+            pendingAsrAmount: 600,
           },
         },
       },

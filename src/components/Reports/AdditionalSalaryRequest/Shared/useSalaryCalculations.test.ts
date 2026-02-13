@@ -316,4 +316,92 @@ describe('useSalaryCalculations', () => {
     // total (30000) > individualCap (10000)
     expect(result.current.exceedsCap).toBe(true);
   });
+
+  describe('Married', () => {
+    it('handles spouseExceedsCap when over max', () => {
+      mockUseAdditionalSalaryRequest.mockReturnValue({
+        traditional403bPercentage: 0.12,
+        roth403bPercentage: 0.1,
+        spouse: { currentSalary: { grossSalaryAmount: 40000 } },
+        requestData: {
+          latestAdditionalSalaryRequest: {
+            calculations: { currentSalaryCap: 10000 },
+            spouseCalculations: {
+              currentSalaryCap: 10000,
+              pendingAsrAmount: 15000,
+            },
+          },
+        },
+      } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+      const values: CompleteFormValues = {
+        ...baseValues,
+        currentYearSalaryNotReceived: '15000',
+      };
+
+      const { result } = renderHook(() => useSalaryCalculations({ values }), {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      });
+
+      // User: 15000 > 10000 (exceeds), Spouse: 15000 > 10000 (exceeds)
+      // additionalApproval = exceedsCap && spouseExceedsCap = true && true = true
+      expect(result.current.additionalApproval).toBe(true);
+    });
+
+    it('handles splitCap when user exceeds but spouse does not', () => {
+      mockUseAdditionalSalaryRequest.mockReturnValue({
+        traditional403bPercentage: 0.12,
+        roth403bPercentage: 0.1,
+        spouse: { currentSalary: { grossSalaryAmount: 40000 } },
+        requestData: {
+          latestAdditionalSalaryRequest: {
+            calculations: { currentSalaryCap: 10000 },
+            spouseCalculations: {
+              currentSalaryCap: 10000,
+              pendingAsrAmount: 7000,
+            },
+          },
+        },
+      } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+      const values: CompleteFormValues = {
+        ...baseValues,
+        currentYearSalaryNotReceived: '15000',
+      };
+
+      const { result } = renderHook(() => useSalaryCalculations({ values }), {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      });
+
+      // User: 15000 > 10000 (exceeds), Spouse: 7000 < 10000 (does not exceed)
+      // splitCap = exceedsCap && !spouseExceedsCap = true && true = true
+      expect(result.current.splitCap).toBe(true);
+      expect(result.current.additionalApproval).toBe(false);
+    });
+
+    it('handles spouseExceedsCap when no spouse data exists', () => {
+      mockUseAdditionalSalaryRequest.mockReturnValue({
+        traditional403bPercentage: 0.12,
+        roth403bPercentage: 0.1,
+        spouse: undefined,
+        requestData: {
+          latestAdditionalSalaryRequest: {
+            calculations: { currentSalaryCap: 10000 },
+          },
+        },
+      } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+      const values: CompleteFormValues = {
+        ...baseValues,
+        currentYearSalaryNotReceived: '5000',
+      };
+
+      const { result } = renderHook(() => useSalaryCalculations({ values }), {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      });
+
+      expect(result.current.splitCap).toBeUndefined();
+      expect(result.current.additionalApproval).toBeUndefined();
+    });
+  });
 });

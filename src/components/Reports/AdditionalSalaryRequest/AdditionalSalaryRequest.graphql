@@ -43,6 +43,7 @@ fragment AdditionalSalaryRequestDetailsFields on AdditionalSalaryRequest {
   updatedAt
   calculations {
     currentSalaryCap
+    combinedCap
     staffAccountBalance
     predictedYearIncome
     pendingAsrAmount
@@ -53,6 +54,7 @@ fragment AdditionalSalaryRequestDetailsFields on AdditionalSalaryRequest {
   }
   spouseCalculations {
     currentSalaryCap
+    pendingAsrAmount
     staffAccountBalance
   }
 }

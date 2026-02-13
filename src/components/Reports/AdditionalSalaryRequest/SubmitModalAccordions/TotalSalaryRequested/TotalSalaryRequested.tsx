@@ -33,7 +33,7 @@ export const TotalSalaryRequested: React.FC<TotalAnnualSalaryProps> = ({
 
   const asrValues = requestData?.latestAdditionalSalaryRequest;
   const calculations = asrValues?.calculations;
-  const individualCap = calculations?.currentSalaryCap ?? 0;
+  const individualCap = calculations?.currentSalaryCap ?? 5000;
 
   const { totalAnnualSalary } = useSalaryCalculations({
     values,

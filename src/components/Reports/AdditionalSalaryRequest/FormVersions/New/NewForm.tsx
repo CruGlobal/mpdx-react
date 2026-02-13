@@ -26,7 +26,7 @@ export const NewForm: React.FC = () => {
   const { name, accountNumber, primaryAccountBalance } = useFormUserInfo();
   const individualCap =
     requestData?.latestAdditionalSalaryRequest?.calculations.currentSalaryCap ??
-    0;
+    5000;
 
   const { exceedsCap } = useSalaryCalculations({
     values,

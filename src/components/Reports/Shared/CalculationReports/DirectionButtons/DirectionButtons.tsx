@@ -18,7 +18,8 @@ interface DirectionButtonsProps {
   overrideNext?: () => void;
   showBackButton?: boolean;
   isEdit?: boolean;
-  exceedsCap?: boolean;
+  additionalApproval?: boolean;
+  splitCap?: boolean;
   disableSubmit?: boolean;
   //Formik validation for submit modal
   isSubmission?: boolean;
@@ -47,7 +48,8 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
   isValid,
   deadlineDate,
   actionRequired,
-  exceedsCap,
+  additionalApproval,
+  splitCap,
   disableSubmit,
 }) => {
   const { t } = useTranslation();
@@ -155,7 +157,8 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
           overrideSubContent={overrideSubContent}
           deadlineDate={deadlineDate}
           actionRequired={actionRequired}
-          exceedsCap={exceedsCap}
+          additionalApproval={additionalApproval}
+          splitCap={splitCap}
           disableSubmit={disableSubmit}
         />
       )}

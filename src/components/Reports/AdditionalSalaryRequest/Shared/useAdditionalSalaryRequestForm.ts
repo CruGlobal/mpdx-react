@@ -83,7 +83,7 @@ export const useAdditionalSalaryRequestForm = (
   const { data: requestData } = useAdditionalSalaryRequestQuery();
   const individualCap =
     requestData?.latestAdditionalSalaryRequest?.calculations.currentSalaryCap ??
-    0;
+    5000;
 
   const [updateAdditionalSalaryRequest] =
     useUpdateAdditionalSalaryRequestMutation();
