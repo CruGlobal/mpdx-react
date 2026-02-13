@@ -11,6 +11,7 @@ interface NoMhaSubmitMessageProps {
   showIneligibleMessage?: boolean;
   isIneligiblePlural?: boolean;
   ineligibleNames?: string;
+  showNoMhaMessage?: boolean;
 }
 
 export const NoMhaSubmitMessage: React.FC<NoMhaSubmitMessageProps> = ({
@@ -19,6 +20,7 @@ export const NoMhaSubmitMessage: React.FC<NoMhaSubmitMessageProps> = ({
   showIneligibleMessage,
   isIneligiblePlural,
   ineligibleNames,
+  showNoMhaMessage,
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -37,8 +39,7 @@ export const NoMhaSubmitMessage: React.FC<NoMhaSubmitMessageProps> = ({
               {{ names: ineligibleNames }} have not completed the required IBS
               courses to meet eligibility criteria. For information about
               obtaining eligibility, contact Personnel Records at{' '}
-              <a href="tel:407-826-2230">(407) 826-2230</a>
-              or
+              <a href="tel:407-826-2230">(407) 826-2230</a> or{' '}
               <a href="mailto:MHA@cru.org">MHA@cru.org</a>.
             </Trans>
           ) : (
@@ -46,63 +47,68 @@ export const NoMhaSubmitMessage: React.FC<NoMhaSubmitMessageProps> = ({
               {{ names: ineligibleNames }} has not completed the required IBS
               courses to meet eligibility criteria. For information about
               obtaining eligibility, contact Personnel Records at{' '}
-              <a href="tel:407-826-2230">(407) 826-2230</a>
-              or
+              <a href="tel:407-826-2230">(407) 826-2230</a> or{' '}
               <a href="mailto:MHA@cru.org">MHA@cru.org</a>.
             </Trans>
           )}
         </Typography>
       )}
-      <Typography
-        variant="body1"
-        sx={{ marginBottom: theme.spacing(2) }}
-        data-testid="no-mha-submit-message"
-      >
-        {isPlural ? (
-          <Trans t={t}>
-            Our records show that {{ names }} do not have a Minister&apos;s
-            Housing Allowance for the effective date of this salary calculation.
-            If {{ names }} have not yet submitted an MHA Request form, it may be
-            completed at their earliest convenience using
-            <Link
-              href={`/accountLists/${accountListId}/reports/housingAllowance`}
-            >
-              this link.
-            </Link>
-          </Trans>
-        ) : (
-          <Trans t={t}>
-            Our records show that {{ names }} does not have a Minister&apos;s
-            Housing Allowance for the effective date of this salary calculation.
-            If {{ names }} has not yet submitted an MHA Request form, it may be
-            completed at their earliest convenience using
-            <Link
-              href={`/accountLists/${accountListId}/reports/housingAllowance`}
-            >
-              this link.
-            </Link>
-          </Trans>
-        )}
-      </Typography>
-      <Typography
-        variant="body1"
-        sx={{ marginBottom: theme.spacing(2) }}
-        data-testid="no-mha-pending-message"
-      >
-        {isPlural ? (
-          <Trans t={t}>
-            If {{ names }} have a pending MHA Request, it will not apply to this
-            salary calculation but a new Salary Calculation Form can be
-            submitted after it is approved.
-          </Trans>
-        ) : (
-          <Trans t={t}>
-            If {{ names }} has a pending MHA Request, it will not apply to this
-            salary calculation but a new Salary Calculation Form can be
-            submitted after it is approved.
-          </Trans>
-        )}
-      </Typography>
+      {showNoMhaMessage && (
+        <>
+          <Typography
+            variant="body1"
+            sx={{ marginBottom: theme.spacing(2) }}
+            data-testid="no-mha-submit-message"
+          >
+            {isPlural ? (
+              <Trans t={t}>
+                Our records show that {{ names }} do not have a Minister&apos;s
+                Housing Allowance for the effective date of this salary
+                calculation. If {{ names }} have not yet submitted an MHA
+                Request form, it may be completed at their earliest convenience
+                using
+                <Link
+                  href={`/accountLists/${accountListId}/reports/housingAllowance`}
+                >
+                  this link.
+                </Link>
+              </Trans>
+            ) : (
+              <Trans t={t}>
+                Our records show that {{ names }} does not have a
+                Minister&apos;s Housing Allowance for the effective date of this
+                salary calculation. If {{ names }} has not yet submitted an MHA
+                Request form, it may be completed at their earliest convenience
+                using
+                <Link
+                  href={`/accountLists/${accountListId}/reports/housingAllowance`}
+                >
+                  this link.
+                </Link>
+              </Trans>
+            )}
+          </Typography>
+          <Typography
+            variant="body1"
+            sx={{ marginBottom: theme.spacing(2) }}
+            data-testid="no-mha-pending-message"
+          >
+            {isPlural ? (
+              <Trans t={t}>
+                If {{ names }} have a pending MHA Request, it will not apply to
+                this salary calculation but a new Salary Calculation Form can be
+                submitted after it is approved.
+              </Trans>
+            ) : (
+              <Trans t={t}>
+                If {{ names }} has a pending MHA Request, it will not apply to
+                this salary calculation but a new Salary Calculation Form can be
+                submitted after it is approved.
+              </Trans>
+            )}
+          </Typography>
+        </>
+      )}
     </>
   );
 };
