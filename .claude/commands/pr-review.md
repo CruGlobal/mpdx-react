@@ -19,9 +19,11 @@ MODE
 - All findings will be collected and optionally posted to the PR via GitHub CLI at the end.
 
 ### Stage 0 — Setup Knowledge
+
 First, read the .CLAUDE/CLAUDE.md file to understand project conventions, architecture, and coding standards.
 
 Then use search tools to build context for reuse analysis:
+
 - `Grep "export" src/lib/ -n` - Find available utility functions
 - `Glob "src/hooks/*.ts"` - List custom hooks
 - `Glob "src/components/Shared/**/*.tsx"` - Find shared components
@@ -70,9 +72,11 @@ List EVERY file changed in this PR (relative path). For each file, include:
 Do not skip any file. If any file can't be read, state it and continue.
 
 ### Stage 2 — Deep Review (File-by-File)
+
 IMPORTANT: Only review files that appear in the git diff from Stage 1. Do not review files that are not part of this PR.
 
 **Issue Severity Guidelines:**
+
 - **Must-fix**: Bugs, security issues, breaking changes, type errors, performance problems
 - **Nice-to-have**: Style improvements, minor refactoring, better naming, documentation
 
@@ -171,12 +175,14 @@ For EACH changed file from Stage 1, review for:
 #### General Concerns
 
 **Correctness Issues**
+
 - Logic errors or bugs
 - Type safety issues
 - Edge cases not handled
 - Incorrect assumptions
 
 **Code Complexity**
+
 - Simpler logic to achieve the same result
 - Redundant logic that can be removed
 - Complex logic in components that could be moved to hook
@@ -184,19 +190,23 @@ For EACH changed file from Stage 1, review for:
 - Duplicated logic or components that could be split out and reused
 
 **Confusing Code**
+
 - Unclear or misleading variable or function names
 - Comments that describe WHAT not WHY
 
 **Code Quality**
+
 - Inconsistent patterns compared to codebase
 - Missing TypeScript types
 
 **Testing Concerns**
+
 - Critical paths without test coverage
 - Complex logic that needs tests
 - Edge cases that should be tested
 
 For each file, document:
+
 - Must-fix: file:line → issue → fix (unified diff if trivial)
   - Evidence (file:line-range quote)
   - Impact (correctness/perf/clarity)
@@ -207,10 +217,12 @@ For each file, document:
 RULE: If no issues found for a file, state: "No issues found after deep check" AND explain the checks you ran.
 
 ### Stage 3 — Reuse Sweep (Repo-Wide)
+
 Search for reuse opportunities in the PR changes:
 
 **Global Shared Resources:**
 Use targeted searches based on PR content:
+
 - If PR has date/time logic: `Grep "date|time|format" src/lib/`
 - If PR has state management: `Grep "use.*State|use.*Effect" src/hooks/`
 - If PR has UI components: `Grep "export.*Component|export.*FC" src/components/Shared/`
@@ -236,6 +248,7 @@ For each reuse candidate found:
 - Consolidation opportunity: if creating new shared code, suggest location (src/lib/, src/hooks/, etc.)
 
 ### Stage 4 — Pattern Sweep (Regex-Guided)
+
 Search ONLY the files changed in this PR (from Stage 1 git diff) for these patterns; for each hit, either propose a fix or mark "N/A" with reason. Cite exact lines.
 
 - `toLocaleString.*currency` → replace with intlFormat helpers
@@ -259,6 +272,7 @@ Print a detailed report grouped by confidence level:
 
 **High Confidence Issues** (very likely needs to be changed)
 For each issue include:
+
 - The concern
 - The filename and line numbers
 - Why the code is suboptimal
@@ -266,6 +280,7 @@ For each issue include:
 
 **Medium Confidence Issues** (probably should be changed)
 For each issue include:
+
 - The concern
 - The filename and line numbers
 - Why the code might be suboptimal
@@ -273,6 +288,7 @@ For each issue include:
 
 **Low Confidence Suggestions** (consider changing)
 For each issue include:
+
 - The suggestion
 - The filename and line numbers
 - Why it might be better
@@ -294,6 +310,7 @@ If the branch does not have a PR yet, skip this step. If it does have a PR, ask 
 I can create review comments on specific lines using `gh pr review` command."
 
 Options:
+
 1. Post all comments (Must-fix and Nice-to-have)
 2. Post only Must-fix comments
 3. Don't post
@@ -301,6 +318,7 @@ Options:
 If the user agrees to post comments:
 
 1. For each comment, use:
+
 ```bash
 gh pr review [PR_NUMBER] --comment --body "[Must-fix/Nice-to-have] Issue at file:line
 
@@ -308,12 +326,14 @@ Evidence: <code fragment>
 Impact: <why this matters>
 Fix: <suggested change>"
 ```
+
 2. Keep each comment concise (≤ 220 characters when possible)
 3. Use collaborative, direct phrasing: "Could we..." or "Consider..."
 4. Group related comments when appropriate
 5. After posting, confirm: "Posted X review comments to PR #[NUMBER]"
 
 Comment formatting rules:
+
 - Start with severity: [Must-fix] or [Nice-to-have]
 - Include file path and line number
 - Be specific and actionable
@@ -329,6 +349,7 @@ If the current branch does not have a PR yet, ask the user:
 "Would you like me to the issues?"
 
 Options:
+
 1. Fix all issues
 2. Fix only Must-fix issues
 3. Don't fix
