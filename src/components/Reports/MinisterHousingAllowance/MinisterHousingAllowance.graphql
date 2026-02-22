@@ -63,9 +63,10 @@ query MinistryHousingAllowanceRequest($ministryHousingAllowanceRequestId: ID!) {
 
 mutation CreateHousingAllowanceRequest(
   $requestAttributes: MinistryHousingAllowanceRequestAttributesInput
+  $isSpouse: Boolean
 ) {
   createMinistryHousingAllowanceRequest(
-    input: { requestAttributes: $requestAttributes }
+    input: { requestAttributes: $requestAttributes, isSpouse: $isSpouse }
   ) {
     ministryHousingAllowanceRequest {
       id

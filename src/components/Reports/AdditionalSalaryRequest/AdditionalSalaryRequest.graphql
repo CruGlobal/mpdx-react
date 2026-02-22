@@ -59,9 +59,10 @@ fragment AdditionalSalaryRequestDetailsFields on AdditionalSalaryRequest {
   }
 }
 
-query AdditionalSalaryRequest {
+query AdditionalSalaryRequest($isSpouse: Boolean) {
   latestAdditionalSalaryRequest(
     status: [IN_PROGRESS, ACTION_REQUIRED, PENDING]
+    isSpouse: $isSpouse
   ) {
     ...AdditionalSalaryRequestDetailsFields
     createdAt
@@ -70,8 +71,11 @@ query AdditionalSalaryRequest {
 
 mutation CreateAdditionalSalaryRequest(
   $attributes: AdditionalSalaryRequestAttributesInput
+  $isSpouse: Boolean
 ) {
-  createAdditionalSalaryRequest(input: { attributes: $attributes }) {
+  createAdditionalSalaryRequest(
+    input: { attributes: $attributes, isSpouse: $isSpouse }
+  ) {
     additionalSalaryRequest {
       ...AdditionalSalaryRequestDetailsFields
     }
