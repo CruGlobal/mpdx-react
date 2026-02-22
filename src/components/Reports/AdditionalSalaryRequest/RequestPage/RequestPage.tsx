@@ -44,7 +44,6 @@ const MainContent: React.FC = () => {
     loading,
     trackMutation,
     user,
-    spouse,
     isSpouse,
     setIsNewAsr,
   } = useAdditionalSalaryRequest();
@@ -56,13 +55,12 @@ const MainContent: React.FC = () => {
 
   const handleContinue = async () => {
     if (requestData?.latestAdditionalSalaryRequest === null) {
-      const hcmUser = isSpouse ? spouse : user;
       await trackMutation(
         createRequest({
           variables: {
             attributes: {
-              phoneNumber: hcmUser?.staffInfo?.primaryPhoneNumber,
-              emailAddress: hcmUser?.staffInfo?.emailAddress,
+              phoneNumber: user?.staffInfo?.primaryPhoneNumber,
+              emailAddress: user?.staffInfo?.emailAddress,
             },
             isSpouse: isSpouse || undefined,
           },

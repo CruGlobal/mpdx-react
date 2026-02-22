@@ -1,5 +1,4 @@
 import Head from 'next/head';
-import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { FormikProvider } from 'formik';
 import { useTranslation } from 'react-i18next';
@@ -147,8 +146,6 @@ const AdditionalSalaryRequestContent: React.FC = () => {
 const AdditionalSalaryRequestPage: React.FC = () => {
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
-  const router = useRouter();
-  const isSpouse = router.query.isSpouse === 'true';
 
   const { data: staffAccountData, loading } = useStaffAccountQuery();
 
@@ -159,7 +156,7 @@ const AdditionalSalaryRequestPage: React.FC = () => {
       </Head>
       {staffAccountData?.staffAccount?.id ? (
         <ReportPageWrapper>
-          <AdditionalSalaryRequestProvider isSpouse={isSpouse}>
+          <AdditionalSalaryRequestProvider>
             <AdditionalSalaryRequestContent />
           </AdditionalSalaryRequestProvider>
         </ReportPageWrapper>

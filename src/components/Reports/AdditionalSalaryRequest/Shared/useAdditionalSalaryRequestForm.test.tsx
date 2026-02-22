@@ -97,6 +97,7 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   roth403bPercentage: 0,
   isNewAsr: false,
   setIsNewAsr: jest.fn(),
+  isSpouse: false,
 };
 
 const defaultFormValues: CompleteFormValues = {

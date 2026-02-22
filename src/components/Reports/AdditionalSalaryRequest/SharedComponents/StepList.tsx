@@ -40,8 +40,8 @@ export const StepList: React.FC<StepListProps> = ({ FormComponent }) => {
   );
 
   const pageLink = `/accountLists/${accountListId}/reports/additionalSalaryRequest`;
-  const spouseLink = `${pageLink}?isSpouse=true`;
-  const showSpouseLink = !!spouse && !isSpouse;
+  const spouseLink = `${pageLink}${isSpouse ? '' : '?isSpouse=true'}`;
+  const showSpouseLink = !!spouse;
 
   const steps = [
     <AboutForm key="about-form" />,

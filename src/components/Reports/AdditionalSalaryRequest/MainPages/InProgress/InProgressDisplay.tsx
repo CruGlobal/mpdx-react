@@ -1,6 +1,7 @@
 import { SwapHorizSharp } from '@mui/icons-material';
 import { Box, Button, Link, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { PanelLayout } from '../../../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { useIconPanelItems } from '../../../Shared/CalculationReports/PanelLayout/useIconPanelItems';
 import {
@@ -9,13 +10,20 @@ import {
 } from '../../../Shared/CalculationReports/Shared/sharedTypes';
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
 
-// TODO: Implement spouse request link
-
 const InProgressMainContent: React.FC = () => {
   const { t } = useTranslation();
+  const accountListId = useAccountListId();
 
-  const { handleDeleteRequest, requestId, spouse, setPageType, goToStep } =
-    useAdditionalSalaryRequest();
+  const {
+    handleDeleteRequest,
+    requestId,
+    spouse,
+    setPageType,
+    goToStep,
+    isSpouse,
+  } = useAdditionalSalaryRequest();
+
+  const name = spouse?.staffInfo?.firstName;
 
   return (
     <>
@@ -54,8 +62,10 @@ const InProgressMainContent: React.FC = () => {
               color: 'rgba(0, 0, 0, 0.54)',
             }}
           />
-          <Link>
-            {t(`Request additional salary for ${spouse.staffInfo.firstName}`)}
+          <Link
+            href={`/accountLists/${accountListId}/reports/additionalSalaryRequest${isSpouse ? '' : '?isSpouse=true'}`}
+          >
+            {t(`Request additional salary for {{name}}`, { name })}
           </Link>
         </Box>
       )}

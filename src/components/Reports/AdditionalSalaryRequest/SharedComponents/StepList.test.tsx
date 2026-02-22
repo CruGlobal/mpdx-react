@@ -71,6 +71,7 @@ const mockContextValue = {
   roth403bPercentage: 0,
   isNewAsr: false,
   setIsNewAsr: jest.fn(),
+  isSpouse: false,
 };
 
 describe('StepList', () => {

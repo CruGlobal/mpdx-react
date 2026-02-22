@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import React, {
   createContext,
   useCallback,
@@ -61,7 +62,7 @@ export type AdditionalSalaryRequestType = {
   isSpouse: boolean;
 };
 
-const AdditionalSalaryRequestContext =
+export const AdditionalSalaryRequestContext =
   createContext<AdditionalSalaryRequestType | null>(null);
 
 export const useAdditionalSalaryRequest = (): AdditionalSalaryRequestType => {
@@ -77,7 +78,6 @@ export const useAdditionalSalaryRequest = (): AdditionalSalaryRequestType => {
 interface Props {
   requestId?: string;
   initialPageType?: PageEnum;
-  isSpouse?: boolean;
   children?: React.ReactNode;
 }
 
@@ -86,7 +86,6 @@ const sections = Object.values(AdditionalSalaryRequestSectionEnum);
 export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   requestId,
   initialPageType,
-  isSpouse: isSpouseProp = false,
   children,
 }) => {
   const { t } = useTranslation();
@@ -95,6 +94,9 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   const [pageType, setPageType] = useState<PageEnum>(
     initialPageType ?? PageEnum.New,
   );
+
+  const router = useRouter();
+  const isSpouse = router.query.isSpouse === 'true';
 
   const [isNewAsr, setIsNewAsr] = useState(false);
 
@@ -114,7 +116,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     error: requestError,
     loading,
   } = useAdditionalSalaryRequestQuery({
-    variables: { isSpouse: isSpouseProp || undefined },
+    variables: { isSpouse: isSpouse || undefined },
   });
 
   const currentYear = useMemo(() => DateTime.now().year, []);
@@ -172,7 +174,10 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
 
   const { trackMutation, isMutating } = useTrackMutation();
 
-  const [user, spouse] = hcmData?.hcm ?? [];
+  const [primaryPerson, spousePerson] = hcmData?.hcm ?? [];
+  const user = isSpouse ? spousePerson : primaryPerson;
+  const spouse = isSpouse ? primaryPerson : spousePerson;
+
   const salaryInfo = salaryInfoData?.salaryInfo;
   const isInternational = user?.staffInfo?.isInternational ?? false;
   const taxDeferred =
@@ -216,7 +221,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       trackMutation,
       isNewAsr,
       setIsNewAsr,
-      isSpouse: isSpouseProp,
+      isSpouse,
     }),
     [
       staffAccountId,
@@ -247,7 +252,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       trackMutation,
       isNewAsr,
       setIsNewAsr,
-      isSpouseProp,
+      isSpouse,
     ],
   );
 
