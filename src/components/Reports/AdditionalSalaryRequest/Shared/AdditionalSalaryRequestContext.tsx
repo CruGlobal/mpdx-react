@@ -58,6 +58,7 @@ export type AdditionalSalaryRequestType = {
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
   isNewAsr: boolean;
   setIsNewAsr: React.Dispatch<React.SetStateAction<boolean>>;
+  isSpouse: boolean;
 };
 
 const AdditionalSalaryRequestContext =
@@ -76,6 +77,7 @@ export const useAdditionalSalaryRequest = (): AdditionalSalaryRequestType => {
 interface Props {
   requestId?: string;
   initialPageType?: PageEnum;
+  isSpouse?: boolean;
   children?: React.ReactNode;
 }
 
@@ -84,6 +86,7 @@ const sections = Object.values(AdditionalSalaryRequestSectionEnum);
 export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   requestId,
   initialPageType,
+  isSpouse: isSpouseProp = false,
   children,
 }) => {
   const { t } = useTranslation();
@@ -110,7 +113,9 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     data: requestData,
     error: requestError,
     loading,
-  } = useAdditionalSalaryRequestQuery();
+  } = useAdditionalSalaryRequestQuery({
+    variables: { isSpouse: isSpouseProp || undefined },
+  });
 
   const currentYear = useMemo(() => DateTime.now().year, []);
   const { data: salaryInfoData } = useSalaryInfoQuery({
@@ -211,6 +216,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       trackMutation,
       isNewAsr,
       setIsNewAsr,
+      isSpouse: isSpouseProp,
     }),
     [
       staffAccountId,
@@ -241,6 +247,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       trackMutation,
       isNewAsr,
       setIsNewAsr,
+      isSpouseProp,
     ],
   );
 
