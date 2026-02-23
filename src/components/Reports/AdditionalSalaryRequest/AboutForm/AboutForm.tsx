@@ -9,8 +9,6 @@ import { useFormUserInfo } from '../Shared/useFormUserInfo';
 import { AdditionalSalaryRequestSection } from '../SharedComponents/AdditionalSalaryRequestSection';
 import { SpouseComponent } from '../SharedComponents/SpouseComponent';
 
-// TODO: Revert changes on currentSalaryCap
-
 export const AboutForm: React.FC = () => {
   const { currentIndex, requestData } = useAdditionalSalaryRequest();
   const { t } = useTranslation();
@@ -19,7 +17,7 @@ export const AboutForm: React.FC = () => {
   const { name, accountNumber, primaryAccountBalance } = useFormUserInfo();
   const individualCap =
     requestData?.latestAdditionalSalaryRequest?.calculations.currentSalaryCap ??
-    5000;
+    0;
 
   return (
     <AdditionalSalaryRequestSection title={getHeader(currentIndex)}>

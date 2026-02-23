@@ -25,7 +25,7 @@ export const ViewForm: React.FC = () => {
   const { name, accountNumber, primaryAccountBalance } = useFormUserInfo();
   const individualCap =
     requestData?.latestAdditionalSalaryRequest?.calculations.currentSalaryCap ??
-    5000;
+    0;
 
   const { exceedsCap } = useSalaryCalculations({
     values,

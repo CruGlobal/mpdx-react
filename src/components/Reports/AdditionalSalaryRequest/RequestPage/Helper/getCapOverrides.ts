@@ -1,12 +1,12 @@
 import { TFunction } from 'i18next';
 
 export const getCapOverrides = (
-  splitCap: boolean,
+  splitAsr: boolean,
   additionalApproval: boolean,
   exceedsCap: boolean,
   t: TFunction,
 ) => {
-  if (splitCap) {
+  if (splitAsr) {
     return {
       title: t(
         'Your Total Additional Salary Request exceeds your remaining allowable salary.',

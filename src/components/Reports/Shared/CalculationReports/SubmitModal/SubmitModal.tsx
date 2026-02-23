@@ -30,7 +30,7 @@ interface SubmitModalProps {
   deadlineDate?: string;
   actionRequired?: boolean;
   additionalApproval?: boolean;
-  splitCap?: boolean;
+  splitAsr?: boolean;
   disableSubmit?: boolean;
 }
 
@@ -47,7 +47,7 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
   deadlineDate,
   actionRequired,
   additionalApproval,
-  splitCap,
+  splitAsr,
   disableSubmit,
 }) => {
   const { t } = useTranslation();
@@ -82,13 +82,13 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
     <Dialog open={true} onClose={handleClose} maxWidth="sm" fullWidth>
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
-        <Alert severity={isError || splitCap ? 'error' : 'warning'}>
+        <Alert severity={isError || splitAsr ? 'error' : 'warning'}>
           <Box sx={{ display: 'flex', flexDirection: 'column' }}>
             <b>{contentTitle}</b>
             {contentText}
           </Box>
         </Alert>
-        {additionalApproval && !splitCap && (
+        {additionalApproval && !splitAsr && (
           <Box mt={2}>
             <TotalSalaryRequested />
             <Box sx={{ mt: 2 }}>
@@ -101,7 +101,7 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
         <Button onClick={handleClose} sx={{ color: 'text.secondary' }}>
           <b>{t('GO BACK')}</b>
         </Button>
-        {!splitCap && (
+        {!splitAsr && (
           <Button
             onClick={handleConfirm}
             color={isError ? 'error' : 'primary'}

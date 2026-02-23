@@ -452,7 +452,7 @@ describe('RequestPage', () => {
             combinedCap: 100000,
           },
           spouseCalculations: {
-            currentSalaryCap: 500,
+            currentSalaryCap: 50000,
             pendingAsrAmount: 100,
           },
         },

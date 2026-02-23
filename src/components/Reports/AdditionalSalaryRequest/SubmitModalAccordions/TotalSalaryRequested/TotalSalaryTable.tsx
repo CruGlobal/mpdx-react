@@ -36,7 +36,7 @@ export const TotalSalaryTable: React.FC = () => {
 
   const asrValues = requestData?.latestAdditionalSalaryRequest;
   const calculations = asrValues?.calculations;
-  const individualCap = calculations?.currentSalaryCap ?? 5000;
+  const individualCap = calculations?.currentSalaryCap ?? 0;
 
   const {
     total,

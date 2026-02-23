@@ -74,7 +74,7 @@ const MainContent: React.FC = () => {
     handleNextStep();
   };
 
-  const { exceedsCap, splitCap, additionalApproval } = useSalaryCalculations({
+  const { exceedsCap, splitAsr, additionalApproval } = useSalaryCalculations({
     values,
   });
 
@@ -92,7 +92,7 @@ const MainContent: React.FC = () => {
   const isFormPage = !isFirstFormPage && !reviewPage;
 
   const { title: overrideTitle, content: overrideContent } = getCapOverrides(
-    !!splitCap,
+    !!splitAsr,
     !!additionalApproval,
     exceedsCap,
     t,
@@ -118,7 +118,7 @@ const MainContent: React.FC = () => {
                 overrideTitle={overrideTitle}
                 overrideContent={overrideContent}
                 overrideSubContent={
-                  splitCap ? (
+                  splitAsr ? (
                     <SplitCapSubContent
                       spouseName={spouse?.staffInfo.firstName ?? ''}
                     />
@@ -144,9 +144,9 @@ const MainContent: React.FC = () => {
                 actionRequired={isEdit}
                 isEdit={isEdit}
                 additionalApproval={additionalApproval || exceedsCap}
-                splitCap={splitCap}
+                splitAsr={splitAsr}
                 disableSubmit={
-                  (splitCap && !!errors.additionalInfo) ||
+                  (splitAsr && !!errors.additionalInfo) ||
                   (exceedsCap && !!errors.additionalInfo)
                 }
                 overrideNext={isFirstFormPage ? handleContinue : undefined}

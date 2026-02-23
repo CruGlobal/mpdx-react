@@ -239,22 +239,22 @@ describe('useSalaryCalculations', () => {
       traditional403bPercentage: 0.12,
       roth403bPercentage: 0.1,
       user: {
-        currentSalary: { grossSalaryAmount: 50000 },
+        currentSalary: { grossSalaryAmount: 1000 },
       },
       requestData: {
         latestAdditionalSalaryRequest: {
-          calculations: { currentSalaryCap: 10000 },
+          calculations: { currentSalaryCap: 5000 },
         },
       },
     } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
 
     const values: CompleteFormValues = {
       ...baseValues,
-      currentYearSalaryNotReceived: '5000',
+      currentYearSalaryNotReceived: '2000',
     };
 
     const calculations = {
-      pendingAsrAmount: 10000,
+      pendingAsrAmount: 1000,
     };
 
     const { result } = renderHook(
@@ -268,11 +268,11 @@ describe('useSalaryCalculations', () => {
       },
     );
 
-    expect(result.current.total).toBe(5000);
+    expect(result.current.total).toBe(2000);
     // totalAnnualSalary = grossAnnualSalary + additionalSalaryReceivedThisYear + total
-    // = 50000 + 10000 + 5000 = 65000
-    expect(result.current.totalAnnualSalary).toBe(65000);
-    // total (5000) <= individualCap (10000)
+    // = 1000 + 1000 + 2000 = 4000
+    expect(result.current.totalAnnualSalary).toBe(4000);
+    // totalAnnualSalary (4000) <= individualCap (5000)
     expect(result.current.exceedsCap).toBe(false);
   });
 
@@ -318,7 +318,7 @@ describe('useSalaryCalculations', () => {
   });
 
   describe('Married', () => {
-    it('handles additionalApproval when both user and spouse exceed their individual caps', () => {
+    it('splitAsr is false when both user and spouse exceed their individual caps', () => {
       mockUseAdditionalSalaryRequest.mockReturnValue({
         traditional403bPercentage: 0.12,
         roth403bPercentage: 0.1,
@@ -351,10 +351,10 @@ describe('useSalaryCalculations', () => {
       // additionalApproval = (exceedsCap && spouseExceedsCap) = true
       expect(result.current.exceedsCap).toBe(true);
       expect(result.current.additionalApproval).toBe(true);
-      expect(result.current.splitCap).toBe(false);
+      expect(result.current.splitAsr).toBe(false);
     });
 
-    it('handles splitCap when user exceeds but spouse does not and over combined cap', () => {
+    it('splitAsr is true when user exceeds but spouse does not and over combined cap', () => {
       mockUseAdditionalSalaryRequest.mockReturnValue({
         traditional403bPercentage: 0.12,
         roth403bPercentage: 0.1,
@@ -386,16 +386,16 @@ describe('useSalaryCalculations', () => {
       // User: 15000 > 10000 (exceeds), Spouse: 7000 < 10000 (does not exceed)
       // totalAnnualSalary = 50000 + 0 + 15000 = 65000
       // spouseTotalAnnualSalary = 40000 + 7000 = 47000
-      // underCombinedCap = 100000 > (65000 + 47000) = 100000 > 112000 = false
-      // splitCap = exceedsCap && !spouseExceedsCap && underCombinedCap = true && true && false = false
-      // additionalApproval = (exceedsCap && spouseExceedsCap) || (exceedsCap && !spouseExceedsCap && !underCombinedCap)
+      // exceedsCombinedCap = 100000 < (65000 + 47000) = 100000 < 112000 = true
+      // splitAsr = exceedsCap && !spouseExceedsCap && !exceedsCombinedCap = true && true && false = false
+      // additionalApproval = (exceedsCap && spouseExceedsCap) || (exceedsCap && !spouseExceedsCap && exceedsCombinedCap)
       //                    = (true && false) || (true && true && true) = true
       expect(result.current.exceedsCap).toBe(true);
-      expect(result.current.splitCap).toBe(false);
+      expect(result.current.splitAsr).toBe(false);
       expect(result.current.additionalApproval).toBe(true);
     });
 
-    it('handles splitCap when user exceeds, spouse does not, and under combined cap', () => {
+    it('splitAsr is true when user exceeds, spouse does not, and under combined cap', () => {
       mockUseAdditionalSalaryRequest.mockReturnValue({
         traditional403bPercentage: 0.12,
         roth403bPercentage: 0.1,
@@ -408,7 +408,7 @@ describe('useSalaryCalculations', () => {
               combinedCap: 120000,
             },
             spouseCalculations: {
-              currentSalaryCap: 10000,
+              currentSalaryCap: 50000,
               pendingAsrAmount: 5000,
             },
           },
@@ -424,19 +424,19 @@ describe('useSalaryCalculations', () => {
         wrapper: ({ children }) => FormikWrapper({ children, values }),
       });
 
-      // User: 12000 > 10000 (exceeds), Spouse: 5000 < 10000 (does not exceed)
+      // User: 62000 > 10000 (exceeds), Spouse: 45000 < 50000 (does not exceed)
       // totalAnnualSalary = 50000 + 0 + 12000 = 62000
       // spouseTotalAnnualSalary = 40000 + 5000 = 45000
-      // underCombinedCap = 120000 > (62000 + 45000) = 120000 > 107000 = true
-      // splitCap = exceedsCap && !spouseExceedsCap && underCombinedCap = true && true && true = true
-      // additionalApproval = (exceedsCap && spouseExceedsCap) || (exceedsCap && !spouseExceedsCap && !underCombinedCap)
+      // exceedsCombinedCap = 120000 < (62000 + 45000) = 120000 < 107000 = false
+      // splitAsr = exceedsCap && !spouseExceedsCap && !exceedsCombinedCap = true && true && true = true
+      // additionalApproval = (exceedsCap && spouseExceedsCap) || (exceedsCap && !spouseExceedsCap && exceedsCombinedCap)
       //                    = (true && false) || (true && true && false) = false
       expect(result.current.exceedsCap).toBe(true);
-      expect(result.current.splitCap).toBe(true);
+      expect(result.current.splitAsr).toBe(true);
       expect(result.current.additionalApproval).toBe(false);
     });
 
-    it('handles spouseExceedsCap when no spouse data exists', () => {
+    it('splitAsr is false when no spouse data exists', () => {
       mockUseAdditionalSalaryRequest.mockReturnValue({
         traditional403bPercentage: 0.12,
         roth403bPercentage: 0.1,
@@ -457,8 +457,8 @@ describe('useSalaryCalculations', () => {
         wrapper: ({ children }) => FormikWrapper({ children, values }),
       });
 
-      expect(result.current.splitCap).toBeUndefined();
-      expect(result.current.additionalApproval).toBeUndefined();
+      expect(result.current.splitAsr).toBe(false);
+      expect(result.current.additionalApproval).toBe(false);
     });
   });
 });

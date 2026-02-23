@@ -19,7 +19,7 @@ interface DirectionButtonsProps {
   showBackButton?: boolean;
   isEdit?: boolean;
   additionalApproval?: boolean;
-  splitCap?: boolean;
+  splitAsr?: boolean;
   disableSubmit?: boolean;
   //Formik validation for submit modal
   isSubmission?: boolean;
@@ -49,7 +49,7 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
   deadlineDate,
   actionRequired,
   additionalApproval,
-  splitCap,
+  splitAsr,
   disableSubmit,
 }) => {
   const { t } = useTranslation();
@@ -158,7 +158,7 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
           deadlineDate={deadlineDate}
           actionRequired={actionRequired}
           additionalApproval={additionalApproval}
-          splitCap={splitCap}
+          splitAsr={splitAsr}
           disableSubmit={disableSubmit}
         />
       )}

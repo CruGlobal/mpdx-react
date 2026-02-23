@@ -85,7 +85,7 @@ interface TestComponentProps {
   isDiscardEdit?: boolean;
   actionRequired?: boolean;
   additionalApproval?: boolean;
-  splitCap?: boolean;
+  splitAsr?: boolean;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
@@ -99,7 +99,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   isDiscardEdit,
   actionRequired,
   additionalApproval,
-  splitCap,
+  splitAsr,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
@@ -120,7 +120,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
                 deadlineDate={date}
                 actionRequired={actionRequired}
                 additionalApproval={additionalApproval}
-                splitCap={splitCap}
+                splitAsr={splitAsr}
               />
             </MinisterHousingAllowanceProvider>
           </FormikWrapper>
@@ -255,18 +255,18 @@ describe('ConfirmationModal', () => {
   });
 
   describe('Additional Salary Request', () => {
-    it('shows TotalSalaryRequested and ApprovalProcess when additionalApproval is true and splitCap is false', async () => {
+    it('shows TotalSalaryRequested and ApprovalProcess when additionalApproval is true and splitAsr is false', async () => {
       const { findByText, getByText } = render(
-        <TestComponent additionalApproval={true} splitCap={false} />,
+        <TestComponent additionalApproval={true} splitAsr={false} />,
       );
 
       expect(await findByText('Total Salary Requested')).toBeInTheDocument();
       expect(getByText('Approval Process')).toBeInTheDocument();
     });
 
-    it('hides submit button when splitCap is true', async () => {
+    it('hides submit button when splitAsr is true', async () => {
       const { findByRole, queryByRole } = render(
-        <TestComponent splitCap={true} />,
+        <TestComponent splitAsr={true} />,
       );
 
       await findByRole('dialog');
@@ -278,7 +278,7 @@ describe('ConfirmationModal', () => {
 
     it('shows Submit For Approval button when additionalApproval is true', async () => {
       const { findByRole } = render(
-        <TestComponent additionalApproval={true} splitCap={false} />,
+        <TestComponent additionalApproval={true} splitAsr={false} />,
       );
 
       expect(
