@@ -92,7 +92,7 @@ const CsvUpload: React.FC<CsvUploadProps> = ({
       <CardContent>
         <Typography variant="body1">
           {t(
-            'A CSV is a comma-seperated spreadsheet format that can be created by many programs such as Excel, Google Sheets, Google Contacts or Numbers.',
+            'A CSV is a comma-separated spreadsheet format that can be created by many programs such as Excel, Google Sheets, Google Contacts or Numbers.',
           )}
         </Typography>
       </CardContent>
