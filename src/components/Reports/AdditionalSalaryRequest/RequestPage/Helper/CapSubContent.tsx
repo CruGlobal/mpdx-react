@@ -8,11 +8,15 @@ import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { StyledListItem } from '../../../SavingsFundTransfer/styledComponents/StyledListItem';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
+import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
 
 export const CapSubContent: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
   const currency = 'USD';
+  const { requestData } = useAdditionalSalaryRequest();
+  const { approvalTimeframe, approver } =
+    requestData?.latestAdditionalSalaryRequest?.progressiveApprovalTier ?? {};
 
   const { values } = useFormikContext<CompleteFormValues>();
 
@@ -34,7 +38,7 @@ export const CapSubContent: React.FC = () => {
           <StyledListItem sx={{ py: 0 }}>
             <ListItemText
               primary={t(
-                'For the {{amount}} you are requesting, this will take [time frame] as it needs to be signed off by [approvers].',
+                'For the {{amount}} you are requesting, this will take {{approvalTimeframe}} as it needs to be signed off by {{approver}}.',
                 {
                   amount: currencyFormat(
                     Number(values.totalAdditionalSalaryRequested),
@@ -42,6 +46,8 @@ export const CapSubContent: React.FC = () => {
                     locale,
                     { showTrailingZeros: true },
                   ),
+                  approvalTimeframe,
+                  approver,
                 },
               )}
               primaryTypographyProps={{ variant: 'body2' }}

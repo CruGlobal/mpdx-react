@@ -41,6 +41,10 @@ fragment AdditionalSalaryRequestDetailsFields on AdditionalSalaryRequest {
   approvedAt
   submittedAt
   updatedAt
+  progressiveApprovalTier {
+    approver
+    approvalTimeframe
+  }
   calculations {
     currentSalaryCap
     combinedCap
