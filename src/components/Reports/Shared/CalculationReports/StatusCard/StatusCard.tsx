@@ -135,7 +135,12 @@ export const StatusCard: React.FC<StatusCardProps> = ({
           {isRequest && (
             <Box sx={{ float: 'right' }}>
               <Button
-                sx={{ color: 'error.light', px: 2, py: 1, fontWeight: 'bold' }}
+                sx={{
+                  color: 'error.light',
+                  px: 2,
+                  py: 1,
+                  fontWeight: 'bold',
+                }}
                 onClick={() => setOpenCancel(true)}
               >
                 <Cancel sx={{ mr: 0.5 }} />

@@ -221,7 +221,7 @@ describe('AdditionalSalaryRequest', () => {
       />,
     );
 
-    expect(await findByText(/APPROVAL DATE/i)).toBeInTheDocument();
+    expect(await findByText(/Request processed on:/i)).toBeInTheDocument();
   });
 
   it('renders action required status with feedback', async () => {
@@ -266,7 +266,7 @@ describe('AdditionalSalaryRequest', () => {
     );
 
     expect(
-      await findByText(/Approved Additional Salary Request/i),
+      await findByText(/Pending Additional Salary Request/i),
     ).toBeInTheDocument();
   });
 

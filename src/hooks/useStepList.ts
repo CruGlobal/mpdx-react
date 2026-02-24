@@ -6,11 +6,17 @@ import {
 } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { Steps } from '../components/Reports/Shared/CalculationReports/StepsList/StepsList';
 
-export function useStepList(formType: FormEnum, type?: PageEnum) {
+export function useStepList(
+  formType: FormEnum,
+  type?: PageEnum,
+  initialIndex?: number,
+) {
   const { t } = useTranslation();
   const isEdit = type === PageEnum.Edit;
 
-  const [currentIndex, setCurrentIndex] = useState(() => (isEdit ? 1 : 0));
+  const [currentIndex, setCurrentIndex] = useState(() =>
+    typeof initialIndex === 'number' ? initialIndex : isEdit ? 1 : 0,
+  );
 
   const [steps, setSteps] = useState<Steps[]>(() =>
     formType === FormEnum.MHA
