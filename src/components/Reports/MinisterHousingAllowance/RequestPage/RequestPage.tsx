@@ -52,6 +52,7 @@ export const RequestPage: React.FC = () => {
     requestData,
     loading,
     userEligibleForMHA,
+    spouseEligibleForMHA,
   } = useMinisterHousingAllowance();
 
   const canEdit =
@@ -116,7 +117,7 @@ export const RequestPage: React.FC = () => {
         </Container>
       }
     />
-  ) : !userEligibleForMHA ? (
+  ) : !userEligibleForMHA && !spouseEligibleForMHA ? (
     <PanelLayout
       panelType={PanelTypeEnum.Empty}
       sidebarTitle={t('Your MHA')}
