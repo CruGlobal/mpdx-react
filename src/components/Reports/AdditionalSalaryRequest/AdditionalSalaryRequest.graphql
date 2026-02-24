@@ -42,6 +42,7 @@ fragment AdditionalSalaryRequestDetailsFields on AdditionalSalaryRequest {
   submittedAt
   updatedAt
   progressiveApprovalTier {
+    id
     approver
     approvalTimeframe
   }

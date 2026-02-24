@@ -15,8 +15,8 @@ export const CapSubContent: React.FC = () => {
   const locale = useLocale();
   const currency = 'USD';
   const { requestData } = useAdditionalSalaryRequest();
-  const { approvalTimeframe, approver } =
-    requestData?.latestAdditionalSalaryRequest?.progressiveApprovalTier ?? {};
+  const progressiveApprovalTier =
+    requestData?.latestAdditionalSalaryRequest?.progressiveApprovalTier;
 
   const { values } = useFormikContext<CompleteFormValues>();
 
@@ -35,24 +35,27 @@ export const CapSubContent: React.FC = () => {
       </Trans>
       <Box>
         <List sx={{ listStyleType: 'disc', pl: 4 }} disablePadding>
-          <StyledListItem sx={{ py: 0 }}>
-            <ListItemText
-              primary={t(
-                'For the {{amount}} you are requesting, this will take {{approvalTimeframe}} as it needs to be signed off by {{approver}}.',
-                {
-                  amount: currencyFormat(
-                    Number(values.totalAdditionalSalaryRequested),
-                    currency,
-                    locale,
-                    { showTrailingZeros: true },
-                  ),
-                  approvalTimeframe,
-                  approver,
-                },
-              )}
-              primaryTypographyProps={{ variant: 'body2' }}
-            />
-          </StyledListItem>
+          {progressiveApprovalTier && (
+            <StyledListItem sx={{ py: 0 }}>
+              <ListItemText
+                primary={t(
+                  'For the {{amount}} you are requesting, this will take {{approvalTimeframe}} as it needs to be signed off by {{approver}}.',
+                  {
+                    amount: currencyFormat(
+                      Number(values.totalAdditionalSalaryRequested),
+                      currency,
+                      locale,
+                      { showTrailingZeros: true },
+                    ),
+                    approvalTimeframe:
+                      progressiveApprovalTier.approvalTimeframe,
+                    approver: progressiveApprovalTier.approver,
+                  },
+                )}
+                primaryTypographyProps={{ variant: 'body2' }}
+              />
+            </StyledListItem>
+          )}
           <StyledListItem sx={{ py: 0 }}>
             <ListItemText
               primary={t(
