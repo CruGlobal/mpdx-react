@@ -93,7 +93,6 @@ const AdditionalSalaryRequestContent: React.FC = () => {
 
   const showStatuses: AsrStatusEnum[] = [
     AsrStatusEnum.ActionRequired,
-    AsrStatusEnum.Pending,
     AsrStatusEnum.InProgress,
   ];
   const showSavingStatus =
