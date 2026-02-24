@@ -7,6 +7,7 @@ export const enum PageEnum {
   New = 'New',
   Edit = 'Edit',
   View = 'View',
+  Reset = 'Reset',
 }
 
 export const enum FormEnum {

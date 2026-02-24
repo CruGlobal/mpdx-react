@@ -21,14 +21,14 @@ describe('BackArrow', () => {
   it('renders BackArrow with provided title', () => {
     const { getByRole } = render(<TestComponent backTitle={title} />);
 
-    expect(getByRole('button', { name: title })).toBeInTheDocument();
+    expect(getByRole('link', { name: title })).toBeInTheDocument();
   });
 
   it('renders BackArrow with default title when backTitle is not provided', () => {
     const { getByRole } = render(<TestComponent />);
 
     expect(
-      getByRole('button', { name: 'Back to dashboard' }),
+      getByRole('link', { name: 'Back to dashboard' }),
     ).toBeInTheDocument();
   });
 });

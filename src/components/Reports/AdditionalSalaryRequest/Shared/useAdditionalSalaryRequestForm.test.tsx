@@ -55,8 +55,6 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
       calculations: {
         currentSalaryCap: 100000,
         staffAccountBalance: 50000,
-        maxAmountAndReason: { amount: 100000 },
-        predictedYearIncome: 50000,
         pendingAsrAmount: 0,
       },
     },
@@ -266,12 +264,7 @@ describe('useAdditionalSalaryRequestForm', () => {
             calculations: {
               currentSalaryCap: 50000,
               staffAccountBalance: 20000,
-              predictedYearIncome: 40000,
               pendingAsrAmount: 0,
-              maxAmountAndReason: {
-                amount: 10000,
-                reason: 'Test reason',
-              },
             },
           },
         },
@@ -433,6 +426,26 @@ describe('useAdditionalSalaryRequestForm', () => {
 
       expect(errors.childrenCollegeEducation).toContain('Exceeds');
       expect(errors.childrenCollegeEducation).toContain('$21,000.00');
+    });
+
+    it('should accept empty string for currency fields', async () => {
+      const { result } = renderHook(
+        () =>
+          useAdditionalSalaryRequestForm({
+            ...defaultFormValues,
+            adoption: '',
+            phoneNumber: '555-123-4567',
+            emailAddress: 'test@example.com',
+          }),
+        { wrapper: TestWrapper },
+      );
+
+      let errors: Record<string, string> = {};
+      await act(async () => {
+        errors = await result.current.validateForm();
+      });
+
+      expect(errors.adoption).toBeUndefined();
     });
 
     it('should validate additional info when exceedsCap is true', async () => {
@@ -651,12 +664,6 @@ describe('useAdditionalSalaryRequestForm', () => {
             calculations: {
               currentSalaryCap: 50000,
               staffAccountBalance: 20000,
-              predictedYearIncome: 40000,
-              pendingAsrAmount: 0,
-              maxAmountAndReason: {
-                amount: 10000,
-                reason: 'Test reason',
-              },
             },
           },
         },

@@ -47,12 +47,7 @@ const mockRequest = {
   calculations: {
     currentSalaryCap: 50000,
     staffAccountBalance: 10000,
-    predictedYearIncome: 45000,
     pendingAsrAmount: 0,
-    maxAmountAndReason: {
-      amount: 10000,
-      reason: 'Test reason',
-    },
   },
   spouseCalculations: null,
   user: {
@@ -226,7 +221,7 @@ describe('AdditionalSalaryRequest', () => {
       />,
     );
 
-    expect(await findByText(/APPROVAL DATE/i)).toBeInTheDocument();
+    expect(await findByText(/Request processed on:/i)).toBeInTheDocument();
   });
 
   it('renders action required status with feedback', async () => {
@@ -271,7 +266,7 @@ describe('AdditionalSalaryRequest', () => {
     );
 
     expect(
-      await findByText(/Approved Additional Salary Request/i),
+      await findByText(/Pending Additional Salary Request/i),
     ).toBeInTheDocument();
   });
 

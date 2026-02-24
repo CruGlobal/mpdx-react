@@ -1,7 +1,6 @@
 import { Container, Stack } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Notification } from 'src/components/Notification/Notification';
-import { AsrStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { PanelLayout } from '../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { useIconPanelItems } from '../Shared/CalculationReports/PanelLayout/useIconPanelItems';
@@ -9,7 +8,6 @@ import { PanelTypeEnum } from '../Shared/CalculationReports/Shared/sharedTypes';
 import { AdditionalSalaryRequestSkeleton } from './AdditionalSalaryRequestSkeleton';
 import { EligibleDisplay } from './MainPages/EligibleDisplay';
 import { useAdditionalSalaryRequest } from './Shared/AdditionalSalaryRequestContext';
-import { ApprovedRequest } from './SharedComponents/ApprovedRequest';
 import { CurrentRequest } from './SharedComponents/CurrentRequest';
 
 export const mainContentWidth = theme.spacing(85);
@@ -81,12 +79,7 @@ export const AdditionalSalaryRequest: React.FC = () => {
             >
               <EligibleDisplay />
 
-              {request &&
-                (request.status === AsrStatusEnum.Approved ? (
-                  <ApprovedRequest request={request} />
-                ) : (
-                  <CurrentRequest request={request} />
-                ))}
+              {request && <CurrentRequest request={request} />}
             </Stack>
           )}
         </Container>

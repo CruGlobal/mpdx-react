@@ -15,32 +15,38 @@ You are helping the user rebase their current feature branch.
 ### Step 1: Parse Arguments and Detect Context
 
 **If no arguments provided:**
+
 - Ask user what they want to rebase onto (default: master)
 - Try to detect the old parent branch
 
 **If target provided (arg 1):**
+
 - Target branch = arg 1 (e.g., "master", "staging")
 - Auto-detect old parent if not provided
 
 **If both target and old-parent provided:**
+
 - Target = arg 1
 - Old parent = arg 2
 
 ### Step 2: Validate Current State
 
 Check:
+
 - Current branch name (must not be master/main/staging/develop)
 - Working directory is clean (`git status`)
 - Target branch exists
 - Old parent branch exists (if specified)
 
 If working directory is dirty:
+
 - Show status
 - Ask if user wants to stash changes or abort
 
 ### Step 3: Show Preview
 
 Display:
+
 ```
 Current branch: <branch-name>
 Target branch: <target-branch>
@@ -72,11 +78,13 @@ git fetch origin <target-branch>:<target-branch>
 ### Step 6: Execute Rebase
 
 **If old-parent specified:**
+
 ```bash
 git rebase --onto <target> <old-parent> <current-branch>
 ```
 
 **If no old-parent (simple rebase):**
+
 ```bash
 git rebase <target>
 ```
@@ -84,8 +92,10 @@ git rebase <target>
 ### Step 7: Handle Conflicts
 
 If conflicts occur:
+
 - Show the conflicting files
 - Provide guidance:
+
   ```
   To resolve:
   1. Edit conflicting files
@@ -100,6 +110,7 @@ If conflicts occur:
 ### Step 8: Verify Result
 
 After successful rebase:
+
 ```bash
 # Show resulting commits
 git log --oneline <current-branch> --not <target>
@@ -111,6 +122,7 @@ git status
 ### Step 9: Offer to Push
 
 Ask user:
+
 ```
 Rebase successful! Would you like to:
 1. Force push to remote (git push --force-with-lease)
@@ -119,6 +131,7 @@ Rebase successful! Would you like to:
 ```
 
 If user chooses 1:
+
 ```bash
 git push --force-with-lease origin <current-branch>
 ```
@@ -128,6 +141,7 @@ If push fails due to remote changes, explain and suggest reviewing remote change
 ### Step 10: Cleanup
 
 Offer to delete backup branch:
+
 ```
 Delete backup branch 'backup-<name>'? (You can always recover from reflog if needed)
 ```
@@ -153,6 +167,7 @@ git rev-list --count master..HEAD
 ```
 
 Look for branch that:
+
 - Has some (but not all) of the current branch's commits
 - Is not the target branch
 - Makes sense as a parent
@@ -162,14 +177,16 @@ If ambiguous, ask user.
 ## Safety Warnings
 
 Before proceeding, warn if:
-- ⚠️  Branch has upstream tracking with different name (might be shared)
-- ⚠️  More than 20 commits to rebase (could be complex)
-- ⚠️  No backup branch could be created
-- ⚠️  Working directory is dirty
+
+- ⚠️ Branch has upstream tracking with different name (might be shared)
+- ⚠️ More than 20 commits to rebase (could be complex)
+- ⚠️ No backup branch could be created
+- ⚠️ Working directory is dirty
 
 ## Example Outputs
 
 ### Example 1: Simple rebase
+
 ```
 $ /rebase-branch master
 
@@ -189,6 +206,7 @@ Proceed with rebase? [y/n]
 ```
 
 ### Example 2: Rebase with parent exclusion
+
 ```
 $ /rebase-branch master old-feature-branch
 
@@ -212,6 +230,7 @@ Proceed with rebase? [y/n]
 ```
 
 ### Example 3: Interactive mode
+
 ```
 $ /rebase-branch
 
@@ -244,6 +263,7 @@ Is 'old-feature' the parent branch you want to exclude? [y/n/other]:
 ## Final Summary
 
 After completion, show:
+
 ```
 ✅ Rebase complete!
 

@@ -46,7 +46,13 @@ export const useMhaRequestData = () => {
         spousePreferredName,
       });
     }
-    return showUserNoMhaMessage ? userPreferredName : spousePreferredName;
+    if (showUserNoMhaMessage) {
+      return userPreferredName;
+    }
+    if (showSpouseNoMhaMessage) {
+      return spousePreferredName;
+    }
+    return '';
   };
   const noMhaNames = getNoMhaNames();
 
@@ -68,6 +74,12 @@ export const useMhaRequestData = () => {
     showUserIneligibleMessage || showSpouseIneligibleMessage;
   const isIneligiblePlural =
     showUserIneligibleMessage && showSpouseIneligibleMessage;
+  const showUnavailableMessage =
+    !showUserFields &&
+    !showSpouseFields &&
+    (showNoMhaMessage || showIneligibleMessage);
+  const showPartiallyUnavailableMessage =
+    showNoMhaMessage || showIneligibleMessage;
 
   const getIneligibleNames = () => {
     if (isIneligiblePlural) {
@@ -80,42 +92,79 @@ export const useMhaRequestData = () => {
   };
   const ineligibleNames = showIneligibleMessage ? getIneligibleNames() : '';
 
-  const approvedAmount = hcmUser?.mhaRequest.currentApprovedOverallAmount;
+  const approvedAmount = userHasApprovedMha
+    ? (hcmUser?.mhaRequest.currentApprovedOverallAmount ?? 0)
+    : (hcmSpouse?.mhaRequest.currentApprovedOverallAmount ?? 0);
+
   const approvedAmountFormatted = useMemo(
-    () => currencyFormat(approvedAmount ?? 0, 'USD', locale),
+    () => currencyFormat(approvedAmount, 'USD', locale),
     [approvedAmount, locale],
   );
 
   const schema = useMemo(() => {
-    const mhaMaxMessage = t(
+    const combinedMaxMessage = t(
+      'Combined MHA amounts cannot exceed Board Approved MHA Amount of {{amount}}',
+      { amount: approvedAmountFormatted },
+    );
+    const singleMaxMessage = t(
       'New Requested MHA cannot exceed Board Approved MHA Amount of {{amount}}',
       { amount: approvedAmountFormatted },
     );
 
-    return yup.object({
-      mhaAmount: amount(t('New Requested MHA'), t, {
-        max: approvedAmount,
-        maxMessage: mhaMaxMessage,
-      }),
-      spouseMhaAmount: amount(t('Spouse New Requested MHA'), t, {
-        max: approvedAmount,
-        maxMessage: mhaMaxMessage,
-      }),
+    let mhaAmountField = amount(t('New Requested MHA'), t, {
+      max: approvedAmount,
+      maxMessage: singleMaxMessage,
     });
-  }, [t, approvedAmount, approvedAmountFormatted]);
+    let spouseMhaAmountField = amount(t('Spouse New Requested MHA'), t, {
+      max: approvedAmount,
+      maxMessage: singleMaxMessage,
+    });
+
+    if (showUserFields && showSpouseFields) {
+      mhaAmountField = mhaAmountField.test(
+        'combined-max',
+        combinedMaxMessage,
+        (value) =>
+          (value ?? 0) + (calculation?.spouseMhaAmount ?? 0) <= approvedAmount,
+      );
+      spouseMhaAmountField = spouseMhaAmountField.test(
+        'combined-max',
+        combinedMaxMessage,
+        (value) =>
+          (value ?? 0) + (calculation?.mhaAmount ?? 0) <= approvedAmount,
+      );
+    }
+
+    return yup.object({
+      mhaAmount: mhaAmountField,
+      spouseMhaAmount: spouseMhaAmountField,
+    });
+  }, [
+    t,
+    approvedAmount,
+    approvedAmountFormatted,
+    showUserFields,
+    showSpouseFields,
+    calculation?.mhaAmount,
+    calculation?.spouseMhaAmount,
+  ]);
 
   const currentTakenAmount = hcmUser?.mhaRequest.currentTakenAmount ?? 0;
   const currentSpouseTakenAmount =
     hcmSpouse?.mhaRequest.currentTakenAmount ?? 0;
 
-  const newRequestedMhaValue = calculation?.mhaAmount ?? 0;
-  const newRequestedSpouseMhaValue = calculation?.spouseMhaAmount ?? 0;
+  const newRequestedMhaValue = showUserFields
+    ? (calculation?.mhaAmount ?? 0)
+    : 0;
+  const newRequestedSpouseMhaValue = showSpouseFields
+    ? (calculation?.spouseMhaAmount ?? 0)
+    : 0;
   const totalRequestedMhaValue = useMemo(
     () =>
-      hcmSpouse
+      showSpouseFields
         ? newRequestedMhaValue + newRequestedSpouseMhaValue
         : newRequestedMhaValue,
-    [hcmSpouse, newRequestedMhaValue, newRequestedSpouseMhaValue],
+    [showSpouseFields, newRequestedMhaValue, newRequestedSpouseMhaValue],
   );
 
   const progressPercentage = useMemo(
@@ -165,5 +214,7 @@ export const useMhaRequestData = () => {
     showIneligibleMessage,
     isIneligiblePlural,
     ineligibleNames,
+    showUnavailableMessage,
+    showPartiallyUnavailableMessage,
   };
 };

@@ -203,11 +203,55 @@ describe('StepList', () => {
   });
 
   describe('Exceeds cap', () => {
-    it('renders exceeds cap text when true', async () => {
+    it('renders exceeds cap (for single) text when true', async () => {
       mockUseAdditionalSalaryRequest.mockReturnValue({
         ...mockContextValue,
         currentIndex: 2,
+        requestData: {
+          latestAdditionalSalaryRequest: {
+            calculations: {
+              currentSalaryCap: 500,
+            },
+          },
+        },
+      } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+      const { getByText } = render(
+        <AdditionalSalaryRequestTestWrapper
+          initialValues={{
+            ...defaultInitialValues,
+            currentYearSalaryNotReceived: '1000',
+          }}
+        >
+          <StepList FormComponent={NewForm} />
+        </AdditionalSalaryRequestTestWrapper>,
+      );
+
+      await waitFor(() => {
+        expect(
+          getByText(
+            /because your request exceeds your remaining allowable salary/i,
+          ),
+        ).toBeInTheDocument();
       });
+    });
+
+    it('renders exceeds cap (for married) text when true', async () => {
+      mockUseAdditionalSalaryRequest.mockReturnValue({
+        ...mockContextValue,
+        currentIndex: 2,
+        requestData: {
+          latestAdditionalSalaryRequest: {
+            calculations: {
+              currentSalaryCap: 500,
+            },
+            spouseCalculations: {
+              currentSalaryCap: 500,
+              pendingAsrAmount: 600,
+            },
+          },
+        },
+      } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
 
       const { getByText } = render(
         <AdditionalSalaryRequestTestWrapper

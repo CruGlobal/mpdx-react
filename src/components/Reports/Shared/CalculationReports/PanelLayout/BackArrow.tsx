@@ -1,7 +1,7 @@
 import NextLink from 'next/link';
 import React from 'react';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import { IconButton, Link } from '@mui/material';
+import { IconButton } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 
 interface BackArrowProps {
@@ -23,6 +23,7 @@ export const BackArrow: React.FC<BackArrowProps> = ({
       <IconButton
         title={label}
         onClick={onBack}
+        aria-label={label}
         sx={(theme) => ({
           color: theme.palette.mpdxGrayDark.main,
         })}
@@ -34,21 +35,17 @@ export const BackArrow: React.FC<BackArrowProps> = ({
 
   if (backHref) {
     return (
-      <Link
+      <IconButton
         component={NextLink}
         href={backHref}
-        sx={{ textDecoration: 'none' }}
         aria-label={label}
+        title={label}
+        sx={(theme) => ({
+          color: theme.palette.mpdxGrayDark.main,
+        })}
       >
-        <IconButton
-          title={label}
-          sx={(theme) => ({
-            color: theme.palette.mpdxGrayDark.main,
-          })}
-        >
-          <ArrowBackIcon />
-        </IconButton>
-      </Link>
+        <ArrowBackIcon />
+      </IconButton>
     );
   }
 

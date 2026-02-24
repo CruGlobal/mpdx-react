@@ -29,7 +29,8 @@ interface SubmitModalProps {
   isDiscardEdit?: boolean;
   deadlineDate?: string;
   actionRequired?: boolean;
-  exceedsCap?: boolean;
+  additionalApproval?: boolean;
+  splitAsr?: boolean;
   disableSubmit?: boolean;
 }
 
@@ -45,7 +46,8 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
   isDiscardEdit,
   deadlineDate,
   actionRequired,
-  exceedsCap,
+  additionalApproval,
+  splitAsr,
   disableSubmit,
 }) => {
   const { t } = useTranslation();
@@ -80,13 +82,13 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
     <Dialog open={true} onClose={handleClose} maxWidth="sm" fullWidth>
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
-        <Alert severity={isError ? 'error' : 'warning'}>
+        <Alert severity={isError || splitAsr ? 'error' : 'warning'}>
           <Box sx={{ display: 'flex', flexDirection: 'column' }}>
             <b>{contentTitle}</b>
             {contentText}
           </Box>
         </Alert>
-        {exceedsCap && (
+        {additionalApproval && !splitAsr && (
           <Box mt={2}>
             <TotalSalaryRequested />
             <Box sx={{ mt: 2 }}>
@@ -99,14 +101,18 @@ export const SubmitModal: React.FC<SubmitModalProps> = ({
         <Button onClick={handleClose} sx={{ color: 'text.secondary' }}>
           <b>{t('GO BACK')}</b>
         </Button>
-        <Button
-          onClick={handleConfirm}
-          color={isError ? 'error' : 'primary'}
-          disabled={disableSubmit}
-        >
-          <b>{exceedsCap ? t('Submit For Approval') : cancelButtonText}</b>
-          <ChevronRight sx={{ ml: 1 }} />
-        </Button>
+        {!splitAsr && (
+          <Button
+            onClick={handleConfirm}
+            color={isError ? 'error' : 'primary'}
+            disabled={disableSubmit}
+          >
+            <b>
+              {additionalApproval ? t('Submit For Approval') : cancelButtonText}
+            </b>
+            <ChevronRight sx={{ ml: 1 }} />
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );
