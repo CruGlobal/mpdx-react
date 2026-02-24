@@ -33,8 +33,6 @@ export const defaultMockContextValue = {
       calculations: {
         currentSalaryCap: 100000,
         staffAccountBalance: 40000,
-        maxAmountAndReason: { amount: 100000 },
-        predictedYearIncome: 50000,
         pendingAsrAmount: 5000,
       },
     },

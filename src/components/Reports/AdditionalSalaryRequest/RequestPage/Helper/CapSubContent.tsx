@@ -6,8 +6,8 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { StyledListItem } from '../../SavingsFundTransfer/styledComponents/StyledListItem';
-import { CompleteFormValues } from '../AdditionalSalaryRequest';
+import { StyledListItem } from '../../../SavingsFundTransfer/styledComponents/StyledListItem';
+import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 
 export const CapSubContent: React.FC = () => {
   const { t } = useTranslation();

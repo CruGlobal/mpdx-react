@@ -2,13 +2,21 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { FormikProvider, useFormik } from 'formik';
 import { SnackbarProvider } from 'notistack';
+import * as yup from 'yup';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { CompleteFormValues } from 'src/components/Reports/AdditionalSalaryRequest/AdditionalSalaryRequest';
+import { useAdditionalSalaryRequest } from 'src/components/Reports/AdditionalSalaryRequest/Shared/AdditionalSalaryRequestContext';
 import theme from 'src/theme';
 import { MinisterHousingAllowanceProvider } from '../../../MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
 import { PageEnum } from '../Shared/sharedTypes';
 import { SubmitModal } from './SubmitModal';
+
+jest.mock(
+  'src/components/Reports/AdditionalSalaryRequest/Shared/AdditionalSalaryRequestContext',
+);
 
 const title = 'Test Title';
 const content = 'Test Content';
@@ -17,6 +25,54 @@ const date = '2024-12-31';
 
 const handleClose = jest.fn();
 const handleConfirm = jest.fn();
+
+const mockUseAdditionalSalaryRequest =
+  useAdditionalSalaryRequest as jest.MockedFunction<
+    typeof useAdditionalSalaryRequest
+  >;
+
+const baseFormValues: CompleteFormValues = {
+  currentYearSalaryNotReceived: '0',
+  previousYearSalaryNotReceived: '0',
+  additionalSalaryWithinMax: '0',
+  adoption: '0',
+  traditional403bContribution: '0',
+  roth403bContribution: '0',
+  counselingNonMedical: '0',
+  healthcareExpensesExceedingLimit: '0',
+  babysittingMinistryEvents: '0',
+  childrenMinistryTripExpenses: '0',
+  childrenCollegeEducation: '0',
+  movingExpense: '0',
+  seminary: '0',
+  housingDownPayment: '0',
+  autoPurchase: '0',
+  expensesNotApprovedWithin90Days: '0',
+  deductTaxDeferredPercent: false,
+  deductRothPercent: false,
+  phoneNumber: '',
+  emailAddress: '',
+  totalAdditionalSalaryRequested: '0',
+  additionalInfo: '',
+};
+
+const validationSchema = yup.object({
+  additionalInfo: yup.string(),
+});
+
+const FormikWrapper: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const formik = useFormik({
+    initialValues: baseFormValues,
+    validationSchema,
+    onSubmit: () => {},
+  });
+
+  const formikWithSchema = { ...formik, validationSchema };
+
+  return <FormikProvider value={formikWithSchema}>{children}</FormikProvider>;
+};
 
 interface TestComponentProps {
   formTitle?: string;
@@ -28,6 +84,8 @@ interface TestComponentProps {
   isDiscard?: boolean;
   isDiscardEdit?: boolean;
   actionRequired?: boolean;
+  additionalApproval?: boolean;
+  splitAsr?: boolean;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
@@ -40,26 +98,32 @@ const TestComponent: React.FC<TestComponentProps> = ({
   isDiscard,
   isDiscardEdit,
   actionRequired,
+  additionalApproval,
+  splitAsr,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
       <SnackbarProvider>
         <GqlMockedProvider>
-          <MinisterHousingAllowanceProvider type={pageType}>
-            <SubmitModal
-              formTitle={formTitle}
-              handleClose={handleClose}
-              handleConfirm={handleConfirm}
-              overrideTitle={overrideTitle}
-              overrideContent={overrideContent}
-              overrideSubContent={overrideSubContent}
-              isCancel={isCancel}
-              isDiscard={isDiscard}
-              isDiscardEdit={isDiscardEdit}
-              deadlineDate={date}
-              actionRequired={actionRequired}
-            />
-          </MinisterHousingAllowanceProvider>
+          <FormikWrapper>
+            <MinisterHousingAllowanceProvider type={pageType}>
+              <SubmitModal
+                formTitle={formTitle}
+                handleClose={handleClose}
+                handleConfirm={handleConfirm}
+                overrideTitle={overrideTitle}
+                overrideContent={overrideContent}
+                overrideSubContent={overrideSubContent}
+                isCancel={isCancel}
+                isDiscard={isDiscard}
+                isDiscardEdit={isDiscardEdit}
+                deadlineDate={date}
+                actionRequired={actionRequired}
+                additionalApproval={additionalApproval}
+                splitAsr={splitAsr}
+              />
+            </MinisterHousingAllowanceProvider>
+          </FormikWrapper>
         </GqlMockedProvider>
       </SnackbarProvider>
     </TestRouter>
@@ -67,6 +131,18 @@ const TestComponent: React.FC<TestComponentProps> = ({
 );
 
 describe('ConfirmationModal', () => {
+  beforeEach(() => {
+    mockUseAdditionalSalaryRequest.mockReturnValue({
+      traditional403bPercentage: 0.12,
+      roth403bPercentage: 0.1,
+      requestData: {
+        latestAdditionalSalaryRequest: {
+          calculations: { currentSalaryCap: 10000 },
+        },
+      },
+    } as ReturnType<typeof useAdditionalSalaryRequest>);
+  });
+
   it('renders submit confirmation modal correctly', async () => {
     const { getByText, getByRole, findByText } = render(
       <TestComponent pageType={PageEnum.New} />,
@@ -176,5 +252,38 @@ describe('ConfirmationModal', () => {
 
     await userEvent.click(getByRole('button', { name: /BACK/i }));
     expect(handleClose).toHaveBeenCalled();
+  });
+
+  describe('Additional Salary Request', () => {
+    it('shows TotalSalaryRequested and ApprovalProcess when additionalApproval is true and splitAsr is false', async () => {
+      const { findByText, getByText } = render(
+        <TestComponent additionalApproval={true} splitAsr={false} />,
+      );
+
+      expect(await findByText('Total Salary Requested')).toBeInTheDocument();
+      expect(getByText('Approval Process')).toBeInTheDocument();
+    });
+
+    it('hides submit button when splitAsr is true', async () => {
+      const { findByRole, queryByRole } = render(
+        <TestComponent splitAsr={true} />,
+      );
+
+      await findByRole('dialog');
+
+      expect(
+        queryByRole('button', { name: /YES, CONTINUE/i }),
+      ).not.toBeInTheDocument();
+    });
+
+    it('shows Submit For Approval button when additionalApproval is true', async () => {
+      const { findByRole } = render(
+        <TestComponent additionalApproval={true} splitAsr={false} />,
+      );
+
+      expect(
+        await findByRole('button', { name: /Submit For Approval/i }),
+      ).toBeInTheDocument();
+    });
   });
 });

@@ -13,7 +13,12 @@ export interface SalaryCalculations {
   additionalSalaryReceivedThisYear: number;
   totalAnnualSalary: number;
   grossAnnualSalary: number;
+  /** `true` when the salary request puts the user over their individual cap */
   exceedsCap: boolean;
+  /** `true` when the salary request puts the user over their individual cap but splitting the request between the user and their spouse would keep the couple under their individual and combined caps */
+  splitAsr: boolean;
+  /** `true` when the request requires additional approval */
+  additionalApproval: boolean;
 }
 
 interface CalculationsData {
@@ -29,12 +34,27 @@ export const useSalaryCalculations = ({
   values,
   calculations,
 }: UseSalaryCalculationsProps): SalaryCalculations => {
-  const { traditional403bPercentage, roth403bPercentage, requestData, user } =
-    useAdditionalSalaryRequest();
+  const {
+    traditional403bPercentage,
+    roth403bPercentage,
+    requestData,
+    user,
+    spouse,
+  } = useAdditionalSalaryRequest();
   const individualCap =
     requestData?.latestAdditionalSalaryRequest?.calculations.currentSalaryCap ??
     0;
+  const spouseIndividualCap = spouse
+    ? (requestData?.latestAdditionalSalaryRequest?.spouseCalculations
+        ?.currentSalaryCap ?? 0)
+    : null;
+  const combinedCap = spouse
+    ? (requestData?.latestAdditionalSalaryRequest?.calculations.combinedCap ??
+      0)
+    : null;
+
   const grossAnnualSalary = user?.currentSalary?.grossSalaryAmount ?? 0;
+  const spouseGrossAnnualSalary = spouse?.currentSalary?.grossSalaryAmount ?? 0;
 
   return useMemo(() => {
     const total = getTotal(values);
@@ -61,11 +81,32 @@ export const useSalaryCalculations = ({
     // Annual salary calculations
     const additionalSalaryReceivedThisYear =
       calculations?.pendingAsrAmount ?? 0;
-
     const totalAnnualSalary =
       grossAnnualSalary + additionalSalaryReceivedThisYear + total;
 
-    const exceedsCap = total > individualCap;
+    // Spouse annual salary calculations
+    const spouseTotalThisYear = spouse
+      ? requestData?.latestAdditionalSalaryRequest?.spouseCalculations
+          ?.pendingAsrAmount
+      : null;
+    const spouseTotalAnnualSalary =
+      spouseGrossAnnualSalary + (spouseTotalThisYear ?? 0);
+
+    // Exceeding cap calculations
+    const exceedsCap = totalAnnualSalary > individualCap;
+    const spouseExceedsCap =
+      spouse && spouseIndividualCap !== null
+        ? (spouseTotalAnnualSalary ?? 0) > spouseIndividualCap
+        : undefined;
+
+    const exceedsCombinedCap =
+      (combinedCap ?? 0) < totalAnnualSalary + spouseTotalAnnualSalary;
+
+    const splitAsr =
+      exceedsCap && spouseExceedsCap === false && !exceedsCombinedCap;
+    const additionalApproval =
+      (exceedsCap && spouseExceedsCap) ||
+      (exceedsCap && spouseExceedsCap === false && exceedsCombinedCap);
 
     return {
       total,
@@ -78,6 +119,8 @@ export const useSalaryCalculations = ({
       additionalSalaryReceivedThisYear,
       totalAnnualSalary,
       exceedsCap,
+      splitAsr,
+      additionalApproval,
     };
   }, [
     values,
@@ -85,5 +128,10 @@ export const useSalaryCalculations = ({
     grossAnnualSalary,
     traditional403bPercentage,
     roth403bPercentage,
+    individualCap,
+    spouseIndividualCap,
+    combinedCap,
+    spouse,
+    requestData,
   ]);
 };

@@ -55,12 +55,7 @@ const mockRequest: RequestType = {
   calculations: {
     currentSalaryCap: 50000,
     staffAccountBalance: 10000,
-    predictedYearIncome: 45000,
     pendingAsrAmount: 0,
-    maxAmountAndReason: {
-      amount: 10000,
-      reason: 'Test reason',
-    },
   },
   spouseCalculations: null,
   user: {
