@@ -66,7 +66,7 @@ export const MinisterHousingAllowanceReport = () => {
           phoneNumber: hcmUser?.staffInfo.primaryPhoneNumber,
           emailAddress: hcmUser?.staffInfo.emailAddress,
         },
-        isSpouse: forSpouse || undefined,
+        isSpouse: forSpouse,
       },
       onCompleted: ({ createMinistryHousingAllowanceRequest: newRequest }) => {
         enqueueSnackbar(

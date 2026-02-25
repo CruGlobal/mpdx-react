@@ -116,7 +116,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     error: requestError,
     loading,
   } = useAdditionalSalaryRequestQuery({
-    variables: { isSpouse: isSpouse || undefined },
+    variables: { isSpouse: isSpouse },
   });
 
   const currentYear = useMemo(() => DateTime.now().year, []);
