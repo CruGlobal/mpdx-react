@@ -171,7 +171,9 @@ describe('AdditionalSalaryRequestContext', () => {
 
     userEvent.click(getByRole('button', { name: 'Go to Receipt' }));
 
-    expect(await findByRole('heading', { name: 'Receipt' })).toBeInTheDocument();
+    expect(
+      await findByRole('heading', { name: 'Receipt' }),
+    ).toBeInTheDocument();
     expect(getByTestId('current-index')).toHaveTextContent('2');
   });
 
