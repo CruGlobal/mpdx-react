@@ -71,6 +71,162 @@ List EVERY file changed in this PR (relative path). For each file, include:
 
 Do not skip any file. If any file can't be read, state it and continue.
 
+### Stage 1.5 — PR Risk Assessment & Review Recommendation
+
+Analyze the PR changes to determine the appropriate reviewer level and display a clear recommendation.
+
+#### Step 1: Calculate Risk Score
+
+Start with a base score of 0, then add points based on these criteria:
+
+**Critical File Patterns (High Risk: +3 points each)**
+
+- `pages/api/auth/[...nextauth].page.ts` - NextAuth configuration
+- `pages/api/auth/helpers.ts` - JWT validation, session management
+- `pages/api/auth/impersonate/**/*` - User impersonation system
+- `pages/api/graphql-rest.page.ts` - REST to GraphQL proxy layer
+- `pages/api/Schema/index.ts` - Schema registry
+- `src/lib/apollo/client.ts` - Apollo client setup
+- `src/lib/apollo/link.ts` - GraphQL routing logic
+- `src/lib/apollo/cache.ts` - Cache policies
+- `next.config.ts` - Next.js/build configuration
+- `.env*` - Environment files (if changed, automatic senior review)
+
+**High-Risk File Patterns (+2 points each)**
+
+- `pages/api/Schema/**/resolvers.ts` - GraphQL resolvers
+- `**/*.graphql` (excluding `**/*.test.*` and `__tests__/**`) - Schema definitions
+- `pages/api/Schema/Settings/Organizations/**/*` - Organization management
+- `pages/api/Schema/Settings/Integrations/**/*` - Third-party integrations
+- `pages/api/Schema/donations/**/*` - Donation processing
+- `pages/api/Schema/reports/financialAccounts/**/*` - Financial reporting
+- `pages/api/Schema/Settings/Preferences/ExportData/**/*` - Data export
+- `src/components/Shared/MultiPageLayout/**/*` - Main app layout
+- `src/components/Shared/Header/**/*` - Global navigation
+- `src/components/Shared/Filters/**/*` - Shared filtering logic
+- `src/components/Shared/Forms/**/*` - Shared form components
+- `src/components/Settings/Admin/**/*` - Admin functionality
+- Any file with `Context` in the name under core features (not report-specific)
+
+**Medium-Risk File Patterns (+1 point each)**
+
+- `pages/accountLists/**/*` - Main application pages
+- `pages/api/**/*` (not already counted) - API endpoints
+- `src/components/Settings/integrations/**/*` - Integration UI
+- `src/components/Reports/**/Context/**/*` - Report state management
+- `src/hooks/**/*` - Custom hooks
+- `src/lib/**/*.ts` - Utility functions
+
+**Low-Risk Files (0 points)**
+
+- `**/*.test.tsx` or `**/*.test.ts` - Test files only
+- `*.md` - Documentation
+- `public/locales/**/*` - Translation files
+- Style-only changes with no logic
+
+**Change Volume Modifier**
+
+- <50 lines total: +0 points
+- 50-200 lines: +1 point
+- 200-500 lines: +2 points
+- 500+ lines: +3 points
+
+**Scope Multiplier**
+Apply after calculating base score:
+
+- Single domain (e.g., only tests): 1.0x
+- Multiple domains (e.g., components + API): 1.3x
+- Cross-cutting (e.g., auth + GraphQL + build): 1.7x
+
+**Special Pattern Detection (additional points)**
+
+- New npm package in `package.json`: +2 points
+- Updated critical package (@apollo/\*, next, react, next-auth): +3 points
+- New file in `src/hooks/`: +1 point (sets pattern)
+- New file in `src/components/Shared/`: +1 point (sets pattern)
+- Changes to `src/graphql/rootFields.generated.ts`: +3 points
+
+#### Step 2: Determine Day of Week
+
+Run: `date +%A`
+
+#### Step 3: Calculate Final Recommendation
+
+Based on the risk score and day of week, determine the required reviewer level:
+
+**Monday-Thursday:**
+
+- Score 1-3: Junior or Mid-level can review
+- Score 4-6: Mid-level recommended, Senior optional
+- Score 7-8: Senior recommended
+- Score 9-10: Senior (Caleb Cox) required
+
+**Friday:**
+
+- Score 1-3: Junior/Mid can review BUT suggest waiting until Monday
+- Score 4-6: Senior recommended for Friday merge
+- Score 7-10: Senior (Caleb Cox) required, strongly suggest waiting until Monday
+
+**Saturday/Sunday:**
+
+- All scores: Treat as Friday + add extra weekend deployment warning
+
+#### Step 4: Display Risk Assessment Report
+
+Print the following report at the beginning of your review (before the deep review):
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 PR RISK ASSESSMENT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Risk Score: [X]/10
+Risk Level: [LOW | MEDIUM | HIGH | CRITICAL]
+
+Files Changed: [N]
+Lines Changed: +[X] -[Y]
+
+Risk Factors Detected:
+[List each risk factor found with specific file references]
+• [e.g., "Authentication logic (pages/api/auth/helpers.ts)"]
+• [e.g., "GraphQL schema changes (3 .graphql files)"]
+• [e.g., "Large changeset (350+ lines)"]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+👥 REVIEW RECOMMENDATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Required Reviewer Level: [JUNIOR/MID-LEVEL | MID-LEVEL/SENIOR | SENIOR (Caleb Cox)]
+
+Reasoning: [1-2 sentence explanation]
+
+[IF FRIDAY AND SCORE <= 6]
+⚠️  FRIDAY DEPLOYMENT NOTICE
+This PR is being reviewed on Friday. Options:
+  1. Proceed with review and merge (approved for Friday deployment)
+  2. Wait until Monday for safer deployment window
+
+[IF FRIDAY AND SCORE >= 7]
+⚠️  HIGH-RISK FRIDAY DEPLOYMENT WARNING
+This PR contains high-risk changes. Recommendations:
+  • Senior (Caleb Cox) review required
+  • Strongly consider waiting until Monday to merge
+  • If urgent, ensure monitoring plan is in place
+
+[IF WEEKEND]
+⚠️  WEEKEND DEPLOYMENT WARNING
+Consider waiting until Monday for deployment unless this is an urgent hotfix.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+#### Important Notes
+
+- If any `.env` file is changed, immediately flag as CRITICAL and require senior review
+- If `package.json` dependencies change, list which packages and their risk level
+- Be specific about which high-risk files triggered the assessment
+- The risk score helps guide the decision but use judgment for edge cases
+
 ### Stage 2 — Deep Review (File-by-File)
 
 IMPORTANT: Only review files that appear in the git diff from Stage 1. Do not review files that are not part of this PR.
