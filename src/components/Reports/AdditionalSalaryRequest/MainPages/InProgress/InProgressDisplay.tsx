@@ -23,7 +23,10 @@ const InProgressMainContent: React.FC = () => {
     isSpouse,
   } = useAdditionalSalaryRequest();
 
-  const name = spouse?.staffInfo?.firstName;
+  const name = spouse?.staffInfo?.firstName ?? '';
+  const spouseLinkText = isSpouse
+    ? t('Switch back to {{name}}', { name })
+    : t('Request additional salary for {{name}}', { name });
 
   return (
     <>
@@ -65,7 +68,7 @@ const InProgressMainContent: React.FC = () => {
           <Link
             href={`/accountLists/${accountListId}/reports/additionalSalaryRequest${isSpouse ? '' : '?isSpouse=true'}`}
           >
-            {t(`Request additional salary for {{name}}`, { name })}
+            {spouseLinkText}
           </Link>
         </Box>
       )}

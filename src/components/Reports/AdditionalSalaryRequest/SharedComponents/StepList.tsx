@@ -43,6 +43,11 @@ export const StepList: React.FC<StepListProps> = ({ FormComponent }) => {
   const spouseLink = `${pageLink}${isSpouse ? '' : '?isSpouse=true'}`;
   const showSpouseLink = !!spouse;
 
+  const name = spouse?.staffInfo?.firstName ?? '';
+  const spouseLinkText = isSpouse
+    ? t('Switch back to {{name}}', { name })
+    : t('Request additional salary for {{name}}', { name });
+
   const steps = [
     <AboutForm key="about-form" />,
     <FormComponent key="complete-form" />,
@@ -55,11 +60,7 @@ export const StepList: React.FC<StepListProps> = ({ FormComponent }) => {
         isEdit={isEdit}
         alertText={alertText}
         linkOne={showSpouseLink ? spouseLink : undefined}
-        linkOneText={
-          showSpouseLink
-            ? t('Request additional salary for your spouse.')
-            : undefined
-        }
+        linkOneText={showSpouseLink ? spouseLinkText : undefined}
       />
     </AdditionalSalaryRequestSection>,
   ];

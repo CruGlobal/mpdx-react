@@ -30,6 +30,9 @@ export const SpouseComponent: React.FC = () => {
     (currentSalaryCap ?? 0) - (staffAccountBalance ?? 0);
 
   const name = spouse?.staffInfo?.firstName ?? '';
+  const spouseLinkText = isSpouse
+    ? t('Switch back to {{name}}', { name })
+    : t('Request additional salary for {{name}}', { name });
 
   return (
     <Box>
@@ -49,7 +52,7 @@ export const SpouseComponent: React.FC = () => {
         <Link
           href={`/accountLists/${accountListId}/reports/additionalSalaryRequest${isSpouse ? '' : '?isSpouse=true'}`}
         >
-          {t('Request additional salary for {{name}}', { name })}
+          {spouseLinkText}
         </Link>
       </Box>
 
