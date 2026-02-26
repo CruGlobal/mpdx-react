@@ -143,7 +143,7 @@ Use the Task tool with:
 
 - **description**: "Security code review"
 - **subagent_type**: "general-purpose"
-- **model**: "sonnet"
+- **model**: "opus"
 - **prompt**:
 
 ```
@@ -208,7 +208,7 @@ Use the Task tool with:
 
 - **description**: "Architecture code review"
 - **subagent_type**: "general-purpose"
-- **model**: "sonnet"
+- **model**: "opus"
 - **prompt**:
 
 ```
@@ -277,7 +277,7 @@ Use the Task tool with:
 
 - **description**: "Data integrity review"
 - **subagent_type**: "general-purpose"
-- **model**: "sonnet"
+- **model**: "opus"
 - **prompt**:
 
 ```
@@ -347,7 +347,7 @@ Use the Task tool with:
 
 - **description**: "Testing and quality review"
 - **subagent_type**: "general-purpose"
-- **model**: "haiku"
+- **model**: "opus"
 - **prompt**:
 
 ```
@@ -422,7 +422,7 @@ Use the Task tool with:
 
 - **description**: "UX and accessibility review"
 - **subagent_type**: "general-purpose"
-- **model**: "haiku"
+- **model**: "opus"
 - **prompt**:
 
 ```
@@ -1079,11 +1079,11 @@ Thank you for using Multi-Agent Code Review! 🤖
 
 **Model Configuration**:
 
-- Security: Sonnet (deep reasoning needed)
-- Architecture: Sonnet (system thinking needed)
-- Data: Sonnet (precision needed)
-- Testing: Haiku (faster, cost-effective)
-- UX: Haiku (faster, cost-effective)
+- Security: Opus (highest quality reasoning needed)
+- Architecture: Opus (deepest system thinking needed)
+- Data: Opus (maximum precision needed)
+- Testing: Opus (comprehensive analysis)
+- UX: Opus (thorough accessibility review)
 
 **Limitations**:
 
