@@ -8,14 +8,14 @@ query ReportsStaffExpenses(
     endMonth: $endMonth
     fundTypes: $fundTypes
   ) {
-    startBalance
     endBalance
     funds {
       id
       fundType
       total
       deficitLimit
-      balance
+      startBalance
+      endBalance
       categories {
         total
         averagePerMonth
