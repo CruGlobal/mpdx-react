@@ -44,6 +44,7 @@ const MainContent: React.FC = () => {
     loading,
     trackMutation,
     user,
+    spouse,
     isSpouse,
     setIsNewAsr,
   } = useAdditionalSalaryRequest();

@@ -58,15 +58,13 @@ export const MinisterHousingAllowanceReport = () => {
 
   const [createMHA] = useCreateHousingAllowanceRequestMutation();
 
-  const onCreateMHARequest = async (forSpouse = false) => {
-    const hcmUser = forSpouse ? spouseHcmData : userHcmData;
+  const onCreateMHARequest = async () => {
     await createMHA({
       variables: {
         requestAttributes: {
-          phoneNumber: hcmUser?.staffInfo.primaryPhoneNumber,
-          emailAddress: hcmUser?.staffInfo.emailAddress,
+          phoneNumber: userHcmData?.staffInfo.primaryPhoneNumber,
+          emailAddress: userHcmData?.staffInfo.emailAddress,
         },
-        isSpouse: forSpouse,
       },
       onCompleted: ({ createMinistryHousingAllowanceRequest: newRequest }) => {
         enqueueSnackbar(
@@ -95,19 +93,6 @@ export const MinisterHousingAllowanceReport = () => {
       },
     });
   };
-
-  const openStatuses = [
-    MhaStatusEnum.InProgress,
-    MhaStatusEnum.ActionRequired,
-    MhaStatusEnum.Pending,
-  ];
-  const spouseHasOpenRequest = isMarried
-    ? requests.some(
-        (r) =>
-          r.personNumber === spousePersonNumber &&
-          openStatuses.includes(r.status),
-      )
-    : false;
 
   const hasNoRequests = !requests.length;
 
@@ -159,26 +144,14 @@ export const MinisterHousingAllowanceReport = () => {
                   ))}
               </Stack>
               {(!isCurrentRequestPending || hasNoRequests) && (
-                <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => onCreateMHARequest(false)}
-                  >
-                    {t('Request New MHA')}
-                  </Button>
-                  {isMarried && !spouseHasOpenRequest && (
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      onClick={() => onCreateMHARequest(true)}
-                    >
-                      {t('Request New MHA for {{name}}', {
-                        name: spousePreferredName,
-                      })}
-                    </Button>
-                  )}
-                </Stack>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{ mt: 2 }}
+                  onClick={onCreateMHARequest}
+                >
+                  {t('Request New MHA')}
+                </Button>
               )}
               {previousApprovedRequest && (
                 <Stack direction="column" width={mainContentWidth} mt={4}>

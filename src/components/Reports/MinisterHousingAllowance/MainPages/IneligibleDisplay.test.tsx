@@ -58,65 +58,7 @@ describe('IneligibleDisplay', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('should render page with married staff and ineligible spouse', () => {
-    const { getByText } = render(
-      <TestComponent
-        contextValue={{
-          isMarried: true,
-          preferredName: 'John',
-          spousePreferredName: 'Jane',
-          userHcmData: {
-            staffInfo: {
-              personNumber: '000123456',
-            },
-          } as unknown as HcmData,
-          spouseHcmData: {
-            staffInfo: {
-              personNumber: '100123456',
-            },
-            mhaEit: {
-              mhaEligibility: false,
-            },
-          } as unknown as HcmData,
-        }}
-      />,
-    );
-
-    expect(
-      getByText(/Jane has not completed the required ibs courses/i),
-    ).toBeInTheDocument();
-  });
-
-  it('should not show ineligible message when spouse is eligible', () => {
-    const { queryByText } = render(
-      <TestComponent
-        contextValue={{
-          isMarried: true,
-          preferredName: 'John',
-          spousePreferredName: 'Jane',
-          userHcmData: {
-            staffInfo: {
-              personNumber: '000123456',
-            },
-          } as unknown as HcmData,
-          spouseHcmData: {
-            staffInfo: {
-              personNumber: '100123456',
-            },
-            mhaEit: {
-              mhaEligibility: true,
-            },
-          } as unknown as HcmData,
-        }}
-      />,
-    );
-
-    expect(
-      queryByText(/Jane has not completed the required ibs courses/i),
-    ).not.toBeInTheDocument();
-  });
-
-  it('should show ineligible message when spouse HCM data has no mhaEit', () => {
+  it('should render page with married staff', () => {
     const { getByText } = render(
       <TestComponent
         contextValue={{
