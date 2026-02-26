@@ -15,7 +15,7 @@ query ReportsStaffExpenses(
       fundType
       total
       deficitLimit
-      balance
+      endBalance
       categories {
         total
         averagePerMonth

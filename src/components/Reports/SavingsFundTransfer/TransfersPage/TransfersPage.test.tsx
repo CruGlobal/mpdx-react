@@ -95,13 +95,13 @@ const mock = {
         {
           id: '2',
           fundType: 'Savings',
-          balance: 25000,
+          endBalance: 25000,
           deficitLimit: 0,
         },
         {
           id: '1',
           fundType: 'Primary',
-          balance: 15000,
+          endBalance: 15000,
           deficitLimit: 0,
         },
       ],
@@ -125,13 +125,13 @@ const emptyMock = {
         {
           id: '1',
           fundType: 'Primary',
-          balance: 15000,
+          endBalance: 15000,
           deficitLimit: 0,
         },
         {
           id: '2',
           fundType: 'Savings',
-          balance: 2500,
+          endBalance: 2500,
           deficitLimit: 0,
         },
       ],
