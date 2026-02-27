@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Container, Stack } from '@mui/material';
+import { Box, Button, Container, Stack, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
@@ -12,6 +12,7 @@ import { PanelLayout } from '../Shared/CalculationReports/PanelLayout/PanelLayou
 import { PanelTypeEnum } from '../Shared/CalculationReports/Shared/sharedTypes';
 import { EligibleDisplay } from './MainPages/EligibleDisplay';
 import { IneligibleDisplay } from './MainPages/IneligibleDisplay';
+import { NoRequestsDisplay } from './MainPages/NoRequestsDisplay';
 import {
   useCreateHousingAllowanceRequestMutation,
   useMinistryHousingAllowanceRequestsQuery,
@@ -40,6 +41,8 @@ export const MinisterHousingAllowanceReport = () => {
     isMarried,
     preferredName,
     spousePreferredName,
+    userEligibleForMHA,
+    spouseEligibleForMHA,
     userHcmData,
     spouseHcmData,
   } = useMinisterHousingAllowance();
@@ -94,8 +97,6 @@ export const MinisterHousingAllowanceReport = () => {
     });
   };
 
-  const hasNoRequests = !requests.length;
-
   const currentRequest = requests[0] || {};
   // It default to true when no availableDate as the request is likely still being processed
   const isCurrentRequestPending =
@@ -113,6 +114,18 @@ export const MinisterHousingAllowanceReport = () => {
         isCurrentRequestPending,
     );
 
+  const hasNoRequests = !requests.length;
+
+  const bothEligible = userEligibleForMHA && spouseEligibleForMHA;
+  const eitherPersonEligible = userEligibleForMHA || spouseEligibleForMHA;
+
+  const showIneligibleDisplay =
+    !userEligibleForMHA || (isMarried && !bothEligible);
+  const showNewRequestButton =
+    eitherPersonEligible && (!isCurrentRequestPending || hasNoRequests);
+  const showCurrentRequest = eitherPersonEligible && currentRequest;
+  const showPreviousRequests = eitherPersonEligible && previousApprovedRequest;
+
   return (
     <PanelLayout
       panelType={PanelTypeEnum.Empty}
@@ -129,21 +142,34 @@ export const MinisterHousingAllowanceReport = () => {
           ) : (
             <>
               <Stack direction="column" width={mainContentWidth}>
+                <Box mb={2}>
+                  <Typography variant="h5">{t('Your MHA')}</Typography>
+                </Box>
+
                 {hasNoRequests ? (
-                  <IneligibleDisplay />
+                  <>
+                    <NoRequestsDisplay />
+                    {showIneligibleDisplay && <IneligibleDisplay />}
+                  </>
                 ) : (
-                  <EligibleDisplay isPending={isCurrentRequestPending} />
+                  <>
+                    {showIneligibleDisplay && <IneligibleDisplay />}
+                    {eitherPersonEligible && (
+                      <EligibleDisplay isPending={isCurrentRequestPending} />
+                    )}
+                  </>
                 )}
+
                 <NameDisplay names={names} personNumbers={personNumbers} />
 
-                {currentRequest &&
+                {showCurrentRequest &&
                   (isCurrentRequestPending ? (
                     <CurrentRequest request={currentRequest} />
                   ) : (
                     <CurrentBoardApproved request={currentRequest} />
                   ))}
               </Stack>
-              {(!isCurrentRequestPending || hasNoRequests) && (
+              {showNewRequestButton && (
                 <Button
                   variant="contained"
                   color="primary"
@@ -153,7 +179,7 @@ export const MinisterHousingAllowanceReport = () => {
                   {t('Request New MHA')}
                 </Button>
               )}
-              {previousApprovedRequest && (
+              {showPreviousRequests && (
                 <Stack direction="column" width={mainContentWidth} mt={4}>
                   <CurrentBoardApproved request={previousApprovedRequest} />
                 </Stack>
