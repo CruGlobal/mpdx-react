@@ -152,21 +152,17 @@ describe('InProgressDisplay', () => {
   });
 
   describe('isSpouse=true', () => {
-    it('renders "View" link text when isSpouse is true', async () => {
-      const { findByText } = render(
-        <TestComponent withSpouse isSpouse />,
-      );
+    it('renders "Switch back to" link text when isSpouse is true', async () => {
+      const { findByText } = render(<TestComponent withSpouse isSpouse />);
 
-      expect(await findByText("View John's request")).toBeInTheDocument();
+      expect(await findByText('Switch back to John')).toBeInTheDocument();
     });
 
     it('generates correct link URL without isSpouse query param', async () => {
-      const { findByRole } = render(
-        <TestComponent withSpouse isSpouse />,
-      );
+      const { findByRole } = render(<TestComponent withSpouse isSpouse />);
 
       const link = await findByRole('link', {
-        name: /View John's request/,
+        name: /Switch back to John/,
       });
       expect(link).toHaveAttribute(
         'href',

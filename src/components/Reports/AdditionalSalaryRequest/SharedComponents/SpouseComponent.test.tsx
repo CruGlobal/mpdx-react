@@ -126,10 +126,10 @@ describe('SpouseComponent', () => {
   });
 
   describe('isSpouse=true', () => {
-    it('shows "View" link text when isSpouse is true', () => {
+    it('shows "Switch back to" link text when isSpouse is true', () => {
       const { getByText } = renderComponent({ isSpouse: true });
 
-      expect(getByText("View Jane's request")).toBeInTheDocument();
+      expect(getByText('Switch back to Jane')).toBeInTheDocument();
     });
 
     it('uses userCalculations for remaining salary when isSpouse is true', () => {
@@ -142,7 +142,7 @@ describe('SpouseComponent', () => {
 
     it('generates correct link URL when isSpouse is true (no query param)', () => {
       const { getByRole } = renderComponent({ isSpouse: true });
-      const link = getByRole('link', { name: /View Jane's request/ });
+      const link = getByRole('link', { name: /Switch back to Jane/ });
 
       expect(link).toHaveAttribute(
         'href',

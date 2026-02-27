@@ -248,7 +248,7 @@ describe('StepList', () => {
       });
     });
 
-    it('renders "View" link text when isSpouse is true', async () => {
+    it('renders "Switch back to" link text when isSpouse is true', async () => {
       mockUseAdditionalSalaryRequest.mockReturnValue({
         ...mockContextValue,
         currentIndex: 2,
@@ -267,7 +267,7 @@ describe('StepList', () => {
       );
 
       await waitFor(() => {
-        expect(getByText("View John's request")).toBeInTheDocument();
+        expect(getByText('Switch back to John')).toBeInTheDocument();
       });
     });
   });
