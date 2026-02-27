@@ -21,10 +21,12 @@ jest.mock('notistack', () => ({
 
 interface TestComponentProps {
   withSpouse?: boolean;
+  isSpouse?: boolean;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   withSpouse = false,
+  isSpouse = false,
 }) => {
   const hcmData = {
     hcm: withSpouse
@@ -68,7 +70,13 @@ const TestComponent: React.FC<TestComponentProps> = ({
   return (
     <ThemeProvider theme={theme}>
       <TestRouter
-        router={{ query: { accountListId: 'account-list-1' }, push: mockPush }}
+        router={{
+          query: {
+            accountListId: 'account-list-1',
+            ...(isSpouse ? { isSpouse: 'true' } : {}),
+          },
+          push: mockPush,
+        }}
       >
         <SnackbarProvider>
           <GqlMockedProvider
@@ -139,6 +147,26 @@ describe('InProgressDisplay', () => {
       expect(mockEnqueue).toHaveBeenCalledWith(
         'Additional Salary Request discarded successfully.',
         { variant: 'success' },
+      );
+    });
+  });
+
+  describe('isSpouse=true', () => {
+    it('renders "Switch back to" link text when isSpouse is true', async () => {
+      const { findByText } = render(<TestComponent withSpouse isSpouse />);
+
+      expect(await findByText('Switch back to John')).toBeInTheDocument();
+    });
+
+    it('generates correct link URL without isSpouse query param', async () => {
+      const { findByRole } = render(<TestComponent withSpouse isSpouse />);
+
+      const link = await findByRole('link', {
+        name: /Switch back to John/,
+      });
+      expect(link).toHaveAttribute(
+        'href',
+        '/accountLists/account-list-1/reports/additionalSalaryRequest',
       );
     });
   });

@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import React, {
   createContext,
   useCallback,
@@ -58,9 +59,10 @@ export type AdditionalSalaryRequestType = {
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
   isNewAsr: boolean;
   setIsNewAsr: React.Dispatch<React.SetStateAction<boolean>>;
+  isSpouse: boolean;
 };
 
-const AdditionalSalaryRequestContext =
+export const AdditionalSalaryRequestContext =
   createContext<AdditionalSalaryRequestType | null>(null);
 
 export const useAdditionalSalaryRequest = (): AdditionalSalaryRequestType => {
@@ -93,6 +95,9 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     initialPageType ?? PageEnum.New,
   );
 
+  const router = useRouter();
+  const isSpouse = router.query.isSpouse === 'true';
+
   const [isNewAsr, setIsNewAsr] = useState(false);
 
   const {
@@ -110,7 +115,9 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     data: requestData,
     error: requestError,
     loading,
-  } = useAdditionalSalaryRequestQuery();
+  } = useAdditionalSalaryRequestQuery({
+    variables: { isSpouse: isSpouse },
+  });
 
   const currentYear = useMemo(() => DateTime.now().year, []);
   const { data: salaryInfoData } = useSalaryInfoQuery({
@@ -167,7 +174,10 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
 
   const { trackMutation, isMutating } = useTrackMutation();
 
-  const [user, spouse] = hcmData?.hcm ?? [];
+  const [primaryPerson, spousePerson] = hcmData?.hcm ?? [];
+  const user = isSpouse ? spousePerson : primaryPerson;
+  const spouse = isSpouse ? primaryPerson : spousePerson;
+
   const salaryInfo = salaryInfoData?.salaryInfo;
   const isInternational = user?.staffInfo?.isInternational ?? false;
   const taxDeferred =
@@ -211,6 +221,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       trackMutation,
       isNewAsr,
       setIsNewAsr,
+      isSpouse,
     }),
     [
       staffAccountId,
@@ -241,6 +252,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       trackMutation,
       isNewAsr,
       setIsNewAsr,
+      isSpouse,
     ],
   );
 
