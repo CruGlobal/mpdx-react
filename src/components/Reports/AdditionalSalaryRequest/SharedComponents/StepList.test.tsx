@@ -203,6 +203,75 @@ describe('StepList', () => {
     ).not.toBeInTheDocument();
   });
 
+  describe('Spouse link in Receipt step', () => {
+    it('renders spouse link when spouse exists', async () => {
+      mockUseAdditionalSalaryRequest.mockReturnValue({
+        ...mockContextValue,
+        currentIndex: 2,
+        spouse: {
+          staffInfo: {
+            firstName: 'Jane',
+          },
+        },
+      } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+      const { getByText } = render(
+        <AdditionalSalaryRequestTestWrapper>
+          <StepList FormComponent={NewForm} />
+        </AdditionalSalaryRequestTestWrapper>,
+      );
+
+      await waitFor(() => {
+        expect(
+          getByText('Request additional salary for Jane'),
+        ).toBeInTheDocument();
+      });
+    });
+
+    it('does not render spouse link when no spouse exists', async () => {
+      mockUseAdditionalSalaryRequest.mockReturnValue({
+        ...mockContextValue,
+        currentIndex: 2,
+        spouse: undefined,
+      });
+
+      const { queryByText } = render(
+        <AdditionalSalaryRequestTestWrapper>
+          <StepList FormComponent={NewForm} />
+        </AdditionalSalaryRequestTestWrapper>,
+      );
+
+      await waitFor(() => {
+        expect(
+          queryByText(/Request additional salary for/),
+        ).not.toBeInTheDocument();
+      });
+    });
+
+    it('renders "View" link text when isSpouse is true', async () => {
+      mockUseAdditionalSalaryRequest.mockReturnValue({
+        ...mockContextValue,
+        currentIndex: 2,
+        isSpouse: true,
+        spouse: {
+          staffInfo: {
+            firstName: 'John',
+          },
+        },
+      } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+      const { getByText } = render(
+        <AdditionalSalaryRequestTestWrapper>
+          <StepList FormComponent={NewForm} />
+        </AdditionalSalaryRequestTestWrapper>,
+      );
+
+      await waitFor(() => {
+        expect(getByText("View John's request")).toBeInTheDocument();
+      });
+    });
+  });
+
   describe('Exceeds cap', () => {
     it('renders exceeds cap (for single) text when true', async () => {
       mockUseAdditionalSalaryRequest.mockReturnValue({

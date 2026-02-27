@@ -1,7 +1,6 @@
 import { SwapHorizSharp } from '@mui/icons-material';
 import { Box, Button, Link, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { useAccountListId } from 'src/hooks/useAccountListId';
 import { PanelLayout } from '../../../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { useIconPanelItems } from '../../../Shared/CalculationReports/PanelLayout/useIconPanelItems';
 import {
@@ -9,24 +8,14 @@ import {
   PanelTypeEnum,
 } from '../../../Shared/CalculationReports/Shared/sharedTypes';
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
+import { useSpouseLink } from '../../Shared/useSpouseLink';
 
 const InProgressMainContent: React.FC = () => {
   const { t } = useTranslation();
-  const accountListId = useAccountListId();
 
-  const {
-    handleDeleteRequest,
-    requestId,
-    spouse,
-    setPageType,
-    goToStep,
-    isSpouse,
-  } = useAdditionalSalaryRequest();
-
-  const name = spouse?.staffInfo?.firstName ?? '';
-  const spouseLinkText = isSpouse
-    ? t('Switch back to {{name}}', { name })
-    : t('Request additional salary for {{name}}', { name });
+  const { handleDeleteRequest, requestId, spouse, setPageType, goToStep } =
+    useAdditionalSalaryRequest();
+  const { spouseLinkText, spouseLinkHref } = useSpouseLink();
 
   return (
     <>
@@ -65,11 +54,7 @@ const InProgressMainContent: React.FC = () => {
               color: 'rgba(0, 0, 0, 0.54)',
             }}
           />
-          <Link
-            href={`/accountLists/${accountListId}/reports/additionalSalaryRequest${isSpouse ? '' : '?isSpouse=true'}`}
-          >
-            {spouseLinkText}
-          </Link>
+          <Link href={spouseLinkHref}>{spouseLinkText}</Link>
         </Box>
       )}
     </>

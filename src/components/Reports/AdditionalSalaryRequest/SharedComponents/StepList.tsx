@@ -8,6 +8,7 @@ import { AboutForm } from '../AboutForm/AboutForm';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { useSalaryCalculations } from '../Shared/useSalaryCalculations';
+import { useSpouseLink } from '../Shared/useSpouseLink';
 import { AdditionalSalaryRequestSection } from './AdditionalSalaryRequestSection';
 import { EditAlertText, ExceedsCapAlertText } from './ReceiptAlertText';
 
@@ -18,11 +19,11 @@ interface StepListProps {
 }
 
 export const StepList: React.FC<StepListProps> = ({ FormComponent }) => {
-  const { currentIndex, pageType, spouse, isSpouse } =
-    useAdditionalSalaryRequest();
+  const { currentIndex, pageType } = useAdditionalSalaryRequest();
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const isEdit = pageType === PageEnum.Edit;
+  const { spouseLinkText, spouseLinkHref, showSpouseLink } = useSpouseLink();
 
   const { values } = useFormikContext<CompleteFormValues>();
   const { exceedsCap } = useSalaryCalculations({
@@ -40,13 +41,6 @@ export const StepList: React.FC<StepListProps> = ({ FormComponent }) => {
   );
 
   const pageLink = `/accountLists/${accountListId}/reports/additionalSalaryRequest`;
-  const spouseLink = `${pageLink}${isSpouse ? '' : '?isSpouse=true'}`;
-  const showSpouseLink = !!spouse;
-
-  const name = spouse?.staffInfo?.firstName ?? '';
-  const spouseLinkText = isSpouse
-    ? t('Switch back to {{name}}', { name })
-    : t('Request additional salary for {{name}}', { name });
 
   const steps = [
     <AboutForm key="about-form" />,
@@ -59,7 +53,7 @@ export const StepList: React.FC<StepListProps> = ({ FormComponent }) => {
         viewLink={pageLink}
         isEdit={isEdit}
         alertText={alertText}
-        linkOne={showSpouseLink ? spouseLink : undefined}
+        linkOne={showSpouseLink ? spouseLinkHref : undefined}
         linkOneText={showSpouseLink ? spouseLinkText : undefined}
       />
     </AdditionalSalaryRequestSection>,

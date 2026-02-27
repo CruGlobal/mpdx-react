@@ -124,4 +124,42 @@ describe('SpouseComponent', () => {
 
     expect(getByTestId('ImportExportIcon')).toBeInTheDocument();
   });
+
+  describe('isSpouse=true', () => {
+    it('shows "View" link text when isSpouse is true', () => {
+      const { getByText } = renderComponent({ isSpouse: true });
+
+      expect(getByText("View Jane's request")).toBeInTheDocument();
+    });
+
+    it('uses userCalculations for remaining salary when isSpouse is true', () => {
+      const { getByText } = renderComponent({ isSpouse: true });
+
+      expect(
+        getByText('Up to their remaining allowable salary of $800'),
+      ).toBeInTheDocument();
+    });
+
+    it('generates correct link URL when isSpouse is true (no query param)', () => {
+      const { getByRole } = renderComponent({ isSpouse: true });
+      const link = getByRole('link', { name: /View Jane's request/ });
+
+      expect(link).toHaveAttribute(
+        'href',
+        '/accountLists/account-list-1/reports/additionalSalaryRequest',
+      );
+    });
+
+    it('generates correct link URL when isSpouse is false (with query param)', () => {
+      const { getByRole } = renderComponent({ isSpouse: false });
+      const link = getByRole('link', {
+        name: /Request additional salary for Jane/,
+      });
+
+      expect(link).toHaveAttribute(
+        'href',
+        '/accountLists/account-list-1/reports/additionalSalaryRequest?isSpouse=true',
+      );
+    });
+  });
 });
