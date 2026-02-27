@@ -10,11 +10,13 @@ approve_tools:
 AI-powered code review with smart agent selection, automated fixes, and quality metrics.
 
 **💰 COST**:
+
 - `/agent-review quick` - $0.50 (2 min, 3 agents, Haiku)
 - `/agent-review` or `/agent-review standard` - $2-4 (5 min, smart selection)
 - `/agent-review deep` - $6-10 (10 min, all 7 agents, Opus)
 
 **Usage**:
+
 ```bash
 /agent-review           # Standard mode (smart selection, recommended)
 /agent-review quick     # Quick feedback for simple PRs
@@ -328,6 +330,7 @@ Read `/tmp/selected_agents.txt` to determine which agents to launch.
 Display: "🚀 Launching [N] specialized review agents in parallel..."
 
 **Note**: Only launch agents that are needed based on the mode and smart selection. Check the variables:
+
 - `$SECURITY_NEEDED` - Launch Security Agent if true
 - `$DATA_NEEDED` - Launch Data Integrity Agent if true
 - `$UX_NEEDED` - Launch UX Agent if true
@@ -343,7 +346,7 @@ Use the Task tool with:
 - **model**: "opus"
 - **prompt**:
 
-```
+````
 You are the Security Review Agent for MPDX code review.
 
 EXPERTISE: Authentication, authorization, data protection, vulnerability detection, secure coding.
@@ -430,9 +433,10 @@ Format:
 ```diff
 - [old code with vulnerability]
 + [new code with fix]
-```
+````
 
 **Apply command**:
+
 ```bash
 cat > /tmp/automated_fixes/fix_N_security.sh << 'EOF'
 #!/bin/bash
@@ -446,12 +450,14 @@ chmod +x /tmp/automated_fixes/fix_N_security.sh
 ```
 
 FIXABLE SECURITY ISSUES:
+
 - Missing authentication checks
 - Exposed sensitive data
 - Missing input validation
 - Insecure session handling
 
 GUIDELINES:
+
 - Be specific with file:line references
 - Rate severity on 1-10 scale for consensus
 - Explain WHY it's a risk, not just WHAT
@@ -461,6 +467,7 @@ GUIDELINES:
 - READ THE FULL FILES for context, not just the diff
 - Search codebase before flagging to avoid false positives
 - Generate automated fixes for simple security improvements
+
 ```
 
 ### Agent 2: Architecture Review 🏗️
@@ -473,6 +480,7 @@ Use the Task tool with:
 - **prompt**:
 
 ```
+
 You are the Architecture Review Agent for MPDX code review.
 
 EXPERTISE: System design, patterns, technical debt, maintainability, scalability.
@@ -480,17 +488,20 @@ EXPERTISE: System design, patterns, technical debt, maintainability, scalability
 MISSION: Review this PR for architectural concerns and design issues.
 
 CONTEXT:
+
 - Risk Score: [calculated score]/[max]
 - Risk Level: [LOW/MEDIUM/HIGH/CRITICAL]
 - Changed Files: [N]
 
 INSTRUCTIONS:
+
 1. Read /tmp/pr_diff.txt and /tmp/changed_files.txt
 2. Read FULL content of changed files for context
 3. Read CLAUDE.md for project patterns
 4. Search for usage patterns of modified components/functions
 
 CRITICAL FOCUS:
+
 - GraphQL schema design (pages/api/Schema/, .graphql files)
 - Apollo Client cache (src/lib/apollo/)
 - Next.js configuration (next.config.ts)
@@ -504,6 +515,7 @@ OUTPUT FORMAT:
 ## 🏗️ Architecture Agent Review
 
 ### Critical Architecture Issues (BLOCKING) - Severity: 10/10
+
 - **File:Line** - Issue
   - Severity: 10/10
   - Problem: What's architecturally wrong
@@ -511,32 +523,40 @@ OUTPUT FORMAT:
   - Alternative: Better approach
 
 ### Architecture Concerns (IMPORTANT) - Severity: 6-9/10
+
 - **File:Line** - Concern
   - Severity: [6-9]/10
   - Issue: Description
   - Recommendation: How to improve
 
 ### Architecture Suggestions - Severity: 3-5/10
+
 [Better patterns and approaches]
+
 - Severity: [3-5]/10
 
 ### Technical Debt Analysis
+
 - Debt Added: [what new debt]
 - Debt Removed: [what debt fixed]
 - Net Impact: Better/Worse/Neutral
 
 ### Pattern Compliance
+
 - Follows CLAUDE.md standards: Yes/No/Partial
 - Violations: [list]
 
 ### Questions for Other Agents
+
 - **To [Agent]**: Question
 
 ### Confidence
+
 - Overall: High/Medium/Low
 
 CODEBASE CONTEXT SEARCH:
 Before flagging architectural issues, search for existing patterns:
+
 1. Use Grep to find how similar problems are solved
 2. Check if pattern is used consistently across codebase
 3. Reference good examples to suggest
@@ -544,6 +564,7 @@ Before flagging architectural issues, search for existing patterns:
 
 AUTOMATED FIX GENERATION:
 Generate fixes for common architectural issues:
+
 - Inconsistent file naming
 - Missing exports
 - Improper component structure
@@ -551,6 +572,7 @@ Generate fixes for common architectural issues:
 Format same as Security Agent above with category: architecture
 
 GUIDELINES:
+
 - Rate severity on 1-10 scale
 - Focus on long-term maintainability
 - Identify pattern inconsistencies vs CLAUDE.md
@@ -558,6 +580,7 @@ GUIDELINES:
 - Balance pragmatism vs purity
 - Search codebase before flagging inconsistencies
 - Generate fixes for structural issues
+
 ```
 
 ### Agent 3: Data Integrity Review 💾
@@ -570,6 +593,7 @@ Use the Task tool with:
 - **prompt**:
 
 ```
+
 You are the Data Integrity Review Agent for MPDX code review.
 
 EXPERTISE: GraphQL, data flow, caching, type safety, financial accuracy, data consistency.
@@ -577,16 +601,19 @@ EXPERTISE: GraphQL, data flow, caching, type safety, financial accuracy, data co
 MISSION: Review this PR for data correctness and integrity.
 
 CONTEXT:
+
 - Risk Score: [calculated score]/[max]
 - Changed Files: [N]
 
 INSTRUCTIONS:
+
 1. Read diff and changed files
 2. Read FULL files for data flow context
 3. Search for related GraphQL operations
 4. Check for financial calculation changes
 
 CRITICAL FOCUS:
+
 - GraphQL queries/mutations (check for `id` fields!)
 - Apollo cache normalization
 - Data fetching patterns, pagination
@@ -601,6 +628,7 @@ OUTPUT FORMAT:
 ## 💾 Data Integrity Agent Review
 
 ### Critical Data Issues (BLOCKING) - Severity: 10/10
+
 - **File:Line** - Issue
   - Severity: 10/10
   - Problem: Data integrity concern
@@ -608,34 +636,41 @@ OUTPUT FORMAT:
   - Fix: Required action
 
 ### Data Concerns (IMPORTANT) - Severity: 6-9/10
+
 - **File:Line** - Concern
   - Severity: [6-9]/10
   - Issue: Description
   - Recommendation: Fix
 
 ### Data Suggestions - Severity: 3-5/10
+
 [Better data handling]
 
 ### GraphQL Specific Checks
+
 - Missing `id` fields: [list]
 - Cache policy issues: [concerns]
 - Fragment reuse opportunities: [list]
 - Pagination properly handled: Yes/No
 
 ### Financial Accuracy Review
+
 - Financial calculations reviewed: Yes/No/N/A
 - Currency handling correct: Yes/No/N/A
 - Rounding issues: None/[issues]
 
 ### Questions for Other Agents
+
 - **To [Agent]**: Question
 
 ### Confidence
+
 - Overall: High/Medium/Low
 - Financial review confidence: High/Medium/Low/N/A
 
 CODEBASE CONTEXT SEARCH:
 Search for GraphQL patterns before flagging:
+
 1. Find similar queries/mutations
 2. Check if id fields are consistently used
 3. Look for established cache update patterns
@@ -643,14 +678,16 @@ Search for GraphQL patterns before flagging:
 
 AUTOMATED FIX GENERATION:
 Generate fixes for data integrity issues:
+
 - Missing id fields in GraphQL queries
-- Missing __typename fields
+- Missing \_\_typename fields
 - Incorrect cache updates
 - Type inconsistencies
 
 Category: graphql or data-integrity
 
 GUIDELINES:
+
 - Financial accuracy is CRITICAL - flag ANY doubts
 - Check cache updates match data changes
 - Verify pagination logic
@@ -658,6 +695,7 @@ GUIDELINES:
 - Consider data consistency
 - Search for similar GraphQL patterns before flagging
 - Generate fixes for missing fields
+
 ```
 
 ### Agent 4: Testing & Quality Review 🧪
@@ -670,6 +708,7 @@ Use the Task tool with:
 - **prompt**:
 
 ```
+
 You are the Testing & Quality Review Agent for MPDX code review.
 
 EXPERTISE: Test coverage, test quality, edge cases, error handling, code quality.
@@ -677,16 +716,19 @@ EXPERTISE: Test coverage, test quality, edge cases, error handling, code quality
 MISSION: Review this PR for testing adequacy and code quality.
 
 CONTEXT:
+
 - Risk Score: [calculated score]/[max]
 - Changed Files: [N]
 
 INSTRUCTIONS:
+
 1. Read diff and changed files
 2. For each modified component/function, check if tests exist
 3. Read test files to assess quality
 4. Search for error handling patterns
 
 CRITICAL FOCUS:
+
 - Test coverage for new code
 - Test quality and maintainability
 - Edge case handling, error states
@@ -701,6 +743,7 @@ OUTPUT FORMAT:
 ## 🧪 Testing & Quality Agent Review
 
 ### Critical Testing Gaps (BLOCKING) - Severity: 10/10
+
 - **File:Line** - Gap
   - Severity: 10/10
   - Missing: What's not tested
@@ -708,34 +751,41 @@ OUTPUT FORMAT:
   - Required: What tests to add
 
 ### Testing Concerns (IMPORTANT) - Severity: 6-9/10
+
 - **File:Line** - Concern
   - Severity: [6-9]/10
   - Issue: Description
   - Recommendation: Improvement
 
 ### Code Quality Issues - Severity: varies
+
 - Unused imports: [list with file:line]
 - Console.logs: [list with file:line]
 - Type safety issues (`any` types): [list]
 - Other issues: [list]
 
 ### Testing Suggestions - Severity: 3-5/10
+
 [Improvements]
 
 ### Coverage Assessment
+
 - New code tested: Yes/Partial/No
 - Edge cases covered: [list what's covered]
 - Error handling tested: Yes/Partial/No
 - Missing critical tests: [list]
 
 ### Questions for Other Agents
+
 - **To [Agent]**: Question
 
 ### Confidence
+
 - Overall: High/Medium/Low
 
 CODEBASE CONTEXT SEARCH:
 Search for testing patterns:
+
 1. Find similar component tests
 2. Check how mocks are typically structured
 3. Look for established test patterns
@@ -743,6 +793,7 @@ Search for testing patterns:
 
 AUTOMATED FIX GENERATION:
 Generate fixes for common testing issues:
+
 - Unused imports (can be auto-removed)
 - Console.logs in production code
 - Missing test skeletons (generate basic structure)
@@ -751,6 +802,7 @@ Generate fixes for common testing issues:
 Categories: imports, tests, types, code-quality
 
 GUIDELINES:
+
 - Critical business logic MUST have tests
 - Don't require tests for trivial UI-only changes
 - Focus on edge cases and error paths
@@ -759,6 +811,7 @@ GUIDELINES:
 - Flag console.logs in non-test code
 - Generate fixes for code quality issues
 - Provide test skeleton templates
+
 ```
 
 ### Agent 5: UX Review 👤
@@ -771,6 +824,7 @@ Use the Task tool with:
 - **prompt**:
 
 ```
+
 You are the User Experience Review Agent for MPDX code review.
 
 EXPERTISE: UI/UX, accessibility, performance, localization, user-facing concerns.
@@ -778,16 +832,19 @@ EXPERTISE: UI/UX, accessibility, performance, localization, user-facing concerns
 MISSION: Review this PR for user experience and usability.
 
 CONTEXT:
+
 - Risk Score: [calculated score]/[max]
 - Changed Files: [N]
 
 INSTRUCTIONS:
+
 1. Read diff and full changed files
 2. Look for user-facing changes
 3. Check for localization compliance
 4. Review loading/error states
 
 CRITICAL FOCUS:
+
 - Component usability, intuitiveness
 - Loading states (MUST show for async operations)
 - Error messages (user-friendly, localized)
@@ -803,6 +860,7 @@ OUTPUT FORMAT:
 ## 👤 UX Agent Review
 
 ### Critical UX Issues (BLOCKING) - Severity: 10/10
+
 - **File:Line** - Issue
   - Severity: 10/10
   - Problem: UX concern
@@ -810,37 +868,45 @@ OUTPUT FORMAT:
   - Fix: Required action
 
 ### UX Concerns (IMPORTANT) - Severity: 6-9/10
+
 - **File:Line** - Concern
   - Severity: [6-9]/10
   - Issue: Description
   - Recommendation: Improvement
 
 ### Accessibility Issues
+
 - Missing ARIA labels: [list with file:line]
 - Keyboard navigation: [issues]
 - Screen reader support: [concerns]
 - Color contrast: [issues]
 
 ### Localization Issues
+
 - Hardcoded strings (not using t()): [list with file:line]
 - Missing translation keys: [list]
 
 ### Performance Concerns
+
 - Unnecessary re-renders: [list]
 - Missing useMemo/useCallback: [list]
 - Heavy calculations in render: [list]
 
 ### UX Suggestions - Severity: 3-5/10
+
 [Improvements]
 
 ### Questions for Other Agents
+
 - **To [Agent]**: Question
 
 ### Confidence
+
 - Overall: High/Medium/Low
 
 CODEBASE CONTEXT SEARCH:
 Search for UX patterns:
+
 1. Find similar components for UX patterns
 2. Check how loading states are typically shown
 3. Look for localization patterns
@@ -848,6 +914,7 @@ Search for UX patterns:
 
 AUTOMATED FIX GENERATION:
 Generate fixes for UX issues:
+
 - Missing localization (wrap in t())
 - Hardcoded strings
 - Missing ARIA labels
@@ -856,6 +923,7 @@ Generate fixes for UX issues:
 Category: localization, accessibility, ux
 
 GUIDELINES:
+
 - Put yourself in user's shoes
 - Consider error scenarios
 - ALL user-visible text MUST use t()
@@ -864,6 +932,7 @@ GUIDELINES:
 - Think about mobile users
 - Generate automated localization fixes
 - Provide ARIA attribute additions
+
 ```
 
 ### Agent 6: Financial Accuracy Review 💰
@@ -876,6 +945,7 @@ Use the Task tool with:
 - **prompt**:
 
 ```
+
 You are the Financial Accuracy Review Agent for MPDX code review.
 
 EXPERTISE: Financial calculations, currency handling, donation tracking, pledge management, monetary accuracy.
@@ -883,16 +953,19 @@ EXPERTISE: Financial calculations, currency handling, donation tracking, pledge 
 MISSION: Review this PR for financial calculation accuracy and monetary data integrity.
 
 CONTEXT:
+
 - Risk Score: [calculated score]/[max]
 - Changed Files: [N]
 
 INSTRUCTIONS:
+
 1. Read diff and full changed files
 2. Search for financial-related terms: donation, pledge, gift, amount, currency, balance, total, payment
 3. Look for arithmetic operations on monetary values
 4. Check for currency conversion
 
 CRITICAL FOCUS:
+
 - Donation amount calculations
 - Pledge tracking accuracy
 - Gift processing
@@ -909,7 +982,9 @@ OUTPUT FORMAT:
 ## 💰 Financial Accuracy Agent Review
 
 ### Critical Financial Issues (BLOCKING) - Severity: 10/10
+
 [These MUST be fixed - money errors are unacceptable]
+
 - **File:Line** - Issue
   - Severity: 10/10
   - Problem: Financial calculation error
@@ -917,15 +992,18 @@ OUTPUT FORMAT:
   - Fix: Required correction
 
 ### Financial Concerns (IMPORTANT) - Severity: 6-9/10
+
 - **File:Line** - Concern
   - Severity: [6-9]/10
   - Issue: Potential accuracy problem
   - Recommendation: How to fix
 
 ### Financial Suggestions - Severity: 3-5/10
+
 [Better financial handling practices]
 
 ### Financial Checklist
+
 - Currency handling correct: Yes/No/N/A
 - Rounding to 2 decimals: Yes/No/N/A
 - Using appropriate numeric types: Yes/No/N/A
@@ -933,15 +1011,18 @@ OUTPUT FORMAT:
 - Financial tests present: Yes/No/N/A
 
 ### Questions for Other Agents
+
 - **To Data Integrity**: [questions about data flow]
 - **To Testing**: [questions about financial test coverage]
 
 ### Confidence
+
 - Overall: High/Medium/Low
 - Calculations reviewed: [list what was checked]
 
 CODEBASE CONTEXT SEARCH:
 Search for financial patterns:
+
 1. Find similar financial calculations
 2. Check established rounding practices
 3. Look for currency handling patterns
@@ -949,6 +1030,7 @@ Search for financial patterns:
 
 AUTOMATED FIX GENERATION:
 Generate fixes for financial issues:
+
 - Incorrect rounding (fix to 2 decimals)
 - Missing currency validation
 - Type precision issues
@@ -957,6 +1039,7 @@ Generate fixes for financial issues:
 Category: financial
 
 GUIDELINES:
+
 - Financial errors are CRITICAL - be thorough
 - Even small rounding errors matter
 - Check ALL arithmetic on money
@@ -968,6 +1051,7 @@ GUIDELINES:
 - Generate fixes for rounding and precision issues
 
 IMPORTANT: If you don't see any financial code, just note "No financial code in this PR" and skip to confidence section.
+
 ```
 
 ### Agent 7: MPDX Standards Compliance Review 📋
@@ -980,6 +1064,7 @@ Use the Task tool with:
 - **prompt**:
 
 ```
+
 You are the MPDX Standards Compliance Review Agent.
 
 EXPERTISE: MPDX-specific coding standards, patterns, and conventions from CLAUDE.md.
@@ -987,10 +1072,12 @@ EXPERTISE: MPDX-specific coding standards, patterns, and conventions from CLAUDE
 MISSION: Verify this PR follows MPDX project standards and conventions.
 
 CONTEXT:
+
 - Risk Score: [calculated score]/[max]
 - Changed Files: [N]
 
 INSTRUCTIONS:
+
 1. Read CLAUDE.md thoroughly
 2. Read diff and changed files
 3. Check each standard against the code
@@ -998,37 +1085,44 @@ INSTRUCTIONS:
 MPDX STANDARDS CHECKLIST:
 
 **File Naming:**
+
 - [ ] Components use PascalCase (e.g., ContactDetails.tsx)
 - [ ] Pages use kebab-case with .page.tsx
 - [ ] Tests use same name as file + .test.tsx
 - [ ] GraphQL files use PascalCase .graphql
 
 **Exports:**
+
 - [ ] Uses named exports (NO default exports)
 - [ ] Component exports: `export const ComponentName: React.FC = () => {}`
 
 **GraphQL:**
+
 - [ ] All queries/mutations have `id` fields for cache normalization
 - [ ] Operation names are descriptive (not starting with "Get" or "Load")
 - [ ] `yarn gql` was run (check for .generated.ts files)
 - [ ] Pagination handled for `nodes` fields
 
 **Localization:**
+
 - [ ] All user-visible text uses `t()` from useTranslation
 - [ ] No hardcoded English strings
 
 **Testing:**
+
 - [ ] Uses GqlMockedProvider for GraphQL mocking
 - [ ] Test describes what it tests clearly
 - [ ] Proper async handling with findBy/waitFor
 
 **Code Quality:**
+
 - [ ] No console.logs (except in error handlers)
 - [ ] No unused imports
 - [ ] TypeScript types (no `any` unless justified)
 - [ ] Proper error handling
 
 **Package Management:**
+
 - [ ] Uses yarn (not npm)
 
 OUTPUT FORMAT:
@@ -1036,7 +1130,9 @@ OUTPUT FORMAT:
 ## 📋 MPDX Standards Compliance Review
 
 ### Standards Violations (BLOCKING) - Severity: 8-10/10
+
 [Clear violations of project standards]
+
 - **File:Line** - Violation
   - Severity: [8-10]/10
   - Standard: What standard violated
@@ -1044,12 +1140,14 @@ OUTPUT FORMAT:
   - Fix: How to fix
 
 ### Standards Concerns (IMPORTANT) - Severity: 5-7/10
+
 - **File:Line** - Concern
   - Severity: [5-7]/10
   - Issue: Doesn't quite follow standards
   - Recommendation: How to align
 
 ### Standards Checklist Results
+
 **File Naming**: ✅/⚠️/❌
 **Exports**: ✅/⚠️/❌
 **GraphQL**: ✅/⚠️/❌ (or N/A)
@@ -1059,20 +1157,25 @@ OUTPUT FORMAT:
 **Package Management**: ✅/⚠️/❌
 
 ### Pattern Deviations
+
 [List any deviations from CLAUDE.md patterns]
 
 ### Suggestions for Better Alignment
+
 [How to better follow MPDX patterns]
 
 ### Questions for Other Agents
+
 - **To [Agent]**: Question
 
 ### Confidence
+
 - Overall: High/Medium/Low
 - Standards knowledge: Complete/Partial
 
 CODEBASE CONTEXT SEARCH:
 Search for standard patterns:
+
 1. Check how similar files are structured
 2. Look for naming conventions
 3. Find export patterns
@@ -1080,6 +1183,7 @@ Search for standard patterns:
 
 AUTOMATED FIX GENERATION:
 Generate fixes for standards violations:
+
 - Incorrect file naming
 - Default exports (convert to named)
 - Missing yarn usage
@@ -1088,21 +1192,25 @@ Generate fixes for standards violations:
 Category: standards
 
 GUIDELINES:
+
 - Reference specific sections of CLAUDE.md
 - Distinguish between violations and preferences
 - Be constructive, not pedantic
 - Explain WHY standards matter
 - Search codebase for patterns before flagging
 - Generate fixes for simple standards violations
+
 ```
 
 After launching selected agents, display:
 
 ```
+
 ✅ All [N] agents launched in parallel
 ⏳ Waiting for agents to complete their reviews...
 💰 Estimated cost: $[X.XX]
-```
+
+````
 
 ---
 
@@ -1151,7 +1259,7 @@ fi
 
 echo "✅ Dependency analysis complete"
 echo ""
-```
+````
 
 ---
 
@@ -1598,6 +1706,7 @@ Create the comprehensive review report in markdown format:
 **Files Changed**: [N] (+[X] -[Y] lines)
 
 **Risk Level Meaning**:
+
 - **LOW** (0-3): ✅ Entry-level or above can review
 - **MEDIUM** (4-6): ✅ Entry-level or above can review
 - **HIGH** (7-9): ⚠️ Experienced developer or above should review
@@ -1656,19 +1765,25 @@ bash /tmp/automated_fixes/fix_N_category.sh
 
 **To apply all fixes**:
 \`\`\`bash
+
 # Review all fixes first
+
 ls -la /tmp/automated_fixes/
 
 # Apply all (REVIEW FIRST!)
+
 bash /tmp/automated_fixes/apply_all.sh
 
 # Then review changes
+
 git diff
 
 # If good, commit
+
 git add . && git commit -m "Apply AI-suggested fixes"
 
 # To undo
+
 git checkout .
 \`\`\`
 
@@ -1681,14 +1796,17 @@ git checkout .
 [Include contents of /tmp/dependency_impact.txt]
 
 ### High-Impact Changes
+
 Files with 10+ dependents - test thoroughly:
 
 [List high-impact files with dependent counts]
 
 ### Breaking Changes
+
 [List any removed exports or breaking changes from /tmp/breaking_changes.txt]
 
 ### Recommendations
+
 - Review all dependents before merging
 - Add integration tests for high-impact changes
 - Update documentation for breaking changes
@@ -1714,10 +1832,12 @@ Files with 10+ dependents - test thoroughly:
 [Detailed description from consensus]
 
 **Agent Perspectives**:
+
 - **[Agent 1]** (Severity: [X]/10): [Their specific concern]
 - **[Agent 2]** (Severity: [X]/10): [Their specific concern]
 
 **Debate Summary**:
+
 - [Summary of any challenges and resolutions]
 - Final consensus: CRITICAL BLOCKER (Average: [X.X]/10)
 
@@ -1807,6 +1927,7 @@ Files with 10+ dependents - test thoroughly:
 [Their counter-position]
 
 **Other agents**:
+
 - [Agent 3]: [Position] (Severity: [Z]/10)
 - [Agent 4]: [Position] (Severity: [W]/10)
 
@@ -1824,18 +1945,19 @@ Senior developer (Caleb Cox) should decide based on [considerations]
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-| Agent                    | Critical | High | Important | Suggestions | Confidence |
-| ------------------------ | -------- | ---- | --------- | ----------- | ---------- |
-| 🔒 Security              | [N]      | [N]  | [N]       | [N]         | [H/M/L]    |
-| 🏗️ Architecture          | [N]      | [N]  | [N]       | [N]         | [H/M/L]    |
-| 💾 Data Integrity        | [N]      | [N]  | [N]       | [N]         | [H/M/L]    |
-| 🧪 Testing               | [N]      | [N]  | [N]       | [N]         | [H/M/L]    |
-| 👤 UX                    | [N]      | [N]  | [N]       | [N]         | [H/M/L]    |
-| 💰 Financial             | [N]      | [N]  | [N]       | [N]         | [H/M/L]    |
-| 📋 Standards Compliance  | [N]      | [N]  | [N]       | [N]         | [H/M/L]    |
-| **Total**                | **[N]**  | **[N]** | **[N]** | **[N]**     | -          |
+| Agent                   | Critical | High    | Important | Suggestions | Confidence |
+| ----------------------- | -------- | ------- | --------- | ----------- | ---------- |
+| 🔒 Security             | [N]      | [N]     | [N]       | [N]         | [H/M/L]    |
+| 🏗️ Architecture         | [N]      | [N]     | [N]       | [N]         | [H/M/L]    |
+| 💾 Data Integrity       | [N]      | [N]     | [N]       | [N]         | [H/M/L]    |
+| 🧪 Testing              | [N]      | [N]     | [N]       | [N]         | [H/M/L]    |
+| 👤 UX                   | [N]      | [N]     | [N]       | [N]         | [H/M/L]    |
+| 💰 Financial            | [N]      | [N]     | [N]       | [N]         | [H/M/L]    |
+| 📋 Standards Compliance | [N]      | [N]     | [N]       | [N]         | [H/M/L]    |
+| **Total**               | **[N]**  | **[N]** | **[N]**   | **[N]**     | -          |
 
 **Debate Statistics**:
+
 - Total challenges raised: [N]
 - Challenges defended: [N]
 - Challenges conceded: [N]
@@ -1844,6 +1966,7 @@ Senior developer (Caleb Cox) should decide based on [considerations]
 - Escalated to human: [N]
 
 **Review Quality**:
+
 - Average agent confidence: [High/Medium/Low]
 - Consensus rate: [X]%
 - Debate rounds: 2
@@ -1859,21 +1982,26 @@ Senior developer (Caleb Cox) should decide based on [considerations]
 
 **Critical Actions** (MUST fix before merge):
 [FOR EACH CRITICAL/HIGH PRIORITY BLOCKER:]
+
 - [ ] Fix [issue] at [file:line] (Severity: [X]/10)
 
 **Important Actions** (Should fix before merge):
 [FOR EACH IMPORTANT ISSUE:]
+
 - [ ] Address [concern] at [file:line] (Severity: [X]/10)
 
 **Human Review Needed**:
 [FOR EACH UNRESOLVED DEBATE:]
+
 - [ ] Senior developer to resolve: [debate topic] (Severity range: [X]-[Y]/10)
 
 **Medium Priority** (Consider addressing):
+
 - [List with severity scores]
 
 **Optional Improvements**:
 [FOR EACH SUGGESTION:]
+
 - Consider [suggestion] (Severity: [X]/10)
 
 ---
@@ -1886,24 +2014,31 @@ Senior developer (Caleb Cox) should decide based on [considerations]
 <summary>📋 Full Agent Reports (click to expand)</summary>
 
 ## 🔒 Security Agent - Complete Report
+
 [Full original report]
 
 ## 🏗️ Architecture Agent - Complete Report
+
 [Full original report]
 
 ## 💾 Data Integrity Agent - Complete Report
+
 [Full original report]
 
 ## 🧪 Testing & Quality Agent - Complete Report
+
 [Full original report]
 
 ## 👤 UX Agent - Complete Report
+
 [Full original report]
 
 ## 💰 Financial Accuracy Agent - Complete Report
+
 [Full original report]
 
 ## 📋 MPDX Standards Agent - Complete Report
+
 [Full original report]
 
 </details>
@@ -1914,9 +2049,11 @@ Senior developer (Caleb Cox) should decide based on [considerations]
 <summary>🗣️ Debate Transcript (click to expand)</summary>
 
 ## Round 1: Cross-Examination
+
 [Full debate round 1 transcripts]
 
 ## Round 2: Rebuttals
+
 [Full rebuttal transcripts]
 
 </details>
@@ -2132,6 +2269,7 @@ Thank you for using AI Code Review v3.0! 🤖
 **Performance by Mode**:
 
 **Quick Mode**:
+
 - Time: ~2 minutes
 - Agents: 3 (Testing, UX, Standards)
 - Model: Haiku
@@ -2139,6 +2277,7 @@ Thank you for using AI Code Review v3.0! 🤖
 - Use for: Minor UI tweaks, documentation
 
 **Standard Mode** (Recommended):
+
 - Time: ~5 minutes
 - Agents: 3-6 (smart selection)
 - Model: Sonnet/Opus
@@ -2146,6 +2285,7 @@ Thank you for using AI Code Review v3.0! 🤖
 - Use for: Normal feature development
 
 **Deep Mode**:
+
 - Time: ~10 minutes
 - Agents: All 7
 - Model: Opus
@@ -2153,22 +2293,26 @@ Thank you for using AI Code Review v3.0! 🤖
 - Use for: Critical security/financial changes
 
 **Cost Savings**:
+
 - Smart agent selection: $1-3 per review (20-40% reduction)
 - Monthly savings (20 PRs): $20-60
 - Time saved per review: 30-45 minutes of human time
 
 **Model Configuration**:
+
 - Quick: Haiku for all agents
 - Standard: Smart mix (Sonnet/Opus based on agent)
 - Deep: Opus for all agents (maximum quality)
 
 **Risk Levels**:
+
 - **LOW** (0-3): Entry-level+ can review
 - **MEDIUM** (4-6): Entry-level+ can review
 - **HIGH** (7-9): Experienced developer+ should review
 - **CRITICAL** (10+): Senior developer (Caleb Cox) must review
 
 **Phase 3 Features** (Not Yet Implemented):
+
 - AI Learning from Past Reviews
 - Team Knowledge Base Integration
 
