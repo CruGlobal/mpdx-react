@@ -54,3 +54,21 @@ node_modules
 # Lighthouse
 .lighthouseci
 lighthouse-results.md
+
+# AI Code Review - Temporary Files
+# These are working files that get regenerated each review
+/tmp/automated_fixes/
+/tmp/dependency_analysis/
+/tmp/dependency_impact.txt
+/tmp/breaking_changes.txt
+/tmp/changed_files.txt
+/tmp/pr_diff.txt
+/tmp/diff_stat.txt
+/tmp/selected_agents.txt
+/tmp/fix_summary.txt
+/tmp/agent_review_report.md
+/tmp/dependents_*.txt
+/tmp/changed_file_contents/
+
+# Note: .claude/review-history/, .claude/review-metrics/, and .claude/pr-metrics/
+# are intentionally NOT ignored - these track quality trends and should be committed
