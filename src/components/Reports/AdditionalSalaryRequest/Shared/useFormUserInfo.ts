@@ -8,7 +8,7 @@ export const useFormUserInfo = () => {
     emailAddress: email,
     preferredName: name,
     personNumber: accountNumber,
-  } = user?.staffInfo || {};
+  } = user?.staffInfo ?? {};
   const primaryAccountBalance = staffAccountBalance ?? 0;
 
   return {

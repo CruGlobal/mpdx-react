@@ -45,6 +45,7 @@ const MainContent: React.FC = () => {
     trackMutation,
     user,
     spouse,
+    isSpouse,
     setIsNewAsr,
   } = useAdditionalSalaryRequest();
 
@@ -62,6 +63,7 @@ const MainContent: React.FC = () => {
               phoneNumber: user?.staffInfo?.primaryPhoneNumber,
               emailAddress: user?.staffInfo?.emailAddress,
             },
+            isSpouse: isSpouse || undefined,
           },
           refetchQueries: ['AdditionalSalaryRequest'],
         }),

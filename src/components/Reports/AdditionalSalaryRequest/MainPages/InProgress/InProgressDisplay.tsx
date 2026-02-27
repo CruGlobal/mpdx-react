@@ -8,14 +8,14 @@ import {
   PanelTypeEnum,
 } from '../../../Shared/CalculationReports/Shared/sharedTypes';
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
-
-// TODO: Implement spouse request link
+import { useSpouseLink } from '../../Shared/useSpouseLink';
 
 const InProgressMainContent: React.FC = () => {
   const { t } = useTranslation();
 
   const { handleDeleteRequest, requestId, spouse, setPageType, goToStep } =
     useAdditionalSalaryRequest();
+  const { spouseLinkText, spouseLinkHref } = useSpouseLink();
 
   return (
     <>
@@ -54,9 +54,7 @@ const InProgressMainContent: React.FC = () => {
               color: 'rgba(0, 0, 0, 0.54)',
             }}
           />
-          <Link>
-            {t(`Request additional salary for ${spouse.staffInfo.firstName}`)}
-          </Link>
+          <Link href={spouseLinkHref}>{spouseLinkText}</Link>
         </Box>
       )}
     </>

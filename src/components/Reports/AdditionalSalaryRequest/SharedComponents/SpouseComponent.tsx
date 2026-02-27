@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
+import { useSpouseLink } from '../Shared/useSpouseLink';
 
 export const SpouseComponent: React.FC = () => {
   const { t } = useTranslation();
@@ -12,15 +13,22 @@ export const SpouseComponent: React.FC = () => {
   const locale = useLocale();
   const currency = 'USD';
 
-  const { requestData, spouse } = useAdditionalSalaryRequest();
+  const { requestData, isSpouse } = useAdditionalSalaryRequest();
+  const { spouseLinkText, spouseLinkHref } = useSpouseLink();
 
-  const name = spouse?.staffInfo?.preferredName ?? '';
-
+  const userCalculations =
+    requestData?.latestAdditionalSalaryRequest?.calculations;
+  const spouseCalculations =
+    requestData?.latestAdditionalSalaryRequest?.spouseCalculations;
   const { currentSalaryCap, staffAccountBalance } =
-    requestData?.latestAdditionalSalaryRequest?.spouseCalculations || {};
-
+    isSpouse && userCalculations
+      ? userCalculations
+      : spouseCalculations
+        ? spouseCalculations
+        : {};
   const spouseIndividualCap =
     (currentSalaryCap ?? 0) - (staffAccountBalance ?? 0);
+
   return (
     <Box>
       <Box
@@ -35,13 +43,12 @@ export const SpouseComponent: React.FC = () => {
           color="action"
           sx={{ transform: 'rotate(90deg)' }}
         />
-        <Link href="#" variant="body1" underline="hover" onClick={() => {}}>
-          {t('Request additional salary from {{name}}', { name })}
-        </Link>
+
+        <Link href={spouseLinkHref}>{spouseLinkText}</Link>
       </Box>
 
       <Typography variant="caption" color="text.secondary">
-        {t('Up to her remaining allowable salary of {{amount}}', {
+        {t('Up to their remaining allowable salary of {{amount}}', {
           amount: currencyFormat(spouseIndividualCap, currency, locale),
         })}
       </Typography>

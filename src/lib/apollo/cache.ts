@@ -111,6 +111,10 @@ export const createCache = () =>
           searchOrganizationsContacts: {
             keyArgs: ['input', ['organizationId', 'search']],
           },
+          // Differentiate spouse vs primary ASR requests in cache to prevent data corruption
+          latestAdditionalSalaryRequest: {
+            keyArgs: ['isSpouse'],
+          },
         },
       },
     },

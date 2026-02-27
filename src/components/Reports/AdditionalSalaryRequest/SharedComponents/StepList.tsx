@@ -8,11 +8,11 @@ import { AboutForm } from '../AboutForm/AboutForm';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
 import { useSalaryCalculations } from '../Shared/useSalaryCalculations';
+import { useSpouseLink } from '../Shared/useSpouseLink';
 import { AdditionalSalaryRequestSection } from './AdditionalSalaryRequestSection';
 import { EditAlertText, ExceedsCapAlertText } from './ReceiptAlertText';
 
 //TODO: Update date in alert text
-//TODO: Add link for spouse request
 //TODO: Check if button link is what we want
 interface StepListProps {
   FormComponent: React.ComponentType;
@@ -23,6 +23,7 @@ export const StepList: React.FC<StepListProps> = ({ FormComponent }) => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const isEdit = pageType === PageEnum.Edit;
+  const { spouseLinkText, spouseLinkHref, showSpouseLink } = useSpouseLink();
 
   const { values } = useFormikContext<CompleteFormValues>();
   const { exceedsCap } = useSalaryCalculations({
@@ -52,8 +53,8 @@ export const StepList: React.FC<StepListProps> = ({ FormComponent }) => {
         viewLink={pageLink}
         isEdit={isEdit}
         alertText={alertText}
-        linkOne={'/'}
-        linkOneText={t('Request additional salary for your spouse.')}
+        linkOne={showSpouseLink ? spouseLinkHref : undefined}
+        linkOneText={showSpouseLink ? spouseLinkText : undefined}
       />
     </AdditionalSalaryRequestSection>,
   ];

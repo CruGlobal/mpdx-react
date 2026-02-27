@@ -95,6 +95,7 @@ const defaultMockContextValue = {
   roth403bPercentage: 0,
   isNewAsr: false,
   setIsNewAsr: jest.fn(),
+  isSpouse: false,
 };
 
 const router = {
