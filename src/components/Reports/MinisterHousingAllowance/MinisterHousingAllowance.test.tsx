@@ -8,8 +8,12 @@ import { MhaStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { HcmDataQuery } from '../Shared/HcmData/HCMData.generated';
 import {
+  marriedBothIneligible,
   marriedMhaAndNoException,
   marriedNoMhaNoException,
+  marriedUserEligibleSpouseIneligible,
+  marriedUserIneligibleSpouseEligible,
+  singleIneligible,
   singleMhaNoException,
   singleNoMhaNoException,
 } from '../Shared/HcmData/mockData';
@@ -74,9 +78,6 @@ describe('MinisterHousingAllowanceReport', () => {
     expect(
       await findByText(/our records indicate that you have not applied for/i),
     ).toBeInTheDocument();
-    expect(
-      await findByText(/will submit the request for john. jane has not/i),
-    ).toBeInTheDocument();
     expect(await findByText('John Doe and Jane Doe')).toBeInTheDocument();
   });
 
@@ -125,6 +126,94 @@ describe('MinisterHousingAllowanceReport', () => {
     expect(await findByText('John Doe')).toBeInTheDocument();
 
     expect(getByText('Current Board Approved MHA')).toBeInTheDocument();
+  });
+
+  it('renders fully ineligible single user with requests and hides request details', async () => {
+    const { findByText, queryByText } = render(
+      <TestComponent
+        hcmMock={singleIneligible}
+        mhaRequestsMock={[
+          {
+            ...mockMHARequest,
+            status: MhaStatusEnum.Pending,
+          },
+        ]}
+      />,
+    );
+
+    expect(
+      await findByText(/you have not completed the required ibs courses/i),
+    ).toBeInTheDocument();
+
+    expect(
+      queryByText(/our records indicate that you have an mha request/i),
+    ).not.toBeInTheDocument();
+  });
+
+  it('renders fully ineligible married couple and hides request details', async () => {
+    const { findByText, queryByText } = render(
+      <TestComponent
+        hcmMock={marriedBothIneligible}
+        mhaRequestsMock={[
+          {
+            ...mockMHARequest,
+            status: MhaStatusEnum.BoardApproved,
+            requestAttributes: {
+              ...mockMHARequest.requestAttributes,
+              spouseSpecific: 5000,
+              staffSpecific: 10000,
+            },
+          },
+        ]}
+      />,
+    );
+
+    expect(
+      await findByText(/have not completed the required ibs courses/i),
+    ).toBeInTheDocument();
+
+    expect(queryByText('Current Board Approved MHA')).not.toBeInTheDocument();
+    expect(
+      queryByText(/our records indicate that you have an approved/i),
+    ).not.toBeInTheDocument();
+  });
+
+  it('renders married, one eligible, one ineligible with no requests', async () => {
+    const { findByText, findByTestId } = render(
+      <TestComponent
+        hcmMock={marriedUserEligibleSpouseIneligible}
+        mhaRequestsMock={[]}
+      />,
+    );
+
+    expect(await findByTestId('one-ineligible')).toBeInTheDocument();
+    expect(
+      await findByText(/our records indicate that you have not applied for/i),
+    ).toBeInTheDocument();
+  });
+
+  it('renders married, one eligible, one ineligible with approved request', async () => {
+    const { findByText, findByTestId } = render(
+      <TestComponent
+        hcmMock={marriedUserIneligibleSpouseEligible}
+        mhaRequestsMock={[
+          {
+            ...mockMHARequest,
+            status: MhaStatusEnum.BoardApproved,
+            requestAttributes: {
+              ...mockMHARequest.requestAttributes,
+              spouseSpecific: 5000,
+              staffSpecific: 10000,
+            },
+          },
+        ]}
+      />,
+    );
+
+    expect(await findByTestId('one-ineligible')).toBeInTheDocument();
+    expect(
+      await findByText(/our records indicate that you have an approved/i),
+    ).toBeInTheDocument();
   });
 
   it('renders married, pending, no approved correctly', async () => {

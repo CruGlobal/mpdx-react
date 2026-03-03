@@ -19,17 +19,15 @@ const TestComponent: React.FC<TestComponentProps> = ({ isPending }) => (
 );
 
 describe('EligibleDisplay', () => {
-  it('should render title and message when pending is true', () => {
+  it('should render message when pending is true', () => {
     const { getByText } = render(<TestComponent isPending={true} />);
 
-    expect(getByText('Your MHA')).toBeInTheDocument();
     expect(getByText(/waiting to be processed/i)).toBeInTheDocument();
   });
 
-  it('should render title and message when pending is false', () => {
+  it('should render message when pending is false', () => {
     const { getByText } = render(<TestComponent isPending={false} />);
 
-    expect(getByText('Your MHA')).toBeInTheDocument();
     expect(
       getByText(/our records indicate that you have an approved mha amount/i),
     ).toBeInTheDocument();

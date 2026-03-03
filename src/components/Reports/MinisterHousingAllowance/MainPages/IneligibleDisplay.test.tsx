@@ -6,7 +6,6 @@ import { render } from '@testing-library/react';
 import theme from 'src/theme';
 import {
   ContextType,
-  HcmData,
   MinisterHousingAllowanceContext,
 } from '../Shared/Context/MinisterHousingAllowanceContext';
 import { IneligibleDisplay } from './IneligibleDisplay';
@@ -30,57 +29,67 @@ const TestComponent: React.FC<TestComponentProps> = ({ contextValue }) => {
 };
 
 describe('IneligibleDisplay', () => {
-  it('should render page with single staff', () => {
-    const { getByText, queryByText } = render(
+  it('should render single user ineligible message', () => {
+    const { getByTestId } = render(
       <TestComponent
         contextValue={{
           isMarried: false,
           preferredName: 'John',
-          spousePreferredName: '',
-          userHcmData: {
-            staffInfo: {
-              personNumber: '000123456',
-            },
-          } as unknown as HcmData,
-          spouseHcmData: null,
+          spousePreferredName: 'Jane',
+          userEligibleForMHA: false,
+          spouseEligibleForMHA: false,
         }}
       />,
     );
 
-    expect(getByText('Your MHA')).toBeInTheDocument();
-    expect(
-      getByText(
-        /our records indicate that you have not applied for minister's housing allowance/i,
-      ),
-    ).toBeInTheDocument();
-    expect(
-      queryByText(/Jane has not completed the required ibs courses/i),
-    ).not.toBeInTheDocument();
+    expect(getByTestId('single-ineligible')).toBeInTheDocument();
   });
 
-  it('should render page with married staff', () => {
-    const { getByText } = render(
+  it('should render both ineligible message when neither user is eligible', () => {
+    const { getByTestId } = render(
       <TestComponent
         contextValue={{
           isMarried: true,
           preferredName: 'John',
           spousePreferredName: 'Jane',
-          userHcmData: {
-            staffInfo: {
-              personNumber: '000123456',
-            },
-          } as unknown as HcmData,
-          spouseHcmData: {
-            staffInfo: {
-              personNumber: '100123456',
-            },
-          } as unknown as HcmData,
+          userEligibleForMHA: false,
+          spouseEligibleForMHA: false,
         }}
       />,
     );
 
-    expect(
-      getByText(/Jane has not completed the required ibs courses/i),
-    ).toBeInTheDocument();
+    expect(getByTestId('both-ineligible')).toBeInTheDocument();
+  });
+
+  it('should render user ineligible message when user ineligible', () => {
+    const { getByTestId } = render(
+      <TestComponent
+        contextValue={{
+          isMarried: true,
+          preferredName: 'John',
+          spousePreferredName: 'Jane',
+          userEligibleForMHA: false,
+          spouseEligibleForMHA: true,
+        }}
+      />,
+    );
+
+    expect(getByTestId('one-ineligible')).toBeInTheDocument();
+  });
+
+  it('should render spouse ineligible message when spouse ineligible', () => {
+    const { getByTestId } = render(
+      <TestComponent
+        contextValue={{
+          isMarried: true,
+          preferredName: 'John',
+          spousePreferredName: 'Jane',
+          userEligibleForMHA: true,
+          spouseEligibleForMHA: false,
+        }}
+      />,
+    );
+
+    expect(getByTestId('one-ineligible')).toBeInTheDocument();
   });
 });
