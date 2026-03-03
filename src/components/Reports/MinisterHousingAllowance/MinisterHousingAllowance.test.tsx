@@ -11,6 +11,8 @@ import {
   marriedBothIneligible,
   marriedMhaAndNoException,
   marriedNoMhaNoException,
+  marriedUserEligibleSpouseIneligible,
+  marriedUserIneligibleSpouseEligible,
   singleIneligible,
   singleMhaNoException,
   singleNoMhaNoException,
@@ -174,6 +176,44 @@ describe('MinisterHousingAllowanceReport', () => {
     expect(
       queryByText(/our records indicate that you have an approved/i),
     ).not.toBeInTheDocument();
+  });
+
+  it('renders married, one eligible, one ineligible with no requests', async () => {
+    const { findByText, findByTestId } = render(
+      <TestComponent
+        hcmMock={marriedUserEligibleSpouseIneligible}
+        mhaRequestsMock={[]}
+      />,
+    );
+
+    expect(await findByTestId('one-ineligible')).toBeInTheDocument();
+    expect(
+      await findByText(/our records indicate that you have not applied for/i),
+    ).toBeInTheDocument();
+  });
+
+  it('renders married, one eligible, one ineligible with approved request', async () => {
+    const { findByText, findByTestId } = render(
+      <TestComponent
+        hcmMock={marriedUserIneligibleSpouseEligible}
+        mhaRequestsMock={[
+          {
+            ...mockMHARequest,
+            status: MhaStatusEnum.BoardApproved,
+            requestAttributes: {
+              ...mockMHARequest.requestAttributes,
+              spouseSpecific: 5000,
+              staffSpecific: 10000,
+            },
+          },
+        ]}
+      />,
+    );
+
+    expect(await findByTestId('one-ineligible')).toBeInTheDocument();
+    expect(
+      await findByText(/our records indicate that you have an approved/i),
+    ).toBeInTheDocument();
   });
 
   it('renders married, pending, no approved correctly', async () => {
