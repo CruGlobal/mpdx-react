@@ -33,5 +33,4 @@ fragment AppealFields on Appeal {
   pledgesAmountNotReceivedNotProcessed
   pledgesAmountReceivedNotProcessed
   pledgesAmountProcessed
-  pledgesAmountTotal
 }
