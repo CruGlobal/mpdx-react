@@ -25,7 +25,6 @@ const testAppeal = {
   pledgesAmountNotReceivedNotProcessed: 5,
   pledgesAmountReceivedNotProcessed: 15,
   pledgesAmountProcessed: 25,
-  pledgesAmountTotal: 55,
 };
 
 const mocks = {

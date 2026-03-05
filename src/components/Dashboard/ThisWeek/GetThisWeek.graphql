@@ -11,7 +11,8 @@ query GetThisWeek(
       id
       name
       amount
-      pledgesAmountTotal
+      pledgesAmountNotReceivedNotProcessed
+      pledgesAmountReceivedNotProcessed
       pledgesAmountProcessed
       amountCurrency
     }

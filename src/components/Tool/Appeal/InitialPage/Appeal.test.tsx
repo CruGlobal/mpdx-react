@@ -10,7 +10,6 @@ const appeal = {
   id: '',
   amount: 100,
   amountCurrency: 'CAD',
-  pledgesAmountTotal: 60,
   pledgesAmountProcessed: 10,
   pledgesAmountReceivedNotProcessed: 20,
   pledgesAmountNotReceivedNotProcessed: 30,

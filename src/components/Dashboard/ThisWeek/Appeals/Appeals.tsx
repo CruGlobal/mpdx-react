@@ -106,8 +106,11 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
   const locale = useLocale();
   const pledgesAmountProcessedPercentage =
     (appeal?.pledgesAmountProcessed || 0) / (appeal?.amount || 0);
-  const pledgesAmountTotalPercentage =
-    (appeal?.pledgesAmountTotal || 0) / (appeal?.amount || 0);
+  const outstandingCommitments =
+    (appeal?.pledgesAmountNotReceivedNotProcessed || 0) +
+    (appeal?.pledgesAmountReceivedNotProcessed || 0);
+  const pledgesAmountCommittedPercentage =
+    outstandingCommitments / (appeal?.amount || 0);
 
   return (
     <AnimatedCard className={classes.card}>
@@ -177,7 +180,7 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
             <StyledProgress
               loading={loading}
               primary={pledgesAmountProcessedPercentage}
-              secondary={pledgesAmountTotalPercentage}
+              secondary={pledgesAmountCommittedPercentage}
             />
             <Grid container spacing={2}>
               <Grid xs={6} item>
@@ -232,7 +235,7 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
                   {loading ? (
                     <Skeleton variant="text" />
                   ) : (
-                    percentageFormat(pledgesAmountTotalPercentage, locale)
+                    percentageFormat(pledgesAmountCommittedPercentage, locale)
                   )}
                 </Typography>
                 <Typography
@@ -243,7 +246,7 @@ const Appeals = ({ loading, appeal }: Props): ReactElement => {
                     <Skeleton variant="text" />
                   ) : (
                     currencyFormat(
-                      appeal.pledgesAmountTotal,
+                      outstandingCommitments,
                       appeal.amountCurrency,
                       locale,
                     )

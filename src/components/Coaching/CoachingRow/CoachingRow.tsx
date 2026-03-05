@@ -114,7 +114,10 @@ export const CoachingRow: React.FC<Props> = ({
           currency={appealCurrencyCode}
           goal={primaryAppeal?.amount ?? 0}
           received={primaryAppeal?.pledgesAmountProcessed}
-          pledged={primaryAppeal?.pledgesAmountTotal}
+          pledged={
+            (primaryAppeal?.pledgesAmountNotReceivedNotProcessed ?? 0) +
+            (primaryAppeal?.pledgesAmountReceivedNotProcessed ?? 0)
+          }
           isPrimary={true}
         />
       </CoachingRowWrapper>
