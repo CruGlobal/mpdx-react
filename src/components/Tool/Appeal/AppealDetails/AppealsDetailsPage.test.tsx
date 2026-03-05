@@ -67,7 +67,6 @@ const mockAppealResponse = {
     pledgesAmountNotReceivedNotProcessed: 2000,
     pledgesAmountProcessed: 50,
     pledgesAmountReceivedNotProcessed: 50,
-    pledgesAmountTotal: 2115.93,
   },
 };
 

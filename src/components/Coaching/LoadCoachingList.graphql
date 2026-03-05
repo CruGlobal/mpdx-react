@@ -24,8 +24,8 @@ fragment CoachedPerson on CoachingAccountList {
     id
     name
     pledgesAmountNotReceivedNotProcessed
+    pledgesAmountReceivedNotProcessed
     pledgesAmountProcessed
-    pledgesAmountTotal
   }
   users {
     nodes {
