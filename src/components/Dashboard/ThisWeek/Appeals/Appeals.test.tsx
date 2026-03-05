@@ -57,7 +57,8 @@ describe('Appeals', () => {
       id: 'appealId',
       name: 'My Appeal',
       amount: 4999.99,
-      pledgesAmountTotal: 2499.99,
+      pledgesAmountNotReceivedNotProcessed: 1000,
+      pledgesAmountReceivedNotProcessed: 499.99,
       pledgesAmountProcessed: 999.99,
       amountCurrency: 'EUR',
     };
@@ -78,9 +79,9 @@ describe('Appeals', () => {
     ).toEqual('€999.99');
     expect(
       getByTestId('AppealsTypographyPledgesAmountTotalPercentage').textContent,
-    ).toEqual('50%');
+    ).toEqual('30%');
     expect(
       getByTestId('AppealsTypographyPledgesAmountTotal').textContent,
-    ).toEqual('€2,499.99');
+    ).toEqual('€1,499.99');
   });
 });
