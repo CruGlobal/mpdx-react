@@ -87,7 +87,7 @@ export const DeductionCheckboxRow: React.FC<DeductionCheckboxRowProps> = ({
                 sx={{ mt: 0.5 }}
               >
                 {t(
-                  'This is your regular 403(b) percentage contribution as selected on your latest Salary Calculation Form.',
+                  'This is your regular 403(b) percentage contribution as selected in your Principal account.',
                 )}
               </Typography>
             </Box>
