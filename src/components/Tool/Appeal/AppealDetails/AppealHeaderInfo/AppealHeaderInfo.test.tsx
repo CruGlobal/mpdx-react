@@ -46,7 +46,7 @@ describe('AppealHeaderInfo', () => {
   });
 
   it('renders appeal info', async () => {
-    const { getByText, findByText } = render(
+    const { getByText, getAllByText, findByText } = render(
       <Components appealInfo={appealInfo} loading={false} />,
     );
 
@@ -54,7 +54,7 @@ describe('AppealHeaderInfo', () => {
 
     expect(getByText('$100')).toBeInTheDocument();
     expect(getByText(/\$50 \(50%\)/i)).toBeInTheDocument();
-    expect(getByText(/\$100 \(100%\)/i)).toBeInTheDocument();
+    expect(getAllByText(/\$25 \(25%\)/i).length).toBe(2);
   });
 
   it('renders amount when goal is 0 info', async () => {

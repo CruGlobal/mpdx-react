@@ -53,7 +53,7 @@ describe('AppealProgressBar', () => {
       );
 
       await waitFor(() => {
-        expect(getAllByText(/\$0 \(10%\)/i).length).toBe(3);
+        expect(getAllByText(/\$0 \(0%\)/i).length).toBe(2);
       });
     });
 
@@ -88,8 +88,8 @@ describe('AppealProgressBar', () => {
 
       expect(await findByText(/\$100 \(10%\)/i)).toBeInTheDocument();
 
+      expect(getByText(/\$200 \(20%\)/i)).toBeInTheDocument();
       expect(getByText(/\$300 \(30%\)/i)).toBeInTheDocument();
-      expect(getByText(/\$600 \(60%\)/i)).toBeInTheDocument();
     });
 
     it('renders progress bar in Euros', async () => {
@@ -105,8 +105,8 @@ describe('AppealProgressBar', () => {
 
       expect(await findByText(/\€100 \(10%\)/i)).toBeInTheDocument();
 
+      expect(getByText(/\€200 \(20%\)/i)).toBeInTheDocument();
       expect(getByText(/\€300 \(30%\)/i)).toBeInTheDocument();
-      expect(getByText(/\€600 \(60%\)/i)).toBeInTheDocument();
     });
 
     it('renders progress bar in NZ dollars', async () => {
@@ -121,8 +121,8 @@ describe('AppealProgressBar', () => {
       );
 
       expect(await findByText(/nz\$100 \(10%\)/i)).toBeInTheDocument();
+      expect(getByText(/nz\$200 \(20%\)/i)).toBeInTheDocument();
       expect(getByText(/nz\$300 \(30%\)/i)).toBeInTheDocument();
-      expect(getByText(/nz\$600 \(60%\)/i)).toBeInTheDocument();
     });
   });
 });
