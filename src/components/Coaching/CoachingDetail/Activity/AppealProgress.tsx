@@ -61,9 +61,8 @@ export const AppealProgress: React.FC<AppealProgressProps> = ({
   const locale = useLocale();
 
   const processed = appeal?.pledgesAmountProcessed ?? 0;
-  const received = processed + (appeal?.pledgesAmountReceivedNotProcessed ?? 0);
-  const committed =
-    received + (appeal?.pledgesAmountNotReceivedNotProcessed ?? 0);
+  const received = appeal?.pledgesAmountReceivedNotProcessed ?? 0;
+  const committed = appeal?.pledgesAmountNotReceivedNotProcessed ?? 0;
   const max = appeal?.amount ?? 1;
   const processedFraction = processed / max;
   const receivedFraction = received / max;

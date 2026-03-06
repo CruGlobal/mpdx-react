@@ -281,7 +281,7 @@ describe('Activity', () => {
 
       await waitFor(() =>
         expect(getByTestId('ActivitySectionAppeal')).toHaveTextContent(
-          'Primary Appeal$200 / $1,000Ask$200 (20%) / $500 (50%) / $600 (60%)',
+          'Primary Appeal$200 / $1,000Ask$200 (20%) / $300 (30%) / $100 (10%)',
         ),
       );
     });

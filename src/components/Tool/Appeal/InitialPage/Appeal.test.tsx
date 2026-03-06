@@ -32,7 +32,7 @@ describe('AppealTest', () => {
     expect(getByText('test 123')).toBeInTheDocument();
     expect(getByText('10.00 / 100.00')).toBeInTheDocument();
     expect(getByText('CA$10 (10%)')).toBeInTheDocument();
+    expect(getByText('CA$20 (20%)')).toBeInTheDocument();
     expect(getByText('CA$30 (30%)')).toBeInTheDocument();
-    expect(getByText('CA$60 (60%)')).toBeInTheDocument();
   });
 });

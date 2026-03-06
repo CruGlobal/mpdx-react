@@ -52,12 +52,12 @@ const AppealProgressBar = ({
     [given, amountCurrency, locale],
   );
   const receivedAmount = useMemo(
-    () => currencyFormat(received + given, amountCurrency, locale),
-    [given, received, amountCurrency, locale],
+    () => currencyFormat(received, amountCurrency, locale),
+    [received, amountCurrency, locale],
   );
   const committedAmount = useMemo(
-    () => currencyFormat(committed + received + given, amountCurrency, locale),
-    [given, received, committed, amountCurrency, locale],
+    () => currencyFormat(committed, amountCurrency, locale),
+    [committed, amountCurrency, locale],
   );
 
   return (
@@ -88,7 +88,7 @@ const AppealProgressBar = ({
             className={classes.colorOrange}
           >
             {receivedAmount} (
-            {`${Math.floor(((received + given) / (amount || 1)) * 100)}%`})
+            {`${Math.floor((received / (amount || 1)) * 100)}%`})
           </Typography>
         </Tooltip>
         <Typography
@@ -107,10 +107,7 @@ const AppealProgressBar = ({
             className={classes.colorLightGray}
           >
             {committedAmount} (
-            {`${Math.floor(
-              ((committed + received + given) / (amount || 1)) * 100,
-            )}%`}
-            )
+            {`${Math.floor((committed / (amount || 1)) * 100)}%`})
           </Typography>
         </Tooltip>
       </Box>
