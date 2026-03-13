@@ -11,21 +11,24 @@ const mockFunds: Fund[] = [
   {
     id: '1',
     fundType: 'Primary',
-    balance: 1500,
+    startBalance: 1000,
+    endBalance: 1400,
     total: 600,
     deficitLimit: 0,
   },
   {
     id: '2',
     fundType: 'Savings',
-    balance: 2000,
+    startBalance: 2000,
+    endBalance: 2250,
     total: 300,
     deficitLimit: 0,
   },
   {
     id: '3',
     fundType: 'ConferenceSavings',
-    balance: -500,
+    startBalance: 500,
+    endBalance: 300,
     total: -200,
     deficitLimit: -1000,
   },
@@ -34,8 +37,6 @@ const mockFunds: Fund[] = [
 const defaultProps = {
   funds: mockFunds,
   selectedFundType: null,
-  startBalance: 1000,
-  endBalance: 1500,
   transferTotals: {
     Primary: { in: 500, out: 100 },
     Savings: { in: 300, out: 50 },
@@ -86,17 +87,19 @@ describe('BalanceCardList', () => {
   });
 
   it('displays values for each card', () => {
-    const { getByText, getAllByText } = render(
-      <TestComponent {...defaultProps} />,
-    );
+    const { getByText } = render(<TestComponent {...defaultProps} />);
     expect(getByText('+ Transfers in: $500')).toBeInTheDocument();
     expect(getByText('- Transfers out: $100')).toBeInTheDocument();
     expect(getByText('+ Transfers in: $300')).toBeInTheDocument();
     expect(getByText('- Transfers out: $50')).toBeInTheDocument();
     expect(getByText('+ Transfers in: $0')).toBeInTheDocument();
     expect(getByText('- Transfers out: $200')).toBeInTheDocument();
-    expect(getAllByText('Starting Balance: $1,000')).toHaveLength(3);
-    expect(getAllByText('= Ending Balance: $1,500')).toHaveLength(3);
+    expect(getByText('Starting Balance: $1,000')).toBeInTheDocument();
+    expect(getByText('Starting Balance: $2,000')).toBeInTheDocument();
+    expect(getByText('Starting Balance: $500')).toBeInTheDocument();
+    expect(getByText('= Ending Balance: $1,400')).toBeInTheDocument();
+    expect(getByText('= Ending Balance: $2,250')).toBeInTheDocument();
+    expect(getByText('= Ending Balance: $300')).toBeInTheDocument();
   });
 
   it('renders empty when no funds provided', () => {
