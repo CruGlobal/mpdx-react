@@ -129,25 +129,20 @@ const NavMenu: React.FC = () => {
       : 0;
   }, [loading]);
 
-  const [reportsMenuOpen, setReportsMenuOpen] = useState(false);
-  const [toolsMenuOpen, setToolsMenuOpen] = useState(false);
+  enum MenuId {
+    Reports = 'reports',
+    Tools = 'tools',
+    RequestForms = 'requestForms',
+  }
 
-  const handleReportsMenuToggle = () => {
-    setReportsMenuOpen((prevOpen) => !prevOpen);
-    handleToolsMenuClose();
+  const [openMenu, setOpenMenu] = useState<MenuId | null>(null);
+
+  const handleMenuToggle = (menu: MenuId) => {
+    setOpenMenu((prev) => (prev === menu ? null : menu));
   };
 
-  const handleReportsMenuClose = () => {
-    setReportsMenuOpen(false);
-  };
-
-  const handleToolsMenuToggle = () => {
-    setToolsMenuOpen((prevOpen) => !prevOpen);
-    handleReportsMenuClose();
-  };
-
-  const handleToolsMenuClose = () => {
-    setToolsMenuOpen(false);
+  const handleMenuClose = () => {
+    setOpenMenu(null);
   };
   const { pathname } = useRouter();
 
@@ -178,9 +173,9 @@ const NavMenu: React.FC = () => {
 
       <NavMenuDropdown
         page={navPages[3]}
-        menuOpen={reportsMenuOpen}
-        handleMenuToggle={handleReportsMenuToggle}
-        handleMenuClose={handleReportsMenuClose}
+        menuOpen={openMenu === MenuId.Reports}
+        handleMenuToggle={() => handleMenuToggle(MenuId.Reports)}
+        handleMenuClose={handleMenuClose}
         testId="ReportMenuToggle"
         sum={sum}
         toolData={toolData}
@@ -189,14 +184,26 @@ const NavMenu: React.FC = () => {
       />
       <NavMenuDropdown
         page={navPages[4]}
-        menuOpen={toolsMenuOpen}
-        handleMenuToggle={handleToolsMenuToggle}
-        handleMenuClose={handleToolsMenuClose}
+        menuOpen={openMenu === MenuId.Tools}
+        handleMenuToggle={() => handleMenuToggle(MenuId.Tools)}
+        handleMenuClose={handleMenuClose}
         testId="ToolsMenuToggle"
         sum={sum}
         toolData={toolData}
         loading={loading}
         isTool={true}
+      />
+
+      <NavMenuDropdown
+        page={navPages[5]}
+        menuOpen={openMenu === MenuId.RequestForms}
+        handleMenuToggle={() => handleMenuToggle(MenuId.RequestForms)}
+        handleMenuClose={handleMenuClose}
+        testId="RequestFormsMenuToggle"
+        sum={sum}
+        toolData={toolData}
+        loading={loading}
+        isTool={false}
       />
 
       {isCoaching && (
