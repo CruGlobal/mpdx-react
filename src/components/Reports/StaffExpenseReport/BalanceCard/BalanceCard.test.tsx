@@ -9,8 +9,8 @@ const defaultProps = {
   title: 'Primary Fund',
   icon: Wallet,
   iconBgColor: 'primary.main',
-  startingBalance: 1000,
-  endingBalance: 1500,
+  startBalance: 1000,
+  endBalance: 1500,
   transfersIn: 500,
   transfersOut: 100,
   isSelected: false,
@@ -51,14 +51,14 @@ describe('BalanceCard', () => {
 
   it('should format positive balances correctly', () => {
     const { getByText } = render(
-      <BalanceCard {...defaultProps} startingBalance={1234.56} />,
+      <BalanceCard {...defaultProps} startBalance={1234.56} />,
     );
     expect(getByText('Starting Balance: $1,234.56')).toBeInTheDocument();
   });
 
   it('should format negative balances correctly', () => {
     const { getByText } = render(
-      <BalanceCard {...defaultProps} startingBalance={-500.25} />,
+      <BalanceCard {...defaultProps} startBalance={-500.25} />,
     );
     expect(getByText('Starting Balance: -$500.25')).toBeInTheDocument();
   });
@@ -72,7 +72,7 @@ describe('BalanceCard', () => {
 
   it('should handle large numbers correctly', () => {
     const { getByText } = render(
-      <BalanceCard {...defaultProps} endingBalance={1000000.99} />,
+      <BalanceCard {...defaultProps} endBalance={1000000.99} />,
     );
     expect(getByText('= Ending Balance: $1,000,000.99')).toBeInTheDocument();
   });

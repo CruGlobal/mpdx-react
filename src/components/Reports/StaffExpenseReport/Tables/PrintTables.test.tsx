@@ -24,11 +24,11 @@ const TestComponent: React.FC<TestComponentProps> = ({ tableProps }) => (
           accountId: 'account-1',
           name: 'Test Account',
           status: 'active',
-          startBalance: 1000,
-          endBalance: 2000,
           funds: [
             {
               fundType: 'Primary',
+              startBalance: 1000,
+              endBalance: 2000,
               total: -500,
               categories: [
                 {
