@@ -45,17 +45,27 @@ export function useReportNavItems(): NavItems[] {
       id: 'coaching',
       title: t('Coaching'),
     },
-    // Goal Calculator
-    // {
-    //   id: 'goalCalculator',
-    //   title: t('Goal Calculator'),
-    //   subTitle: t('Reports - Goal Calculation'),
-    // },
-    // {
-    //   id: 'mpgaIncomeExpenses',
-    //   title: t('MPGA Monthly Report'),
-    //   subTitle: t('Income & Expenses'),
-    // },
+    {
+      id: 'mpgaIncomeExpenses',
+      title: t('MPGA Monthly Report'),
+      subTitle: t('Income & Expenses'),
+    },
+    {
+      id: 'staffSavingFund',
+      title: t('Staff Saving Fund'),
+    },
+    {
+      id: 'staffExpense',
+      title: t('Staff Expense'),
+    },
+    {
+      id: 'goalCalculator',
+      title: t('Goal Calculator'),
+    },
+    {
+      id: 'mpReminders',
+      title: t('Ministry Partner Reminders'),
+    },
   ];
 
   return useMemo(() => reportNavItems, [t]);
