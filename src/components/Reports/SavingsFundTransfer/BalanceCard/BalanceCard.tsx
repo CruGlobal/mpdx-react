@@ -121,14 +121,14 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
 
         <Typography
           variant="h5"
-          color={fund.balance < 0 ? 'error.main' : 'text.primary'}
+          color={fund.endBalance < 0 ? 'error.main' : 'text.primary'}
           sx={{ fontSize: 'inherit' }}
         >
-          {fund.balance < 0 ? '(' : ''}
-          {currencyFormat(Math.abs(fund.balance), 'USD', locale, {
+          {fund.endBalance < 0 ? '(' : ''}
+          {currencyFormat(Math.abs(fund.endBalance), 'USD', locale, {
             showTrailingZeros: true,
           })}
-          {fund.balance < 0 ? ')' : ''}
+          {fund.endBalance < 0 ? ')' : ''}
         </Typography>
       </Box>
 
@@ -141,7 +141,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
       >
         <Button
           onClick={handleTransferFrom}
-          disabled={fund.balance <= fund.deficitLimit}
+          disabled={fund.endBalance <= fund.deficitLimit}
         >
           <Outbox fontSize="small" sx={{ mr: 0.5 }} />
           {t('TRANSFER FROM')}

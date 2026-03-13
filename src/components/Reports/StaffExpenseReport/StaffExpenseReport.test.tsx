@@ -58,14 +58,14 @@ const TestComponent: React.FC<TestComponentProps> = ({
               mocks={{
                 ReportsStaffExpenses: {
                   reportsStaffExpenses: {
-                    startBalance: 1000,
-                    endBalance: 2000,
                     funds: isEmpty
                       ? []
                       : [
                           {
                             fundType: 'Primary',
                             total: -500,
+                            startBalance: 1000,
+                            endBalance: 2000,
                             categories: [
                               {
                                 category: StaffExpenseCategoryEnum.Assessment,
@@ -149,6 +149,8 @@ const TestComponent: React.FC<TestComponentProps> = ({
                           {
                             fundType: 'Savings',
                             total: -100,
+                            startBalance: 1000,
+                            endBalance: 2000,
                             categories: [
                               {
                                 category: StaffExpenseCategoryEnum.Assessment,

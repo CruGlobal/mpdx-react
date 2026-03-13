@@ -91,10 +91,10 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
 
             <Typography
               variant="h5"
-              color={fund.balance < 0 ? 'error.main' : 'text.primary'}
+              color={fund.endBalance < 0 ? 'error.main' : 'text.primary'}
               sx={{ fontSize: 'inherit' }}
             >
-              {formatBalance(fund.balance)}
+              {formatBalance(fund.endBalance)}
             </Typography>
           </Box>
         </Box>
