@@ -192,9 +192,7 @@ describe('CurrentBoardApproved Component', () => {
   });
 
   it('should hide Update Current MHA button when there is an open request', () => {
-    const { queryByText, getByText } = render(
-      <TestComponent hasOpenRequest />,
-    );
+    const { queryByText, getByText } = render(<TestComponent hasOpenRequest />);
 
     expect(getByText('View Current MHA')).toBeInTheDocument();
     expect(queryByText('Update Current MHA')).not.toBeInTheDocument();
