@@ -41,6 +41,7 @@ interface TestComponentProps {
   mocks?: DeepPartial<{
     DuplicateMinistryHousingAllowanceRequest: DuplicateMinistryHousingAllowanceRequestMutation;
   }>;
+  hasOpenRequest?: boolean;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
@@ -48,6 +49,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   request,
   router = {},
   mocks,
+  hasOpenRequest,
 }) => {
   const approvedMHARequest = request ?? {
     ...mockMHARequest,
@@ -73,7 +75,10 @@ const TestComponent: React.FC<TestComponentProps> = ({
           <MinisterHousingAllowanceContext.Provider
             value={contextValue as ContextType}
           >
-            <CurrentBoardApproved request={approvedMHARequest} />
+            <CurrentBoardApproved
+              request={approvedMHARequest}
+              hasOpenRequest={hasOpenRequest}
+            />
           </MinisterHousingAllowanceContext.Provider>
         </GqlMockedProvider>
       </TestRouter>
@@ -184,5 +189,14 @@ describe('CurrentBoardApproved Component', () => {
         `/accountLists/account-list-1/reports/housingAllowance/${newRequestId}?mode=edit`,
       );
     });
+  });
+
+  it('should hide Update Current MHA button when there is an open request', () => {
+    const { queryByText, getByText } = render(
+      <TestComponent hasOpenRequest />,
+    );
+
+    expect(getByText('View Current MHA')).toBeInTheDocument();
+    expect(queryByText('Update Current MHA')).not.toBeInTheDocument();
   });
 });
