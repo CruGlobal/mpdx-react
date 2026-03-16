@@ -104,6 +104,7 @@ const mockContextValue = {
   isNewAsr: false,
   setIsNewAsr: jest.fn(),
   isSpouse: false,
+  hasSpouse: false,
 };
 
 const TestComponent: React.FC<{ request: RequestType }> = ({ request }) => (
