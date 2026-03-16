@@ -21,6 +21,7 @@ import {
   MinisterHousingAllowanceContext,
   MinisterHousingAllowanceProvider,
 } from '../../Shared/Context/MinisterHousingAllowanceContext';
+import { mockMHARequest } from '../../mockData';
 import { Calculation } from './Calculation';
 
 const submit = jest.fn();
@@ -31,6 +32,32 @@ const updateMutation = jest.fn();
 const handleNextStep = jest.fn();
 const mockEnqueue = jest.fn();
 const trackMutation = jest.fn();
+
+const defaultContext: ContextType = {
+  steps: [],
+  currentIndex: 0,
+  percentComplete: 0,
+  handleNextStep,
+  handlePreviousStep: jest.fn(),
+  pageType: PageEnum.New,
+  hasCalcValues: false,
+  setHasCalcValues,
+  isDrawerOpen: false,
+  toggleDrawer: jest.fn(),
+  setIsDrawerOpen: jest.fn(),
+  setIsComplete: jest.fn(),
+  isMarried: false,
+  preferredName: '',
+  spousePreferredName: '',
+  userEligibleForMHA: false,
+  spouseEligibleForMHA: false,
+  handleDiscard: jest.fn(),
+  loading: false,
+  deleteRequestMutation: jest.fn(),
+  updateMutation,
+  isMutating: false,
+  trackMutation,
+};
 
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -44,7 +71,7 @@ jest.mock('notistack', () => ({
 }));
 
 interface TestComponentProps {
-  contextValue: Partial<ContextType>;
+  contextValue: ContextType;
   boardApprovedAt?: string | null;
   availableDate?: string | null;
   rentOrOwn?: MhaRentOrOwnEnum;
@@ -66,9 +93,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
           onCall={mutationSpy}
         >
           <Formik initialValues={{}} onSubmit={submit}>
-            <MinisterHousingAllowanceContext.Provider
-              value={contextValue as ContextType}
-            >
+            <MinisterHousingAllowanceContext.Provider value={contextValue}>
               <Calculation
                 boardApprovedAt={boardApprovedAt}
                 availableDate={availableDate}
@@ -85,14 +110,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
 describe('Calculation', () => {
   it('renders the component', async () => {
     const { getByText, getByRole, findByRole } = render(
-      <TestComponent
-        contextValue={
-          {
-            pageType: PageEnum.New,
-            setHasCalcValues,
-          } as unknown as ContextType
-        }
-      />,
+      <TestComponent contextValue={defaultContext} />,
     );
 
     expect(
@@ -113,18 +131,13 @@ describe('Calculation', () => {
   it('should show validation error when inputs are invalid', async () => {
     const { findByText, getByRole, findByRole, getByText } = render(
       <TestComponent
-        contextValue={
-          {
-            pageType: PageEnum.New,
-            setHasCalcValues,
-            requestData: {
-              id: 'request-id',
-              requestAttributes: {
-                unexpectedExpenses: null,
-              },
-            },
-          } as unknown as ContextType
-        }
+        contextValue={{
+          ...defaultContext,
+          requestData: {
+            ...mockMHARequest,
+            id: 'request-id',
+          },
+        }}
       />,
     );
 
@@ -133,19 +146,19 @@ describe('Calculation', () => {
     });
     const input = within(row).getByPlaceholderText(/\$0/i);
 
-    await userEvent.type(input, '100');
+    userEvent.type(input, '100');
     expect(input).toHaveValue('100');
-    await userEvent.clear(input);
+    userEvent.clear(input);
     expect(input).toHaveValue('');
 
     input.focus();
-    await userEvent.tab();
+    userEvent.tab();
 
     expect(await findByText('Required field.')).toBeInTheDocument();
 
     const submitButton = getByRole('button', { name: /submit/i });
 
-    await userEvent.click(submitButton);
+    userEvent.click(submitButton);
 
     expect(await findByRole('alert')).toBeInTheDocument();
     expect(
@@ -155,19 +168,12 @@ describe('Calculation', () => {
 
   it('should show validation error when checkbox is not checked', async () => {
     const { findByText, findByRole, getByText } = render(
-      <TestComponent
-        contextValue={
-          {
-            pageType: PageEnum.New,
-            setHasCalcValues,
-          } as unknown as ContextType
-        }
-      />,
+      <TestComponent contextValue={defaultContext} />,
     );
 
     const submitButton = await findByRole('button', { name: /submit/i });
 
-    await userEvent.click(submitButton);
+    userEvent.click(submitButton);
 
     expect(
       await findByText('This box must be checked to continue.'),
@@ -184,20 +190,18 @@ describe('Calculation', () => {
   it('shows validation errors when email and phone are invalid', async () => {
     const { getByRole, findByText, findByRole } = render(
       <TestComponent
-        contextValue={
-          {
-            pageType: PageEnum.New,
-            trackMutation,
-            setHasCalcValues,
-            requestData: {
-              id: 'request-id',
-              requestAttributes: {
-                phoneNumber: '1234567890',
-                emailAddress: 'john.doe@cru.org',
-              },
+        contextValue={{
+          ...defaultContext,
+          requestData: {
+            ...mockMHARequest,
+            id: 'request-id',
+            requestAttributes: {
+              ...mockMHARequest.requestAttributes,
+              phoneNumber: '1234567890',
+              emailAddress: 'john.doe@cru.org',
             },
-          } as unknown as ContextType
-        }
+          },
+        }}
       />,
     );
 
@@ -207,38 +211,33 @@ describe('Calculation', () => {
     expect(phone).toHaveValue('1234567890');
     expect(email).toHaveValue('john.doe@cru.org');
 
-    await userEvent.clear(phone);
-    await userEvent.tab();
+    userEvent.clear(phone);
+    userEvent.tab();
     expect(await findByText('Phone Number is required.')).toBeInTheDocument();
 
-    await userEvent.clear(email);
-    await userEvent.tab();
+    userEvent.clear(email);
+    userEvent.tab();
     expect(await findByText('Email is required.')).toBeInTheDocument();
 
-    await userEvent.type(phone, 'abc');
-    await userEvent.tab();
+    userEvent.type(phone, 'abc');
+    userEvent.tab();
     expect(await findByText('Invalid phone number')).toBeInTheDocument();
 
-    await userEvent.type(email, 'invalid-email');
-    await userEvent.tab();
+    userEvent.type(email, 'invalid-email');
+    userEvent.tab();
     expect(await findByText('Invalid email address.')).toBeInTheDocument();
   });
 
   it('shows validation error when input is 0', async () => {
     const { findByRole, findByText } = render(
       <TestComponent
-        contextValue={
-          {
-            pageType: PageEnum.New,
-            setHasCalcValues,
-            requestData: {
-              id: 'request-id',
-              requestAttributes: {
-                unexpectedExpenses: null,
-              },
-            },
-          } as unknown as ContextType
-        }
+        contextValue={{
+          ...defaultContext,
+          requestData: {
+            ...mockMHARequest,
+            id: 'request-id',
+          },
+        }}
       />,
     );
 
@@ -247,10 +246,10 @@ describe('Calculation', () => {
     });
     const input = within(row).getByPlaceholderText(/\$0/i);
 
-    await userEvent.type(input, '0');
+    userEvent.type(input, '0');
 
     input.focus();
-    await userEvent.tab();
+    userEvent.tab();
 
     expect(input).toHaveValue('$0.00');
 
@@ -260,28 +259,19 @@ describe('Calculation', () => {
   it('shows confirmation modal when submit is clicked', async () => {
     const { getByRole, getByText, findByRole } = render(
       <TestComponent
-        contextValue={
-          {
-            pageType: PageEnum.New,
-            trackMutation,
-            setHasCalcValues,
-            updateMutation,
-            handleNextStep,
-            requestData: {
-              id: 'request-id',
-              requestAttributes: {
-                mortgageOrRentPayment: null,
-                furnitureValue: null,
-                repairCosts: null,
-                utilityCosts: null,
-                unexpectedExpenses: null,
-                iUnderstandMhaPolicy: false,
-                phoneNumber: '1234567890',
-                emailAddress: 'john.doe@cru.org',
-              },
+        contextValue={{
+          ...defaultContext,
+          requestData: {
+            ...mockMHARequest,
+            id: 'request-id',
+            requestAttributes: {
+              ...mockMHARequest.requestAttributes,
+              iUnderstandMhaPolicy: false,
+              phoneNumber: '1234567890',
+              emailAddress: 'john.doe@cru.org',
             },
-          } as unknown as ContextType
-        }
+          },
+        }}
         rentOrOwn={MhaRentOrOwnEnum.Rent}
       />,
     );
@@ -309,19 +299,19 @@ describe('Calculation', () => {
     });
     const input5 = within(row5).getByPlaceholderText(/\$0/i);
 
-    await userEvent.type(input1, '1000');
-    await userEvent.type(input2, '200');
-    await userEvent.type(input3, '300');
-    await userEvent.type(input4, '400');
-    await userEvent.type(input5, '500');
+    userEvent.type(input1, '1000');
+    userEvent.type(input2, '200');
+    userEvent.type(input3, '300');
+    userEvent.type(input4, '400');
+    userEvent.type(input5, '500');
     const checkbox = getByRole('checkbox', {
       name: /i understand that my approved/i,
     });
-    await userEvent.click(checkbox);
+    userEvent.click(checkbox);
 
     const submitButton = getByRole('button', { name: /submit/i });
 
-    await userEvent.click(submitButton);
+    userEvent.click(submitButton);
     expect(await findByRole('dialog')).toBeInTheDocument();
 
     expect(
@@ -342,7 +332,7 @@ describe('Calculation', () => {
 
     const confirmButton = getByRole('button', { name: /yes, continue/i });
 
-    await userEvent.click(confirmButton);
+    userEvent.click(confirmButton);
 
     await waitFor(() => {
       expect(mutationSpy).toHaveBeenCalledTimes(6);
@@ -441,12 +431,7 @@ describe('Calculation', () => {
   it('should change text when dates are null', () => {
     const { getByText } = render(
       <TestComponent
-        contextValue={
-          {
-            pageType: PageEnum.New,
-            setHasCalcValues,
-          } as unknown as ContextType
-        }
+        contextValue={defaultContext}
         boardApprovedAt={null}
         availableDate={null}
       />,
@@ -462,20 +447,17 @@ describe('Calculation', () => {
   it('should update checkbox value when clicked', async () => {
     const { findByRole } = render(
       <TestComponent
-        contextValue={
-          {
-            pageType: PageEnum.New,
-            trackMutation,
-            setHasCalcValues,
-            updateMutation,
-            requestData: {
-              id: 'request-id',
-              requestAttributes: {
-                iUnderstandMhaPolicy: false,
-              },
+        contextValue={{
+          ...defaultContext,
+          requestData: {
+            ...mockMHARequest,
+            id: 'request-id',
+            requestAttributes: {
+              ...mockMHARequest.requestAttributes,
+              iUnderstandMhaPolicy: false,
             },
-          } as unknown as ContextType
-        }
+          },
+        }}
       />,
     );
 
@@ -484,7 +466,7 @@ describe('Calculation', () => {
     });
     expect(checkbox).not.toBeChecked();
 
-    await userEvent.click(checkbox);
+    userEvent.click(checkbox);
     expect(checkbox).toBeChecked();
 
     await waitFor(() =>
@@ -501,16 +483,41 @@ describe('Calculation', () => {
     );
   });
 
+  it('should display correct totals when returning to the step with saved values', async () => {
+    const { findByText, findAllByText } = render(
+      <TestComponent
+        contextValue={{
+          ...defaultContext,
+          requestData: {
+            ...mockMHARequest,
+            requestAttributes: {
+              ...mockMHARequest.requestAttributes,
+              mortgageOrRentPayment: 1000,
+              furnitureCostsTwo: 200,
+              repairCosts: 150,
+              avgUtilityTwo: 300,
+              unexpectedExpenses: 100,
+            },
+          },
+        }}
+        rentOrOwn={MhaRentOrOwnEnum.Rent}
+      />,
+    );
+
+    // Total Monthly Cost
+    expect(await findByText('$1,750.00')).toBeInTheDocument();
+    // Annual Cost (Cost of Home and Request Summary Card)
+    expect(await findAllByText('$21,000.00')).toHaveLength(2);
+  });
+
   describe('isViewPage behavior', () => {
     it('renders view only mode', async () => {
       const { findByRole, queryByRole, getByText } = render(
         <TestComponent
-          contextValue={
-            {
-              pageType: PageEnum.View,
-              setHasCalcValues,
-            } as unknown as ContextType
-          }
+          contextValue={{
+            ...defaultContext,
+            pageType: PageEnum.View,
+          }}
         />,
       );
 
