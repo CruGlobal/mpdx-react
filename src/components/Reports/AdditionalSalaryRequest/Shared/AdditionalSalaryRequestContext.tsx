@@ -60,6 +60,7 @@ export type AdditionalSalaryRequestType = {
   isNewAsr: boolean;
   setIsNewAsr: React.Dispatch<React.SetStateAction<boolean>>;
   isSpouse: boolean;
+  hasSpouse: boolean;
 };
 
 export const AdditionalSalaryRequestContext =
@@ -227,6 +228,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       isNewAsr,
       setIsNewAsr,
       isSpouse,
+      hasSpouse,
     }),
     [
       staffAccountId,
@@ -258,6 +260,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       isNewAsr,
       setIsNewAsr,
       isSpouse,
+      hasSpouse,
     ],
   );
 
