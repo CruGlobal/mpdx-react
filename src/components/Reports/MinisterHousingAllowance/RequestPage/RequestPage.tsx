@@ -147,8 +147,7 @@ export const RequestPage: React.FC = () => {
         <Formik<FormValues>
           enableReinitialize
           initialValues={{
-            rentOrOwn:
-              isEdit && request?.rentOrOwn ? request.rentOrOwn : undefined,
+            rentOrOwn: request?.rentOrOwn ?? undefined,
           }}
           validationSchema={validationSchema}
           onSubmit={() => handleNextStep()}
