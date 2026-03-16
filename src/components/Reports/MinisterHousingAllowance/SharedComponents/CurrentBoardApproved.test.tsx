@@ -185,5 +185,4 @@ describe('CurrentBoardApproved Component', () => {
       );
     });
   });
-
 });
