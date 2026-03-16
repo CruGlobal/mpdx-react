@@ -102,7 +102,9 @@ export const DeductionCheckboxRow: React.FC<DeductionCheckboxRowProps> = ({
             : 'Calculated roth deduction amount'
         }
       >
-        {currencyFormat(calculatedDeduction, 'USD', locale)}
+        {currencyFormat(calculatedDeduction, 'USD', locale, {
+          showTrailingZeros: true,
+        })}
       </TableCell>
     </TableRow>
   );

@@ -59,8 +59,13 @@ export const TotalSalaryRequested: React.FC<TotalAnnualSalaryProps> = ({
             </Typography>
           </Box>
           <Typography>
-            {currencyFormat(Number(totalAnnualSalary), currency, locale)}/
-            {currencyFormat(individualCap, currency, locale)}
+            {currencyFormat(Number(totalAnnualSalary), currency, locale, {
+              showTrailingZeros: true,
+            })}
+            /
+            {currencyFormat(individualCap, currency, locale, {
+              showTrailingZeros: true,
+            })}
           </Typography>
         </Box>
         <LinearProgress variant="determinate" value={100} color="warning" />

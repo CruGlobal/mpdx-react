@@ -4,7 +4,7 @@ import { prepareDataForValidation } from 'formik';
 import * as yup from 'yup';
 import { useLocale } from 'src/hooks/useLocale';
 import { useSyncedState } from 'src/hooks/useSyncedState';
-import { display, parseInput } from './Helper/formatHelper';
+import { display, isDecimal, parseInput } from './Helper/formatHelper';
 
 // By default, treats all fields as currency numbers and auto-formats them
 // Pass field names in 'stringFields' to treat them as plain text instead
@@ -101,11 +101,13 @@ export const useCustomAutoSave = <Value extends string | number | boolean>({
       if (isString) {
         setInternalValue(newValue);
         setFieldValue(fieldName, newValue);
+      } else if (isDecimal(newValue)) {
+        setInternalValue(newValue);
+        setFieldValue(fieldName, Number(newValue));
       } else {
         const parsed = parseInput(newValue);
-        const displayValue = String(parsed ?? '');
-        setInternalValue(displayValue);
-        setFieldValue(fieldName, parsed);
+        setInternalValue(String(parsed ?? ''));
+        setFieldValue(fieldName, parsed ?? null);
       }
     },
     onBlur: () => {

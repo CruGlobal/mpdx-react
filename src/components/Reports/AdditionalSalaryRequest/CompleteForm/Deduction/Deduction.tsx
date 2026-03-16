@@ -46,7 +46,9 @@ export const Deduction: React.FC = () => {
           </Typography>
         </TableCell>
         <TableCell sx={{ width: '30%', fontSize: 16 }}>
-          {currencyFormat(contribution403b, 'USD', locale)}
+          {currencyFormat(contribution403b, 'USD', locale, {
+            showTrailingZeros: true,
+          })}
         </TableCell>
       </TableRow>
       <TableRow>
@@ -59,7 +61,9 @@ export const Deduction: React.FC = () => {
           sx={{ width: '30%', fontSize: 16, fontWeight: 'bold' }}
           aria-label="Total requested amount"
         >
-          {currencyFormat(totalDeduction, 'USD', locale)}
+          {currencyFormat(totalDeduction, 'USD', locale, {
+            showTrailingZeros: true,
+          })}
         </TableCell>
       </TableRow>
     </FormCard>

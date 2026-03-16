@@ -87,6 +87,21 @@ describe('useCustomAutoSave', () => {
     expect(setFieldTouched).toHaveBeenCalledWith('rentalValue', true, true);
   });
 
+  it('saves valid decimal value on blur', async () => {
+    const { getByRole } = render(<TestComponent />);
+
+    const input = getByRole('textbox', { name: /rental value/i });
+    await userEvent.clear(input);
+    await userEvent.type(input, '75.19');
+    await userEvent.tab();
+
+    expect(input).toHaveValue('$75.19');
+
+    expect(saveValue).toHaveBeenCalledWith(75.19);
+    expect(setFieldValue).toHaveBeenCalledWith('rentalValue', 75.19);
+    expect(setFieldTouched).toHaveBeenCalledWith('rentalValue', true, true);
+  });
+
   it('saves null value', async () => {
     const { getByRole } = render(<TestComponent />);
 
