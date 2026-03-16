@@ -96,6 +96,7 @@ const defaultMockContextValue = {
   isNewAsr: false,
   setIsNewAsr: jest.fn(),
   isSpouse: false,
+  hasSpouse: false,
 };
 
 const router = {
