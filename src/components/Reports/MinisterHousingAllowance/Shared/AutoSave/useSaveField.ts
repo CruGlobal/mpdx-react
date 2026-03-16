@@ -3,8 +3,6 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { MinistryHousingAllowanceRequestAttributesInput } from 'pages/api/graphql-rest.page.generated';
 import { calculateAnnualTotals } from 'src/hooks/useAnnualTotal';
-import { useLocale } from 'src/hooks/useLocale';
-import { amountFormat } from 'src/lib/intlFormat';
 import { useUpdateMinistryHousingAllowanceRequestMutation } from '../../MinisterHousingAllowance.generated';
 import { CalculationFormValues } from '../../Steps/StepThree/Calculation';
 import { useMinisterHousingAllowance } from '../Context/MinisterHousingAllowanceContext';
@@ -15,7 +13,6 @@ interface UseSaveFieldOptions {
 
 export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
   const { t } = useTranslation();
-  const locale = useLocale();
   const { enqueueSnackbar } = useSnackbar();
 
   const { requestData, trackMutation } = useMinisterHousingAllowance();
@@ -37,7 +34,7 @@ export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
       } as CalculationFormValues;
       const { annualTotal: overallAmount } =
         calculateAnnualTotals(updatedValues);
-      const roundedOverallAmount = amountFormat(overallAmount, locale);
+      const roundedOverallAmount = Math.round(overallAmount * 100) / 100;
 
       return trackMutation(
         updateMinistryHousingAllowanceRequest({
@@ -60,7 +57,7 @@ export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
                   __typename: 'MhaRequestAttributes',
                   ...values,
                   ...attributes,
-                  overallAmount,
+                  overallAmount: roundedOverallAmount,
                 },
               },
             },

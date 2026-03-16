@@ -10,7 +10,7 @@ export const parseInput = (s: string) => {
 };
 
 export const isDecimal = (s: string) => {
-  return /^\d*\.?\d*$/.test(s);
+  return /^\d+\.?\d*$/.test(s);
 };
 
 export const display = (

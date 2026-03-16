@@ -98,12 +98,15 @@ export const useCustomAutoSave = <Value extends string | number | boolean>({
         return;
       }
 
+      // String fields are not parsed or formatted
       if (isString) {
         setInternalValue(newValue);
         setFieldValue(fieldName, newValue);
+        // Preserves raw string while mid-typing decimals
       } else if (isDecimal(newValue)) {
         setInternalValue(newValue);
         setFieldValue(fieldName, Number(newValue));
+        // Handles formatted input by stripping non-digit characters
       } else {
         const parsed = parseInput(newValue);
         setInternalValue(String(parsed ?? ''));

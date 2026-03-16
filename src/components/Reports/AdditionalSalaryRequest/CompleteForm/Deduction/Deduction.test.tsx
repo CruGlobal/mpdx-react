@@ -383,7 +383,7 @@ describe('Deduction', () => {
 
     await waitFor(() => {
       expect(getByLabelText('Total requested amount')).toHaveTextContent(
-        '$2,500',
+        '$2,500.00',
       );
     });
   });
@@ -391,7 +391,7 @@ describe('Deduction', () => {
   it('updates total when roth403bContribution changes', async () => {
     const { getByLabelText, rerender } = render(<TestWrapper />);
 
-    expect(getByLabelText('Total requested amount')).toHaveTextContent('$0');
+    expect(getByLabelText('Total requested amount')).toHaveTextContent('$0.00');
 
     const updatedValues: CompleteFormValues = {
       ...defaultCompleteFormValues,
