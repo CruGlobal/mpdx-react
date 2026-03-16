@@ -68,6 +68,8 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
           router.push(getRequestUrl(accountListId, newRequestId, 'edit'));
         }
       },
+      // Prevents unhandled promise rejection
+      onError: () => {},
     });
   };
 
