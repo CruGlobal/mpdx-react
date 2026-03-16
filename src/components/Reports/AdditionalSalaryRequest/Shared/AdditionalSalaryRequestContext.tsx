@@ -60,6 +60,7 @@ export type AdditionalSalaryRequestType = {
   isNewAsr: boolean;
   setIsNewAsr: React.Dispatch<React.SetStateAction<boolean>>;
   isSpouse: boolean;
+  hasSpouse: boolean;
 };
 
 export const AdditionalSalaryRequestContext =
@@ -175,8 +176,13 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   const { trackMutation, isMutating } = useTrackMutation();
 
   const [primaryPerson, spousePerson] = hcmData?.hcm ?? [];
+  const hasSpouse = (hcmData?.hcm?.length ?? 0) > 1;
   const user = isSpouse ? spousePerson : primaryPerson;
-  const spouse = isSpouse ? primaryPerson : spousePerson;
+  const spouse = hasSpouse
+    ? isSpouse
+      ? primaryPerson
+      : spousePerson
+    : undefined;
 
   const salaryInfo = salaryInfoData?.salaryInfo;
   const isInternational = user?.staffInfo?.isInternational ?? false;
@@ -222,6 +228,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       isNewAsr,
       setIsNewAsr,
       isSpouse,
+      hasSpouse,
     }),
     [
       staffAccountId,
@@ -253,6 +260,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       isNewAsr,
       setIsNewAsr,
       isSpouse,
+      hasSpouse,
     ],
   );
 
