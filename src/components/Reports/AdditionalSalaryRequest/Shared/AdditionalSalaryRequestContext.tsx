@@ -175,8 +175,13 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   const { trackMutation, isMutating } = useTrackMutation();
 
   const [primaryPerson, spousePerson] = hcmData?.hcm ?? [];
+  const hasSpouse = (hcmData?.hcm?.length ?? 0) > 1;
   const user = isSpouse ? spousePerson : primaryPerson;
-  const spouse = isSpouse ? primaryPerson : spousePerson;
+  const spouse = hasSpouse
+    ? isSpouse
+      ? primaryPerson
+      : spousePerson
+    : undefined;
 
   const salaryInfo = salaryInfoData?.salaryInfo;
   const isInternational = user?.staffInfo?.isInternational ?? false;
