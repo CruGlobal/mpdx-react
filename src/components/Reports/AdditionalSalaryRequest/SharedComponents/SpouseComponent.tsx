@@ -13,8 +13,12 @@ export const SpouseComponent: React.FC = () => {
   const locale = useLocale();
   const currency = 'USD';
 
-  const { requestData, isSpouse } = useAdditionalSalaryRequest();
+  const { requestData, isSpouse, hasSpouse } = useAdditionalSalaryRequest();
   const { spouseLinkText, spouseLinkHref } = useSpouseLink();
+
+  if (!hasSpouse) {
+    return null;
+  }
 
   const userCalculations =
     requestData?.latestAdditionalSalaryRequest?.calculations;

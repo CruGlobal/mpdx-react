@@ -37,11 +37,13 @@ type ComponentProps = {
   requestData?: object;
   spouse?: object;
   isSpouse?: boolean;
+  hasSpouse?: boolean;
 };
 const renderComponent = ({
   requestData = requestDataDefault,
   spouse = spouseDefault,
   isSpouse = false,
+  hasSpouse = true,
 }: ComponentProps) =>
   render(
     <TestRouter router={router}>
@@ -51,6 +53,7 @@ const renderComponent = ({
             requestData,
             spouse,
             isSpouse,
+            hasSpouse,
           } as unknown as AdditionalSalaryRequestType
         }
       >
@@ -123,6 +126,18 @@ describe('SpouseComponent', () => {
     const { getByTestId } = renderComponent({});
 
     expect(getByTestId('ImportExportIcon')).toBeInTheDocument();
+  });
+
+  it('does not render when user has no spouse', () => {
+    const { queryByText, queryByTestId } = renderComponent({
+      spouse: undefined,
+      hasSpouse: false,
+    });
+
+    expect(
+      queryByText(/Request additional salary for/),
+    ).not.toBeInTheDocument();
+    expect(queryByTestId('ImportExportIcon')).not.toBeInTheDocument();
   });
 
   describe('isSpouse=true', () => {
