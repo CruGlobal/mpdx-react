@@ -1,11 +1,17 @@
 import React from 'react';
+import { MockedProvider, MockedResponse } from '@apollo/client/testing';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { GraphQLError } from 'graphql';
+import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
-import { DuplicateMinistryHousingAllowanceRequestMutation } from '../MinisterHousingAllowance.generated';
+import {
+  DuplicateMinistryHousingAllowanceRequestDocument,
+  DuplicateMinistryHousingAllowanceRequestMutation,
+} from '../MinisterHousingAllowance.generated';
 import {
   ContextType,
   HcmData,
@@ -17,19 +23,40 @@ import { CurrentBoardApproved } from './CurrentBoardApproved';
 const newRequestId = 'new-request-id';
 const mutationSpy = jest.fn();
 const mockPush = jest.fn();
+
+const singleContext: Partial<ContextType> = {
+  isMarried: false,
+  preferredName: 'John',
+  spousePreferredName: '',
+  userHcmData: {
+    staffInfo: {
+      personNumber: '000123456',
+    },
+  } as unknown as HcmData,
+  spouseHcmData: null,
+};
+
 interface TestComponentProps {
-  contextValue: Partial<ContextType>;
+  contextValue?: Partial<ContextType>;
+  request?: typeof mockMHARequest;
   router?: {
     push?: jest.Mock;
     query?: { accountListId?: string };
   };
+  mocks?: DeepPartial<{
+    DuplicateMinistryHousingAllowanceRequest: DuplicateMinistryHousingAllowanceRequestMutation;
+  }>;
+  errorMocks?: MockedResponse[];
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
-  contextValue,
+  contextValue = singleContext,
+  request,
   router = {},
+  mocks,
+  errorMocks,
 }) => {
-  const approvedMHARequest = {
+  const approvedMHARequest = request ?? {
     ...mockMHARequest,
     updatedAt: '2022-12-01',
     requestAttributes: {
@@ -41,20 +68,29 @@ const TestComponent: React.FC<TestComponentProps> = ({
     },
   };
 
+  const content = (
+    <MinisterHousingAllowanceContext.Provider
+      value={contextValue as ContextType}
+    >
+      <CurrentBoardApproved request={approvedMHARequest} />
+    </MinisterHousingAllowanceContext.Provider>
+  );
+
   return (
     <ThemeProvider theme={theme}>
       <TestRouter router={router}>
-        <GqlMockedProvider<{
-          DuplicateMinistryHousingAllowanceRequest: DuplicateMinistryHousingAllowanceRequestMutation;
-        }>
-          onCall={mutationSpy}
-        >
-          <MinisterHousingAllowanceContext.Provider
-            value={contextValue as ContextType}
+        {errorMocks ? (
+          <MockedProvider mocks={errorMocks}>{content}</MockedProvider>
+        ) : (
+          <GqlMockedProvider<{
+            DuplicateMinistryHousingAllowanceRequest: DuplicateMinistryHousingAllowanceRequestMutation;
+          }>
+            mocks={mocks}
+            onCall={mutationSpy}
           >
-            <CurrentBoardApproved request={approvedMHARequest} />
-          </MinisterHousingAllowanceContext.Provider>
-        </GqlMockedProvider>
+            {content}
+          </GqlMockedProvider>
+        )}
       </TestRouter>
     </ThemeProvider>
   );
@@ -105,19 +141,7 @@ describe('CurrentBoardApproved Component', () => {
 
   it('should render correctly for single person', () => {
     const { queryByText, queryByRole, getAllByText } = render(
-      <TestComponent
-        contextValue={{
-          isMarried: false,
-          preferredName: 'John',
-          spousePreferredName: '',
-          userHcmData: {
-            staffInfo: {
-              personNumber: '000123456',
-            },
-          } as unknown as HcmData,
-          spouseHcmData: null,
-        }}
-      />,
+      <TestComponent />,
     );
 
     expect(queryByText('Current Board Approved MHA')).toBeInTheDocument();
@@ -141,42 +165,19 @@ describe('CurrentBoardApproved Component', () => {
 
   it('should navigate to edit page with new requestId after duplicate mutation', async () => {
     const { getByText } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={{ push: mockPush }}>
-          <GqlMockedProvider<{
-            DuplicateMinistryHousingAllowanceRequest: DuplicateMinistryHousingAllowanceRequestMutation;
-          }>
-            mocks={{
-              DuplicateMinistryHousingAllowanceRequest: {
-                duplicateMinistryHousingAllowanceRequest: {
-                  ministryHousingAllowanceRequest: {
-                    id: newRequestId,
-                  },
-                },
+      <TestComponent
+        request={mockMHARequest}
+        router={{ push: mockPush }}
+        mocks={{
+          DuplicateMinistryHousingAllowanceRequest: {
+            duplicateMinistryHousingAllowanceRequest: {
+              ministryHousingAllowanceRequest: {
+                id: newRequestId,
               },
-            }}
-            onCall={mutationSpy}
-          >
-            <MinisterHousingAllowanceContext.Provider
-              value={
-                {
-                  isMarried: false,
-                  preferredName: 'John',
-                  spousePreferredName: '',
-                  userHcmData: {
-                    staffInfo: {
-                      personNumber: '000123456',
-                    },
-                  } as unknown as HcmData,
-                  spouseHcmData: null,
-                } as ContextType
-              }
-            >
-              <CurrentBoardApproved request={mockMHARequest} />
-            </MinisterHousingAllowanceContext.Provider>
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>,
+            },
+          },
+        }}
+      />,
     );
 
     const updateButton = getByText('Update Current MHA');
@@ -197,6 +198,41 @@ describe('CurrentBoardApproved Component', () => {
       expect(mockPush).toHaveBeenCalledWith(
         `/accountLists/account-list-1/reports/housingAllowance/${newRequestId}?mode=edit`,
       );
+    });
+  });
+
+  it('should handle duplicate mutation error gracefully without throwing', async () => {
+    const { getByText } = render(
+      <TestComponent
+        request={mockMHARequest}
+        router={{ push: mockPush }}
+        errorMocks={[
+          {
+            request: {
+              query: DuplicateMinistryHousingAllowanceRequestDocument,
+              variables: {
+                input: {
+                  requestId: '1',
+                },
+              },
+            },
+            result: {
+              errors: [
+                new GraphQLError(
+                  'You already have an open request. Please complete or delete it before duplicating this MHA request.',
+                ),
+              ],
+            },
+          },
+        ]}
+      />,
+    );
+
+    const updateButton = getByText('Update Current MHA');
+    userEvent.click(updateButton);
+
+    await waitFor(() => {
+      expect(mockPush).not.toHaveBeenCalled();
     });
   });
 });
