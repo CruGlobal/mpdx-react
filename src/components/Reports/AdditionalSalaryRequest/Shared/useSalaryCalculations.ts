@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
-import { getTotal } from './Helper/getTotal';
+import { getTotal, getTotalWithout403b } from './Helper/getTotal';
 
 export interface SalaryCalculations {
   total: number;
@@ -59,12 +59,14 @@ export const useSalaryCalculations = ({
   return useMemo(() => {
     const total = getTotal(values);
 
+    const totalWithout403b = getTotalWithout403b(values);
+
     const calculatedTraditionalDeduction = values.deductTaxDeferredPercent
-      ? Math.round(total * traditional403bPercentage)
+      ? Math.round(totalWithout403b * traditional403bPercentage)
       : 0;
 
     const calculatedRothDeduction = values.deductRothPercent
-      ? Math.round(total * roth403bPercentage)
+      ? Math.round(totalWithout403b * roth403bPercentage)
       : 0;
 
     const calculatedDeduction =
