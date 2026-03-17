@@ -130,7 +130,7 @@ describe('useSaveField', () => {
       },
     );
 
-    result.current({ currentYearSalaryNotReceived: '200' });
+    result.current({ currentYearSalaryNotReceived: 200 });
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation(
@@ -138,7 +138,7 @@ describe('useSaveField', () => {
         {
           id: 'request-id',
           attributes: {
-            currentYearSalaryNotReceived: '200',
+            currentYearSalaryNotReceived: 200,
             totalAdditionalSalaryRequested: 200,
           },
         },
@@ -162,7 +162,7 @@ describe('useSaveField', () => {
       },
     );
 
-    await result.current({ currentYearSalaryNotReceived: '200' });
+    await result.current({ currentYearSalaryNotReceived: 200 });
 
     expect(mutationSpy).not.toHaveBeenCalled();
   });
@@ -178,7 +178,7 @@ describe('useSaveField', () => {
       },
     );
 
-    result.current({ adoption: '500' });
+    result.current({ adoption: 500 });
 
     await waitFor(() => expect(mockTrackMutation).toHaveBeenCalled());
   });
@@ -202,7 +202,7 @@ describe('useSaveField', () => {
     );
 
     // Update one field - total should include existing values plus new value
-    result.current({ movingExpense: '400' });
+    result.current({ movingExpense: 400 });
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation(
@@ -210,7 +210,7 @@ describe('useSaveField', () => {
         {
           id: 'request-id',
           attributes: {
-            movingExpense: '400',
+            movingExpense: 400,
             // Total: 100 + 200 + 300 + 400 = 1000
             totalAdditionalSalaryRequested: 1000,
           },

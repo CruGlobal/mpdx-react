@@ -86,10 +86,10 @@ describe('Deduction', () => {
     expect(getByText('Total 403(b) Deduction')).toBeInTheDocument();
   });
 
-  it('shows $0 for all amounts when form is empty', () => {
+  it('shows $0.00 for all amounts when form is empty', () => {
     const { getAllByText } = render(<TestWrapper />);
 
-    const zeroAmounts = getAllByText('$0');
+    const zeroAmounts = getAllByText('$0.00');
     expect(zeroAmounts.length).toBeGreaterThanOrEqual(4);
   });
 
@@ -135,10 +135,10 @@ describe('Deduction', () => {
     await waitFor(() => {
       expect(
         getByLabelText('Calculated traditional deduction amount'),
-      ).toHaveTextContent('$1,200');
+      ).toHaveTextContent('$1,200.00');
       expect(
         getByLabelText('Calculated roth deduction amount'),
-      ).toHaveTextContent('$800');
+      ).toHaveTextContent('$800.00');
     });
   });
 
@@ -158,10 +158,10 @@ describe('Deduction', () => {
 
     expect(
       getByLabelText('Calculated traditional deduction amount'),
-    ).toHaveTextContent('$0');
+    ).toHaveTextContent('$0.00');
     expect(
       getByLabelText('Calculated roth deduction amount'),
-    ).toHaveTextContent('$0');
+    ).toHaveTextContent('$0.00');
   });
 
   it('displays traditional403bContribution amount from form values', () => {
@@ -175,7 +175,7 @@ describe('Deduction', () => {
     );
 
     // The traditional403bContribution value should be displayed
-    expect(getAllByText('$5,000').length).toBeGreaterThanOrEqual(1);
+    expect(getAllByText('$5,000.00').length).toBeGreaterThanOrEqual(1);
   });
 
   it('displays roth403bContribution amount from form values', () => {
@@ -189,7 +189,7 @@ describe('Deduction', () => {
     );
 
     // The roth403bContribution value should be displayed
-    expect(getAllByText('$3,000').length).toBeGreaterThanOrEqual(1);
+    expect(getAllByText('$3,000.00').length).toBeGreaterThanOrEqual(1);
   });
 
   it('calculates total deduction as sum of calculated and traditional403bContribution + roth403bContribution', async () => {
@@ -218,16 +218,16 @@ describe('Deduction', () => {
     await waitFor(() => {
       expect(
         getByLabelText('Calculated traditional deduction amount'),
-      ).toHaveTextContent('$1,800');
+      ).toHaveTextContent('$1,800.00');
       expect(
         getByLabelText('Calculated roth deduction amount'),
-      ).toHaveTextContent('$1,200');
+      ).toHaveTextContent('$1,200.00');
     });
 
     // Total should be $3,000 + ($3,000 + $2,000) = $8,000
     await waitFor(() => {
       expect(getByLabelText('Total requested amount')).toHaveTextContent(
-        '$8,000',
+        '$8,000.00',
       );
     });
   });
@@ -258,10 +258,10 @@ describe('Deduction', () => {
     await waitFor(() => {
       expect(
         getByLabelText('Calculated traditional deduction amount'),
-      ).toHaveTextContent('$1,200');
+      ).toHaveTextContent('$1,200.00');
       expect(
         getByLabelText('Calculated roth deduction amount'),
-      ).toHaveTextContent('$800');
+      ).toHaveTextContent('$800.00');
     });
   });
 
@@ -286,7 +286,7 @@ describe('Deduction', () => {
     await waitFor(() => {
       expect(
         getByLabelText('Calculated traditional deduction amount'),
-      ).toHaveTextContent('$1,200');
+      ).toHaveTextContent('$1,200.00');
     });
   });
 
@@ -311,7 +311,7 @@ describe('Deduction', () => {
     await waitFor(() => {
       expect(
         getByLabelText('Calculated roth deduction amount'),
-      ).toHaveTextContent('$800');
+      ).toHaveTextContent('$800.00');
     });
   });
 
@@ -338,7 +338,7 @@ describe('Deduction', () => {
     await waitFor(() => {
       expect(
         getByLabelText('Calculated traditional deduction amount'),
-      ).toHaveTextContent('$600');
+      ).toHaveTextContent('$600.00');
     });
   });
 
@@ -365,14 +365,14 @@ describe('Deduction', () => {
     await waitFor(() => {
       expect(
         getByLabelText('Calculated roth deduction amount'),
-      ).toHaveTextContent('$400');
+      ).toHaveTextContent('$400.00');
     });
   });
 
   it('updates total when traditional403bContribution changes', async () => {
     const { getByLabelText, rerender } = render(<TestWrapper />);
 
-    expect(getByLabelText('Total requested amount')).toHaveTextContent('$0');
+    expect(getByLabelText('Total requested amount')).toHaveTextContent('$0.00');
 
     const updatedValues: CompleteFormValues = {
       ...defaultCompleteFormValues,
@@ -383,7 +383,7 @@ describe('Deduction', () => {
 
     await waitFor(() => {
       expect(getByLabelText('Total requested amount')).toHaveTextContent(
-        '$2,500',
+        '$2,500.00',
       );
     });
   });
@@ -391,7 +391,7 @@ describe('Deduction', () => {
   it('updates total when roth403bContribution changes', async () => {
     const { getByLabelText, rerender } = render(<TestWrapper />);
 
-    expect(getByLabelText('Total requested amount')).toHaveTextContent('$0');
+    expect(getByLabelText('Total requested amount')).toHaveTextContent('$0.00');
 
     const updatedValues: CompleteFormValues = {
       ...defaultCompleteFormValues,
@@ -402,7 +402,7 @@ describe('Deduction', () => {
 
     await waitFor(() => {
       expect(getByLabelText('Total requested amount')).toHaveTextContent(
-        '$1,500',
+        '$1,500.00',
       );
     });
   });
