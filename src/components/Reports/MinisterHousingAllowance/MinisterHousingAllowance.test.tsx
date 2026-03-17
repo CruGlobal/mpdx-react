@@ -1,6 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -18,9 +19,15 @@ import {
   singleNoMhaNoException,
 } from '../Shared/HcmData/mockData';
 import { MinisterHousingAllowanceReport } from './MinisterHousingAllowance';
-import { MinistryHousingAllowanceRequestsQuery } from './MinisterHousingAllowance.generated';
+import {
+  CreateHousingAllowanceRequestMutation,
+  MinistryHousingAllowanceRequestsQuery,
+} from './MinisterHousingAllowance.generated';
 import { MinisterHousingAllowanceProvider } from './Shared/Context/MinisterHousingAllowanceContext';
 import { mockMHARequest } from './mockData';
+
+const mutationSpy = jest.fn();
+const mockPush = jest.fn();
 
 interface TestComponentProps {
   hcmMock: HcmDataQuery['hcm'];
@@ -32,11 +39,12 @@ const TestComponent: React.FC<TestComponentProps> = ({
   mhaRequestsMock,
 }) => (
   <ThemeProvider theme={theme}>
-    <TestRouter>
+    <TestRouter router={{ push: mockPush }}>
       <SnackbarProvider>
         <GqlMockedProvider<{
           HcmData: HcmDataQuery;
           MinistryHousingAllowanceRequests: MinistryHousingAllowanceRequestsQuery;
+          CreateHousingAllowanceRequest: CreateHousingAllowanceRequestMutation;
         }>
           mocks={{
             HcmData: {
@@ -47,7 +55,15 @@ const TestComponent: React.FC<TestComponentProps> = ({
                 nodes: mhaRequestsMock,
               },
             },
+            CreateHousingAllowanceRequest: {
+              createMinistryHousingAllowanceRequest: {
+                ministryHousingAllowanceRequest: {
+                  id: 'new-mha-id',
+                },
+              },
+            },
           }}
+          onCall={mutationSpy}
         >
           <MinisterHousingAllowanceProvider>
             <MinisterHousingAllowanceReport />
@@ -239,5 +255,60 @@ describe('MinisterHousingAllowanceReport', () => {
     expect(await findByText('John Doe and Jane Doe')).toBeInTheDocument();
 
     expect(await findByText('Current MHA Request')).toBeInTheDocument();
+  });
+
+  it('does not render Current Request section when eligible user has no requests', async () => {
+    const { queryByText, findByText } = render(
+      <TestComponent hcmMock={singleMhaNoException} mhaRequestsMock={[]} />,
+    );
+
+    expect(await findByText('Your MHA')).toBeInTheDocument();
+    expect(queryByText('Current MHA Request')).not.toBeInTheDocument();
+  });
+
+  it('shows loading and calls router.push when creating a new MHA request', async () => {
+    const { findByText, findByTestId } = render(
+      <TestComponent
+        hcmMock={singleMhaNoException}
+        mhaRequestsMock={[
+          { ...mockMHARequest, status: MhaStatusEnum.BoardApproved },
+        ]}
+      />,
+    );
+
+    const requestButton = await findByText('Request New MHA');
+    userEvent.click(requestButton);
+
+    expect(await findByTestId('Loading')).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'CreateHousingAllowanceRequest',
+      );
+    });
+
+    await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith(
+        '/accountLists/account-list-1/reports/housingAllowance/new-mha-id?mode=new',
+      );
+    });
+  });
+
+  it('shows success snackbar when MHA request is created', async () => {
+    const { findByText } = render(
+      <TestComponent
+        hcmMock={singleMhaNoException}
+        mhaRequestsMock={[
+          { ...mockMHARequest, status: MhaStatusEnum.BoardApproved },
+        ]}
+      />,
+    );
+
+    const requestButton = await findByText('Request New MHA');
+    userEvent.click(requestButton);
+
+    expect(
+      await findByText('Successfully created MHA Request.'),
+    ).toBeInTheDocument();
   });
 });

@@ -49,7 +49,8 @@ const MainContent: React.FC = () => {
     setIsNewAsr,
   } = useAdditionalSalaryRequest();
 
-  const [createRequest] = useCreateAdditionalSalaryRequestMutation();
+  const [createRequest, { loading: creatingRequest }] =
+    useCreateAdditionalSalaryRequestMutation();
 
   const { values, submitForm, validateForm, submitCount, isValid, errors } =
     useFormikContext<CompleteFormValues>();
@@ -100,8 +101,8 @@ const MainContent: React.FC = () => {
     t,
   );
 
-  if (loading && !requestData) {
-    return <Loading loading={loading} />;
+  if (creatingRequest || (loading && !requestData)) {
+    return <Loading loading />;
   }
 
   return (
