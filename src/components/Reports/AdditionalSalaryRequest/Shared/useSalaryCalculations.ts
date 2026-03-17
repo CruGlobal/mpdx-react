@@ -62,11 +62,11 @@ export const useSalaryCalculations = ({
     const totalWithout403b = getTotalWithout403b(values);
 
     const calculatedTraditionalDeduction = values.deductTaxDeferredPercent
-      ? Math.round(totalWithout403b * traditional403bPercentage)
+      ? totalWithout403b * traditional403bPercentage
       : 0;
 
     const calculatedRothDeduction = values.deductRothPercent
-      ? Math.round(totalWithout403b * roth403bPercentage)
+      ? totalWithout403b * roth403bPercentage
       : 0;
 
     const calculatedDeduction =

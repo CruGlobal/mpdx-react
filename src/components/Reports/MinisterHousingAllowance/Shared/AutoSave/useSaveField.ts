@@ -34,6 +34,7 @@ export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
       } as CalculationFormValues;
       const { annualTotal: overallAmount } =
         calculateAnnualTotals(updatedValues);
+      const roundedOverallAmount = Math.round(overallAmount * 100) / 100;
 
       return trackMutation(
         updateMinistryHousingAllowanceRequest({
@@ -42,7 +43,7 @@ export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
               requestId: requestData.id,
               requestAttributes: {
                 ...attributes,
-                overallAmount,
+                overallAmount: roundedOverallAmount,
               },
             },
           },
@@ -56,7 +57,7 @@ export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
                   __typename: 'MhaRequestAttributes',
                   ...values,
                   ...attributes,
-                  overallAmount,
+                  overallAmount: roundedOverallAmount,
                 },
               },
             },

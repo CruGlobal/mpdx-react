@@ -126,9 +126,14 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
                     <Typography
                       sx={{ color: 'primary.main', fontWeight: 'bold' }}
                     >
-                      {currencyFormat(approvedOverallAmount, currency, locale, {
-                        showTrailingZeros: true,
-                      })}
+                      {currencyFormat(
+                        Number(approvedOverallAmount),
+                        currency,
+                        locale,
+                        {
+                          showTrailingZeros: true,
+                        },
+                      )}
                     </Typography>
                   </Grid>
                   <Grid item>
@@ -154,7 +159,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
                     <Typography
                       sx={{ color: 'primary.main', fontWeight: 'bold' }}
                     >
-                      {currencyFormat(staffSpecific, currency, locale, {
+                      {currencyFormat(Number(staffSpecific), currency, locale, {
                         showTrailingZeros: true,
                       })}
                     </Typography>
@@ -189,7 +194,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
                         sx={{ color: 'primary.main', fontWeight: 'bold' }}
                       >
                         {currencyFormat(
-                          approvedOverallAmount,
+                          Number(approvedOverallAmount),
                           currency,
                           locale,
                           {
@@ -224,9 +229,14 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
                       <Typography
                         sx={{ color: 'primary.main', fontWeight: 'bold' }}
                       >
-                        {currencyFormat(spouseSpecific, currency, locale, {
-                          showTrailingZeros: true,
-                        })}
+                        {currencyFormat(
+                          Number(spouseSpecific),
+                          currency,
+                          locale,
+                          {
+                            showTrailingZeros: true,
+                          },
+                        )}
                       </Typography>
                     </Grid>
                     <Grid item>

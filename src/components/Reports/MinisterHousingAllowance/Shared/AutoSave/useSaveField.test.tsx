@@ -97,6 +97,64 @@ describe('useSaveField', () => {
     );
   });
 
+  it('should round overall amount and save', async () => {
+    const { result } = renderHook(
+      () =>
+        useSaveField({
+          formValues: { rentalValue: 50 },
+        }),
+      {
+        wrapper: TestComponent,
+      },
+    );
+
+    result.current({ rentalValue: 35.37 });
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'UpdateMinistryHousingAllowanceRequest',
+        {
+          input: {
+            requestId: 'request-id',
+            requestAttributes: {
+              rentalValue: 35.37,
+              overallAmount: 424.44,
+            },
+          },
+        },
+      ),
+    );
+  });
+
+  it('should handle zero overall amount correctly', async () => {
+    const { result } = renderHook(
+      () =>
+        useSaveField({
+          formValues: { rentalValue: 50 },
+        }),
+      {
+        wrapper: TestComponent,
+      },
+    );
+
+    result.current({ rentalValue: 0 });
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'UpdateMinistryHousingAllowanceRequest',
+        {
+          input: {
+            requestId: 'request-id',
+            requestAttributes: {
+              rentalValue: 0,
+              overallAmount: 0.0,
+            },
+          },
+        },
+      ),
+    );
+  });
+
   it('should not show snackbar if all values are null', async () => {
     const { result } = renderHook(
       () =>

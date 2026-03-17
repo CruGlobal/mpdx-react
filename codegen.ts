@@ -16,6 +16,7 @@ export default {
         scalars: {
           ISO8601Date: 'string',
           ISO8601DateTime: 'string',
+          PositiveFloat: 'number',
         },
       },
     },

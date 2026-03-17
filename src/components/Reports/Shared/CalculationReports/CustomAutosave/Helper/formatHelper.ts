@@ -9,6 +9,10 @@ export const parseInput = (s: string) => {
   return Number.isFinite(n) ? n : undefined;
 };
 
+export const isDecimal = (s: string) => {
+  return /^\d+\.?\d*$/.test(s);
+};
+
 export const display = (
   isEditing: (name: string) => boolean,
   name: string,
