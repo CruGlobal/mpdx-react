@@ -161,41 +161,21 @@ export const Calculation: React.FC<CalculationProps> = ({
   const isViewPage = pageType === PageEnum.View;
   const isEdit = pageType === PageEnum.Edit;
 
-  const initialValues: CalculationFormValues = actionRequired
-    ? {
-        rentalValue: request?.rentalValue,
-        furnitureCostsOne: request?.furnitureCostsOne,
-        avgUtilityOne: request?.avgUtilityOne,
-        mortgageOrRentPayment: request?.mortgageOrRentPayment,
-        furnitureCostsTwo: request?.furnitureCostsTwo,
-        repairCosts: request?.repairCosts,
-        avgUtilityTwo: request?.avgUtilityTwo,
-        unexpectedExpenses: request?.unexpectedExpenses,
-        phoneNumber:
-          request?.phoneNumber ??
-          userHcmData?.staffInfo.primaryPhoneNumber ??
-          null,
-        emailAddress:
-          request?.emailAddress ?? userHcmData?.staffInfo.emailAddress ?? null,
-        iUnderstandMhaPolicy: request?.iUnderstandMhaPolicy ?? false,
-      }
-    : {
-        rentalValue: null,
-        furnitureCostsOne: null,
-        avgUtilityOne: null,
-        mortgageOrRentPayment: null,
-        furnitureCostsTwo: null,
-        repairCosts: null,
-        avgUtilityTwo: null,
-        unexpectedExpenses: null,
-        phoneNumber:
-          request?.phoneNumber ??
-          userHcmData?.staffInfo.primaryPhoneNumber ??
-          null,
-        emailAddress:
-          request?.emailAddress ?? userHcmData?.staffInfo.emailAddress ?? null,
-        iUnderstandMhaPolicy: false,
-      };
+  const initialValues: CalculationFormValues = {
+    rentalValue: request?.rentalValue ?? null,
+    furnitureCostsOne: request?.furnitureCostsOne ?? null,
+    avgUtilityOne: request?.avgUtilityOne ?? null,
+    mortgageOrRentPayment: request?.mortgageOrRentPayment ?? null,
+    furnitureCostsTwo: request?.furnitureCostsTwo ?? null,
+    repairCosts: request?.repairCosts ?? null,
+    avgUtilityTwo: request?.avgUtilityTwo ?? null,
+    unexpectedExpenses: request?.unexpectedExpenses ?? null,
+    phoneNumber:
+      request?.phoneNumber ?? userHcmData?.staffInfo.primaryPhoneNumber ?? null,
+    emailAddress:
+      request?.emailAddress ?? userHcmData?.staffInfo.emailAddress ?? null,
+    iUnderstandMhaPolicy: request?.iUnderstandMhaPolicy ?? false,
+  };
 
   const boardDateFormatted = boardApprovedAt
     ? dateFormatShort(DateTime.fromISO(boardApprovedAt), locale)
