@@ -12,6 +12,7 @@ import { ContactInformation } from '../../CompleteForm/ContactInformation/Contac
 import { Deduction } from '../../CompleteForm/Deduction/Deduction';
 import { NetAdditionalSalary } from '../../CompleteForm/NetAdditionalSalary/NetAdditionalSalary';
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
+import { AutosaveCustomTextField } from '../../Shared/AutoSave/AutosaveCustomTextField';
 import { useFormUserInfo } from '../../Shared/useFormUserInfo';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 import { SpouseComponent } from '../../SharedComponents/SpouseComponent';
@@ -58,6 +59,18 @@ export const NewForm: React.FC = () => {
       <AdditionalSalaryRequest />
       <Deduction />
       <NetAdditionalSalary />
+      <AutosaveCustomTextField
+        fieldName="additionalInfo"
+        label={t('Comments')}
+        variant="outlined"
+        multiline
+        rows={4}
+        fullWidth
+        placeholder={t(
+          'Enter any specific payroll instructions or notes for your request.',
+        )}
+        inputProps={{ style: { overflowY: 'auto' } }}
+      />
       {exceedsCap && (
         <>
           <TotalSalaryRequested onForm />
