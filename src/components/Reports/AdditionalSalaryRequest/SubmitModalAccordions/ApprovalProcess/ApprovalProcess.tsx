@@ -1,10 +1,7 @@
 import { InfoSharp } from '@mui/icons-material';
-import { Box, CardContent, Typography, alpha } from '@mui/material';
-import { useFormikContext } from 'formik';
+import { CardContent, Typography, alpha } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import theme from 'src/theme';
-import { CompleteFormValues } from '../../AdditionalSalaryRequest';
-import { AutosaveCustomTextField } from '../../Shared/AutoSave/AutosaveCustomTextField';
 import { ModalAccordion } from '../ModalAccordion/ModalAccordion';
 
 interface ApprovalProcessProps {
@@ -14,12 +11,6 @@ interface ApprovalProcessProps {
 export const ApprovalProcess: React.FC<ApprovalProcessProps> = ({ onForm }) => {
   const { t } = useTranslation();
 
-  const { errors, touched, submitCount } =
-    useFormikContext<CompleteFormValues>();
-
-  const showError =
-    (touched.additionalInfo || submitCount > 0) && !!errors.additionalInfo;
-
   return (
     <ModalAccordion
       backgroundColor={alpha(theme.palette.info.light, 0.1)}
@@ -27,7 +18,6 @@ export const ApprovalProcess: React.FC<ApprovalProcessProps> = ({ onForm }) => {
       title={t('Approval Process')}
       titleColor="info.dark"
       subtitle={t('Approvals needed for this request')}
-      expanded={showError}
       onForm={onForm}
     >
       <CardContent>
@@ -39,16 +29,6 @@ export const ApprovalProcess: React.FC<ApprovalProcessProps> = ({ onForm }) => {
             CAP, could this request be spread over 2-3 years?
           </Typography>
         </Trans>
-        <Box sx={{ mt: 2 }}>
-          <AutosaveCustomTextField
-            fieldName="additionalInfo"
-            variant="outlined"
-            multiline
-            rows={6}
-            fullWidth
-            inputProps={{ style: { overflowY: 'auto' } }}
-          />
-        </Box>
       </CardContent>
     </ModalAccordion>
   );
