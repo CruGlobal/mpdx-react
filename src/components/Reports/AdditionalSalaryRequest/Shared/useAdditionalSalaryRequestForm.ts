@@ -75,12 +75,20 @@ export const useAdditionalSalaryRequestForm = (
 ) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { handleNextStep, user, salaryInfo, isInternational, requestId } =
-    useAdditionalSalaryRequest();
+  const {
+    handleNextStep,
+    user,
+    salaryInfo,
+    isInternational,
+    requestId,
+    isSpouse,
+  } = useAdditionalSalaryRequest();
 
   const { primaryAccountBalance } = useFormUserInfo();
 
-  const { data: requestData } = useAdditionalSalaryRequestQuery();
+  const { data: requestData } = useAdditionalSalaryRequestQuery({
+    variables: { isSpouse },
+  });
   const individualCap =
     requestData?.latestAdditionalSalaryRequest?.calculations.currentSalaryCap ??
     0;
