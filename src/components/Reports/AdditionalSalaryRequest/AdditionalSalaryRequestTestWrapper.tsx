@@ -74,6 +74,7 @@ const validationSchema = yup.object({
         return (value || 0) <= individualCap;
       },
     ),
+  additionalInfo: yup.string(),
 });
 
 const TestFormikWrapper: React.FC<{

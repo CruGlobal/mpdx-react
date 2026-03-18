@@ -11,6 +11,7 @@ import { AdditionalSalaryRequest } from '../../CompleteForm/AdditionalSalaryRequ
 import { Deduction } from '../../CompleteForm/Deduction/Deduction';
 import { NetAdditionalSalary } from '../../CompleteForm/NetAdditionalSalary/NetAdditionalSalary';
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
+import { AutosaveCustomTextField } from '../../Shared/AutoSave/AutosaveCustomTextField';
 import { useFormUserInfo } from '../../Shared/useFormUserInfo';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 import { ContactInformationSummaryCard } from '../../SharedComponents/ContactInformationSummaryCard';
@@ -55,6 +56,15 @@ export const ViewForm: React.FC = () => {
       <AdditionalSalaryRequest />
       <Deduction />
       <NetAdditionalSalary />
+      <AutosaveCustomTextField
+        fieldName="additionalInfo"
+        label={t('Comments')}
+        variant="outlined"
+        multiline
+        rows={4}
+        fullWidth
+        inputProps={{ style: { overflowY: 'auto' } }}
+      />
       <ContactInformationSummaryCard />
       {exceedsCap && (
         <>
