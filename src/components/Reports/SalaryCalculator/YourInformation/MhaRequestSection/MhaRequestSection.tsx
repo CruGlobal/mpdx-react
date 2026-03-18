@@ -142,10 +142,10 @@ export const MhaRequestSection: React.FC = () => {
           <>
             {showUserFields && showSpouseFields && (
               <SpouseLayout>
-                <Typography variant="subtitle1">
+                <Typography variant="subtitle1" flex={1}>
                   {hcmUser?.staffInfo.preferredName}
                 </Typography>
-                <Typography variant="subtitle1">
+                <Typography variant="subtitle1" flex={1}>
                   {hcmSpouse?.staffInfo.preferredName}
                 </Typography>
               </SpouseLayout>
