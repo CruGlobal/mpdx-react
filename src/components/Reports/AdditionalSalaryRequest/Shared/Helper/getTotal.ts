@@ -26,3 +26,15 @@ export const getTotal = (values: TotalableValues): number => {
     return sum + Number(values[key] || 0);
   }, 0);
 };
+
+const fieldsWithout403b = numericFields.filter(
+  (field) =>
+    field !== 'traditional403bContribution' &&
+    field !== 'roth403bContribution',
+);
+
+export const getTotalWithout403b = (values: TotalableValues): number => {
+  return fieldsWithout403b.reduce((sum, key) => {
+    return sum + Number(values[key] || 0);
+  }, 0);
+};

@@ -76,11 +76,13 @@ describe('useSalaryCalculations', () => {
     });
 
     expect(result.current.total).toBe(11100); // 5000 + 3000 + 2000 + 1000 + 100
-    expect(result.current.calculatedTraditionalDeduction).toBe(1332); // 11100 * 0.12
-    expect(result.current.calculatedRothDeduction).toBe(1110); // 11100 * 0.10
+    // Deductions are based on totalWithout403b (10000 = 5000 + 3000 + 2000)
+    expect(result.current.calculatedTraditionalDeduction).toBe(1200); // 10000 * 0.12
+    // Roth is based on totalWithout403b minus traditional deduction: (10000 - 1200) * 0.10
+    expect(result.current.calculatedRothDeduction).toBe(880); // 8800 * 0.10
     expect(result.current.contribution403b).toBe(1100);
-    expect(result.current.totalDeduction).toBe(3542); // (1332 + 1110) + 1100
-    expect(result.current.netSalary).toBe(7558); // 11100 - 3542
+    expect(result.current.totalDeduction).toBe(3180); // (1200 + 880) + 1100
+    expect(result.current.netSalary).toBe(7920); // 11100 - 3180
     expect(result.current.totalAnnualSalary).toBe(11100); // No calculations data, so just total
   });
 
