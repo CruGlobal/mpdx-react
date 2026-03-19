@@ -66,8 +66,7 @@ export const useSalaryCalculations = ({
       : 0;
 
     const calculatedRothDeduction = values.deductRothPercent
-      ? (totalWithout403b - calculatedTraditionalDeduction) *
-        roth403bPercentage
+      ? (totalWithout403b - calculatedTraditionalDeduction) * roth403bPercentage
       : 0;
 
     const calculatedDeduction =
