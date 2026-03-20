@@ -9,14 +9,13 @@ import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalcula
 export const useMhaRequestData = () => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { calculation, hcmUser, hcmSpouse } = useSalaryCalculator();
+  const { calculation, hcmUser, hcmSpouse, hasSpouse } = useSalaryCalculator();
 
   // User MHA eligibility and request status
   const userEligible = hcmUser?.mhaEit.mhaEligibility ?? false;
   const userHasApprovedMha = !!hcmUser?.mhaRequest.currentApprovedOverallAmount;
-
-  // Spouse MHA eligibility and request status
-  const spouseEligible = hcmSpouse?.mhaEit.mhaEligibility ?? false;
+  const spouseEligible =
+    hasSpouse && (hcmSpouse?.mhaEit.mhaEligibility ?? false);
   const spouseHasApprovedMha =
     !!hcmSpouse?.mhaRequest.currentApprovedOverallAmount;
   // Show "no MHA" message for eligible people who don't have an MHA
@@ -27,7 +26,7 @@ export const useMhaRequestData = () => {
   const showUserIneligibleSpouseApprovedMessage =
     !userEligible && spouseEligible && spouseHasApprovedMha;
   const showSpouseIneligibleUserApprovedMessage =
-    !spouseEligible && userEligible && userHasApprovedMha;
+    hasSpouse && !spouseEligible && userEligible && userHasApprovedMha;
   // Determine which fields should be shown
   const showUserFields = userEligible && userHasApprovedMha;
   const showSpouseFields = spouseEligible && spouseHasApprovedMha;
@@ -69,7 +68,8 @@ export const useMhaRequestData = () => {
 
   // Ineligibility messages (for NoMhaSubmitMessage)
   const showUserIneligibleMessage = !userEligible;
-  const showSpouseIneligibleMessage = !spouseEligible;
+  const showSpouseIneligibleMessage = hasSpouse && !spouseEligible;
+
   const showIneligibleMessage =
     showUserIneligibleMessage || showSpouseIneligibleMessage;
   const isIneligiblePlural =
