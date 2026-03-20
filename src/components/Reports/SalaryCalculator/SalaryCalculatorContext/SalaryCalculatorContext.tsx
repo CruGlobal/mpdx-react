@@ -41,6 +41,7 @@ export interface SalaryCalculatorContextType {
 
   hcmUser: HcmQuery['hcm'][number] | null;
   hcmSpouse: HcmQuery['hcm'][number] | null;
+  hasSpouse: boolean;
   calculation: SalaryCalculationQuery['salaryRequest'] | null;
 
   /** Whether any mutations are currently in progress */
@@ -108,6 +109,7 @@ export const SalaryCalculatorProvider: React.FC<
 
   const contextValue: SalaryCalculatorContextType = useMemo(() => {
     const hcmSpouse = hcmData?.hcm[1] ?? null;
+    const eligibleSpouse = hcmSpouse?.salaryRequestEligible ? hcmSpouse : null;
     return {
       steps,
       currentIndex,
@@ -119,7 +121,8 @@ export const SalaryCalculatorProvider: React.FC<
       toggleDrawer,
       hcmUser: hcmData?.hcm[0] ?? null,
       // Ignore spouses that aren't eligible to make a salary request
-      hcmSpouse: hcmSpouse?.salaryRequestEligible ? hcmSpouse : null,
+      hcmSpouse: eligibleSpouse,
+      hasSpouse: !!eligibleSpouse,
       calculation,
       isMutating,
       trackMutation,
