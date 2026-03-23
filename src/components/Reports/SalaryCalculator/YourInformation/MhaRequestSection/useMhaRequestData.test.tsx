@@ -220,4 +220,39 @@ describe('useMhaRequestData', () => {
     expect(result.current.showSpouseFields).toBe(false);
     expect(result.current.spousePreferredName).toBe('');
   });
+
+  it('does not show spouse ineligible message when spouse does not exist', async () => {
+    const { result } = renderHook(() => useMhaRequestData(), {
+      wrapper: createWrapper({ hasSpouse: false }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.showUserFields).toBe(true);
+    });
+
+    expect(result.current.showIneligibleMessage).toBe(false);
+    expect(result.current.isIneligiblePlural).toBe(false);
+    expect(result.current.ineligibleNames).toBe('');
+    expect(result.current.ineligibleName).toBeNull();
+  });
+
+  it('shows only user ineligible message when user is ineligible and no spouse exists', async () => {
+    const { result } = renderHook(() => useMhaRequestData(), {
+      wrapper: createWrapper({
+        hcmUser: { mhaEit: { mhaEligibility: false } },
+        hasSpouse: false,
+      }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.userPreferredName).toBe('John');
+    });
+
+    expect(result.current.showIneligibleMessage).toBe(true);
+    expect(result.current.isIneligiblePlural).toBe(false);
+    expect(result.current.ineligibleNames).toBe('John');
+    expect(result.current.ineligibleName).toBeNull();
+    expect(result.current.showUserFields).toBe(false);
+    expect(result.current.showSpouseFields).toBe(false);
+  });
 });

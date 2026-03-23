@@ -29,8 +29,7 @@ export const getTotal = (values: TotalableValues): number => {
 
 const fieldsWithout403b = numericFields.filter(
   (field) =>
-    field !== 'traditional403bContribution' &&
-    field !== 'roth403bContribution',
+    field !== 'traditional403bContribution' && field !== 'roth403bContribution',
 );
 
 export const getTotalWithout403b = (values: TotalableValues): number => {

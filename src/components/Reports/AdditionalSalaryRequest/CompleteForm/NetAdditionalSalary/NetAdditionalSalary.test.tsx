@@ -116,8 +116,10 @@ describe('NetAdditionalSalary', () => {
       />,
     );
 
-    // Net = $10,000 - (12% of $10,000 + 8% of $10,000) = $10,000 - $1,200 - $800 = $8,000
-    expect(await findByText('$8,000')).toBeInTheDocument();
+    // Traditional = 12% of $10,000 = $1,200
+    // Roth = 8% of ($10,000 - $1,200) = 8% of $8,800 = $704
+    // Net = $10,000 - $1,200 - $704 = $8,096
+    expect(await findByText('$8,096')).toBeInTheDocument();
   });
 
   it('calculates net salary with both percentage and traditional403b deductions', async () => {
@@ -139,10 +141,12 @@ describe('NetAdditionalSalary', () => {
     );
 
     // Total = $10,000 + $1,000 + $100 = $11,100
-    // Calculated deduction = 12% of $11,100 + 8% of $11,100 = $1,332 + $888 = $2,220
-    // Total deduction = $2,220 + $1,000 + $100 = $3,320
-    // Net = $11,100 - $3,320 = $7,780
-    expect(await findByText('$7,780')).toBeInTheDocument();
+    // totalWithout403b = $10,000
+    // Traditional = 12% of $10,000 = $1,200
+    // Roth = 8% of ($10,000 - $1,200) = 8% of $8,800 = $704
+    // Total deduction = ($1,200 + $704) + ($1,000 + $100) = $3,004
+    // Net = $11,100 - $3,004 = $8,096
+    expect(await findByText('$8,096')).toBeInTheDocument();
   });
 
   it('includes all salary fields in the total calculation', async () => {

@@ -286,6 +286,18 @@ describe('useAdditionalSalaryRequestForm', () => {
       expect(result.current.values.deductTaxDeferredPercent).toBe(true);
       expect(result.current.values.phoneNumber).toBe('123-456-7890');
     });
+
+    it('should send isSpouse variable to request query', async () => {
+      renderHook(() => useAdditionalSalaryRequestForm(), {
+        wrapper: TestWrapper,
+      });
+
+      await waitFor(() => {
+        expect(mutationSpy).toHaveGraphqlOperation('AdditionalSalaryRequest', {
+          isSpouse: false,
+        });
+      });
+    });
   });
 
   describe('validation', () => {

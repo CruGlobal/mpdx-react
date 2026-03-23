@@ -131,14 +131,14 @@ describe('Deduction', () => {
     });
 
     // 12% of $10,000 = $1,200
-    // 8% of $10,000 = $800
+    // 8% of ($10,000 - $1,200) = 8% of $8,800 = $704
     await waitFor(() => {
       expect(
         getByLabelText('Calculated traditional deduction amount'),
       ).toHaveTextContent('$1,200.00');
       expect(
         getByLabelText('Calculated roth deduction amount'),
-      ).toHaveTextContent('$800.00');
+      ).toHaveTextContent('$704.00');
     });
   });
 
@@ -213,21 +213,22 @@ describe('Deduction', () => {
     // Wait for GraphQL data to load
     await findByText(/12%/);
 
-    // 12% of ($10,000 + $3,000 + $2,000) = $1,800
-    // 8% of ($10,000 + $3,000 + $2,000) = $1,200
+    // 403b contributions excluded from base: totalWithout403b = $10,000
+    // 12% of $10,000 = $1,200
+    // 8% of ($10,000 - $1,200) = 8% of $8,800 = $704
     await waitFor(() => {
       expect(
         getByLabelText('Calculated traditional deduction amount'),
-      ).toHaveTextContent('$1,800.00');
+      ).toHaveTextContent('$1,200.00');
       expect(
         getByLabelText('Calculated roth deduction amount'),
-      ).toHaveTextContent('$1,200.00');
+      ).toHaveTextContent('$704.00');
     });
 
-    // Total should be $3,000 + ($3,000 + $2,000) = $8,000
+    // Total should be ($1,200 + $704) + ($3,000 + $2,000) = $6,904
     await waitFor(() => {
       expect(getByLabelText('Total requested amount')).toHaveTextContent(
-        '$8,000.00',
+        '$6,904.00',
       );
     });
   });
@@ -254,14 +255,14 @@ describe('Deduction', () => {
     await findByText(/12%/);
 
     // 12% of ($5,000 + $2,000 + $3,000) = 12% of $10,000 = $1,200
-    // 8% of ($5,000 + $2,000 + $3,000) = 8% of $10,000 = $800
+    // 8% of ($10,000 - $1,200) = 8% of $8,800 = $704
     await waitFor(() => {
       expect(
         getByLabelText('Calculated traditional deduction amount'),
       ).toHaveTextContent('$1,200.00');
       expect(
         getByLabelText('Calculated roth deduction amount'),
-      ).toHaveTextContent('$800.00');
+      ).toHaveTextContent('$704.00');
     });
   });
 
