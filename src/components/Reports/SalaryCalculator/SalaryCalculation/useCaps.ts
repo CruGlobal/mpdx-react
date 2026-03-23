@@ -1,15 +1,20 @@
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 import { useFormatters } from '../Shared/useFormatters';
 
+interface OverCapPerson {
+  /** The name of the person whose salary is over their effective cap */
+  name: string | null;
+
+  /** The formatted effective cap of the person whose salary is over their effective cap */
+  effectiveCap: string;
+}
+
 interface UseCapsResult {
   /** The sum of the users' requested gross salaries */
   combinedGross: number;
 
-  /** The name of the person whose salary is over their effective cap */
-  overCapName: string | null;
-
-  /** The formatted salary of the person whose salary is over their effective cap */
-  overCapSalary: string | null;
+  /** The person whose salary is over their effective cap */
+  overCapPerson: OverCapPerson | null;
 }
 
 export const useCaps = (): UseCapsResult => {
@@ -25,21 +30,20 @@ export const useCaps = (): UseCapsResult => {
   const overUserCap = !!calcs && calcs.requestedGross > calcs.effectiveCap;
   const overSpouseCap =
     !!spouseCalcs && spouseCalcs.requestedGross > spouseCalcs.effectiveCap;
-
-  const overCapName = overUserCap
-    ? (hcmUser?.staffInfo.preferredName ?? null)
+  const overCapPerson = overUserCap
+    ? {
+        name: hcmUser?.staffInfo.preferredName ?? null,
+        effectiveCap: formatCurrency(calcs.effectiveCap),
+      }
     : overSpouseCap
-      ? (hcmSpouse?.staffInfo.preferredName ?? null)
-      : null;
-  const overCapSalary = overUserCap
-    ? formatCurrency(calcs.requestedGross)
-    : overSpouseCap
-      ? formatCurrency(spouseCalcs.requestedGross)
+      ? {
+          name: hcmSpouse?.staffInfo.preferredName ?? null,
+          effectiveCap: formatCurrency(spouseCalcs.effectiveCap),
+        }
       : null;
 
   return {
     combinedGross,
-    overCapName,
-    overCapSalary,
+    overCapPerson,
   };
 };

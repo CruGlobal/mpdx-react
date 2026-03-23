@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { ProgressiveApprovalTierEnum } from 'src/graphql/types.generated';
+import { useCaps } from '../SalaryCalculation/useCaps';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 import { useFormatters } from '../Shared/useFormatters';
 
@@ -12,6 +13,7 @@ interface DialogContent {
 export const useSubmitDialogContent = (): DialogContent => {
   const { t } = useTranslation();
   const { calculation, hcmUser } = useSalaryCalculator();
+  const { combinedGross } = useCaps();
   const { formatCurrency } = useFormatters();
 
   const progressiveApprovalTier = calculation?.progressiveApprovalTier;
@@ -35,9 +37,6 @@ export const useSubmitDialogContent = (): DialogContent => {
       "You have a Board approved Maximum Allowable Salary (CAP) and your salary request exceeds that amount. As a result we need to get their approval for this request. We'll forward your request to them and get back to you with their decision.",
     );
   } else {
-    const combinedGross =
-      (calculation?.calculations?.requestedGross ?? 0) +
-      (calculation?.spouseCalculations?.requestedGross ?? 0);
     subContent = t(
       'We will review your request through our Progressive Approvals process. For the {{amount}} you are requesting, this will take {{timeframe}} as it needs to be signed off by {{approvers}}. This may affect your selected effective date.',
       {
