@@ -44,7 +44,7 @@ const CsvUpload: React.FC<CsvUploadProps> = ({
     event,
   ) => {
     const file = event.target.files?.[0];
-    const maxSizeInBytes = maxSizeInMB * 1024;
+    const maxSizeInBytes = maxSizeInMB * 1024 * 1024;
 
     try {
       if (!file) {
