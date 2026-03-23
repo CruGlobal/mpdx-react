@@ -59,7 +59,7 @@ export const RequestSummaryCard: React.FC = () => {
     !!progressiveApprovalTier &&
     progressiveApprovalTier?.tier !== ProgressiveApprovalTierEnum.DivisionHead;
   const boardCapException = hcmUser?.exceptionSalaryCap.boardCapException;
-  const { combinedGross, overCapName, overCapSalary } = useCaps();
+  const { combinedGross, overCapPerson } = useCaps();
 
   const { formatCurrency } = useFormatters();
 
@@ -116,12 +116,13 @@ export const RequestSummaryCard: React.FC = () => {
   ) : (
     <Trans t={t}>
       Your Combined Gross Requested Salary is within your Combined Maximum
-      Allowable Salary. However, {{ name: overCapName }}
-      &apos;s Gross Requested Salary exceeds his individual Maximum Allowable
+      Allowable Salary. However, {{ name: overCapPerson?.name }}
+      &apos;s Gross Requested Salary exceeds their individual Maximum Allowable
       Salary. If this is correct, please provide reasoning for why{' '}
-      {{ name: overCapName }}&apos;s Salary should exceed{' '}
-      {{ salary: overCapSalary }} in the Additional Information section below or
-      make changes to how your Requested Salary is distributed above.
+      {{ name: overCapPerson?.name }}&apos;s Requested Salary should exceed{' '}
+      {{ cap: overCapPerson?.effectiveCap }} in the Additional Information
+      section below or make changes to how your Requested Salary is distributed
+      above.
     </Trans>
   );
 
