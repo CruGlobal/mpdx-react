@@ -24,8 +24,8 @@ describe('ApprovalProcessCard', () => {
       const { getByRole, getByTestId } = render(
         <TestComponent
           salaryRequestMock={{
-            calculations: { requestedGross: 40000 },
-            spouseCalculations: { effectiveCap: 50000 },
+            calculations: { requestedGross: 40000, effectiveCap: 30000 },
+            spouseCalculations: { requestedGross: 40000, effectiveCap: 50000 },
             progressiveApprovalTier: {
               tier: ProgressiveApprovalTierEnum.DivisionHead,
             },
@@ -35,7 +35,8 @@ describe('ApprovalProcessCard', () => {
 
       await waitFor(() =>
         expect(getByTestId('ApprovalProcessCard-status')).toHaveTextContent(
-          "John's Gross Requested Salary exceeds their individual Maximum Allowable Salary. If this is correct, please provide reasoning for why John's Salary should exceed $40,000.00 or make changes to your Requested Salary above.",
+          "John's Gross Requested Salary exceeds their individual Maximum Allowable Salary. \
+If this is correct, please provide reasoning for why John's Salary should exceed $30,000.00 or make changes to your Requested Salary above.",
         ),
       );
       expect(
@@ -49,8 +50,8 @@ describe('ApprovalProcessCard', () => {
       const { getByRole, getByTestId } = render(
         <TestComponent
           salaryRequestMock={{
-            calculations: { effectiveCap: 50000 },
-            spouseCalculations: { requestedGross: 40000 },
+            calculations: { requestedGross: 40000, effectiveCap: 50000 },
+            spouseCalculations: { requestedGross: 40000, effectiveCap: 30000 },
             progressiveApprovalTier: {
               tier: ProgressiveApprovalTierEnum.DivisionHead,
             },
@@ -60,7 +61,8 @@ describe('ApprovalProcessCard', () => {
 
       await waitFor(() =>
         expect(getByTestId('ApprovalProcessCard-status')).toHaveTextContent(
-          "Jane's Gross Requested Salary exceeds their individual Maximum Allowable Salary. If this is correct, please provide reasoning for why Jane's Salary should exceed $40,000.00 or make changes to your Requested Salary above.",
+          "Jane's Gross Requested Salary exceeds their individual Maximum Allowable Salary. \
+If this is correct, please provide reasoning for why Jane's Salary should exceed $30,000.00 or make changes to your Requested Salary above.",
         ),
       );
       expect(
