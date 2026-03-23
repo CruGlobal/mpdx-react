@@ -13,7 +13,7 @@ import { useCaps } from '../useCaps';
 export const ApprovalProcessCard: React.FC = () => {
   const { t } = useTranslation();
   const { calculation, hcmSpouse } = useSalaryCalculator();
-  const { overCapName, overCapSalary } = useCaps();
+  const { overCapPerson } = useCaps();
 
   const schema = useMemo(
     () =>
@@ -65,11 +65,13 @@ export const ApprovalProcessCard: React.FC = () => {
             </Trans>
           ) : (
             <Trans t={t}>
-              {{ name: overCapName }}&apos;s Gross Requested Salary exceeds
-              their individual Maximum Allowable Salary. If this is correct,
-              please provide reasoning for why {{ name: overCapName }}&apos;s
-              Salary should exceed {{ salary: overCapSalary }} or make changes
-              to your Requested Salary above.
+              {{ name: overCapPerson?.name }}&apos;s Gross Requested Salary
+              exceeds their individual Maximum Allowable Salary. If this is
+              correct, please provide reasoning for why{' '}
+              {{ name: overCapPerson?.name }}
+              &apos;s Salary should exceed{' '}
+              {{ cap: overCapPerson?.effectiveCap }} or make changes to your
+              Requested Salary above.
             </Trans>
           )}
         </Typography>
