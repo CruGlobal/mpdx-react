@@ -102,7 +102,7 @@ We'll forward your request to them and get back to you with their decision.",
       await waitFor(() =>
         expect(getByTestId('RequestSummaryCard-status')).toHaveTextContent(
           "Your Combined Gross Requested Salary is within your Combined Maximum Allowable Salary. \
-However, John's Gross Requested Salary exceeds his individual Maximum Allowable Salary. \
+However, John's Gross Requested Salary exceeds their individual Maximum Allowable Salary. \
 If this is correct, please provide reasoning for why John's Salary should exceed $40,000.00 in the Additional Information section below \
 or make changes to how your Requested Salary is distributed above.",
         ),
@@ -127,7 +127,7 @@ or make changes to how your Requested Salary is distributed above.",
       await waitFor(() =>
         expect(getByTestId('RequestSummaryCard-status')).toHaveTextContent(
           "Your Combined Gross Requested Salary is within your Combined Maximum Allowable Salary. \
-However, Jane's Gross Requested Salary exceeds his individual Maximum Allowable Salary. \
+However, Jane's Gross Requested Salary exceeds their individual Maximum Allowable Salary. \
 If this is correct, please provide reasoning for why Jane's Salary should exceed $40,000.00 in the Additional Information section below \
 or make changes to how your Requested Salary is distributed above.",
         ),
