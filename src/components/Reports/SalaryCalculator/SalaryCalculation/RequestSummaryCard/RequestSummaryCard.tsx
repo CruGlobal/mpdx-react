@@ -119,7 +119,7 @@ export const RequestSummaryCard: React.FC = () => {
       Allowable Salary. However, {{ name: overCapName }}
       &apos;s Gross Requested Salary exceeds their individual Maximum Allowable
       Salary. If this is correct, please provide reasoning for why{' '}
-      {{ name: overCapName }}&apos;s Salary should exceed{' '}
+      {{ name: overCapName }}&apos;s salary should exceed{' '}
       {{ salary: overCapSalary }} in the Additional Information section below or
       make changes to how your Requested Salary is distributed above.
     </Trans>
