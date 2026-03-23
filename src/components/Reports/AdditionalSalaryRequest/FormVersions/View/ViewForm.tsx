@@ -66,12 +66,8 @@ export const ViewForm: React.FC = () => {
         inputProps={{ style: { overflowY: 'auto' } }}
       />
       <ContactInformationSummaryCard />
-      {exceedsCap && (
-        <>
-          <TotalSalaryRequested onForm />
-          <ApprovalProcess onForm />
-        </>
-      )}
+      {exceedsCap && <TotalSalaryRequested onForm />}
+      <ApprovalProcess onForm exceedsCap={exceedsCap} />
 
       <Button
         onClick={() => setPageType(PageEnum.Reset)}
