@@ -19,12 +19,16 @@ query LandingSalaryCalculations {
   }
   approvedCalculation: latestSalaryRequest(status: [APPROVED]) {
     id
-    salaryCap
-    spouseSalaryCap
     salary
     spouseSalary
     mhaAmount
     spouseMhaAmount
+    calculations {
+      effectiveCap
+    }
+    spouseCalculations {
+      effectiveCap
+    }
   }
 }
 
