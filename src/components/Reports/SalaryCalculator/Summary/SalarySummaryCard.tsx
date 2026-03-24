@@ -72,9 +72,11 @@ export const SalarySummaryCard: React.FC = () => {
             <TableRow>
               <TableCell scope="row">{t('Max Allowable Salary')}</TableCell>
               <TableCell>
-                {formatCurrency(approvedCalculation?.salaryCap)}
+                {formatCurrency(approvedCalculation?.calculations.effectiveCap)}
               </TableCell>
-              <TableCell>{formatCurrency(calculation?.salaryCap)}</TableCell>
+              <TableCell>
+                {formatCurrency(calculation?.calculations.effectiveCap)}
+              </TableCell>
             </TableRow>
           </TableBody>
         </Table>
@@ -126,10 +128,14 @@ export const SalarySummaryCard: React.FC = () => {
               <TableRow>
                 <TableCell scope="row">{t('Max Allowable Salary')}</TableCell>
                 <TableCell>
-                  {formatCurrency(approvedCalculation?.spouseSalaryCap)}
+                  {formatCurrency(
+                    approvedCalculation?.spouseCalculations?.effectiveCap,
+                  )}
                 </TableCell>
                 <TableCell>
-                  {formatCurrency(calculation?.spouseSalaryCap)}
+                  {formatCurrency(
+                    calculation?.spouseCalculations?.effectiveCap,
+                  )}
                 </TableCell>
               </TableRow>
             </TableBody>
