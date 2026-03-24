@@ -1,8 +1,10 @@
-import React from 'react';
+import { useRouter } from 'next/router';
+import React, { useState } from 'react';
 import { Box, Button, Container, Stack, Typography } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import Loading from 'src/components/Loading/Loading';
 import { Notification } from 'src/components/Notification/Notification';
 import { MhaStatusEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -29,6 +31,7 @@ export const MinisterHousingAllowanceReport = () => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const accountListId = useAccountListId();
+  const router = useRouter();
 
   const {
     data,
@@ -60,8 +63,10 @@ export const MinisterHousingAllowanceReport = () => {
     : personNumber;
 
   const [createMHA] = useCreateHousingAllowanceRequestMutation();
+  const [creatingRequest, setCreatingRequest] = useState(false);
 
   const onCreateMHARequest = async () => {
+    setCreatingRequest(true);
     await createMHA({
       variables: {
         requestAttributes: {
@@ -70,21 +75,15 @@ export const MinisterHousingAllowanceReport = () => {
         },
       },
       onCompleted: ({ createMinistryHousingAllowanceRequest: newRequest }) => {
-        enqueueSnackbar(
-          t("Successfully created MHA Request. You'll be redirected shortly."),
-          {
-            variant: 'success',
-          },
-        );
+        enqueueSnackbar(t('Successfully created MHA Request.'), {
+          variant: 'success',
+        });
         const mhaRequestId = newRequest?.ministryHousingAllowanceRequest.id;
         const requestLink = getRequestUrl(accountListId, mhaRequestId, 'new');
-
-        // Wait 1 second before redirecting
-        setTimeout(() => {
-          window.location.href = requestLink;
-        }, 1000);
+        router.push(requestLink);
       },
       onError: (err) => {
+        setCreatingRequest(false);
         enqueueSnackbar(
           t('Error while creating MHA Request - {{error}}', {
             error: err.message,
@@ -97,12 +96,12 @@ export const MinisterHousingAllowanceReport = () => {
     });
   };
 
-  const currentRequest = requests[0] || {};
+  const currentRequest = requests[0] ?? undefined;
   // It default to true when no availableDate as the request is likely still being processed
   const isCurrentRequestPending =
-    currentRequest.status === MhaStatusEnum.BoardApproved &&
-    currentRequest.requestAttributes?.availableDate
-      ? DateTime.fromISO(currentRequest.requestAttributes.availableDate) >
+    currentRequest?.status === MhaStatusEnum.BoardApproved &&
+    currentRequest?.requestAttributes?.availableDate
+      ? DateTime.fromISO(currentRequest?.requestAttributes?.availableDate) >
         DateTime.now()
       : true;
 
@@ -125,6 +124,10 @@ export const MinisterHousingAllowanceReport = () => {
     eitherPersonEligible && (!isCurrentRequestPending || hasNoRequests);
   const showCurrentRequest = eitherPersonEligible && currentRequest;
   const showPreviousRequests = eitherPersonEligible && previousApprovedRequest;
+
+  if (creatingRequest) {
+    return <Loading loading />;
+  }
 
   return (
     <PanelLayout
