@@ -56,12 +56,8 @@ export const EditForm: React.FC = () => {
       <AdditionalSalaryRequest />
       <Deduction />
       <NetAdditionalSalary />
-      {exceedsCap && (
-        <>
-          <TotalSalaryRequested onForm />
-          <ApprovalProcess onForm />
-        </>
-      )}
+      {exceedsCap && <TotalSalaryRequested onForm />}
+      <ApprovalProcess onForm exceedsCap={exceedsCap} />
       <Typography variant="body1" paragraph>
         <Trans t={t}>
           If the above information is correct, please confirm your telephone

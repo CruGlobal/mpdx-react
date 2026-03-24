@@ -9,9 +9,13 @@ import { ModalAccordion } from '../ModalAccordion/ModalAccordion';
 
 interface ApprovalProcessProps {
   onForm?: boolean;
+  exceedsCap?: boolean;
 }
 
-export const ApprovalProcess: React.FC<ApprovalProcessProps> = ({ onForm }) => {
+export const ApprovalProcess: React.FC<ApprovalProcessProps> = ({
+  onForm,
+  exceedsCap = true,
+}) => {
   const { t } = useTranslation();
 
   const { errors, touched, submitCount } =
@@ -24,21 +28,35 @@ export const ApprovalProcess: React.FC<ApprovalProcessProps> = ({ onForm }) => {
     <ModalAccordion
       backgroundColor={alpha(theme.palette.info.light, 0.1)}
       icon={InfoSharp}
-      title={t('Approval Process')}
+      title={exceedsCap ? t('Approval Process') : t('Optional Comments')}
       titleColor="info.dark"
-      subtitle={t('Approvals needed for this request')}
+      subtitle={
+        exceedsCap
+          ? t('Approvals needed for this request')
+          : t(
+              'Use this optional comment section to communicate specific payroll needs, if needed.',
+            )
+      }
       expanded={showError}
       onForm={onForm}
     >
       <CardContent>
-        <Trans i18nKey="approvalProcessInfo">
+        {exceedsCap ? (
+          <Trans i18nKey="approvalProcessInfo">
+            <Typography variant="body1">
+              Please explain in detail, what are the specific expenses and
+              reasons why you are requesting this salary level and how your
+              ministry assignment relates to this need. So that you would not
+              exceed your CAP, could this request be spread over 2-3 years?
+            </Typography>
+          </Trans>
+        ) : (
           <Typography variant="body1">
-            Please explain in detail, what are the specific expenses and reasons
-            why you are requesting this salary level and how your ministry
-            assignment relates to this need. So that you would not exceed your
-            CAP, could this request be spread over 2-3 years?
+            {t(
+              'Use this optional comment section to communicate specific payroll needs, if needed.',
+            )}
           </Typography>
-        </Trans>
+        )}
         <Box sx={{ mt: 2 }}>
           <AutosaveCustomTextField
             fieldName="additionalInfo"

@@ -56,12 +56,8 @@ export const ViewForm: React.FC = () => {
       <Deduction />
       <NetAdditionalSalary />
       <ContactInformationSummaryCard />
-      {exceedsCap && (
-        <>
-          <TotalSalaryRequested onForm />
-          <ApprovalProcess onForm />
-        </>
-      )}
+      {exceedsCap && <TotalSalaryRequested onForm />}
+      <ApprovalProcess onForm exceedsCap={exceedsCap} />
 
       <Button
         onClick={() => setPageType(PageEnum.Reset)}
