@@ -17,8 +17,6 @@ const createCalculation = (
   status,
   mhaAmount: null,
   spouseMhaAmount: null,
-  salaryCap: null,
-  spouseSalaryCap: null,
   salary: null,
   spouseSalary: null,
   submittedAt: '2025-01-15T10:00:00Z',

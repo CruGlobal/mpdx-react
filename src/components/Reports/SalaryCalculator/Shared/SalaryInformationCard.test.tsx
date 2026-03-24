@@ -1,9 +1,9 @@
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { LandingTestWrapper } from '../Landing/NewSalaryCalculationLanding/LandingTestWrapper';
 import { SalaryInformationCard } from './SalaryInformationCard';
 
 const TestComponent: React.FC = () => (
-  <LandingTestWrapper>
+  <LandingTestWrapper hasApprovedCalculation>
     <SalaryInformationCard />
   </LandingTestWrapper>
 );
@@ -28,47 +28,37 @@ describe('SalaryInformationCard', () => {
   });
 
   it('renders category column headers', async () => {
-    const { getByRole, findByRole } = render(<TestComponent />);
-    expect(getByRole('columnheader', { name: 'Category' })).toBeInTheDocument();
-    expect(
-      await findByRole('columnheader', { name: 'John' }),
-    ).toBeInTheDocument();
-    expect(
-      await findByRole('columnheader', { name: 'Jane' }),
-    ).toBeInTheDocument();
+    const { getAllByRole } = render(<TestComponent />);
+
+    await waitFor(() =>
+      expect(
+        getAllByRole('columnheader').map((cell) => cell.textContent),
+      ).toEqual(['Category', 'John', 'Jane']),
+    );
   });
 
-  it('renders salary category names', () => {
-    const { getByRole } = render(<TestComponent />);
+  it('renders salary category names', async () => {
+    const { getAllByRole } = render(<TestComponent />);
 
-    expect(
-      getByRole('cell', { name: 'Maximum Allowable Salary' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('cell', { name: 'Tax-deferred 403(b) Contribution' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('cell', { name: 'Roth 403(b) Contribution' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('cell', { name: 'Security (SECA/FICA) Status' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('cell', { name: 'Gross Requested Salary' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('cell', { name: 'Current MHA (Included in Gross Salary)' }),
-    ).toBeInTheDocument();
-  });
+    const expectedCells = [
+      ['Maximum Allowable Salary', '$60,000.00', '$70,000.00'],
+      ['Requested Salary', '$50,000.00', '$60,000.00'],
+      ['Tax-deferred 403(b) Contribution', '5%', '6%'],
+      ['Roth 403(b) Contribution', '12%', '10%'],
+      ['Security (SECA/FICA) Status', 'Subject to SECA', 'Subject to SECA'],
+      ['Gross Requested Salary', '$55,000.00', '$10,000.00'],
+      [
+        'Current MHA (Included in Gross Salary)',
+        '$10,000.00View',
+        '$12,000.00',
+      ],
+    ].flat();
 
-  it('renders table rows for salary categories', async () => {
-    const { findByRole } = render(<TestComponent />);
-
-    expect(await findByRole('cell', { name: '5%' })).toBeInTheDocument();
-    expect(await findByRole('cell', { name: '12%' })).toBeInTheDocument();
-
-    expect(await findByRole('cell', { name: '10%' })).toBeInTheDocument();
-    expect(await findByRole('cell', { name: '6%' })).toBeInTheDocument();
+    await waitFor(() =>
+      expect(getAllByRole('cell').map((cell) => cell.textContent)).toEqual(
+        expectedCells,
+      ),
+    );
   });
 
   it('renders the View link for MHA category', () => {

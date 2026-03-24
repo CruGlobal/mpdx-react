@@ -215,10 +215,10 @@ export const RequestSummaryCard: React.FC = () => {
                 <TableCell component="th" scope="row">
                   {t('Requested Salary (includes MHA)')}
                 </TableCell>
-                <TableCell>{formatCurrency(calcs?.annualBase)}</TableCell>
+                <TableCell>{formatCurrency(calculation?.salary)}</TableCell>
                 {hasSpouse && (
                   <TableCell>
-                    {formatCurrency(spouseCalcs.annualBase)}
+                    {formatCurrency(calculation?.spouseSalary)}
                   </TableCell>
                 )}
               </TableRow>

@@ -11,8 +11,9 @@ import { RequestSummaryCard } from './RequestSummaryCard';
 
 const defaultSalaryMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> =
   {
+    salary: 10001,
+    spouseSalary: 20001,
     calculations: {
-      annualBase: 10001,
       requestedSeca: 10002,
       contributing403bAmount: 10003,
       requestedGross: 10004,
@@ -20,7 +21,6 @@ const defaultSalaryMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> =
       combinedCap: 10006,
     },
     spouseCalculations: {
-      annualBase: 20001,
       requestedSeca: 20002,
       contributing403bAmount: 20003,
       requestedGross: 20004,

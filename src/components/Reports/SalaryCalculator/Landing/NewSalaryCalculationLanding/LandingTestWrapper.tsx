@@ -2,7 +2,10 @@ import { ThemeProvider } from '@emotion/react';
 import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { SalaryRequestStatusEnum } from 'src/graphql/types.generated';
+import {
+  SalaryRequestStatusEnum,
+  SecaStatusEnum,
+} from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { HcmQuery } from '../../SalaryCalculatorContext/Hcm.generated';
 import { AccountBalanceQuery } from '../AccountBalance.generated';
@@ -41,6 +44,7 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
                 staffInfo: {
                   preferredName: 'John',
                   lastName: 'Doe',
+                  secaStatus: SecaStatusEnum.Seca,
                 },
                 currentSalary: {
                   grossSalaryAmount: 55000,
@@ -49,7 +53,6 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
                 fourOThreeB: {
                   currentRothContributionPercentage: 12,
                   currentTaxDeferredContributionPercentage: 5,
-                  maximumContributionLimit: 45,
                 },
                 salaryRequestEligible,
               },
@@ -57,6 +60,7 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
                 staffInfo: {
                   preferredName: 'Jane',
                   lastName: 'Doe',
+                  secaStatus: SecaStatusEnum.Seca,
                 },
                 currentSalary: {
                   grossSalaryAmount: 10000,
@@ -65,7 +69,6 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
                 fourOThreeB: {
                   currentRothContributionPercentage: 10,
                   currentTaxDeferredContributionPercentage: 6,
-                  maximumContributionLimit: 45,
                 },
                 salaryRequestEligible,
               },
@@ -75,7 +78,16 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
             inProgressCalculation: hasInProgressCalculation
               ? { id: 'in-progress-calc-1' }
               : null,
-            approvedCalculation: hasApprovedCalculation ? {} : null,
+            approvedCalculation: hasApprovedCalculation
+              ? {
+                  salary: 50000,
+                  spouseSalary: 60000,
+                  mhaAmount: 10000,
+                  spouseMhaAmount: 12000,
+                  calculations: { effectiveCap: 60000 },
+                  spouseCalculations: { effectiveCap: 70000 },
+                }
+              : null,
             latestCalculation: hasLatestCalculation
               ? {
                   id: 'pending-calc-1',
