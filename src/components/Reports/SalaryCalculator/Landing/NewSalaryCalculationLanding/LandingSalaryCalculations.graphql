@@ -4,8 +4,6 @@ query LandingSalaryCalculations {
   ) {
     id
     status
-    salaryCap
-    spouseSalaryCap
     salary
     spouseSalary
     mhaAmount
