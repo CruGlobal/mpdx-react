@@ -1,6 +1,7 @@
 import { TextField, TextFieldProps } from '@mui/material';
 import { useFormikContext } from 'formik';
 import * as yup from 'yup';
+import { MinistryHousingAllowanceRequestAttributesInput } from 'pages/api/graphql-rest.page.generated';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { useCustomAutoSave } from '../../../Shared/CalculationReports/CustomAutosave/useCustomAutosave';
 import { CalculationFormValues } from '../../Steps/StepThree/Calculation';
@@ -14,12 +15,13 @@ export interface AutosaveCustomTextFieldProps
   > {
   variant?: 'standard' | 'outlined';
   fieldName: keyof CalculationFormValues & string;
+  additionalSaveFields?: Array<keyof CalculationFormValues & string>;
   schema: yup.Schema;
 }
 
 export const AutosaveCustomTextField: React.FC<
   AutosaveCustomTextFieldProps
-> = ({ variant, fieldName, schema, ...props }) => {
+> = ({ variant, fieldName, additionalSaveFields, schema, ...props }) => {
   const { pageType, requestData } = useMinisterHousingAllowance();
   const request = requestData?.requestAttributes;
 
@@ -32,12 +34,37 @@ export const AutosaveCustomTextField: React.FC<
 
   const saveField = useSaveField({ formValues });
 
+  /*
+   * For additional fields to save,
+   * call setFieldValue for those fields whenever the main field changes,
+   * so that they are updated in formik state and included in validation
+   */
+  const wrappedSetFieldValue: typeof setFieldValue = (
+    field,
+    value,
+    shouldValidate,
+  ) => {
+    setFieldValue(field, value, shouldValidate);
+    if (field === fieldName && additionalSaveFields) {
+      additionalSaveFields.forEach((additionalField) => {
+        setFieldValue(additionalField, value, shouldValidate);
+      });
+    }
+  };
+
   const fieldProps = useCustomAutoSave({
     value: request?.[fieldName],
-    saveValue: (value) => saveField({ [fieldName]: value }),
+    saveValue: (value) => {
+      const attributes: Partial<MinistryHousingAllowanceRequestAttributesInput> =
+        { [fieldName]: value };
+      additionalSaveFields?.forEach((field) => {
+        attributes[field] = value;
+      });
+      return saveField(attributes);
+    },
     fieldName,
     schema,
-    setFieldValue,
+    setFieldValue: wrappedSetFieldValue,
     setFieldTouched,
     submitCount,
     disabled: !request || pageType === PageEnum.View,

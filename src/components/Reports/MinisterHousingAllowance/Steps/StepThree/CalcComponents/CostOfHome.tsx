@@ -153,6 +153,7 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({
             placeholder={currencyFormat(0, currency, locale)}
             InputProps={{ disableUnderline: true, inputMode: 'decimal' }}
             fieldName="avgUtilityTwo"
+            additionalSaveFields={['avgUtilityOne']}
             schema={schema}
           />
         </TableCell>
