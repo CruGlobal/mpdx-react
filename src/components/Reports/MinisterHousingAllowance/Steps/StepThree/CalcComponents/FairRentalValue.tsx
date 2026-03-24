@@ -123,6 +123,7 @@ export const FairRentalValue: React.FC<FairRentalValueProps> = ({ schema }) => {
             placeholder={currencyFormat(0, currency, locale)}
             InputProps={{ disableUnderline: true, inputMode: 'decimal' }}
             fieldName="avgUtilityOne"
+            additionalSaveFields={['avgUtilityTwo']}
             schema={schema}
           />
         </TableCell>
