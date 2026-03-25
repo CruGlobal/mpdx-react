@@ -75,16 +75,16 @@ query ApprovedSalaryCalculation {
     id
     mhaAmount
     spouseMhaAmount
-    salaryCap
-    spouseSalaryCap
     salary
     spouseSalary
 
     calculations {
       contributing403bFraction
+      effectiveCap
     }
     spouseCalculations {
       contributing403bFraction
+      effectiveCap
     }
   }
 }

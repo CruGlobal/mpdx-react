@@ -13,15 +13,15 @@ const approvedSalaryMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> =
   {
     salary: 10001,
     mhaAmount: 10002,
-    salaryCap: 10003,
     spouseSalary: 20001,
     spouseMhaAmount: 20002,
-    spouseSalaryCap: 20003,
     calculations: {
       contributing403bFraction: 0.1,
+      effectiveCap: 10003,
     },
     spouseCalculations: {
       contributing403bFraction: 0.2,
+      effectiveCap: 20003,
     },
   };
 
@@ -30,15 +30,15 @@ const defaultSalaryMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> =
     id: 'salary-request-1',
     salary: 30001,
     mhaAmount: 30002,
-    salaryCap: 30003,
     spouseSalary: 40001,
     spouseMhaAmount: 40002,
-    spouseSalaryCap: 40003,
     calculations: {
       contributing403bFraction: 0.3,
+      effectiveCap: 30003,
     },
     spouseCalculations: {
       contributing403bFraction: 0.4,
+      effectiveCap: 40003,
     },
   };
 

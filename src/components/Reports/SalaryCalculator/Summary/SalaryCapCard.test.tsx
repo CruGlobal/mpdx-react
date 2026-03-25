@@ -85,8 +85,8 @@ describe('SalaryCapCard', () => {
       [
         '9. Maximum Allowable Salary (CAP)Line 7 × Line 8bFor a couple, the combined CAPs cannot exceed $10,011.00, with neither individual exceeding $10,010.00.',
       ],
-      ['a. CAP', '$10,008.00', '$20,008.00'],
-      ['b. Minimum', '$10,009.00', '$20,009.00'],
+      ['a. Personal Factors Cap', '$10,008.00', '$20,008.00'],
+      ['b. Max Allowable Cap', '$10,009.00', '$20,009.00'],
     ].flat();
 
     await waitFor(() =>

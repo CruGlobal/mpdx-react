@@ -176,7 +176,7 @@ export const SalaryCapCard: React.FC = () => {
             </TableRow>
             <TableRow>
               <TableCell scope="row" className="sub-item">
-                a. {t('CAP')}
+                a. {t('Personal Factors Cap')}
               </TableCell>
               <TableCell>{formatCurrency(calcs?.calculatedCap)}</TableCell>
               {hasSpouse && (
@@ -187,7 +187,7 @@ export const SalaryCapCard: React.FC = () => {
             </TableRow>
             <TableRow>
               <TableCell scope="row" className="sub-item">
-                b. {t('Minimum')}
+                b. {t('Max Allowable Cap')}
               </TableCell>
               <TableCell>{formatCurrency(calcs?.effectiveCap)}</TableCell>
               {hasSpouse && (
