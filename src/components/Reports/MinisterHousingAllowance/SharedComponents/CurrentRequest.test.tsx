@@ -14,6 +14,7 @@ import {
 } from '../Shared/Context/MinisterHousingAllowanceContext';
 import { mockMHARequest } from '../mockData';
 import { CurrentRequest, getDotColor, getDotVariant } from './CurrentRequest';
+import { MHARequest } from './types';
 
 const deleteRequestMutation = jest
   .fn()
@@ -35,7 +36,13 @@ jest.mock('notistack', () => ({
   },
 }));
 
-const TestComponent: React.FC = () => {
+interface TestComponentProps {
+  request?: MHARequest;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({
+  request = mockMHARequest,
+}) => {
   return (
     <ThemeProvider theme={theme}>
       <SnackbarProvider>
@@ -53,7 +60,7 @@ const TestComponent: React.FC = () => {
             }
           >
             <TestRouter>
-              <CurrentRequest request={mockMHARequest} />
+              <CurrentRequest request={request} />
             </TestRouter>
           </MinisterHousingAllowanceContext.Provider>
         </GqlMockedProvider>
@@ -110,6 +117,42 @@ describe('CurrentRequest Component', () => {
         { variant: 'success' },
       );
     });
+  });
+
+  it('renders feedback when status is ActionRequired', () => {
+    const { getByText } = render(
+      <TestComponent
+        request={{
+          ...mockMHARequest,
+          status: MhaStatusEnum.ActionRequired,
+          feedback: 'Please provide additional documentation',
+        }}
+      />,
+    );
+
+    expect(getByText('Action Required')).toBeInTheDocument();
+    expect(
+      getByText('Please provide additional documentation'),
+    ).toBeInTheDocument();
+  });
+
+  it('does not render feedback when status is not ActionRequired', () => {
+    const { getByText, queryByText } = render(
+      <TestComponent
+        request={{
+          ...mockMHARequest,
+          status: MhaStatusEnum.HrApproved,
+          feedback: 'Please provide additional documentation',
+        }}
+      />,
+    );
+
+    expect(getByText('Current MHA Request')).toBeInTheDocument();
+
+    expect(queryByText('Action Required')).not.toBeInTheDocument();
+    expect(
+      queryByText('Please provide additional documentation'),
+    ).not.toBeInTheDocument();
   });
 });
 
