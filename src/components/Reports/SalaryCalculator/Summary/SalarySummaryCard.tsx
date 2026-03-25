@@ -37,32 +37,40 @@ export const SalarySummaryCard: React.FC = () => {
               <TableCell scope="col">
                 {hcmUser?.staffInfo.preferredName}
               </TableCell>
-              <TableCell scope="col">{t('Old')}</TableCell>
+              {approvedCalculation && (
+                <TableCell scope="col">{t('Old')}</TableCell>
+              )}
               <TableCell scope="col">{t('New')}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             <TableRow>
               <TableCell scope="row">{t('Requested Salary')}</TableCell>
-              <TableCell>
-                {formatCurrency(approvedCalculation?.salary)}
-              </TableCell>
+              {approvedCalculation && (
+                <TableCell>
+                  {formatCurrency(approvedCalculation.salary)}
+                </TableCell>
+              )}
               <TableCell>{formatCurrency(calculation?.salary)}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell scope="row">{t('MHA')}</TableCell>
-              <TableCell>
-                {formatCurrency(approvedCalculation?.mhaAmount)}
-              </TableCell>
+              {approvedCalculation && (
+                <TableCell>
+                  {formatCurrency(approvedCalculation.mhaAmount)}
+                </TableCell>
+              )}
               <TableCell>{formatCurrency(calculation?.mhaAmount)}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell scope="row">{t('403(b) Contribution')}</TableCell>
-              <TableCell>
-                {formatFraction(
-                  approvedCalculation?.calculations?.contributing403bFraction,
-                )}
-              </TableCell>
+              {approvedCalculation && (
+                <TableCell>
+                  {formatFraction(
+                    approvedCalculation.calculations.contributing403bFraction,
+                  )}
+                </TableCell>
+              )}
               <TableCell>
                 {formatFraction(
                   calculation?.calculations?.contributing403bFraction,
@@ -71,9 +79,13 @@ export const SalarySummaryCard: React.FC = () => {
             </TableRow>
             <TableRow>
               <TableCell scope="row">{t('Max Allowable Salary')}</TableCell>
-              <TableCell>
-                {formatCurrency(approvedCalculation?.calculations.effectiveCap)}
-              </TableCell>
+              {approvedCalculation && (
+                <TableCell>
+                  {formatCurrency(
+                    approvedCalculation.calculations.effectiveCap,
+                  )}
+                </TableCell>
+              )}
               <TableCell>
                 {formatCurrency(calculation?.calculations.effectiveCap)}
               </TableCell>
@@ -88,37 +100,45 @@ export const SalarySummaryCard: React.FC = () => {
                 <TableCell scope="col">
                   {hcmSpouse?.staffInfo.preferredName}
                 </TableCell>
-                <TableCell scope="col">{t('Old')}</TableCell>
+                {approvedCalculation && (
+                  <TableCell scope="col">{t('Old')}</TableCell>
+                )}
                 <TableCell scope="col">{t('New')}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               <TableRow>
                 <TableCell scope="row">{t('Requested Salary')}</TableCell>
-                <TableCell>
-                  {formatCurrency(approvedCalculation?.spouseSalary)}
-                </TableCell>
+                {approvedCalculation && (
+                  <TableCell>
+                    {formatCurrency(approvedCalculation.spouseSalary)}
+                  </TableCell>
+                )}
                 <TableCell>
                   {formatCurrency(calculation?.spouseSalary)}
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell scope="row">{t('MHA')}</TableCell>
-                <TableCell>
-                  {formatCurrency(approvedCalculation?.spouseMhaAmount)}
-                </TableCell>
+                {approvedCalculation && (
+                  <TableCell>
+                    {formatCurrency(approvedCalculation.spouseMhaAmount)}
+                  </TableCell>
+                )}
                 <TableCell>
                   {formatCurrency(calculation?.spouseMhaAmount)}
                 </TableCell>
               </TableRow>
               <TableRow>
                 <TableCell scope="row">{t('403(b) Contribution')}</TableCell>
-                <TableCell>
-                  {formatFraction(
-                    approvedCalculation?.spouseCalculations
-                      ?.contributing403bFraction,
-                  )}
-                </TableCell>
+                {approvedCalculation && (
+                  <TableCell>
+                    {formatFraction(
+                      approvedCalculation.spouseCalculations
+                        ?.contributing403bFraction,
+                    )}
+                  </TableCell>
+                )}
                 <TableCell>
                   {formatFraction(
                     calculation?.spouseCalculations?.contributing403bFraction,
@@ -127,11 +147,13 @@ export const SalarySummaryCard: React.FC = () => {
               </TableRow>
               <TableRow>
                 <TableCell scope="row">{t('Max Allowable Salary')}</TableCell>
-                <TableCell>
-                  {formatCurrency(
-                    approvedCalculation?.spouseCalculations?.effectiveCap,
-                  )}
-                </TableCell>
+                {approvedCalculation && (
+                  <TableCell>
+                    {formatCurrency(
+                      approvedCalculation.spouseCalculations?.effectiveCap,
+                    )}
+                  </TableCell>
+                )}
                 <TableCell>
                   {formatCurrency(
                     calculation?.spouseCalculations?.effectiveCap,
