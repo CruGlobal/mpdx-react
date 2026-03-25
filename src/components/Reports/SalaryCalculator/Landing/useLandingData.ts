@@ -151,15 +151,21 @@ export const useLandingData = (): LandingData => {
     () => [
       {
         category: t('Maximum Allowable Salary'),
-        user: approvedCalculation?.salaryCap
-          ? currencyFormat(approvedCalculation.salaryCap, 'USD', locale, {
-              showTrailingZeros: true,
-            })
+        user: approvedCalculation?.calculations.effectiveCap
+          ? currencyFormat(
+              approvedCalculation.calculations.effectiveCap,
+              'USD',
+              locale,
+              { showTrailingZeros: true },
+            )
           : '-',
-        spouse: approvedCalculation?.spouseSalaryCap
-          ? currencyFormat(approvedCalculation.spouseSalaryCap, 'USD', locale, {
-              showTrailingZeros: true,
-            })
+        spouse: approvedCalculation?.spouseCalculations?.effectiveCap
+          ? currencyFormat(
+              approvedCalculation.spouseCalculations?.effectiveCap,
+              'USD',
+              locale,
+              { showTrailingZeros: true },
+            )
           : '-',
       },
       {

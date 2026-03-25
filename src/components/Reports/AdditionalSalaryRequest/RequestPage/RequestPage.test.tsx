@@ -665,6 +665,34 @@ describe('RequestPage', () => {
     });
   });
 
+  it('shows loading indicator when context loading is true and no request data', () => {
+    mockUseAdditionalSalaryRequest.mockReturnValue({
+      ...defaultMockContextValue,
+      loading: true,
+      requestData: null,
+    } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+    const { getByTestId, queryByRole } = render(<TestWrapper />);
+
+    expect(getByTestId('Loading')).toBeInTheDocument();
+    expect(
+      queryByRole('button', { name: /continue/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('shows loading indicator when creating a new request', async () => {
+    mockUseAdditionalSalaryRequest.mockReturnValue({
+      ...defaultMockContextValue,
+      requestData: { latestAdditionalSalaryRequest: null },
+    } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+    const { getByRole, findByTestId } = render(<TestWrapper />);
+
+    userEvent.click(getByRole('button', { name: /continue/i }));
+
+    expect(await findByTestId('Loading')).toBeInTheDocument();
+  });
+
   it('hides back href on About this Form step in New mode', () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
       ...defaultMockContextValue,
