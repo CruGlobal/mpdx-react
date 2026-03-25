@@ -48,6 +48,8 @@ export const MaxAllowableStep: React.FC = () => {
     });
   };
 
+  const formattedSingleCap = formatCap(calculations?.individualCap);
+  const formattedFamilyCap = formatCap(calculations?.familyCap);
   const formattedHardCap = formatCap(calculations?.hardCap);
   const formattedCombinedCap = formatCap(calculations?.combinedCap);
 
@@ -63,7 +65,7 @@ export const MaxAllowableStep: React.FC = () => {
 
   const schema = useMemo(() => {
     const maxMessage = t(
-      'Maximum Allowable Salary must not exceed cap of {{cap}}',
+      'Maximum Allowable Salary must not exceed cap of {{ cap }}',
       { cap: formattedHardCap },
     );
 
@@ -105,8 +107,8 @@ export const MaxAllowableStep: React.FC = () => {
           ) : (
             <Trans t={t}>
               Maximum Allowable Salary may not exceed{' '}
-              {{ hardCap: formattedHardCap }} for an individual and{' '}
-              {{ combinedCap: formattedCombinedCap }} combined for a couple or a
+              {{ singleCap: formattedSingleCap }} for an individual and{' '}
+              {{ familyCap: formattedFamilyCap }} combined for a couple or a
               widow(er).
             </Trans>
           )}
