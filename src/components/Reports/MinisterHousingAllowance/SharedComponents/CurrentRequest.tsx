@@ -37,7 +37,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
 
   const requestId = request.id;
 
-  const { status, requestAttributes } = request;
+  const { status, requestAttributes, feedback } = request;
 
   const canEdit = [
     MhaStatusEnum.InProgress,
@@ -117,12 +117,13 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
             )}
           </Alert>
         )}
-        <Typography variant="h3" sx={{ color: 'primary.main' }}>
-          <b>
-            {currencyFormat(approvedOverallAmount || 0, currency, locale, {
-              showTrailingZeros: true,
-            })}
-          </b>
+        <Typography
+          variant="h3"
+          sx={{ color: 'primary.main', fontWeight: 'bold' }}
+        >
+          {currencyFormat(approvedOverallAmount || 0, currency, locale, {
+            showTrailingZeros: true,
+          })}
         </Typography>
         <Timeline
           sx={{
@@ -148,17 +149,11 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
               <TimelineConnector />
             </TimelineSeparator>
             <TimelineContent>
-              <b>
-                {status === MhaStatusEnum.InProgress ? (
-                  t('Currently Editing')
-                ) : (
-                  <>
-                    {t('Requested on')}
-                    {submittedAt &&
-                      `: ${dateFormat(DateTime.fromISO(submittedAt), locale)}`}
-                  </>
-                )}
-              </b>
+              <Typography fontWeight="bold">
+                {status === MhaStatusEnum.InProgress
+                  ? t('Currently Editing')
+                  : `${t('Requested on')}${submittedAt ? `: ${dateFormat(DateTime.fromISO(submittedAt), locale)}` : ''}`}
+              </Typography>
             </TimelineContent>
           </TimelineItem>
           <TimelineItem>
@@ -172,11 +167,14 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
               <TimelineConnector />
             </TimelineSeparator>
             <TimelineContent>
-              <b>
+              <Typography fontWeight="bold">
                 {status === MhaStatusEnum.ActionRequired
                   ? t('Action Required')
                   : t('Request in Process')}
-              </b>
+              </Typography>
+              {status === MhaStatusEnum.ActionRequired && feedback && (
+                <Typography>{feedback}</Typography>
+              )}
             </TimelineContent>
           </TimelineItem>
           <TimelineItem>
@@ -190,11 +188,9 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
               <TimelineConnector />
             </TimelineSeparator>
             <TimelineContent>
-              <b>
-                {t('Deadline for changes')}
-                {deadlineDate &&
-                  `: ${dateFormat(DateTime.fromISO(deadlineDate), locale)}`}
-              </b>
+              <Typography fontWeight="bold">
+                {`${t('Deadline for changes')}${deadlineDate ? `: ${dateFormat(DateTime.fromISO(deadlineDate), locale)}` : ''}`}
+              </Typography>
             </TimelineContent>
           </TimelineItem>
           <TimelineItem>
@@ -208,11 +204,9 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
               <TimelineConnector />
             </TimelineSeparator>
             <TimelineContent>
-              <b>
-                {t('Board Approval on')}
-                {boardApprovedAt &&
-                  `: ${dateFormat(DateTime.fromISO(boardApprovedAt), locale)}`}
-              </b>
+              <Typography fontWeight="bold">
+                {`${t('Board Approval on')}${boardApprovedAt ? `: ${dateFormat(DateTime.fromISO(boardApprovedAt), locale)}` : ''}`}
+              </Typography>
             </TimelineContent>
           </TimelineItem>
           <TimelineItem>
@@ -225,11 +219,9 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
               />
             </TimelineSeparator>
             <TimelineContent>
-              <b>
-                {t('MHA Available on')}
-                {availableDate &&
-                  `: ${dateFormat(DateTime.fromISO(availableDate), locale)}`}
-              </b>
+              <Typography fontWeight="bold">
+                {`${t('MHA Available on')}${availableDate ? `: ${dateFormat(DateTime.fromISO(availableDate), locale)}` : ''}`}
+              </Typography>
             </TimelineContent>
           </TimelineItem>
         </Timeline>
