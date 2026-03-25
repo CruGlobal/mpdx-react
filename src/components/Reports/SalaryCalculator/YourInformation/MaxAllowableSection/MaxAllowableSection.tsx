@@ -51,8 +51,8 @@ export const MaxAllowableStep: React.FC = () => {
   const formattedHardCap = formatCap(calculations?.hardCap);
   const formattedCombinedCap = formatCap(calculations?.combinedCap);
 
-  const calculatedCap = calculations?.calculatedCap ?? 0;
-  const spouseCalculatedCap = spouseCalculations?.calculatedCap ?? 0;
+  const effectiveCap = calculations?.effectiveCap ?? 0;
+  const spouseEffectiveCap = spouseCalculations?.effectiveCap ?? 0;
   const combinedCap = calculations?.combinedCap ?? 0;
   const formattedCap = currencyFormat(combinedCap, 'USD', locale, {
     showTrailingZeros: true,
@@ -205,10 +205,8 @@ export const MaxAllowableStep: React.FC = () => {
             <TableBody>
               <TableRow>
                 <FormattedTableCell value={t('Maximum Allowable Salary')} />
-                <FormattedTableCell value={calculatedCap} />
-                {hcmSpouse && (
-                  <FormattedTableCell value={spouseCalculatedCap} />
-                )}
+                <FormattedTableCell value={effectiveCap} />
+                {hcmSpouse && <FormattedTableCell value={spouseEffectiveCap} />}
               </TableRow>
             </TableBody>
           </Table>

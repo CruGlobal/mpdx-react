@@ -13,8 +13,8 @@ const mutationSpy = jest.fn();
 const defaultSalaryRequestMock: DeepPartial<
   SalaryCalculationQuery['salaryRequest']
 > = {
-  calculations: { calculatedCap: 75000 },
-  spouseCalculations: { calculatedCap: 80000 },
+  calculations: { effectiveCap: 75000 },
+  spouseCalculations: { effectiveCap: 80000 },
   manuallySplitCap: false,
   splitCapRequired: true,
 };
@@ -47,8 +47,8 @@ describe('MaxAllowableSection', () => {
       const { findByRole, getByRole, queryByRole } = render(
         <TestComponent
           salaryRequestMock={{
-            calculations: { calculatedCap: 50000 },
-            spouseCalculations: { calculatedCap: 60000 },
+            calculations: { effectiveCap: 50000 },
+            spouseCalculations: { effectiveCap: 60000 },
             splitCapRequired: false,
           }}
         />,
