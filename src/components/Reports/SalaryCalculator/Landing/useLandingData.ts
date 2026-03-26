@@ -26,20 +26,24 @@ interface SalaryCategory {
 
 type HcmPerson = HcmQuery['hcm'][number];
 
+interface SalaryData {
+  currentGrossSalary: number;
+  lastUpdated: string;
+  spouseCurrentGrossSalary: number;
+  rothContribution: number;
+  spouseRothContribution: number;
+  taxDeferredContribution: number;
+  spouseTaxDeferredContribution: number;
+  takenMha: number;
+  spouseTakenMha: number;
+}
+
 export interface LandingData {
   staffAccountId: string | null;
   names: string;
   self: HcmPerson | null;
   spouse: HcmPerson | null;
-  salaryData: {
-    currentGrossSalary: number;
-    lastUpdated: string;
-    spouseCurrentGrossSalary: number;
-    rothContribution: number;
-    spouseRothContribution: number;
-    taxDeferredContribution: number;
-    spouseTaxDeferredContribution: number;
-  };
+  salaryData: SalaryData;
   salaryCategories: SalaryCategory[];
   accountBalance: number;
   inProgressCalculationId: string | null;
@@ -111,7 +115,7 @@ export const useLandingData = (): LandingData => {
     return `${selfName} and ${spouse.staffInfo.preferredName}`;
   }, [self, spouse]);
 
-  const salaryData = useMemo(() => {
+  const salaryData = useMemo((): SalaryData => {
     const currentGrossSalary = self?.currentSalary.grossSalaryAmount ?? 0;
     const lastUpdated = self?.currentSalary.lastUpdated ?? '';
     const spouseCurrentGrossSalary =
