@@ -228,17 +228,27 @@ export const useLandingData = (): LandingData => {
       },
       {
         category: t('Current MHA (Included in Gross Salary)'),
-        user: approvedCalculation?.mhaAmount
-          ? currencyFormat(approvedCalculation.mhaAmount, 'USD', locale, {
-              showTrailingZeros: true,
-            })
-          : '-',
-        spouse: approvedCalculation?.spouseMhaAmount
-          ? currencyFormat(approvedCalculation.spouseMhaAmount, 'USD', locale, {
-              showTrailingZeros: true,
-            })
-          : '-',
-        link: '/reports/housingAllowance',
+        user:
+          typeof approvedCalculation?.mhaAmount === 'number'
+            ? currencyFormat(approvedCalculation.mhaAmount, 'USD', locale, {
+                showTrailingZeros: true,
+              })
+            : '-',
+        spouse:
+          typeof approvedCalculation?.spouseMhaAmount === 'number'
+            ? currencyFormat(
+                approvedCalculation.spouseMhaAmount,
+                'USD',
+                locale,
+                {
+                  showTrailingZeros: true,
+                },
+              )
+            : '-',
+        link:
+          typeof approvedCalculation?.mhaAmount === 'number'
+            ? '/reports/housingAllowance'
+            : undefined,
       },
     ],
     [t, salaryData, self, spouse, approvedCalculation, locale],
