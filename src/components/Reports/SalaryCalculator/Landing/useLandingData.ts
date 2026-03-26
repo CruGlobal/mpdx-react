@@ -158,7 +158,7 @@ export const useLandingData = (): LandingData => {
               locale,
               { showTrailingZeros: true },
             )
-          : '-',
+          : 'TBD',
         spouse: approvedCalculation?.spouseCalculations?.effectiveCap
           ? currencyFormat(
               approvedCalculation.spouseCalculations?.effectiveCap,
@@ -166,7 +166,7 @@ export const useLandingData = (): LandingData => {
               locale,
               { showTrailingZeros: true },
             )
-          : '-',
+          : 'TBD',
       },
       {
         category: t('Requested Salary'),
@@ -174,12 +174,12 @@ export const useLandingData = (): LandingData => {
           ? currencyFormat(approvedCalculation.salary, 'USD', locale, {
               showTrailingZeros: true,
             })
-          : '-',
+          : 'TBD',
         spouse: approvedCalculation?.spouseSalary
           ? currencyFormat(approvedCalculation.spouseSalary, 'USD', locale, {
               showTrailingZeros: true,
             })
-          : '-',
+          : 'TBD',
         tooltip: t(
           'Requested Salary includes MHA and taxes if applicable. It does not include 403(b) Contributions and SECA.',
         ),
