@@ -44,9 +44,13 @@ const defaultSalaryMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> =
 
 interface TestComponentProps {
   hasSpouse?: boolean;
+  hasApprovedCalculation?: boolean;
 }
 
-const TestComponent: React.FC<TestComponentProps> = ({ hasSpouse = true }) => (
+const TestComponent: React.FC<TestComponentProps> = ({
+  hasSpouse = true,
+  hasApprovedCalculation = true,
+}) => (
   <TestRouter
     router={{
       query: { calculationId: 'salary-request-1' },
@@ -64,7 +68,7 @@ const TestComponent: React.FC<TestComponentProps> = ({ hasSpouse = true }) => (
           salaryRequest: defaultSalaryMock,
         },
         ApprovedSalaryCalculation: {
-          salaryRequest: approvedSalaryMock,
+          salaryRequest: hasApprovedCalculation ? approvedSalaryMock : null,
         },
       }}
     >
@@ -110,6 +114,48 @@ describe('SalarySummaryCard', () => {
         expectedCells,
       ),
     );
+  });
+
+  describe('no approved calculation', () => {
+    it('should hide the Old column headers', async () => {
+      const { getAllByRole } = render(
+        <TestComponent hasApprovedCalculation={false} />,
+      );
+
+      const expectedHeaders = [
+        ['John', 'New'],
+        ['Jane', 'New'],
+      ].flat();
+
+      await waitFor(() =>
+        expect(
+          getAllByRole('columnheader').map((cell) => cell.textContent),
+        ).toEqual(expectedHeaders),
+      );
+    });
+
+    it('should hide the Old column cells', async () => {
+      const { getAllByRole } = render(
+        <TestComponent hasApprovedCalculation={false} />,
+      );
+
+      const expectedCells = [
+        ['Requested Salary', '$30,001.00'],
+        ['MHA', '$30,002.00'],
+        ['403(b) Contribution', '30.00%'],
+        ['Max Allowable Salary', '$30,003.00'],
+        ['Requested Salary', '$40,001.00'],
+        ['MHA', '$40,002.00'],
+        ['403(b) Contribution', '40.00%'],
+        ['Max Allowable Salary', '$40,003.00'],
+      ].flat();
+
+      await waitFor(() =>
+        expect(getAllByRole('cell').map((cell) => cell.textContent)).toEqual(
+          expectedCells,
+        ),
+      );
+    });
   });
 
   describe('single', () => {

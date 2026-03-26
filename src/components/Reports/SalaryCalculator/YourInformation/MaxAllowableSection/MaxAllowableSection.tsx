@@ -48,11 +48,13 @@ export const MaxAllowableStep: React.FC = () => {
     });
   };
 
+  const formattedSingleCap = formatCap(calculations?.individualCap);
+  const formattedFamilyCap = formatCap(calculations?.familyCap);
   const formattedHardCap = formatCap(calculations?.hardCap);
   const formattedCombinedCap = formatCap(calculations?.combinedCap);
 
-  const calculatedCap = calculations?.calculatedCap ?? 0;
-  const spouseCalculatedCap = spouseCalculations?.calculatedCap ?? 0;
+  const effectiveCap = calculations?.effectiveCap ?? 0;
+  const spouseEffectiveCap = spouseCalculations?.effectiveCap ?? 0;
   const combinedCap = calculations?.combinedCap ?? 0;
   const formattedCap = currencyFormat(combinedCap, 'USD', locale, {
     showTrailingZeros: true,
@@ -63,7 +65,7 @@ export const MaxAllowableStep: React.FC = () => {
 
   const schema = useMemo(() => {
     const maxMessage = t(
-      'Maximum Allowable Salary must not exceed cap of {{cap}}',
+      'Maximum Allowable Salary must not exceed cap of {{ cap }}',
       { cap: formattedHardCap },
     );
 
@@ -105,8 +107,8 @@ export const MaxAllowableStep: React.FC = () => {
           ) : (
             <Trans t={t}>
               Maximum Allowable Salary may not exceed{' '}
-              {{ hardCap: formattedHardCap }} for an individual and{' '}
-              {{ combinedCap: formattedCombinedCap }} combined for a couple or a
+              {{ singleCap: formattedSingleCap }} for an individual and{' '}
+              {{ familyCap: formattedFamilyCap }} combined for a couple or a
               widow(er).
             </Trans>
           )}
@@ -205,10 +207,8 @@ export const MaxAllowableStep: React.FC = () => {
             <TableBody>
               <TableRow>
                 <FormattedTableCell value={t('Maximum Allowable Salary')} />
-                <FormattedTableCell value={calculatedCap} />
-                {hcmSpouse && (
-                  <FormattedTableCell value={spouseCalculatedCap} />
-                )}
+                <FormattedTableCell value={effectiveCap} />
+                {hcmSpouse && <FormattedTableCell value={spouseEffectiveCap} />}
               </TableRow>
             </TableBody>
           </Table>
