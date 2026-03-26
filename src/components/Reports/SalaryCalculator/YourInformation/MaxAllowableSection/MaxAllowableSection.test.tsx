@@ -13,8 +13,14 @@ const mutationSpy = jest.fn();
 const defaultSalaryRequestMock: DeepPartial<
   SalaryCalculationQuery['salaryRequest']
 > = {
-  calculations: { calculatedCap: 75000 },
-  spouseCalculations: { calculatedCap: 80000 },
+  calculations: {
+    effectiveCap: 75000,
+    individualCap: 90000,
+    familyCap: 135000,
+  },
+  spouseCalculations: {
+    effectiveCap: 80000,
+  },
   manuallySplitCap: false,
   splitCapRequired: true,
 };
@@ -36,7 +42,7 @@ describe('MaxAllowableSection', () => {
 
     expect(
       await findByText(
-        'Maximum Allowable Salary may not exceed $80,000 for an individual and $125,000 combined',
+        'Maximum Allowable Salary may not exceed $90,000 for an individual and $135,000 combined',
         { exact: false },
       ),
     ).toBeInTheDocument();
@@ -47,8 +53,8 @@ describe('MaxAllowableSection', () => {
       const { findByRole, getByRole, queryByRole } = render(
         <TestComponent
           salaryRequestMock={{
-            calculations: { calculatedCap: 50000 },
-            spouseCalculations: { calculatedCap: 60000 },
+            calculations: { effectiveCap: 50000 },
+            spouseCalculations: { effectiveCap: 60000 },
             splitCapRequired: false,
           }}
         />,
