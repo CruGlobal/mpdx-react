@@ -127,6 +127,9 @@ export const useLandingData = (): LandingData => {
     const spouseTaxDeferredContribution =
       spouse?.fourOThreeB.currentTaxDeferredContributionPercentage ?? 0;
 
+    const takenMha = self?.mhaRequest.currentTakenAmount ?? 0;
+    const spouseTakenMha = spouse?.mhaRequest.currentTakenAmount ?? 0;
+
     return {
       currentGrossSalary,
       lastUpdated,
@@ -135,6 +138,8 @@ export const useLandingData = (): LandingData => {
       spouseRothContribution,
       taxDeferredContribution,
       spouseTaxDeferredContribution,
+      takenMha,
+      spouseTakenMha,
     };
   }, [self, spouse]);
 
@@ -228,25 +233,19 @@ export const useLandingData = (): LandingData => {
       },
       {
         category: t('Current MHA (Included in Gross Salary)'),
-        user:
-          typeof approvedCalculation?.mhaAmount === 'number'
-            ? currencyFormat(approvedCalculation.mhaAmount, 'USD', locale, {
-                showTrailingZeros: true,
-              })
-            : '-',
-        spouse:
-          typeof approvedCalculation?.spouseMhaAmount === 'number'
-            ? currencyFormat(
-                approvedCalculation.spouseMhaAmount,
-                'USD',
-                locale,
-                {
-                  showTrailingZeros: true,
-                },
-              )
-            : '-',
+        user: salaryData.takenMha
+          ? currencyFormat(salaryData.takenMha, 'USD', locale, {
+              showTrailingZeros: true,
+            })
+          : '-',
+        spouse: salaryData.spouseTakenMha
+          ? currencyFormat(salaryData.spouseTakenMha, 'USD', locale, {
+              showTrailingZeros: true,
+            })
+          : '-',
         link:
-          typeof approvedCalculation?.mhaAmount === 'number'
+          typeof salaryData.takenMha === 'number' ||
+          typeof salaryData.spouseTakenMha === 'number'
             ? '/reports/housingAllowance'
             : undefined,
       },
