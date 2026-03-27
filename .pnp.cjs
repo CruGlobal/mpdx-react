@@ -112,7 +112,7 @@ const RAW_RUNTIME_STATE =
           ["jest-fetch-mock", "npm:3.0.3"],\
           ["lighthouse", "npm:11.7.1"],\
           ["lint-staged", "npm:13.0.3"],\
-          ["lodash", "npm:4.17.21"],\
+          ["lodash", "npm:4.17.23"],\
           ["luxon", "npm:3.4.4"],\
           ["micro-cors", "npm:0.1.1"],\
           ["next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:15.0.3"],\
@@ -18304,6 +18304,13 @@ const RAW_RUNTIME_STATE =
           ["lodash", "npm:4.17.21"]\
         ],\
         "linkType": "HARD"\
+      }],\
+      ["npm:4.17.23", {\
+        "packageLocation": "./.yarn/cache/lodash-npm-4.17.23-50bdb1c01a-82504c8825.zip/node_modules/lodash/",\
+        "packageDependencies": [\
+          ["lodash", "npm:4.17.23"]\
+        ],\
+        "linkType": "HARD"\
       }]\
     ]],\
     ["lodash-es", [\
@@ -19103,7 +19110,7 @@ const RAW_RUNTIME_STATE =
           ["jest-fetch-mock", "npm:3.0.3"],\
           ["lighthouse", "npm:11.7.1"],\
           ["lint-staged", "npm:13.0.3"],\
-          ["lodash", "npm:4.17.21"],\
+          ["lodash", "npm:4.17.23"],\
           ["luxon", "npm:3.4.4"],\
           ["micro-cors", "npm:0.1.1"],\
           ["next", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:15.0.3"],\
