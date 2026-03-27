@@ -237,21 +237,13 @@ export const useLandingData = (): LandingData => {
       },
       {
         category: t('Current MHA (Included in Gross Salary)'),
-        user: salaryData.takenMha
-          ? currencyFormat(salaryData.takenMha, 'USD', locale, {
-              showTrailingZeros: true,
-            })
-          : '-',
-        spouse: salaryData.spouseTakenMha
-          ? currencyFormat(salaryData.spouseTakenMha, 'USD', locale, {
-              showTrailingZeros: true,
-            })
-          : '-',
-        link:
-          typeof salaryData.takenMha === 'number' ||
-          typeof salaryData.spouseTakenMha === 'number'
-            ? '/reports/housingAllowance'
-            : undefined,
+        user: currencyFormat(salaryData.takenMha, 'USD', locale, {
+          showTrailingZeros: true,
+        }),
+        spouse: currencyFormat(salaryData.spouseTakenMha, 'USD', locale, {
+          showTrailingZeros: true,
+        }),
+        link: '/reports/housingAllowance',
       },
     ],
     [t, salaryData, self, spouse, approvedCalculation, locale],
