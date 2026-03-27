@@ -4,6 +4,7 @@ import CompassIcon from '@mui/icons-material/Explore';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useReportNavItems } from './useReportNavItems';
+import { useRequestFormsNavItems } from './useRequestFormsNavItems';
 import { useSettingsNavItems } from './useSettingsNavItems';
 import { useToolsNavItems } from './useToolsNavItems';
 
@@ -48,6 +49,7 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
   const accountListId = useAccountListId();
   const { t } = useTranslation();
   const reportItems = useReportNavItems();
+  const requestFormsItems = useRequestFormsNavItems();
   const toolsItems = useToolsNavItems();
   const settingsItems = useSettingsNavItems();
 
@@ -112,6 +114,19 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
         ),
         showInNav: true,
         showInSearchDialog: true,
+      },
+      {
+        id: 'request-forms-page',
+        title: t('Request Forms'),
+        pathname: '/accountLists/[accountListId]/reports',
+        items: requestFormsItems.map((item) => ({
+          ...item,
+          href: `/accountLists/${accountListId}/reports/${item.id}`,
+          searchIcon: <CompassIcon />,
+          searchName: t(`Request Forms - {{ title }}`, { title: item.title }),
+          showInSearchDialog: true,
+        })),
+        showInNav: true,
       },
       {
         id: 'settings-page',
@@ -191,6 +206,13 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
             pages.push({ ...item, title: item.searchName ?? item.title });
           });
         }
+      }
+
+      // get request forms sub items
+      if (page.id === 'request-forms-page' && page.items) {
+        page.items.forEach((item) => {
+          pages.push({ ...item, title: item.searchName ?? item.title });
+        });
       }
 
       // get settings sub items without granted access
