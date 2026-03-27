@@ -46,7 +46,7 @@ describe('SalaryInformationCard', () => {
       ['Tax-deferred 403(b) Contribution', '5%', '6%'],
       ['Roth 403(b) Contribution', '12%', '10%'],
       ['Security (SECA/FICA) Status', 'Subject to SECA', 'Subject to SECA'],
-      ['Gross Requested Salary', '$55,000.00', '$10,000.00'],
+      ['Gross Salary', '$55,000.00', '$10,000.00'],
       [
         'Current MHA (Included in Gross Salary)',
         '$10,000.00View',
@@ -61,9 +61,9 @@ describe('SalaryInformationCard', () => {
     );
   });
 
-  it('renders the View link for MHA category', () => {
-    const { getByRole } = render(<TestComponent />);
-    const link = getByRole('link', { name: 'View' });
+  it('renders the View link for MHA category', async () => {
+    const { findByRole } = render(<TestComponent />);
+    const link = await findByRole('link', { name: 'View' });
     expect(link).toBeInTheDocument();
     expect(link).toHaveAttribute(
       'href',

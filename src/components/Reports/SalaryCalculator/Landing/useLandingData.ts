@@ -158,7 +158,7 @@ export const useLandingData = (): LandingData => {
               locale,
               { showTrailingZeros: true },
             )
-          : '-',
+          : 'TBD',
         spouse: approvedCalculation?.spouseCalculations?.effectiveCap
           ? currencyFormat(
               approvedCalculation.spouseCalculations?.effectiveCap,
@@ -166,7 +166,7 @@ export const useLandingData = (): LandingData => {
               locale,
               { showTrailingZeros: true },
             )
-          : '-',
+          : 'TBD',
       },
       {
         category: t('Requested Salary'),
@@ -174,12 +174,12 @@ export const useLandingData = (): LandingData => {
           ? currencyFormat(approvedCalculation.salary, 'USD', locale, {
               showTrailingZeros: true,
             })
-          : '-',
+          : 'TBD',
         spouse: approvedCalculation?.spouseSalary
           ? currencyFormat(approvedCalculation.spouseSalary, 'USD', locale, {
               showTrailingZeros: true,
             })
-          : '-',
+          : 'TBD',
         tooltip: t(
           'Requested Salary includes MHA and taxes if applicable. It does not include 403(b) Contributions and SECA.',
         ),
@@ -211,7 +211,7 @@ export const useLandingData = (): LandingData => {
         spouse: getLocalizedTaxStatus(spouse?.staffInfo.secaStatus, t),
       },
       {
-        category: t('Gross Requested Salary'),
+        category: t('Gross Salary'),
         user: salaryData.currentGrossSalary
           ? currencyFormat(salaryData.currentGrossSalary, 'USD', locale, {
               showTrailingZeros: true,
@@ -223,22 +223,32 @@ export const useLandingData = (): LandingData => {
             })
           : '-',
         tooltip: t(
-          'Gross Requested Salary includes MHA, 403(b), SECA, and taxes if applicable.',
+          'Gross Salary includes MHA, 403(b), SECA, and taxes if applicable.',
         ),
       },
       {
         category: t('Current MHA (Included in Gross Salary)'),
-        user: approvedCalculation?.mhaAmount
-          ? currencyFormat(approvedCalculation.mhaAmount, 'USD', locale, {
-              showTrailingZeros: true,
-            })
-          : '-',
-        spouse: approvedCalculation?.spouseMhaAmount
-          ? currencyFormat(approvedCalculation.spouseMhaAmount, 'USD', locale, {
-              showTrailingZeros: true,
-            })
-          : '-',
-        link: '/reports/housingAllowance',
+        user:
+          typeof approvedCalculation?.mhaAmount === 'number'
+            ? currencyFormat(approvedCalculation.mhaAmount, 'USD', locale, {
+                showTrailingZeros: true,
+              })
+            : '-',
+        spouse:
+          typeof approvedCalculation?.spouseMhaAmount === 'number'
+            ? currencyFormat(
+                approvedCalculation.spouseMhaAmount,
+                'USD',
+                locale,
+                {
+                  showTrailingZeros: true,
+                },
+              )
+            : '-',
+        link:
+          typeof approvedCalculation?.mhaAmount === 'number'
+            ? '/reports/housingAllowance'
+            : undefined,
       },
     ],
     [t, salaryData, self, spouse, approvedCalculation, locale],
