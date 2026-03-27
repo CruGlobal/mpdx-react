@@ -26,20 +26,24 @@ interface SalaryCategory {
 
 type HcmPerson = HcmQuery['hcm'][number];
 
+interface SalaryData {
+  currentGrossSalary: number;
+  lastUpdated: string;
+  spouseCurrentGrossSalary: number;
+  rothContribution: number;
+  spouseRothContribution: number;
+  taxDeferredContribution: number;
+  spouseTaxDeferredContribution: number;
+  takenMha: number;
+  spouseTakenMha: number;
+}
+
 export interface LandingData {
   staffAccountId: string | null;
   names: string;
   self: HcmPerson | null;
   spouse: HcmPerson | null;
-  salaryData: {
-    currentGrossSalary: number;
-    lastUpdated: string;
-    spouseCurrentGrossSalary: number;
-    rothContribution: number;
-    spouseRothContribution: number;
-    taxDeferredContribution: number;
-    spouseTaxDeferredContribution: number;
-  };
+  salaryData: SalaryData;
   salaryCategories: SalaryCategory[];
   accountBalance: number;
   inProgressCalculationId: string | null;
@@ -111,7 +115,7 @@ export const useLandingData = (): LandingData => {
     return `${selfName} and ${spouse.staffInfo.preferredName}`;
   }, [self, spouse]);
 
-  const salaryData = useMemo(() => {
+  const salaryData = useMemo((): SalaryData => {
     const currentGrossSalary = self?.currentSalary.grossSalaryAmount ?? 0;
     const lastUpdated = self?.currentSalary.lastUpdated ?? '';
     const spouseCurrentGrossSalary =
@@ -127,6 +131,9 @@ export const useLandingData = (): LandingData => {
     const spouseTaxDeferredContribution =
       spouse?.fourOThreeB.currentTaxDeferredContributionPercentage ?? 0;
 
+    const takenMha = self?.mhaRequest.currentTakenAmount ?? 0;
+    const spouseTakenMha = spouse?.mhaRequest.currentTakenAmount ?? 0;
+
     return {
       currentGrossSalary,
       lastUpdated,
@@ -135,6 +142,8 @@ export const useLandingData = (): LandingData => {
       spouseRothContribution,
       taxDeferredContribution,
       spouseTaxDeferredContribution,
+      takenMha,
+      spouseTakenMha,
     };
   }, [self, spouse]);
 
@@ -228,27 +237,13 @@ export const useLandingData = (): LandingData => {
       },
       {
         category: t('Current MHA (Included in Gross Salary)'),
-        user:
-          typeof approvedCalculation?.mhaAmount === 'number'
-            ? currencyFormat(approvedCalculation.mhaAmount, 'USD', locale, {
-                showTrailingZeros: true,
-              })
-            : '-',
-        spouse:
-          typeof approvedCalculation?.spouseMhaAmount === 'number'
-            ? currencyFormat(
-                approvedCalculation.spouseMhaAmount,
-                'USD',
-                locale,
-                {
-                  showTrailingZeros: true,
-                },
-              )
-            : '-',
-        link:
-          typeof approvedCalculation?.mhaAmount === 'number'
-            ? '/reports/housingAllowance'
-            : undefined,
+        user: currencyFormat(salaryData.takenMha, 'USD', locale, {
+          showTrailingZeros: true,
+        }),
+        spouse: currencyFormat(salaryData.spouseTakenMha, 'USD', locale, {
+          showTrailingZeros: true,
+        }),
+        link: '/reports/housingAllowance',
       },
     ],
     [t, salaryData, self, spouse, approvedCalculation, locale],
