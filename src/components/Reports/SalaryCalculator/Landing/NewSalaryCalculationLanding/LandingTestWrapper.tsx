@@ -54,6 +54,9 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
                   currentRothContributionPercentage: 12,
                   currentTaxDeferredContributionPercentage: 5,
                 },
+                mhaRequest: {
+                  currentTakenAmount: 10000,
+                },
                 salaryRequestEligible,
               },
               {
@@ -70,6 +73,9 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
                   currentRothContributionPercentage: 10,
                   currentTaxDeferredContributionPercentage: 6,
                 },
+                mhaRequest: {
+                  currentTakenAmount: 12000,
+                },
                 salaryRequestEligible,
               },
             ],
@@ -82,8 +88,6 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
               ? {
                   salary: 50000,
                   spouseSalary: 60000,
-                  mhaAmount: 10000,
-                  spouseMhaAmount: 12000,
                   calculations: { effectiveCap: 60000 },
                   spouseCalculations: { effectiveCap: 70000 },
                 }
