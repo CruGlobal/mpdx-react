@@ -19,8 +19,6 @@ query LandingSalaryCalculations {
     id
     salary
     spouseSalary
-    mhaAmount
-    spouseMhaAmount
     calculations {
       effectiveCap
     }

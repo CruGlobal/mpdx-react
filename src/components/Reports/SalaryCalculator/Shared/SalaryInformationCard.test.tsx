@@ -61,11 +61,9 @@ describe('SalaryInformationCard', () => {
     );
   });
 
-  it('renders the View link for MHA category', async () => {
-    const { findByRole } = render(<TestComponent />);
-    const link = await findByRole('link', { name: 'View' });
-    expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute(
+  it('renders the View link for MHA category', () => {
+    const { getByRole } = render(<TestComponent />);
+    expect(getByRole('link', { name: 'View' })).toHaveAttribute(
       'href',
       expect.stringContaining('/reports/housingAllowance'),
     );
