@@ -12,6 +12,7 @@ import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { SalaryRequestStatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
+import { usePayrollDatesQuery } from '../EffectiveDateStep/PayrollDates.generated';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 import { StepCard } from '../Shared/StepCard';
 
@@ -19,6 +20,7 @@ export const StaffInfoSummaryCard: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
   const { hcmUser, hcmSpouse, calculation } = useSalaryCalculator();
+  const { data: payrollDatesData } = usePayrollDatesQuery();
   const { data: userData } = useGetUserQuery();
 
   const name =
@@ -31,8 +33,11 @@ export const StaffInfoSummaryCard: React.FC = () => {
     ? t('{{ name }} and {{ spouseName }}', { name, spouseName })
     : name;
 
-  const effectiveDate = calculation?.effectiveDate
-    ? dateFormatShort(DateTime.fromISO(calculation.effectiveDate), locale)
+  const payrollDate = payrollDatesData?.payrollDates.find(
+    (date) => date.startDate === calculation?.effectiveDate,
+  );
+  const effectiveDate = payrollDate
+    ? dateFormatShort(DateTime.fromISO(payrollDate.regularProcessDate), locale)
     : null;
   const submittedDate = calculation?.submittedAt
     ? dateFormatShort(DateTime.fromISO(calculation.submittedAt), locale)

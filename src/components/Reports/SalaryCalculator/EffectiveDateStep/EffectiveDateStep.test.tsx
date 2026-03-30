@@ -1,20 +1,18 @@
 import { render } from '@testing-library/react';
 import { DateTime, Settings } from 'luxon';
-import { PayrollDate } from 'src/graphql/types.generated';
 import { SalaryCalculatorTestWrapper } from '../SalaryCalculatorTestWrapper';
 import { EffectiveDateStep } from './EffectiveDateStep';
+import { PayrollDatesQuery } from './PayrollDates.generated';
 
-const currentYear = DateTime.now().year;
-
-const testDates: PayrollDate[] = [
-  { regularProcessDate: `${currentYear}-01-15` },
-  { regularProcessDate: `${currentYear}-02-01` },
-  { regularProcessDate: `${currentYear}-02-15` },
+const testDates = [
+  { startDate: '2020-01-01', regularProcessDate: '2020-01-25' },
+  { startDate: '2020-01-16', regularProcessDate: '2020-02-10' },
+  { startDate: '2020-02-01', regularProcessDate: '2020-02-25' },
 ];
 
-const TestComponent: React.FC<{ dates?: PayrollDate[] }> = ({
-  dates = testDates,
-}) => (
+const TestComponent: React.FC<{
+  dates?: PayrollDatesQuery['payrollDates'];
+}> = ({ dates = testDates }) => (
   <SalaryCalculatorTestWrapper payrollDates={dates}>
     <EffectiveDateStep />
   </SalaryCalculatorTestWrapper>
@@ -23,7 +21,7 @@ const TestComponent: React.FC<{ dates?: PayrollDate[] }> = ({
 describe('EffectiveDateStep', () => {
   beforeEach(() => {
     const now = DateTime.fromObject({
-      year: currentYear,
+      year: 2020,
       month: 12,
       day: 10,
     }).toMillis();
@@ -77,11 +75,10 @@ describe('EffectiveDateStep', () => {
   });
 
   it('does not show the effective date banner when next year payroll dates exist', async () => {
-    const nextYear = currentYear + 1;
-    const newDates: PayrollDate[] = [
+    const newDates = [
       ...testDates,
-      { regularProcessDate: `${currentYear - 1}-12-15` },
-      { regularProcessDate: `${nextYear}-01-01` },
+      { startDate: '2019-11-20', regularProcessDate: '2019-12-15' },
+      { startDate: '2020-12-07', regularProcessDate: '2021-01-01' },
     ];
     const { queryByTestId } = render(<TestComponent dates={newDates} />);
 
@@ -90,7 +87,7 @@ describe('EffectiveDateStep', () => {
 
   it('does not show the effective date banner before November 15th', async () => {
     const beforeNovember15 = DateTime.fromObject({
-      year: currentYear,
+      year: 2020,
       month: 11,
       day: 10,
     }).toMillis();

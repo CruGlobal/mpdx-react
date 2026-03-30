@@ -4,10 +4,7 @@ import { merge } from 'lodash';
 import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
-import {
-  PayrollDate,
-  SalaryRequestStatusEnum,
-} from 'src/graphql/types.generated';
+import { SalaryRequestStatusEnum } from 'src/graphql/types.generated';
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
 import { PayrollDatesQuery } from './EffectiveDateStep/PayrollDates.generated';
@@ -93,7 +90,7 @@ export interface SalaryCalculatorTestWrapperProps {
   onCall?: MockLinkCallHandler;
   children?: React.ReactNode;
   hasSpouse?: boolean;
-  payrollDates?: PayrollDate[];
+  payrollDates?: PayrollDatesQuery['payrollDates'];
   editing?: boolean;
 }
 

@@ -4,6 +4,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { SalaryRequestStatusEnum } from 'src/graphql/types.generated';
+import { PayrollDatesQuery } from '../EffectiveDateStep/PayrollDates.generated';
 import { HcmQuery } from '../SalaryCalculatorContext/Hcm.generated';
 import { SalaryCalculationQuery } from '../SalaryCalculatorContext/SalaryCalculation.generated';
 import { SalaryCalculatorProvider } from '../SalaryCalculatorContext/SalaryCalculatorContext';
@@ -27,6 +28,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
     <GqlMockedProvider<{
       Hcm: HcmQuery;
       SalaryCalculation: SalaryCalculationQuery;
+      PayrollDates: PayrollDatesQuery;
       GetUser: GetUserQuery;
     }>
       mocks={{
@@ -39,9 +41,14 @@ const TestComponent: React.FC<TestComponentProps> = ({
             status: submitted
               ? SalaryRequestStatusEnum.Pending
               : SalaryRequestStatusEnum.InProgress,
-            effectiveDate: '2024-01-15',
+            effectiveDate: '2024-01-01',
             submittedAt: '2025-01-01',
           },
+        },
+        PayrollDates: {
+          payrollDates: [
+            { startDate: '2024-01-01', regularProcessDate: '2024-01-15' },
+          ],
         },
         GetUser: {
           user: {
