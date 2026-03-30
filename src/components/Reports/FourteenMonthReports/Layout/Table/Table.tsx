@@ -100,18 +100,28 @@ export const FourteenMonthReportTable: React.FC<
   const totalAverage = useMemo(
     () =>
       Math.round(
-        orderedContacts?.reduce(
-          (totalAverage, contact) => totalAverage + contact.average,
+        orderedContacts?.reduce((sum, contact) => sum + contact.average, 0) ??
           0,
-        ) ?? 0,
       ),
     [orderedContacts],
   );
   const totalMinimum = useMemo(
     () =>
       Math.round(
+        orderedContacts?.reduce((sum, contact) => sum + contact.minimum, 0) ??
+          0,
+      ),
+    [orderedContacts],
+  );
+  // The completeMonthsTotal field is calculated by the server and is total the contact's donations
+  // during complete months. For example, on January 15th, 2026 this would be the sum of donations
+  // during 2025. We exclude incomplete months since the partner might not have given their monthly
+  // gift yet on January 15th.
+  const totalCompleteMonths = useMemo(
+    () =>
+      Math.round(
         orderedContacts?.reduce(
-          (totalMinimum, contact) => totalMinimum + contact.minimum,
+          (sum, contact) => sum + contact.completeMonthsTotal,
           0,
         ) ?? 0,
       ),
@@ -239,14 +249,7 @@ export const FourteenMonthReportTable: React.FC<
               </StyledTableCell>
             ))}
             <StyledTableCell align="right" data-testid="overallTotal">
-              {numberFormat(
-                Math.round(
-                  totals
-                    ?.slice(-totals.length - 1, -1) // Get last 12 complete months (excluding current incomplete month)
-                    .reduce((sum, month) => sum + month.total, 0) ?? 0,
-                ),
-                locale,
-              )}
+              {numberFormat(totalCompleteMonths, locale)}
             </StyledTableCell>
           </StyledTotalsRow>
         </TableBody>

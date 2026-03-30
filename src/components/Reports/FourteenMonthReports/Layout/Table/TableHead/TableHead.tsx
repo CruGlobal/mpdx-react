@@ -187,10 +187,10 @@ export const FourteenMonthReportTableHead: FC<
         ))}
         <TableHeadCell
           align="right"
-          isActive={orderBy === 'total'}
-          sortDirection={orderBy === 'total' ? order : false}
-          direction={orderBy === 'total' ? order : 'asc'}
-          onClick={createSortHandler('total')}
+          isActive={orderBy === 'completeMonthsTotal'}
+          sortDirection={orderBy === 'completeMonthsTotal' ? order : false}
+          direction={orderBy === 'completeMonthsTotal' ? order : 'asc'}
+          onClick={createSortHandler('completeMonthsTotal')}
         >
           {t('12 Month Total')}
         </TableHeadCell>
