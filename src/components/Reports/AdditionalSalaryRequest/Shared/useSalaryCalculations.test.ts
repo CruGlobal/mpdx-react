@@ -356,6 +356,7 @@ describe('useSalaryCalculations', () => {
       // Staff Member: 50000 + 0 + 5000 = 55000 < 70000
       expect(result.current.exceedsCap).toBe(false);
       expect(result.current.splitAsr).toBe(false);
+      expect(result.current.splitAsrType).toBeNull();
       expect(result.current.additionalApproval).toBe(false);
     });
 
@@ -374,6 +375,7 @@ describe('useSalaryCalculations', () => {
       // Staff Member: 55000 < 70000, Spouse: 45000 < 50000
       expect(result.current.exceedsCap).toBe(false);
       expect(result.current.splitAsr).toBe(false);
+      expect(result.current.splitAsrType).toBeNull();
       expect(result.current.additionalApproval).toBe(false);
     });
 
@@ -391,7 +393,8 @@ describe('useSalaryCalculations', () => {
 
       // Staff Member: 55000 < 70000, Spouse: 55000 > 50000
       expect(result.current.exceedsCap).toBe(false);
-      expect(result.current.splitAsr).toBe(false);
+      expect(result.current.splitAsr).toBe(true);
+      expect(result.current.splitAsrType).toBe('spouse');
       expect(result.current.additionalApproval).toBe(false);
     });
 
@@ -410,6 +413,7 @@ describe('useSalaryCalculations', () => {
       // Staff Member: 55000 < 70000, Spouse: 40000 within $5 of 40003 (at cap)
       expect(result.current.exceedsCap).toBe(false);
       expect(result.current.splitAsr).toBe(false);
+      expect(result.current.splitAsrType).toBeNull();
       expect(result.current.additionalApproval).toBe(false);
     });
   });
@@ -451,6 +455,7 @@ describe('useSalaryCalculations', () => {
       // Spouse: 40000 + 0 = 40000 < 50000 (under cap)
       expect(result.current.exceedsCap).toBe(true);
       expect(result.current.splitAsr).toBe(true);
+      expect(result.current.splitAsrType).toBe('user');
       expect(result.current.additionalApproval).toBe(false);
     });
 
@@ -470,6 +475,7 @@ describe('useSalaryCalculations', () => {
       // Spouse: 40000 + 5000 = 45000 < 50000 (under cap)
       expect(result.current.exceedsCap).toBe(true);
       expect(result.current.splitAsr).toBe(true);
+      expect(result.current.splitAsrType).toBe('user');
       expect(result.current.additionalApproval).toBe(false);
     });
 
@@ -489,6 +495,7 @@ describe('useSalaryCalculations', () => {
       // Spouse: 40000 + 15000 = 55000 > 50000 (exceeds)
       expect(result.current.exceedsCap).toBe(true);
       expect(result.current.splitAsr).toBe(false);
+      expect(result.current.splitAsrType).toBeNull();
       expect(result.current.additionalApproval).toBe(true);
     });
 
@@ -508,6 +515,7 @@ describe('useSalaryCalculations', () => {
       // Spouse: 40000 within $5 of 40003 (at cap)
       expect(result.current.exceedsCap).toBe(true);
       expect(result.current.splitAsr).toBe(false);
+      expect(result.current.splitAsrType).toBeNull();
       expect(result.current.additionalApproval).toBe(true);
     });
 
@@ -527,6 +535,7 @@ describe('useSalaryCalculations', () => {
       // Spouse: 40000, cap = 40005, difference = $5 (inclusive boundary — at cap)
       expect(result.current.exceedsCap).toBe(true);
       expect(result.current.splitAsr).toBe(false);
+      expect(result.current.splitAsrType).toBeNull();
       expect(result.current.additionalApproval).toBe(true);
     });
 
@@ -546,6 +555,7 @@ describe('useSalaryCalculations', () => {
       // Spouse: 40000, cap = 40006, difference = $6 (outside tolerance — not at cap)
       expect(result.current.exceedsCap).toBe(true);
       expect(result.current.splitAsr).toBe(true);
+      expect(result.current.splitAsrType).toBe('user');
       expect(result.current.additionalApproval).toBe(false);
     });
   });
@@ -587,6 +597,7 @@ describe('useSalaryCalculations', () => {
       // Staff Member: 50000 + 0 + 5000 = 55000 = 55000 (at cap, not over)
       expect(result.current.exceedsCap).toBe(false);
       expect(result.current.splitAsr).toBe(false);
+      expect(result.current.splitAsrType).toBeNull();
       expect(result.current.additionalApproval).toBe(false);
     });
 
@@ -605,6 +616,7 @@ describe('useSalaryCalculations', () => {
       // Staff Member: 55000 = 55000 (at cap), Spouse: 45000 < 50000
       expect(result.current.exceedsCap).toBe(false);
       expect(result.current.splitAsr).toBe(false);
+      expect(result.current.splitAsrType).toBeNull();
       expect(result.current.additionalApproval).toBe(false);
     });
 
@@ -622,7 +634,8 @@ describe('useSalaryCalculations', () => {
 
       // Staff Member: 55000 = 55000 (at cap), Spouse: 55000 > 50000
       expect(result.current.exceedsCap).toBe(false);
-      expect(result.current.splitAsr).toBe(false);
+      expect(result.current.splitAsr).toBe(true);
+      expect(result.current.splitAsrType).toBe('spouse');
       expect(result.current.additionalApproval).toBe(false);
     });
 
@@ -641,6 +654,7 @@ describe('useSalaryCalculations', () => {
       // Staff Member: 55000 = 55000 (at cap), Spouse: 40000 within $5 of 40003
       expect(result.current.exceedsCap).toBe(false);
       expect(result.current.splitAsr).toBe(false);
+      expect(result.current.splitAsrType).toBeNull();
       expect(result.current.additionalApproval).toBe(false);
     });
   });
@@ -675,6 +689,7 @@ describe('useSalaryCalculations', () => {
       // Staff Member: 50000 + 0 + 5000 = 55000 < 70000
       expect(result.current.exceedsCap).toBe(false);
       expect(result.current.splitAsr).toBe(false);
+      expect(result.current.splitAsrType).toBeNull();
       expect(result.current.additionalApproval).toBe(false);
     });
 
@@ -693,6 +708,7 @@ describe('useSalaryCalculations', () => {
       // Staff Member: 50000 + 0 + 5000 = 55000 = 55000 (at cap, not over)
       expect(result.current.exceedsCap).toBe(false);
       expect(result.current.splitAsr).toBe(false);
+      expect(result.current.splitAsrType).toBeNull();
       expect(result.current.additionalApproval).toBe(false);
     });
 
@@ -711,6 +727,7 @@ describe('useSalaryCalculations', () => {
       // Staff Member: 50000 + 0 + 15000 = 65000 > 60000 (exceeds)
       expect(result.current.exceedsCap).toBe(true);
       expect(result.current.splitAsr).toBe(false);
+      expect(result.current.splitAsrType).toBeNull();
       expect(result.current.additionalApproval).toBe(true);
     });
   });

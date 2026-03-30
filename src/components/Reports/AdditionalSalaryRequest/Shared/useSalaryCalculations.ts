@@ -19,8 +19,10 @@ export interface SalaryCalculations {
   grossAnnualSalary: number;
   /** `true` when the salary request puts the user over their individual cap */
   exceedsCap: boolean;
-  /** `true` when the user exceeds their individual cap and their spouse has not yet submitted an ASR at their cap */
+  /** `true` when salary should be split between the user and spouse */
   splitAsr: boolean;
+  /** Indicates which direction the split is needed, or null if no split */
+  splitAsrType: 'user' | 'spouse' | null;
   /** `true` when the request requires additional approval */
   additionalApproval: boolean;
 }
@@ -108,8 +110,17 @@ export const useSalaryCalculations = ({
           spouseIndividualCap - SPOUSE_AT_CAP_TOLERANCE
         : false;
 
-    const splitAsr =
+    const userSplitAsr =
       exceedsCap && !!spouse && !spouseAtCap && spouseExceedsCap === false;
+    const spouseSplitAsr =
+      !exceedsCap && !!spouse && spouseExceedsCap === true;
+
+    const splitAsr = userSplitAsr || spouseSplitAsr;
+    const splitAsrType: 'user' | 'spouse' | null = userSplitAsr
+      ? 'user'
+      : spouseSplitAsr
+        ? 'spouse'
+        : null;
     const additionalApproval =
       exceedsCap && (!spouse || spouseAtCap || spouseExceedsCap === true);
 
@@ -125,6 +136,7 @@ export const useSalaryCalculations = ({
       totalAnnualSalary,
       exceedsCap,
       splitAsr,
+      splitAsrType,
       additionalApproval,
     };
   }, [
