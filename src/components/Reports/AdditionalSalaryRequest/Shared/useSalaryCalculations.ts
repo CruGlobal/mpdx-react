@@ -3,6 +3,10 @@ import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 import { getTotal, getTotalWithout403b } from './Helper/getTotal';
 
+// Tolerance for considering a spouse "at cap" — small rounding differences
+// (e.g. $19,998 vs $20,000 cap) are treated as effectively at cap.
+const SPOUSE_AT_CAP_TOLERANCE = 5;
+
 export interface SalaryCalculations {
   total: number;
   calculatedTraditionalDeduction: number;
@@ -15,7 +19,7 @@ export interface SalaryCalculations {
   grossAnnualSalary: number;
   /** `true` when the salary request puts the user over their individual cap */
   exceedsCap: boolean;
-  /** `true` when the salary request puts the user over their individual cap but splitting the request between the user and their spouse would keep the couple under their individual and combined caps */
+  /** `true` when the user exceeds their individual cap and their spouse has not yet submitted an ASR at their cap */
   splitAsr: boolean;
   /** `true` when the request requires additional approval */
   additionalApproval: boolean;
@@ -47,10 +51,6 @@ export const useSalaryCalculations = ({
   const spouseIndividualCap = spouse
     ? (requestData?.latestAdditionalSalaryRequest?.spouseCalculations
         ?.currentSalaryCap ?? 0)
-    : null;
-  const combinedCap = spouse
-    ? (requestData?.latestAdditionalSalaryRequest?.calculations.combinedCap ??
-      0)
     : null;
 
   const grossAnnualSalary = user?.currentSalary?.grossSalaryAmount ?? 0;
@@ -100,15 +100,18 @@ export const useSalaryCalculations = ({
       spouse && spouseIndividualCap !== null
         ? (spouseTotalAnnualSalary ?? 0) > spouseIndividualCap
         : undefined;
-
-    const exceedsCombinedCap =
-      (combinedCap ?? 0) < totalAnnualSalary + spouseTotalAnnualSalary;
+    // Spouse is within $5 of their cap but not over — treat as "at cap" for split purposes
+    // e.g. an ASR of $19,998 with a cap of $20,000 is considered at cap
+    const spouseAtCap =
+      spouse && spouseIndividualCap !== null && spouseExceedsCap === false
+        ? (spouseTotalAnnualSalary ?? 0) >=
+          spouseIndividualCap - SPOUSE_AT_CAP_TOLERANCE
+        : false;
 
     const splitAsr =
-      exceedsCap && spouseExceedsCap === false && !exceedsCombinedCap;
+      exceedsCap && !!spouse && !spouseAtCap && spouseExceedsCap === false;
     const additionalApproval =
-      (exceedsCap && spouseExceedsCap) ||
-      (exceedsCap && spouseExceedsCap === false && exceedsCombinedCap);
+      exceedsCap && (!spouse || spouseAtCap || spouseExceedsCap === true);
 
     return {
       total,
@@ -132,7 +135,6 @@ export const useSalaryCalculations = ({
     roth403bPercentage,
     individualCap,
     spouseIndividualCap,
-    combinedCap,
     spouse,
     requestData,
   ]);

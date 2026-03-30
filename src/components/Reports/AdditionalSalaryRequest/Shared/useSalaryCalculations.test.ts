@@ -319,8 +319,12 @@ describe('useSalaryCalculations', () => {
     expect(result.current.exceedsCap).toBe(true);
   });
 
-  describe('Married', () => {
-    it('splitAsr is false when both user and spouse exceed their individual caps', () => {
+  describe('Married - Staff Member under cap', () => {
+    // Cases 1-4: Staff Member under cap — nothing triggers regardless of spouse status
+    const setupUnderCap = (spouseCalculations: {
+      currentSalaryCap: number;
+      pendingAsrAmount: number;
+    }) => {
       mockUseAdditionalSalaryRequest.mockReturnValue({
         traditional403bPercentage: 0.12,
         roth403bPercentage: 0.1,
@@ -329,126 +333,16 @@ describe('useSalaryCalculations', () => {
         requestData: {
           latestAdditionalSalaryRequest: {
             calculations: {
-              currentSalaryCap: 10000,
-              combinedCap: 25000,
+              currentSalaryCap: 70000,
             },
-            spouseCalculations: {
-              currentSalaryCap: 10000,
-              pendingAsrAmount: 15000,
-            },
+            spouseCalculations,
           },
         },
       } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+    };
 
-      const values: CompleteFormValues = {
-        ...baseValues,
-        currentYearSalaryNotReceived: '15000',
-      };
-
-      const { result } = renderHook(() => useSalaryCalculations({ values }), {
-        wrapper: ({ children }) => FormikWrapper({ children, values }),
-      });
-
-      // User: 15000 > 10000 (exceeds), Spouse: 15000 > 10000 (exceeds)
-      // additionalApproval = (exceedsCap && spouseExceedsCap) = true
-      expect(result.current.exceedsCap).toBe(true);
-      expect(result.current.additionalApproval).toBe(true);
-      expect(result.current.splitAsr).toBe(false);
-    });
-
-    it('splitAsr is true when user exceeds but spouse does not and over combined cap', () => {
-      mockUseAdditionalSalaryRequest.mockReturnValue({
-        traditional403bPercentage: 0.12,
-        roth403bPercentage: 0.1,
-        user: { currentSalary: { grossSalaryAmount: 50000 } },
-        spouse: { currentSalary: { grossSalaryAmount: 40000 } },
-        requestData: {
-          latestAdditionalSalaryRequest: {
-            calculations: {
-              currentSalaryCap: 10000,
-              combinedCap: 100000,
-            },
-            spouseCalculations: {
-              currentSalaryCap: 10000,
-              pendingAsrAmount: 7000,
-            },
-          },
-        },
-      } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
-
-      const values: CompleteFormValues = {
-        ...baseValues,
-        currentYearSalaryNotReceived: '15000',
-      };
-
-      const { result } = renderHook(() => useSalaryCalculations({ values }), {
-        wrapper: ({ children }) => FormikWrapper({ children, values }),
-      });
-
-      // User: 15000 > 10000 (exceeds), Spouse: 7000 < 10000 (does not exceed)
-      // totalAnnualSalary = 50000 + 0 + 15000 = 65000
-      // spouseTotalAnnualSalary = 40000 + 7000 = 47000
-      // exceedsCombinedCap = 100000 < (65000 + 47000) = 100000 < 112000 = true
-      // splitAsr = exceedsCap && !spouseExceedsCap && !exceedsCombinedCap = true && true && false = false
-      // additionalApproval = (exceedsCap && spouseExceedsCap) || (exceedsCap && !spouseExceedsCap && exceedsCombinedCap)
-      //                    = (true && false) || (true && true && true) = true
-      expect(result.current.exceedsCap).toBe(true);
-      expect(result.current.splitAsr).toBe(false);
-      expect(result.current.additionalApproval).toBe(true);
-    });
-
-    it('splitAsr is true when user exceeds, spouse does not, and under combined cap', () => {
-      mockUseAdditionalSalaryRequest.mockReturnValue({
-        traditional403bPercentage: 0.12,
-        roth403bPercentage: 0.1,
-        user: { currentSalary: { grossSalaryAmount: 50000 } },
-        spouse: { currentSalary: { grossSalaryAmount: 40000 } },
-        requestData: {
-          latestAdditionalSalaryRequest: {
-            calculations: {
-              currentSalaryCap: 10000,
-              combinedCap: 120000,
-            },
-            spouseCalculations: {
-              currentSalaryCap: 50000,
-              pendingAsrAmount: 5000,
-            },
-          },
-        },
-      } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
-
-      const values: CompleteFormValues = {
-        ...baseValues,
-        currentYearSalaryNotReceived: '12000',
-      };
-
-      const { result } = renderHook(() => useSalaryCalculations({ values }), {
-        wrapper: ({ children }) => FormikWrapper({ children, values }),
-      });
-
-      // User: 62000 > 10000 (exceeds), Spouse: 45000 < 50000 (does not exceed)
-      // totalAnnualSalary = 50000 + 0 + 12000 = 62000
-      // spouseTotalAnnualSalary = 40000 + 5000 = 45000
-      // exceedsCombinedCap = 120000 < (62000 + 45000) = 120000 < 107000 = false
-      // splitAsr = exceedsCap && !spouseExceedsCap && !exceedsCombinedCap = true && true && true = true
-      // additionalApproval = (exceedsCap && spouseExceedsCap) || (exceedsCap && !spouseExceedsCap && exceedsCombinedCap)
-      //                    = (true && false) || (true && true && false) = false
-      expect(result.current.exceedsCap).toBe(true);
-      expect(result.current.splitAsr).toBe(true);
-      expect(result.current.additionalApproval).toBe(false);
-    });
-
-    it('splitAsr is false when no spouse data exists', () => {
-      mockUseAdditionalSalaryRequest.mockReturnValue({
-        traditional403bPercentage: 0.12,
-        roth403bPercentage: 0.1,
-        spouse: undefined,
-        requestData: {
-          latestAdditionalSalaryRequest: {
-            calculations: { currentSalaryCap: 10000 },
-          },
-        },
-      } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+    it('Staff Member under cap, spouse has no pending ASR', () => {
+      setupUnderCap({ currentSalaryCap: 50000, pendingAsrAmount: 0 });
 
       const values: CompleteFormValues = {
         ...baseValues,
@@ -459,8 +353,365 @@ describe('useSalaryCalculations', () => {
         wrapper: ({ children }) => FormikWrapper({ children, values }),
       });
 
+      // Staff Member: 50000 + 0 + 5000 = 55000 < 70000
+      expect(result.current.exceedsCap).toBe(false);
       expect(result.current.splitAsr).toBe(false);
       expect(result.current.additionalApproval).toBe(false);
+    });
+
+    it('Staff Member under cap, spouse has ASR under their cap', () => {
+      setupUnderCap({ currentSalaryCap: 50000, pendingAsrAmount: 5000 });
+
+      const values: CompleteFormValues = {
+        ...baseValues,
+        currentYearSalaryNotReceived: '5000',
+      };
+
+      const { result } = renderHook(() => useSalaryCalculations({ values }), {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      });
+
+      // Staff Member: 55000 < 70000, Spouse: 45000 < 50000
+      expect(result.current.exceedsCap).toBe(false);
+      expect(result.current.splitAsr).toBe(false);
+      expect(result.current.additionalApproval).toBe(false);
+    });
+
+    it('Staff Member under cap, spouse is over their cap', () => {
+      setupUnderCap({ currentSalaryCap: 50000, pendingAsrAmount: 15000 });
+
+      const values: CompleteFormValues = {
+        ...baseValues,
+        currentYearSalaryNotReceived: '5000',
+      };
+
+      const { result } = renderHook(() => useSalaryCalculations({ values }), {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      });
+
+      // Staff Member: 55000 < 70000, Spouse: 55000 > 50000
+      expect(result.current.exceedsCap).toBe(false);
+      expect(result.current.splitAsr).toBe(false);
+      expect(result.current.additionalApproval).toBe(false);
+    });
+
+    it('Staff Member under cap, spouse is at their cap', () => {
+      setupUnderCap({ currentSalaryCap: 40003, pendingAsrAmount: 0 });
+
+      const values: CompleteFormValues = {
+        ...baseValues,
+        currentYearSalaryNotReceived: '5000',
+      };
+
+      const { result } = renderHook(() => useSalaryCalculations({ values }), {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      });
+
+      // Staff Member: 55000 < 70000, Spouse: 40000 within $5 of 40003 (at cap)
+      expect(result.current.exceedsCap).toBe(false);
+      expect(result.current.splitAsr).toBe(false);
+      expect(result.current.additionalApproval).toBe(false);
+    });
+  });
+
+  describe('Married - Staff Member over cap', () => {
+    const setupOverCap = (spouseCalculations: {
+      currentSalaryCap: number;
+      pendingAsrAmount: number;
+    }) => {
+      mockUseAdditionalSalaryRequest.mockReturnValue({
+        traditional403bPercentage: 0.12,
+        roth403bPercentage: 0.1,
+        user: { currentSalary: { grossSalaryAmount: 50000 } },
+        spouse: { currentSalary: { grossSalaryAmount: 40000 } },
+        requestData: {
+          latestAdditionalSalaryRequest: {
+            calculations: {
+              currentSalaryCap: 60000,
+            },
+            spouseCalculations,
+          },
+        },
+      } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+    };
+
+    it('Staff Member over cap, spouse has no pending ASR — splitAsr', () => {
+      setupOverCap({ currentSalaryCap: 50000, pendingAsrAmount: 0 });
+
+      const values: CompleteFormValues = {
+        ...baseValues,
+        currentYearSalaryNotReceived: '15000',
+      };
+
+      const { result } = renderHook(() => useSalaryCalculations({ values }), {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      });
+
+      // Staff Member: 50000 + 0 + 15000 = 65000 > 60000 (exceeds)
+      // Spouse: 40000 + 0 = 40000 < 50000 (under cap)
+      expect(result.current.exceedsCap).toBe(true);
+      expect(result.current.splitAsr).toBe(true);
+      expect(result.current.additionalApproval).toBe(false);
+    });
+
+    it('Staff Member over cap, spouse has ASR under their cap — splitAsr', () => {
+      setupOverCap({ currentSalaryCap: 50000, pendingAsrAmount: 5000 });
+
+      const values: CompleteFormValues = {
+        ...baseValues,
+        currentYearSalaryNotReceived: '15000',
+      };
+
+      const { result } = renderHook(() => useSalaryCalculations({ values }), {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      });
+
+      // Staff Member: 65000 > 60000 (exceeds)
+      // Spouse: 40000 + 5000 = 45000 < 50000 (under cap)
+      expect(result.current.exceedsCap).toBe(true);
+      expect(result.current.splitAsr).toBe(true);
+      expect(result.current.additionalApproval).toBe(false);
+    });
+
+    it('Staff Member over cap, spouse is over their cap — additionalApproval', () => {
+      setupOverCap({ currentSalaryCap: 50000, pendingAsrAmount: 15000 });
+
+      const values: CompleteFormValues = {
+        ...baseValues,
+        currentYearSalaryNotReceived: '15000',
+      };
+
+      const { result } = renderHook(() => useSalaryCalculations({ values }), {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      });
+
+      // Staff Member: 65000 > 60000 (exceeds)
+      // Spouse: 40000 + 15000 = 55000 > 50000 (exceeds)
+      expect(result.current.exceedsCap).toBe(true);
+      expect(result.current.splitAsr).toBe(false);
+      expect(result.current.additionalApproval).toBe(true);
+    });
+
+    it('Staff Member over cap, spouse is at their cap — additionalApproval', () => {
+      setupOverCap({ currentSalaryCap: 40003, pendingAsrAmount: 0 });
+
+      const values: CompleteFormValues = {
+        ...baseValues,
+        currentYearSalaryNotReceived: '15000',
+      };
+
+      const { result } = renderHook(() => useSalaryCalculations({ values }), {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      });
+
+      // Staff Member: 65000 > 60000 (exceeds)
+      // Spouse: 40000 within $5 of 40003 (at cap)
+      expect(result.current.exceedsCap).toBe(true);
+      expect(result.current.splitAsr).toBe(false);
+      expect(result.current.additionalApproval).toBe(true);
+    });
+
+    it('Staff Member over cap, spouse exactly $5 below cap — treated as at cap', () => {
+      setupOverCap({ currentSalaryCap: 40005, pendingAsrAmount: 0 });
+
+      const values: CompleteFormValues = {
+        ...baseValues,
+        currentYearSalaryNotReceived: '15000',
+      };
+
+      const { result } = renderHook(() => useSalaryCalculations({ values }), {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      });
+
+      // Staff Member: 65000 > 60000 (exceeds)
+      // Spouse: 40000, cap = 40005, difference = $5 (inclusive boundary — at cap)
+      expect(result.current.exceedsCap).toBe(true);
+      expect(result.current.splitAsr).toBe(false);
+      expect(result.current.additionalApproval).toBe(true);
+    });
+
+    it('Staff Member over cap, spouse $6 below cap — not at cap, splitAsr', () => {
+      setupOverCap({ currentSalaryCap: 40006, pendingAsrAmount: 0 });
+
+      const values: CompleteFormValues = {
+        ...baseValues,
+        currentYearSalaryNotReceived: '15000',
+      };
+
+      const { result } = renderHook(() => useSalaryCalculations({ values }), {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      });
+
+      // Staff Member: 65000 > 60000 (exceeds)
+      // Spouse: 40000, cap = 40006, difference = $6 (outside tolerance — not at cap)
+      expect(result.current.exceedsCap).toBe(true);
+      expect(result.current.splitAsr).toBe(true);
+      expect(result.current.additionalApproval).toBe(false);
+    });
+  });
+
+  describe('Married - Staff Member at cap', () => {
+    // Cases 9-12: Staff Member at cap (not over) — nothing triggers
+    const setupAtCap = (spouseCalculations: {
+      currentSalaryCap: number;
+      pendingAsrAmount: number;
+    }) => {
+      mockUseAdditionalSalaryRequest.mockReturnValue({
+        traditional403bPercentage: 0.12,
+        roth403bPercentage: 0.1,
+        user: { currentSalary: { grossSalaryAmount: 50000 } },
+        spouse: { currentSalary: { grossSalaryAmount: 40000 } },
+        requestData: {
+          latestAdditionalSalaryRequest: {
+            calculations: {
+              currentSalaryCap: 55000,
+            },
+            spouseCalculations,
+          },
+        },
+      } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+    };
+
+    it('Staff Member at cap, spouse has no pending ASR', () => {
+      setupAtCap({ currentSalaryCap: 50000, pendingAsrAmount: 0 });
+
+      const values: CompleteFormValues = {
+        ...baseValues,
+        currentYearSalaryNotReceived: '5000',
+      };
+
+      const { result } = renderHook(() => useSalaryCalculations({ values }), {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      });
+
+      // Staff Member: 50000 + 0 + 5000 = 55000 = 55000 (at cap, not over)
+      expect(result.current.exceedsCap).toBe(false);
+      expect(result.current.splitAsr).toBe(false);
+      expect(result.current.additionalApproval).toBe(false);
+    });
+
+    it('Staff Member at cap, spouse has ASR under their cap', () => {
+      setupAtCap({ currentSalaryCap: 50000, pendingAsrAmount: 5000 });
+
+      const values: CompleteFormValues = {
+        ...baseValues,
+        currentYearSalaryNotReceived: '5000',
+      };
+
+      const { result } = renderHook(() => useSalaryCalculations({ values }), {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      });
+
+      // Staff Member: 55000 = 55000 (at cap), Spouse: 45000 < 50000
+      expect(result.current.exceedsCap).toBe(false);
+      expect(result.current.splitAsr).toBe(false);
+      expect(result.current.additionalApproval).toBe(false);
+    });
+
+    it('Staff Member at cap, spouse is over their cap', () => {
+      setupAtCap({ currentSalaryCap: 50000, pendingAsrAmount: 15000 });
+
+      const values: CompleteFormValues = {
+        ...baseValues,
+        currentYearSalaryNotReceived: '5000',
+      };
+
+      const { result } = renderHook(() => useSalaryCalculations({ values }), {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      });
+
+      // Staff Member: 55000 = 55000 (at cap), Spouse: 55000 > 50000
+      expect(result.current.exceedsCap).toBe(false);
+      expect(result.current.splitAsr).toBe(false);
+      expect(result.current.additionalApproval).toBe(false);
+    });
+
+    it('Staff Member at cap, spouse is at their cap', () => {
+      setupAtCap({ currentSalaryCap: 40003, pendingAsrAmount: 0 });
+
+      const values: CompleteFormValues = {
+        ...baseValues,
+        currentYearSalaryNotReceived: '5000',
+      };
+
+      const { result } = renderHook(() => useSalaryCalculations({ values }), {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      });
+
+      // Staff Member: 55000 = 55000 (at cap), Spouse: 40000 within $5 of 40003
+      expect(result.current.exceedsCap).toBe(false);
+      expect(result.current.splitAsr).toBe(false);
+      expect(result.current.additionalApproval).toBe(false);
+    });
+  });
+
+  describe('Single staff member', () => {
+    const setupSingle = (cap: number) => {
+      mockUseAdditionalSalaryRequest.mockReturnValue({
+        traditional403bPercentage: 0.12,
+        roth403bPercentage: 0.1,
+        user: { currentSalary: { grossSalaryAmount: 50000 } },
+        spouse: undefined,
+        requestData: {
+          latestAdditionalSalaryRequest: {
+            calculations: { currentSalaryCap: cap },
+          },
+        },
+      } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+    };
+
+    it('Staff Member under cap — nothing triggers', () => {
+      setupSingle(70000);
+
+      const values: CompleteFormValues = {
+        ...baseValues,
+        currentYearSalaryNotReceived: '5000',
+      };
+
+      const { result } = renderHook(() => useSalaryCalculations({ values }), {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      });
+
+      // Staff Member: 50000 + 0 + 5000 = 55000 < 70000
+      expect(result.current.exceedsCap).toBe(false);
+      expect(result.current.splitAsr).toBe(false);
+      expect(result.current.additionalApproval).toBe(false);
+    });
+
+    it('Staff Member at cap — nothing triggers', () => {
+      setupSingle(55000);
+
+      const values: CompleteFormValues = {
+        ...baseValues,
+        currentYearSalaryNotReceived: '5000',
+      };
+
+      const { result } = renderHook(() => useSalaryCalculations({ values }), {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      });
+
+      // Staff Member: 50000 + 0 + 5000 = 55000 = 55000 (at cap, not over)
+      expect(result.current.exceedsCap).toBe(false);
+      expect(result.current.splitAsr).toBe(false);
+      expect(result.current.additionalApproval).toBe(false);
+    });
+
+    it('Staff Member over cap — additionalApproval', () => {
+      setupSingle(60000);
+
+      const values: CompleteFormValues = {
+        ...baseValues,
+        currentYearSalaryNotReceived: '15000',
+      };
+
+      const { result } = renderHook(() => useSalaryCalculations({ values }), {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      });
+
+      // Staff Member: 50000 + 0 + 15000 = 65000 > 60000 (exceeds)
+      expect(result.current.exceedsCap).toBe(true);
+      expect(result.current.splitAsr).toBe(false);
+      expect(result.current.additionalApproval).toBe(true);
     });
   });
 });
