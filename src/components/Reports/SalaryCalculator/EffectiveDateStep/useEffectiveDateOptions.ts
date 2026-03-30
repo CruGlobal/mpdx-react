@@ -2,7 +2,10 @@ import { useMemo } from 'react';
 import { DateTime } from 'luxon';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat } from 'src/lib/intlFormat';
-import { usePayrollDatesQuery } from './PayrollDates.generated';
+import {
+  PayrollDatesQuery,
+  usePayrollDatesQuery,
+} from './PayrollDates.generated';
 
 export interface DateOption {
   value: string;
@@ -10,33 +13,29 @@ export interface DateOption {
 }
 
 export const formatEffectiveDates = (
-  effectiveDates: string[] | undefined,
+  effectiveDates: PayrollDatesQuery['payrollDates'] | undefined,
   locale: string,
 ): DateOption[] => {
-  if (!effectiveDates) {
-    return [];
-  }
+  return (
+    effectiveDates?.map(({ startDate, regularProcessDate }) => {
+      const date = DateTime.fromISO(regularProcessDate);
+      const formattedDate = dateFormat(date, locale);
 
-  return effectiveDates.map((dateString: string) => {
-    const date = DateTime.fromISO(dateString);
-    const formattedDate = dateFormat(date, locale);
-
-    return {
-      value: dateString,
-      label: formattedDate,
-    };
-  });
+      // The user sees the regularProcessDate, but we store the startDate
+      return {
+        value: startDate,
+        label: formattedDate,
+      };
+    }) ?? []
+  );
 };
 
 export const useEffectiveDateOptions = (): DateOption[] => {
   const { data } = usePayrollDatesQuery();
   const locale = useLocale();
 
-  return useMemo(() => {
-    const effectiveDates = data?.payrollDates.map(
-      (payrollDate) => payrollDate.regularProcessDate,
-    );
-
-    return formatEffectiveDates(effectiveDates, locale);
-  }, [data?.payrollDates, locale]);
+  return useMemo(
+    () => formatEffectiveDates(data?.payrollDates, locale),
+    [data, locale],
+  );
 };

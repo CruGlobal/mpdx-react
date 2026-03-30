@@ -1,25 +1,25 @@
 import { formatEffectiveDates } from './useEffectiveDateOptions';
 
-const testDates = ['2025-01-10', '2025-02-07', '2025-03-21', '2025-12-25'];
+const testDates = [
+  { startDate: '2025-01-01', regularProcessDate: '2025-01-25' },
+  { startDate: '2025-01-16', regularProcessDate: '2025-02-10' },
+  { startDate: '2025-02-01', regularProcessDate: '2025-02-25' },
+];
 
 const locale = 'en-US';
 
 const expectedOptions = [
   {
-    value: '2025-01-10',
-    label: 'Jan 10, 2025',
+    value: '2025-01-01',
+    label: 'Jan 25, 2025',
   },
   {
-    value: '2025-02-07',
-    label: 'Feb 7, 2025',
+    value: '2025-01-16',
+    label: 'Feb 10, 2025',
   },
   {
-    value: '2025-03-21',
-    label: 'Mar 21, 2025',
-  },
-  {
-    value: '2025-12-25',
-    label: 'Dec 25, 2025',
+    value: '2025-02-01',
+    label: 'Feb 25, 2025',
   },
 ];
 
