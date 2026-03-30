@@ -78,9 +78,10 @@ const MainContent: React.FC = () => {
     handleNextStep();
   };
 
-  const { exceedsCap, splitAsr, splitAsrType, additionalApproval } = useSalaryCalculations({
-    values,
-  });
+  const { exceedsCap, splitAsr, splitAsrType, additionalApproval } =
+    useSalaryCalculations({
+      values,
+    });
 
   const handleDiscard = async () => {
     if (requestId) {

@@ -97,27 +97,27 @@ export const useSalaryCalculations = ({
       spouseGrossAnnualSalary + (spouseTotalThisYear ?? 0);
 
     // Exceeding cap calculations
+    const isMarried = !!spouse;
     const exceedsCap = totalAnnualSalary > individualCap;
     const spouseExceedsCap =
-      spouse && spouseIndividualCap !== null
-        ? (spouseTotalAnnualSalary ?? 0) > spouseIndividualCap
-        : undefined;
+      isMarried &&
+      spouseIndividualCap !== null &&
+      spouseTotalAnnualSalary > spouseIndividualCap;
     // Within $5 of cap but not over — treat as "at cap"
     // e.g. an ASR of $19,998 with a cap of $20,000 is considered at cap
     const spouseAtCap =
-      spouse && spouseIndividualCap !== null && spouseExceedsCap === false
-        ? (spouseTotalAnnualSalary ?? 0) >=
-          spouseIndividualCap - AT_CAP_TOLERANCE
-        : false;
+      isMarried &&
+      spouseIndividualCap !== null &&
+      !spouseExceedsCap &&
+      spouseTotalAnnualSalary >= spouseIndividualCap - AT_CAP_TOLERANCE;
     const userAtCap =
-      !exceedsCap &&
-      totalAnnualSalary >= individualCap - AT_CAP_TOLERANCE;
+      !exceedsCap && totalAnnualSalary >= individualCap - AT_CAP_TOLERANCE;
 
     const userSplitAsr =
-      exceedsCap && !!spouse && !spouseAtCap && spouseExceedsCap === false;
+      exceedsCap && isMarried && !spouseAtCap && !spouseExceedsCap;
     // Only show spouse split when user has room to increase (not at/over cap)
     const spouseSplitAsr =
-      !exceedsCap && !userAtCap && !!spouse && spouseExceedsCap === true;
+      !exceedsCap && !userAtCap && isMarried && spouseExceedsCap;
 
     const splitAsr = userSplitAsr || spouseSplitAsr;
     const splitAsrType: 'user' | 'spouse' | null = userSplitAsr
@@ -126,8 +126,8 @@ export const useSalaryCalculations = ({
         ? 'spouse'
         : null;
     const additionalApproval =
-      (exceedsCap && (!spouse || spouseAtCap || spouseExceedsCap === true)) ||
-      (userAtCap && !!spouse && spouseExceedsCap === true);
+      (exceedsCap && (!isMarried || spouseAtCap || spouseExceedsCap)) ||
+      (userAtCap && isMarried && spouseExceedsCap);
 
     return {
       total,
