@@ -26,6 +26,7 @@ import { useSalaryCalculations } from '../Shared/useSalaryCalculations';
 import { StepList } from '../SharedComponents/StepList';
 import { CapSubContent } from './Helper/CapSubContent';
 import { SplitCapSubContent } from './Helper/SplitCapSubContent';
+import { SpouseOverCapSubContent } from './Helper/SpouseOverCapSubContent';
 import { getCapOverrides } from './Helper/getCapOverrides';
 
 const MainContent: React.FC = () => {
@@ -77,7 +78,7 @@ const MainContent: React.FC = () => {
     handleNextStep();
   };
 
-  const { exceedsCap, splitAsr, additionalApproval } = useSalaryCalculations({
+  const { exceedsCap, splitAsr, splitAsrType, additionalApproval } = useSalaryCalculations({
     values,
   });
 
@@ -122,9 +123,15 @@ const MainContent: React.FC = () => {
                 overrideContent={overrideContent}
                 overrideSubContent={
                   splitAsr ? (
-                    <SplitCapSubContent
-                      spouseName={spouse?.staffInfo.firstName ?? ''}
-                    />
+                    splitAsrType === 'spouse' ? (
+                      <SpouseOverCapSubContent
+                        spouseName={spouse?.staffInfo.firstName ?? ''}
+                      />
+                    ) : (
+                      <SplitCapSubContent
+                        spouseName={spouse?.staffInfo.firstName ?? ''}
+                      />
+                    )
                   ) : additionalApproval || exceedsCap ? (
                     <CapSubContent />
                   ) : isEdit ? (

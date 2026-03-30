@@ -3,7 +3,10 @@ import { renderHook } from '@testing-library/react';
 import { Formik } from 'formik';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
-import { useSalaryCalculations } from './useSalaryCalculations';
+import {
+  AT_CAP_TOLERANCE,
+  useSalaryCalculations,
+} from './useSalaryCalculations';
 
 jest.mock('./AdditionalSalaryRequestContext');
 
@@ -520,7 +523,8 @@ describe('useSalaryCalculations', () => {
     });
 
     it('Staff Member over cap, spouse exactly $5 below cap — treated as at cap', () => {
-      setupOverCap({ currentSalaryCap: 40005, pendingAsrAmount: 0 });
+      const currentSalaryCap = 40000 + AT_CAP_TOLERANCE;
+      setupOverCap({ currentSalaryCap, pendingAsrAmount: 0 });
 
       const values: CompleteFormValues = {
         ...baseValues,
@@ -540,7 +544,8 @@ describe('useSalaryCalculations', () => {
     });
 
     it('Staff Member over cap, spouse $6 below cap — not at cap, splitAsr', () => {
-      setupOverCap({ currentSalaryCap: 40006, pendingAsrAmount: 0 });
+      const currentSalaryCap = 40000 + AT_CAP_TOLERANCE + 1;
+      setupOverCap({ currentSalaryCap, pendingAsrAmount: 0 });
 
       const values: CompleteFormValues = {
         ...baseValues,
@@ -633,10 +638,11 @@ describe('useSalaryCalculations', () => {
       });
 
       // Staff Member: 55000 = 55000 (at cap), Spouse: 55000 > 50000
+      // No room to increase — needs approval, not split
       expect(result.current.exceedsCap).toBe(false);
-      expect(result.current.splitAsr).toBe(true);
-      expect(result.current.splitAsrType).toBe('spouse');
-      expect(result.current.additionalApproval).toBe(false);
+      expect(result.current.splitAsr).toBe(false);
+      expect(result.current.splitAsrType).toBeNull();
+      expect(result.current.additionalApproval).toBe(true);
     });
 
     it('Staff Member at cap, spouse is at their cap', () => {

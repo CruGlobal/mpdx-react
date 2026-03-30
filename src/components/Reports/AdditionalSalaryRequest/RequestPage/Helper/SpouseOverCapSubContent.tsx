@@ -13,9 +13,9 @@ export const SpouseOverCapSubContent: React.FC<
 
   return (
     <Trans t={t} values={{ spouseName }} parent="span">
-      Please consider submitting your request at your maximum allowable salary.
-      This will reduce the amount on {spouseName}&apos;s request, which may
-      avoid requiring approval through our{' '}
+      Please consider submitting your request at your maximum allowable salary
+      to reduce the amount on {spouseName}&apos;s request, which may avoid
+      requiring approval through our{' '}
       <Link
         href="/"
         style={{ display: 'inline', color: theme.palette.primary.main }}
