@@ -10,14 +10,14 @@
     "typescriptreact"
   ],
   "editor.formatOnSave": true,
-  "typescript.tsdk": ".yarn/sdks/typescript/lib",
+  "js/ts.tsdk.path": ".yarn/sdks/typescript/lib",
   "search.exclude": {
     "**/.yarn": true,
     "**/.pnp.*": true
   },
   "eslint.nodePath": ".yarn/sdks",
   "prettier.prettierPath": ".yarn/sdks/prettier/index.js",
-  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "js/ts.tsdk.promptToUseWorkspaceVersion": true,
   "jest.jestCommandLine": "yarn jest",
   "editor.bracketPairColorization.enabled": true
 }
