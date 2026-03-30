@@ -28,7 +28,7 @@ export const sortContacts = (
   orderBy: OrderBy | null,
   order: Order,
 ): Contact[] => {
-  if (!contacts || orderBy === null) {
+  if (orderBy === null) {
     return contacts;
   }
 
@@ -36,9 +36,7 @@ export const sortContacts = (
     const compare = extractSortKey(a, orderBy)?.localeCompare(
       extractSortKey(b, orderBy),
       undefined,
-      {
-        numeric: true,
-      },
+      { numeric: true },
     );
 
     return order === 'asc' ? compare : -compare;
