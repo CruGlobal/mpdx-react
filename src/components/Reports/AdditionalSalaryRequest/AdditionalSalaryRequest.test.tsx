@@ -156,10 +156,16 @@ describe('AdditionalSalaryRequest', () => {
     expect(queryByText(/currently has a pending request/i)).toBeNull();
   });
 
-  it('displays pending request message when status is pending', async () => {
+  it.each([
+    AsrStatusEnum.Pending,
+    AsrStatusEnum.PendingDivisionHeadApproval,
+    AsrStatusEnum.PendingVpApproval,
+    AsrStatusEnum.PendingManagementApproval,
+    AsrStatusEnum.PendingBoardApproval,
+  ])('displays pending request message when status is %s', async (status) => {
     const pendingRequest = {
       ...mockRequest,
-      status: AsrStatusEnum.Pending,
+      status,
       submittedAt: '2024-01-15T00:00:00Z',
     };
 
@@ -177,98 +183,7 @@ describe('AdditionalSalaryRequest', () => {
       await findByText(/currently has a pending request/i),
     ).toBeInTheDocument();
     expect(await findByText('Requested on:')).toBeInTheDocument();
-  });
-
-  it('displays pending request message when status is pending division head approval', async () => {
-    const pendingRequest = {
-      ...mockRequest,
-      status: AsrStatusEnum.PendingDivisionHeadApproval,
-      submittedAt: '2024-01-15T00:00:00Z',
-    };
-
-    const { findByText } = render(
-      <TestWrapper
-        mocks={{
-          AdditionalSalaryRequest: {
-            latestAdditionalSalaryRequest: pendingRequest,
-          },
-        }}
-      />,
-    );
-
-    expect(
-      await findByText(/currently has a pending request/i),
-    ).toBeInTheDocument();
-    expect(await findByText('Requested on:')).toBeInTheDocument();
-  });
-
-  it('displays pending request message when status is pending vp approval', async () => {
-    const pendingRequest = {
-      ...mockRequest,
-      status: AsrStatusEnum.PendingVpApproval,
-      submittedAt: '2024-01-15T00:00:00Z',
-    };
-
-    const { findByText } = render(
-      <TestWrapper
-        mocks={{
-          AdditionalSalaryRequest: {
-            latestAdditionalSalaryRequest: pendingRequest,
-          },
-        }}
-      />,
-    );
-
-    expect(
-      await findByText(/currently has a pending request/i),
-    ).toBeInTheDocument();
-    expect(await findByText('Requested on:')).toBeInTheDocument();
-  });
-
-  it('displays pending request message when status is pending management approval', async () => {
-    const pendingRequest = {
-      ...mockRequest,
-      status: AsrStatusEnum.PendingManagementApproval,
-      submittedAt: '2024-01-15T00:00:00Z',
-    };
-
-    const { findByText } = render(
-      <TestWrapper
-        mocks={{
-          AdditionalSalaryRequest: {
-            latestAdditionalSalaryRequest: pendingRequest,
-          },
-        }}
-      />,
-    );
-
-    expect(
-      await findByText(/currently has a pending request/i),
-    ).toBeInTheDocument();
-    expect(await findByText('Requested on:')).toBeInTheDocument();
-  });
-
-  it('displays pending request message when status is pending board approval', async () => {
-    const pendingRequest = {
-      ...mockRequest,
-      status: AsrStatusEnum.PendingBoardApproval,
-      submittedAt: '2024-01-15T00:00:00Z',
-    };
-
-    const { findByText } = render(
-      <TestWrapper
-        mocks={{
-          AdditionalSalaryRequest: {
-            latestAdditionalSalaryRequest: pendingRequest,
-          },
-        }}
-      />,
-    );
-
-    expect(
-      await findByText(/currently has a pending request/i),
-    ).toBeInTheDocument();
-    expect(await findByText('Requested on:')).toBeInTheDocument();
+    expect(await findByText(/Jan 15, 2024/)).toBeInTheDocument();
   });
 
   it('renders CurrentRequest component for in-progress request', async () => {

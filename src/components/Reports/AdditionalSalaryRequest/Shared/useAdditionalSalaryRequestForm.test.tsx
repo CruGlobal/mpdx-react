@@ -100,6 +100,7 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   isSpouse: false,
   hasSpouse: false,
   isPending: false,
+  isApproved: false,
 };
 
 const defaultFormValues: CompleteFormValues = {

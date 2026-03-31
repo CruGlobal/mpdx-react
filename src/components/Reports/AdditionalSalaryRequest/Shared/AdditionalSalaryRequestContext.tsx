@@ -63,6 +63,7 @@ export type AdditionalSalaryRequestType = {
   isSpouse: boolean;
   hasSpouse: boolean;
   isPending: boolean;
+  isApproved: boolean;
 };
 
 export const AdditionalSalaryRequestContext =
@@ -129,6 +130,9 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     status === AsrStatusEnum.PendingVpApproval ||
     status === AsrStatusEnum.PendingManagementApproval ||
     status === AsrStatusEnum.PendingBoardApproval;
+  const isApproved =
+    status === AsrStatusEnum.ApprovedNotPaid ||
+    status === AsrStatusEnum.ApprovedAndPaid;
 
   const currentYear = useMemo(() => DateTime.now().year, []);
   const { data: salaryInfoData } = useSalaryInfoQuery({
@@ -240,6 +244,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       isSpouse,
       hasSpouse,
       isPending,
+      isApproved,
     }),
     [
       staffAccountId,
@@ -273,6 +278,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       isSpouse,
       hasSpouse,
       isPending,
+      isApproved,
     ],
   );
 

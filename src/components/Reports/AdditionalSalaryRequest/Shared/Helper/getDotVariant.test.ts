@@ -5,34 +5,34 @@ describe('getDotVariant', () => {
   describe('with Approved status', () => {
     it('returns filled with step submitted - approved not paid', () => {
       expect(
-        getDotVariant(AsrStatusEnum.ApprovedNotPaid, 'submitted', false),
+        getDotVariant(AsrStatusEnum.ApprovedNotPaid, 'submitted', false, true),
       ).toBe('filled');
     });
     it('returns filled with step submitted - approved and paid', () => {
       expect(
-        getDotVariant(AsrStatusEnum.ApprovedAndPaid, 'submitted', false),
+        getDotVariant(AsrStatusEnum.ApprovedAndPaid, 'submitted', false, true),
       ).toBe('filled');
     });
 
     it('returns filled with step processed - approved not paid', () => {
       expect(
-        getDotVariant(AsrStatusEnum.ApprovedNotPaid, 'processed', false),
+        getDotVariant(AsrStatusEnum.ApprovedNotPaid, 'processed', false, true),
       ).toBe('filled');
     });
     it('returns filled with step processed - approved and paid', () => {
       expect(
-        getDotVariant(AsrStatusEnum.ApprovedAndPaid, 'processed', false),
+        getDotVariant(AsrStatusEnum.ApprovedAndPaid, 'processed', false, true),
       ).toBe('filled');
     });
 
     it('returns filled with step complete - approved not paid', () => {
       expect(
-        getDotVariant(AsrStatusEnum.ApprovedNotPaid, 'complete', false),
+        getDotVariant(AsrStatusEnum.ApprovedNotPaid, 'complete', false, true),
       ).toBe('filled');
     });
     it('returns filled with step complete - approved and paid', () => {
       expect(
-        getDotVariant(AsrStatusEnum.ApprovedAndPaid, 'complete', false),
+        getDotVariant(AsrStatusEnum.ApprovedAndPaid, 'complete', false, true),
       ).toBe('filled');
     });
   });
@@ -40,67 +40,43 @@ describe('getDotVariant', () => {
   describe('with ActionRequired status', () => {
     it('returns filled with step submitted', () => {
       expect(
-        getDotVariant(AsrStatusEnum.ActionRequired, 'submitted', false),
+        getDotVariant(AsrStatusEnum.ActionRequired, 'submitted', false, false),
       ).toBe('filled');
     });
 
     it('returns filled with step processed', () => {
       expect(
-        getDotVariant(AsrStatusEnum.ActionRequired, 'processed', false),
+        getDotVariant(AsrStatusEnum.ActionRequired, 'processed', false, false),
       ).toBe('filled');
     });
 
     it('returns filled with step complete', () => {
       expect(
-        getDotVariant(AsrStatusEnum.ActionRequired, 'complete', false),
+        getDotVariant(AsrStatusEnum.ActionRequired, 'complete', false, false),
       ).toBe('filled');
     });
   });
   describe('with Pending status', () => {
-    it('returns filled with step submitted - pending', () => {
-      expect(getDotVariant(AsrStatusEnum.Pending, 'submitted', true)).toBe(
-        'filled',
-      );
-    });
-    it('returns filled with step submitted - pending division head approval', () => {
-      expect(
-        getDotVariant(
-          AsrStatusEnum.PendingDivisionHeadApproval,
-          'submitted',
-          true,
-        ),
-      ).toBe('filled');
-    });
-    it('returns filled with step submitted - pending vp approval', () => {
-      expect(
-        getDotVariant(AsrStatusEnum.PendingVpApproval, 'submitted', true),
-      ).toBe('filled');
-    });
-    it('returns filled with step submitted - pending management approval', () => {
-      expect(
-        getDotVariant(
-          AsrStatusEnum.PendingManagementApproval,
-          'submitted',
-          true,
-        ),
-      ).toBe('filled');
-    });
-    it('returns filled with step submitted - pending board approval', () => {
-      expect(
-        getDotVariant(AsrStatusEnum.PendingBoardApproval, 'submitted', true),
-      ).toBe('filled');
+    it.each([
+      AsrStatusEnum.Pending,
+      AsrStatusEnum.PendingDivisionHeadApproval,
+      AsrStatusEnum.PendingVpApproval,
+      AsrStatusEnum.PendingManagementApproval,
+      AsrStatusEnum.PendingBoardApproval,
+    ])('returns filled with step submitted - %s', (status) => {
+      expect(getDotVariant(status, 'submitted', true, false)).toBe('filled');
     });
 
     it('returns filled with step processed', () => {
-      expect(getDotVariant(AsrStatusEnum.Pending, 'processed', true)).toBe(
-        'filled',
-      );
+      expect(
+        getDotVariant(AsrStatusEnum.Pending, 'processed', true, false),
+      ).toBe('filled');
     });
 
     it('returns outlined with step complete', () => {
-      expect(getDotVariant(AsrStatusEnum.Pending, 'complete', true)).toBe(
-        'outlined',
-      );
+      expect(
+        getDotVariant(AsrStatusEnum.Pending, 'complete', true, false),
+      ).toBe('outlined');
     });
   });
 });

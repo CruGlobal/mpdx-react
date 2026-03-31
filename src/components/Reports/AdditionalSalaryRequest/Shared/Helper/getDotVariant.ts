@@ -5,27 +5,19 @@ export const getDotVariant = (
   status: AsrStatusEnum,
   step: 'submitted' | 'processed' | 'complete',
   isPending: boolean,
+  isApproved: boolean,
 ): 'filled' | 'outlined' => {
   switch (step) {
     case 'submitted':
       return 'filled';
 
     case 'processed':
-      if (
-        status === AsrStatusEnum.ApprovedNotPaid ||
-        status === AsrStatusEnum.ApprovedAndPaid ||
-        status === AsrStatusEnum.ActionRequired ||
-        isPending
-      ) {
+      if (isApproved || status === AsrStatusEnum.ActionRequired || isPending) {
         return 'filled';
       }
     // fallthrough
     case 'complete':
-      if (
-        status === AsrStatusEnum.ApprovedNotPaid ||
-        status === AsrStatusEnum.ApprovedAndPaid ||
-        status === AsrStatusEnum.ActionRequired
-      ) {
+      if (isApproved || status === AsrStatusEnum.ActionRequired) {
         return 'filled';
       }
     // fallthrough

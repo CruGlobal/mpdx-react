@@ -5,6 +5,7 @@ export const getDotColor = (
   status: AsrStatusEnum,
   step: 'submitted' | 'processed' | 'complete',
   isPending: boolean,
+  isApproved: boolean,
 ): string => {
   switch (step) {
     case 'submitted':
@@ -14,11 +15,7 @@ export const getDotColor = (
       return 'info.main';
 
     case 'processed':
-      if (
-        status === AsrStatusEnum.ApprovedNotPaid ||
-        status === AsrStatusEnum.ApprovedAndPaid ||
-        status === AsrStatusEnum.ActionRequired
-      ) {
+      if (isApproved || status === AsrStatusEnum.ActionRequired) {
         return 'success.main';
       }
       if (isPending) {
@@ -26,10 +23,7 @@ export const getDotColor = (
       }
     // fallthrough
     case 'complete':
-      if (
-        status === AsrStatusEnum.ApprovedNotPaid ||
-        status === AsrStatusEnum.ApprovedAndPaid
-      ) {
+      if (isApproved) {
         return 'success.main';
       }
       if (status === AsrStatusEnum.ActionRequired) {

@@ -95,6 +95,7 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   isSpouse: false,
   hasSpouse: false,
   isPending: false,
+  isApproved: false,
 };
 
 interface TestComponentProps {

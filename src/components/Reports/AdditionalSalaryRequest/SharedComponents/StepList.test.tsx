@@ -74,6 +74,7 @@ const mockContextValue = {
   isSpouse: false,
   hasSpouse: false,
   isPending: false,
+  isApproved: false,
 };
 
 describe('StepList', () => {

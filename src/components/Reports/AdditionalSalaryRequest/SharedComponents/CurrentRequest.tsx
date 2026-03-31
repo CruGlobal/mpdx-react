@@ -29,8 +29,14 @@ interface CurrentRequestProps {
 export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { user, handleDeleteRequest, setPageType, goToStep, isPending } =
-    useAdditionalSalaryRequest();
+  const {
+    user,
+    handleDeleteRequest,
+    setPageType,
+    goToStep,
+    isPending,
+    isApproved,
+  } = useAdditionalSalaryRequest();
   const preferredName = user?.staffInfo?.preferredName;
 
   const {
@@ -91,8 +97,20 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
           <TimelineItem>
             <TimelineSeparator>
               <TimelineDot
-                sx={{ bgcolor: getDotColor(status, 'submitted', isPending) }}
-                variant={getDotVariant(status, 'submitted', isPending)}
+                sx={{
+                  bgcolor: getDotColor(
+                    status,
+                    'submitted',
+                    isPending,
+                    isApproved,
+                  ),
+                }}
+                variant={getDotVariant(
+                  status,
+                  'submitted',
+                  isPending,
+                  isApproved,
+                )}
               />
               <TimelineConnector />
             </TimelineSeparator>
@@ -115,15 +133,25 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
           <TimelineItem>
             <TimelineSeparator>
               <TimelineDot
-                sx={{ bgcolor: getDotColor(status, 'processed', isPending) }}
-                variant={getDotVariant(status, 'processed', isPending)}
+                sx={{
+                  bgcolor: getDotColor(
+                    status,
+                    'processed',
+                    isPending,
+                    isApproved,
+                  ),
+                }}
+                variant={getDotVariant(
+                  status,
+                  'processed',
+                  isPending,
+                  isApproved,
+                )}
               />
               <TimelineConnector />
             </TimelineSeparator>
             <TimelineContent>
-              {status === AsrStatusEnum.ApprovedNotPaid ||
-              status === AsrStatusEnum.ApprovedAndPaid ||
-              status === AsrStatusEnum.ActionRequired ? (
+              {isApproved || status === AsrStatusEnum.ActionRequired ? (
                 <Typography>
                   <Box component="span" sx={{ fontWeight: 'bold' }}>
                     {t('Request processed on:')}
@@ -141,8 +169,20 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
           <TimelineItem>
             <TimelineSeparator>
               <TimelineDot
-                sx={{ bgcolor: getDotColor(status, 'complete', isPending) }}
-                variant={getDotVariant(status, 'complete', isPending)}
+                sx={{
+                  bgcolor: getDotColor(
+                    status,
+                    'complete',
+                    isPending,
+                    isApproved,
+                  ),
+                }}
+                variant={getDotVariant(
+                  status,
+                  'complete',
+                  isPending,
+                  isApproved,
+                )}
               />
             </TimelineSeparator>
             <TimelineContent>
