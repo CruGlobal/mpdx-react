@@ -80,6 +80,8 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   setIsNewAsr: jest.fn(),
   isSpouse: false,
   hasSpouse: false,
+  isPending: false,
+  isApproved: false,
 };
 
 interface TestComponentProps {
