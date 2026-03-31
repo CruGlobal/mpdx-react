@@ -60,10 +60,7 @@ describe('FourteenMonthReportTableHead', () => {
     );
 
     userEvent.click(getByText('12 Month Total'));
-    expect(onRequestSort).toHaveBeenCalledWith(
-      expect.anything(),
-      'completeMonthsTotal',
-    );
+    expect(onRequestSort).toHaveBeenCalledWith('completeMonthsTotal');
   });
   it('Confirm months headers are not showing with no data', async () => {
     const { queryByTestId } = render(

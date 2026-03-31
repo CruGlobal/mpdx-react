@@ -83,10 +83,7 @@ export const FourteenMonthReport: React.FC<Props> = ({
 
   const handlePrint = () => window.print();
 
-  const handleRequestSort = (
-    event: React.MouseEvent<unknown>,
-    property: OrderBy,
-  ) => {
+  const handleRequestSort = (property: OrderBy) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
