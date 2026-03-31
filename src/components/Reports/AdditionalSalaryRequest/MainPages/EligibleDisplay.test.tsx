@@ -74,7 +74,7 @@ const TestWrapper: React.FC<TestWrapperProps> = ({
 };
 
 describe('EligibleDisplay', () => {
-  it('renders the page title', async () => {
+  it('renders relevant pending messages - pending', async () => {
     const { findByText } = render(
       <TestWrapper status={AsrStatusEnum.Pending} />,
     );
@@ -82,13 +82,58 @@ describe('EligibleDisplay', () => {
     expect(
       await findByText('Your Additional Salary Request'),
     ).toBeInTheDocument();
+    expect(
+      await findByText(/currently has a pending request/i),
+    ).toBeInTheDocument();
   });
 
-  it('displays pending request message when status is Pending', async () => {
+  it('renders relevant pending messages - pending division head approval', async () => {
     const { findByText } = render(
-      <TestWrapper status={AsrStatusEnum.Pending} />,
+      <TestWrapper status={AsrStatusEnum.PendingDivisionHeadApproval} />,
     );
 
+    expect(
+      await findByText('Your Additional Salary Request'),
+    ).toBeInTheDocument();
+    expect(
+      await findByText(/currently has a pending request/i),
+    ).toBeInTheDocument();
+  });
+
+  it('renders relevant pending messages - pending vp approval', async () => {
+    const { findByText } = render(
+      <TestWrapper status={AsrStatusEnum.PendingVpApproval} />,
+    );
+
+    expect(
+      await findByText('Your Additional Salary Request'),
+    ).toBeInTheDocument();
+    expect(
+      await findByText(/currently has a pending request/i),
+    ).toBeInTheDocument();
+  });
+
+  it('renders relevant pending messages - pending management approval', async () => {
+    const { findByText } = render(
+      <TestWrapper status={AsrStatusEnum.PendingManagementApproval} />,
+    );
+
+    expect(
+      await findByText('Your Additional Salary Request'),
+    ).toBeInTheDocument();
+    expect(
+      await findByText(/currently has a pending request/i),
+    ).toBeInTheDocument();
+  });
+
+  it('renders relevant pending messages - pending board approval', async () => {
+    const { findByText } = render(
+      <TestWrapper status={AsrStatusEnum.PendingBoardApproval} />,
+    );
+
+    expect(
+      await findByText('Your Additional Salary Request'),
+    ).toBeInTheDocument();
     expect(
       await findByText(/currently has a pending request/i),
     ).toBeInTheDocument();

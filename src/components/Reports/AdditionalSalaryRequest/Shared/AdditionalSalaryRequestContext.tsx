@@ -14,6 +14,7 @@ import {
   FormEnum,
   PageEnum,
 } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
+import { AsrStatusEnum } from 'src/graphql/types.generated';
 import { useStepList } from 'src/hooks/useStepList';
 import { useTrackMutation } from 'src/hooks/useTrackMutation';
 import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
@@ -61,6 +62,7 @@ export type AdditionalSalaryRequestType = {
   setIsNewAsr: React.Dispatch<React.SetStateAction<boolean>>;
   isSpouse: boolean;
   hasSpouse: boolean;
+  isPending: boolean;
 };
 
 export const AdditionalSalaryRequestContext =
@@ -119,6 +121,14 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   } = useAdditionalSalaryRequestQuery({
     variables: { isSpouse },
   });
+
+  const status = requestData?.latestAdditionalSalaryRequest?.status;
+  const isPending =
+    status === AsrStatusEnum.Pending ||
+    status === AsrStatusEnum.PendingDivisionHeadApproval ||
+    status === AsrStatusEnum.PendingVpApproval ||
+    status === AsrStatusEnum.PendingManagementApproval ||
+    status === AsrStatusEnum.PendingBoardApproval;
 
   const currentYear = useMemo(() => DateTime.now().year, []);
   const { data: salaryInfoData } = useSalaryInfoQuery({
@@ -229,6 +239,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       setIsNewAsr,
       isSpouse,
       hasSpouse,
+      isPending,
     }),
     [
       staffAccountId,
@@ -261,6 +272,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       setIsNewAsr,
       isSpouse,
       hasSpouse,
+      isPending,
     ],
   );
 

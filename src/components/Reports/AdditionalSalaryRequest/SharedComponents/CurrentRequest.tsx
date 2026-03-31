@@ -29,7 +29,7 @@ interface CurrentRequestProps {
 export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { user, handleDeleteRequest, setPageType, goToStep } =
+  const { user, handleDeleteRequest, setPageType, goToStep, isPending } =
     useAdditionalSalaryRequest();
   const preferredName = user?.staffInfo?.preferredName;
 
@@ -91,8 +91,8 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
           <TimelineItem>
             <TimelineSeparator>
               <TimelineDot
-                sx={{ bgcolor: getDotColor(status, 'submitted') }}
-                variant={getDotVariant(status, 'submitted')}
+                sx={{ bgcolor: getDotColor(status, 'submitted', isPending) }}
+                variant={getDotVariant(status, 'submitted', isPending)}
               />
               <TimelineConnector />
             </TimelineSeparator>
@@ -115,13 +115,14 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
           <TimelineItem>
             <TimelineSeparator>
               <TimelineDot
-                sx={{ bgcolor: getDotColor(status, 'processed') }}
-                variant={getDotVariant(status, 'processed')}
+                sx={{ bgcolor: getDotColor(status, 'processed', isPending) }}
+                variant={getDotVariant(status, 'processed', isPending)}
               />
               <TimelineConnector />
             </TimelineSeparator>
             <TimelineContent>
-              {status === AsrStatusEnum.Approved ||
+              {status === AsrStatusEnum.ApprovedNotPaid ||
+              status === AsrStatusEnum.ApprovedAndPaid ||
               status === AsrStatusEnum.ActionRequired ? (
                 <Typography>
                   <Box component="span" sx={{ fontWeight: 'bold' }}>
@@ -140,8 +141,8 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
           <TimelineItem>
             <TimelineSeparator>
               <TimelineDot
-                sx={{ bgcolor: getDotColor(status, 'complete') }}
-                variant={getDotVariant(status, 'complete')}
+                sx={{ bgcolor: getDotColor(status, 'complete', isPending) }}
+                variant={getDotVariant(status, 'complete', isPending)}
               />
             </TimelineSeparator>
             <TimelineContent>

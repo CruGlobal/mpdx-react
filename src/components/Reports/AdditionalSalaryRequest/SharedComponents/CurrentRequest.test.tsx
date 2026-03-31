@@ -105,6 +105,7 @@ const mockContextValue = {
   setIsNewAsr: jest.fn(),
   isSpouse: false,
   hasSpouse: false,
+  isPending: true,
 };
 
 const TestComponent: React.FC<{ request: RequestType }> = ({ request }) => (
@@ -160,10 +161,58 @@ describe('CurrentRequest', () => {
   });
 
   describe('timeline status - Pending', () => {
-    it('displays "Requested on:" with date for submitted requests', () => {
+    it('displays "Requested on:" with date for submitted requests - pending', () => {
       const pendingRequest: RequestType = {
         ...mockRequest,
         status: AsrStatusEnum.Pending,
+        submittedAt: '2025-06-10T00:00:00.000Z',
+      };
+
+      const { getByText } = render(<TestComponent request={pendingRequest} />);
+
+      expect(getByText('Requested on:')).toBeInTheDocument();
+    });
+
+    it('displays "Requested on:" with date for submitted requests - pending division head approval', () => {
+      const pendingRequest: RequestType = {
+        ...mockRequest,
+        status: AsrStatusEnum.PendingDivisionHeadApproval,
+        submittedAt: '2025-06-10T00:00:00.000Z',
+      };
+
+      const { getByText } = render(<TestComponent request={pendingRequest} />);
+
+      expect(getByText('Requested on:')).toBeInTheDocument();
+    });
+
+    it('displays "Requested on:" with date for submitted requests - pending vp approval', () => {
+      const pendingRequest: RequestType = {
+        ...mockRequest,
+        status: AsrStatusEnum.PendingVpApproval,
+        submittedAt: '2025-06-10T00:00:00.000Z',
+      };
+
+      const { getByText } = render(<TestComponent request={pendingRequest} />);
+
+      expect(getByText('Requested on:')).toBeInTheDocument();
+    });
+
+    it('displays "Requested on:" with date for submitted requests - pending management approval', () => {
+      const pendingRequest: RequestType = {
+        ...mockRequest,
+        status: AsrStatusEnum.PendingManagementApproval,
+        submittedAt: '2025-06-10T00:00:00.000Z',
+      };
+
+      const { getByText } = render(<TestComponent request={pendingRequest} />);
+
+      expect(getByText('Requested on:')).toBeInTheDocument();
+    });
+
+    it('displays "Requested on:" with date for submitted requests - pending board approval', () => {
+      const pendingRequest: RequestType = {
+        ...mockRequest,
+        status: AsrStatusEnum.PendingBoardApproval,
         submittedAt: '2025-06-10T00:00:00.000Z',
       };
 
@@ -185,10 +234,10 @@ describe('CurrentRequest', () => {
   });
 
   describe('timeline status - Approved', () => {
-    it('displays "Request processed on:" for approved requests', () => {
+    it('displays "Request processed on:" for approved requests - approved not paid', () => {
       const approvedRequest: RequestType = {
         ...mockRequest,
-        status: AsrStatusEnum.Approved,
+        status: AsrStatusEnum.ApprovedNotPaid,
         submittedAt: '2025-06-10T00:00:00.000Z',
       };
 
@@ -197,10 +246,33 @@ describe('CurrentRequest', () => {
       expect(getByText('Request processed on:')).toBeInTheDocument();
     });
 
-    it('displays "Request Complete" for approved status', () => {
+    it('displays "Request processed on:" for approved requests - approved and paid', () => {
       const approvedRequest: RequestType = {
         ...mockRequest,
-        status: AsrStatusEnum.Approved,
+        status: AsrStatusEnum.ApprovedAndPaid,
+        submittedAt: '2025-06-10T00:00:00.000Z',
+      };
+
+      const { getByText } = render(<TestComponent request={approvedRequest} />);
+
+      expect(getByText('Request processed on:')).toBeInTheDocument();
+    });
+
+    it('displays "Request Complete" for approved not paid status', () => {
+      const approvedRequest: RequestType = {
+        ...mockRequest,
+        status: AsrStatusEnum.ApprovedNotPaid,
+      };
+
+      const { getByText } = render(<TestComponent request={approvedRequest} />);
+
+      expect(getByText('Request Complete')).toBeInTheDocument();
+    });
+
+    it('displays "Request Complete" for approved and paid status', () => {
+      const approvedRequest: RequestType = {
+        ...mockRequest,
+        status: AsrStatusEnum.ApprovedAndPaid,
       };
 
       const { getByText } = render(<TestComponent request={approvedRequest} />);
