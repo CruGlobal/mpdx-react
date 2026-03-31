@@ -4,6 +4,8 @@ import { AsrStatusEnum } from 'src/graphql/types.generated';
 export const getDotColor = (
   status: AsrStatusEnum,
   step: 'submitted' | 'processed' | 'complete',
+  isPending: boolean,
+  isApproved: boolean,
 ): string => {
   switch (step) {
     case 'submitted':
@@ -13,18 +15,15 @@ export const getDotColor = (
       return 'info.main';
 
     case 'processed':
-      if (
-        status === AsrStatusEnum.Approved ||
-        status === AsrStatusEnum.ActionRequired
-      ) {
+      if (isApproved || status === AsrStatusEnum.ActionRequired) {
         return 'success.main';
       }
-      if (status === AsrStatusEnum.Pending) {
+      if (isPending) {
         return 'info.main';
       }
     // fallthrough
     case 'complete':
-      if (status === AsrStatusEnum.Approved) {
+      if (isApproved) {
         return 'success.main';
       }
       if (status === AsrStatusEnum.ActionRequired) {

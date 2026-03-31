@@ -6,7 +6,7 @@ import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestCon
 
 export const EligibleDisplay: React.FC = () => {
   const { t } = useTranslation();
-  const { user, requestData } = useAdditionalSalaryRequest();
+  const { user, requestData, isPending } = useAdditionalSalaryRequest();
   const preferredName = user?.staffInfo?.preferredName;
   const { status } = requestData?.latestAdditionalSalaryRequest || {};
 
@@ -18,7 +18,7 @@ export const EligibleDisplay: React.FC = () => {
         </Typography>
       </Box>
       <Box>
-        {status === AsrStatusEnum.Pending && (
+        {isPending && (
           <Typography sx={{ lineHeight: 1.5 }}>
             <Trans t={t}>
               We have noted that {{ preferredName }} currently has a pending

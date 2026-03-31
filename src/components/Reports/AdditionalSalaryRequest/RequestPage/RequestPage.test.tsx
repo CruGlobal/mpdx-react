@@ -8,6 +8,7 @@ import { I18nextProvider } from 'react-i18next';
 import * as yup from 'yup';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { AsrStatusEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import { amount, phoneNumber } from 'src/lib/yupHelpers';
 import theme from 'src/theme';
@@ -299,13 +300,14 @@ describe('RequestPage', () => {
       setPageType: mockSetPageType,
       requestData: {
         latestAdditionalSalaryRequest: {
-          status: 'PENDING',
+          status: AsrStatusEnum.Pending,
           calculations: {
             currentSalaryCap: 50000,
             staffAccountBalance: 0,
           },
         },
       },
+      isPending: true,
     } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
 
     const { getByRole } = render(<TestWrapper />);

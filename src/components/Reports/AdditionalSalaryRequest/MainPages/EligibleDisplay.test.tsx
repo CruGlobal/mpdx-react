@@ -74,21 +74,18 @@ const TestWrapper: React.FC<TestWrapperProps> = ({
 };
 
 describe('EligibleDisplay', () => {
-  it('renders the page title', async () => {
-    const { findByText } = render(
-      <TestWrapper status={AsrStatusEnum.Pending} />,
-    );
+  it.each([
+    AsrStatusEnum.Pending,
+    AsrStatusEnum.PendingDivisionHeadApproval,
+    AsrStatusEnum.PendingVpApproval,
+    AsrStatusEnum.PendingManagementApproval,
+    AsrStatusEnum.PendingBoardApproval,
+  ])('renders relevant pending messages - %s', async (status) => {
+    const { findByText } = render(<TestWrapper status={status} />);
 
     expect(
       await findByText('Your Additional Salary Request'),
     ).toBeInTheDocument();
-  });
-
-  it('displays pending request message when status is Pending', async () => {
-    const { findByText } = render(
-      <TestWrapper status={AsrStatusEnum.Pending} />,
-    );
-
     expect(
       await findByText(/currently has a pending request/i),
     ).toBeInTheDocument();

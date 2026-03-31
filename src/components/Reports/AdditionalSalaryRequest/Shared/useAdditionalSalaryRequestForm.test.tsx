@@ -99,6 +99,8 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   setIsNewAsr: jest.fn(),
   isSpouse: false,
   hasSpouse: false,
+  isPending: false,
+  isApproved: false,
 };
 
 const defaultFormValues: CompleteFormValues = {

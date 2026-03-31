@@ -73,6 +73,8 @@ const mockContextValue = {
   setIsNewAsr: jest.fn(),
   isSpouse: false,
   hasSpouse: false,
+  isPending: false,
+  isApproved: false,
 };
 
 describe('StepList', () => {

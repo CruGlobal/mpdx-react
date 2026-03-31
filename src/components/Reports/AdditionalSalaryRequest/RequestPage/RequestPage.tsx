@@ -182,12 +182,12 @@ export const RequestPage: React.FC = () => {
     staffAccountIdLoading,
     requestData,
     setPageType,
+    isPending,
   } = useAdditionalSalaryRequest();
   const { values } = useFormikContext<CompleteFormValues>();
   const iconPanelItems = useIconPanelItems(isDrawerOpen, toggleDrawer);
   const status = requestData?.latestAdditionalSalaryRequest?.status;
-  const showBackButton =
-    status === AsrStatusEnum.ActionRequired || status === AsrStatusEnum.Pending;
+  const showBackButton = status === AsrStatusEnum.ActionRequired || isPending;
   const percentComplete = useMemo(
     () => calculateCompletionPercentage(values),
     [values],
