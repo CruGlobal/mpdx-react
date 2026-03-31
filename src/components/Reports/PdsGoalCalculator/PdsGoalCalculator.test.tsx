@@ -11,6 +11,8 @@ describe('PdsGoalCalculator', () => {
       </PdsGoalCalculatorTestWrapper>,
     );
 
-    expect(getByRole('heading', { level: 5, name: 'Settings' })).toBeInTheDocument();
+    expect(
+      getByRole('heading', { level: 5, name: 'Settings' }),
+    ).toBeInTheDocument();
   });
 });

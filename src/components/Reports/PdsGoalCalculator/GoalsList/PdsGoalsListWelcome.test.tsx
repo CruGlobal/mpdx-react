@@ -6,6 +6,10 @@ describe('PdsGoalsListWelcome', () => {
   it('renders a welcome message with the user name', () => {
     const { getByText } = render(<PdsGoalsListWelcome firstName="John" />);
 
-    expect(getByText('Welcome to the Paid with Designation Support Goal Calculator.')).toBeInTheDocument();
+    expect(
+      getByText(
+        'Welcome to the Paid with Designation Support Goal Calculator.',
+      ),
+    ).toBeInTheDocument();
   });
 });

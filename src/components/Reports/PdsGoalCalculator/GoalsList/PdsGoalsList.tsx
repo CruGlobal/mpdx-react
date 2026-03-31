@@ -39,7 +39,11 @@ export const PdsGoalsList: React.FC = () => {
       </Stack>
 
       {goals.length === 0 ? (
-        <PlaceholderImage src={illustration6graybg} alt="" role="presentation" />
+        <PlaceholderImage
+          src={illustration6graybg}
+          alt=""
+          role="presentation"
+        />
       ) : (
         <Stack direction="row" gap={3} flexWrap="wrap">
           {/* TODO: Map over goals and render PdsGoalCard */}

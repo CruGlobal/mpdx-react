@@ -1,13 +1,6 @@
 import NextLink from 'next/link';
 import React, { useState } from 'react';
-import {
-  Box,
-  Button,
-  Card,
-  Divider,
-  Typography,
-  styled,
-} from '@mui/material';
+import { Box, Button, Card, Divider, Typography, styled } from '@mui/material';
 import { DateTime } from 'luxon';
 import { Trans, useTranslation } from 'react-i18next';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
@@ -133,11 +126,7 @@ export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({ goal }) => {
 
         <StyledActionBox>
           <Button onClick={handleDeleteClick}>
-            <Typography
-              variant="body2"
-              fontWeight="bold"
-              color="error"
-            >
+            <Typography variant="body2" fontWeight="bold" color="error">
               {t('Delete')}
             </Typography>
           </Button>

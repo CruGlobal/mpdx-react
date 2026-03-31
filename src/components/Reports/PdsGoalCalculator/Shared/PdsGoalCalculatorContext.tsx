@@ -1,9 +1,4 @@
-import React, {
-  createContext,
-  useCallback,
-  useMemo,
-  useState,
-} from 'react';
+import React, { createContext, useCallback, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { PdsGoalCalculatorStepEnum } from '../PdsGoalCalculatorHelper';
@@ -24,7 +19,9 @@ export type PdsGoalCalculatorType = {
   setDrawerOpen: (open: boolean) => void;
 };
 
-const PdsGoalCalculatorContext = createContext<PdsGoalCalculatorType | null>(null);
+const PdsGoalCalculatorContext = createContext<PdsGoalCalculatorType | null>(
+  null,
+);
 
 export const usePdsGoalCalculator = (): PdsGoalCalculatorType => {
   const context = React.useContext(PdsGoalCalculatorContext);

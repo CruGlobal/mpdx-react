@@ -11,11 +11,7 @@ describe('ReimbursableExpensesStep', () => {
       </PdsGoalCalculatorTestWrapper>,
     );
 
-    expect(
-      getByText('Monthly Reimbursable Expenses'),
-    ).toBeInTheDocument();
-    expect(
-      getByText('Annual Reimbursable Expenses'),
-    ).toBeInTheDocument();
+    expect(getByText('Monthly Reimbursable Expenses')).toBeInTheDocument();
+    expect(getByText('Annual Reimbursable Expenses')).toBeInTheDocument();
   });
 });
