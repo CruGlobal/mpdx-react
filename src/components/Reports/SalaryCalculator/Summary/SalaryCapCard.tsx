@@ -178,10 +178,10 @@ export const SalaryCapCard: React.FC = () => {
               <TableCell scope="row" className="sub-item">
                 a. {t('Personal Factors Cap')}
               </TableCell>
-              <TableCell>{formatCurrency(calcs?.calculatedCap)}</TableCell>
+              <TableCell>{formatCurrency(calcs?.personalFactorsCap)}</TableCell>
               {hasSpouse && (
                 <TableCell>
-                  {formatCurrency(spouseCalcs.calculatedCap)}
+                  {formatCurrency(spouseCalcs.personalFactorsCap)}
                 </TableCell>
               )}
             </TableRow>

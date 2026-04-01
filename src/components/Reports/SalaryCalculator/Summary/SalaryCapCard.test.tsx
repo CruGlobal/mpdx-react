@@ -22,7 +22,7 @@ const defaultSalaryMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> =
       capWithSeca: 10007,
       contributing403bFraction: 0.1,
       non403bFraction: 0.9,
-      calculatedCap: 10008,
+      personalFactorsCap: 10008,
       effectiveCap: 10009,
       hardCap: 10010,
       combinedCap: 10011,
@@ -38,7 +38,7 @@ const defaultSalaryMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> =
       capWithSeca: 20007,
       contributing403bFraction: 0.2,
       non403bFraction: 0.8,
-      calculatedCap: 20008,
+      personalFactorsCap: 20008,
       effectiveCap: 20009,
     },
   };
