@@ -56,7 +56,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
     deadlineDate,
     submittedAt,
     availableDate,
-    approvedOverallAmount,
+    overallAmount,
   } = requestAttributes || {};
 
   const pastDeadlineDate = deadlineDate
@@ -121,7 +121,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
           variant="h3"
           sx={{ color: 'primary.main', fontWeight: 'bold' }}
         >
-          {currencyFormat(approvedOverallAmount || 0, currency, locale, {
+          {currencyFormat(overallAmount ?? 0, currency, locale, {
             showTrailingZeros: true,
           })}
         </Typography>
