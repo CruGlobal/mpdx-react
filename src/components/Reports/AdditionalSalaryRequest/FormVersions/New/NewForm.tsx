@@ -40,7 +40,7 @@ export const NewForm: React.FC = () => {
         personNumbers={accountNumber ?? ''}
         titleOne={t('Primary Account Balance')}
         amountOne={primaryAccountBalance}
-        titleTwo={t('Your Remaining Allowable Salary')}
+        titleTwo={t('Your Maximum Allowable Salary (CAP)')}
         amountTwo={individualCap}
         spouseComponent={<SpouseComponent />}
         showContent

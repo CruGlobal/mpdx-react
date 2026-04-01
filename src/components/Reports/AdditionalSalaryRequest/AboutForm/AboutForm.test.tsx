@@ -96,7 +96,9 @@ describe('AboutForm', () => {
     expect(await findByText('Doc, John')).toBeInTheDocument();
     expect(getByText('00123456')).toBeInTheDocument();
     expect(getByText(/Primary Account Balance/i)).toBeInTheDocument();
-    expect(getAllByText(/Your Remaining Allowable Salary/i)).toHaveLength(2);
+    expect(getAllByText(/Your Maximum Allowable Salary (CAP)/i)).toHaveLength(
+      2,
+    );
   });
 
   it('should have Progressive Approvals link', () => {
