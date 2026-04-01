@@ -91,14 +91,14 @@ describe('AboutForm', () => {
   });
 
   it('should display user information and financial data', async () => {
-    const { findByText, getByText, getAllByText } = render(<TestWrapper />);
+    const { findByText, getByText } = render(<TestWrapper />);
 
     expect(await findByText('Doc, John')).toBeInTheDocument();
     expect(getByText('00123456')).toBeInTheDocument();
     expect(getByText(/Primary Account Balance/i)).toBeInTheDocument();
-    expect(getAllByText(/Your Maximum Allowable Salary (CAP)/i)).toHaveLength(
-      2,
-    );
+    expect(
+      getByText(/Your Maximum Allowable Salary \(CAP\)/i),
+    ).toBeInTheDocument();
   });
 
   it('should have Progressive Approvals link', () => {
