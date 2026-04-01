@@ -103,7 +103,7 @@ export const SalaryInformationCard: React.FC = () => {
                         component={NextLink}
                         href={`/accountLists/${accountListId}${row.link}`}
                       >
-                        {t('View')}
+                        {t('View MHA Form')}
                       </Link>
                     )}
                   </FlexBox>

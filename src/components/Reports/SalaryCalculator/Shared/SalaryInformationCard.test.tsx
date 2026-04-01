@@ -49,7 +49,7 @@ describe('SalaryInformationCard', () => {
       ['Gross Salary', '$55,000.00', '$10,000.00'],
       [
         'Current MHA (Included in Gross Salary)',
-        '$10,000.00View',
+        '$10,000.00View MHA Form',
         '$12,000.00',
       ],
     ].flat();
@@ -63,7 +63,7 @@ describe('SalaryInformationCard', () => {
 
   it('renders the View link for MHA category', () => {
     const { getByRole } = render(<TestComponent />);
-    expect(getByRole('link', { name: 'View' })).toHaveAttribute(
+    expect(getByRole('link', { name: 'View MHA Form' })).toHaveAttribute(
       'href',
       expect.stringContaining('/reports/housingAllowance'),
     );
