@@ -1,4 +1,4 @@
-import React, { FC, useMemo } from 'react';
+import { FC, useMemo } from 'react';
 import { TableCell, TableHead, TableRow, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
@@ -42,7 +42,7 @@ export interface FourteenMonthReportTableHeadProps {
   isExpanded: boolean;
   totals: MonthTotal[] | undefined;
   salaryCurrency: string | undefined;
-  onRequestSort: (event: React.MouseEvent<unknown>, property: OrderBy) => void;
+  onRequestSort: (property: OrderBy) => void;
   order: Order;
   orderBy: OrderBy | null;
 }
@@ -74,11 +74,6 @@ export const FourteenMonthReportTableHead: FC<
 > = ({ isExpanded, totals, salaryCurrency, order, orderBy, onRequestSort }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-
-  const createSortHandler =
-    (property: OrderBy) => (event: React.MouseEvent<unknown>) => {
-      onRequestSort(event, property);
-    };
 
   const allYears = useMemo(() => {
     return totals?.map((month) => month.month.split('-')[0]);
@@ -131,7 +126,7 @@ export const FourteenMonthReportTableHead: FC<
           isActive={orderBy === 'name'}
           sortDirection={orderBy === 'name' ? order : false}
           direction={orderBy === 'name' ? order : 'asc'}
-          onClick={createSortHandler('name')}
+          onClick={() => onRequestSort('name')}
         >
           {t('Partner')}
         </TableHeadCell>
@@ -141,7 +136,7 @@ export const FourteenMonthReportTableHead: FC<
               isActive={orderBy === 'status'}
               sortDirection={orderBy === 'status' ? order : false}
               direction={orderBy === 'status' ? order : 'asc'}
-              onClick={createSortHandler('status')}
+              onClick={() => onRequestSort('status')}
             >
               {t('Status')}
             </TableHeadCell>
@@ -149,7 +144,7 @@ export const FourteenMonthReportTableHead: FC<
               isActive={orderBy === 'pledgeAmount'}
               sortDirection={orderBy === 'pledgeAmount' ? order : false}
               direction={orderBy === 'pledgeAmount' ? order : 'asc'}
-              onClick={createSortHandler('pledgeAmount')}
+              onClick={() => onRequestSort('pledgeAmount')}
             >
               {t('Commitment')}
             </TableHeadCell>
@@ -157,7 +152,7 @@ export const FourteenMonthReportTableHead: FC<
               isActive={orderBy === 'average'}
               sortDirection={orderBy === 'average' ? order : false}
               direction={orderBy === 'average' ? order : 'asc'}
-              onClick={createSortHandler('average')}
+              onClick={() => onRequestSort('average')}
             >
               {t('Avg')}
             </TableHeadCell>
@@ -165,7 +160,7 @@ export const FourteenMonthReportTableHead: FC<
               isActive={orderBy === 'minimum'}
               sortDirection={orderBy === 'minimum' ? order : false}
               direction={orderBy === 'minimum' ? order : 'asc'}
-              onClick={createSortHandler('minimum')}
+              onClick={() => onRequestSort('minimum')}
             >
               {t('Min')}
             </TableHeadCell>
@@ -178,7 +173,7 @@ export const FourteenMonthReportTableHead: FC<
             align="center"
             sortDirection={orderBy === index ? order : false}
             direction={orderBy === index ? order : 'asc'}
-            onClick={createSortHandler(index)}
+            onClick={() => onRequestSort(index)}
           >
             {DateTime.fromISO(month.month)
               .toJSDate()
@@ -187,10 +182,10 @@ export const FourteenMonthReportTableHead: FC<
         ))}
         <TableHeadCell
           align="right"
-          isActive={orderBy === 'total'}
-          sortDirection={orderBy === 'total' ? order : false}
-          direction={orderBy === 'total' ? order : 'asc'}
-          onClick={createSortHandler('total')}
+          isActive={orderBy === 'completeMonthsTotal'}
+          sortDirection={orderBy === 'completeMonthsTotal' ? order : false}
+          direction={orderBy === 'completeMonthsTotal' ? order : 'asc'}
+          onClick={() => onRequestSort('completeMonthsTotal')}
         >
           {t('12 Month Total')}
         </TableHeadCell>

@@ -136,6 +136,7 @@ const createMockGraphQLData = (fetchSalaryReport: boolean) =>
               donation_infos: [
                 {
                   contact_id: 'contact-1',
+                  complete_months_total: '100',
                   months: [
                     {
                       total: '50',
@@ -157,6 +158,7 @@ const createMockGraphQLData = (fetchSalaryReport: boolean) =>
                 },
                 {
                   contact_id: 'contact-2',
+                  complete_months_total: '100',
                   months: [
                     {
                       total: '50',
@@ -185,6 +187,7 @@ const createMockGraphQLData = (fetchSalaryReport: boolean) =>
               donation_infos: [
                 {
                   contact_id: 'contact-3',
+                  complete_months_total: '40',
                   months: [
                     {
                       total: '20',
@@ -452,8 +455,9 @@ describe('FourteenMonthReport', () => {
       expect(table1MonthlyTotals[1]).toHaveTextContent('100');
       expect(table1MonthlyTotals[2]).toHaveTextContent('100');
       expect(table1MonthlyTotals[3]).toHaveTextContent('100');
+      // 2 contacts * 50 * 2 complete months = 200
       expect(within(tables[0]).getByTestId('overallTotal')).toHaveTextContent(
-        '300',
+        '200',
       );
 
       expect(
@@ -467,8 +471,9 @@ describe('FourteenMonthReport', () => {
       expect(table2MonthlyTotals[1]).toHaveTextContent('20');
       expect(table2MonthlyTotals[2]).toHaveTextContent('20');
       expect(table2MonthlyTotals[3]).toHaveTextContent('20');
+      // 1 contact * 20 * 2 complete months = 40
       expect(within(tables[1]).getByTestId('overallTotal')).toHaveTextContent(
-        '60',
+        '40',
       );
     });
   });

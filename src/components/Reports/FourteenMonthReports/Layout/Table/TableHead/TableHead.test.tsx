@@ -8,7 +8,7 @@ import { FourteenMonthReportTableHead } from './TableHead';
 const onRequestSort = jest.fn();
 
 const order = 'asc';
-const orderBy = 'total';
+const orderBy = 'completeMonthsTotal';
 const salaryCurrency = 'CAD';
 const totals = [
   {
@@ -60,7 +60,7 @@ describe('FourteenMonthReportTableHead', () => {
     );
 
     userEvent.click(getByText('12 Month Total'));
-    expect(onRequestSort).toHaveBeenCalled();
+    expect(onRequestSort).toHaveBeenCalledWith('completeMonthsTotal');
   });
   it('Confirm months headers are not showing with no data', async () => {
     const { queryByTestId } = render(
