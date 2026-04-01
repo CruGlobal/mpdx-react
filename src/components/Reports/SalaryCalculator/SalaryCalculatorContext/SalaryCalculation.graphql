@@ -43,7 +43,7 @@ fragment CalculationFields on SalaryRequestCalculations {
   capWithSeca
   contributing403bFraction
   non403bFraction
-  calculatedCap
+  personalFactorsCap
   effectiveCap
   individualCap
   familyCap
