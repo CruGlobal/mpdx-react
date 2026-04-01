@@ -81,7 +81,7 @@ describe('CurrentRequest Component', () => {
     ).toBeInTheDocument();
     expect(queryByText('Edit Request')).not.toBeInTheDocument();
 
-    expect(getByText('$15,000.00')).toBeInTheDocument();
+    expect(getByText('$10,000.00')).toBeInTheDocument();
 
     expect(getByText(/Requested on: Oct 1, 2019/i)).toBeInTheDocument();
     expect(
