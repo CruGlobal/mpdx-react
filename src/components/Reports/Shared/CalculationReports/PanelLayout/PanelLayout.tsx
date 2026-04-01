@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { CheckCircleOutline, CircleSharp } from '@mui/icons-material';
 import { Box, Divider, IconButton, Stack } from '@mui/material';
 import { CircularProgressWithLabel } from 'src/components/Reports/Shared/CalculationReports/CircularProgressWithLabel/CircularProgressWithLabel';
@@ -59,6 +59,13 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
   hasCurrentRequestPending,
 }) => {
   const isLastStep = steps ? currentIndex === steps.length - 1 : false;
+  const mainContentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (mainContentRef.current) {
+      mainContentRef.current.scrollTop = 0;
+    }
+  }, [currentIndex]);
 
   return (
     <PrintableStack direction="row">
@@ -100,7 +107,9 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
               ))}
           </StyledSidebar>
           <Divider orientation="vertical" flexItem />
-          <MainContent className="main-content">{mainContent}</MainContent>
+          <MainContent className="main-content" ref={mainContentRef}>
+            {mainContent}
+          </MainContent>
         </>
       ) : (
         <>
@@ -161,7 +170,9 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
             {sidebarContent}
           </StyledSidebar>
           <Divider orientation="vertical" flexItem />
-          <MainContent className="main-content">{mainContent}</MainContent>
+          <MainContent className="main-content" ref={mainContentRef}>
+            {mainContent}
+          </MainContent>
         </>
       )}
     </PrintableStack>
