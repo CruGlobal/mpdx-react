@@ -64,17 +64,15 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   );
 
   const handleContinue = useCallback(() => {
-    setStepIndex((prev) => {
-      if (prev < steps.length - 1) {
-        return prev + 1;
-      }
+    if (stepIndex < steps.length - 1) {
+      setStepIndex(stepIndex + 1);
+    } else {
       enqueueSnackbar(
         t('You have reached the end of the PDS goal calculator.'),
         { variant: 'info' },
       );
-      return prev;
-    });
-  }, [steps, enqueueSnackbar, t]);
+    }
+  }, [stepIndex, steps, enqueueSnackbar, t]);
 
   const closeRightPanel = useCallback(() => {
     setRightPanelContent(null);

@@ -12,4 +12,10 @@ describe('PdsGoalsListWelcome', () => {
       ),
     ).toBeInTheDocument();
   });
+
+  it('renders the firstName in the greeting', () => {
+    const { getByText } = render(<PdsGoalsListWelcome firstName="John" />);
+
+    expect(getByText(/John/)).toBeInTheDocument();
+  });
 });

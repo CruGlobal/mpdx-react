@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import React, { useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
@@ -22,8 +22,7 @@ const PdsGoalCalculatorPage: React.FC = () => {
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
   const accountListId = useAccountListId();
-  const [isNavListOpen, setNavListOpen] = useState(false);
-  const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
+  const [isNavListOpen, setNavListOpen] = React.useState(false);
 
   const handleNavListToggle = () => {
     setNavListOpen((prev) => !prev);
@@ -43,8 +42,6 @@ const PdsGoalCalculatorPage: React.FC = () => {
                 isOpen={isNavListOpen}
                 selectedId="pdsGoalCalculator"
                 onClose={handleNavListToggle}
-                designationAccounts={designationAccounts}
-                setDesignationAccounts={setDesignationAccounts}
                 navType={NavTypeEnum.Reports}
               />
             }
