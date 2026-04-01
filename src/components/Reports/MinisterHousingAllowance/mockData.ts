@@ -27,7 +27,7 @@ export const mockMHARequest: MHARequest = {
     repairCosts: null,
     avgUtilityTwo: null,
     unexpectedExpenses: null,
-    overallAmount: null,
+    overallAmount: 10000,
     phoneNumber: null,
     emailAddress: null,
     iUnderstandMhaPolicy: true,
