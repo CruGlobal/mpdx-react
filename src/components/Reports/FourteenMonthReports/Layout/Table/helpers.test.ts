@@ -82,23 +82,31 @@ describe('extractSortKey', () => {
 });
 
 describe('sortContacts', () => {
-  const contacts = [100, 200, 150, 1000].map((total) => mockContact({ total }));
+  const contacts = [100, 200, 150, 1000].map((completeMonthsTotal) =>
+    mockContact({ completeMonthsTotal }),
+  );
 
   it('sorts contacts ascending', () => {
     expect(
-      sortContacts(contacts, 'total', 'asc').map((contact) => contact.total),
+      sortContacts(contacts, 'completeMonthsTotal', 'asc').map(
+        (contact) => contact.completeMonthsTotal,
+      ),
     ).toEqual([100, 150, 200, 1000]);
   });
 
   it('sorts contacts descending', () => {
     expect(
-      sortContacts(contacts, 'total', 'desc').map((contact) => contact.total),
+      sortContacts(contacts, 'completeMonthsTotal', 'desc').map(
+        (contact) => contact.completeMonthsTotal,
+      ),
     ).toEqual([1000, 200, 150, 100]);
   });
 
   it('ignores null order by', () => {
     expect(
-      sortContacts(contacts, null, 'asc').map((contact) => contact.total),
+      sortContacts(contacts, null, 'asc').map(
+        (contact) => contact.completeMonthsTotal,
+      ),
     ).toEqual([100, 200, 150, 1000]);
   });
 });

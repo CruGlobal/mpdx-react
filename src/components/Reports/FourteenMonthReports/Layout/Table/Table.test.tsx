@@ -38,7 +38,7 @@ const reportsSalaryCurrencyDonationsMock = {
               donations: [],
             },
             { total: '50', donations: [{ converted_amount: '50' }] },
-            { total: 0, donations: [] },
+            { total: '0', donations: [] },
           ],
         },
         {
