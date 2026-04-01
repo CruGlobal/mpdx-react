@@ -80,9 +80,6 @@ describe('Deduction', () => {
   it('displays all three sections', () => {
     const { getByText } = render(<TestWrapper />);
 
-    expect(
-      getByText('403(b) Contribution Requested as Additional Salary'),
-    ).toBeInTheDocument();
     expect(getByText('Total 403(b) Deduction')).toBeInTheDocument();
   });
 
@@ -90,7 +87,7 @@ describe('Deduction', () => {
     const { getAllByText } = render(<TestWrapper />);
 
     const zeroAmounts = getAllByText('$0.00');
-    expect(zeroAmounts.length).toBeGreaterThanOrEqual(4);
+    expect(zeroAmounts.length).toBeGreaterThanOrEqual(3);
   });
 
   it('calculates deduction when checkbox is checked', async () => {
@@ -164,40 +161,10 @@ describe('Deduction', () => {
     ).toHaveTextContent('$0.00');
   });
 
-  it('displays traditional403bContribution amount from form values', () => {
-    const valuesWithContribution: CompleteFormValues = {
-      ...defaultCompleteFormValues,
-      traditional403bContribution: '5000',
-    };
-
-    const { getAllByText } = render(
-      <TestWrapper initialValues={valuesWithContribution} />,
-    );
-
-    // The traditional403bContribution value should be displayed
-    expect(getAllByText('$5,000.00').length).toBeGreaterThanOrEqual(1);
-  });
-
-  it('displays roth403bContribution amount from form values', () => {
-    const valuesWithContribution: CompleteFormValues = {
-      ...defaultCompleteFormValues,
-      roth403bContribution: '3000',
-    };
-
-    const { getAllByText } = render(
-      <TestWrapper initialValues={valuesWithContribution} />,
-    );
-
-    // The roth403bContribution value should be displayed
-    expect(getAllByText('$3,000.00').length).toBeGreaterThanOrEqual(1);
-  });
-
-  it('calculates total deduction as sum of calculated and traditional403bContribution + roth403bContribution', async () => {
+  it('calculates total deduction as sum of calculated deduction', async () => {
     const valuesWithBoth: CompleteFormValues = {
       ...defaultCompleteFormValues,
       additionalSalaryWithinMax: '10000',
-      traditional403bContribution: '3000',
-      roth403bContribution: '2000',
       deductTaxDeferredPercent: true,
       deductRothPercent: true,
     };
@@ -225,10 +192,10 @@ describe('Deduction', () => {
       ).toHaveTextContent('$704.00');
     });
 
-    // Total should be ($1,200 + $704) + ($3,000 + $2,000) = $6,904
+    // Total should be ($1,200 + $704) = $1,904
     await waitFor(() => {
       expect(getByLabelText('Total requested amount')).toHaveTextContent(
-        '$6,904.00',
+        '$1,904.00',
       );
     });
   });
@@ -367,44 +334,6 @@ describe('Deduction', () => {
       expect(
         getByLabelText('Calculated roth deduction amount'),
       ).toHaveTextContent('$400.00');
-    });
-  });
-
-  it('updates total when traditional403bContribution changes', async () => {
-    const { getByLabelText, rerender } = render(<TestWrapper />);
-
-    expect(getByLabelText('Total requested amount')).toHaveTextContent('$0.00');
-
-    const updatedValues: CompleteFormValues = {
-      ...defaultCompleteFormValues,
-      traditional403bContribution: '2500',
-    };
-
-    rerender(<TestWrapper initialValues={updatedValues} />);
-
-    await waitFor(() => {
-      expect(getByLabelText('Total requested amount')).toHaveTextContent(
-        '$2,500.00',
-      );
-    });
-  });
-
-  it('updates total when roth403bContribution changes', async () => {
-    const { getByLabelText, rerender } = render(<TestWrapper />);
-
-    expect(getByLabelText('Total requested amount')).toHaveTextContent('$0.00');
-
-    const updatedValues: CompleteFormValues = {
-      ...defaultCompleteFormValues,
-      roth403bContribution: '1500',
-    };
-
-    rerender(<TestWrapper initialValues={updatedValues} />);
-
-    await waitFor(() => {
-      expect(getByLabelText('Total requested amount')).toHaveTextContent(
-        '$1,500.00',
-      );
     });
   });
 

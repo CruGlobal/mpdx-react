@@ -3,8 +3,6 @@ const numericFields = [
   'previousYearSalaryNotReceived',
   'additionalSalaryWithinMax',
   'adoption',
-  'traditional403bContribution',
-  'roth403bContribution',
   'counselingNonMedical',
   'healthcareExpensesExceedingLimit',
   'babysittingMinistryEvents',
@@ -23,17 +21,6 @@ type TotalableValues = Partial<Record<NumericField, string | number | null>>;
 
 export const getTotal = (values: TotalableValues): number => {
   return numericFields.reduce((sum, key) => {
-    return sum + Number(values[key] || 0);
-  }, 0);
-};
-
-const fieldsWithout403b = numericFields.filter(
-  (field) =>
-    field !== 'traditional403bContribution' && field !== 'roth403bContribution',
-);
-
-export const getTotalWithout403b = (values: TotalableValues): number => {
-  return fieldsWithout403b.reduce((sum, key) => {
     return sum + Number(values[key] || 0);
   }, 0);
 };

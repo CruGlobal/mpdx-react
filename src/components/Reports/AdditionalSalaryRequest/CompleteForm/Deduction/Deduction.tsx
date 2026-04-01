@@ -20,7 +20,6 @@ export const Deduction: React.FC = () => {
   const {
     calculatedTraditionalDeduction,
     calculatedRothDeduction,
-    contribution403b,
     totalDeduction,
   } = useSalaryCalculations({ values: formValues });
 
@@ -36,21 +35,6 @@ export const Deduction: React.FC = () => {
         percentage={roth403bPercentage}
         calculatedDeduction={calculatedRothDeduction}
       />
-      <TableRow>
-        <TableCell sx={{ width: '70%' }}>
-          <Typography variant="body1">
-            {t('403(b) Contribution Requested as Additional Salary')}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            {t('This is the amount you requested above.')}
-          </Typography>
-        </TableCell>
-        <TableCell sx={{ width: '30%', fontSize: 16 }}>
-          {currencyFormat(contribution403b, 'USD', locale, {
-            showTrailingZeros: true,
-          })}
-        </TableCell>
-      </TableRow>
       <TableRow>
         <TableCell sx={{ width: '70%' }}>
           <Typography variant="body1" fontWeight="bold">

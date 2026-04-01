@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
-import { getTotal, getTotalWithout403b } from './Helper/getTotal';
+import { getTotal } from './Helper/getTotal';
 
 // Tolerance for considering someone "at cap" — small rounding differences
 // (e.g. $19,998 vs $20,000 cap) are treated as effectively at cap.
@@ -11,7 +11,6 @@ export interface SalaryCalculations {
   total: number;
   calculatedTraditionalDeduction: number;
   calculatedRothDeduction: number;
-  contribution403b: number;
   totalDeduction: number;
   netSalary: number;
   additionalSalaryReceivedThisYear: number;
@@ -61,24 +60,18 @@ export const useSalaryCalculations = ({
   return useMemo(() => {
     const total = getTotal(values);
 
-    const totalWithout403b = getTotalWithout403b(values);
-
     const calculatedTraditionalDeduction = values.deductTaxDeferredPercent
-      ? totalWithout403b * traditional403bPercentage
+      ? total * traditional403bPercentage
       : 0;
 
     const calculatedRothDeduction = values.deductRothPercent
-      ? (totalWithout403b - calculatedTraditionalDeduction) * roth403bPercentage
+      ? (total - calculatedTraditionalDeduction) * roth403bPercentage
       : 0;
 
     const calculatedDeduction =
       calculatedTraditionalDeduction + calculatedRothDeduction;
 
-    const contribution403b =
-      Number(values.traditional403bContribution || 0) +
-      Number(values.roth403bContribution || 0);
-
-    const totalDeduction = calculatedDeduction + contribution403b;
+    const totalDeduction = calculatedDeduction;
 
     const netSalary = total - totalDeduction;
 
@@ -133,7 +126,6 @@ export const useSalaryCalculations = ({
       total,
       calculatedTraditionalDeduction,
       calculatedRothDeduction,
-      contribution403b,
       totalDeduction,
       netSalary,
       grossAnnualSalary,

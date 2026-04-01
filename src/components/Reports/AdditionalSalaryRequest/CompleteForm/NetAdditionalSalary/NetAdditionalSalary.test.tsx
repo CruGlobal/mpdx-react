@@ -64,42 +64,6 @@ describe('NetAdditionalSalary', () => {
     expect(getByText('$10,000')).toBeInTheDocument();
   });
 
-  it('calculates net salary with traditional403bContribution deducted', async () => {
-    const valuesWithContribution: CompleteFormValues = {
-      ...defaultCompleteFormValues,
-      additionalSalaryWithinMax: '10000',
-      traditional403bContribution: '2000',
-      roth403bContribution: '0',
-    };
-
-    const { getByText } = render(
-      <TestWrapper initialValues={valuesWithContribution} />,
-    );
-
-    // Total = $10,000 + $2,000 = $12,000
-    // Deduction = $2,000 (traditional403bContribution)
-    // Net = $12,000 - $2,000 = $10,000
-    expect(getByText('$10,000')).toBeInTheDocument();
-  });
-
-  it('calculates net salary with roth403bContribution deducted', async () => {
-    const valuesWithRothContribution: CompleteFormValues = {
-      ...defaultCompleteFormValues,
-      additionalSalaryWithinMax: '10000',
-      traditional403bContribution: '0',
-      roth403bContribution: '1500',
-    };
-
-    const { getByText } = render(
-      <TestWrapper initialValues={valuesWithRothContribution} />,
-    );
-
-    // Total = $10,000 + $1,500 = $11,500
-    // Deduction = $1,500 (roth403bContribution)
-    // Net = $11,500 - $1,500 = $10,000
-    expect(getByText('$10,000')).toBeInTheDocument();
-  });
-
   it('calculates net salary with percentage deduction when checkbox is checked', async () => {
     const valuesWithDeduction: CompleteFormValues = {
       ...defaultCompleteFormValues,
@@ -119,33 +83,6 @@ describe('NetAdditionalSalary', () => {
     // Traditional = 12% of $10,000 = $1,200
     // Roth = 8% of ($10,000 - $1,200) = 8% of $8,800 = $704
     // Net = $10,000 - $1,200 - $704 = $8,096
-    expect(await findByText('$8,096')).toBeInTheDocument();
-  });
-
-  it('calculates net salary with both percentage and traditional403b deductions', async () => {
-    const valuesWithBoth: CompleteFormValues = {
-      ...defaultCompleteFormValues,
-      additionalSalaryWithinMax: '10000',
-      traditional403bContribution: '1000',
-      roth403bContribution: '100',
-      deductTaxDeferredPercent: true,
-      deductRothPercent: true,
-    };
-
-    const { findByText } = render(
-      <TestWrapper
-        initialValues={valuesWithBoth}
-        traditionalDeductionPercentage={12}
-        rothDeductionPercentage={8}
-      />,
-    );
-
-    // Total = $10,000 + $1,000 + $100 = $11,100
-    // totalWithout403b = $10,000
-    // Traditional = 12% of $10,000 = $1,200
-    // Roth = 8% of ($10,000 - $1,200) = 8% of $8,800 = $704
-    // Total deduction = ($1,200 + $704) + ($1,000 + $100) = $3,004
-    // Net = $11,100 - $3,004 = $8,096
     expect(await findByText('$8,096')).toBeInTheDocument();
   });
 

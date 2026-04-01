@@ -35,8 +35,6 @@ const mockRequest: RequestType = {
   previousYearSalaryNotReceived: 500,
   additionalSalaryWithinMax: 200,
   adoption: 0,
-  traditional403bContribution: 0,
-  roth403bContribution: 0,
   counselingNonMedical: 0,
   healthcareExpensesExceedingLimit: 0,
   babysittingMinistryEvents: 0,

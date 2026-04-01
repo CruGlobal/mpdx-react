@@ -45,20 +45,6 @@ export const useCompleteFormCategories = (): Category[] => {
       }),
     },
     {
-      key: 'traditional403bContribution',
-      label: t('403(b) Contribution - Traditional'),
-      description: t(
-        '100% of what you enter here will be contributed to a Traditional 403(b)',
-      ),
-    },
-    {
-      key: 'roth403bContribution',
-      label: t('403(b) Contribution - Roth'),
-      description: t(
-        '100% of what you enter here will be contributed to a Roth 403(b)',
-      ),
-    },
-    {
       key: 'counselingNonMedical',
       label: t(
         'Counseling that is not for the treatment of a medical condition',

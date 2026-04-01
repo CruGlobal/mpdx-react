@@ -19,8 +19,6 @@ fragment AdditionalSalaryRequestDetailsFields on AdditionalSalaryRequest {
   personNumber
   additionalSalaryWithinMax
   adoption
-  traditional403bContribution
-  roth403bContribution
   counselingNonMedical
   healthcareExpensesExceedingLimit
   babysittingMinistryEvents

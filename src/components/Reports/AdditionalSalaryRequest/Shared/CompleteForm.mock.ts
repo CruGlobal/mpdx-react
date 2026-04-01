@@ -6,8 +6,6 @@ export const defaultCompleteFormValues: CompleteFormValues = {
   previousYearSalaryNotReceived: '0',
   additionalSalaryWithinMax: '0',
   adoption: '0',
-  traditional403bContribution: '0',
-  roth403bContribution: '0',
   counselingNonMedical: '0',
   healthcareExpensesExceedingLimit: '0',
   babysittingMinistryEvents: '0',

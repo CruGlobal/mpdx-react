@@ -108,8 +108,6 @@ const defaultFormValues: CompleteFormValues = {
   previousYearSalaryNotReceived: '0',
   additionalSalaryWithinMax: '0',
   adoption: '0',
-  traditional403bContribution: '0',
-  roth403bContribution: '0',
   counselingNonMedical: '0',
   healthcareExpensesExceedingLimit: '0',
   babysittingMinistryEvents: '0',
@@ -180,7 +178,7 @@ describe('useAdditionalSalaryRequestForm', () => {
 
   describe('fieldConfig', () => {
     it('should have all expected field configurations', () => {
-      expect(fieldConfig).toHaveLength(16);
+      expect(fieldConfig).toHaveLength(14);
 
       const fieldKeys = fieldConfig.map((f) => f.key);
       expect(fieldKeys).toContain('currentYearSalaryNotReceived');
@@ -252,7 +250,6 @@ describe('useAdditionalSalaryRequestForm', () => {
             previousYearSalaryNotReceived: 200,
             additionalSalaryWithinMax: 0,
             adoption: 0,
-            traditional403bContribution: 0,
             counselingNonMedical: 0,
             healthcareExpensesExceedingLimit: 0,
             babysittingMinistryEvents: 0,
@@ -663,7 +660,6 @@ describe('useAdditionalSalaryRequestForm', () => {
             previousYearSalaryNotReceived: 0,
             additionalSalaryWithinMax: 0,
             adoption: 0,
-            traditional403bContribution: 0,
             counselingNonMedical: 0,
             healthcareExpensesExceedingLimit: 0,
             babysittingMinistryEvents: 0,

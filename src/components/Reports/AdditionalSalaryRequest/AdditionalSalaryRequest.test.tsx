@@ -29,8 +29,6 @@ const mockRequest = {
   personNumber: '12345',
   additionalSalaryWithinMax: 2000,
   adoption: 0,
-  traditional403bContribution: 0,
-  roth403bContribution: 0,
   counselingNonMedical: 0,
   healthcareExpensesExceedingLimit: 0,
   babysittingMinistryEvents: 0,

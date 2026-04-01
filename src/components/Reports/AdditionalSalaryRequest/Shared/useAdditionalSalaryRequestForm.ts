@@ -35,11 +35,6 @@ export const fieldConfig: Array<{
     salaryInfoIntKey: 'maxAdoptionInt',
     salaryInfoUssKey: 'maxAdoptionUss',
   },
-  {
-    key: 'traditional403bContribution',
-    label: '403(b) Contribution - Traditional',
-  },
-  { key: 'roth403bContribution', label: '403(b) Contribution - Roth' },
   { key: 'counselingNonMedical', label: 'Counseling' },
   { key: 'healthcareExpensesExceedingLimit', label: 'Healthcare Expenses' },
   { key: 'babysittingMinistryEvents', label: 'Babysitting' },
