@@ -29,15 +29,12 @@ export const TotalSalaryRequested: React.FC<TotalAnnualSalaryProps> = ({
   const currency = 'USD';
 
   const { values } = useFormikContext<CompleteFormValues>();
-  const { requestData } = useAdditionalSalaryRequest();
+  const { calculations } = useAdditionalSalaryRequest();
 
-  const asrValues = requestData?.latestAdditionalSalaryRequest;
-  const calculations = asrValues?.calculations;
   const individualCap = calculations?.currentSalaryCap ?? 0;
 
   const { totalAnnualSalary } = useSalaryCalculations({
     values,
-    calculations,
   });
 
   const remainingInMaxAllowable = individualCap - totalAnnualSalary;

@@ -26,14 +26,8 @@ export interface SalaryCalculations {
   /** `true` when the request requires additional approval */
   additionalApproval: boolean;
 }
-
-interface CalculationsData {
-  pendingAsrAmount?: number | null;
-}
-
 export interface UseSalaryCalculationsProps {
   values: CompleteFormValues;
-  calculations?: CalculationsData | null;
 }
 
 const calculate403bDeductions = (
@@ -60,7 +54,6 @@ const calculate403bDeductions = (
 
 export const useSalaryCalculations = ({
   values,
-  calculations,
 }: UseSalaryCalculationsProps): SalaryCalculations => {
   const {
     traditional403bPercentage,
@@ -99,7 +92,8 @@ export const useSalaryCalculations = ({
 
     // Annual salary calculations
     const additionalSalaryReceivedThisYear =
-      calculations?.pendingAsrAmount ?? 0;
+      requestData?.latestAdditionalSalaryRequest?.calculations
+        ?.pendingAsrAmount ?? 0;
     const totalAnnualSalary =
       grossAnnualSalary + additionalSalaryReceivedThisYear + total;
 
@@ -160,7 +154,6 @@ export const useSalaryCalculations = ({
     };
   }, [
     values,
-    calculations,
     grossAnnualSalary,
     traditional403bPercentage,
     roth403bPercentage,
