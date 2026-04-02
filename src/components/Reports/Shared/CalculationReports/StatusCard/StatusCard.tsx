@@ -30,6 +30,7 @@ interface StatusCardProps {
   linkTwoText?: string;
   linkTwo?: string;
   isRequest?: boolean;
+  disableCancel?: boolean;
   hidePrint?: boolean;
   hideActions?: boolean;
   hideLinkTwoButton?: boolean;
@@ -52,6 +53,7 @@ export const StatusCard: React.FC<StatusCardProps> = ({
   linkTwoText,
   linkTwo,
   isRequest,
+  disableCancel,
   hidePrint,
   hideActions,
   hideLinkTwoButton,
@@ -141,6 +143,7 @@ export const StatusCard: React.FC<StatusCardProps> = ({
                   py: 1,
                   fontWeight: 'bold',
                 }}
+                disabled={disableCancel}
                 onClick={() => setOpenCancel(true)}
               >
                 <Cancel sx={{ mr: 0.5 }} />
