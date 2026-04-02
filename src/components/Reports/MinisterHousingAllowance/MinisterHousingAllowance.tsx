@@ -184,7 +184,10 @@ export const MinisterHousingAllowanceReport = () => {
               )}
               {showPreviousRequests && (
                 <Stack direction="column" width={mainContentWidth} mt={4}>
-                  <CurrentBoardApproved request={previousApprovedRequest} />
+                  <CurrentBoardApproved
+                    request={previousApprovedRequest}
+                    hasOpenRequest={isCurrentRequestPending}
+                  />
                 </Stack>
               )}
             </>
