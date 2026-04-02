@@ -2,7 +2,7 @@ import React from 'react';
 import HomeIcon from '@mui/icons-material/Home';
 import MenuOpenSharp from '@mui/icons-material/MenuOpenSharp';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -170,6 +170,21 @@ describe('PanelLayout', () => {
     expect(inactiveButton).toHaveStyle({
       color: theme.palette.mpdxGrayDark.main,
     });
+  });
+
+  it('scrolls main content to top when currentIndex changes', async () => {
+    const { rerender, container } = render(
+      <TestComponent panelType={PanelTypeEnum.Other} currentIndex={0} />,
+    );
+
+    const mainContent = container.querySelector('.main-content')!;
+    mainContent.scrollTop = 500;
+
+    rerender(
+      <TestComponent panelType={PanelTypeEnum.Other} currentIndex={1} />,
+    );
+
+    await waitFor(() => expect(mainContent.scrollTop).toBe(0));
   });
 
   it('handles empty icon panel items gracefully', () => {
