@@ -52,6 +52,8 @@ export const MhaRequestSection: React.FC = () => {
     isNoMhaPlural,
     noMhaNames,
     ineligibleName,
+    mhiIneligibleName,
+    showMhiMessage,
     showUserFields,
     showSpouseFields,
     spousePreferredName,
@@ -80,6 +82,7 @@ export const MhaRequestSection: React.FC = () => {
             isIneligiblePlural={isIneligiblePlural}
             ineligibleNames={ineligibleNames}
             showNoMhaMessage={showNoMhaMessage}
+            showMhiMessage={showMhiMessage}
           />
         )}
 
@@ -115,6 +118,16 @@ export const MhaRequestSection: React.FC = () => {
                   <a href="mailto:MHA@cru.org">MHA@cru.org</a>.
                 </Trans>
               )}
+              {mhiIneligibleName && (
+                <Trans t={t}>
+                  {{ name: mhiIneligibleName }} is in Italy and must fill out an
+                  MHI form rather than an MHA form. Please reach out to
+                  Personnel Records at{' '}
+                  <a href="tel:407-826-2230">(407) 826-2230</a> or{' '}
+                  <a href="mailto:MHA@cru.org">MHA@cru.org</a> for more
+                  information on the MHI form.
+                </Trans>
+              )}
             </Typography>
             <Typography variant="body1">
               <Trans t={t}>
@@ -133,6 +146,7 @@ export const MhaRequestSection: React.FC = () => {
                 isIneligiblePlural={isIneligiblePlural}
                 ineligibleNames={ineligibleNames}
                 showNoMhaMessage={showNoMhaMessage}
+                showMhiMessage={showMhiMessage}
               />
             )}
           </>

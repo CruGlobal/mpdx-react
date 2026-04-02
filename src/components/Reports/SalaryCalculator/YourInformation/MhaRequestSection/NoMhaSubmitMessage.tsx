@@ -1,9 +1,10 @@
 import Link from 'next/link';
 import React from 'react';
-import { Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { MhiMessage } from '../../../Shared/HcmData/MhiMessage';
 
 interface NoMhaSubmitMessageProps {
   isPlural: boolean;
@@ -12,6 +13,7 @@ interface NoMhaSubmitMessageProps {
   isIneligiblePlural?: boolean;
   ineligibleNames?: string;
   showNoMhaMessage?: boolean;
+  showMhiMessage?: boolean;
 }
 
 export const NoMhaSubmitMessage: React.FC<NoMhaSubmitMessageProps> = ({
@@ -21,6 +23,7 @@ export const NoMhaSubmitMessage: React.FC<NoMhaSubmitMessageProps> = ({
   isIneligiblePlural,
   ineligibleNames,
   showNoMhaMessage,
+  showMhiMessage,
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
@@ -52,6 +55,11 @@ export const NoMhaSubmitMessage: React.FC<NoMhaSubmitMessageProps> = ({
             </Trans>
           )}
         </Typography>
+      )}
+      {showMhiMessage && (
+        <Box sx={{ marginBottom: theme.spacing(2) }} data-testid="mhi-message">
+          <MhiMessage />
+        </Box>
       )}
       {showNoMhaMessage && (
         <>

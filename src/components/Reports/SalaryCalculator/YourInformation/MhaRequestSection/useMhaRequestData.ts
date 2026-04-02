@@ -4,6 +4,10 @@ import * as yup from 'yup';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { amount } from 'src/lib/yupHelpers';
+import {
+  isEligibleMhaUser,
+  isMhiUser,
+} from '../../../Shared/HcmData/mhaEligibility';
 import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
 
 export const useMhaRequestData = () => {
@@ -11,22 +15,31 @@ export const useMhaRequestData = () => {
   const locale = useLocale();
   const { calculation, hcmUser, hcmSpouse, hasSpouse } = useSalaryCalculator();
 
-  // User MHA eligibility and request status
-  const userEligible = hcmUser?.mhaEit.mhaEligibility ?? false;
+  const userIsMhi = isMhiUser(hcmUser);
+  const spouseIsMhi = hasSpouse && isMhiUser(hcmSpouse);
+
+  // Effective eligibility excludes MHI users
+  const userEligible = isEligibleMhaUser(hcmUser);
   const userHasApprovedMha = !!hcmUser?.mhaRequest.currentApprovedOverallAmount;
-  const spouseEligible =
-    hasSpouse && (hcmSpouse?.mhaEit.mhaEligibility ?? false);
+  const spouseEligible = hasSpouse && isEligibleMhaUser(hcmSpouse);
   const spouseHasApprovedMha =
     !!hcmSpouse?.mhaRequest.currentApprovedOverallAmount;
-  // Show "no MHA" message for eligible people who don't have an MHA
+
+  // Show "no MHA" message for eligible non-MHI people who don't have an MHA
   const showUserNoMhaMessage = userEligible && !userHasApprovedMha;
   const showSpouseNoMhaMessage = spouseEligible && !spouseHasApprovedMha;
 
   // Show "not eligible" message when one person is not eligible but the other has MHA
+  // Exclude MHI users
   const showUserIneligibleSpouseApprovedMessage =
-    !userEligible && spouseEligible && spouseHasApprovedMha;
+    !userEligible && !userIsMhi && spouseEligible && spouseHasApprovedMha;
   const showSpouseIneligibleUserApprovedMessage =
-    hasSpouse && !spouseEligible && userEligible && userHasApprovedMha;
+    hasSpouse &&
+    !spouseEligible &&
+    !spouseIsMhi &&
+    userEligible &&
+    userHasApprovedMha;
+
   // Determine which fields should be shown
   const showUserFields = userEligible && userHasApprovedMha;
   const showSpouseFields = spouseEligible && spouseHasApprovedMha;
@@ -66,20 +79,35 @@ export const useMhaRequestData = () => {
   };
   const ineligibleName = getIneligibleName();
 
-  // Ineligibility messages (for NoMhaSubmitMessage)
-  const showUserIneligibleMessage = !userEligible;
-  const showSpouseIneligibleMessage = hasSpouse && !spouseEligible;
+  const getMhiIneligibleName = () => {
+    if (userIsMhi && showSpouseFields) {
+      return userPreferredName;
+    }
+    if (spouseIsMhi && showUserFields) {
+      return spousePreferredName;
+    }
+    return null;
+  };
+  const mhiIneligibleName = getMhiIneligibleName();
+
+  // Ineligibility messages for NoMhaSubmitMessage
+  const showUserIneligibleMessage = !userEligible && !userIsMhi;
+  const showSpouseIneligibleMessage =
+    hasSpouse && !spouseEligible && !spouseIsMhi;
 
   const showIneligibleMessage =
     showUserIneligibleMessage || showSpouseIneligibleMessage;
   const isIneligiblePlural =
     showUserIneligibleMessage && showSpouseIneligibleMessage;
+
+  const showMhiMessage = userIsMhi || spouseIsMhi;
+
   const showUnavailableMessage =
     !showUserFields &&
     !showSpouseFields &&
-    (showNoMhaMessage || showIneligibleMessage);
+    (showNoMhaMessage || showIneligibleMessage || showMhiMessage);
   const showPartiallyUnavailableMessage =
-    showNoMhaMessage || showIneligibleMessage;
+    showNoMhaMessage || showIneligibleMessage || showMhiMessage;
 
   const getIneligibleNames = () => {
     if (isIneligiblePlural) {
@@ -207,6 +235,8 @@ export const useMhaRequestData = () => {
     isNoMhaPlural,
     noMhaNames,
     ineligibleName,
+    mhiIneligibleName,
+    showMhiMessage,
     showUserFields,
     showSpouseFields,
     userPreferredName,
