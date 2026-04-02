@@ -36,7 +36,12 @@ export const ValidationAlert: React.FC = () => {
   }, [submitCount, salaryInfo, isInternational, values, t]);
 
   const hasRequiredErrors = Object.keys(errors).some((key) =>
-    ['phoneNumber', 'emailAddress', 'additionalInfo'].includes(key),
+    [
+      'phoneNumber',
+      'emailAddress',
+      'additionalInfo',
+      'electionType403b',
+    ].includes(key),
   );
 
   const hasErrors =

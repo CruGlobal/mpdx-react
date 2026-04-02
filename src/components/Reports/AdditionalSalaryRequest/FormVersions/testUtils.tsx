@@ -51,7 +51,6 @@ const validationSchema = yup.object({
       amount(label, (key: string) => key),
     ]),
   ),
-  deductTaxDeferredPercent: yup.boolean(),
   phoneNumber: phoneNumber((key: string) => key).required(
     'Telephone number is required',
   ),
@@ -61,6 +60,9 @@ const validationSchema = yup.object({
     .email('Please enter a valid email address'),
   totalAdditionalSalaryRequested: yup.string(),
   additionalInfo: yup.string(),
+  electionType403b: yup
+    .string()
+    .required('Please select how you would like to contribute to your 403(b).'),
 });
 
 interface TestFormikWrapperProps {

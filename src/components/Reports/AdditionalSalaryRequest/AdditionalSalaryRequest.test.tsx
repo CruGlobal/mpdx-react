@@ -29,8 +29,6 @@ const mockRequest = {
   personNumber: '12345',
   additionalSalaryWithinMax: 2000,
   adoption: 0,
-  traditional403bContribution: 0,
-  roth403bContribution: 0,
   counselingNonMedical: 0,
   healthcareExpensesExceedingLimit: 0,
   babysittingMinistryEvents: 0,
@@ -41,8 +39,6 @@ const mockRequest = {
   housingDownPayment: 0,
   autoPurchase: 0,
   expensesNotApprovedWithin90Days: 0,
-  deductTaxDeferredPercent: false,
-  traditional403bContributionRequested: 0,
   usingSpouseSalary: false,
   calculations: {
     currentSalaryCap: 50000,

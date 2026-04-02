@@ -1,7 +1,8 @@
 import { useMemo } from 'react';
+import { ElectionType403bEnum } from 'src/graphql/types.generated';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
-import { getTotal, getTotalWithout403b } from './Helper/getTotal';
+import { getTotal } from './Helper/getTotal';
 
 // Tolerance for considering someone "at cap" — small rounding differences
 // (e.g. $19,998 vs $20,000 cap) are treated as effectively at cap.
@@ -11,7 +12,6 @@ export interface SalaryCalculations {
   total: number;
   calculatedTraditionalDeduction: number;
   calculatedRothDeduction: number;
-  contribution403b: number;
   totalDeduction: number;
   netSalary: number;
   additionalSalaryReceivedThisYear: number;
@@ -35,6 +35,26 @@ export interface UseSalaryCalculationsProps {
   values: CompleteFormValues;
   calculations?: CalculationsData | null;
 }
+
+const calculate403bDeductions = (
+  electionType: ElectionType403bEnum | null,
+  total: number,
+  traditionalPercentage: number,
+  rothPercentage: number,
+): { traditional: number; roth: number } => {
+  switch (electionType) {
+    case ElectionType403bEnum.Pretax:
+      return { traditional: total, roth: 0 };
+    case ElectionType403bEnum.Roth:
+      return { traditional: 0, roth: total };
+    case ElectionType403bEnum.Standard: {
+      const traditional = total * traditionalPercentage;
+      return { traditional, roth: (total - traditional) * rothPercentage };
+    }
+    default:
+      return { traditional: 0, roth: 0 };
+  }
+};
 
 export const useSalaryCalculations = ({
   values,
@@ -60,25 +80,18 @@ export const useSalaryCalculations = ({
 
   return useMemo(() => {
     const total = getTotal(values);
+    const {
+      traditional: calculatedTraditionalDeduction,
+      roth: calculatedRothDeduction,
+    } = calculate403bDeductions(
+      values.electionType403b,
+      total,
+      traditional403bPercentage,
+      roth403bPercentage,
+    );
 
-    const totalWithout403b = getTotalWithout403b(values);
-
-    const calculatedTraditionalDeduction = values.deductTaxDeferredPercent
-      ? totalWithout403b * traditional403bPercentage
-      : 0;
-
-    const calculatedRothDeduction = values.deductRothPercent
-      ? (totalWithout403b - calculatedTraditionalDeduction) * roth403bPercentage
-      : 0;
-
-    const calculatedDeduction =
+    const totalDeduction =
       calculatedTraditionalDeduction + calculatedRothDeduction;
-
-    const contribution403b =
-      Number(values.traditional403bContribution || 0) +
-      Number(values.roth403bContribution || 0);
-
-    const totalDeduction = calculatedDeduction + contribution403b;
 
     const netSalary = total - totalDeduction;
 
@@ -133,7 +146,6 @@ export const useSalaryCalculations = ({
       total,
       calculatedTraditionalDeduction,
       calculatedRothDeduction,
-      contribution403b,
       totalDeduction,
       netSalary,
       grossAnnualSalary,

@@ -4,6 +4,7 @@ import { DeepPartial } from 'ts-essentials';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { HcmDataQuery } from 'src/components/Reports/Shared/HcmData/HCMData.generated';
+import { ElectionType403bEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import {
@@ -108,8 +109,6 @@ const defaultFormValues: CompleteFormValues = {
   previousYearSalaryNotReceived: '0',
   additionalSalaryWithinMax: '0',
   adoption: '0',
-  traditional403bContribution: '0',
-  roth403bContribution: '0',
   counselingNonMedical: '0',
   healthcareExpensesExceedingLimit: '0',
   babysittingMinistryEvents: '0',
@@ -120,8 +119,7 @@ const defaultFormValues: CompleteFormValues = {
   housingDownPayment: '0',
   autoPurchase: '0',
   expensesNotApprovedWithin90Days: '0',
-  deductTaxDeferredPercent: false,
-  deductRothPercent: false,
+  electionType403b: null,
   phoneNumber: '',
   emailAddress: '',
   totalAdditionalSalaryRequested: '0',
@@ -180,7 +178,7 @@ describe('useAdditionalSalaryRequestForm', () => {
 
   describe('fieldConfig', () => {
     it('should have all expected field configurations', () => {
-      expect(fieldConfig).toHaveLength(16);
+      expect(fieldConfig).toHaveLength(14);
 
       const fieldKeys = fieldConfig.map((f) => f.key);
       expect(fieldKeys).toContain('currentYearSalaryNotReceived');
@@ -252,7 +250,6 @@ describe('useAdditionalSalaryRequestForm', () => {
             previousYearSalaryNotReceived: 200,
             additionalSalaryWithinMax: 0,
             adoption: 0,
-            traditional403bContribution: 0,
             counselingNonMedical: 0,
             healthcareExpensesExceedingLimit: 0,
             babysittingMinistryEvents: 0,
@@ -263,7 +260,7 @@ describe('useAdditionalSalaryRequestForm', () => {
             housingDownPayment: 0,
             autoPurchase: 0,
             expensesNotApprovedWithin90Days: 0,
-            deductTaxDeferredPercent: true,
+            electionType403b: ElectionType403bEnum.None,
             phoneNumber: '123-456-7890',
             calculations: {
               currentSalaryCap: 50000,
@@ -285,7 +282,6 @@ describe('useAdditionalSalaryRequestForm', () => {
       });
 
       expect(result.current.values.previousYearSalaryNotReceived).toBe('200');
-      expect(result.current.values.deductTaxDeferredPercent).toBe(true);
       expect(result.current.values.phoneNumber).toBe('123-456-7890');
     });
 
@@ -486,6 +482,47 @@ describe('useAdditionalSalaryRequestForm', () => {
         'Additional info is required for requests exceeding your cap.',
       );
     });
+
+    it('should not show electionType403b error before submit', () => {
+      const { result } = renderHook(
+        () =>
+          useAdditionalSalaryRequestForm({
+            ...defaultFormValues,
+            phoneNumber: '555-123-4567',
+            electionType403b: null,
+          }),
+        {
+          wrapper: TestWrapper,
+        },
+      );
+
+      // Before submit, errors should not be surfaced to the user
+      expect(result.current.submitCount).toBe(0);
+      expect(result.current.errors.electionType403b).toBeUndefined();
+    });
+
+    it('should validate electionType403b as required after submit', async () => {
+      const { result } = renderHook(
+        () =>
+          useAdditionalSalaryRequestForm({
+            ...defaultFormValues,
+            phoneNumber: '555-123-4567',
+            electionType403b: null,
+          }),
+        {
+          wrapper: TestWrapper,
+        },
+      );
+
+      let errors: Record<string, string> = {};
+      await act(async () => {
+        errors = await result.current.validateForm();
+      });
+
+      expect(errors.electionType403b).toBe(
+        'Please select how you would like to contribute to your 403(b).',
+      );
+    });
   });
 
   describe('onSubmit', () => {
@@ -516,6 +553,7 @@ describe('useAdditionalSalaryRequestForm', () => {
             phoneNumber: '555-123-4567',
             emailAddress: 'test@example.com',
             currentYearSalaryNotReceived: '100',
+            electionType403b: ElectionType403bEnum.None,
           }),
         {
           wrapper: TestWrapper,
@@ -551,6 +589,7 @@ describe('useAdditionalSalaryRequestForm', () => {
             adoption: '300',
             phoneNumber: '555-123-4567',
             emailAddress: 'test@example.com',
+            electionType403b: ElectionType403bEnum.None,
           }),
         {
           wrapper: TestWrapper,
@@ -589,6 +628,7 @@ describe('useAdditionalSalaryRequestForm', () => {
             ...defaultFormValues,
             phoneNumber: '555-123-4567',
             emailAddress: 'test@example.com',
+            electionType403b: ElectionType403bEnum.None,
           }),
         {
           wrapper: TestWrapper,
@@ -663,7 +703,6 @@ describe('useAdditionalSalaryRequestForm', () => {
             previousYearSalaryNotReceived: 0,
             additionalSalaryWithinMax: 0,
             adoption: 0,
-            traditional403bContribution: 0,
             counselingNonMedical: 0,
             healthcareExpensesExceedingLimit: 0,
             babysittingMinistryEvents: 0,
@@ -674,7 +713,7 @@ describe('useAdditionalSalaryRequestForm', () => {
             housingDownPayment: 0,
             autoPurchase: 0,
             expensesNotApprovedWithin90Days: 0,
-            deductTaxDeferredPercent: false,
+            electionType403b: ElectionType403bEnum.None,
             phoneNumber: '',
             emailAddress: '',
             calculations: {
