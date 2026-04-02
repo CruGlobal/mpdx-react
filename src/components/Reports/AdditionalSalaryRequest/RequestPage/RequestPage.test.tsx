@@ -8,7 +8,10 @@ import { I18nextProvider } from 'react-i18next';
 import * as yup from 'yup';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { AsrStatusEnum } from 'src/graphql/types.generated';
+import {
+  AsrStatusEnum,
+  ElectionType403bEnum,
+} from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import { amount, phoneNumber } from 'src/lib/yupHelpers';
 import theme from 'src/theme';
@@ -113,7 +116,6 @@ const validationSchema = yup.object({
       amount(label, (key: string) => key),
     ]),
   ),
-  deductTaxDeferredPercent: yup.boolean(),
   phoneNumber: phoneNumber(i18n.t).required(
     i18n.t('Phone Number is required.'),
   ),
@@ -123,6 +125,9 @@ const validationSchema = yup.object({
     .email('Please enter a valid email address'),
   totalAdditionalSalaryRequested: yup.number(),
   additionalInfo: yup.string(),
+  electionType403b: yup
+    .string()
+    .required('Please select how you would like to contribute to your 403(b).'),
 });
 
 interface TestFormikWrapperProps {
@@ -330,6 +335,7 @@ describe('RequestPage', () => {
       ...defaultCompleteFormValues,
       phoneNumber: '123-456-7890',
       emailAddress: 'test@example.com',
+      electionType403b: ElectionType403bEnum.None,
     };
 
     const { getByRole, getByText } = render(
@@ -365,6 +371,7 @@ describe('RequestPage', () => {
       ...defaultCompleteFormValues,
       phoneNumber: '123-456-7890',
       emailAddress: 'test@example.com',
+      electionType403b: ElectionType403bEnum.None,
     };
 
     const { getByRole, getByText } = render(
@@ -413,6 +420,7 @@ describe('RequestPage', () => {
       phoneNumber: '123-456-7890',
       emailAddress: 'test@example.com',
       additionalInfo: 'Test additional info for exceeds cap',
+      electionType403b: ElectionType403bEnum.None,
     };
 
     const { getByRole, getByText } = render(
@@ -469,6 +477,7 @@ describe('RequestPage', () => {
       phoneNumber: '123-456-7890',
       emailAddress: 'test@example.com',
       additionalInfo: 'Test additional info for exceeds cap',
+      electionType403b: ElectionType403bEnum.None,
     };
 
     const { getByRole, getByText, getAllByText } = render(
@@ -526,6 +535,7 @@ describe('RequestPage', () => {
       phoneNumber: '123-456-7890',
       emailAddress: 'test@example.com',
       additionalInfo: 'Test additional info for exceeds cap',
+      electionType403b: ElectionType403bEnum.None,
     };
 
     const { getByRole, getByText } = render(

@@ -1,4 +1,5 @@
 import { render, waitFor } from '@testing-library/react';
+import { ElectionType403bEnum } from 'pages/api/graphql-rest.page.generated';
 import { PageEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
@@ -28,8 +29,7 @@ const defaultInitialValues: CompleteFormValues = {
   housingDownPayment: '0',
   autoPurchase: '0',
   expensesNotApprovedWithin90Days: '0',
-  deductTaxDeferredPercent: false,
-  deductRothPercent: false,
+  electionType403b: ElectionType403bEnum.None,
   phoneNumber: '',
   totalAdditionalSalaryRequested: '0',
   emailAddress: '',

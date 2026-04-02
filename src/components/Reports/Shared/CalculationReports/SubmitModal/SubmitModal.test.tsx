@@ -9,6 +9,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { CompleteFormValues } from 'src/components/Reports/AdditionalSalaryRequest/AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from 'src/components/Reports/AdditionalSalaryRequest/Shared/AdditionalSalaryRequestContext';
+import { ElectionType403bEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { MinisterHousingAllowanceProvider } from '../../../MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
 import { PageEnum } from '../Shared/sharedTypes';
@@ -46,8 +47,7 @@ const baseFormValues: CompleteFormValues = {
   housingDownPayment: '0',
   autoPurchase: '0',
   expensesNotApprovedWithin90Days: '0',
-  deductTaxDeferredPercent: false,
-  deductRothPercent: false,
+  electionType403b: ElectionType403bEnum.None,
   phoneNumber: '',
   emailAddress: '',
   totalAdditionalSalaryRequested: '0',

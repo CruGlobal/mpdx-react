@@ -39,8 +39,6 @@ const mockRequest = {
   housingDownPayment: 0,
   autoPurchase: 0,
   expensesNotApprovedWithin90Days: 0,
-  deductTaxDeferredPercent: false,
-  traditional403bContributionRequested: 0,
   usingSpouseSalary: false,
   calculations: {
     currentSalaryCap: 50000,

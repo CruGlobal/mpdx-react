@@ -6,35 +6,19 @@ import { FormCard } from 'src/components/Reports/Shared/CalculationReports/FormC
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
-import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
-import { DeductionCheckboxRow } from './DeductionCheckboxRow';
+import { DeductionPercentQuestion } from './DeductionPercentQuestion';
 
 export const Deduction: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { traditional403bPercentage, roth403bPercentage } =
-    useAdditionalSalaryRequest();
   const { values: formValues } = useFormikContext<CompleteFormValues>();
 
-  const {
-    calculatedTraditionalDeduction,
-    calculatedRothDeduction,
-    totalDeduction,
-  } = useSalaryCalculations({ values: formValues });
+  const { totalDeduction } = useSalaryCalculations({ values: formValues });
 
   return (
     <FormCard title={t('403(b) Deduction')} hideHeaders>
-      <DeductionCheckboxRow
-        fieldName="deductTaxDeferredPercent"
-        percentage={traditional403bPercentage}
-        calculatedDeduction={calculatedTraditionalDeduction}
-      />
-      <DeductionCheckboxRow
-        fieldName="deductRothPercent"
-        percentage={roth403bPercentage}
-        calculatedDeduction={calculatedRothDeduction}
-      />
+      <DeductionPercentQuestion />
       <TableRow>
         <TableCell sx={{ width: '70%' }}>
           <Typography variant="body1" fontWeight="bold">

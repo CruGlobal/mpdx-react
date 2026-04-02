@@ -6,6 +6,7 @@ import * as yup from 'yup';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
+import { ElectionType403bEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import { amount, phoneNumber } from 'src/lib/yupHelpers';
 import theme from 'src/theme';
@@ -38,8 +39,7 @@ const defaultInitialValues: CompleteFormValues = {
   housingDownPayment: '0',
   autoPurchase: '0',
   expensesNotApprovedWithin90Days: '0',
-  deductTaxDeferredPercent: false,
-  deductRothPercent: false,
+  electionType403b: '',
   phoneNumber: '',
   emailAddress: '',
   totalAdditionalSalaryRequested: '0',
@@ -53,8 +53,6 @@ const validationSchema = yup.object({
       amount(label, (key: string) => key),
     ]),
   ),
-  deductTaxDeferredPercent: yup.boolean(),
-  deductRothPercent: yup.boolean(),
   phoneNumber: phoneNumber(i18n.t).required(
     i18n.t('Phone Number is required.'),
   ),
@@ -73,6 +71,9 @@ const validationSchema = yup.object({
       },
     ),
   additionalInfo: yup.string(),
+  electionType403b: yup
+    .string()
+    .required('Please select how you would like to contribute to your 403(b).'),
 });
 
 const TestFormikWrapper: React.FC<{
@@ -133,6 +134,7 @@ export const AdditionalSalaryRequestTestWrapper: React.FC<
                           : [key, value],
                       ),
                     ),
+                    electionType403b: ElectionType403bEnum.None,
                   },
                 },
                 HcmData: {

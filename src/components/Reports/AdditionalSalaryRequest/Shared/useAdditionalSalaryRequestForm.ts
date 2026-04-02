@@ -118,8 +118,7 @@ export const useAdditionalSalaryRequestForm = (
     ...Object.fromEntries(fieldConfig.map(({ key }) => [key, '0'])),
     totalAdditionalSalaryRequested: '0',
     additionalInfo: '',
-    deductTaxDeferredPercent: false,
-    deductRothPercent: false,
+    electionType403b: '',
     phoneNumber: user?.staffInfo?.primaryPhoneNumber || '',
     emailAddress: user?.staffInfo?.emailAddress || '',
   } as CompleteFormValues;
@@ -139,8 +138,6 @@ export const useAdditionalSalaryRequestForm = (
               String((request[key as keyof typeof request] as number) ?? ''),
             ]),
           ),
-          deductTaxDeferredPercent: request.deductTaxDeferredPercent || false,
-          deductRothPercent: request.deductRothPercent || false,
           phoneNumber:
             request.phoneNumber || user?.staffInfo?.primaryPhoneNumber || '',
           emailAddress:
@@ -148,6 +145,7 @@ export const useAdditionalSalaryRequestForm = (
           totalAdditionalSalaryRequested:
             request.totalAdditionalSalaryRequested || '',
           additionalInfo: request.additionalInfo || '',
+          electionType403b: request.electionType403b || '',
         } as CompleteFormValues;
       }
     }
@@ -177,8 +175,6 @@ export const useAdditionalSalaryRequestForm = (
             createCurrencyValidation(t(field.label), getMaxForField(field)),
           ]),
         ),
-        deductTaxDeferredPercent: yup.boolean(),
-        deductRothPercent: yup.boolean(),
         phoneNumber: phoneNumber(i18n.t).required(
           i18n.t('Phone Number is required.'),
         ),
@@ -221,6 +217,11 @@ export const useAdditionalSalaryRequestForm = (
               return true;
             },
           ),
+        electionType403b: yup
+          .string()
+          .required(
+            t('Please select how you would like to contribute to your 403(b).'),
+          ),
       }),
     [createCurrencyValidation, t, primaryAccountBalance, individualCap, locale],
   );
@@ -240,7 +241,8 @@ export const useAdditionalSalaryRequestForm = (
                 typeof value === 'string' &&
                 key !== 'phoneNumber' &&
                 key !== 'emailAddress' &&
-                key !== 'additionalInfo'
+                key !== 'additionalInfo' &&
+                key !== 'electionType403b'
                   ? [key, parseFloat(value) || 0]
                   : [key, value],
               ),

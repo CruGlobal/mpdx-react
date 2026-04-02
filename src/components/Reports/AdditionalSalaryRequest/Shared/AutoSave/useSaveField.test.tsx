@@ -1,6 +1,7 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { renderHook, waitFor } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { ElectionType403bEnum } from 'pages/api/graphql-rest.page.generated';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import theme from 'src/theme';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
@@ -44,8 +45,7 @@ const defaultFormValues: CompleteFormValues = {
   housingDownPayment: '0',
   autoPurchase: '0',
   expensesNotApprovedWithin90Days: '0',
-  deductTaxDeferredPercent: false,
-  deductRothPercent: false,
+  electionType403b: ElectionType403bEnum.None,
   phoneNumber: '555-1234',
   emailAddress: 'test@testerson.test',
   totalAdditionalSalaryRequested: '100',

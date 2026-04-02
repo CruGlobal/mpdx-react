@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { ElectionType403bEnum } from 'src/graphql/types.generated';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 import { getTotal } from './Helper/getTotal';
@@ -59,14 +60,23 @@ export const useSalaryCalculations = ({
 
   return useMemo(() => {
     const total = getTotal(values);
+    const pretaxDeduction =
+      values.electionType403b === ElectionType403bEnum.Pretax;
+    const rothDeduction = values.electionType403b === ElectionType403bEnum.Roth;
+    const standardDeduction =
+      values.electionType403b === ElectionType403bEnum.Standard;
 
-    const calculatedTraditionalDeduction = values.deductTaxDeferredPercent
-      ? total * traditional403bPercentage
-      : 0;
+    const calculatedTraditionalDeduction = pretaxDeduction
+      ? total
+      : standardDeduction
+        ? total * traditional403bPercentage
+        : 0;
 
-    const calculatedRothDeduction = values.deductRothPercent
-      ? (total - calculatedTraditionalDeduction) * roth403bPercentage
-      : 0;
+    const calculatedRothDeduction = rothDeduction
+      ? total
+      : standardDeduction
+        ? (total - calculatedTraditionalDeduction) * roth403bPercentage
+        : 0;
 
     const calculatedDeduction =
       calculatedTraditionalDeduction + calculatedRothDeduction;

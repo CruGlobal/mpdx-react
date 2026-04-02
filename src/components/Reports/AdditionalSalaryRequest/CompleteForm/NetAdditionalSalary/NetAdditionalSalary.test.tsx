@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
+import { ElectionType403bEnum } from 'src/graphql/types.generated';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { AdditionalSalaryRequestTestWrapper } from '../../AdditionalSalaryRequestTestWrapper';
 import { defaultCompleteFormValues } from '../../Shared/CompleteForm.mock';
@@ -64,12 +65,11 @@ describe('NetAdditionalSalary', () => {
     expect(getByText('$10,000')).toBeInTheDocument();
   });
 
-  it('calculates net salary with percentage deduction when checkbox is checked', async () => {
+  it('calculates net salary with standard contribution selected', async () => {
     const valuesWithDeduction: CompleteFormValues = {
       ...defaultCompleteFormValues,
       additionalSalaryWithinMax: '10000',
-      deductTaxDeferredPercent: true,
-      deductRothPercent: true,
+      electionType403b: ElectionType403bEnum.Standard,
     };
 
     const { findByText } = render(
@@ -134,12 +134,11 @@ describe('NetAdditionalSalary', () => {
     });
   });
 
-  it('does not apply percentage deduction when checkbox is unchecked', () => {
+  it('does not apply percentage deduction when no contribution is selected', () => {
     const valuesWithoutDeduction: CompleteFormValues = {
       ...defaultCompleteFormValues,
       additionalSalaryWithinMax: '10000',
-      deductTaxDeferredPercent: false,
-      deductRothPercent: false,
+      electionType403b: ElectionType403bEnum.None,
     };
 
     const { getByText } = render(
