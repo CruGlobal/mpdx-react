@@ -1,3 +1,4 @@
+import { ElectionType403bEnum } from 'src/graphql/types.generated';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { defaultCompleteFormValues } from './CompleteForm.mock';
 import { calculateCompletionPercentage } from './calculateCompletionPercentage';
@@ -11,8 +12,6 @@ describe('calculateCompletionPercentage', () => {
     previousYearSalaryNotReceived: '',
     additionalSalaryWithinMax: '',
     adoption: '',
-    traditional403bContribution: '',
-    roth403bContribution: '',
     counselingNonMedical: '',
     healthcareExpensesExceedingLimit: '',
     babysittingMinistryEvents: '',
@@ -37,8 +36,6 @@ describe('calculateCompletionPercentage', () => {
       previousYearSalaryNotReceived: '48000',
       additionalSalaryWithinMax: '5000',
       adoption: '1000',
-      traditional403bContribution: '2000',
-      roth403bContribution: '1500',
       counselingNonMedical: '500',
       healthcareExpensesExceedingLimit: '1500',
       babysittingMinistryEvents: '800',
@@ -49,6 +46,7 @@ describe('calculateCompletionPercentage', () => {
       housingDownPayment: '10000',
       autoPurchase: '5000',
       expensesNotApprovedWithin90Days: '750',
+      electionType403b: ElectionType403bEnum.Pretax,
       phoneNumber: '555-1234',
       emailAddress: 'test@example.com',
       additionalInfo: 'Some additional info',
@@ -57,13 +55,12 @@ describe('calculateCompletionPercentage', () => {
     expect(calculateCompletionPercentage(values)).toBe(100);
   });
 
-  it('should exclude deductTaxDeferredPercent from calculation', () => {
+  it('should exclude electionType403b none selection from calculation', () => {
     const values = createFormValues({
       currentYearSalaryNotReceived: '50000',
-      deductTaxDeferredPercent: true,
-      deductRothPercent: true,
+      electionType403b: ElectionType403bEnum.None,
     });
-    expect(calculateCompletionPercentage(values)).toBe(5);
+    expect(calculateCompletionPercentage(values)).toBe(11);
   });
 
   it('should treat zero values as unfilled', () => {
@@ -72,7 +69,7 @@ describe('calculateCompletionPercentage', () => {
       previousYearSalaryNotReceived: '0',
       additionalSalaryWithinMax: '50000',
     });
-    expect(calculateCompletionPercentage(values)).toBe(5);
+    expect(calculateCompletionPercentage(values)).toBe(6);
   });
 
   it('should handle decimal values correctly', () => {
@@ -80,6 +77,6 @@ describe('calculateCompletionPercentage', () => {
       currentYearSalaryNotReceived: '50000.50',
       previousYearSalaryNotReceived: '48000.75',
     });
-    expect(calculateCompletionPercentage(values)).toBe(10);
+    expect(calculateCompletionPercentage(values)).toBe(11);
   });
 });

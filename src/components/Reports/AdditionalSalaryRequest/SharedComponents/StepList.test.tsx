@@ -1,4 +1,5 @@
 import { render, waitFor } from '@testing-library/react';
+import { ElectionType403bEnum } from 'src/graphql/types.generated';
 import { PageEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
@@ -18,8 +19,6 @@ const defaultInitialValues: CompleteFormValues = {
   previousYearSalaryNotReceived: '0',
   additionalSalaryWithinMax: '0',
   adoption: '0',
-  traditional403bContribution: '0',
-  roth403bContribution: '0',
   counselingNonMedical: '0',
   healthcareExpensesExceedingLimit: '0',
   babysittingMinistryEvents: '0',
@@ -30,8 +29,7 @@ const defaultInitialValues: CompleteFormValues = {
   housingDownPayment: '0',
   autoPurchase: '0',
   expensesNotApprovedWithin90Days: '0',
-  deductTaxDeferredPercent: false,
-  deductRothPercent: false,
+  electionType403b: ElectionType403bEnum.None,
   phoneNumber: '',
   totalAdditionalSalaryRequested: '0',
   emailAddress: '',

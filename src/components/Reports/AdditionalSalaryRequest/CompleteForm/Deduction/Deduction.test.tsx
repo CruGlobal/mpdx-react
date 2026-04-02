@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { AdditionalSalaryRequestTestWrapper } from '../../AdditionalSalaryRequestTestWrapper';
 import { defaultCompleteFormValues } from '../../Shared/CompleteForm.mock';
@@ -10,17 +11,20 @@ interface TestWrapperProps {
   initialValues?: CompleteFormValues;
   traditionalDeductionPercentage?: number;
   rothDeductionPercentage?: number;
+  pageType?: PageEnum;
 }
 
 const TestWrapper: React.FC<TestWrapperProps> = ({
   initialValues = defaultCompleteFormValues,
   traditionalDeductionPercentage = 0,
   rothDeductionPercentage = 0,
+  pageType,
 }) => (
   <AdditionalSalaryRequestTestWrapper
     initialValues={initialValues}
     traditionalDeductionPercentage={traditionalDeductionPercentage}
     rothDeductionPercentage={rothDeductionPercentage}
+    pageType={pageType}
   >
     <Deduction />
   </AdditionalSalaryRequestTestWrapper>
@@ -35,71 +39,64 @@ describe('Deduction', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders the default percentage checkbox', () => {
+  it('renders contribution radio group', () => {
     const { getByRole } = render(<TestWrapper />);
 
-    const traditionalCheckbox = getByRole('checkbox', {
-      name: 'Use default Percentage for 403(b) Traditional deduction',
+    const noneRadio = getByRole('radio', {
+      name: 'No 403(b) contribution - all funds go to my account',
     });
-    expect(traditionalCheckbox).toBeInTheDocument();
-    expect(traditionalCheckbox).not.toBeChecked();
+    expect(noneRadio).toBeInTheDocument();
 
-    const rothCheckbox = getByRole('checkbox', {
-      name: 'Use default Percentage for 403(b) Roth deduction',
+    const rothRadio = getByRole('radio', {
+      name: '100% of this request goes to my Roth 403(b)',
     });
-    expect(rothCheckbox).toBeInTheDocument();
-    expect(rothCheckbox).not.toBeChecked();
+    expect(rothRadio).toBeInTheDocument();
+
+    const traditionalRadio = getByRole('radio', {
+      name: '100% of this request goes to my Traditional 403(b)',
+    });
+    expect(traditionalRadio).toBeInTheDocument();
+
+    const standardRadio = getByRole('radio', {
+      name: /Apply my regular 403\(b\) percentages/i,
+    });
+    expect(standardRadio).toBeInTheDocument();
   });
 
-  it('displays the checkbox label text with percentage', async () => {
-    const { findByText, getAllByText } = render(
+  it('displays the standard radio label with default percentages', async () => {
+    const { findByRole } = render(
       <TestWrapper
         traditionalDeductionPercentage={12}
         rothDeductionPercentage={8}
       />,
     );
 
-    expect(
-      await findByText(
-        'Check this box if you would like 12% of your Additional Salary Request contributed to your Traditional 403(b).',
-      ),
-    ).toBeInTheDocument();
-    expect(
-      await findByText(
-        'Check this box if you would like 8% of your Additional Salary Request contributed to your Roth 403(b).',
-      ),
-    ).toBeInTheDocument();
-
-    expect(
-      getAllByText(
-        'This is your regular 403(b) percentage contribution as selected in your Principal account.',
-      ),
-    ).toHaveLength(2);
+    const standardRadio = await findByRole('radio', {
+      name: 'Apply my regular 403(b) percentages (12% Traditional / 8% Roth)',
+    });
+    expect(standardRadio).toBeInTheDocument();
   });
 
-  it('displays all three sections', () => {
+  it('displays total deduction section', () => {
     const { getByText } = render(<TestWrapper />);
 
-    expect(
-      getByText('403(b) Contribution Requested as Additional Salary'),
-    ).toBeInTheDocument();
     expect(getByText('Total 403(b) Deduction')).toBeInTheDocument();
   });
 
-  it('shows $0.00 for all amounts when form is empty', () => {
+  it('shows $0.00 for total deduction amount when form is empty', () => {
     const { getAllByText } = render(<TestWrapper />);
 
     const zeroAmounts = getAllByText('$0.00');
-    expect(zeroAmounts.length).toBeGreaterThanOrEqual(4);
+    expect(zeroAmounts.length).toBe(1);
   });
 
-  it('calculates deduction when checkbox is checked', async () => {
+  it('shows $0.00 when none selected', async () => {
     const valuesWithSalary: CompleteFormValues = {
       ...defaultCompleteFormValues,
       additionalSalaryWithinMax: '10000',
     };
 
-    const { getByRole, findByText, getByLabelText } = render(
+    const { getByRole, findByText, getByText } = render(
       <TestWrapper
         initialValues={valuesWithSalary}
         traditionalDeductionPercentage={12}
@@ -110,45 +107,28 @@ describe('Deduction', () => {
     // Wait for GraphQL data to load
     await findByText(/12%/);
 
-    const traditionalCheckbox = getByRole('checkbox', {
-      name: 'Use default Percentage for 403(b) Traditional deduction',
+    const noneRadio = getByRole('radio', {
+      name: 'No 403(b) contribution - all funds go to my account',
     });
 
-    userEvent.click(traditionalCheckbox);
+    userEvent.click(noneRadio);
 
     await waitFor(() => {
-      expect(traditionalCheckbox).toBeChecked();
+      expect(noneRadio).toBeChecked();
     });
-
-    const rothCheckbox = getByRole('checkbox', {
-      name: 'Use default Percentage for 403(b) Roth deduction',
-    });
-
-    userEvent.click(rothCheckbox);
 
     await waitFor(() => {
-      expect(rothCheckbox).toBeChecked();
-    });
-
-    // 12% of $10,000 = $1,200
-    // 8% of ($10,000 - $1,200) = 8% of $8,800 = $704
-    await waitFor(() => {
-      expect(
-        getByLabelText('Calculated traditional deduction amount'),
-      ).toHaveTextContent('$1,200.00');
-      expect(
-        getByLabelText('Calculated roth deduction amount'),
-      ).toHaveTextContent('$704.00');
+      expect(getByText('$0.00')).toBeInTheDocument();
     });
   });
 
-  it('does not calculate deduction when checkbox is unchecked', () => {
+  it('calculates deduction when pretax selected', async () => {
     const valuesWithSalary: CompleteFormValues = {
       ...defaultCompleteFormValues,
       additionalSalaryWithinMax: '10000',
     };
 
-    const { getByLabelText } = render(
+    const { getByRole, findByText, getByText } = render(
       <TestWrapper
         initialValues={valuesWithSalary}
         traditionalDeductionPercentage={12}
@@ -156,151 +136,34 @@ describe('Deduction', () => {
       />,
     );
 
-    expect(
-      getByLabelText('Calculated traditional deduction amount'),
-    ).toHaveTextContent('$0.00');
-    expect(
-      getByLabelText('Calculated roth deduction amount'),
-    ).toHaveTextContent('$0.00');
-  });
-
-  it('displays traditional403bContribution amount from form values', () => {
-    const valuesWithContribution: CompleteFormValues = {
-      ...defaultCompleteFormValues,
-      traditional403bContribution: '5000',
-    };
-
-    const { getAllByText } = render(
-      <TestWrapper initialValues={valuesWithContribution} />,
-    );
-
-    // The traditional403bContribution value should be displayed
-    expect(getAllByText('$5,000.00').length).toBeGreaterThanOrEqual(1);
-  });
-
-  it('displays roth403bContribution amount from form values', () => {
-    const valuesWithContribution: CompleteFormValues = {
-      ...defaultCompleteFormValues,
-      roth403bContribution: '3000',
-    };
-
-    const { getAllByText } = render(
-      <TestWrapper initialValues={valuesWithContribution} />,
-    );
-
-    // The roth403bContribution value should be displayed
-    expect(getAllByText('$3,000.00').length).toBeGreaterThanOrEqual(1);
-  });
-
-  it('calculates total deduction as sum of calculated and traditional403bContribution + roth403bContribution', async () => {
-    const valuesWithBoth: CompleteFormValues = {
-      ...defaultCompleteFormValues,
-      additionalSalaryWithinMax: '10000',
-      traditional403bContribution: '3000',
-      roth403bContribution: '2000',
-      deductTaxDeferredPercent: true,
-      deductRothPercent: true,
-    };
-
-    const { getByLabelText, findByText } = render(
-      <TestWrapper
-        initialValues={valuesWithBoth}
-        traditionalDeductionPercentage={12}
-        rothDeductionPercentage={8}
-      />,
-    );
-
     // Wait for GraphQL data to load
     await findByText(/12%/);
 
-    // 403b contributions excluded from base: totalWithout403b = $10,000
-    // 12% of $10,000 = $1,200
-    // 8% of ($10,000 - $1,200) = 8% of $8,800 = $704
-    await waitFor(() => {
-      expect(
-        getByLabelText('Calculated traditional deduction amount'),
-      ).toHaveTextContent('$1,200.00');
-      expect(
-        getByLabelText('Calculated roth deduction amount'),
-      ).toHaveTextContent('$704.00');
+    const traditionalRadio = getByRole('radio', {
+      name: '100% of this request goes to my Traditional 403(b)',
     });
 
-    // Total should be ($1,200 + $704) + ($3,000 + $2,000) = $6,904
+    userEvent.click(traditionalRadio);
+
     await waitFor(() => {
-      expect(getByLabelText('Total requested amount')).toHaveTextContent(
-        '$6,904.00',
-      );
+      expect(traditionalRadio).toBeChecked();
+    });
+
+    await waitFor(() => {
+      expect(getByText('$10,000.00')).toBeInTheDocument();
     });
   });
 
-  it('calculates percentage based on total of all salary fields', async () => {
-    const valuesWithMultiple: CompleteFormValues = {
-      ...defaultCompleteFormValues,
-      additionalSalaryWithinMax: '5000',
-      adoption: '2000',
-      counselingNonMedical: '3000',
-      deductTaxDeferredPercent: true,
-      deductRothPercent: true,
-    };
-
-    const { getByLabelText, findByText } = render(
-      <TestWrapper
-        initialValues={valuesWithMultiple}
-        traditionalDeductionPercentage={12}
-        rothDeductionPercentage={8}
-      />,
-    );
-
-    // Wait for GraphQL data to load
-    await findByText(/12%/);
-
-    // 12% of ($5,000 + $2,000 + $3,000) = 12% of $10,000 = $1,200
-    // 8% of ($10,000 - $1,200) = 8% of $8,800 = $704
-    await waitFor(() => {
-      expect(
-        getByLabelText('Calculated traditional deduction amount'),
-      ).toHaveTextContent('$1,200.00');
-      expect(
-        getByLabelText('Calculated roth deduction amount'),
-      ).toHaveTextContent('$704.00');
-    });
-  });
-
-  it('does not include deductTaxDeferredPercent boolean in calculation', async () => {
-    const valuesWithBoolean: CompleteFormValues = {
+  it('calculates deduction when roth selected', async () => {
+    const valuesWithSalary: CompleteFormValues = {
       ...defaultCompleteFormValues,
       additionalSalaryWithinMax: '10000',
-      deductTaxDeferredPercent: true,
     };
 
-    const { getByLabelText, findByText } = render(
+    const { getByRole, findByText, getByText } = render(
       <TestWrapper
-        initialValues={valuesWithBoolean}
+        initialValues={valuesWithSalary}
         traditionalDeductionPercentage={12}
-      />,
-    );
-
-    // Wait for GraphQL data to load
-    await findByText(/12%/);
-
-    // Should calculate 12% of $10,000, not treat boolean as a number
-    await waitFor(() => {
-      expect(
-        getByLabelText('Calculated traditional deduction amount'),
-      ).toHaveTextContent('$1,200.00');
-    });
-  });
-
-  it('does not include deductRothPercent boolean in calculation', async () => {
-    const valuesWithBoolean: CompleteFormValues = {
-      ...defaultCompleteFormValues,
-      additionalSalaryWithinMax: '10000',
-      deductRothPercent: true,
-    };
-
-    const { getByLabelText, findByText } = render(
-      <TestWrapper
-        initialValues={valuesWithBoolean}
         rothDeductionPercentage={8}
       />,
     );
@@ -308,143 +171,72 @@ describe('Deduction', () => {
     // Wait for GraphQL data to load
     await findByText(/8%/);
 
-    // Should calculate 8% of $10,000, not treat boolean as a number
+    const rothRadio = getByRole('radio', {
+      name: '100% of this request goes to my Roth 403(b)',
+    });
+
+    userEvent.click(rothRadio);
+
     await waitFor(() => {
-      expect(
-        getByLabelText('Calculated roth deduction amount'),
-      ).toHaveTextContent('$800.00');
+      expect(rothRadio).toBeChecked();
+    });
+
+    await waitFor(() => {
+      expect(getByText('$10,000.00')).toBeInTheDocument();
     });
   });
 
-  it('handles empty string values in calculation with deductTaxDeferredPercent', async () => {
-    const valuesWithEmpty: CompleteFormValues = {
+  it('calculates deduction when standard selected', async () => {
+    const valuesWithSalary: CompleteFormValues = {
       ...defaultCompleteFormValues,
-      additionalSalaryWithinMax: '5000',
-      adoption: '',
-      counselingNonMedical: '',
-      deductTaxDeferredPercent: true,
+      additionalSalaryWithinMax: '10000',
     };
 
-    const { getByLabelText, findByText } = render(
+    const { getByRole, findByText, getByText } = render(
       <TestWrapper
-        initialValues={valuesWithEmpty}
+        initialValues={valuesWithSalary}
         traditionalDeductionPercentage={12}
+        rothDeductionPercentage={8}
       />,
     );
 
     // Wait for GraphQL data to load
     await findByText(/12%/);
 
-    // 12% of $5,000 = $600 (empty strings should be treated as 0)
+    const standardRadio = getByRole('radio', {
+      name: 'Apply my regular 403(b) percentages (12% Traditional / 8% Roth)',
+    });
+
+    userEvent.click(standardRadio);
+
     await waitFor(() => {
-      expect(
-        getByLabelText('Calculated traditional deduction amount'),
-      ).toHaveTextContent('$600.00');
+      expect(standardRadio).toBeChecked();
+    });
+
+    // Traditional: $10,000 * 12% = $1,200
+    // Roth: ($10,000 - 1,200) * 8% = $704
+    // Total: $1,904
+    await waitFor(() => {
+      expect(getByText('$1,904.00')).toBeInTheDocument();
     });
   });
 
-  it('handles empty string values in calculation with deductRothPercent', async () => {
-    const valuesWithEmpty: CompleteFormValues = {
-      ...defaultCompleteFormValues,
-      additionalSalaryWithinMax: '5000',
-      adoption: '',
-      counselingNonMedical: '',
-      deductRothPercent: true,
-    };
+  it('disables radio buttons in view mode', () => {
+    const { getAllByRole } = render(<TestWrapper pageType={PageEnum.View} />);
 
-    const { getByLabelText, findByText } = render(
-      <TestWrapper
-        initialValues={valuesWithEmpty}
-        rothDeductionPercentage={8}
-      />,
-    );
-
-    // Wait for GraphQL data to load
-    await findByText(/8%/);
-
-    // 8% of $5,000 = $400 (empty strings should be treated as 0)
-    await waitFor(() => {
-      expect(
-        getByLabelText('Calculated roth deduction amount'),
-      ).toHaveTextContent('$400.00');
+    const radios = getAllByRole('radio');
+    radios.forEach((radio) => {
+      expect(radio).toBeDisabled();
     });
   });
 
-  it('updates total when traditional403bContribution changes', async () => {
-    const { getByLabelText, rerender } = render(<TestWrapper />);
+  it('does not show validation error before submit', () => {
+    const { queryByText } = render(<TestWrapper />);
 
-    expect(getByLabelText('Total requested amount')).toHaveTextContent('$0.00');
-
-    const updatedValues: CompleteFormValues = {
-      ...defaultCompleteFormValues,
-      traditional403bContribution: '2500',
-    };
-
-    rerender(<TestWrapper initialValues={updatedValues} />);
-
-    await waitFor(() => {
-      expect(getByLabelText('Total requested amount')).toHaveTextContent(
-        '$2,500.00',
-      );
-    });
-  });
-
-  it('updates total when roth403bContribution changes', async () => {
-    const { getByLabelText, rerender } = render(<TestWrapper />);
-
-    expect(getByLabelText('Total requested amount')).toHaveTextContent('$0.00');
-
-    const updatedValues: CompleteFormValues = {
-      ...defaultCompleteFormValues,
-      roth403bContribution: '1500',
-    };
-
-    rerender(<TestWrapper initialValues={updatedValues} />);
-
-    await waitFor(() => {
-      expect(getByLabelText('Total requested amount')).toHaveTextContent(
-        '$1,500.00',
-      );
-    });
-  });
-
-  it('traditional checkbox can be toggled on and off', async () => {
-    const { getByRole } = render(<TestWrapper />);
-
-    const checkbox = getByRole('checkbox', {
-      name: 'Use default Percentage for 403(b) Traditional deduction',
-    });
-
-    expect(checkbox).not.toBeChecked();
-
-    userEvent.click(checkbox);
-    await waitFor(() => {
-      expect(checkbox).toBeChecked();
-    });
-
-    userEvent.click(checkbox);
-    await waitFor(() => {
-      expect(checkbox).not.toBeChecked();
-    });
-  });
-
-  it('roth checkbox can be toggled on and off', async () => {
-    const { getByRole } = render(<TestWrapper />);
-
-    const checkbox = getByRole('checkbox', {
-      name: 'Use default Percentage for 403(b) Roth deduction',
-    });
-
-    expect(checkbox).not.toBeChecked();
-
-    userEvent.click(checkbox);
-    await waitFor(() => {
-      expect(checkbox).toBeChecked();
-    });
-
-    userEvent.click(checkbox);
-    await waitFor(() => {
-      expect(checkbox).not.toBeChecked();
-    });
+    expect(
+      queryByText(
+        'Please select how you would like to contribute to your 403(b).',
+      ),
+    ).not.toBeInTheDocument();
   });
 });

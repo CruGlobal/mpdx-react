@@ -35,7 +35,7 @@ describe('AdditionalSalaryRequest', () => {
       const { getAllByRole, getByText } = render(<TestWrapper />);
 
       const inputs = getAllByRole('textbox');
-      expect(inputs).toHaveLength(16);
+      expect(inputs).toHaveLength(14);
 
       // Verify key category labels are present
       expect(
@@ -97,7 +97,6 @@ describe('AdditionalSalaryRequest', () => {
       const valuesWithBoolean: CompleteFormValues = {
         ...defaultCompleteFormValues,
         additionalSalaryWithinMax: '10000',
-        deductTaxDeferredPercent: true,
         phoneNumber: '555-1234',
       };
 
