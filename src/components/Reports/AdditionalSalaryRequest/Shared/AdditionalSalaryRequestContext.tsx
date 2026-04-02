@@ -14,7 +14,10 @@ import {
   FormEnum,
   PageEnum,
 } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
-import { AsrStatusEnum } from 'src/graphql/types.generated';
+import {
+  AdditionalSalaryRequestCalculations,
+  AsrStatusEnum,
+} from 'src/graphql/types.generated';
 import { useStepList } from 'src/hooks/useStepList';
 import { useTrackMutation } from 'src/hooks/useTrackMutation';
 import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
@@ -50,6 +53,13 @@ export type AdditionalSalaryRequestType = {
   setPageType: (pageType: PageEnum) => void;
   handleDeleteRequest: (id: string, isCancel: boolean) => Promise<void>;
   requestId?: string;
+  calculations?: Pick<
+    AdditionalSalaryRequestCalculations,
+    | 'currentSalaryCap'
+    | 'combinedCap'
+    | 'staffAccountBalance'
+    | 'pendingAsrAmount'
+  >;
   user: HcmDataQuery['hcm'][0] | undefined;
   spouse: HcmDataQuery['hcm'][1] | undefined;
   salaryInfo: SalaryInfoQuery['salaryInfo'] | undefined;
@@ -231,6 +241,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       setPageType,
       handleDeleteRequest,
       requestId: requestData?.latestAdditionalSalaryRequest?.id ?? requestId,
+      calculations: requestData?.latestAdditionalSalaryRequest?.calculations,
       user,
       spouse,
       salaryInfo,
