@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { AdditionalSalaryRequestTestWrapper } from '../../AdditionalSalaryRequestTestWrapper';
 import { defaultCompleteFormValues } from '../../Shared/CompleteForm.mock';
@@ -10,17 +11,20 @@ interface TestWrapperProps {
   initialValues?: CompleteFormValues;
   traditionalDeductionPercentage?: number;
   rothDeductionPercentage?: number;
+  pageType?: PageEnum;
 }
 
 const TestWrapper: React.FC<TestWrapperProps> = ({
   initialValues = defaultCompleteFormValues,
   traditionalDeductionPercentage = 0,
   rothDeductionPercentage = 0,
+  pageType,
 }) => (
   <AdditionalSalaryRequestTestWrapper
     initialValues={initialValues}
     traditionalDeductionPercentage={traditionalDeductionPercentage}
     rothDeductionPercentage={rothDeductionPercentage}
+    pageType={pageType}
   >
     <Deduction />
   </AdditionalSalaryRequestTestWrapper>
@@ -215,5 +219,24 @@ describe('Deduction', () => {
     await waitFor(() => {
       expect(getByText('$1,904.00')).toBeInTheDocument();
     });
+  });
+
+  it('disables radio buttons in view mode', () => {
+    const { getAllByRole } = render(<TestWrapper pageType={PageEnum.View} />);
+
+    const radios = getAllByRole('radio');
+    radios.forEach((radio) => {
+      expect(radio).toBeDisabled();
+    });
+  });
+
+  it('does not show validation error before submit', () => {
+    const { queryByText } = render(<TestWrapper />);
+
+    expect(
+      queryByText(
+        'Please select how you would like to contribute to your 403(b).',
+      ),
+    ).not.toBeInTheDocument();
   });
 });

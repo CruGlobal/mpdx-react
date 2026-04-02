@@ -119,7 +119,7 @@ const defaultFormValues: CompleteFormValues = {
   housingDownPayment: '0',
   autoPurchase: '0',
   expensesNotApprovedWithin90Days: '0',
-  electionType403b: '',
+  electionType403b: null,
   phoneNumber: '',
   emailAddress: '',
   totalAdditionalSalaryRequested: '0',
@@ -483,13 +483,31 @@ describe('useAdditionalSalaryRequestForm', () => {
       );
     });
 
-    it('should validate electionType403b as required', async () => {
+    it('should not show electionType403b error before submit', () => {
       const { result } = renderHook(
         () =>
           useAdditionalSalaryRequestForm({
             ...defaultFormValues,
             phoneNumber: '555-123-4567',
-            electionType403b: '',
+            electionType403b: null,
+          }),
+        {
+          wrapper: TestWrapper,
+        },
+      );
+
+      // Before submit, errors should not be surfaced to the user
+      expect(result.current.submitCount).toBe(0);
+      expect(result.current.errors.electionType403b).toBeUndefined();
+    });
+
+    it('should validate electionType403b as required after submit', async () => {
+      const { result } = renderHook(
+        () =>
+          useAdditionalSalaryRequestForm({
+            ...defaultFormValues,
+            phoneNumber: '555-123-4567',
+            electionType403b: null,
           }),
         {
           wrapper: TestWrapper,

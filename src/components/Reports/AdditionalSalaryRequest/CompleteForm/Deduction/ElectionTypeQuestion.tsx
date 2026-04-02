@@ -11,6 +11,7 @@ import {
 } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
+import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { ElectionType403bEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
@@ -19,17 +20,18 @@ import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequest
 import { useSaveField } from '../../Shared/AutoSave/useSaveField';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
 
-export const DeductionPercentQuestion: React.FC = () => {
+export const ElectionTypeQuestion: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
   const currency = 'USD';
-  const { traditional403bPercentage, roth403bPercentage } =
+  const { traditional403bPercentage, roth403bPercentage, pageType } =
     useAdditionalSalaryRequest();
 
   const {
     values: formValues,
     setFieldValue,
     errors,
+    submitCount,
   } = useFormikContext<CompleteFormValues>();
   const saveField = useSaveField({ formValues });
 
@@ -53,10 +55,10 @@ export const DeductionPercentQuestion: React.FC = () => {
             'How would you like your Additional Salary Request contributed to your 403(b)?',
           )}
         </Typography>
-        <FormControl component="fieldset">
+        <FormControl component="fieldset" disabled={pageType === PageEnum.View}>
           <RadioGroup
             name="electionType403b"
-            value={formValues.electionType403b}
+            value={formValues.electionType403b ?? ''}
             onChange={handleCustomChange}
           >
             <FormControlLabel
@@ -107,7 +109,7 @@ export const DeductionPercentQuestion: React.FC = () => {
               </Typography>
             </Box>
           )}
-          {errors.electionType403b && (
+          {submitCount > 0 && errors.electionType403b && (
             <Typography variant="body2" color="error" sx={{ mt: 1 }}>
               {errors.electionType403b}
             </Typography>

@@ -1,8 +1,8 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { renderHook, waitFor } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { ElectionType403bEnum } from 'pages/api/graphql-rest.page.generated';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
+import { ElectionType403bEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { UpdateAdditionalSalaryRequestMutation } from '../../AdditionalSalaryRequest.generated';

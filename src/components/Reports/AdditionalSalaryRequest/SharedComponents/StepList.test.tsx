@@ -1,5 +1,5 @@
 import { render, waitFor } from '@testing-library/react';
-import { ElectionType403bEnum } from 'pages/api/graphql-rest.page.generated';
+import { ElectionType403bEnum } from 'src/graphql/types.generated';
 import { PageEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';

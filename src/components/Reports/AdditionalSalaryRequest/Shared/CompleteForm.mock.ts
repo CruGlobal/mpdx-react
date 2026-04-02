@@ -16,7 +16,7 @@ export const defaultCompleteFormValues: CompleteFormValues = {
   housingDownPayment: '0',
   autoPurchase: '0',
   expensesNotApprovedWithin90Days: '0',
-  electionType403b: '',
+  electionType403b: null,
   phoneNumber: '',
   emailAddress: '',
   totalAdditionalSalaryRequested: '0',

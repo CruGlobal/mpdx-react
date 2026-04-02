@@ -69,7 +69,7 @@ describe('calculateCompletionPercentage', () => {
       previousYearSalaryNotReceived: '0',
       additionalSalaryWithinMax: '50000',
     });
-    expect(calculateCompletionPercentage(values)).toBe(5);
+    expect(calculateCompletionPercentage(values)).toBe(6);
   });
 
   it('should handle decimal values correctly', () => {

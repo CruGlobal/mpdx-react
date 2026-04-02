@@ -36,6 +36,26 @@ export interface UseSalaryCalculationsProps {
   calculations?: CalculationsData | null;
 }
 
+const calculate403bDeductions = (
+  electionType: ElectionType403bEnum | null,
+  total: number,
+  traditionalPercentage: number,
+  rothPercentage: number,
+): { traditional: number; roth: number } => {
+  switch (electionType) {
+    case ElectionType403bEnum.Pretax:
+      return { traditional: total, roth: 0 };
+    case ElectionType403bEnum.Roth:
+      return { traditional: 0, roth: total };
+    case ElectionType403bEnum.Standard: {
+      const traditional = total * traditionalPercentage;
+      return { traditional, roth: (total - traditional) * rothPercentage };
+    }
+    default:
+      return { traditional: 0, roth: 0 };
+  }
+};
+
 export const useSalaryCalculations = ({
   values,
   calculations,
@@ -60,28 +80,18 @@ export const useSalaryCalculations = ({
 
   return useMemo(() => {
     const total = getTotal(values);
-    const pretaxDeduction =
-      values.electionType403b === ElectionType403bEnum.Pretax;
-    const rothDeduction = values.electionType403b === ElectionType403bEnum.Roth;
-    const standardDeduction =
-      values.electionType403b === ElectionType403bEnum.Standard;
+    const {
+      traditional: calculatedTraditionalDeduction,
+      roth: calculatedRothDeduction,
+    } = calculate403bDeductions(
+      values.electionType403b,
+      total,
+      traditional403bPercentage,
+      roth403bPercentage,
+    );
 
-    const calculatedTraditionalDeduction = pretaxDeduction
-      ? total
-      : standardDeduction
-        ? total * traditional403bPercentage
-        : 0;
-
-    const calculatedRothDeduction = rothDeduction
-      ? total
-      : standardDeduction
-        ? (total - calculatedTraditionalDeduction) * roth403bPercentage
-        : 0;
-
-    const calculatedDeduction =
+    const totalDeduction =
       calculatedTraditionalDeduction + calculatedRothDeduction;
-
-    const totalDeduction = calculatedDeduction;
 
     const netSalary = total - totalDeduction;
 

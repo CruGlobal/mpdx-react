@@ -7,7 +7,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
-import { DeductionPercentQuestion } from './DeductionPercentQuestion';
+import { ElectionTypeQuestion } from './ElectionTypeQuestion';
 
 export const Deduction: React.FC = () => {
   const { t } = useTranslation();
@@ -18,7 +18,7 @@ export const Deduction: React.FC = () => {
 
   return (
     <FormCard title={t('403(b) Deduction')} hideHeaders>
-      <DeductionPercentQuestion />
+      <ElectionTypeQuestion />
       <TableRow>
         <TableCell sx={{ width: '70%' }}>
           <Typography variant="body1" fontWeight="bold">
@@ -27,7 +27,7 @@ export const Deduction: React.FC = () => {
         </TableCell>
         <TableCell
           sx={{ width: '30%', fontSize: 16, fontWeight: 'bold' }}
-          aria-label="Total requested amount"
+          aria-label={t('Total requested amount')}
         >
           {currencyFormat(totalDeduction, 'USD', locale, {
             showTrailingZeros: true,

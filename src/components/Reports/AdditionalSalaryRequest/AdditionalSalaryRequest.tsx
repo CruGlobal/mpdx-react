@@ -1,6 +1,7 @@
 import { Container, Stack } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Notification } from 'src/components/Notification/Notification';
+import { ElectionType403bEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { PanelLayout } from '../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { useIconPanelItems } from '../Shared/CalculationReports/PanelLayout/useIconPanelItems';
@@ -27,7 +28,7 @@ export interface CompleteFormValues {
   housingDownPayment: string;
   autoPurchase: string;
   expensesNotApprovedWithin90Days: string;
-  electionType403b: string;
+  electionType403b: ElectionType403bEnum | null;
   phoneNumber: string;
   totalAdditionalSalaryRequested: string;
   additionalInfo: string;

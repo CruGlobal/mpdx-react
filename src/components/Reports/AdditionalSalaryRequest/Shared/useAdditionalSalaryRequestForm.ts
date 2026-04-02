@@ -118,7 +118,7 @@ export const useAdditionalSalaryRequestForm = (
     ...Object.fromEntries(fieldConfig.map(({ key }) => [key, '0'])),
     totalAdditionalSalaryRequested: '0',
     additionalInfo: '',
-    electionType403b: '',
+    electionType403b: null,
     phoneNumber: user?.staffInfo?.primaryPhoneNumber || '',
     emailAddress: user?.staffInfo?.emailAddress || '',
   } as CompleteFormValues;
@@ -145,7 +145,7 @@ export const useAdditionalSalaryRequestForm = (
           totalAdditionalSalaryRequested:
             request.totalAdditionalSalaryRequested || '',
           additionalInfo: request.additionalInfo || '',
-          electionType403b: request.electionType403b || '',
+          electionType403b: request.electionType403b ?? null,
         } as CompleteFormValues;
       }
     }

@@ -1,7 +1,7 @@
 import React, { createElement } from 'react';
 import { renderHook } from '@testing-library/react';
 import { Formik } from 'formik';
-import { ElectionType403bEnum } from 'pages/api/graphql-rest.page.generated';
+import { ElectionType403bEnum } from 'src/graphql/types.generated';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 import {
