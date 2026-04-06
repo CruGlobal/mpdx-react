@@ -20,12 +20,10 @@ import { TotalSalaryRequested } from '../../SubmitModalAccordions/TotalSalaryReq
 
 export const ViewForm: React.FC = () => {
   const { t } = useTranslation();
-  const { requestData, setPageType } = useAdditionalSalaryRequest();
+  const { calculations, setPageType } = useAdditionalSalaryRequest();
   const { values } = useFormikContext<CompleteFormValues>();
   const { name, accountNumber, primaryAccountBalance } = useFormUserInfo();
-  const individualCap =
-    requestData?.latestAdditionalSalaryRequest?.calculations.currentSalaryCap ??
-    0;
+  const individualCap = calculations?.currentSalaryCap ?? 0;
 
   const { exceedsCap } = useSalaryCalculations({
     values,

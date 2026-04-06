@@ -37,6 +37,10 @@ const defaultMockContextValue = {
       },
     },
   },
+  calculations: {
+    currentSalaryCap: 100000,
+    pendingAsrAmount: 5000,
+  },
   user: {
     currentSalary: {
       grossSalaryAmount: 50000,

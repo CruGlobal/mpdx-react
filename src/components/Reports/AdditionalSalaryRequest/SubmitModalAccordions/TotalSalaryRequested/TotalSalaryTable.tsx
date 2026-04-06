@@ -31,11 +31,9 @@ export const TotalSalaryTable: React.FC = () => {
   const locale = useLocale();
   const currency = 'USD';
 
-  const { requestData } = useAdditionalSalaryRequest();
+  const { calculations } = useAdditionalSalaryRequest();
   const { values } = useFormikContext<CompleteFormValues>();
 
-  const asrValues = requestData?.latestAdditionalSalaryRequest;
-  const calculations = asrValues?.calculations;
   const individualCap = calculations?.currentSalaryCap ?? 0;
 
   const {
@@ -45,7 +43,6 @@ export const TotalSalaryTable: React.FC = () => {
     grossAnnualSalary,
   } = useSalaryCalculations({
     values,
-    calculations,
   });
 
   const summaryItems = useMemo(
