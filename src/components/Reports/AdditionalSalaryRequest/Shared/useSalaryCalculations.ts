@@ -161,5 +161,6 @@ export const useSalaryCalculations = ({
     spouseIndividualCap,
     spouse,
     requestData,
+    spouseGrossAnnualSalary,
   ]);
 };
