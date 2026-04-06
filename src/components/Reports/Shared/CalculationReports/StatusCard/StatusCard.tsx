@@ -12,6 +12,7 @@ import {
   IconButton,
   SxProps,
   Theme,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
@@ -136,19 +137,29 @@ export const StatusCard: React.FC<StatusCardProps> = ({
           )}
           {isRequest && (
             <Box sx={{ float: 'right' }}>
-              <Button
-                sx={{
-                  color: 'error.light',
-                  px: 2,
-                  py: 1,
-                  fontWeight: 'bold',
-                }}
-                disabled={disableCancel}
-                onClick={() => setOpenCancel(true)}
+              <Tooltip
+                title={
+                  disableCancel
+                    ? t('An approved request cannot be canceled')
+                    : ''
+                }
               >
-                <Cancel sx={{ mr: 0.5 }} />
-                {t('Cancel Request')}
-              </Button>
+                <span data-testid="cancel-button-wrapper">
+                  <Button
+                    sx={{
+                      color: 'error.light',
+                      px: 2,
+                      py: 1,
+                      fontWeight: 'bold',
+                    }}
+                    disabled={disableCancel}
+                    onClick={() => setOpenCancel(true)}
+                  >
+                    <Cancel sx={{ mr: 0.5 }} />
+                    {t('Cancel Request')}
+                  </Button>
+                </span>
+              </Tooltip>
             </Box>
           )}
           {openCancel && (
