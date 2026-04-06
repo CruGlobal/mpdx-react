@@ -84,7 +84,7 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
             inProgressCalculation: hasInProgressCalculation
               ? { id: 'in-progress-calc-1' }
               : null,
-            approvedCalculation: hasApprovedCalculation
+            effectiveCalculation: hasApprovedCalculation
               ? {
                   salary: 50000,
                   spouseSalary: 60000,
