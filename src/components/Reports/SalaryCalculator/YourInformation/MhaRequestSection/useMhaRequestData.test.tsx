@@ -236,6 +236,73 @@ describe('useMhaRequestData', () => {
     expect(result.current.ineligibleName).toBeNull();
   });
 
+  it('shows MHI message when user is from Italy', async () => {
+    const { result } = renderHook(() => useMhaRequestData(), {
+      wrapper: createWrapper({
+        hcmUser: {
+          staffInfo: { country: 'IT' },
+          mhaEit: { mhaEligibility: false },
+        },
+      }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.userPreferredName).toBe('John');
+    });
+
+    expect(result.current.showMhiMessage).toBe(true);
+    expect(result.current.showUserFields).toBe(false);
+    expect(result.current.showSpouseFields).toBe(true);
+    expect(result.current.showIneligibleMessage).toBe(false);
+    expect(result.current.ineligibleNames).toBe('');
+    expect(result.current.mhiIneligibleName).toBe('John');
+  });
+
+  it('shows MHI message when spouse is from Italy', async () => {
+    const { result } = renderHook(() => useMhaRequestData(), {
+      wrapper: createWrapper({
+        hcmSpouse: {
+          staffInfo: { country: 'IT' },
+          mhaEit: { mhaEligibility: false },
+        },
+      }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.userPreferredName).toBe('John');
+    });
+
+    expect(result.current.showMhiMessage).toBe(true);
+    expect(result.current.showUserFields).toBe(true);
+    expect(result.current.showSpouseFields).toBe(false);
+    expect(result.current.mhiIneligibleName).toBe('Jane');
+  });
+
+  it('shows unavailable message when both are MHI', async () => {
+    const { result } = renderHook(() => useMhaRequestData(), {
+      wrapper: createWrapper({
+        hcmUser: {
+          staffInfo: { country: 'IT' },
+          mhaEit: { mhaEligibility: false },
+        },
+        hcmSpouse: {
+          staffInfo: { country: 'IT' },
+          mhaEit: { mhaEligibility: false },
+        },
+      }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.userPreferredName).toBe('John');
+    });
+
+    expect(result.current.showMhiMessage).toBe(true);
+    expect(result.current.showUnavailableMessage).toBe(true);
+    expect(result.current.showUserFields).toBe(false);
+    expect(result.current.showSpouseFields).toBe(false);
+    expect(result.current.mhiIneligibleName).toBeNull();
+  });
+
   it('shows only user ineligible message when user is ineligible and no spouse exists', async () => {
     const { result } = renderHook(() => useMhaRequestData(), {
       wrapper: createWrapper({

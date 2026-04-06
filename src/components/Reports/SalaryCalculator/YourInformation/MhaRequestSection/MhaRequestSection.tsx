@@ -11,6 +11,7 @@ import {
 import { useTheme } from '@mui/material/styles';
 import { Stack } from '@mui/system';
 import { Trans, useTranslation } from 'react-i18next';
+import { MhiMessage } from '../../../Shared/HcmData/MhiMessage';
 import { AutosaveTextField } from '../../Autosave/AutosaveTextField';
 import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
 import { StepCard } from '../../Shared/StepCard';
@@ -52,6 +53,8 @@ export const MhaRequestSection: React.FC = () => {
     isNoMhaPlural,
     noMhaNames,
     ineligibleName,
+    mhiIneligibleName,
+    showMhiMessage,
     showUserFields,
     showSpouseFields,
     spousePreferredName,
@@ -80,6 +83,7 @@ export const MhaRequestSection: React.FC = () => {
             isIneligiblePlural={isIneligiblePlural}
             ineligibleNames={ineligibleNames}
             showNoMhaMessage={showNoMhaMessage}
+            showMhiMessage={showMhiMessage}
           />
         )}
 
@@ -115,6 +119,7 @@ export const MhaRequestSection: React.FC = () => {
                   <a href="mailto:MHA@cru.org">MHA@cru.org</a>.
                 </Trans>
               )}
+              {mhiIneligibleName && <MhiMessage name={mhiIneligibleName} />}
             </Typography>
             <Typography variant="body1">
               <Trans t={t}>
@@ -133,6 +138,7 @@ export const MhaRequestSection: React.FC = () => {
                 isIneligiblePlural={isIneligiblePlural}
                 ineligibleNames={ineligibleNames}
                 showNoMhaMessage={showNoMhaMessage}
+                showMhiMessage={showMhiMessage}
               />
             )}
           </>

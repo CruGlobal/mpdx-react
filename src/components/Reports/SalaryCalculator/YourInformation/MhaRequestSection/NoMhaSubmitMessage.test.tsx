@@ -129,6 +129,34 @@ describe('NoMhaSubmitMessage', () => {
     expect(queryByTestId('ineligible-message')).not.toBeInTheDocument();
   });
 
+  it('should render MHI message when showMhiMessage is true', () => {
+    const { getByTestId } = render(
+      <TestWrapper>
+        <NoMhaSubmitMessage
+          isPlural={false}
+          names="John"
+          showMhiMessage={true}
+        />
+      </TestWrapper>,
+    );
+
+    expect(getByTestId('mhi-message')).toBeInTheDocument();
+  });
+
+  it('should not render MHI message when showMhiMessage is false', () => {
+    const { queryByTestId } = render(
+      <TestWrapper>
+        <NoMhaSubmitMessage
+          isPlural={false}
+          names="John"
+          showMhiMessage={false}
+        />
+      </TestWrapper>,
+    );
+
+    expect(queryByTestId('mhi-message')).not.toBeInTheDocument();
+  });
+
   it('should not render ineligible message when ineligibleNames is empty', () => {
     const { queryByTestId } = render(
       <TestWrapper>
