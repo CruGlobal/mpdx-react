@@ -60,6 +60,12 @@ export type AdditionalSalaryRequestType = {
     | 'staffAccountBalance'
     | 'pendingAsrAmount'
   >;
+  spouseCalculations?: Pick<
+    AdditionalSalaryRequestCalculations,
+    | 'currentSalaryCap'
+    | 'staffAccountBalance'
+    | 'pendingAsrAmount'
+  > | null;
   user: HcmDataQuery['hcm'][0] | undefined;
   spouse: HcmDataQuery['hcm'][1] | undefined;
   salaryInfo: SalaryInfoQuery['salaryInfo'] | undefined;
@@ -242,6 +248,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       handleDeleteRequest,
       requestId: requestData?.latestAdditionalSalaryRequest?.id ?? requestId,
       calculations: requestData?.latestAdditionalSalaryRequest?.calculations,
+      spouseCalculations: requestData?.latestAdditionalSalaryRequest?.spouseCalculations,
       user,
       spouse,
       salaryInfo,
