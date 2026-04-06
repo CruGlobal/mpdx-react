@@ -8,10 +8,7 @@ import { I18nextProvider } from 'react-i18next';
 import * as yup from 'yup';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import {
-  AsrStatusEnum,
-  ElectionType403bEnum,
-} from 'src/graphql/types.generated';
+import { AsrStatusEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import { amount, phoneNumber } from 'src/lib/yupHelpers';
 import theme from 'src/theme';
@@ -335,7 +332,6 @@ describe('RequestPage', () => {
       ...defaultCompleteFormValues,
       phoneNumber: '123-456-7890',
       emailAddress: 'test@example.com',
-      electionType403b: ElectionType403bEnum.None,
     };
 
     const { getByRole, getByText } = render(
@@ -371,7 +367,6 @@ describe('RequestPage', () => {
       ...defaultCompleteFormValues,
       phoneNumber: '123-456-7890',
       emailAddress: 'test@example.com',
-      electionType403b: ElectionType403bEnum.None,
     };
 
     const { getByRole, getByText } = render(
@@ -420,7 +415,6 @@ describe('RequestPage', () => {
       phoneNumber: '123-456-7890',
       emailAddress: 'test@example.com',
       additionalInfo: 'Test additional info for exceeds cap',
-      electionType403b: ElectionType403bEnum.None,
     };
 
     const { getByRole, getByText } = render(
@@ -477,7 +471,6 @@ describe('RequestPage', () => {
       phoneNumber: '123-456-7890',
       emailAddress: 'test@example.com',
       additionalInfo: 'Test additional info for exceeds cap',
-      electionType403b: ElectionType403bEnum.None,
     };
 
     const { getByRole, getByText, getAllByText } = render(
@@ -535,7 +528,6 @@ describe('RequestPage', () => {
       phoneNumber: '123-456-7890',
       emailAddress: 'test@example.com',
       additionalInfo: 'Test additional info for exceeds cap',
-      electionType403b: ElectionType403bEnum.None,
     };
 
     const { getByRole, getByText } = render(

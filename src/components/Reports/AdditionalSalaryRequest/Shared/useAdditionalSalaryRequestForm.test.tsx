@@ -119,7 +119,7 @@ const defaultFormValues: CompleteFormValues = {
   housingDownPayment: '0',
   autoPurchase: '0',
   expensesNotApprovedWithin90Days: '0',
-  electionType403b: null,
+  electionType403b: ElectionType403bEnum.None,
   phoneNumber: '',
   emailAddress: '',
   totalAdditionalSalaryRequested: '0',
@@ -553,7 +553,6 @@ describe('useAdditionalSalaryRequestForm', () => {
             phoneNumber: '555-123-4567',
             emailAddress: 'test@example.com',
             currentYearSalaryNotReceived: '100',
-            electionType403b: ElectionType403bEnum.None,
           }),
         {
           wrapper: TestWrapper,
@@ -589,7 +588,6 @@ describe('useAdditionalSalaryRequestForm', () => {
             adoption: '300',
             phoneNumber: '555-123-4567',
             emailAddress: 'test@example.com',
-            electionType403b: ElectionType403bEnum.None,
           }),
         {
           wrapper: TestWrapper,
@@ -628,7 +626,6 @@ describe('useAdditionalSalaryRequestForm', () => {
             ...defaultFormValues,
             phoneNumber: '555-123-4567',
             emailAddress: 'test@example.com',
-            electionType403b: ElectionType403bEnum.None,
           }),
         {
           wrapper: TestWrapper,

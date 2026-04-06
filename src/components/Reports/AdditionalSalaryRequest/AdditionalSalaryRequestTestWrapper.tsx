@@ -39,7 +39,7 @@ const defaultInitialValues: CompleteFormValues = {
   housingDownPayment: '0',
   autoPurchase: '0',
   expensesNotApprovedWithin90Days: '0',
-  electionType403b: null,
+  electionType403b: ElectionType403bEnum.None,
   phoneNumber: '',
   emailAddress: '',
   totalAdditionalSalaryRequested: '0',

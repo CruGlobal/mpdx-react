@@ -138,7 +138,6 @@ describe('NetAdditionalSalary', () => {
     const valuesWithoutDeduction: CompleteFormValues = {
       ...defaultCompleteFormValues,
       additionalSalaryWithinMax: '10000',
-      electionType403b: ElectionType403bEnum.None,
     };
 
     const { getByText } = render(

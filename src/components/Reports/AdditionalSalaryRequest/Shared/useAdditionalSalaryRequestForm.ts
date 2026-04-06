@@ -2,6 +2,7 @@ import { useCallback, useMemo, useRef } from 'react';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { ElectionType403bEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import i18n from 'src/lib/i18n';
 import { currencyFormat } from 'src/lib/intlFormat';
@@ -118,7 +119,7 @@ export const useAdditionalSalaryRequestForm = (
     ...Object.fromEntries(fieldConfig.map(({ key }) => [key, '0'])),
     totalAdditionalSalaryRequested: '0',
     additionalInfo: '',
-    electionType403b: null,
+    electionType403b: ElectionType403bEnum.None,
     phoneNumber: user?.staffInfo?.primaryPhoneNumber || '',
     emailAddress: user?.staffInfo?.emailAddress || '',
   } as CompleteFormValues;
@@ -145,7 +146,8 @@ export const useAdditionalSalaryRequestForm = (
           totalAdditionalSalaryRequested:
             request.totalAdditionalSalaryRequested || '',
           additionalInfo: request.additionalInfo || '',
-          electionType403b: request.electionType403b ?? null,
+          electionType403b:
+            request.electionType403b ?? ElectionType403bEnum.None,
         } as CompleteFormValues;
       }
     }
