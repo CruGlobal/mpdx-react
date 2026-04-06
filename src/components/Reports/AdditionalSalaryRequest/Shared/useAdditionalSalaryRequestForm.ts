@@ -9,7 +9,6 @@ import { currencyFormat } from 'src/lib/intlFormat';
 import { amount, phoneNumber } from 'src/lib/yupHelpers';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import {
-  useAdditionalSalaryRequestQuery,
   useSubmitAdditionalSalaryRequestMutation,
   useUpdateAdditionalSalaryRequestMutation,
 } from '../AdditionalSalaryRequest.generated';
@@ -77,17 +76,13 @@ export const useAdditionalSalaryRequestForm = (
     salaryInfo,
     isInternational,
     requestId,
-    isSpouse,
+    calculations,
+    requestData,
   } = useAdditionalSalaryRequest();
 
   const { primaryAccountBalance } = useFormUserInfo();
 
-  const { data: requestData } = useAdditionalSalaryRequestQuery({
-    variables: { isSpouse },
-  });
-  const individualCap =
-    requestData?.latestAdditionalSalaryRequest?.calculations.currentSalaryCap ??
-    0;
+  const individualCap = calculations?.currentSalaryCap ?? 0;
 
   const [updateAdditionalSalaryRequest] =
     useUpdateAdditionalSalaryRequestMutation();

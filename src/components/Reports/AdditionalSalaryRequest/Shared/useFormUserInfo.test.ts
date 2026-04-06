@@ -14,6 +14,10 @@ const mockUseAdditionalSalaryRequest =
 describe('useFormUserInfo', () => {
   it('returns staff info and calculated balances', () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
+      calculations: {
+        currentSalaryCap: 100000,
+        staffAccountBalance: 40000,
+      },
       requestData: {
         latestAdditionalSalaryRequest: {
           calculations: {
@@ -44,6 +48,7 @@ describe('useFormUserInfo', () => {
 
   it('defaults balances to 0 when calculations are undefined', () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
+      calculations: undefined,
       requestData: {
         latestAdditionalSalaryRequest: {
           calculations: undefined,
@@ -63,6 +68,10 @@ describe('useFormUserInfo', () => {
 
   it('handles undefined user gracefully', () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
+      calculations: {
+        currentSalaryCap: 100000,
+        staffAccountBalance: 40000,
+      },
       requestData: {
         latestAdditionalSalaryRequest: {
           calculations: {

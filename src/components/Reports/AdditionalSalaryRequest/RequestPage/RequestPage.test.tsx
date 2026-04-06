@@ -300,6 +300,10 @@ describe('RequestPage', () => {
       currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
       pageType: PageEnum.Edit,
       setPageType: mockSetPageType,
+      calculations: {
+        currentSalaryCap: 50000,
+        staffAccountBalance: 0,
+      },
       requestData: {
         latestAdditionalSalaryRequest: {
           status: AsrStatusEnum.Pending,
@@ -400,6 +404,9 @@ describe('RequestPage', () => {
       currentIndex: 1,
       currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
       pageType: PageEnum.New,
+      calculations: {
+        currentSalaryCap: 50,
+      },
       requestData: {
         latestAdditionalSalaryRequest: {
           calculations: {
@@ -450,6 +457,14 @@ describe('RequestPage', () => {
           firstName: 'Jane',
           lastName: 'Doe',
         },
+      },
+      calculations: {
+        currentSalaryCap: 500,
+        combinedCap: 100000,
+      },
+      spouseCalculations: {
+        currentSalaryCap: 50000,
+        pendingAsrAmount: 100,
       },
       requestData: {
         latestAdditionalSalaryRequest: {
@@ -508,6 +523,13 @@ describe('RequestPage', () => {
           firstName: 'Jane',
           lastName: 'Doe',
         },
+      },
+      calculations: {
+        currentSalaryCap: 500,
+      },
+      spouseCalculations: {
+        currentSalaryCap: 500,
+        pendingAsrAmount: 600,
       },
       requestData: {
         latestAdditionalSalaryRequest: {
