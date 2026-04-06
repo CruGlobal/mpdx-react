@@ -81,9 +81,9 @@ describe('NetAdditionalSalary', () => {
     );
 
     // Traditional = 12% of $10,000 = $1,200
-    // Roth = 8% of ($10,000 - $1,200) = 8% of $8,800 = $704
-    // Net = $10,000 - $1,200 - $704 = $8,096
-    expect(await findByText('$8,096')).toBeInTheDocument();
+    // Roth = 8% of $10,000 = $800
+    // Net = $10,000 - $1,200 - $800 = $8,000
+    expect(await findByText('$8,000')).toBeInTheDocument();
   });
 
   it('includes all salary fields in the total calculation', async () => {

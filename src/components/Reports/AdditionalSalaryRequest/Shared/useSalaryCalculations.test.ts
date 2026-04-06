@@ -75,9 +75,9 @@ describe('useSalaryCalculations', () => {
 
     expect(result.current.total).toBe(10000); // 5000 + 3000 + 2000
     expect(result.current.calculatedTraditionalDeduction).toBe(1200); // 10000 * 0.12
-    expect(result.current.calculatedRothDeduction).toBe(880); // (10000 - 1200) * 0.10
-    expect(result.current.totalDeduction).toBe(2080); // 1200 + 880
-    expect(result.current.netSalary).toBe(7920); // 10000 - 2080
+    expect(result.current.calculatedRothDeduction).toBe(1000); // 10000 * 0.10
+    expect(result.current.totalDeduction).toBe(2200); // 1200 + 1000
+    expect(result.current.netSalary).toBe(7800); // 10000 - 2200
     expect(result.current.totalAnnualSalary).toBe(10000); // No calculations data, so just total
   });
 

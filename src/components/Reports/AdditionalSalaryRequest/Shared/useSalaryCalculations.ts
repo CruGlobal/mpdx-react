@@ -48,8 +48,10 @@ const calculate403bDeductions = (
     case ElectionType403bEnum.Roth:
       return { traditional: 0, roth: total };
     case ElectionType403bEnum.Standard: {
-      const traditional = total * traditionalPercentage;
-      return { traditional, roth: (total - traditional) * rothPercentage };
+      return {
+        traditional: total * traditionalPercentage,
+        roth: total * rothPercentage,
+      };
     }
     default:
       return { traditional: 0, roth: 0 };
