@@ -67,7 +67,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
         SalaryCalculation: {
           salaryRequest: defaultSalaryMock,
         },
-        ApprovedSalaryCalculation: {
+        EffectiveSalaryCalculation: {
           salaryRequest: hasApprovedCalculation ? approvedSalaryMock : null,
         },
       }}

@@ -15,7 +15,7 @@ query LandingSalaryCalculations {
   inProgressCalculation: latestSalaryRequest(status: [IN_PROGRESS]) {
     id
   }
-  approvedCalculation: latestSalaryRequest(status: [APPROVED]) {
+  effectiveCalculation: effectiveSalaryRequest {
     id
     salary
     spouseSalary

@@ -72,8 +72,8 @@ query SalaryCalculation($id: ID!) {
   }
 }
 
-query ApprovedSalaryCalculation {
-  salaryRequest: latestSalaryRequest(status: [APPROVED]) {
+query EffectiveSalaryCalculation {
+  salaryRequest: effectiveSalaryRequest {
     id
     mhaAmount
     spouseMhaAmount
