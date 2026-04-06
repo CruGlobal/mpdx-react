@@ -9,7 +9,10 @@ import { MhaRentOrOwnEnum, MhaStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { PageEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { HcmDataQuery } from '../../Shared/HcmData/HCMData.generated';
-import { singleMhaNoException } from '../../Shared/HcmData/mockData';
+import {
+  singleMhaNoException,
+  singleNoMhaNoException,
+} from '../../Shared/HcmData/mockData';
 import {
   MinistryHousingAllowanceRequestQuery,
   UpdateMinistryHousingAllowanceRequestMutation,
@@ -105,7 +108,7 @@ describe('RequestPage', () => {
         contextValue={
           {
             steps,
-            userEligibleForMHA: true,
+            userHcmData: singleNoMhaNoException[0],
             requestData: {
               id: 'request-id',
               status: MhaStatusEnum.InProgress,
@@ -190,7 +193,7 @@ describe('RequestPage', () => {
               steps,
               handleNextStep,
               handlePreviousStep,
-              userEligibleForMHA: true,
+              userHcmData: singleNoMhaNoException[0],
               requestData: {
                 id: 'request-id',
                 status: MhaStatusEnum.InProgress,
@@ -223,7 +226,7 @@ describe('RequestPage', () => {
               hasCalcValues: true,
               setHasCalcValues,
               updateMutation,
-              userEligibleForMHA: true,
+              userHcmData: singleNoMhaNoException[0],
               requestData: {
                 id: 'request-id',
                 status: MhaStatusEnum.InProgress,
@@ -332,7 +335,7 @@ describe('RequestPage', () => {
               steps,
               currentIndex: 1,
               pageType: PageEnum.New,
-              userEligibleForMHA: true,
+              userHcmData: singleNoMhaNoException[0],
               requestData: {
                 id: 'request-id',
                 status: MhaStatusEnum.InProgress,
@@ -367,7 +370,7 @@ describe('RequestPage', () => {
                 hasCalcValues: true,
                 setHasCalcValues,
                 updateMutation,
-                userEligibleForMHA: true,
+                userHcmData: singleNoMhaNoException[0],
                 requestData: {
                   id: 'request-id',
                   status: MhaStatusEnum.InProgress,

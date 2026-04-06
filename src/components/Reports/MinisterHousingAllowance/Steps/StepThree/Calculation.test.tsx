@@ -49,8 +49,6 @@ const defaultContext: ContextType = {
   isMarried: false,
   preferredName: '',
   spousePreferredName: '',
-  userEligibleForMHA: false,
-  spouseEligibleForMHA: false,
   handleDiscard: jest.fn(),
   loading: false,
   deleteRequestMutation: jest.fn(),

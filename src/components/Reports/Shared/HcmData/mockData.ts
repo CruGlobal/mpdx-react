@@ -10,6 +10,7 @@ const johnDoe: HcmDataQuery['hcm'][number]['staffInfo'] = {
   addressLine1: '100 Lake Hart Dr',
   addressLine2: '',
   city: 'Orlando',
+  country: 'US',
   state: 'FL',
   zipCode: '32832',
   dependentChildrenWithHealthcareBenefits: null,
@@ -108,6 +109,38 @@ export const marriedUserIneligibleSpouseEligible: HcmDataQuery['hcm'] = [
 ];
 export const marriedUserEligibleSpouseIneligible: HcmDataQuery['hcm'] = [
   noMhaAndNoException,
+  {
+    ...ineligibleAndNoException,
+    staffInfo: janeDoe,
+  },
+];
+
+// MHI (Italy) mock data
+const mhiUser: HcmDataQuery['hcm'][number] = {
+  ...ineligibleAndNoException,
+  staffInfo: { ...johnDoe, country: 'IT' },
+};
+
+const mhiSpouse: HcmDataQuery['hcm'][number] = {
+  ...ineligibleAndNoException,
+  staffInfo: { ...janeDoe, country: 'IT' },
+};
+
+export const singleMhi: HcmDataQuery['hcm'] = [mhiUser];
+export const marriedBothMhi: HcmDataQuery['hcm'] = [mhiUser, mhiSpouse];
+export const marriedUserMhiSpouseEligible: HcmDataQuery['hcm'] = [
+  mhiUser,
+  {
+    ...noMhaAndNoException,
+    staffInfo: janeDoe,
+  },
+];
+export const marriedUserEligibleSpouseMhi: HcmDataQuery['hcm'] = [
+  noMhaAndNoException,
+  mhiSpouse,
+];
+export const marriedUserMhiSpouseIneligible: HcmDataQuery['hcm'] = [
+  mhiUser,
   {
     ...ineligibleAndNoException,
     staffInfo: janeDoe,

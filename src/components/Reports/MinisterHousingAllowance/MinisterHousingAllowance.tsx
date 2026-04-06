@@ -12,6 +12,7 @@ import theme from 'src/theme';
 import { NameDisplay } from '../Shared/CalculationReports/NameDisplay/NameDisplay';
 import { PanelLayout } from '../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { PanelTypeEnum } from '../Shared/CalculationReports/Shared/sharedTypes';
+import { isEligibleForMha } from '../Shared/HcmData/mhaEligibility';
 import { EligibleDisplay } from './MainPages/EligibleDisplay';
 import { IneligibleDisplay } from './MainPages/IneligibleDisplay';
 import { NoRequestsDisplay } from './MainPages/NoRequestsDisplay';
@@ -44,8 +45,6 @@ export const MinisterHousingAllowanceReport = () => {
     isMarried,
     preferredName,
     spousePreferredName,
-    userEligibleForMHA,
-    spouseEligibleForMHA,
     userHcmData,
     spouseHcmData,
   } = useMinisterHousingAllowance();
@@ -115,15 +114,18 @@ export const MinisterHousingAllowanceReport = () => {
 
   const hasNoRequests = !requests.length;
 
-  const bothEligible = userEligibleForMHA && spouseEligibleForMHA;
-  const eitherPersonEligible = userEligibleForMHA || spouseEligibleForMHA;
+  const userIsEligibleMha = isEligibleForMha(userHcmData);
+  const spouseIsEligibleMha = isEligibleForMha(spouseHcmData);
+  const hasEligibleMhaUser = userIsEligibleMha || spouseIsEligibleMha;
+  const bothEligibleMha = userIsEligibleMha && spouseIsEligibleMha;
 
   const showIneligibleDisplay =
-    !userEligibleForMHA || (isMarried && !bothEligible);
+    !userIsEligibleMha || (isMarried && !bothEligibleMha);
+
   const showNewRequestButton =
-    eitherPersonEligible && (!isCurrentRequestPending || hasNoRequests);
-  const showCurrentRequest = eitherPersonEligible && currentRequest;
-  const showPreviousRequests = eitherPersonEligible && previousApprovedRequest;
+    hasEligibleMhaUser && (!isCurrentRequestPending || hasNoRequests);
+  const showCurrentRequest = hasEligibleMhaUser && currentRequest;
+  const showPreviousRequests = hasEligibleMhaUser && previousApprovedRequest;
 
   if (creatingRequest) {
     return <Loading loading />;
@@ -151,13 +153,13 @@ export const MinisterHousingAllowanceReport = () => {
 
                 {hasNoRequests ? (
                   <>
-                    <NoRequestsDisplay />
+                    {hasEligibleMhaUser && <NoRequestsDisplay />}
                     {showIneligibleDisplay && <IneligibleDisplay />}
                   </>
                 ) : (
                   <>
                     {showIneligibleDisplay && <IneligibleDisplay />}
-                    {eitherPersonEligible && (
+                    {hasEligibleMhaUser && (
                       <EligibleDisplay isPending={isCurrentRequestPending} />
                     )}
                   </>

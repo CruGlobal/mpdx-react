@@ -1,5 +1,10 @@
 import { Box } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
+import { MhiMessage } from '../../Shared/HcmData/MhiMessage';
+import {
+  isEligibleForMha,
+  isMhiUser,
+} from '../../Shared/HcmData/mhaEligibility';
 import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
 
 export const IneligibleDisplay: React.FC = () => {
@@ -7,11 +12,25 @@ export const IneligibleDisplay: React.FC = () => {
     isMarried,
     preferredName,
     spousePreferredName,
-    userEligibleForMHA,
-    spouseEligibleForMHA,
+    userHcmData,
+    spouseHcmData,
   } = useMinisterHousingAllowance();
 
   const { t } = useTranslation();
+
+  const userIsMhi = isMhiUser(userHcmData);
+  const spouseIsMhi = isMhiUser(spouseHcmData);
+  const userEligible = isEligibleForMha(userHcmData);
+  const spouseEligible = isEligibleForMha(spouseHcmData);
+
+  // Single user or both spouses are MHI
+  if (!isMarried && userIsMhi) {
+    return (
+      <Box mt={2} data-testid="mhi-ineligible">
+        <MhiMessage />
+      </Box>
+    );
+  }
 
   if (!isMarried) {
     return (
@@ -25,7 +44,7 @@ export const IneligibleDisplay: React.FC = () => {
             Once approved, when you calculate your salary, you will see the
             approved amount that can be applied to your salary. If you believe
             this is incorrect, please contact Personnel Records at{' '}
-            <a href="tel:4078262230">(407) 826-2230</a> or{' '}
+            <a href="tel:407-826-2230">(407) 826-2230</a> or{' '}
             <a href="mailto:MHA@cru.org">MHA@cru.org</a>.
           </p>
         </Trans>
@@ -33,7 +52,40 @@ export const IneligibleDisplay: React.FC = () => {
     );
   }
 
-  const bothIneligible = !userEligibleForMHA && !spouseEligibleForMHA;
+  const bothIneligible = !userEligible && !spouseEligible;
+
+  if (bothIneligible && userIsMhi && spouseIsMhi) {
+    return (
+      <Box mt={2} data-testid="mhi-ineligible">
+        <MhiMessage />
+      </Box>
+    );
+  }
+
+  if (bothIneligible && (userIsMhi || spouseIsMhi)) {
+    const mhiName = userIsMhi ? preferredName : spousePreferredName;
+    const ibsName = userIsMhi ? spousePreferredName : preferredName;
+
+    return (
+      <Box mt={2} data-testid="both-ineligible-mixed">
+        <MhiMessage name={mhiName} />
+        <Trans
+          t={t}
+          values={{
+            ibsName,
+          }}
+        >
+          <p style={{ lineHeight: 1.5, marginTop: '1em' }}>
+            {'{{ibsName}}'} has not completed the required IBS courses to meet
+            eligibility criteria. For information about obtaining eligibility,
+            contact Personnel Records at{' '}
+            <a href="tel:407-826-2230">(407) 826-2230</a> or{' '}
+            <a href="mailto:MHA@cru.org">MHA@cru.org</a>.
+          </p>
+        </Trans>
+      </Box>
+    );
+  }
 
   if (bothIneligible) {
     return (
@@ -54,7 +106,7 @@ export const IneligibleDisplay: React.FC = () => {
             approved amount that can be applied to {'{{preferredName}}'} and{' '}
             {'{{spousePreferredName}}'}&apos;s salary. If you believe this is
             incorrect, please contact Personnel Records at{' '}
-            <a href="tel:4078262230">(407) 826-2230</a> or{' '}
+            <a href="tel:407-826-2230">(407) 826-2230</a> or{' '}
             <a href="mailto:MHA@cru.org">MHA@cru.org</a>.
           </p>
         </Trans>
@@ -62,12 +114,28 @@ export const IneligibleDisplay: React.FC = () => {
     );
   }
 
-  const eligibleUserName = userEligibleForMHA
-    ? preferredName
-    : spousePreferredName;
-  const ineligibleUserName = userEligibleForMHA
-    ? spousePreferredName
-    : preferredName;
+  const eligibleUserName = userEligible ? preferredName : spousePreferredName;
+  const ineligibleUserName = userEligible ? spousePreferredName : preferredName;
+  const ineligibleIsMhi = userEligible ? spouseIsMhi : userIsMhi;
+
+  if (ineligibleIsMhi) {
+    return (
+      <Box mt={2} data-testid="one-mhi-ineligible">
+        <Trans
+          t={t}
+          values={{
+            eligibleUserName,
+          }}
+        >
+          <p style={{ lineHeight: 1.5 }}>
+            Completing a Minister&apos;s Housing Allowance will submit the
+            request for {'{{eligibleUserName}}'}.
+          </p>
+        </Trans>
+        <MhiMessage name={ineligibleUserName} />
+      </Box>
+    );
+  }
 
   return (
     <Box mt={2} data-testid="one-ineligible">
@@ -87,7 +155,7 @@ export const IneligibleDisplay: React.FC = () => {
           Once approved, when you calculate your salary, you will see the
           approved amount that can be applied to {'{{ineligibleUserName}}'}
           &apos;s salary. If you believe this is incorrect, please contact
-          Personnel Records at <a href="tel:4078262230">
+          Personnel Records at <a href="tel:407-826-2230">
             (407) 826-2230
           </a> or <a href="mailto:MHA@cru.org">MHA@cru.org</a>.
         </p>

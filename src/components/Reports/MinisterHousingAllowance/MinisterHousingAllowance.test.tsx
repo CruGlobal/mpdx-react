@@ -10,12 +10,17 @@ import theme from 'src/theme';
 import { HcmDataQuery } from '../Shared/HcmData/HCMData.generated';
 import {
   marriedBothIneligible,
+  marriedBothMhi,
   marriedMhaAndNoException,
   marriedNoMhaNoException,
   marriedUserEligibleSpouseIneligible,
+  marriedUserEligibleSpouseMhi,
   marriedUserIneligibleSpouseEligible,
+  marriedUserMhiSpouseEligible,
+  marriedUserMhiSpouseIneligible,
   singleIneligible,
   singleMhaNoException,
+  singleMhi,
   singleNoMhaNoException,
 } from '../Shared/HcmData/mockData';
 import { MinisterHousingAllowanceReport } from './MinisterHousingAllowance';
@@ -258,16 +263,18 @@ describe('MinisterHousingAllowanceReport', () => {
   });
 
   it('does not render Current Request section when eligible user has no requests', async () => {
-    const { queryByText, findByText } = render(
+    const { queryByText, findByRole } = render(
       <TestComponent hcmMock={singleMhaNoException} mhaRequestsMock={[]} />,
     );
 
-    expect(await findByText('Your MHA')).toBeInTheDocument();
+    expect(
+      await findByRole('heading', { name: 'Your MHA' }),
+    ).toBeInTheDocument();
     expect(queryByText('Current MHA Request')).not.toBeInTheDocument();
   });
 
   it('shows loading and calls router.push when creating a new MHA request', async () => {
-    const { findByText, findByTestId } = render(
+    const { findByRole, findByTestId } = render(
       <TestComponent
         hcmMock={singleMhaNoException}
         mhaRequestsMock={[
@@ -276,7 +283,9 @@ describe('MinisterHousingAllowanceReport', () => {
       />,
     );
 
-    const requestButton = await findByText('Request New MHA');
+    const requestButton = await findByRole('button', {
+      name: 'Request New MHA',
+    });
     userEvent.click(requestButton);
 
     expect(await findByTestId('Loading')).toBeInTheDocument();
@@ -295,7 +304,7 @@ describe('MinisterHousingAllowanceReport', () => {
   });
 
   it('shows success snackbar when MHA request is created', async () => {
-    const { findByText } = render(
+    const { findByRole, findByText } = render(
       <TestComponent
         hcmMock={singleMhaNoException}
         mhaRequestsMock={[
@@ -304,11 +313,112 @@ describe('MinisterHousingAllowanceReport', () => {
       />,
     );
 
-    const requestButton = await findByText('Request New MHA');
+    const requestButton = await findByRole('button', {
+      name: 'Request New MHA',
+    });
     userEvent.click(requestButton);
 
     expect(
       await findByText('Successfully created MHA Request.'),
     ).toBeInTheDocument();
+  });
+
+  it('renders single MHI user with IneligibleDisplay and hides NoRequestsDisplay', async () => {
+    const { findByTestId, queryByTestId } = render(
+      <TestComponent hcmMock={singleMhi} mhaRequestsMock={[]} />,
+    );
+
+    expect(await findByTestId('mhi-ineligible')).toBeInTheDocument();
+    expect(queryByTestId('no-requests-display')).not.toBeInTheDocument();
+  });
+
+  it('renders married both MHI with IneligibleDisplay and hides NoRequestsDisplay', async () => {
+    const { findByTestId, queryByTestId } = render(
+      <TestComponent hcmMock={marriedBothMhi} mhaRequestsMock={[]} />,
+    );
+
+    expect(await findByTestId('mhi-ineligible')).toBeInTheDocument();
+    expect(queryByTestId('no-requests-display')).not.toBeInTheDocument();
+  });
+
+  it('renders married one MHI + one eligible with both IneligibleDisplay and NoRequestsDisplay', async () => {
+    const { findByTestId } = render(
+      <TestComponent
+        hcmMock={marriedUserMhiSpouseEligible}
+        mhaRequestsMock={[]}
+      />,
+    );
+
+    expect(await findByTestId('one-mhi-ineligible')).toBeInTheDocument();
+    expect(await findByTestId('no-requests-display')).toBeInTheDocument();
+  });
+
+  it('renders married one eligible + one MHI spouse with both displays', async () => {
+    const { findByTestId } = render(
+      <TestComponent
+        hcmMock={marriedUserEligibleSpouseMhi}
+        mhaRequestsMock={[]}
+      />,
+    );
+
+    expect(await findByTestId('one-mhi-ineligible')).toBeInTheDocument();
+    expect(await findByTestId('no-requests-display')).toBeInTheDocument();
+  });
+
+  it('renders married MHI user + IBS ineligible spouse with mixed ineligible display', async () => {
+    const { findByTestId, queryByTestId } = render(
+      <TestComponent
+        hcmMock={marriedUserMhiSpouseIneligible}
+        mhaRequestsMock={[]}
+      />,
+    );
+
+    expect(await findByTestId('both-ineligible-mixed')).toBeInTheDocument();
+    expect(queryByTestId('no-requests-display')).not.toBeInTheDocument();
+  });
+
+  it('hides request details and Request New MHA button for single MHI user', async () => {
+    const { findByTestId, queryByText, queryByRole } = render(
+      <TestComponent
+        hcmMock={singleMhi}
+        mhaRequestsMock={[
+          {
+            ...mockMHARequest,
+            status: MhaStatusEnum.BoardApproved,
+          },
+        ]}
+      />,
+    );
+
+    expect(await findByTestId('mhi-ineligible')).toBeInTheDocument();
+    expect(queryByText('Current Board Approved MHA')).not.toBeInTheDocument();
+    expect(
+      queryByRole('button', { name: 'Request New MHA' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('shows request details for married MHI user + eligible spouse with approved request', async () => {
+    const { findByTestId, findByText } = render(
+      <TestComponent
+        hcmMock={marriedUserMhiSpouseEligible}
+        mhaRequestsMock={[
+          {
+            ...mockMHARequest,
+            status: MhaStatusEnum.BoardApproved,
+            requestAttributes: {
+              ...mockMHARequest.requestAttributes,
+              spouseSpecific: 5000,
+              staffSpecific: 10000,
+            },
+          },
+        ]}
+      />,
+    );
+
+    expect(await findByTestId('one-mhi-ineligible')).toBeInTheDocument();
+    expect(
+      await findByText(/our records indicate that you have an approved/i),
+    ).toBeInTheDocument();
+    expect(await findByText('Current Board Approved MHA')).toBeInTheDocument();
   });
 });

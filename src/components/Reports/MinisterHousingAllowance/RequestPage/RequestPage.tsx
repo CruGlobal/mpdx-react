@@ -15,6 +15,7 @@ import {
   PanelTypeEnum,
 } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { StepsList } from '../../Shared/CalculationReports/StepsList/StepsList';
+import { isEligibleForMha } from '../../Shared/HcmData/mhaEligibility';
 import { mainContentWidth } from '../MinisterHousingAllowance';
 import { useMinisterHousingAllowance } from '../Shared/Context/MinisterHousingAllowanceContext';
 import { getRequestUrl } from '../Shared/Helper/getRequestUrl';
@@ -51,9 +52,12 @@ export const RequestPage: React.FC = () => {
     setIsComplete,
     requestData,
     loading,
-    userEligibleForMHA,
-    spouseEligibleForMHA,
+    userHcmData,
+    spouseHcmData,
   } = useMinisterHousingAllowance();
+
+  const hasEligibleMhaUser =
+    isEligibleForMha(userHcmData) || isEligibleForMha(spouseHcmData);
 
   const canEdit =
     !requestData ||
@@ -117,7 +121,7 @@ export const RequestPage: React.FC = () => {
         </Container>
       }
     />
-  ) : !userEligibleForMHA && !spouseEligibleForMHA ? (
+  ) : !hasEligibleMhaUser ? (
     <PanelLayout
       panelType={PanelTypeEnum.Empty}
       sidebarTitle={t('Your MHA')}
