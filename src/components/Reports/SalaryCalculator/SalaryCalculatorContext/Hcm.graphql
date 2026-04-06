@@ -5,6 +5,7 @@ query Hcm($effectiveDate: ISO8601Date) {
       preferredName
       lastName
       city
+      country
       state
       tenure
       age
