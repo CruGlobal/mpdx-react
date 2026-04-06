@@ -4,7 +4,6 @@ import { render } from '@testing-library/react';
 import { FormikProvider, useFormik } from 'formik';
 import { I18nextProvider } from 'react-i18next';
 import * as yup from 'yup';
-import { ElectionType403bEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import { amount, phoneNumber } from 'src/lib/yupHelpers';
 import theme from 'src/theme';
@@ -151,7 +150,6 @@ describe('ValidationAlert', () => {
   it('renders nothing when form is valid and submitted', async () => {
     const validValues: CompleteFormValues = {
       ...defaultCompleteFormValues,
-      electionType403b: ElectionType403bEnum.None,
       phoneNumber: '407-555-1234',
     };
 

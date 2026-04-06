@@ -58,7 +58,7 @@ export const ElectionTypeQuestion: React.FC = () => {
         <FormControl component="fieldset" disabled={pageType === PageEnum.View}>
           <RadioGroup
             name="electionType403b"
-            value={formValues.electionType403b ?? ''}
+            value={formValues.electionType403b ?? ElectionType403bEnum.None}
             onChange={handleCustomChange}
           >
             <FormControlLabel

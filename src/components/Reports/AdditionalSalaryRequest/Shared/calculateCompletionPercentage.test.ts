@@ -25,9 +25,9 @@ describe('calculateCompletionPercentage', () => {
     ...overrides,
   });
 
-  it('should return 0 when all fields are empty', () => {
+  it('should return 5 when all fields are empty (electionType defaulted to none)', () => {
     const values = createFormValues();
-    expect(calculateCompletionPercentage(values)).toBe(0);
+    expect(calculateCompletionPercentage(values)).toBe(5);
   });
 
   it('should return 100 when all fields are filled', () => {
@@ -67,16 +67,18 @@ describe('calculateCompletionPercentage', () => {
     const values = createFormValues({
       currentYearSalaryNotReceived: '0',
       previousYearSalaryNotReceived: '0',
+      electionType403b: ElectionType403bEnum.Pretax,
       additionalSalaryWithinMax: '50000',
     });
-    expect(calculateCompletionPercentage(values)).toBe(6);
+    expect(calculateCompletionPercentage(values)).toBe(11);
   });
 
   it('should handle decimal values correctly', () => {
     const values = createFormValues({
       currentYearSalaryNotReceived: '50000.50',
       previousYearSalaryNotReceived: '48000.75',
+      electionType403b: ElectionType403bEnum.Roth,
     });
-    expect(calculateCompletionPercentage(values)).toBe(11);
+    expect(calculateCompletionPercentage(values)).toBe(16);
   });
 });

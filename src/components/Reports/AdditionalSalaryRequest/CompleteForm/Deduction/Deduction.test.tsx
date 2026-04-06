@@ -122,6 +122,17 @@ describe('Deduction', () => {
     });
   });
 
+  it('displays preselected none radio', () => {
+    const { getByRole } = render(
+      <TestWrapper initialValues={defaultCompleteFormValues} />,
+    );
+
+    const noneRadio = getByRole('radio', {
+      name: 'No 403(b) contribution - all funds go to my account',
+    });
+    expect(noneRadio).toBeChecked();
+  });
+
   it('calculates deduction when pretax selected', async () => {
     const valuesWithSalary: CompleteFormValues = {
       ...defaultCompleteFormValues,
@@ -214,10 +225,10 @@ describe('Deduction', () => {
     });
 
     // Traditional: $10,000 * 12% = $1,200
-    // Roth: ($10,000 - 1,200) * 8% = $704
-    // Total: $1,904
+    // Roth: $10,000 * 8% = $800
+    // Total: $2,000
     await waitFor(() => {
-      expect(getByText('$1,904.00')).toBeInTheDocument();
+      expect(getByText('$2,000.00')).toBeInTheDocument();
     });
   });
 
