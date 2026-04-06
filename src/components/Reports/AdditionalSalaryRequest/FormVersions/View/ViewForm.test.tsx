@@ -54,6 +54,9 @@ describe('ViewForm', () => {
             },
           },
         },
+        calculations: {
+          currentSalaryCap: -40000,
+        },
       },
     });
 

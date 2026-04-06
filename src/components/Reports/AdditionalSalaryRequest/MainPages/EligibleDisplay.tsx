@@ -8,7 +8,7 @@ export const EligibleDisplay: React.FC = () => {
   const { t } = useTranslation();
   const { user, requestData, isPending } = useAdditionalSalaryRequest();
   const preferredName = user?.staffInfo?.preferredName;
-  const { status } = requestData?.latestAdditionalSalaryRequest || {};
+  const { status } = requestData?.latestAdditionalSalaryRequest ?? {};
 
   return (
     <>

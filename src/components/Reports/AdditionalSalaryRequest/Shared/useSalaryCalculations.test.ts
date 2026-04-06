@@ -224,7 +224,10 @@ describe('useSalaryCalculations', () => {
       },
       requestData: {
         latestAdditionalSalaryRequest: {
-          calculations: { currentSalaryCap: 5000 },
+          calculations: {
+            currentSalaryCap: 5000,
+            pendingAsrAmount: 1000,
+          },
         },
       },
     } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
@@ -234,15 +237,10 @@ describe('useSalaryCalculations', () => {
       currentYearSalaryNotReceived: '2000',
     };
 
-    const calculations = {
-      pendingAsrAmount: 1000,
-    };
-
     const { result } = renderHook(
       () =>
         useSalaryCalculations({
           values,
-          calculations,
         }),
       {
         wrapper: ({ children }) => FormikWrapper({ children, values }),
@@ -266,7 +264,10 @@ describe('useSalaryCalculations', () => {
       },
       requestData: {
         latestAdditionalSalaryRequest: {
-          calculations: { currentSalaryCap: 10000 },
+          calculations: {
+            currentSalaryCap: 10000,
+            pendingAsrAmount: 10000,
+          },
         },
       },
     } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
@@ -276,15 +277,10 @@ describe('useSalaryCalculations', () => {
       currentYearSalaryNotReceived: '30000',
     };
 
-    const calculations = {
-      pendingAsrAmount: 10000,
-    };
-
     const { result } = renderHook(
       () =>
         useSalaryCalculations({
           values,
-          calculations,
         }),
       {
         wrapper: ({ children }) => FormikWrapper({ children, values }),

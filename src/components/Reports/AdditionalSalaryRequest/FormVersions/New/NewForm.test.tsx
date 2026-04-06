@@ -67,6 +67,9 @@ describe('NewForm', () => {
               },
             },
           },
+          calculations: {
+            currentSalaryCap: -40000,
+          },
         },
       });
 

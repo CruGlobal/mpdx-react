@@ -50,6 +50,9 @@ describe('EditForm', () => {
             },
           },
         },
+        calculations: {
+          currentSalaryCap: -40000,
+        },
       },
     });
 
