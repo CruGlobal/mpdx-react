@@ -119,6 +119,51 @@ describe('CurrentRequest Component', () => {
     });
   });
 
+  it('should disable cancel button when status is HR approved', () => {
+    const { getByRole } = render(
+      <TestComponent
+        request={{
+          ...mockMHARequest,
+          status: MhaStatusEnum.HrApproved,
+        }}
+      />,
+    );
+
+    expect(getByRole('button', { name: 'Cancel Request' })).toBeDisabled();
+  });
+
+  it('should disable cancel button when status is board approved', () => {
+    const { getByRole } = render(
+      <TestComponent
+        request={{
+          ...mockMHARequest,
+          status: MhaStatusEnum.BoardApproved,
+        }}
+      />,
+    );
+
+    expect(getByRole('button', { name: 'Cancel Request' })).toBeDisabled();
+  });
+
+  it('should show tooltip on disabled cancel button when approved', async () => {
+    const { getByTestId, findByRole } = render(
+      <TestComponent
+        request={{
+          ...mockMHARequest,
+          status: MhaStatusEnum.HrApproved,
+        }}
+      />,
+    );
+
+    userEvent.hover(getByTestId('cancel-button-wrapper'));
+
+    expect(
+      await findByRole('tooltip', {
+        name: 'An approved request cannot be canceled',
+      }),
+    ).toBeInTheDocument();
+  });
+
   it('renders feedback when status is ActionRequired', () => {
     const { getByText } = render(
       <TestComponent

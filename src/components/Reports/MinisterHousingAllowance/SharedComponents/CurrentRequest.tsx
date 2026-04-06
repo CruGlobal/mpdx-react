@@ -97,6 +97,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
       hideLinkTwoButton={hideEditButton}
       isRequest={true}
       handleConfirmCancel={handleCancelRequest}
+      disableCancel={approved}
       handlePrint={handlePrint}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
