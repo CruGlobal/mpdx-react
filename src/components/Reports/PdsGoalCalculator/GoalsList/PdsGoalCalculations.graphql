@@ -1,0 +1,42 @@
+fragment PdsGoalCalculationFields on DesignationSupportCalculation {
+  id
+  name
+  primary
+  isCurrent
+  updatedAt
+  averageHoursPerWeek
+  hoursWorkedPerWeek
+  salaryOrHourly
+  status
+  payRate
+}
+
+query PdsGoalCalculations {
+  designationSupportCalculations {
+    nodes {
+      ...PdsGoalCalculationFields
+    }
+  }
+}
+
+query PdsGoalCalculation($id: ID!) {
+  designationSupportCalculation(id: $id) {
+    ...PdsGoalCalculationFields
+  }
+}
+
+mutation CreatePdsGoalCalculation(
+  $attributes: DesignationSupportCalculationCreateInput
+) {
+  createDesignationSupportCalculation(input: { attributes: $attributes }) {
+    designationSupportCalculation {
+      ...PdsGoalCalculationFields
+    }
+  }
+}
+
+mutation DeletePdsGoalCalculation($id: ID!) {
+  deleteDesignationSupportCalculation(input: { id: $id }) {
+    id
+  }
+}
