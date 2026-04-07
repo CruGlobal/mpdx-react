@@ -57,7 +57,17 @@ fragment AdditionalSalaryRequestDetailsFields on AdditionalSalaryRequest {
 
 query AdditionalSalaryRequest($isSpouse: Boolean) {
   latestAdditionalSalaryRequest(
-    status: [IN_PROGRESS, ACTION_REQUIRED, PENDING]
+    status: [
+      IN_PROGRESS
+      ACTION_REQUIRED
+      PENDING
+      PENDING_DIVISION_HEAD_APPROVAL
+      PENDING_VP_APPROVAL
+      PENDING_MANAGEMENT_APPROVAL
+      PENDING_BOARD_APPROVAL
+      APPROVED_NOT_PAID
+      APPROVED_AND_PAID
+    ]
     isSpouse: $isSpouse
   ) {
     ...AdditionalSalaryRequestDetailsFields

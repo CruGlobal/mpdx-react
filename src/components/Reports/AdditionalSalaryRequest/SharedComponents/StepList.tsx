@@ -19,7 +19,8 @@ interface StepListProps {
 }
 
 export const StepList: React.FC<StepListProps> = ({ FormComponent }) => {
-  const { currentIndex, pageType, setPageType } = useAdditionalSalaryRequest();
+  const { currentIndex, pageType, setPageType, setPendingPrint } =
+    useAdditionalSalaryRequest();
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const isEdit = pageType === PageEnum.Edit;
@@ -48,7 +49,10 @@ export const StepList: React.FC<StepListProps> = ({ FormComponent }) => {
         formTitle={t('Additional Salary Request')}
         buttonText={t('Back to Dashboard')}
         buttonLink={`/accountLists/${accountListId}`}
-        onView={() => setPageType(PageEnum.View)}
+        onView={() => {
+          setPendingPrint(true);
+          setPageType(PageEnum.View);
+        }}
         isEdit={isEdit}
         alertText={alertText}
         linkOne={showSpouseLink ? spouseLinkHref : undefined}

@@ -66,6 +66,8 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   requestError: undefined,
   pageType: PageEnum.New,
   setPageType: jest.fn(),
+  pendingPrint: false,
+  setPendingPrint: jest.fn(),
   handleDeleteRequest: jest.fn(),
   requestId: 'request-id',
   user: undefined,

@@ -57,6 +57,8 @@ const mockContextValue = {
   requestError: undefined,
   pageType: PageEnum.New,
   setPageType: jest.fn(),
+  pendingPrint: false,
+  setPendingPrint: jest.fn(),
   handleDeleteRequest: jest.fn(),
   requestId: undefined,
   user: undefined,
@@ -132,12 +134,17 @@ describe('StepList', () => {
       });
     });
 
-    it('switches to View page when "View or print" link is clicked', async () => {
+    it('switches to View page and flags pendingPrint when "View or print" link is clicked', async () => {
+      const printSpy = jest
+        .spyOn(window, 'print')
+        .mockImplementation(() => undefined);
       const setPageType = jest.fn();
+      const setPendingPrint = jest.fn();
       mockUseAdditionalSalaryRequest.mockReturnValue({
         ...mockContextValue,
         currentIndex: 2,
         setPageType,
+        setPendingPrint,
       });
 
       const { getByText } = render(<TestComponent />);
@@ -151,6 +158,10 @@ describe('StepList', () => {
       await waitFor(() => {
         expect(setPageType).toHaveBeenCalledWith(PageEnum.View);
       });
+
+      expect(setPendingPrint).toHaveBeenCalledWith(true);
+      expect(printSpy).not.toHaveBeenCalled();
+      printSpy.mockRestore();
     });
   });
 

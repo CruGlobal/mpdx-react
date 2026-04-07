@@ -8,19 +8,25 @@ import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 
-interface ReceiptProps {
+interface BaseReceiptProps {
   formTitle: string;
   buttonText: string;
   buttonLink: string;
   alertText?: string | React.ReactNode;
   linkOne?: string;
   linkOneText?: string;
-  viewLink?: string;
-  onView?: () => void;
   isEdit?: boolean;
   availableDate?: string | null;
   setIsComplete?: Dispatch<SetStateAction<boolean>>;
 }
+
+// Exactly one of `viewLink` (URL-based view, e.g. MHA) or `onView` (state-based
+// view, e.g. ASR) must be provided. Passing both — or neither — is a type error.
+type ReceiptProps = BaseReceiptProps &
+  (
+    | { viewLink: string; onView?: never }
+    | { onView: () => void; viewLink?: never }
+  );
 
 export const Receipt: React.FC<ReceiptProps> = ({
   formTitle,
@@ -48,6 +54,7 @@ export const Receipt: React.FC<ReceiptProps> = ({
     : t('approval soon');
 
   const handlePrint = async () => {
+    // No URL for ASR view mode — the View page itself owns the print trigger
     if (onView) {
       setIsComplete?.(true);
       onView();
@@ -102,7 +109,12 @@ export const Receipt: React.FC<ReceiptProps> = ({
             fontSize="small"
             sx={{ verticalAlign: 'middle', opacity: 0.56 }}
           />{' '}
-          <Link onClick={handlePrint} sx={{ cursor: 'pointer' }}>
+          <Link
+            component="button"
+            type="button"
+            onClick={handlePrint}
+            sx={{ cursor: 'pointer' }}
+          >
             {t(`View or print a copy of your submitted ${formTitle}`)}
           </Link>
         </Box>

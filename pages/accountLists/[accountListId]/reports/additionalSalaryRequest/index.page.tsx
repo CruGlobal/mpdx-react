@@ -66,6 +66,7 @@ const AdditionalSalaryRequestRouter: React.FC = () => {
     case AsrStatusEnum.PendingVpApproval:
     case AsrStatusEnum.PendingManagementApproval:
     case AsrStatusEnum.PendingBoardApproval:
+    case AsrStatusEnum.ApprovedNotPaid:
       // ActionRequred normally returns the <AdditionalSalaryRequest /> component accept when pageType is View or Edit
       return pageType === PageEnum.Edit || pageType === PageEnum.View ? (
         <FormikRequestPage />
@@ -74,7 +75,7 @@ const AdditionalSalaryRequestRouter: React.FC = () => {
       );
     case AsrStatusEnum.InProgress:
       return isEdit || isNewAsr ? <FormikRequestPage /> : <InProgressDisplay />;
-    case AsrStatusEnum.ApprovedNotPaid:
+
     case AsrStatusEnum.ApprovedAndPaid:
     default:
       return <FormikRequestPage />;

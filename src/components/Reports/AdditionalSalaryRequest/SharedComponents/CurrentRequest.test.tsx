@@ -79,6 +79,8 @@ const mockContextValue = {
   requestError: undefined,
   pageType: PageEnum.New,
   setPageType: jest.fn(),
+  pendingPrint: false,
+  setPendingPrint: jest.fn(),
   handleDeleteRequest: mockHandleDeleteRequest,
   requestId: undefined,
   user: {

@@ -22,16 +22,18 @@ const buttonLink = '/test/button-link';
 
 const setIsComplete = jest.fn();
 
-interface TestComponentProps {
+type TestComponentProps = {
   pageType?: PageEnum;
   alertText?: string;
   linkOne?: string;
   linkOneText?: string;
-  viewLink?: string;
   isEdit?: boolean;
   availableDate?: string | null;
   setIsComplete?: Dispatch<SetStateAction<boolean>>;
-}
+} & (
+  | { viewLink?: string; onView?: never }
+  | { onView: () => void; viewLink?: never }
+);
 
 const TestComponent: React.FC<TestComponentProps> = ({
   pageType,
@@ -39,35 +41,42 @@ const TestComponent: React.FC<TestComponentProps> = ({
   linkOne,
   linkOneText,
   viewLink,
+  onView,
   isEdit,
   availableDate = '2024-06-15',
   setIsComplete,
-}) => (
-  <ThemeProvider theme={theme}>
-    <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <TestRouter>
-        <SnackbarProvider>
-          <GqlMockedProvider>
-            <MinisterHousingAllowanceProvider type={pageType}>
-              <Receipt
-                formTitle={formTitle}
-                buttonText={buttonText}
-                alertText={alertText}
-                linkOne={linkOne}
-                linkOneText={linkOneText}
-                viewLink={viewLink}
-                buttonLink={buttonLink}
-                isEdit={isEdit}
-                availableDate={availableDate}
-                setIsComplete={setIsComplete}
-              />
-            </MinisterHousingAllowanceProvider>
-          </GqlMockedProvider>
-        </SnackbarProvider>
-      </TestRouter>
-    </LocalizationProvider>
-  </ThemeProvider>
-);
+}) => {
+  const viewProps: { viewLink: string } | { onView: () => void } = onView
+    ? { onView }
+    : { viewLink: viewLink ?? '/test/view-link' };
+
+  return (
+    <ThemeProvider theme={theme}>
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <TestRouter>
+          <SnackbarProvider>
+            <GqlMockedProvider>
+              <MinisterHousingAllowanceProvider type={pageType}>
+                <Receipt
+                  formTitle={formTitle}
+                  buttonText={buttonText}
+                  alertText={alertText}
+                  linkOne={linkOne}
+                  linkOneText={linkOneText}
+                  buttonLink={buttonLink}
+                  isEdit={isEdit}
+                  availableDate={availableDate}
+                  setIsComplete={setIsComplete}
+                  {...viewProps}
+                />
+              </MinisterHousingAllowanceProvider>
+            </GqlMockedProvider>
+          </SnackbarProvider>
+        </TestRouter>
+      </LocalizationProvider>
+    </ThemeProvider>
+  );
+};
 
 describe('Receipt', () => {
   it('renders the component in new page', async () => {
@@ -190,7 +199,7 @@ describe('Receipt', () => {
       expect.stringContaining('/test/button-link'),
     );
 
-    await userEvent.click(button);
+    userEvent.click(button);
   });
 
   it('should go to view link when view/print clicked', async () => {
@@ -200,7 +209,68 @@ describe('Receipt', () => {
 
     const printLink = await findByText(/view or print a copy/i);
 
-    await userEvent.click(printLink);
+    userEvent.click(printLink);
     expect(setIsComplete).toHaveBeenCalledWith(true);
+  });
+
+  describe('onView callback', () => {
+    it('calls onView and setIsComplete when provided alone (no viewLink)', async () => {
+      const onView = jest.fn();
+      const localSetIsComplete = jest.fn();
+      const { findByText } = render(
+        <TestComponent onView={onView} setIsComplete={localSetIsComplete} />,
+      );
+
+      userEvent.click(await findByText(/view or print a copy/i));
+
+      expect(onView).toHaveBeenCalledTimes(1);
+      expect(localSetIsComplete).toHaveBeenCalledWith(true);
+    });
+
+    it('does not push the router or print when onView is provided', async () => {
+      const onView = jest.fn();
+      const push = jest.fn().mockResolvedValue(true);
+      const printSpy = jest
+        .spyOn(window, 'print')
+        .mockImplementation(() => undefined);
+
+      const { findByText } = render(
+        <ThemeProvider theme={theme}>
+          <LocalizationProvider dateAdapter={AdapterLuxon}>
+            <TestRouter router={{ push }}>
+              <SnackbarProvider>
+                <GqlMockedProvider>
+                  <MinisterHousingAllowanceProvider>
+                    <Receipt
+                      formTitle={formTitle}
+                      buttonText={buttonText}
+                      buttonLink={buttonLink}
+                      onView={onView}
+                    />
+                  </MinisterHousingAllowanceProvider>
+                </GqlMockedProvider>
+              </SnackbarProvider>
+            </TestRouter>
+          </LocalizationProvider>
+        </ThemeProvider>,
+      );
+
+      userEvent.click(await findByText(/view or print a copy/i));
+
+      expect(onView).toHaveBeenCalledTimes(1);
+      expect(push).not.toHaveBeenCalled();
+      expect(printSpy).not.toHaveBeenCalled();
+
+      printSpy.mockRestore();
+    });
+
+    it('does not crash when onView is provided without setIsComplete', async () => {
+      const onView = jest.fn();
+      const { findByText } = render(<TestComponent onView={onView} />);
+
+      userEvent.click(await findByText(/view or print a copy/i));
+
+      expect(onView).toHaveBeenCalledTimes(1);
+    });
   });
 });
