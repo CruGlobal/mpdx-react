@@ -1,4 +1,5 @@
 import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { ElectionType403bEnum } from 'src/graphql/types.generated';
 import { PageEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
@@ -128,6 +129,27 @@ describe('StepList', () => {
         expect(
           getByText(/your request has been sent to payroll/i),
         ).toBeInTheDocument();
+      });
+    });
+
+    it('switches to View page when "View or print" link is clicked', async () => {
+      const setPageType = jest.fn();
+      mockUseAdditionalSalaryRequest.mockReturnValue({
+        ...mockContextValue,
+        currentIndex: 2,
+        setPageType,
+      });
+
+      const { getByText } = render(<TestComponent />);
+
+      userEvent.click(
+        getByText(
+          'View or print a copy of your submitted Additional Salary Request',
+        ),
+      );
+
+      await waitFor(() => {
+        expect(setPageType).toHaveBeenCalledWith(PageEnum.View);
       });
     });
   });

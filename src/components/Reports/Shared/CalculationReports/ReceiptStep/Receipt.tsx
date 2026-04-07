@@ -16,6 +16,7 @@ interface ReceiptProps {
   linkOne?: string;
   linkOneText?: string;
   viewLink?: string;
+  onView?: () => void;
   isEdit?: boolean;
   availableDate?: string | null;
   setIsComplete?: Dispatch<SetStateAction<boolean>>;
@@ -29,6 +30,7 @@ export const Receipt: React.FC<ReceiptProps> = ({
   linkOne,
   linkOneText,
   viewLink,
+  onView,
   isEdit,
   availableDate,
   setIsComplete,
@@ -46,6 +48,12 @@ export const Receipt: React.FC<ReceiptProps> = ({
     : t('approval soon');
 
   const handlePrint = async () => {
+    if (onView) {
+      setIsComplete?.(true);
+      onView();
+      return;
+    }
+
     if (!viewLink) {
       return;
     }
