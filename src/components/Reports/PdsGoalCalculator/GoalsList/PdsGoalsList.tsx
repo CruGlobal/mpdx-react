@@ -1,8 +1,16 @@
+import { useRouter } from 'next/router';
 import React from 'react';
-import { Box, Button, Stack, styled } from '@mui/material';
+import { Box, Button, CircularProgress, Stack, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import illustration6graybg from 'src/images/drawkit/grape/drawkit-grape-pack-illustration-6-gray-bg.svg';
+import { PdsGoalCard } from '../GoalCard/PdsGoalCard';
+import {
+  useCreatePdsGoalCalculationMutation,
+  useDeletePdsGoalCalculationMutation,
+  usePdsGoalCalculationsQuery,
+} from './PdsGoalCalculations.generated';
 import { PdsGoalsListWelcome } from './PdsGoalsListWelcome';
 
 const Container = styled(Box)(({ theme }) => ({
@@ -16,17 +24,39 @@ const PlaceholderImage = styled('img')(({ theme }) => ({
 
 export const PdsGoalsList: React.FC = () => {
   const { t } = useTranslation();
+  const router = useRouter();
+  const accountListId = useAccountListId() ?? '';
 
   const { data: userData } = useGetUserQuery();
   const defaultName = t('User');
   const firstName = userData?.user.firstName ?? defaultName;
 
-  // TODO: Replace with real GraphQL query and mutation when backend is ready
-  const goals: never[] = [];
+  const { data, loading } = usePdsGoalCalculationsQuery();
+  const [createPdsGoalCalculation] = useCreatePdsGoalCalculationMutation();
+  const [deletePdsGoalCalculation] = useDeletePdsGoalCalculationMutation();
+
+  const goals = data?.designationSupportCalculations.nodes;
+
+  const handleDeleteGoal = async (id: string) => {
+    await deletePdsGoalCalculation({
+      variables: { id },
+      update: (cache) => {
+        cache.evict({ id: `DesignationSupportCalculation:${id}` });
+        cache.gc();
+      },
+    });
+  };
 
   const handleCreateGoal = async () => {
-    // TODO: Call createPdsGoal mutation, then navigate:
-    // router.push(`/accountLists/${_accountListId}/reports/pdsGoalCalculator/${newGoalId}`);
+    const { data } = await createPdsGoalCalculation();
+    const calculation =
+      data?.createDesignationSupportCalculation?.designationSupportCalculation;
+
+    if (calculation) {
+      router.push(
+        `/accountLists/${accountListId}/reports/pdsGoalCalculator/${calculation.id}`,
+      );
+    }
   };
 
   return (
@@ -38,7 +68,9 @@ export const PdsGoalsList: React.FC = () => {
         </Button>
       </Stack>
 
-      {goals.length === 0 ? (
+      {loading ? (
+        <CircularProgress />
+      ) : goals?.length === 0 ? (
         <PlaceholderImage
           src={illustration6graybg}
           alt=""
@@ -46,7 +78,13 @@ export const PdsGoalsList: React.FC = () => {
         />
       ) : (
         <Stack direction="row" gap={3} flexWrap="wrap">
-          {/* TODO: Map over goals and render PdsGoalCard */}
+          {goals?.map((goal) => (
+            <PdsGoalCard
+              key={goal.id}
+              goal={goal}
+              onDelete={handleDeleteGoal}
+            />
+          ))}
         </Stack>
       )}
     </Container>

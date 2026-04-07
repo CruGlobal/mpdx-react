@@ -7,6 +7,7 @@ import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmat
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat } from 'src/lib/intlFormat';
+import { PdsGoalCalculationFieldsFragment } from '../GoalsList/PdsGoalCalculations.generated';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   minWidth: 350,
@@ -45,18 +46,12 @@ const StyledActionBox = styled(Box)(({ theme }) => ({
   paddingLeft: theme.spacing(1),
 }));
 
-// TODO: Replace with generated GraphQL type when backend is ready
-export interface PdsGoal {
-  id: string;
-  name: string | null;
-  updatedAt: string;
-}
-
 export interface PdsGoalCardProps {
-  goal: PdsGoal;
+  goal: PdsGoalCalculationFieldsFragment;
+  onDelete: (id: string) => void;
 }
 
-export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({ goal }) => {
+export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({ goal, onDelete }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const accountListId = useAccountListId() ?? '';
@@ -67,7 +62,7 @@ export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({ goal }) => {
   };
 
   const handleConfirmDelete = async () => {
-    // TODO: Call deletePdsGoal mutation when backend is ready
+    await onDelete(goal.id);
     setDeleting(false);
   };
 

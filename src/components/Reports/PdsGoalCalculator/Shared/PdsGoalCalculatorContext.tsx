@@ -1,12 +1,20 @@
+import { useRouter } from 'next/router';
 import React, { createContext, useCallback, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import {
+  PdsGoalCalculationFieldsFragment,
+  usePdsGoalCalculationQuery,
+} from '../GoalsList/PdsGoalCalculations.generated';
 import { PdsGoalCalculatorStepEnum } from '../PdsGoalCalculatorHelper';
 import { PdsGoalCalculatorStep, useSteps } from './useSteps';
 
 export type PdsGoalCalculatorType = {
   steps: PdsGoalCalculatorStep[];
   currentStep: PdsGoalCalculatorStep;
+
+  calculation?: PdsGoalCalculationFieldsFragment;
+  calculationLoading: boolean;
 
   rightPanelContent: React.ReactNode;
   setRightPanelContent: (content: React.ReactNode) => void;
@@ -40,6 +48,15 @@ interface Props {
 export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const { enqueueSnackbar } = useSnackbar();
   const { t } = useTranslation();
+  const router = useRouter();
+  const pdsGoalId = (router.query.pdsGoalId as string) ?? '';
+
+  const { data: calculationData, loading: calculationLoading } =
+    usePdsGoalCalculationQuery({
+      variables: { id: pdsGoalId },
+      skip: !pdsGoalId,
+    });
+  const calculation = calculationData?.designationSupportCalculation;
 
   const steps = useSteps();
   const [stepIndex, setStepIndex] = useState(0);
@@ -86,6 +103,8 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     (): PdsGoalCalculatorType => ({
       steps,
       currentStep,
+      calculation,
+      calculationLoading,
       rightPanelContent,
       isDrawerOpen,
       handleStepChange,
@@ -98,6 +117,8 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     [
       steps,
       currentStep,
+      calculation,
+      calculationLoading,
       rightPanelContent,
       isDrawerOpen,
       handleStepChange,
