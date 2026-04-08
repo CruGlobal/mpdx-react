@@ -26,6 +26,15 @@ export function useReportNavItems(): NavItems[] {
       subTitle: t('Salary Currency'),
     },
     {
+      id: 'staffExpense',
+      title: t('Staff Expense Report'),
+    },
+    {
+      id: 'mpgaIncomeExpenses',
+      title: t('MPGA Monthly Report'),
+      subTitle: t('Income & Expenses'),
+    },
+    {
       id: 'designationAccounts',
       title: t('Designation Accounts'),
     },
@@ -44,27 +53,6 @@ export function useReportNavItems(): NavItems[] {
     {
       id: 'coaching',
       title: t('Coaching'),
-    },
-    {
-      id: 'goalCalculator',
-      title: t('Goal Calculator'),
-    },
-    {
-      id: 'mpgaIncomeExpenses',
-      title: t('MPGA Monthly Report'),
-      subTitle: t('Income & Expenses'),
-    },
-    {
-      id: 'staffSavingFund',
-      title: t('Savings Fund Transfer'),
-    },
-    {
-      id: 'staffExpense',
-      title: t('Staff Expense Report'),
-    },
-    {
-      id: 'mpReminders',
-      title: t('Ministry Partner Reminders'),
     },
   ];
 

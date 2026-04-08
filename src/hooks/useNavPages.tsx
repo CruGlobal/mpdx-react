@@ -3,8 +3,8 @@ import { ReactElement, useMemo } from 'react';
 import CompassIcon from '@mui/icons-material/Explore';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useHrToolsNavItems } from './useHrToolsNavItems';
 import { useReportNavItems } from './useReportNavItems';
-import { useRequestFormNavItems } from './useRequestFormNavItems';
 import { useSettingsNavItems } from './useSettingsNavItems';
 import { useToolsNavItems } from './useToolsNavItems';
 
@@ -51,7 +51,7 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
   const reportItems = useReportNavItems();
   const toolsItems = useToolsNavItems();
   const settingsItems = useSettingsNavItems();
-  const requestFormItems = useRequestFormNavItems();
+  const hrToolsItems = useHrToolsNavItems();
 
   const allNavPages = useMemo<NavPage[]>(() => {
     const navPages: NavPage[] = [
@@ -97,10 +97,10 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
         showInNav: true,
       },
       {
-        id: 'request-forms-page',
-        title: t('Request Forms'),
-        pathname: '/accountLists/[accountListId]/reports',
-        items: requestFormItems.map((item) => ({
+        id: 'hr-tools-page',
+        title: t('HR Tools'),
+        pathname: '/accountLists/[accountListId]/requests',
+        items: hrToolsItems.map((item) => ({
           ...item,
           href: `/accountLists/${accountListId}/requests/${item.id}`,
           searchIcon: <CompassIcon />,
@@ -110,8 +110,8 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
         showInNav: true,
       },
       {
-        id: 'tools-page',
-        title: t('Tools'),
+        id: 'mpdx-tools-page',
+        title: t('MPDX Tools'),
         searchIcon: <CompassIcon />,
         href: `/accountLists/${accountListId}/tools`,
         pathname: '/accountLists/[accountListId]/tools',
@@ -200,14 +200,14 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
       }
 
       // get request form sub items
-      if (page.id === 'request-forms-page' && page.items) {
+      if (page.id === 'hr-tools-page' && page.items) {
         page.items.forEach((item) => {
           pages.push({ ...item, title: item.searchName ?? item.title });
         });
       }
 
       // get tool sub items
-      if (page.id === 'tools-page' && page.items) {
+      if (page.id === 'mpdx-tools-page' && page.items) {
         if (page.items) {
           page.items.forEach((item) => {
             pages.push({ ...item, title: item.searchName ?? item.title });

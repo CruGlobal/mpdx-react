@@ -130,7 +130,7 @@ const NavMenu: React.FC = () => {
   }, [loading]);
 
   const [reportsMenuOpen, setReportsMenuOpen] = useState(false);
-  const [requestFormsMenuOpen, setRequestFormsMenuOpen] = useState(false);
+  const [hrToolsMenuOpen, setHrToolsMenuOpen] = useState(false);
   const [toolsMenuOpen, setToolsMenuOpen] = useState(false);
 
   const handleReportsMenuToggle = () => {
@@ -142,13 +142,13 @@ const NavMenu: React.FC = () => {
     setReportsMenuOpen(false);
   };
 
-  const handleRequestFormsMenuToggle = () => {
-    setRequestFormsMenuOpen((prevOpen) => !prevOpen);
+  const handleHrToolsMenuToggle = () => {
+    setHrToolsMenuOpen((prevOpen) => !prevOpen);
     handleToolsMenuClose();
   };
 
-  const handleRequestFormsMenuClose = () => {
-    setRequestFormsMenuOpen(false);
+  const handleHrToolsMenuClose = () => {
+    setHrToolsMenuOpen(false);
   };
 
   const handleToolsMenuToggle = () => {
@@ -199,10 +199,10 @@ const NavMenu: React.FC = () => {
       />
       <NavMenuDropdown
         page={navPages[4]}
-        menuOpen={requestFormsMenuOpen}
-        handleMenuToggle={handleRequestFormsMenuToggle}
-        handleMenuClose={handleRequestFormsMenuClose}
-        testId="RequestFormsMenuToggle"
+        menuOpen={hrToolsMenuOpen}
+        handleMenuToggle={handleHrToolsMenuToggle}
+        handleMenuClose={handleHrToolsMenuClose}
+        testId="HrToolsMenuToggle"
         sum={sum}
         toolData={toolData}
         loading={loading}
