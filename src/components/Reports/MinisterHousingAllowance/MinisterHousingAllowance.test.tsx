@@ -294,6 +294,42 @@ describe('MinisterHousingAllowanceReport', () => {
     });
   });
 
+  it.each([
+    MhaStatusEnum.HrApproved,
+    MhaStatusEnum.BoardApproved,
+    MhaStatusEnum.Cancelled,
+  ])('shows new request button when current request is %s', async (status) => {
+    const { findByRole } = render(
+      <TestComponent
+        hcmMock={singleMhaNoException}
+        mhaRequestsMock={[{ ...mockMHARequest, status }]}
+      />,
+    );
+
+    expect(
+      await findByRole('button', { name: 'Request New MHA' }),
+    ).toBeInTheDocument();
+  });
+
+  it.each([
+    MhaStatusEnum.InProgress,
+    MhaStatusEnum.ActionRequired,
+    MhaStatusEnum.Pending,
+  ])(
+    'does not show new request button when current request is %s',
+    async (status) => {
+      const { findByText, queryByText } = render(
+        <TestComponent
+          hcmMock={singleMhaNoException}
+          mhaRequestsMock={[{ ...mockMHARequest, status }]}
+        />,
+      );
+
+      expect(await findByText('Current MHA Request')).toBeInTheDocument();
+      expect(queryByText('Request New MHA')).not.toBeInTheDocument();
+    },
+  );
+
   it('shows success snackbar when MHA request is created', async () => {
     const { findByText } = render(
       <TestComponent

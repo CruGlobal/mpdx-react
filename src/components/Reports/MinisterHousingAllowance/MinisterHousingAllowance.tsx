@@ -105,6 +105,15 @@ export const MinisterHousingAllowanceReport = () => {
         DateTime.now()
       : true;
 
+  // Once the current request is HR approved, the user may submit another request
+  const hasBlockingRequest = currentRequest
+    ? [
+        MhaStatusEnum.InProgress,
+        MhaStatusEnum.ActionRequired,
+        MhaStatusEnum.Pending,
+      ].includes(currentRequest.status)
+    : false;
+
   const previousApprovedRequest = requests
     .slice(1)
     ?.find(
@@ -120,8 +129,7 @@ export const MinisterHousingAllowanceReport = () => {
 
   const showIneligibleDisplay =
     !userEligibleForMHA || (isMarried && !bothEligible);
-  const showNewRequestButton =
-    eitherPersonEligible && (!isCurrentRequestPending || hasNoRequests);
+  const showNewRequestButton = eitherPersonEligible && !hasBlockingRequest;
   const showCurrentRequest = eitherPersonEligible && currentRequest;
   const showPreviousRequests = eitherPersonEligible && previousApprovedRequest;
 
