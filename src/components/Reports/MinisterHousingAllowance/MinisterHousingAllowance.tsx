@@ -96,12 +96,12 @@ export const MinisterHousingAllowanceReport = () => {
     });
   };
 
-  const currentRequest = requests[0] ?? undefined;
+  const currentRequest: (typeof requests)[number] | undefined = requests[0];
   // It default to true when no availableDate as the request is likely still being processed
   const isCurrentRequestPending =
     currentRequest?.status === MhaStatusEnum.BoardApproved &&
     currentRequest?.requestAttributes?.availableDate
-      ? DateTime.fromISO(currentRequest?.requestAttributes?.availableDate) >
+      ? DateTime.fromISO(currentRequest.requestAttributes.availableDate) >
         DateTime.now()
       : true;
 
@@ -182,7 +182,12 @@ export const MinisterHousingAllowanceReport = () => {
                   </>
                 ) : (
                   eitherPersonEligible && (
-                    <EligibleDisplay isPending={isCurrentRequestPending} />
+                    <EligibleDisplay
+                      isPending={isCurrentRequestPending}
+                      isEditable={
+                        currentRequest.status === MhaStatusEnum.ActionRequired
+                      }
+                    />
                   )
                 )}
 
