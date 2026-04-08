@@ -12,7 +12,7 @@ describe('PdsGoalCalculator', () => {
     );
 
     expect(
-      getByRole('heading', { level: 5, name: 'Settings' }),
+      getByRole('heading', { level: 6, name: 'Calculator Setup' }),
     ).toBeInTheDocument();
   });
 });
