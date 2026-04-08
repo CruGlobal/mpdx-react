@@ -1,4 +1,11 @@
 {
+  "enabledPlugins": {
+    "git@cru-plugins": true,
+    "quality@cru-plugins": true,
+    "testing@cru-plugins": true,
+    "admin@cru-plugins": true,
+    "figma@cru-plugins": true
+  },
   "extraKnownMarketplaces": {
     "cru-plugins": {
       "source": {
@@ -6,12 +13,5 @@
         "url": "https://github.com/CruGlobal/claude-code-plugins.git"
       }
     }
-  },
-  "enabledPlugins": {
-    "git@cru-plugins": true,
-    "quality@cru-plugins": true,
-    "testing@cru-plugins": true,
-    "admin@cru-plugins": true,
-    "figma@cru-plugins": true
   }
 }
