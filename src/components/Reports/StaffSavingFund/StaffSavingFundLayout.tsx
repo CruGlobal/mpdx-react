@@ -50,7 +50,7 @@ export const StaffSavingFundLayout: React.FC<StaffSavingFundLayoutProps> = ({
                 isOpen={isNavListOpen}
                 selectedId={selectedMenuId}
                 onClose={onNavListToggle}
-                navType={NavTypeEnum.Reports}
+                navType={NavTypeEnum.HrTools}
               />
             }
             leftOpen={isNavListOpen}

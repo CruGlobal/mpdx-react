@@ -44,7 +44,7 @@ const MPRemindersReportPage: React.FC = () => {
                 isOpen={isNavListOpen}
                 selectedId="mpReminders"
                 onClose={handleNavListToggle}
-                navType={NavTypeEnum.Reports}
+                navType={NavTypeEnum.HrTools}
               />
             }
             leftOpen={isNavListOpen}

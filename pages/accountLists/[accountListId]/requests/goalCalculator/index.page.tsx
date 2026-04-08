@@ -45,7 +45,7 @@ const GoalCalculatorPage: React.FC = () => {
                 onClose={handleNavListToggle}
                 designationAccounts={designationAccounts}
                 setDesignationAccounts={setDesignationAccounts}
-                navType={NavTypeEnum.Reports}
+                navType={NavTypeEnum.HrTools}
               />
             }
             leftOpen={isNavListOpen}
@@ -57,7 +57,7 @@ const GoalCalculatorPage: React.FC = () => {
                   isNavListOpen={isNavListOpen}
                   onNavListToggle={handleNavListToggle}
                   title={t('Goal Calculator')}
-                  headerType={HeaderTypeEnum.Report}
+                  headerType={HeaderTypeEnum.HrTools}
                 />
                 <GoalsList />
               </>

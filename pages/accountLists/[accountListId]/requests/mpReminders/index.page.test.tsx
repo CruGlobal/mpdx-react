@@ -64,9 +64,11 @@ describe('MP Reminders Report Page', () => {
     userEvent.click(
       await findByRole('button', { name: 'Toggle Navigation Panel' }),
     );
-    expect(getByRole('heading', { name: 'Reports' })).toBeInTheDocument();
+    expect(getByRole('heading', { name: 'HR Tools' })).toBeInTheDocument();
     userEvent.click(getByRole('img', { name: 'Close' }));
-    expect(queryByRole('heading', { name: 'Reports' })).not.toBeInTheDocument();
+    expect(
+      queryByRole('heading', { name: 'HR Tools' }),
+    ).not.toBeInTheDocument();
   });
 
   it('renders no staff account page when no staff account', async () => {

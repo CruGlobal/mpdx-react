@@ -104,7 +104,7 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
           ...item,
           href: `/accountLists/${accountListId}/requests/${item.id}`,
           searchIcon: <CompassIcon />,
-          searchName: t(`Request Forms - {{ title }}`, { title: item.title }),
+          searchName: t(`HR Tools - {{ title }}`, { title: item.title }),
           showInSearchDialog: true,
         })),
         showInNav: true,

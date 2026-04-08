@@ -52,7 +52,7 @@ const ToolsPageContent: React.FC<ToolsWrapperProps> = ({
             isNavListOpen={isToolDrawerOpen}
             onNavListToggle={() => setIsToolDrawerOpen(!isToolDrawerOpen)}
             title={pageTitle || ''}
-            headerType={HeaderTypeEnum.Tools}
+            headerType={HeaderTypeEnum.MpdxTools}
           />
           <PageContentWrapper
             maxWidth="lg"

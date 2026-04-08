@@ -38,7 +38,7 @@ const SalaryCalculatorPage: React.FC = () => {
             isOpen={isNavListOpen}
             selectedId="salaryCalculator"
             onClose={handleNavListToggle}
-            navType={NavTypeEnum.Reports}
+            navType={NavTypeEnum.HrTools}
           />
         }
         leftOpen={isNavListOpen}
@@ -49,7 +49,7 @@ const SalaryCalculatorPage: React.FC = () => {
               isNavListOpen={isNavListOpen}
               onNavListToggle={handleNavListToggle}
               title={t('Salary Calculator')}
-              headerType={HeaderTypeEnum.Report}
+              headerType={HeaderTypeEnum.HrTools}
             />
 
             {shouldShowPending ? (

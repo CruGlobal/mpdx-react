@@ -40,7 +40,7 @@ describe('Tools Page', () => {
         <ToolsPage />
       </MocksProviders>,
     );
-    expect(await findByText('Tools')).toBeInTheDocument();
+    expect(await findByText('MPDX Tools')).toBeInTheDocument();
     expect(await findByText('Fix Phone Numbers')).toBeInTheDocument();
   });
 
@@ -55,7 +55,7 @@ describe('Tools Page', () => {
       expect(queryByTestId('ToolsWrapperLoading')).not.toBeInTheDocument(),
     );
 
-    const expandButton = getByTestId('ToolsMenuIcon');
+    const expandButton = getByTestId('MpdxToolsMenuIcon');
     expect(expandButton).toBeInTheDocument();
 
     userEvent.click(expandButton);
@@ -77,7 +77,7 @@ describe('Tools Page', () => {
         </MocksProviders>,
       );
 
-      expect(await findByText('Tools')).toBeInTheDocument();
+      expect(await findByText('MPDX Tools')).toBeInTheDocument();
       await waitFor(() => {
         expect(queryByText(bannerText)).not.toBeInTheDocument();
       });

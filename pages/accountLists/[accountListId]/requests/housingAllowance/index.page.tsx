@@ -45,7 +45,7 @@ const MinisterHousingAllowancePage: React.FC = () => {
                 isOpen={isNavListOpen}
                 selectedId="housingAllowance"
                 onClose={handleNavListToggle}
-                navType={NavTypeEnum.Reports}
+                navType={NavTypeEnum.HrTools}
               />
             }
             leftOpen={isNavListOpen}
@@ -57,7 +57,7 @@ const MinisterHousingAllowancePage: React.FC = () => {
                   isNavListOpen={isNavListOpen}
                   onNavListToggle={handleNavListToggle}
                   title={t("Minister's Housing Allowance Request")}
-                  headerType={HeaderTypeEnum.Report}
+                  headerType={HeaderTypeEnum.HrTools}
                 />
                 <MinisterHousingAllowanceProvider>
                   <MinisterHousingAllowanceReport />

@@ -10,9 +10,10 @@ import { getHeaderTitleAccess } from './helpers';
 
 export enum HeaderTypeEnum {
   Report = 'reports',
+  HrTools = 'hrTools',
   Filters = 'filters',
   Settings = 'settings',
-  Tools = 'tools',
+  MpdxTools = 'mpdxTools',
 }
 
 export const multiPageHeaderHeight = theme.spacing(10);
@@ -67,8 +68,9 @@ export const MultiPageHeader: FC<MultiPageHeaderProps> = ({
   const { t } = useTranslation();
   const { onSetupTour } = useSetupContext();
   const isReportsHeader = headerType === HeaderTypeEnum.Report;
+  const isHrToolsHeader = headerType === HeaderTypeEnum.HrTools;
   const isSettingsHeader = headerType === HeaderTypeEnum.Settings;
-  const isToolsHeader = headerType === HeaderTypeEnum.Tools;
+  const isToolsHeader = headerType === HeaderTypeEnum.MpdxTools;
   const isFiltersHeader = headerType === HeaderTypeEnum.Filters;
 
   const titleAccess = getHeaderTitleAccess(headerType, t);
@@ -92,6 +94,12 @@ export const MultiPageHeader: FC<MultiPageHeaderProps> = ({
               data-testid="ReportsMenuIcon"
             />
           )}
+          {isHrToolsHeader && (
+            <NavMenuIcon
+              titleAccess={titleAccess}
+              data-testid="HrToolsMenuIcon"
+            />
+          )}
           {isFiltersHeader && (
             <NavFilterIcon titleAccess={titleAccess} data-testid="FilterIcon" />
           )}
@@ -104,7 +112,7 @@ export const MultiPageHeader: FC<MultiPageHeaderProps> = ({
           {isToolsHeader && (
             <NavMenuIcon
               titleAccess={titleAccess}
-              data-testid="ToolsMenuIcon"
+              data-testid="MpdxToolsMenuIcon"
             />
           )}
         </NavListButton>

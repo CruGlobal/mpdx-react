@@ -61,6 +61,8 @@ describe('MultiPageMenu', () => {
     expect(getByText('Donations')).toBeInTheDocument();
     expect(getByText('14 Month Partner Report')).toBeInTheDocument();
     expect(getByText('14 Month Salary Report')).toBeInTheDocument();
+    expect(getByText('Staff Expense Report')).toBeInTheDocument();
+    expect(getByText('MPGA Monthly Report')).toBeInTheDocument();
     expect(getByText('Designation Accounts')).toBeInTheDocument();
     expect(getByText('Responsibility Centers')).toBeInTheDocument();
     expect(getByText('Expected Monthly Total')).toBeInTheDocument();
@@ -343,6 +345,34 @@ describe('MultiPageMenu', () => {
     await waitFor(() => {
       expect(getByText('Manage Organizations')).toBeInTheDocument();
       expect(getByText('Admin Console')).toBeInTheDocument();
+    });
+  });
+
+  it('shows hr tools', async () => {
+    const { getByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider>
+            <MultiPageMenu
+              selectedId={selected}
+              isOpen={true}
+              onClose={() => {}}
+              designationAccounts={[]}
+              setDesignationAccounts={() => {}}
+              navType={NavTypeEnum.HrTools}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(getByText('Salary Calculator')).toBeInTheDocument();
+      expect(getByText('Savings Fund Transfer')).toBeInTheDocument();
+      expect(getByText('MPD Goal Calculator')).toBeInTheDocument();
+      expect(getByText('MHA Calculator')).toBeInTheDocument();
+      expect(getByText('Additional Salary Request')).toBeInTheDocument();
+      expect(getByText('Ministry Partner Reminders')).toBeInTheDocument();
     });
   });
 });

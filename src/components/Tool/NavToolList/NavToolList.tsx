@@ -82,7 +82,7 @@ const NavToolList = ({ selectedId, isOpen, toggle }: Props): ReactElement => {
                 alignItems="center"
               >
                 <Typography variant="h6" id="left-panel-header">
-                  {t('Tools')}
+                  {t('MPDX Tools')}
                 </Typography>
                 <IconButton
                   data-testid="ToolNavToggle"

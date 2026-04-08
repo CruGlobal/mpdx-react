@@ -115,7 +115,7 @@ const AdditionalSalaryRequestContent: React.FC = () => {
           isOpen={isNavListOpen}
           selectedId="salaryRequest"
           onClose={handleNavListToggle}
-          navType={NavTypeEnum.Reports}
+          navType={NavTypeEnum.HrTools}
         />
       }
       leftOpen={isNavListOpen}
@@ -127,7 +127,7 @@ const AdditionalSalaryRequestContent: React.FC = () => {
             isNavListOpen={isNavListOpen}
             onNavListToggle={handleNavListToggle}
             title={t('Additional Salary Request')}
-            headerType={HeaderTypeEnum.Report}
+            headerType={HeaderTypeEnum.HrTools}
             rightExtra={
               showSavingStatus && (
                 <SavingStatus
