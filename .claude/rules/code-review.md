@@ -6,7 +6,7 @@ Project-specific rules layered on top of `CLAUDE.md` for `/quality:agent-review`
 
 **Key architectural facts the agents should know:**
 - Two GraphQL servers are routed by Apollo Link: the primary API (`https://api.mpdx.org/graphql`) and a Next.js REST-proxy lambda under `pages/api/graphql-rest.page.ts`. Routing is driven by `src/graphql/rootFields.generated.ts`.
-- REST-proxy schemas live in `pages/api/Schema/<Feature>/` and follow the pattern: `.graphql` → resolver → `dataHandlers/` → REST call.
+- REST-proxy schemas live in `pages/api/Schema/<Feature>/` and follow the pattern: `<Feature>.graphql` → `resolvers.ts` → `datahandler.ts` (sibling file) → REST call.
 - Every user-visible string is localized via `useTranslation` / `t()` and extracted to `public/locales/`.
 - Named exports only — no `export default` in components, hooks, or libs.
 - Apollo cache normalization depends on every selection set including `id` on normalizable types.
@@ -27,19 +27,19 @@ Files that control auth, routing, Apollo setup, build config, or the CI/review p
 - `src/lib/apollo/cache.ts` — cache type policies, merge functions, pagination config
 - `src/graphql/rootFields.generated.ts` — drives which GraphQL server handles which field
 - `pages/_app.page.tsx` — app-level providers and global wiring
-- `next.config.js` — build-time config, headers, rewrites, CSP
+- `next.config.{js,ts}` — build-time config, headers, rewrites, CSP
 - `codegen.ts`, `codegen.*.ts` — GraphQL codegen configuration
 - `.env`, `.env.*`, `.env.example` — environment files
 - `package.json` — dependency changes (new packages trigger `## Special Pattern Detection` below)
 - `.github/workflows/**` — CI/CD workflows
-- `.claude/commands/**`, `.claude/rules/**` — review-process definitions (protect against weakening AI review)
+- `.claude/commands/**`, `.claude/rules/**`, `.claude/settings.json` — review-process and harness definitions (protect against weakening AI review or enabling unvetted plugins/marketplaces)
 
 ## High-Risk File Patterns
 
 Each contributes +2 to risk score.
 
 - `pages/api/Schema/**/*.{ts,graphql}` — REST-proxy resolvers, schemas, and data handlers (silent data-reshaping risk)
-- `pages/api/Schema/**/dataHandlers/**` — response transformation feeding the REST proxy
+- `pages/api/Schema/**/datahandler*.ts` — response transformation feeding the REST proxy
 - `pages/api/**/*.page.ts` (excluding `auth/` and `graphql-rest` — already Critical) — other API/lambda routes
 - `src/components/**/*.graphql` — GraphQL operations (cache normalization and pagination correctness)
 - `src/lib/apollo/**/*.ts` — any Apollo helper beyond the Critical files above
@@ -83,7 +83,7 @@ Additional risk modifiers, added to the universal defaults.
 - **New `process.env.*` reference in source not present in `.env.example`:** +1 (breaks new-dev setup)
 - **New file in `src/hooks/` that uses Apollo hooks without an accompanying test file:** +1 (hooks drive component behavior; untested hooks are landmines)
 - **New file in `src/components/` without an accompanying `*.test.tsx`:** +1
-- **Changes to `next.config.js` rewrites, headers, CSP, or image domains:** +2 (affects all pages and external requests)
+- **Changes to `next.config.{js,ts}` rewrites, headers, CSP, or image domains:** +2 (affects all pages and external requests)
 - **New field added to an existing GraphQL type without updating callers of that type's fragment:** +1
 - **Deletion of a GraphQL operation (`.graphql` file) without grep confirming no remaining callers:** +2
 - **Changes to `src/lib/apollo/cache.ts` `typePolicies` or `merge` functions:** +2 (can silently corrupt cached data across the app)
@@ -95,15 +95,15 @@ Repo-specific triggers that supplement the skill's minimal universal triggers.
 **Security Agent**
 - Any file under `pages/api/**` (all API/lambda routes)
 - Any file matching `src/lib/apollo/{link,client,ssrClient}.ts`
-- `next.config.js`, `pages/_app.page.tsx`, any middleware/CSP/headers config
+- `next.config.{js,ts}`, `pages/_app.page.tsx`, any middleware/CSP/headers config
 - `src/lib/extractCookie*.ts`, `src/lib/**auth**`, `src/lib/**session**`
 - Changes to `.github/workflows/**`
 - Changes adding `process.env.*` references
-- Changes to `.claude/commands/**` or `.claude/rules/**` (review process integrity)
+- Changes to `.claude/commands/**`, `.claude/rules/**`, or `.claude/settings.json` (review process and harness integrity)
 
 **Data Integrity Agent**
 - `pages/api/Schema/**/*.{ts,graphql}` (REST proxy silently reshapes data)
-- `pages/api/Schema/**/dataHandlers/**`
+- `pages/api/Schema/**/datahandler*.ts`
 - `src/lib/apollo/cache.ts` (type policies, merge functions, pagination)
 - `src/components/**/*.graphql` containing `mutation` keyword
 - Any `.graphql` file with `first:`, `after:`, `pageInfo`, or `nodes` (pagination)
@@ -132,9 +132,11 @@ MPDX displays and calculates donation/partner-giving aggregations across dozens 
 
 **Trigger conditions:**
 - Any file under `src/components/Reports/**`
-- Any file under `src/components/GoalCalculator/**` or `src/components/PdsGoalCalculator/**`
+- Any file under `src/components/Reports/GoalCalculator/**` or `src/components/Reports/PdsGoalCalculator/**`
+- Any file under `src/components/Reports/SalaryCalculator/**`
 - Any file under `src/components/EditDonationModal/**`
-- Any file under `src/components/AdditionalSalaryRequest/**`, `src/components/MinisterHousingAllowance/**`
+- Any file under `src/components/Reports/AdditionalSalaryRequest/**`, `src/components/Reports/MinisterHousingAllowance/**`
+- Any file under `src/components/Dashboard/MonthlyGoal/**`, `src/components/Dashboard/DonationHistories/**`
 - Diff content contains any of: `amount`, `currency`, `convertedAmount`, `pledgeAmount`, `goal`, `balance`, `total`, `sum(`, `reduce((`, `.toFixed(`, `Math.round(`, `Number(`, `parseFloat(`, `parseInt(` inside `src/components/Reports/**` or goal/donation components
 
 **Focus areas:**
@@ -182,7 +184,7 @@ Every item here is mandatory. The Standards agent must report compliance per ite
 - [ ] Any query returning `nodes` either handles pagination via `pageInfo` / `after` / `fetchMore`, or documents why the default 25-item limit is sufficient
 - [ ] Mutations that change cached data include either `update`, `refetchQueries`, or `cache.evict` to reflect the change in the UI
 - [ ] Apollo routing awareness — when adding a field, check `src/graphql/rootFields.generated.ts` to know which server handles it; don't mix rootFields with REST-proxy-only fields in one operation
-- [ ] No raw `fetch` or `axios` calls for data that could go through Apollo — centralize in GraphQL
+- [ ] No raw `fetch` or `axios` calls for data that could go through Apollo — centralize in GraphQL. Exception: the REST-proxy boundary layer (`pages/api/graphql-rest.page.ts` and `pages/api/Schema/**/datahandler*.ts`) uses `fetch` intentionally to call the upstream REST API
 
 **TypeScript**
 - [ ] No `any` types in new code (use `unknown` + narrowing, or proper generics)
@@ -222,18 +224,18 @@ Project-specific concerns added to the Security agent's universal checks.
 - **Client-side validation parity** — every Yup rule, every `disabled` button, every `required` field must have a server-side equivalent. If a mutation silently trusts the client, flag it
 - **Impersonation flow** — changes touching impersonation (`pages/api/auth/impersonate/**`, `src/components/User/impersonate*`) must verify the authorizer's role and log the action
 - **File uploads** — `pages/api/uploads/**`, `pages/api/Schema/uploads/**` — verify content-type validation, size limits, filename sanitization (no path traversal), and that upload tokens are scoped
-- **CSP and security headers** in `next.config.js` — any weakening (new `unsafe-inline`, `unsafe-eval`, added origins) is a red flag
+- **CSP and security headers** in `next.config.{js,ts}` — any weakening (new `unsafe-inline`, `unsafe-eval`, added origins) is a red flag
 - **XSS surfaces** — `dangerouslySetInnerHTML`, `innerHTML`, direct DOM writes; flag any use in new code and verify input is sanitized
 - **Open redirect** — any `router.push(value)` or `window.location = value` where `value` comes from a query parameter must be validated against an allowlist
 - **GraphQL variable injection** — never build GraphQL operations via string concatenation; only use query variables
 - **Admin/coaching authorization** — settings, org admin, and coaching views must check the user's role on each mutation, not just on the initial page load
 - **CI/CD workflow security** — any change to `.github/workflows/**` must verify permission scopes are minimal, secrets are not exposed in logs, and trigger conditions cannot be abused to bypass review
-- **Review process integrity** — changes to `.claude/commands/**` or `.claude/rules/**` must verify risk scoring is not weakened, severity thresholds are not lowered, and critical checks are not stripped
+- **Review process integrity** — changes to `.claude/commands/**`, `.claude/rules/**`, or `.claude/settings.json` must verify risk scoring is not weakened, severity thresholds are not lowered, critical checks are not stripped, and newly enabled plugins/marketplaces come from trusted org-controlled sources
 
 ## Architecture Focus Areas
 
 - **Dual GraphQL boundary** — new queries should route cleanly to one server. Mixing rootFields (primary API) with REST-proxy-only fields in the same operation is a smell; the Apollo link will split them but the result can be confusing and harder to cache
-- **REST-proxy layering** — new proxy queries follow the pattern: `pages/api/Schema/<Feature>/<Feature>.graphql` → resolver in the same folder → `dataHandlers/<feature>Handler.ts` → REST call in `graphql-rest.page.ts`. Deviations should be justified
+- **REST-proxy layering** — new proxy queries follow the pattern: `pages/api/Schema/<Feature>/<Feature>.graphql` → `resolvers.ts` in the same folder → `datahandler.ts` sibling file → REST call in `graphql-rest.page.ts`. Deviations should be justified
 - **Thin page components** — route-level pages (`pages/**/*.page.tsx`) should compose feature components, not contain business logic. Logic lives in hooks or feature components
 - **Component feature organization** — new components belong under `src/components/<Feature>/`; components used across multiple features go in `src/components/Shared/`. Don't add one-off components to `Shared/`
 - **Hook placement** — reusable hooks in `src/hooks/`; feature-specific hooks stay next to their components
