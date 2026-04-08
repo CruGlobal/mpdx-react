@@ -26,7 +26,10 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({
 
   const { values, touched, errors } = useFormikContext<CalculationFormValues>();
 
-  const { totalCostOfHome, annualCostOfHome } = useAnnualTotal(values);
+  const { totalCostOfHome, annualCostOfHome } = useAnnualTotal(
+    values,
+    rentOrOwn,
+  );
 
   return (
     <FormCard title={t('Cost of Providing a Home')}>

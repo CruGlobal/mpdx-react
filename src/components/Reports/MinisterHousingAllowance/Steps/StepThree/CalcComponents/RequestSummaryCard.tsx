@@ -36,7 +36,7 @@ export const RequestSummaryCard: React.FC<RequestSummaryCardProps> = ({
   const currency = 'USD';
 
   const { values } = useFormikContext<CalculationFormValues>();
-  const { annualTotal } = useAnnualTotal(values);
+  const { annualTotal } = useAnnualTotal(values, rentOrOwn);
 
   const { pageType } = useMinisterHousingAllowance();
 

@@ -32,8 +32,11 @@ export const useSaveField = ({ formValues }: UseSaveFieldOptions) => {
         ...formValues,
         ...attributes,
       } as CalculationFormValues;
-      const { annualTotal: overallAmount } =
-        calculateAnnualTotals(updatedValues);
+      const rentOrOwn = requestData.requestAttributes?.rentOrOwn;
+      const { annualTotal: overallAmount } = calculateAnnualTotals(
+        updatedValues,
+        rentOrOwn ?? undefined,
+      );
       const roundedOverallAmount = Math.round(overallAmount * 100) / 100;
 
       return trackMutation(
