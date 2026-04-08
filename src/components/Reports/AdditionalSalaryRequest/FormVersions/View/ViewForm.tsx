@@ -37,6 +37,13 @@ export const ViewForm: React.FC = () => {
     }
 
     let cancelled = false;
+    // Two nested requestAnimationFrames are needed to ensure the print dialog
+    // opens only after the view has fully rendered with the latest form data.
+    // The first rAF waits for React to commit the DOM updates from
+    // setPendingPrint/pageType changes; the second rAF waits for the browser
+    // to actually paint those updates to the screen. Without both, the print
+    // dialog can open against a stale layout and the printed output will be
+    // missing the newly rendered content.
     const rafId = requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         if (cancelled) {

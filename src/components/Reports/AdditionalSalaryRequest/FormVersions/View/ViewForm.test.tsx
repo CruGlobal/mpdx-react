@@ -104,21 +104,12 @@ describe('ViewForm', () => {
   });
 
   describe('pendingPrint', () => {
-    let rafSpy: jest.SpyInstance;
-
     beforeEach(() => {
-      // requestAnimationFrame is not always implemented in jsdom; stub it to
-      // run synchronously so the print effect's nested rAFs flush immediately.
-      rafSpy = jest
-        .spyOn(window, 'requestAnimationFrame')
-        .mockImplementation((cb) => {
-          cb(0);
-          return 0;
-        });
+      jest.useFakeTimers();
     });
 
     afterEach(() => {
-      rafSpy.mockRestore();
+      jest.useRealTimers();
     });
 
     it('calls window.print and clears the flag when pendingPrint is true', () => {
@@ -133,6 +124,11 @@ describe('ViewForm', () => {
           setPendingPrint,
         },
       });
+
+      // The effect schedules two nested requestAnimationFrame callbacks.
+      // Jest's modern fake timers fake rAF (~16ms per frame), so advancing
+      // ~32ms flushes both callbacks.
+      jest.advanceTimersByTime(32);
 
       expect(printSpy).toHaveBeenCalledTimes(1);
       expect(setPendingPrint).toHaveBeenCalledWith(false);

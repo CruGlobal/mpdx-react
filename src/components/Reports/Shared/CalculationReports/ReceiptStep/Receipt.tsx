@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 
-interface BaseReceiptProps {
+export interface ReceiptProps {
   formTitle: string;
   buttonText: string;
   buttonLink: string;
@@ -18,15 +18,12 @@ interface BaseReceiptProps {
   isEdit?: boolean;
   availableDate?: string | null;
   setIsComplete?: Dispatch<SetStateAction<boolean>>;
+  // URL-based view (e.g. MHA). Ignored if `onPrint` is provided.
+  viewLink?: string;
+  // Caller-owned print handler (e.g. ASR state-based view). If provided, the
+  // caller is responsible for any completion/state updates.
+  onPrint?: () => void;
 }
-
-// Exactly one of `viewLink` (URL-based view, e.g. MHA) or `onView` (state-based
-// view, e.g. ASR) must be provided. Passing both — or neither — is a type error.
-type ReceiptProps = BaseReceiptProps &
-  (
-    | { viewLink: string; onView?: never }
-    | { onView: () => void; viewLink?: never }
-  );
 
 export const Receipt: React.FC<ReceiptProps> = ({
   formTitle,
@@ -36,7 +33,7 @@ export const Receipt: React.FC<ReceiptProps> = ({
   linkOne,
   linkOneText,
   viewLink,
-  onView,
+  onPrint,
   isEdit,
   availableDate,
   setIsComplete,
@@ -54,10 +51,8 @@ export const Receipt: React.FC<ReceiptProps> = ({
     : t('approval soon');
 
   const handlePrint = async () => {
-    // No URL for ASR view mode — the View page itself owns the print trigger
-    if (onView) {
-      setIsComplete?.(true);
-      onView();
+    if (onPrint) {
+      onPrint();
       return;
     }
 

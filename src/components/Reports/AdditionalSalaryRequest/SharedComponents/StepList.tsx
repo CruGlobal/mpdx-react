@@ -49,7 +49,7 @@ export const StepList: React.FC<StepListProps> = ({ FormComponent }) => {
         formTitle={t('Additional Salary Request')}
         buttonText={t('Back to Dashboard')}
         buttonLink={`/accountLists/${accountListId}`}
-        onView={() => {
+        onPrint={() => {
           setPendingPrint(true);
           setPageType(PageEnum.View);
         }}

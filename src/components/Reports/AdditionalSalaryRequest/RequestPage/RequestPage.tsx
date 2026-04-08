@@ -57,7 +57,11 @@ const MainContent: React.FC = () => {
     useFormikContext<CompleteFormValues>();
 
   const handleContinue = async () => {
-    if (requestData?.latestAdditionalSalaryRequest === null) {
+    const latestRequest = requestData?.latestAdditionalSalaryRequest;
+    if (
+      latestRequest === null ||
+      latestRequest?.status === AsrStatusEnum.ApprovedAndPaid
+    ) {
       await trackMutation(
         createRequest({
           variables: {

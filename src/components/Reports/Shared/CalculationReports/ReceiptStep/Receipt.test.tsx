@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from 'react';
+import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -10,7 +10,7 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { MinisterHousingAllowanceProvider } from '../../../MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
 import { PageEnum } from '../Shared/sharedTypes';
-import { Receipt } from './Receipt';
+import { Receipt, ReceiptProps } from './Receipt';
 
 const formTitle = 'Test Title';
 const buttonText = 'View Dashboard';
@@ -22,34 +22,16 @@ const buttonLink = '/test/button-link';
 
 const setIsComplete = jest.fn();
 
-type TestComponentProps = {
+type TestComponentProps = Partial<ReceiptProps> & {
   pageType?: PageEnum;
-  alertText?: string;
-  linkOne?: string;
-  linkOneText?: string;
-  isEdit?: boolean;
-  availableDate?: string | null;
-  setIsComplete?: Dispatch<SetStateAction<boolean>>;
-} & (
-  | { viewLink?: string; onView?: never }
-  | { onView: () => void; viewLink?: never }
-);
+};
 
 const TestComponent: React.FC<TestComponentProps> = ({
   pageType,
-  alertText,
-  linkOne,
-  linkOneText,
-  viewLink,
-  onView,
-  isEdit,
+  viewLink = '/test/view-link',
   availableDate = '2024-06-15',
-  setIsComplete,
+  ...receiptProps
 }) => {
-  const viewProps: { viewLink: string } | { onView: () => void } = onView
-    ? { onView }
-    : { viewLink: viewLink ?? '/test/view-link' };
-
   return (
     <ThemeProvider theme={theme}>
       <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -60,14 +42,10 @@ const TestComponent: React.FC<TestComponentProps> = ({
                 <Receipt
                   formTitle={formTitle}
                   buttonText={buttonText}
-                  alertText={alertText}
-                  linkOne={linkOne}
-                  linkOneText={linkOneText}
                   buttonLink={buttonLink}
-                  isEdit={isEdit}
                   availableDate={availableDate}
-                  setIsComplete={setIsComplete}
-                  {...viewProps}
+                  viewLink={viewLink}
+                  {...receiptProps}
                 />
               </MinisterHousingAllowanceProvider>
             </GqlMockedProvider>
@@ -213,22 +191,19 @@ describe('Receipt', () => {
     expect(setIsComplete).toHaveBeenCalledWith(true);
   });
 
-  describe('onView callback', () => {
-    it('calls onView and setIsComplete when provided alone (no viewLink)', async () => {
-      const onView = jest.fn();
-      const localSetIsComplete = jest.fn();
-      const { findByText } = render(
-        <TestComponent onView={onView} setIsComplete={localSetIsComplete} />,
-      );
+  describe('onPrint callback', () => {
+    it('calls onPrint when provided', async () => {
+      const onPrint = jest.fn();
+      const { findByText } = render(<TestComponent onPrint={onPrint} />);
 
       userEvent.click(await findByText(/view or print a copy/i));
 
-      expect(onView).toHaveBeenCalledTimes(1);
-      expect(localSetIsComplete).toHaveBeenCalledWith(true);
+      expect(onPrint).toHaveBeenCalledTimes(1);
     });
 
-    it('does not push the router or print when onView is provided', async () => {
-      const onView = jest.fn();
+    it('does not push the router, print, or call setIsComplete when onPrint is provided', async () => {
+      const onPrint = jest.fn();
+      const localSetIsComplete = jest.fn();
       const push = jest.fn().mockResolvedValue(true);
       const printSpy = jest
         .spyOn(window, 'print')
@@ -245,7 +220,8 @@ describe('Receipt', () => {
                       formTitle={formTitle}
                       buttonText={buttonText}
                       buttonLink={buttonLink}
-                      onView={onView}
+                      onPrint={onPrint}
+                      setIsComplete={localSetIsComplete}
                     />
                   </MinisterHousingAllowanceProvider>
                 </GqlMockedProvider>
@@ -257,20 +233,12 @@ describe('Receipt', () => {
 
       userEvent.click(await findByText(/view or print a copy/i));
 
-      expect(onView).toHaveBeenCalledTimes(1);
+      expect(onPrint).toHaveBeenCalledTimes(1);
+      expect(localSetIsComplete).not.toHaveBeenCalled();
       expect(push).not.toHaveBeenCalled();
       expect(printSpy).not.toHaveBeenCalled();
 
       printSpy.mockRestore();
-    });
-
-    it('does not crash when onView is provided without setIsComplete', async () => {
-      const onView = jest.fn();
-      const { findByText } = render(<TestComponent onView={onView} />);
-
-      userEvent.click(await findByText(/view or print a copy/i));
-
-      expect(onView).toHaveBeenCalledTimes(1);
     });
   });
 });
