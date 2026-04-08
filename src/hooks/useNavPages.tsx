@@ -4,6 +4,7 @@ import CompassIcon from '@mui/icons-material/Explore';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useReportNavItems } from './useReportNavItems';
+import { useRequestFormNavItems } from './useRequestFormNavItems';
 import { useSettingsNavItems } from './useSettingsNavItems';
 import { useToolsNavItems } from './useToolsNavItems';
 
@@ -50,6 +51,7 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
   const reportItems = useReportNavItems();
   const toolsItems = useToolsNavItems();
   const settingsItems = useSettingsNavItems();
+  const requestFormItems = useRequestFormNavItems();
 
   const allNavPages = useMemo<NavPage[]>(() => {
     const navPages: NavPage[] = [
@@ -90,6 +92,19 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
           href: `/accountLists/${accountListId}/reports/${item.id}`,
           searchIcon: <CompassIcon />,
           searchName: t(`Reports - {{ title }}`, { title: item.title }),
+          showInSearchDialog: true,
+        })),
+        showInNav: true,
+      },
+      {
+        id: 'request-forms-page',
+        title: t('Request Forms'),
+        pathname: '/accountLists/[accountListId]/reports',
+        items: requestFormItems.map((item) => ({
+          ...item,
+          href: `/accountLists/${accountListId}/requests/${item.id}`,
+          searchIcon: <CompassIcon />,
+          searchName: t(`Request Forms - {{ title }}`, { title: item.title }),
           showInSearchDialog: true,
         })),
         showInNav: true,
@@ -179,6 +194,13 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
 
       // get report sub items
       if (page.id === 'reports-page' && page.items) {
+        page.items.forEach((item) => {
+          pages.push({ ...item, title: item.searchName ?? item.title });
+        });
+      }
+
+      // get request form sub items
+      if (page.id === 'request-forms-page' && page.items) {
         page.items.forEach((item) => {
           pages.push({ ...item, title: item.searchName ?? item.title });
         });

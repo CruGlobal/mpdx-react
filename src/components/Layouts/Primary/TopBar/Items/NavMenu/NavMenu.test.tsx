@@ -55,6 +55,9 @@ describe('NavMenu', () => {
     expect(getByRole('menuitem', { name: 'Dashboard' })).toBeInTheDocument();
     expect(getByRole('menuitem', { name: 'Contacts' })).toBeInTheDocument();
     expect(getByRole('menuitem', { name: 'Reports' })).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { name: 'Request Forms' }),
+    ).toBeInTheDocument();
     expect(getByRole('menuitem', { name: 'Tools' })).toBeInTheDocument();
     userEvent.click(getByTestId('ReportMenuToggle'));
     expect(getByRole('menuitem', { name: 'Donations' })).toBeInTheDocument();
@@ -76,6 +79,16 @@ describe('NavMenu', () => {
     ).toBeInTheDocument();
     expect(
       getByRole('menuitem', { name: 'Partner Giving Analysis' }),
+    ).toBeInTheDocument();
+    userEvent.click(getByTestId('RequestFormsMenuToggle'));
+    expect(
+      getByRole('menuitem', { name: 'Minister Housing Allowance' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { name: 'Additional Salary Request' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { name: 'Salary Calculator' }),
     ).toBeInTheDocument();
     userEvent.click(getByTestId('ToolsMenuToggle'));
     expect(getByRole('menuitem', { name: 'Appeals' })).toBeInTheDocument();
