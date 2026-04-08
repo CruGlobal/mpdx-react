@@ -69,6 +69,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
         goToStep(1);
       }}
       isRequest={true}
+      disableCancel={isApproved}
       handlePrint={handlePrint}
       handleConfirmCancel={() => handleDeleteRequest(id, true)}
     >
