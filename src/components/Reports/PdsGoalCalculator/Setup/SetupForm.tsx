@@ -179,9 +179,7 @@ export const SetupForm: React.FC = () => {
               <TextField
                 {...params}
                 label={t('Geographic Multiplier')}
-                helperText={t(
-                  'If not applicable, select "None"',
-                )}
+                helperText={t('If not applicable, select "None"')}
               />
             )}
           />
