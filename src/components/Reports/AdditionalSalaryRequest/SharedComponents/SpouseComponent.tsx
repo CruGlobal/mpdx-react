@@ -13,20 +13,17 @@ export const SpouseComponent: React.FC = () => {
   const locale = useLocale();
   const currency = 'USD';
 
-  const { requestData, isSpouse, hasSpouse } = useAdditionalSalaryRequest();
+  const { calculations, spouseCalculations, isSpouse, hasSpouse } =
+    useAdditionalSalaryRequest();
   const { spouseLinkText, spouseLinkHref } = useSpouseLink();
 
   if (!hasSpouse) {
     return null;
   }
 
-  const userCalculations =
-    requestData?.latestAdditionalSalaryRequest?.calculations;
-  const spouseCalculations =
-    requestData?.latestAdditionalSalaryRequest?.spouseCalculations;
   const { currentSalaryCap, staffAccountBalance } =
-    isSpouse && userCalculations
-      ? userCalculations
+    isSpouse && calculations
+      ? calculations
       : spouseCalculations
         ? spouseCalculations
         : {};

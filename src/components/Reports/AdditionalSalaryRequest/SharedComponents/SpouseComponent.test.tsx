@@ -19,6 +19,11 @@ const requestDataDefault = {
   },
 };
 
+const calculationsDefault =
+  requestDataDefault.latestAdditionalSalaryRequest.calculations;
+const spouseCalculationsDefault =
+  requestDataDefault.latestAdditionalSalaryRequest.spouseCalculations;
+
 const spouseDefault = {
   staffInfo: {
     firstName: 'Jane',
@@ -35,12 +40,16 @@ const router = {
 
 type ComponentProps = {
   requestData?: object;
+  calculations?: object | null;
+  spouseCalculations?: object | null;
   spouse?: object;
   isSpouse?: boolean;
   hasSpouse?: boolean;
 };
 const renderComponent = ({
   requestData = requestDataDefault,
+  calculations = calculationsDefault,
+  spouseCalculations = spouseCalculationsDefault,
   spouse = spouseDefault,
   isSpouse = false,
   hasSpouse = true,
@@ -51,6 +60,8 @@ const renderComponent = ({
         value={
           {
             requestData,
+            calculations,
+            spouseCalculations,
             spouse,
             isSpouse,
             hasSpouse,
@@ -79,6 +90,10 @@ describe('SpouseComponent', () => {
 
   it('calculates remaining salary correctly when values are provided', () => {
     const { getByText } = renderComponent({
+      spouseCalculations: {
+        currentSalaryCap: 15000,
+        staffAccountBalance: 5000,
+      },
       requestData: {
         latestAdditionalSalaryRequest: {
           ...requestDataDefault.latestAdditionalSalaryRequest,
@@ -97,6 +112,7 @@ describe('SpouseComponent', () => {
 
   it('handles null spouse calculations gracefully', () => {
     const { getByText } = renderComponent({
+      spouseCalculations: null,
       requestData: {
         latestAdditionalSalaryRequest: {
           ...requestDataDefault.latestAdditionalSalaryRequest,

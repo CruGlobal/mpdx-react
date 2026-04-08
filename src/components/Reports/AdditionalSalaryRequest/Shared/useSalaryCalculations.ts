@@ -58,16 +58,15 @@ export const useSalaryCalculations = ({
   const {
     traditional403bPercentage,
     roth403bPercentage,
-    requestData,
+    calculations,
+    spouseCalculations,
     user,
     spouse,
   } = useAdditionalSalaryRequest();
-  const individualCap =
-    requestData?.latestAdditionalSalaryRequest?.calculations.currentSalaryCap ??
-    0;
+  const individualCap = calculations?.currentSalaryCap ?? 0;
+
   const spouseIndividualCap = spouse
-    ? (requestData?.latestAdditionalSalaryRequest?.spouseCalculations
-        ?.currentSalaryCap ?? 0)
+    ? (spouseCalculations?.currentSalaryCap ?? 0)
     : null;
 
   const grossAnnualSalary = user?.currentSalary?.grossSalaryAmount ?? 0;
@@ -92,15 +91,13 @@ export const useSalaryCalculations = ({
 
     // Annual salary calculations
     const additionalSalaryReceivedThisYear =
-      requestData?.latestAdditionalSalaryRequest?.calculations
-        ?.pendingAsrAmount ?? 0;
+      calculations?.pendingAsrAmount ?? 0;
     const totalAnnualSalary =
       grossAnnualSalary + additionalSalaryReceivedThisYear + total;
 
     // Spouse annual salary calculations
     const spouseTotalThisYear = spouse
-      ? requestData?.latestAdditionalSalaryRequest?.spouseCalculations
-          ?.pendingAsrAmount
+      ? spouseCalculations?.pendingAsrAmount
       : null;
     const spouseTotalAnnualSalary =
       spouseGrossAnnualSalary + (spouseTotalThisYear ?? 0);
@@ -160,7 +157,8 @@ export const useSalaryCalculations = ({
     individualCap,
     spouseIndividualCap,
     spouse,
-    requestData,
+    spouseCalculations,
+    calculations,
     spouseGrossAnnualSalary,
   ]);
 };

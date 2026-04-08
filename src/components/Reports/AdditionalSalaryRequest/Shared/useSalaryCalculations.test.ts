@@ -222,6 +222,10 @@ describe('useSalaryCalculations', () => {
       user: {
         currentSalary: { grossSalaryAmount: 1000 },
       },
+      calculations: {
+        currentSalaryCap: 5000,
+        pendingAsrAmount: 1000,
+      },
       requestData: {
         latestAdditionalSalaryRequest: {
           calculations: {
@@ -261,6 +265,10 @@ describe('useSalaryCalculations', () => {
       roth403bPercentage: 0.1,
       user: {
         currentSalary: { grossSalaryAmount: 50000 },
+      },
+      calculations: {
+        currentSalaryCap: 10000,
+        pendingAsrAmount: 10000,
       },
       requestData: {
         latestAdditionalSalaryRequest: {
@@ -305,6 +313,10 @@ describe('useSalaryCalculations', () => {
         roth403bPercentage: 0.1,
         user: { currentSalary: { grossSalaryAmount: 50000 } },
         spouse: { currentSalary: { grossSalaryAmount: 40000 } },
+        calculations: {
+          currentSalaryCap: 70000,
+        },
+        spouseCalculations,
         requestData: {
           latestAdditionalSalaryRequest: {
             calculations: {
@@ -403,6 +415,10 @@ describe('useSalaryCalculations', () => {
         roth403bPercentage: 0.1,
         user: { currentSalary: { grossSalaryAmount: 50000 } },
         spouse: { currentSalary: { grossSalaryAmount: 40000 } },
+        calculations: {
+          currentSalaryCap: 60000,
+        },
+        spouseCalculations,
         requestData: {
           latestAdditionalSalaryRequest: {
             calculations: {
@@ -548,6 +564,10 @@ describe('useSalaryCalculations', () => {
         roth403bPercentage: 0.1,
         user: { currentSalary: { grossSalaryAmount: 50000 } },
         spouse: { currentSalary: { grossSalaryAmount: 40000 } },
+        calculations: {
+          currentSalaryCap: 55000,
+        },
+        spouseCalculations,
         requestData: {
           latestAdditionalSalaryRequest: {
             calculations: {
@@ -644,6 +664,7 @@ describe('useSalaryCalculations', () => {
         roth403bPercentage: 0.1,
         user: { currentSalary: { grossSalaryAmount: 50000 } },
         spouse: undefined,
+        calculations: { currentSalaryCap: cap },
         requestData: {
           latestAdditionalSalaryRequest: {
             calculations: { currentSalaryCap: cap },

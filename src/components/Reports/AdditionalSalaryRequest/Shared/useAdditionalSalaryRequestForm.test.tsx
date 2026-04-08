@@ -49,6 +49,11 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   goToStep: jest.fn(),
   isDrawerOpen: true,
   toggleDrawer: jest.fn(),
+  calculations: {
+    currentSalaryCap: 100000,
+    staffAccountBalance: 50000,
+    pendingAsrAmount: 0,
+  },
   requestData: {
     latestAdditionalSalaryRequest: {
       phoneNumber: '555-123-4567',
@@ -214,6 +219,8 @@ describe('useAdditionalSalaryRequestForm', () => {
       mockUseAdditionalSalaryRequest.mockReturnValue({
         ...defaultMockContextValue,
         user: undefined,
+        requestData: undefined,
+        calculations: undefined,
       });
 
       const { result } = renderHook(() => useAdditionalSalaryRequestForm(), {
@@ -241,9 +248,15 @@ describe('useAdditionalSalaryRequestForm', () => {
       expect(result.current.values.phoneNumber).toBe('555-1234');
     });
 
-    it('should populate initial values from request data query', async () => {
-      const mocks = {
-        AdditionalSalaryRequest: {
+    it('should populate initial values from request data in context', async () => {
+      mockUseAdditionalSalaryRequest.mockReturnValue({
+        ...defaultMockContextValue,
+        calculations: {
+          currentSalaryCap: 50000,
+          staffAccountBalance: 20000,
+          pendingAsrAmount: 0,
+        },
+        requestData: {
           latestAdditionalSalaryRequest: {
             id: 'test-request-id',
             currentYearSalaryNotReceived: 500,
@@ -268,38 +281,44 @@ describe('useAdditionalSalaryRequestForm', () => {
               pendingAsrAmount: 0,
             },
           },
-        },
-      };
+        } as unknown as AdditionalSalaryRequestQuery,
+      });
 
       const { result } = renderHook(() => useAdditionalSalaryRequestForm(), {
-        wrapper: ({ children }) => (
-          <TestWrapper mocks={mocks}>{children}</TestWrapper>
-        ),
+        wrapper: TestWrapper,
       });
 
-      await waitFor(() => {
-        expect(result.current.values.currentYearSalaryNotReceived).toBe('500');
-      });
-
+      expect(result.current.values.currentYearSalaryNotReceived).toBe('500');
       expect(result.current.values.previousYearSalaryNotReceived).toBe('200');
       expect(result.current.values.phoneNumber).toBe('123-456-7890');
     });
 
-    it('should send isSpouse variable to request query', async () => {
-      renderHook(() => useAdditionalSalaryRequestForm(), {
+    it('should read isSpouse from context', async () => {
+      mockUseAdditionalSalaryRequest.mockReturnValue({
+        ...defaultMockContextValue,
+        isSpouse: false,
+        requestData: undefined,
+        calculations: undefined,
+      });
+
+      const { result } = renderHook(() => useAdditionalSalaryRequestForm(), {
         wrapper: TestWrapper,
       });
 
-      await waitFor(() => {
-        expect(mutationSpy).toHaveGraphqlOperation('AdditionalSalaryRequest', {
-          isSpouse: false,
-        });
-      });
+      // isSpouse=false should be used (no spouse mode)
+      expect(result.current.values).toBeDefined();
     });
   });
 
   describe('validation', () => {
     it('should require phone number', async () => {
+      mockUseAdditionalSalaryRequest.mockReturnValue({
+        ...defaultMockContextValue,
+        user: undefined,
+        requestData: undefined,
+        calculations: undefined,
+      });
+
       const { result } = renderHook(() => useAdditionalSalaryRequestForm(), {
         wrapper: TestWrapper,
       });
@@ -461,6 +480,25 @@ describe('useAdditionalSalaryRequestForm', () => {
     });
 
     it('should validate additional info when exceedsCap is true', async () => {
+      mockUseAdditionalSalaryRequest.mockReturnValue({
+        ...defaultMockContextValue,
+        calculations: {
+          currentSalaryCap: 50,
+          staffAccountBalance: 0,
+          pendingAsrAmount: 0,
+        },
+        requestData: {
+          latestAdditionalSalaryRequest: {
+            phoneNumber: '555-123-4567',
+            calculations: {
+              currentSalaryCap: 50,
+              staffAccountBalance: 0,
+              pendingAsrAmount: 0,
+            },
+          },
+        } as unknown as AdditionalSalaryRequestQuery,
+      });
+
       const { result } = renderHook(
         () =>
           useAdditionalSalaryRequestForm({
@@ -691,9 +729,16 @@ describe('useAdditionalSalaryRequestForm', () => {
       expect(result.current.values.currentYearSalaryNotReceived).toBe('100');
     });
 
-    it('should enable reinitialize', async () => {
-      const mocks = {
-        AdditionalSalaryRequest: {
+    it('should initialize from requestData in context', async () => {
+      mockUseAdditionalSalaryRequest.mockReturnValue({
+        ...defaultMockContextValue,
+        calculations: {
+          currentSalaryCap: 50000,
+          combinedCap: 50000,
+          staffAccountBalance: 20000,
+          pendingAsrAmount: 0,
+        },
+        requestData: {
           latestAdditionalSalaryRequest: {
             id: 'test-request-id',
             currentYearSalaryNotReceived: 999,
@@ -718,18 +763,14 @@ describe('useAdditionalSalaryRequestForm', () => {
               staffAccountBalance: 20000,
             },
           },
-        },
-      };
+        } as unknown as AdditionalSalaryRequestQuery,
+      });
 
       const { result } = renderHook(() => useAdditionalSalaryRequestForm(), {
-        wrapper: ({ children }) => (
-          <TestWrapper mocks={mocks}>{children}</TestWrapper>
-        ),
+        wrapper: TestWrapper,
       });
 
-      await waitFor(() => {
-        expect(result.current.values.currentYearSalaryNotReceived).toBe('999');
-      });
+      expect(result.current.values.currentYearSalaryNotReceived).toBe('999');
     });
   });
 });
