@@ -9,6 +9,8 @@ fragment PdsGoalCalculationFields on DesignationSupportCalculation {
   salaryOrHourly
   status
   payRate
+  benefits
+  geographicLocation
 }
 
 query PdsGoalCalculations {
@@ -38,5 +40,15 @@ mutation CreatePdsGoalCalculation(
 mutation DeletePdsGoalCalculation($id: ID!) {
   deleteDesignationSupportCalculation(input: { id: $id }) {
     id
+  }
+}
+
+mutation UpdatePdsGoalCalculation(
+  $attributes: DesignationSupportCalculationUpdateInput!
+) {
+  updateDesignationSupportCalculation(input: { attributes: $attributes }) {
+    designationSupportCalculation {
+      ...PdsGoalCalculationFields
+    }
   }
 }
