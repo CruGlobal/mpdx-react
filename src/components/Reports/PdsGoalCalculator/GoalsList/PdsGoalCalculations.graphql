@@ -1,7 +1,6 @@
 fragment PdsGoalCalculationFields on DesignationSupportCalculation {
   id
   name
-  isCurrent
   updatedAt
   averageHoursPerWeek
   hoursWorkedPerWeek
