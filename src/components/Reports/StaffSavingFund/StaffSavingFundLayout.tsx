@@ -8,7 +8,7 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
-import { NoStaffAccount } from '../Shared/NoStaffAccount/NoStaffAccount';
+import { LimitedAccess } from '../../Shared/LimitedAccess/LimitedAccess';
 import { useStaffAccountQuery } from '../StaffAccount.generated';
 import {
   StaffSavingFundContext,
@@ -61,7 +61,7 @@ export const StaffSavingFundLayout: React.FC<StaffSavingFundLayoutProps> = ({
       ) : loading ? (
         <Loading loading />
       ) : (
-        <NoStaffAccount />
+        <LimitedAccess noStaffAccount />
       )}
     </>
   );

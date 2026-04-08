@@ -16,8 +16,8 @@ import {
 import { useAdditionalSalaryRequestForm } from 'src/components/Reports/AdditionalSalaryRequest/Shared/useAdditionalSalaryRequestForm';
 import { SavingStatus } from 'src/components/Reports/Shared/CalculationReports/SavingStatus/SavingStatus';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
-import { NoStaffAccount } from 'src/components/Reports/Shared/NoStaffAccount/NoStaffAccount';
 import { useStaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
+import { LimitedAccess } from 'src/components/Shared/LimitedAccess/LimitedAccess';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -169,7 +169,7 @@ const AdditionalSalaryRequestPage: React.FC = () => {
       ) : loading ? (
         <Loading loading />
       ) : (
-        <NoStaffAccount />
+        <LimitedAccess noStaffAccount />
       )}
     </>
   );

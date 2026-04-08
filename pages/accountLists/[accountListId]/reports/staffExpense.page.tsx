@@ -6,9 +6,9 @@ import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
-import { NoStaffAccount } from 'src/components/Reports/Shared/NoStaffAccount/NoStaffAccount';
 import { useStaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
 import { StaffExpenseReport } from 'src/components/Reports/StaffExpenseReport/StaffExpenseReport';
+import { LimitedAccess } from 'src/components/Shared/LimitedAccess/LimitedAccess';
 import {
   MultiPageMenu,
   NavTypeEnum,
@@ -66,7 +66,7 @@ const StaffExpenseReportPage: React.FC = () => {
       ) : loading ? (
         <Loading loading />
       ) : (
-        <NoStaffAccount />
+        <LimitedAccess noStaffAccount />
       )}
     </>
   );

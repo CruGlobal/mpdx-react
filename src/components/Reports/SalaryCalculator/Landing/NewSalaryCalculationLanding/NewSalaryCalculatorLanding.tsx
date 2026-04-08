@@ -6,7 +6,7 @@ import { styled } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
 import Loading from 'src/components/Loading/Loading';
 import { NameDisplay } from 'src/components/Reports/Shared/CalculationReports/NameDisplay/NameDisplay';
-import { NoStaffAccount } from 'src/components/Reports/Shared/NoStaffAccount/NoStaffAccount';
+import { LimitedAccess } from 'src/components/Shared/LimitedAccess/LimitedAccess';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { SalaryInformationCard } from '../../Shared/SalaryInformationCard';
 import { useLandingData } from '../useLandingData';
@@ -56,7 +56,7 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
   }
 
   if (!staffAccountId) {
-    return <NoStaffAccount />;
+    return <LimitedAccess noStaffAccount />;
   }
 
   return (

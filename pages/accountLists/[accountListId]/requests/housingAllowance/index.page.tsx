@@ -6,8 +6,8 @@ import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
 import { MinisterHousingAllowanceReport } from 'src/components/Reports/MinisterHousingAllowance/MinisterHousingAllowance';
 import { MinisterHousingAllowanceProvider } from 'src/components/Reports/MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
-import { NoStaffAccount } from 'src/components/Reports/Shared/NoStaffAccount/NoStaffAccount';
 import { useStaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
+import { LimitedAccess } from 'src/components/Shared/LimitedAccess/LimitedAccess';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -69,7 +69,7 @@ const MinisterHousingAllowancePage: React.FC = () => {
       ) : loading ? (
         <Loading loading />
       ) : (
-        <NoStaffAccount />
+        <LimitedAccess noStaffAccount />
       )}
     </>
   );

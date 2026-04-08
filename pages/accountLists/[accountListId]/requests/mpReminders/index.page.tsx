@@ -7,8 +7,8 @@ import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelper
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
 import { MPRemindersReport } from 'src/components/Reports/MinistryPartnerReminders/MPRemindersReport';
-import { NoStaffAccount } from 'src/components/Reports/Shared/NoStaffAccount/NoStaffAccount';
 import { useStaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
+import { LimitedAccess } from 'src/components/Shared/LimitedAccess/LimitedAccess';
 import {
   MultiPageMenu,
   NavTypeEnum,
@@ -61,7 +61,7 @@ const MPRemindersReportPage: React.FC = () => {
       ) : loading ? (
         <Loading loading />
       ) : (
-        <NoStaffAccount />
+        <LimitedAccess noStaffAccount />
       )}
     </>
   );
