@@ -1,7 +1,11 @@
 import { useMemo } from 'react';
 import { CalculationFormValues } from 'src/components/Reports/MinisterHousingAllowance/Steps/StepThree/Calculation';
+import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
 
-export const calculateAnnualTotals = (values: CalculationFormValues) => {
+export const calculateAnnualTotals = (
+  values: CalculationFormValues,
+  rentOrOwn?: MhaRentOrOwnEnum,
+) => {
   const {
     rentalValue,
     furnitureCostsOne,
@@ -14,7 +18,9 @@ export const calculateAnnualTotals = (values: CalculationFormValues) => {
   } = values;
 
   const totalFairRental =
-    (rentalValue ?? 0) + (furnitureCostsOne ?? 0) + (avgUtilityOne ?? 0);
+    rentOrOwn === MhaRentOrOwnEnum.Own
+      ? (rentalValue ?? 0) + (furnitureCostsOne ?? 0) + (avgUtilityOne ?? 0)
+      : 0;
 
   const annualFairRental = totalFairRental * 12;
 
@@ -43,10 +49,14 @@ export const calculateAnnualTotals = (values: CalculationFormValues) => {
   };
 };
 
-export const useAnnualTotal = (values: CalculationFormValues) => {
+export const useAnnualTotal = (
+  values: CalculationFormValues,
+  rentOrOwn?: MhaRentOrOwnEnum,
+) => {
   return useMemo(
-    () => calculateAnnualTotals(values),
+    () => calculateAnnualTotals(values, rentOrOwn),
     [
+      rentOrOwn,
       values.rentalValue,
       values.furnitureCostsOne,
       values.avgUtilityOne,

@@ -3,6 +3,7 @@ import { useFormikContext } from 'formik';
 import { Trans, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { StyledOrderedList } from 'src/components/Reports/Shared/CalculationReports/Shared/styledComponents/StepsListStyles';
+import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
 import { useAnnualTotal } from 'src/hooks/useAnnualTotal';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
@@ -21,7 +22,10 @@ export const FairRentalValue: React.FC<FairRentalValueProps> = ({ schema }) => {
 
   const { values, touched, errors } = useFormikContext<CalculationFormValues>();
 
-  const { totalFairRental, annualFairRental } = useAnnualTotal(values);
+  const { totalFairRental, annualFairRental } = useAnnualTotal(
+    values,
+    MhaRentOrOwnEnum.Own,
+  );
 
   return (
     <FormCard title={t('Fair Rental Value')}>

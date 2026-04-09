@@ -3,6 +3,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
+import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { UpdateMinistryHousingAllowanceRequestMutation } from '../../MinisterHousingAllowance.generated';
 import {
@@ -46,7 +47,10 @@ const TestComponent: React.FC<TestComponentProps> = ({ children }) => {
                 trackMutation,
                 requestData: {
                   id: 'request-id',
-                  requestAttributes: { rentalValue: 50 },
+                  requestAttributes: {
+                    rentalValue: 50,
+                    rentOrOwn: MhaRentOrOwnEnum.Own,
+                  },
                 },
               } as unknown as ContextType
             }
