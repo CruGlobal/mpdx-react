@@ -1,7 +1,8 @@
-import React, { ReactElement } from 'react';
+import React, { ReactElement, useEffect } from 'react';
 import { Box, Container, Grid } from '@mui/material';
 import { motion } from 'framer-motion';
 import { GetDashboardQuery } from 'pages/accountLists/GetDashboard.generated';
+import { useUserOptionQuery } from 'src/hooks/UserPreference.generated';
 import { ConfirmUserGroupModal } from '../Shared/ConfirmUserGroupModal/ConfirmUserGroupModal';
 import Balance from './Balance';
 import DonationHistories from './DonationHistories';
@@ -29,8 +30,19 @@ const variants = {
 };
 
 const Dashboard = ({ data, accountListId }: Props): ReactElement => {
+  const { data: userOptionData, loading } = useUserOptionQuery({
+    variables: { key: 'user_group' },
+  });
+  const userGroup = userOptionData?.userOption?.value;
+
   const [openConfirmUserGroupModal, setOpenConfirmUserGroupModal] =
-    React.useState(true);
+    React.useState(false);
+
+  useEffect(() => {
+    if (!loading && !userGroup && userGroup !== 'PENDING') {
+      setOpenConfirmUserGroupModal(true);
+    }
+  }, [loading, userGroup]);
 
   const handleCloseConfirmUserGroupModal = () => {
     setOpenConfirmUserGroupModal(false);

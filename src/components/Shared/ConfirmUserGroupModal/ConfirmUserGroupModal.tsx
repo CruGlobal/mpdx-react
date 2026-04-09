@@ -11,6 +11,7 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useUpdateUserOptionMutation } from 'src/hooks/UserPreference.generated';
 import theme from 'src/theme';
 import { useGetUserGroupQuery } from './GetUserGroup.generated';
 import { getUserType } from './getUserType';
@@ -27,9 +28,28 @@ export const ConfirmUserGroupModal: React.FC<ConfirmUserGroupModalProps> = ({
   const { t } = useTranslation();
   const { data, loading } = useGetUserGroupQuery();
   const userType = getUserType(data?.user?.userType);
+  const [updateUserOption] = useUpdateUserOptionMutation();
 
-  const handleCustomClose = () => {
+  const handleRequestChange = () => {
+    updateUserOption({
+      variables: {
+        key: 'user_group',
+        value: 'PENDING',
+      },
+    });
+
     window.location.href = 'mailto:support@mpdx.org';
+    handleClose();
+  };
+
+  const handleCustomConfirm = () => {
+    updateUserOption({
+      variables: {
+        key: 'user_group',
+        value: data?.user?.userType ?? '',
+      },
+    });
+
     handleClose();
   };
 
@@ -48,7 +68,7 @@ export const ConfirmUserGroupModal: React.FC<ConfirmUserGroupModalProps> = ({
           </Box>
           <Typography>
             {t(
-              'If this is correct, please confirm. If this is incorrect, please contact  ',
+              'If this is correct, please confirm. If this is incorrect, please contact ',
             )}
             <Link
               href="mailto:support@mpdx.org"
@@ -61,10 +81,10 @@ export const ConfirmUserGroupModal: React.FC<ConfirmUserGroupModalProps> = ({
         </Alert>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleCustomClose} sx={{ color: 'error.main' }}>
+        <Button onClick={handleRequestChange} sx={{ color: 'error.main' }}>
           <b>{t('No, Request Change')}</b>
         </Button>
-        <Button onClick={handleClose} color="primary">
+        <Button onClick={handleCustomConfirm} color="primary">
           <b>{t('Yes, Confirm')}</b>
         </Button>
       </DialogActions>

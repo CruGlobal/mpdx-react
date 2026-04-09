@@ -1,6 +1,10 @@
 import { MockedResponse } from '@apollo/client/testing';
 import { DateTime } from 'luxon';
 import { ActivityTypeEnum } from 'src/graphql/types.generated';
+import {
+  UserOptionDocument,
+  UserOptionQuery,
+} from 'src/hooks/UserPreference.generated';
 import { GetThisWeekDocument, GetThisWeekQuery } from './GetThisWeek.generated';
 import {
   GetWeeklyActivityQueryDefaultMocks,
@@ -140,6 +144,21 @@ export const GetThisWeekDefaultMocks = (): MockedResponse[] => {
       totalCount: 5,
     },
   };
+  const userOptionMock: MockedResponse<UserOptionQuery> = {
+    request: {
+      query: UserOptionDocument,
+      variables: { key: 'user_group' },
+    },
+    result: {
+      data: {
+        userOption: {
+          key: 'user_group',
+          value: '',
+        },
+      },
+    },
+  };
+
   return [
     {
       request: {
@@ -156,9 +175,28 @@ export const GetThisWeekDefaultMocks = (): MockedResponse[] => {
         data,
       },
     },
+    userOptionMock,
     ...GetWeeklyActivityQueryDefaultMocks(),
   ];
 };
+
+export const getUserOptionMock = (
+  value = '',
+): MockedResponse<UserOptionQuery> => ({
+  request: {
+    query: UserOptionDocument,
+    variables: { key: 'user_group' },
+  },
+  result: {
+    data: {
+      userOption: {
+        key: 'user_group',
+        value,
+      },
+    },
+  },
+});
+
 export const GetThisWeekEmptyMocks = (): MockedResponse[] => {
   const endOfDay = DateTime.local().endOf('day');
 

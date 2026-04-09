@@ -4,16 +4,19 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { UserTypeEnum } from 'src/graphql/types.generated';
+import { UpdateUserOptionMutation } from 'src/hooks/UserPreference.generated';
 import theme from 'src/theme';
 import { ConfirmUserGroupModal } from './ConfirmUserGroupModal';
 import { GetUserGroupQuery } from './GetUserGroup.generated';
 
 const handleClose = jest.fn();
+const mutationSpy = jest.fn();
 
 const TestComponent = () => {
   return (
     <GqlMockedProvider<{
       GetUserGroup: GetUserGroupQuery;
+      UpdateUserOption: UpdateUserOptionMutation;
     }>
       mocks={{
         GetUserGroup: {
@@ -21,7 +24,16 @@ const TestComponent = () => {
             userType: UserTypeEnum.UsStaff,
           },
         },
+        UpdateUserOption: {
+          createOrUpdateUserOption: {
+            option: {
+              key: 'user_group',
+              value: UserTypeEnum.UsStaff,
+            },
+          },
+        },
       }}
+      onCall={mutationSpy}
     >
       <ThemeProvider theme={theme}>
         <ConfirmUserGroupModal open={true} handleClose={handleClose} />
@@ -65,10 +77,28 @@ describe('ConfirmUserGroupModal', () => {
     });
   });
 
-  it('calls handleClose when "Yes, Confirm" button is clicked', async () => {
-    const { getByRole } = render(<TestComponent />);
+  it('creates user option when "Yes, Confirm" button is clicked', async () => {
+    const { findByRole } = render(<TestComponent />);
 
-    const confirmButton = await getByRole('button', { name: 'Yes, Confirm' });
+    const confirmButton = await findByRole('button', { name: 'Yes, Confirm' });
+    await waitFor(() => {
+      expect(confirmButton).toBeInTheDocument();
+    });
+
+    userEvent.click(confirmButton);
+
+    await waitFor(() => {
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOption', {
+        key: 'user_group',
+        value: UserTypeEnum.UsStaff,
+      });
+    });
+  });
+
+  it('calls handleClose when "Yes, Confirm" button is clicked', async () => {
+    const { findByRole } = render(<TestComponent />);
+
+    const confirmButton = await findByRole('button', { name: 'Yes, Confirm' });
     await waitFor(() => {
       expect(confirmButton).toBeInTheDocument();
     });
@@ -79,10 +109,30 @@ describe('ConfirmUserGroupModal', () => {
     });
   });
 
-  it('calls handleClose when "No, Request Change" button is clicked', async () => {
-    const { getByRole } = render(<TestComponent />);
+  it('creates user option when "No, Request Change" button is clicked', async () => {
+    const { findByRole } = render(<TestComponent />);
 
-    const requestChangeButton = await getByRole('button', {
+    const requestChangeButton = await findByRole('button', {
+      name: 'No, Request Change',
+    });
+    await waitFor(() => {
+      expect(requestChangeButton).toBeInTheDocument();
+    });
+
+    userEvent.click(requestChangeButton);
+
+    await waitFor(() => {
+      expect(mutationSpy).toHaveGraphqlOperation('UpdateUserOption', {
+        key: 'user_group',
+        value: 'PENDING',
+      });
+    });
+  });
+
+  it('calls handleClose when "No, Request Change" button is clicked', async () => {
+    const { findByRole } = render(<TestComponent />);
+
+    const requestChangeButton = await findByRole('button', {
       name: 'No, Request Change',
     });
     await waitFor(() => {

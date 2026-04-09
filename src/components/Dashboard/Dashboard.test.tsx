@@ -9,9 +9,13 @@ import {
   beforeTestResizeObserver,
 } from '__tests__/util/windowResizeObserver';
 import { GetDashboardQuery } from 'pages/accountLists/GetDashboard.generated';
+import { UserTypeEnum } from 'src/graphql/types.generated';
 import useTaskModal from '../../hooks/useTaskModal';
 import theme from '../../theme';
-import { GetThisWeekDefaultMocks } from './ThisWeek/ThisWeek.mock';
+import {
+  GetThisWeekDefaultMocks,
+  getUserOptionMock,
+} from './ThisWeek/ThisWeek.mock';
 import Dashboard from '.';
 
 jest.mock('../../hooks/useTaskModal');
@@ -215,5 +219,86 @@ describe('Dashboard', () => {
     expect(
       getByTestId('DonationHistoriesTypographyPledged').textContent,
     ).toEqual('Committed $700');
+  });
+
+  describe('ConfirmUserGroupModal', () => {
+    it('renders ConfirmUserGroupModal when user group is not set', async () => {
+      const { getByText } = render(
+        <ThemeProvider theme={theme}>
+          <SnackbarProvider>
+            <MockedProvider
+              mocks={GetThisWeekDefaultMocks()}
+              addTypename={false}
+            >
+              <Dashboard accountListId="abc" data={data} />
+            </MockedProvider>
+          </SnackbarProvider>
+        </ThemeProvider>,
+      );
+
+      await waitFor(() => {
+        expect(getByText('Is this your user group?')).toBeInTheDocument();
+      });
+    });
+
+    it('does not render ConfirmUserGroupModal when loading', async () => {
+      const { queryByText } = render(
+        <ThemeProvider theme={theme}>
+          <SnackbarProvider>
+            <MockedProvider mocks={[]} addTypename={false}>
+              <Dashboard accountListId="abc" data={data} />
+            </MockedProvider>
+          </SnackbarProvider>
+        </ThemeProvider>,
+      );
+
+      await waitFor(() => {
+        expect(queryByText('Is this your user group?')).not.toBeInTheDocument();
+      });
+    });
+
+    it('does not render ConfirmUserGroupModal when user group is PENDING', async () => {
+      const { queryByText } = render(
+        <ThemeProvider theme={theme}>
+          <SnackbarProvider>
+            <MockedProvider
+              mocks={[
+                ...GetThisWeekDefaultMocks(),
+                getUserOptionMock('PENDING'),
+              ]}
+              addTypename={false}
+            >
+              <Dashboard accountListId="abc" data={data} />
+            </MockedProvider>
+          </SnackbarProvider>
+        </ThemeProvider>,
+      );
+
+      await waitFor(() => {
+        expect(queryByText('Is this your user group?')).not.toBeInTheDocument();
+      });
+    });
+
+    it('does not render ConfirmUserGroupModal when user group is set', async () => {
+      const { queryByText } = render(
+        <ThemeProvider theme={theme}>
+          <SnackbarProvider>
+            <MockedProvider
+              mocks={[
+                ...GetThisWeekDefaultMocks(),
+                getUserOptionMock(UserTypeEnum.UsStaff),
+              ]}
+              addTypename={false}
+            >
+              <Dashboard accountListId="abc" data={data} />
+            </MockedProvider>
+          </SnackbarProvider>
+        </ThemeProvider>,
+      );
+
+      await waitFor(() => {
+        expect(queryByText('Is this your user group?')).not.toBeInTheDocument();
+      });
+    });
   });
 });
