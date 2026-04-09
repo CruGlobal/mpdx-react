@@ -2,7 +2,10 @@ import { useCallback, useMemo, useRef } from 'react';
 import { useFormik } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { ElectionType403bEnum } from 'src/graphql/types.generated';
+import {
+  AsrStatusEnum,
+  ElectionType403bEnum,
+} from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import i18n from 'src/lib/i18n';
 import { currencyFormat } from 'src/lib/intlFormat';
@@ -131,7 +134,7 @@ export const useAdditionalSalaryRequestForm = (
       initialValuesRef.current = providedInitialValues;
     } else {
       const request = requestData?.latestAdditionalSalaryRequest;
-      if (request) {
+      if (request && request.status !== AsrStatusEnum.ApprovedAndPaid) {
         initialValuesRef.current = {
           ...Object.fromEntries(
             fieldConfig.map(({ key }) => [

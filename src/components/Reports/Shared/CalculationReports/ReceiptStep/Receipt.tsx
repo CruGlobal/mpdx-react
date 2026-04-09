@@ -8,17 +8,21 @@ import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
 
-interface ReceiptProps {
+export interface ReceiptProps {
   formTitle: string;
   buttonText: string;
   buttonLink: string;
   alertText?: string | React.ReactNode;
   linkOne?: string;
   linkOneText?: string;
-  viewLink?: string;
   isEdit?: boolean;
   availableDate?: string | null;
   setIsComplete?: Dispatch<SetStateAction<boolean>>;
+  // URL-based view (e.g. MHA). Ignored if `onPrint` is provided.
+  viewLink?: string;
+  // Caller-owned print handler (e.g. ASR state-based view). If provided, the
+  // caller is responsible for any completion/state updates.
+  onPrint?: () => void;
 }
 
 export const Receipt: React.FC<ReceiptProps> = ({
@@ -29,6 +33,7 @@ export const Receipt: React.FC<ReceiptProps> = ({
   linkOne,
   linkOneText,
   viewLink,
+  onPrint,
   isEdit,
   availableDate,
   setIsComplete,
@@ -46,6 +51,11 @@ export const Receipt: React.FC<ReceiptProps> = ({
     : t('approval soon');
 
   const handlePrint = async () => {
+    if (onPrint) {
+      onPrint();
+      return;
+    }
+
     if (!viewLink) {
       return;
     }
@@ -94,7 +104,12 @@ export const Receipt: React.FC<ReceiptProps> = ({
             fontSize="small"
             sx={{ verticalAlign: 'middle', opacity: 0.56 }}
           />{' '}
-          <Link onClick={handlePrint} sx={{ cursor: 'pointer' }}>
+          <Link
+            component="button"
+            type="button"
+            onClick={handlePrint}
+            sx={{ cursor: 'pointer' }}
+          >
             {t(`View or print a copy of your submitted ${formTitle}`)}
           </Link>
         </Box>

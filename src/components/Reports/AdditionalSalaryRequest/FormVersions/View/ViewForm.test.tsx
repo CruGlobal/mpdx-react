@@ -103,6 +103,56 @@ describe('ViewForm', () => {
     expect(queryByText('Approval Process')).not.toBeInTheDocument();
   });
 
+  describe('pendingPrint', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+
+    it('calls window.print and clears the flag when pendingPrint is true', () => {
+      const printSpy = jest
+        .spyOn(window, 'print')
+        .mockImplementation(() => undefined);
+      const setPendingPrint = jest.fn();
+
+      renderComponent({
+        contextOverrides: {
+          pendingPrint: true,
+          setPendingPrint,
+        },
+      });
+
+      // The effect schedules two nested requestAnimationFrame callbacks.
+      // Jest's modern fake timers fake rAF (~16ms per frame), so advancing
+      // ~32ms flushes both callbacks.
+      jest.advanceTimersByTime(32);
+
+      expect(printSpy).toHaveBeenCalledTimes(1);
+      expect(setPendingPrint).toHaveBeenCalledWith(false);
+
+      printSpy.mockRestore();
+    });
+
+    it('does not call window.print when pendingPrint is false', () => {
+      const printSpy = jest
+        .spyOn(window, 'print')
+        .mockImplementation(() => undefined);
+
+      renderComponent({
+        contextOverrides: {
+          pendingPrint: false,
+        },
+      });
+
+      expect(printSpy).not.toHaveBeenCalled();
+
+      printSpy.mockRestore();
+    });
+  });
+
   it('handles missing user gracefully', () => {
     const { container } = renderComponent({
       contextOverrides: {

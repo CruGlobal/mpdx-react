@@ -51,6 +51,8 @@ export type AdditionalSalaryRequestType = {
   requestError?: ApolloError;
   pageType: PageEnum;
   setPageType: (pageType: PageEnum) => void;
+  pendingPrint: boolean;
+  setPendingPrint: React.Dispatch<React.SetStateAction<boolean>>;
   handleDeleteRequest: (id: string, isCancel: boolean) => Promise<void>;
   requestId?: string;
   calculations?: Pick<
@@ -108,6 +110,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   const [pageType, setPageType] = useState<PageEnum>(
     initialPageType ?? PageEnum.New,
   );
+  const [pendingPrint, setPendingPrint] = useState(false);
 
   const router = useRouter();
   const isSpouse = router.query.isSpouse === 'true';
@@ -239,6 +242,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       currentYear,
       pageType,
       setPageType,
+      pendingPrint,
+      setPendingPrint,
       handleDeleteRequest,
       requestId: requestData?.latestAdditionalSalaryRequest?.id ?? requestId,
       calculations: requestData?.latestAdditionalSalaryRequest?.calculations,
@@ -274,6 +279,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       currentYear,
       pageType,
       setPageType,
+      pendingPrint,
+      setPendingPrint,
       handleDeleteRequest,
       requestId,
       user,

@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Button, Stack, Typography } from '@mui/material';
 import { useFormikContext } from 'formik';
 import { Trans, useTranslation } from 'react-i18next';
@@ -20,7 +21,8 @@ import { TotalSalaryRequested } from '../../SubmitModalAccordions/TotalSalaryReq
 
 export const ViewForm: React.FC = () => {
   const { t } = useTranslation();
-  const { calculations, setPageType } = useAdditionalSalaryRequest();
+  const { calculations, setPageType, pendingPrint, setPendingPrint } =
+    useAdditionalSalaryRequest();
   const { values } = useFormikContext<CompleteFormValues>();
   const { name, accountNumber, primaryAccountBalance } = useFormUserInfo();
   const individualCap = calculations?.currentSalaryCap ?? 0;
@@ -28,6 +30,35 @@ export const ViewForm: React.FC = () => {
   const { exceedsCap } = useSalaryCalculations({
     values,
   });
+
+  useEffect(() => {
+    if (!pendingPrint) {
+      return;
+    }
+
+    let cancelled = false;
+    // Two nested requestAnimationFrames are needed to ensure the print dialog
+    // opens only after the view has fully rendered with the latest form data.
+    // The first rAF waits for React to commit the DOM updates from
+    // setPendingPrint/pageType changes; the second rAF waits for the browser
+    // to actually paint those updates to the screen. Without both, the print
+    // dialog can open against a stale layout and the printed output will be
+    // missing the newly rendered content.
+    const rafId = requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (cancelled) {
+          return;
+        }
+        window.print();
+        setPendingPrint(false);
+      });
+    });
+
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(rafId);
+    };
+  }, [pendingPrint, setPendingPrint]);
 
   return (
     <Stack gap={4} padding={4} width={mainContentWidth}>
