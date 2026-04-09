@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import CalculateIcon from '@mui/icons-material/Calculate';
 import {
   Autocomplete,
   AutocompleteRenderInputParams,
@@ -7,6 +8,8 @@ import {
   Card,
   Divider,
   Grid,
+  IconButton,
+  InputAdornment,
   MenuItem,
   TextField,
   Typography,
@@ -28,11 +31,13 @@ import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants
 import { AutosaveTextField } from '../Shared/Autosave/AutosaveTextField';
 import { useSaveField } from '../Shared/Autosave/useSaveField';
 import { usePdsGoalCalculator } from '../Shared/PdsGoalCalculatorContext';
+import { HoursPerWeekGrid } from './HoursPerWeekGrid/HoursPerWeekGrid';
 
 export const SetupStep: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { calculation, hcmUser } = usePdsGoalCalculator();
+  const { calculation, hcmUser, setRightPanelContent } =
+    usePdsGoalCalculator();
   const { data: userData } = useGetUserQuery();
   const fourOThreeB = hcmUser?.fourOThreeB;
   const totalFourOThreeBContributionPercentage = fourOThreeB
@@ -76,6 +81,16 @@ export const SetupStep: React.FC = () => {
   const payRateHelperText = isSalaried
     ? t('Enter yearly salary')
     : t('Enter hourly rate');
+
+  const handleOpenHoursCalculator = () => {
+    setRightPanelContent(
+      <HoursPerWeekGrid
+        onAverageHoursChange={(_average) => {
+          // TODO: Save averageHoursPerWeek to the calculation via mutation
+        }}
+      />,
+    );
+  };
 
   return (
     <AutosaveForm>
@@ -166,6 +181,20 @@ export const SetupStep: React.FC = () => {
                 label={t('Hours Worked')}
                 type="number"
                 helperText={t('Estimate of hours worked per week')}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={handleOpenHoursCalculator}
+                        aria-label={t('Open hours per week calculator')}
+                        edge="end"
+                        size="small"
+                      >
+                        <CalculateIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
             </Grid>
           )}

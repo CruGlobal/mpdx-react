@@ -257,4 +257,31 @@ describe('SetupStep', () => {
       }),
     );
   });
+
+  it('renders the calculator icon button next to Hours Worked', async () => {
+    const { findByLabelText } = render(
+      <PdsGoalCalculatorTestWrapper calculationMock={fullTimeHourlyMock}>
+        <SetupStep />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    expect(
+      await findByLabelText('Open hours per week calculator'),
+    ).toBeInTheDocument();
+  });
+
+  it('does not throw when clicking the calculator icon', async () => {
+    const { findByLabelText } = render(
+      <PdsGoalCalculatorTestWrapper calculationMock={fullTimeHourlyMock}>
+        <SetupStep />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    // Clicking the icon sets right panel content via context.
+    // The actual panel rendering happens at the page level,
+    // so we just verify no errors are thrown.
+    await userEvent.click(
+      await findByLabelText('Open hours per week calculator'),
+    );
+  });
 });
