@@ -65,7 +65,7 @@ describe('SalaryInformationCard', () => {
     const { getByRole } = render(<TestComponent />);
     expect(getByRole('link', { name: 'View MHA Form' })).toHaveAttribute(
       'href',
-      expect.stringContaining('/reports/housingAllowance'),
+      expect.stringContaining('/hrTools/mhaCalculator'),
     );
   });
 

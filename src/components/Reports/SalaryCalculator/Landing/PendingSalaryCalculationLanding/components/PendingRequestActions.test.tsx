@@ -41,7 +41,7 @@ describe('PendingRequestActions', () => {
 
     expect(getByRole('link', { name: 'View Request' })).toHaveAttribute(
       'href',
-      '/accountLists/account-list-1/reports/salaryCalculator/1?mode=view',
+      '/accountLists/account-list-1/hrTools/salaryCalculator/1?mode=view',
     );
   });
 
@@ -57,7 +57,7 @@ describe('PendingRequestActions', () => {
 
     expect(getByRole('link', { name: 'Edit Request' })).toHaveAttribute(
       'href',
-      '/accountLists/account-list-1/reports/salaryCalculator/1',
+      '/accountLists/account-list-1/hrTools/salaryCalculator/1?mode=edit',
     );
   });
 

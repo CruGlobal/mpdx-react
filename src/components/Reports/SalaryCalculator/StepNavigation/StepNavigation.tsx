@@ -24,7 +24,7 @@ export const DiscardButton: React.FC<ButtonProps> = (props) => {
   const handleDiscard = async () => {
     if (calculation) {
       await deleteSalaryCalculation(calculation.id);
-      push(`/accountLists/${accountListId}/reports/salaryCalculator`);
+      push(`/accountLists/${accountListId}/hrTools/salaryCalculator`);
     }
   };
 

@@ -243,7 +243,7 @@ export const useLandingData = (): LandingData => {
         spouse: currencyFormat(salaryData.spouseTakenMha, 'USD', locale, {
           showTrailingZeros: true,
         }),
-        link: '/reports/housingAllowance',
+        link: '/hrTools/mhaCalculator',
       },
     ],
     [t, salaryData, self, spouse, effectiveCalculation, locale],

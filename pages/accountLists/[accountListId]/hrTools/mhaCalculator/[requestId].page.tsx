@@ -66,7 +66,7 @@ const HousingAllowanceRequestPageContent: React.FC = () => {
           leftPanel={
             <MultiPageMenu
               isOpen={isNavListOpen}
-              selectedId={'housingAllowance' + pageType}
+              selectedId={'mhaCalculator' + pageType}
               onClose={handleNavListToggle}
               navType={NavTypeEnum.Reports}
             />

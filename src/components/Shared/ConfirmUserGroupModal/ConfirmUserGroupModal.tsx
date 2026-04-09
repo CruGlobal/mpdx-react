@@ -10,52 +10,66 @@ import {
   Link,
   Typography,
 } from '@mui/material';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { UserTypeEnum } from 'src/graphql/types.generated';
 import { useUpdateUserOptionMutation } from 'src/hooks/UserPreference.generated';
 import theme from 'src/theme';
-import { useGetUserGroupQuery } from './GetUserGroup.generated';
-import { getUserType } from './getUserType';
+import { getUserType } from './Helper/getUserType';
 
 interface ConfirmUserGroupModalProps {
   open: boolean;
   handleClose: () => void;
+  userType: UserTypeEnum;
 }
 
 export const ConfirmUserGroupModal: React.FC<ConfirmUserGroupModalProps> = ({
   open,
   handleClose,
+  userType,
 }) => {
   const { t } = useTranslation();
-  const { data, loading } = useGetUserGroupQuery();
-  const userType = getUserType(data?.user?.userType);
+  const { enqueueSnackbar } = useSnackbar();
   const [updateUserOption] = useUpdateUserOptionMutation();
 
-  const handleRequestChange = () => {
+  const updateUserOptionValue = async (value: string) => {
     updateUserOption({
       variables: {
-        key: 'user_group',
-        value: 'PENDING',
+        key: 'user_type_verified',
+        value,
       },
     });
+  };
+
+  const userTypeLabel = getUserType(userType, t);
+
+  const handleRequestChange = async () => {
+    try {
+      await updateUserOptionValue('true');
+    } catch {
+      enqueueSnackbar(t('Failed to request user group change.'), {
+        variant: 'error',
+      });
+    }
 
     window.location.href = 'mailto:support@mpdx.org';
     handleClose();
   };
 
-  const handleCustomConfirm = () => {
-    updateUserOption({
-      variables: {
-        key: 'user_group',
-        value: data?.user?.userType ?? '',
-      },
-    });
+  const handleCustomConfirm = async () => {
+    try {
+      await updateUserOptionValue('true');
+      enqueueSnackbar(t('Successfully confirmed user group.'), {
+        variant: 'success',
+      });
+    } catch {
+      enqueueSnackbar(t('Failed to confirm user group.'), {
+        variant: 'error',
+      });
+    }
 
     handleClose();
   };
-
-  if (loading) {
-    return null;
-  }
 
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
@@ -64,7 +78,7 @@ export const ConfirmUserGroupModal: React.FC<ConfirmUserGroupModalProps> = ({
         <Alert severity="info" sx={{ mb: 2 }}>
           <Box sx={{ display: 'flex', gap: 0.5, mb: 2 }}>
             <Typography>{t('The user group for your account is:')}</Typography>
-            <Typography fontWeight="bold">{userType}</Typography>
+            <Typography fontWeight="bold">{userTypeLabel}</Typography>
           </Box>
           <Typography>
             {t(

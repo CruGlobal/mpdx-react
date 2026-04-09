@@ -166,7 +166,7 @@ describe('InProgressDisplay', () => {
       });
       expect(link).toHaveAttribute(
         'href',
-        '/accountLists/account-list-1/reports/additionalSalaryRequest',
+        '/accountLists/account-list-1/hrTools/additionalSalaryRequest',
       );
     });
   });

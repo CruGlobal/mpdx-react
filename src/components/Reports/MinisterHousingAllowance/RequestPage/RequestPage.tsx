@@ -89,7 +89,7 @@ export const RequestPage: React.FC = () => {
       panelType={PanelTypeEnum.Empty}
       sidebarTitle={t('Your MHA')}
       percentComplete={0}
-      backHref={`/accountLists/${accountListId}/reports/housingAllowance`}
+      backHref={`/accountLists/${accountListId}/hrTools/mhaCalculator`}
       mainContent={
         <Container sx={{ ml: 5 }}>
           <Stack direction="column" width={mainContentWidth}>
@@ -108,7 +108,7 @@ export const RequestPage: React.FC = () => {
       panelType={PanelTypeEnum.Empty}
       sidebarTitle={t('Your MHA')}
       percentComplete={0}
-      backHref={`/accountLists/${accountListId}/reports/housingAllowance`}
+      backHref={`/accountLists/${accountListId}/hrTools/mhaCalculator`}
       mainContent={
         <Container sx={{ ml: 5 }}>
           <Stack direction="column" width={permissionDeniedWidth}>
@@ -122,7 +122,7 @@ export const RequestPage: React.FC = () => {
       panelType={PanelTypeEnum.Empty}
       sidebarTitle={t('Your MHA')}
       percentComplete={0}
-      backHref={`/accountLists/${accountListId}/reports/housingAllowance`}
+      backHref={`/accountLists/${accountListId}/hrTools/mhaCalculator`}
       mainContent={
         <Container sx={{ ml: 5 }}>
           <Stack direction="column" width={permissionDeniedWidth}>
@@ -138,7 +138,7 @@ export const RequestPage: React.FC = () => {
       percentComplete={percentComplete}
       currentIndex={currentIndex}
       steps={steps}
-      backHref={`/accountLists/${accountListId}/reports/housingAllowance`}
+      backHref={`/accountLists/${accountListId}/hrTools/mhaCalculator`}
       isSidebarOpen={isDrawerOpen}
       sidebarTitle={isEdit ? t('Edit Request') : t('New Request')}
       sidebarAriaLabel={isEdit ? t('MHA Edit Request') : t('MHA New Request')}
@@ -176,7 +176,7 @@ export const RequestPage: React.FC = () => {
                     buttonText={t('View In Dashboard')}
                     isEdit={isEdit}
                     viewLink={viewLink}
-                    buttonLink={`/accountLists/${accountListId}/reports/housingAllowance`}
+                    buttonLink={`/accountLists/${accountListId}/hrTools/mhaCalculator`}
                     availableDate={availableDate}
                     setIsComplete={setIsComplete}
                   />

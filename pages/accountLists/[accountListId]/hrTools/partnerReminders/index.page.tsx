@@ -1,31 +1,30 @@
 import Head from 'next/head';
 import React, { useState } from 'react';
+import { Box } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
-import { MinisterHousingAllowanceReport } from 'src/components/Reports/MinisterHousingAllowance/MinisterHousingAllowance';
-import { MinisterHousingAllowanceProvider } from 'src/components/Reports/MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
+import { PartnerRemindersReport } from 'src/components/Reports/MinistryPartnerReminders/PartnerRemindersReport';
 import { useStaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
 import { LimitedAccess } from 'src/components/Shared/LimitedAccess/LimitedAccess';
-import {
-  HeaderTypeEnum,
-  MultiPageHeader,
-  multiPageHeaderHeight,
-} from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
-import { ReportPageWrapper } from 'src/components/Shared/styledComponents/ReportPageWrapper';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
-const MinisterHousingAllowancePage: React.FC = () => {
-  const { t } = useTranslation();
-  const { appName } = useGetAppSettings();
-  const [isNavListOpen, setIsNavListOpen] = useState(false);
+const PartnerRemindersReportPageWrapper = styled(Box)(({ theme }) => ({
+  backgroundColor: theme.palette.common.white,
+}));
 
+const PartnerRemindersReportPage: React.FC = () => {
+  const { appName } = useGetAppSettings();
+  const { t } = useTranslation();
   const { data: staffAccountData, loading } = useStaffAccountQuery();
+
+  const [isNavListOpen, setIsNavListOpen] = useState<boolean>(false);
 
   const handleNavListToggle = () => {
     setIsNavListOpen(!isNavListOpen);
@@ -34,38 +33,31 @@ const MinisterHousingAllowancePage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>{`${appName} | ${t("Reports - Minister's Housing Allowance")}`}</title>
+        <title>{`${appName} | ${t('Reports')} - ${t('Ministry Partner Reminders')}`}</title>
       </Head>
       {staffAccountData?.staffAccount?.id ? (
-        <ReportPageWrapper>
+        <PartnerRemindersReportPageWrapper>
           <SidePanelsLayout
             isScrollBox={false}
             leftPanel={
               <MultiPageMenu
                 isOpen={isNavListOpen}
-                selectedId="housingAllowance"
+                selectedId="partnerReminders"
                 onClose={handleNavListToggle}
                 navType={NavTypeEnum.HrTools}
               />
             }
             leftOpen={isNavListOpen}
             leftWidth="290px"
-            headerHeight={multiPageHeaderHeight}
             mainContent={
-              <>
-                <MultiPageHeader
-                  isNavListOpen={isNavListOpen}
-                  onNavListToggle={handleNavListToggle}
-                  title={t("Minister's Housing Allowance Request")}
-                  headerType={HeaderTypeEnum.HrTools}
-                />
-                <MinisterHousingAllowanceProvider>
-                  <MinisterHousingAllowanceReport />
-                </MinisterHousingAllowanceProvider>
-              </>
+              <PartnerRemindersReport
+                isNavListOpen={isNavListOpen}
+                onNavListToggle={handleNavListToggle}
+                title={t('Ministry Partner Reminders')}
+              />
             }
           />
-        </ReportPageWrapper>
+        </PartnerRemindersReportPageWrapper>
       ) : loading ? (
         <Loading loading />
       ) : (
@@ -76,5 +68,4 @@ const MinisterHousingAllowancePage: React.FC = () => {
 };
 
 export const getServerSideProps = blockImpersonatingNonDevelopers;
-
-export default MinisterHousingAllowancePage;
+export default PartnerRemindersReportPage;

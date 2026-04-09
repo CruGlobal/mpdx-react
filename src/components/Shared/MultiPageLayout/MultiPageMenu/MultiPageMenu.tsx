@@ -99,12 +99,16 @@ export const MultiPageMenu: React.FC<Props & BoxProps> = ({
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const user = useRequiredSession();
+  const reportNavItems = useReportNavItems();
+  const hrToolsNavItems = useHrToolsNavItems();
+  const settingsNavItems = useSettingsNavItems();
+
   const navItems =
     navType === NavTypeEnum.Reports
-      ? useReportNavItems()
+      ? reportNavItems
       : navType === NavTypeEnum.HrTools
-        ? useHrToolsNavItems()
-        : useSettingsNavItems();
+        ? hrToolsNavItems
+        : settingsNavItems;
   const navTitle =
     navType === NavTypeEnum.Reports
       ? t('Reports')

@@ -195,7 +195,7 @@ describe('CurrentBoardApproved Component', () => {
 
     await waitFor(() => {
       expect(mockPush).toHaveBeenCalledWith(
-        `/accountLists/account-list-1/reports/housingAllowance/${newRequestId}?mode=edit`,
+        `/accountLists/account-list-1/hrTools/mhaCalculator/${newRequestId}?mode=edit`,
       );
     });
   });

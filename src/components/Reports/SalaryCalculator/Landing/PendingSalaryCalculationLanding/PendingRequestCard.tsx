@@ -46,7 +46,7 @@ export const PendingRequestCard: React.FC = () => {
             <IconButton
               aria-label={t('Print')}
               component={Link}
-              href={`/accountLists/${accountListId}/reports/salaryCalculator/${calculation.id}?mode=view&print=true`}
+              href={`/accountLists/${accountListId}/hrTools/salaryCalculator/${calculation.id}?mode=view&print=true`}
             >
               <Print />
             </IconButton>

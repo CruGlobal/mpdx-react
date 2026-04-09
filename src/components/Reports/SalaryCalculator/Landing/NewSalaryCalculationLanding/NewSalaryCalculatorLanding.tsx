@@ -46,7 +46,7 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
       createCalculationResult.data?.createSalaryRequest?.salaryRequest?.id;
     if (newCalculationId) {
       router.push({
-        pathname: `/accountLists/${accountListId}/reports/salaryCalculator/${newCalculationId}`,
+        pathname: `/accountLists/${accountListId}/hrTools/salaryCalculator/${newCalculationId}`,
       });
     }
   };
@@ -124,7 +124,7 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
                 variant="contained"
                 color="primary"
                 component={Link}
-                href={`/accountLists/${accountListId}/reports/salaryCalculator/${inProgressCalculationId}`}
+                href={`/accountLists/${accountListId}/hrTools/salaryCalculator/${inProgressCalculationId}`}
               >
                 {t('Continue Salary Calculation')}
               </Button>

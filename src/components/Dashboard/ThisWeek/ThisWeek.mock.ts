@@ -147,13 +147,13 @@ export const GetThisWeekDefaultMocks = (): MockedResponse[] => {
   const userOptionMock: MockedResponse<UserOptionQuery> = {
     request: {
       query: UserOptionDocument,
-      variables: { key: 'user_group' },
+      variables: { key: 'user_type_verified' },
     },
     result: {
       data: {
         userOption: {
-          key: 'user_group',
-          value: '',
+          key: 'user_type_verified',
+          value: 'false',
         },
       },
     },
@@ -181,16 +181,16 @@ export const GetThisWeekDefaultMocks = (): MockedResponse[] => {
 };
 
 export const getUserOptionMock = (
-  value = '',
+  value = 'false',
 ): MockedResponse<UserOptionQuery> => ({
   request: {
     query: UserOptionDocument,
-    variables: { key: 'user_group' },
+    variables: { key: 'user_type_verified' },
   },
   result: {
     data: {
       userOption: {
-        key: 'user_group',
+        key: 'user_type_verified',
         value,
       },
     },

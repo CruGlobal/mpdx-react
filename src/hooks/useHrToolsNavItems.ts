@@ -19,7 +19,7 @@ export function useHrToolsNavItems(): NavItems[] {
       title: t('MPD Goal Calculator'),
     },
     {
-      id: 'housingAllowance',
+      id: 'mhaCalculator',
       title: t('MHA Calculator'),
     },
     {
@@ -27,7 +27,7 @@ export function useHrToolsNavItems(): NavItems[] {
       title: t('Additional Salary Request'),
     },
     {
-      id: 'mpReminders',
+      id: 'partnerReminders',
       title: t('Ministry Partner Reminders'),
     },
   ];

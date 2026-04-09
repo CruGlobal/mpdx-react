@@ -135,7 +135,7 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
         enqueueSnackbar(t('Request discarded successfully.'), {
           variant: 'success',
         });
-        router.push(`/accountLists/${accountListId}/reports/housingAllowance`);
+        router.push(`/accountLists/${accountListId}/hrTools/mhaCalculator`);
       },
     });
   };

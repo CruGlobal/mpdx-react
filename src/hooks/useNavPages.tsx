@@ -99,10 +99,10 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
       {
         id: 'hr-tools-page',
         title: t('HR Tools'),
-        pathname: '/accountLists/[accountListId]/requests',
+        pathname: '/accountLists/[accountListId]/hrTools',
         items: hrToolsItems.map((item) => ({
           ...item,
-          href: `/accountLists/${accountListId}/requests/${item.id}`,
+          href: `/accountLists/${accountListId}/hrTools/${item.id}`,
           searchIcon: <CompassIcon />,
           searchName: t(`HR Tools - {{ title }}`, { title: item.title }),
           showInSearchDialog: true,

@@ -30,19 +30,19 @@ const variants = {
 };
 
 const Dashboard = ({ data, accountListId }: Props): ReactElement => {
-  const { data: userOptionData, loading } = useUserOptionQuery({
-    variables: { key: 'user_group' },
+  const { data: userOptionData } = useUserOptionQuery({
+    variables: { key: 'user_type_verified' },
   });
-  const userGroup = userOptionData?.userOption?.value;
+  const userTypeVerified = userOptionData?.userOption?.value;
 
   const [openConfirmUserGroupModal, setOpenConfirmUserGroupModal] =
     React.useState(false);
 
   useEffect(() => {
-    if (!loading && !userGroup && userGroup !== 'PENDING') {
+    if (userOptionData && userTypeVerified !== 'true') {
       setOpenConfirmUserGroupModal(true);
     }
-  }, [loading, userGroup]);
+  }, [userOptionData, userTypeVerified]);
 
   const handleCloseConfirmUserGroupModal = () => {
     setOpenConfirmUserGroupModal(false);
@@ -62,6 +62,7 @@ const Dashboard = ({ data, accountListId }: Props): ReactElement => {
             <ConfirmUserGroupModal
               open={openConfirmUserGroupModal}
               handleClose={handleCloseConfirmUserGroupModal}
+              userType={data.user.userType}
             />
 
             <Grid container spacing={3} alignItems="stretch">

@@ -78,7 +78,7 @@ export const SummaryStep: React.FC = () => {
                 using the{' '}
                 <Link
                   component={NextLink}
-                  href={`/accountLists/${accountListId}/reports/additionalSalaryRequest`}
+                  href={`/accountLists/${accountListId}/hrTools/additionalSalaryRequest`}
                 >
                   Additional Salary Request Form
                 </Link>

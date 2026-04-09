@@ -37,7 +37,9 @@ beforeEach(() => {
 
 const data: GetDashboardQuery = {
   user: {
+    id: '123',
     firstName: 'Roger',
+    userType: UserTypeEnum.UsStaff,
   },
   accountList: {
     id: '1',
@@ -222,7 +224,7 @@ describe('Dashboard', () => {
   });
 
   describe('ConfirmUserGroupModal', () => {
-    it('renders ConfirmUserGroupModal when user group is not set', async () => {
+    it('renders ConfirmUserGroupModal when user type is not verified', async () => {
       const { getByText } = render(
         <ThemeProvider theme={theme}>
           <SnackbarProvider>
@@ -241,52 +243,17 @@ describe('Dashboard', () => {
       });
     });
 
-    it('does not render ConfirmUserGroupModal when loading', async () => {
-      const { queryByText } = render(
-        <ThemeProvider theme={theme}>
-          <SnackbarProvider>
-            <MockedProvider mocks={[]} addTypename={false}>
-              <Dashboard accountListId="abc" data={data} />
-            </MockedProvider>
-          </SnackbarProvider>
-        </ThemeProvider>,
-      );
-
-      await waitFor(() => {
-        expect(queryByText('Is this your user group?')).not.toBeInTheDocument();
-      });
-    });
-
-    it('does not render ConfirmUserGroupModal when user group is PENDING', async () => {
+    it('does not render ConfirmUserGroupModal when user type is verified', async () => {
       const { queryByText } = render(
         <ThemeProvider theme={theme}>
           <SnackbarProvider>
             <MockedProvider
               mocks={[
-                ...GetThisWeekDefaultMocks(),
-                getUserOptionMock('PENDING'),
-              ]}
-              addTypename={false}
-            >
-              <Dashboard accountListId="abc" data={data} />
-            </MockedProvider>
-          </SnackbarProvider>
-        </ThemeProvider>,
-      );
-
-      await waitFor(() => {
-        expect(queryByText('Is this your user group?')).not.toBeInTheDocument();
-      });
-    });
-
-    it('does not render ConfirmUserGroupModal when user group is set', async () => {
-      const { queryByText } = render(
-        <ThemeProvider theme={theme}>
-          <SnackbarProvider>
-            <MockedProvider
-              mocks={[
-                ...GetThisWeekDefaultMocks(),
-                getUserOptionMock(UserTypeEnum.UsStaff),
+                ...GetThisWeekDefaultMocks().filter(
+                  (mock) =>
+                    mock.request.variables?.key !== 'user_type_verified',
+                ),
+                getUserOptionMock('true'),
               ]}
               addTypename={false}
             >

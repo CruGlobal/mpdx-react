@@ -1,5 +1,0 @@
-query GetUserGroup {
-  user {
-    userType
-  }
-}

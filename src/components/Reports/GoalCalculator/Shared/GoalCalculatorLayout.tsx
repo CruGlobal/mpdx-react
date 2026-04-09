@@ -60,7 +60,7 @@ export const GoalCalculatorLayout: React.FC<GoalCalculatorLayoutProps> = ({
       isSidebarOpen={isDrawerOpen}
       sidebarAriaLabel={t('{{step}} Sections', { step: currentStep.title })}
       mainContent={mainContent}
-      backHref={`/accountLists/${accountListId}/reports/goalCalculator`}
+      backHref={`/accountLists/${accountListId}/hrTools/goalCalculator`}
       backTitle={t('Go Back')}
     />
   );

@@ -24,7 +24,7 @@ describe('PendingRequestCard', () => {
 
     expect(await findByRole('link', { name: 'Print' })).toHaveAttribute(
       'href',
-      '/accountLists/account-list-1/reports/salaryCalculator/pending-calc-1?mode=view&print=true',
+      '/accountLists/account-list-1/hrTools/salaryCalculator/pending-calc-1?mode=view&print=true',
     );
   });
 });

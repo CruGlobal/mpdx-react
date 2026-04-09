@@ -92,7 +92,7 @@ describe('GoalCard', () => {
     const { getByRole } = render(<TestComponent />);
     expect(getByRole('link', { name: 'View' })).toHaveAttribute(
       'href',
-      '/accountLists/account-list-1/reports/goalCalculator/goal-1',
+      '/accountLists/account-list-1/hrTools/goalCalculator/goal-1',
     );
   });
 

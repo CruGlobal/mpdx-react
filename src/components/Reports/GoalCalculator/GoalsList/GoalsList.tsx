@@ -51,7 +51,7 @@ export const GoalsList: React.FC = () => {
     const goalCalculation = data?.createGoalCalculation?.goalCalculation;
     if (goalCalculation) {
       router.push(
-        `/accountLists/${accountListId}/reports/goalCalculator/${goalCalculation.id}`,
+        `/accountLists/${accountListId}/hrTools/goalCalculator/${goalCalculation.id}`,
       );
     }
   };

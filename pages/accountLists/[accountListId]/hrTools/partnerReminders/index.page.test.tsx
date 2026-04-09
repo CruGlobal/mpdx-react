@@ -11,7 +11,7 @@ import {
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { StaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
 import theme from 'src/theme';
-import MPRemindersReportPage, { getServerSideProps } from './index.page';
+import PartnerRemindersReportPage, { getServerSideProps } from './index.page';
 
 const mutationSpy = jest.fn();
 
@@ -34,14 +34,14 @@ const Components = () => (
           mocks={mockStaffAccount}
           onCall={mutationSpy}
         >
-          <MPRemindersReportPage />
+          <PartnerRemindersReportPage />
         </GqlMockedProvider>
       </TestRouter>
     </SnackbarProvider>
   </ThemeProvider>
 );
 
-describe('MP Reminders Report Page', () => {
+describe('Partner Reminders Report Page', () => {
   beforeEach(() => {
     beforeTestResizeObserver();
   });
@@ -50,7 +50,7 @@ describe('MP Reminders Report Page', () => {
     afterTestResizeObserver();
   });
 
-  it('should show initial mp reminders report page', async () => {
+  it('should show initial partner reminders report page', async () => {
     const { findByRole } = render(<Components />);
 
     expect(
@@ -86,7 +86,7 @@ describe('MP Reminders Report Page', () => {
           mocks={mockNoStaffAccount}
           onCall={mutationSpy}
         >
-          <MPRemindersReportPage />
+          <PartnerRemindersReportPage />
         </GqlMockedProvider>
       </TestRouter>,
     );

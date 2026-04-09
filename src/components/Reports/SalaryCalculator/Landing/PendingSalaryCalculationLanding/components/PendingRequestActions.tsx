@@ -43,7 +43,7 @@ export const PendingRequestActions: React.FC<PendingRequestActionsProps> = ({
             variant="contained"
             color="primary"
             component={Link}
-            href={`/accountLists/${accountListId}/reports/salaryCalculator/${calculation.id}?mode=view`}
+            href={`/accountLists/${accountListId}/hrTools/salaryCalculator/${calculation.id}?mode=view`}
             data-testid="view-request"
           >
             {t('View Request')}
@@ -54,7 +54,7 @@ export const PendingRequestActions: React.FC<PendingRequestActionsProps> = ({
             variant="outlined"
             color="primary"
             component={Link}
-            href={`/accountLists/${accountListId}/reports/salaryCalculator/${calculation.id}`}
+            href={`/accountLists/${accountListId}/hrTools/salaryCalculator/${calculation.id}?mode=edit`}
             data-testid="edit-request"
           >
             {t('Edit Request')}

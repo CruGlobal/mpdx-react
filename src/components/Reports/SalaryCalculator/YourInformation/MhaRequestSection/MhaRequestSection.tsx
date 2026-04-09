@@ -98,7 +98,7 @@ export const MhaRequestSection: React.FC = () => {
               MHA Request form has not yet been submitted, it may be completed
               using{' '}
               <Link
-                href={`/accountLists/${accountListId}/reports/housingAllowance`}
+                href={`/accountLists/${accountListId}/hrTools/mhaCalculator`}
               >
                 this link
               </Link>

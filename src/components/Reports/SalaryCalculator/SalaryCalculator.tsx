@@ -51,7 +51,7 @@ export const SalaryCalculator: React.FC = () => {
       isSidebarOpen={editing && isDrawerOpen}
       sidebarAriaLabel={t('Salary Calculator Sections')}
       mainContent={<MainContent />}
-      backHref={`/accountLists/${accountListId}/reports/salaryCalculator`}
+      backHref={`/accountLists/${accountListId}/hrTools/salaryCalculator`}
     />
   );
 };

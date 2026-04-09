@@ -161,7 +161,7 @@ describe('SpouseComponent', () => {
 
       expect(link).toHaveAttribute(
         'href',
-        '/accountLists/account-list-1/reports/additionalSalaryRequest',
+        '/accountLists/account-list-1/hrTools/additionalSalaryRequest',
       );
     });
 
@@ -173,7 +173,7 @@ describe('SpouseComponent', () => {
 
       expect(link).toHaveAttribute(
         'href',
-        '/accountLists/account-list-1/reports/additionalSalaryRequest?isSpouse=true',
+        '/accountLists/account-list-1/hrTools/additionalSalaryRequest?isSpouse=true',
       );
     });
   });
