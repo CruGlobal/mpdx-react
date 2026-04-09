@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       head_branch:
-        description: "The PR head branch name"
+        description: 'The PR head branch name'
         required: true
         type: string
 
