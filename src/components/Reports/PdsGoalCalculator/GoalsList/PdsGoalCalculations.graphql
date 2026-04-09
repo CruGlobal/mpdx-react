@@ -1,14 +1,14 @@
 fragment PdsGoalCalculationFields on DesignationSupportCalculation {
   id
   name
-  primary
-  isCurrent
   updatedAt
   averageHoursPerWeek
   hoursWorkedPerWeek
   salaryOrHourly
   status
   payRate
+  benefits
+  geographicLocation
 }
 
 query PdsGoalCalculations {
@@ -38,5 +38,15 @@ mutation CreatePdsGoalCalculation(
 mutation DeletePdsGoalCalculation($id: ID!) {
   deleteDesignationSupportCalculation(input: { id: $id }) {
     id
+  }
+}
+
+mutation UpdatePdsGoalCalculation(
+  $attributes: DesignationSupportCalculationUpdateInput!
+) {
+  updateDesignationSupportCalculation(input: { attributes: $attributes }) {
+    designationSupportCalculation {
+      ...PdsGoalCalculationFields
+    }
   }
 }
