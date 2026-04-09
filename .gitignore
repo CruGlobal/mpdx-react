@@ -57,6 +57,7 @@ lighthouse-results.md
 
 # AI Code Review - Temporary Files
 # These are working files that get regenerated each review
+.ai-review.json
 /tmp/automated_fixes/
 /tmp/dependency_analysis/
 /tmp/dependency_impact.txt
