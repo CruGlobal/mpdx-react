@@ -1,0 +1,19 @@
+{
+  "body": "PR adds code-review rules (.claude/rules/code-review.md) and enables the cru-plugins marketplace (.claude/settings.json). Both files are Critical-risk (review pipeline config). No must-fix issues. The rules are thorough, well-aligned with CLAUDE.md, and previous review findings have been addressed. Two minor nice-to-haves: marketplace version pinning and Apollo risk deduplication.",
+  "comments": [
+    {
+      "path": ".claude/settings.json",
+      "start_line": 10,
+      "line": 15,
+      "start_side": "RIGHT",
+      "side": "RIGHT",
+      "body": "[Nice-to-have] Consider pinning the marketplace to a specific tag or commit SHA to prevent supply-chain drift if the upstream repo is compromised."
+    },
+    {
+      "path": ".claude/rules/code-review.md",
+      "line": 41,
+      "side": "RIGHT",
+      "body": "[Nice-to-have] Apollo files appear in High-Risk (+2), Special Pattern Detection (+2 for cache.ts), Security triggers, and Data Integrity triggers. The layering is intentional but could we add a note clarifying that risk scores don't stack across sections?"
+    }
+  ]
+}

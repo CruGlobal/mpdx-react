@@ -5,6 +5,7 @@ Project-specific rules layered on top of `CLAUDE.md` for `/quality:agent-review`
 **Stack:** Next.js 15 (Pages Router) · React 18 · TypeScript · Material UI v5 · Apollo Client (dual GraphQL) · Formik + Yup · Jest + React Testing Library · react-i18next · NextAuth (Okta / API OAuth).
 
 **Key architectural facts the agents should know:**
+
 - Two GraphQL servers are routed by Apollo Link: the primary API (`https://api.mpdx.org/graphql`) and a Next.js REST-proxy lambda under `pages/api/graphql-rest.page.ts`. Routing is driven by `src/graphql/rootFields.generated.ts`.
 - REST-proxy schemas live in `pages/api/Schema/<Feature>/` and follow the pattern: `<Feature>.graphql` → `resolvers.ts` → `datahandler.ts` (sibling file) → REST call.
 - Every user-visible string is localized via `useTranslation` / `t()` and extracted to `public/locales/`.
@@ -22,16 +23,15 @@ Files that control auth, routing, Apollo setup, build config, or the CI/review p
 - `pages/api/auth/helpers.ts` — shared auth helpers (token handling)
 - `pages/api/graphql-rest.page.ts` — REST-proxy entry point (token forwarding lives here)
 - `pages/api/Schema/index.ts` — REST-proxy schema registration
-- `src/lib/apollo/client.ts`, `src/lib/apollo/ssrClient.ts` — Apollo Client construction
-- `src/lib/apollo/link.ts` — link chain (auth headers, error handling, routing between servers)
-- `src/lib/apollo/cache.ts` — cache type policies, merge functions, pagination config
-- `src/graphql/rootFields.generated.ts` — drives which GraphQL server handles which field
 - `pages/_app.page.tsx` — app-level providers and global wiring
 - `next.config.{js,ts}` — build-time config, headers, rewrites, CSP
 - `codegen.ts`, `codegen.*.ts` — GraphQL codegen configuration
-- `.env`, `.env.*`, `.env.example` — environment files
 - `package.json` — dependency changes (new packages trigger `## Special Pattern Detection` below)
 - `.github/workflows/**` — CI/CD workflows
+- `src/lib/apollo/client.ts` — Apollo Client instantiation (auth headers, default options, link chain composition)
+- `src/lib/apollo/link.ts` — Apollo Link chain (dual-server routing, auth token attachment, error handling)
+- `src/lib/apollo/cache.ts` — Apollo InMemoryCache config (type policies, merge functions, cache normalization)
+- `src/lib/apollo/ssrClient.ts` — SSR Apollo Client (server-side data fetching, hydration)
 - `.claude/commands/**`, `.claude/rules/**`, `.claude/settings.json` — review-process and harness definitions (protect against weakening AI review or enabling unvetted plugins/marketplaces)
 
 ## High-Risk File Patterns
@@ -46,7 +46,6 @@ Each contributes +2 to risk score.
 - `src/components/User/**`, anything handling impersonation or account-list switching
 - `pages/api/Schema/uploads/**`, `pages/api/uploads/**` — file upload handlers
 - `src/components/Shared/**` — shared components (blast radius)
-- Any file matching `**/migration*.ts`, `**/migrations/**` — data/schema migrations
 
 ## Medium-Risk File Patterns
 
@@ -64,7 +63,6 @@ Each contributes +1 to risk score.
 
 Zero points. These override or augment the universal Low-Risk defaults.
 
-- `**/*.stories.tsx`, `**/*.stories.ts` — Storybook stories
 - `**/*.test.{ts,tsx}` — test files (content changes only; new test infrastructure should still be reviewed)
 - `public/locales/**/*.json` — translation content
 - `public/static/**` — static assets
@@ -78,14 +76,11 @@ Additional risk modifiers, added to the universal defaults.
 - **New package added to `package.json` dependencies/devDependencies:** +2 (supply-chain risk, bundle size impact)
 - **Updated critical package** (`next`, `react`, `@apollo/client`, `@mui/material`, `formik`, `next-auth`, `typescript`, `graphql-codegen`): +3
 - **`yarn.lock` changed without matching `package.json` change:** +1 (likely a resolution drift or lockfile hand-edit)
-- **`.graphql` file changed without matching `.generated.ts` regeneration in the same PR:** +2 (codegen out of sync — runtime errors likely)
+- **`.graphql` file changed without verifying `yarn gql` runs cleanly:** +2 (codegen out of sync — runtime errors likely). Note: `.generated.ts` files are not committed; CI regenerates them. The check is that codegen succeeds, not that generated files appear in the PR
 - **New `.graphql` file under `pages/api/Schema/` without matching resolver/dataHandler updates:** +1
-- **New `process.env.*` reference in source not present in `.env.example`:** +1 (breaks new-dev setup)
 - **New file in `src/hooks/` that uses Apollo hooks without an accompanying test file:** +1 (hooks drive component behavior; untested hooks are landmines)
 - **New file in `src/components/` without an accompanying `*.test.tsx`:** +1
 - **Changes to `next.config.{js,ts}` rewrites, headers, CSP, or image domains:** +2 (affects all pages and external requests)
-- **New field added to an existing GraphQL type without updating callers of that type's fragment:** +1
-- **Deletion of a GraphQL operation (`.graphql` file) without grep confirming no remaining callers:** +2
 - **Changes to `src/lib/apollo/cache.ts` `typePolicies` or `merge` functions:** +2 (can silently corrupt cached data across the app)
 
 ## Agent Triggers
@@ -93,6 +88,7 @@ Additional risk modifiers, added to the universal defaults.
 Repo-specific triggers that supplement the skill's minimal universal triggers.
 
 **Security Agent**
+
 - Any file under `pages/api/**` (all API/lambda routes)
 - Any file matching `src/lib/apollo/{link,client,ssrClient}.ts`
 - `next.config.{js,ts}`, `pages/_app.page.tsx`, any middleware/CSP/headers config
@@ -102,6 +98,7 @@ Repo-specific triggers that supplement the skill's minimal universal triggers.
 - Changes to `.claude/commands/**`, `.claude/rules/**`, or `.claude/settings.json` (review process and harness integrity)
 
 **Data Integrity Agent**
+
 - `pages/api/Schema/**/*.{ts,graphql}` (REST proxy silently reshapes data)
 - `pages/api/Schema/**/datahandler*.ts`
 - `src/lib/apollo/cache.ts` (type policies, merge functions, pagination)
@@ -112,14 +109,15 @@ Repo-specific triggers that supplement the skill's minimal universal triggers.
 - `src/graphql/rootFields.generated.ts` (dual-server routing)
 
 **UX Agent**
+
 - `src/components/**/*.tsx`
 - `pages/**/*.page.tsx`
 - `src/theme.ts`, `src/theme/**`
-- Changes to any file containing `sx={` or `<Dialog`, `<Drawer`, `<Snackbar`, `<Alert`, or form field components
 - Changes touching Formik wiring (`<Formik>`, `useFormik`, `<Field>`, `ErrorMessage`)
 - New translation keys (files under `public/locales/en/**` changed with structural additions, not content translation)
 
 **Testing Agent**
+
 - Any file under `src/components/**`, `src/hooks/**`, or `src/lib/**` that is added or modified **without** a corresponding `*.test.{ts,tsx}` change in the same PR
 - Any change to test utilities (`__tests__/util/**`)
 - New mocks added to `GqlMockedProvider` usage that bypass type checking
@@ -131,6 +129,7 @@ Repo-specific triggers that supplement the skill's minimal universal triggers.
 MPDX displays and calculates donation/partner-giving aggregations across dozens of financial reports. Display-side miscalculations silently mislead staff about their support status. This agent supplements the generic Data Integrity agent with domain-specific invariants.
 
 **Trigger conditions:**
+
 - Any file under `src/components/Reports/**`
 - Any file under `src/components/Reports/GoalCalculator/**` or `src/components/Reports/PdsGoalCalculator/**`
 - Any file under `src/components/Reports/SalaryCalculator/**`
@@ -140,6 +139,7 @@ MPDX displays and calculates donation/partner-giving aggregations across dozens 
 - Diff content contains any of: `amount`, `currency`, `convertedAmount`, `pledgeAmount`, `goal`, `balance`, `total`, `sum(`, `reduce((`, `.toFixed(`, `Math.round(`, `Number(`, `parseFloat(`, `parseInt(` inside `src/components/Reports/**` or goal/donation components
 
 **Focus areas:**
+
 - **Money is never a JavaScript `number` for arithmetic.** Check for floating-point arithmetic on money values — any `amount + amount`, `amount * rate`, or `.reduce` accumulating amounts must either (a) use a decimal library (if one is in use in the codebase), (b) round at the display boundary only, or (c) work in integer "cents" consistently. Never compare money values with `===` after arithmetic.
 - **Currency mixing.** Donations arrive in multiple currencies; verify no code path sums `amount` (native currency) across rows with different `currencyCode`. Aggregations must use `convertedAmount` (or equivalent) in a single reporting currency.
 - **Rounding consistency.** Rounding should happen at the display boundary via `intlFormat` / `Intl.NumberFormat`, not sprinkled through calculation code. Flag any `.toFixed(n)` used inside aggregation logic.
@@ -168,36 +168,42 @@ MPDX displays and calculates donation/partner-giving aggregations across dozens 
 Every item here is mandatory. The Standards agent must report compliance per item.
 
 **Exports & Naming**
+
 - [ ] **Named exports only** — no `export default` in components, hooks, or libs (`export const ComponentName: React.FC = () => {}`)
 - [ ] **File naming** — components PascalCase (`Foo.tsx`), pages kebab-case with `.page.tsx`, API routes with `.page.ts`, tests colocated as `Foo.test.tsx`, GraphQL as PascalCase `.graphql`
 - [ ] **GraphQL operation names** — descriptive, not prefixed with `Get` or `Load` (e.g. `ContactDetails`, not `GetContactDetails`)
 - [ ] **Hook names** — must start with `use` and live in `src/hooks/` (reusable) or next to the component (feature-specific)
 
 **Localization (i18n)**
+
 - [ ] Every user-visible string uses `useTranslation` / `t()` — no hard-coded display text in JSX, `Alert`, `Snackbar`, error messages, `aria-label`, or form labels
 - [ ] No string interpolation inside `t()` calls — use interpolation variables: `t('Hello {{name}}', { name })`, not `t(`Hello ${name}`)`
 - [ ] No dynamic `t()` keys (`t(varName)`) — extraction tool can't find them
 
 **GraphQL & Apollo**
+
 - [ ] Every query/mutation selection set includes `id` on normalizable types (for cache normalization)
-- [ ] Any `.graphql` change is accompanied by the regenerated `.generated.ts` in the same PR (`yarn gql`)
+- [ ] Any `.graphql` change has been verified by running `yarn gql` successfully
 - [ ] Any query returning `nodes` either handles pagination via `pageInfo` / `after` / `fetchMore`, or documents why the default 25-item limit is sufficient
 - [ ] Mutations that change cached data include either `update`, `refetchQueries`, or `cache.evict` to reflect the change in the UI
 - [ ] Apollo routing awareness — when adding a field, check `src/graphql/rootFields.generated.ts` to know which server handles it; don't mix rootFields with REST-proxy-only fields in one operation
 - [ ] No raw `fetch` or `axios` calls for data that could go through Apollo — centralize in GraphQL. Exception: the REST-proxy boundary layer (`pages/api/graphql-rest.page.ts` and `pages/api/Schema/**/datahandler*.ts`) uses `fetch` intentionally to call the upstream REST API
 
 **TypeScript**
+
 - [ ] No `any` types in new code (use `unknown` + narrowing, or proper generics)
 - [ ] No `@ts-ignore` / `@ts-expect-error` without an inline comment explaining why
 - [ ] No non-null assertions (`!`) on values that could legitimately be null — prefer explicit null checks
 - [ ] Generated operation types from `.generated.ts` files are used for Apollo hooks and mocks
 
 **Forms**
+
 - [ ] Forms use Formik + Yup — no manual `useState` form state for anything beyond trivial single-field inputs
 - [ ] Every Yup schema has matching server-side validation (don't rely on client-only validation)
 - [ ] Submit buttons are `disabled` while `isSubmitting` is true
 
 **Testing**
+
 - [ ] Every new component, hook, and lib function has a colocated `*.test.{ts,tsx}`
 - [ ] Component tests using GraphQL wrap in `GqlMockedProvider<{ OperationName: OperationNameQuery }>` with typed mocks
 - [ ] Tests use `findBy*` for async assertions rather than `waitFor(() => getBy*)`
@@ -205,6 +211,7 @@ Every item here is mandatory. The Standards agent must report compliance per ite
 - [ ] No global `fetch` mocking — use Apollo mocks at the operation level
 
 **Code Quality**
+
 - [ ] Passes `yarn lint` and `yarn lint:ts`
 - [ ] No debug output (`console.log`, `console.debug`, `debugger`, `// TODO` without a Jira/MPDX ticket reference)
 - [ ] No `new Date()` — use Luxon (`DateTime.now()`, `DateTime.local()`) per project convention
@@ -279,9 +286,6 @@ Project-specific testing conventions added to the Testing agent's universal chec
 - **Time-dependent tests** — use Jest fake timers (`jest.useFakeTimers()`) or Luxon's `Settings.now` override; never rely on actual system time
 - **Edge case coverage** — every new component test should include: empty state, loading state, error state, at least one happy path, and boundary conditions (0 items, 1 item, many items)
 - **Error path testing** — not just happy paths. Test validation failures, Apollo error responses, and user-visible error states
-- **Accessibility assertions** — for new interactive components, tests should assert on roles/labels (`getByRole('button', { name: /submit/i })`) rather than CSS selectors or test IDs
-- **No `act()` warnings** — a passing test with `act()` warnings in the console is broken; it means state updates aren't awaited correctly
-- **Code quality in tests** — unused imports, `console.log`, `.only`, `.skip` without a ticket reference, and commented-out assertions are all rejectable
 
 ## UX Focus Areas
 
@@ -309,13 +313,10 @@ Project-specific UX/UI conventions layered on top of the UX agent's universal ch
 
 Directories and file patterns the agent should not search or flag findings against.
 
-- `src/graphql/**/*.generated.ts` — GraphQL codegen output
-- `**/*.generated.ts` — any generated file (anywhere in the tree)
-- `public/locales/**` — translation content (agents should not flag translation *quality*)
+- **All gitignored paths** — anything matched by `.gitignore` (generated code, build artifacts, dependencies, etc.)
+- `**/*.generated.ts` — GraphQL codegen output; these files are not committed and are regenerated by CI/build
+- `public/locales/**` — translation content (agents should not flag translation _quality_)
 - `public/static/**`, `public/fonts/**`, `public/images/**` — static assets
-- `coverage/**`, `.next/**`, `dist/**`, `build/**`, `out/**` — build and coverage artifacts
-- `node_modules/**` — dependencies
-- `.yarn/**`, `.yarnrc*`, `yarn-error.log` — Yarn internals
 - `**/*.snap` — Jest snapshot files
-- `.git/**`, `.github/ISSUE_TEMPLATE/**`
+- `.github/ISSUE_TEMPLATE/**`
 - `docs/**` — repo documentation (unless changes are in-scope for the review)
