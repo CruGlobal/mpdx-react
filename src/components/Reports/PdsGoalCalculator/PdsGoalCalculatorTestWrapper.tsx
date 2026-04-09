@@ -6,6 +6,11 @@ import { SnackbarProvider } from 'notistack';
 import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
+import {
+  DesignationSupportSalaryType,
+  DesignationSupportStatus,
+} from 'src/graphql/types.generated';
+import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
 import {
   PdsGoalCalculationQuery,
@@ -25,6 +30,12 @@ const calculationsDefault = gqlMock<
         {
           id: 'goal-1',
           name: 'Test Goal',
+          status: DesignationSupportStatus.FullTime,
+          salaryOrHourly: DesignationSupportSalaryType.Salaried,
+          payRate: 50000,
+          hoursWorkedPerWeek: null,
+          benefits: 1500,
+          geographicLocation: null,
         },
       ],
     },
@@ -35,17 +46,29 @@ export type PdsGoalCalculationsMock = DeepPartial<
   PdsGoalCalculationsQuery['designationSupportCalculations']
 >;
 
+export type PdsGoalCalculationMock = DeepPartial<
+  PdsGoalCalculationQuery['designationSupportCalculation']
+>;
+
 export interface PdsGoalCalculatorTestWrapperProps {
   children?: React.ReactNode;
   withProvider?: boolean;
   calculationsMock?: PdsGoalCalculationsMock;
+  calculationMock?: PdsGoalCalculationMock;
   onCall?: MockLinkCallHandler;
   router?: React.ComponentProps<typeof TestRouter>['router'];
 }
 
 export const PdsGoalCalculatorTestWrapper: React.FC<
   PdsGoalCalculatorTestWrapperProps
-> = ({ children, withProvider = true, calculationsMock, onCall, router }) => {
+> = ({
+  children,
+  withProvider = true,
+  calculationsMock,
+  calculationMock,
+  onCall,
+  router,
+}) => {
   return (
     <ThemeProvider theme={theme}>
       <TestRouter
@@ -58,6 +81,7 @@ export const PdsGoalCalculatorTestWrapper: React.FC<
           <GqlMockedProvider<{
             PdsGoalCalculations: PdsGoalCalculationsQuery;
             PdsGoalCalculation: PdsGoalCalculationQuery;
+            GoalCalculatorConstants: GoalCalculatorConstantsQuery;
           }>
             mocks={{
               PdsGoalCalculations: {
@@ -66,6 +90,33 @@ export const PdsGoalCalculatorTestWrapper: React.FC<
                   calculationsDefault,
                   calculationsMock,
                 ),
+              },
+              ...(calculationMock
+                ? {
+                    PdsGoalCalculation: {
+                      designationSupportCalculation: calculationMock,
+                    },
+                  }
+                : {}),
+              GoalCalculatorConstants: {
+                constant: {
+                  mpdGoalBenefitsConstants: [],
+                  mpdGoalGeographicConstants: [
+                    {
+                      location: 'None',
+                      percentageMultiplier: 0,
+                    },
+                    {
+                      location: 'Orlando, FL',
+                      percentageMultiplier: 0.06,
+                    },
+                    {
+                      location: 'New York, NY',
+                      percentageMultiplier: 0.12,
+                    },
+                  ],
+                  mpdGoalMiscConstants: [],
+                },
               },
             }}
             onCall={onCall}
