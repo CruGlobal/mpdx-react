@@ -77,6 +77,28 @@ describe('PdsGoalsList', () => {
     );
   });
 
+  it('displays goals sorted by most recently updated', async () => {
+    const { findAllByRole } = render(
+      <PdsGoalCalculatorTestWrapper
+        withProvider={false}
+        calculationsMock={{
+          nodes: [
+            { name: 'Oldest', updatedAt: '2024-01-01T00:00:00Z' },
+            { name: 'Newest', updatedAt: '2024-03-01T00:00:00Z' },
+            { name: 'Middle', updatedAt: '2024-02-01T00:00:00Z' },
+          ],
+        }}
+      >
+        <PdsGoalsList />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    const headings = await findAllByRole('heading', { level: 6 });
+    expect(headings[0]).toHaveTextContent('Newest');
+    expect(headings[1]).toHaveTextContent('Middle');
+    expect(headings[2]).toHaveTextContent('Oldest');
+  });
+
   it('calls delete mutation when a goal is deleted', async () => {
     const { findByRole } = render(
       <PdsGoalCalculatorTestWrapper

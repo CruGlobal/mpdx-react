@@ -35,7 +35,9 @@ export const PdsGoalsList: React.FC = () => {
   const [createPdsGoalCalculation] = useCreatePdsGoalCalculationMutation();
   const [deletePdsGoalCalculation] = useDeletePdsGoalCalculationMutation();
 
-  const goals = data?.designationSupportCalculations.nodes;
+  const goals = data?.designationSupportCalculations.nodes
+    .slice()
+    .sort((goalA, goalB) => goalB.updatedAt.localeCompare(goalA.updatedAt));
 
   const handleDeleteGoal = async (id: string) => {
     await deletePdsGoalCalculation({
