@@ -2,6 +2,7 @@ import React, { ReactElement } from 'react';
 import { Box, Container, Grid } from '@mui/material';
 import { motion } from 'framer-motion';
 import { GetDashboardQuery } from 'pages/accountLists/GetDashboard.generated';
+import { ConfirmUserGroupModal } from '../Shared/ConfirmUserGroupModal/ConfirmUserGroupModal';
 import Balance from './Balance';
 import DonationHistories from './DonationHistories';
 import MonthlyGoal from './MonthlyGoal/MonthlyGoal';
@@ -28,6 +29,13 @@ const variants = {
 };
 
 const Dashboard = ({ data, accountListId }: Props): ReactElement => {
+  const [openConfirmUserGroupModal, setOpenConfirmUserGroupModal] =
+    React.useState(true);
+
+  const handleCloseConfirmUserGroupModal = () => {
+    setOpenConfirmUserGroupModal(false);
+  };
+
   return (
     <>
       <Welcome firstName={data.user.firstName ?? undefined} />
@@ -39,6 +47,11 @@ const Dashboard = ({ data, accountListId }: Props): ReactElement => {
             exit="exit"
             variants={variants}
           >
+            <ConfirmUserGroupModal
+              open={openConfirmUserGroupModal}
+              handleClose={handleCloseConfirmUserGroupModal}
+            />
+
             <Grid container spacing={3} alignItems="stretch">
               <Grid xs={12} sm={8} item>
                 <MonthlyGoal
