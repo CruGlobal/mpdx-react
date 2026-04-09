@@ -62,9 +62,9 @@ export const ApprovalProcessCard: React.FC = () => {
             </Trans>
           ) : (
             <Trans t={t}>
-              Since you are requesting above your and {{ spouse: spouseName }}
-              &apos;s combined Maximum Allowable Salary, you will need to
-              provide the information below.
+              Since you are requesting above {{ spouse: spouseName }}&apos;s and
+              your combined Maximum Allowable Salary, you will need to provide
+              the information below.
             </Trans>
           )}
         </Typography>

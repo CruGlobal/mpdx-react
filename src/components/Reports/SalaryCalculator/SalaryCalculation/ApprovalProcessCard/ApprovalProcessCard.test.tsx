@@ -86,7 +86,7 @@ If this is correct, please provide reasoning for why Jane's Salary should exceed
 
       await waitFor(() =>
         expect(getByTestId('ApprovalProcessCard-status')).toHaveTextContent(
-          "Since you are requesting above your and Jane's combined Maximum Allowable Salary, you will need to provide the information below.",
+          "Since you are requesting above Jane's and your combined Maximum Allowable Salary, you will need to provide the information below.",
         ),
       );
       expect(
