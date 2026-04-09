@@ -25,6 +25,9 @@ export const StepCard = styled(Card)(({ theme }) => ({
       marginBlock: theme.spacing(2),
     },
   },
+  '.MuiTable-root': {
+    tableLayout: 'fixed',
+  },
   '.MuiTableCell-head.MuiTableCell-root': {
     fontWeight: 'bold',
     color: theme.palette.primary.main,
