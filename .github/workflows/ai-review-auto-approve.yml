@@ -1,0 +1,168 @@
+name: AI Review Auto-Approve
+
+# Triggered explicitly by the /agent-review command after posting a review.
+# The agent review determines eligibility and triggers this workflow only when appropriate.
+on:
+  workflow_dispatch:
+    inputs:
+      head_branch:
+        description: "The PR head branch name"
+        required: true
+        type: string
+
+permissions:
+  pull-requests: write
+
+concurrency:
+  group: ai-review-auto-approve-${{ inputs.head_branch }}
+  cancel-in-progress: true
+
+jobs:
+  auto-approve:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check agent review and auto-approve
+        uses: actions/github-script@v7
+        env:
+          HEAD_BRANCH: ${{ inputs.head_branch }}
+        with:
+          script: |
+            const headBranch = process.env.HEAD_BRANCH;
+
+            // Find the PR for this branch
+            const prs = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              head: `${context.repo.owner}:${headBranch}`,
+              state: 'open',
+            });
+
+            if (prs.data.length === 0) {
+              core.setFailed(`No open PR found for branch ${headBranch}.`);
+              return;
+            }
+
+            const pr = prs.data[0];
+            const prNumber = pr.number;
+            console.log(`Found PR #${prNumber} for branch ${headBranch}`);
+
+            // --- Find the most recent agent review ---
+            const reviews = await github.paginate(github.rest.pulls.listReviews, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: prNumber,
+            });
+
+            let agentReview = null;
+            let meta = null;
+            for (const review of [...reviews].reverse()) {
+              const match = (review.body || '').match(/<!-- AI_REVIEW_META: ({.*?}) -->/s);
+              if (match) {
+                try {
+                  meta = JSON.parse(match[1]);
+                  agentReview = review;
+                  break;
+                } catch (e) {
+                  console.log('Failed to parse AI_REVIEW_META:', e.message);
+                }
+              }
+            }
+
+            if (!agentReview || !meta) {
+              core.setFailed('No agent review with AI_REVIEW_META found on this PR.');
+              return;
+            }
+
+            // Normalize metadata — LLM-generated values may have inconsistent casing or types
+            const risk_level = String(meta.risk_level || '').toUpperCase().trim();
+            const verdict = String(meta.verdict || '').toUpperCase().trim();
+
+            if (isNaN(Number(meta.risk_score))) {
+              console.log(`Warning: risk_score "${meta.risk_score}" is not a number, defaulting to 0`);
+            }
+            if (isNaN(Number(meta.blockers))) {
+              console.log(`Warning: blockers "${meta.blockers}" is not a number, defaulting to 0`);
+            }
+
+            const risk_score = Number(meta.risk_score) || 0;
+            const blockers = Number(meta.blockers) || 0;
+            const dismissed = Number(meta.dismissed) || 0;
+            console.log(`Agent review found — Risk: ${risk_level} (${risk_score}/10), Blockers: ${blockers}, Verdict: ${verdict}, Dismissed: ${dismissed}`);
+
+            // Gate 1: Only LOW or MEDIUM risk
+            if (!['LOW', 'MEDIUM'].includes(risk_level)) {
+              console.log(`Risk level is ${risk_level} — human review required.`);
+              return;
+            }
+
+            // Gate 2: No blockers
+            if (blockers > 0) {
+              console.log(`${blockers} blocker(s) found — human review required.`);
+              return;
+            }
+
+            // Gate 3: CLEAN or APPROVED_WITH_SUGGESTIONS verdicts get auto-approved.
+            // Suggestions are posted to the PR for the developer to decide on.
+            // Only BLOCKERS_FOUND requires human review.
+            if (!['CLEAN', 'APPROVED_WITH_SUGGESTIONS'].includes(verdict)) {
+              console.log(
+                `Verdict is ${verdict} — only CLEAN or APPROVED_WITH_SUGGESTIONS qualify for auto-approval. Human review required.`
+              );
+              return;
+            }
+
+            // Gate 4: Check we haven't already approved based on this agent review.
+            // Use the agent review's ID to prevent duplicate approvals from the same review.
+            const botApproval = reviews.find(
+              r => r.user.login === 'github-actions[bot]'
+                && r.state === 'APPROVED'
+                && r.body && r.body.includes(`<!-- Agent Review ID: ${agentReview.id} -->`)
+            );
+
+            if (botApproval) {
+              console.log('Bot has already approved based on this agent review. Skipping duplicate.');
+              return;
+            }
+
+            // All gates passed — auto-approve
+            try {
+              const verdictDesc = verdict === 'CLEAN'
+                ? '**CLEAN** (no issues found)'
+                : '**APPROVED_WITH_SUGGESTIONS** (suggestions posted, no blockers)';
+
+              const bodyLines = [
+                '## AI Review Auto-Approval',
+                '',
+                `**Risk Level:** ${risk_level} (${risk_score}/10)`,
+                `**Verdict:** ${verdictDesc}`,
+                '',
+                'This PR was auto-approved because:',
+                '- The multi-agent AI review determined it is **' + risk_level.toLowerCase() + ' risk**',
+                '- **No blocking issues** were found',
+              ];
+
+              if (verdict === 'APPROVED_WITH_SUGGESTIONS') {
+                bodyLines.push('- All suggestions have been posted as review comments for the developer to consider');
+              }
+
+              if (dismissed > 0) {
+                bodyLines.push(`- ${dismissed} non-blocking finding(s) were reviewed and dismissed by the developer`);
+              }
+
+              bodyLines.push('');
+              bodyLines.push('If you believe this PR needs human review, dismiss this approval and request a review manually.');
+              bodyLines.push('');
+              bodyLines.push(`<!-- Agent Review ID: ${agentReview.id} -->`);
+
+              await github.rest.pulls.createReview({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber,
+                event: 'APPROVE',
+                body: bodyLines.join('\n'),
+              });
+
+              console.log(`Auto-approved PR #${prNumber} — ${risk_level} risk, verdict: ${verdict}, dismissed: ${dismissed}`);
+            } catch (error) {
+              core.setFailed(`Failed to auto-approve PR #${prNumber}: ${error.message}`);
+            }
