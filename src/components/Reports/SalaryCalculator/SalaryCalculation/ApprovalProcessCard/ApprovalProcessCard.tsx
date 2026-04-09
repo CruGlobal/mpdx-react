@@ -30,8 +30,6 @@ export const ApprovalProcessCard: React.FC = () => {
     return null;
   }
 
-  const approvalRequired = tier !== ProgressiveApprovalTierEnum.DivisionHead;
-
   return (
     <StepCard>
       <StyledCardHeader
@@ -43,35 +41,30 @@ export const ApprovalProcessCard: React.FC = () => {
               color="info.main"
               sx={{ fontWeight: 'bold' }}
             >
-              {approvalRequired
-                ? t('Approval Process')
-                : t('Additional Information')}
+              {t('Approval Process')}
             </Typography>
-            {approvalRequired && (
-              <Typography color="textSecondary" ml={4}>
-                {t('Approvals are needed for this request')}
-              </Typography>
-            )}
+            <Typography color="textSecondary" ml={4}>
+              {t('Approvals are needed for this request')}
+            </Typography>
           </>
         }
       />
       <CardContent>
         <Typography data-testid="ApprovalProcessCard-status">
-          {approvalRequired ? (
-            <Trans t={t}>
-              Since you are requesting above your and {{ spouse: spouseName }}
-              &apos;s combined Maximum Allowable Salary, you will need to
-              provide the information below.
-            </Trans>
-          ) : (
+          {tier === ProgressiveApprovalTierEnum.DivisionHead ? (
             <Trans t={t}>
               {{ name: overCapPerson?.name }}&apos;s Gross Requested Salary
               exceeds their individual Maximum Allowable Salary. If this is
               correct, please provide reasoning for why{' '}
-              {{ name: overCapPerson?.name }}
-              &apos;s Salary should exceed{' '}
-              {{ cap: overCapPerson?.effectiveCap }} or make changes to your
-              Requested Salary above.
+              {{ name: overCapPerson?.name }}&apos;s Salary should exceed{' '}
+              {{ cap: overCapPerson?.effectiveCap }} for division head approval
+              below.
+            </Trans>
+          ) : (
+            <Trans t={t}>
+              Since you are requesting above {{ spouse: spouseName }}&apos;s and
+              your combined Maximum Allowable Salary, you will need to provide
+              the information below.
             </Trans>
           )}
         </Typography>
