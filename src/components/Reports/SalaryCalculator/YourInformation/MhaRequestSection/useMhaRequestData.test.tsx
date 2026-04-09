@@ -118,7 +118,7 @@ describe('useMhaRequestData', () => {
     ).resolves.toEqual({ mhaAmount: 20000, spouseMhaAmount: 0 });
   });
 
-  it('shows ineligible message when user is not eligible', async () => {
+  it('hides user fields when user is not eligible', async () => {
     const { result } = renderHook(() => useMhaRequestData(), {
       wrapper: createWrapper({
         hcmUser: { mhaEit: { mhaEligibility: false } },
@@ -129,14 +129,11 @@ describe('useMhaRequestData', () => {
       expect(result.current.userPreferredName).toBe('John');
     });
 
-    expect(result.current.showIneligibleMessage).toBe(true);
-    expect(result.current.isIneligiblePlural).toBe(false);
-    expect(result.current.ineligibleNames).toBe('John');
     expect(result.current.showUserFields).toBe(false);
     expect(result.current.showSpouseFields).toBe(true);
   });
 
-  it('shows ineligible message when spouse is not eligible', async () => {
+  it('hides spouse fields when spouse is not eligible', async () => {
     const { result } = renderHook(() => useMhaRequestData(), {
       wrapper: createWrapper({
         hcmSpouse: { mhaEit: { mhaEligibility: false } },
@@ -147,14 +144,11 @@ describe('useMhaRequestData', () => {
       expect(result.current.userPreferredName).toBe('John');
     });
 
-    expect(result.current.showIneligibleMessage).toBe(true);
-    expect(result.current.isIneligiblePlural).toBe(false);
-    expect(result.current.ineligibleNames).toBe('Jane');
     expect(result.current.showUserFields).toBe(true);
     expect(result.current.showSpouseFields).toBe(false);
   });
 
-  it('shows ineligible message for both when neither is eligible', async () => {
+  it('hides both fields when neither is eligible', async () => {
     const { result } = renderHook(() => useMhaRequestData(), {
       wrapper: createWrapper({
         hcmUser: { mhaEit: { mhaEligibility: false } },
@@ -166,9 +160,6 @@ describe('useMhaRequestData', () => {
       expect(result.current.userPreferredName).toBe('John');
     });
 
-    expect(result.current.showIneligibleMessage).toBe(true);
-    expect(result.current.isIneligiblePlural).toBe(true);
-    expect(result.current.ineligibleNames).toBe('John and Jane');
     expect(result.current.showUserFields).toBe(false);
     expect(result.current.showSpouseFields).toBe(false);
   });
@@ -181,11 +172,9 @@ describe('useMhaRequestData', () => {
     });
 
     await waitFor(() => {
-      expect(result.current.showNoMhaMessage).toBe(true);
+      expect(result.current.anyEligibleWithoutApprovedMha).toBe(true);
     });
 
-    expect(result.current.isNoMhaPlural).toBe(false);
-    expect(result.current.noMhaNames).toBe('John');
     expect(result.current.showUserFields).toBe(false);
     expect(result.current.showSpouseFields).toBe(true);
   });
@@ -199,11 +188,9 @@ describe('useMhaRequestData', () => {
     });
 
     await waitFor(() => {
-      expect(result.current.showNoMhaMessage).toBe(true);
+      expect(result.current.anyEligibleWithoutApprovedMha).toBe(true);
     });
 
-    expect(result.current.isNoMhaPlural).toBe(true);
-    expect(result.current.noMhaNames).toBe('John and Jane');
     expect(result.current.showUserFields).toBe(false);
     expect(result.current.showSpouseFields).toBe(false);
   });
@@ -221,22 +208,7 @@ describe('useMhaRequestData', () => {
     expect(result.current.spousePreferredName).toBe('');
   });
 
-  it('does not show spouse ineligible message when spouse does not exist', async () => {
-    const { result } = renderHook(() => useMhaRequestData(), {
-      wrapper: createWrapper({ hasSpouse: false }),
-    });
-
-    await waitFor(() => {
-      expect(result.current.showUserFields).toBe(true);
-    });
-
-    expect(result.current.showIneligibleMessage).toBe(false);
-    expect(result.current.isIneligiblePlural).toBe(false);
-    expect(result.current.ineligibleNames).toBe('');
-    expect(result.current.ineligibleName).toBeNull();
-  });
-
-  it('shows only user ineligible message when user is ineligible and no spouse exists', async () => {
+  it('hides user fields when user is ineligible and no spouse exists', async () => {
     const { result } = renderHook(() => useMhaRequestData(), {
       wrapper: createWrapper({
         hcmUser: { mhaEit: { mhaEligibility: false } },
@@ -248,10 +220,6 @@ describe('useMhaRequestData', () => {
       expect(result.current.userPreferredName).toBe('John');
     });
 
-    expect(result.current.showIneligibleMessage).toBe(true);
-    expect(result.current.isIneligiblePlural).toBe(false);
-    expect(result.current.ineligibleNames).toBe('John');
-    expect(result.current.ineligibleName).toBeNull();
     expect(result.current.showUserFields).toBe(false);
     expect(result.current.showSpouseFields).toBe(false);
   });

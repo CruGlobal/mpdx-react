@@ -25,6 +25,7 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
           preferredName: 'John',
           lastName: 'Doe',
           city: 'Miami',
+          country: 'US',
           state: 'FL',
           tenure: 4,
           age: 34,

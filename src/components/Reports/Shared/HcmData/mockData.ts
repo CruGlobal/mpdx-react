@@ -10,6 +10,7 @@ const johnDoe: HcmDataQuery['hcm'][number]['staffInfo'] = {
   addressLine1: '100 Lake Hart Dr',
   addressLine2: '',
   city: 'Orlando',
+  country: 'US',
   state: 'FL',
   zipCode: '32832',
   dependentChildrenWithHealthcareBenefits: null,

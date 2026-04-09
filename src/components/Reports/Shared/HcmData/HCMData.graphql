@@ -5,6 +5,7 @@ query HcmData {
       addressLine2
       age
       city
+      country
       dependentChildrenWithHealthcareBenefits
       emailAddress
       firstName

@@ -145,7 +145,7 @@ describe('MinisterHousingAllowanceReport', () => {
   });
 
   it('renders fully ineligible single user with requests and hides request details', async () => {
-    const { findByText, queryByText } = render(
+    const { findByText, queryByTestId, queryByText } = render(
       <TestComponent
         hcmMock={singleIneligible}
         mhaRequestsMock={[
@@ -157,9 +157,9 @@ describe('MinisterHousingAllowanceReport', () => {
       />,
     );
 
-    expect(
-      await findByText(/you have not completed the required ibs courses/i),
-    ).toBeInTheDocument();
+    // Eligibility table not shown when requests exist
+    expect(await findByText('Your MHA')).toBeInTheDocument();
+    expect(queryByTestId('eligibility-status-table')).not.toBeInTheDocument();
 
     expect(
       queryByText(/our records indicate that you have an mha request/i),
@@ -167,7 +167,7 @@ describe('MinisterHousingAllowanceReport', () => {
   });
 
   it('renders fully ineligible married couple and hides request details', async () => {
-    const { findByText, queryByText } = render(
+    const { findByText, queryByTestId, queryByText } = render(
       <TestComponent
         hcmMock={marriedBothIneligible}
         mhaRequestsMock={[
@@ -184,9 +184,9 @@ describe('MinisterHousingAllowanceReport', () => {
       />,
     );
 
-    expect(
-      await findByText(/have not completed the required ibs courses/i),
-    ).toBeInTheDocument();
+    // Eligibility table not shown when requests exist
+    expect(await findByText('Your MHA')).toBeInTheDocument();
+    expect(queryByTestId('eligibility-status-table')).not.toBeInTheDocument();
 
     expect(queryByText('Current Board Approved MHA')).not.toBeInTheDocument();
     expect(
@@ -202,14 +202,14 @@ describe('MinisterHousingAllowanceReport', () => {
       />,
     );
 
-    expect(await findByTestId('one-ineligible')).toBeInTheDocument();
+    expect(await findByTestId('eligibility-status-table')).toBeInTheDocument();
     expect(
       await findByText(/our records indicate that you have not applied for/i),
     ).toBeInTheDocument();
   });
 
   it('renders married, one eligible, one ineligible with approved request', async () => {
-    const { findByText, findByTestId } = render(
+    const { findByText, queryByTestId } = render(
       <TestComponent
         hcmMock={marriedUserIneligibleSpouseEligible}
         mhaRequestsMock={[
@@ -226,7 +226,7 @@ describe('MinisterHousingAllowanceReport', () => {
       />,
     );
 
-    expect(await findByTestId('one-ineligible')).toBeInTheDocument();
+    expect(queryByTestId('eligibility-status-table')).not.toBeInTheDocument();
     expect(
       await findByText(/our records indicate that you have an approved/i),
     ).toBeInTheDocument();

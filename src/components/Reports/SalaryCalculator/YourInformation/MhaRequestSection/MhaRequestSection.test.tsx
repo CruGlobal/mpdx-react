@@ -53,8 +53,20 @@ describe('MhaRequestSection', () => {
     expect(await findByRole('progressbar')).toBeInTheDocument();
   });
 
+  it('should render eligibility table when user is ineligible', async () => {
+    const { findByText } = render(
+      <TestComponent
+        hcmUser={{
+          mhaEit: { mhaEligibility: false },
+        }}
+      />,
+    );
+
+    expect(await findByText('Ineligible')).toBeInTheDocument();
+  });
+
   describe('no MHA messages', () => {
-    it('should render messages when both user and spouse have no MHA', async () => {
+    it('should render no-MHA message when both user and spouse have no MHA', async () => {
       const { findByTestId } = render(
         <TestComponent
           hcmUser={{
@@ -67,10 +79,9 @@ describe('MhaRequestSection', () => {
       );
 
       expect(await findByTestId('no-mha-submit-message')).toBeInTheDocument();
-      expect(await findByTestId('no-mha-pending-message')).toBeInTheDocument();
     });
 
-    it('should render message when only user has no MHA', async () => {
+    it('should render no-MHA message when only user has no MHA', async () => {
       const { findByTestId } = render(
         <TestComponent
           hcmUser={{
@@ -83,23 +94,6 @@ describe('MhaRequestSection', () => {
       );
 
       expect(await findByTestId('no-mha-submit-message')).toBeInTheDocument();
-      expect(await findByTestId('no-mha-pending-message')).toBeInTheDocument();
-    });
-
-    it('should render message when only spouse has no MHA', async () => {
-      const { findByTestId } = render(
-        <TestComponent
-          hcmUser={{
-            mhaRequest: { currentApprovedOverallAmount: 20000 },
-          }}
-          hcmSpouse={{
-            mhaRequest: { currentApprovedOverallAmount: 0 },
-          }}
-        />,
-      );
-
-      expect(await findByTestId('no-mha-submit-message')).toBeInTheDocument();
-      expect(await findByTestId('no-mha-pending-message')).toBeInTheDocument();
     });
 
     it('should not render no MHA messages when both have MHA', async () => {
@@ -116,7 +110,6 @@ describe('MhaRequestSection', () => {
 
       expect(await findByTestId('board-approved-amount')).toBeInTheDocument();
       expect(queryByTestId('no-mha-submit-message')).not.toBeInTheDocument();
-      expect(queryByTestId('no-mha-pending-message')).not.toBeInTheDocument();
     });
   });
 });

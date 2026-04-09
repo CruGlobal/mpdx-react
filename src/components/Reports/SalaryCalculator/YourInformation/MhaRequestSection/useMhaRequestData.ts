@@ -18,15 +18,6 @@ export const useMhaRequestData = () => {
     hasSpouse && (hcmSpouse?.mhaEit.mhaEligibility ?? false);
   const spouseHasApprovedMha =
     !!hcmSpouse?.mhaRequest.currentApprovedOverallAmount;
-  // Show "no MHA" message for eligible people who don't have an MHA
-  const showUserNoMhaMessage = userEligible && !userHasApprovedMha;
-  const showSpouseNoMhaMessage = spouseEligible && !spouseHasApprovedMha;
-
-  // Show "not eligible" message when one person is not eligible but the other has MHA
-  const showUserIneligibleSpouseApprovedMessage =
-    !userEligible && spouseEligible && spouseHasApprovedMha;
-  const showSpouseIneligibleUserApprovedMessage =
-    hasSpouse && !spouseEligible && userEligible && userHasApprovedMha;
   // Determine which fields should be shown
   const showUserFields = userEligible && userHasApprovedMha;
   const showSpouseFields = spouseEligible && spouseHasApprovedMha;
@@ -34,63 +25,16 @@ export const useMhaRequestData = () => {
   const userPreferredName = hcmUser?.staffInfo.preferredName ?? '';
   const spousePreferredName = hcmSpouse?.staffInfo.preferredName ?? '';
 
-  // Computed text values for the component
-  const showNoMhaMessage = showUserNoMhaMessage || showSpouseNoMhaMessage;
-  const isNoMhaPlural = showUserNoMhaMessage && showSpouseNoMhaMessage;
+  // Users from Italy apply for an MHI, and are ineligible
+  const userCountry = hcmUser?.staffInfo.country ?? null;
+  const spouseCountry = hcmSpouse?.staffInfo.country ?? null;
 
-  const getNoMhaNames = () => {
-    if (isNoMhaPlural) {
-      return t('{{userPreferredName}} and {{spousePreferredName}}', {
-        userPreferredName,
-        spousePreferredName,
-      });
-    }
-    if (showUserNoMhaMessage) {
-      return userPreferredName;
-    }
-    if (showSpouseNoMhaMessage) {
-      return spousePreferredName;
-    }
-    return '';
-  };
-  const noMhaNames = getNoMhaNames();
+  const anyIneligible = !userEligible || (hasSpouse && !spouseEligible);
 
-  const getIneligibleName = () => {
-    if (showUserIneligibleSpouseApprovedMessage) {
-      return userPreferredName;
-    }
-    if (showSpouseIneligibleUserApprovedMessage) {
-      return spousePreferredName;
-    }
-    return null;
-  };
-  const ineligibleName = getIneligibleName();
-
-  // Ineligibility messages (for NoMhaSubmitMessage)
-  const showUserIneligibleMessage = !userEligible;
-  const showSpouseIneligibleMessage = hasSpouse && !spouseEligible;
-
-  const showIneligibleMessage =
-    showUserIneligibleMessage || showSpouseIneligibleMessage;
-  const isIneligiblePlural =
-    showUserIneligibleMessage && showSpouseIneligibleMessage;
-  const showUnavailableMessage =
-    !showUserFields &&
-    !showSpouseFields &&
-    (showNoMhaMessage || showIneligibleMessage);
-  const showPartiallyUnavailableMessage =
-    showNoMhaMessage || showIneligibleMessage;
-
-  const getIneligibleNames = () => {
-    if (isIneligiblePlural) {
-      return t('{{userPreferredName}} and {{spousePreferredName}}', {
-        userPreferredName,
-        spousePreferredName,
-      });
-    }
-    return showUserIneligibleMessage ? userPreferredName : spousePreferredName;
-  };
-  const ineligibleNames = showIneligibleMessage ? getIneligibleNames() : '';
+  // Show "no MHA" link when someone is eligible but has no approved MHA
+  const anyEligibleWithoutApprovedMha =
+    (userEligible && !userHasApprovedMha) ||
+    (spouseEligible && !spouseHasApprovedMha);
 
   const approvedAmount = userHasApprovedMha
     ? (hcmUser?.mhaRequest.currentApprovedOverallAmount ?? 0)
@@ -203,18 +147,16 @@ export const useMhaRequestData = () => {
     difference: differenceFormatted,
     approvedAmount: approvedAmountFormatted,
     progressPercentage,
-    showNoMhaMessage,
-    isNoMhaPlural,
-    noMhaNames,
-    ineligibleName,
+    anyEligibleWithoutApprovedMha,
     showUserFields,
     showSpouseFields,
     userPreferredName,
     spousePreferredName,
-    showIneligibleMessage,
-    isIneligiblePlural,
-    ineligibleNames,
-    showUnavailableMessage,
-    showPartiallyUnavailableMessage,
+    userEligible,
+    spouseEligible,
+    userCountry,
+    spouseCountry,
+    anyIneligible,
+    hasSpouse,
   };
 };

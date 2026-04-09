@@ -12,8 +12,8 @@ import theme from 'src/theme';
 import { NameDisplay } from '../Shared/CalculationReports/NameDisplay/NameDisplay';
 import { PanelLayout } from '../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { PanelTypeEnum } from '../Shared/CalculationReports/Shared/sharedTypes';
+import { EligibilityStatusTable } from '../Shared/EligibilityStatusTable/EligibilityStatusTable';
 import { EligibleDisplay } from './MainPages/EligibleDisplay';
-import { IneligibleDisplay } from './MainPages/IneligibleDisplay';
 import { NoRequestsDisplay } from './MainPages/NoRequestsDisplay';
 import {
   useCreateHousingAllowanceRequestMutation,
@@ -124,11 +124,8 @@ export const MinisterHousingAllowanceReport = () => {
 
   const hasNoRequests = !requests.length;
 
-  const bothEligible = userEligibleForMHA && spouseEligibleForMHA;
   const eitherPersonEligible = userEligibleForMHA || spouseEligibleForMHA;
 
-  const showIneligibleDisplay =
-    !userEligibleForMHA || (isMarried && !bothEligible);
   const showNewRequestButton = eitherPersonEligible && !hasBlockingRequest;
   const showCurrentRequest = eitherPersonEligible && currentRequest;
   const showPreviousRequests = eitherPersonEligible && previousApprovedRequest;
@@ -157,21 +154,37 @@ export const MinisterHousingAllowanceReport = () => {
                   <Typography variant="h5">{t('Your MHA')}</Typography>
                 </Box>
 
+                <NameDisplay names={names} personNumbers={personNumbers} />
+
                 {hasNoRequests ? (
                   <>
                     <NoRequestsDisplay />
-                    {showIneligibleDisplay && <IneligibleDisplay />}
+                    <Box mt={2}>
+                      <EligibilityStatusTable
+                        userPreferredName={preferredName}
+                        userEligible={userEligibleForMHA}
+                        userCountry={
+                          userHcmData?.staffInfo?.country ?? undefined
+                        }
+                        spousePreferredName={
+                          isMarried ? spousePreferredName : undefined
+                        }
+                        spouseEligible={
+                          isMarried ? spouseEligibleForMHA : undefined
+                        }
+                        spouseCountry={
+                          isMarried
+                            ? (spouseHcmData?.staffInfo?.country ?? undefined)
+                            : undefined
+                        }
+                      />
+                    </Box>
                   </>
                 ) : (
-                  <>
-                    {showIneligibleDisplay && <IneligibleDisplay />}
-                    {eitherPersonEligible && (
-                      <EligibleDisplay isPending={isCurrentRequestPending} />
-                    )}
-                  </>
+                  eitherPersonEligible && (
+                    <EligibleDisplay isPending={isCurrentRequestPending} />
+                  )
                 )}
-
-                <NameDisplay names={names} personNumbers={personNumbers} />
 
                 {showCurrentRequest &&
                   (isCurrentRequestPending ? (

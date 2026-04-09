@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import React from 'react';
 import {
   Box,
@@ -11,10 +12,11 @@ import {
 import { useTheme } from '@mui/material/styles';
 import { Stack } from '@mui/system';
 import { Trans, useTranslation } from 'react-i18next';
+import { EligibilityStatusTable } from 'src/components/Reports/Shared/EligibilityStatusTable/EligibilityStatusTable';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import { AutosaveTextField } from '../../Autosave/AutosaveTextField';
 import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
 import { StepCard } from '../../Shared/StepCard';
-import { NoMhaSubmitMessage } from './NoMhaSubmitMessage';
 import { useMhaRequestData } from './useMhaRequestData';
 
 const SpouseLayout = styled(Box)(({ theme }) => ({
@@ -39,6 +41,7 @@ const StyledRemainingBox = styled(Box)(({ theme }) => ({
 export const MhaRequestSection: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
+  const accountListId = useAccountListId();
   const { hcmUser, hcmSpouse } = useSalaryCalculator();
   const {
     schema,
@@ -48,18 +51,17 @@ export const MhaRequestSection: React.FC = () => {
     progressPercentage,
     currentTakenAmount,
     currentSpouseTakenAmount,
-    showNoMhaMessage,
-    isNoMhaPlural,
-    noMhaNames,
-    ineligibleName,
+    anyEligibleWithoutApprovedMha,
     showUserFields,
     showSpouseFields,
     spousePreferredName,
-    showIneligibleMessage,
-    isIneligiblePlural,
-    ineligibleNames,
-    showUnavailableMessage,
-    showPartiallyUnavailableMessage,
+    userPreferredName,
+    userEligible,
+    spouseEligible,
+    userCountry,
+    spouseCountry,
+    anyIneligible,
+    hasSpouse,
   } = useMhaRequestData();
 
   return (
@@ -72,15 +74,38 @@ export const MhaRequestSection: React.FC = () => {
     >
       <CardHeader title={t('MHA Request')} />
       <CardContent>
-        {showUnavailableMessage && (
-          <NoMhaSubmitMessage
-            isPlural={isNoMhaPlural}
-            names={noMhaNames}
-            showIneligibleMessage={showIneligibleMessage}
-            isIneligiblePlural={isIneligiblePlural}
-            ineligibleNames={ineligibleNames}
-            showNoMhaMessage={showNoMhaMessage}
+        {anyIneligible && (
+          <EligibilityStatusTable
+            userPreferredName={userPreferredName}
+            userEligible={userEligible}
+            userCountry={userCountry}
+            spousePreferredName={hasSpouse ? spousePreferredName : undefined}
+            spouseEligible={hasSpouse ? spouseEligible : undefined}
+            spouseCountry={hasSpouse ? spouseCountry : undefined}
+            compact
           />
+        )}
+
+        {anyEligibleWithoutApprovedMha && (
+          <Typography
+            variant="body1"
+            sx={{ marginBottom: theme.spacing(2) }}
+            data-testid="no-mha-submit-message"
+          >
+            <Trans t={t}>
+              Our records show that not all staff have a Minister&apos;s Housing
+              Allowance for the effective date of this salary calculation. If an
+              MHA Request form has not yet been submitted, it may be completed
+              using{' '}
+              <Link
+                href={`/accountLists/${accountListId}/reports/housingAllowance`}
+              >
+                this link
+              </Link>
+              . Pending MHA Requests will not apply to this salary calculation
+              but a new Salary Calculation Form can be submitted after approval.
+            </Trans>
+          </Typography>
         )}
 
         {(showUserFields || showSpouseFields) && (
@@ -105,16 +130,7 @@ export const MhaRequestSection: React.FC = () => {
               <Trans t={t}>
                 This is the amount you are approved for as of the effective date
                 of this salary calculation.
-              </Trans>{' '}
-              {ineligibleName && (
-                <Trans t={t}>
-                  {{ name: ineligibleName }} has not completed the required IBS
-                  courses to meet eligibility criteria. For information about
-                  obtaining eligibility, contact Personnel Records at{' '}
-                  <a href="tel:407-826-2230">(407) 826-2230</a> or{' '}
-                  <a href="mailto:MHA@cru.org">MHA@cru.org</a>.
-                </Trans>
-              )}
+              </Trans>
             </Typography>
             <Typography variant="body1">
               <Trans t={t}>
@@ -124,17 +140,6 @@ export const MhaRequestSection: React.FC = () => {
                 submit a new Salary Calculation Form after it is approved.
               </Trans>
             </Typography>
-
-            {showPartiallyUnavailableMessage && (
-              <NoMhaSubmitMessage
-                isPlural={isNoMhaPlural}
-                names={noMhaNames}
-                showIneligibleMessage={showIneligibleMessage}
-                isIneligiblePlural={isIneligiblePlural}
-                ineligibleNames={ineligibleNames}
-                showNoMhaMessage={showNoMhaMessage}
-              />
-            )}
           </>
         )}
 
