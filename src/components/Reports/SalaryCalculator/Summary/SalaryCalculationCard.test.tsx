@@ -16,8 +16,8 @@ const defaultSalaryMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> =
       secaEstimatedFraction: 0.22,
       requestedWithSeca: 10003,
       minimumRequiredSalary: 10004,
-      contributing403bFraction: 0.1,
-      non403bFraction: 0.9,
+      contributing403bFraction: 0.1234,
+      non403bFraction: 0.8766,
       requestedGross: 10005,
     },
     spouseCalculations: {
@@ -26,8 +26,8 @@ const defaultSalaryMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> =
       secaEstimatedFraction: 0.22,
       requestedWithSeca: 20003,
       minimumRequiredSalary: 20004,
-      contributing403bFraction: 0.2,
-      non403bFraction: 0.8,
+      contributing403bFraction: 0.2345,
+      non403bFraction: 0.7655,
       requestedGross: 20005,
     },
   };
@@ -73,8 +73,8 @@ describe('SalaryCalculationCard', () => {
       ['13. 403(b) Contribution'],
       ['a. Tax-deferred (before tax) percentage', '5.00%', '8.00%'],
       ['b. Roth (after-tax) percentage', '12.00%', '10.00%'],
-      ['c. Total ContributionLine 13a + 13b', '10.00%', '20.00%'],
-      ['d. 1.00 minus 403(b) percentage', '0.90', '0.80'],
+      ['c. Total ContributionLine 13a + 13b', '12.34%', '23.45%'],
+      ['d. 1.00 minus 403(b) percentage', '0.8766', '0.7655'],
       [
         '14. Gross SalaryLine 12 ÷ Line 13dIf this amount is greater than your CAP (the lesser of line 9a or 9b), it must be approved.',
         '$10,005.00',
