@@ -294,7 +294,7 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
             {t('Average Hours Worked Per Week')}
           </Typography>
           <Typography variant="body2" fontWeight="bold">
-            {averageHoursPerWeek.toFixed(1)}
+            {averageHoursPerWeek}
           </Typography>
         </FooterRow>
       </StyledCard>
