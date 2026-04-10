@@ -320,3 +320,24 @@ Directories and file patterns the agent should not search or flag findings again
 - `**/*.snap` — Jest snapshot files
 - `.github/ISSUE_TEMPLATE/**`
 - `docs/**` — repo documentation (unless changes are in-scope for the review)
+
+## Post-Review Auto-Approve Trigger
+
+**After posting the review to GitHub**, if ALL of these conditions are met,trigger the auto-approve workflow:
+
+- The review was posted to GitHub (not terminal-only)
+- Risk level is LOW or MEDIUM
+- Verdict is CLEAN or APPROVED_WITH_SUGGESTIONS
+
+```bash
+BRANCH=$(gh pr view ${PR_NUM} --json headRefName --jq '.headRefName')
+if [ -n "$BRANCH" ]; then
+  gh workflow run ai-review-auto-approve.yml -f head_branch="${BRANCH}" \
+    && echo "Triggered auto-approve workflow for branch ${BRANCH}" \
+    || echo "WARNING: Failed to trigger auto-approve workflow"
+else
+  echo "WARNING: Could not determine branch name, skipping auto-approve trigger"
+fi
+```
+
+Do NOT trigger the workflow if any condition is not met (e.g., BLOCKERS_FOUND verdict or HIGH/CRITICAL risk). The auto-approve workflow does NOT check CI status — CI is enforced by the repo's branch protection rules (CI must pass before merging).
