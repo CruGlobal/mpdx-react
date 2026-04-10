@@ -14,6 +14,7 @@ import { NetAdditionalSalary } from '../../CompleteForm/NetAdditionalSalary/NetA
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
 import { useFormUserInfo } from '../../Shared/useFormUserInfo';
 import { useSalaryCalculations } from '../../Shared/useSalaryCalculations';
+import { SpouseComponent } from '../../SharedComponents/SpouseComponent';
 import { ValidationAlert } from '../../SharedComponents/ValidationAlert';
 import { ApprovalProcess } from '../../SubmitModalAccordions/ApprovalProcess/ApprovalProcess';
 import { TotalSalaryRequested } from '../../SubmitModalAccordions/TotalSalaryRequested/TotalSalaryRequested';
@@ -40,6 +41,7 @@ export const EditForm: React.FC = () => {
         amountOne={primaryAccountBalance}
         titleTwo={t('Your Maximum Allowable Salary (CAP)')}
         amountTwo={individualCap}
+        spouseComponent={<SpouseComponent />}
         showContent
       />
       <Typography variant="body1" paragraph>
