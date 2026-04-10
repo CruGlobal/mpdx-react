@@ -78,7 +78,7 @@ export const RequestedSalaryCard: React.FC = () => {
     <StepCard>
       <CardHeader title={t('Requested Salary')} />
       <CardContent>
-        <Typography variant="body1">
+        <Typography variant="body1" data-testid="RequestedSalaryCard-message">
           <Trans t={t}>
             Below, enter the annual salary amount you would like to request.
             This salary level includes taxes (local, state, and federal) and
@@ -90,7 +90,7 @@ export const RequestedSalaryCard: React.FC = () => {
               Because of IRS and Cru requirements, the lowest salary you can
               request is {{ minimumSalary }} ({{ formula }}) for{' '}
               {{ name: hcmUser?.staffInfo.preferredName }} and{' '}
-              {{ spouseMinimumSalary }} ({{ formula: spouseFormula }}) for{' '}
+              {{ spouseMinimumSalary }} ({{ spouseFormula }}) for{' '}
               {{ spouseName: hcmSpouse?.staffInfo.preferredName }}.
             </Trans>
           ) : (
@@ -124,11 +124,25 @@ export const RequestedSalaryCard: React.FC = () => {
 
             <TableRow>
               <TableCell component="th" scope="row">
-                {t('Salary Minimum')}
+                {t('Minimum Salary')}
               </TableCell>
               <FormattedTableCell value={minimumSalaryValue} />
               {hcmSpouse && (
                 <FormattedTableCell value={spouseMinimumSalaryValue} />
+              )}
+            </TableRow>
+
+            <TableRow>
+              <TableCell component="th" scope="row">
+                {t('Maximum Allowable Salary (CAP)')}
+              </TableCell>
+              <FormattedTableCell
+                value={salaryCalculation?.calculations.effectiveCap}
+              />
+              {hcmSpouse && (
+                <FormattedTableCell
+                  value={salaryCalculation?.spouseCalculations?.effectiveCap}
+                />
               )}
             </TableRow>
 
