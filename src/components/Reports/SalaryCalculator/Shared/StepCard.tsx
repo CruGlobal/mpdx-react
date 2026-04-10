@@ -1,15 +1,6 @@
 import React from 'react';
-import {
-  Card,
-  TableCell,
-  TableCellProps,
-  TableHead,
-  TableRow,
-  styled,
-} from '@mui/material';
+import { Card, TableCell, TableHead, TableRow, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 
 export const StepCard = styled(Card)(({ theme }) => ({
@@ -39,31 +30,6 @@ export const StepCard = styled(Card)(({ theme }) => ({
     padding: theme.spacing(2),
   },
 }));
-
-interface FormattedTableCellProps extends Omit<TableCellProps, 'children'> {
-  value: React.ReactNode;
-  percentage?: boolean;
-}
-
-export const FormattedTableCell: React.FC<FormattedTableCellProps> = ({
-  value,
-  percentage,
-  ...props
-}) => {
-  const locale = useLocale();
-  const formattedValue =
-    typeof value === 'number'
-      ? percentage
-        ? percentageFormat(value / 100, locale, {
-            fractionDigits: 2,
-          })
-        : currencyFormat(value, 'USD', locale, {
-            fractionDigits: 0,
-          })
-      : value;
-
-  return <TableCell {...props}>{formattedValue}</TableCell>;
-};
 
 export const StepTableHead: React.FC = () => {
   const { t } = useTranslation();

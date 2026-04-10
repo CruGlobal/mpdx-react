@@ -14,11 +14,7 @@ import { amount } from 'src/lib/yupHelpers';
 import { AutosaveTextField } from '../../Autosave/AutosaveTextField';
 import { CalculationFieldsFragment } from '../../SalaryCalculatorContext/SalaryCalculation.generated';
 import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
-import {
-  FormattedTableCell,
-  StepCard,
-  StepTableHead,
-} from '../../Shared/StepCard';
+import { StepCard, StepTableHead } from '../../Shared/StepCard';
 import { useFormatters } from '../../Shared/useFormatters';
 
 export const RequestedSalaryCard: React.FC = () => {
@@ -112,13 +108,13 @@ export const RequestedSalaryCard: React.FC = () => {
               <TableCell component="th" scope="row">
                 {t('Current Salary')}
               </TableCell>
-              <FormattedTableCell
-                value={hcmUser?.currentSalary.grossSalaryAmount}
-              />
+              <TableCell>
+                {formatCurrency(hcmUser?.currentSalary.grossSalaryAmount)}
+              </TableCell>
               {hcmSpouse && (
-                <FormattedTableCell
-                  value={hcmSpouse.currentSalary.grossSalaryAmount}
-                />
+                <TableCell>
+                  {formatCurrency(hcmSpouse.currentSalary.grossSalaryAmount)}
+                </TableCell>
               )}
             </TableRow>
 
@@ -126,9 +122,11 @@ export const RequestedSalaryCard: React.FC = () => {
               <TableCell component="th" scope="row">
                 {t('Minimum Salary')}
               </TableCell>
-              <FormattedTableCell value={minimumSalaryValue} />
+              <TableCell>{formatCurrency(minimumSalaryValue)}</TableCell>
               {hcmSpouse && (
-                <FormattedTableCell value={spouseMinimumSalaryValue} />
+                <TableCell>
+                  {formatCurrency(spouseMinimumSalaryValue)}
+                </TableCell>
               )}
             </TableRow>
 
@@ -136,13 +134,15 @@ export const RequestedSalaryCard: React.FC = () => {
               <TableCell component="th" scope="row">
                 {t('Maximum Allowable Salary (CAP)')}
               </TableCell>
-              <FormattedTableCell
-                value={salaryCalculation?.calculations.effectiveCap}
-              />
+              <TableCell>
+                {formatCurrency(salaryCalculation?.calculations.effectiveCap)}
+              </TableCell>
               {hcmSpouse && (
-                <FormattedTableCell
-                  value={salaryCalculation?.spouseCalculations?.effectiveCap}
-                />
+                <TableCell>
+                  {formatCurrency(
+                    salaryCalculation?.spouseCalculations?.effectiveCap,
+                  )}
+                </TableCell>
               )}
             </TableRow>
 

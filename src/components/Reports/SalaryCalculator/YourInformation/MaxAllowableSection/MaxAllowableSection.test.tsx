@@ -60,9 +60,11 @@ describe('MaxAllowableSection', () => {
         />,
       );
 
-      expect(await findByRole('cell', { name: '$50,000' })).toBeInTheDocument();
+      expect(
+        await findByRole('cell', { name: '$50,000.00' }),
+      ).toBeInTheDocument();
       await waitFor(() =>
-        expect(getByRole('cell', { name: '$60,000' })).toBeInTheDocument(),
+        expect(getByRole('cell', { name: '$60,000.00' })).toBeInTheDocument(),
       );
       expect(queryByRole('checkbox')).not.toBeInTheDocument();
     });
@@ -168,7 +170,9 @@ describe('MaxAllowableSection', () => {
       <TestComponent salaryRequestMock={{ splitCapRequired: false }} />,
     );
 
-    expect(await findByRole('cell', { name: '$75,000' })).toBeInTheDocument();
+    expect(
+      await findByRole('cell', { name: '$75,000.00' }),
+    ).toBeInTheDocument();
     expect(queryByRole('checkbox')).not.toBeInTheDocument();
   });
 });

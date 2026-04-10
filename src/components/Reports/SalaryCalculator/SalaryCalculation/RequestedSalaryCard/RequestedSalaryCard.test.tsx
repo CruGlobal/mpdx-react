@@ -79,9 +79,9 @@ As you set your salary level, the amount you receive should reflect the amount o
       const { getAllByRole } = render(<TestComponent />);
 
       const expectedCells = [
-        ['$10,001', '$20,001'],
-        ['$10,003', '$20,003'],
-        ['$10,004', '$20,004'],
+        ['$10,001.00', '$20,001.00'],
+        ['$10,003.00', '$20,003.00'],
+        ['$10,004.00', '$20,004.00'],
       ].flat();
 
       await waitFor(() =>
@@ -134,7 +134,7 @@ As you set your salary level, the amount you receive should reflect the amount o
     it('should render table cells with formatted currency', async () => {
       const { getAllByRole } = render(<TestComponent hasSpouse={false} />);
 
-      const expectedCells = [['$10,001'], ['$10,003'], ['$10,004']].flat();
+      const expectedCells = ['$10,001.00', '$10,003.00', '$10,004.00'];
 
       await waitFor(() =>
         expect(
