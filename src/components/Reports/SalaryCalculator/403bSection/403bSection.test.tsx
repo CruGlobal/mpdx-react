@@ -1,21 +1,94 @@
-import { render } from '@testing-library/react';
-import { SalaryCalculatorTestWrapper } from '../SalaryCalculatorTestWrapper';
+import { render, waitFor } from '@testing-library/react';
+import {
+  SalaryCalculatorTestWrapper,
+  SalaryCalculatorTestWrapperProps,
+} from '../SalaryCalculatorTestWrapper';
 import { FourOhThreeBSection } from './403bSection';
 
-const mutationSpy = jest.fn();
-
-const TestComponent: React.FC = () => (
-  <SalaryCalculatorTestWrapper onCall={mutationSpy}>
+const TestComponent: React.FC<SalaryCalculatorTestWrapperProps> = (props) => (
+  <SalaryCalculatorTestWrapper
+    hcmUser={{
+      fourOThreeB: { maximumContributionLimit: 10001 },
+    }}
+    hcmSpouse={{
+      fourOThreeB: { maximumContributionLimit: 20001 },
+    }}
+    {...props}
+  >
     <FourOhThreeBSection />
   </SalaryCalculatorTestWrapper>
 );
 
 describe('403bSection', () => {
-  it('should render retirement contribution percentages', async () => {
-    const { findByRole, getByRole } = render(<TestComponent />);
+  describe('married', () => {
+    it('should render table headers', async () => {
+      const { getAllByRole } = render(<TestComponent />);
 
-    expect(await findByRole('cell', { name: '12.00%' })).toBeInTheDocument();
-    expect(getByRole('cell', { name: '8.00%' })).toBeInTheDocument();
-    expect(getByRole('cell', { name: '$47' })).toBeInTheDocument();
+      await waitFor(() =>
+        expect(
+          getAllByRole('columnheader').map((cell) => cell.textContent),
+        ).toEqual(['Category', 'John', 'Jane']),
+      );
+
+      await waitFor(() =>
+        expect(
+          getAllByRole('rowheader').map((cell) => cell.textContent),
+        ).toEqual([
+          'Current Tax-Deferred Contribution Percent',
+          'Current Roth 403(b) Contribution Percent',
+          'Maximum Contribution Limit',
+        ]),
+      );
+    });
+
+    it('should render table cells with formatted values', async () => {
+      const { getAllByRole } = render(<TestComponent />);
+
+      const expectedCells = [
+        ['5.00%', '8.00%'],
+        ['12.00%', '10.00%'],
+        ['$10,001.00', '$20,001.00'],
+      ].flat();
+
+      await waitFor(() =>
+        expect(getAllByRole('cell').map((cell) => cell.textContent)).toEqual(
+          expectedCells,
+        ),
+      );
+    });
+  });
+
+  describe('single', () => {
+    it('should render table headers', async () => {
+      const { getAllByRole } = render(<TestComponent hasSpouse={false} />);
+
+      await waitFor(() =>
+        expect(
+          getAllByRole('columnheader').map((cell) => cell.textContent),
+        ).toEqual(['Category', 'John']),
+      );
+
+      await waitFor(() =>
+        expect(
+          getAllByRole('rowheader').map((cell) => cell.textContent),
+        ).toEqual([
+          'Current Tax-Deferred Contribution Percent',
+          'Current Roth 403(b) Contribution Percent',
+          'Maximum Contribution Limit',
+        ]),
+      );
+    });
+
+    it('should render table cells with formatted values', async () => {
+      const { getAllByRole } = render(<TestComponent hasSpouse={false} />);
+
+      const expectedCells = ['5.00%', '12.00%', '$10,001.00'];
+
+      await waitFor(() =>
+        expect(getAllByRole('cell').map((cell) => cell.textContent)).toEqual(
+          expectedCells,
+        ),
+      );
+    });
   });
 });

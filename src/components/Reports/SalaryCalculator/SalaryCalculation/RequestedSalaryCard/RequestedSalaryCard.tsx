@@ -10,16 +10,12 @@ import {
 } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat } from 'src/lib/intlFormat';
 import { amount } from 'src/lib/yupHelpers';
 import { AutosaveTextField } from '../../Autosave/AutosaveTextField';
+import { CalculationFieldsFragment } from '../../SalaryCalculatorContext/SalaryCalculation.generated';
 import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
-import {
-  FormattedTableCell,
-  StepCard,
-  StepTableHead,
-} from '../../Shared/StepCard';
+import { StepCard, StepTableHead } from '../../Shared/StepCard';
+import { useFormatters } from '../../Shared/useFormatters';
 
 export const RequestedSalaryCard: React.FC = () => {
   const { t } = useTranslation();
@@ -28,27 +24,24 @@ export const RequestedSalaryCard: React.FC = () => {
     hcmUser,
     hcmSpouse,
   } = useSalaryCalculator();
-  const locale = useLocale();
+  const { formatCurrency } = useFormatters();
 
   const minimumSalaryValue =
-    salaryCalculation?.calculations.minimumRequestedSalary ?? 0;
+    salaryCalculation?.calculations.minimumRequestedSalary;
   const spouseMinimumSalaryValue =
-    salaryCalculation?.spouseCalculations?.minimumRequestedSalary ?? 0;
+    salaryCalculation?.spouseCalculations?.minimumRequestedSalary;
 
-  const formula = t('MHA + {{ min }} - SECA', {
-    min: currencyFormat(
-      salaryCalculation?.calculations.minimumRequiredSalary ?? 0,
-      'USD',
-      locale,
-    ),
-  });
+  const minimumSalary = formatCurrency(minimumSalaryValue);
+  const spouseMinimumSalary = formatCurrency(spouseMinimumSalaryValue);
 
-  const minimumSalary = currencyFormat(minimumSalaryValue, 'USD', locale);
-  const spouseMinimumSalary = currencyFormat(
-    spouseMinimumSalaryValue,
-    'USD',
-    locale,
-  );
+  const renderFormula = (
+    calculations: CalculationFieldsFragment | null | undefined,
+  ) =>
+    t('MHA + {{ min }} - SECA', {
+      min: formatCurrency(calculations?.minimumRequiredSalary),
+    });
+  const formula = renderFormula(salaryCalculation?.calculations);
+  const spouseFormula = renderFormula(salaryCalculation?.spouseCalculations);
 
   const schema = useMemo(
     () =>
@@ -81,7 +74,7 @@ export const RequestedSalaryCard: React.FC = () => {
     <StepCard>
       <CardHeader title={t('Requested Salary')} />
       <CardContent>
-        <Typography variant="body1">
+        <Typography variant="body1" data-testid="RequestedSalaryCard-message">
           <Trans t={t}>
             Below, enter the annual salary amount you would like to request.
             This salary level includes taxes (local, state, and federal) and
@@ -91,15 +84,15 @@ export const RequestedSalaryCard: React.FC = () => {
           {hcmSpouse ? (
             <Trans t={t}>
               Because of IRS and Cru requirements, the lowest salary you can
-              request is {{ minimumSalary }} ({formula}) for{' '}
+              request is {{ minimumSalary }} ({{ formula }}) for{' '}
               {{ name: hcmUser?.staffInfo.preferredName }} and{' '}
-              {{ spouseMinimumSalary }} ({formula}) for{' '}
+              {{ spouseMinimumSalary }} ({{ spouseFormula }}) for{' '}
               {{ spouseName: hcmSpouse?.staffInfo.preferredName }}.
             </Trans>
           ) : (
             <Trans t={t}>
               Because of IRS and Cru requirements, the lowest salary you can
-              request is {{ minimumSalary }} ({formula}).
+              request is {{ minimumSalary }} ({{ formula }}).
             </Trans>
           )}{' '}
           <Trans t={t}>
@@ -115,23 +108,41 @@ export const RequestedSalaryCard: React.FC = () => {
               <TableCell component="th" scope="row">
                 {t('Current Salary')}
               </TableCell>
-              <FormattedTableCell
-                value={hcmUser?.currentSalary.grossSalaryAmount}
-              />
+              <TableCell>
+                {formatCurrency(hcmUser?.currentSalary.grossSalaryAmount)}
+              </TableCell>
               {hcmSpouse && (
-                <FormattedTableCell
-                  value={hcmSpouse.currentSalary.grossSalaryAmount}
-                />
+                <TableCell>
+                  {formatCurrency(hcmSpouse.currentSalary.grossSalaryAmount)}
+                </TableCell>
               )}
             </TableRow>
 
             <TableRow>
               <TableCell component="th" scope="row">
-                {t('Salary Minimum')}
+                {t('Minimum Salary')}
               </TableCell>
-              <FormattedTableCell value={minimumSalaryValue} />
+              <TableCell>{formatCurrency(minimumSalaryValue)}</TableCell>
               {hcmSpouse && (
-                <FormattedTableCell value={spouseMinimumSalaryValue} />
+                <TableCell>
+                  {formatCurrency(spouseMinimumSalaryValue)}
+                </TableCell>
+              )}
+            </TableRow>
+
+            <TableRow>
+              <TableCell component="th" scope="row">
+                {t('Maximum Allowable Salary (CAP)')}
+              </TableCell>
+              <TableCell>
+                {formatCurrency(salaryCalculation?.calculations.effectiveCap)}
+              </TableCell>
+              {hcmSpouse && (
+                <TableCell>
+                  {formatCurrency(
+                    salaryCalculation?.spouseCalculations?.effectiveCap,
+                  )}
+                </TableCell>
               )}
             </TableRow>
 

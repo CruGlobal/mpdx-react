@@ -21,15 +21,13 @@ import { amount } from 'src/lib/yupHelpers';
 import { AutosaveCheckbox } from '../../Autosave/AutosaveCheckbox';
 import { AutosaveTextField } from '../../Autosave/AutosaveTextField';
 import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
-import {
-  FormattedTableCell,
-  StepCard,
-  StepTableHead,
-} from '../../Shared/StepCard';
+import { StepCard, StepTableHead } from '../../Shared/StepCard';
+import { useFormatters } from '../../Shared/useFormatters';
 
 export const MaxAllowableStep: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const { formatCurrency } = useFormatters();
   const {
     calculation: salaryCalculation,
     hcmUser,
@@ -206,9 +204,13 @@ export const MaxAllowableStep: React.FC = () => {
             <StepTableHead />
             <TableBody>
               <TableRow>
-                <FormattedTableCell value={t('Maximum Allowable Salary')} />
-                <FormattedTableCell value={effectiveCap} />
-                {hcmSpouse && <FormattedTableCell value={spouseEffectiveCap} />}
+                <TableCell component="th" scope="row">
+                  {t('Maximum Allowable Salary')}
+                </TableCell>
+                <TableCell>{formatCurrency(effectiveCap)}</TableCell>
+                {hcmSpouse && (
+                  <TableCell>{formatCurrency(spouseEffectiveCap)}</TableCell>
+                )}
               </TableRow>
             </TableBody>
           </Table>

@@ -12,14 +12,12 @@ import {
 import { Stack } from '@mui/system';
 import { Trans, useTranslation } from 'react-i18next';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
-import {
-  FormattedTableCell,
-  StepCard,
-  StepTableHead,
-} from '../Shared/StepCard';
+import { StepCard, StepTableHead } from '../Shared/StepCard';
+import { useFormatters } from '../Shared/useFormatters';
 
 export const FourOhThreeBSection: React.FC = () => {
   const { t } = useTranslation();
+  const { formatCurrency, formatPercentage } = useFormatters();
   const { hcmUser, hcmSpouse } = useSalaryCalculator();
 
   const user = hcmUser?.fourOThreeB;
@@ -53,39 +51,43 @@ export const FourOhThreeBSection: React.FC = () => {
                 <TableCell component="th" scope="row">
                   {t('Current Tax-Deferred Contribution Percent')}
                 </TableCell>
-                <FormattedTableCell
-                  percentage
-                  value={user?.currentTaxDeferredContributionPercentage}
-                />
+                <TableCell>
+                  {formatPercentage(
+                    user?.currentTaxDeferredContributionPercentage,
+                  )}
+                </TableCell>
                 {spouse && (
-                  <FormattedTableCell
-                    percentage
-                    value={spouse.currentTaxDeferredContributionPercentage}
-                  />
+                  <TableCell>
+                    {formatPercentage(
+                      spouse.currentTaxDeferredContributionPercentage,
+                    )}
+                  </TableCell>
                 )}
               </TableRow>
               <TableRow>
                 <TableCell component="th" scope="row">
                   {t('Current Roth 403(b) Contribution Percent')}
                 </TableCell>
-                <FormattedTableCell
-                  percentage
-                  value={user?.currentRothContributionPercentage}
-                />
+                <TableCell>
+                  {formatPercentage(user?.currentRothContributionPercentage)}
+                </TableCell>
                 {spouse && (
-                  <FormattedTableCell
-                    percentage
-                    value={spouse.currentRothContributionPercentage}
-                  />
+                  <TableCell>
+                    {formatPercentage(spouse.currentRothContributionPercentage)}
+                  </TableCell>
                 )}
               </TableRow>
               <TableRow>
                 <TableCell component="th" scope="row">
                   {t('Maximum Contribution Limit')}
                 </TableCell>
-                <FormattedTableCell value={user?.maximumContributionLimit} />
+                <TableCell>
+                  {formatCurrency(user?.maximumContributionLimit)}
+                </TableCell>
                 {spouse && (
-                  <FormattedTableCell value={spouse.maximumContributionLimit} />
+                  <TableCell>
+                    {formatCurrency(spouse.maximumContributionLimit)}
+                  </TableCell>
                 )}
               </TableRow>
             </TableBody>

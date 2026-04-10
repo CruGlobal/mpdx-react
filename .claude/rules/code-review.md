@@ -140,7 +140,7 @@ MPDX displays and calculates donation/partner-giving aggregations across dozens 
 
 **Focus areas:**
 
-- **Money is never a JavaScript `number` for arithmetic.** Check for floating-point arithmetic on money values — any `amount + amount`, `amount * rate`, or `.reduce` accumulating amounts must either (a) use a decimal library (if one is in use in the codebase), (b) round at the display boundary only, or (c) work in integer "cents" consistently. Never compare money values with `===` after arithmetic.
+- **Money is never a JavaScript `number` for arithmetic.** Check for floating-point arithmetic on money values — any `amount + amount`, `amount * rate`, or `.reduce` accumulating amounts must round at the display boundary.
 - **Currency mixing.** Donations arrive in multiple currencies; verify no code path sums `amount` (native currency) across rows with different `currencyCode`. Aggregations must use `convertedAmount` (or equivalent) in a single reporting currency.
 - **Rounding consistency.** Rounding should happen at the display boundary via `intlFormat` / `Intl.NumberFormat`, not sprinkled through calculation code. Flag any `.toFixed(n)` used inside aggregation logic.
 - **Missing/null amounts.** Donations, pledges, and goals may be `null` or `undefined`. Verify nullish handling (`?? 0`) is present where aggregations happen, and that `null` is not silently coerced to `0` where it should surface as "unknown."
