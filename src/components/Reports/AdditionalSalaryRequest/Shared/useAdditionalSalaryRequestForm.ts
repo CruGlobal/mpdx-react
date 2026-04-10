@@ -81,6 +81,7 @@ export const useAdditionalSalaryRequestForm = (
     isInternational,
     requestId,
     isSpouse,
+    hasBoardCapException,
   } = useAdditionalSalaryRequest();
 
   const { primaryAccountBalance } = useFormUserInfo();
@@ -208,6 +209,9 @@ export const useAdditionalSalaryRequestForm = (
             'required-when-exceeds-cap',
             t('Additional info is required for requests exceeding your cap.'),
             function (value) {
+              if (hasBoardCapException) {
+                return true;
+              }
               const total = getTotal(this.parent as CompleteFormValues);
               if (total > 0) {
                 lastValidTotalRef.current = total;
@@ -228,7 +232,14 @@ export const useAdditionalSalaryRequestForm = (
             t('Please select how you would like to contribute to your 403(b).'),
           ),
       }),
-    [createCurrencyValidation, t, primaryAccountBalance, individualCap, locale],
+    [
+      createCurrencyValidation,
+      t,
+      primaryAccountBalance,
+      individualCap,
+      locale,
+      hasBoardCapException,
+    ],
   );
 
   const onSubmit = useCallback(

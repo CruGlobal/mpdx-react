@@ -46,6 +46,7 @@ const noMhaAndNoException: HcmDataQuery['hcm'][number] = {
   exceptionSalaryCap: {
     amount: null,
     effectiveDate: null,
+    boardCapException: false,
   },
   fourOThreeB: {
     currentTaxDeferredContributionPercentage: 6,
@@ -113,4 +114,17 @@ export const marriedUserEligibleSpouseIneligible: HcmDataQuery['hcm'] = [
     ...ineligibleAndNoException,
     staffInfo: janeDoe,
   },
+];
+
+const noMhaWithBoardCapException: HcmDataQuery['hcm'][number] = {
+  ...noMhaAndNoException,
+  exceptionSalaryCap: {
+    amount: null,
+    effectiveDate: null,
+    boardCapException: true,
+  },
+};
+
+export const singleNoMhaWithBoardCapException: HcmDataQuery['hcm'] = [
+  noMhaWithBoardCapException,
 ];

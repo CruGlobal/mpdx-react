@@ -8,7 +8,10 @@ import { I18nextProvider } from 'react-i18next';
 import * as yup from 'yup';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { AsrStatusEnum } from 'src/graphql/types.generated';
+import {
+  AsrStatusEnum,
+  ElectionType403bEnum,
+} from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import { amount, phoneNumber } from 'src/lib/yupHelpers';
 import theme from 'src/theme';
@@ -100,6 +103,7 @@ const defaultMockContextValue = {
   setIsNewAsr: jest.fn(),
   isSpouse: false,
   hasSpouse: false,
+  hasBoardCapException: false,
 };
 
 const router = {
@@ -711,5 +715,75 @@ describe('RequestPage', () => {
 
     const backLink = queryByRole('link', { name: /back to dashboard/i });
     expect(backLink).not.toBeInTheDocument();
+  });
+
+  describe('board cap exception', () => {
+    const boardCapContextValue = {
+      ...defaultMockContextValue,
+      currentIndex: mockSteps.length - 2,
+      currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
+      hasBoardCapException: true,
+      requestData: {
+        latestAdditionalSalaryRequest: {
+          id: 'asr-1',
+          status: AsrStatusEnum.InProgress,
+          calculations: {
+            currentSalaryCap: 10000,
+            combinedCap: null,
+            staffAccountBalance: 999999,
+            pendingAsrAmount: 0,
+          },
+          progressiveApprovalTier: null,
+        },
+      },
+    };
+
+    const overCapInitialValues: CompleteFormValues = {
+      ...defaultCompleteFormValues,
+      currentYearSalaryNotReceived: '20000',
+      totalAdditionalSalaryRequested: '20000',
+      phoneNumber: '555-123-4567',
+      emailAddress: 'test@example.com',
+      electionType403b: ElectionType403bEnum.None,
+    };
+
+    it('shows board approval title in submit modal when user has board cap exception and exceeds cap', async () => {
+      mockUseAdditionalSalaryRequest.mockReturnValue(
+        boardCapContextValue as unknown as ReturnType<
+          typeof useAdditionalSalaryRequest
+        >,
+      );
+
+      const { findByRole, findByText } = render(
+        <TestWrapper initialValues={overCapInitialValues} />,
+      );
+
+      const submitButton = await findByRole('button', { name: /submit/i });
+      userEvent.click(submitButton);
+
+      expect(await findByText(/requires Board approval/)).toBeInTheDocument();
+    });
+
+    it('shows board cap sub-content in submit modal when user has board cap exception and exceeds cap', async () => {
+      mockUseAdditionalSalaryRequest.mockReturnValue(
+        boardCapContextValue as unknown as ReturnType<
+          typeof useAdditionalSalaryRequest
+        >,
+      );
+
+      const { findByRole, findAllByText } = render(
+        <TestWrapper initialValues={overCapInitialValues} />,
+      );
+
+      const submitButton = await findByRole('button', { name: /submit/i });
+      userEvent.click(submitButton);
+
+      // The board cap text appears in both the modal's bold contentTitle
+      // (from overrideContent) and the CapSubContent span (from overrideSubContent)
+      const matches = await findAllByText(
+        /You have a Board approved Maximum Allowable Salary/,
+      );
+      expect(matches.length).toBeGreaterThanOrEqual(2);
+    });
   });
 });

@@ -48,6 +48,7 @@ const MainContent: React.FC = () => {
     spouse,
     isSpouse,
     setIsNewAsr,
+    hasBoardCapException,
   } = useAdditionalSalaryRequest();
 
   const [createRequest, { loading: creatingRequest }] =
@@ -104,6 +105,7 @@ const MainContent: React.FC = () => {
     !!splitAsr,
     !!additionalApproval,
     exceedsCap,
+    hasBoardCapException,
     t,
   );
 
@@ -161,8 +163,9 @@ const MainContent: React.FC = () => {
                 additionalApproval={additionalApproval || exceedsCap}
                 splitAsr={splitAsr}
                 disableSubmit={
-                  (splitAsr && !!errors.additionalInfo) ||
-                  (exceedsCap && !!errors.additionalInfo)
+                  !hasBoardCapException &&
+                  ((splitAsr && !!errors.additionalInfo) ||
+                    (exceedsCap && !!errors.additionalInfo))
                 }
                 overrideNext={isFirstFormPage ? handleContinue : undefined}
               />

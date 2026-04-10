@@ -4,6 +4,7 @@ export const getCapOverrides = (
   splitAsr: boolean,
   additionalApproval: boolean,
   exceedsCap: boolean,
+  hasBoardCapException: boolean,
   t: TFunction,
 ) => {
   if (splitAsr) {
@@ -16,6 +17,17 @@ export const getCapOverrides = (
   }
 
   if (additionalApproval || exceedsCap) {
+    if (hasBoardCapException) {
+      return {
+        title: t(
+          'Your request requires Board approval. Please review the information below to continue.',
+        ),
+        content: t(
+          "You have a Board approved Maximum Allowable Salary (CAP) and your Additional Salary Request exceeds that amount. As a result we need to get their approval for this request. We'll forward your request to them and get back to you with their decision.",
+        ),
+      };
+    }
+
     return {
       title: t(
         'Your request requires additional approval. Please fill in the information below to continue.',
