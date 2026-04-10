@@ -60,11 +60,16 @@ export const ApprovalProcessCard: React.FC = () => {
               {{ cap: overCapPerson?.effectiveCap }} for division head approval
               below.
             </Trans>
-          ) : (
+          ) : spouseName ? (
             <Trans t={t}>
               Since you are requesting above {{ spouse: spouseName }}&apos;s and
               your combined Maximum Allowable Salary, you will need to provide
               the information below.
+            </Trans>
+          ) : (
+            <Trans t={t}>
+              Since you are requesting above your Maximum Allowable Salary, you
+              will need to provide the information below.
             </Trans>
           )}
         </Typography>

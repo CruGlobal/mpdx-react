@@ -72,7 +72,30 @@ If this is correct, please provide reasoning for why Jane's Salary should exceed
   });
 
   describe('combined over cap', () => {
-    it('renders status message and textfield', async () => {
+    it('renders single status message and textfield', async () => {
+      const { getByRole, getByTestId } = render(
+        <TestComponent
+          salaryRequestMock={{
+            calculations: { requestedGross: 100_000 },
+            spouseCalculations: null,
+            progressiveApprovalTier: {
+              tier: ProgressiveApprovalTierEnum.VicePresident,
+            },
+          }}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(getByTestId('ApprovalProcessCard-status')).toHaveTextContent(
+          'Since you are requesting above your Maximum Allowable Salary, you will need to provide the information below.',
+        ),
+      );
+      expect(
+        getByRole('textbox', { name: 'Additional info' }),
+      ).toBeInTheDocument();
+    });
+
+    it('renders married status message', async () => {
       const { getByRole, getByTestId } = render(
         <TestComponent
           salaryRequestMock={{
