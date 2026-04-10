@@ -2,13 +2,19 @@ import { DateTime } from 'luxon';
 import { TFunction } from 'react-i18next';
 import * as yup from 'yup';
 
+/**
+ * Validation for phone numbers that satisfy these conditions:
+ * - May include digits, spaces, parentheses, plus signs, and hyphens
+ * - Cannot contain letters or other special characters
+ * - Must contain between 7 and 15 digits (after removing non-digit characters)
+ */
 export const phoneNumber = (t: TFunction) =>
   yup.string().test('is-phone-number', t('Invalid phone number'), (val) => {
     if (!val) {
       return false;
     }
     const cleaned = val.replace(/\D/g, '');
-    return /^1?\d{10}$/.test(cleaned);
+    return !/[^\d+() -]/.test(val) && /^\d{7,15}$/.test(cleaned);
   });
 
 export const dateTime = () =>
