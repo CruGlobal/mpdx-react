@@ -115,16 +115,3 @@ export const marriedUserEligibleSpouseIneligible: HcmDataQuery['hcm'] = [
     staffInfo: janeDoe,
   },
 ];
-
-const noMhaWithBoardCapException: HcmDataQuery['hcm'][number] = {
-  ...noMhaAndNoException,
-  exceptionSalaryCap: {
-    amount: null,
-    effectiveDate: null,
-    boardCapException: true,
-  },
-};
-
-export const singleNoMhaWithBoardCapException: HcmDataQuery['hcm'] = [
-  noMhaWithBoardCapException,
-];

@@ -69,7 +69,7 @@ describe('CapSubContent', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('renders board cap exception messaging when hasBoardCapException is true', () => {
+  it('renders nothing when hasBoardCapException is true (message is carried by getCapOverrides)', () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
       hasBoardCapException: true,
       requestData: {
@@ -79,14 +79,12 @@ describe('CapSubContent', () => {
       },
     } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
 
-    const { getByText, queryByText } = renderCapSubContent();
+    const { container, queryByText } = renderCapSubContent();
 
+    expect(container).toBeEmptyDOMElement();
     expect(
-      getByText(/You have a Board approved Maximum Allowable Salary/),
-    ).toBeInTheDocument();
-    expect(
-      getByText(/Additional Salary Request exceeds that amount/),
-    ).toBeInTheDocument();
+      queryByText(/You have a Board approved Maximum Allowable Salary/),
+    ).not.toBeInTheDocument();
     expect(queryByText(/Progressive Approvals/)).not.toBeInTheDocument();
   });
 });

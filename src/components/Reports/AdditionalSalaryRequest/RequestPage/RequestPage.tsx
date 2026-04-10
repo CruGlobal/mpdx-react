@@ -102,10 +102,12 @@ const MainContent: React.FC = () => {
   const isFormPage = !isFirstFormPage && !reviewPage;
 
   const { title: overrideTitle, content: overrideContent } = getCapOverrides(
-    !!splitAsr,
-    !!additionalApproval,
-    exceedsCap,
-    hasBoardCapException,
+    {
+      splitAsr: !!splitAsr,
+      additionalApproval: !!additionalApproval,
+      exceedsCap,
+      hasBoardCapException,
+    },
     t,
   );
 
@@ -163,9 +165,8 @@ const MainContent: React.FC = () => {
                 additionalApproval={additionalApproval || exceedsCap}
                 splitAsr={splitAsr}
                 disableSubmit={
-                  !hasBoardCapException &&
-                  ((splitAsr && !!errors.additionalInfo) ||
-                    (exceedsCap && !!errors.additionalInfo))
+                  (splitAsr && !!errors.additionalInfo) ||
+                  (exceedsCap && !!errors.additionalInfo)
                 }
                 overrideNext={isFirstFormPage ? handleContinue : undefined}
               />

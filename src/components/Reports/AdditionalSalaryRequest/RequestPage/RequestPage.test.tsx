@@ -778,12 +778,10 @@ describe('RequestPage', () => {
       const submitButton = await findByRole('button', { name: /submit/i });
       userEvent.click(submitButton);
 
-      // The board cap text appears in both the modal's bold contentTitle
-      // (from overrideContent) and the CapSubContent span (from overrideSubContent)
       const matches = await findAllByText(
         /You have a Board approved Maximum Allowable Salary/,
       );
-      expect(matches.length).toBeGreaterThanOrEqual(2);
+      expect(matches).toHaveLength(1);
     });
   });
 });

@@ -21,13 +21,7 @@ export const CapSubContent: React.FC = () => {
   const { values } = useFormikContext<CompleteFormValues>();
 
   if (hasBoardCapException) {
-    return (
-      <span>
-        {t(
-          "You have a Board approved Maximum Allowable Salary (CAP) and your Additional Salary Request exceeds that amount. As a result we need to get their approval for this request. We'll forward your request to them and get back to you with their decision.",
-        )}
-      </span>
-    );
+    return null;
   }
 
   return (
