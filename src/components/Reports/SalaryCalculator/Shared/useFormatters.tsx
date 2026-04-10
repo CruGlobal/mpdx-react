@@ -20,7 +20,7 @@ export const useFormatters = () => {
     new Intl.NumberFormat(locale, {
       style: 'decimal',
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
+      maximumFractionDigits: 4,
     }).format(value ?? 0);
 
   return {
