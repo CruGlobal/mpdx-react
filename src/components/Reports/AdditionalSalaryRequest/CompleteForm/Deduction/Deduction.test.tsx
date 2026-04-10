@@ -72,7 +72,21 @@ describe('Deduction', () => {
     );
 
     const standardRadio = await findByRole('radio', {
-      name: 'Apply my regular 403(b) percentages (12% Traditional / 8% Roth)',
+      name: 'Apply my regular 403(b) percentages (12.00% Traditional / 8.00% Roth)',
+    });
+    expect(standardRadio).toBeInTheDocument();
+  });
+
+  it('rounds percentages in the standard radio label', async () => {
+    const { findByRole } = render(
+      <TestWrapper
+        traditionalDeductionPercentage={12.249}
+        rothDeductionPercentage={7.00000001}
+      />,
+    );
+
+    const standardRadio = await findByRole('radio', {
+      name: 'Apply my regular 403(b) percentages (12.25% Traditional / 7.00% Roth)',
     });
     expect(standardRadio).toBeInTheDocument();
   });
@@ -105,7 +119,7 @@ describe('Deduction', () => {
     );
 
     // Wait for GraphQL data to load
-    await findByText(/12%/);
+    await findByText(/12.00%/);
 
     const noneRadio = getByRole('radio', {
       name: 'No 403(b) contribution - all funds go to my account',
@@ -148,7 +162,7 @@ describe('Deduction', () => {
     );
 
     // Wait for GraphQL data to load
-    await findByText(/12%/);
+    await findByText(/12.00%/);
 
     const traditionalRadio = getByRole('radio', {
       name: '100% of this request goes to my Traditional 403(b)',
@@ -180,7 +194,7 @@ describe('Deduction', () => {
     );
 
     // Wait for GraphQL data to load
-    await findByText(/8%/);
+    await findByText(/8.00%/);
 
     const rothRadio = getByRole('radio', {
       name: '100% of this request goes to my Roth 403(b)',
@@ -203,7 +217,7 @@ describe('Deduction', () => {
       additionalSalaryWithinMax: '10000',
     };
 
-    const { getByRole, findByText, getByText } = render(
+    const { findByRole, getByText } = render(
       <TestWrapper
         initialValues={valuesWithSalary}
         traditionalDeductionPercentage={12}
@@ -211,11 +225,8 @@ describe('Deduction', () => {
       />,
     );
 
-    // Wait for GraphQL data to load
-    await findByText(/12%/);
-
-    const standardRadio = getByRole('radio', {
-      name: 'Apply my regular 403(b) percentages (12% Traditional / 8% Roth)',
+    const standardRadio = await findByRole('radio', {
+      name: 'Apply my regular 403(b) percentages (12.00% Traditional / 8.00% Roth)',
     });
 
     userEvent.click(standardRadio);

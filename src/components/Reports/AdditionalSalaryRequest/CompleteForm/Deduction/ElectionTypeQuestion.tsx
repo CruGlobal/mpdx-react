@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { ElectionType403bEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
-import { currencyFormat } from 'src/lib/intlFormat';
+import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
 import { useSaveField } from '../../Shared/AutoSave/useSaveField';
@@ -80,10 +80,18 @@ export const ElectionTypeQuestion: React.FC = () => {
               value={ElectionType403bEnum.Standard}
               control={<Radio />}
               label={t(
-                'Apply my regular 403(b) percentages ({{traditional}}% Traditional / {{roth}}% Roth)',
+                'Apply my regular 403(b) percentages ({{traditional}} Traditional / {{roth}} Roth)',
                 {
-                  traditional: traditional403bPercentage * 100,
-                  roth: roth403bPercentage * 100,
+                  traditional: percentageFormat(
+                    traditional403bPercentage,
+                    locale,
+                    {
+                      fractionDigits: 2,
+                    },
+                  ),
+                  roth: percentageFormat(roth403bPercentage, locale, {
+                    fractionDigits: 2,
+                  }),
                 },
               )}
             />
