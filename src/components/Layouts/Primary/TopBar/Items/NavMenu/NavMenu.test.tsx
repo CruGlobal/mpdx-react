@@ -47,7 +47,7 @@ const TestComponent: React.FC<TestComponentProps> = ({ router, mocks }) => (
 
 describe('NavMenu', () => {
   it('default', async () => {
-    const { findByRole, getByRole, getByTestId } = render(
+    const { findByRole, getByRole, getByTestId, queryByRole } = render(
       <TestComponent
         mocks={{
           LoadCoachingList: {
@@ -82,8 +82,8 @@ describe('NavMenu', () => {
       getByRole('menuitem', { name: 'Designation Accounts' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('menuitem', { name: 'Responsibility Centers' }),
-    ).toBeInTheDocument();
+      queryByRole('menuitem', { name: 'Responsibility Centers' }),
+    ).not.toBeInTheDocument();
     expect(
       getByRole('menuitem', { name: 'Expected Monthly Total' }),
     ).toBeInTheDocument();
@@ -150,9 +150,6 @@ describe('NavMenu', () => {
       getByRole('menuitem', { name: 'Designation Accounts' }),
     ).not.toBeVisible();
     expect(
-      getByRole('menuitem', { name: 'Responsibility Centers' }),
-    ).not.toBeVisible();
-    expect(
       getByRole('menuitem', { name: 'Expected Monthly Total' }),
     ).not.toBeVisible();
     expect(
@@ -163,6 +160,7 @@ describe('NavMenu', () => {
       await findByRole('menuitem', { name: 'Coaching' }),
     ).toBeInTheDocument();
   });
+
   it('does not show coaching link if there are no coaching accounts', async () => {
     const { queryByRole } = render(
       <TestComponent

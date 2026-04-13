@@ -13,7 +13,8 @@ export type NavItems = {
 export function useReportNavItems(): NavItems[] {
   const { t } = useTranslation();
   const { userType } = useContext(UserPreferenceContext);
-  const showItem = userType === UserTypeEnum.UsStaff;
+  const usStaff = userType === UserTypeEnum.UsStaff;
+  const globalStaff = userType === UserTypeEnum.GlobalStaff;
 
   const reportNavItems: NavItems[] = [
     {
@@ -36,13 +37,13 @@ export function useReportNavItems(): NavItems[] {
           {
             id: 'staffExpense',
             title: t('Staff Expense Report'),
-            hideItem: !showItem,
+            hideItem: !usStaff,
           },
           {
             id: 'mpgaIncomeExpenses',
             title: t('MPGA Monthly Report'),
             subTitle: t('Income & Expenses'),
-            hideItem: !showItem,
+            hideItem: !usStaff,
           },
         ]),
     {
@@ -52,7 +53,7 @@ export function useReportNavItems(): NavItems[] {
     {
       id: 'financialAccounts',
       title: t('Responsibility Centers'),
-      hideItem: !showItem,
+      hideItem: !globalStaff,
     },
     {
       id: 'expectedMonthlyTotal',
@@ -70,6 +71,6 @@ export function useReportNavItems(): NavItems[] {
 
   return useMemo(
     () => reportNavItems.filter((item) => !item.hideItem),
-    [t, showItem],
+    [t, usStaff, globalStaff],
   );
 }
