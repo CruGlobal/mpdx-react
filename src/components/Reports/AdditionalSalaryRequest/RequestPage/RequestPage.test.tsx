@@ -8,7 +8,10 @@ import { I18nextProvider } from 'react-i18next';
 import * as yup from 'yup';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { AsrStatusEnum } from 'src/graphql/types.generated';
+import {
+  AsrStatusEnum,
+  ElectionType403bEnum,
+} from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import { amount, phoneNumber } from 'src/lib/yupHelpers';
 import theme from 'src/theme';
@@ -100,6 +103,7 @@ const defaultMockContextValue = {
   setIsNewAsr: jest.fn(),
   isSpouse: false,
   hasSpouse: false,
+  hasBoardCapException: false,
 };
 
 const router = {
@@ -711,5 +715,115 @@ describe('RequestPage', () => {
 
     const backLink = queryByRole('link', { name: /back to dashboard/i });
     expect(backLink).not.toBeInTheDocument();
+  });
+
+  describe('board cap exception', () => {
+    const boardCapContextValue = {
+      ...defaultMockContextValue,
+      currentIndex: mockSteps.length - 2,
+      currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
+      hasBoardCapException: true,
+      requestData: {
+        latestAdditionalSalaryRequest: {
+          id: 'asr-1',
+          status: AsrStatusEnum.InProgress,
+          calculations: {
+            currentSalaryCap: 10000,
+            combinedCap: null,
+            staffAccountBalance: 999999,
+            pendingAsrAmount: 0,
+          },
+          progressiveApprovalTier: null,
+        },
+      },
+    };
+
+    const overCapInitialValues: CompleteFormValues = {
+      ...defaultCompleteFormValues,
+      currentYearSalaryNotReceived: '20000',
+      totalAdditionalSalaryRequested: '20000',
+      phoneNumber: '555-123-4567',
+      emailAddress: 'test@example.com',
+      electionType403b: ElectionType403bEnum.None,
+    };
+
+    it('shows board approval title in submit modal when user has board cap exception and exceeds cap', async () => {
+      mockUseAdditionalSalaryRequest.mockReturnValue(
+        boardCapContextValue as unknown as ReturnType<
+          typeof useAdditionalSalaryRequest
+        >,
+      );
+
+      const { findByRole, findByText } = render(
+        <TestWrapper initialValues={overCapInitialValues} />,
+      );
+
+      const submitButton = await findByRole('button', { name: /submit/i });
+      userEvent.click(submitButton);
+
+      expect(await findByText(/requires Board approval/)).toBeInTheDocument();
+    });
+
+    it('shows board cap sub-content in submit modal when user has board cap exception and exceeds cap', async () => {
+      mockUseAdditionalSalaryRequest.mockReturnValue(
+        boardCapContextValue as unknown as ReturnType<
+          typeof useAdditionalSalaryRequest
+        >,
+      );
+
+      const { findByRole, findAllByText } = render(
+        <TestWrapper initialValues={overCapInitialValues} />,
+      );
+
+      const submitButton = await findByRole('button', { name: /submit/i });
+      userEvent.click(submitButton);
+
+      const matches = await findAllByText(
+        /You have a Board approved Maximum Allowable Salary/,
+      );
+      expect(matches).toHaveLength(1);
+    });
+
+    it('shows normal submit modal when user has board cap exception but does not exceed cap', async () => {
+      mockUseAdditionalSalaryRequest.mockReturnValue({
+        ...boardCapContextValue,
+        requestData: {
+          latestAdditionalSalaryRequest: {
+            ...boardCapContextValue.requestData.latestAdditionalSalaryRequest,
+            calculations: {
+              ...boardCapContextValue.requestData.latestAdditionalSalaryRequest
+                .calculations,
+              currentSalaryCap: 100000,
+            },
+          },
+        },
+      } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+      const underCapValues: CompleteFormValues = {
+        ...defaultCompleteFormValues,
+        currentYearSalaryNotReceived: '500',
+        totalAdditionalSalaryRequested: '500',
+        phoneNumber: '555-123-4567',
+        emailAddress: 'test@example.com',
+        electionType403b: ElectionType403bEnum.None,
+      };
+
+      const { findByRole, findByText, queryByText } = render(
+        <TestWrapper initialValues={underCapValues} />,
+      );
+
+      const submitButton = await findByRole('button', { name: /submit/i });
+      userEvent.click(submitButton);
+
+      expect(
+        await findByText(
+          'Are you ready to submit your Additional Salary Request?',
+        ),
+      ).toBeInTheDocument();
+      expect(queryByText(/requires Board approval/)).not.toBeInTheDocument();
+      expect(
+        queryByText(/You have a Board approved Maximum Allowable Salary/),
+      ).not.toBeInTheDocument();
+    });
   });
 });

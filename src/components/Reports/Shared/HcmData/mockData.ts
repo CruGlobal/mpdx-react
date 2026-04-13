@@ -46,6 +46,7 @@ const noMhaAndNoException: HcmDataQuery['hcm'][number] = {
   exceptionSalaryCap: {
     amount: null,
     effectiveDate: null,
+    boardCapException: false,
   },
   fourOThreeB: {
     currentTaxDeferredContributionPercentage: 6,

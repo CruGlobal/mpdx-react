@@ -14,11 +14,15 @@ export const CapSubContent: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
   const currency = 'USD';
-  const { requestData } = useAdditionalSalaryRequest();
+  const { requestData, hasBoardCapException } = useAdditionalSalaryRequest();
   const progressiveApprovalTier =
     requestData?.latestAdditionalSalaryRequest?.progressiveApprovalTier;
 
   const { values } = useFormikContext<CompleteFormValues>();
+
+  if (hasBoardCapException) {
+    return null;
+  }
 
   return (
     <>

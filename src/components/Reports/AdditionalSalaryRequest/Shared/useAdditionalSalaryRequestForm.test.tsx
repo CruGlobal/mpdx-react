@@ -102,6 +102,7 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   setIsNewAsr: jest.fn(),
   isSpouse: false,
   hasSpouse: false,
+  hasBoardCapException: false,
   isPending: false,
   isApproved: false,
 };
@@ -483,6 +484,32 @@ describe('useAdditionalSalaryRequestForm', () => {
       expect(errors.additionalInfo).toBe(
         'Additional info is required for requests exceeding your cap.',
       );
+    });
+
+    it('should not require additional info when exceedsCap is true and user has board cap exception', async () => {
+      mockUseAdditionalSalaryRequest.mockReturnValue({
+        ...defaultMockContextValue,
+        hasBoardCapException: true,
+      });
+
+      const { result } = renderHook(
+        () =>
+          useAdditionalSalaryRequestForm({
+            ...defaultFormValues,
+            phoneNumber: '555-123-4567',
+            additionalSalaryWithinMax: '70000',
+          }),
+        {
+          wrapper: TestWrapper,
+        },
+      );
+
+      let errors: Record<string, string> = {};
+      await act(async () => {
+        errors = await result.current.validateForm();
+      });
+
+      expect(errors.additionalInfo).toBeUndefined();
     });
 
     it('should not show electionType403b error before submit', () => {

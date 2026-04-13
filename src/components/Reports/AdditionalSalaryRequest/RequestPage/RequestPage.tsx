@@ -48,6 +48,7 @@ const MainContent: React.FC = () => {
     spouse,
     isSpouse,
     setIsNewAsr,
+    hasBoardCapException,
   } = useAdditionalSalaryRequest();
 
   const [createRequest, { loading: creatingRequest }] =
@@ -101,9 +102,12 @@ const MainContent: React.FC = () => {
   const isFormPage = !isFirstFormPage && !reviewPage;
 
   const { title: overrideTitle, content: overrideContent } = getCapOverrides(
-    !!splitAsr,
-    !!additionalApproval,
-    exceedsCap,
+    {
+      splitAsr: !!splitAsr,
+      additionalApproval: !!additionalApproval,
+      exceedsCap,
+      hasBoardCapException,
+    },
     t,
   );
 
