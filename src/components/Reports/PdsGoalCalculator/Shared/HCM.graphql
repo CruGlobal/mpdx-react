@@ -1,0 +1,10 @@
+query HcmUser($effectiveDate: ISO8601Date) {
+  hcm(effectiveDate: $effectiveDate) {
+    fourOThreeB {
+      currentTaxDeferredContributionPercentage
+      currentRothContributionPercentage
+      maximumContributionLimit
+      fourOThreeBMakeUpLimitAmount
+    }
+  }
+}

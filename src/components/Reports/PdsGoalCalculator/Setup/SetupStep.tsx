@@ -1,6 +1,8 @@
 import React, { useMemo } from 'react';
 import {
   Autocomplete,
+  AutocompleteRenderInputParams,
+  Avatar,
   Box,
   Card,
   Divider,
@@ -12,8 +14,12 @@ import {
 import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { CurrencyAdornment } from 'src/components/Reports/GoalCalculator/Shared/Adornments';
+import {
+  CurrencyAdornment,
+  PercentageAdornment,
+} from 'src/components/Reports/GoalCalculator/Shared/Adornments';
 import { AutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
+import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   DesignationSupportSalaryType,
   DesignationSupportStatus,
@@ -26,7 +32,13 @@ import { usePdsGoalCalculator } from '../Shared/PdsGoalCalculatorContext';
 export const SetupStep: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { calculation } = usePdsGoalCalculator();
+  const { calculation, hcmUser } = usePdsGoalCalculator();
+  const { data: userData } = useGetUserQuery();
+  const fourOThreeB = hcmUser?.fourOThreeB;
+  const totalFourOThreeBContributionPercentage = fourOThreeB
+    ? (fourOThreeB.currentTaxDeferredContributionPercentage ?? 0) +
+      (fourOThreeB.currentRothContributionPercentage ?? 0)
+    : null;
 
   const schema = useMemo(
     () =>
@@ -89,6 +101,17 @@ export const SetupStep: React.FC = () => {
       </Box>
 
       <Card sx={{ padding: theme.spacing(3) }}>
+        <Box display="flex" alignItems="center" gap={1} mb={3}>
+          <Avatar
+            src={userData?.user.avatar}
+            alt={userData?.user.firstName ?? undefined}
+            variant="rounded"
+            sx={{ width: theme.spacing(4.5), height: theme.spacing(4.5) }}
+          />
+          <Typography data-testid="info-name-typography" variant="subtitle1">
+            {userData?.user.firstName}
+          </Typography>
+        </Box>
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <AutosaveTextField
@@ -169,7 +192,13 @@ export const SetupStep: React.FC = () => {
               variant="outlined"
               label={t('403b Contribution Percentage')}
               disabled
-              helperText={t('Retrieved from Principal')}
+              value={totalFourOThreeBContributionPercentage ?? ''}
+              helperText={t(
+                'Retrieved from Principal. A combined percentage of your current tax deferred and Roth contributions.',
+              )}
+              InputProps={{
+                endAdornment: <PercentageAdornment />,
+              }}
             />
           </Grid>
 
@@ -177,12 +206,12 @@ export const SetupStep: React.FC = () => {
             <Autocomplete
               options={locations}
               value={calculation?.geographicLocation ?? 'None'}
-              onChange={(_, newValue) =>
+              onChange={(_, newValue: string | null) =>
                 saveField({ geographicLocation: newValue })
               }
               disabled={!calculation}
               size="small"
-              renderInput={(params) => (
+              renderInput={(params: AutocompleteRenderInputParams) => (
                 <TextField
                   {...params}
                   label={t('Geographic Multiplier')}

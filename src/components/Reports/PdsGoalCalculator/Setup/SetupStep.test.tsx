@@ -126,6 +126,71 @@ describe('SetupStep', () => {
     ).toBeDisabled();
   });
 
+  it('displays the sum of tax-deferred and Roth 403b contribution percentages', async () => {
+    const { findByRole } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={fullTimeSalariedMock}
+        hcmUserMock={{
+          fourOThreeB: {
+            currentTaxDeferredContributionPercentage: 5,
+            currentRothContributionPercentage: 3,
+          },
+        }}
+      >
+        <SetupStep />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    await waitFor(async () =>
+      expect(
+        await findByRole('textbox', {
+          name: '403b Contribution Percentage',
+        }),
+      ).toHaveValue('8'),
+    );
+  });
+
+  it('403b field is empty when hcm data has no 403b entry', async () => {
+    const { findByRole } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={fullTimeSalariedMock}
+        hcmUserMock={null}
+      >
+        <SetupStep />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    expect(
+      await findByRole('textbox', {
+        name: '403b Contribution Percentage',
+      }),
+    ).toHaveValue('');
+  });
+
+  it('displays the logged-in user first name and avatar', async () => {
+    const { getByTestId, getByAltText } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={fullTimeSalariedMock}
+        userMock={{
+          user: {
+            firstName: 'Jane',
+            avatar: 'https://example.com/jane.png',
+          },
+        }}
+      >
+        <SetupStep />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    await waitFor(() =>
+      expect(getByTestId('info-name-typography')).toHaveTextContent('Jane'),
+    );
+    expect(getByAltText('Jane')).toHaveAttribute(
+      'src',
+      'https://example.com/jane.png',
+    );
+  });
+
   it('Geographic Multiplier autocomplete renders', async () => {
     const { findByRole } = render(
       <PdsGoalCalculatorTestWrapper calculationMock={fullTimeSalariedMock}>
