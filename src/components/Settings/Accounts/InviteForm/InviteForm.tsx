@@ -136,7 +136,7 @@ export const InviteForm: React.FC<InviteFormProps> = ({ type }) => {
                 type="email"
                 name="email"
                 value={email}
-                autoFocus={true}
+                autoFocus
                 placeholder="person.to.share@cru.org"
                 onChange={handleChange}
               />

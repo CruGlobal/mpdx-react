@@ -123,7 +123,7 @@ export const ImpersonateUserAccordion: React.FC<
                   type="email"
                   value={user}
                   disabled={isSubmitting}
-                  autoFocus={true}
+                  autoFocus
                   name="user"
                   onChange={handleChange}
                 />

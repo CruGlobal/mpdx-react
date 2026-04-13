@@ -112,7 +112,7 @@ export const ResetAccountAccordion: React.FC<
                   type="email"
                   value={user}
                   disabled={isSubmitting}
-                  autoFocus={true}
+                  autoFocus
                   onChange={handleChange('user')}
                 />
                 {errors.user && (

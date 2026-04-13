@@ -133,7 +133,7 @@ export const ImpersonateUserAccordion: React.FC<
                   type="email"
                   value={user}
                   disabled={isSubmitting}
-                  autoFocus={true}
+                  autoFocus
                   onChange={handleChange}
                   inputProps={{
                     'data-testid': 'impersonateUsername',

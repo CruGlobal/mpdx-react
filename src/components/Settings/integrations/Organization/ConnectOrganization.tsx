@@ -276,7 +276,7 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
                       label={t('Username')}
                       value={username}
                       disabled={isSubmitting}
-                      autoFocus={true}
+                      autoFocus
                       onChange={handleChange('username')}
                     />
                   </FieldWrapper>

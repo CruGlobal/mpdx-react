@@ -356,7 +356,7 @@ export const ManageOrganizationAccessAccordion: React.FC<
                     type="email"
                     value={username}
                     disabled={isSubmitting}
-                    autoFocus={true}
+                    autoFocus
                     onChange={handleChange}
                     inputProps={{
                       'data-testid': 'inviteUsername',

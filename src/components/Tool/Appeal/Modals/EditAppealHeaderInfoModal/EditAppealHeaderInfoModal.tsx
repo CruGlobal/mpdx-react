@@ -120,7 +120,7 @@ export const EditAppealHeaderInfoModal: React.FC<
                     label={t('Name')}
                     value={name}
                     disabled={isSubmitting}
-                    autoFocus={true}
+                    autoFocus
                     onChange={handleChange}
                   />
                   <FormHelperText error={true} data-testid="nameError">

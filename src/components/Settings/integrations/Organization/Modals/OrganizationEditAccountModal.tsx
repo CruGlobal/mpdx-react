@@ -104,7 +104,7 @@ export const OrganizationEditAccountModal: React.FC<
                   label={t('Username')}
                   value={username}
                   disabled={isSubmitting}
-                  autoFocus={true}
+                  autoFocus
                   onChange={handleChange('username')}
                 />
                 {errors.username && (
