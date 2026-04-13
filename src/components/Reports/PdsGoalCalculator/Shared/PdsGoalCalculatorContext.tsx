@@ -7,6 +7,7 @@ import {
   usePdsGoalCalculationQuery,
 } from '../GoalsList/PdsGoalCalculations.generated';
 import { PdsGoalCalculatorStepEnum } from '../PdsGoalCalculatorHelper';
+import { HcmUserQuery, useHcmUserQuery } from './HCM.generated';
 import { PdsGoalCalculatorStep, useSteps } from './useSteps';
 
 export type PdsGoalCalculatorType = {
@@ -15,6 +16,8 @@ export type PdsGoalCalculatorType = {
 
   calculation?: PdsGoalCalculationFieldsFragment;
   calculationLoading: boolean;
+
+  hcmUser?: HcmUserQuery['hcm'][number];
 
   rightPanelContent: React.ReactNode;
   setRightPanelContent: (content: React.ReactNode) => void;
@@ -59,6 +62,9 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       skip: !pdsGoalId,
     });
   const calculation = calculationData?.designationSupportCalculation;
+
+  const { data: hcmData } = useHcmUserQuery();
+  const hcmUser = hcmData?.hcm[0];
 
   const steps = useSteps();
   const [stepIndex, setStepIndex] = useState(0);
@@ -109,6 +115,7 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       stepIndex,
       calculation,
       calculationLoading,
+      hcmUser,
       rightPanelContent,
       isDrawerOpen,
       handleStepChange,
@@ -125,6 +132,7 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       stepIndex,
       calculation,
       calculationLoading,
+      hcmUser,
       rightPanelContent,
       isDrawerOpen,
       handleStepChange,

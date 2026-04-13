@@ -6,6 +6,7 @@ import { SnackbarProvider } from 'notistack';
 import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   DesignationSupportSalaryType,
   DesignationSupportStatus,
@@ -18,6 +19,11 @@ import {
   PdsGoalCalculationsQuery,
   PdsGoalCalculationsQueryVariables,
 } from './GoalsList/PdsGoalCalculations.generated';
+import {
+  HcmUserDocument,
+  HcmUserQuery,
+  HcmUserQueryVariables,
+} from './Shared/HCM.generated';
 import { PdsGoalCalculatorProvider } from './Shared/PdsGoalCalculatorContext';
 
 const calculationsDefault = gqlMock<
@@ -50,11 +56,32 @@ export type PdsGoalCalculationMock = DeepPartial<
   PdsGoalCalculationQuery['designationSupportCalculation']
 >;
 
+const hcmUserDefault = gqlMock<HcmUserQuery, HcmUserQueryVariables>(
+  HcmUserDocument,
+  {
+    mocks: {
+      hcm: [
+        {
+          fourOThreeB: {
+            currentTaxDeferredContributionPercentage: 0,
+            currentRothContributionPercentage: 0,
+          },
+        },
+      ],
+    },
+  },
+);
+
+export type HcmUserMock = DeepPartial<HcmUserQuery['hcm'][number]>;
+export type GetUserMock = DeepPartial<GetUserQuery>;
+
 export interface PdsGoalCalculatorTestWrapperProps {
   children?: React.ReactNode;
   withProvider?: boolean;
   calculationsMock?: PdsGoalCalculationsMock;
   calculationMock?: PdsGoalCalculationMock;
+  hcmUserMock?: HcmUserMock | null;
+  userMock?: GetUserMock;
   onCall?: MockLinkCallHandler;
   router?: React.ComponentProps<typeof TestRouter>['router'];
 }
@@ -66,6 +93,8 @@ export const PdsGoalCalculatorTestWrapper: React.FC<
   withProvider = true,
   calculationsMock,
   calculationMock,
+  hcmUserMock,
+  userMock,
   onCall,
   router,
 }) => {
@@ -82,6 +111,8 @@ export const PdsGoalCalculatorTestWrapper: React.FC<
             PdsGoalCalculations: PdsGoalCalculationsQuery;
             PdsGoalCalculation: PdsGoalCalculationQuery;
             GoalCalculatorConstants: GoalCalculatorConstantsQuery;
+            HcmUser: HcmUserQuery;
+            GetUser: GetUserQuery;
           }>
             mocks={{
               PdsGoalCalculations: {
@@ -98,6 +129,13 @@ export const PdsGoalCalculatorTestWrapper: React.FC<
                     },
                   }
                 : {}),
+              HcmUser: {
+                hcm:
+                  hcmUserMock === null
+                    ? []
+                    : [merge({}, hcmUserDefault.hcm[0], hcmUserMock)],
+              },
+              ...(userMock ? { GetUser: userMock } : {}),
               GoalCalculatorConstants: {
                 constant: {
                   mpdGoalBenefitsConstants: [],
