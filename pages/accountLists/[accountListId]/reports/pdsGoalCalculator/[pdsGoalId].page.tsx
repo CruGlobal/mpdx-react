@@ -12,6 +12,7 @@ import {
   PdsGoalCalculatorProvider,
   usePdsGoalCalculator,
 } from 'src/components/Reports/PdsGoalCalculator/Shared/PdsGoalCalculatorContext';
+import { SavingStatus } from 'src/components/Reports/Shared/CalculationReports/SavingStatus/SavingStatus';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -54,7 +55,13 @@ const PdsGoalCalculatorContent: React.FC<PdsGoalCalculatorContentProps> = ({
   designationAccounts,
   setDesignationAccounts,
 }) => {
-  const { rightPanelContent, closeRightPanel } = usePdsGoalCalculator();
+  const {
+    rightPanelContent,
+    closeRightPanel,
+    calculation,
+    calculationLoading,
+    isMutating,
+  } = usePdsGoalCalculator();
   const { t } = useTranslation();
 
   const rightPanel = (
@@ -96,6 +103,14 @@ const PdsGoalCalculatorContent: React.FC<PdsGoalCalculatorContentProps> = ({
             isNavListOpen={isNavListOpen}
             onNavListToggle={onNavListToggle}
             title={t('Paid with Designation Support Goal Calculator')}
+            rightExtra={
+              <SavingStatus
+                loading={calculationLoading}
+                hasData={!!calculation}
+                isMutating={isMutating}
+                lastSavedAt={calculation?.updatedAt ?? null}
+              />
+            }
             headerType={HeaderTypeEnum.Report}
           />
           <PdsGoalCalculator />
@@ -107,7 +122,7 @@ const PdsGoalCalculatorContent: React.FC<PdsGoalCalculatorContentProps> = ({
   );
 };
 
-const PdsGoalCalculatorPage: React.FC = () => {
+export const PdsGoalCalculatorPage: React.FC = () => {
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
   const accountListId = useAccountListId();

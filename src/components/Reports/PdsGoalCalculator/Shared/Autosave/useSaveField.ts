@@ -4,7 +4,7 @@ import { DesignationSupportCalculationUpdateInput } from 'src/graphql/types.gene
 import { useUpdatePdsGoalCalculationMutation } from '../../GoalsList/PdsGoalCalculations.generated';
 
 export const useSaveField = () => {
-  const { calculation } = usePdsGoalCalculator();
+  const { calculation, trackMutation } = usePdsGoalCalculator();
   const [updatePdsGoalCalculation] = useUpdatePdsGoalCalculationMutation();
 
   const saveField = useCallback(
@@ -20,25 +20,26 @@ export const useSaveField = () => {
         return;
       }
 
-      return updatePdsGoalCalculation({
-        variables: {
-          attributes: {
-            id: calculation.id,
-            ...attributes,
-          },
-        },
-        optimisticResponse: {
-          updateDesignationSupportCalculation: {
-            __typename: 'DesignationSupportCalculationUpdateMutationPayload',
-            designationSupportCalculation: {
-              ...calculation,
+      return trackMutation(
+        updatePdsGoalCalculation({
+          variables: {
+            attributes: {
+              id: calculation.id,
               ...attributes,
             },
           },
-        },
-      });
+          optimisticResponse: {
+            updateDesignationSupportCalculation: {
+              designationSupportCalculation: {
+                ...calculation,
+                ...attributes,
+              },
+            },
+          },
+        }),
+      );
     },
-    [calculation, updatePdsGoalCalculation],
+    [calculation, trackMutation, updatePdsGoalCalculation],
   );
 
   return saveField;
