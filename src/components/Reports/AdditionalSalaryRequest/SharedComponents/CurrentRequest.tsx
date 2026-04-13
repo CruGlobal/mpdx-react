@@ -71,7 +71,7 @@ export const CurrentRequest: React.FC<CurrentRequestProps> = ({ request }) => {
       isRequest={true}
       disableCancel={isApproved}
       handlePrint={handlePrint}
-      handleConfirmCancel={() => handleDeleteRequest(id, true)}
+      handleConfirmCancel={() => handleDeleteRequest(id, false)}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column' }}>
         <Typography
