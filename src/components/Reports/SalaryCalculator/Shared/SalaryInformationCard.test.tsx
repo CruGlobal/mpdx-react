@@ -46,9 +46,9 @@ describe('SalaryInformationCard', () => {
       ['Tax-deferred 403(b) Contribution', '5%', '6%'],
       ['Roth 403(b) Contribution', '12%', '10%'],
       ['Security (SECA/FICA) Status', 'Subject to SECA', 'Subject to SECA'],
-      ['Gross Salary', '$55,000.00', '$10,000.00'],
+      ['Current Gross Salary', '$55,000.00', '$10,000.00'],
       [
-        'Current MHA (Included in Gross Salary)',
+        'Current MHA (Included in Current Gross Salary)',
         '$10,000.00View MHA Form',
         '$12,000.00',
       ],

@@ -220,7 +220,7 @@ export const useLandingData = (): LandingData => {
         spouse: getLocalizedTaxStatus(spouse?.staffInfo.secaStatus, t),
       },
       {
-        category: t('Gross Salary'),
+        category: t('Current Gross Salary'),
         user: salaryData.currentGrossSalary
           ? currencyFormat(salaryData.currentGrossSalary, 'USD', locale, {
               showTrailingZeros: true,
@@ -232,11 +232,11 @@ export const useLandingData = (): LandingData => {
             })
           : '-',
         tooltip: t(
-          'Gross Salary includes MHA, 403(b), SECA, and taxes if applicable.',
+          'Current Gross Salary includes MHA, 403(b), SECA, and taxes if applicable.',
         ),
       },
       {
-        category: t('Current MHA (Included in Gross Salary)'),
+        category: t('Current MHA (Included in Current Gross Salary)'),
         user: currencyFormat(salaryData.takenMha, 'USD', locale, {
           showTrailingZeros: true,
         }),
