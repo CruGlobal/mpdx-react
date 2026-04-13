@@ -127,7 +127,6 @@ export const MonthlyGoalAccordion: React.FC<MonthlyGoalAccordionProps> = ({
                 name="monthlyGoal"
                 error={!!errors.monthlyGoal}
                 helperText={errors.monthlyGoal && t('Monthly Goal is required')}
-                // eslint-disable-next-line jsx-a11y/no-autofocus
                 autoFocus
                 label={label}
                 sx={{ marginTop: 1 }}

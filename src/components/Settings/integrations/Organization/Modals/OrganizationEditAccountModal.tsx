@@ -104,8 +104,7 @@ export const OrganizationEditAccountModal: React.FC<
                   label={t('Username')}
                   value={username}
                   disabled={isSubmitting}
-                  // eslint-disable-next-line jsx-a11y/no-autofocus
-                  autoFocus={true}
+                  autoFocus
                   onChange={handleChange('username')}
                 />
                 {errors.username && (

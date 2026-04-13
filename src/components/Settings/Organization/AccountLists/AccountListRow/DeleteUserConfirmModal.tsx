@@ -93,7 +93,6 @@ export const DeleteUserConfirmModal: React.FC<DeleteUserConfirmModalProps> = ({
           </Typography>
           {t('Please explain the reason for deleting this user.')}
           <TextField
-            // eslint-disable-next-line jsx-a11y/no-autofocus
             autoFocus
             margin="dense"
             id={t('Reason')}

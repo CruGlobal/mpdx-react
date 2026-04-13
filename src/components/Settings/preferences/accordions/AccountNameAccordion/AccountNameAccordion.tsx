@@ -109,7 +109,6 @@ export const AccountNameAccordion: React.FC<AccountNameAccordionProps> = ({
                 error={!!errors.name}
                 helperText={errors.name && t('Account Name is required')}
                 name={'name'}
-                // eslint-disable-next-line jsx-a11y/no-autofocus
                 autoFocus
                 label={label}
                 sx={{ marginTop: 1 }}

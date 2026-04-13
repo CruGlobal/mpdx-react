@@ -112,8 +112,7 @@ export const ResetAccountAccordion: React.FC<
                   type="email"
                   value={user}
                   disabled={isSubmitting}
-                  // eslint-disable-next-line jsx-a11y/no-autofocus
-                  autoFocus={true}
+                  autoFocus
                   onChange={handleChange('user')}
                 />
                 {errors.user && (

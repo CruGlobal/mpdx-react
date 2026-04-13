@@ -74,6 +74,7 @@ module.exports = {
     'react/jsx-no-useless-fragment': 'error',
     'react/prop-types': 'off',
     'react/react-in-jsx-scope': 'off',
+    'jsx-a11y/no-autofocus': 'off',
   },
   settings: {
     react: {

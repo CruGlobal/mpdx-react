@@ -120,8 +120,7 @@ export const EditAppealHeaderInfoModal: React.FC<
                     label={t('Name')}
                     value={name}
                     disabled={isSubmitting}
-                    // eslint-disable-next-line jsx-a11y/no-autofocus
-                    autoFocus={true}
+                    autoFocus
                     onChange={handleChange}
                   />
                   <FormHelperText error={true} data-testid="nameError">
