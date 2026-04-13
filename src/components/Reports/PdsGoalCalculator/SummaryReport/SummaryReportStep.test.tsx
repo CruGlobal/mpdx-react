@@ -4,13 +4,13 @@ import { PdsGoalCalculatorTestWrapper } from '../PdsGoalCalculatorTestWrapper';
 import { SummaryReportStep } from './SummaryReportStep';
 
 describe('SummaryReportStep', () => {
-  it('renders the MPD Goal nav item', () => {
+  it('renders the summary report heading', () => {
     const { getByText } = render(
       <PdsGoalCalculatorTestWrapper>
         <SummaryReportStep />
       </PdsGoalCalculatorTestWrapper>,
     );
 
-    expect(getByText('MPD Goal')).toBeInTheDocument();
+    expect(getByText('Summary Report')).toBeInTheDocument();
   });
 });

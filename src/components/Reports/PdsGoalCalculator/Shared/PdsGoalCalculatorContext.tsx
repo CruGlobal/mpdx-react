@@ -20,9 +20,11 @@ export type PdsGoalCalculatorType = {
   setRightPanelContent: (content: React.ReactNode) => void;
   closeRightPanel: () => void;
 
+  stepIndex: number;
   isDrawerOpen: boolean;
   handleStepChange: (stepId: PdsGoalCalculatorStepEnum) => void;
   handleContinue: () => void;
+  handlePreviousStep: () => void;
   toggleDrawer: () => void;
   setDrawerOpen: (open: boolean) => void;
 };
@@ -83,13 +85,14 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const handleContinue = useCallback(() => {
     if (stepIndex < steps.length - 1) {
       setStepIndex(stepIndex + 1);
-    } else {
-      enqueueSnackbar(
-        t('You have reached the end of the PDS goal calculator.'),
-        { variant: 'info' },
-      );
     }
-  }, [stepIndex, steps, enqueueSnackbar, t]);
+  }, [stepIndex, steps]);
+
+  const handlePreviousStep = useCallback(() => {
+    if (stepIndex > 0) {
+      setStepIndex(stepIndex - 1);
+    }
+  }, [stepIndex]);
 
   const closeRightPanel = useCallback(() => {
     setRightPanelContent(null);
@@ -103,12 +106,14 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     (): PdsGoalCalculatorType => ({
       steps,
       currentStep,
+      stepIndex,
       calculation,
       calculationLoading,
       rightPanelContent,
       isDrawerOpen,
       handleStepChange,
       handleContinue,
+      handlePreviousStep,
       setRightPanelContent,
       closeRightPanel,
       toggleDrawer,
@@ -117,12 +122,14 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     [
       steps,
       currentStep,
+      stepIndex,
       calculation,
       calculationLoading,
       rightPanelContent,
       isDrawerOpen,
       handleStepChange,
       handleContinue,
+      handlePreviousStep,
       setRightPanelContent,
       closeRightPanel,
       toggleDrawer,
