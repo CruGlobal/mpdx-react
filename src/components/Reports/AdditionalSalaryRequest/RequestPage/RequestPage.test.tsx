@@ -783,5 +783,47 @@ describe('RequestPage', () => {
       );
       expect(matches).toHaveLength(1);
     });
+
+    it('shows normal submit modal when user has board cap exception but does not exceed cap', async () => {
+      mockUseAdditionalSalaryRequest.mockReturnValue({
+        ...boardCapContextValue,
+        requestData: {
+          latestAdditionalSalaryRequest: {
+            ...boardCapContextValue.requestData.latestAdditionalSalaryRequest,
+            calculations: {
+              ...boardCapContextValue.requestData.latestAdditionalSalaryRequest
+                .calculations,
+              currentSalaryCap: 100000,
+            },
+          },
+        },
+      } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+      const underCapValues: CompleteFormValues = {
+        ...defaultCompleteFormValues,
+        currentYearSalaryNotReceived: '500',
+        totalAdditionalSalaryRequested: '500',
+        phoneNumber: '555-123-4567',
+        emailAddress: 'test@example.com',
+        electionType403b: ElectionType403bEnum.None,
+      };
+
+      const { findByRole, findByText, queryByText } = render(
+        <TestWrapper initialValues={underCapValues} />,
+      );
+
+      const submitButton = await findByRole('button', { name: /submit/i });
+      userEvent.click(submitButton);
+
+      expect(
+        await findByText(
+          'Are you ready to submit your Additional Salary Request?',
+        ),
+      ).toBeInTheDocument();
+      expect(queryByText(/requires Board approval/)).not.toBeInTheDocument();
+      expect(
+        queryByText(/You have a Board approved Maximum Allowable Salary/),
+      ).not.toBeInTheDocument();
+    });
   });
 });

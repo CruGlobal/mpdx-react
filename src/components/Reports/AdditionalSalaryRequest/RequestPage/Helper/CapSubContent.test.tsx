@@ -64,6 +64,8 @@ describe('CapSubContent', () => {
     const { getByText, queryByText } = renderCapSubContent();
 
     expect(getByText(/Progressive Approvals/)).toBeInTheDocument();
+    expect(getByText(/Division Head/)).toBeInTheDocument();
+    expect(getByText(/1-2 weeks/)).toBeInTheDocument();
     expect(
       queryByText(/You have a Board approved Maximum Allowable Salary/),
     ).not.toBeInTheDocument();
