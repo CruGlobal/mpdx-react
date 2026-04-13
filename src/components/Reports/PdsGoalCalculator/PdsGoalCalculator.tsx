@@ -30,7 +30,6 @@ export const PdsGoalCalculator: React.FC = () => {
   const sections = currentStep.sections;
 
   const isLastStep = stepIndex === steps.length - 1;
-  const isFirstStep = stepIndex === 0;
 
   return (
     <PdsGoalCalculatorLayout
@@ -43,7 +42,6 @@ export const PdsGoalCalculator: React.FC = () => {
               formTitle={currentStep.title}
               handleNextStep={handleContinue}
               handlePreviousStep={handlePreviousStep}
-              showBackButton={!isFirstStep}
             />
           )}
         </>
