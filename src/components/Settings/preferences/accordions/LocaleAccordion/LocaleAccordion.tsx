@@ -130,7 +130,6 @@ export const LocaleAccordion: React.FC<LocaleAccordionProps> = ({
                   <TextField
                     {...params}
                     placeholder={label}
-                    // eslint-disable-next-line jsx-a11y/no-autofocus
                     autoFocus
                     label={label}
                     sx={{ marginTop: 1 }}

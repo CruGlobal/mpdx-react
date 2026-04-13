@@ -119,7 +119,6 @@ export const TimeZoneAccordion: React.FC<TimeZoneAccordionProps> = ({
                     placeholder={label}
                     label={label}
                     sx={{ marginTop: 1 }}
-                    // eslint-disable-next-line jsx-a11y/no-autofocus
                     autoFocus
                   />
                 )}

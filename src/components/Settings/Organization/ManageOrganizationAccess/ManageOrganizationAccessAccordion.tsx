@@ -356,7 +356,6 @@ export const ManageOrganizationAccessAccordion: React.FC<
                     type="email"
                     value={username}
                     disabled={isSubmitting}
-                    // eslint-disable-next-line jsx-a11y/no-autofocus
                     autoFocus={true}
                     onChange={handleChange}
                     inputProps={{

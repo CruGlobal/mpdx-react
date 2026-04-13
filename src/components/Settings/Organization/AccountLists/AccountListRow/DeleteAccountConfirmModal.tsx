@@ -102,7 +102,6 @@ export const DeleteAccountConfirmModal: React.FC<
           </Typography>
           {t('Please explain the reason for deleting this account.')}
           <TextField
-            // eslint-disable-next-line jsx-a11y/no-autofocus
             autoFocus
             margin="dense"
             id={t('Reason')}

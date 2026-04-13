@@ -276,7 +276,6 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
                       label={t('Username')}
                       value={username}
                       disabled={isSubmitting}
-                      // eslint-disable-next-line jsx-a11y/no-autofocus
                       autoFocus={true}
                       onChange={handleChange('username')}
                     />

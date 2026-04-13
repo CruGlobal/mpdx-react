@@ -149,7 +149,6 @@ export const MpdInfoAccordion: React.FC<MpdInfoAccordionProps> = ({
                   label={t('Start Date')}
                   value={activeMpdStartAt}
                   onChange={(date) => setFieldValue('activeMpdStartAt', date)}
-                  // eslint-disable-next-line jsx-a11y/no-autofocus
                   autoFocus
                 />
               </Grid>

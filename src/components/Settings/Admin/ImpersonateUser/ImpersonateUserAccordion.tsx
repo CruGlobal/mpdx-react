@@ -123,7 +123,6 @@ export const ImpersonateUserAccordion: React.FC<
                   type="email"
                   value={user}
                   disabled={isSubmitting}
-                  // eslint-disable-next-line jsx-a11y/no-autofocus
                   autoFocus={true}
                   name="user"
                   onChange={handleChange}
