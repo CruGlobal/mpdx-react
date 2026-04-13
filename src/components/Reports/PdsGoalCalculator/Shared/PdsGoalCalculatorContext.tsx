@@ -2,6 +2,7 @@ import { useRouter } from 'next/router';
 import React, { createContext, useCallback, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { useTrackMutation } from 'src/hooks/useTrackMutation';
 import {
   PdsGoalCalculationFieldsFragment,
   usePdsGoalCalculationQuery,
@@ -16,8 +17,12 @@ export type PdsGoalCalculatorType = {
 
   calculation?: PdsGoalCalculationFieldsFragment;
   calculationLoading: boolean;
-
   hcmUser?: HcmUserQuery['hcm'][number];
+
+  /** Whether any mutations are currently in progress */
+  isMutating: boolean;
+  /** Call with the mutation promise to track the start and end of mutations */
+  trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
 
   rightPanelContent: React.ReactNode;
   setRightPanelContent: (content: React.ReactNode) => void;
@@ -71,6 +76,7 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const [rightPanelContent, setRightPanelContent] =
     useState<React.ReactNode>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(true);
+  const { trackMutation, isMutating } = useTrackMutation();
 
   const currentStep = steps[stepIndex];
 
@@ -115,6 +121,8 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       stepIndex,
       calculation,
       calculationLoading,
+      isMutating,
+      trackMutation,
       hcmUser,
       rightPanelContent,
       isDrawerOpen,
@@ -132,6 +140,8 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       stepIndex,
       calculation,
       calculationLoading,
+      isMutating,
+      trackMutation,
       hcmUser,
       rightPanelContent,
       isDrawerOpen,
