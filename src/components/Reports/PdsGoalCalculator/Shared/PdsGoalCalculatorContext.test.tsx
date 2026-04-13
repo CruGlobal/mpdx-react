@@ -1,5 +1,5 @@
 import React from 'react';
-import { renderHook } from '@testing-library/react';
+import { act, renderHook } from '@testing-library/react';
 import { PdsGoalCalculatorTestWrapper } from '../PdsGoalCalculatorTestWrapper';
 import { usePdsGoalCalculator } from './PdsGoalCalculatorContext';
 
@@ -15,11 +15,43 @@ describe('PdsGoalCalculatorContext', () => {
     expect(result.current.currentStep.step).toBe('setup');
   });
 
-  it('throws when used outside provider', () => {
-    jest.spyOn(console, 'error').mockImplementation(() => {});
-    expect(() => renderHook(() => usePdsGoalCalculator())).toThrow(
-      'Could not find PdsGoalCalculatorContext',
-    );
-    jest.restoreAllMocks();
+  it('handleContinue advances to the next step', () => {
+    const { result } = renderHook(() => usePdsGoalCalculator(), {
+      wrapper: ({ children }) => (
+        <PdsGoalCalculatorTestWrapper>{children}</PdsGoalCalculatorTestWrapper>
+      ),
+    });
+
+    expect(result.current.stepIndex).toBe(0);
+
+    act(() => result.current.handleContinue());
+    expect(result.current.stepIndex).toBe(1);
+  });
+
+  it('handlePreviousStep goes back to the previous step', () => {
+    const { result } = renderHook(() => usePdsGoalCalculator(), {
+      wrapper: ({ children }) => (
+        <PdsGoalCalculatorTestWrapper>{children}</PdsGoalCalculatorTestWrapper>
+      ),
+    });
+
+    act(() => result.current.handleContinue());
+    expect(result.current.stepIndex).toBe(1);
+
+    act(() => result.current.handlePreviousStep());
+    expect(result.current.stepIndex).toBe(0);
+  });
+
+  it('handlePreviousStep does nothing on the first step', () => {
+    const { result } = renderHook(() => usePdsGoalCalculator(), {
+      wrapper: ({ children }) => (
+        <PdsGoalCalculatorTestWrapper>{children}</PdsGoalCalculatorTestWrapper>
+      ),
+    });
+
+    expect(result.current.stepIndex).toBe(0);
+
+    act(() => result.current.handlePreviousStep());
+    expect(result.current.stepIndex).toBe(0);
   });
 });

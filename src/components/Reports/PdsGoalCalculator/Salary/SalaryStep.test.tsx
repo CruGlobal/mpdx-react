@@ -4,13 +4,13 @@ import { PdsGoalCalculatorTestWrapper } from '../PdsGoalCalculatorTestWrapper';
 import { SalaryStep } from './SalaryStep';
 
 describe('SalaryStep', () => {
-  it('renders the salary step placeholder', () => {
-    const { getAllByText } = render(
+  it('renders the support item heading', () => {
+    const { getByText } = render(
       <PdsGoalCalculatorTestWrapper>
         <SalaryStep />
       </PdsGoalCalculatorTestWrapper>,
     );
 
-    expect(getAllByText('Salary').length).toBeGreaterThan(0);
+    expect(getByText('Support Item')).toBeInTheDocument();
   });
 });
