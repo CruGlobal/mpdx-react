@@ -3,11 +3,8 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
-import Loading from 'src/components/Loading';
 import { MinisterHousingAllowanceReport } from 'src/components/Reports/MinisterHousingAllowance/MinisterHousingAllowance';
 import { MinisterHousingAllowanceProvider } from 'src/components/Reports/MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
-import { useStaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
-import { LimitedAccess } from 'src/components/Shared/LimitedAccess/LimitedAccess';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -17,6 +14,7 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { ReportPageWrapper } from 'src/components/Shared/styledComponents/ReportPageWrapper';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
@@ -25,18 +23,16 @@ const MinisterHousingAllowancePage: React.FC = () => {
   const { appName } = useGetAppSettings();
   const [isNavListOpen, setIsNavListOpen] = useState(false);
 
-  const { data: staffAccountData, loading } = useStaffAccountQuery();
-
   const handleNavListToggle = () => {
     setIsNavListOpen(!isNavListOpen);
   };
 
   return (
-    <>
-      <Head>
-        <title>{`${appName} | ${t("Reports - Minister's Housing Allowance")}`}</title>
-      </Head>
-      {staffAccountData?.staffAccount?.id ? (
+    <UserTypeAccess requireStaffAccount>
+      <>
+        <Head>
+          <title>{`${appName} | ${t("Reports - Minister's Housing Allowance")}`}</title>
+        </Head>
         <ReportPageWrapper>
           <SidePanelsLayout
             isScrollBox={false}
@@ -66,12 +62,8 @@ const MinisterHousingAllowancePage: React.FC = () => {
             }
           />
         </ReportPageWrapper>
-      ) : loading ? (
-        <Loading loading />
-      ) : (
-        <LimitedAccess noStaffAccount />
-      )}
-    </>
+      </>
+    </UserTypeAccess>
   );
 };
 

@@ -1,7 +1,9 @@
 import { LinkProps } from 'next/link';
-import { ReactElement, useMemo } from 'react';
+import { ReactElement, useContext, useMemo } from 'react';
 import CompassIcon from '@mui/icons-material/Explore';
 import { useTranslation } from 'react-i18next';
+import { UserPreferenceContext } from 'src/components/User/Preferences/UserPreferenceProvider';
+import { UserTypeEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useHrToolsNavItems } from './useHrToolsNavItems';
 import { useReportNavItems } from './useReportNavItems';
@@ -43,11 +45,15 @@ export interface NavPage {
   showInSearchDialog?: boolean;
   showInPanel?: boolean;
   isDropdown?: boolean;
+  hideTab?: boolean;
 }
 
 export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
   const accountListId = useAccountListId();
   const { t } = useTranslation();
+  const { userType } = useContext(UserPreferenceContext);
+  const showTab = userType === UserTypeEnum.UsStaff;
+
   const reportItems = useReportNavItems();
   const toolsItems = useToolsNavItems();
   const settingsItems = useSettingsNavItems();
@@ -111,6 +117,7 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
                 showInSearchDialog: true,
               })),
               showInNav: true,
+              hideTab: !showTab,
             },
           ]),
       {
@@ -179,8 +186,17 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
       });
     }
 
-    return navPages;
-  }, [accountListId, coachingAccountCount, t]);
+    return navPages.filter((page) => !page.hideTab);
+  }, [
+    accountListId,
+    coachingAccountCount,
+    t,
+    reportItems,
+    toolsItems,
+    settingsItems,
+    hrToolsItems,
+    showTab,
+  ]);
 
   const navPages = useMemo(
     () => allNavPages.filter((page) => page.showInNav),

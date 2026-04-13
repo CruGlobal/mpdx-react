@@ -7,6 +7,8 @@ import { session } from '__tests__/fixtures/session';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetDesignationAccountsQuery } from 'src/components/EditDonationModal/EditDonationModal.generated';
+import { UserPreferenceContext } from 'src/components/User/Preferences/UserPreferenceProvider';
+import { UserTypeEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { MultiPageMenu, NavTypeEnum } from './MultiPageMenu';
 import { ManageOrganizationsAccessQuery } from './MultiPageMenu.generated';
@@ -45,14 +47,18 @@ describe('MultiPageMenu', () => {
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
           <GqlMockedProvider>
-            <MultiPageMenu
-              selectedId={selected}
-              isOpen={true}
-              onClose={() => {}}
-              designationAccounts={[]}
-              setDesignationAccounts={() => {}}
-              navType={NavTypeEnum.Reports}
-            />
+            <UserPreferenceContext.Provider
+              value={{ userType: UserTypeEnum.UsStaff, locale: 'en-US' }}
+            >
+              <MultiPageMenu
+                selectedId={selected}
+                isOpen={true}
+                onClose={() => {}}
+                designationAccounts={[]}
+                setDesignationAccounts={() => {}}
+                navType={NavTypeEnum.Reports}
+              />
+            </UserPreferenceContext.Provider>
           </GqlMockedProvider>
         </TestRouter>
       </ThemeProvider>,

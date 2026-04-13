@@ -1,14 +1,19 @@
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { UserPreferenceContext } from 'src/components/User/Preferences/UserPreferenceProvider';
+import { UserTypeEnum } from 'src/graphql/types.generated';
 
 export type NavItems = {
   id: string;
   title: string;
   subTitle?: string;
+  hideItem?: boolean;
 };
 
 export function useReportNavItems(): NavItems[] {
   const { t } = useTranslation();
+  const { userType } = useContext(UserPreferenceContext);
+  const showItem = userType === UserTypeEnum.UsStaff;
 
   const reportNavItems: NavItems[] = [
     {
@@ -31,11 +36,13 @@ export function useReportNavItems(): NavItems[] {
           {
             id: 'staffExpense',
             title: t('Staff Expense Report'),
+            hideItem: !showItem,
           },
           {
             id: 'mpgaIncomeExpenses',
             title: t('MPGA Monthly Report'),
             subTitle: t('Income & Expenses'),
+            hideItem: !showItem,
           },
         ]),
     {
@@ -45,6 +52,7 @@ export function useReportNavItems(): NavItems[] {
     {
       id: 'financialAccounts',
       title: t('Responsibility Centers'),
+      hideItem: !showItem,
     },
     {
       id: 'expectedMonthlyTotal',
@@ -60,5 +68,8 @@ export function useReportNavItems(): NavItems[] {
     },
   ];
 
-  return useMemo(() => reportNavItems, [t]);
+  return useMemo(
+    () => reportNavItems.filter((item) => !item.hideItem),
+    [t, showItem],
+  );
 }

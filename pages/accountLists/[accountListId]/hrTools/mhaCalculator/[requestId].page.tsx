@@ -22,6 +22,7 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 
 const RequestPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -40,7 +41,7 @@ const getPageType = (mode: string | string[] | undefined) => {
   }
 };
 
-const HousingAllowanceRequestPageContent: React.FC = () => {
+export const HousingAllowanceRequestPageContent: React.FC = () => {
   const { t } = useTranslation();
   const [isNavListOpen, setIsNavListOpen] = useState(false);
 
@@ -56,47 +57,49 @@ const HousingAllowanceRequestPageContent: React.FC = () => {
   };
 
   return (
-    <>
-      <Head>
-        <title>{title}</title>
-      </Head>
-      <RequestPageWrapper>
-        <SidePanelsLayout
-          isScrollBox={false}
-          leftPanel={
-            <MultiPageMenu
-              isOpen={isNavListOpen}
-              selectedId={'mhaCalculator' + pageType}
-              onClose={handleNavListToggle}
-              navType={NavTypeEnum.Reports}
-            />
-          }
-          leftOpen={isNavListOpen}
-          leftWidth="290px"
-          mainContent={
-            <>
-              <SimpleScreenOnly>
-                <MultiPageHeader
-                  isNavListOpen={isNavListOpen}
-                  onNavListToggle={handleNavListToggle}
-                  title={t("Minister's Housing Allowance Request")}
-                  rightExtra={
-                    <SavingStatus
-                      loading={loading}
-                      hasData={!!requestData}
-                      isMutating={isMutating}
-                      lastSavedAt={requestData?.updatedAt ?? null}
-                    />
-                  }
-                  headerType={HeaderTypeEnum.Report}
-                />
-              </SimpleScreenOnly>
-              <RequestPage />
-            </>
-          }
-        />
-      </RequestPageWrapper>
-    </>
+    <UserTypeAccess>
+      <>
+        <Head>
+          <title>{title}</title>
+        </Head>
+        <RequestPageWrapper>
+          <SidePanelsLayout
+            isScrollBox={false}
+            leftPanel={
+              <MultiPageMenu
+                isOpen={isNavListOpen}
+                selectedId={'mhaCalculator' + pageType}
+                onClose={handleNavListToggle}
+                navType={NavTypeEnum.Reports}
+              />
+            }
+            leftOpen={isNavListOpen}
+            leftWidth="290px"
+            mainContent={
+              <>
+                <SimpleScreenOnly>
+                  <MultiPageHeader
+                    isNavListOpen={isNavListOpen}
+                    onNavListToggle={handleNavListToggle}
+                    title={t("Minister's Housing Allowance Request")}
+                    rightExtra={
+                      <SavingStatus
+                        loading={loading}
+                        hasData={!!requestData}
+                        isMutating={isMutating}
+                        lastSavedAt={requestData?.updatedAt ?? null}
+                      />
+                    }
+                    headerType={HeaderTypeEnum.Report}
+                  />
+                </SimpleScreenOnly>
+                <RequestPage />
+              </>
+            }
+          />
+        </RequestPageWrapper>
+      </>
+    </UserTypeAccess>
   );
 };
 

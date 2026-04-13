@@ -89,6 +89,7 @@ export enum ToolName {
 const NavMenu: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
+
   const { classes } = useStyles();
   const { data, loading } = useGetToolNotificationsQuery({
     variables: { accountListId: accountListId ?? '' },

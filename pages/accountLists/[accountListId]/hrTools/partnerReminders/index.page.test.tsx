@@ -8,8 +8,13 @@ import {
   afterTestResizeObserver,
   beforeTestResizeObserver,
 } from '__tests__/util/windowResizeObserver';
+import { UserTypeEnum } from 'pages/api/graphql-rest.page.generated';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { StaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
+import {
+  UserPreferenceContext,
+  UserPreferenceType,
+} from 'src/components/User/Preferences/UserPreferenceProvider';
 import theme from 'src/theme';
 import PartnerRemindersReportPage, { getServerSideProps } from './index.page';
 
@@ -24,7 +29,16 @@ const mockStaffAccount = {
   },
 };
 
-const Components = () => (
+const defaultContext: UserPreferenceType = {
+  locale: 'en-US',
+  userType: UserTypeEnum.UsStaff,
+};
+
+interface ComponentProps {
+  contextValue: UserPreferenceType;
+}
+
+const Components: React.FC<ComponentProps> = ({ contextValue }) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
       <TestRouter>
@@ -34,7 +48,9 @@ const Components = () => (
           mocks={mockStaffAccount}
           onCall={mutationSpy}
         >
-          <PartnerRemindersReportPage />
+          <UserPreferenceContext.Provider value={contextValue}>
+            <PartnerRemindersReportPage />
+          </UserPreferenceContext.Provider>
         </GqlMockedProvider>
       </TestRouter>
     </SnackbarProvider>
@@ -51,7 +67,7 @@ describe('Partner Reminders Report Page', () => {
   });
 
   it('should show initial partner reminders report page', async () => {
-    const { findByRole } = render(<Components />);
+    const { findByRole } = render(<Components contextValue={defaultContext} />);
 
     expect(
       await findByRole('heading', { name: /online reminder system/i }),
@@ -59,7 +75,9 @@ describe('Partner Reminders Report Page', () => {
   });
 
   it('should open and close menu', async () => {
-    const { findByRole, getByRole, queryByRole } = render(<Components />);
+    const { findByRole, getByRole, queryByRole } = render(
+      <Components contextValue={defaultContext} />,
+    );
 
     userEvent.click(
       await findByRole('button', { name: 'Toggle Navigation Panel' }),
@@ -86,7 +104,9 @@ describe('Partner Reminders Report Page', () => {
           mocks={mockNoStaffAccount}
           onCall={mutationSpy}
         >
-          <PartnerRemindersReportPage />
+          <UserPreferenceContext.Provider value={defaultContext}>
+            <PartnerRemindersReportPage />
+          </UserPreferenceContext.Provider>
         </GqlMockedProvider>
       </TestRouter>,
     );
@@ -98,5 +118,17 @@ describe('Partner Reminders Report Page', () => {
 
   it('uses blockImpersonatingNonDevelopers for server-side props', () => {
     expect(getServerSideProps).toBe(blockImpersonatingNonDevelopers);
+  });
+
+  it('should show limited access if user does not have access to page', async () => {
+    const { findByText } = render(
+      <Components
+        contextValue={{ ...defaultContext, userType: UserTypeEnum.NonCru }}
+      />,
+    );
+
+    expect(
+      await findByText('Access to this feature is limited.'),
+    ).toBeInTheDocument();
   });
 });

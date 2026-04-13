@@ -7,10 +7,7 @@ import {
   UserPreferenceType,
 } from 'src/components/User/Preferences/UserPreferenceProvider';
 import { UserTypeEnum } from 'src/graphql/types.generated';
-import {
-  GoalCalculatorPage,
-  getServerSideProps,
-} from './[goalCalculationId].page';
+import { StaffExpenseReportPage, getServerSideProps } from './index.page';
 
 const defaultContext: UserPreferenceType = {
   locale: 'en-US',
@@ -21,13 +18,13 @@ const Components = () => (
   <TestRouter>
     <GqlMockedProvider>
       <UserPreferenceContext.Provider value={defaultContext}>
-        <GoalCalculatorPage />
+        <StaffExpenseReportPage />
       </UserPreferenceContext.Provider>
     </GqlMockedProvider>
   </TestRouter>
 );
 
-describe('[goalCalculationId] page', () => {
+describe('StaffExpense page', () => {
   it('uses blockImpersonatingNonDevelopers for server-side props', () => {
     expect(getServerSideProps).toBe(blockImpersonatingNonDevelopers);
   });

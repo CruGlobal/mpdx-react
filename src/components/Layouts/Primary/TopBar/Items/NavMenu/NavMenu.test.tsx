@@ -8,6 +8,8 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import { LoadCoachingListQuery } from 'src/components/Coaching/LoadCoachingList.generated';
+import { UserPreferenceContext } from 'src/components/User/Preferences/UserPreferenceProvider';
+import { UserTypeEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { GetToolNotificationsQuery } from './GetToolNotifcations.generated';
 import NavMenu from './NavMenu';
@@ -33,7 +35,11 @@ const TestComponent: React.FC<TestComponentProps> = ({ router, mocks }) => (
       }}
     >
       <GqlMockedProvider mocks={mocks}>
-        <NavMenu />
+        <UserPreferenceContext.Provider
+          value={{ locale: 'en-US', userType: UserTypeEnum.UsStaff }}
+        >
+          <NavMenu />
+        </UserPreferenceContext.Provider>
       </GqlMockedProvider>
     </TestRouter>
   </ThemeProvider>

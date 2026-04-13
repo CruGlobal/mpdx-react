@@ -8,8 +8,13 @@ import {
   afterTestResizeObserver,
   beforeTestResizeObserver,
 } from '__tests__/util/windowResizeObserver';
+import { UserTypeEnum } from 'pages/api/graphql-rest.page.generated';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { StaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
+import {
+  UserPreferenceContext,
+  UserPreferenceType,
+} from 'src/components/User/Preferences/UserPreferenceProvider';
 import theme from 'src/theme';
 import MinisterHousingAllowancePage, { getServerSideProps } from './index.page';
 
@@ -24,7 +29,16 @@ const mockStaffAccount = {
   },
 };
 
-const Components = () => (
+const defaultContext: UserPreferenceType = {
+  locale: 'en-US',
+  userType: UserTypeEnum.UsStaff,
+};
+
+interface ComponentProps {
+  contextValue: UserPreferenceType;
+}
+
+const Components: React.FC<ComponentProps> = ({ contextValue }) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
       <TestRouter>
@@ -34,7 +48,9 @@ const Components = () => (
           mocks={mockStaffAccount}
           onCall={mutationSpy}
         >
-          <MinisterHousingAllowancePage />
+          <UserPreferenceContext.Provider value={contextValue}>
+            <MinisterHousingAllowancePage />
+          </UserPreferenceContext.Provider>
         </GqlMockedProvider>
       </TestRouter>
     </SnackbarProvider>
@@ -55,14 +71,18 @@ describe('MHA Calculation Page', () => {
   });
 
   it('should show initial MHA calculation page', async () => {
-    const { findAllByRole } = render(<Components />);
+    const { findAllByRole } = render(
+      <Components contextValue={defaultContext} />,
+    );
 
     const heading = await findAllByRole('heading', { name: /your mha/i });
     expect(heading[0]).toBeInTheDocument();
   });
 
   it('should open and close menu', async () => {
-    const { findByRole, getByRole, queryByRole } = render(<Components />);
+    const { findByRole, getByRole, queryByRole } = render(
+      <Components contextValue={defaultContext} />,
+    );
 
     userEvent.click(
       await findByRole('button', { name: 'Toggle HR Tools Menu' }),
@@ -89,13 +109,27 @@ describe('MHA Calculation Page', () => {
           mocks={mockNoStaffAccount}
           onCall={mutationSpy}
         >
-          <MinisterHousingAllowancePage />
+          <UserPreferenceContext.Provider value={defaultContext}>
+            <MinisterHousingAllowancePage />
+          </UserPreferenceContext.Provider>
         </GqlMockedProvider>
       </TestRouter>,
     );
 
     expect(
       await findByText(/access to this feature is limited/i),
+    ).toBeInTheDocument();
+  });
+
+  it('should show limited access if user does not have access to page', async () => {
+    const { findByText } = render(
+      <Components
+        contextValue={{ ...defaultContext, userType: UserTypeEnum.NonCru }}
+      />,
+    );
+
+    expect(
+      await findByText('Access to this feature is limited.'),
     ).toBeInTheDocument();
   });
 });

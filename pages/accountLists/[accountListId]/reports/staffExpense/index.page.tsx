@@ -5,40 +5,36 @@ import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
-import Loading from 'src/components/Loading';
-import { useStaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
 import { StaffExpenseReport } from 'src/components/Reports/StaffExpenseReport/StaffExpenseReport';
-import { LimitedAccess } from 'src/components/Shared/LimitedAccess/LimitedAccess';
 import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
 const StaffExpenseReportPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
 }));
 
-const StaffExpenseReportPage: React.FC = () => {
+export const StaffExpenseReportPage: React.FC = () => {
   const { appName } = useGetAppSettings();
   const { t } = useTranslation();
   const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
   const [isNavListOpen, setIsNavListOpen] = useState<boolean>(false);
-
-  const { data: staffAccountData, loading } = useStaffAccountQuery();
 
   const handleNavListToggle = () => {
     setIsNavListOpen(!isNavListOpen);
   };
 
   return (
-    <>
-      <Head>
-        <title>{`${appName} | ${t('Reports')} | ${t(
-          'Staff Expense Report',
-        )}`}</title>
-      </Head>
-      {staffAccountData?.staffAccount?.id ? (
+    <UserTypeAccess requireStaffAccount>
+      <>
+        <Head>
+          <title>{`${appName} | ${t('Reports')} | ${t(
+            'Staff Expense Report',
+          )}`}</title>
+        </Head>
         <StaffExpenseReportPageWrapper>
           <SidePanelsLayout
             isScrollBox={false}
@@ -63,12 +59,8 @@ const StaffExpenseReportPage: React.FC = () => {
             }
           />
         </StaffExpenseReportPageWrapper>
-      ) : loading ? (
-        <Loading loading />
-      ) : (
-        <LimitedAccess noStaffAccount />
-      )}
-    </>
+      </>
+    </UserTypeAccess>
   );
 };
 

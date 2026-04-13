@@ -16,8 +16,6 @@ import {
 import { useAdditionalSalaryRequestForm } from 'src/components/Reports/AdditionalSalaryRequest/Shared/useAdditionalSalaryRequestForm';
 import { SavingStatus } from 'src/components/Reports/Shared/CalculationReports/SavingStatus/SavingStatus';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
-import { useStaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
-import { LimitedAccess } from 'src/components/Shared/LimitedAccess/LimitedAccess';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
@@ -27,6 +25,7 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { ReportPageWrapper } from 'src/components/Shared/styledComponents/ReportPageWrapper';
 import { AsrStatusEnum } from 'src/graphql/types.generated';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
@@ -153,25 +152,19 @@ const AdditionalSalaryRequestPage: React.FC = () => {
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
 
-  const { data: staffAccountData, loading } = useStaffAccountQuery();
-
   return (
-    <>
-      <Head>
-        <title>{`${appName} | ${t('Additional Salary Request')}`}</title>
-      </Head>
-      {staffAccountData?.staffAccount?.id ? (
+    <UserTypeAccess requireStaffAccount>
+      <>
+        <Head>
+          <title>{`${appName} | ${t('Additional Salary Request')}`}</title>
+        </Head>
         <ReportPageWrapper>
           <AdditionalSalaryRequestProvider>
             <AdditionalSalaryRequestContent />
           </AdditionalSalaryRequestProvider>
         </ReportPageWrapper>
-      ) : loading ? (
-        <Loading loading />
-      ) : (
-        <LimitedAccess noStaffAccount />
-      )}
-    </>
+      </>
+    </UserTypeAccess>
   );
 };
 

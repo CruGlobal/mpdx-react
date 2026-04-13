@@ -23,6 +23,7 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { ReportPageWrapper } from 'src/components/Shared/styledComponents/ReportPageWrapper';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
@@ -128,7 +129,7 @@ const GoalCalculatorContent: React.FC<GoalCalculatorContentProps> = ({
   );
 };
 
-const GoalCalculatorPage: React.FC = () => {
+export const GoalCalculatorPage: React.FC = () => {
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
   const accountListId = useAccountListId();
@@ -140,25 +141,27 @@ const GoalCalculatorPage: React.FC = () => {
   };
 
   return (
-    <>
-      <Head>
-        <title>{`${appName} | ${t('Reports - Goal Calculation')}`}</title>
-      </Head>
-      {accountListId ? (
-        <ReportPageWrapper>
-          <GoalCalculatorProvider>
-            <GoalCalculatorContent
-              isNavListOpen={isNavListOpen}
-              onNavListToggle={handleNavListToggle}
-              designationAccounts={designationAccounts}
-              setDesignationAccounts={setDesignationAccounts}
-            />
-          </GoalCalculatorProvider>
-        </ReportPageWrapper>
-      ) : (
-        <Loading loading />
-      )}
-    </>
+    <UserTypeAccess>
+      <>
+        <Head>
+          <title>{`${appName} | ${t('Reports - Goal Calculation')}`}</title>
+        </Head>
+        {accountListId ? (
+          <ReportPageWrapper>
+            <GoalCalculatorProvider>
+              <GoalCalculatorContent
+                isNavListOpen={isNavListOpen}
+                onNavListToggle={handleNavListToggle}
+                designationAccounts={designationAccounts}
+                setDesignationAccounts={setDesignationAccounts}
+              />
+            </GoalCalculatorProvider>
+          </ReportPageWrapper>
+        ) : (
+          <Loading loading />
+        )}
+      </>
+    </UserTypeAccess>
   );
 };
 

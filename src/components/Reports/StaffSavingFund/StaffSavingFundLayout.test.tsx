@@ -2,6 +2,11 @@ import { ThemeProvider } from '@emotion/react';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
+import {
+  UserPreferenceContext,
+  UserPreferenceType,
+} from 'src/components/User/Preferences/UserPreferenceProvider';
+import { UserTypeEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { StaffAccountQuery } from '../StaffAccount.generated';
 import { StaffSavingFundContext } from './StaffSavingFundContext';
@@ -22,6 +27,11 @@ const mockStaffAccount = {
   },
 };
 
+const defaultContext: UserPreferenceType = {
+  locale: 'en-US',
+  userType: UserTypeEnum.UsStaff,
+};
+
 const MockStaffSavingFundProvider = ({
   children,
 }: {
@@ -37,7 +47,11 @@ const MockStaffSavingFundProvider = ({
   </StaffSavingFundContext.Provider>
 );
 
-const Components = () => (
+interface ComponentProps {
+  contextValue: UserPreferenceType;
+}
+
+const Components: React.FC<ComponentProps> = ({ contextValue }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
       <GqlMockedProvider<{
@@ -46,11 +60,13 @@ const Components = () => (
         mocks={mockStaffAccount}
         onCall={mutationSpy}
       >
-        <MockStaffSavingFundProvider>
-          <StaffSavingFundLayout pageTitle={title} selectedMenuId={id}>
-            <div>Test Children</div>
-          </StaffSavingFundLayout>
-        </MockStaffSavingFundProvider>
+        <UserPreferenceContext.Provider value={contextValue}>
+          <MockStaffSavingFundProvider>
+            <StaffSavingFundLayout pageTitle={title} selectedMenuId={id}>
+              <div>Test Children</div>
+            </StaffSavingFundLayout>
+          </MockStaffSavingFundProvider>
+        </UserPreferenceContext.Provider>
       </GqlMockedProvider>
     </TestRouter>
   </ThemeProvider>
@@ -58,12 +74,12 @@ const Components = () => (
 
 describe('StaffSavingFundLayout', () => {
   it('renders children with staff account', async () => {
-    const { findByText } = render(<Components />);
+    const { findByText } = render(<Components contextValue={defaultContext} />);
     expect(await findByText('Test Children')).toBeInTheDocument();
   });
 
   it('should open nav list', async () => {
-    const { findByText } = render(<Components />);
+    const { findByText } = render(<Components contextValue={defaultContext} />);
     expect(await findByText(/salary calculator/i)).toBeInTheDocument();
     expect(await findByText(/hr tools/i)).toBeInTheDocument();
   });
@@ -92,6 +108,18 @@ describe('StaffSavingFundLayout', () => {
     );
     expect(
       await findByText(/access to this feature is limited/i),
+    ).toBeInTheDocument();
+  });
+
+  it('should show limited access if user does not have access to page', async () => {
+    const { findByText } = render(
+      <Components
+        contextValue={{ ...defaultContext, userType: UserTypeEnum.NonCru }}
+      />,
+    );
+
+    expect(
+      await findByText('Access to this feature is limited.'),
     ).toBeInTheDocument();
   });
 });

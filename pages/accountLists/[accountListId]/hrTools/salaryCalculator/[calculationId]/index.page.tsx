@@ -17,6 +17,7 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
 const SalaryCalculatorSavingStatus: React.FC = () => {
@@ -41,37 +42,38 @@ export const SalaryCalculatorEditPage: React.FC = () => {
   };
 
   return (
-    <>
-      <Head>
-        <title>{`${appName} | ${t('Salary Calculator')}`}</title>
-      </Head>
-
-      <SidePanelsLayout
-        isScrollBox={false}
-        leftPanel={
-          <MultiPageMenu
-            isOpen={isNavListOpen}
-            selectedId="salaryCalculator"
-            onClose={handleNavListToggle}
-            navType={NavTypeEnum.Reports}
-          />
-        }
-        leftOpen={isNavListOpen}
-        leftWidth="290px"
-        mainContent={
-          <SalaryCalculatorProvider>
-            <MultiPageHeader
-              isNavListOpen={isNavListOpen}
-              onNavListToggle={handleNavListToggle}
-              title={t('Salary Calculator')}
-              headerType={HeaderTypeEnum.Report}
-              rightExtra={<SalaryCalculatorSavingStatus />}
+    <UserTypeAccess>
+      <>
+        <Head>
+          <title>{`${appName} | ${t('Salary Calculator')}`}</title>
+        </Head>
+        <SidePanelsLayout
+          isScrollBox={false}
+          leftPanel={
+            <MultiPageMenu
+              isOpen={isNavListOpen}
+              selectedId="salaryCalculator"
+              onClose={handleNavListToggle}
+              navType={NavTypeEnum.Reports}
             />
-            <SalaryCalculator />
-          </SalaryCalculatorProvider>
-        }
-      />
-    </>
+          }
+          leftOpen={isNavListOpen}
+          leftWidth="290px"
+          mainContent={
+            <SalaryCalculatorProvider>
+              <MultiPageHeader
+                isNavListOpen={isNavListOpen}
+                onNavListToggle={handleNavListToggle}
+                title={t('Salary Calculator')}
+                headerType={HeaderTypeEnum.Report}
+                rightExtra={<SalaryCalculatorSavingStatus />}
+              />
+              <SalaryCalculator />
+            </SalaryCalculatorProvider>
+          }
+        />
+      </>
+    </UserTypeAccess>
   );
 };
 

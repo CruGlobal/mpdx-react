@@ -14,6 +14,7 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
 const SalaryCalculatorPage: React.FC = () => {
@@ -27,40 +28,42 @@ const SalaryCalculatorPage: React.FC = () => {
   };
 
   return (
-    <>
-      <Head>
-        <title>{`${appName} | ${t('Salary Calculator')}`}</title>
-      </Head>
-      <SidePanelsLayout
-        isScrollBox={false}
-        leftPanel={
-          <MultiPageMenu
-            isOpen={isNavListOpen}
-            selectedId="salaryCalculator"
-            onClose={handleNavListToggle}
-            navType={NavTypeEnum.HrTools}
-          />
-        }
-        leftOpen={isNavListOpen}
-        leftWidth="290px"
-        mainContent={
-          <>
-            <MultiPageHeader
-              isNavListOpen={isNavListOpen}
-              onNavListToggle={handleNavListToggle}
-              title={t('Salary Calculator')}
-              headerType={HeaderTypeEnum.HrTools}
+    <UserTypeAccess>
+      <>
+        <Head>
+          <title>{`${appName} | ${t('Salary Calculator')}`}</title>
+        </Head>
+        <SidePanelsLayout
+          isScrollBox={false}
+          leftPanel={
+            <MultiPageMenu
+              isOpen={isNavListOpen}
+              selectedId="salaryCalculator"
+              onClose={handleNavListToggle}
+              navType={NavTypeEnum.HrTools}
             />
+          }
+          leftOpen={isNavListOpen}
+          leftWidth="290px"
+          mainContent={
+            <>
+              <MultiPageHeader
+                isNavListOpen={isNavListOpen}
+                onNavListToggle={handleNavListToggle}
+                title={t('Salary Calculator')}
+                headerType={HeaderTypeEnum.HrTools}
+              />
 
-            {shouldShowPending ? (
-              <PendingSalaryCalculationLanding />
-            ) : (
-              <NewSalaryCalculatorLanding />
-            )}
-          </>
-        }
-      />
-    </>
+              {shouldShowPending ? (
+                <PendingSalaryCalculationLanding />
+              ) : (
+                <NewSalaryCalculatorLanding />
+              )}
+            </>
+          }
+        />
+      </>
+    </UserTypeAccess>
   );
 };
 
