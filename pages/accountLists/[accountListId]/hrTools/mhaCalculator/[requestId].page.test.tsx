@@ -5,6 +5,7 @@ import { render } from '__tests__/util/testingLibraryReactMock';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { MinisterHousingAllowanceProvider } from 'src/components/Reports/MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
+import { StaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
 import {
   UserPreferenceContext,
   UserPreferenceType,
@@ -16,6 +17,16 @@ import {
 } from './[requestId].page';
 
 const requestId = '123';
+const mutationSpy = jest.fn();
+
+const mockStaffAccount = {
+  StaffAccount: {
+    staffAccount: {
+      id: '12345',
+      name: 'Test Account',
+    },
+  },
+};
 
 const defaultContext: UserPreferenceType = {
   locale: 'en-US',
@@ -25,7 +36,12 @@ const defaultContext: UserPreferenceType = {
 const Components = () => (
   <TestRouter>
     <SnackbarProvider>
-      <GqlMockedProvider>
+      <GqlMockedProvider<{
+        StaffAccount: StaffAccountQuery;
+      }>
+        mocks={mockStaffAccount}
+        onCall={mutationSpy}
+      >
         <UserPreferenceContext.Provider value={defaultContext}>
           <MinisterHousingAllowanceProvider
             type={PageEnum.New}

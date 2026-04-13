@@ -57,7 +57,7 @@ export const HousingAllowanceRequestPageContent: React.FC = () => {
   };
 
   return (
-    <UserTypeAccess>
+    <UserTypeAccess requireStaffAccount>
       <>
         <Head>
           <title>{title}</title>

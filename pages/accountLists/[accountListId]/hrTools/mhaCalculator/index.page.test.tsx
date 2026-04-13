@@ -8,13 +8,13 @@ import {
   afterTestResizeObserver,
   beforeTestResizeObserver,
 } from '__tests__/util/windowResizeObserver';
-import { UserTypeEnum } from 'pages/api/graphql-rest.page.generated';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { StaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
 import {
   UserPreferenceContext,
   UserPreferenceType,
 } from 'src/components/User/Preferences/UserPreferenceProvider';
+import { UserTypeEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import MinisterHousingAllowancePage, { getServerSideProps } from './index.page';
 

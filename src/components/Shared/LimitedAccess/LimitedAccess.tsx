@@ -3,16 +3,25 @@ import { Box, Button, Container, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
+import { getLimitedText } from './getLimitedText';
 
 interface LimitedAccessProps {
   noStaffAccount?: boolean;
+  userGroupError?: boolean;
 }
 
 export const LimitedAccess: React.FC<LimitedAccessProps> = ({
   noStaffAccount,
+  userGroupError,
 }) => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
+
+  const { title, content, ending } = getLimitedText({
+    t,
+    noStaffAccount,
+    userGroupError,
+  });
 
   return (
     <Container
@@ -25,27 +34,17 @@ export const LimitedAccess: React.FC<LimitedAccessProps> = ({
       }}
     >
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-        <Typography variant="h2">
-          {t('Access to this feature is limited.')}
-        </Typography>
-
+        <Typography variant="h2">{title}</Typography>
         <Typography variant="h6">
-          {noStaffAccount
-            ? t(
-                'Our records show that you do not have a staff account. You cannot access this feature if you do not have a staff account. If you think this is a mistake, please contact ',
-              )
-            : t(
-                'Our records show that you are not part of the user group that has access to this feature. If you think this is a mistake, please contact ',
-              )}
+          {content}
           <Link
             href="mailto:support@mpdx.org"
             style={{ color: theme.palette.primary.main, fontWeight: 'bold' }}
           >
             support@mpdx.org
           </Link>
-          {t(' to change your user group.')}
+          {ending}
         </Typography>
-
         <Box sx={{ display: 'flex', mt: 2 }}>
           <Button variant="contained" href={`/accountLists/${accountListId}`}>
             {t('Back to Dashboard')}

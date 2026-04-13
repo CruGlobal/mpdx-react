@@ -15,10 +15,14 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
   requireStaffAccount,
   children,
 }) => {
+  const { userType, loading: userLoading, error } = useUserPreferenceContext();
   const { data: staffAccountData, loading } = useStaffAccountQuery({
-    skip: !requireStaffAccount,
+    skip: !requireStaffAccount || userType !== allowedUserType,
   });
-  const { userType, loading: userLoading } = useUserPreferenceContext();
+
+  if (error) {
+    return <LimitedAccess userGroupError />;
+  }
 
   if (userLoading) {
     return <Loading loading />;

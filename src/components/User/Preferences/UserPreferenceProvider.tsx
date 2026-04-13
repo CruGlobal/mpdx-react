@@ -8,6 +8,7 @@ export type UserPreferenceType = {
   locale: string;
   userType?: UserTypeEnum;
   loading?: boolean;
+  error?: Error;
 };
 
 export const UserPreferenceContext = createContext<UserPreferenceType>({
@@ -22,7 +23,7 @@ interface Props {
   children?: React.ReactNode;
 }
 export const UserPreferenceProvider: React.FC<Props> = ({ children }) => {
-  const { data, loading } = useGetUserQuery();
+  const { data, loading, error } = useGetUserQuery();
   const [locale, setLocale] = useState('en-US');
   const userType = data?.user.userType;
 
@@ -39,6 +40,7 @@ export const UserPreferenceProvider: React.FC<Props> = ({ children }) => {
         locale,
         userType,
         loading,
+        error,
       }}
     >
       {children}

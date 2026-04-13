@@ -1,14 +1,27 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { UserTypeEnum } from 'pages/api/graphql-rest.page.generated';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { LandingTestWrapper } from 'src/components/Reports/SalaryCalculator/Landing/NewSalaryCalculationLanding/LandingTestWrapper';
 import { SalaryCalculatorTestWrapper } from 'src/components/Reports/SalaryCalculator/SalaryCalculatorTestWrapper';
+import { StaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
 import {
   UserPreferenceContext,
   UserPreferenceType,
 } from 'src/components/User/Preferences/UserPreferenceProvider';
+import { UserTypeEnum } from 'src/graphql/types.generated';
 import SalaryCalculatorPage, { getServerSideProps } from './index.page';
+
+const mutationSpy = jest.fn();
+
+const mockStaffAccount = {
+  StaffAccount: {
+    staffAccount: {
+      id: '12345',
+      name: 'Test Account',
+    },
+  },
+};
 
 const defaultContext: UserPreferenceType = {
   locale: 'en-US',
@@ -20,11 +33,18 @@ interface TestComponentProps {
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({ contextValue }) => (
-  <SalaryCalculatorTestWrapper>
-    <UserPreferenceContext.Provider value={contextValue}>
-      <SalaryCalculatorPage />
-    </UserPreferenceContext.Provider>
-  </SalaryCalculatorTestWrapper>
+  <GqlMockedProvider<{
+    StaffAccount: StaffAccountQuery;
+  }>
+    mocks={mockStaffAccount}
+    onCall={mutationSpy}
+  >
+    <SalaryCalculatorTestWrapper>
+      <UserPreferenceContext.Provider value={contextValue}>
+        <SalaryCalculatorPage />
+      </UserPreferenceContext.Provider>
+    </SalaryCalculatorTestWrapper>
+  </GqlMockedProvider>
 );
 
 describe('SalaryCalculatorPage', () => {

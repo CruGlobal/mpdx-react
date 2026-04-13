@@ -1,4 +1,4 @@
-import Head from 'next/dist/shared/lib/head';
+import Head from 'next/head';
 import React, { useState } from 'react';
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';

@@ -28,7 +28,7 @@ const SalaryCalculatorPage: React.FC = () => {
   };
 
   return (
-    <UserTypeAccess>
+    <UserTypeAccess requireStaffAccount>
       <>
         <Head>
           <title>{`${appName} | ${t('Salary Calculator')}`}</title>

@@ -94,4 +94,22 @@ describe('UserTypeAccess', () => {
       getByText(/our records show that you do not have a staff account/i),
     ).toBeInTheDocument();
   });
+
+  it('should render LimitedAccess with user group error message when there is an error loading user preferences', () => {
+    const { getByRole, getByText } = render(
+      <TestComponent
+        contextValue={{
+          ...defaultContext,
+          error: new Error('User group error'),
+        }}
+      />,
+    );
+
+    expect(
+      getByRole('heading', { name: 'Unable to load this page' }),
+    ).toBeInTheDocument();
+    expect(
+      getByText(/something went wrong while loading your account information/i),
+    ).toBeInTheDocument();
+  });
 });
