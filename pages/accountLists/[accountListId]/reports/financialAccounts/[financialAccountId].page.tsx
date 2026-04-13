@@ -12,6 +12,7 @@ import {
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
+import { UserTypeEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
@@ -26,7 +27,7 @@ const FinancialAccountSummaryPage: React.FC = () => {
     setNavListOpen(!navListOpen);
   };
   return (
-    <UserTypeAccess>
+    <UserTypeAccess allowedUserType={UserTypeEnum.GlobalStaff}>
       <>
         <Head>
           <title>

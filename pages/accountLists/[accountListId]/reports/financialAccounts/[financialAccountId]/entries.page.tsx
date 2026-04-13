@@ -22,6 +22,7 @@ import {
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
+import { UserTypeEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { Panel } from '../../helpers';
@@ -100,7 +101,7 @@ const FinancialAccountEntries = (): ReactElement => {
   }, [data]);
 
   return (
-    <UserTypeAccess>
+    <UserTypeAccess allowedUserType={UserTypeEnum.GlobalStaff}>
       <>
         <Head>
           <title>

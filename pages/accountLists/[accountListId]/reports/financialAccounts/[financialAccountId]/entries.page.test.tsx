@@ -31,7 +31,7 @@ const router = {
 
 const defaultContext: UserPreferenceType = {
   locale: 'en-US',
-  userType: UserTypeEnum.UsStaff,
+  userType: UserTypeEnum.GlobalStaff,
 };
 
 interface ComponentProps {
