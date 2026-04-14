@@ -3,7 +3,7 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 import { DeepPartial } from 'ts-essentials';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
-import { HcmDataQuery } from 'src/components/Reports/Shared/HcmData/HCMData.generated';
+import { HcmQuery } from 'src/components/Reports/Shared/HcmData/Hcm.generated';
 import { ElectionType403bEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
@@ -81,7 +81,7 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
     currentSalary: {
       grossSalaryAmount: 40000,
     },
-  } as unknown as HcmDataQuery['hcm'][0],
+  } as unknown as HcmQuery['hcm'][0],
   spouse: undefined,
   salaryInfo: {
     id: '1',

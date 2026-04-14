@@ -8,7 +8,7 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { MhaRentOrOwnEnum, MhaStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { PageEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
-import { HcmDataQuery } from '../../Shared/HcmData/HCMData.generated';
+import { HcmQuery } from '../../Shared/HcmData/Hcm.generated';
 import { singleMhaNoException } from '../../Shared/HcmData/mockData';
 import {
   MinistryHousingAllowanceRequestQuery,
@@ -54,7 +54,7 @@ interface TestComponentProps {
   type?: PageEnum;
   contextValue?: Partial<ContextType>;
   mocks?: {
-    HcmData?: HcmDataQuery;
+    Hcm?: HcmQuery;
     MinistryHousingAllowanceRequest?: MinistryHousingAllowanceRequestQuery;
     UpdateMinistryHousingAllowanceRequest?: UpdateMinistryHousingAllowanceRequestMutation;
   };
@@ -82,7 +82,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
       <TestRouter>
         <SnackbarProvider>
           <GqlMockedProvider<{
-            HcmData: HcmDataQuery;
+            Hcm: HcmQuery;
             MinistryHousingAllowanceRequest: MinistryHousingAllowanceRequestQuery;
             UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
           }>
@@ -128,7 +128,7 @@ describe('RequestPage', () => {
           <TestComponent
             type={PageEnum.Edit}
             mocks={{
-              HcmData: {
+              Hcm: {
                 hcm: singleMhaNoException,
               },
             }}
@@ -264,7 +264,7 @@ describe('RequestPage', () => {
           <TestComponent
             type={PageEnum.New}
             mocks={{
-              HcmData: {
+              Hcm: {
                 hcm: singleMhaNoException,
               },
             }}

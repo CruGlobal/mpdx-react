@@ -41,7 +41,7 @@ const TestWrapper: React.FC<TestWrapperProps> = ({
         <SnackbarProvider>
           <GqlMockedProvider
             mocks={{
-              HcmData: hcmData,
+              Hcm: hcmData,
               AdditionalSalaryRequest: {
                 latestAdditionalSalaryRequest: null,
               },
