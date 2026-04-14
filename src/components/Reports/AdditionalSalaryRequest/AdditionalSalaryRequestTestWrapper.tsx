@@ -137,7 +137,7 @@ export const AdditionalSalaryRequestTestWrapper: React.FC<
                     electionType403b: ElectionType403bEnum.None,
                   },
                 },
-                HcmData: {
+                Hcm: {
                   hcm: [
                     {
                       id: 'hcm-1',

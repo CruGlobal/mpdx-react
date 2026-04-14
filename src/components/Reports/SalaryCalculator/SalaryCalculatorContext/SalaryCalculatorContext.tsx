@@ -15,7 +15,7 @@ import { useTrackMutation } from 'src/hooks/useTrackMutation';
 import { getQueryParam } from 'src/utils/queryParam';
 import { FormEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
-import { HcmQuery, useHcmQuery } from './Hcm.generated';
+import { HcmQuery, useHcmQuery } from '../../Shared/HcmData/Hcm.generated';
 import { SalaryCalculatorSectionEnum } from './Helper/sharedTypes';
 import {
   SalaryCalculationQuery,

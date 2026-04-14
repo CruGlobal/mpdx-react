@@ -21,10 +21,7 @@ import {
 import { useStepList } from 'src/hooks/useStepList';
 import { useTrackMutation } from 'src/hooks/useTrackMutation';
 import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
-import {
-  HcmDataQuery,
-  useHcmDataQuery,
-} from '../../Shared/HcmData/HCMData.generated';
+import { HcmQuery, useHcmQuery } from '../../Shared/HcmData/Hcm.generated';
 import {
   AdditionalSalaryRequestQuery,
   useAdditionalSalaryRequestQuery,
@@ -62,8 +59,8 @@ export type AdditionalSalaryRequestType = {
     | 'staffAccountBalance'
     | 'pendingAsrAmount'
   >;
-  user: HcmDataQuery['hcm'][0] | undefined;
-  spouse: HcmDataQuery['hcm'][1] | undefined;
+  user: HcmQuery['hcm'][0] | undefined;
+  spouse: HcmQuery['hcm'][1] | undefined;
   salaryInfo: SalaryInfoQuery['salaryInfo'] | undefined;
   isInternational: boolean;
   traditional403bPercentage: number;
@@ -127,7 +124,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     currentIndex,
   } = useStepList(FormEnum.AdditionalSalary, undefined, 0);
 
-  const { data: hcmData } = useHcmDataQuery();
+  const { data: hcmData } = useHcmQuery();
 
   const {
     data: requestData,

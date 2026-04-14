@@ -17,9 +17,9 @@ import {
   PageEnum,
 } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import {
-  HcmDataQuery,
-  useHcmDataQuery,
-} from 'src/components/Reports/Shared/HcmData/HCMData.generated';
+  HcmQuery,
+  useHcmQuery,
+} from 'src/components/Reports/Shared/HcmData/Hcm.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useStepList } from 'src/hooks/useStepList';
 import { useTrackMutation } from 'src/hooks/useTrackMutation';
@@ -32,7 +32,7 @@ import {
 } from '../../MinisterHousingAllowance.generated';
 import { hasPopulatedValues } from './Helper/hasPopulatedValues';
 
-export type HcmData = HcmDataQuery['hcm'][number];
+export type HcmData = HcmQuery['hcm'][number];
 
 export type ContextType = {
   steps: Steps[];
@@ -166,7 +166,7 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
     }));
   }, [initialSteps, isComplete]);
 
-  const { data: hcmData } = useHcmDataQuery();
+  const { data: hcmData } = useHcmQuery();
 
   const [userHcmData, setUserHcmData] = useState<HcmData>();
   const [spouseHcmData, setSpouseHcmData] = useState<HcmData | null>(null);

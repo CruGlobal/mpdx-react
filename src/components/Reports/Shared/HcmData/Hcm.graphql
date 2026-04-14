@@ -1,23 +1,26 @@
-query HcmData {
-  hcm {
+query Hcm($effectiveDate: ISO8601Date) {
+  hcm(effectiveDate: $effectiveDate) {
     staffInfo {
-      addressLine1
-      addressLine2
-      age
-      city
-      country
-      dependentChildrenWithHealthcareBenefits
-      emailAddress
-      firstName
       id
-      isInternational
+      preferredName
+      firstName
       lastName
       personNumber
-      preferredName
+      emailAddress
       primaryPhoneNumber
-      secaStatus
+      age
+      addressLine1
+      addressLine2
+      city
+      country
       state
       zipCode
+      dependentChildrenWithHealthcareBenefits
+      isInternational
+      secaStatus
+      tenure
+      peopleGroupSupportType
+      userPersonType
     }
     currentSalary {
       grossSalaryAmount

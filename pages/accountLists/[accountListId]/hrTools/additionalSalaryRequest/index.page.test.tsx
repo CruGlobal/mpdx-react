@@ -25,7 +25,7 @@ const mocks = {
   AdditionalSalaryRequest: {
     latestAdditionalSalaryRequest: null,
   },
-  HcmData: {
+  Hcm: {
     hcm: [
       {
         salaryRequestEligible: true,

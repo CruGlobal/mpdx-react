@@ -7,7 +7,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { MhaStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { HcmDataQuery } from '../Shared/HcmData/HCMData.generated';
+import { HcmQuery } from '../Shared/HcmData/Hcm.generated';
 import {
   marriedBothIneligible,
   marriedMhaAndNoException,
@@ -30,7 +30,7 @@ const mutationSpy = jest.fn();
 const mockPush = jest.fn();
 
 interface TestComponentProps {
-  hcmMock: HcmDataQuery['hcm'];
+  hcmMock: HcmQuery['hcm'];
   mhaRequestsMock: MinistryHousingAllowanceRequestsQuery['ministryHousingAllowanceRequests']['nodes'];
 }
 
@@ -42,12 +42,12 @@ const TestComponent: React.FC<TestComponentProps> = ({
     <TestRouter router={{ push: mockPush }}>
       <SnackbarProvider>
         <GqlMockedProvider<{
-          HcmData: HcmDataQuery;
+          Hcm: HcmQuery;
           MinistryHousingAllowanceRequests: MinistryHousingAllowanceRequestsQuery;
           CreateHousingAllowanceRequest: CreateHousingAllowanceRequestMutation;
         }>
           mocks={{
-            HcmData: {
+            Hcm: {
               hcm: hcmMock,
             },
             MinistryHousingAllowanceRequests: {

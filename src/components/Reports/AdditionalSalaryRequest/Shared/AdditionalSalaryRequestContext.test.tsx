@@ -336,7 +336,7 @@ describe('AdditionalSalaryRequestContext', () => {
           >
             <GqlMockedProvider
               mocks={{
-                HcmData: {
+                Hcm: {
                   hcm: [
                     {
                       staffInfo: {
