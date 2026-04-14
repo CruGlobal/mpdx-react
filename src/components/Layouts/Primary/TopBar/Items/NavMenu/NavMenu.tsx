@@ -163,6 +163,10 @@ const NavMenu: React.FC = () => {
 
   const isCoaching = !!coachingAccounts?.totalCount;
   const { navPages } = useNavPages(isCoaching);
+  const reports = navPages.find((page) => page.id === 'reports-page');
+  const hrTools = navPages.find((page) => page.id === 'hr-tools-page');
+  const mpdxTools = navPages.find((page) => page.id === 'mpdx-tools-page');
+
   const coachingIndex = navPages.findIndex(
     (page) => page.id === 'coaching-page',
   );
@@ -186,39 +190,45 @@ const NavMenu: React.FC = () => {
           ),
       )}
 
-      <NavMenuDropdown
-        page={navPages[3]}
-        menuOpen={reportsMenuOpen}
-        handleMenuToggle={handleReportsMenuToggle}
-        handleMenuClose={handleReportsMenuClose}
-        testId="ReportMenuToggle"
-        sum={sum}
-        toolData={toolData}
-        loading={loading}
-        isTool={false}
-      />
-      <NavMenuDropdown
-        page={navPages[4]}
-        menuOpen={hrToolsMenuOpen}
-        handleMenuToggle={handleHrToolsMenuToggle}
-        handleMenuClose={handleHrToolsMenuClose}
-        testId="HrToolsMenuToggle"
-        sum={sum}
-        toolData={toolData}
-        loading={loading}
-        isTool={false}
-      />
-      <NavMenuDropdown
-        page={navPages[5]}
-        menuOpen={toolsMenuOpen}
-        handleMenuToggle={handleToolsMenuToggle}
-        handleMenuClose={handleToolsMenuClose}
-        testId="ToolsMenuToggle"
-        sum={sum}
-        toolData={toolData}
-        loading={loading}
-        isTool={true}
-      />
+      {reports && (
+        <NavMenuDropdown
+          page={reports}
+          menuOpen={reportsMenuOpen}
+          handleMenuToggle={handleReportsMenuToggle}
+          handleMenuClose={handleReportsMenuClose}
+          testId="ReportMenuToggle"
+          sum={sum}
+          toolData={toolData}
+          loading={loading}
+          isTool={false}
+        />
+      )}
+      {hrTools && (
+        <NavMenuDropdown
+          page={hrTools}
+          menuOpen={hrToolsMenuOpen}
+          handleMenuToggle={handleHrToolsMenuToggle}
+          handleMenuClose={handleHrToolsMenuClose}
+          testId="HrToolsMenuToggle"
+          sum={sum}
+          toolData={toolData}
+          loading={loading}
+          isTool={false}
+        />
+      )}
+      {mpdxTools && (
+        <NavMenuDropdown
+          page={mpdxTools}
+          menuOpen={toolsMenuOpen}
+          handleMenuToggle={handleToolsMenuToggle}
+          handleMenuClose={handleToolsMenuClose}
+          testId="ToolsMenuToggle"
+          sum={sum}
+          toolData={toolData}
+          loading={loading}
+          isTool={true}
+        />
+      )}
 
       {isCoaching && (
         <Grid item className={classes.navListItem}>

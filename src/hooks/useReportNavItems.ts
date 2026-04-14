@@ -25,15 +25,19 @@ export function useReportNavItems(): NavItems[] {
       title: t('14 Month Salary Report'),
       subTitle: t('Salary Currency'),
     },
-    {
-      id: 'staffExpense',
-      title: t('Staff Expense Report'),
-    },
-    {
-      id: 'mpgaIncomeExpenses',
-      title: t('MPGA Monthly Report'),
-      subTitle: t('Income & Expenses'),
-    },
+    ...(process.env.DISABLE_NEW_REPORTS === 'true'
+      ? []
+      : [
+          {
+            id: 'staffExpense',
+            title: t('Staff Expense Report'),
+          },
+          {
+            id: 'mpgaIncomeExpenses',
+            title: t('MPGA Monthly Report'),
+            subTitle: t('Income & Expenses'),
+          },
+        ]),
     {
       id: 'designationAccounts',
       title: t('Designation Accounts'),

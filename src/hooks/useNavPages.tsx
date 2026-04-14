@@ -96,19 +96,23 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
         })),
         showInNav: true,
       },
-      {
-        id: 'hr-tools-page',
-        title: t('HR Tools'),
-        pathname: '/accountLists/[accountListId]/hrTools',
-        items: hrToolsItems.map((item) => ({
-          ...item,
-          href: `/accountLists/${accountListId}/hrTools/${item.id}`,
-          searchIcon: <CompassIcon />,
-          searchName: t(`HR Tools - {{ title }}`, { title: item.title }),
-          showInSearchDialog: true,
-        })),
-        showInNav: true,
-      },
+      ...(process.env.DISABLE_NEW_REPORTS === 'true'
+        ? []
+        : [
+            {
+              id: 'hr-tools-page',
+              title: t('HR Tools'),
+              pathname: '/accountLists/[accountListId]/hrTools',
+              items: hrToolsItems.map((item) => ({
+                ...item,
+                href: `/accountLists/${accountListId}/hrTools/${item.id}`,
+                searchIcon: <CompassIcon />,
+                searchName: t(`HR Tools - {{ title }}`, { title: item.title }),
+                showInSearchDialog: true,
+              })),
+              showInNav: true,
+            },
+          ]),
       {
         id: 'mpdx-tools-page',
         title: t('MPDX Tools'),
@@ -121,7 +125,7 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
             title: tool.tool,
             href: `/accountLists/${accountListId}/tools/${tool.url}`,
             searchIcon: <CompassIcon />,
-            searchName: t(`Tools - {{ title }}`, { title: tool.tool }),
+            searchName: t(`MPDX Tools - {{ title }}`, { title: tool.tool }),
             showInSearchDialog: true,
           })),
         ),
