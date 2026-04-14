@@ -709,4 +709,86 @@ describe('useSalaryCalculations', () => {
       expect(result.current.additionalApproval).toBe(true);
     });
   });
+
+  describe('spouse cap fields', () => {
+    it('returns spouse total, cap, and remaining when spouse has room', () => {
+      mockUseAdditionalSalaryRequest.mockReturnValue({
+        traditional403bPercentage: 0.12,
+        roth403bPercentage: 0.1,
+        user: { currentSalary: { grossSalaryAmount: 50000 } },
+        spouse: { currentSalary: { grossSalaryAmount: 40000 } },
+        requestData: {
+          latestAdditionalSalaryRequest: {
+            calculations: { currentSalaryCap: 60000 },
+            spouseCalculations: {
+              currentSalaryCap: 50000,
+              pendingAsrAmount: 2000,
+            },
+          },
+        },
+      } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+      const values: CompleteFormValues = { ...baseValues };
+
+      const { result } = renderHook(() => useSalaryCalculations({ values }), {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      });
+
+      expect(result.current.spouseTotalAnnualSalary).toBe(42000); // 40000 + 2000
+      expect(result.current.spouseIndividualCap).toBe(50000);
+      expect(result.current.spouseRemainingCap).toBe(8000); // 50000 - 42000
+    });
+
+    it('clamps spouseRemainingCap at 0 when spouse total exceeds cap', () => {
+      mockUseAdditionalSalaryRequest.mockReturnValue({
+        traditional403bPercentage: 0.12,
+        roth403bPercentage: 0.1,
+        user: { currentSalary: { grossSalaryAmount: 50000 } },
+        spouse: { currentSalary: { grossSalaryAmount: 40000 } },
+        requestData: {
+          latestAdditionalSalaryRequest: {
+            calculations: { currentSalaryCap: 60000 },
+            spouseCalculations: {
+              currentSalaryCap: 50000,
+              pendingAsrAmount: 15000,
+            },
+          },
+        },
+      } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+      const values: CompleteFormValues = { ...baseValues };
+
+      const { result } = renderHook(() => useSalaryCalculations({ values }), {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      });
+
+      expect(result.current.spouseTotalAnnualSalary).toBe(55000);
+      expect(result.current.spouseIndividualCap).toBe(50000);
+      expect(result.current.spouseRemainingCap).toBe(0);
+    });
+
+    it('returns null for all spouse fields when no spouse', () => {
+      mockUseAdditionalSalaryRequest.mockReturnValue({
+        traditional403bPercentage: 0.12,
+        roth403bPercentage: 0.1,
+        user: { currentSalary: { grossSalaryAmount: 50000 } },
+        spouse: undefined,
+        requestData: {
+          latestAdditionalSalaryRequest: {
+            calculations: { currentSalaryCap: 60000 },
+          },
+        },
+      } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
+
+      const values: CompleteFormValues = { ...baseValues };
+
+      const { result } = renderHook(() => useSalaryCalculations({ values }), {
+        wrapper: ({ children }) => FormikWrapper({ children, values }),
+      });
+
+      expect(result.current.spouseTotalAnnualSalary).toBeNull();
+      expect(result.current.spouseIndividualCap).toBeNull();
+      expect(result.current.spouseRemainingCap).toBeNull();
+    });
+  });
 });
