@@ -1,6 +1,10 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import {
+  MpdGoalMiscConstantCategoryEnum,
+  MpdGoalMiscConstantLabelEnum,
+} from 'src/graphql/types.generated';
 import { PdsGoalCalculatorTestWrapper } from '../PdsGoalCalculatorTestWrapper';
 import { PdsGoalsList } from './PdsGoalsList';
 
@@ -45,17 +49,45 @@ describe('PdsGoalsList', () => {
     expect(queryByTestId('goal-name')).not.toBeInTheDocument();
   });
 
-  it('calls create mutation on create', async () => {
-    const { getByRole } = render(
-      <PdsGoalCalculatorTestWrapper withProvider={false} onCall={mutationSpy}>
+  it('seeds reimbursable defaults from MPD constants on create', async () => {
+    const { findByRole } = render(
+      <PdsGoalCalculatorTestWrapper
+        withProvider={false}
+        onCall={mutationSpy}
+        constantsMock={{
+          mpdGoalMiscConstants: [
+            {
+              category:
+                MpdGoalMiscConstantCategoryEnum.ReimbursementsWithMaximum,
+              label: MpdGoalMiscConstantLabelEnum.Phone,
+              fee: 75,
+            },
+            {
+              category:
+                MpdGoalMiscConstantCategoryEnum.ReimbursementsWithMaximum,
+              label: MpdGoalMiscConstantLabelEnum.Internet,
+              fee: 50,
+            },
+          ],
+        }}
+      >
         <PdsGoalsList />
       </PdsGoalCalculatorTestWrapper>,
     );
 
-    userEvent.click(getByRole('button', { name: 'Create a New Goal' }));
+    const button = await findByRole('button', { name: 'Create a New Goal' });
+    await waitFor(() => {
+      expect(button).toBeEnabled();
+    });
+    userEvent.click(button);
 
     await waitFor(() => {
-      expect(mutationSpy).toHaveGraphqlOperation('CreatePdsGoalCalculation');
+      expect(mutationSpy).toHaveGraphqlOperation('CreatePdsGoalCalculation', {
+        attributes: {
+          ministryCellPhone: 75,
+          ministryInternet: 50,
+        },
+      });
     });
   });
 
