@@ -100,7 +100,9 @@ describe('SplitCapSubContent', () => {
     const { getByText } = renderSplitCapSubContent('Jane');
 
     // spouse total = 40000 + 2000 = 42000, cap = 50000
-    expect(getByText("Jane's Salary / Max Allowable Salary")).toBeInTheDocument();
+    expect(
+      getByText("Jane's Salary / Max Allowable Salary"),
+    ).toBeInTheDocument();
     expect(getByText('$42,000.00 / $50,000.00')).toBeInTheDocument();
   });
 
@@ -165,8 +167,6 @@ describe('SplitCapSubContent', () => {
       getByText(/Please make adjustments to your request/),
     ).toBeInTheDocument();
     expect(queryByRole('progressbar')).not.toBeInTheDocument();
-    expect(
-      queryByText(/Max Allowable Salary/),
-    ).not.toBeInTheDocument();
+    expect(queryByText(/Max Allowable Salary/)).not.toBeInTheDocument();
   });
 });
