@@ -25,12 +25,15 @@ export interface SalaryCalculations {
   splitAsrType: 'user' | 'spouse' | null;
   /** `true` when the request requires additional approval */
   additionalApproval: boolean;
-  /** Spouse's gross annual salary + pending ASR amount. `null` when no spouse. */
-  spouseTotalAnnualSalary: number | null;
-  /** Spouse's individual salary cap. `null` when no spouse. */
-  spouseIndividualCap: number | null;
-  /** Spouse's remaining room under cap (cap - total, clamped at 0). `null` when no spouse. */
-  spouseRemainingCap: number | null;
+  /** Spouse cap figures. `null` when no spouse; otherwise all three fields are present. */
+  spouseCap: {
+    /** Spouse's gross annual salary + pending ASR amount. */
+    totalAnnualSalary: number;
+    /** Spouse's individual salary cap. */
+    individualCap: number;
+    /** Spouse's remaining room under cap (cap - total, clamped at 0). */
+    remainingCap: number;
+  } | null;
 }
 export interface UseSalaryCalculationsProps {
   values: CompleteFormValues;
@@ -73,7 +76,7 @@ export const useSalaryCalculations = ({
     0;
   const spouseIndividualCap = spouse
     ? (requestData?.latestAdditionalSalaryRequest?.spouseCalculations
-        ?.currentSalaryCap ?? 0)
+        ?.currentSalaryCap ?? null)
     : null;
 
   const grossAnnualSalary = user?.currentSalary?.grossSalaryAmount ?? 0;
@@ -145,8 +148,15 @@ export const useSalaryCalculations = ({
       (userAtCap && isMarried && spouseExceedsCap);
 
     const hasSpouseCap = isMarried && spouseIndividualCap !== null;
-    const spouseRemainingCap = hasSpouseCap
-      ? Math.max(0, spouseIndividualCap - spouseTotalAnnualSalary)
+    const spouseCap = hasSpouseCap
+      ? {
+          totalAnnualSalary: spouseTotalAnnualSalary,
+          individualCap: spouseIndividualCap,
+          remainingCap: Math.max(
+            0,
+            spouseIndividualCap - spouseTotalAnnualSalary,
+          ),
+        }
       : null;
 
     return {
@@ -162,9 +172,7 @@ export const useSalaryCalculations = ({
       splitAsr,
       splitAsrType,
       additionalApproval,
-      spouseTotalAnnualSalary: hasSpouseCap ? spouseTotalAnnualSalary : null,
-      spouseIndividualCap: hasSpouseCap ? spouseIndividualCap : null,
-      spouseRemainingCap,
+      spouseCap,
     };
   }, [
     values,

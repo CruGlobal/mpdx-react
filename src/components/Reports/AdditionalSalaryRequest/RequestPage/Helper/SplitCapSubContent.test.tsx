@@ -77,13 +77,14 @@ describe('SplitCapSubContent', () => {
   it('renders existing copy with spouse name and Progressive Approvals link', () => {
     setupContext({ spouseCap: 50000 });
 
-    const { getAllByText, getByText, getByRole } =
-      renderSplitCapSubContent('Jane');
+    const { getByText, getByRole } = renderSplitCapSubContent('Jane');
 
     expect(
       getByText(/Please make adjustments to your request/),
     ).toBeInTheDocument();
-    expect(getAllByText(/Jane/).length).toBeGreaterThan(0);
+    expect(
+      getByText(/separate request up to Jane's maximum allowable salary/),
+    ).toBeInTheDocument();
     expect(
       getByRole('link', { name: 'Progressive Approvals' }),
     ).toBeInTheDocument();
@@ -144,6 +145,14 @@ describe('SplitCapSubContent', () => {
     expect(getByText('$50,000.00 / $50,000.00')).toBeInTheDocument();
     expect(getByText('$0.00')).toBeInTheDocument();
     expect(getByRole('progressbar')).toHaveAttribute('aria-valuenow', '100');
+  });
+
+  it('does not render status bar when spouse cap is 0', () => {
+    setupContext({ spouseCap: 0 });
+
+    const { queryByRole } = renderSplitCapSubContent('Jane');
+
+    expect(queryByRole('progressbar')).not.toBeInTheDocument();
   });
 
   it('does not render the status bar when spouse cap is unavailable', () => {

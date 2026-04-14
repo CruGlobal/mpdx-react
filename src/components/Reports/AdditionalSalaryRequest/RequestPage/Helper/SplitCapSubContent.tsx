@@ -19,30 +19,22 @@ export const SplitCapSubContent: React.FC<SplitCapSubContentProps> = ({
   const locale = useLocale();
   const currency = 'USD';
   const { values } = useFormikContext<CompleteFormValues>();
-  const {
-    spouseTotalAnnualSalary,
-    spouseIndividualCap,
-    spouseRemainingCap,
-  } = useSalaryCalculations({ values });
+  const { spouseCap } = useSalaryCalculations({ values });
 
-  const showBar =
-    spouseIndividualCap !== null &&
-    spouseIndividualCap > 0 &&
-    spouseTotalAnnualSalary !== null &&
-    spouseRemainingCap !== null;
+  const showBar = spouseCap !== null && spouseCap.individualCap > 0;
 
   const totalFormatted = showBar
-    ? currencyFormat(spouseTotalAnnualSalary, currency, locale, {
+    ? currencyFormat(spouseCap.totalAnnualSalary, currency, locale, {
         showTrailingZeros: true,
       })
     : '';
   const capFormatted = showBar
-    ? currencyFormat(spouseIndividualCap, currency, locale, {
+    ? currencyFormat(spouseCap.individualCap, currency, locale, {
         showTrailingZeros: true,
       })
     : '';
   const remainingFormatted = showBar
-    ? currencyFormat(spouseRemainingCap, currency, locale, {
+    ? currencyFormat(spouseCap.remainingCap, currency, locale, {
         showTrailingZeros: true,
       })
     : '';
@@ -50,7 +42,10 @@ export const SplitCapSubContent: React.FC<SplitCapSubContentProps> = ({
   const progressValue = showBar
     ? Math.min(
         100,
-        Math.max(0, (spouseTotalAnnualSalary / spouseIndividualCap) * 100),
+        Math.max(
+          0,
+          (spouseCap.totalAnnualSalary / spouseCap.individualCap) * 100,
+        ),
       )
     : 0;
 
@@ -77,26 +72,35 @@ export const SplitCapSubContent: React.FC<SplitCapSubContentProps> = ({
               mb: 1,
               display: 'flex',
               justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: 1,
             }}
           >
-            <Typography variant="body1">
+            <Typography variant="body1" id="spouse-salary-progress-label">
               {t("{{spouseName}}'s Salary / Max Allowable Salary", {
                 spouseName,
               })}
             </Typography>
-            <Typography>
-              {t('{{totalFormatted}} / {{capFormatted}}', {
-                totalFormatted,
-                capFormatted,
-              })}
-            </Typography>
+            <Typography>{`${totalFormatted} / ${capFormatted}`}</Typography>
           </Box>
           <LinearProgress
             variant="determinate"
             value={progressValue}
             color="primary"
+            aria-labelledby="spouse-salary-progress-label"
+            aria-valuetext={t('{{total}} of {{cap}}', {
+              total: totalFormatted,
+              cap: capFormatted,
+            })}
           />
-          <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: 1,
+            }}
+          >
             <Typography variant="body2" sx={{ mt: 1, color: 'text.secondary' }}>
               {t("Remaining in {{spouseName}}'s Max Allowable Salary", {
                 spouseName,

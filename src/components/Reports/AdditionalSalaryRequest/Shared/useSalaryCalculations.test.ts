@@ -734,9 +734,11 @@ describe('useSalaryCalculations', () => {
         wrapper: ({ children }) => FormikWrapper({ children, values }),
       });
 
-      expect(result.current.spouseTotalAnnualSalary).toBe(42000); // 40000 + 2000
-      expect(result.current.spouseIndividualCap).toBe(50000);
-      expect(result.current.spouseRemainingCap).toBe(8000); // 50000 - 42000
+      expect(result.current.spouseCap).toEqual({
+        totalAnnualSalary: 42000, // 40000 + 2000
+        individualCap: 50000,
+        remainingCap: 8000, // 50000 - 42000
+      });
     });
 
     it('clamps spouseRemainingCap at 0 when spouse total exceeds cap', () => {
@@ -762,9 +764,11 @@ describe('useSalaryCalculations', () => {
         wrapper: ({ children }) => FormikWrapper({ children, values }),
       });
 
-      expect(result.current.spouseTotalAnnualSalary).toBe(55000);
-      expect(result.current.spouseIndividualCap).toBe(50000);
-      expect(result.current.spouseRemainingCap).toBe(0);
+      expect(result.current.spouseCap).toEqual({
+        totalAnnualSalary: 55000,
+        individualCap: 50000,
+        remainingCap: 0,
+      });
     });
 
     it('returns null for all spouse fields when no spouse', () => {
@@ -786,9 +790,7 @@ describe('useSalaryCalculations', () => {
         wrapper: ({ children }) => FormikWrapper({ children, values }),
       });
 
-      expect(result.current.spouseTotalAnnualSalary).toBeNull();
-      expect(result.current.spouseIndividualCap).toBeNull();
-      expect(result.current.spouseRemainingCap).toBeNull();
+      expect(result.current.spouseCap).toBeNull();
     });
   });
 });
