@@ -44,6 +44,10 @@ const calculationsDefault = gqlMock<
           geographicLocation: null,
         },
       ],
+      pageInfo: {
+        endCursor: null,
+        hasNextPage: false,
+      },
     },
   },
 }).designationSupportCalculations;

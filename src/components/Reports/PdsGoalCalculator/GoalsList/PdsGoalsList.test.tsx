@@ -109,6 +109,26 @@ describe('PdsGoalsList', () => {
     );
   });
 
+  it('fetches additional pages when hasNextPage is true', async () => {
+    render(
+      <PdsGoalCalculatorTestWrapper
+        withProvider={false}
+        onCall={mutationSpy}
+        calculationsMock={{
+          pageInfo: { endCursor: 'cursor-1', hasNextPage: true },
+        }}
+      >
+        <PdsGoalsList />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('PdsGoalCalculations', {
+        after: 'cursor-1',
+      }),
+    );
+  });
+
   it('calls delete mutation when a goal is deleted', async () => {
     const { findByRole } = render(
       <PdsGoalCalculatorTestWrapper
