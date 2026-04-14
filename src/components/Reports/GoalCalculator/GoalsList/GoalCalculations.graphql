@@ -25,10 +25,14 @@ fragment ListGoalCalculation on GoalCalculation {
   }
 }
 
-query GoalCalculations($accountListId: ID!) {
-  goalCalculations(accountListId: $accountListId) {
+query GoalCalculations($accountListId: ID!, $after: String) {
+  goalCalculations(accountListId: $accountListId, after: $after) {
     nodes {
       ...ListGoalCalculation
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
     }
   }
 }

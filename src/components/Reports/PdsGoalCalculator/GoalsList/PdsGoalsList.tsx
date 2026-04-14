@@ -4,6 +4,7 @@ import { Box, Button, CircularProgress, Stack, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import illustration6graybg from 'src/images/drawkit/grape/drawkit-grape-pack-illustration-6-gray-bg.svg';
 import { PdsGoalCard } from '../GoalCard/PdsGoalCard';
@@ -32,7 +33,12 @@ export const PdsGoalsList: React.FC = () => {
   const defaultName = t('User');
   const firstName = userData?.user.firstName ?? defaultName;
 
-  const { data, loading } = usePdsGoalCalculationsQuery();
+  const { data, error, fetchMore } = usePdsGoalCalculationsQuery();
+  const { loading } = useFetchAllPages({
+    fetchMore,
+    error,
+    pageInfo: data?.designationSupportCalculations.pageInfo,
+  });
   const [createPdsGoalCalculation] = useCreatePdsGoalCalculationMutation();
   const [deletePdsGoalCalculation] = useDeletePdsGoalCalculationMutation();
   const { goalMiscConstants, loading: constantsLoading } =

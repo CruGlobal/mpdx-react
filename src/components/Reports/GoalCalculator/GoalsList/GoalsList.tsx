@@ -4,6 +4,7 @@ import { Box, Button, CircularProgress, Stack, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import illustration6graybg from 'src/images/drawkit/grape/drawkit-grape-pack-illustration-6-gray-bg.svg';
 import { GoalCard } from '../GoalCard/GoalCard';
 import {
@@ -26,8 +27,13 @@ export const GoalsList: React.FC = () => {
   const { t } = useTranslation();
   const router = useRouter();
   const accountListId = useAccountListId() ?? '';
-  const { data, loading } = useGoalCalculationsQuery({
+  const { data, error, fetchMore } = useGoalCalculationsQuery({
     variables: { accountListId },
+  });
+  const { loading } = useFetchAllPages({
+    fetchMore,
+    error,
+    pageInfo: data?.goalCalculations.pageInfo,
   });
   const [createGoalCalculation] = useCreateGoalCalculationMutation({
     variables: { accountListId },
