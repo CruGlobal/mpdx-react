@@ -25,6 +25,15 @@ export interface SalaryCalculations {
   splitAsrType: 'user' | 'spouse' | null;
   /** `true` when the request requires additional approval */
   additionalApproval: boolean;
+  /** Spouse cap figures. `null` when no spouse; otherwise all three fields are present. */
+  spouseCap: {
+    /** Spouse's gross annual salary + pending ASR amount. */
+    totalAnnualSalary: number;
+    /** Spouse's individual salary cap. */
+    individualCap: number;
+    /** Spouse's remaining room under cap (cap - total, clamped at 0). */
+    remainingCap: number;
+  } | null;
 }
 export interface UseSalaryCalculationsProps {
   values: CompleteFormValues;
@@ -67,7 +76,7 @@ export const useSalaryCalculations = ({
     0;
   const spouseIndividualCap = spouse
     ? (requestData?.latestAdditionalSalaryRequest?.spouseCalculations
-        ?.currentSalaryCap ?? 0)
+        ?.currentSalaryCap ?? null)
     : null;
 
   const grossAnnualSalary = user?.currentSalary?.grossSalaryAmount ?? 0;
@@ -138,6 +147,18 @@ export const useSalaryCalculations = ({
       (exceedsCap && (!isMarried || spouseAtCap || spouseExceedsCap)) ||
       (userAtCap && isMarried && spouseExceedsCap);
 
+    const hasSpouseCap = isMarried && spouseIndividualCap !== null;
+    const spouseCap = hasSpouseCap
+      ? {
+          totalAnnualSalary: spouseTotalAnnualSalary,
+          individualCap: spouseIndividualCap,
+          remainingCap: Math.max(
+            0,
+            spouseIndividualCap - spouseTotalAnnualSalary,
+          ),
+        }
+      : null;
+
     return {
       total,
       calculatedTraditionalDeduction,
@@ -151,6 +172,7 @@ export const useSalaryCalculations = ({
       splitAsr,
       splitAsrType,
       additionalApproval,
+      spouseCap,
     };
   }, [
     values,
