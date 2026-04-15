@@ -21,7 +21,6 @@ import {
   CurrencyAdornment,
   PercentageAdornment,
 } from 'src/components/Reports/GoalCalculator/Shared/Adornments';
-import { AutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   DesignationSupportSalaryType,
@@ -94,7 +93,7 @@ export const SetupStep: React.FC = () => {
   };
 
   return (
-    <AutosaveForm>
+    <>
       <Box pb={4}>
         <Typography variant="h6">{t('Settings')}</Typography>
         <Typography pt={1}>
@@ -252,6 +251,6 @@ export const SetupStep: React.FC = () => {
           </Grid>
         </Grid>
       </Card>
-    </AutosaveForm>
+    </>
   );
 };

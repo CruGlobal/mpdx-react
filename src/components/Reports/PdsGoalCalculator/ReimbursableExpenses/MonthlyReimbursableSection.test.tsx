@@ -1,12 +1,12 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import {
   MpdGoalMiscConstantCategoryEnum,
   MpdGoalMiscConstantLabelEnum,
 } from 'src/graphql/types.generated';
 import { PdsGoalCalculatorTestWrapper } from '../PdsGoalCalculatorTestWrapper';
 import { MonthlyReimbursableSection } from './MonthlyReimbursableSection';
+import { editAmountCell } from './reimbursableExpensesTestUtils';
 
 const mutationSpy = jest.fn();
 
@@ -40,19 +40,6 @@ const TestComponent: React.FC = () => (
     <MonthlyReimbursableSection />
   </PdsGoalCalculatorTestWrapper>
 );
-
-const editAmountCell = async (
-  findByRole: ReturnType<typeof render>['findByRole'],
-  rowLabel: string,
-  newValue: string,
-) => {
-  const row = await findByRole('row', { name: new RegExp(rowLabel) });
-  userEvent.dblClick(row.querySelector('[data-field="amount"]')!);
-  const input = await findByRole('spinbutton');
-  userEvent.clear(input);
-  userEvent.type(input, newValue);
-  userEvent.tab();
-};
 
 describe('MonthlyReimbursableSection', () => {
   it('renders the section heading and column headers', async () => {

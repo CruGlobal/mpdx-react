@@ -1,5 +1,14 @@
 import React, { useState } from 'react';
-import { Box, Card, FormHelperText, Typography, styled } from '@mui/material';
+import InfoIcon from '@mui/icons-material/Info';
+import {
+  Box,
+  Card,
+  FormHelperText,
+  Stack,
+  Tooltip,
+  Typography,
+  styled,
+} from '@mui/material';
 import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import { BaseGrid } from 'src/components/Reports/GoalCalculator/SharedComponents/GoalCalculatorGrid/BaseGrid';
@@ -25,6 +34,7 @@ interface ReimbursableRow {
 
 interface ReimbursableExpensesGridProps {
   title: string;
+  titleTooltip?: string;
   fields: ReimbursableField[];
   subtotalLabel: string;
   subtotalValue: number;
@@ -46,7 +56,14 @@ const ErrorCell = styled(Box)(({ theme }) => ({
 
 export const ReimbursableExpensesGrid: React.FC<
   ReimbursableExpensesGridProps
-> = ({ title, fields, subtotalLabel, subtotalValue, subtotalTestId }) => {
+> = ({
+  title,
+  titleTooltip,
+  fields,
+  subtotalLabel,
+  subtotalValue,
+  subtotalTestId,
+}) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const { calculation } = usePdsGoalCalculator();
@@ -145,9 +162,14 @@ export const ReimbursableExpensesGrid: React.FC<
 
   return (
     <>
-      <Typography variant="h6" pb={2}>
-        {title}
-      </Typography>
+      <Stack direction="row" alignItems="center" gap={0.5} pb={2}>
+        <Typography variant="h6">{title}</Typography>
+        {titleTooltip && (
+          <Tooltip title={titleTooltip}>
+            <InfoIcon color="action" aria-label={titleTooltip} />
+          </Tooltip>
+        )}
+      </Stack>
       <StyledCard>
         <BaseGrid
           rows={rows}
