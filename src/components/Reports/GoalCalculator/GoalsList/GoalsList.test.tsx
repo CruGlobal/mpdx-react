@@ -1,15 +1,23 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GoalCalculationsQuery } from './GoalCalculations.generated';
 import { GoalsList } from './GoalsList';
 
+const mutationSpy = jest.fn();
+
 interface TestComponentProps {
   noGoals?: boolean;
+  hasNextPage?: boolean;
+  endCursor?: string | null;
 }
 
-const TestComponent: React.FC<TestComponentProps> = ({ noGoals = false }) => (
+const TestComponent: React.FC<TestComponentProps> = ({
+  noGoals = false,
+  hasNextPage = false,
+  endCursor = null,
+}) => (
   <TestRouter
     router={{
       query: { accountListId: 'account-list-1' },
@@ -26,9 +34,14 @@ const TestComponent: React.FC<TestComponentProps> = ({ noGoals = false }) => (
                   { name: 'Annual Giving Goal' },
                   { name: 'Partnership Goal' },
                 ],
+            pageInfo: {
+              endCursor,
+              hasNextPage,
+            },
           },
         },
       }}
+      onCall={mutationSpy}
     >
       <GoalsList />
     </GqlMockedProvider>
@@ -69,5 +82,16 @@ describe('GoalsList', () => {
     const { findByRole } = render(<TestComponent noGoals />);
 
     expect(await findByRole('img')).toBeInTheDocument();
+  });
+
+  it('fetches additional pages when hasNextPage is true', async () => {
+    render(<TestComponent hasNextPage endCursor="cursor-1" />);
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('GoalCalculations', {
+        accountListId: 'account-list-1',
+        after: 'cursor-1',
+      }),
+    );
   });
 });

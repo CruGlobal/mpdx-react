@@ -20,10 +20,14 @@ fragment PdsGoalCalculationFields on DesignationSupportCalculation {
   otherAnnualReimbursements
 }
 
-query PdsGoalCalculations {
-  designationSupportCalculations {
+query PdsGoalCalculations($after: String) {
+  designationSupportCalculations(after: $after) {
     nodes {
       ...PdsGoalCalculationFields
+    }
+    pageInfo {
+      endCursor
+      hasNextPage
     }
   }
 }
