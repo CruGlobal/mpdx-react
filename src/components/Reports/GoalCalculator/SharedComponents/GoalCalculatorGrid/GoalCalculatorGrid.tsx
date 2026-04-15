@@ -41,6 +41,7 @@ import {
 import { BudgetFamilyFragment } from '../../Shared/GoalCalculation.generated';
 import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
 import { GoalCalculatorSection } from '../../Shared/GoalCalculatorSection';
+import { BaseGrid } from './BaseGrid';
 import {
   UpdateSubBudgetCategoriesFragment,
   UpdateSubBudgetCategoriesFragmentDoc,
@@ -49,7 +50,6 @@ import {
   useUpdatePrimaryBudgetCategoryMutation,
   useUpdateSubBudgetCategoryMutation,
 } from './GoalCalculatorGrid.generated';
-import { StyledGrid } from './StyledGrid';
 import { getDirectInputDefaults } from './getDefaultDirectInput';
 
 const categoriesWithDefaults = [
@@ -581,26 +581,10 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
               {t('Add Line Item')}
             </Button>
 
-            <StyledGrid
+            <BaseGrid
               rows={dataWithTotal}
               columns={columns}
               processRowUpdate={processRowUpdate}
-              onCellEditStart={(_, event) => {
-                // This is event is triggered before the input exists, so wait briefly for it to be created
-                requestAnimationFrame(() => {
-                  const input =
-                    event.target instanceof HTMLElement &&
-                    event.target.querySelector('input');
-                  if (!input) {
-                    return;
-                  }
-
-                  // number inputs don't support selecting text, so temporarily switch to a text input
-                  input.type = 'text';
-                  input.setSelectionRange(0, input.value.length);
-                  input.type = 'number';
-                });
-              }}
               isCellEditable={(params) => {
                 // Don't allow editing the total row or label field when canDelete is false
                 if (params.id === 'total') {

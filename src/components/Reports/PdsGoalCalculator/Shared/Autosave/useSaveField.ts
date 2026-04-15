@@ -30,7 +30,9 @@ export const useSaveField = () => {
           },
           optimisticResponse: {
             updateDesignationSupportCalculation: {
+              __typename: 'DesignationSupportCalculationUpdateMutationPayload',
               designationSupportCalculation: {
+                __typename: 'DesignationSupportCalculation',
                 ...calculation,
                 ...attributes,
               },

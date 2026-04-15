@@ -4,6 +4,7 @@ import { Box, Button, CircularProgress, Stack, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import illustration6graybg from 'src/images/drawkit/grape/drawkit-grape-pack-illustration-6-gray-bg.svg';
 import { PdsGoalCard } from '../GoalCard/PdsGoalCard';
 import {
@@ -34,6 +35,8 @@ export const PdsGoalsList: React.FC = () => {
   const { data, loading } = usePdsGoalCalculationsQuery();
   const [createPdsGoalCalculation] = useCreatePdsGoalCalculationMutation();
   const [deletePdsGoalCalculation] = useDeletePdsGoalCalculationMutation();
+  const { goalMiscConstants, loading: constantsLoading } =
+    useGoalCalculatorConstants();
 
   const goals = data?.designationSupportCalculations.nodes;
 
@@ -48,7 +51,16 @@ export const PdsGoalsList: React.FC = () => {
   };
 
   const handleCreateGoal = async () => {
-    const { data } = await createPdsGoalCalculation();
+    const { data } = await createPdsGoalCalculation({
+      variables: {
+        attributes: {
+          ministryCellPhone:
+            goalMiscConstants.REIMBURSEMENTS_WITH_MAXIMUM?.PHONE?.fee,
+          ministryInternet:
+            goalMiscConstants.REIMBURSEMENTS_WITH_MAXIMUM?.INTERNET?.fee,
+        },
+      },
+    });
     const calculation =
       data?.createDesignationSupportCalculation?.designationSupportCalculation;
 
@@ -63,7 +75,11 @@ export const PdsGoalsList: React.FC = () => {
     <Container>
       <PdsGoalsListWelcome firstName={firstName} />
       <Stack direction="row" gap={2} pb={3}>
-        <Button variant="contained" onClick={handleCreateGoal}>
+        <Button
+          variant="contained"
+          onClick={handleCreateGoal}
+          disabled={constantsLoading}
+        >
           {t('Create a New Goal')}
         </Button>
       </Stack>

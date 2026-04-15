@@ -4,13 +4,15 @@ import { PdsGoalCalculatorTestWrapper } from '../PdsGoalCalculatorTestWrapper';
 import { ReimbursableExpensesStep } from './ReimbursableExpensesStep';
 
 describe('ReimbursableExpensesStep', () => {
-  it('renders the reimbursable expenses heading', () => {
-    const { getByText } = render(
-      <PdsGoalCalculatorTestWrapper>
+  it('renders the monthly reimbursable section', async () => {
+    const { findByRole } = render(
+      <PdsGoalCalculatorTestWrapper calculationMock={{ id: 'goal-1' }}>
         <ReimbursableExpensesStep />
       </PdsGoalCalculatorTestWrapper>,
     );
 
-    expect(getByText('Reimbursable Expenses')).toBeInTheDocument();
+    expect(
+      await findByRole('heading', { name: 'Monthly Reimbursable Expenses' }),
+    ).toBeInTheDocument();
   });
 });

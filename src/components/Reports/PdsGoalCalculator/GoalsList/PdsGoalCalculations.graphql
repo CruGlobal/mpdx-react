@@ -9,6 +9,15 @@ fragment PdsGoalCalculationFields on DesignationSupportCalculation {
   payRate
   benefits
   geographicLocation
+  ministryCellPhone
+  ministryInternet
+  mpdNewsletter
+  mpdMiscellaneous
+  accountTransfers
+  otherMonthlyReimbursements
+  conferenceRetreatCosts
+  ministryTravelMeals
+  otherAnnualReimbursements
 }
 
 query PdsGoalCalculations {

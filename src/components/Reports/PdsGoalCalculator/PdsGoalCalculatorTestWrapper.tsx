@@ -75,6 +75,10 @@ const hcmUserDefault = gqlMock<HcmUserQuery, HcmUserQueryVariables>(
 export type HcmUserMock = DeepPartial<HcmUserQuery['hcm'][number]>;
 export type GetUserMock = DeepPartial<GetUserQuery>;
 
+export type GoalCalculatorConstantsMock = DeepPartial<
+  GoalCalculatorConstantsQuery['constant']
+>;
+
 export interface PdsGoalCalculatorTestWrapperProps {
   children?: React.ReactNode;
   withProvider?: boolean;
@@ -82,6 +86,7 @@ export interface PdsGoalCalculatorTestWrapperProps {
   calculationMock?: PdsGoalCalculationMock;
   hcmUserMock?: HcmUserMock | null;
   userMock?: GetUserMock;
+  constantsMock?: GoalCalculatorConstantsMock;
   onCall?: MockLinkCallHandler;
   router?: React.ComponentProps<typeof TestRouter>['router'];
 }
@@ -95,6 +100,7 @@ export const PdsGoalCalculatorTestWrapper: React.FC<
   calculationMock,
   hcmUserMock,
   userMock,
+  constantsMock,
   onCall,
   router,
 }) => {
@@ -137,24 +143,27 @@ export const PdsGoalCalculatorTestWrapper: React.FC<
               },
               ...(userMock ? { GetUser: userMock } : {}),
               GoalCalculatorConstants: {
-                constant: {
-                  mpdGoalBenefitsConstants: [],
-                  mpdGoalGeographicConstants: [
-                    {
-                      location: 'None',
-                      percentageMultiplier: 0,
-                    },
-                    {
-                      location: 'Orlando, FL',
-                      percentageMultiplier: 0.06,
-                    },
-                    {
-                      location: 'New York, NY',
-                      percentageMultiplier: 0.12,
-                    },
-                  ],
-                  mpdGoalMiscConstants: [],
-                },
+                constant: merge(
+                  {
+                    mpdGoalBenefitsConstants: [],
+                    mpdGoalGeographicConstants: [
+                      {
+                        location: 'None',
+                        percentageMultiplier: 0,
+                      },
+                      {
+                        location: 'Orlando, FL',
+                        percentageMultiplier: 0.06,
+                      },
+                      {
+                        location: 'New York, NY',
+                        percentageMultiplier: 0.12,
+                      },
+                    ],
+                    mpdGoalMiscConstants: [],
+                  },
+                  constantsMock,
+                ),
               },
             }}
             onCall={onCall}

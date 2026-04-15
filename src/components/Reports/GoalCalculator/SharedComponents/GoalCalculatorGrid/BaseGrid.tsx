@@ -43,7 +43,31 @@ const StyledDataGrid = styled(DataGrid)({
   },
 });
 
-export const StyledGrid: React.FC<DataGridProps> = (props) => {
+/**
+ * Browsers reject setSelectionRange on input type="number". To pre-select
+ * the full value when the user opens a numeric cell for editing, temporarily
+ * flip the input to type="text", select the range, then flip back. The
+ * requestAnimationFrame is required because onCellEditStart fires before MUI
+ * has mounted the edit input.
+ */
+const selectAllOnEditStart: DataGridProps['onCellEditStart'] = (
+  _params,
+  event,
+) => {
+  requestAnimationFrame(() => {
+    const input =
+      event.target instanceof HTMLElement &&
+      event.target.querySelector('input');
+    if (!input) {
+      return;
+    }
+    input.type = 'text';
+    input.setSelectionRange(0, input.value.length);
+    input.type = 'number';
+  });
+};
+
+export const BaseGrid: React.FC<DataGridProps> = (props) => {
   return (
     <StyledDataGrid
       hideFooter
@@ -55,6 +79,7 @@ export const StyledGrid: React.FC<DataGridProps> = (props) => {
       columnHeaderHeight={38}
       isCellEditable={(params) => params.id !== 'total'}
       isRowSelectable={(params) => params.id !== 'total'}
+      onCellEditStart={selectAllOnEditStart}
       {...props}
     />
   );
