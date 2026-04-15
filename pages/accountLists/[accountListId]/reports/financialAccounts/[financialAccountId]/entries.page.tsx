@@ -101,14 +101,14 @@ const FinancialAccountEntries = (): ReactElement => {
   }, [data]);
 
   return (
-    <UserTypeAccess allowedUserType={UserTypeEnum.GlobalStaff}>
-      <>
-        <Head>
-          <title>
-            {`${appName} | ${t('Transactions Report - Responsibility Centers')}`}
-          </title>
-        </Head>
-        {accountListId ? (
+    <>
+      <Head>
+        <title>
+          {`${appName} | ${t('Transactions Report - Responsibility Centers')}`}
+        </title>
+      </Head>
+      {accountListId ? (
+        <UserTypeAccess allowedUserType={UserTypeEnum.GlobalStaff}>
           <Box sx={{ background: 'common.white' }}>
             <SidePanelsLayout
               headerHeight={headerHeight}
@@ -140,11 +140,11 @@ const FinancialAccountEntries = (): ReactElement => {
               }
             />
           </Box>
-        ) : (
-          <Loading loading />
-        )}
-      </>
-    </UserTypeAccess>
+        </UserTypeAccess>
+      ) : (
+        <Loading loading />
+      )}
+    </>
   );
 };
 

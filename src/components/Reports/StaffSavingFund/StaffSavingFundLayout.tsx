@@ -33,11 +33,11 @@ export const StaffSavingFundLayout: React.FC<StaffSavingFundLayoutProps> = ({
   ) as StaffSavingFundType;
 
   return (
-    <UserTypeAccess requireStaffAccount>
-      <>
-        <Head>
-          <title>{`${pageTitle}`}</title>
-        </Head>
+    <>
+      <Head>
+        <title>{`${pageTitle}`}</title>
+      </Head>
+      <UserTypeAccess requireStaffAccount>
         <StaffSavingFundPageWrapper>
           <SidePanelsLayout
             isScrollBox={false}
@@ -54,7 +54,7 @@ export const StaffSavingFundLayout: React.FC<StaffSavingFundLayoutProps> = ({
             mainContent={children}
           />
         </StaffSavingFundPageWrapper>
-      </>
-    </UserTypeAccess>
+      </UserTypeAccess>
+    </>
   );
 };

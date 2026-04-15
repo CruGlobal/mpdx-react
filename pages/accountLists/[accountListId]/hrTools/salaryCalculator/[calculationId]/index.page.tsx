@@ -42,11 +42,11 @@ export const SalaryCalculatorEditPage: React.FC = () => {
   };
 
   return (
-    <UserTypeAccess requireStaffAccount>
-      <>
-        <Head>
-          <title>{`${appName} | ${t('Salary Calculator')}`}</title>
-        </Head>
+    <>
+      <Head>
+        <title>{`${appName} | ${t('Salary Calculator')}`}</title>
+      </Head>
+      <UserTypeAccess requireStaffAccount>
         <SidePanelsLayout
           isScrollBox={false}
           leftPanel={
@@ -72,8 +72,8 @@ export const SalaryCalculatorEditPage: React.FC = () => {
             </SalaryCalculatorProvider>
           }
         />
-      </>
-    </UserTypeAccess>
+      </UserTypeAccess>
+    </>
   );
 };
 

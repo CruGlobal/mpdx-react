@@ -25,19 +25,18 @@ export const GoalCalculatorPage: React.FC = () => {
   const accountListId = useAccountListId();
 
   const [isNavListOpen, setNavListOpen] = useState(false);
-  const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
 
   const handleNavListToggle = () => {
     setNavListOpen(!isNavListOpen);
   };
 
   return (
-    <UserTypeAccess>
-      <>
-        <Head>
-          <title>{`${appName} | ${t('Reports - Goal Calculation')}`}</title>
-        </Head>
-        {accountListId ? (
+    <>
+      <Head>
+        <title>{`${appName} | ${t('Reports - Goal Calculation')}`}</title>
+      </Head>
+      {accountListId ? (
+        <UserTypeAccess>
           <ReportPageWrapper>
             <SidePanelsLayout
               isScrollBox={false}
@@ -46,8 +45,6 @@ export const GoalCalculatorPage: React.FC = () => {
                   isOpen={isNavListOpen}
                   selectedId="goalCalculation"
                   onClose={handleNavListToggle}
-                  designationAccounts={designationAccounts}
-                  setDesignationAccounts={setDesignationAccounts}
                   navType={NavTypeEnum.HrTools}
                 />
               }
@@ -67,11 +64,11 @@ export const GoalCalculatorPage: React.FC = () => {
               }
             />
           </ReportPageWrapper>
-        ) : (
-          <Loading loading />
-        )}
-      </>
-    </UserTypeAccess>
+        </UserTypeAccess>
+      ) : (
+        <Loading loading />
+      )}
+    </>
   );
 };
 

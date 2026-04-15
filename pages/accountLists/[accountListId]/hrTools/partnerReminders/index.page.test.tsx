@@ -10,17 +10,13 @@ import {
 } from '__tests__/util/windowResizeObserver';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { StaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
-import {
-  UserPreferenceContext,
-  UserPreferenceType,
-} from 'src/components/User/Preferences/UserPreferenceProvider';
 import { UserTypeEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import PartnerRemindersReportPage, { getServerSideProps } from './index.page';
 
 const mutationSpy = jest.fn();
 
-const mockStaffAccount = {
+const mocks = {
   StaffAccount: {
     staffAccount: {
       id: '12345',
@@ -28,29 +24,28 @@ const mockStaffAccount = {
     },
   },
 };
-
-const defaultContext: UserPreferenceType = {
-  locale: 'en-US',
-  userType: UserTypeEnum.UsStaff,
-};
-
 interface ComponentProps {
-  contextValue: UserPreferenceType;
+  userType?: UserTypeEnum;
 }
 
-const Components: React.FC<ComponentProps> = ({ contextValue }) => (
+const Components: React.FC<ComponentProps> = ({
+  userType = UserTypeEnum.UsStaff,
+}) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
       <TestRouter>
         <GqlMockedProvider<{
           StaffAccount: StaffAccountQuery;
         }>
-          mocks={mockStaffAccount}
+          mocks={{
+            ...mocks,
+            GetUser: {
+              user: { userType },
+            },
+          }}
           onCall={mutationSpy}
         >
-          <UserPreferenceContext.Provider value={contextValue}>
-            <PartnerRemindersReportPage />
-          </UserPreferenceContext.Provider>
+          <PartnerRemindersReportPage />
         </GqlMockedProvider>
       </TestRouter>
     </SnackbarProvider>
@@ -67,7 +62,7 @@ describe('Partner Reminders Report Page', () => {
   });
 
   it('should show initial partner reminders report page', async () => {
-    const { findByRole } = render(<Components contextValue={defaultContext} />);
+    const { findByRole } = render(<Components />);
 
     expect(
       await findByRole('heading', { name: /online reminder system/i }),
@@ -75,9 +70,7 @@ describe('Partner Reminders Report Page', () => {
   });
 
   it('should open and close menu', async () => {
-    const { findByRole, getByRole, queryByRole } = render(
-      <Components contextValue={defaultContext} />,
-    );
+    const { findByRole, getByRole, queryByRole } = render(<Components />);
 
     userEvent.click(
       await findByRole('button', { name: 'Toggle Navigation Panel' }),
@@ -104,9 +97,7 @@ describe('Partner Reminders Report Page', () => {
           mocks={mockNoStaffAccount}
           onCall={mutationSpy}
         >
-          <UserPreferenceContext.Provider value={defaultContext}>
-            <PartnerRemindersReportPage />
-          </UserPreferenceContext.Provider>
+          <PartnerRemindersReportPage />
         </GqlMockedProvider>
       </TestRouter>,
     );
@@ -122,9 +113,7 @@ describe('Partner Reminders Report Page', () => {
 
   it('should show limited access if user does not have access to page', async () => {
     const { findByText } = render(
-      <Components
-        contextValue={{ ...defaultContext, userType: UserTypeEnum.NonCru }}
-      />,
+      <Components userType={UserTypeEnum.NonCru} />,
     );
 
     expect(

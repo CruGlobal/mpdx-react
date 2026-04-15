@@ -2,27 +2,23 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
-import {
-  UserPreferenceContext,
-  UserPreferenceType,
-} from 'src/components/User/Preferences/UserPreferenceProvider';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
 import {
   GoalCalculatorPage,
   getServerSideProps,
 } from './[goalCalculationId].page';
 
-const defaultContext: UserPreferenceType = {
-  locale: 'en-US',
-  userType: UserTypeEnum.NonCru,
-};
-
 const Components = () => (
   <TestRouter>
-    <GqlMockedProvider>
-      <UserPreferenceContext.Provider value={defaultContext}>
-        <GoalCalculatorPage />
-      </UserPreferenceContext.Provider>
+    <GqlMockedProvider<{
+      GetUser: GetUserQuery;
+    }>
+      mocks={{
+        GetUser: { user: { userType: UserTypeEnum.NonCru } },
+      }}
+    >
+      <GoalCalculatorPage />
     </GqlMockedProvider>
   </TestRouter>
 );

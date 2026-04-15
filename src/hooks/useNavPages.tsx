@@ -1,8 +1,8 @@
 import { LinkProps } from 'next/link';
-import { ReactElement, useContext, useMemo } from 'react';
+import { ReactElement, useMemo } from 'react';
 import CompassIcon from '@mui/icons-material/Explore';
 import { useTranslation } from 'react-i18next';
-import { UserPreferenceContext } from 'src/components/User/Preferences/UserPreferenceProvider';
+import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useHrToolsNavItems } from './useHrToolsNavItems';
@@ -51,7 +51,8 @@ export interface NavPage {
 export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
   const accountListId = useAccountListId();
   const { t } = useTranslation();
-  const { userType } = useContext(UserPreferenceContext);
+  const { data } = useGetUserQuery();
+  const userType = data?.user.userType;
   const showTab = userType === UserTypeEnum.UsStaff;
 
   const reportItems = useReportNavItems();

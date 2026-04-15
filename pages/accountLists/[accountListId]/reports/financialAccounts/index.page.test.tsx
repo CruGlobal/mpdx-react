@@ -10,10 +10,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { FinancialAccountsQuery } from 'src/components/Reports/FinancialAccountsReport/FinancialAccounts/FinancialAccounts.generated';
 import { FinancialAccountsMock } from 'src/components/Reports/FinancialAccountsReport/FinancialAccounts/FinancialAccountsMocks';
-import {
-  UserPreferenceContext,
-  UserPreferenceType,
-} from 'src/components/User/Preferences/UserPreferenceProvider';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
@@ -24,17 +21,13 @@ const router = {
   query: { accountListId },
   isReady: true,
 };
-
-const defaultContext: UserPreferenceType = {
-  locale: 'en-US',
-  userType: UserTypeEnum.GlobalStaff,
-};
-
 interface ComponentProps {
-  contextValue: UserPreferenceType;
+  userType?: UserTypeEnum;
 }
 
-const Components: React.FC<ComponentProps> = ({ contextValue }) => (
+const Components: React.FC<ComponentProps> = ({
+  userType = UserTypeEnum.GlobalStaff,
+}) => (
   <I18nextProvider i18n={i18n}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <SnackbarProvider>
@@ -42,14 +35,16 @@ const Components: React.FC<ComponentProps> = ({ contextValue }) => (
           <TestRouter router={router}>
             <GqlMockedProvider<{
               FinancialAccounts: FinancialAccountsQuery;
+              GetUser: GetUserQuery;
             }>
               mocks={{
                 ...FinancialAccountsMock,
+                GetUser: {
+                  user: { userType },
+                },
               }}
             >
-              <UserPreferenceContext.Provider value={contextValue}>
-                <FinancialAccountsPage />
-              </UserPreferenceContext.Provider>
+              <FinancialAccountsPage />
             </GqlMockedProvider>
           </TestRouter>
         </ThemeProvider>
@@ -60,7 +55,7 @@ const Components: React.FC<ComponentProps> = ({ contextValue }) => (
 
 describe('Financial Accounts Page', () => {
   it('should show initial financial accounts page', async () => {
-    const { findByText } = render(<Components contextValue={defaultContext} />);
+    const { findByText } = render(<Components />);
 
     expect(await findByText('Responsibility Centers')).toBeInTheDocument();
 
@@ -68,9 +63,7 @@ describe('Financial Accounts Page', () => {
   });
 
   it('should open and close  menu', async () => {
-    const { findByRole, getByRole, queryByRole } = render(
-      <Components contextValue={defaultContext} />,
-    );
+    const { findByRole, getByRole, queryByRole } = render(<Components />);
 
     userEvent.click(
       await findByRole('button', { name: 'Toggle Navigation Panel' }),
@@ -82,9 +75,7 @@ describe('Financial Accounts Page', () => {
 
   it('should show limited access if user does not have access to page', async () => {
     const { findByText } = render(
-      <Components
-        contextValue={{ ...defaultContext, userType: UserTypeEnum.NonCru }}
-      />,
+      <Components userType={UserTypeEnum.NonCru} />,
     );
 
     expect(

@@ -28,11 +28,11 @@ const MinisterHousingAllowancePage: React.FC = () => {
   };
 
   return (
-    <UserTypeAccess requireStaffAccount>
-      <>
-        <Head>
-          <title>{`${appName} | ${t("Reports - Minister's Housing Allowance")}`}</title>
-        </Head>
+    <>
+      <Head>
+        <title>{`${appName} | ${t("Reports - Minister's Housing Allowance")}`}</title>
+      </Head>
+      <UserTypeAccess requireStaffAccount>
         <ReportPageWrapper>
           <SidePanelsLayout
             isScrollBox={false}
@@ -62,8 +62,8 @@ const MinisterHousingAllowancePage: React.FC = () => {
             }
           />
         </ReportPageWrapper>
-      </>
-    </UserTypeAccess>
+      </UserTypeAccess>
+    </>
   );
 };
 

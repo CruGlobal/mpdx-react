@@ -6,10 +6,7 @@ import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelper
 import { MinisterHousingAllowanceProvider } from 'src/components/Reports/MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { StaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
-import {
-  UserPreferenceContext,
-  UserPreferenceType,
-} from 'src/components/User/Preferences/UserPreferenceProvider';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
 import {
   HousingAllowanceRequestPageContent,
@@ -17,39 +14,36 @@ import {
 } from './[requestId].page';
 
 const requestId = '123';
-const mutationSpy = jest.fn();
 
-const mockStaffAccount = {
+const mocks = {
   StaffAccount: {
     staffAccount: {
       id: '12345',
       name: 'Test Account',
     },
   },
-};
-
-const defaultContext: UserPreferenceType = {
-  locale: 'en-US',
-  userType: UserTypeEnum.NonCru,
+  GetUser: {
+    user: {
+      userType: UserTypeEnum.NonCru,
+    },
+  },
 };
 
 const Components = () => (
   <TestRouter>
     <SnackbarProvider>
       <GqlMockedProvider<{
+        GetUser: GetUserQuery;
         StaffAccount: StaffAccountQuery;
       }>
-        mocks={mockStaffAccount}
-        onCall={mutationSpy}
+        mocks={mocks}
       >
-        <UserPreferenceContext.Provider value={defaultContext}>
-          <MinisterHousingAllowanceProvider
-            type={PageEnum.New}
-            requestId={requestId}
-          >
-            <HousingAllowanceRequestPageContent />
-          </MinisterHousingAllowanceProvider>
-        </UserPreferenceContext.Provider>
+        <MinisterHousingAllowanceProvider
+          type={PageEnum.New}
+          requestId={requestId}
+        >
+          <HousingAllowanceRequestPageContent />
+        </MinisterHousingAllowanceProvider>
       </GqlMockedProvider>
     </SnackbarProvider>
   </TestRouter>

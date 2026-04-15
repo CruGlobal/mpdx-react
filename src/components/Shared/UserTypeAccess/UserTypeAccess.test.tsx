@@ -4,74 +4,85 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
 import { StaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
-import {
-  UserPreferenceContext,
-  UserPreferenceType,
-} from 'src/components/User/Preferences/UserPreferenceProvider';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { UserTypeAccess } from './UserTypeAccess';
 
-const mockStaffAccount = {
-  StaffAccount: {
-    staffAccount: {
-      id: '',
-      name: 'Test Account',
-    },
-  },
-};
-
-const defaultContext: UserPreferenceType = {
-  locale: 'en-US',
-  userType: UserTypeEnum.UsStaff,
-};
+const id = 'staff-1';
 
 interface TestComponentProps {
-  contextValue: UserPreferenceType;
   requireStaffAccount?: boolean;
+  userType?: UserTypeEnum;
+  staffAccountId?: string | null;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
-  contextValue,
   requireStaffAccount,
+  userType = UserTypeEnum.UsStaff,
+  staffAccountId = id,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
       <GqlMockedProvider<{
         StaffAccount: StaffAccountQuery;
+        GetUser: GetUserQuery;
       }>
-        mocks={mockStaffAccount}
+        mocks={{
+          GetUser: { user: { userType } },
+          StaffAccount: {
+            staffAccount: staffAccountId
+              ? { id: staffAccountId, name: 'Test Account' }
+              : null,
+          },
+        }}
       >
-        <UserPreferenceContext.Provider value={contextValue}>
-          <UserTypeAccess
-            allowedUserType={UserTypeEnum.UsStaff}
-            requireStaffAccount={requireStaffAccount}
-          >
-            <div>Test Content</div>
-          </UserTypeAccess>
-        </UserPreferenceContext.Provider>
+        <UserTypeAccess
+          allowedUserType={UserTypeEnum.UsStaff}
+          requireStaffAccount={requireStaffAccount}
+        >
+          <div>Test Content</div>
+        </UserTypeAccess>
+      </GqlMockedProvider>
+    </TestRouter>
+  </ThemeProvider>
+);
+
+const ErrorTestComponent: React.FC = () => (
+  <ThemeProvider theme={theme}>
+    <TestRouter>
+      <GqlMockedProvider
+        mocks={{
+          GetUser: {
+            user: () => {
+              throw new Error('User group error');
+            },
+          },
+        }}
+      >
+        <UserTypeAccess allowedUserType={UserTypeEnum.UsStaff}>
+          <div>Test Content</div>
+        </UserTypeAccess>
       </GqlMockedProvider>
     </TestRouter>
   </ThemeProvider>
 );
 
 describe('UserTypeAccess', () => {
-  it('should render child component when user type is allowed', () => {
-    const { getByText } = render(
-      <TestComponent contextValue={defaultContext} />,
-    );
-    expect(getByText('Test Content')).toBeInTheDocument();
+  it('should render child component when user type is allowed', async () => {
+    const { findByText } = render(<TestComponent />);
+    expect(await findByText('Test Content')).toBeInTheDocument();
   });
 
-  it('should render LimitedAccess when user type is not allowed', () => {
-    const { getByRole, getByText } = render(
-      <TestComponent
-        contextValue={{ ...defaultContext, userType: UserTypeEnum.NonCru }}
-      />,
+  it('should render LimitedAccess when user type is not allowed', async () => {
+    const { findByRole, getByText } = render(
+      <TestComponent userType={UserTypeEnum.NonCru} />,
     );
 
     expect(
-      getByRole('heading', { name: 'Access to this feature is limited.' }),
+      await findByRole('heading', {
+        name: 'Access to this feature is limited.',
+      }),
     ).toBeInTheDocument();
     expect(
       getByText(
@@ -82,7 +93,7 @@ describe('UserTypeAccess', () => {
 
   it('should render LimitedAccess when staff account is required but not present', async () => {
     const { findByRole, getByText } = render(
-      <TestComponent contextValue={defaultContext} requireStaffAccount />,
+      <TestComponent requireStaffAccount staffAccountId={null} />,
     );
 
     expect(
@@ -95,18 +106,18 @@ describe('UserTypeAccess', () => {
     ).toBeInTheDocument();
   });
 
-  it('should render LimitedAccess with user group error message when there is an error loading user preferences', () => {
-    const { getByRole, getByText } = render(
-      <TestComponent
-        contextValue={{
-          ...defaultContext,
-          error: new Error('User group error'),
-        }}
-      />,
+  it('should render child component when staff account is required and present', async () => {
+    const { findByText } = render(
+      <TestComponent requireStaffAccount staffAccountId={id} />,
     );
+    expect(await findByText('Test Content')).toBeInTheDocument();
+  });
+
+  it('should render LimitedAccess with user group error message when there is an error loading the user', async () => {
+    const { findByRole, getByText } = render(<ErrorTestComponent />);
 
     expect(
-      getByRole('heading', { name: 'Unable to load this page' }),
+      await findByRole('heading', { name: 'Unable to load this page' }),
     ).toBeInTheDocument();
     expect(
       getByText(/something went wrong while loading your account information/i),

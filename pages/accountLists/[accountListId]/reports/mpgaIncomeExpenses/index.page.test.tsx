@@ -9,10 +9,7 @@ import {
 } from '__tests__/util/windowResizeObserver';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { StaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
-import {
-  UserPreferenceContext,
-  UserPreferenceType,
-} from 'src/components/User/Preferences/UserPreferenceProvider';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import MPGAReportPage, { getServerSideProps } from './index.page';
@@ -28,27 +25,24 @@ const mockStaffAccount = {
   },
 };
 
-const defaultContext: UserPreferenceType = {
-  locale: 'en-US',
-  userType: UserTypeEnum.UsStaff,
-};
-
 interface ComponentProps {
-  contextValue: UserPreferenceType;
+  userType?: UserTypeEnum;
 }
 
-const Components = ({ contextValue }: ComponentProps) => (
+const Components = ({ userType = UserTypeEnum.UsStaff }: ComponentProps) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
       <GqlMockedProvider<{
         StaffAccount: StaffAccountQuery;
+        GetUser: GetUserQuery;
       }>
-        mocks={mockStaffAccount}
+        mocks={{
+          ...mockStaffAccount,
+          GetUser: { user: { userType } },
+        }}
         onCall={mutationSpy}
       >
-        <UserPreferenceContext.Provider value={contextValue}>
-          <MPGAReportPage />
-        </UserPreferenceContext.Provider>
+        <MPGAReportPage />
       </GqlMockedProvider>
     </TestRouter>
   </ThemeProvider>
@@ -68,7 +62,7 @@ describe('MPGA Report Page', () => {
   });
 
   it('should show initial mpga report page', async () => {
-    const { findByText } = render(<Components contextValue={defaultContext} />);
+    const { findByText } = render(<Components />);
 
     expect(
       await findByText(/ministry partner giving analysis/i),
@@ -76,9 +70,7 @@ describe('MPGA Report Page', () => {
   });
 
   it('should open and close  menu', async () => {
-    const { findByRole, getByRole, queryByRole } = render(
-      <Components contextValue={defaultContext} />,
-    );
+    const { findByRole, getByRole, queryByRole } = render(<Components />);
 
     userEvent.click(
       await findByRole('button', { name: 'Toggle Navigation Panel' }),
@@ -115,9 +107,7 @@ describe('MPGA Report Page', () => {
 
   it('should show limited access if user does not have access to page', async () => {
     const { findByText } = render(
-      <Components
-        contextValue={{ ...defaultContext, userType: UserTypeEnum.NonCru }}
-      />,
+      <Components userType={UserTypeEnum.NonCru} />,
     );
 
     expect(

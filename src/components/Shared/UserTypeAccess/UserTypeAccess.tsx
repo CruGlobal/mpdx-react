@@ -1,6 +1,6 @@
 import Loading from 'src/components/Loading';
 import { useStaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
-import { useUserPreferenceContext } from 'src/components/User/Preferences/UserPreferenceProvider';
+import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
 import { LimitedAccess } from '../LimitedAccess/LimitedAccess';
 
@@ -15,25 +15,27 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
   requireStaffAccount,
   children,
 }) => {
-  const { userType, loading: userLoading, error } = useUserPreferenceContext();
+  const { data, loading: userLoading, error } = useGetUserQuery();
   const { data: staffAccountData, loading } = useStaffAccountQuery({
-    skip: !requireStaffAccount || userType !== allowedUserType,
+    skip: !requireStaffAccount,
   });
+
+  const userType = data?.user.userType;
 
   if (error) {
     return <LimitedAccess userGroupError />;
   }
 
-  if (userLoading) {
-    return <Loading loading />;
+  if (userLoading && !userType) {
+    return null;
   }
 
-  if (userType !== allowedUserType) {
+  if (userType && userType !== allowedUserType) {
     return <LimitedAccess />;
   }
 
   if (requireStaffAccount) {
-    if (loading) {
+    if (loading && !staffAccountData) {
       return <Loading loading />;
     }
     if (!staffAccountData?.staffAccount?.id) {

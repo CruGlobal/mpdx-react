@@ -17,8 +17,18 @@ export const LimitedAccess: React.FC<LimitedAccessProps> = ({
   const { t } = useTranslation();
   const accountListId = useAccountListId();
 
-  const { title, content, ending } = getLimitedText({
+  const link = (
+    <Link
+      href="mailto:support@mpdx.org"
+      style={{ color: theme.palette.primary.main, fontWeight: 'bold' }}
+    >
+      support@mpdx.org
+    </Link>
+  );
+
+  const { title, content } = getLimitedText({
     t,
+    link,
     noStaffAccount,
     userGroupError,
   });
@@ -35,16 +45,7 @@ export const LimitedAccess: React.FC<LimitedAccessProps> = ({
     >
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
         <Typography variant="h2">{title}</Typography>
-        <Typography variant="h6">
-          {content}
-          <Link
-            href="mailto:support@mpdx.org"
-            style={{ color: theme.palette.primary.main, fontWeight: 'bold' }}
-          >
-            support@mpdx.org
-          </Link>
-          {ending}
-        </Typography>
+        <Typography variant="h6">{content}</Typography>
         <Box sx={{ display: 'flex', mt: 2 }}>
           <Button variant="contained" href={`/accountLists/${accountListId}`}>
             {t('Back to Dashboard')}

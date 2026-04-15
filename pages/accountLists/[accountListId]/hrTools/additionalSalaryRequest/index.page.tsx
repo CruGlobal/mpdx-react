@@ -153,18 +153,18 @@ const AdditionalSalaryRequestPage: React.FC = () => {
   const { appName } = useGetAppSettings();
 
   return (
-    <UserTypeAccess requireStaffAccount>
-      <>
-        <Head>
-          <title>{`${appName} | ${t('Additional Salary Request')}`}</title>
-        </Head>
+    <>
+      <Head>
+        <title>{`${appName} | ${t('Additional Salary Request')}`}</title>
+      </Head>
+      <UserTypeAccess requireStaffAccount>
         <ReportPageWrapper>
           <AdditionalSalaryRequestProvider>
             <AdditionalSalaryRequestContent />
           </AdditionalSalaryRequestProvider>
         </ReportPageWrapper>
-      </>
-    </UserTypeAccess>
+      </UserTypeAccess>
+    </>
   );
 };
 

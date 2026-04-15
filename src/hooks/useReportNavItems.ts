@@ -1,6 +1,6 @@
-import { useContext, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { UserPreferenceContext } from 'src/components/User/Preferences/UserPreferenceProvider';
+import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
 
 export type NavItems = {
@@ -12,7 +12,8 @@ export type NavItems = {
 
 export function useReportNavItems(): NavItems[] {
   const { t } = useTranslation();
-  const { userType } = useContext(UserPreferenceContext);
+  const { data } = useGetUserQuery();
+  const userType = data?.user.userType;
   const usStaff = userType === UserTypeEnum.UsStaff;
   const globalStaff = userType === UserTypeEnum.GlobalStaff;
 

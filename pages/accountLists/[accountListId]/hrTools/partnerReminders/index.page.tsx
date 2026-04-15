@@ -28,11 +28,11 @@ const PartnerRemindersReportPage: React.FC = () => {
   };
 
   return (
-    <UserTypeAccess requireStaffAccount>
-      <>
-        <Head>
-          <title>{`${appName} | ${t('Reports')} - ${t('Ministry Partner Reminders')}`}</title>
-        </Head>
+    <>
+      <Head>
+        <title>{`${appName} | ${t('Reports')} - ${t('Ministry Partner Reminders')}`}</title>
+      </Head>
+      <UserTypeAccess requireStaffAccount>
         <PartnerRemindersReportPageWrapper>
           <SidePanelsLayout
             isScrollBox={false}
@@ -55,8 +55,8 @@ const PartnerRemindersReportPage: React.FC = () => {
             }
           />
         </PartnerRemindersReportPageWrapper>
-      </>
-    </UserTypeAccess>
+      </UserTypeAccess>
+    </>
   );
 };
 

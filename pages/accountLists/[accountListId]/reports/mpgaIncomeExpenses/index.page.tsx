@@ -28,13 +28,13 @@ const MPGAReportPage: React.FC = () => {
   };
 
   return (
-    <UserTypeAccess requireStaffAccount>
-      <>
-        <Head>
-          <title>{`${appName} | ${t('Reports')} - ${t(
-            'MPGA Monthly Report',
-          )}`}</title>
-        </Head>
+    <>
+      <Head>
+        <title>{`${appName} | ${t('Reports')} - ${t(
+          'MPGA Monthly Report',
+        )}`}</title>
+      </Head>
+      <UserTypeAccess requireStaffAccount>
         <MPGAReportPageWrapper>
           <SidePanelsLayout
             isScrollBox={false}
@@ -57,8 +57,8 @@ const MPGAReportPage: React.FC = () => {
             }
           />
         </MPGAReportPageWrapper>
-      </>
-    </UserTypeAccess>
+      </UserTypeAccess>
+    </>
   );
 };
 

@@ -7,7 +7,7 @@ import { session } from '__tests__/fixtures/session';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetDesignationAccountsQuery } from 'src/components/EditDonationModal/EditDonationModal.generated';
-import { UserPreferenceContext } from 'src/components/User/Preferences/UserPreferenceProvider';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { MultiPageMenu, NavTypeEnum } from './MultiPageMenu';
@@ -43,22 +43,26 @@ describe('MultiPageMenu', () => {
   });
 
   it('Cru US default', async () => {
-    const { getByText, queryByText } = render(
+    const { findByText, getByText, queryByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider>
-            <UserPreferenceContext.Provider
-              value={{ userType: UserTypeEnum.UsStaff, locale: 'en-US' }}
-            >
-              <MultiPageMenu
-                selectedId={selected}
-                isOpen={true}
-                onClose={() => {}}
-                designationAccounts={[]}
-                setDesignationAccounts={() => {}}
-                navType={NavTypeEnum.Reports}
-              />
-            </UserPreferenceContext.Provider>
+          <GqlMockedProvider<{
+            GetUser: GetUserQuery;
+          }>
+            mocks={{
+              GetUser: {
+                user: { userType: UserTypeEnum.UsStaff },
+              },
+            }}
+          >
+            <MultiPageMenu
+              selectedId={selected}
+              isOpen={true}
+              onClose={() => {}}
+              designationAccounts={[]}
+              setDesignationAccounts={() => {}}
+              navType={NavTypeEnum.Reports}
+            />
           </GqlMockedProvider>
         </TestRouter>
       </ThemeProvider>,
@@ -67,7 +71,7 @@ describe('MultiPageMenu', () => {
     expect(getByText('Donations')).toBeInTheDocument();
     expect(getByText('14 Month Partner Report')).toBeInTheDocument();
     expect(getByText('14 Month Salary Report')).toBeInTheDocument();
-    expect(getByText('Staff Expense Report')).toBeInTheDocument();
+    expect(await findByText('Staff Expense Report')).toBeInTheDocument();
     expect(getByText('MPGA Monthly Report')).toBeInTheDocument();
     expect(getByText('Designation Accounts')).toBeInTheDocument();
     expect(getByText('Expected Monthly Total')).toBeInTheDocument();
@@ -78,22 +82,26 @@ describe('MultiPageMenu', () => {
   });
 
   it('Cru Global default', async () => {
-    const { getByText, queryByText } = render(
+    const { findByText, getByText, queryByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider>
-            <UserPreferenceContext.Provider
-              value={{ userType: UserTypeEnum.GlobalStaff, locale: 'en-US' }}
-            >
-              <MultiPageMenu
-                selectedId={selected}
-                isOpen={true}
-                onClose={() => {}}
-                designationAccounts={[]}
-                setDesignationAccounts={() => {}}
-                navType={NavTypeEnum.Reports}
-              />
-            </UserPreferenceContext.Provider>
+          <GqlMockedProvider<{
+            GetUser: GetUserQuery;
+          }>
+            mocks={{
+              GetUser: {
+                user: { userType: UserTypeEnum.GlobalStaff },
+              },
+            }}
+          >
+            <MultiPageMenu
+              selectedId={selected}
+              isOpen={true}
+              onClose={() => {}}
+              designationAccounts={[]}
+              setDesignationAccounts={() => {}}
+              navType={NavTypeEnum.Reports}
+            />
           </GqlMockedProvider>
         </TestRouter>
       </ThemeProvider>,
@@ -103,7 +111,7 @@ describe('MultiPageMenu', () => {
     expect(getByText('14 Month Partner Report')).toBeInTheDocument();
     expect(getByText('14 Month Salary Report')).toBeInTheDocument();
     expect(getByText('Designation Accounts')).toBeInTheDocument();
-    expect(getByText('Responsibility Centers')).toBeInTheDocument();
+    expect(await findByText('Responsibility Centers')).toBeInTheDocument();
     expect(getByText('Expected Monthly Total')).toBeInTheDocument();
     expect(getByText('Partner Giving Analysis')).toBeInTheDocument();
     expect(getByText('Coaching')).toBeInTheDocument();
@@ -116,19 +124,23 @@ describe('MultiPageMenu', () => {
     const { getByText, queryByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider>
-            <UserPreferenceContext.Provider
-              value={{ userType: UserTypeEnum.NonCru, locale: 'en-US' }}
-            >
-              <MultiPageMenu
-                selectedId={selected}
-                isOpen={true}
-                onClose={() => {}}
-                designationAccounts={[]}
-                setDesignationAccounts={() => {}}
-                navType={NavTypeEnum.Reports}
-              />
-            </UserPreferenceContext.Provider>
+          <GqlMockedProvider<{
+            GetUser: GetUserQuery;
+          }>
+            mocks={{
+              GetUser: {
+                user: { userType: UserTypeEnum.NonCru },
+              },
+            }}
+          >
+            <MultiPageMenu
+              selectedId={selected}
+              isOpen={true}
+              onClose={() => {}}
+              designationAccounts={[]}
+              setDesignationAccounts={() => {}}
+              navType={NavTypeEnum.Reports}
+            />
           </GqlMockedProvider>
         </TestRouter>
       </ThemeProvider>,

@@ -57,11 +57,11 @@ export const HousingAllowanceRequestPageContent: React.FC = () => {
   };
 
   return (
-    <UserTypeAccess requireStaffAccount>
-      <>
-        <Head>
-          <title>{title}</title>
-        </Head>
+    <>
+      <Head>
+        <title>{title}</title>
+      </Head>
+      <UserTypeAccess requireStaffAccount>
         <RequestPageWrapper>
           <SidePanelsLayout
             isScrollBox={false}
@@ -98,8 +98,8 @@ export const HousingAllowanceRequestPageContent: React.FC = () => {
             }
           />
         </RequestPageWrapper>
-      </>
-    </UserTypeAccess>
+      </UserTypeAccess>
+    </>
   );
 };
 

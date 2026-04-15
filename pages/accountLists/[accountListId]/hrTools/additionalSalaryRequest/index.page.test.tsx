@@ -10,30 +10,21 @@ import {
 } from '__tests__/util/windowResizeObserver';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { StaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
-import {
-  UserPreferenceContext,
-  UserPreferenceType,
-} from 'src/components/User/Preferences/UserPreferenceProvider';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import AdditionalSalaryRequestPage, { getServerSideProps } from './index.page';
 
-const mockStaffAccount = {
+const mocks = {
   StaffAccount: {
     staffAccount: {
       id: '12345',
       name: 'Test Account',
     },
   },
-};
-
-const mockAdditionalSalaryRequests = {
   AdditionalSalaryRequest: {
     latestAdditionalSalaryRequest: null,
   },
-};
-
-const mockHcmData = {
   HcmData: {
     hcm: [
       {
@@ -48,32 +39,28 @@ const mockHcmData = {
     ],
   },
 };
-
-const defaultContext: UserPreferenceType = {
-  locale: 'en-US',
-  userType: UserTypeEnum.UsStaff,
-};
-
 interface TestComponentProps {
-  contextValue: UserPreferenceType;
+  userType?: UserTypeEnum;
 }
 
-const TestComponent: React.FC<TestComponentProps> = ({ contextValue }) => (
+const TestComponent: React.FC<TestComponentProps> = ({
+  userType = UserTypeEnum.UsStaff,
+}) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
       <TestRouter router={{ query: { accountListId: 'account-list-1' } }}>
         <GqlMockedProvider<{
           StaffAccount: StaffAccountQuery;
+          GetUser: GetUserQuery;
         }>
           mocks={{
-            ...mockStaffAccount,
-            ...mockAdditionalSalaryRequests,
-            ...mockHcmData,
+            ...mocks,
+            GetUser: {
+              user: { userType },
+            },
           }}
         >
-          <UserPreferenceContext.Provider value={contextValue}>
-            <AdditionalSalaryRequestPage />
-          </UserPreferenceContext.Provider>
+          <AdditionalSalaryRequestPage />
         </GqlMockedProvider>
       </TestRouter>
     </SnackbarProvider>
@@ -94,9 +81,7 @@ describe('AdditionalSalaryRequest page', () => {
   });
 
   it('renders page', async () => {
-    const { findByRole } = render(
-      <TestComponent contextValue={defaultContext} />,
-    );
+    const { findByRole } = render(<TestComponent />);
 
     expect(
       await findByRole('heading', { name: 'About this Form' }),
@@ -104,9 +89,7 @@ describe('AdditionalSalaryRequest page', () => {
   });
 
   it('should open and close menu', async () => {
-    const { findByRole, getByRole, queryByRole } = render(
-      <TestComponent contextValue={defaultContext} />,
-    );
+    const { findByRole, getByRole, queryByRole } = render(<TestComponent />);
 
     userEvent.click(
       await findByRole('button', { name: 'Toggle HR Tools Menu' }),
@@ -148,9 +131,7 @@ describe('AdditionalSalaryRequest page', () => {
 
   it('should show limited access if user does not have access to page', async () => {
     const { findByText } = render(
-      <TestComponent
-        contextValue={{ ...defaultContext, userType: UserTypeEnum.NonCru }}
-      />,
+      <TestComponent userType={UserTypeEnum.NonCru} />,
     );
 
     expect(

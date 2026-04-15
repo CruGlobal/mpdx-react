@@ -47,15 +47,11 @@ const RightPanelContent = styled('div')(({ theme }) => ({
 interface GoalCalculatorContentProps {
   isNavListOpen: boolean;
   onNavListToggle: () => void;
-  designationAccounts: string[];
-  setDesignationAccounts: (accounts: string[]) => void;
 }
 
 const GoalCalculatorContent: React.FC<GoalCalculatorContentProps> = ({
   isNavListOpen,
   onNavListToggle,
-  designationAccounts,
-  setDesignationAccounts,
 }) => {
   const {
     rightPanelContent,
@@ -95,8 +91,6 @@ const GoalCalculatorContent: React.FC<GoalCalculatorContentProps> = ({
           isOpen={isNavListOpen}
           selectedId="goalCalculation"
           onClose={onNavListToggle}
-          designationAccounts={designationAccounts}
-          setDesignationAccounts={setDesignationAccounts}
           navType={NavTypeEnum.Reports}
         />
       }
@@ -134,34 +128,31 @@ export const GoalCalculatorPage: React.FC = () => {
   const { appName } = useGetAppSettings();
   const accountListId = useAccountListId();
   const [isNavListOpen, setNavListOpen] = useState(false);
-  const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
 
   const handleNavListToggle = () => {
     setNavListOpen(!isNavListOpen);
   };
 
   return (
-    <UserTypeAccess>
-      <>
-        <Head>
-          <title>{`${appName} | ${t('Reports - Goal Calculation')}`}</title>
-        </Head>
-        {accountListId ? (
+    <>
+      <Head>
+        <title>{`${appName} | ${t('Reports - Goal Calculation')}`}</title>
+      </Head>
+      {accountListId ? (
+        <UserTypeAccess>
           <ReportPageWrapper>
             <GoalCalculatorProvider>
               <GoalCalculatorContent
                 isNavListOpen={isNavListOpen}
                 onNavListToggle={handleNavListToggle}
-                designationAccounts={designationAccounts}
-                setDesignationAccounts={setDesignationAccounts}
               />
             </GoalCalculatorProvider>
           </ReportPageWrapper>
-        ) : (
-          <Loading loading />
-        )}
-      </>
-    </UserTypeAccess>
+        </UserTypeAccess>
+      ) : (
+        <Loading loading />
+      )}
+    </>
   );
 };
 

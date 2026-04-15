@@ -27,13 +27,13 @@ const FinancialAccountsPage: React.FC = () => {
     setNavListOpen(!navListOpen);
   };
   return (
-    <UserTypeAccess allowedUserType={UserTypeEnum.GlobalStaff}>
-      <>
-        <Head>
-          <title>{`${appName} | ${t('Reports - Responsibility Centers')}`}</title>
-        </Head>
+    <>
+      <Head>
+        <title>{`${appName} | ${t('Reports - Responsibility Centers')}`}</title>
+      </Head>
 
-        {accountListId ? (
+      {accountListId ? (
+        <UserTypeAccess allowedUserType={UserTypeEnum.GlobalStaff}>
           <Box sx={{ background: 'common.white' }}>
             <SidePanelsLayout
               headerHeight={headerHeight}
@@ -60,11 +60,11 @@ const FinancialAccountsPage: React.FC = () => {
               }
             />
           </Box>
-        ) : (
-          <Loading loading />
-        )}
-      </>
-    </UserTypeAccess>
+        </UserTypeAccess>
+      ) : (
+        <Loading loading />
+      )}
+    </>
   );
 };
 

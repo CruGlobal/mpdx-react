@@ -20,7 +20,6 @@ const StaffExpenseReportPageWrapper = styled(Box)(({ theme }) => ({
 export const StaffExpenseReportPage: React.FC = () => {
   const { appName } = useGetAppSettings();
   const { t } = useTranslation();
-  const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
   const [isNavListOpen, setIsNavListOpen] = useState<boolean>(false);
 
   const handleNavListToggle = () => {
@@ -28,13 +27,13 @@ export const StaffExpenseReportPage: React.FC = () => {
   };
 
   return (
-    <UserTypeAccess requireStaffAccount>
-      <>
-        <Head>
-          <title>{`${appName} | ${t('Reports')} | ${t(
-            'Staff Expense Report',
-          )}`}</title>
-        </Head>
+    <>
+      <Head>
+        <title>{`${appName} | ${t('Reports')} | ${t(
+          'Staff Expense Report',
+        )}`}</title>
+      </Head>
+      <UserTypeAccess requireStaffAccount>
         <StaffExpenseReportPageWrapper>
           <SidePanelsLayout
             isScrollBox={false}
@@ -43,8 +42,6 @@ export const StaffExpenseReportPage: React.FC = () => {
                 isOpen={isNavListOpen}
                 selectedId="staffExpense"
                 onClose={handleNavListToggle}
-                designationAccounts={designationAccounts}
-                setDesignationAccounts={setDesignationAccounts}
                 navType={NavTypeEnum.Reports}
               />
             }
@@ -59,8 +56,8 @@ export const StaffExpenseReportPage: React.FC = () => {
             }
           />
         </StaffExpenseReportPageWrapper>
-      </>
-    </UserTypeAccess>
+      </UserTypeAccess>
+    </>
   );
 };
 

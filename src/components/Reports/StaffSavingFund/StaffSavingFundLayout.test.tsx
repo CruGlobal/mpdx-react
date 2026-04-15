@@ -2,10 +2,7 @@ import { ThemeProvider } from '@emotion/react';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
-import {
-  UserPreferenceContext,
-  UserPreferenceType,
-} from 'src/components/User/Preferences/UserPreferenceProvider';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { StaffAccountQuery } from '../StaffAccount.generated';
@@ -27,11 +24,6 @@ const mockStaffAccount = {
   },
 };
 
-const defaultContext: UserPreferenceType = {
-  locale: 'en-US',
-  userType: UserTypeEnum.UsStaff,
-};
-
 const MockStaffSavingFundProvider = ({
   children,
 }: {
@@ -48,25 +40,29 @@ const MockStaffSavingFundProvider = ({
 );
 
 interface ComponentProps {
-  contextValue: UserPreferenceType;
+  userType?: UserTypeEnum;
 }
 
-const Components: React.FC<ComponentProps> = ({ contextValue }) => (
+const Components: React.FC<ComponentProps> = ({
+  userType = UserTypeEnum.UsStaff,
+}) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
       <GqlMockedProvider<{
         StaffAccount: StaffAccountQuery;
+        GetUser: GetUserQuery;
       }>
-        mocks={mockStaffAccount}
+        mocks={{
+          ...mockStaffAccount,
+          GetUser: { user: { userType } },
+        }}
         onCall={mutationSpy}
       >
-        <UserPreferenceContext.Provider value={contextValue}>
-          <MockStaffSavingFundProvider>
-            <StaffSavingFundLayout pageTitle={title} selectedMenuId={id}>
-              <div>Test Children</div>
-            </StaffSavingFundLayout>
-          </MockStaffSavingFundProvider>
-        </UserPreferenceContext.Provider>
+        <MockStaffSavingFundProvider>
+          <StaffSavingFundLayout pageTitle={title} selectedMenuId={id}>
+            <div>Test Children</div>
+          </StaffSavingFundLayout>
+        </MockStaffSavingFundProvider>
       </GqlMockedProvider>
     </TestRouter>
   </ThemeProvider>
@@ -74,12 +70,12 @@ const Components: React.FC<ComponentProps> = ({ contextValue }) => (
 
 describe('StaffSavingFundLayout', () => {
   it('renders children with staff account', async () => {
-    const { findByText } = render(<Components contextValue={defaultContext} />);
+    const { findByText } = render(<Components />);
     expect(await findByText('Test Children')).toBeInTheDocument();
   });
 
   it('should open nav list', async () => {
-    const { findByText } = render(<Components contextValue={defaultContext} />);
+    const { findByText } = render(<Components />);
     expect(await findByText(/salary calculator/i)).toBeInTheDocument();
     expect(await findByText(/hr tools/i)).toBeInTheDocument();
   });
@@ -113,9 +109,7 @@ describe('StaffSavingFundLayout', () => {
 
   it('should show limited access if user does not have access to page', async () => {
     const { findByText } = render(
-      <Components
-        contextValue={{ ...defaultContext, userType: UserTypeEnum.NonCru }}
-      />,
+      <Components userType={UserTypeEnum.NonCru} />,
     );
 
     expect(
