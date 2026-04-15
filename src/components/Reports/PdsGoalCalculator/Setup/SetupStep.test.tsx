@@ -286,9 +286,7 @@ describe('SetupStep', () => {
 
     expect(queryByText('Hours Per Week Calculator')).not.toBeInTheDocument();
 
-    await userEvent.click(
-      await findByLabelText('Open hours per week calculator'),
-    );
+    userEvent.click(await findByLabelText('Open hours per week calculator'));
 
     expect(await findByText('Hours Per Week Calculator')).toBeInTheDocument();
   });
