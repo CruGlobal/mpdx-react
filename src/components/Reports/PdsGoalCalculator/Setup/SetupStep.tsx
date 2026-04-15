@@ -85,8 +85,10 @@ export const SetupStep: React.FC = () => {
   const handleOpenHoursCalculator = () => {
     setRightPanelContent(
       <HoursPerWeekGrid
-        onAverageHoursChange={(_average) => {
-          // TODO: Save averageHoursPerWeek to the calculation via mutation
+        onAverageHoursChange={(average) => {
+          saveField({
+            hoursWorkedPerWeek: Math.round(average * 10) / 10,
+          });
         }}
       />,
     );

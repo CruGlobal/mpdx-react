@@ -6,7 +6,13 @@ import {
   DesignationSupportStatus,
 } from 'src/graphql/types.generated';
 import { PdsGoalCalculatorTestWrapper } from '../PdsGoalCalculatorTestWrapper';
+import { usePdsGoalCalculator } from '../Shared/PdsGoalCalculatorContext';
 import { SetupStep } from './SetupStep';
+
+const RightPanelProbe: React.FC = () => {
+  const { rightPanelContent } = usePdsGoalCalculator();
+  return <div data-testid="right-panel-probe">{rightPanelContent}</div>;
+};
 
 const mutationSpy = jest.fn();
 
@@ -270,18 +276,20 @@ describe('SetupStep', () => {
     ).toBeInTheDocument();
   });
 
-  it('does not throw when clicking the calculator icon', async () => {
-    const { findByLabelText } = render(
+  it('opens the hours per week calculator in the right panel when the icon is clicked', async () => {
+    const { findByLabelText, findByText, queryByText } = render(
       <PdsGoalCalculatorTestWrapper calculationMock={fullTimeHourlyMock}>
         <SetupStep />
+        <RightPanelProbe />
       </PdsGoalCalculatorTestWrapper>,
     );
 
-    // Clicking the icon sets right panel content via context.
-    // The actual panel rendering happens at the page level,
-    // so we just verify no errors are thrown.
+    expect(queryByText('Hours Per Week Calculator')).not.toBeInTheDocument();
+
     await userEvent.click(
       await findByLabelText('Open hours per week calculator'),
     );
+
+    expect(await findByText('Hours Per Week Calculator')).toBeInTheDocument();
   });
 });

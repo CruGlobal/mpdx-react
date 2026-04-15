@@ -1,7 +1,6 @@
-import React, { useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import DoNotDisturbAltIcon from '@mui/icons-material/DoNotDisturbAlt';
 import {
   Box,
   Button,
@@ -38,30 +37,6 @@ export interface HoursPerWeekEntry {
   canDelete: boolean;
 }
 
-const defaultEntries: HoursPerWeekEntry[] = [
-  {
-    id: 'default-regular',
-    label: 'Regular Week',
-    hoursPerWeek: 40,
-    weeks: 48,
-    canDelete: false,
-  },
-  {
-    id: 'default-travel',
-    label: 'Travel',
-    hoursPerWeek: 0,
-    weeks: 0,
-    canDelete: false,
-  },
-  {
-    id: 'default-vacation',
-    label: 'Unpaid Vacation',
-    hoursPerWeek: 0,
-    weeks: 0,
-    canDelete: false,
-  },
-];
-
 interface HoursPerWeekGridProps {
   onAverageHoursChange?: (averageHoursPerWeek: number) => void;
 }
@@ -70,7 +45,34 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
   onAverageHoursChange,
 }) => {
   const { t } = useTranslation();
+  const defaultEntries = useMemo<HoursPerWeekEntry[]>(
+    () => [
+      {
+        id: 'default-regular',
+        label: t('Regular Week'),
+        hoursPerWeek: 40,
+        weeks: 48,
+        canDelete: false,
+      },
+      {
+        id: 'default-travel',
+        label: t('Travel'),
+        hoursPerWeek: 0,
+        weeks: 0,
+        canDelete: false,
+      },
+      {
+        id: 'default-vacation',
+        label: t('Unpaid Vacation'),
+        hoursPerWeek: 0,
+        weeks: 0,
+        canDelete: false,
+      },
+    ],
+    [t],
+  );
   const [entries, setEntries] = useState<HoursPerWeekEntry[]>(defaultEntries);
+  const nextEntryIdRef = useRef(0);
 
   const totalWeeks = useMemo(
     () => entries.reduce((sum, entry) => sum + entry.weeks, 0),
@@ -116,7 +118,7 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
 
   const addEntry = useCallback(() => {
     const newEntry: HoursPerWeekEntry = {
-      id: `custom-${Date.now()}`,
+      id: `custom-${nextEntryIdRef.current++}`,
       label: t('New Entry'),
       hoursPerWeek: 0,
       weeks: 0,
@@ -155,7 +157,7 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
       {
         id: 'total',
         label: t('Total'),
-        hoursPerWeek: '',
+        hoursPerWeek: null,
         weeks: totalWeeks,
         totalHours: totalHours,
         canDelete: false,
@@ -212,20 +214,8 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
         headerName: '',
         width: 60,
         getActions: (params) => {
-          if (params.id === 'total') {
+          if (params.id === 'total' || !params.row.canDelete) {
             return [];
-          }
-
-          if (!params.row.canDelete) {
-            return [
-              <GridActionsCellItem
-                key="forbidden"
-                icon={<DoNotDisturbAltIcon />}
-                label="forbidden"
-                disabled
-                showInMenu={false}
-              />,
-            ];
           }
 
           return [
@@ -294,7 +284,7 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
             {t('Average Hours Worked Per Week')}
           </Typography>
           <Typography variant="body2" fontWeight="bold">
-            {averageHoursPerWeek}
+            {averageHoursPerWeek.toFixed(1)}
           </Typography>
         </FooterRow>
       </StyledCard>
