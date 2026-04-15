@@ -6,7 +6,13 @@ import {
   DesignationSupportStatus,
 } from 'src/graphql/types.generated';
 import { PdsGoalCalculatorTestWrapper } from '../PdsGoalCalculatorTestWrapper';
+import { usePdsGoalCalculator } from '../Shared/PdsGoalCalculatorContext';
 import { SetupStep } from './SetupStep';
+
+const RightPanelProbe: React.FC = () => {
+  const { rightPanelContent } = usePdsGoalCalculator();
+  return <div data-testid="right-panel-probe">{rightPanelContent}</div>;
+};
 
 const mutationSpy = jest.fn();
 
@@ -256,5 +262,32 @@ describe('SetupStep', () => {
         },
       }),
     );
+  });
+
+  it('renders the calculator icon button next to Hours Worked', async () => {
+    const { findByLabelText } = render(
+      <PdsGoalCalculatorTestWrapper calculationMock={fullTimeHourlyMock}>
+        <SetupStep />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    expect(
+      await findByLabelText('Open hours per week calculator'),
+    ).toBeInTheDocument();
+  });
+
+  it('opens the hours per week calculator in the right panel when the icon is clicked', async () => {
+    const { findByLabelText, findByText, queryByText } = render(
+      <PdsGoalCalculatorTestWrapper calculationMock={fullTimeHourlyMock}>
+        <SetupStep />
+        <RightPanelProbe />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    expect(queryByText('Hours Per Week Calculator')).not.toBeInTheDocument();
+
+    userEvent.click(await findByLabelText('Open hours per week calculator'));
+
+    expect(await findByText('Hours Per Week Calculator')).toBeInTheDocument();
   });
 });
