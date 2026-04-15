@@ -1,14 +1,7 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import {
-  Box,
-  Button,
-  Card,
-  Divider,
-  Typography,
-  styled,
-} from '@mui/material';
+import { Box, Button, Card, Divider, Typography, styled } from '@mui/material';
 import {
   GridActionsCellItem,
   GridColDef,
@@ -81,10 +74,7 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
 
   const totalHours = useMemo(
     () =>
-      entries.reduce(
-        (sum, entry) => sum + entry.hoursPerWeek * entry.weeks,
-        0,
-      ),
+      entries.reduce((sum, entry) => sum + entry.hoursPerWeek * entry.weeks, 0),
     [entries],
   );
 

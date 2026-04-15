@@ -36,8 +36,7 @@ import { HoursPerWeekGrid } from './HoursPerWeekGrid/HoursPerWeekGrid';
 export const SetupStep: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { calculation, hcmUser, setRightPanelContent } =
-    usePdsGoalCalculator();
+  const { calculation, hcmUser, setRightPanelContent } = usePdsGoalCalculator();
   const { data: userData } = useGetUserQuery();
   const fourOThreeB = hcmUser?.fourOThreeB;
   const totalFourOThreeBContributionPercentage = fourOThreeB
