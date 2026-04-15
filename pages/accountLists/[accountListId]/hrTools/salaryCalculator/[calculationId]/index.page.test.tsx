@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { SalaryCalculatorTestWrapper } from 'src/components/Reports/SalaryCalculator/SalaryCalculatorTestWrapper';
 import { UserTypeEnum } from 'src/graphql/types.generated';
-import { SalaryCalculatorEditPage } from './index.page';
+import { SalaryCalculatorEditOuterPage } from './index.page';
 
 interface ComponentProps {
   userType?: UserTypeEnum;
@@ -12,7 +12,7 @@ const Components: React.FC<ComponentProps> = ({
   userType = UserTypeEnum.UsStaff,
 }) => (
   <SalaryCalculatorTestWrapper userType={userType}>
-    <SalaryCalculatorEditPage />
+    <SalaryCalculatorEditOuterPage />
   </SalaryCalculatorTestWrapper>
 );
 

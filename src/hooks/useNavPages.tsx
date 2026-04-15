@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useUserOptionQuery } from './UserPreference.generated';
 import { useHrToolsNavItems } from './useHrToolsNavItems';
 import { useReportNavItems } from './useReportNavItems';
 import { useSettingsNavItems } from './useSettingsNavItems';
@@ -52,6 +53,9 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
   const accountListId = useAccountListId();
   const { t } = useTranslation();
   const { data } = useGetUserQuery();
+  const { data: userOptionData } = useUserOptionQuery({
+    variables: { key: 'user_type_verified' },
+  });
   const userType = data?.user.userType;
   const showTab = userType === UserTypeEnum.UsStaff;
 
@@ -103,7 +107,8 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
         })),
         showInNav: true,
       },
-      ...(process.env.DISABLE_NEW_REPORTS === 'true'
+      ...(process.env.DISABLE_NEW_REPORTS === 'true' ||
+      userOptionData?.userOption?.value !== 'true'
         ? []
         : [
             {
