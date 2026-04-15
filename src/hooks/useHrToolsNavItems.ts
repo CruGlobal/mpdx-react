@@ -1,14 +1,23 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { UserTypeEnum } from 'pages/api/graphql-rest.page.generated';
+import { useUserPreferenceContext } from 'src/components/User/Preferences/UserPreferenceProvider';
 import { NavItems } from './useReportNavItems';
+import { useUsStaffGroups } from './useUsStaffGroups';
 
 export function useHrToolsNavItems(): NavItems[] {
   const { t } = useTranslation();
+  const { userType } = useUserPreferenceContext();
+
+  const { inAsrIneligibleGroup, inSalaryCalcIneligibleGroup } =
+    useUsStaffGroups();
+  const usStaff = userType === UserTypeEnum.UsStaff;
 
   const hrToolsNavItems: NavItems[] = [
     {
       id: 'salaryCalculator',
       title: t('Salary Calculator'),
+      hideItem: usStaff && inSalaryCalcIneligibleGroup,
     },
     {
       id: 'staffSavingFund',
@@ -25,6 +34,7 @@ export function useHrToolsNavItems(): NavItems[] {
     {
       id: 'additionalSalaryRequest',
       title: t('Additional Salary Request'),
+      hideItem: usStaff && inAsrIneligibleGroup,
     },
     {
       id: 'partnerReminders',
@@ -32,5 +42,8 @@ export function useHrToolsNavItems(): NavItems[] {
     },
   ];
 
-  return useMemo(() => hrToolsNavItems, [t]);
+  return useMemo(
+    () => hrToolsNavItems.filter((item) => !item.hideItem),
+    [t, usStaff, inAsrIneligibleGroup, inSalaryCalcIneligibleGroup],
+  );
 }

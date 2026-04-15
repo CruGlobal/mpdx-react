@@ -2,11 +2,15 @@ import Loading from 'src/components/Loading';
 import { useStaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
+import { useUsStaffGroups } from 'src/hooks/useUsStaffGroups';
 import { LimitedAccess } from '../LimitedAccess/LimitedAccess';
 
 interface UserTypeAccessProps {
   allowedUserType?: UserTypeEnum;
   requireStaffAccount?: boolean;
+  isAsr?: boolean;
+  isSalaryCalc?: boolean;
+  effectiveDate?: string | null;
   children: React.ReactElement;
   alwaysAllow?: boolean;
 }
@@ -14,6 +18,9 @@ interface UserTypeAccessProps {
 export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
   allowedUserType = UserTypeEnum.UsStaff,
   requireStaffAccount,
+  isAsr,
+  isSalaryCalc,
+  effectiveDate,
   children,
   alwaysAllow,
 }) => {
@@ -25,8 +32,15 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
   } = useStaffAccountQuery({
     skip: !requireStaffAccount,
   });
-
+  const { inAsrIneligibleGroup, inSalaryCalcIneligibleGroup } =
+    useUsStaffGroups(isSalaryCalc ? (effectiveDate ?? undefined) : undefined);
   const userType = data?.user.userType;
+  const cruUsStaff = userType === UserTypeEnum.UsStaff;
+
+  const limitedAccess =
+    (userType && userType !== allowedUserType) ||
+    (isAsr && cruUsStaff && inAsrIneligibleGroup) ||
+    (isSalaryCalc && cruUsStaff && inSalaryCalcIneligibleGroup);
 
   // Once HCM is ready to go live and DISABLE_NEW_REPORTS is removed, we can remove the alwaysAllow prop
   if (alwaysAllow) {
@@ -41,7 +55,7 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
     return null;
   }
 
-  if (userType && userType !== allowedUserType) {
+  if (limitedAccess) {
     return <LimitedAccess />;
   }
 

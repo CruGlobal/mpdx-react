@@ -1,59 +1,64 @@
 import { useMemo } from 'react';
-import { useUserPreferenceContext } from 'src/components/User/Preferences/UserPreferenceProvider';
+import { useHcmQuery } from 'src/components/Reports/Shared/HcmData/Hcm.generated';
 import {
   AssignmentCategoryEnum,
   AssignmentStatusEnum,
   PeopleGroupSupportTypeEnum,
   UserPersonTypeEnum,
-  UserTypeEnum,
 } from 'src/graphql/types.generated';
-import { HcmQuery } from '../components/Reports/Shared/HcmData/Hcm.generated';
 
-export function useUsStaffGroups(user: HcmQuery['hcm'][number] | undefined) {
-  const { userType } = useUserPreferenceContext();
-  const staff = user?.staffInfo;
-
-  if (userType && userType !== UserTypeEnum.UsStaff) {
-    return;
-  }
-
-  const seniorStaff =
+const usStaffGroups = (staff) => ({
+  seniorStaff:
     staff?.peopleGroupSupportType === PeopleGroupSupportTypeEnum.SupportedRmo &&
     staff?.assignmentStatus === AssignmentStatusEnum.ActivePayrollEligible &&
-    staff?.assignmentCategory === AssignmentCategoryEnum.FullTimeRegular;
-
-  const newStaff =
+    staff?.assignmentCategory === AssignmentCategoryEnum.FullTimeRegular,
+  newStaff:
     staff?.peopleGroupSupportType === PeopleGroupSupportTypeEnum.SupportedRmo &&
     (staff?.assignmentStatus ===
       AssignmentStatusEnum.RaisingInitialSupportPayrollEligible ||
       staff?.assignmentStatus ===
-        AssignmentStatusEnum.RaisingInitialSupportNoPayroll);
-
-  const partTimeFieldStaff =
-    staff?.userPersonType === UserPersonTypeEnum.EmployeePtfs;
-
-  const paidWithDesignation =
-    staff?.peopleGroupSupportType === PeopleGroupSupportTypeEnum.Designation;
-
-  const intern =
+        AssignmentStatusEnum.RaisingInitialSupportNoPayroll),
+  partTimeFieldStaff: staff?.userPersonType === UserPersonTypeEnum.EmployeePtfs,
+  paidWithDesignation:
+    staff?.peopleGroupSupportType === PeopleGroupSupportTypeEnum.Designation,
+  intern:
     staff?.userPersonType === UserPersonTypeEnum.EmployeeInternationalIntern ||
-    staff?.userPersonType === UserPersonTypeEnum.EmployeeUsIntern;
+    staff?.userPersonType === UserPersonTypeEnum.EmployeeUsIntern,
+});
+
+/**
+ * This hook determines whether a US Staff user is in a subgroup that's ineligible for ASR or Salary Calculator (see above groups).
+ * It accepts an optional effectiveDate. When provided, the subgroup check always runs against the logged-in user. When omitted,
+ * we pick the logged-in user if eligible, or their spouse if they are the one eligible, to check the subgroups against. If
+ * neither is eligible, it defaults to the logged-in user, who will not be able to see the form anyway.
+ */
+export function useUsStaffGroups(effectiveDate?: string) {
+  const { data } = useHcmQuery({
+    variables: effectiveDate ? { effectiveDate } : undefined,
+  });
+  const [user, spouse] = data?.hcm ?? [];
+
+  // If ASR, figure out if user or spouse is eligible
+  const asrEligiblePerson = user?.asrEit?.asrEligibility
+    ? user
+    : spouse?.asrEit?.asrEligibility
+      ? spouse
+      : undefined;
+
+  const staff = effectiveDate ? user : (asrEligiblePerson ?? user);
+
+  const { newStaff, partTimeFieldStaff, paidWithDesignation, intern } =
+    usStaffGroups(staff?.staffInfo);
+
+  const inAsrIneligibleGroup = paidWithDesignation || intern;
+  const inSalaryCalcIneligibleGroup =
+    newStaff || partTimeFieldStaff || paidWithDesignation || intern;
 
   return useMemo(
     () => ({
-      seniorStaff,
-      newStaff,
-      partTimeFieldStaff,
-      paidWithDesignation,
-      intern,
+      inAsrIneligibleGroup,
+      inSalaryCalcIneligibleGroup,
     }),
-    [
-      user,
-      seniorStaff,
-      newStaff,
-      partTimeFieldStaff,
-      paidWithDesignation,
-      intern,
-    ],
+    [inAsrIneligibleGroup, inSalaryCalcIneligibleGroup],
   );
 }
