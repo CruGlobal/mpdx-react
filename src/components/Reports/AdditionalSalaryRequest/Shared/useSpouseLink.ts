@@ -17,7 +17,7 @@ export const useSpouseLink = (): SpouseLinkInfo => {
   const spouseLinkText = isSpouse
     ? t('Switch back to {{name}}', { name })
     : t('Request additional salary for {{name}}', { name });
-  const spouseLinkHref = `/accountLists/${accountListId}/reports/additionalSalaryRequest${isSpouse ? '' : '?isSpouse=true'}`;
+  const spouseLinkHref = `/accountLists/${accountListId}/hrTools/additionalSalaryRequest${isSpouse ? '' : '?isSpouse=true'}`;
   const showSpouseLink = !!spouse;
 
   return { spouseLinkText, spouseLinkHref, showSpouseLink };

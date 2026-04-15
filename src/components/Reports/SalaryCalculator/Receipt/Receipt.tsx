@@ -98,7 +98,7 @@ export const ReceiptStep: React.FC = () => {
         variant="contained"
         color="primary"
         sx={{ alignSelf: 'flex-start' }}
-        href={`/accountLists/${accountListId}/reports/salaryCalculator`}
+        href={`/accountLists/${accountListId}/hrTools/salaryCalculator`}
       >
         {t('View in Dashboard')}
       </Button>

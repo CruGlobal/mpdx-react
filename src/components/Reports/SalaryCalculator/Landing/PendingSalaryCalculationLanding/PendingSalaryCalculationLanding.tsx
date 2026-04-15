@@ -4,7 +4,7 @@ import { styled } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
 import Loading from 'src/components/Loading/Loading';
 import { NameDisplay } from 'src/components/Reports/Shared/CalculationReports/NameDisplay/NameDisplay';
-import { NoStaffAccount } from 'src/components/Reports/Shared/NoStaffAccount/NoStaffAccount';
+import { LimitedAccess } from 'src/components/Shared/LimitedAccess/LimitedAccess';
 import { SalaryInformationCard } from '../../Shared/SalaryInformationCard';
 import { useLandingData } from '../useLandingData';
 import { PendingRequestCard } from './PendingRequestCard';
@@ -24,7 +24,7 @@ export const PendingSalaryCalculationLanding: React.FC = () => {
   }
 
   if (!staffAccountId) {
-    return <NoStaffAccount />;
+    return <LimitedAccess noStaffAccount />;
   }
 
   // TODO (MPDX-9298): Update text with correct HR contact info when available.

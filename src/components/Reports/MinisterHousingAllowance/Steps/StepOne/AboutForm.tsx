@@ -49,7 +49,7 @@ export const AboutForm: React.FC<AboutFormProps> = ({
     ? t(` on ${availableDateFormatted}.`)
     : '.';
 
-  const salaryLink = `/accountLists/${accountListId}/reports/salaryCalculator`;
+  const salaryLink = `/accountLists/${accountListId}/hrTools/salaryCalculator`;
 
   return (
     <>

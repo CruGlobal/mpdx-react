@@ -64,8 +64,8 @@ describe('StaffSavingFundLayout', () => {
 
   it('should open nav list', async () => {
     const { findByText } = render(<Components />);
-    expect(await findByText(/donation/i)).toBeInTheDocument();
-    expect(await findByText(/reports/i)).toBeInTheDocument();
+    expect(await findByText(/salary calculator/i)).toBeInTheDocument();
+    expect(await findByText(/hr tools/i)).toBeInTheDocument();
   });
 
   it('renders no staff account page when no staff account', async () => {

@@ -25,6 +25,19 @@ export function useReportNavItems(): NavItems[] {
       title: t('14 Month Salary Report'),
       subTitle: t('Salary Currency'),
     },
+    ...(process.env.DISABLE_NEW_REPORTS === 'true'
+      ? []
+      : [
+          {
+            id: 'staffExpense',
+            title: t('Staff Expense Report'),
+          },
+          {
+            id: 'mpgaIncomeExpenses',
+            title: t('MPGA Monthly Report'),
+            subTitle: t('Income & Expenses'),
+          },
+        ]),
     {
       id: 'designationAccounts',
       title: t('Designation Accounts'),
@@ -45,17 +58,6 @@ export function useReportNavItems(): NavItems[] {
       id: 'coaching',
       title: t('Coaching'),
     },
-    // Goal Calculator
-    // {
-    //   id: 'goalCalculator',
-    //   title: t('Goal Calculator'),
-    //   subTitle: t('Reports - Goal Calculation'),
-    // },
-    // {
-    //   id: 'mpgaIncomeExpenses',
-    //   title: t('MPGA Monthly Report'),
-    //   subTitle: t('Income & Expenses'),
-    // },
   ];
 
   return useMemo(() => reportNavItems, [t]);

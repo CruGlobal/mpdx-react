@@ -11,8 +11,8 @@ import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { MinistryPartnerReminderFrequencyEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { StaffAccountQuery } from '../StaffAccount.generated';
-import { MPRemindersReport } from './MPRemindersReport';
 import { MinistryPartnerRemindersQuery } from './MinistryPartnerRemindersQuery.generated';
+import { PartnerRemindersReport } from './PartnerRemindersReport';
 
 const mutationSpy = jest.fn();
 const onNavListToggle = jest.fn();
@@ -78,7 +78,7 @@ const TestComponent: React.FC = () => (
               mocks={mocks}
               onCall={mutationSpy}
             >
-              <MPRemindersReport
+              <PartnerRemindersReport
                 isNavListOpen={true}
                 onNavListToggle={onNavListToggle}
                 title={title}
@@ -99,7 +99,7 @@ beforeEach(() => {
   });
 });
 
-describe('MPRemindersReport', () => {
+describe('PartnerRemindersReport', () => {
   it('should render header with custom title', async () => {
     const { getByText, findByText } = render(<TestComponent />);
 

@@ -45,7 +45,7 @@ interface MPRemindersReportProps {
   title: string;
 }
 
-export const MPRemindersReport: React.FC<MPRemindersReportProps> = ({
+export const PartnerRemindersReport: React.FC<MPRemindersReportProps> = ({
   title,
   isNavListOpen,
   onNavListToggle,

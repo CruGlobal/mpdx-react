@@ -55,7 +55,8 @@ describe('NavMenu', () => {
     expect(getByRole('menuitem', { name: 'Dashboard' })).toBeInTheDocument();
     expect(getByRole('menuitem', { name: 'Contacts' })).toBeInTheDocument();
     expect(getByRole('menuitem', { name: 'Reports' })).toBeInTheDocument();
-    expect(getByRole('menuitem', { name: 'Tools' })).toBeInTheDocument();
+    expect(getByRole('menuitem', { name: 'HR Tools' })).toBeInTheDocument();
+    expect(getByRole('menuitem', { name: 'MPDX Tools' })).toBeInTheDocument();
     userEvent.click(getByTestId('ReportMenuToggle'));
     expect(getByRole('menuitem', { name: 'Donations' })).toBeInTheDocument();
     expect(getByRole('menuitem', { name: 'Donations' })).toBeVisible();
@@ -64,6 +65,12 @@ describe('NavMenu', () => {
     ).toBeInTheDocument();
     expect(
       getByRole('menuitem', { name: '14 Month Salary Report' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { name: 'Staff Expense Report' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { name: 'MPGA Monthly Report' }),
     ).toBeInTheDocument();
     expect(
       getByRole('menuitem', { name: 'Designation Accounts' }),
@@ -76,6 +83,25 @@ describe('NavMenu', () => {
     ).toBeInTheDocument();
     expect(
       getByRole('menuitem', { name: 'Partner Giving Analysis' }),
+    ).toBeInTheDocument();
+    userEvent.click(getByTestId('HrToolsMenuToggle'));
+    expect(
+      getByRole('menuitem', { name: 'Salary Calculator' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { name: 'Savings Fund Transfer' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { name: 'MPD Goal Calculator' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { name: 'MHA Calculator' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { name: 'Additional Salary Request' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('menuitem', { name: 'Ministry Partner Reminders' }),
     ).toBeInTheDocument();
     userEvent.click(getByTestId('ToolsMenuToggle'));
     expect(getByRole('menuitem', { name: 'Appeals' })).toBeInTheDocument();

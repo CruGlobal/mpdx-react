@@ -21,7 +21,7 @@ const ToolsPage = (): ReactElement => {
     push(`/accountLists/${accountListId}`);
   };
   return (
-    <ToolsWrapper pageTitle={t('Tools')}>
+    <ToolsWrapper pageTitle={t('MPDX Tools')}>
       <>
         {onSetupTour && (
           <StickyBox>

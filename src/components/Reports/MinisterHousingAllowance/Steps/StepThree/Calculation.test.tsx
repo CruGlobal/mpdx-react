@@ -423,7 +423,7 @@ describe('Calculation', () => {
 
     await waitFor(() => {
       expect(mockPush).toHaveBeenCalledWith(
-        `/accountLists/account-list-1/reports/housingAllowance`,
+        `/accountLists/account-list-1/hrTools/mhaCalculator`,
       );
     });
   });

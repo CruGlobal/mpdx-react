@@ -11,7 +11,7 @@ import {
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { StaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
 import theme from 'src/theme';
-import MPRemindersReportPage, { getServerSideProps } from './index.page';
+import MinisterHousingAllowancePage, { getServerSideProps } from './index.page';
 
 const mutationSpy = jest.fn();
 
@@ -34,14 +34,14 @@ const Components = () => (
           mocks={mockStaffAccount}
           onCall={mutationSpy}
         >
-          <MPRemindersReportPage />
+          <MinisterHousingAllowancePage />
         </GqlMockedProvider>
       </TestRouter>
     </SnackbarProvider>
   </ThemeProvider>
 );
 
-describe('MP Reminders Report Page', () => {
+describe('MHA Calculation Page', () => {
   beforeEach(() => {
     beforeTestResizeObserver();
   });
@@ -50,23 +50,28 @@ describe('MP Reminders Report Page', () => {
     afterTestResizeObserver();
   });
 
-  it('should show initial mp reminders report page', async () => {
-    const { findByRole } = render(<Components />);
+  it('uses blockImpersonatingNonDevelopers for server-side props', () => {
+    expect(getServerSideProps).toBe(blockImpersonatingNonDevelopers);
+  });
 
-    expect(
-      await findByRole('heading', { name: /online reminder system/i }),
-    ).toBeInTheDocument();
+  it('should show initial MHA calculation page', async () => {
+    const { findAllByRole } = render(<Components />);
+
+    const heading = await findAllByRole('heading', { name: /your mha/i });
+    expect(heading[0]).toBeInTheDocument();
   });
 
   it('should open and close menu', async () => {
     const { findByRole, getByRole, queryByRole } = render(<Components />);
 
     userEvent.click(
-      await findByRole('button', { name: 'Toggle Navigation Panel' }),
+      await findByRole('button', { name: 'Toggle HR Tools Menu' }),
     );
-    expect(getByRole('heading', { name: 'Reports' })).toBeInTheDocument();
+    expect(getByRole('heading', { name: 'HR Tools' })).toBeInTheDocument();
     userEvent.click(getByRole('img', { name: 'Close' }));
-    expect(queryByRole('heading', { name: 'Reports' })).not.toBeInTheDocument();
+    expect(
+      queryByRole('heading', { name: 'HR Tools' }),
+    ).not.toBeInTheDocument();
   });
 
   it('renders no staff account page when no staff account', async () => {
@@ -84,7 +89,7 @@ describe('MP Reminders Report Page', () => {
           mocks={mockNoStaffAccount}
           onCall={mutationSpy}
         >
-          <MPRemindersReportPage />
+          <MinisterHousingAllowancePage />
         </GqlMockedProvider>
       </TestRouter>,
     );
@@ -92,9 +97,5 @@ describe('MP Reminders Report Page', () => {
     expect(
       await findByText(/access to this feature is limited/i),
     ).toBeInTheDocument();
-  });
-
-  it('uses blockImpersonatingNonDevelopers for server-side props', () => {
-    expect(getServerSideProps).toBe(blockImpersonatingNonDevelopers);
   });
 });

@@ -6,20 +6,20 @@ import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
-import { MPRemindersReport } from 'src/components/Reports/MinistryPartnerReminders/MPRemindersReport';
-import { NoStaffAccount } from 'src/components/Reports/Shared/NoStaffAccount/NoStaffAccount';
+import { PartnerRemindersReport } from 'src/components/Reports/MinistryPartnerReminders/PartnerRemindersReport';
 import { useStaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
+import { LimitedAccess } from 'src/components/Shared/LimitedAccess/LimitedAccess';
 import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
-const MPRemindersReportPageWrapper = styled(Box)(({ theme }) => ({
+const PartnerRemindersReportPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
 }));
 
-const MPRemindersReportPage: React.FC = () => {
+const PartnerRemindersReportPage: React.FC = () => {
   const { appName } = useGetAppSettings();
   const { t } = useTranslation();
   const { data: staffAccountData, loading } = useStaffAccountQuery();
@@ -36,36 +36,36 @@ const MPRemindersReportPage: React.FC = () => {
         <title>{`${appName} | ${t('Reports')} - ${t('Ministry Partner Reminders')}`}</title>
       </Head>
       {staffAccountData?.staffAccount?.id ? (
-        <MPRemindersReportPageWrapper>
+        <PartnerRemindersReportPageWrapper>
           <SidePanelsLayout
             isScrollBox={false}
             leftPanel={
               <MultiPageMenu
                 isOpen={isNavListOpen}
-                selectedId="mpReminders"
+                selectedId="partnerReminders"
                 onClose={handleNavListToggle}
-                navType={NavTypeEnum.Reports}
+                navType={NavTypeEnum.HrTools}
               />
             }
             leftOpen={isNavListOpen}
             leftWidth="290px"
             mainContent={
-              <MPRemindersReport
+              <PartnerRemindersReport
                 isNavListOpen={isNavListOpen}
                 onNavListToggle={handleNavListToggle}
                 title={t('Ministry Partner Reminders')}
               />
             }
           />
-        </MPRemindersReportPageWrapper>
+        </PartnerRemindersReportPageWrapper>
       ) : loading ? (
         <Loading loading />
       ) : (
-        <NoStaffAccount />
+        <LimitedAccess noStaffAccount />
       )}
     </>
   );
 };
 
 export const getServerSideProps = blockImpersonatingNonDevelopers;
-export default MPRemindersReportPage;
+export default PartnerRemindersReportPage;

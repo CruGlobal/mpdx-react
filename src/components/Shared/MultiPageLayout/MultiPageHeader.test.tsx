@@ -61,6 +61,15 @@ describe('MultiPageHeader', () => {
     expect(getByTestId('ReportsMenuIcon')).toBeInTheDocument();
   });
 
+  it('should render the HR Tools menu', async () => {
+    const { getByTestId, getByText } = render(
+      <TestComponent headerType={HeaderTypeEnum.HrTools} />,
+    );
+
+    expect(getByText('Toggle HR Tools Menu')).toBeInTheDocument();
+    expect(getByTestId('HrToolsMenuIcon')).toBeInTheDocument();
+  });
+
   it('should render the Settings menu when not on setup tour', async () => {
     const { getByRole } = render(
       <TestComponent headerType={HeaderTypeEnum.Settings} />,
@@ -82,12 +91,12 @@ describe('MultiPageHeader', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('should render the Tools menu', async () => {
+  it('should render the MPDX Tools menu', async () => {
     const { getByTestId, getByText } = render(
-      <TestComponent headerType={HeaderTypeEnum.Tools} />,
+      <TestComponent headerType={HeaderTypeEnum.MpdxTools} />,
     );
 
-    expect(getByText('Toggle Tools Menu')).toBeInTheDocument();
-    expect(getByTestId('ToolsMenuIcon')).toBeInTheDocument();
+    expect(getByText('Toggle MPDX Tools Menu')).toBeInTheDocument();
+    expect(getByTestId('MpdxToolsMenuIcon')).toBeInTheDocument();
   });
 });

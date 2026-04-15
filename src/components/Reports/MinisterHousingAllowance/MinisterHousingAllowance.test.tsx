@@ -289,7 +289,7 @@ describe('MinisterHousingAllowanceReport', () => {
 
     await waitFor(() => {
       expect(mockPush).toHaveBeenCalledWith(
-        '/accountLists/account-list-1/reports/housingAllowance/new-mha-id?mode=new',
+        '/accountLists/account-list-1/hrTools/mhaCalculator/new-mha-id?mode=new',
       );
     });
   });

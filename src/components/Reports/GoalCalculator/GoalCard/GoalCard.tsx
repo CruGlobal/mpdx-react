@@ -230,7 +230,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({
           </Button>
           <Button
             LinkComponent={NextLink}
-            href={`/accountLists/${accountListId}/reports/goalCalculator/${goal.id}`}
+            href={`/accountLists/${accountListId}/hrTools/goalCalculator/${goal.id}`}
             variant="contained"
             color="primary"
           >

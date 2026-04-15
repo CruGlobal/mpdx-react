@@ -86,7 +86,7 @@ describe('AboutForm', () => {
     const salaryLink = getByText('Salary Calculation Form');
     expect(salaryLink).toHaveAttribute(
       'href',
-      '/accountLists/account-list-1/reports/salaryCalculator',
+      '/accountLists/account-list-1/hrTools/salaryCalculator',
     );
   });
 
@@ -128,7 +128,7 @@ describe('AboutForm', () => {
 
     await waitFor(() => {
       expect(mockPush).toHaveBeenCalledWith(
-        `/accountLists/account-list-1/reports/housingAllowance`,
+        `/accountLists/account-list-1/hrTools/mhaCalculator`,
       );
     });
   });

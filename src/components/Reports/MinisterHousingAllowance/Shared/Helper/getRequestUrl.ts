@@ -7,6 +7,6 @@ export const getRequestUrl = (
     return '';
   }
 
-  const baseUrl = `/accountLists/${accountListId}/reports/housingAllowance/${requestId}`;
+  const baseUrl = `/accountLists/${accountListId}/hrTools/mhaCalculator/${requestId}`;
   return mode ? `${baseUrl}?mode=${mode}` : baseUrl;
 };

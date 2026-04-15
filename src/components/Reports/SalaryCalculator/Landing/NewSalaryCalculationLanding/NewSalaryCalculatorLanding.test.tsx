@@ -90,7 +90,7 @@ describe('NewSalaryCalculatorLanding', () => {
       await findByRole('link', { name: 'Continue Salary Calculation' }),
     ).toHaveAttribute(
       'href',
-      '/accountLists/account-list-1/reports/salaryCalculator/in-progress-calc-1',
+      '/accountLists/account-list-1/hrTools/salaryCalculator/in-progress-calc-1',
     );
   });
 

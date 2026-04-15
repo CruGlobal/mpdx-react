@@ -6,7 +6,7 @@ import { styled } from '@mui/material/styles';
 import { Trans, useTranslation } from 'react-i18next';
 import Loading from 'src/components/Loading/Loading';
 import { NameDisplay } from 'src/components/Reports/Shared/CalculationReports/NameDisplay/NameDisplay';
-import { NoStaffAccount } from 'src/components/Reports/Shared/NoStaffAccount/NoStaffAccount';
+import { LimitedAccess } from 'src/components/Shared/LimitedAccess/LimitedAccess';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { SalaryInformationCard } from '../../Shared/SalaryInformationCard';
 import { useLandingData } from '../useLandingData';
@@ -46,7 +46,7 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
       createCalculationResult.data?.createSalaryRequest?.salaryRequest?.id;
     if (newCalculationId) {
       router.push({
-        pathname: `/accountLists/${accountListId}/reports/salaryCalculator/${newCalculationId}`,
+        pathname: `/accountLists/${accountListId}/hrTools/salaryCalculator/${newCalculationId}`,
       });
     }
   };
@@ -56,7 +56,7 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
   }
 
   if (!staffAccountId) {
-    return <NoStaffAccount />;
+    return <LimitedAccess noStaffAccount />;
   }
 
   return (
@@ -124,7 +124,7 @@ export const NewSalaryCalculatorLanding: React.FC = () => {
                 variant="contained"
                 color="primary"
                 component={Link}
-                href={`/accountLists/${accountListId}/reports/salaryCalculator/${inProgressCalculationId}`}
+                href={`/accountLists/${accountListId}/hrTools/salaryCalculator/${inProgressCalculationId}`}
               >
                 {t('Continue Salary Calculation')}
               </Button>

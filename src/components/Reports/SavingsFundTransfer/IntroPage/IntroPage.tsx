@@ -35,7 +35,7 @@ export const SavingsFundTransfer: React.FC<SavingsFundTransferProps> = ({
   ) as StaffSavingFundType;
 
   const accountListId = useAccountListId();
-  const transferLink = `/accountLists/${accountListId}/reports/staffSavingFund/transfers`;
+  const transferLink = `/accountLists/${accountListId}/hrTools/staffSavingFund/transfers`;
 
   return (
     <Box>

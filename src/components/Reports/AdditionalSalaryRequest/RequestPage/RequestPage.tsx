@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import Loading from 'src/components/Loading/Loading';
 import { DirectionButtons } from 'src/components/Reports/Shared/CalculationReports/DirectionButtons/DirectionButtons';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
-import { NoStaffAccount } from 'src/components/Reports/Shared/NoStaffAccount/NoStaffAccount';
+import { LimitedAccess } from 'src/components/Shared/LimitedAccess/LimitedAccess';
 import { AsrStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { PanelLayout } from '../../Shared/CalculationReports/PanelLayout/PanelLayout';
@@ -202,7 +202,7 @@ export const RequestPage: React.FC = () => {
   );
 
   if (!staffAccountId && !staffAccountIdLoading) {
-    return <NoStaffAccount />;
+    return <LimitedAccess noStaffAccount />;
   }
 
   return (

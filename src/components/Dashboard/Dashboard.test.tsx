@@ -9,9 +9,13 @@ import {
   beforeTestResizeObserver,
 } from '__tests__/util/windowResizeObserver';
 import { GetDashboardQuery } from 'pages/accountLists/GetDashboard.generated';
+import { UserTypeEnum } from 'src/graphql/types.generated';
 import useTaskModal from '../../hooks/useTaskModal';
 import theme from '../../theme';
-import { GetThisWeekDefaultMocks } from './ThisWeek/ThisWeek.mock';
+import {
+  GetThisWeekDefaultMocks,
+  getUserOptionMock,
+} from './ThisWeek/ThisWeek.mock';
 import Dashboard from '.';
 
 jest.mock('../../hooks/useTaskModal');
@@ -33,7 +37,9 @@ beforeEach(() => {
 
 const data: GetDashboardQuery = {
   user: {
+    id: '123',
     firstName: 'Roger',
+    userType: UserTypeEnum.UsStaff,
   },
   accountList: {
     id: '1',
@@ -215,5 +221,51 @@ describe('Dashboard', () => {
     expect(
       getByTestId('DonationHistoriesTypographyPledged').textContent,
     ).toEqual('Committed $700');
+  });
+
+  describe('ConfirmUserGroupModal', () => {
+    it('renders ConfirmUserGroupModal when user type is not verified', async () => {
+      const { getByText } = render(
+        <ThemeProvider theme={theme}>
+          <SnackbarProvider>
+            <MockedProvider
+              mocks={GetThisWeekDefaultMocks()}
+              addTypename={false}
+            >
+              <Dashboard accountListId="abc" data={data} />
+            </MockedProvider>
+          </SnackbarProvider>
+        </ThemeProvider>,
+      );
+
+      await waitFor(() => {
+        expect(getByText('Is this your user group?')).toBeInTheDocument();
+      });
+    });
+
+    it('does not render ConfirmUserGroupModal when user type is verified', async () => {
+      const { queryByText } = render(
+        <ThemeProvider theme={theme}>
+          <SnackbarProvider>
+            <MockedProvider
+              mocks={[
+                ...GetThisWeekDefaultMocks().filter(
+                  (mock) =>
+                    mock.request.variables?.key !== 'user_type_verified',
+                ),
+                getUserOptionMock('true'),
+              ]}
+              addTypename={false}
+            >
+              <Dashboard accountListId="abc" data={data} />
+            </MockedProvider>
+          </SnackbarProvider>
+        </ThemeProvider>,
+      );
+
+      await waitFor(() => {
+        expect(queryByText('Is this your user group?')).not.toBeInTheDocument();
+      });
+    });
   });
 });

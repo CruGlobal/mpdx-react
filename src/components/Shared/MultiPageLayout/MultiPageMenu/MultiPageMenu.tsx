@@ -16,6 +16,7 @@ import { useGetDesignationAccountsQuery } from 'src/components/EditDonationModal
 import { FilterListItemMultiselect } from 'src/components/Shared/Filters/FilterListItemMultiselect';
 import { MultiselectFilter } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useHrToolsNavItems } from 'src/hooks/useHrToolsNavItems';
 import { useReportNavItems } from 'src/hooks/useReportNavItems';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { NavItems, useSettingsNavItems } from 'src/hooks/useSettingsNavItems';
@@ -24,6 +25,7 @@ import { useManageOrganizationsAccessQuery } from './MultiPageMenu.generated';
 
 export enum NavTypeEnum {
   Reports = 'reports',
+  HrTools = 'hrTools',
   Settings = 'settings',
 }
 
@@ -97,12 +99,22 @@ export const MultiPageMenu: React.FC<Props & BoxProps> = ({
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const user = useRequiredSession();
+  const reportNavItems = useReportNavItems();
+  const hrToolsNavItems = useHrToolsNavItems();
+  const settingsNavItems = useSettingsNavItems();
+
   const navItems =
     navType === NavTypeEnum.Reports
-      ? useReportNavItems()
-      : useSettingsNavItems();
+      ? reportNavItems
+      : navType === NavTypeEnum.HrTools
+        ? hrToolsNavItems
+        : settingsNavItems;
   const navTitle =
-    navType === NavTypeEnum.Reports ? t('Reports') : t('Settings');
+    navType === NavTypeEnum.Reports
+      ? t('Reports')
+      : navType === NavTypeEnum.HrTools
+        ? t('HR Tools')
+        : t('Settings');
 
   const { data: organizations } = useManageOrganizationsAccessQuery({
     skip: navType === NavTypeEnum.Reports,
