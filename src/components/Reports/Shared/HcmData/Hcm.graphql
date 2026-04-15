@@ -21,6 +21,8 @@ query Hcm($effectiveDate: ISO8601Date) {
       tenure
       peopleGroupSupportType
       userPersonType
+      assignmentStatus
+      assignmentCategory
     }
     currentSalary {
       grossSalaryAmount
