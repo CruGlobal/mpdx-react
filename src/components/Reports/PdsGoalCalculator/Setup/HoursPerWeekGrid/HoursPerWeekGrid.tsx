@@ -8,7 +8,7 @@ import {
   GridValidRowModel,
 } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
-import { StyledGrid } from 'src/components/Reports/GoalCalculator/SharedComponents/GoalCalculatorGrid/StyledGrid';
+import { BaseGrid } from 'src/components/Reports/GoalCalculator/SharedComponents/GoalCalculatorGrid/BaseGrid';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
@@ -239,7 +239,7 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
           {t('Add Entry')}
         </Button>
 
-        <StyledGrid
+        <BaseGrid
           rows={dataWithTotal}
           columns={columns}
           processRowUpdate={processRowUpdate}
