@@ -41,6 +41,7 @@ import {
 import { BudgetFamilyFragment } from '../../Shared/GoalCalculation.generated';
 import { useGoalCalculator } from '../../Shared/GoalCalculatorContext';
 import { GoalCalculatorSection } from '../../Shared/GoalCalculatorSection';
+import { BaseGrid } from './BaseGrid';
 import {
   UpdateSubBudgetCategoriesFragment,
   UpdateSubBudgetCategoriesFragmentDoc,
@@ -49,7 +50,6 @@ import {
   useUpdatePrimaryBudgetCategoryMutation,
   useUpdateSubBudgetCategoryMutation,
 } from './GoalCalculatorGrid.generated';
-import { StyledGrid } from './StyledGrid';
 import { getDirectInputDefaults } from './getDefaultDirectInput';
 
 const categoriesWithDefaults = [
@@ -581,7 +581,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
               {t('Add Line Item')}
             </Button>
 
-            <StyledGrid
+            <BaseGrid
               rows={dataWithTotal}
               columns={columns}
               processRowUpdate={processRowUpdate}

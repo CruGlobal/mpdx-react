@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Box, Card, FormHelperText, Typography, styled } from '@mui/material';
 import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
-import { StyledGrid } from 'src/components/Reports/GoalCalculator/SharedComponents/GoalCalculatorGrid/StyledGrid';
+import { BaseGrid } from 'src/components/Reports/GoalCalculator/SharedComponents/GoalCalculatorGrid/BaseGrid';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { useSaveField } from '../Shared/Autosave/useSaveField';
@@ -149,7 +149,7 @@ export const ReimbursableExpensesGrid: React.FC<
         {title}
       </Typography>
       <StyledCard>
-        <StyledGrid
+        <BaseGrid
           rows={rows}
           columns={columns}
           processRowUpdate={processRowUpdate}

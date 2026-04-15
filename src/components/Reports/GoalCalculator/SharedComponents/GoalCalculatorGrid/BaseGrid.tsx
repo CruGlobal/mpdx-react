@@ -44,7 +44,7 @@ const StyledDataGrid = styled(DataGrid)({
 });
 
 /**
- * Browsers reject setSelectionRange on <input type="number">. To pre-select
+ * Browsers reject setSelectionRange on input type="number". To pre-select
  * the full value when the user opens a numeric cell for editing, temporarily
  * flip the input to type="text", select the range, then flip back. The
  * requestAnimationFrame is required because onCellEditStart fires before MUI
@@ -67,7 +67,7 @@ const selectAllOnEditStart: DataGridProps['onCellEditStart'] = (
   });
 };
 
-export const StyledGrid: React.FC<DataGridProps> = (props) => {
+export const BaseGrid: React.FC<DataGridProps> = (props) => {
   return (
     <StyledDataGrid
       hideFooter
