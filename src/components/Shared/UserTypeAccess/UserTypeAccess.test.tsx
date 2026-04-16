@@ -48,26 +48,6 @@ const TestComponent: React.FC<TestComponentProps> = ({
   </ThemeProvider>
 );
 
-const ErrorTestComponent: React.FC = () => (
-  <ThemeProvider theme={theme}>
-    <TestRouter>
-      <GqlMockedProvider
-        mocks={{
-          GetUser: {
-            user: () => {
-              throw new Error('User group error');
-            },
-          },
-        }}
-      >
-        <UserTypeAccess allowedUserType={UserTypeEnum.UsStaff}>
-          <div>Test Content</div>
-        </UserTypeAccess>
-      </GqlMockedProvider>
-    </TestRouter>
-  </ThemeProvider>
-);
-
 describe('UserTypeAccess', () => {
   it('should render child component when user type is allowed', async () => {
     const { findByText } = render(<TestComponent />);
@@ -114,7 +94,55 @@ describe('UserTypeAccess', () => {
   });
 
   it('should render LimitedAccess with user group error message when there is an error loading the user', async () => {
-    const { findByRole, getByText } = render(<ErrorTestComponent />);
+    const { findByRole, getByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter>
+          <GqlMockedProvider
+            mocks={{
+              GetUser: {
+                user: () => {
+                  throw new Error('User group error');
+                },
+              },
+            }}
+          >
+            <UserTypeAccess allowedUserType={UserTypeEnum.UsStaff}>
+              <div>Test Content</div>
+            </UserTypeAccess>
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    expect(
+      await findByRole('heading', { name: 'Unable to load this page' }),
+    ).toBeInTheDocument();
+    expect(
+      getByText(/something went wrong while loading your account information/i),
+    ).toBeInTheDocument();
+  });
+
+  it('should render LimitedAccess with user error when there is an error loading the staff account', async () => {
+    const { findByRole, getByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter>
+          <GqlMockedProvider
+            mocks={{
+              GetUser: { user: { userType: UserTypeEnum.UsStaff } },
+              StaffAccount: {
+                staffAccount: () => {
+                  throw new Error('Staff account error');
+                },
+              },
+            }}
+          >
+            <UserTypeAccess requireStaffAccount>
+              <div>Test Content</div>
+            </UserTypeAccess>
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
 
     expect(
       await findByRole('heading', { name: 'Unable to load this page' }),

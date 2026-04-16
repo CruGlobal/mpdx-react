@@ -8,19 +8,30 @@ interface UserTypeAccessProps {
   allowedUserType?: UserTypeEnum;
   requireStaffAccount?: boolean;
   children: React.ReactElement;
+  alwaysAllow?: boolean;
 }
 
 export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
   allowedUserType = UserTypeEnum.UsStaff,
   requireStaffAccount,
   children,
+  alwaysAllow,
 }) => {
   const { data, loading: userLoading, error } = useGetUserQuery();
-  const { data: staffAccountData, loading } = useStaffAccountQuery({
+  const {
+    data: staffAccountData,
+    loading,
+    error: staffAccountError,
+  } = useStaffAccountQuery({
     skip: !requireStaffAccount,
   });
 
   const userType = data?.user.userType;
+
+  // Once HCM is ready to go live and DISABLE_NEW_REPORTS is removed, we can remove the alwaysAllow prop
+  if (alwaysAllow) {
+    return children;
+  }
 
   if (error) {
     return <LimitedAccess userGroupError />;
@@ -35,6 +46,9 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
   }
 
   if (requireStaffAccount) {
+    if (staffAccountError) {
+      return <LimitedAccess userGroupError />;
+    }
     if (loading && !staffAccountData) {
       return <Loading loading />;
     }

@@ -108,7 +108,10 @@ const FinancialAccountEntries = (): ReactElement => {
         </title>
       </Head>
       {accountListId ? (
-        <UserTypeAccess allowedUserType={UserTypeEnum.GlobalStaff}>
+        <UserTypeAccess
+          allowedUserType={UserTypeEnum.GlobalStaff}
+          alwaysAllow={process.env.DISABLE_NEW_REPORTS === 'true'}
+        >
           <Box sx={{ background: 'common.white' }}>
             <SidePanelsLayout
               headerHeight={headerHeight}

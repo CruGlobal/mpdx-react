@@ -54,7 +54,8 @@ export function useReportNavItems(): NavItems[] {
     {
       id: 'financialAccounts',
       title: t('Responsibility Centers'),
-      hideItem: !globalStaff,
+      hideItem:
+        process.env.DISABLE_NEW_REPORTS === 'true' ? undefined : !globalStaff,
     },
     {
       id: 'expectedMonthlyTotal',
