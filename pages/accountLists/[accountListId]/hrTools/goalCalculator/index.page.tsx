@@ -14,16 +14,17 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { ReportPageWrapper } from 'src/components/Shared/styledComponents/ReportPageWrapper';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
-const GoalCalculatorPage: React.FC = () => {
+export const GoalCalculatorPage: React.FC = () => {
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
   const accountListId = useAccountListId();
+
   const [isNavListOpen, setNavListOpen] = useState(false);
-  const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
 
   const handleNavListToggle = () => {
     setNavListOpen(!isNavListOpen);
@@ -35,35 +36,35 @@ const GoalCalculatorPage: React.FC = () => {
         <title>{`${appName} | ${t('Reports - Goal Calculation')}`}</title>
       </Head>
       {accountListId ? (
-        <ReportPageWrapper>
-          <SidePanelsLayout
-            isScrollBox={false}
-            leftPanel={
-              <MultiPageMenu
-                isOpen={isNavListOpen}
-                selectedId="goalCalculation"
-                onClose={handleNavListToggle}
-                designationAccounts={designationAccounts}
-                setDesignationAccounts={setDesignationAccounts}
-                navType={NavTypeEnum.HrTools}
-              />
-            }
-            leftOpen={isNavListOpen}
-            leftWidth="290px"
-            headerHeight={multiPageHeaderHeight}
-            mainContent={
-              <>
-                <MultiPageHeader
-                  isNavListOpen={isNavListOpen}
-                  onNavListToggle={handleNavListToggle}
-                  title={t('Goal Calculator')}
-                  headerType={HeaderTypeEnum.HrTools}
+        <UserTypeAccess>
+          <ReportPageWrapper>
+            <SidePanelsLayout
+              isScrollBox={false}
+              leftPanel={
+                <MultiPageMenu
+                  isOpen={isNavListOpen}
+                  selectedId="goalCalculation"
+                  onClose={handleNavListToggle}
+                  navType={NavTypeEnum.HrTools}
                 />
-                <GoalsList />
-              </>
-            }
-          />
-        </ReportPageWrapper>
+              }
+              leftOpen={isNavListOpen}
+              leftWidth="290px"
+              headerHeight={multiPageHeaderHeight}
+              mainContent={
+                <>
+                  <MultiPageHeader
+                    isNavListOpen={isNavListOpen}
+                    onNavListToggle={handleNavListToggle}
+                    title={t('Goal Calculator')}
+                    headerType={HeaderTypeEnum.HrTools}
+                  />
+                  <GoalsList />
+                </>
+              }
+            />
+          </ReportPageWrapper>
+        </UserTypeAccess>
       ) : (
         <Loading loading />
       )}

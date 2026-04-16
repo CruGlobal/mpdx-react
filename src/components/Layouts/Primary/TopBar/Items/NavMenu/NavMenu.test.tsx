@@ -8,18 +8,20 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import { LoadCoachingListQuery } from 'src/components/Coaching/LoadCoachingList.generated';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
+import { UserTypeEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { GetToolNotificationsQuery } from './GetToolNotifcations.generated';
 import NavMenu from './NavMenu';
 
 const accountListId = 'test121';
-
 interface TestComponentProps {
   router?: Partial<NextRouter>;
   mocks?: ApolloErgonoMockMap &
     DeepPartial<{
       GetToolNotifications: GetToolNotificationsQuery;
       LoadCoachingList: LoadCoachingListQuery;
+      GetUser: GetUserQuery;
     }>;
 }
 
@@ -39,27 +41,50 @@ const TestComponent: React.FC<TestComponentProps> = ({ router, mocks }) => (
   </ThemeProvider>
 );
 
+const defaultMocks = {
+  LoadCoachingList: {
+    coachingAccountLists: {
+      totalCount: 1,
+    },
+  },
+  GetUser: {
+    user: {
+      userType: UserTypeEnum.UsStaff,
+    },
+  },
+  GetToolNotifications: {
+    fixCommitmentInfo: { totalCount: 0 },
+    fixMailingAddresses: { totalCount: 0 },
+    fixSendNewsletter: { totalCount: 0 },
+    fixEmailAddresses: { totalCount: 0 },
+    fixPhoneNumbers: { totalCount: 0 },
+    mergeContacts: { totalCount: 0 },
+    mergePeople: { totalCount: 0 },
+  },
+};
+
 describe('NavMenu', () => {
-  it('default', async () => {
-    const { findByRole, getByRole, getByTestId } = render(
-      <TestComponent
-        mocks={{
-          LoadCoachingList: {
-            coachingAccountLists: {
-              totalCount: 1,
-            },
-          },
-        }}
-      />,
+  it('renders top-level nav items and coaching link', async () => {
+    const { findByRole, getByRole } = render(
+      <TestComponent mocks={defaultMocks} />,
     );
+    expect(
+      await findByRole('menuitem', { name: 'HR Tools' }),
+    ).toBeInTheDocument();
     expect(getByRole('menuitem', { name: 'Dashboard' })).toBeInTheDocument();
     expect(getByRole('menuitem', { name: 'Contacts' })).toBeInTheDocument();
     expect(getByRole('menuitem', { name: 'Reports' })).toBeInTheDocument();
-    expect(getByRole('menuitem', { name: 'HR Tools' })).toBeInTheDocument();
     expect(getByRole('menuitem', { name: 'MPDX Tools' })).toBeInTheDocument();
+    expect(getByRole('menuitem', { name: 'Coaching' })).toBeInTheDocument();
+  });
+
+  it('renders Reports submenu items', async () => {
+    const { findByRole, getByRole, getByTestId, queryByRole } = render(
+      <TestComponent mocks={defaultMocks} />,
+    );
+    await findByRole('menuitem', { name: 'Reports' });
     userEvent.click(getByTestId('ReportMenuToggle'));
     expect(getByRole('menuitem', { name: 'Donations' })).toBeInTheDocument();
-    expect(getByRole('menuitem', { name: 'Donations' })).toBeVisible();
     expect(
       getByRole('menuitem', { name: '14 Month Partner Report' }),
     ).toBeInTheDocument();
@@ -76,14 +101,21 @@ describe('NavMenu', () => {
       getByRole('menuitem', { name: 'Designation Accounts' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('menuitem', { name: 'Responsibility Centers' }),
-    ).toBeInTheDocument();
+      queryByRole('menuitem', { name: 'Responsibility Centers' }),
+    ).not.toBeInTheDocument();
     expect(
       getByRole('menuitem', { name: 'Expected Monthly Total' }),
     ).toBeInTheDocument();
     expect(
       getByRole('menuitem', { name: 'Partner Giving Analysis' }),
     ).toBeInTheDocument();
+  });
+
+  it('renders HR Tools submenu items', async () => {
+    const { findByRole, getByRole, getByTestId } = render(
+      <TestComponent mocks={defaultMocks} />,
+    );
+    await findByRole('menuitem', { name: 'HR Tools' });
     userEvent.click(getByTestId('HrToolsMenuToggle'));
     expect(
       getByRole('menuitem', { name: 'Salary Calculator' }),
@@ -103,6 +135,13 @@ describe('NavMenu', () => {
     expect(
       getByRole('menuitem', { name: 'Ministry Partner Reminders' }),
     ).toBeInTheDocument();
+  });
+
+  it('renders MPDX Tools submenu items', async () => {
+    const { findByRole, getByRole, getByTestId } = render(
+      <TestComponent mocks={defaultMocks} />,
+    );
+    await findByRole('menuitem', { name: 'MPDX Tools' });
     userEvent.click(getByTestId('ToolsMenuToggle'));
     expect(getByRole('menuitem', { name: 'Appeals' })).toBeInTheDocument();
     expect(
@@ -133,30 +172,9 @@ describe('NavMenu', () => {
     expect(
       getByRole('menuitem', { name: 'Import from CSV' }),
     ).toBeInTheDocument();
-    expect(getByRole('menuitem', { name: 'Donations' })).not.toBeVisible();
-    expect(
-      getByRole('menuitem', { name: '14 Month Partner Report' }),
-    ).not.toBeVisible();
-    expect(
-      getByRole('menuitem', { name: '14 Month Salary Report' }),
-    ).not.toBeVisible();
-    expect(
-      getByRole('menuitem', { name: 'Designation Accounts' }),
-    ).not.toBeVisible();
-    expect(
-      getByRole('menuitem', { name: 'Responsibility Centers' }),
-    ).not.toBeVisible();
-    expect(
-      getByRole('menuitem', { name: 'Expected Monthly Total' }),
-    ).not.toBeVisible();
-    expect(
-      getByRole('menuitem', { name: 'Partner Giving Analysis' }),
-    ).not.toBeVisible();
     expect(getByTestId('appeals-false')).toBeInTheDocument();
-    expect(
-      await findByRole('menuitem', { name: 'Coaching' }),
-    ).toBeInTheDocument();
   });
+
   it('does not show coaching link if there are no coaching accounts', async () => {
     const { queryByRole } = render(
       <TestComponent

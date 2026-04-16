@@ -9,6 +9,8 @@ import {
 } from '__tests__/util/windowResizeObserver';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { StaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
+import { UserTypeEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import MPGAReportPage, { getServerSideProps } from './index.page';
 
@@ -23,13 +25,21 @@ const mockStaffAccount = {
   },
 };
 
-const Components = () => (
+interface ComponentProps {
+  userType?: UserTypeEnum;
+}
+
+const Components = ({ userType = UserTypeEnum.UsStaff }: ComponentProps) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
       <GqlMockedProvider<{
         StaffAccount: StaffAccountQuery;
+        GetUser: GetUserQuery;
       }>
-        mocks={mockStaffAccount}
+        mocks={{
+          ...mockStaffAccount,
+          GetUser: { user: { userType } },
+        }}
         onCall={mutationSpy}
       >
         <MPGAReportPage />
@@ -92,6 +102,16 @@ describe('MPGA Report Page', () => {
 
     expect(
       await findByText(/access to this feature is limited/i),
+    ).toBeInTheDocument();
+  });
+
+  it('should show limited access if user does not have access to page', async () => {
+    const { findByText } = render(
+      <Components userType={UserTypeEnum.NonCru} />,
+    );
+
+    expect(
+      await findByText('Access to this feature is limited.'),
     ).toBeInTheDocument();
   });
 });

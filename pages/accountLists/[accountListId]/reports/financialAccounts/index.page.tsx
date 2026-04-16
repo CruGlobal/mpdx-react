@@ -11,6 +11,8 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
+import { UserTypeEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
@@ -31,32 +33,37 @@ const FinancialAccountsPage: React.FC = () => {
       </Head>
 
       {accountListId ? (
-        <Box sx={{ background: 'common.white' }}>
-          <SidePanelsLayout
-            headerHeight={headerHeight}
-            isScrollBox={false}
-            leftOpen={navListOpen}
-            leftWidth="290px"
-            mainContent={
-              <FinancialAccounts
-                accountListId={accountListId}
-                isNavListOpen={navListOpen}
-                designationAccounts={designationAccounts}
-                handleNavListToggle={handleNavListToggle}
-              />
-            }
-            leftPanel={
-              <MultiPageMenu
-                isOpen={navListOpen}
-                selectedId="financialAccounts"
-                onClose={handleNavListToggle}
-                designationAccounts={designationAccounts}
-                setDesignationAccounts={setDesignationAccounts}
-                navType={NavTypeEnum.Reports}
-              />
-            }
-          />
-        </Box>
+        <UserTypeAccess
+          allowedUserType={UserTypeEnum.GlobalStaff}
+          alwaysAllow={process.env.DISABLE_NEW_REPORTS === 'true'}
+        >
+          <Box sx={{ background: 'common.white' }}>
+            <SidePanelsLayout
+              headerHeight={headerHeight}
+              isScrollBox={false}
+              leftOpen={navListOpen}
+              leftWidth="290px"
+              mainContent={
+                <FinancialAccounts
+                  accountListId={accountListId}
+                  isNavListOpen={navListOpen}
+                  designationAccounts={designationAccounts}
+                  handleNavListToggle={handleNavListToggle}
+                />
+              }
+              leftPanel={
+                <MultiPageMenu
+                  isOpen={navListOpen}
+                  selectedId="financialAccounts"
+                  onClose={handleNavListToggle}
+                  designationAccounts={designationAccounts}
+                  setDesignationAccounts={setDesignationAccounts}
+                  navType={NavTypeEnum.Reports}
+                />
+              }
+            />
+          </Box>
+        </UserTypeAccess>
       ) : (
         <Loading loading />
       )}

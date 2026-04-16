@@ -12,6 +12,8 @@ import { defaultFinancialAccountSummary } from 'src/components/Reports/Financial
 import { FinancialAccountSummaryQuery } from 'src/components/Reports/FinancialAccountsReport/AccountSummary/financialAccountSummary.generated';
 import { FinancialAccountQuery } from 'src/components/Reports/FinancialAccountsReport/Context/FinancialAccount.generated';
 import { defaultFinancialAccount } from 'src/components/Reports/FinancialAccountsReport/Header/HeaderMocks';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
+import { UserTypeEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import FinancialAccountSummaryPage from './[financialAccountId].page';
@@ -23,7 +25,13 @@ const router = {
   isReady: true,
 };
 
-const Components = () => (
+interface ComponentProps {
+  userType?: UserTypeEnum;
+}
+
+const Components: React.FC<ComponentProps> = ({
+  userType = UserTypeEnum.GlobalStaff,
+}) => (
   <I18nextProvider i18n={i18n}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <SnackbarProvider>
@@ -32,10 +40,14 @@ const Components = () => (
             <GqlMockedProvider<{
               FinancialAccountSummary: FinancialAccountSummaryQuery;
               FinancialAccount: FinancialAccountQuery;
+              GetUser: GetUserQuery;
             }>
               mocks={{
                 FinancialAccountSummary: defaultFinancialAccountSummary,
                 FinancialAccount: defaultFinancialAccount,
+                GetUser: {
+                  user: { userType },
+                },
               }}
             >
               <FinancialAccountSummaryPage />
@@ -71,5 +83,15 @@ describe('Financial Accounts Page', () => {
     expect(getByRole('heading', { name: 'Reports' })).toBeInTheDocument();
     userEvent.click(getByRole('img', { name: 'Close' }));
     expect(queryByRole('heading', { name: 'Reports' })).not.toBeInTheDocument();
+  });
+
+  it('should show limited access if user does not have access to page', async () => {
+    const { findByText } = render(
+      <Components userType={UserTypeEnum.NonCru} />,
+    );
+
+    expect(
+      await findByText('Access to this feature is limited.'),
+    ).toBeInTheDocument();
   });
 });

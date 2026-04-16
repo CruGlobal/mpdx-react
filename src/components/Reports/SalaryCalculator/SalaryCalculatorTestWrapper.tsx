@@ -5,7 +5,12 @@ import { I18nextProvider } from 'react-i18next';
 import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
-import { SalaryRequestStatusEnum } from 'src/graphql/types.generated';
+import { StaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
+import {
+  SalaryRequestStatusEnum,
+  UserTypeEnum,
+} from 'src/graphql/types.generated';
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
@@ -95,6 +100,7 @@ export interface SalaryCalculatorTestWrapperProps {
   hasSpouse?: boolean;
   payrollDates?: PayrollDatesQuery['payrollDates'];
   editing?: boolean;
+  userType?: UserTypeEnum;
 }
 
 export const SalaryCalculatorTestWrapper: React.FC<
@@ -108,6 +114,7 @@ export const SalaryCalculatorTestWrapper: React.FC<
   hasSpouse = true,
   payrollDates = [],
   editing = true,
+  userType = UserTypeEnum.UsStaff,
 }) => {
   const hcmUserMerged = merge({}, hcmUserMock, hcmUser);
   const hcmSpouseMerged = merge({}, hcmSpouseMock, hcmSpouse);
@@ -128,8 +135,21 @@ export const SalaryCalculatorTestWrapper: React.FC<
             PayrollDates: PayrollDatesQuery;
             SalaryCalculation: SalaryCalculationQuery;
             GoalCalculatorConstants: GoalCalculatorConstantsQuery;
+            StaffAccount: StaffAccountQuery;
+            GetUser: GetUserQuery;
           }>
             mocks={{
+              StaffAccount: {
+                staffAccount: {
+                  id: '12345',
+                  name: 'Test Account',
+                },
+              },
+              GetUser: {
+                user: {
+                  userType,
+                },
+              },
               PayrollDates: {
                 payrollDates,
               },

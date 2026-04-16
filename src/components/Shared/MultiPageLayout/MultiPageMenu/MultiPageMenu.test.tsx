@@ -7,6 +7,8 @@ import { session } from '__tests__/fixtures/session';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetDesignationAccountsQuery } from 'src/components/EditDonationModal/EditDonationModal.generated';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
+import { UserTypeEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { MultiPageMenu, NavTypeEnum } from './MultiPageMenu';
 import { ManageOrganizationsAccessQuery } from './MultiPageMenu.generated';
@@ -40,11 +42,19 @@ describe('MultiPageMenu', () => {
     process.env.OAUTH_URL = 'https://auth.mpdx.org';
   });
 
-  it('default', async () => {
-    const { getByText } = render(
+  it('Cru US default', async () => {
+    const { findByText, getByText, queryByText } = render(
       <ThemeProvider theme={theme}>
         <TestRouter router={router}>
-          <GqlMockedProvider>
+          <GqlMockedProvider<{
+            GetUser: GetUserQuery;
+          }>
+            mocks={{
+              GetUser: {
+                user: { userType: UserTypeEnum.UsStaff },
+              },
+            }}
+          >
             <MultiPageMenu
               selectedId={selected}
               isOpen={true}
@@ -61,13 +71,92 @@ describe('MultiPageMenu', () => {
     expect(getByText('Donations')).toBeInTheDocument();
     expect(getByText('14 Month Partner Report')).toBeInTheDocument();
     expect(getByText('14 Month Salary Report')).toBeInTheDocument();
-    expect(getByText('Staff Expense Report')).toBeInTheDocument();
+    expect(await findByText('Staff Expense Report')).toBeInTheDocument();
     expect(getByText('MPGA Monthly Report')).toBeInTheDocument();
     expect(getByText('Designation Accounts')).toBeInTheDocument();
-    expect(getByText('Responsibility Centers')).toBeInTheDocument();
     expect(getByText('Expected Monthly Total')).toBeInTheDocument();
     expect(getByText('Partner Giving Analysis')).toBeInTheDocument();
     expect(getByText('Coaching')).toBeInTheDocument();
+
+    expect(queryByText('Responsibility Centers')).not.toBeInTheDocument();
+  });
+
+  it('Cru Global default', async () => {
+    const { findByText, getByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider<{
+            GetUser: GetUserQuery;
+          }>
+            mocks={{
+              GetUser: {
+                user: { userType: UserTypeEnum.GlobalStaff },
+              },
+            }}
+          >
+            <MultiPageMenu
+              selectedId={selected}
+              isOpen={true}
+              onClose={() => {}}
+              designationAccounts={[]}
+              setDesignationAccounts={() => {}}
+              navType={NavTypeEnum.Reports}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    expect(getByText('Donations')).toBeInTheDocument();
+    expect(getByText('14 Month Partner Report')).toBeInTheDocument();
+    expect(getByText('14 Month Salary Report')).toBeInTheDocument();
+    expect(getByText('Designation Accounts')).toBeInTheDocument();
+    expect(await findByText('Responsibility Centers')).toBeInTheDocument();
+    expect(getByText('Expected Monthly Total')).toBeInTheDocument();
+    expect(getByText('Partner Giving Analysis')).toBeInTheDocument();
+    expect(getByText('Coaching')).toBeInTheDocument();
+
+    expect(queryByText('Staff Expense Report')).not.toBeInTheDocument();
+    expect(queryByText('MPGA Monthly Report')).not.toBeInTheDocument();
+  });
+
+  it('non Cru default', async () => {
+    const { getByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider<{
+            GetUser: GetUserQuery;
+          }>
+            mocks={{
+              GetUser: {
+                user: { userType: UserTypeEnum.NonCru },
+              },
+            }}
+          >
+            <MultiPageMenu
+              selectedId={selected}
+              isOpen={true}
+              onClose={() => {}}
+              designationAccounts={[]}
+              setDesignationAccounts={() => {}}
+              navType={NavTypeEnum.Reports}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    expect(getByText('Donations')).toBeInTheDocument();
+    expect(getByText('14 Month Partner Report')).toBeInTheDocument();
+    expect(getByText('14 Month Salary Report')).toBeInTheDocument();
+    expect(getByText('Designation Accounts')).toBeInTheDocument();
+    expect(getByText('Expected Monthly Total')).toBeInTheDocument();
+    expect(getByText('Partner Giving Analysis')).toBeInTheDocument();
+    expect(getByText('Coaching')).toBeInTheDocument();
+
+    expect(queryByText('Staff Expense Report')).not.toBeInTheDocument();
+    expect(queryByText('MPGA Monthly Report')).not.toBeInTheDocument();
+    expect(queryByText('Responsibility Centers')).not.toBeInTheDocument();
   });
 
   it('has designation account filter', async () => {

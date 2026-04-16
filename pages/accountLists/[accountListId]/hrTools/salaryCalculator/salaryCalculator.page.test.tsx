@@ -3,10 +3,17 @@ import { render } from '@testing-library/react';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { LandingTestWrapper } from 'src/components/Reports/SalaryCalculator/Landing/NewSalaryCalculationLanding/LandingTestWrapper';
 import { SalaryCalculatorTestWrapper } from 'src/components/Reports/SalaryCalculator/SalaryCalculatorTestWrapper';
+import { UserTypeEnum } from 'src/graphql/types.generated';
 import SalaryCalculatorPage, { getServerSideProps } from './index.page';
 
-const TestComponent = () => (
-  <SalaryCalculatorTestWrapper>
+interface TestComponentProps {
+  userType?: UserTypeEnum;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({
+  userType = UserTypeEnum.UsStaff,
+}) => (
+  <SalaryCalculatorTestWrapper userType={userType}>
     <SalaryCalculatorPage />
   </SalaryCalculatorTestWrapper>
 );
@@ -47,5 +54,15 @@ describe('SalaryCalculatorPage', () => {
         await findByRole('heading', { name: 'Salary Calculator' }),
       ).toBeInTheDocument();
     });
+  });
+
+  it('should show limited access if user does not have access to page', async () => {
+    const { findByText } = render(
+      <TestComponent userType={UserTypeEnum.NonCru} />,
+    );
+
+    expect(
+      await findByText('Access to this feature is limited.'),
+    ).toBeInTheDocument();
   });
 });

@@ -23,6 +23,7 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { ReportPageWrapper } from 'src/components/Shared/styledComponents/ReportPageWrapper';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
@@ -46,15 +47,11 @@ const RightPanelContent = styled('div')(({ theme }) => ({
 interface GoalCalculatorContentProps {
   isNavListOpen: boolean;
   onNavListToggle: () => void;
-  designationAccounts: string[];
-  setDesignationAccounts: (accounts: string[]) => void;
 }
 
 const GoalCalculatorContent: React.FC<GoalCalculatorContentProps> = ({
   isNavListOpen,
   onNavListToggle,
-  designationAccounts,
-  setDesignationAccounts,
 }) => {
   const {
     rightPanelContent,
@@ -94,8 +91,6 @@ const GoalCalculatorContent: React.FC<GoalCalculatorContentProps> = ({
           isOpen={isNavListOpen}
           selectedId="goalCalculation"
           onClose={onNavListToggle}
-          designationAccounts={designationAccounts}
-          setDesignationAccounts={setDesignationAccounts}
           navType={NavTypeEnum.Reports}
         />
       }
@@ -128,12 +123,11 @@ const GoalCalculatorContent: React.FC<GoalCalculatorContentProps> = ({
   );
 };
 
-const GoalCalculatorPage: React.FC = () => {
+export const GoalCalculatorPage: React.FC = () => {
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
   const accountListId = useAccountListId();
   const [isNavListOpen, setNavListOpen] = useState(false);
-  const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
 
   const handleNavListToggle = () => {
     setNavListOpen(!isNavListOpen);
@@ -145,16 +139,16 @@ const GoalCalculatorPage: React.FC = () => {
         <title>{`${appName} | ${t('Reports - Goal Calculation')}`}</title>
       </Head>
       {accountListId ? (
-        <ReportPageWrapper>
-          <GoalCalculatorProvider>
-            <GoalCalculatorContent
-              isNavListOpen={isNavListOpen}
-              onNavListToggle={handleNavListToggle}
-              designationAccounts={designationAccounts}
-              setDesignationAccounts={setDesignationAccounts}
-            />
-          </GoalCalculatorProvider>
-        </ReportPageWrapper>
+        <UserTypeAccess>
+          <ReportPageWrapper>
+            <GoalCalculatorProvider>
+              <GoalCalculatorContent
+                isNavListOpen={isNavListOpen}
+                onNavListToggle={handleNavListToggle}
+              />
+            </GoalCalculatorProvider>
+          </ReportPageWrapper>
+        </UserTypeAccess>
       ) : (
         <Loading loading />
       )}

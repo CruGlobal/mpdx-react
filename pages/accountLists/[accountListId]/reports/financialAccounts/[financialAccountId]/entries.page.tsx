@@ -20,7 +20,9 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
+import { UserTypeEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { Panel } from '../../helpers';
@@ -105,39 +107,43 @@ const FinancialAccountEntries = (): ReactElement => {
           {`${appName} | ${t('Transactions Report - Responsibility Centers')}`}
         </title>
       </Head>
-
       {accountListId ? (
-        <Box sx={{ background: 'common.white' }}>
-          <SidePanelsLayout
-            headerHeight={headerHeight}
-            isScrollBox={false}
-            leftOpen={isNavListOpen}
-            leftWidth="290px"
-            mainContent={<AccountTransactions />}
-            leftPanel={
-              panelOpen === Panel.Navigation ? (
-                <MultiPageMenu
-                  isOpen={isNavListOpen}
-                  selectedId="financialAccounts"
-                  onClose={handleNavListToggle}
-                  designationAccounts={designationAccounts}
-                  setDesignationAccounts={setDesignationAccounts}
-                  navType={NavTypeEnum.Reports}
-                />
-              ) : panelOpen === Panel.Filters ? (
-                <DynamicFilterPanel
-                  filters={filterGroups}
-                  defaultExpandedFilterGroups={
-                    new Set(['Transaction Date', 'Category'])
-                  }
-                  savedFilters={[]}
-                  onClose={() => setPanelOpen(null)}
-                  showSaveButton={false}
-                />
-              ) : undefined
-            }
-          />
-        </Box>
+        <UserTypeAccess
+          allowedUserType={UserTypeEnum.GlobalStaff}
+          alwaysAllow={process.env.DISABLE_NEW_REPORTS === 'true'}
+        >
+          <Box sx={{ background: 'common.white' }}>
+            <SidePanelsLayout
+              headerHeight={headerHeight}
+              isScrollBox={false}
+              leftOpen={isNavListOpen}
+              leftWidth="290px"
+              mainContent={<AccountTransactions />}
+              leftPanel={
+                panelOpen === Panel.Navigation ? (
+                  <MultiPageMenu
+                    isOpen={isNavListOpen}
+                    selectedId="financialAccounts"
+                    onClose={handleNavListToggle}
+                    designationAccounts={designationAccounts}
+                    setDesignationAccounts={setDesignationAccounts}
+                    navType={NavTypeEnum.Reports}
+                  />
+                ) : panelOpen === Panel.Filters ? (
+                  <DynamicFilterPanel
+                    filters={filterGroups}
+                    defaultExpandedFilterGroups={
+                      new Set(['Transaction Date', 'Category'])
+                    }
+                    savedFilters={[]}
+                    onClose={() => setPanelOpen(null)}
+                    showSaveButton={false}
+                  />
+                ) : undefined
+              }
+            />
+          </Box>
+        </UserTypeAccess>
       ) : (
         <Loading loading />
       )}
