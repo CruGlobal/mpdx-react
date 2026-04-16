@@ -8,8 +8,12 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import { LoadCoachingListQuery } from 'src/components/Coaching/LoadCoachingList.generated';
+import { HcmQuery } from 'src/components/Reports/Shared/HcmData/Hcm.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
-import { UserTypeEnum } from 'src/graphql/types.generated';
+import {
+  PeopleGroupSupportTypeEnum,
+  UserTypeEnum,
+} from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { GetToolNotificationsQuery } from './GetToolNotifcations.generated';
 import NavMenu from './NavMenu';
@@ -22,6 +26,7 @@ interface TestComponentProps {
       GetToolNotifications: GetToolNotificationsQuery;
       LoadCoachingList: LoadCoachingListQuery;
       GetUser: GetUserQuery;
+      Hcm: HcmQuery;
     }>;
 }
 
@@ -113,7 +118,25 @@ describe('NavMenu', () => {
 
   it('renders HR Tools submenu items', async () => {
     const { findByRole, getByRole, getByTestId } = render(
-      <TestComponent mocks={defaultMocks} />,
+      <TestComponent
+        mocks={{
+          ...defaultMocks,
+          Hcm: {
+            hcm: [
+              {
+                staffInfo: {
+                  id: '1',
+                  peopleGroupSupportType:
+                    PeopleGroupSupportTypeEnum.SupportedRmo,
+                },
+                asrEit: {
+                  asrEligibility: true,
+                },
+              },
+            ],
+          },
+        }}
+      />,
     );
     await findByRole('menuitem', { name: 'HR Tools' });
     userEvent.click(getByTestId('HrToolsMenuToggle'));

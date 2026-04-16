@@ -16,11 +16,6 @@ import { UserTypeAccess } from './UserTypeAccess';
 const id = 'staff-1';
 
 const mockData = {
-  GetUser: {
-    user: {
-      userType: UserTypeEnum.UsStaff,
-    },
-  },
   Hcm: {
     hcm: [
       {
@@ -46,6 +41,7 @@ interface TestComponentProps {
 
 const TestComponent: React.FC<TestComponentProps> = ({
   requireStaffAccount,
+  userType = UserTypeEnum.UsStaff,
   staffAccountId = id,
   isAsr,
   isSalaryCalc,
@@ -59,6 +55,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
       }>
         mocks={{
           ...mockData,
+          GetUser: { user: { userType } },
           StaffAccount: {
             staffAccount: staffAccountId
               ? { id: staffAccountId, name: 'Test Account' }

@@ -4,7 +4,7 @@ import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelper
 import { LandingTestWrapper } from 'src/components/Reports/SalaryCalculator/Landing/NewSalaryCalculationLanding/LandingTestWrapper';
 import { SalaryCalculatorTestWrapper } from 'src/components/Reports/SalaryCalculator/SalaryCalculatorTestWrapper';
 import { UserTypeEnum } from 'src/graphql/types.generated';
-import SalaryCalculatorOuterPage, { getServerSideProps } from './index.page';
+import { SalaryCalculatorOuterPage, getServerSideProps } from './index.page';
 
 interface TestComponentProps {
   userType?: UserTypeEnum;
