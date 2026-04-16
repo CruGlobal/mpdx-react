@@ -59,11 +59,13 @@ const Dashboard = ({ data, accountListId }: Props): ReactElement => {
             exit="exit"
             variants={variants}
           >
-            <ConfirmUserGroupModal
-              open={openConfirmUserGroupModal}
-              handleClose={handleCloseConfirmUserGroupModal}
-              userType={data.user.userType}
-            />
+            {process.env.DISABLE_NEW_REPORTS !== 'true' && (
+              <ConfirmUserGroupModal
+                open={openConfirmUserGroupModal}
+                handleClose={handleCloseConfirmUserGroupModal}
+                userType={data.user.userType}
+              />
+            )}
 
             <Grid container spacing={3} alignItems="stretch">
               <Grid xs={12} sm={8} item>
