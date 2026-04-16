@@ -19,6 +19,7 @@ const StyledGrid = styled(DataGrid)(({ theme }) => ({
   fontSize: '1rem',
   '.MuiDataGrid-columnHeaderTitle': {
     fontWeight: 'bold',
+    color: theme.palette.mpdxBlue.main,
   },
   '.MuiDataGrid-row.top-border .MuiDataGrid-cell': {
     borderTop: `2px solid ${theme.palette.divider}`,
@@ -80,7 +81,7 @@ export const SalarySection: React.FC = () => {
       </Typography>
       <GridContainer>
         <StyledGrid
-          label={t('Salary')}
+          aria-label={t('Salary breakdown')}
           rows={rows}
           columns={columns}
           getRowClassName={(params) =>

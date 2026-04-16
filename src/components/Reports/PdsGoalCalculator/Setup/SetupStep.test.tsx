@@ -109,7 +109,7 @@ describe('SetupStep', () => {
     );
 
     await findByRole('spinbutton', { name: 'Pay Rate' });
-    expect(await findByText('Enter monthly salary')).toBeInTheDocument();
+    expect(await findByText('Enter yearly salary')).toBeInTheDocument();
 
     rerender(
       <PdsGoalCalculatorTestWrapper calculationMock={fullTimeHourlyMock}>

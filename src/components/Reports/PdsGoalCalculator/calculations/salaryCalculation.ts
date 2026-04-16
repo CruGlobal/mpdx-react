@@ -9,6 +9,7 @@ export type SalaryCalculationFields = Pick<
 >;
 
 export interface SalaryTotals {
+  monthlyBase: number;
   grossMonthlyPay: number;
   employerFica: number;
   subtotal: number;
@@ -24,10 +25,10 @@ export const calculateSalaryTotals = (
   const isSalaried =
     calculation.salaryOrHourly === DesignationSupportSalaryType.Salaried;
 
-  const base = isSalaried ? payRate : (payRate * hours * 52) / 12;
-  const grossMonthlyPay = base * (1 + geographicMultiplier);
+  const monthlyBase = isSalaried ? payRate / 12 : (payRate * hours * 52) / 12;
+  const grossMonthlyPay = monthlyBase * (1 + geographicMultiplier);
   const employerFica = grossMonthlyPay * employerFicaRate;
   const subtotal = grossMonthlyPay + employerFica;
 
-  return { grossMonthlyPay, employerFica, subtotal };
+  return { monthlyBase, grossMonthlyPay, employerFica, subtotal };
 };

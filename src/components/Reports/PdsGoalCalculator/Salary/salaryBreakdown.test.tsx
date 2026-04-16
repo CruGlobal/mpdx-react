@@ -13,7 +13,8 @@ const constants = { geographicMultiplier: 0, employerFicaRate: 0.08 };
 
 const salariedCalculation: SalaryCalculationFields = {
   salaryOrHourly: DesignationSupportSalaryType.Salaried,
-  payRate: 5000,
+  // Yearly salary — divided by 12 for monthly base
+  payRate: 60000,
   hoursWorkedPerWeek: null,
   geographicLocation: null,
 };
@@ -47,6 +48,7 @@ describe('buildSalaryBreakdownRows', () => {
     );
     expect(rows.map((row) => row.id)).toEqual([
       'pay-rate',
+      'monthly-base',
       'geographic-multiplier',
       'gross-monthly-pay',
       'employer-fica',

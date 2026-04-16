@@ -77,7 +77,7 @@ export const SetupStep: React.FC = () => {
   const isPartTime = calculation?.status === DesignationSupportStatus.PartTime;
 
   const payRateHelperText = isSalaried
-    ? t('Enter monthly salary')
+    ? t('Enter yearly salary')
     : t('Enter hourly rate');
 
   const handleOpenHoursCalculator = () => {

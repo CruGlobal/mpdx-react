@@ -10,7 +10,8 @@ const salaried = (
   overrides: Partial<SalaryCalculationFields> = {},
 ): SalaryCalculationFields => ({
   salaryOrHourly: DesignationSupportSalaryType.Salaried,
-  payRate: 5000,
+  // Yearly salary — divided by 12 for monthly base
+  payRate: 60000,
   hoursWorkedPerWeek: null,
   geographicLocation: null,
   ...overrides,
@@ -28,13 +29,15 @@ const hourly = (
 
 describe('calculateSalaryTotals', () => {
   describe('salaried', () => {
-    it('uses payRate directly when there is no geographic multiplier', () => {
+    it('divides yearly payRate by 12 when there is no geographic multiplier', () => {
       const result = calculateSalaryTotals(salaried(), 0, FICA_RATE);
+      // 60000 / 12
       expect(result.grossMonthlyPay).toBe(5000);
     });
 
     it('applies geographic multiplier additively', () => {
       const result = calculateSalaryTotals(salaried(), 0.06, FICA_RATE);
+      // (60000 / 12) * 1.06
       expect(result.grossMonthlyPay).toBeCloseTo(5300);
     });
 

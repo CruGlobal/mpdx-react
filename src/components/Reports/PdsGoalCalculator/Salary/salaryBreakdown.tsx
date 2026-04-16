@@ -47,13 +47,9 @@ export const buildSalaryBreakdownRows = (
   const payRate = calculation.payRate ?? 0;
   const hoursPerWeek = calculation.hoursWorkedPerWeek ?? 0;
   const isSalaried = salaryOrHourly === DesignationSupportSalaryType.Salaried;
-  const monthlyBase = isSalaried ? payRate : (payRate * hoursPerWeek * 52) / 12;
 
-  const { grossMonthlyPay, employerFica, subtotal } = calculateSalaryTotals(
-    calculation,
-    geographicMultiplier,
-    employerFicaRate,
-  );
+  const { monthlyBase, grossMonthlyPay, employerFica, subtotal } =
+    calculateSalaryTotals(calculation, geographicMultiplier, employerFicaRate);
 
   return [
     {
@@ -71,14 +67,16 @@ export const buildSalaryBreakdownRows = (
             amount: hoursPerWeek,
             format: 'number' as const,
           },
-          {
-            id: 'monthly-base',
-            category: t('Monthly Base'),
-            formula: t('Pay Rate × Hours per Week × 52 ÷ 12'),
-            amount: monthlyBase,
-            format: 'currency' as const,
-          },
         ]),
+    {
+      id: 'monthly-base',
+      category: t('Monthly Base'),
+      formula: isSalaried
+        ? t('Pay Rate ÷ 12')
+        : t('Pay Rate × Hours per Week × 52 ÷ 12'),
+      amount: monthlyBase,
+      format: 'currency',
+    },
     {
       id: 'geographic-multiplier',
       category: t('Geographic Multiplier'),
@@ -88,9 +86,7 @@ export const buildSalaryBreakdownRows = (
     {
       id: 'gross-monthly-pay',
       category: t('Gross Monthly Pay'),
-      formula: isSalaried
-        ? t('Pay Rate × (1 + Geographic Multiplier)')
-        : t('Monthly Base × (1 + Geographic Multiplier)'),
+      formula: t('Monthly Base × (1 + Geographic Multiplier)'),
       amount: grossMonthlyPay,
       format: 'currency',
       testId: 'gross-monthly-pay',
@@ -138,9 +134,10 @@ export const buildSalaryBreakdownColumns = (
   {
     field: 'amount',
     headerName: t('Amount'),
-    width: 140,
-    align: 'right',
-    headerAlign: 'right',
+    flex: 1,
+    minWidth: 140,
+    align: 'left',
+    headerAlign: 'left',
     renderCell: (params: GridRenderCellParams<SalaryBreakdownRow>) => {
       const { amount, format, testId } = params.row;
       const formatted =

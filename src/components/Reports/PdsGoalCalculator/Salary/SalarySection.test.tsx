@@ -23,7 +23,8 @@ describe('SalarySection', () => {
       <TestComponent
         calculationMock={{
           salaryOrHourly: DesignationSupportSalaryType.Salaried,
-          payRate: 5000,
+          // Yearly salary — divided by 12 for monthly base
+          payRate: 60000,
           hoursWorkedPerWeek: null,
           geographicLocation: null,
         }}
@@ -34,21 +35,28 @@ describe('SalarySection', () => {
   });
 
   describe('salaried breakdown', () => {
-    it('renders a five-row breakdown for a salaried user with no geographic multiplier', async () => {
-      const { findByTestId, getByTestId } = render(
+    it('renders a six-row breakdown for a salaried user with no geographic multiplier', async () => {
+      const { findByTestId, getByTestId, getByRole } = render(
         <TestComponent
           calculationMock={{
             salaryOrHourly: DesignationSupportSalaryType.Salaried,
-            payRate: 5000,
+            // Yearly salary — divided by 12 for monthly base
+            payRate: 60000,
             hoursWorkedPerWeek: null,
             geographicLocation: null,
           }}
         />,
       );
 
-      expect(await findByTestId('gross-monthly-pay')).toHaveTextContent(
-        '$5,000',
-      );
+      await findByTestId('gross-monthly-pay');
+
+      // 60000 / 12 = 5000 monthly base
+      const monthlyBaseRow = getByRole('gridcell', {
+        name: /Monthly Base.*Pay Rate ÷ 12/,
+      }).closest('[role="row"]');
+      expect(monthlyBaseRow).toHaveTextContent('$5,000');
+
+      expect(getByTestId('gross-monthly-pay')).toHaveTextContent('$5,000');
       expect(getByTestId('employer-fica')).toHaveTextContent('$400');
       expect(getByTestId('salary-subtotal')).toHaveTextContent('$5,400');
     });
@@ -58,7 +66,8 @@ describe('SalarySection', () => {
         <TestComponent
           calculationMock={{
             salaryOrHourly: DesignationSupportSalaryType.Salaried,
-            payRate: 5000,
+            // Yearly salary — divided by 12 for monthly base
+            payRate: 60000,
             hoursWorkedPerWeek: null,
             // Orlando seeds at 0.06
             geographicLocation: 'Orlando, FL',
@@ -73,7 +82,7 @@ describe('SalarySection', () => {
       }).closest('[role="row"]');
       expect(geoRow).toHaveTextContent('6%');
 
-      // 5000 * (1 + 0.06)
+      // (60000 / 12) * (1 + 0.06) = 5300
       expect(getByTestId('gross-monthly-pay')).toHaveTextContent('$5,300');
       // 5300 * 0.08
       expect(getByTestId('employer-fica')).toHaveTextContent('$424');
@@ -121,7 +130,8 @@ describe('SalarySection', () => {
       <PdsGoalCalculatorTestWrapper
         calculationMock={{
           salaryOrHourly: DesignationSupportSalaryType.Salaried,
-          payRate: 5000,
+          // Yearly salary — divided by 12 for monthly base
+          payRate: 60000,
           hoursWorkedPerWeek: null,
           geographicLocation: null,
         }}
