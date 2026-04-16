@@ -1,7 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
-import { merge } from 'lodash';
+import { merge, mergeWith } from 'lodash';
 import { SnackbarProvider } from 'notistack';
 import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
@@ -10,6 +10,8 @@ import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   DesignationSupportSalaryType,
   DesignationSupportStatus,
+  MpdGoalMiscConstantCategoryEnum,
+  MpdGoalMiscConstantLabelEnum,
 } from 'src/graphql/types.generated';
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
@@ -147,7 +149,8 @@ export const PdsGoalCalculatorTestWrapper: React.FC<
               },
               ...(userMock ? { GetUser: userMock } : {}),
               GoalCalculatorConstants: {
-                constant: merge(
+                constant: mergeWith(
+                  {},
                   {
                     mpdGoalBenefitsConstants: [],
                     mpdGoalGeographicConstants: [
@@ -164,9 +167,18 @@ export const PdsGoalCalculatorTestWrapper: React.FC<
                         percentageMultiplier: 0.12,
                       },
                     ],
-                    mpdGoalMiscConstants: [],
+                    mpdGoalMiscConstants: [
+                      {
+                        category:
+                          MpdGoalMiscConstantCategoryEnum.AdditionalRates,
+                        label: MpdGoalMiscConstantLabelEnum.EmployerFicaRate,
+                        fee: 0.08,
+                      },
+                    ],
                   },
                   constantsMock,
+                  (_objValue, srcValue) =>
+                    Array.isArray(srcValue) ? srcValue : undefined,
                 ),
               },
             }}
