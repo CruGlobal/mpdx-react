@@ -42,7 +42,7 @@ const StepContent: React.FC = () => {
           formTitle={currentStep.title}
           handleNextStep={handleContinue}
           handlePreviousStep={handlePreviousStep}
-          isValid={allValid}
+          disableNext={!allValid}
         />
       )}
     </>

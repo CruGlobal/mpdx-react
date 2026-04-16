@@ -21,6 +21,7 @@ interface DirectionButtonsProps {
   additionalApproval?: boolean;
   splitAsr?: boolean;
   disableSubmit?: boolean;
+  disableNext?: boolean;
   //Formik validation for submit modal
   isSubmission?: boolean;
   submitForm?: () => Promise<void>;
@@ -51,6 +52,7 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
   additionalApproval,
   splitAsr,
   disableSubmit,
+  disableNext,
 }) => {
   const { t } = useTranslation();
 
@@ -141,7 +143,7 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
             variant="contained"
             color="primary"
             onClick={overrideNext ?? handleNextStep}
-            disabled={isValid === false}
+            disabled={disableNext}
           >
             {buttonTitle ?? t('Continue')}
             <ChevronRight sx={{ ml: 1 }} />
