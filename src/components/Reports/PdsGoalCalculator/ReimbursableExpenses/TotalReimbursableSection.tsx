@@ -14,7 +14,7 @@ import { usePdsGoalCalculator } from '../Shared/PdsGoalCalculatorContext';
 import {
   REIMBURSABLE_FLOOR,
   calculateReimbursableTotals,
-} from './reimbursableExpenses';
+} from '../calculations/reimbursableExpenses';
 
 const AmountTypography = styled(Typography)(({ theme }) => ({
   fontSize: '2.5rem',
