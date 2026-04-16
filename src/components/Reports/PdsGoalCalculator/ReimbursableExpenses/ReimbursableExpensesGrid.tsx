@@ -16,7 +16,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { useSaveField } from '../Shared/Autosave/useSaveField';
 import { usePdsGoalCalculator } from '../Shared/PdsGoalCalculatorContext';
-import { ReimbursableCalculationFields } from './reimbursableExpenses';
+import { ReimbursableCalculationFields } from '../calculations/reimbursableExpenses';
 
 export type ReimbursableFieldName = keyof ReimbursableCalculationFields;
 
