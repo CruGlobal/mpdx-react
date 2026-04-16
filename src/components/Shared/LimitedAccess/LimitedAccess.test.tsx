@@ -10,12 +10,19 @@ const router = {
 
 interface ComponentsProps {
   noStaffAccount?: boolean;
+  userGroupError?: boolean;
 }
 
-const Components: React.FC<ComponentsProps> = ({ noStaffAccount }) => (
+const Components: React.FC<ComponentsProps> = ({
+  noStaffAccount,
+  userGroupError,
+}) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
-      <LimitedAccess noStaffAccount={noStaffAccount} />
+      <LimitedAccess
+        noStaffAccount={noStaffAccount}
+        userGroupError={userGroupError}
+      />
     </TestRouter>
   </ThemeProvider>
 );
@@ -48,6 +55,23 @@ describe('LimitedAccess', () => {
       getByText(
         /our records show that you are not part of the user group that has access to this feature/i,
       ),
+    ).toBeInTheDocument();
+    expect(getByRole('link', { name: 'support@mpdx.org' })).toBeInTheDocument();
+
+    const button = getByRole('link', { name: 'Back to Dashboard' });
+    expect(button).toBeInTheDocument();
+
+    expect(button).toHaveAttribute('href', `/accountLists/acc_123`);
+  });
+
+  it('should render the LimitedAccess component with error message when user group error', () => {
+    const { getByText, getByRole } = render(<Components userGroupError />);
+
+    expect(
+      getByRole('heading', { name: 'Unable to load this page' }),
+    ).toBeInTheDocument();
+    expect(
+      getByText(/something went wrong while loading your account information/i),
     ).toBeInTheDocument();
     expect(getByRole('link', { name: 'support@mpdx.org' })).toBeInTheDocument();
 

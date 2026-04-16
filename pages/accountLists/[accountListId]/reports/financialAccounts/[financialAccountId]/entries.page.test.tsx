@@ -10,6 +10,8 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { FinancialAccountQuery } from 'src/components/Reports/FinancialAccountsReport/Context/FinancialAccount.generated';
 import { defaultFinancialAccount } from 'src/components/Reports/FinancialAccountsReport/Header/HeaderMocks';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
+import { UserTypeEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import FinancialAccountsPage from './entries.page';
@@ -23,8 +25,13 @@ const router = {
   },
   isReady: true,
 };
+interface ComponentProps {
+  userType?: UserTypeEnum;
+}
 
-const Components = () => (
+const Components: React.FC<ComponentProps> = ({
+  userType = UserTypeEnum.GlobalStaff,
+}) => (
   <I18nextProvider i18n={i18n}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
       <SnackbarProvider>
@@ -32,9 +39,11 @@ const Components = () => (
           <TestRouter router={router}>
             <GqlMockedProvider<{
               FinancialAccount: FinancialAccountQuery;
+              GetUser: GetUserQuery;
             }>
               mocks={{
                 FinancialAccount: defaultFinancialAccount,
+                GetUser: { user: { userType } },
               }}
             >
               <FinancialAccountsPage />
@@ -84,5 +93,15 @@ describe('Financial Accounts Page', () => {
     expect(getByRole('heading', { name: 'Reports' })).toBeInTheDocument();
     userEvent.click(getByRole('img', { name: 'Close' }));
     expect(queryByRole('heading', { name: 'Reports' })).not.toBeInTheDocument();
+  });
+
+  it('should show limited access if user does not have access to page', async () => {
+    const { findByText } = render(
+      <Components userType={UserTypeEnum.NonCru} />,
+    );
+
+    expect(
+      await findByText('Access to this feature is limited.'),
+    ).toBeInTheDocument();
   });
 });

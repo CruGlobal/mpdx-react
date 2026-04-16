@@ -5,7 +5,7 @@ import IntroPage from 'src/components/Reports/SavingsFundTransfer/IntroPage/Intr
 import { StaffSavingFundProvider } from 'src/components/Reports/StaffSavingFund/StaffSavingFundContext';
 import { StaffSavingFundLayout } from 'src/components/Reports/StaffSavingFund/StaffSavingFundLayout';
 
-const StaffSavingFundPage: React.FC = () => {
+export const StaffSavingFundPage: React.FC = () => {
   const { t } = useTranslation();
 
   const title = t('Savings Fund Transfer');

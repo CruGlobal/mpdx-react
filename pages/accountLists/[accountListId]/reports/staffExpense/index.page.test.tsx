@@ -4,10 +4,7 @@ import { render } from '__tests__/util/testingLibraryReactMock';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
-import {
-  GoalCalculatorPage,
-  getServerSideProps,
-} from './[goalCalculationId].page';
+import { StaffExpenseReportPage, getServerSideProps } from './index.page';
 
 const Components = () => (
   <TestRouter>
@@ -18,12 +15,12 @@ const Components = () => (
         GetUser: { user: { userType: UserTypeEnum.NonCru } },
       }}
     >
-      <GoalCalculatorPage />
+      <StaffExpenseReportPage />
     </GqlMockedProvider>
   </TestRouter>
 );
 
-describe('[goalCalculationId] page', () => {
+describe('StaffExpense page', () => {
   it('uses blockImpersonatingNonDevelopers for server-side props', () => {
     expect(getServerSideProps).toBe(blockImpersonatingNonDevelopers);
   });

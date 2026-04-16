@@ -10,12 +10,14 @@ import {
 } from '__tests__/util/windowResizeObserver';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { StaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
+import { UserTypeEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import MinisterHousingAllowancePage, { getServerSideProps } from './index.page';
 
 const mutationSpy = jest.fn();
 
-const mockStaffAccount = {
+const mocks = {
   StaffAccount: {
     staffAccount: {
       id: '12345',
@@ -23,15 +25,26 @@ const mockStaffAccount = {
     },
   },
 };
+interface ComponentProps {
+  userType?: UserTypeEnum;
+}
 
-const Components = () => (
+const Components: React.FC<ComponentProps> = ({
+  userType = UserTypeEnum.UsStaff,
+}) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
       <TestRouter>
         <GqlMockedProvider<{
           StaffAccount: StaffAccountQuery;
+          GetUser: GetUserQuery;
         }>
-          mocks={mockStaffAccount}
+          mocks={{
+            ...mocks,
+            GetUser: {
+              user: { userType },
+            },
+          }}
           onCall={mutationSpy}
         >
           <MinisterHousingAllowancePage />
@@ -96,6 +109,16 @@ describe('MHA Calculation Page', () => {
 
     expect(
       await findByText(/access to this feature is limited/i),
+    ).toBeInTheDocument();
+  });
+
+  it('should show limited access if user does not have access to page', async () => {
+    const { findByText } = render(
+      <Components userType={UserTypeEnum.NonCru} />,
+    );
+
+    expect(
+      await findByText('Access to this feature is limited.'),
     ).toBeInTheDocument();
   });
 });

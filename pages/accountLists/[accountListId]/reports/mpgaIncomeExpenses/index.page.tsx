@@ -5,14 +5,12 @@ import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
-import Loading from 'src/components/Loading';
 import { MPGAIncomeExpensesReport } from 'src/components/Reports/MPGAIncomeExpensesReport/MPGAIncomeExpensesReport';
-import { useStaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
-import { LimitedAccess } from 'src/components/Shared/LimitedAccess/LimitedAccess';
 import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
 const MPGAReportPageWrapper = styled(Box)(({ theme }) => ({
@@ -22,8 +20,6 @@ const MPGAReportPageWrapper = styled(Box)(({ theme }) => ({
 const MPGAReportPage: React.FC = () => {
   const { appName } = useGetAppSettings();
   const { t } = useTranslation();
-
-  const { data: staffAccountData, loading } = useStaffAccountQuery();
 
   const [isNavListOpen, setIsNavListOpen] = useState<boolean>(false);
 
@@ -38,7 +34,7 @@ const MPGAReportPage: React.FC = () => {
           'MPGA Monthly Report',
         )}`}</title>
       </Head>
-      {staffAccountData?.staffAccount?.id ? (
+      <UserTypeAccess requireStaffAccount>
         <MPGAReportPageWrapper>
           <SidePanelsLayout
             isScrollBox={false}
@@ -61,11 +57,7 @@ const MPGAReportPage: React.FC = () => {
             }
           />
         </MPGAReportPageWrapper>
-      ) : loading ? (
-        <Loading loading />
-      ) : (
-        <LimitedAccess noStaffAccount />
-      )}
+      </UserTypeAccess>
     </>
   );
 };

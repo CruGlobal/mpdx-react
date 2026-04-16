@@ -1,15 +1,13 @@
-import Head from 'next/dist/shared/lib/head';
+import Head from 'next/head';
 import React, { ReactElement, useContext } from 'react';
 import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
-import Loading from 'src/components/Loading';
 import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
-import { LimitedAccess } from '../../Shared/LimitedAccess/LimitedAccess';
-import { useStaffAccountQuery } from '../StaffAccount.generated';
+import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import {
   StaffSavingFundContext,
   StaffSavingFundType,
@@ -34,14 +32,12 @@ export const StaffSavingFundLayout: React.FC<StaffSavingFundLayoutProps> = ({
     StaffSavingFundContext,
   ) as StaffSavingFundType;
 
-  const { data: staffAccountData, loading } = useStaffAccountQuery();
-
   return (
     <>
       <Head>
         <title>{`${pageTitle}`}</title>
       </Head>
-      {staffAccountData?.staffAccount?.id ? (
+      <UserTypeAccess requireStaffAccount>
         <StaffSavingFundPageWrapper>
           <SidePanelsLayout
             isScrollBox={false}
@@ -58,11 +54,7 @@ export const StaffSavingFundLayout: React.FC<StaffSavingFundLayoutProps> = ({
             mainContent={children}
           />
         </StaffSavingFundPageWrapper>
-      ) : loading ? (
-        <Loading loading />
-      ) : (
-        <LimitedAccess noStaffAccount />
-      )}
+      </UserTypeAccess>
     </>
   );
 };
