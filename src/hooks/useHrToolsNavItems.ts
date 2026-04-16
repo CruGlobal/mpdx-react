@@ -1,13 +1,14 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { UserTypeEnum } from 'pages/api/graphql-rest.page.generated';
-import { useUserPreferenceContext } from 'src/components/User/Preferences/UserPreferenceProvider';
+import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { NavItems } from './useReportNavItems';
 import { useUsStaffGroups } from './useUsStaffGroups';
 
 export function useHrToolsNavItems(): NavItems[] {
   const { t } = useTranslation();
-  const { userType } = useUserPreferenceContext();
+  const { data } = useGetUserQuery();
+  const userType = data?.user.userType;
 
   const { inAsrIneligibleGroup, inSalaryCalcIneligibleGroup } =
     useUsStaffGroups();
