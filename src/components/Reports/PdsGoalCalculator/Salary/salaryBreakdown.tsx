@@ -72,7 +72,7 @@ export const buildSalaryBreakdownRows = (
       id: 'monthly-base',
       category: t('Monthly Base'),
       formula: isSalaried
-        ? t('Pay Rate ÷ 12')
+        ? t('Yearly Salary ÷ 12')
         : t('Pay Rate × Hours per Week × 52 ÷ 12'),
       amount: monthlyBase,
       format: 'currency',

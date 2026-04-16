@@ -4,6 +4,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import { useLocale } from 'src/hooks/useLocale';
+import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
 import { usePdsGoalCalculator } from '../Shared/PdsGoalCalculatorContext';
 import {
   buildSalaryBreakdownColumns,
@@ -42,6 +43,7 @@ const StyledGrid = styled(DataGrid)(({ theme }) => ({
 export const SalarySection: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const localeText = useDataGridLocaleText();
   const { calculation } = usePdsGoalCalculator();
   const { goalMiscConstants, goalGeographicConstantMap } =
     useGoalCalculatorConstants();
@@ -93,6 +95,7 @@ export const SalarySection: React.FC = () => {
           disableColumnSorting
           disableRowSelectionOnClick
           hideFooter
+          localeText={localeText}
         />
       </GridContainer>
     </>

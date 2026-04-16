@@ -52,7 +52,7 @@ describe('SalarySection', () => {
 
       // 60000 / 12 = 5000 monthly base
       const monthlyBaseRow = getByRole('gridcell', {
-        name: /Monthly Base.*Pay Rate ÷ 12/,
+        name: /Monthly Base.*Yearly Salary ÷ 12/,
       }).closest('[role="row"]');
       expect(monthlyBaseRow).toHaveTextContent('$5,000');
 
