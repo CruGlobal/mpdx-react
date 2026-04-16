@@ -10,6 +10,7 @@ import {
 } from 'src/lib/intlFormat';
 import {
   SalaryCalculationFields,
+  SalaryConstants,
   calculateSalaryTotals,
 } from '../calculations/salaryCalculation';
 
@@ -31,11 +32,6 @@ export interface SalaryBreakdownRow {
   testId?: string;
 }
 
-export interface SalaryConstants {
-  geographicMultiplier: number;
-  employerFicaRate: number;
-}
-
 export const buildSalaryBreakdownRows = (
   calculation: SalaryCalculationFields,
   constants: SalaryConstants,
@@ -49,7 +45,7 @@ export const buildSalaryBreakdownRows = (
   const isSalaried = salaryOrHourly === DesignationSupportSalaryType.Salaried;
 
   const { monthlyBase, grossMonthlyPay, employerFica, subtotal } =
-    calculateSalaryTotals(calculation, geographicMultiplier, employerFicaRate);
+    calculateSalaryTotals(calculation, constants);
 
   return [
     {

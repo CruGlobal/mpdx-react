@@ -17,7 +17,7 @@ const GridContainer = styled(Box)({
 });
 
 const StyledGrid = styled(DataGrid)(({ theme }) => ({
-  fontSize: '1rem',
+  fontSize: theme.typography.body1.fontSize,
   '.MuiDataGrid-columnHeaderTitle': {
     fontWeight: 'bold',
     color: theme.palette.mpdxBlue.main,
@@ -36,7 +36,7 @@ const StyledGrid = styled(DataGrid)(({ theme }) => ({
   '.category-formula': {
     display: 'block',
     color: theme.palette.text.secondary,
-    fontSize: '0.8125rem',
+    fontSize: theme.typography.body2.fontSize,
   },
 })) as typeof DataGrid;
 

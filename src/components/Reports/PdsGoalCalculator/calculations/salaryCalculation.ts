@@ -8,6 +8,11 @@ export type SalaryCalculationFields = Pick<
   'salaryOrHourly' | 'payRate' | 'hoursWorkedPerWeek' | 'geographicLocation'
 >;
 
+export interface SalaryConstants {
+  geographicMultiplier: number;
+  employerFicaRate: number;
+}
+
 export interface SalaryTotals {
   monthlyBase: number;
   grossMonthlyPay: number;
@@ -17,9 +22,9 @@ export interface SalaryTotals {
 
 export const calculateSalaryTotals = (
   calculation: SalaryCalculationFields,
-  geographicMultiplier: number,
-  employerFicaRate: number,
+  constants: SalaryConstants,
 ): SalaryTotals => {
+  const { geographicMultiplier, employerFicaRate } = constants;
   const payRate = calculation.payRate ?? 0;
   const hours = calculation.hoursWorkedPerWeek ?? 0;
   const isSalaried =
