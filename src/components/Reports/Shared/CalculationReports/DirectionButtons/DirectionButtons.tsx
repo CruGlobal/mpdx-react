@@ -141,6 +141,7 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
             variant="contained"
             color="primary"
             onClick={overrideNext ?? handleNextStep}
+            disabled={isValid === false}
           >
             {buttonTitle ?? t('Continue')}
             <ChevronRight sx={{ ml: 1 }} />

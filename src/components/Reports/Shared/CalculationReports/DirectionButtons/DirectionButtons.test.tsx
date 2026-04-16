@@ -25,6 +25,7 @@ interface TestComponentProps {
   showBackButton?: boolean;
   buttonTitle?: string;
   isEdit?: boolean;
+  isValid?: boolean;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
@@ -33,6 +34,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   showBackButton = false,
   buttonTitle,
   isEdit,
+  isValid,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter
@@ -54,6 +56,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
                 showBackButton={showBackButton}
                 buttonTitle={buttonTitle}
                 isEdit={isEdit}
+                isValid={isValid}
               />
             </MinisterHousingAllowanceProvider>
           </Formik>
@@ -112,6 +115,24 @@ describe('DirectionButtons', () => {
     const { findByRole } = render(<TestComponent buttonTitle={title} />);
 
     expect(await findByRole('button', { name: title })).toBeInTheDocument();
+  });
+
+  it('disables Continue when isValid is false', async () => {
+    const { findByRole } = render(<TestComponent isValid={false} />);
+
+    expect(await findByRole('button', { name: 'Continue' })).toBeDisabled();
+  });
+
+  it('enables Continue when isValid is true', async () => {
+    const { findByRole } = render(<TestComponent isValid={true} />);
+
+    expect(await findByRole('button', { name: 'Continue' })).toBeEnabled();
+  });
+
+  it('leaves Continue enabled when isValid is not provided', async () => {
+    const { findByRole } = render(<TestComponent />);
+
+    expect(await findByRole('button', { name: 'Continue' })).toBeEnabled();
   });
 
   it('renders Discard button', async () => {
