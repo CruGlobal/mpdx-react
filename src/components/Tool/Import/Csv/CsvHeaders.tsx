@@ -5,6 +5,7 @@ import {
   Button,
   Card,
   CardHeader,
+  CircularProgress,
   List,
   ListItem,
   MenuItem,
@@ -96,6 +97,7 @@ const CsvHeaders: React.FC<CsvHeadersProps> = ({
   const { appName } = useGetAppSettings();
 
   const [unmappedHeadersChecked, setUnmappedHeadersChecked] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const importHeaders = uploadData?.fileHeaders ?? {};
   const fileHeadersMappings = uploadData?.fileHeadersMappings ?? {};
@@ -187,6 +189,7 @@ const CsvHeaders: React.FC<CsvHeadersProps> = ({
     }
     uploadData.valuesToConstantsMappings = {};
 
+    setSaving(true);
     save({
       uploadData,
       initialData,
@@ -196,13 +199,17 @@ const CsvHeaders: React.FC<CsvHeadersProps> = ({
       supportedHeaders,
       setUploadData,
       setInitialData,
-    }).then((transformedData) => {
-      const nextTab = !Object.keys(transformedData.valuesToConstantsMappings)
-        .length
-        ? CsvImportViewStepEnum.Preview
-        : CsvImportViewStepEnum.Values;
-      setCurrentTab(nextTab);
-    });
+    })
+      .then((transformedData) => {
+        const nextTab = !Object.keys(transformedData.valuesToConstantsMappings)
+          .length
+          ? CsvImportViewStepEnum.Preview
+          : CsvImportViewStepEnum.Values;
+        setCurrentTab(nextTab);
+      })
+      .finally(() => {
+        setSaving(false);
+      });
   };
 
   if (!accountListId || !uploadData?.id || !unmappedHeadersChecked) {
@@ -326,7 +333,9 @@ const CsvHeaders: React.FC<CsvHeadersProps> = ({
           <Button
             variant="contained"
             onClick={handleSave}
-            disabled={!uploadData || unmappedHeaders.length !== 0}
+            disabled={!uploadData || unmappedHeaders.length !== 0 || saving}
+            aria-busy={saving}
+            endIcon={saving && <CircularProgress size={16} color="inherit" />}
           >
             {t('Next')}
           </Button>
