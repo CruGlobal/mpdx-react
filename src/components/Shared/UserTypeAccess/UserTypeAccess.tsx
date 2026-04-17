@@ -39,7 +39,7 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
     inAsrIneligibleGroup,
     inSalaryCalcIneligibleGroup,
     loading: hcmLoading,
-  } = useUsStaffGroups(skip, date);
+  } = useUsStaffGroups(date, skip);
 
   const userType = data?.user.userType;
   const cruUsStaff = userType === UserTypeEnum.UsStaff;
