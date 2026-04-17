@@ -13,6 +13,7 @@ import {
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { UserTypeEnum } from 'src/graphql/types.generated';
+import { useUserOptionQuery } from 'src/hooks/UserPreference.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useGetAppSettings from 'src/hooks/useGetAppSettings';
 
@@ -22,6 +23,10 @@ const FinancialAccountSummaryPage: React.FC = () => {
   const { appName } = useGetAppSettings();
   const [navListOpen, setNavListOpen] = useState(false);
   const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
+
+  const { data: userOptionData } = useUserOptionQuery({
+    variables: { key: 'user_type_verified' },
+  });
 
   const handleNavListToggle = () => {
     setNavListOpen(!navListOpen);
@@ -37,7 +42,10 @@ const FinancialAccountSummaryPage: React.FC = () => {
       {accountListId ? (
         <UserTypeAccess
           allowedUserType={UserTypeEnum.GlobalStaff}
-          alwaysAllow={process.env.DISABLE_NEW_REPORTS === 'true'}
+          alwaysAllow={
+            process.env.DISABLE_NEW_REPORTS === 'true' ||
+            userOptionData?.userOption?.value !== 'true'
+          }
         >
           <Box sx={{ background: 'common.white' }}>
             <SidePanelsLayout

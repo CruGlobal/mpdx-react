@@ -52,7 +52,7 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
   }
 
   if (userLoading && !userType) {
-    return null;
+    return <Loading loading />;
   }
 
   if (limitedAccess) {

@@ -14,6 +14,7 @@ import {
   PeopleGroupSupportTypeEnum,
   UserTypeEnum,
 } from 'src/graphql/types.generated';
+import { UserOptionQuery } from 'src/hooks/UserPreference.generated';
 import theme from 'src/theme';
 import { GetToolNotificationsQuery } from './GetToolNotifcations.generated';
 import NavMenu from './NavMenu';
@@ -27,6 +28,7 @@ interface TestComponentProps {
       LoadCoachingList: LoadCoachingListQuery;
       GetUser: GetUserQuery;
       Hcm: HcmQuery;
+      UserOption: UserOptionQuery;
     }>;
 }
 
@@ -65,6 +67,11 @@ const defaultMocks = {
     fixPhoneNumbers: { totalCount: 0 },
     mergeContacts: { totalCount: 0 },
     mergePeople: { totalCount: 0 },
+  },
+  UserOption: {
+    userOption: {
+      value: 'true',
+    },
   },
 };
 
@@ -196,6 +203,25 @@ describe('NavMenu', () => {
       getByRole('menuitem', { name: 'Import from CSV' }),
     ).toBeInTheDocument();
     expect(getByTestId('appeals-false')).toBeInTheDocument();
+  });
+
+  it('does not render new reports when user type not verified', async () => {
+    const { queryByRole } = render(
+      <TestComponent
+        mocks={{
+          ...defaultMocks,
+          UserOption: {
+            userOption: {
+              value: '',
+            },
+          },
+        }}
+      />,
+    );
+
+    expect(
+      await queryByRole('menuitem', { name: 'HR Tools' }),
+    ).not.toBeInTheDocument();
   });
 
   it('does not show coaching link if there are no coaching accounts', async () => {
