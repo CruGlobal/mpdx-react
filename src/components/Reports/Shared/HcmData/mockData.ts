@@ -1,6 +1,6 @@
-import { HcmDataQuery } from './HCMData.generated';
+import { HcmQuery } from './Hcm.generated';
 
-const johnDoe: HcmDataQuery['hcm'][number]['staffInfo'] = {
+const johnDoe: HcmQuery['hcm'][number]['staffInfo'] = {
   id: `ID000000`,
   personNumber: `000123456`,
   firstName: `John`,
@@ -19,7 +19,7 @@ const johnDoe: HcmDataQuery['hcm'][number]['staffInfo'] = {
   primaryPhoneNumber: '1234567890',
 };
 
-const janeDoe: HcmDataQuery['hcm'][number]['staffInfo'] = {
+const janeDoe: HcmQuery['hcm'][number]['staffInfo'] = {
   ...johnDoe,
   id: `ID111111`,
   personNumber: `000789123`,
@@ -30,7 +30,7 @@ const janeDoe: HcmDataQuery['hcm'][number]['staffInfo'] = {
   primaryPhoneNumber: '9876543210',
 };
 
-const noMhaAndNoException: HcmDataQuery['hcm'][number] = {
+const noMhaAndNoException: HcmQuery['hcm'][number] = {
   salaryRequestEligible: true,
   staffInfo: johnDoe,
   mhaRequest: {
@@ -60,14 +60,14 @@ const noMhaAndNoException: HcmDataQuery['hcm'][number] = {
   },
 };
 
-const ineligibleAndNoException: HcmDataQuery['hcm'][number] = {
+const ineligibleAndNoException: HcmQuery['hcm'][number] = {
   ...noMhaAndNoException,
   mhaEit: {
     mhaEligibility: false,
   },
 };
 
-const mhaAndNoException: HcmDataQuery['hcm'][number] = {
+const mhaAndNoException: HcmQuery['hcm'][number] = {
   ...noMhaAndNoException,
   mhaRequest: {
     currentApprovedOverallAmount: 15000,
@@ -75,40 +75,38 @@ const mhaAndNoException: HcmDataQuery['hcm'][number] = {
   },
 };
 
-export const singleNoMhaNoException: HcmDataQuery['hcm'] = [
-  noMhaAndNoException,
-];
-export const singleMhaNoException: HcmDataQuery['hcm'] = [mhaAndNoException];
-export const marriedMhaAndNoException: HcmDataQuery['hcm'] = [
+export const singleNoMhaNoException: HcmQuery['hcm'] = [noMhaAndNoException];
+export const singleMhaNoException: HcmQuery['hcm'] = [mhaAndNoException];
+export const marriedMhaAndNoException: HcmQuery['hcm'] = [
   mhaAndNoException,
   {
     ...mhaAndNoException,
     staffInfo: janeDoe,
   },
 ];
-export const marriedNoMhaNoException: HcmDataQuery['hcm'] = [
+export const marriedNoMhaNoException: HcmQuery['hcm'] = [
   noMhaAndNoException,
   {
     ...noMhaAndNoException,
     staffInfo: janeDoe,
   },
 ];
-export const singleIneligible: HcmDataQuery['hcm'] = [ineligibleAndNoException];
-export const marriedBothIneligible: HcmDataQuery['hcm'] = [
+export const singleIneligible: HcmQuery['hcm'] = [ineligibleAndNoException];
+export const marriedBothIneligible: HcmQuery['hcm'] = [
   ineligibleAndNoException,
   {
     ...ineligibleAndNoException,
     staffInfo: janeDoe,
   },
 ];
-export const marriedUserIneligibleSpouseEligible: HcmDataQuery['hcm'] = [
+export const marriedUserIneligibleSpouseEligible: HcmQuery['hcm'] = [
   ineligibleAndNoException,
   {
     ...noMhaAndNoException,
     staffInfo: janeDoe,
   },
 ];
-export const marriedUserEligibleSpouseIneligible: HcmDataQuery['hcm'] = [
+export const marriedUserEligibleSpouseIneligible: HcmQuery['hcm'] = [
   noMhaAndNoException,
   {
     ...ineligibleAndNoException,

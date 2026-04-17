@@ -12,6 +12,7 @@ import { FinancialAccountQuery } from 'src/components/Reports/FinancialAccountsR
 import { defaultFinancialAccount } from 'src/components/Reports/FinancialAccountsReport/Header/HeaderMocks';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
+import { UserOptionQuery } from 'src/hooks/UserPreference.generated';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import FinancialAccountsPage from './entries.page';
@@ -27,10 +28,12 @@ const router = {
 };
 interface ComponentProps {
   userType?: UserTypeEnum;
+  userOptionValue?: string;
 }
 
 const Components: React.FC<ComponentProps> = ({
   userType = UserTypeEnum.GlobalStaff,
+  userOptionValue = 'true',
 }) => (
   <I18nextProvider i18n={i18n}>
     <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -40,10 +43,14 @@ const Components: React.FC<ComponentProps> = ({
             <GqlMockedProvider<{
               FinancialAccount: FinancialAccountQuery;
               GetUser: GetUserQuery;
+              UserOption: UserOptionQuery;
             }>
               mocks={{
                 FinancialAccount: defaultFinancialAccount,
                 GetUser: { user: { userType } },
+                UserOption: {
+                  userOption: { value: userOptionValue },
+                },
               }}
             >
               <FinancialAccountsPage />
@@ -103,5 +110,13 @@ describe('Financial Accounts Page', () => {
     expect(
       await findByText('Access to this feature is limited.'),
     ).toBeInTheDocument();
+  });
+
+  it('should show page if user has not verified user type', async () => {
+    const { findByText } = render(
+      <Components userType={UserTypeEnum.NonCru} userOptionValue="" />,
+    );
+
+    expect(await findByText('Account 1')).toBeInTheDocument();
   });
 });

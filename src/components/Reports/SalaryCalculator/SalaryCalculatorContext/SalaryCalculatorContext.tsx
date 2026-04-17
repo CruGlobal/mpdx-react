@@ -15,7 +15,7 @@ import { useTrackMutation } from 'src/hooks/useTrackMutation';
 import { getQueryParam } from 'src/utils/queryParam';
 import { FormEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
-import { HcmQuery, useHcmQuery } from './Hcm.generated';
+import { HcmQuery, useHcmQuery } from '../../Shared/HcmData/Hcm.generated';
 import { SalaryCalculatorSectionEnum } from './Helper/sharedTypes';
 import {
   SalaryCalculationQuery,
@@ -79,6 +79,7 @@ export const SalaryCalculatorProvider: React.FC<
 
   const { data: calculationData, loading } = useSalaryCalculationQuery({
     variables: { id: calculationId },
+    skip: !calculationId,
   });
   const calculation = calculationData?.salaryRequest ?? null;
 
@@ -145,7 +146,7 @@ export const SalaryCalculatorProvider: React.FC<
     editing,
   ]);
 
-  if (!calculationData) {
+  if (calculationId && !calculationData) {
     return (
       <Box
         display="flex"

@@ -81,7 +81,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
         <SnackbarProvider>
           <GqlMockedProvider
             mocks={{
-              HcmData: hcmData,
+              Hcm: hcmData,
               AdditionalSalaryRequest: additionalSalaryRequestData,
               StaffAccountId: staffAccountIdData,
             }}

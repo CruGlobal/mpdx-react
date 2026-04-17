@@ -2,11 +2,14 @@ import Loading from 'src/components/Loading';
 import { useStaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
+import { useUsStaffGroups } from 'src/hooks/useUsStaffGroups';
 import { LimitedAccess } from '../LimitedAccess/LimitedAccess';
 
 interface UserTypeAccessProps {
   allowedUserType?: UserTypeEnum;
   requireStaffAccount?: boolean;
+  requireUserGroups?: 'asr' | 'salaryCalc';
+  effectiveDate?: string | null;
   children: React.ReactElement;
   alwaysAllow?: boolean;
 }
@@ -14,19 +17,38 @@ interface UserTypeAccessProps {
 export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
   allowedUserType = UserTypeEnum.UsStaff,
   requireStaffAccount,
+  effectiveDate,
   children,
   alwaysAllow,
+  requireUserGroups,
 }) => {
   const { data, loading: userLoading, error } = useGetUserQuery();
   const {
     data: staffAccountData,
-    loading,
+    loading: staffAccountLoading,
     error: staffAccountError,
   } = useStaffAccountQuery({
     skip: !requireStaffAccount,
   });
 
+  const isAsr = requireUserGroups === 'asr';
+  const isSalaryCalc = requireUserGroups === 'salaryCalc';
+
+  const date = isSalaryCalc ? (effectiveDate ?? undefined) : undefined;
+  const skip = !isAsr && !isSalaryCalc;
+  const {
+    inAsrIneligibleGroup,
+    inSalaryCalcIneligibleGroup,
+    loading: hcmLoading,
+  } = useUsStaffGroups(date, skip);
+
   const userType = data?.user.userType;
+  const cruUsStaff = userType === UserTypeEnum.UsStaff;
+
+  const limitedAccess =
+    (userType && userType !== allowedUserType) ||
+    (isAsr && cruUsStaff && inAsrIneligibleGroup) ||
+    (isSalaryCalc && cruUsStaff && inSalaryCalcIneligibleGroup);
 
   // Once HCM is ready to go live and DISABLE_NEW_REPORTS is removed, we can remove the alwaysAllow prop
   if (alwaysAllow) {
@@ -37,11 +59,11 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
     return <LimitedAccess userGroupError />;
   }
 
-  if (userLoading && !userType) {
-    return null;
+  if ((userLoading && !userType) || hcmLoading) {
+    return <Loading loading />;
   }
 
-  if (userType && userType !== allowedUserType) {
+  if (limitedAccess) {
     return <LimitedAccess />;
   }
 
@@ -49,7 +71,7 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
     if (staffAccountError) {
       return <LimitedAccess userGroupError />;
     }
-    if (loading && !staffAccountData) {
+    if (staffAccountLoading && !staffAccountData) {
       return <Loading loading />;
     }
     if (!staffAccountData?.staffAccount?.id) {

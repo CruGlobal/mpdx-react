@@ -7,7 +7,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
-import { HcmDataQuery } from '../../Shared/HcmData/HCMData.generated';
+import { HcmQuery } from '../../Shared/HcmData/Hcm.generated';
 import { AdditionalSalaryRequestProvider } from '../Shared/AdditionalSalaryRequestContext';
 import { AboutForm } from './AboutForm';
 
@@ -32,7 +32,7 @@ const router = {
 };
 
 const mocks = {
-  HcmData: {
+  Hcm: {
     hcm: [
       {
         id: '1',
@@ -63,7 +63,7 @@ const TestWrapper: React.FC = () => (
     <TestRouter router={router}>
       <I18nextProvider i18n={i18n}>
         <SnackbarProvider>
-          <GqlMockedProvider<{ HcmData: HcmDataQuery }> mocks={mocks}>
+          <GqlMockedProvider<{ Hcm: HcmQuery }> mocks={mocks}>
             <AdditionalSalaryRequestProvider>
               <AboutForm />
             </AdditionalSalaryRequestProvider>

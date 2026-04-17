@@ -14,12 +14,12 @@ import {
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
-import { PayrollDatesQuery } from './EffectiveDateStep/PayrollDates.generated';
 import {
   HcmDocument,
   HcmQuery,
   HcmQueryVariables,
-} from './SalaryCalculatorContext/Hcm.generated';
+} from '../Shared/HcmData/Hcm.generated';
+import { PayrollDatesQuery } from './EffectiveDateStep/PayrollDates.generated';
 import { SalaryCalculationQuery } from './SalaryCalculatorContext/SalaryCalculation.generated';
 import { SalaryCalculatorProvider } from './SalaryCalculatorContext/SalaryCalculatorContext';
 
