@@ -21,6 +21,7 @@ import { amount } from 'src/lib/yupHelpers';
 import { AutosaveCheckbox } from '../../Autosave/AutosaveCheckbox';
 import { AutosaveTextField } from '../../Autosave/AutosaveTextField';
 import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
+import { EffectiveDateNote } from '../../Shared/EffectiveDateNote';
 import { StepCard, StepTableHead } from '../../Shared/StepCard';
 import { useFormatters } from '../../Shared/useFormatters';
 
@@ -84,7 +85,10 @@ export const MaxAllowableStep: React.FC = () => {
 
   return (
     <StepCard>
-      <CardHeader title={t('Maximum Allowable Salary (CAP)')} />
+      <CardHeader
+        title={t('Maximum Allowable Salary (CAP)')}
+        subheader={<EffectiveDateNote />}
+      />
       <CardContent>
         <Typography variant="body1">
           <Trans t={t}>
