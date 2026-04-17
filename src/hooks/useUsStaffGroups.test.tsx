@@ -71,6 +71,7 @@ describe('useUsStaffGroups', () => {
       expect(result.current).toEqual({
         inAsrIneligibleGroup: false,
         inSalaryCalcIneligibleGroup: false,
+        loading: false,
       });
     });
   });
@@ -88,6 +89,7 @@ describe('useUsStaffGroups', () => {
       expect(result.current).toEqual({
         inAsrIneligibleGroup: false,
         inSalaryCalcIneligibleGroup: true,
+        loading: false,
       });
     });
   });
@@ -103,6 +105,7 @@ describe('useUsStaffGroups', () => {
       expect(result.current).toEqual({
         inAsrIneligibleGroup: false,
         inSalaryCalcIneligibleGroup: true,
+        loading: false,
       });
     });
   });
@@ -118,6 +121,7 @@ describe('useUsStaffGroups', () => {
       expect(result.current).toEqual({
         inAsrIneligibleGroup: true,
         inSalaryCalcIneligibleGroup: true,
+        loading: false,
       });
     });
   });
@@ -133,6 +137,7 @@ describe('useUsStaffGroups', () => {
       expect(result.current).toEqual({
         inAsrIneligibleGroup: true,
         inSalaryCalcIneligibleGroup: true,
+        loading: false,
       });
     });
   });
