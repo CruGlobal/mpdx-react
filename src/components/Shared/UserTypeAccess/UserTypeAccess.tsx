@@ -27,13 +27,20 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
   const { data, loading: userLoading, error } = useGetUserQuery();
   const {
     data: staffAccountData,
-    loading,
+    loading: staffAccountLoading,
     error: staffAccountError,
   } = useStaffAccountQuery({
     skip: !requireStaffAccount,
   });
-  const { inAsrIneligibleGroup, inSalaryCalcIneligibleGroup } =
-    useUsStaffGroups(isSalaryCalc ? (effectiveDate ?? undefined) : undefined);
+
+  const date = isSalaryCalc ? (effectiveDate ?? undefined) : undefined;
+  const skip = !isAsr && !isSalaryCalc;
+  const {
+    inAsrIneligibleGroup,
+    inSalaryCalcIneligibleGroup,
+    loading: hcmLoading,
+  } = useUsStaffGroups(skip, date);
+
   const userType = data?.user.userType;
   const cruUsStaff = userType === UserTypeEnum.UsStaff;
 
@@ -51,7 +58,7 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
     return <LimitedAccess userGroupError />;
   }
 
-  if (userLoading && !userType) {
+  if ((userLoading && !userType) || hcmLoading) {
     return <Loading loading />;
   }
 
@@ -63,7 +70,7 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
     if (staffAccountError) {
       return <LimitedAccess userGroupError />;
     }
-    if (loading && !staffAccountData) {
+    if (staffAccountLoading && !staffAccountData) {
       return <Loading loading />;
     }
     if (!staffAccountData?.staffAccount?.id) {

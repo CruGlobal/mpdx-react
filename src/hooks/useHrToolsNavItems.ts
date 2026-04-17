@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { UserTypeEnum } from 'pages/api/graphql-rest.page.generated';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
+import { UserTypeEnum } from 'src/graphql/types.generated';
 import { NavItems } from './useReportNavItems';
 import { useUsStaffGroups } from './useUsStaffGroups';
 

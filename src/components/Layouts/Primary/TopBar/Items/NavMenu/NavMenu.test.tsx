@@ -219,9 +219,11 @@ describe('NavMenu', () => {
       />,
     );
 
-    expect(
-      await queryByRole('menuitem', { name: 'HR Tools' }),
-    ).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        queryByRole('menuitem', { name: 'HR Tools' }),
+      ).not.toBeInTheDocument();
+    });
   });
 
   it('does not show coaching link if there are no coaching accounts', async () => {

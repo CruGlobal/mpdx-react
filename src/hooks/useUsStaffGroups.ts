@@ -1,5 +1,8 @@
 import { useMemo } from 'react';
-import { useHcmQuery } from 'src/components/Reports/Shared/HcmData/Hcm.generated';
+import {
+  HcmQuery,
+  useHcmQuery,
+} from 'src/components/Reports/Shared/HcmData/Hcm.generated';
 import {
   AssignmentCategoryEnum,
   AssignmentStatusEnum,
@@ -7,7 +10,9 @@ import {
   UserPersonTypeEnum,
 } from 'src/graphql/types.generated';
 
-const usStaffGroups = (staff) => ({
+type StaffInfo = HcmQuery['hcm'][number]['staffInfo'];
+
+const usStaffGroups = (staff: StaffInfo) => ({
   seniorStaff:
     staff?.peopleGroupSupportType === PeopleGroupSupportTypeEnum.SupportedRmo &&
     staff?.assignmentStatus === AssignmentStatusEnum.ActivePayrollEligible &&
@@ -32,9 +37,10 @@ const usStaffGroups = (staff) => ({
  * we pick the logged-in user if eligible, or their spouse if they are the one eligible, to check the subgroups against. If
  * neither is eligible, it defaults to the logged-in user, who will not be able to see the form anyway.
  */
-export function useUsStaffGroups(effectiveDate?: string) {
-  const { data } = useHcmQuery({
+export function useUsStaffGroups(skip: boolean, effectiveDate?: string) {
+  const { data, loading } = useHcmQuery({
     variables: effectiveDate ? { effectiveDate } : undefined,
+    skip,
   });
   const [user, spouse] = data?.hcm ?? [];
 
@@ -58,7 +64,8 @@ export function useUsStaffGroups(effectiveDate?: string) {
     () => ({
       inAsrIneligibleGroup,
       inSalaryCalcIneligibleGroup,
+      loading: loading && !skip,
     }),
-    [inAsrIneligibleGroup, inSalaryCalcIneligibleGroup],
+    [inAsrIneligibleGroup, inSalaryCalcIneligibleGroup, loading, skip],
   );
 }

@@ -29,13 +29,6 @@ query Hcm($effectiveDate: ISO8601Date) {
       lastRegularPaymentDate
       lastUpdated
     }
-    mhaEit {
-      mhaEligibility
-    }
-    asrEit {
-      asrEligibility
-      ineligibilityReason
-    }
     exceptionSalaryCap {
       amount
       effectiveDate
@@ -51,6 +44,7 @@ query Hcm($effectiveDate: ISO8601Date) {
     }
     asrEit {
       asrEligibility
+      ineligibilityReason
     }
     mhaRequest {
       currentApprovedOverallAmount
