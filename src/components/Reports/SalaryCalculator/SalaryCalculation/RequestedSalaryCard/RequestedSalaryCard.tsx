@@ -14,6 +14,7 @@ import { amount } from 'src/lib/yupHelpers';
 import { AutosaveTextField } from '../../Autosave/AutosaveTextField';
 import { CalculationFieldsFragment } from '../../SalaryCalculatorContext/SalaryCalculation.generated';
 import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
+import { EffectiveDateNote } from '../../Shared/EffectiveDateNote';
 import { StepCard, StepTableHead } from '../../Shared/StepCard';
 import { useFormatters } from '../../Shared/useFormatters';
 
@@ -72,7 +73,10 @@ export const RequestedSalaryCard: React.FC = () => {
 
   return (
     <StepCard>
-      <CardHeader title={t('Requested Salary')} />
+      <CardHeader
+        title={t('Requested Salary')}
+        subheader={<EffectiveDateNote />}
+      />
       <CardContent>
         <Typography variant="body1" data-testid="RequestedSalaryCard-message">
           <Trans t={t}>

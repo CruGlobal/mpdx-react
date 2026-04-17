@@ -16,6 +16,7 @@ import { EligibilityStatusTable } from 'src/components/Reports/Shared/Eligibilit
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { AutosaveTextField } from '../../Autosave/AutosaveTextField';
 import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
+import { EffectiveDateNote } from '../../Shared/EffectiveDateNote';
 import { StepCard } from '../../Shared/StepCard';
 import { useMhaRequestData } from './useMhaRequestData';
 
@@ -72,7 +73,7 @@ export const MhaRequestSection: React.FC = () => {
         },
       }}
     >
-      <CardHeader title={t('MHA Request')} />
+      <CardHeader title={t('MHA Request')} subheader={<EffectiveDateNote />} />
       <CardContent>
         {anyIneligible && (
           <EligibilityStatusTable

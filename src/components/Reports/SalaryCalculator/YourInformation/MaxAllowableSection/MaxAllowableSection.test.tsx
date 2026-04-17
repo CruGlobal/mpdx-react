@@ -25,18 +25,35 @@ const defaultSalaryRequestMock: DeepPartial<
   splitCapRequired: true,
 };
 
-const TestComponent: React.FC<
-  Pick<SalaryCalculatorTestWrapperProps, 'salaryRequestMock'>
-> = ({ salaryRequestMock }) => (
+const TestComponent: React.FC<SalaryCalculatorTestWrapperProps> = ({
+  salaryRequestMock,
+  ...props
+}) => (
   <SalaryCalculatorTestWrapper
-    salaryRequestMock={merge({}, defaultSalaryRequestMock, salaryRequestMock)}
+    {...props}
     onCall={mutationSpy}
+    salaryRequestMock={merge({}, defaultSalaryRequestMock, salaryRequestMock)}
   >
     <MaxAllowableStep />
   </SalaryCalculatorTestWrapper>
 );
 
 describe('MaxAllowableSection', () => {
+  it('should render the effective paycheck note when payroll dates match', async () => {
+    const { findByRole } = render(
+      <TestComponent
+        salaryRequestMock={{ effectiveDate: '2026-06-01' }}
+        payrollDates={[
+          { startDate: '2026-06-01', regularProcessDate: '2026-06-10' },
+        ]}
+      />,
+    );
+
+    expect(await findByRole('note')).toHaveTextContent(
+      'Values shown reflect the paycheck dated 6/10/2026.',
+    );
+  });
+
   it('shows hard caps', async () => {
     const { findByText } = render(<TestComponent />);
 
