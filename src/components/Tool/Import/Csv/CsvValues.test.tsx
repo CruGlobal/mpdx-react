@@ -262,6 +262,34 @@ describe('CsvValues', () => {
       });
     });
 
+    it('should show a saving state while the save is pending', async () => {
+      let resolveSave: (value: unknown) => void = () => undefined;
+      (save as jest.Mock).mockReturnValue(
+        new Promise((resolve) => {
+          resolveSave = resolve;
+        }),
+      );
+
+      const { getByRole } = render(
+        <CsvValuesMockComponent
+          accountListId="wee"
+          setCurrentTab={setCurrentTab}
+        ></CsvValuesMockComponent>,
+      );
+      const nextButton = getByRole('button', { name: /next/i });
+      userEvent.click(nextButton);
+
+      await waitFor(() => expect(nextButton).toBeDisabled());
+      expect(nextButton).toHaveAttribute('aria-busy', 'true');
+      expect(within(nextButton).getByRole('progressbar')).toBeInTheDocument();
+
+      resolveSave({ valuesToConstantsMappings: {} });
+      await waitFor(() =>
+        expect(nextButton).toHaveAttribute('aria-busy', 'false'),
+      );
+      expect(nextButton).not.toBeDisabled();
+    });
+
     it('should send the user to the preview tab', async () => {
       const { getByRole } = render(
         <CsvValuesMockComponent

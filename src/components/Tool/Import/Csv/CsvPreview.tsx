@@ -340,9 +340,10 @@ const CsvPreview: React.FC<CsvPreviewProps> = ({
               }
             />
             <Button
+              variant="contained"
               onClick={handleSave}
               disabled={!accept || saving}
-              variant="contained"
+              aria-busy={saving}
               endIcon={saving && <CircularProgress size={16} color="inherit" />}
             >
               {t('Import')}

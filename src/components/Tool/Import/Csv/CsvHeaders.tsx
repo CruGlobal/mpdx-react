@@ -334,6 +334,7 @@ const CsvHeaders: React.FC<CsvHeadersProps> = ({
             variant="contained"
             onClick={handleSave}
             disabled={!uploadData || unmappedHeaders.length !== 0 || saving}
+            aria-busy={saving}
             endIcon={saving && <CircularProgress size={16} color="inherit" />}
           >
             {t('Next')}

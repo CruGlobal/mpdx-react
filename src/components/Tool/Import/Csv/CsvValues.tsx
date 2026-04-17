@@ -259,9 +259,10 @@ const CsvValues: React.FC<CsvValuesProps> = ({
           {t('Back')}
         </Button>
         <Button
+          variant="contained"
           onClick={handleSave}
           disabled={saving}
-          variant="contained"
+          aria-busy={saving}
           endIcon={saving && <CircularProgress size={16} color="inherit" />}
         >
           {t('Next')}
