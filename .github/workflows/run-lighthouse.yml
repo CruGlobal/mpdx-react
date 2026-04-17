@@ -16,13 +16,12 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v4
-        with:
-          lfs: true
       - uses: actions/setup-node@v4
         with:
           node-version-file: .tool-versions
       - name: 📦 Install Dependencies
-        run: yarn install --immutable --immutable-cache
+        # Download packages from the registry instead of git-lfs to save git-lfs bandwidth
+        run: yarn cache clean && yarn install
 
       - name: 🚨 Run Lighthouse
         run: yarn lighthouse
