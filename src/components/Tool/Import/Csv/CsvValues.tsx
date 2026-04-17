@@ -1,9 +1,10 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   Box,
   Button,
   Card,
   CardHeader,
+  CircularProgress,
   MenuItem,
   Select,
   Table,
@@ -44,6 +45,7 @@ const CsvValues: React.FC<CsvValuesProps> = ({
   const { t } = useTranslation();
   const { appName } = useGetAppSettings();
   const constants = useApiConstants();
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (!uploadData?.id && csvFileId) {
@@ -63,6 +65,7 @@ const CsvValues: React.FC<CsvValuesProps> = ({
       return;
     }
 
+    setSaving(true);
     save({
       uploadData,
       initialData,
@@ -72,9 +75,13 @@ const CsvValues: React.FC<CsvValuesProps> = ({
       supportedHeaders,
       setUploadData,
       setInitialData,
-    }).then(() => {
-      setCurrentTab(CsvImportViewStepEnum.Preview);
-    });
+    })
+      .then(() => {
+        setCurrentTab(CsvImportViewStepEnum.Preview);
+      })
+      .finally(() => {
+        setSaving(false);
+      });
   };
 
   const fileHeader = (constantKey: string): string => {
@@ -251,7 +258,12 @@ const CsvValues: React.FC<CsvValuesProps> = ({
         <Button variant="contained" onClick={handleBack}>
           {t('Back')}
         </Button>
-        <Button variant="contained" onClick={handleSave}>
+        <Button
+          onClick={handleSave}
+          disabled={saving}
+          variant="contained"
+          endIcon={saving && <CircularProgress size={16} color="inherit" />}
+        >
           {t('Next')}
         </Button>
       </Box>
