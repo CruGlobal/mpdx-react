@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@emotion/react';
-import { render, waitFor } from '@testing-library/react';
+import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestWrapper from '__tests__/util/TestWrapper';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
@@ -286,6 +286,38 @@ describe('CsvPreview', () => {
       await waitFor(() => {
         expect(setUploadData).toHaveBeenCalledWith(null);
       });
+    });
+
+    it('should show a saving state while the save is pending', async () => {
+      let resolveSave: (value: unknown) => void = () => undefined;
+      (save as jest.Mock).mockReturnValue(
+        new Promise((resolve) => {
+          resolveSave = resolve;
+        }),
+      );
+
+      const screen = render(
+        <CsvPreviewMockComponent
+          accountListId="wee"
+          setCurrentTab={setCurrentTab}
+        ></CsvPreviewMockComponent>,
+      );
+      userEvent.click(
+        screen.getByRole('checkbox', {
+          name: /I accept that this import cannot be undone/i,
+        }),
+      );
+      const importButton = screen.getByRole('button', { name: 'Import' });
+      userEvent.click(importButton);
+
+      await waitFor(() => expect(importButton).toBeDisabled());
+      expect(importButton).toHaveAttribute('aria-busy', 'true');
+      expect(within(importButton).getByRole('progressbar')).toBeInTheDocument();
+
+      resolveSave({ valuesToConstantsMappings: {} });
+      await waitFor(() =>
+        expect(importButton).toHaveAttribute('aria-busy', 'false'),
+      );
     });
 
     const clickSave = (accountListId: string) => {

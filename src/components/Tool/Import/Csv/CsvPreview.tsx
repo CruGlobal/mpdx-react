@@ -6,6 +6,7 @@ import {
   Card,
   CardHeader,
   Checkbox,
+  CircularProgress,
   FormControlLabel,
   Table,
   TableBody,
@@ -72,6 +73,7 @@ const CsvPreview: React.FC<CsvPreviewProps> = ({
 
   const [accept, setAccept] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (!uploadData?.id && csvFileId) {
@@ -96,6 +98,7 @@ const CsvPreview: React.FC<CsvPreviewProps> = ({
     }
 
     uploadData.inPreview = false;
+    setSaving(true);
     save({
       uploadData,
       initialData,
@@ -105,9 +108,13 @@ const CsvPreview: React.FC<CsvPreviewProps> = ({
       supportedHeaders,
       setUploadData,
       setInitialData,
-    }).then(() => {
-      setShowSuccessModal(true);
-    });
+    })
+      .then(() => {
+        setShowSuccessModal(true);
+      })
+      .finally(() => {
+        setSaving(false);
+      });
   };
 
   if (!uploadData?.id) {
@@ -332,7 +339,13 @@ const CsvPreview: React.FC<CsvPreviewProps> = ({
                 <Checkbox id="accept" onClick={() => setAccept(!accept)} />
               }
             />
-            <Button onClick={handleSave} disabled={!accept} variant="contained">
+            <Button
+              variant="contained"
+              onClick={handleSave}
+              disabled={!accept || saving}
+              aria-busy={saving}
+              endIcon={saving && <CircularProgress size={16} color="inherit" />}
+            >
               {t('Import')}
             </Button>
           </Box>

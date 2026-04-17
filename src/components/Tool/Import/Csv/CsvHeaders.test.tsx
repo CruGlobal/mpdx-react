@@ -397,6 +397,35 @@ describe('CsvHeaders', () => {
       );
     });
 
+    it('should show a saving state while the save is pending', async () => {
+      let resolveSave: (value: unknown) => void = () => undefined;
+      (save as jest.Mock).mockReturnValue(
+        new Promise((resolve) => {
+          resolveSave = resolve;
+        }),
+      );
+
+      const { findByRole } = render(
+        <CsvHeadersMockComponent
+          accountListId="wee"
+          setCurrentTab={setCurrentTab}
+        ></CsvHeadersMockComponent>,
+      );
+
+      const nextButton = await findByRole('button', { name: 'Next' });
+      userEvent.click(nextButton);
+
+      await waitFor(() => expect(nextButton).toBeDisabled());
+      expect(nextButton).toHaveAttribute('aria-busy', 'true');
+      expect(within(nextButton).getByRole('progressbar')).toBeInTheDocument();
+
+      resolveSave({ valuesToConstantsMappings: {} });
+      await waitFor(() =>
+        expect(nextButton).toHaveAttribute('aria-busy', 'false'),
+      );
+      expect(nextButton).not.toBeDisabled();
+    });
+
     it('should allow the user to not map every header', async () => {
       uploadData.fileHeadersMappings.weird = -1;
 

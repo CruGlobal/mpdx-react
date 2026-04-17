@@ -41,6 +41,10 @@ query LoadConstants {
       key
       value
     }
+    sendAppeals {
+      id
+      value
+    }
     status {
       id
       value
