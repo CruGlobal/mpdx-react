@@ -8,8 +8,7 @@ import { LimitedAccess } from '../LimitedAccess/LimitedAccess';
 interface UserTypeAccessProps {
   allowedUserType?: UserTypeEnum;
   requireStaffAccount?: boolean;
-  isAsr?: boolean;
-  isSalaryCalc?: boolean;
+  requireUserGroups?: 'asr' | 'salaryCalc';
   effectiveDate?: string | null;
   children: React.ReactElement;
   alwaysAllow?: boolean;
@@ -18,11 +17,10 @@ interface UserTypeAccessProps {
 export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
   allowedUserType = UserTypeEnum.UsStaff,
   requireStaffAccount,
-  isAsr,
-  isSalaryCalc,
   effectiveDate,
   children,
   alwaysAllow,
+  requireUserGroups,
 }) => {
   const { data, loading: userLoading, error } = useGetUserQuery();
   const {
@@ -32,6 +30,9 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
   } = useStaffAccountQuery({
     skip: !requireStaffAccount,
   });
+
+  const isAsr = requireUserGroups === 'asr';
+  const isSalaryCalc = requireUserGroups === 'salaryCalc';
 
   const date = isSalaryCalc ? (effectiveDate ?? undefined) : undefined;
   const skip = !isAsr && !isSalaryCalc;

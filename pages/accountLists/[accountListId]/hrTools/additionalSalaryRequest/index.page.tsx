@@ -157,7 +157,7 @@ const AdditionalSalaryRequestPage: React.FC = () => {
       <Head>
         <title>{`${appName} | ${t('Additional Salary Request')}`}</title>
       </Head>
-      <UserTypeAccess requireStaffAccount isAsr>
+      <UserTypeAccess requireStaffAccount requireUserGroups="asr">
         <ReportPageWrapper>
           <AdditionalSalaryRequestProvider>
             <AdditionalSalaryRequestContent />

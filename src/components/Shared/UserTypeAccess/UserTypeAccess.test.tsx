@@ -35,16 +35,14 @@ interface TestComponentProps {
   requireStaffAccount?: boolean;
   userType?: UserTypeEnum;
   staffAccountId?: string | null;
-  isAsr?: boolean;
-  isSalaryCalc?: boolean;
+  requireUserGroups?: 'asr' | 'salaryCalc';
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   requireStaffAccount,
   userType = UserTypeEnum.UsStaff,
   staffAccountId = id,
-  isAsr,
-  isSalaryCalc,
+  requireUserGroups,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
@@ -66,8 +64,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
         <UserTypeAccess
           allowedUserType={UserTypeEnum.UsStaff}
           requireStaffAccount={requireStaffAccount}
-          isAsr={isAsr}
-          isSalaryCalc={isSalaryCalc}
+          requireUserGroups={requireUserGroups}
         >
           <div>Test Content</div>
         </UserTypeAccess>
@@ -100,7 +97,9 @@ describe('UserTypeAccess', () => {
   });
 
   it('should render LimitedAccess when user type is allowed but user is ineligible for ASR', async () => {
-    const { findByRole, getByText } = render(<TestComponent isAsr />);
+    const { findByRole, getByText } = render(
+      <TestComponent requireUserGroups="asr" />,
+    );
 
     expect(
       await findByRole('heading', {
@@ -115,7 +114,9 @@ describe('UserTypeAccess', () => {
   });
 
   it('should render LimitedAccess when user type is allowed but user is ineligible for Salary Calculator', async () => {
-    const { findByRole, getByText } = render(<TestComponent isSalaryCalc />);
+    const { findByRole, getByText } = render(
+      <TestComponent requireUserGroups="salaryCalc" />,
+    );
 
     expect(
       await findByRole('heading', {

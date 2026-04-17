@@ -57,7 +57,7 @@ const SalaryCalculatorEditPage: React.FC = () => {
       </Head>
       <UserTypeAccess
         requireStaffAccount
-        isSalaryCalc
+        requireUserGroups="salaryCalc"
         effectiveDate={calculation?.effectiveDate}
       >
         <SidePanelsLayout
