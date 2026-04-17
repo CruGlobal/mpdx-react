@@ -28,14 +28,7 @@ jobs:
       - name: 🌐 Extract Translations
         run: yarn extract
       - name: 🔤🔽 CrowdIn Translations Download
-        uses: crowdin/github-action@v2
-        with:
-          upload_sources: false
-          upload_translations: false
-          download_sources: false
-          download_translations: true
-          push_translations: false
-          create_pull_request: false
+        run: yarn crowdin download translations
         env:
           CROWDIN_API_TOKEN: ${{ secrets.CROWDIN_API_TOKEN }}
       - name: 🔤 Sort Translations
