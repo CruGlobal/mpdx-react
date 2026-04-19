@@ -46,7 +46,11 @@ import {
 import { FilterKey, FilterValue } from './FilterPanelTypes';
 import { SaveFilterModal } from './SaveFilterModal/SaveFilterModal';
 import { FilterPanelTagsSection } from './TagsSection/FilterPanelTagsSection';
-import { renameFilterNames, reverseFiltersMap } from './helpers';
+import {
+  isPredefinedFilter,
+  renameFilterNames,
+  reverseFiltersMap,
+} from './helpers';
 
 export const snakeToCamel = (inputKey: string): string => {
   const stringParts = inputKey.split('_');
@@ -196,10 +200,7 @@ export const FilterPanel: React.FC<FilterPanelProps & BoxProps> = ({
       // Parse from string to json object
       const parsedFilter = JSON.parse(filter.value);
 
-      if (
-        filter.key?.includes('graphql_') ||
-        filter.id?.includes('pre-defined-filter-')
-      ) {
+      if (filter.key?.includes('graphql_') || isPredefinedFilter(filter)) {
         // Clear current filters
         clearSelectedFilter();
         // Filter out accountListId from filter
