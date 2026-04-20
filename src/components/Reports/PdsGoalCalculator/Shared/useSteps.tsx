@@ -39,7 +39,7 @@ export const useSteps = (): PdsGoalCalculatorStep[] => {
         ],
       },
       {
-        step: PdsGoalCalculatorStepEnum.Salary,
+        step: PdsGoalCalculatorStepEnum.SupportItem,
         title: t('Support Item'),
         icon: <AttachMoneyIcon />,
         sections: [

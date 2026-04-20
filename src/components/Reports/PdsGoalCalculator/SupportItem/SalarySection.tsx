@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
-import { Box, Typography, styled } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
+import { Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import { useLocale } from 'src/hooks/useLocale';
@@ -10,35 +9,7 @@ import {
   buildSalaryBreakdownColumns,
   buildSalaryBreakdownRows,
 } from './salaryBreakdown';
-
-const GridContainer = styled(Box)({
-  display: 'flex',
-  flexDirection: 'column',
-});
-
-const StyledGrid = styled(DataGrid)(({ theme }) => ({
-  fontSize: theme.typography.body1.fontSize,
-  '.MuiDataGrid-columnHeaderTitle': {
-    fontWeight: 'bold',
-    color: theme.palette.mpdxBlue.main,
-  },
-  '.MuiDataGrid-row.top-border .MuiDataGrid-cell': {
-    borderTop: `2px solid ${theme.palette.divider}`,
-  },
-  '.MuiDataGrid-row[data-id="total"]': {
-    fontWeight: 'bold',
-  },
-  '.category-cell': {
-    lineHeight: 1.3,
-    paddingTop: theme.spacing(1),
-    paddingBottom: theme.spacing(1),
-  },
-  '.category-formula': {
-    display: 'block',
-    color: theme.palette.text.secondary,
-    fontSize: theme.typography.body2.fontSize,
-  },
-})) as typeof DataGrid;
+import { GridContainer, StyledGrid } from './styledGrid';
 
 export const SalarySection: React.FC = () => {
   const { t } = useTranslation();
