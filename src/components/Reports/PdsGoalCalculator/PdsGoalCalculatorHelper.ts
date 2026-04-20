@@ -1,6 +1,6 @@
 export enum PdsGoalCalculatorStepEnum {
   Setup = 'setup',
   ReimbursableExpenses = 'reimbursable-expenses',
-  Salary = 'salary',
+  SupportItem = 'SupportItem',
   SummaryReport = 'summary-report',
 }

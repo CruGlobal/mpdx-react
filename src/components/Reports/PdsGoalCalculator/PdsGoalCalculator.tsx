@@ -3,11 +3,11 @@ import { SectionList } from 'src/components/Reports/GoalCalculator/SharedCompone
 import { DirectionButtons } from 'src/components/Reports/Shared/CalculationReports/DirectionButtons/DirectionButtons';
 import { PdsGoalCalculatorStepEnum } from './PdsGoalCalculatorHelper';
 import { ReimbursableExpensesStep } from './ReimbursableExpenses/ReimbursableExpensesStep';
-import { SalaryStep } from './Salary/SalaryStep';
 import { SetupStep } from './Setup/SetupStep';
 import { usePdsGoalCalculator } from './Shared/PdsGoalCalculatorContext';
 import { PdsGoalCalculatorLayout } from './Shared/PdsGoalCalculatorLayout';
 import { SummaryReportStep } from './SummaryReport/SummaryReportStep';
+import { SupportItemStep } from './SupportItem/SupportItemStep';
 
 const CurrentStep: React.FC = () => {
   const { currentStep } = usePdsGoalCalculator();
@@ -17,8 +17,8 @@ const CurrentStep: React.FC = () => {
       return <SetupStep />;
     case PdsGoalCalculatorStepEnum.ReimbursableExpenses:
       return <ReimbursableExpensesStep />;
-    case PdsGoalCalculatorStepEnum.Salary:
-      return <SalaryStep />;
+    case PdsGoalCalculatorStepEnum.SupportItem:
+      return <SupportItemStep />;
     case PdsGoalCalculatorStepEnum.SummaryReport:
       return <SummaryReportStep />;
   }
