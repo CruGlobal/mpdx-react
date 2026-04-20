@@ -12,14 +12,17 @@ const expectedOptions = [
   {
     value: '2025-01-01',
     label: 'Jan 25, 2025',
+    shortLabel: '1/25/2025',
   },
   {
     value: '2025-01-16',
     label: 'Feb 10, 2025',
+    shortLabel: '2/10/2025',
   },
   {
     value: '2025-02-01',
     label: 'Feb 25, 2025',
+    shortLabel: '2/25/2025',
   },
 ];
 

@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { DateTime } from 'luxon';
 import { useLocale } from 'src/hooks/useLocale';
-import { dateFormat } from 'src/lib/intlFormat';
+import { dateFormat, dateFormatShort } from 'src/lib/intlFormat';
 import {
   PayrollDatesQuery,
   usePayrollDatesQuery,
@@ -10,6 +10,7 @@ import {
 export interface DateOption {
   value: string;
   label: string;
+  shortLabel: string;
 }
 
 export const formatEffectiveDates = (
@@ -19,12 +20,12 @@ export const formatEffectiveDates = (
   return (
     effectiveDates?.map(({ startDate, regularProcessDate }) => {
       const date = DateTime.fromISO(regularProcessDate);
-      const formattedDate = dateFormat(date, locale);
 
       // The user sees the regularProcessDate, but we store the startDate
       return {
         value: startDate,
-        label: formattedDate,
+        label: dateFormat(date, locale),
+        shortLabel: dateFormatShort(date, locale),
       };
     }) ?? []
   );
