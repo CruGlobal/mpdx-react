@@ -13,6 +13,7 @@ const defaultConstants: OtherExpensesConstants = {
   workCompPercentage: 0.17,
   attritionRate: 0.06,
   creditCardFeeRate: 0.06,
+  adminRate: 0.12,
 };
 
 const fullTime = (
@@ -144,12 +145,48 @@ describe('calculateOtherExpenses', () => {
   });
 
   describe('assessment', () => {
-    it('is (subtotal + attrition + creditCardFees) / 0.88 minus itself', () => {
+    it('returns 0 when adminRate is 1 (avoids division by zero)', () => {
+      const result = calculateOtherExpenses(fullTime(), {
+        ...defaultConstants,
+        adminRate: 1,
+      });
+      expect(result.assessment).toBe(0);
+    });
+
+    it('is the 12% assessment on (subtotal + attrition + creditCardFees)', () => {
       const result = calculateOtherExpenses(fullTime(), defaultConstants);
-      const preAssessment =
-        result.subtotal + result.attrition + result.creditCardFees;
-      const expected = preAssessment / 0.88 - preAssessment;
-      expect(result.assessment).toBeCloseTo(expected);
+      // subtotal=7400, attrition=444, creditCardFees=470.64
+      // preAssessment = 8314.64
+      // assessment = 8314.64 / (1 - 0.12) - 8314.64 ≈ 1133.81
+      expect(result.assessment).toBeCloseTo(1133.81, 1);
+    });
+  });
+
+  describe('end-to-end totals', () => {
+    it('produces correct totals for a full-time employee', () => {
+      const result = calculateOtherExpenses(fullTime(), defaultConstants);
+      expect(result.reimbursableExpenses).toBe(500);
+      expect(result.fourOThreeBContributions).toBeCloseTo(400);
+      expect(result.workComp).toBe(0);
+      expect(result.benefits).toBe(1500);
+      expect(result.subtotal).toBeCloseTo(7400);
+      expect(result.attrition).toBeCloseTo(444);
+      expect(result.creditCardFees).toBeCloseTo(470.64);
+      expect(result.assessment).toBeCloseTo(1133.81, 1);
+    });
+
+    it('produces correct totals for a part-time employee', () => {
+      const result = calculateOtherExpenses(partTime(), defaultConstants);
+      // reimbursable=500, 403b=400, workComp=4000*0.17=680, benefits=0
+      // subtotal=5000+500+400+680+0=6580
+      // attrition=6580*0.06=394.80
+      // creditCardFees=(6580+394.80)*0.06=418.49
+      // preAssessment=6580+394.80+418.49=7393.29
+      // assessment=7393.29/(1-0.12)-7393.29≈1008.13
+      expect(result.subtotal).toBeCloseTo(6580);
+      expect(result.attrition).toBeCloseTo(394.8);
+      expect(result.creditCardFees).toBeCloseTo(418.49, 1);
+      expect(result.assessment).toBeCloseTo(1008.13, 0);
     });
   });
 });

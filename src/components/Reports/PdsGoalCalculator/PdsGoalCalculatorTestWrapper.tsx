@@ -193,6 +193,11 @@ export const PdsGoalCalculatorTestWrapper: React.FC<
                         label: MpdGoalMiscConstantLabelEnum.CreditCardFeeRate,
                         fee: 0.06,
                       },
+                      {
+                        category: MpdGoalMiscConstantCategoryEnum.Rates,
+                        label: MpdGoalMiscConstantLabelEnum.AdminRate,
+                        fee: 0.12,
+                      },
                     ],
                   },
                   constantsMock,

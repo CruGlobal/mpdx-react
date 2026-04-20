@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
-import { Box, Typography, styled } from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
+import { Divider, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import { useLocale } from 'src/hooks/useLocale';
@@ -13,38 +12,7 @@ import {
   buildOtherBreakdownColumns,
   buildOtherBreakdownRows,
 } from './otherBreakdown';
-
-const GridContainer = styled(Box)({
-  display: 'flex',
-  flexDirection: 'column',
-});
-
-const StyledGrid = styled(DataGrid)(({ theme }) => ({
-  fontSize: theme.typography.body1.fontSize,
-  '.MuiDataGrid-columnHeaderTitle': {
-    fontWeight: 'bold',
-    color: theme.palette.mpdxBlue.main,
-  },
-  '.MuiDataGrid-row.top-border .MuiDataGrid-cell': {
-    borderTop: `2px solid ${theme.palette.divider}`,
-  },
-  '.MuiDataGrid-row.bold-row': {
-    fontWeight: 'bold',
-  },
-  '.MuiDataGrid-row.bottom-border .MuiDataGrid-cell': {
-    borderBottom: `2px solid ${theme.palette.divider}`,
-  },
-  '.category-cell': {
-    lineHeight: 1.3,
-    paddingTop: theme.spacing(1),
-    paddingBottom: theme.spacing(1),
-  },
-  '.category-formula': {
-    display: 'block',
-    color: theme.palette.text.secondary,
-    fontSize: theme.typography.body2.fontSize,
-  },
-})) as typeof DataGrid;
+import { GridContainer, StyledGrid } from './styledGrid';
 
 export const OtherSection: React.FC = () => {
   const { t } = useTranslation();
@@ -59,6 +27,7 @@ export const OtherSection: React.FC = () => {
   const workCompPercentage = additionalRates?.PART_TIME_WORK_COMPENSATION?.fee;
   const attritionRate = additionalRates?.ATTRITION_RATE?.fee;
   const creditCardFeeRate = additionalRates?.CREDIT_CARD_FEE_RATE?.fee;
+  const adminRate = goalMiscConstants.RATES?.ADMIN_RATE?.fee;
 
   const rows = useMemo(() => {
     if (
@@ -66,7 +35,8 @@ export const OtherSection: React.FC = () => {
       employerFicaRate === undefined ||
       workCompPercentage === undefined ||
       attritionRate === undefined ||
-      creditCardFeeRate === undefined
+      creditCardFeeRate === undefined ||
+      adminRate === undefined
     ) {
       return [];
     }
@@ -94,6 +64,7 @@ export const OtherSection: React.FC = () => {
       workCompPercentage,
       attritionRate,
       creditCardFeeRate,
+      adminRate,
     };
 
     return buildOtherBreakdownRows(calculation, constants, locale, t);
@@ -104,6 +75,7 @@ export const OtherSection: React.FC = () => {
     workCompPercentage,
     attritionRate,
     creditCardFeeRate,
+    adminRate,
     goalGeographicConstantMap,
     locale,
     t,
@@ -120,6 +92,7 @@ export const OtherSection: React.FC = () => {
 
   return (
     <>
+      <Divider sx={{ mx: -4, my: 4 }} />
       <Typography variant="h6" pb={2}>
         {t('Other')}
       </Typography>

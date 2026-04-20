@@ -120,6 +120,26 @@ describe('OtherSection', () => {
     });
   });
 
+  describe('null status', () => {
+    it('renders neither benefits nor work comp when status is null', async () => {
+      const nullStatusMock: PdsGoalCalculationMock = {
+        ...fullTimeMock,
+        status: null,
+      };
+
+      const { findByTestId, queryByTestId } = render(
+        <TestComponent calculationMock={nullStatusMock} />,
+      );
+
+      await findByTestId('other-subtotal');
+
+      // When status is null, both isFullTime and isPartTime are false,
+      // so neither the benefits row nor the work comp row should render.
+      expect(queryByTestId('other-benefits')).not.toBeInTheDocument();
+      expect(queryByTestId('other-work-comp')).not.toBeInTheDocument();
+    });
+  });
+
   describe('403b contributions', () => {
     it('includes 403b contributions when the user has contribution percentages', async () => {
       const { findByTestId, getByTestId } = render(
