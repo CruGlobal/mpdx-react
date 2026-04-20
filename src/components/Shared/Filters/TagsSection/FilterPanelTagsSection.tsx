@@ -58,6 +58,9 @@ export const FilterPanelTagsSection: React.FC<FilterPanelTagsSectionProps> = ({
 }) => {
   const { t } = useTranslation();
   const { pathname } = useRouter();
+  const description = pathname?.includes('contacts')
+    ? t('Click a tag twice to look up all contacts who do not have that tag.')
+    : t('Click a tag twice to look up all tasks that do not have that tag.');
 
   const [selectedTag, setSelectedTag] = useState('');
   const [openFilterTagDeleteModal, setOpenFilterTagDeleteModal] =
@@ -111,14 +114,7 @@ export const FilterPanelTagsSection: React.FC<FilterPanelTagsSectionProps> = ({
           <TagsSectionWrapper>
             <Box mb={2}>
               <TagsSectionDescription variant="body2">
-                {t(
-                  'Click a tag twice to look up all {{page}} do not have that tag.',
-                  {
-                    page: pathname?.includes('contacts')
-                      ? t('contacts who')
-                      : t('tasks that'),
-                  },
-                )}
+                {description}
               </TagsSectionDescription>
             </Box>
             {filterOptions

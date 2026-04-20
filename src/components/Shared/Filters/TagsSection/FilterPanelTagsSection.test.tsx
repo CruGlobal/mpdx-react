@@ -11,17 +11,17 @@ import {
 } from './FilterPanelTagsSection';
 
 const accountListId = 'account-list-1';
-const router = {
+const defaultRouter = {
   query: { accountListId },
   isReady: true,
 };
 
 const onSelectedFiltersChanged = jest.fn();
 const ComponentWithMocks: React.FC<
-  Partial<FilterPanelTagsSectionProps> | undefined
-> = (props) => (
+  (Partial<FilterPanelTagsSectionProps> & { pathname?: string }) | undefined
+> = ({ pathname, ...props } = {}) => (
   <ThemeProvider theme={theme}>
-    <TestRouter router={router}>
+    <TestRouter router={{ ...defaultRouter, pathname }}>
       <SnackbarProvider>
         <GqlMockedProvider>
           <FilterPanelTagsSection
@@ -73,5 +73,29 @@ describe('FilterPanelTagsSection', () => {
     expect(getByRole('button', { name: 'All' })).toHaveClass(
       'MuiButton-contained',
     );
+  });
+
+  it('renders the contacts description on a contacts pathname', () => {
+    const { getByText } = render(
+      <ComponentWithMocks pathname="/accountLists/[accountListId]/contacts" />,
+    );
+
+    expect(
+      getByText(
+        'Click a tag twice to look up all contacts who do not have that tag.',
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('renders the tasks description on a tasks pathname', () => {
+    const { getByText } = render(
+      <ComponentWithMocks pathname="/accountLists/[accountListId]/tasks" />,
+    );
+
+    expect(
+      getByText(
+        'Click a tag twice to look up all tasks that do not have that tag.',
+      ),
+    ).toBeInTheDocument();
   });
 });
