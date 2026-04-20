@@ -174,6 +174,25 @@ export const PdsGoalCalculatorTestWrapper: React.FC<
                         label: MpdGoalMiscConstantLabelEnum.EmployerFicaRate,
                         fee: 0.08,
                       },
+                      {
+                        category:
+                          MpdGoalMiscConstantCategoryEnum.AdditionalRates,
+                        label:
+                          MpdGoalMiscConstantLabelEnum.PartTimeWorkCompensation,
+                        fee: 0.17,
+                      },
+                      {
+                        category:
+                          MpdGoalMiscConstantCategoryEnum.AdditionalRates,
+                        label: MpdGoalMiscConstantLabelEnum.AttritionRate,
+                        fee: 0.06,
+                      },
+                      {
+                        category:
+                          MpdGoalMiscConstantCategoryEnum.AdditionalRates,
+                        label: MpdGoalMiscConstantLabelEnum.CreditCardFeeRate,
+                        fee: 0.06,
+                      },
                     ],
                   },
                   constantsMock,
