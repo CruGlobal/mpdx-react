@@ -56,14 +56,14 @@ export const AboutForm: React.FC<AboutFormProps> = ({
       <Box mb={2}>
         <Typography variant="h5">{t('About this Form')}</Typography>
       </Box>
-      <Trans values={{ nextYear, after, approval }}>
-        <p style={{ lineHeight: 1.5 }}>
+      <p style={{ lineHeight: 1.5 }}>
+        <Trans>
           A Minister&apos;s Housing Allowance Request is a form ministers
           complete to designate part of their compensation as tax-free housing
-          allowance. To complete this form for the {nextYear} tax year,
+          allowance. To complete this form for the {{ nextYear }} tax year,
           you&apos;ll need:
-        </p>
-      </Trans>
+        </Trans>
+      </p>
       <Box sx={{ mt: 2 }}>
         <List sx={{ listStyleType: 'disc', pl: 4 }}>
           <StyledListItem>
