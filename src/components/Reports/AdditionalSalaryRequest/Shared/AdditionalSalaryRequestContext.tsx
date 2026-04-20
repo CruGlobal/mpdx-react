@@ -9,7 +9,7 @@ import React, {
 import { ApolloError } from '@apollo/client';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
-import { useTranslation } from 'react-i18next';
+import { TFunction, useTranslation } from 'react-i18next';
 import {
   FormEnum,
   PageEnum,
@@ -33,6 +33,56 @@ import {
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
 import { SalaryInfoQuery, useSalaryInfoQuery } from '../SalaryInfo.generated';
 import { useStaffAccountIdQuery } from '../StaffAccountId.generated';
+
+type SalaryInfo = NonNullable<SalaryInfoQuery['salaryInfo']>;
+
+export type FieldConfig = Array<{
+  key: string;
+  label: string;
+  salaryInfoIntKey?: keyof SalaryInfo;
+  salaryInfoUssKey?: keyof SalaryInfo;
+}>;
+
+// Field configuration: combines keys, labels, and optional salaryInfo key pairs for dynamic max values
+export const getFieldConfig = (t: TFunction): FieldConfig => [
+  { key: 'currentYearSalaryNotReceived', label: t("Current Year's Salary") },
+  { key: 'previousYearSalaryNotReceived', label: t("Previous Year's Salary") },
+  { key: 'additionalSalaryWithinMax', label: t('Additional Salary') },
+  {
+    key: 'adoption',
+    label: t('Adoption'),
+    salaryInfoIntKey: 'maxAdoptionInt',
+    salaryInfoUssKey: 'maxAdoptionUss',
+  },
+  { key: 'counselingNonMedical', label: t('Counseling') },
+  { key: 'healthcareExpensesExceedingLimit', label: t('Healthcare Expenses') },
+  { key: 'babysittingMinistryEvents', label: t('Babysitting') },
+  { key: 'childrenMinistryTripExpenses', label: t("Children's Ministry Trip") },
+  {
+    key: 'childrenCollegeEducation',
+    label: t("Children's College"),
+    salaryInfoIntKey: 'maxCollegeInt',
+    salaryInfoUssKey: 'maxCollegeUss',
+  },
+  { key: 'movingExpense', label: t('Moving Expense') },
+  { key: 'seminary', label: t('Seminary') },
+  {
+    key: 'housingDownPayment',
+    label: t('Housing Down Payment'),
+    salaryInfoIntKey: 'maxHousingDownPaymentInt',
+    salaryInfoUssKey: 'maxHousingDownPaymentUss',
+  },
+  {
+    key: 'autoPurchase',
+    label: t('Auto Purchase'),
+    salaryInfoIntKey: 'maxAutoPurchaseInt',
+    salaryInfoUssKey: 'maxAutoPurchaseUss',
+  },
+  {
+    key: 'expensesNotApprovedWithin90Days',
+    label: t('Reimbursable Expenses'),
+  },
+];
 
 export type AdditionalSalaryRequestType = {
   staffAccountId: string | null | undefined;
@@ -77,6 +127,7 @@ export type AdditionalSalaryRequestType = {
   hasBoardCapException: boolean;
   isPending: boolean;
   isApproved: boolean;
+  fieldConfig: FieldConfig;
 };
 
 export const AdditionalSalaryRequestContext =
@@ -227,6 +278,8 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
     [staffAccountIdData],
   );
 
+  const fieldConfig = useMemo(() => getFieldConfig(t), [t]);
+
   const contextValue = useMemo<AdditionalSalaryRequestType>(
     () => ({
       staffAccountId,
@@ -265,6 +318,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       hasBoardCapException,
       isPending,
       isApproved,
+      fieldConfig,
     }),
     [
       staffAccountId,
@@ -302,6 +356,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       hasBoardCapException,
       isPending,
       isApproved,
+      fieldConfig,
     ],
   );
 

@@ -10,9 +10,11 @@ import i18n from 'src/lib/i18n';
 import { amount, phoneNumber } from 'src/lib/yupHelpers';
 import theme from 'src/theme';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
-import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
+import {
+  getFieldConfig,
+  useAdditionalSalaryRequest,
+} from '../Shared/AdditionalSalaryRequestContext';
 import { defaultCompleteFormValues } from '../Shared/CompleteForm.mock';
-import { fieldConfig } from '../Shared/useAdditionalSalaryRequestForm';
 
 export const mockUser = {
   staffInfo: {
@@ -51,7 +53,7 @@ export const router = {
 
 const validationSchema = yup.object({
   ...Object.fromEntries(
-    fieldConfig.map(({ key, label }) => [
+    getFieldConfig(i18n.t).map(({ key, label }) => [
       key,
       amount(label, (key: string) => key),
     ]),

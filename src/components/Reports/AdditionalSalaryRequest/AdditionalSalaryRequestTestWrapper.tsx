@@ -11,8 +11,10 @@ import i18n from 'src/lib/i18n';
 import { amount, phoneNumber } from 'src/lib/yupHelpers';
 import theme from 'src/theme';
 import { CompleteFormValues } from './AdditionalSalaryRequest';
-import { AdditionalSalaryRequestProvider } from './Shared/AdditionalSalaryRequestContext';
-import { fieldConfig } from './Shared/useAdditionalSalaryRequestForm';
+import {
+  AdditionalSalaryRequestProvider,
+  getFieldConfig,
+} from './Shared/AdditionalSalaryRequestContext';
 
 interface AdditionalSalaryRequestTestWrapperProps {
   children?: React.ReactNode;
@@ -48,7 +50,7 @@ const defaultInitialValues: CompleteFormValues = {
 
 const validationSchema = yup.object({
   ...Object.fromEntries(
-    fieldConfig.map(({ key, label }) => [
+    getFieldConfig(i18n.t).map(({ key, label }) => [
       key,
       amount(label, (key: string) => key),
     ]),

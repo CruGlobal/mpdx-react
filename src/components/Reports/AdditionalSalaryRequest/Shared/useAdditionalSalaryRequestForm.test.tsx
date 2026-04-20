@@ -5,6 +5,7 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { HcmDataQuery } from 'src/components/Reports/Shared/HcmData/HCMData.generated';
 import { ElectionType403bEnum } from 'src/graphql/types.generated';
+import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import {
@@ -16,12 +17,12 @@ import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHe
 import { SalaryInfoQuery } from '../SalaryInfo.generated';
 import {
   AdditionalSalaryRequestType,
+  getFieldConfig,
   useAdditionalSalaryRequest,
 } from './AdditionalSalaryRequestContext';
-import {
-  fieldConfig,
-  useAdditionalSalaryRequestForm,
-} from './useAdditionalSalaryRequestForm';
+import { useAdditionalSalaryRequestForm } from './useAdditionalSalaryRequestForm';
+
+const fieldConfig = getFieldConfig(i18n.t);
 
 jest.mock('./AdditionalSalaryRequestContext', () => {
   const originalModule = jest.requireActual('./AdditionalSalaryRequestContext');
@@ -105,6 +106,7 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   hasBoardCapException: false,
   isPending: false,
   isApproved: false,
+  fieldConfig,
 };
 
 const defaultFormValues: CompleteFormValues = {
