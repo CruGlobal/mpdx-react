@@ -25,7 +25,7 @@ export const OtherSection: React.FC = () => {
   const additionalRates = goalMiscConstants.ADDITIONAL_RATES;
   const employerFicaRate = additionalRates?.EMPLOYER_FICA_RATE?.fee;
   const workCompPercentage = additionalRates?.PART_TIME_WORK_COMPENSATION?.fee;
-  const attritionRate = additionalRates?.ATTRITION_RATE?.fee;
+  const attritionRate = goalMiscConstants.RATES?.ATTRITION_RATE?.fee;
   const creditCardFeeRate = additionalRates?.CREDIT_CARD_FEE_RATE?.fee;
   const adminRate = goalMiscConstants.RATES?.ADMIN_RATE?.fee;
 
