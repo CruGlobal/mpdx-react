@@ -87,7 +87,9 @@ describe('NavMenu', () => {
     expect(getByRole('menuitem', { name: 'Contacts' })).toBeInTheDocument();
     expect(getByRole('menuitem', { name: 'Reports' })).toBeInTheDocument();
     expect(getByRole('menuitem', { name: 'MPDX Tools' })).toBeInTheDocument();
-    expect(getByRole('menuitem', { name: 'Coaching' })).toBeInTheDocument();
+    expect(
+      await findByRole('menuitem', { name: 'Coaching' }),
+    ).toBeInTheDocument();
   });
 
   it('renders Reports submenu items', async () => {
@@ -139,6 +141,7 @@ describe('NavMenu', () => {
                 asrEit: {
                   asrEligibility: true,
                 },
+                salaryRequestEligible: true,
               },
             ],
           },

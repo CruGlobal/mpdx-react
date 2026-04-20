@@ -8,6 +8,7 @@ import { LimitedAccess } from '../LimitedAccess/LimitedAccess';
 export enum RequiredUserGroupEnum {
   Asr = 'asr',
   SalaryCalc = 'salaryCalc',
+  Mha = 'mha',
 }
 
 interface UserTypeAccessProps {
@@ -34,13 +35,16 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
     skip: !requireStaffAccount,
   });
 
-  const isAsr = requireUserGroups === 'asr';
-  const isSalaryCalc = requireUserGroups === 'salaryCalc';
+  const isAsr = requireUserGroups === RequiredUserGroupEnum.Asr;
+  const isSalaryCalc = requireUserGroups === RequiredUserGroupEnum.SalaryCalc;
+  const isMha = requireUserGroups === RequiredUserGroupEnum.Mha;
 
-  const skip = !isAsr && !isSalaryCalc;
+  // Only run HCM query if we are using an HCM report
+  const skip = !isAsr && !isSalaryCalc && !isMha;
   const {
     inAsrIneligibleGroup,
     inSalaryCalcIneligibleGroup,
+    inMhaIneligibleGroup,
     loading: hcmLoading,
   } = useUsStaffGroups(skip);
 
@@ -49,7 +53,8 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
   const limitedAccess =
     (userType && userType !== requiredUserType) ||
     (isAsr && inAsrIneligibleGroup) ||
-    (isSalaryCalc && inSalaryCalcIneligibleGroup);
+    (isSalaryCalc && inSalaryCalcIneligibleGroup) ||
+    (isMha && inMhaIneligibleGroup);
 
   // Once HCM is ready to go live and DISABLE_NEW_REPORTS is removed, we can remove the alwaysAllow prop
   if (alwaysAllow) {

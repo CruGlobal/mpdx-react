@@ -6,36 +6,19 @@ import { render } from '__tests__/util/testingLibraryReactMock';
 import { HcmQuery } from 'src/components/Reports/Shared/HcmData/Hcm.generated';
 import { StaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
-import {
-  PeopleGroupSupportTypeEnum,
-  UserTypeEnum,
-} from 'src/graphql/types.generated';
+import { UserTypeEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { RequiredUserGroupEnum, UserTypeAccess } from './UserTypeAccess';
 
 const id = 'staff-1';
-
-const mockData = {
-  Hcm: {
-    hcm: [
-      {
-        staffInfo: {
-          id: '1',
-          peopleGroupSupportType: PeopleGroupSupportTypeEnum.Designation,
-        },
-        asrEit: {
-          asrEligibility: true,
-        },
-      },
-    ],
-  },
-};
 
 interface TestComponentProps {
   requireStaffAccount?: boolean;
   userType?: UserTypeEnum;
   staffAccountId?: string | null;
   requireUserGroups?: RequiredUserGroupEnum;
+  asrEligible?: boolean;
+  salaryRequestEligible?: boolean;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
@@ -43,6 +26,8 @@ const TestComponent: React.FC<TestComponentProps> = ({
   userType = UserTypeEnum.UsStaff,
   staffAccountId = id,
   requireUserGroups,
+  asrEligible = true,
+  salaryRequestEligible = true,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
@@ -52,7 +37,14 @@ const TestComponent: React.FC<TestComponentProps> = ({
         Hcm: HcmQuery;
       }>
         mocks={{
-          ...mockData,
+          Hcm: {
+            hcm: [
+              {
+                asrEit: { asrEligibility: asrEligible },
+                salaryRequestEligible,
+              },
+            ],
+          },
           GetUser: { user: { userType } },
           StaffAccount: {
             staffAccount: staffAccountId
@@ -98,7 +90,10 @@ describe('UserTypeAccess', () => {
 
   it('should render LimitedAccess when user type is allowed but user is ineligible for ASR', async () => {
     const { findByRole, getByText } = render(
-      <TestComponent requireUserGroups={RequiredUserGroupEnum.Asr} />,
+      <TestComponent
+        requireUserGroups={RequiredUserGroupEnum.Asr}
+        asrEligible={false}
+      />,
     );
 
     expect(
@@ -115,7 +110,10 @@ describe('UserTypeAccess', () => {
 
   it('should render LimitedAccess when user type is allowed but user is ineligible for Salary Calculator', async () => {
     const { findByRole, getByText } = render(
-      <TestComponent requireUserGroups={RequiredUserGroupEnum.SalaryCalc} />,
+      <TestComponent
+        requireUserGroups={RequiredUserGroupEnum.SalaryCalc}
+        salaryRequestEligible={false}
+      />,
     );
 
     expect(

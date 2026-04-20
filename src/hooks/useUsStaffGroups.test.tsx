@@ -1,5 +1,6 @@
 import React, { ReactElement } from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
+import { GraphQLError } from 'graphql';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { HcmQuery } from 'src/components/Reports/Shared/HcmData/Hcm.generated';
 import { useUsStaffGroups } from './useUsStaffGroups';
@@ -7,6 +8,7 @@ import { useUsStaffGroups } from './useUsStaffGroups';
 interface BuildHcmMockOptions {
   userAsrEligible?: boolean;
   userSalaryRequestEligible?: boolean;
+  userMhaEligible?: boolean;
   includeSpouse?: boolean;
   spouseAsrEligible?: boolean;
 }
@@ -14,6 +16,7 @@ interface BuildHcmMockOptions {
 const buildHcmMock = ({
   userAsrEligible = true,
   userSalaryRequestEligible = true,
+  userMhaEligible = true,
   includeSpouse = false,
   spouseAsrEligible = true,
 }: BuildHcmMockOptions = {}): HcmQuery => {
@@ -21,12 +24,14 @@ const buildHcmMock = ({
     {
       asrEit: { asrEligibility: userAsrEligible },
       salaryRequestEligible: userSalaryRequestEligible,
+      mhaEit: { mhaEligibility: userMhaEligible },
     },
   ];
   if (includeSpouse) {
     entries.push({
       asrEit: { asrEligibility: spouseAsrEligible },
       salaryRequestEligible: true,
+      mhaEit: { mhaEligibility: true },
     });
   }
   return { hcm: entries } as HcmQuery;
@@ -42,13 +47,14 @@ const renderUseUsStaffGroups = (hcmMock: HcmQuery, skip?: boolean) =>
   });
 
 describe('useUsStaffGroups', () => {
-  it('marks an ASR-eligible and salary-eligible user as eligible for both', async () => {
+  it('marks an ASR-eligible, salary-eligible, MHA-eligible user as eligible', async () => {
     const { result } = renderUseUsStaffGroups(buildHcmMock());
 
     await waitFor(() => {
       expect(result.current).toEqual({
         inAsrIneligibleGroup: false,
         inSalaryCalcIneligibleGroup: false,
+        inMhaIneligibleGroup: false,
         loading: false,
       });
     });
@@ -63,6 +69,22 @@ describe('useUsStaffGroups', () => {
       expect(result.current).toEqual({
         inAsrIneligibleGroup: false,
         inSalaryCalcIneligibleGroup: true,
+        inMhaIneligibleGroup: false,
+        loading: false,
+      });
+    });
+  });
+
+  it('marks user as mha ineligible when mhaEligibility is false', async () => {
+    const { result } = renderUseUsStaffGroups(
+      buildHcmMock({ userMhaEligible: false }),
+    );
+
+    await waitFor(() => {
+      expect(result.current).toEqual({
+        inAsrIneligibleGroup: false,
+        inSalaryCalcIneligibleGroup: false,
+        inMhaIneligibleGroup: true,
         loading: false,
       });
     });
@@ -125,7 +147,37 @@ describe('useUsStaffGroups', () => {
     expect(result.current).toEqual({
       inAsrIneligibleGroup: false,
       inSalaryCalcIneligibleGroup: false,
+      inMhaIneligibleGroup: false,
       loading: false,
+    });
+  });
+
+  it('treats no staff account error as ineligible for all groups', async () => {
+    const { result } = renderHook(() => useUsStaffGroups(), {
+      wrapper: ({ children }: { children: ReactElement }) => (
+        <GqlMockedProvider
+          mocks={{
+            Hcm: {
+              hcm: () => {
+                throw new GraphQLError('Staff account id not found', {
+                  extensions: { code: 'NO_STAFF_ACCOUNT' },
+                });
+              },
+            },
+          }}
+        >
+          {children}
+        </GqlMockedProvider>
+      ),
+    });
+
+    await waitFor(() => {
+      expect(result.current).toEqual({
+        inAsrIneligibleGroup: true,
+        inSalaryCalcIneligibleGroup: true,
+        inMhaIneligibleGroup: true,
+        loading: false,
+      });
     });
   });
 });

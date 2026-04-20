@@ -20,7 +20,6 @@ const TestWrapper: React.FC<TestWrapperProps> = ({
   const hcmData = {
     hcm: [
       {
-        id: 'hcm-1',
         asrEit: {
           asrEligibility: false,
           ineligibilityReason,

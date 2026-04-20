@@ -9,10 +9,13 @@ export function useHrToolsNavItems(): NavItems[] {
   const { t } = useTranslation();
   const { data } = useGetUserQuery();
   const userType = data?.user.userType;
-
-  const { inAsrIneligibleGroup, inSalaryCalcIneligibleGroup } =
-    useUsStaffGroups();
   const usStaff = userType === UserTypeEnum.UsStaff;
+
+  const {
+    inAsrIneligibleGroup,
+    inSalaryCalcIneligibleGroup,
+    inMhaIneligibleGroup,
+  } = useUsStaffGroups(!usStaff);
 
   const hrToolsNavItems: NavItems[] = [
     {
@@ -31,6 +34,7 @@ export function useHrToolsNavItems(): NavItems[] {
     {
       id: 'mhaCalculator',
       title: t('MHA Calculator'),
+      hideItem: usStaff && inMhaIneligibleGroup,
     },
     {
       id: 'additionalSalaryRequest',
@@ -49,6 +53,12 @@ export function useHrToolsNavItems(): NavItems[] {
 
   return useMemo(
     () => hrToolsNavItems.filter((item) => !item.hideItem),
-    [t, usStaff, inAsrIneligibleGroup, inSalaryCalcIneligibleGroup],
+    [
+      t,
+      usStaff,
+      inAsrIneligibleGroup,
+      inSalaryCalcIneligibleGroup,
+      inMhaIneligibleGroup,
+    ],
   );
 }

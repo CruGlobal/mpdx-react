@@ -23,8 +23,8 @@ const TestWrapper: React.FC<TestWrapperProps> = ({
   const hcmData = {
     hcm: [
       {
-        id: 'hcm-1',
         staffInfo: {
+          id: 'hcm-1',
           preferredName,
         },
       },

@@ -121,7 +121,7 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
                 showInSearchDialog: true,
               })),
               showInNav: true,
-              hideTab: !showTab,
+              hideTab: !!data && !showTab,
             },
           ]),
       {
