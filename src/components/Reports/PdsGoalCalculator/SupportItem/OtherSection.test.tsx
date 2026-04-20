@@ -174,9 +174,7 @@ describe('OtherSection', () => {
     );
 
     await waitFor(() =>
-      expect(
-        queryByRole('heading', { name: 'Other' }),
-      ).not.toBeInTheDocument(),
+      expect(queryByRole('heading', { name: 'Other' })).not.toBeInTheDocument(),
     );
     expect(container).toBeEmptyDOMElement();
   });

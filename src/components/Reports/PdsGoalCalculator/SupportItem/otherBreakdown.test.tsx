@@ -2,7 +2,10 @@ import { DataGrid } from '@mui/x-data-grid';
 import { render } from '@testing-library/react';
 import { t } from 'i18next';
 import { DesignationSupportStatus } from 'src/graphql/types.generated';
-import { OtherExpensesConstants, OtherExpensesFields } from '../calculations/OtherExpenses';
+import {
+  OtherExpensesConstants,
+  OtherExpensesFields,
+} from '../calculations/OtherExpenses';
 import {
   OtherBreakdownRow,
   buildOtherBreakdownColumns,
