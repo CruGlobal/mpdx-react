@@ -73,7 +73,6 @@ export const getModalText = ({
           'This updated request will take the place of your previous request. Once submitted, you can return and make edits until {{date}}. After this date, your request will be processed as is.',
           {
             date: formattedDeadlineDate,
-            interpolation: { escapeValue: false },
           },
         ),
         cancelButtonText: t('Yes, Continue'),
@@ -90,7 +89,6 @@ export const getModalText = ({
           'Once submitted, you can return and make edits until {{date}}. After this date, your request will be processed as is.',
           {
             date: formattedDeadlineDate,
-            interpolation: { escapeValue: false },
           },
         ),
         cancelButtonText: t('Yes, Continue'),

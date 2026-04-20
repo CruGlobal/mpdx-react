@@ -16,6 +16,21 @@ const TestComponent: React.FC<
 );
 
 describe('MhaRequestSection', () => {
+  it('should render the effective paycheck note when payroll dates match', async () => {
+    const { findByRole } = render(
+      <TestComponent
+        salaryRequestMock={{ effectiveDate: '2026-06-01' }}
+        payrollDates={[
+          { startDate: '2026-06-01', regularProcessDate: '2026-06-10' },
+        ]}
+      />,
+    );
+
+    expect(await findByRole('note')).toHaveTextContent(
+      'Values shown reflect the paycheck dated 6/10/2026.',
+    );
+  });
+
   it('should display both spouse names as headers', async () => {
     const { findByRole } = render(<TestComponent />);
 

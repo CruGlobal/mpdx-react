@@ -12,6 +12,7 @@ import {
 import { Stack } from '@mui/system';
 import { Trans, useTranslation } from 'react-i18next';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
+import { EffectiveDateNote } from '../Shared/EffectiveDateNote';
 import { StepCard, StepTableHead } from '../Shared/StepCard';
 import { useFormatters } from '../Shared/useFormatters';
 
@@ -26,7 +27,10 @@ export const FourOhThreeBSection: React.FC = () => {
   return (
     <Stack gap={4}>
       <StepCard>
-        <CardHeader title={t('403(b) Retirement Contribution')} />
+        <CardHeader
+          title={t('403(b) Retirement Contribution')}
+          subheader={<EffectiveDateNote />}
+        />
         <CardContent>
           <Typography variant="body1">
             <Trans t={t}>

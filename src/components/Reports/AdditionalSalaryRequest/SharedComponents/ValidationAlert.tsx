@@ -64,7 +64,6 @@ export const ValidationAlert: React.FC = () => {
           <li>
             {t('The following fields exceed their limits: {{fields}}', {
               fields: exceedingLimitFields.join(', '),
-              interpolation: { escapeValue: false },
             })}
           </li>
         )}

@@ -14,6 +14,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import { AutosaveAutocomplete } from '../../Autosave/AutosaveAutocomplete';
 import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
+import { EffectiveDateNote } from '../../Shared/EffectiveDateNote';
 import { StepCard, StepTableHead } from '../../Shared/StepCard';
 import { usePersonalInformation } from './usePersonalInformation';
 
@@ -40,6 +41,7 @@ export const PersonalInformationSection: React.FC = () => {
     <StepCard>
       <CardHeader
         title={t('Personal Information')}
+        subheader={<EffectiveDateNote />}
         data-testid="personal-information-header"
       />
       <CardContent>

@@ -84,7 +84,7 @@ export const Receipt: React.FC<ReceiptProps> = ({
               ? alertText
               : t(
                   'We will review your information and you will receive notice for your {{approval}}.',
-                  { approval, interpolation: { escapeValue: false } },
+                  { approval },
                 )}
           </Typography>
         </Box>

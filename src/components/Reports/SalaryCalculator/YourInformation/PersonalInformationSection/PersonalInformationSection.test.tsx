@@ -3,6 +3,7 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
   SalaryCalculatorTestWrapper,
+  SalaryCalculatorTestWrapperProps,
   SalaryRequestMock,
 } from '../../SalaryCalculatorTestWrapper';
 import { PersonalInformationSection } from './PersonalInformationSection';
@@ -10,10 +11,12 @@ import { PersonalInformationSection } from './PersonalInformationSection';
 const TestComponent: React.FC<{
   hasSpouse?: boolean;
   requestMock?: SalaryRequestMock;
-}> = ({ hasSpouse, requestMock }) => (
+  payrollDates?: SalaryCalculatorTestWrapperProps['payrollDates'];
+}> = ({ hasSpouse, requestMock, payrollDates }) => (
   <SalaryCalculatorTestWrapper
     hasSpouse={hasSpouse}
     salaryRequestMock={requestMock}
+    payrollDates={payrollDates}
   >
     <PersonalInformationSection />
   </SalaryCalculatorTestWrapper>
@@ -49,7 +52,7 @@ describe('PersonalInformationSection', () => {
     expect(
       await findByRole('columnheader', { name: 'John' }),
     ).toBeInTheDocument();
-    waitFor(() => {
+    await waitFor(() => {
       expect(
         queryByRole('columnheader', { name: 'Jane' }),
       ).not.toBeInTheDocument();
@@ -104,6 +107,21 @@ describe('PersonalInformationSection', () => {
     userEvent.click(await findByRole('button', { name: 'Open' }));
 
     expect(await findAllByRole('option')).toHaveLength(2);
+  });
+
+  it('should render the effective paycheck note when payroll dates match', async () => {
+    const { findByRole } = render(
+      <TestComponent
+        requestMock={{ effectiveDate: '2026-06-01' }}
+        payrollDates={[
+          { startDate: '2026-06-01', regularProcessDate: '2026-06-10' },
+        ]}
+      />,
+    );
+
+    expect(await findByRole('note')).toHaveTextContent(
+      'Values shown reflect the paycheck dated 6/10/2026.',
+    );
   });
 
   it('should not display spouse information when no spouse exists', async () => {
