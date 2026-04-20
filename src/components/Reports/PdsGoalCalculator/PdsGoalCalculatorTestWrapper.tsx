@@ -182,8 +182,7 @@ export const PdsGoalCalculatorTestWrapper: React.FC<
                         fee: 0.17,
                       },
                       {
-                        category:
-                          MpdGoalMiscConstantCategoryEnum.AdditionalRates,
+                        category: MpdGoalMiscConstantCategoryEnum.Rates,
                         label: MpdGoalMiscConstantLabelEnum.AttritionRate,
                         fee: 0.06,
                       },
