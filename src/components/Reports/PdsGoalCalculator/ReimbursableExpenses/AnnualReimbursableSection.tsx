@@ -1,11 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePdsGoalCalculator } from '../Shared/PdsGoalCalculatorContext';
+import { calculateReimbursableTotals } from '../calculations/reimbursableExpenses';
 import {
   ReimbursableExpensesGrid,
   ReimbursableField,
 } from './ReimbursableExpensesGrid';
-import { calculateReimbursableTotals } from './reimbursableExpenses';
 
 export const AnnualReimbursableSection: React.FC = () => {
   const { t } = useTranslation();
