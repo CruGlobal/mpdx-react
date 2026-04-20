@@ -11,7 +11,7 @@ import {
   UserTypeEnum,
 } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { UserTypeAccess } from './UserTypeAccess';
+import { RequiredUserGroupEnum, UserTypeAccess } from './UserTypeAccess';
 
 const id = 'staff-1';
 
@@ -35,7 +35,7 @@ interface TestComponentProps {
   requireStaffAccount?: boolean;
   userType?: UserTypeEnum;
   staffAccountId?: string | null;
-  requireUserGroups?: 'asr' | 'salaryCalc';
+  requireUserGroups?: RequiredUserGroupEnum;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
@@ -62,7 +62,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
         }}
       >
         <UserTypeAccess
-          allowedUserType={UserTypeEnum.UsStaff}
+          requiredUserType={UserTypeEnum.UsStaff}
           requireStaffAccount={requireStaffAccount}
           requireUserGroups={requireUserGroups}
         >
@@ -98,7 +98,7 @@ describe('UserTypeAccess', () => {
 
   it('should render LimitedAccess when user type is allowed but user is ineligible for ASR', async () => {
     const { findByRole, getByText } = render(
-      <TestComponent requireUserGroups="asr" />,
+      <TestComponent requireUserGroups={RequiredUserGroupEnum.Asr} />,
     );
 
     expect(
@@ -115,7 +115,7 @@ describe('UserTypeAccess', () => {
 
   it('should render LimitedAccess when user type is allowed but user is ineligible for Salary Calculator', async () => {
     const { findByRole, getByText } = render(
-      <TestComponent requireUserGroups="salaryCalc" />,
+      <TestComponent requireUserGroups={RequiredUserGroupEnum.SalaryCalc} />,
     );
 
     expect(
@@ -165,7 +165,7 @@ describe('UserTypeAccess', () => {
               },
             }}
           >
-            <UserTypeAccess allowedUserType={UserTypeEnum.UsStaff}>
+            <UserTypeAccess requiredUserType={UserTypeEnum.UsStaff}>
               <div>Test Content</div>
             </UserTypeAccess>
           </GqlMockedProvider>

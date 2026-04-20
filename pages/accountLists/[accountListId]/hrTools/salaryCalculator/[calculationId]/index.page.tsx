@@ -17,7 +17,10 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
-import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
+import {
+  RequiredUserGroupEnum,
+  UserTypeAccess,
+} from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { getAppName } from 'src/lib/getAppName';
 
 const SalaryCalculatorSavingStatus: React.FC = () => {
@@ -44,7 +47,6 @@ const SalaryCalculatorEditInnerPage: React.FC = () => {
   const appName = getAppName();
   const { t } = useTranslation();
   const [isNavListOpen, setIsNavListOpen] = useState(false);
-  const { calculation } = useSalaryCalculator();
 
   const handleNavListToggle = () => {
     setIsNavListOpen(!isNavListOpen);
@@ -57,8 +59,7 @@ const SalaryCalculatorEditInnerPage: React.FC = () => {
       </Head>
       <UserTypeAccess
         requireStaffAccount
-        requireUserGroups="salaryCalc"
-        effectiveDate={calculation?.effectiveDate}
+        requireUserGroups={RequiredUserGroupEnum.SalaryCalc}
       >
         <SidePanelsLayout
           isScrollBox={false}

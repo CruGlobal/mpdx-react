@@ -7,10 +7,6 @@ import { NewSalaryCalculatorLanding } from 'src/components/Reports/SalaryCalcula
 import { PendingSalaryCalculationLanding } from 'src/components/Reports/SalaryCalculator/Landing/PendingSalaryCalculationLanding/PendingSalaryCalculationLanding';
 import { useLandingData } from 'src/components/Reports/SalaryCalculator/Landing/useLandingData';
 import {
-  SalaryCalculatorProvider,
-  useSalaryCalculator,
-} from 'src/components/Reports/SalaryCalculator/SalaryCalculatorContext/SalaryCalculatorContext';
-import {
   HeaderTypeEnum,
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
@@ -18,23 +14,17 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
-import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
+import {
+  RequiredUserGroupEnum,
+  UserTypeAccess,
+} from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { getAppName } from 'src/lib/getAppName';
-
-export const SalaryCalculatorOuterPage: React.FC = () => {
-  return (
-    <SalaryCalculatorProvider>
-      <SalaryCalculatorPage />
-    </SalaryCalculatorProvider>
-  );
-};
 
 const SalaryCalculatorPage: React.FC = () => {
   const appName = getAppName();
   const { t } = useTranslation();
   const [isNavListOpen, setIsNavListOpen] = useState(false);
   const { shouldShowPending } = useLandingData();
-  const { calculation } = useSalaryCalculator();
 
   const handleNavListToggle = () => {
     setIsNavListOpen(!isNavListOpen);
@@ -47,8 +37,7 @@ const SalaryCalculatorPage: React.FC = () => {
       </Head>
       <UserTypeAccess
         requireStaffAccount
-        requireUserGroups="salaryCalc"
-        effectiveDate={calculation?.effectiveDate}
+        requireUserGroups={RequiredUserGroupEnum.SalaryCalc}
       >
         <SidePanelsLayout
           isScrollBox={false}
@@ -86,4 +75,4 @@ const SalaryCalculatorPage: React.FC = () => {
 
 export const getServerSideProps = blockImpersonatingNonDevelopers;
 
-export default SalaryCalculatorOuterPage;
+export default SalaryCalculatorPage;

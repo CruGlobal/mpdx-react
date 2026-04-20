@@ -1,77 +1,32 @@
 import { useMemo } from 'react';
-import {
-  HcmQuery,
-  useHcmQuery,
-} from 'src/components/Reports/Shared/HcmData/Hcm.generated';
-import {
-  AssignmentCategoryEnum,
-  AssignmentStatusEnum,
-  PeopleGroupSupportTypeEnum,
-  UserPersonTypeEnum,
-} from 'src/graphql/types.generated';
-
-type StaffInfo = HcmQuery['hcm'][number]['staffInfo'];
-
-const usStaffGroups = (staff: StaffInfo) => ({
-  seniorStaff:
-    staff?.peopleGroupSupportType === PeopleGroupSupportTypeEnum.SupportedRmo &&
-    staff?.assignmentStatus === AssignmentStatusEnum.ActivePayrollEligible &&
-    staff?.assignmentCategory === AssignmentCategoryEnum.FullTimeRegular,
-  newStaff:
-    staff?.peopleGroupSupportType === PeopleGroupSupportTypeEnum.SupportedRmo &&
-    (staff?.assignmentStatus ===
-      AssignmentStatusEnum.RaisingInitialSupportPayrollEligible ||
-      staff?.assignmentStatus ===
-        AssignmentStatusEnum.RaisingInitialSupportNoPayroll),
-  partTimeFieldStaff: staff?.userPersonType === UserPersonTypeEnum.EmployeePtfs,
-  paidWithDesignation:
-    staff?.peopleGroupSupportType === PeopleGroupSupportTypeEnum.Designation,
-  intern:
-    staff?.userPersonType === UserPersonTypeEnum.EmployeeInternationalIntern ||
-    staff?.userPersonType === UserPersonTypeEnum.EmployeeUsIntern,
-});
+import { useHcmQuery } from 'src/components/Reports/Shared/HcmData/Hcm.generated';
 
 /**
- * This hook determines whether a US Staff user is in a subgroup that's ineligible for ASR or Salary Calculator (see above groups).
- * It accepts an optional effectiveDate. When provided, the subgroup check always runs against the logged-in user. When omitted,
- * we pick the logged-in user if eligible, or their spouse if they are the one eligible, to check the subgroups against. If
- * neither is eligible, it defaults to the logged-in user, who will not be able to see the form anyway.
+ * This hook determines whether a US Staff user is in a subgroup that's ineligible for ASR or Salary Calculator.
+ * The ASR check runs against the ASR-eligible person (logged-in user if eligible, otherwise spouse, otherwise the logged-in user).
+ * The Salary Calculator check always runs against the logged-in user.
  */
-export function useUsStaffGroups({
-  effectiveDate,
-  skip,
-}: {
-  effectiveDate?: string;
-  skip?: boolean;
-} = {}) {
+export function useUsStaffGroups(skip?: boolean) {
   const { data, loading } = useHcmQuery({
-    variables: effectiveDate ? { effectiveDate } : undefined,
     skip,
   });
   const [user, spouse] = data?.hcm ?? [];
 
-  // When no effectiveDate is provided (is ASR), select the eligible user
-  const asrEligiblePerson = user?.asrEit?.asrEligibility
+  const eligibleUser = user?.asrEit?.asrEligibility
     ? user
     : spouse?.asrEit?.asrEligibility
       ? spouse
-      : undefined;
+      : user;
 
-  const staff = effectiveDate ? user : (asrEligiblePerson ?? user);
-
-  const { newStaff, partTimeFieldStaff, paidWithDesignation, intern } =
-    usStaffGroups(staff?.staffInfo);
-
-  const inAsrIneligibleGroup = paidWithDesignation || intern;
-  const inSalaryCalcIneligibleGroup =
-    newStaff || partTimeFieldStaff || paidWithDesignation || intern;
+  const inAsrIneligibleGroup = eligibleUser?.asrEit?.asrEligibility === false;
+  const inSalaryCalcIneligibleGroup = user?.salaryRequestEligible === false;
 
   return useMemo(
     () => ({
       inAsrIneligibleGroup,
       inSalaryCalcIneligibleGroup,
-      loading: loading && !skip,
+      loading: loading && !data,
     }),
-    [inAsrIneligibleGroup, inSalaryCalcIneligibleGroup, loading, skip],
+    [inAsrIneligibleGroup, inSalaryCalcIneligibleGroup, loading, data],
   );
 }

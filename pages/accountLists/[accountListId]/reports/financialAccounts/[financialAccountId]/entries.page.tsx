@@ -111,7 +111,7 @@ const FinancialAccountEntries = (): ReactElement => {
       </Head>
       {accountListId ? (
         <UserTypeAccess
-          allowedUserType={UserTypeEnum.GlobalStaff}
+          requiredUserType={UserTypeEnum.GlobalStaff}
           alwaysAllow={reportsDisabled}
         >
           <Box sx={{ background: 'common.white' }}>

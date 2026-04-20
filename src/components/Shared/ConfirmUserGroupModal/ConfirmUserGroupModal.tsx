@@ -50,7 +50,7 @@ export const ConfirmUserGroupModal: React.FC<ConfirmUserGroupModalProps> = ({
         )
       : userType === UserTypeEnum.GlobalStaff
         ? t(
-            'Users in this group receive (mostly) non-US donations and are paid through our Global Netsuite system.',
+            'Users in this group receive (mostly) non-US donations and are paid through our Global NetSuite system.',
           )
         : undefined;
 
@@ -88,17 +88,17 @@ export const ConfirmUserGroupModal: React.FC<ConfirmUserGroupModalProps> = ({
       <DialogContent>
         <Alert severity="info" sx={{ mb: 2 }}>
           <Box sx={{ display: 'flex', gap: 0.5, mb: description ? 0 : 2 }}>
-            {userType !== UserTypeEnum.NonCru ? (
+            {userType === UserTypeEnum.NonCru ? (
+              <Typography>
+                {t("We see you're not on staff with Cru.")}
+              </Typography>
+            ) : (
               <>
                 <Typography>
                   {t('The user group for your account is:')}
                 </Typography>
                 <Typography fontWeight="bold">{userTypeLabel}</Typography>
               </>
-            ) : (
-              <Typography>
-                {t("We see you're not on staff with Cru.")}
-              </Typography>
             )}
           </Box>
           {description && (

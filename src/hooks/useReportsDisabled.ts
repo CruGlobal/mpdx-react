@@ -7,7 +7,8 @@ export function useReportsDisabled() {
   const userGroupVerified = data?.userOption?.value;
 
   const reportsDisabled =
-    process.env.DISABLE_NEW_REPORTS === 'true' || userGroupVerified !== 'true';
+    process.env.DISABLE_NEW_REPORTS === 'true' ||
+    (!!data && userGroupVerified !== 'true');
 
   return { reportsDisabled };
 }

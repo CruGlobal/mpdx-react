@@ -5,19 +5,22 @@ import { UserTypeEnum } from 'src/graphql/types.generated';
 import { useUsStaffGroups } from 'src/hooks/useUsStaffGroups';
 import { LimitedAccess } from '../LimitedAccess/LimitedAccess';
 
+export enum RequiredUserGroupEnum {
+  Asr = 'asr',
+  SalaryCalc = 'salaryCalc',
+}
+
 interface UserTypeAccessProps {
-  allowedUserType?: UserTypeEnum;
+  requiredUserType?: UserTypeEnum;
   requireStaffAccount?: boolean;
-  requireUserGroups?: 'asr' | 'salaryCalc';
-  effectiveDate?: string | null;
+  requireUserGroups?: RequiredUserGroupEnum;
   children: React.ReactElement;
   alwaysAllow?: boolean;
 }
 
 export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
-  allowedUserType = UserTypeEnum.UsStaff,
+  requiredUserType = UserTypeEnum.UsStaff,
   requireStaffAccount,
-  effectiveDate,
   children,
   alwaysAllow,
   requireUserGroups,
@@ -34,21 +37,19 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
   const isAsr = requireUserGroups === 'asr';
   const isSalaryCalc = requireUserGroups === 'salaryCalc';
 
-  const date = isSalaryCalc ? (effectiveDate ?? undefined) : undefined;
   const skip = !isAsr && !isSalaryCalc;
   const {
     inAsrIneligibleGroup,
     inSalaryCalcIneligibleGroup,
     loading: hcmLoading,
-  } = useUsStaffGroups({ effectiveDate: date, skip });
+  } = useUsStaffGroups(skip);
 
   const userType = data?.user.userType;
-  const cruUsStaff = userType === UserTypeEnum.UsStaff;
 
   const limitedAccess =
-    (userType && userType !== allowedUserType) ||
-    (isAsr && cruUsStaff && inAsrIneligibleGroup) ||
-    (isSalaryCalc && cruUsStaff && inSalaryCalcIneligibleGroup);
+    (userType && userType !== requiredUserType) ||
+    (isAsr && inAsrIneligibleGroup) ||
+    (isSalaryCalc && inSalaryCalcIneligibleGroup);
 
   // Once HCM is ready to go live and DISABLE_NEW_REPORTS is removed, we can remove the alwaysAllow prop
   if (alwaysAllow) {

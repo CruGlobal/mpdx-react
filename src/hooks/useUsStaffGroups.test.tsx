@@ -2,54 +2,38 @@ import React, { ReactElement } from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { HcmQuery } from 'src/components/Reports/Shared/HcmData/Hcm.generated';
-import {
-  AssignmentCategoryEnum,
-  AssignmentStatusEnum,
-  PeopleGroupSupportTypeEnum,
-  UserPersonTypeEnum,
-} from 'src/graphql/types.generated';
 import { useUsStaffGroups } from './useUsStaffGroups';
 
-type StaffInfo = HcmQuery['hcm'][number]['staffInfo'];
-
 interface BuildHcmMockOptions {
-  spouse?: Partial<StaffInfo>;
   userAsrEligible?: boolean;
+  userSalaryRequestEligible?: boolean;
+  includeSpouse?: boolean;
   spouseAsrEligible?: boolean;
 }
 
-const eligibleStaffInfo: Partial<StaffInfo> = {
-  peopleGroupSupportType: PeopleGroupSupportTypeEnum.SupportedRmo,
-  assignmentStatus: AssignmentStatusEnum.ActivePayrollEligible,
-  assignmentCategory: AssignmentCategoryEnum.FullTimeRegular,
-  userPersonType: UserPersonTypeEnum.EmployeeStaff,
-};
-
-const buildHcmMock = (
-  user: Partial<StaffInfo>,
-  {
-    spouse,
-    userAsrEligible = true,
-    spouseAsrEligible = true,
-  }: BuildHcmMockOptions = {},
-): HcmQuery => {
+const buildHcmMock = ({
+  userAsrEligible = true,
+  userSalaryRequestEligible = true,
+  includeSpouse = false,
+  spouseAsrEligible = true,
+}: BuildHcmMockOptions = {}): HcmQuery => {
   const entries = [
     {
-      staffInfo: { ...eligibleStaffInfo, ...user },
       asrEit: { asrEligibility: userAsrEligible },
+      salaryRequestEligible: userSalaryRequestEligible,
     },
   ];
-  if (spouse) {
+  if (includeSpouse) {
     entries.push({
-      staffInfo: { ...eligibleStaffInfo, ...spouse },
       asrEit: { asrEligibility: spouseAsrEligible },
+      salaryRequestEligible: true,
     });
   }
   return { hcm: entries } as HcmQuery;
 };
 
-const renderUseUsStaffGroups = (hcmMock: HcmQuery, effectiveDate?: string) =>
-  renderHook(() => useUsStaffGroups({ effectiveDate }), {
+const renderUseUsStaffGroups = (hcmMock: HcmQuery, skip?: boolean) =>
+  renderHook(() => useUsStaffGroups(skip), {
     wrapper: ({ children }: { children: ReactElement }) => (
       <GqlMockedProvider<{ Hcm: HcmQuery }> mocks={{ Hcm: hcmMock }}>
         {children}
@@ -58,14 +42,8 @@ const renderUseUsStaffGroups = (hcmMock: HcmQuery, effectiveDate?: string) =>
   });
 
 describe('useUsStaffGroups', () => {
-  it('marks senior staff as eligible for both ASR and salary calculator', async () => {
-    const { result } = renderUseUsStaffGroups(
-      buildHcmMock({
-        peopleGroupSupportType: PeopleGroupSupportTypeEnum.SupportedRmo,
-        assignmentStatus: AssignmentStatusEnum.ActivePayrollEligible,
-        assignmentCategory: AssignmentCategoryEnum.FullTimeRegular,
-      }),
-    );
+  it('marks an ASR-eligible and salary-eligible user as eligible for both', async () => {
+    const { result } = renderUseUsStaffGroups(buildHcmMock());
 
     await waitFor(() => {
       expect(result.current).toEqual({
@@ -76,13 +54,9 @@ describe('useUsStaffGroups', () => {
     });
   });
 
-  it('marks new staff as eligible for ASR but ineligible for salary calculator', async () => {
+  it('marks user as salary-calc ineligible when salaryRequestEligible is false', async () => {
     const { result } = renderUseUsStaffGroups(
-      buildHcmMock({
-        peopleGroupSupportType: PeopleGroupSupportTypeEnum.SupportedRmo,
-        assignmentStatus:
-          AssignmentStatusEnum.RaisingInitialSupportPayrollEligible,
-      }),
+      buildHcmMock({ userSalaryRequestEligible: false }),
     );
 
     await waitFor(() => {
@@ -94,68 +68,37 @@ describe('useUsStaffGroups', () => {
     });
   });
 
-  it('marks part-time field staff as eligible for ASR but ineligible for salary calculator', async () => {
+  it('marks user as ASR ineligible when user and spouse are both ASR-ineligible', async () => {
     const { result } = renderUseUsStaffGroups(
       buildHcmMock({
-        userPersonType: UserPersonTypeEnum.EmployeePtfs,
+        userAsrEligible: false,
+        includeSpouse: true,
+        spouseAsrEligible: false,
       }),
     );
 
     await waitFor(() => {
-      expect(result.current).toEqual({
-        inAsrIneligibleGroup: false,
-        inSalaryCalcIneligibleGroup: true,
-        loading: false,
-      });
+      expect(result.current.inAsrIneligibleGroup).toBe(true);
     });
   });
 
-  it('marks paid-with-designation staff as ineligible for both', async () => {
+  it('marks user as ASR ineligible when there is no spouse and user is ASR-ineligible', async () => {
     const { result } = renderUseUsStaffGroups(
-      buildHcmMock({
-        peopleGroupSupportType: PeopleGroupSupportTypeEnum.Designation,
-      }),
+      buildHcmMock({ userAsrEligible: false }),
     );
 
     await waitFor(() => {
-      expect(result.current).toEqual({
-        inAsrIneligibleGroup: true,
-        inSalaryCalcIneligibleGroup: true,
-        loading: false,
-      });
+      expect(result.current.inAsrIneligibleGroup).toBe(true);
     });
   });
 
-  it('marks interns as ineligible for both', async () => {
+  it('falls back to the spouse for ASR eligibility when the logged-in user is not ASR-eligible', async () => {
     const { result } = renderUseUsStaffGroups(
       buildHcmMock({
-        userPersonType: UserPersonTypeEnum.EmployeeUsIntern,
+        userAsrEligible: false,
+        includeSpouse: true,
+        spouseAsrEligible: true,
       }),
-    );
-
-    await waitFor(() => {
-      expect(result.current).toEqual({
-        inAsrIneligibleGroup: true,
-        inSalaryCalcIneligibleGroup: true,
-        loading: false,
-      });
-    });
-  });
-
-  it('falls back to the spouse when the logged-in user is not ASR-eligible', async () => {
-    const { result } = renderUseUsStaffGroups(
-      buildHcmMock(
-        { userPersonType: UserPersonTypeEnum.EmployeeUsIntern },
-        {
-          spouse: {
-            peopleGroupSupportType: PeopleGroupSupportTypeEnum.SupportedRmo,
-            assignmentStatus: AssignmentStatusEnum.ActivePayrollEligible,
-            assignmentCategory: AssignmentCategoryEnum.FullTimeRegular,
-          },
-          userAsrEligible: false,
-          spouseAsrEligible: true,
-        },
-      ),
     );
 
     await waitFor(() => {
@@ -163,25 +106,26 @@ describe('useUsStaffGroups', () => {
     });
   });
 
-  it('uses the logged-in user when an effectiveDate is provided, ignoring the spouse', async () => {
+  it('uses the logged-in user for salary calc even when a spouse is present', async () => {
     const { result } = renderUseUsStaffGroups(
-      buildHcmMock(
-        { userPersonType: UserPersonTypeEnum.EmployeeUsIntern },
-        {
-          spouse: {
-            peopleGroupSupportType: PeopleGroupSupportTypeEnum.SupportedRmo,
-            assignmentStatus: AssignmentStatusEnum.ActivePayrollEligible,
-            assignmentCategory: AssignmentCategoryEnum.FullTimeRegular,
-          },
-          userAsrEligible: false,
-          spouseAsrEligible: true,
-        },
-      ),
-      '2026-01-01',
+      buildHcmMock({
+        userSalaryRequestEligible: false,
+        includeSpouse: true,
+      }),
     );
 
     await waitFor(() => {
       expect(result.current.inSalaryCalcIneligibleGroup).toBe(true);
+    });
+  });
+
+  it('skips the HCM query and returns defaults when skip is true', () => {
+    const { result } = renderUseUsStaffGroups(buildHcmMock(), true);
+
+    expect(result.current).toEqual({
+      inAsrIneligibleGroup: false,
+      inSalaryCalcIneligibleGroup: false,
+      loading: false,
     });
   });
 });

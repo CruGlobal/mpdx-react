@@ -4,7 +4,7 @@ import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelper
 import { LandingTestWrapper } from 'src/components/Reports/SalaryCalculator/Landing/NewSalaryCalculationLanding/LandingTestWrapper';
 import { SalaryCalculatorTestWrapper } from 'src/components/Reports/SalaryCalculator/SalaryCalculatorTestWrapper';
 import { UserTypeEnum } from 'src/graphql/types.generated';
-import { SalaryCalculatorOuterPage, getServerSideProps } from './index.page';
+import SalaryCalculatorPage, { getServerSideProps } from './index.page';
 
 interface TestComponentProps {
   userType?: UserTypeEnum;
@@ -14,7 +14,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   userType = UserTypeEnum.UsStaff,
 }) => (
   <SalaryCalculatorTestWrapper userType={userType}>
-    <SalaryCalculatorOuterPage />
+    <SalaryCalculatorPage />
   </SalaryCalculatorTestWrapper>
 );
 
@@ -34,7 +34,7 @@ describe('SalaryCalculatorPage', () => {
     it('renders PendingSalaryCalculationLanding when shouldShowPending is true', async () => {
       const { findByRole } = render(
         <LandingTestWrapper hasLatestCalculation>
-          <SalaryCalculatorOuterPage />
+          <SalaryCalculatorPage />
         </LandingTestWrapper>,
       );
 
@@ -46,7 +46,7 @@ describe('SalaryCalculatorPage', () => {
     it('renders NewSalaryCalculatorLanding when shouldShowPending is false', async () => {
       const { findByRole } = render(
         <LandingTestWrapper>
-          <SalaryCalculatorOuterPage />
+          <SalaryCalculatorPage />
         </LandingTestWrapper>,
       );
 

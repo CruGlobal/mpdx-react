@@ -38,7 +38,7 @@ const FinancialAccountSummaryPage: React.FC = () => {
 
       {accountListId ? (
         <UserTypeAccess
-          allowedUserType={UserTypeEnum.GlobalStaff}
+          requiredUserType={UserTypeEnum.GlobalStaff}
           alwaysAllow={reportsDisabled}
         >
           <Box sx={{ background: 'common.white' }}>
