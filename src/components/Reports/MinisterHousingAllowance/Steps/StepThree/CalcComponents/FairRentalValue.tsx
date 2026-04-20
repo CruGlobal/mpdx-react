@@ -36,7 +36,7 @@ export const FairRentalValue: React.FC<FairRentalValueProps> = ({ schema }) => {
               {t('Monthly market rental value of your home.')}
             </Typography>
             <Box sx={{ color: 'text.secondary' }}>
-              <Trans i18nKey="fairRentalValueQuestion1">
+              <Trans>
                 The best way to determine this amount is to have an appraiser or
                 rental real estate specialist provide you with a written
                 estimate of the monthly rental value. If this is not possible,
@@ -74,7 +74,7 @@ export const FairRentalValue: React.FC<FairRentalValueProps> = ({ schema }) => {
               )}
             </Typography>
             <Box sx={{ color: 'text.secondary' }}>
-              <Trans i18nKey="fairRentalValueQuestion2">
+              <Trans>
                 This is a reasonable amount by which the monthly rental of your
                 home would increase if it were furnished.
               </Trans>

@@ -56,10 +56,7 @@ export const AboutForm: React.FC<AboutFormProps> = ({
       <Box mb={2}>
         <Typography variant="h5">{t('About this Form')}</Typography>
       </Box>
-      <Trans
-        i18nKey="newRequestAboutFormPartOne"
-        values={{ nextYear, after, approval }}
-      >
+      <Trans values={{ nextYear, after, approval }}>
         <p style={{ lineHeight: 1.5 }}>
           A Minister&apos;s Housing Allowance Request is a form ministers
           complete to designate part of their compensation as tax-free housing
@@ -93,10 +90,7 @@ export const AboutForm: React.FC<AboutFormProps> = ({
           </StyledListItem>
         </List>
       </Box>
-      <Trans
-        i18nKey="newRequestAboutFormPartTwo"
-        values={{ boardDateFormatted, availableDateFormatted }}
-      >
+      <Trans values={{ boardDateFormatted, availableDateFormatted }}>
         <Box sx={{ mt: 2 }}>
           The next time the board will approve MHA Requests is {after} and your
           approved annual MHA amount will appear on your{' '}

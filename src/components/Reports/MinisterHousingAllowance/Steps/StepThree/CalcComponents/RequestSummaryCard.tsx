@@ -85,7 +85,7 @@ export const RequestSummaryCard: React.FC<RequestSummaryCardProps> = ({
                   <b>{t('Your Annual MHA Total')}</b>
                 </Typography>
                 <Box sx={{ color: 'text.secondary' }}>
-                  <Trans i18nKey="requestSummaryCardInfo" values={{ above }}>
+                  <Trans values={{ above }}>
                     This is calculated from your {above} responses and is the
                     lower of the Annual Fair Rental Value or the Annual Cost of
                     Providing a Home.
