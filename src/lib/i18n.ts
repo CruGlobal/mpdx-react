@@ -20,6 +20,12 @@ i18next
     react: {
       useSuspense: false,
     },
+    // React escapes interpolated values for us, so disable i18next's default
+    // escaping to avoid double-escaping characters like / and <. Safe as long
+    // as we never render translated strings via dangerouslySetInnerHTML.
+    interpolation: {
+      escapeValue: false,
+    },
     detection: {
       order: ['localStorage', 'navigator', 'htmlTag'],
     },

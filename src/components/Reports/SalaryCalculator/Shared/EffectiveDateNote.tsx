@@ -20,7 +20,6 @@ export const EffectiveDateNote: React.FC = () => {
     >
       {t('Values shown reflect the paycheck dated {{date}}.', {
         date: paycheckDate,
-        interpolation: { escapeValue: false },
       })}
     </Typography>
   );

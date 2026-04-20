@@ -87,7 +87,6 @@ export const DeleteUserConfirmModal: React.FC<DeleteUserConfirmModalProps> = ({
               {
                 first: deleteUser?.userFirstName,
                 last: deleteUser?.userLastName,
-                interpolation: { escapeValue: false },
               },
             )}
           </Typography>

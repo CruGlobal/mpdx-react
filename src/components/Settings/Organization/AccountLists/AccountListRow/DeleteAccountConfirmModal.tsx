@@ -96,7 +96,6 @@ export const DeleteAccountConfirmModal: React.FC<
               `Are you sure you want to permanently delete the account list: {{accountListName}}?`,
               {
                 accountListName: name,
-                interpolation: { escapeValue: false },
               },
             )}
           </Typography>
