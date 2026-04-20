@@ -49,7 +49,7 @@ const buildHcmMock = (
 };
 
 const renderUseUsStaffGroups = (hcmMock: HcmQuery, effectiveDate?: string) =>
-  renderHook(() => useUsStaffGroups(effectiveDate), {
+  renderHook(() => useUsStaffGroups({ effectiveDate }), {
     wrapper: ({ children }: { children: ReactElement }) => (
       <GqlMockedProvider<{ Hcm: HcmQuery }> mocks={{ Hcm: hcmMock }}>
         {children}

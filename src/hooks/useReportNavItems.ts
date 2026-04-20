@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
-import { useUserOptionQuery } from './UserPreference.generated';
+import { useReportsDisabled } from './useReportsDisabled';
 
 export type NavItems = {
   id: string;
@@ -14,9 +14,7 @@ export type NavItems = {
 export function useReportNavItems(): NavItems[] {
   const { t } = useTranslation();
   const { data } = useGetUserQuery();
-  const { data: userOptionData } = useUserOptionQuery({
-    variables: { key: 'user_type_verified' },
-  });
+  const { reportsDisabled } = useReportsDisabled();
 
   const userType = data?.user.userType;
   const usStaff = userType === UserTypeEnum.UsStaff;
@@ -37,8 +35,7 @@ export function useReportNavItems(): NavItems[] {
       title: t('14 Month Salary Report'),
       subTitle: t('Salary Currency'),
     },
-    ...(process.env.DISABLE_NEW_REPORTS === 'true' ||
-    userOptionData?.userOption?.value !== 'true'
+    ...(reportsDisabled
       ? []
       : [
           {
@@ -60,11 +57,7 @@ export function useReportNavItems(): NavItems[] {
     {
       id: 'financialAccounts',
       title: t('Responsibility Centers'),
-      hideItem:
-        process.env.DISABLE_NEW_REPORTS === 'true' ||
-        userOptionData?.userOption?.value !== 'true'
-          ? undefined
-          : !globalStaff,
+      hideItem: reportsDisabled ? undefined : !globalStaff,
     },
     {
       id: 'expectedMonthlyTotal',
@@ -82,6 +75,6 @@ export function useReportNavItems(): NavItems[] {
 
   return useMemo(
     () => reportNavItems.filter((item) => !item.hideItem),
-    [t, usStaff, globalStaff, userOptionData],
+    [t, usStaff, globalStaff, reportsDisabled],
   );
 }

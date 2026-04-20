@@ -23,8 +23,8 @@ import {
 import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { UserTypeEnum } from 'src/graphql/types.generated';
-import { useUserOptionQuery } from 'src/hooks/UserPreference.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useReportsDisabled } from 'src/hooks/useReportsDisabled';
 import { getAppName } from 'src/lib/getAppName';
 import { Panel } from '../../helpers';
 import { FinancialAccountsWrapper } from './Wrapper';
@@ -45,10 +45,7 @@ const FinancialAccountEntries = (): ReactElement => {
   } = useContext(FinancialAccountContext) as FinancialAccountType;
 
   const { data } = financialAccountQuery;
-
-  const { data: userOptionData } = useUserOptionQuery({
-    variables: { key: 'user_type_verified' },
-  });
+  const { reportsDisabled } = useReportsDisabled();
 
   const filterGroups = useMemo(() => {
     const categoryOptions =
@@ -115,10 +112,7 @@ const FinancialAccountEntries = (): ReactElement => {
       {accountListId ? (
         <UserTypeAccess
           allowedUserType={UserTypeEnum.GlobalStaff}
-          alwaysAllow={
-            process.env.DISABLE_NEW_REPORTS === 'true' ||
-            userOptionData?.userOption?.value !== 'true'
-          }
+          alwaysAllow={reportsDisabled}
         >
           <Box sx={{ background: 'common.white' }}>
             <SidePanelsLayout

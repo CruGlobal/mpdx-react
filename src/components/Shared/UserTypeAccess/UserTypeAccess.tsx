@@ -22,7 +22,7 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
   alwaysAllow,
   requireUserGroups,
 }) => {
-  const { data, loading: userLoading, error } = useGetUserQuery();
+  const { data, loading: userLoading, error: userError } = useGetUserQuery();
   const {
     data: staffAccountData,
     loading: staffAccountLoading,
@@ -40,7 +40,7 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
     inAsrIneligibleGroup,
     inSalaryCalcIneligibleGroup,
     loading: hcmLoading,
-  } = useUsStaffGroups(date, skip);
+  } = useUsStaffGroups({ effectiveDate: date, skip });
 
   const userType = data?.user.userType;
   const cruUsStaff = userType === UserTypeEnum.UsStaff;
@@ -55,7 +55,7 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
     return children;
   }
 
-  if (error) {
+  if (userError) {
     return <LimitedAccess userGroupError />;
   }
 

@@ -37,14 +37,20 @@ const usStaffGroups = (staff: StaffInfo) => ({
  * we pick the logged-in user if eligible, or their spouse if they are the one eligible, to check the subgroups against. If
  * neither is eligible, it defaults to the logged-in user, who will not be able to see the form anyway.
  */
-export function useUsStaffGroups(effectiveDate?: string, skip?: boolean) {
+export function useUsStaffGroups({
+  effectiveDate,
+  skip,
+}: {
+  effectiveDate?: string;
+  skip?: boolean;
+} = {}) {
   const { data, loading } = useHcmQuery({
     variables: effectiveDate ? { effectiveDate } : undefined,
     skip,
   });
   const [user, spouse] = data?.hcm ?? [];
 
-  // If ASR, figure out if user or spouse is eligible
+  // When no effectiveDate is provided (is ASR), select the eligible user
   const asrEligiblePerson = user?.asrEit?.asrEligibility
     ? user
     : spouse?.asrEit?.asrEligibility
