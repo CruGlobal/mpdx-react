@@ -1,3 +1,4 @@
+import { TFunction } from 'react-i18next';
 import { StatusEnum } from 'src/graphql/types.generated';
 
 export interface TableData {
@@ -17,24 +18,26 @@ export interface TableData {
   lastDonationCurrency: string | null;
 }
 
-export const getLocalizedStatus = (status: StatusEnum) => {
-  return PartnerStatusLabels[status];
-};
-
-export const PartnerStatusLabels: Record<StatusEnum, string> = {
-  [StatusEnum.PartnerFinancial]: 'Partner - Financial',
-  [StatusEnum.PartnerPray]: 'Partner - Pray',
-  [StatusEnum.PartnerSpecial]: 'Partner - Special',
-  [StatusEnum.ContactForAppointment]: 'Contact for Appointment',
-  [StatusEnum.CallForDecision]: 'Call for Decision',
-  [StatusEnum.NeverContacted]: 'Never Contacted',
-  [StatusEnum.ResearchContactInfo]: 'Research Contact Info',
-  [StatusEnum.AskInFuture]: 'Ask in Future',
-  [StatusEnum.CultivateRelationship]: 'Cultivate Relationship',
-  [StatusEnum.AppointmentScheduled]: 'Appointment Scheduled',
-  [StatusEnum.NotInterested]: 'Not Interested',
-  [StatusEnum.Unresponsive]: 'Unresponsive',
-  [StatusEnum.NeverAsk]: 'Never Ask',
-  [StatusEnum.ResearchAbandoned]: 'Research Abandoned',
-  [StatusEnum.ExpiredReferral]: 'Expired Referral',
+export const getLocalizedStatus = (
+  status: StatusEnum,
+  t: TFunction,
+): string => {
+  const labels: Record<StatusEnum, string> = {
+    [StatusEnum.PartnerFinancial]: t('Partner - Financial'),
+    [StatusEnum.PartnerPray]: t('Partner - Pray'),
+    [StatusEnum.PartnerSpecial]: t('Partner - Special'),
+    [StatusEnum.ContactForAppointment]: t('Contact for Appointment'),
+    [StatusEnum.CallForDecision]: t('Call for Decision'),
+    [StatusEnum.NeverContacted]: t('Never Contacted'),
+    [StatusEnum.ResearchContactInfo]: t('Research Contact Info'),
+    [StatusEnum.AskInFuture]: t('Ask in Future'),
+    [StatusEnum.CultivateRelationship]: t('Cultivate Relationship'),
+    [StatusEnum.AppointmentScheduled]: t('Appointment Scheduled'),
+    [StatusEnum.NotInterested]: t('Not Interested'),
+    [StatusEnum.Unresponsive]: t('Unresponsive'),
+    [StatusEnum.NeverAsk]: t('Never Ask'),
+    [StatusEnum.ResearchAbandoned]: t('Research Abandoned'),
+    [StatusEnum.ExpiredReferral]: t('Expired Referral'),
+  };
+  return labels[status];
 };

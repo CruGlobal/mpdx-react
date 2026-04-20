@@ -6,7 +6,7 @@ import {
   GridFooterContainer,
   GridPagination,
 } from '@mui/x-data-grid';
-import { useTranslation } from 'react-i18next';
+import { TFunction, useTranslation } from 'react-i18next';
 import { PartnerGivingAnalysisContact } from 'src/graphql/types.generated';
 import { usePopulateTableRows } from 'src/hooks/usePopulateTableRows';
 import { TableData, getLocalizedStatus } from '../Helper/tableData';
@@ -24,10 +24,10 @@ export interface PartnerGivingAnalysisTableProps {
   apiRef: React.MutableRefObject<GridApi | null>;
 }
 
-export const createTableRow = (data: Row): TableData => ({
+export const createTableRow = (data: Row, t: TFunction): TableData => ({
   id: data.id,
   name: data.name ?? '',
-  status: data.status ? getLocalizedStatus(data.status) : null,
+  status: data.status ? getLocalizedStatus(data.status, t) : null,
   pledgeAmount: data.pledgeAmount ?? 0,
   pledgeFrequency: data.pledgeFrequency ?? null,
   donationPeriodSum: data.donationPeriodSum,
@@ -57,8 +57,8 @@ export const PartnerGivingAnalysisTable: React.FC<
   const { t } = useTranslation();
 
   const tableRows = useMemo(
-    () => data.map((contact) => createTableRow(contact)),
-    [data],
+    () => data.map((contact) => createTableRow(contact, t)),
+    [data, t],
   );
 
   const {

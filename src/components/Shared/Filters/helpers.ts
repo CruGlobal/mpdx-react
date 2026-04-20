@@ -53,3 +53,6 @@ export const renameFilterNames = (name: string | undefined) => {
 };
 
 export const reverseFiltersMap = new Map(Object.entries(reverseFiltersOptions));
+
+export const isPredefinedFilter = (filter: { id: string }): boolean =>
+  filter.id.startsWith('pre-defined-filter-');
