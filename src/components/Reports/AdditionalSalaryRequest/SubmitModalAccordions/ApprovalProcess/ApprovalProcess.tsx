@@ -1,7 +1,7 @@
 import { InfoSharp } from '@mui/icons-material';
 import { Box, CardContent, Typography, alpha } from '@mui/material';
 import { useFormikContext } from 'formik';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import theme from 'src/theme';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { AutosaveCustomTextField } from '../../Shared/AutoSave/AutosaveCustomTextField';
@@ -42,14 +42,11 @@ export const ApprovalProcess: React.FC<ApprovalProcessProps> = ({
     >
       <CardContent>
         {exceedsCap ? (
-          <Trans i18nKey="approvalProcessInfo">
-            <Typography variant="body1">
-              Please explain in detail, what are the specific expenses and
-              reasons why you are requesting this salary level and how your
-              ministry assignment relates to this need. So that you would not
-              exceed your CAP, could this request be spread over 2-3 years?
-            </Typography>
-          </Trans>
+          <Typography variant="body1">
+            {t(
+              'Please explain in detail, what are the specific expenses and reasons why you are requesting this salary level and how your ministry assignment relates to this need. So that you would not exceed your CAP, could this request be spread over 2-3 years?',
+            )}
+          </Typography>
         ) : (
           <Typography variant="body1">
             {t(

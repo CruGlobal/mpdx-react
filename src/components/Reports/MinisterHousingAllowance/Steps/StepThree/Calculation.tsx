@@ -271,26 +271,24 @@ export const Calculation: React.FC<CalculationProps> = ({
             </Box>
             {isViewPage ? (
               <PersonInfo />
+            ) : actionRequired ? (
+              <p style={{ lineHeight: 1.5 }}>
+                <Trans values={{ after, approval }}>
+                  Please review the Annual MHA Request that you have submitted
+                  for Board approval and make any changes necessary here. The
+                  board will review this {{ after }} and you will receive notice
+                  of your {{ approval }}.
+                </Trans>
+              </p>
             ) : (
-              <Trans
-                i18nKey="newRequestCalculation"
-                values={{ after, approval }}
-              >
-                {actionRequired ? (
-                  <p style={{ lineHeight: 1.5 }}>
-                    Please review the Annual MHA Request that you have submitted
-                    for Board approval and make any changes necessary here. The
-                    board will review this {after} and you will receive notice
-                    of your {approval}.
-                  </p>
-                ) : (
-                  <p style={{ lineHeight: 1.5 }}>
-                    Please enter dollar amounts for each category below to
-                    calculate your Annual MHA. The board will review this{' '}
-                    {after} and you will receive notice of your {approval}.
-                  </p>
-                )}
-              </Trans>
+              <p style={{ lineHeight: 1.5 }}>
+                <Trans values={{ after, approval }}>
+                  Please enter dollar amounts for each category below to
+                  calculate your Annual MHA. The board will review this{' '}
+                  {{ after }} and you will receive notice of your {{ approval }}
+                  .
+                </Trans>
+              </p>
             )}
             <SimpleScreenOnly>
               <Box sx={{ mt: 2, mb: 3 }}>

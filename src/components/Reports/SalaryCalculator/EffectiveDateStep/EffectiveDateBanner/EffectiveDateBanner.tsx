@@ -36,10 +36,7 @@ export const EffectiveDateBanner: React.FC<EffectiveDateBannerProps> = ({
       data-testid="effective-date-banner-text"
     >
       <Typography fontWeight="bold" textAlign="center">
-        <Trans
-          i18nKey="effective_date_banner_message"
-          values={{ thisYear, nextYear }}
-        >
+        <Trans values={{ thisYear, nextYear }}>
           Dates for {'{{nextYear}}'} are unavailable at this time while we
           update salary level tables. By December 15, {'{{thisYear}}'} you will
           be able to request a salary change for {'{{nextYear}}'}.
