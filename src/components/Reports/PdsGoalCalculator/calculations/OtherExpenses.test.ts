@@ -145,20 +145,19 @@ describe('calculateOtherExpenses', () => {
   });
 
   describe('assessment', () => {
-    it('returns 0 when adminRate is 1 (avoids division by zero)', () => {
-      const result = calculateOtherExpenses(fullTime(), {
-        ...defaultConstants,
-        adminRate: 1,
-      });
-      expect(result.assessment).toBe(0);
-    });
-
-    it('is the 12% assessment on (subtotal + attrition + creditCardFees)', () => {
+    it('is (subtotal + creditCardFees + attrition) × adminRate', () => {
       const result = calculateOtherExpenses(fullTime(), defaultConstants);
       // subtotal=7400, attrition=444, creditCardFees=470.64
-      // preAssessment = 8314.64
-      // assessment = 8314.64 / (1 - 0.12) - 8314.64 ≈ 1133.81
-      expect(result.assessment).toBeCloseTo(1133.81, 1);
+      // (7400 + 470.64 + 444) * 0.12 ≈ 997.76
+      expect(result.assessment).toBeCloseTo(997.76, 1);
+    });
+
+    it('returns 0 when adminRate is 0', () => {
+      const result = calculateOtherExpenses(fullTime(), {
+        ...defaultConstants,
+        adminRate: 0,
+      });
+      expect(result.assessment).toBe(0);
     });
   });
 
@@ -172,7 +171,7 @@ describe('calculateOtherExpenses', () => {
       expect(result.subtotal).toBeCloseTo(7400);
       expect(result.attrition).toBeCloseTo(444);
       expect(result.creditCardFees).toBeCloseTo(470.64);
-      expect(result.assessment).toBeCloseTo(1133.81, 1);
+      expect(result.assessment).toBeCloseTo(997.76, 1);
     });
 
     it('produces correct totals for a part-time employee', () => {
@@ -181,12 +180,11 @@ describe('calculateOtherExpenses', () => {
       // subtotal=5000+500+400+680+0=6580
       // attrition=6580*0.06=394.80
       // creditCardFees=(6580+394.80)*0.06=418.49
-      // preAssessment=6580+394.80+418.49=7393.29
-      // assessment=7393.29/(1-0.12)-7393.29≈1008.13
+      // assessment=(6580+418.49+394.80)*0.12≈887.19
       expect(result.subtotal).toBeCloseTo(6580);
       expect(result.attrition).toBeCloseTo(394.8);
       expect(result.creditCardFees).toBeCloseTo(418.49, 1);
-      expect(result.assessment).toBeCloseTo(1008.13, 0);
+      expect(result.assessment).toBeCloseTo(887.19, 1);
     });
   });
 });

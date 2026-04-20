@@ -51,10 +51,8 @@ export const calculateOtherExpenses = (
 
   const attrition = subtotal * constants.attritionRate;
   const creditCardFees = (subtotal + attrition) * constants.creditCardFeeRate;
-  const preAssessment = subtotal + attrition + creditCardFees;
-  const adminDivisor = 1 - constants.adminRate;
-  const assessment =
-    adminDivisor === 0 ? 0 : preAssessment / adminDivisor - preAssessment;
+  const adminRate = constants.adminRate;
+  const assessment = (subtotal + creditCardFees + attrition) * adminRate;
 
   return {
     reimbursableExpenses,
