@@ -91,12 +91,9 @@ export const ExportAllDataAccordion: React.FC<ExportAllDataAccordionProps> = ({
         <FieldWrapper>
           {exportedAt && (
             <Alert severity="info" icon={<DownloadForOffline />}>
-              {t(
-                `Your last export was on ${dateTimeFormat(
-                  DateTime.fromISO(exportedAt),
-                  locale,
-                )}`,
-              )}
+              {t('Your last export was on {{date}}', {
+                date: dateTimeFormat(DateTime.fromISO(exportedAt), locale),
+              })}
             </Alert>
           )}
           <FormGroup>

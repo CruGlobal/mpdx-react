@@ -1,6 +1,5 @@
 import React from 'react';
 import { FormControl, FormControlProps } from '@mui/material';
-import { useTranslation } from 'react-i18next';
 import {
   HelperPositionEnum,
   StyledFormHelperText,
@@ -32,7 +31,6 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({
   formHelperTextProps = { variant: 'standard' },
   children,
 }) => {
-  const { t } = useTranslation();
   const labelOutput = labelText ? (
     <StyledFormLabel
       sx={{
@@ -41,7 +39,7 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({
         marginBottom: 1,
       }}
     >
-      {t(labelText)}
+      {labelText}
     </StyledFormLabel>
   ) : (
     ''
@@ -49,7 +47,7 @@ export const FieldWrapper: React.FC<FieldWrapperProps> = ({
 
   const helperTextOutput = helperText ? (
     <StyledFormHelperText {...formHelperTextProps}>
-      {t(helperText)}
+      {helperText}
     </StyledFormHelperText>
   ) : (
     ''

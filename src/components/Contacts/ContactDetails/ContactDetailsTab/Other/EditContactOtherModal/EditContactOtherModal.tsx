@@ -427,7 +427,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                               value.id &&
                               value.value && (
                                 <MenuItem key={value.id} value={value.id}>
-                                  {t(value.value)}
+                                  {value.value}
                                 </MenuItem>
                               ),
                           )}
@@ -468,7 +468,7 @@ export const EditContactOtherModal: React.FC<EditContactOtherModalProps> = ({
                         >
                           {timezones.map(({ key, value }) => (
                             <MenuItem key={key} value={value}>
-                              {t(value)}
+                              {value}
                             </MenuItem>
                           ))}
                         </NullableSelect>

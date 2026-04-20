@@ -71,11 +71,11 @@ export const DeletePledgeModal: React.FC<DeletePledgeModalProps> = ({
           </Box>
         ) : (
           <DialogContentText component="div">
-            {t(
-              viewMode === TableViewModeEnum.Flows
-                ? 'Moving this contact will result in the connected commitment being deleted. Are you sure?'
-                : 'Are you sure you wish to remove this commitment?',
-            )}
+            {viewMode === TableViewModeEnum.Flows
+              ? t(
+                  'Moving this contact will result in the connected commitment being deleted. Are you sure?',
+                )
+              : t('Are you sure you wish to remove this commitment?')}
           </DialogContentText>
         )}
       </DialogContent>

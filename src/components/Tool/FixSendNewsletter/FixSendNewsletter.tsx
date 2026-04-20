@@ -82,7 +82,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
         { query: InvalidNewsletterDocument, variables: { accountListId } },
       ],
       onError() {
-        enqueueSnackbar(t(`Error updating contact ${name}`), {
+        enqueueSnackbar(t('Error updating contact {{name}}', { name }), {
           variant: 'error',
           autoHideDuration: 7000,
         });
@@ -112,7 +112,7 @@ const FixSendNewsletter: React.FC<Props> = ({ accountListId }: Props) => {
         },
       ],
       onError: () => {
-        enqueueSnackbar(t(`Error updating contacts`), {
+        enqueueSnackbar(t('Error updating contacts'), {
           variant: 'error',
           autoHideDuration: 7000,
         });

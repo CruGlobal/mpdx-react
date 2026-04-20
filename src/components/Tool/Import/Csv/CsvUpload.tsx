@@ -52,8 +52,9 @@ const CsvUpload: React.FC<CsvUploadProps> = ({
       }
 
       if (file.size > maxSizeInBytes) {
-        const errorMessage = `File too large, ${maxSizeInMB}MB max`;
-        throw new Error(t(errorMessage));
+        throw new Error(
+          t('File too large, {{maxSizeInMB}}MB max', { maxSizeInMB }),
+        );
       } else {
         uploadFile({ accountListId, file, t }).then((data) => {
           if (data) {

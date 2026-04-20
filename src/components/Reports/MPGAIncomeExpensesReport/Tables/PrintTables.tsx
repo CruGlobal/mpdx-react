@@ -212,9 +212,9 @@ export const PrintTables: React.FC<PrintTablesProps> = ({
             <TableBody>
               <TableRow>
                 <TableCell colSpan={15} align="center">
-                  {t(`No ${type} data available in the last 12 months`, {
-                    type: ReportTypeEnum[type],
-                  })}
+                  {type === ReportTypeEnum.Income
+                    ? t('No income data available in the last 12 months')
+                    : t('No expenses data available in the last 12 months')}
                 </TableCell>
               </TableRow>
             </TableBody>

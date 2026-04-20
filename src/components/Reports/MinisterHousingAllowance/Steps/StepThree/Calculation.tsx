@@ -186,11 +186,13 @@ export const Calculation: React.FC<CalculationProps> = ({
     : null;
 
   const after = boardDateFormatted
-    ? t(`number after ${boardDateFormatted}`)
+    ? t('number after {{boardDateFormatted}}', { boardDateFormatted })
     : t('number');
 
   const approval = availableDateFormatted
-    ? t(`approval effective ${availableDateFormatted}`)
+    ? t('approval effective {{availableDateFormatted}}', {
+        availableDateFormatted,
+      })
     : t('approval soon');
 
   const schema = getValidationSchema(rentOrOwn);

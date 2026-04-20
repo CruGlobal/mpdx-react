@@ -36,7 +36,7 @@ export const AddMenuPanel = (): ReactElement => {
 
   const addMenuContent: MenuContent[] = [
     {
-      text: 'Add Contact',
+      text: t('Add Contact'),
       icon: PersonIcon,
       onClick: () => {
         changeSelectedMenuItem(AddMenuItemsEnum.NewContact);
@@ -45,7 +45,7 @@ export const AddMenuPanel = (): ReactElement => {
       onMouseEnter: preloadCreateContact,
     },
     {
-      text: 'Add Multiple Contacts',
+      text: t('Add Multiple Contacts'),
       icon: PeopleIcon,
       onClick: () => {
         changeSelectedMenuItem(AddMenuItemsEnum.MultipleContacts);
@@ -54,7 +54,7 @@ export const AddMenuPanel = (): ReactElement => {
       onMouseEnter: preloadCreateMultipleContacts,
     },
     {
-      text: 'Add Donation',
+      text: t('Add Donation'),
       icon: CardGiftcardIcon,
       onClick: () => {
         changeSelectedMenuItem(AddMenuItemsEnum.AddDonation);
@@ -63,7 +63,7 @@ export const AddMenuPanel = (): ReactElement => {
       onMouseEnter: preloadAddDonation,
     },
     {
-      text: 'Add Task',
+      text: t('Add Task'),
       icon: ListIcon,
       onClick: () => {
         openTaskModal({ view: TaskModalEnum.Add });
@@ -71,7 +71,7 @@ export const AddMenuPanel = (): ReactElement => {
       onMouseEnter: () => preloadTaskModal(TaskModalEnum.Add),
     },
     {
-      text: 'Log Task',
+      text: t('Log Task'),
       icon: EditIcon,
       onClick: () => {
         openTaskModal({ view: TaskModalEnum.Log });
@@ -100,7 +100,7 @@ export const AddMenuPanel = (): ReactElement => {
             >
               <LeafButton style={style}>
                 <Icon size={18} style={iconStyle} />
-                <Title>{t(text)}</Title>
+                <Title>{text}</Title>
               </LeafButton>
             </LeafListItem>
           ),

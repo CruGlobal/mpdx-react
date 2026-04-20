@@ -11,6 +11,7 @@ import {
 } from './CsvImportContext';
 import CsvUpload from './CsvUpload';
 import { getMaxFileSize, uploadFile } from './uploadCsvFile';
+import 'src/lib/i18n';
 
 jest.mock('./uploadCsvFile');
 
@@ -91,9 +92,7 @@ describe('CsvUpload', () => {
     await waitFor(() =>
       expect(mockEnqueue).toHaveBeenCalledWith(
         `File too large, ${maxFileSize}MB max`,
-        {
-          variant: 'error',
-        },
+        { variant: 'error' },
       ),
     );
   });

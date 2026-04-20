@@ -16,7 +16,6 @@ import {
   Typography,
 } from '@mui/material';
 import clsx from 'clsx';
-import { useTranslation } from 'react-i18next';
 import { NavPage } from 'src/hooks/useNavPages';
 import { useCurrentToolId } from '../../../../../../hooks/useCurrentToolId';
 import { useStyles } from './NavMenu';
@@ -44,7 +43,6 @@ export const NavMenuDropdown: React.FC<NavMenuDropdownProps> = ({
   loading,
   isTool,
 }) => {
-  const { t } = useTranslation();
   const { classes } = useStyles();
   const { pathname } = useRouter();
   const currentToolId = useCurrentToolId();
@@ -182,7 +180,7 @@ export const NavMenuDropdown: React.FC<NavMenuDropdownProps> = ({
                             : undefined
                         }
                       >
-                        <ListItemText primary={t(title)} />
+                        <ListItemText primary={title} />
                       </MenuItem>
                     ))}
                   </MenuList>

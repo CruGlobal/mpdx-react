@@ -208,13 +208,15 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
       }
 
       if (errorOccurred) {
-        enqueueSnackbar(t(`Error updating contact ${name}`), {
+        enqueueSnackbar(t('Error updating contact {{name}}', { name }), {
           variant: 'error',
           autoHideDuration: 7000,
         });
         return { success: false };
       } else {
-        enqueueSnackbar(t(`Updated contact ${name}`), { variant: 'success' });
+        enqueueSnackbar(t('Updated contact {{name}}', { name }), {
+          variant: 'success',
+        });
         return { success: true };
       }
     },
@@ -247,23 +249,28 @@ const FixMailingAddresses: React.FC<Props> = ({ accountListId }: Props) => {
         const successfulUpdates = results.length - failedUpdates;
 
         if (successfulUpdates) {
-          enqueueSnackbar(t(`Updated ${successfulUpdates} contact(s)`), {
-            variant: 'success',
-          });
+          enqueueSnackbar(
+            t('Updated {{count}} contact(s)', { count: successfulUpdates }),
+            {
+              variant: 'success',
+            },
+          );
         }
         if (failedUpdates) {
           enqueueSnackbar(
-            t(`Error when updating ${failedUpdates} contact(s)`),
+            t('Error when updating {{count}} contact(s)', {
+              count: failedUpdates,
+            }),
             {
               variant: 'error',
             },
           );
         }
       } else {
-        enqueueSnackbar(t(`No contacts were updated`), { variant: 'warning' });
+        enqueueSnackbar(t('No contacts were updated'), { variant: 'warning' });
       }
     } catch (error) {
-      enqueueSnackbar(t(`Error updating contacts`), { variant: 'error' });
+      enqueueSnackbar(t('Error updating contacts'), { variant: 'error' });
     }
   }, [
     data,

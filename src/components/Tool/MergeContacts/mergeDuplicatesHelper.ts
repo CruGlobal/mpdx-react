@@ -128,17 +128,17 @@ export const bulkUpdateDuplicates = async (
         mergeActions.length + duplicatesToIgnore.length;
 
       if (totalSuccessful) {
-        const message = t(`Updated ${totalSuccessful} duplicate(s)`);
+        const message = t('Updated {{count}} duplicate(s)', {
+          count: totalSuccessful,
+        });
         enqueueSnackbar(`${message}`, {
           variant: 'success',
         });
       }
       if (totalDuplicatesAttempted !== totalSuccessful) {
-        const message = t(
-          `Failed to update ${
-            totalDuplicatesAttempted - totalSuccessful
-          } duplicate(s)`,
-        );
+        const message = t('Failed to update {{count}} duplicate(s)', {
+          count: totalDuplicatesAttempted - totalSuccessful,
+        });
         enqueueSnackbar(message, {
           variant: 'error',
         });
@@ -149,7 +149,7 @@ export const bulkUpdateDuplicates = async (
       });
     }
   } catch (error) {
-    const message = t(`Error updating duplicates: ${error}`);
+    const message = t('Error updating duplicates: {{error}}', { error });
     enqueueSnackbar(message, {
       variant: 'error',
     });

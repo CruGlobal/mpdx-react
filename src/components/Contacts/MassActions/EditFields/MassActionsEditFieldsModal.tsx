@@ -34,21 +34,6 @@ interface MassActionsEditFieldsModalProps {
   handleClose: () => void;
 }
 
-const StarredMap = {
-  Starred: true,
-  Unstarred: false,
-};
-
-const NoAppealsMap = {
-  No: true, // true means we do not want appeals
-  Yes: false,
-};
-
-const PledgeReceivedMap = {
-  Yes: true,
-  No: false,
-};
-
 const MassActionsEditFieldsSchema = yup.object({
   status: yup.string().nullable(),
   likelyToGive: yup.string().nullable(),
@@ -198,11 +183,8 @@ export const MassActionsEditFieldsModal: React.FC<
                       <MenuItem value={''}>
                         <em>{t("Don't change")}</em>
                       </MenuItem>
-                      {Object.entries(StarredMap).map(([key, val]) => (
-                        <MenuItem key={key} value={String(val)}>
-                          {t(key) /* manually added to translation file */}
-                        </MenuItem>
-                      ))}
+                      <MenuItem value="true">{t('Starred')}</MenuItem>
+                      <MenuItem value="false">{t('Unstarred')}</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
@@ -220,11 +202,9 @@ export const MassActionsEditFieldsModal: React.FC<
                       <MenuItem value={''}>
                         <em>{t("Don't change")}</em>
                       </MenuItem>
-                      {Object.entries(NoAppealsMap).map(([key, val]) => (
-                        <MenuItem key={key} value={String(val)}>
-                          {t(key) /* manually added to translation file */}
-                        </MenuItem>
-                      ))}
+                      {/* true means we do not want appeals */}
+                      <MenuItem value="true">{t('No')}</MenuItem>
+                      <MenuItem value="false">{t('Yes')}</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
@@ -272,11 +252,8 @@ export const MassActionsEditFieldsModal: React.FC<
                       <MenuItem value={''}>
                         <em>{t("Don't change")}</em>
                       </MenuItem>
-                      {Object.entries(PledgeReceivedMap).map(([key, val]) => (
-                        <MenuItem key={key} value={String(val)}>
-                          {t(key) /* manually added to translation file */}
-                        </MenuItem>
-                      ))}
+                      <MenuItem value="true">{t('Yes')}</MenuItem>
+                      <MenuItem value="false">{t('No')}</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
@@ -309,11 +286,7 @@ export const MassActionsEditFieldsModal: React.FC<
                       {!loadingConstants &&
                         constants?.constant?.languages?.map((val) => (
                           <MenuItem key={val.id} value={val.id || ''}>
-                            {
-                              t(
-                                val.value || '',
-                              ) /* manually added to translation file */
-                            }
+                            {val.value}
                           </MenuItem>
                         ))}
                     </Select>

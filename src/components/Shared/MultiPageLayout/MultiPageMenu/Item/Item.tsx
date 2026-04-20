@@ -2,7 +2,6 @@ import NextLink from 'next/link';
 import React, { useMemo, useState } from 'react';
 import ArrowForwardIos from '@mui/icons-material/ArrowForwardIos';
 import { Collapse, Link, ListItemButton, ListItemText } from '@mui/material';
-import { useTranslation } from 'react-i18next';
 import { OauthLink } from 'src/components/OauthLink/OauthLink';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { NavItems } from 'src/hooks/useSettingsNavItems';
@@ -18,7 +17,6 @@ interface Props {
 export const Item: React.FC<Props> = ({ item, selectedId, navType }) => {
   const accountListId = useAccountListId();
   const [openSubMenu, setOpenSubMenu] = useState(false);
-  const { t } = useTranslation();
 
   const isSelected = useMemo(() => {
     if (item.id === selectedId) {
@@ -47,8 +45,8 @@ export const Item: React.FC<Props> = ({ item, selectedId, navType }) => {
           variant: 'subtitle1',
           color: 'textPrimary',
         }}
-        primary={t(item.title)}
-        secondary={item.subTitle ? t(item.subTitle) : undefined}
+        primary={item.title}
+        secondary={item.subTitle}
       />
       <ArrowForwardIos
         fontSize="small"

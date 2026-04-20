@@ -42,11 +42,11 @@ export const AboutForm: React.FC<AboutFormProps> = ({
     : null;
 
   const after = boardDateFormatted
-    ? t(`after ${boardDateFormatted}`)
+    ? t('after {{boardDateFormatted}}', { boardDateFormatted })
     : t('unknown at this time');
 
   const approval = availableDateFormatted
-    ? t(` on ${availableDateFormatted}.`)
+    ? t(' on {{availableDateFormatted}}.', { availableDateFormatted })
     : '.';
 
   const salaryLink = `/accountLists/${accountListId}/hrTools/salaryCalculator`;
