@@ -10,8 +10,8 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat } from 'src/lib/intlFormat';
+import { getLocalizedReminderStatus } from 'src/utils/functions/getLocalizedReminderStatus';
 import { StyledTableRow } from '../../styledComponents';
-import { getReminderStatus } from '../Helper/getReminderStatus';
 import { ReminderData } from '../mockData';
 
 interface PrintTableProps {
@@ -60,12 +60,14 @@ export const PrintTable: React.FC<PrintTableProps> = ({ data, error }) => {
                     {row.partner}
                   </Typography>
                   <Typography sx={{ fontSize: '14px' }}>
-                    {row.partnerId ? t(`${row.partnerId}`) : t('(N/A)')}
+                    {row.partnerId || t('(N/A)')}
                   </Typography>
                 </TableCell>
                 <TableCell>{dateFormat(row.lastGift, locale)}</TableCell>
                 <TableCell>{dateFormat(row.lastReminder, locale)}</TableCell>
-                <TableCell>{t(getReminderStatus(row.status))}</TableCell>
+                <TableCell>
+                  {getLocalizedReminderStatus(t, row.status)}
+                </TableCell>
               </StyledTableRow>
             ))
           )}
