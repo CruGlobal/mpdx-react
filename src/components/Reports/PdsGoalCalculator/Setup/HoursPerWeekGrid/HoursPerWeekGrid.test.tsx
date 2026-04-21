@@ -119,9 +119,32 @@ describe('HoursPerWeekGrid', () => {
     expect(queryByText('Apply to Hours Worked')).not.toBeInTheDocument();
   });
 
-  it('calls onApply with the rounded average when Apply button is clicked', async () => {
+  it('shows warning and disables Apply when weeks do not add up to 52', async () => {
     const onApply = jest.fn();
-    const { findByText, getByText, getByDisplayValue } = render(
+    const { findByText, getByText, getByRole } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={defaultCalculationMock}
+        onCall={mutationSpy}
+      >
+        <HoursPerWeekGrid onApply={onApply} />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    await waitForDataToLoad();
+    await findByText('Regular Week');
+
+    // Default entries have 48 weeks total, 4 remaining
+    expect(
+      getByText(/Weeks must add up to 52. 4 week\(s\) remaining./),
+    ).toBeInTheDocument();
+
+    const applyButton = getByRole('button', { name: 'Apply to Hours Worked' });
+    expect(applyButton).toBeDisabled();
+  });
+
+  it('enables Apply when weeks add up to 52', async () => {
+    const onApply = jest.fn();
+    const { findByText, getByDisplayValue, getByRole, queryByRole } = render(
       <PdsGoalCalculatorTestWrapper
         calculationMock={defaultCalculationMock}
         onCall={mutationSpy}
@@ -132,32 +155,30 @@ describe('HoursPerWeekGrid', () => {
 
     await waitForDataToLoad();
 
-    // Edit Regular Week hours from 40 to 20
-    const regularRow = (await findByText('Regular Week')).closest(
-      '[role="row"]',
-    );
-    const hoursCell = regularRow?.querySelector('[data-field="hoursPerWeek"]');
-    userEvent.dblClick(hoursCell!);
+    // Edit Travel weeks from 0 to 4 (48 + 4 = 52)
+    const travelRow = (await findByText('Travel')).closest('[role="row"]');
+    const weeksCell = travelRow?.querySelector('[data-field="weeks"]');
+    userEvent.dblClick(weeksCell!);
 
     await waitFor(() => {
-      const input = getByDisplayValue('40');
+      const input = getByDisplayValue('0');
       userEvent.clear(input);
-      userEvent.type(input, '20');
+      userEvent.type(input, '4');
     });
     userEvent.tab();
 
-    // Average = 20 * 48 / 48 = 20.0
+    // Warning should disappear and Apply should be enabled
     await waitFor(() => {
-      expect(getByText('20.0')).toBeInTheDocument();
+      expect(
+        queryByRole('alert'),
+      ).not.toBeInTheDocument();
     });
 
-    // onApply should not have been called yet
-    expect(onApply).not.toHaveBeenCalled();
+    const applyButton = getByRole('button', { name: 'Apply to Hours Worked' });
+    expect(applyButton).not.toBeDisabled();
 
-    // Click the Apply button
-    userEvent.click(getByText('Apply to Hours Worked'));
-
-    expect(onApply).toHaveBeenCalledWith(20);
+    userEvent.click(applyButton);
+    expect(onApply).toHaveBeenCalled();
   });
 
   it('shows delete button only for custom entries on hover', async () => {

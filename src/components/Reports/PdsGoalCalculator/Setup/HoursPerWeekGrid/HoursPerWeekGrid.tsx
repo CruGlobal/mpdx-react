@@ -1,7 +1,15 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Box, Button, Card, Divider, Typography, styled } from '@mui/material';
+import {
+  Alert,
+  Box,
+  Button,
+  Card,
+  Divider,
+  Typography,
+  styled,
+} from '@mui/material';
 import {
   GridActionsCellItem,
   GridColDef,
@@ -111,6 +119,8 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
     () => (totalWeeks > 0 ? totalHours / totalWeeks : 0),
     [totalHours, totalWeeks],
   );
+
+  const weeksRemaining = MAX_TOTAL_WEEKS - totalWeeks;
 
   const saveHoursItem = useCallback(
     async (entry: HoursPerWeekEntry, currentEntries: HoursPerWeekEntry[]) => {
@@ -358,7 +368,7 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
     <Box>
       <Typography variant="h6">{t('Hours Per Week Calculator')}</Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        {t('Weeks are limited to 52 total to reflect a full calendar year.')}
+        {t('Weeks must add up to 52 to reflect a full calendar year.')}
       </Typography>
 
       <StyledCard>
@@ -411,10 +421,20 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
         </FooterRow>
       </StyledCard>
 
+      {weeksRemaining > 0 && (
+        <Alert severity="warning" sx={{ mt: 1 }}>
+          {t('Weeks must add up to {{max}}. {{remaining}} week(s) remaining.', {
+            max: MAX_TOTAL_WEEKS,
+            remaining: weeksRemaining,
+          })}
+        </Alert>
+      )}
+
       {onApply && (
         <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
           <Button
             variant="contained"
+            disabled={weeksRemaining > 0}
             onClick={() =>
               onApply(Math.round(averageHoursPerWeek * 10) / 10)
             }
