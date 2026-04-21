@@ -146,7 +146,7 @@ export const ProfileMenuPanel: React.FC = () => {
                 LinkComponent={NextLink}
                 href={href?.toString() ?? ''}
               >
-                <Title>{t(title)}</Title>
+                <Title>{title}</Title>
               </StyledButton>
             </LeafListItem>
           ))}

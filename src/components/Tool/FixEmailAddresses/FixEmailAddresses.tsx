@@ -240,17 +240,24 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
       },
       onCompleted: () => {
         enqueueSnackbar(
-          t(`Successfully updated email addresses for ${personName}`),
+          t('Successfully updated email addresses for {{personName}}', {
+            personName,
+          }),
           {
             variant: 'success',
           },
         );
       },
       onError: () => {
-        enqueueSnackbar(t(`Error updating email addresses for ${personName}`), {
-          variant: 'error',
-          autoHideDuration: 7000,
-        });
+        enqueueSnackbar(
+          t('Error updating email addresses for {{personName}}', {
+            personName,
+          }),
+          {
+            variant: 'error',
+            autoHideDuration: 7000,
+          },
+        );
       },
     });
   };
@@ -273,12 +280,12 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
           cache.gc();
         },
         onCompleted: () => {
-          enqueueSnackbar(t(`Successfully updated email addresses`), {
+          enqueueSnackbar(t('Successfully updated email addresses'), {
             variant: 'success',
           });
         },
         onError: () => {
-          enqueueSnackbar(t(`Error updating email addresses`), {
+          enqueueSnackbar(t('Error updating email addresses'), {
             variant: 'error',
             autoHideDuration: 7000,
           });
@@ -286,7 +293,7 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
       });
     } else {
       enqueueSnackbar(
-        t(`No {{source}} primary email address exists to update`, {
+        t('No {{source}} primary email address exists to update', {
           source: sourceToStr(t, defaultSource),
         }),
         {
@@ -414,12 +421,10 @@ export const FixEmailAddresses: React.FC<FixEmailAddressesProps> = ({
         handleClose={() => setShowBulkConfirmModal(false)}
         mutation={handleBulkConfirm}
         title={t('Confirm')}
-        message={t(`You are updating all contacts visible on this page, setting the first ${sourceToStr(
-          t,
-          defaultSource,
-        )} email address as the
-          primary email address. If no such email address exists the contact will not be updated.
-          Are you sure you want to do this?`)}
+        message={t(
+          'You are updating all contacts visible on this page, setting the first {{source}} email address as the primary email address. If no such email address exists the contact will not be updated. Are you sure you want to do this?',
+          { source: sourceToStr(t, defaultSource) },
+        )}
       />
     </Container>
   );

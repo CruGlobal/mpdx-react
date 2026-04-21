@@ -73,7 +73,7 @@ export const ExpectedMonthlyTotalReportTable: React.FC<Props> = ({
           }}
           onClick={() => setVisible((v) => !v)}
         >
-          <Typography>{t(title)}</Typography>
+          <Typography>{title}</Typography>
           <Typography
             style={{ fontSize: 12, margin: 4 }}
             data-testid="totalPartners"

@@ -47,7 +47,7 @@ export const Receipt: React.FC<ReceiptProps> = ({
     : null;
 
   const approval = available
-    ? t(`approval effective ${available}`)
+    ? t('approval effective {{available}}', { available })
     : t('approval soon');
 
   const handlePrint = async () => {
@@ -69,15 +69,19 @@ export const Receipt: React.FC<ReceiptProps> = ({
     <Box>
       <Typography variant="h5" sx={{ mb: 3 }}>
         {isEdit
-          ? t(`Thank you for updating your ${formTitle}!`)
-          : t(`Thank you for Submitting your ${formTitle}!`)}
+          ? t('Thank you for updating your {{formTitle}}!', { formTitle })
+          : t('Thank you for Submitting your {{formTitle}}!', { formTitle })}
       </Typography>
       <Alert severity="success">
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
           <Typography sx={{ fontWeight: 'bold' }}>
             {isEdit
-              ? t(`You've successfully updated your ${formTitle}!`)
-              : t(`You've successfully submitted your ${formTitle}!`)}
+              ? t("You've successfully updated your {{formTitle}}!", {
+                  formTitle,
+                })
+              : t("You've successfully submitted your {{formTitle}}!", {
+                  formTitle,
+                })}
           </Typography>
           <Typography>
             {alertText
@@ -110,7 +114,9 @@ export const Receipt: React.FC<ReceiptProps> = ({
             onClick={handlePrint}
             sx={{ cursor: 'pointer' }}
           >
-            {t(`View or print a copy of your submitted ${formTitle}`)}
+            {t('View or print a copy of your submitted {{formTitle}}', {
+              formTitle,
+            })}
           </Link>
         </Box>
       </Box>

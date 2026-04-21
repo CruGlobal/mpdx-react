@@ -4,13 +4,13 @@ import { useFormikContext } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
-import { fieldConfig } from '../Shared/useAdditionalSalaryRequestForm';
 
 export const ValidationAlert: React.FC = () => {
   const { t } = useTranslation();
   const { submitCount, values, errors } =
     useFormikContext<CompleteFormValues>();
-  const { salaryInfo, isInternational } = useAdditionalSalaryRequest();
+  const { salaryInfo, isInternational, fieldConfig } =
+    useAdditionalSalaryRequest();
 
   const exceedingLimitFields = useMemo(() => {
     if (!submitCount || !salaryInfo) {
@@ -32,8 +32,8 @@ export const ValidationAlert: React.FC = () => {
         );
         return !isNaN(value) && value > max;
       })
-      .map(({ label }) => t(label));
-  }, [submitCount, salaryInfo, isInternational, values, t]);
+      .map(({ label }) => label);
+  }, [submitCount, salaryInfo, isInternational, values, fieldConfig]);
 
   const hasRequiredErrors = Object.keys(errors).some((key) =>
     [

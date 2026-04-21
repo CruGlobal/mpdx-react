@@ -181,8 +181,8 @@ const CsvPreview: React.FC<CsvPreviewProps> = ({
         <Box sx={{ padding: '10px 15px' }}>
           <Typography variant="body1">
             {t(
-              `Please take a look at these sample rows that show how your CSV will import into ${appName}. If you would like to` +
-                ' make changes, go back to Step 2 or back to Step 1 to reimport all over again.',
+              'Please take a look at these sample rows that show how your CSV will import into {{appName}}. If you would like to make changes, go back to Step 2 or back to Step 1 to reimport all over again.',
+              { appName },
             )}
           </Typography>
         </Box>

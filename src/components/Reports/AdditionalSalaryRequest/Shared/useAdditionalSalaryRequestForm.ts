@@ -16,58 +16,9 @@ import {
   useSubmitAdditionalSalaryRequestMutation,
   useUpdateAdditionalSalaryRequestMutation,
 } from '../AdditionalSalaryRequest.generated';
-import { SalaryInfoQuery } from '../SalaryInfo.generated';
 import { useAdditionalSalaryRequest } from './AdditionalSalaryRequestContext';
 import { getTotal } from './Helper/getTotal';
 import { useFormUserInfo } from './useFormUserInfo';
-
-type SalaryInfo = NonNullable<SalaryInfoQuery['salaryInfo']>;
-
-// Field configuration: combines keys, labels, and optional salaryInfo key pairs for dynamic max values
-export const fieldConfig: Array<{
-  key: string;
-  label: string;
-  salaryInfoIntKey?: keyof SalaryInfo;
-  salaryInfoUssKey?: keyof SalaryInfo;
-}> = [
-  { key: 'currentYearSalaryNotReceived', label: "Current Year's Salary" },
-  { key: 'previousYearSalaryNotReceived', label: "Previous Year's Salary" },
-  { key: 'additionalSalaryWithinMax', label: 'Additional Salary' },
-  {
-    key: 'adoption',
-    label: 'Adoption',
-    salaryInfoIntKey: 'maxAdoptionInt',
-    salaryInfoUssKey: 'maxAdoptionUss',
-  },
-  { key: 'counselingNonMedical', label: 'Counseling' },
-  { key: 'healthcareExpensesExceedingLimit', label: 'Healthcare Expenses' },
-  { key: 'babysittingMinistryEvents', label: 'Babysitting' },
-  { key: 'childrenMinistryTripExpenses', label: "Children's Ministry Trip" },
-  {
-    key: 'childrenCollegeEducation',
-    label: "Children's College",
-    salaryInfoIntKey: 'maxCollegeInt',
-    salaryInfoUssKey: 'maxCollegeUss',
-  },
-  { key: 'movingExpense', label: 'Moving Expense' },
-  { key: 'seminary', label: 'Seminary' },
-  {
-    key: 'housingDownPayment',
-    label: 'Housing Down Payment',
-    salaryInfoIntKey: 'maxHousingDownPaymentInt',
-    salaryInfoUssKey: 'maxHousingDownPaymentUss',
-  },
-  {
-    key: 'autoPurchase',
-    label: 'Auto Purchase',
-    salaryInfoIntKey: 'maxAutoPurchaseInt',
-    salaryInfoUssKey: 'maxAutoPurchaseUss',
-  },
-  {
-    key: 'expensesNotApprovedWithin90Days',
-    label: 'Reimbursable Expenses',
-  },
-];
 
 export const useAdditionalSalaryRequestForm = (
   providedInitialValues?: CompleteFormValues,
@@ -82,6 +33,7 @@ export const useAdditionalSalaryRequestForm = (
     requestId,
     isSpouse,
     hasBoardCapException,
+    fieldConfig,
   } = useAdditionalSalaryRequest();
 
   const { primaryAccountBalance } = useFormUserInfo();
@@ -178,7 +130,7 @@ export const useAdditionalSalaryRequestForm = (
         ...Object.fromEntries(
           fieldConfig.map((field) => [
             field.key,
-            createCurrencyValidation(t(field.label), getMaxForField(field)),
+            createCurrencyValidation(field.label, getMaxForField(field)),
           ]),
         ),
         phoneNumber: phoneNumber(i18n.t).required(
@@ -234,6 +186,8 @@ export const useAdditionalSalaryRequestForm = (
       }),
     [
       createCurrencyValidation,
+      fieldConfig,
+      getMaxForField,
       t,
       primaryAccountBalance,
       individualCap,

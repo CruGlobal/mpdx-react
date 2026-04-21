@@ -135,10 +135,8 @@ jobs:
       - name: 🔍 Check Yarn Cache
         run: yarn install --immutable --immutable-cache --check-cache
 
-  crowdin-upload:
+  translations:
     runs-on: ubuntu-latest
-    needs: [test, eslint, typescript, prettier]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -152,6 +150,8 @@ jobs:
         run: yarn extract
       - name: 🔤🔼 CrowdIn Translations Upload
         uses: crowdin/github-action@v2
+        # Always run `yarn extract` to verify labels but only push translations to CrowdIn when PRs merge
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         with:
           upload_sources: true
           upload_translations: false

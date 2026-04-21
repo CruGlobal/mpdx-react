@@ -1,15 +1,6 @@
 import { DateTime } from 'luxon';
 import { MinistryPartnerReminderFrequencyEnum } from 'src/graphql/types.generated';
 
-export enum ReminderStatusEnum {
-  NotReminded = 'Not Reminded',
-  DoNotRemind = 'Do Not Remind',
-  Monthly = 'Monthly',
-  BiMonthly = 'Bi-Monthly',
-  Quarterly = 'Quarterly',
-  SemiAnnual = 'Semi-Annually',
-  Annual = 'Annually',
-}
 export interface ReminderData {
   id: string;
   partner: string;

@@ -202,7 +202,9 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
       },
       onCompleted: () => {
         enqueueSnackbar(
-          t(`Successfully deleted email address ${email.email}`),
+          t('Successfully deleted email address {{email}}', {
+            email: email.email,
+          }),
           {
             variant: 'success',
           },
@@ -210,9 +212,12 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
         handleDeleteEmailModalClose();
       },
       onError: () => {
-        enqueueSnackbar(t(`Error deleting email address ${email.email}`), {
-          variant: 'error',
-        });
+        enqueueSnackbar(
+          t('Error deleting email address {{email}}', { email: email.email }),
+          {
+            variant: 'error',
+          },
+        );
       },
     });
   };

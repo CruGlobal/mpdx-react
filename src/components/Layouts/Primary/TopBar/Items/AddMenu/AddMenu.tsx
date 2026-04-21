@@ -165,8 +165,6 @@ const AddMenuPanel = ({
 }: {
   addMenuContent: AddMenuItem[];
 }): ReactElement => {
-  const { t } = useTranslation();
-
   return (
     <Box display="flex" flexDirection="column" justifyContent="center">
       {addMenuContent.map(({ text, icon, onClick, onMouseEnter }, index) => (
@@ -177,7 +175,7 @@ const AddMenuPanel = ({
           onMouseEnter={onMouseEnter}
         >
           {icon}
-          <MenuItemText primary={t(`${text}`)} />
+          <MenuItemText primary={text} />
         </RowContainer>
       ))}
     </Box>
@@ -193,7 +191,7 @@ const AddMenu = ({ isInDrawer = false }: AddMenuProps): ReactElement => {
 
   const addMenuContent = [
     {
-      text: 'Add Contact',
+      text: t('Add Contact'),
       icon: <PersonIcon />,
       onClick: () => {
         changeSelectedMenuItem(AddMenuItemsEnum.NewContact);
@@ -203,7 +201,7 @@ const AddMenu = ({ isInDrawer = false }: AddMenuProps): ReactElement => {
       onMouseEnter: preloadCreateContact,
     },
     {
-      text: 'Add Multiple Contacts',
+      text: t('Add Multiple Contacts'),
       icon: <PeopleIcon />,
       onClick: () => {
         changeSelectedMenuItem(AddMenuItemsEnum.MultipleContacts);
@@ -213,7 +211,7 @@ const AddMenu = ({ isInDrawer = false }: AddMenuProps): ReactElement => {
       onMouseEnter: preloadCreateMultipleContacts,
     },
     {
-      text: 'Add Donation',
+      text: t('Add Donation'),
       icon: <CardGiftcardIcon />,
       onClick: () => {
         changeSelectedMenuItem(AddMenuItemsEnum.AddDonation);
@@ -223,7 +221,7 @@ const AddMenu = ({ isInDrawer = false }: AddMenuProps): ReactElement => {
       onMouseEnter: preloadAddDonation,
     },
     {
-      text: 'Add Task',
+      text: t('Add Task'),
       icon: <ListIcon />,
       onClick: () => {
         openTaskModal({ view: TaskModalEnum.Add });
@@ -232,7 +230,7 @@ const AddMenu = ({ isInDrawer = false }: AddMenuProps): ReactElement => {
       onMouseEnter: () => preloadTaskModal(TaskModalEnum.Add),
     },
     {
-      text: 'Log Task',
+      text: t('Log Task'),
       icon: <EditIcon />,
       onClick: () => {
         openTaskModal({ view: TaskModalEnum.Log });

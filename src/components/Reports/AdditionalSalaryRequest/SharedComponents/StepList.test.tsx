@@ -1,13 +1,17 @@
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ElectionType403bEnum } from 'src/graphql/types.generated';
+import i18n from 'src/lib/i18n';
 import { PageEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
 import { AdditionalSalaryRequestTestWrapper } from '../AdditionalSalaryRequestTestWrapper';
 import { EditForm } from '../FormVersions/Edit/EditForm';
 import { NewForm } from '../FormVersions/New/NewForm';
-import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
+import {
+  getFieldConfig,
+  useAdditionalSalaryRequest,
+} from '../Shared/AdditionalSalaryRequestContext';
 import { StepList } from './StepList';
 
 jest.mock('../Shared/AdditionalSalaryRequestContext', () => ({
@@ -77,6 +81,7 @@ const mockContextValue = {
   hasBoardCapException: false,
   isPending: false,
   isApproved: false,
+  fieldConfig: getFieldConfig(i18n.t),
 };
 
 describe('StepList', () => {

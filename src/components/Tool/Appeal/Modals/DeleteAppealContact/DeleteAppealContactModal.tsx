@@ -80,11 +80,13 @@ export const DeleteAppealContactModal: React.FC<
           </Box>
         ) : (
           <DialogContentText component="div">
-            {t(
-              viewMode === TableViewModeEnum.Flows
-                ? 'You cannot exclude a contact from this appeal. Would you like to remove them from this appeal instead?'
-                : 'Are you sure you wish to remove this contact from the appeal?',
-            )}
+            {viewMode === TableViewModeEnum.Flows
+              ? t(
+                  'You cannot exclude a contact from this appeal. Would you like to remove them from this appeal instead?',
+                )
+              : t(
+                  'Are you sure you wish to remove this contact from the appeal?',
+                )}
           </DialogContentText>
         )}
       </DialogContent>

@@ -146,9 +146,7 @@ const CsvValues: React.FC<CsvValuesProps> = ({
                       <TableHead>
                         <TableRow>
                           <TableCell>{fileHeader(constantKey)}</TableCell>
-                          <TableCell>
-                            {t(supportedHeaders[constantKey])}
-                          </TableCell>
+                          <TableCell>{supportedHeaders[constantKey]}</TableCell>
                         </TableRow>
                       </TableHead>
 
@@ -195,7 +193,7 @@ const CsvValues: React.FC<CsvValuesProps> = ({
                                             value={constantValues.value}
                                             aria-label={constantValues.id}
                                           >
-                                            {t(constantValues.value)}
+                                            {constantValues.value}
                                           </MenuItem>
                                         );
                                       }
@@ -206,7 +204,7 @@ const CsvValues: React.FC<CsvValuesProps> = ({
                                             value={constantValues.id.toLowerCase()}
                                             aria-label={constantValues.id}
                                           >
-                                            {t(constantValues.value)}
+                                            {constantValues.value}
                                           </MenuItem>
                                         );
                                       }
@@ -217,7 +215,7 @@ const CsvValues: React.FC<CsvValuesProps> = ({
                                             value={constantValues.id}
                                             aria-label={constantValues.id}
                                           >
-                                            {t(constantValues.value)}
+                                            {constantValues.value}
                                           </MenuItem>
                                         );
                                       } else if (constantValues.code) {
@@ -227,7 +225,7 @@ const CsvValues: React.FC<CsvValuesProps> = ({
                                             value={constantValues.code}
                                             aria-label={constantValues.code}
                                           >
-                                            {t(constantValues.codeSymbolString)}
+                                            {constantValues.codeSymbolString}
                                           </MenuItem>
                                         );
                                       }

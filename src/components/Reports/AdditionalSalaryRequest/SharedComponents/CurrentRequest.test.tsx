@@ -2,10 +2,14 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
 import { AsrStatusEnum } from 'src/graphql/types.generated';
+import i18n from 'src/lib/i18n';
 import { AdditionalSalaryRequestQuery } from '../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
 import { AdditionalSalaryRequestTestWrapper } from '../AdditionalSalaryRequestTestWrapper';
-import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
+import {
+  getFieldConfig,
+  useAdditionalSalaryRequest,
+} from '../Shared/AdditionalSalaryRequestContext';
 import { CurrentRequest } from './CurrentRequest';
 
 type RequestType = NonNullable<
@@ -106,6 +110,7 @@ const mockContextValue = {
   hasBoardCapException: false,
   isPending: true,
   isApproved: false,
+  fieldConfig: getFieldConfig(i18n.t),
 };
 
 const TestComponent: React.FC<{ request: RequestType }> = ({ request }) => (

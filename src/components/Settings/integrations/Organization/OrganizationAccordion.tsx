@@ -362,7 +362,8 @@ export const OrganizationAccordion: React.FC<AccordionProps> = ({
           isOpen={true}
           title={t('Confirm')}
           message={t(
-            `Are you sure you wish to disconnect the organization "${deleteOrganizationModal.organization.name}"?`,
+            'Are you sure you wish to disconnect the organization "{{organizationName}}"?',
+            { organizationName: deleteOrganizationModal.organization.name },
           )}
           handleClose={() => setDeleteOrganizationModal(null)}
           mutation={() => handleDelete(deleteOrganizationModal.id)}

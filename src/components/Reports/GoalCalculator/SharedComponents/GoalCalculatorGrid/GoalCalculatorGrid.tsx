@@ -556,7 +556,7 @@ export const GoalCalculatorGrid: React.FC<GoalCalculatorGridProps> = ({
         getPrimaryCategoryRightPanel(category.category) ?? undefined
       }
     >
-      {promptText && <Typography sx={{ mb: 2 }}>{t(promptText)}</Typography>}
+      {promptText && <Typography sx={{ mb: 2 }}>{promptText}</Typography>}
 
       <StyledCard>
         {directInput ? (

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Alert } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useTranslation } from 'react-i18next';
 
 interface AlertBannerProps {
   text: string;
@@ -29,7 +28,6 @@ export const AlertBanner: React.FC<AlertBannerProps> = ({
   severity = 'warning',
   localStorageName,
 }) => {
-  const { t } = useTranslation();
   const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
@@ -51,7 +49,7 @@ export const AlertBanner: React.FC<AlertBannerProps> = ({
 
   return showAlert ? (
     <AlertBox onClose={() => closeAlert()} severity={severity}>
-      {t(text)}
+      {text}
     </AlertBox>
   ) : null;
 };

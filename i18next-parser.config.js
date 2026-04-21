@@ -10,6 +10,7 @@ module.exports = {
   locales: ['en'],
   output: 'public/locales/$LOCALE/$NAMESPACE.json',
   input: ['src/**/*.{js,jsx,ts,tsx}', 'pages/**/*.{jsx,tsx}'],
+  failOnWarnings: true,
   verbose: true,
   sort: true,
   namespaceSeparator: false,

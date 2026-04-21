@@ -30,7 +30,7 @@ export const EmptyDonationsTable: React.FC<Props> = ({ title }) => {
   return (
     <EmptyTableWrapper boxShadow={3}>
       <StyledLocalAtmIcon fontSize="large" />
-      <Typography variant="h5">{t(title)}</Typography>
+      <Typography variant="h5">{title}</Typography>
       <Typography>
         {t(
           'You can setup an organization account to import historic donations or add a new donation.',

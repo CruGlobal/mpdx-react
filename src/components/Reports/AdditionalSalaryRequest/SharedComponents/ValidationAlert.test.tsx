@@ -8,9 +8,11 @@ import i18n from 'src/lib/i18n';
 import { amount, phoneNumber } from 'src/lib/yupHelpers';
 import theme from 'src/theme';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
-import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
+import {
+  getFieldConfig,
+  useAdditionalSalaryRequest,
+} from '../Shared/AdditionalSalaryRequestContext';
 import { defaultCompleteFormValues } from '../Shared/CompleteForm.mock';
-import { fieldConfig } from '../Shared/useAdditionalSalaryRequestForm';
 import { ValidationAlert } from './ValidationAlert';
 
 jest.mock('../Shared/AdditionalSalaryRequestContext', () => {
@@ -42,7 +44,7 @@ const mockSalaryInfo = {
 const createValidationSchema = () =>
   yup.object({
     ...Object.fromEntries(
-      fieldConfig.map(({ key, label, salaryInfoUssKey }) => {
+      getFieldConfig(i18n.t).map(({ key, label, salaryInfoUssKey }) => {
         let schema = amount(label, (k: string) => k);
         const max = salaryInfoUssKey
           ? (mockSalaryInfo[salaryInfoUssKey as keyof typeof mockSalaryInfo] as
@@ -120,6 +122,7 @@ const renderComponent = ({
   mockUseAdditionalSalaryRequest.mockReturnValue({
     salaryInfo,
     isInternational,
+    fieldConfig: getFieldConfig(i18n.t),
   } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
 
   return render(

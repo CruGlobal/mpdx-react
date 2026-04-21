@@ -309,7 +309,7 @@ const CsvHeaders: React.FC<CsvHeadersProps> = ({
                             key !== fileHeadersMappings[header]
                           }
                         >
-                          {t(supportedHeaders[key])}
+                          {supportedHeaders[key]}
                         </MenuItem>
                       ))}
                     </Select>

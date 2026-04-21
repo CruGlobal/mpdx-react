@@ -31,11 +31,7 @@ export const AnnouncementModal: React.FC<AnnouncementModalProps> = ({
   };
 
   return (
-    <Modal
-      isOpen={true}
-      title={t(announcement.title)}
-      handleClose={handleClose}
-    >
+    <Modal isOpen={true} title={announcement.title} handleClose={handleClose}>
       <DialogContent dividers>
         {announcement.imageUrl && (
           <Box textAlign="center" mb={2}>

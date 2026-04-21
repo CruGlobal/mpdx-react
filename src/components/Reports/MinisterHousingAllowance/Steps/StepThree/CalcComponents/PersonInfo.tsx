@@ -22,7 +22,9 @@ export const PersonInfo: React.FC = () => {
         </Grid>
         <Grid item xs={12} sm={6}>
           <Typography>
-            {t(`Staff Account Number: ${person?.personNumber}`)}
+            {t('Staff Account Number: {{personNumber}}', {
+              personNumber: person?.personNumber,
+            })}
           </Typography>
         </Grid>
       </Grid>
@@ -37,7 +39,11 @@ export const PersonInfo: React.FC = () => {
           )}
         </Grid>
         <Grid item xs={12} sm={6}>
-          <Typography>{t(`Email: ${person?.emailAddress}`)}</Typography>
+          <Typography>
+            {t('Email: {{emailAddress}}', {
+              emailAddress: person?.emailAddress,
+            })}
+          </Typography>
         </Grid>
       </Grid>
       <Grid container spacing={2}>
@@ -48,7 +54,9 @@ export const PersonInfo: React.FC = () => {
         </Grid>
         <Grid item xs={12} sm={6}>
           <Typography>
-            {t(`Phone number: ${person?.primaryPhoneNumber}`)}
+            {t('Phone number: {{primaryPhoneNumber}}', {
+              primaryPhoneNumber: person?.primaryPhoneNumber,
+            })}
           </Typography>
         </Grid>
       </Grid>

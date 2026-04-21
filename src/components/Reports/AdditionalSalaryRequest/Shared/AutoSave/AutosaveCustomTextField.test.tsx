@@ -6,12 +6,14 @@ import { FormikProvider, useFormik } from 'formik';
 import * as yup from 'yup';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
+import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { UpdateAdditionalSalaryRequestMutation } from '../../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestSectionEnum } from '../../AdditionalSalaryRequestHelper';
 import {
   AdditionalSalaryRequestType,
+  getFieldConfig,
   useAdditionalSalaryRequest,
 } from '../AdditionalSalaryRequestContext';
 import { defaultCompleteFormValues } from '../CompleteForm.mock';
@@ -85,6 +87,7 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   hasBoardCapException: false,
   isPending: false,
   isApproved: false,
+  fieldConfig: getFieldConfig(i18n.t),
 };
 
 interface TestComponentProps {

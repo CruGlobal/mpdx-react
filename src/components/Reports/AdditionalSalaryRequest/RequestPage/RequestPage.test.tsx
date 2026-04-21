@@ -18,9 +18,11 @@ import theme from 'src/theme';
 import { PageEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
-import { useAdditionalSalaryRequest } from '../Shared/AdditionalSalaryRequestContext';
+import {
+  getFieldConfig,
+  useAdditionalSalaryRequest,
+} from '../Shared/AdditionalSalaryRequestContext';
 import { defaultCompleteFormValues } from '../Shared/CompleteForm.mock';
-import { fieldConfig } from '../Shared/useAdditionalSalaryRequestForm';
 import { RequestPage } from './RequestPage';
 
 jest.mock('../Shared/AdditionalSalaryRequestContext', () => {
@@ -104,6 +106,7 @@ const defaultMockContextValue = {
   isSpouse: false,
   hasSpouse: false,
   hasBoardCapException: false,
+  fieldConfig: getFieldConfig(i18n.t),
 };
 
 const router = {
@@ -114,7 +117,7 @@ const router = {
 
 const validationSchema = yup.object({
   ...Object.fromEntries(
-    fieldConfig.map(({ key, label }) => [
+    getFieldConfig(i18n.t).map(({ key, label }) => [
       key,
       amount(label, (key: string) => key),
     ]),

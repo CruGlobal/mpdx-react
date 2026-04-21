@@ -13,15 +13,13 @@ interface BulletListProps {
 }
 
 const BulletList: React.FC<BulletListProps> = ({ listItems }) => {
-  const { t } = useTranslation();
-
   return (
     <Box>
       <List sx={{ listStyleType: 'disc', pl: 4, mt: 0.5 }} disablePadding>
         {listItems.map((item, index) => (
           <StyledListItem key={index} sx={{ py: 0 }} disablePadding>
             <ListItemText
-              primary={t(item)}
+              primary={item}
               primaryTypographyProps={{ variant: 'body2' }}
               sx={{ my: 0 }}
             />
@@ -48,8 +46,10 @@ export const ExceedsCapAlertText: React.FC = () => {
       process.
       <BulletList
         listItems={[
-          'This can take up to -- days.',
-          'No additional salary can be requested while this request is pending.',
+          t('This can take up to -- days.'),
+          t(
+            'No additional salary can be requested while this request is pending.',
+          ),
         ]}
       />
     </Trans>
@@ -57,11 +57,14 @@ export const ExceedsCapAlertText: React.FC = () => {
 };
 
 export const EditAlertText: React.FC = () => {
+  const { t } = useTranslation();
   return (
     <BulletList
       listItems={[
-        'We will review your updated request.',
-        'No additional salary can be requested while this request is pending.',
+        t('We will review your updated request.'),
+        t(
+          'No additional salary can be requested while this request is pending.',
+        ),
       ]}
     />
   );
