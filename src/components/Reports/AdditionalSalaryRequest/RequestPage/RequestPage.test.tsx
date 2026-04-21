@@ -4,7 +4,6 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { FormikProvider, useFormik } from 'formik';
 import { SnackbarProvider } from 'notistack';
-import { I18nextProvider } from 'react-i18next';
 import * as yup from 'yup';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -164,15 +163,13 @@ interface TestWrapperProps {
 const TestWrapper: React.FC<TestWrapperProps> = ({ initialValues }) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
-      <I18nextProvider i18n={i18n}>
-        <TestRouter router={router}>
-          <GqlMockedProvider>
-            <TestFormikWrapper initialValues={initialValues}>
-              <RequestPage />
-            </TestFormikWrapper>
-          </GqlMockedProvider>
-        </TestRouter>
-      </I18nextProvider>
+      <TestRouter router={router}>
+        <GqlMockedProvider>
+          <TestFormikWrapper initialValues={initialValues}>
+            <RequestPage />
+          </TestFormikWrapper>
+        </GqlMockedProvider>
+      </TestRouter>
     </SnackbarProvider>
   </ThemeProvider>
 );
@@ -573,24 +570,22 @@ describe('RequestPage', () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <SnackbarProvider>
-          <I18nextProvider i18n={i18n}>
-            <TestRouter router={router}>
-              <GqlMockedProvider
-                mocks={{
-                  CreateAdditionalSalaryRequest: {
-                    createAdditionalSalaryRequest: {
-                      additionalSalaryRequest: { id: 'new-request-id' },
-                    },
+          <TestRouter router={router}>
+            <GqlMockedProvider
+              mocks={{
+                CreateAdditionalSalaryRequest: {
+                  createAdditionalSalaryRequest: {
+                    additionalSalaryRequest: { id: 'new-request-id' },
                   },
-                }}
-                onCall={mutationSpy}
-              >
-                <TestFormikWrapper>
-                  <RequestPage />
-                </TestFormikWrapper>
-              </GqlMockedProvider>
-            </TestRouter>
-          </I18nextProvider>
+                },
+              }}
+              onCall={mutationSpy}
+            >
+              <TestFormikWrapper>
+                <RequestPage />
+              </TestFormikWrapper>
+            </GqlMockedProvider>
+          </TestRouter>
         </SnackbarProvider>
       </ThemeProvider>,
     );
@@ -617,21 +612,19 @@ describe('RequestPage', () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <SnackbarProvider>
-          <I18nextProvider i18n={i18n}>
-            <TestRouter router={router}>
-              <GqlMockedProvider
-                mocks={{
-                  CreateAdditionalSalaryRequest: {
-                    createAdditionalSalaryRequest: null,
-                  },
-                }}
-              >
-                <TestFormikWrapper>
-                  <RequestPage />
-                </TestFormikWrapper>
-              </GqlMockedProvider>
-            </TestRouter>
-          </I18nextProvider>
+          <TestRouter router={router}>
+            <GqlMockedProvider
+              mocks={{
+                CreateAdditionalSalaryRequest: {
+                  createAdditionalSalaryRequest: null,
+                },
+              }}
+            >
+              <TestFormikWrapper>
+                <RequestPage />
+              </TestFormikWrapper>
+            </GqlMockedProvider>
+          </TestRouter>
         </SnackbarProvider>
       </ThemeProvider>,
     );
@@ -656,15 +649,13 @@ describe('RequestPage', () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
         <SnackbarProvider>
-          <I18nextProvider i18n={i18n}>
-            <TestRouter router={router}>
-              <GqlMockedProvider onCall={mutationSpy}>
-                <TestFormikWrapper>
-                  <RequestPage />
-                </TestFormikWrapper>
-              </GqlMockedProvider>
-            </TestRouter>
-          </I18nextProvider>
+          <TestRouter router={router}>
+            <GqlMockedProvider onCall={mutationSpy}>
+              <TestFormikWrapper>
+                <RequestPage />
+              </TestFormikWrapper>
+            </GqlMockedProvider>
+          </TestRouter>
         </SnackbarProvider>
       </ThemeProvider>,
     );

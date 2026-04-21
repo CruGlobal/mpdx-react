@@ -2,13 +2,11 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { ErgonoMockShape } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
-import { I18nextProvider } from 'react-i18next';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { mockInvalidEmailAddressesResponse } from 'src/components/Tool/FixEmailAddresses/FixEmailAddressesMocks';
 import { InvalidAddressesQuery } from 'src/components/Tool/FixMailingAddresses/GetInvalidAddresses.generated';
-import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import FixEmailAddressesPage from './[[...contactId]].page';
 
@@ -52,11 +50,9 @@ const Components = ({
             },
           }}
         >
-          <I18nextProvider i18n={i18n}>
-            <SnackbarProvider>
-              <FixEmailAddressesPage />
-            </SnackbarProvider>
-          </I18nextProvider>
+          <SnackbarProvider>
+            <FixEmailAddressesPage />
+          </SnackbarProvider>
         </GqlMockedProvider>
       </VirtuosoMockContext.Provider>
     </TestRouter>

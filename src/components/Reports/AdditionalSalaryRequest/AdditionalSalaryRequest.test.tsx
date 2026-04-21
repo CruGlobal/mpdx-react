@@ -2,11 +2,9 @@ import React from 'react';
 import { ThemeProvider } from '@emotion/react';
 import { render } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
-import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { AsrStatusEnum } from 'src/graphql/types.generated';
-import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { AdditionalSalaryRequest } from './AdditionalSalaryRequest';
 import { AdditionalSalaryRequestQuery } from './AdditionalSalaryRequest.generated';
@@ -97,21 +95,19 @@ const TestWrapper: React.FC<TestWrapperProps> = ({
   return (
     <ThemeProvider theme={theme}>
       <SnackbarProvider>
-        <I18nextProvider i18n={i18n}>
-          <TestRouter
-            router={{
-              query: {
-                accountListId,
-              },
-            }}
-          >
-            <GqlMockedProvider mocks={defaultMocks} onCall={onCall}>
-              <AdditionalSalaryRequestProvider>
-                <AdditionalSalaryRequest />
-              </AdditionalSalaryRequestProvider>
-            </GqlMockedProvider>
-          </TestRouter>
-        </I18nextProvider>
+        <TestRouter
+          router={{
+            query: {
+              accountListId,
+            },
+          }}
+        >
+          <GqlMockedProvider mocks={defaultMocks} onCall={onCall}>
+            <AdditionalSalaryRequestProvider>
+              <AdditionalSalaryRequest />
+            </AdditionalSalaryRequestProvider>
+          </GqlMockedProvider>
+        </TestRouter>
       </SnackbarProvider>
     </ThemeProvider>
   );

@@ -2,11 +2,9 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { StatusEnum } from 'src/graphql/types.generated';
-import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import SearchMenu from './SearchMenu';
 import { GetSearchMenuContactsQuery } from './SearchMenu.generated';
@@ -52,52 +50,50 @@ describe('SearchMenu', () => {
 
   it('handles searching', async () => {
     const { getByRole, getByPlaceholderText, getByText } = render(
-      <I18nextProvider i18n={i18n}>
-        <GqlMockedProvider<{
-          GetSearchMenuContacts: GetSearchMenuContactsQuery;
-        }>
-          mocks={{
-            GetSearchMenuContacts: {
-              contacts: {
-                nodes: [
-                  {
-                    name: 'Cool, Guy',
-                    status: StatusEnum.AskInFuture,
-                    id: '123',
-                  },
-                  {
-                    name: 'Cool, Dude',
-                    status: StatusEnum.CallForDecision,
-                    id: '1234',
-                  },
-                  {
-                    name: 'Cool, One',
-                    status: StatusEnum.CallForDecision,
-                    id: '12341',
-                  },
-                  {
-                    name: 'Cool, Two',
-                    status: StatusEnum.CallForDecision,
-                    id: '12342',
-                  },
-                  {
-                    name: 'Cool, Three',
-                    status: StatusEnum.CallForDecision,
-                    id: '12343',
-                  },
-                ],
-                totalCount: 8,
-              },
+      <GqlMockedProvider<{
+        GetSearchMenuContacts: GetSearchMenuContactsQuery;
+      }>
+        mocks={{
+          GetSearchMenuContacts: {
+            contacts: {
+              nodes: [
+                {
+                  name: 'Cool, Guy',
+                  status: StatusEnum.AskInFuture,
+                  id: '123',
+                },
+                {
+                  name: 'Cool, Dude',
+                  status: StatusEnum.CallForDecision,
+                  id: '1234',
+                },
+                {
+                  name: 'Cool, One',
+                  status: StatusEnum.CallForDecision,
+                  id: '12341',
+                },
+                {
+                  name: 'Cool, Two',
+                  status: StatusEnum.CallForDecision,
+                  id: '12342',
+                },
+                {
+                  name: 'Cool, Three',
+                  status: StatusEnum.CallForDecision,
+                  id: '12343',
+                },
+              ],
+              totalCount: 8,
             },
-          }}
-        >
-          <ThemeProvider theme={theme}>
-            <TestRouter router={router}>
-              <SearchMenu />
-            </TestRouter>
-          </ThemeProvider>
-        </GqlMockedProvider>
-      </I18nextProvider>,
+          },
+        }}
+      >
+        <ThemeProvider theme={theme}>
+          <TestRouter router={router}>
+            <SearchMenu />
+          </TestRouter>
+        </ThemeProvider>
+      </GqlMockedProvider>,
     );
 
     userEvent.click(getByRole('button'));
@@ -119,36 +115,34 @@ describe('SearchMenu', () => {
 
   it('handles clicking search result', async () => {
     const { getByRole, getByPlaceholderText, getByText } = render(
-      <I18nextProvider i18n={i18n}>
-        <GqlMockedProvider<{
-          GetSearchMenuContacts: GetSearchMenuContactsQuery;
-        }>
-          mocks={{
-            GetSearchMenuContacts: {
-              contacts: {
-                nodes: [
-                  {
-                    name: 'Cool, Guy',
-                    status: StatusEnum.AskInFuture,
-                    id: '123',
-                  },
-                  {
-                    name: 'Cool, Dude',
-                    status: StatusEnum.CallForDecision,
-                    id: '1234',
-                  },
-                ],
-              },
+      <GqlMockedProvider<{
+        GetSearchMenuContacts: GetSearchMenuContactsQuery;
+      }>
+        mocks={{
+          GetSearchMenuContacts: {
+            contacts: {
+              nodes: [
+                {
+                  name: 'Cool, Guy',
+                  status: StatusEnum.AskInFuture,
+                  id: '123',
+                },
+                {
+                  name: 'Cool, Dude',
+                  status: StatusEnum.CallForDecision,
+                  id: '1234',
+                },
+              ],
             },
-          }}
-        >
-          <ThemeProvider theme={theme}>
-            <TestRouter router={router}>
-              <SearchMenu />
-            </TestRouter>
-          </ThemeProvider>
-        </GqlMockedProvider>
-      </I18nextProvider>,
+          },
+        }}
+      >
+        <ThemeProvider theme={theme}>
+          <TestRouter router={router}>
+            <SearchMenu />
+          </TestRouter>
+        </ThemeProvider>
+      </GqlMockedProvider>,
     );
 
     userEvent.click(getByRole('button'));
@@ -172,41 +166,39 @@ describe('SearchMenu', () => {
 
 it('handles creating a new contact', async () => {
   const { getByRole, getByPlaceholderText, getByText } = render(
-    <I18nextProvider i18n={i18n}>
-      <GqlMockedProvider<{ GetSearchMenuContacts: GetSearchMenuContactsQuery }>
-        mocks={{
-          GetSearchMenuContacts: {
-            contacts: {
-              nodes: [
-                {
-                  name: 'Cool, Guy',
-                  status: StatusEnum.AskInFuture,
-                  id: '123',
-                },
-                {
-                  name: 'Cool, Dude',
-                  status: StatusEnum.CallForDecision,
-                  id: '1234',
-                },
-              ],
-            },
-          },
-          CreateContact: {
-            createContact: {
-              contact: {
-                id: 'abc123',
+    <GqlMockedProvider<{ GetSearchMenuContacts: GetSearchMenuContactsQuery }>
+      mocks={{
+        GetSearchMenuContacts: {
+          contacts: {
+            nodes: [
+              {
+                name: 'Cool, Guy',
+                status: StatusEnum.AskInFuture,
+                id: '123',
               },
+              {
+                name: 'Cool, Dude',
+                status: StatusEnum.CallForDecision,
+                id: '1234',
+              },
+            ],
+          },
+        },
+        CreateContact: {
+          createContact: {
+            contact: {
+              id: 'abc123',
             },
           },
-        }}
-      >
-        <ThemeProvider theme={theme}>
-          <TestRouter router={router}>
-            <SearchMenu />
-          </TestRouter>
-        </ThemeProvider>
-      </GqlMockedProvider>
-    </I18nextProvider>,
+        },
+      }}
+    >
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <SearchMenu />
+        </TestRouter>
+      </ThemeProvider>
+    </GqlMockedProvider>,
   );
 
   userEvent.click(getByRole('button'));

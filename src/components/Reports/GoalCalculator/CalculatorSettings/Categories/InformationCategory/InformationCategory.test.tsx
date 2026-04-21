@@ -1,7 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { I18nextProvider } from 'react-i18next';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
@@ -9,7 +8,6 @@ import {
   MpdGoalBenefitsConstantSizeEnum,
 } from 'src/graphql/types.generated';
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
-import i18n from 'src/lib/i18n';
 import {
   GoalCalculatorTestWrapper,
   constantsMock,
@@ -50,11 +48,9 @@ const TestComponent: React.FC<TestComponentProps> = ({ single = false }) => (
     }}
     onCall={mutationSpy}
   >
-    <I18nextProvider i18n={i18n}>
-      <GoalCalculatorTestWrapper noMocks>
-        <InformationCategory />
-      </GoalCalculatorTestWrapper>
-    </I18nextProvider>
+    <GoalCalculatorTestWrapper noMocks>
+      <InformationCategory />
+    </GoalCalculatorTestWrapper>
   </GqlMockedProvider>
 );
 

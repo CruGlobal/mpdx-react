@@ -1,9 +1,7 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
-import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
-import i18n from 'src/lib/i18n';
 import AcceptInvitePage from './acceptInvite.page';
 import 'node-fetch';
 
@@ -51,11 +49,9 @@ describe('AcceptInvitePage', () => {
 
     const { getByText } = render(
       <TestRouter router={router}>
-        <I18nextProvider i18n={i18n}>
-          <SnackbarProvider>
-            <AcceptInvitePage />
-          </SnackbarProvider>
-        </I18nextProvider>
+        <SnackbarProvider>
+          <AcceptInvitePage />
+        </SnackbarProvider>
       </TestRouter>,
     );
 
@@ -89,11 +85,9 @@ describe('AcceptInvitePage', () => {
 
     const { getByText } = render(
       <TestRouter router={router}>
-        <I18nextProvider i18n={i18n}>
-          <SnackbarProvider>
-            <AcceptInvitePage />
-          </SnackbarProvider>
-        </I18nextProvider>
+        <SnackbarProvider>
+          <AcceptInvitePage />
+        </SnackbarProvider>
       </TestRouter>,
     );
 
@@ -127,11 +121,9 @@ describe('AcceptInvitePage', () => {
 
     render(
       <TestRouter router={router}>
-        <I18nextProvider i18n={i18n}>
-          <SnackbarProvider>
-            <AcceptInvitePage />
-          </SnackbarProvider>
-        </I18nextProvider>
+        <SnackbarProvider>
+          <AcceptInvitePage />
+        </SnackbarProvider>
       </TestRouter>,
     );
 
@@ -156,11 +148,9 @@ describe('AcceptInvitePage', () => {
 
     render(
       <TestRouter router={router}>
-        <I18nextProvider i18n={i18n}>
-          <SnackbarProvider>
-            <AcceptInvitePage />
-          </SnackbarProvider>
-        </I18nextProvider>
+        <SnackbarProvider>
+          <AcceptInvitePage />
+        </SnackbarProvider>
       </TestRouter>,
     );
 

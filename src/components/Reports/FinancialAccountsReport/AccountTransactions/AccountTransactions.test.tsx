@@ -7,12 +7,10 @@ import { fireEvent, render, waitFor } from '@testing-library/react';
 import { Settings } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import { buildURI } from 'react-csv/lib/core';
-import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { Panel } from 'pages/accountLists/[accountListId]/reports/helpers';
 import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
-import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import {
   FinancialAccountQuery,
@@ -42,60 +40,58 @@ interface ComponentsProps {
 
 const Components = ({ filters, searchTerm }: ComponentsProps) => {
   return (
-    <I18nextProvider i18n={i18n}>
-      <LocalizationProvider dateAdapter={AdapterLuxon}>
-        <SnackbarProvider>
-          <ThemeProvider theme={theme}>
-            <TestRouter
-              router={{
-                ...defaultRouter,
-                query: {
-                  ...defaultRouter.query,
-                  filters,
-                  searchTerm,
-                },
-              }}
-            >
-              <UrlFiltersProvider>
-                <GqlMockedProvider<{
-                  FinancialAccount: FinancialAccountQuery;
-                  FinancialAccountEntries: FinancialAccountEntriesQuery;
-                }>
-                  mocks={{
-                    FinancialAccount: defaultFinancialAccount,
-                    FinancialAccountEntries: financialAccountEntriesMock,
+    <LocalizationProvider dateAdapter={AdapterLuxon}>
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <TestRouter
+            router={{
+              ...defaultRouter,
+              query: {
+                ...defaultRouter.query,
+                filters,
+                searchTerm,
+              },
+            }}
+          >
+            <UrlFiltersProvider>
+              <GqlMockedProvider<{
+                FinancialAccount: FinancialAccountQuery;
+                FinancialAccountEntries: FinancialAccountEntriesQuery;
+              }>
+                mocks={{
+                  FinancialAccount: defaultFinancialAccount,
+                  FinancialAccountEntries: financialAccountEntriesMock,
+                }}
+                onCall={mutationSpy}
+              >
+                <FinancialAccountContext.Provider
+                  value={{
+                    accountListId,
+                    financialAccountId,
+                    financialAccountQuery: {
+                      data: defaultFinancialAccount,
+                      loading: false,
+                    } as unknown as QueryResult<
+                      FinancialAccountQuery,
+                      FinancialAccountQueryVariables
+                    >,
+                    isNavListOpen: false,
+                    designationAccounts: [],
+                    setDesignationAccounts: jest.fn(),
+                    panelOpen: null,
+                    setPanelOpen,
+                    handleNavListToggle: jest.fn(),
+                    handleFilterListToggle: jest.fn(),
                   }}
-                  onCall={mutationSpy}
                 >
-                  <FinancialAccountContext.Provider
-                    value={{
-                      accountListId,
-                      financialAccountId,
-                      financialAccountQuery: {
-                        data: defaultFinancialAccount,
-                        loading: false,
-                      } as unknown as QueryResult<
-                        FinancialAccountQuery,
-                        FinancialAccountQueryVariables
-                      >,
-                      isNavListOpen: false,
-                      designationAccounts: [],
-                      setDesignationAccounts: jest.fn(),
-                      panelOpen: null,
-                      setPanelOpen,
-                      handleNavListToggle: jest.fn(),
-                      handleFilterListToggle: jest.fn(),
-                    }}
-                  >
-                    <AccountTransactions />
-                  </FinancialAccountContext.Provider>
-                </GqlMockedProvider>
-              </UrlFiltersProvider>
-            </TestRouter>
-          </ThemeProvider>
-        </SnackbarProvider>
-      </LocalizationProvider>
-    </I18nextProvider>
+                  <AccountTransactions />
+                </FinancialAccountContext.Provider>
+              </GqlMockedProvider>
+            </UrlFiltersProvider>
+          </TestRouter>
+        </ThemeProvider>
+      </SnackbarProvider>
+    </LocalizationProvider>
   );
 };
 

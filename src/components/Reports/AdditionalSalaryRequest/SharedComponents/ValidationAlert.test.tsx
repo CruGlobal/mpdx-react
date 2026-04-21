@@ -2,7 +2,6 @@ import React, { useEffect } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { FormikProvider, useFormik } from 'formik';
-import { I18nextProvider } from 'react-i18next';
 import * as yup from 'yup';
 import i18n from 'src/lib/i18n';
 import { amount, phoneNumber } from 'src/lib/yupHelpers';
@@ -127,14 +126,12 @@ const renderComponent = ({
 
   return render(
     <ThemeProvider theme={theme}>
-      <I18nextProvider i18n={i18n}>
-        <TestFormikWrapper
-          initialValues={initialValues}
-          submitOnMount={submitOnMount}
-        >
-          <ValidationAlert />
-        </TestFormikWrapper>
-      </I18nextProvider>
+      <TestFormikWrapper
+        initialValues={initialValues}
+        submitOnMount={submitOnMount}
+      >
+        <ValidationAlert />
+      </TestFormikWrapper>
     </ThemeProvider>,
   );
 };

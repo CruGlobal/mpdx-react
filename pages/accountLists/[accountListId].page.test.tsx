@@ -5,11 +5,9 @@ import { render } from '@testing-library/react';
 import { GraphQLError } from 'graphql';
 import { getSession } from 'next-auth/react';
 import { SnackbarProvider } from 'notistack';
-import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import makeSsrClient from 'src/lib/apollo/ssrClient';
-import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import AccountListIdPage, {
   AccountListIdPageProps,
@@ -96,9 +94,7 @@ describe('AccountListsId page', () => {
           <TestRouter>
             <SnackbarProvider>
               <GqlMockedProvider>
-                <I18nextProvider i18n={i18n}>
-                  <AccountListIdPage {...props} />
-                </I18nextProvider>
+                <AccountListIdPage {...props} />
               </GqlMockedProvider>
             </SnackbarProvider>
           </TestRouter>

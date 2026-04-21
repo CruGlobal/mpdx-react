@@ -3,14 +3,14 @@ import { TextField } from '@mui/material';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as yup from 'yup';
-import i18next from 'src/lib/i18n';
+import i18n from 'src/lib/i18n';
 import { amount } from 'src/lib/yupHelpers';
 import { AutosaveForm, useAutosaveForm } from './AutosaveForm';
 import { useAutoSave } from './useAutosave';
 
 const schema = yup.object({
-  field1: amount('field', i18next.t, { max: 100 }),
-  field2: amount('field', i18next.t, { max: 200 }),
+  field1: amount('field', i18n.t, { max: 100 }),
+  field2: amount('field', i18n.t, { max: 200 }),
 });
 
 const saveValue = jest.fn().mockResolvedValue(undefined);

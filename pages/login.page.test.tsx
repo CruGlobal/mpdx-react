@@ -3,10 +3,8 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { getSession, signIn } from 'next-auth/react';
-import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import Login, { LoginProps, getServerSideProps } from './login.page';
 
@@ -30,9 +28,7 @@ const Components = ({ props, mutationSpy }: ComponentsProps) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
       <GqlMockedProvider onCall={mutationSpy}>
-        <I18nextProvider i18n={i18n}>
-          <Login {...props} />
-        </I18nextProvider>
+        <Login {...props} />
       </GqlMockedProvider>
     </TestRouter>
   </ThemeProvider>
