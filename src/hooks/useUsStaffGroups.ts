@@ -30,46 +30,48 @@ function mhaIneligible(user: HcmQuery['hcm'][number]['staffInfo']) {
 
 /**
  * This hook determines whether a US Staff user is in a subgroup that's ineligible for ASR, Salary Calculator, or MHA (all reports that require HCM).
- * The ASR check runs against the ASR-eligible person (logged-in user if eligible, otherwise spouse, otherwise the logged-in user).
- * The Salary Calculator and MHA check always runs against the logged-in user.
+ * The ASR and MHA check runs against the eligible person (logged-in user if eligible, otherwise spouse, otherwise the logged-in user).
+ * The Salary Calculator check always runs against the logged-in user.
  */
 export function useUsStaffGroups(skip?: boolean) {
   const { data, loading, error } = useHcmQuery({
     skip,
-    context: { suppressErrors: true },
+    context: { suppressErrors: true, doNotBatch: true },
   });
-  const [user, spouse] = data?.hcm ?? [];
+  const people = data?.hcm ?? [];
+  const [user] = people;
 
-  const eligibleUser = user?.asrEit?.asrEligibility
-    ? user
-    : spouse?.asrEit?.asrEligibility
-      ? spouse
-      : user;
+  const allAsrIneligible =
+    !!people.length &&
+    people.every((person) => person?.asrEit?.asrEligibility === false);
+  const allMhaIneligible =
+    !!people.length &&
+    people.every((person) => mhaIneligible(person.staffInfo));
 
-  // If there is no staff account, we want to hide all HCM-related reports, so we treat the user as ineligible for all groups
+  // If there is no staff account, we want to hide all reports that require it
   const hasNoStaffAccount =
     error?.graphQLErrors.some(
       (graphQLError) => graphQLError.extensions?.code === 'NO_STAFF_ACCOUNT',
     ) ?? false;
 
-  const inAsrIneligibleGroup =
-    hasNoStaffAccount || eligibleUser?.asrEit?.asrEligibility === false;
+  const inAsrIneligibleGroup = hasNoStaffAccount || allAsrIneligible;
   const inSalaryCalcIneligibleGroup =
     hasNoStaffAccount || user?.salaryRequestEligible === false;
-  const inMhaIneligibleGroup =
-    hasNoStaffAccount || (!!user && mhaIneligible(user.staffInfo));
+  const inMhaIneligibleGroup = hasNoStaffAccount || allMhaIneligible;
 
   return useMemo(
     () => ({
       inAsrIneligibleGroup,
       inSalaryCalcIneligibleGroup,
       inMhaIneligibleGroup,
+      hasNoStaffAccount,
       loading: loading && !data,
     }),
     [
       inAsrIneligibleGroup,
       inSalaryCalcIneligibleGroup,
       inMhaIneligibleGroup,
+      hasNoStaffAccount,
       loading,
       data,
     ],

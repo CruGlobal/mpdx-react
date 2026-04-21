@@ -201,6 +201,7 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
     hrToolsItems,
     showTab,
     reportsDisabled,
+    data,
   ]);
 
   const navPages = useMemo(

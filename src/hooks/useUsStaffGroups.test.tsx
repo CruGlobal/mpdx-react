@@ -78,6 +78,7 @@ describe('useUsStaffGroups', () => {
         inAsrIneligibleGroup: false,
         inSalaryCalcIneligibleGroup: false,
         inMhaIneligibleGroup: false,
+        hasNoStaffAccount: false,
         loading: false,
       });
     });
@@ -93,6 +94,7 @@ describe('useUsStaffGroups', () => {
         inAsrIneligibleGroup: false,
         inSalaryCalcIneligibleGroup: true,
         inMhaIneligibleGroup: false,
+        hasNoStaffAccount: false,
         loading: false,
       });
     });
@@ -110,6 +112,7 @@ describe('useUsStaffGroups', () => {
         inAsrIneligibleGroup: false,
         inSalaryCalcIneligibleGroup: false,
         inMhaIneligibleGroup: true,
+        hasNoStaffAccount: false,
         loading: false,
       });
     });
@@ -149,6 +152,7 @@ describe('useUsStaffGroups', () => {
         inAsrIneligibleGroup: false,
         inSalaryCalcIneligibleGroup: false,
         inMhaIneligibleGroup: false,
+        hasNoStaffAccount: false,
         loading: false,
       });
     });
@@ -224,7 +228,22 @@ describe('useUsStaffGroups', () => {
       inAsrIneligibleGroup: false,
       inSalaryCalcIneligibleGroup: false,
       inMhaIneligibleGroup: false,
+      hasNoStaffAccount: false,
       loading: false,
+    });
+  });
+
+  it('defaults all to false when array is empty', async () => {
+    const { result } = renderUseUsStaffGroups({ hcm: [] } as HcmQuery);
+
+    await waitFor(() => {
+      expect(result.current).toEqual({
+        inAsrIneligibleGroup: false,
+        inSalaryCalcIneligibleGroup: false,
+        inMhaIneligibleGroup: false,
+        hasNoStaffAccount: false,
+        loading: false,
+      });
     });
   });
 
@@ -252,6 +271,7 @@ describe('useUsStaffGroups', () => {
         inAsrIneligibleGroup: true,
         inSalaryCalcIneligibleGroup: true,
         inMhaIneligibleGroup: true,
+        hasNoStaffAccount: true,
         loading: false,
       });
     });

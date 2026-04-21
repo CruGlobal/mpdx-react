@@ -11,7 +11,9 @@ import { LoadCoachingListQuery } from 'src/components/Coaching/LoadCoachingList.
 import { HcmQuery } from 'src/components/Reports/Shared/HcmData/Hcm.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
+  AssignmentStatusEnum,
   PeopleGroupSupportTypeEnum,
+  UserPersonTypeEnum,
   UserTypeEnum,
 } from 'src/graphql/types.generated';
 import { UserOptionQuery } from 'src/hooks/UserPreference.generated';
@@ -137,6 +139,8 @@ describe('NavMenu', () => {
                   id: '1',
                   peopleGroupSupportType:
                     PeopleGroupSupportTypeEnum.SupportedRmo,
+                  userPersonType: UserPersonTypeEnum.EmployeeStaff,
+                  assignmentStatus: AssignmentStatusEnum.ActivePayrollEligible,
                 },
                 asrEit: {
                   asrEligibility: true,

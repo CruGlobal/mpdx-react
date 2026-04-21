@@ -1,31 +1,28 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useGetUserQuery } from 'src/components/User/GetUser.generated';
-import { UserTypeEnum } from 'src/graphql/types.generated';
 import { NavItems } from './useReportNavItems';
 import { useUsStaffGroups } from './useUsStaffGroups';
 
 export function useHrToolsNavItems(): NavItems[] {
   const { t } = useTranslation();
-  const { data } = useGetUserQuery();
-  const userType = data?.user.userType;
-  const usStaff = userType === UserTypeEnum.UsStaff;
 
   const {
     inAsrIneligibleGroup,
     inSalaryCalcIneligibleGroup,
     inMhaIneligibleGroup,
-  } = useUsStaffGroups(!usStaff);
+    hasNoStaffAccount,
+  } = useUsStaffGroups();
 
   const hrToolsNavItems: NavItems[] = [
     {
       id: 'salaryCalculator',
       title: t('Salary Calculator'),
-      hideItem: usStaff && inSalaryCalcIneligibleGroup,
+      hideItem: inSalaryCalcIneligibleGroup,
     },
     {
       id: 'staffSavingFund',
       title: t('Savings Fund Transfer'),
+      hideItem: hasNoStaffAccount,
     },
     {
       id: 'goalCalculator',
@@ -34,12 +31,12 @@ export function useHrToolsNavItems(): NavItems[] {
     {
       id: 'mhaCalculator',
       title: t('MHA Calculator'),
-      hideItem: usStaff && inMhaIneligibleGroup,
+      hideItem: inMhaIneligibleGroup,
     },
     {
       id: 'additionalSalaryRequest',
       title: t('Additional Salary Request'),
-      hideItem: usStaff && inAsrIneligibleGroup,
+      hideItem: inAsrIneligibleGroup,
     },
     {
       id: 'pdsGoalCalculator',
@@ -48,6 +45,7 @@ export function useHrToolsNavItems(): NavItems[] {
     {
       id: 'partnerReminders',
       title: t('Ministry Partner Reminders'),
+      hideItem: hasNoStaffAccount,
     },
   ];
 
@@ -55,10 +53,10 @@ export function useHrToolsNavItems(): NavItems[] {
     () => hrToolsNavItems.filter((item) => !item.hideItem),
     [
       t,
-      usStaff,
       inAsrIneligibleGroup,
       inSalaryCalcIneligibleGroup,
       inMhaIneligibleGroup,
+      hasNoStaffAccount,
     ],
   );
 }

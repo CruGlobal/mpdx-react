@@ -20,6 +20,9 @@ export function useReportNavItems(): NavItems[] {
   const usStaff = userType === UserTypeEnum.UsStaff;
   const globalStaff = userType === UserTypeEnum.GlobalStaff;
 
+  const hasNoStaffAccount =
+    data && typeof data.user.staffAccountId !== 'string';
+
   const reportNavItems: NavItems[] = [
     {
       id: 'donations',
@@ -41,13 +44,13 @@ export function useReportNavItems(): NavItems[] {
           {
             id: 'staffExpense',
             title: t('Staff Expense Report'),
-            hideItem: !usStaff,
+            hideItem: !usStaff || hasNoStaffAccount,
           },
           {
             id: 'mpgaIncomeExpenses',
             title: t('MPGA Monthly Report'),
             subTitle: t('Income & Expenses'),
-            hideItem: !usStaff,
+            hideItem: !usStaff || hasNoStaffAccount,
           },
         ]),
     {
@@ -75,6 +78,6 @@ export function useReportNavItems(): NavItems[] {
 
   return useMemo(
     () => reportNavItems.filter((item) => !item.hideItem),
-    [t, usStaff, globalStaff, reportsDisabled],
+    [t, usStaff, globalStaff, reportsDisabled, hasNoStaffAccount],
   );
 }
