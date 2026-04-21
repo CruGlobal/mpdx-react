@@ -90,7 +90,7 @@ const PdsGoalCalculatorContent: React.FC<PdsGoalCalculatorContentProps> = ({
           onClose={onNavListToggle}
           designationAccounts={designationAccounts}
           setDesignationAccounts={setDesignationAccounts}
-          navType={NavTypeEnum.Reports}
+          navType={NavTypeEnum.HrTools}
         />
       }
       leftOpen={isNavListOpen}
@@ -111,7 +111,7 @@ const PdsGoalCalculatorContent: React.FC<PdsGoalCalculatorContentProps> = ({
                 lastSavedAt={calculation?.updatedAt ?? null}
               />
             }
-            headerType={HeaderTypeEnum.Report}
+            headerType={HeaderTypeEnum.HrTools}
           />
           <PdsGoalCalculator />
         </>
@@ -136,7 +136,7 @@ export const PdsGoalCalculatorPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>{`${appName} | ${t('Reports - Paid with Designation Support Goal Calculator')}`}</title>
+        <title>{`${appName} | ${t('HR Tools - Paid with Designation Support Goal Calculator')}`}</title>
       </Head>
       {accountListId ? (
         <ReportPageWrapper>

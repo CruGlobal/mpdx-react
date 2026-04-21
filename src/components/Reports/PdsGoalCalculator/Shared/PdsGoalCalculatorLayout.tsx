@@ -52,7 +52,7 @@ export const PdsGoalCalculatorLayout: React.FC<
       isSidebarOpen={isDrawerOpen}
       sidebarAriaLabel={t('{{step}} Sections', { step: currentStep.title })}
       mainContent={mainContent}
-      backHref={`/accountLists/${accountListId}/reports/pdsGoalCalculator`}
+      backHref={`/accountLists/${accountListId}/hrTools/pdsGoalCalculator`}
       backTitle={t('Go Back')}
     />
   );

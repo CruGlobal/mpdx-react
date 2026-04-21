@@ -72,7 +72,7 @@ export const PdsGoalsList: React.FC = () => {
 
     if (calculation) {
       router.push(
-        `/accountLists/${accountListId}/reports/pdsGoalCalculator/${calculation.id}`,
+        `/accountLists/${accountListId}/hrTools/pdsGoalCalculator/${calculation.id}`,
       );
     }
   };

@@ -31,7 +31,7 @@ const PdsGoalCalculatorPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>{`${appName} | ${t('Reports - Paid with Designation Support Goal Calculator')}`}</title>
+        <title>{`${appName} | ${t('HR Tools - Paid with Designation Support Goal Calculator')}`}</title>
       </Head>
       {accountListId ? (
         <ReportPageWrapper>
@@ -42,7 +42,7 @@ const PdsGoalCalculatorPage: React.FC = () => {
                 isOpen={isNavListOpen}
                 selectedId="pdsGoalCalculator"
                 onClose={handleNavListToggle}
-                navType={NavTypeEnum.Reports}
+                navType={NavTypeEnum.HrTools}
               />
             }
             leftOpen={isNavListOpen}
@@ -54,7 +54,7 @@ const PdsGoalCalculatorPage: React.FC = () => {
                   isNavListOpen={isNavListOpen}
                   onNavListToggle={handleNavListToggle}
                   title={t('Paid with Designation Support Goal Calculator')}
-                  headerType={HeaderTypeEnum.Report}
+                  headerType={HeaderTypeEnum.HrTools}
                 />
                 <PdsGoalsList />
               </>
