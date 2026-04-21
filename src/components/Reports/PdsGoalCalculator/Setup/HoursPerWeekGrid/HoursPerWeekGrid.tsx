@@ -34,6 +34,8 @@ interface HoursPerWeekGridProps {
   onAverageHoursChange?: (averageHoursPerWeek: number) => void;
 }
 
+const MAX_TOTAL_WEEKS = 52;
+
 export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
   onAverageHoursChange,
 }) => {
@@ -127,15 +129,21 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
         return newRow;
       }
 
+      const newWeeks = Number(newRow.weeks) || 0;
+      const otherWeeks = entries
+        .filter((e) => e.id !== newRow.id)
+        .reduce((sum, e) => sum + e.weeks, 0);
+      const clampedWeeks = Math.min(newWeeks, MAX_TOTAL_WEEKS - otherWeeks);
+
       updateEntry(newRow.id as string, {
         label: newRow.label as string,
         hoursPerWeek: Number(newRow.hoursPerWeek) || 0,
-        weeks: Number(newRow.weeks) || 0,
+        weeks: Math.max(0, clampedWeeks),
       });
 
-      return newRow;
+      return { ...newRow, weeks: Math.max(0, clampedWeeks) };
     },
-    [updateEntry],
+    [updateEntry, entries],
   );
 
   const dataWithTotal = useMemo(
@@ -225,8 +233,9 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
 
   return (
     <Box>
-      <Typography variant="h6" sx={{ mb: 2 }}>
-        {t('Hours Per Week Calculator')}
+      <Typography variant="h6">{t('Hours Per Week Calculator')}</Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+        {t('Weeks are limited to 52 total to reflect a full calendar year.')}
       </Typography>
 
       <StyledCard>
