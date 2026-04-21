@@ -2,12 +2,10 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
-import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { mockInvalidNewslettersResponse } from 'src/components/Tool/FixSendNewsletter/FixSendNewsletterMock';
 import { InvalidNewsletterQuery } from 'src/components/Tool/FixSendNewsletter/InvalidNewsletter.generated';
-import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import FixSendNewsletterPage from './[[...contactId]].page';
 
@@ -32,17 +30,15 @@ const router = {
 const Components = () => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
-      <I18nextProvider i18n={i18n}>
-        <SnackbarProvider>
-          <GqlMockedProvider<{
-            InvalidNewsletter: InvalidNewsletterQuery;
-          }>
-            mocks={mockInvalidNewslettersResponse as ApolloErgonoMockMap}
-          >
-            <FixSendNewsletterPage />
-          </GqlMockedProvider>
-        </SnackbarProvider>
-      </I18nextProvider>
+      <SnackbarProvider>
+        <GqlMockedProvider<{
+          InvalidNewsletter: InvalidNewsletterQuery;
+        }>
+          mocks={mockInvalidNewslettersResponse as ApolloErgonoMockMap}
+        >
+          <FixSendNewsletterPage />
+        </GqlMockedProvider>
+      </SnackbarProvider>
     </TestRouter>
   </ThemeProvider>
 );

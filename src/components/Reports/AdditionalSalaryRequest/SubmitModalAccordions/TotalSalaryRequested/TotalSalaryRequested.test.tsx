@@ -3,8 +3,6 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { FormikProvider, useFormik } from 'formik';
-import { I18nextProvider } from 'react-i18next';
-import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
@@ -85,11 +83,9 @@ const renderComponent = ({
 
   return render(
     <ThemeProvider theme={theme}>
-      <I18nextProvider i18n={i18n}>
-        <TestFormikWrapper initialValues={initialValues}>
-          <TotalSalaryRequested onForm={onForm} />
-        </TestFormikWrapper>
-      </I18nextProvider>
+      <TestFormikWrapper initialValues={initialValues}>
+        <TotalSalaryRequested onForm={onForm} />
+      </TestFormikWrapper>
     </ThemeProvider>,
   );
 };

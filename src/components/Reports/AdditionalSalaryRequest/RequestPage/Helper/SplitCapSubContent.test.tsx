@@ -2,8 +2,6 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { FormikProvider, useFormik } from 'formik';
-import { I18nextProvider } from 'react-i18next';
-import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
@@ -61,11 +59,9 @@ const setupContext = (opts: {
 const renderSplitCapSubContent = (spouseName = 'Jane') =>
   render(
     <ThemeProvider theme={theme}>
-      <I18nextProvider i18n={i18n}>
-        <FormikWrapper>
-          <SplitCapSubContent spouseName={spouseName} />
-        </FormikWrapper>
-      </I18nextProvider>
+      <FormikWrapper>
+        <SplitCapSubContent spouseName={spouseName} />
+      </FormikWrapper>
     </ThemeProvider>,
   );
 

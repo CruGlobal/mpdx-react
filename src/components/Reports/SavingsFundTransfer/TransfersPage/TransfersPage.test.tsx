@@ -6,10 +6,8 @@ import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Settings } from 'luxon';
 import { SnackbarProvider } from 'notistack';
-import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { StaffAccountQuery } from '../../StaffAccount.generated';
 import { StaffSavingFundContext } from '../../StaffSavingFund/StaffSavingFundContext';
@@ -174,20 +172,18 @@ const Components = ({
     <ThemeProvider theme={theme}>
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <TestRouter>
-          <I18nextProvider i18n={i18n}>
-            <GqlMockedProvider<{
-              StaffAccount: StaffAccountQuery;
-              ReportsSavingsFundTransfer: ReportsSavingsFundTransferQuery;
-              FundBalances: FundBalancesQuery;
-            }>
-              mocks={mock}
-              onCall={mutationSpy}
-            >
-              <MockStaffSavingFundProvider>
-                <TransfersPage title={title} />
-              </MockStaffSavingFundProvider>
-            </GqlMockedProvider>
-          </I18nextProvider>
+          <GqlMockedProvider<{
+            StaffAccount: StaffAccountQuery;
+            ReportsSavingsFundTransfer: ReportsSavingsFundTransferQuery;
+            FundBalances: FundBalancesQuery;
+          }>
+            mocks={mock}
+            onCall={mutationSpy}
+          >
+            <MockStaffSavingFundProvider>
+              <TransfersPage title={title} />
+            </MockStaffSavingFundProvider>
+          </GqlMockedProvider>
         </TestRouter>
       </LocalizationProvider>
     </ThemeProvider>
@@ -267,19 +263,17 @@ describe('TransfersPage', () => {
         <ThemeProvider theme={theme}>
           <LocalizationProvider dateAdapter={AdapterLuxon}>
             <TestRouter>
-              <I18nextProvider i18n={i18n}>
-                <GqlMockedProvider<{
-                  ReportsSavingsFundTransfer: ReportsSavingsFundTransferQuery;
-                  FundBalances: FundBalancesQuery;
-                }>
-                  mocks={emptyMock}
-                  onCall={mutationSpy}
-                >
-                  <MockStaffSavingFundProvider>
-                    <TransfersPage title={'Empty Transfer History'} />
-                  </MockStaffSavingFundProvider>
-                </GqlMockedProvider>
-              </I18nextProvider>
+              <GqlMockedProvider<{
+                ReportsSavingsFundTransfer: ReportsSavingsFundTransferQuery;
+                FundBalances: FundBalancesQuery;
+              }>
+                mocks={emptyMock}
+                onCall={mutationSpy}
+              >
+                <MockStaffSavingFundProvider>
+                  <TransfersPage title={'Empty Transfer History'} />
+                </MockStaffSavingFundProvider>
+              </GqlMockedProvider>
             </TestRouter>
           </LocalizationProvider>
         </ThemeProvider>

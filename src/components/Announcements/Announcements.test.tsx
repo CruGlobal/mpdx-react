@@ -5,12 +5,10 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
-import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { DisplayMethodEnum } from 'src/graphql/types.generated';
 import { dispatch } from 'src/lib/analytics';
-import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { ContactTagsQuery } from '../Tool/Appeal/InitialPage/AddAppealForm/AddAppealForm.generated';
 import { contactTagsMock } from '../Tool/Appeal/InitialPage/AddAppealForm/AddAppealFormMocks';
@@ -43,32 +41,30 @@ const TestComponent: React.FC<AnnouncementModalProps> = ({
   announcement = defaultAnnouncement,
 }) => {
   return (
-    <I18nextProvider i18n={i18n}>
-      <LocalizationProvider dateAdapter={AdapterLuxon}>
-        <SnackbarProvider>
-          <TestRouter router={router}>
-            <ThemeProvider theme={theme}>
-              <GqlMockedProvider<{
-                Announcements: AnnouncementsQuery;
-                ContactTags: ContactTagsQuery;
-              }>
-                mocks={{
-                  Announcements: {
-                    announcements: {
-                      nodes: [announcement],
-                    },
+    <LocalizationProvider dateAdapter={AdapterLuxon}>
+      <SnackbarProvider>
+        <TestRouter router={router}>
+          <ThemeProvider theme={theme}>
+            <GqlMockedProvider<{
+              Announcements: AnnouncementsQuery;
+              ContactTags: ContactTagsQuery;
+            }>
+              mocks={{
+                Announcements: {
+                  announcements: {
+                    nodes: [announcement],
                   },
-                  ContactTags: contactTagsMock,
-                }}
-                onCall={mutationSpy}
-              >
-                <Announcements />
-              </GqlMockedProvider>
-            </ThemeProvider>
-          </TestRouter>
-        </SnackbarProvider>
-      </LocalizationProvider>
-    </I18nextProvider>
+                },
+                ContactTags: contactTagsMock,
+              }}
+              onCall={mutationSpy}
+            >
+              <Announcements />
+            </GqlMockedProvider>
+          </ThemeProvider>
+        </TestRouter>
+      </SnackbarProvider>
+    </LocalizationProvider>
   );
 };
 

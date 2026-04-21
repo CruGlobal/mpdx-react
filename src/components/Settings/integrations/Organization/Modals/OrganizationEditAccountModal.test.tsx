@@ -98,7 +98,7 @@ describe('OrganizationEditAccountModal', () => {
 
     await waitFor(() => {
       expect(mockEnqueue).toHaveBeenCalledWith(
-        '{{appName}} updated your organization account',
+        'MPDX updated your organization account',
         { variant: 'success' },
       );
       expect(mutationSpy.mock.calls[0][0].operation.operationName).toEqual(

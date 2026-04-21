@@ -1,10 +1,8 @@
 import React from 'react';
 import { ThemeProvider } from '@emotion/react';
 import { render, waitFor } from '@testing-library/react';
-import { I18nextProvider } from 'react-i18next';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { StatusEnum } from 'src/graphql/types.generated';
-import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import {
   FormikHandleChange,
@@ -30,29 +28,27 @@ const Components = ({
   contactStatusQueryMock,
 }: ComponentsProps) => (
   <ThemeProvider theme={theme}>
-    <I18nextProvider i18n={i18n}>
-      <GqlMockedProvider<{
-        ContactStatus: ContactStatusQuery;
-      }>
-        mocks={{
-          ContactStatus: {
-            contact: {
-              status: contactStatusQueryMock || null,
-            },
+    <GqlMockedProvider<{
+      ContactStatus: ContactStatusQuery;
+    }>
+      mocks={{
+        ContactStatus: {
+          contact: {
+            status: contactStatusQueryMock || null,
           },
-        }}
-        onCall={mutationSpy}
-      >
-        <SuggestedContactStatus
-          suggestedContactStatus={suggestedContactStatus}
-          changeContactStatus={false}
-          handleChange={handleChange}
-          accountListId={accountListId}
-          contactIds={contactIds}
-          contactStatus={contactStatus}
-        />
-      </GqlMockedProvider>
-    </I18nextProvider>
+        },
+      }}
+      onCall={mutationSpy}
+    >
+      <SuggestedContactStatus
+        suggestedContactStatus={suggestedContactStatus}
+        changeContactStatus={false}
+        handleChange={handleChange}
+        accountListId={accountListId}
+        contactIds={contactIds}
+        contactStatus={contactStatus}
+      />
+    </GqlMockedProvider>
   </ThemeProvider>
 );
 

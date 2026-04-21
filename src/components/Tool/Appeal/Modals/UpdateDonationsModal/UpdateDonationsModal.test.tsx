@@ -5,7 +5,6 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
-import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
@@ -15,7 +14,6 @@ import {
   DonationTableQuery,
 } from 'src/components/DonationTable/DonationTable.generated';
 import { PledgeStatusEnum } from 'src/graphql/types.generated';
-import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import {
   AppealsContext,
@@ -81,158 +79,154 @@ const Components = ({
   mutationsThrowErrors = false,
 }: ComponentsProps) => {
   return (
-    <I18nextProvider i18n={i18n}>
-      <SnackbarProvider>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <SnackbarProvider>
-            <ThemeProvider theme={theme}>
-              <TestRouter router={router}>
-                <GqlMockedProvider<{
-                  AccountListCurrency: AccountListCurrencyQuery;
-                  GetContactDonations: GetContactDonationsQuery;
-                  DonationTable: DonationTableQuery;
-                }>
-                  mocks={{
-                    UpdateDonations: mutationsThrowErrors
-                      ? () => {
-                          throw new Error('Server Error');
-                        }
-                      : {},
-                    UpdateAccountListPledge: mutationsThrowErrors
-                      ? () => {
-                          throw new Error('Server Error');
-                        }
-                      : {},
-                    CreateAccountListPledge: mutationsThrowErrors
-                      ? () => {
-                          throw new Error('Server Error');
-                        }
-                      : {},
-                    AccountListCurrency: {
-                      accountList: {
-                        currency: 'CAD',
-                      },
-                    },
-                    GetContactDonations: isEmpty
-                      ? contactNoDonationsMock
-                      : contactWithDonationsMock,
-                    DonationTable: {
-                      donations: {
-                        nodes: isEmpty
-                          ? []
-                          : [
-                              {
-                                id: 'donation-1',
-                                amount: {
-                                  amount: zeroAmount ? 0 : 10,
-                                  convertedAmount: zeroAmount ? 0 : 10,
-                                  convertedCurrency: 'CAD',
-                                  currency: 'CAD',
-                                },
-                                appeal: {
-                                  id: noDonationsMatchAppeal
-                                    ? 'appeal-99'
-                                    : appealId,
-                                  name: 'Appeal 1',
-                                },
-                                designationAccount: {
-                                  id: 'designation-account-1',
-                                  name: 'Designation Account 1',
-                                },
-                                donationDate: '2023-03-01',
-                                donorAccount: {
-                                  contacts: {
-                                    nodes: [
-                                      {
-                                        id: defaultContact.id,
-                                      },
-                                    ],
-                                  },
-                                  id: defaultContact.id,
-                                  displayName: defaultContact.name,
-                                },
-                                paymentMethod: 'Check',
-                              },
-                              {
-                                id: 'donation-2',
-                                amount: {
-                                  amount: hasForeignCurrency ? 200 : 100,
-                                  convertedAmount: 100,
-                                  convertedCurrency: 'CAD',
-                                  currency: hasForeignCurrency ? 'USD' : 'CAD',
-                                },
-                                appeal: null,
-                                donationDate: '2023-03-02',
-                                donorAccount: {
-                                  contacts: {
-                                    nodes: [],
-                                  },
-                                  displayName: 'Donor 2',
-                                },
-                                paymentMethod: 'Credit Card',
-                              },
-                              {
-                                id: 'donation-3',
-                                amount: {
-                                  amount: 0,
-                                  convertedAmount: 0,
-                                  convertedCurrency: 'CAD',
-                                  currency: 'CAD',
-                                },
-                                appeal: null,
-                                designationAccount: {
-                                  id: 'designation-account-2',
-                                  name: 'Designation Account 2',
-                                },
-                                donationDate: '2023-03-01',
-                                donorAccount: {
-                                  contacts: {
-                                    nodes: [
-                                      {
-                                        id: defaultContact.id,
-                                      },
-                                    ],
-                                  },
-                                  id: defaultContact.id,
-                                  displayName: defaultContact.name,
-                                },
-                                paymentMethod: 'Credit Card',
-                              },
-                            ],
-                        pageInfo: {
-                          endCursor: 'cursor',
-                          hasNextPage: hasMultiplePages,
-                        },
-                      },
-                    },
-                  }}
-                  onCall={mutationSpy}
-                >
-                  <AppealsWrapper>
-                    <AppealsContext.Provider
-                      value={
-                        {
-                          accountListId,
-                          appealId: appealId,
-                        } as unknown as AppealsType
+    <SnackbarProvider>
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <SnackbarProvider>
+          <ThemeProvider theme={theme}>
+            <TestRouter router={router}>
+              <GqlMockedProvider<{
+                AccountListCurrency: AccountListCurrencyQuery;
+                GetContactDonations: GetContactDonationsQuery;
+                DonationTable: DonationTableQuery;
+              }>
+                mocks={{
+                  UpdateDonations: mutationsThrowErrors
+                    ? () => {
+                        throw new Error('Server Error');
                       }
-                    >
-                      <UpdateDonationsModal
-                        handleClose={handleClose}
-                        contact={defaultContact}
-                        pledge={
-                          pledge as AppealContactInfoFragment['pledges'][0]
-                        }
-                      />
-                    </AppealsContext.Provider>
-                  </AppealsWrapper>
-                </GqlMockedProvider>
-              </TestRouter>
-            </ThemeProvider>
-          </SnackbarProvider>
-        </LocalizationProvider>
-      </SnackbarProvider>
-    </I18nextProvider>
+                    : {},
+                  UpdateAccountListPledge: mutationsThrowErrors
+                    ? () => {
+                        throw new Error('Server Error');
+                      }
+                    : {},
+                  CreateAccountListPledge: mutationsThrowErrors
+                    ? () => {
+                        throw new Error('Server Error');
+                      }
+                    : {},
+                  AccountListCurrency: {
+                    accountList: {
+                      currency: 'CAD',
+                    },
+                  },
+                  GetContactDonations: isEmpty
+                    ? contactNoDonationsMock
+                    : contactWithDonationsMock,
+                  DonationTable: {
+                    donations: {
+                      nodes: isEmpty
+                        ? []
+                        : [
+                            {
+                              id: 'donation-1',
+                              amount: {
+                                amount: zeroAmount ? 0 : 10,
+                                convertedAmount: zeroAmount ? 0 : 10,
+                                convertedCurrency: 'CAD',
+                                currency: 'CAD',
+                              },
+                              appeal: {
+                                id: noDonationsMatchAppeal
+                                  ? 'appeal-99'
+                                  : appealId,
+                                name: 'Appeal 1',
+                              },
+                              designationAccount: {
+                                id: 'designation-account-1',
+                                name: 'Designation Account 1',
+                              },
+                              donationDate: '2023-03-01',
+                              donorAccount: {
+                                contacts: {
+                                  nodes: [
+                                    {
+                                      id: defaultContact.id,
+                                    },
+                                  ],
+                                },
+                                id: defaultContact.id,
+                                displayName: defaultContact.name,
+                              },
+                              paymentMethod: 'Check',
+                            },
+                            {
+                              id: 'donation-2',
+                              amount: {
+                                amount: hasForeignCurrency ? 200 : 100,
+                                convertedAmount: 100,
+                                convertedCurrency: 'CAD',
+                                currency: hasForeignCurrency ? 'USD' : 'CAD',
+                              },
+                              appeal: null,
+                              donationDate: '2023-03-02',
+                              donorAccount: {
+                                contacts: {
+                                  nodes: [],
+                                },
+                                displayName: 'Donor 2',
+                              },
+                              paymentMethod: 'Credit Card',
+                            },
+                            {
+                              id: 'donation-3',
+                              amount: {
+                                amount: 0,
+                                convertedAmount: 0,
+                                convertedCurrency: 'CAD',
+                                currency: 'CAD',
+                              },
+                              appeal: null,
+                              designationAccount: {
+                                id: 'designation-account-2',
+                                name: 'Designation Account 2',
+                              },
+                              donationDate: '2023-03-01',
+                              donorAccount: {
+                                contacts: {
+                                  nodes: [
+                                    {
+                                      id: defaultContact.id,
+                                    },
+                                  ],
+                                },
+                                id: defaultContact.id,
+                                displayName: defaultContact.name,
+                              },
+                              paymentMethod: 'Credit Card',
+                            },
+                          ],
+                      pageInfo: {
+                        endCursor: 'cursor',
+                        hasNextPage: hasMultiplePages,
+                      },
+                    },
+                  },
+                }}
+                onCall={mutationSpy}
+              >
+                <AppealsWrapper>
+                  <AppealsContext.Provider
+                    value={
+                      {
+                        accountListId,
+                        appealId: appealId,
+                      } as unknown as AppealsType
+                    }
+                  >
+                    <UpdateDonationsModal
+                      handleClose={handleClose}
+                      contact={defaultContact}
+                      pledge={pledge as AppealContactInfoFragment['pledges'][0]}
+                    />
+                  </AppealsContext.Provider>
+                </AppealsWrapper>
+              </GqlMockedProvider>
+            </TestRouter>
+          </ThemeProvider>
+        </SnackbarProvider>
+      </LocalizationProvider>
+    </SnackbarProvider>
   );
 };
 

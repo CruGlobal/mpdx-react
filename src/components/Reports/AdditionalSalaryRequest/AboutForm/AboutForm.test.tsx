@@ -2,10 +2,8 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
-import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { HcmDataQuery } from '../../Shared/HcmData/HCMData.generated';
 import { AdditionalSalaryRequestProvider } from '../Shared/AdditionalSalaryRequestContext';
@@ -61,15 +59,13 @@ const mocks = {
 const TestWrapper: React.FC = () => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
-      <I18nextProvider i18n={i18n}>
-        <SnackbarProvider>
-          <GqlMockedProvider<{ HcmData: HcmDataQuery }> mocks={mocks}>
-            <AdditionalSalaryRequestProvider>
-              <AboutForm />
-            </AdditionalSalaryRequestProvider>
-          </GqlMockedProvider>
-        </SnackbarProvider>
-      </I18nextProvider>
+      <SnackbarProvider>
+        <GqlMockedProvider<{ HcmData: HcmDataQuery }> mocks={mocks}>
+          <AdditionalSalaryRequestProvider>
+            <AboutForm />
+          </AdditionalSalaryRequestProvider>
+        </GqlMockedProvider>
+      </SnackbarProvider>
     </TestRouter>
   </ThemeProvider>
 );

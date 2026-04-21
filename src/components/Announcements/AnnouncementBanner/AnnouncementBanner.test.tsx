@@ -2,9 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@emotion/react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
-import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { announcement } from '../Announcements.mock';
 import { AnnouncementBanner } from './AnnouncementBanner';
@@ -18,16 +16,14 @@ const router = {
 
 const TestComponent: React.FC = () => {
   return (
-    <I18nextProvider i18n={i18n}>
-      <TestRouter router={router}>
-        <ThemeProvider theme={theme}>
-          <AnnouncementBanner
-            announcement={announcement}
-            handlePerformAction={handlePerformAction}
-          />
-        </ThemeProvider>
-      </TestRouter>
-    </I18nextProvider>
+    <TestRouter router={router}>
+      <ThemeProvider theme={theme}>
+        <AnnouncementBanner
+          announcement={announcement}
+          handlePerformAction={handlePerformAction}
+        />
+      </ThemeProvider>
+    </TestRouter>
   );
 };
 

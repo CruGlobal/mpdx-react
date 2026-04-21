@@ -1,13 +1,11 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
-import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMock';
 import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { StatusEnum } from 'src/graphql/types.generated';
-import i18n from 'src/lib/i18n';
 import theme from '../../../theme';
 import { ContactPartnershipStatus } from './ContactPartnershipStatus';
 
@@ -30,19 +28,17 @@ const TestComponent: React.FC<TestComponentProps> = ({
     <TestRouter>
       <GqlMockedProvider>
         <ThemeProvider theme={theme}>
-          <I18nextProvider i18n={i18n}>
-            <ContactPanelProvider>
-              <ContactPartnershipStatus
-                lateAt={null}
-                pledgeStartDate={null}
-                pledgeAmount={pledgeAmount}
-                pledgeCurrency={pledgeCurrency}
-                pledgeFrequency={null}
-                pledgeReceived={pledgeReceived}
-                status={status}
-              />
-            </ContactPanelProvider>
-          </I18nextProvider>
+          <ContactPanelProvider>
+            <ContactPartnershipStatus
+              lateAt={null}
+              pledgeStartDate={null}
+              pledgeAmount={pledgeAmount}
+              pledgeCurrency={pledgeCurrency}
+              pledgeFrequency={null}
+              pledgeReceived={pledgeReceived}
+              status={status}
+            />
+          </ContactPanelProvider>
         </ThemeProvider>
       </GqlMockedProvider>
     </TestRouter>

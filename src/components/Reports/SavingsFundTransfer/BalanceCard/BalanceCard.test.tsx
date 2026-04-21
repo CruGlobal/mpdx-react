@@ -3,10 +3,8 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
-import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { FundFieldsFragment } from '../ReportsSavingsFund.generated';
 import { FundTypeEnum } from '../mockData';
@@ -40,15 +38,13 @@ const Components = ({
   <SnackbarProvider>
     <ThemeProvider theme={theme}>
       <TestRouter router={router}>
-        <I18nextProvider i18n={i18n}>
-          <GqlMockedProvider onCall={mutationSpy}>
-            <BalanceCard
-              fund={fund}
-              handleOpenTransferModal={mockHandleOpenTransferModal}
-              isSelected={isSelected}
-            />
-          </GqlMockedProvider>
-        </I18nextProvider>
+        <GqlMockedProvider onCall={mutationSpy}>
+          <BalanceCard
+            fund={fund}
+            handleOpenTransferModal={mockHandleOpenTransferModal}
+            isSelected={isSelected}
+          />
+        </GqlMockedProvider>
       </TestRouter>
     </ThemeProvider>
   </SnackbarProvider>

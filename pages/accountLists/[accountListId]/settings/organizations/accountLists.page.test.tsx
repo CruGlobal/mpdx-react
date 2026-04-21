@@ -1,10 +1,8 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { OrganizationsQuery } from '../organizations.generated';
 import AccountListsOrganizations from './accountLists.page';
@@ -33,9 +31,7 @@ const Components = ({ mutationSpy }: { mutationSpy?: () => void }) => (
         }}
         onCall={mutationSpy}
       >
-        <I18nextProvider i18n={i18n}>
-          <AccountListsOrganizations />
-        </I18nextProvider>
+        <AccountListsOrganizations />
       </GqlMockedProvider>
     </TestRouter>
   </ThemeProvider>

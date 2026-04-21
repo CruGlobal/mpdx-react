@@ -9,6 +9,8 @@ import { loadConstantsMockData } from 'src/components/Constants/LoadConstantsMoc
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { toHaveGraphqlOperation } from '../extensions/toHaveGraphqlOperation';
 import matchMediaMock from './matchMediaMock';
+// Configure i18next in tests
+import 'src/lib/i18n';
 
 jest.mock('src/components/Constants/UseApiConstants');
 jest.mock('next-auth/react', () => {

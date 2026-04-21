@@ -4,11 +4,9 @@ import { Box } from '@mui/system';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
-import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { InviteTypeEnum } from 'src/graphql/types.generated';
-import i18n from 'src/lib/i18n';
 import theme from '../../../../theme';
 import { ManageAccounts } from './ManageAccounts';
 import {
@@ -99,9 +97,7 @@ const CoachIntro = (): React.ReactElement => (
 const Components = ({ children }: PropsWithChildren) => (
   <SnackbarProvider>
     <TestRouter router={router}>
-      <ThemeProvider theme={theme}>
-        <I18nextProvider i18n={i18n}>{children}</I18nextProvider>
-      </ThemeProvider>
+      <ThemeProvider theme={theme}>{children}</ThemeProvider>
     </TestRouter>
   </SnackbarProvider>
 );

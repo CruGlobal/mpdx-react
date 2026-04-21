@@ -5,14 +5,12 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
-import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { FinancialAccountQuery } from 'src/components/Reports/FinancialAccountsReport/Context/FinancialAccount.generated';
 import { defaultFinancialAccount } from 'src/components/Reports/FinancialAccountsReport/Header/HeaderMocks';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
-import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import FinancialAccountsPage from './entries.page';
 
@@ -32,27 +30,25 @@ interface ComponentProps {
 const Components: React.FC<ComponentProps> = ({
   userType = UserTypeEnum.GlobalStaff,
 }) => (
-  <I18nextProvider i18n={i18n}>
-    <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <SnackbarProvider>
-        <ThemeProvider theme={theme}>
-          <TestRouter router={router}>
-            <GqlMockedProvider<{
-              FinancialAccount: FinancialAccountQuery;
-              GetUser: GetUserQuery;
-            }>
-              mocks={{
-                FinancialAccount: defaultFinancialAccount,
-                GetUser: { user: { userType } },
-              }}
-            >
-              <FinancialAccountsPage />
-            </GqlMockedProvider>
-          </TestRouter>
-        </ThemeProvider>
-      </SnackbarProvider>
-    </LocalizationProvider>
-  </I18nextProvider>
+  <LocalizationProvider dateAdapter={AdapterLuxon}>
+    <SnackbarProvider>
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider<{
+            FinancialAccount: FinancialAccountQuery;
+            GetUser: GetUserQuery;
+          }>
+            mocks={{
+              FinancialAccount: defaultFinancialAccount,
+              GetUser: { user: { userType } },
+            }}
+          >
+            <FinancialAccountsPage />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>
+    </SnackbarProvider>
+  </LocalizationProvider>
 );
 
 describe('Financial Accounts Page', () => {

@@ -157,7 +157,7 @@ describe('Connect Organization', () => {
     });
     await waitFor(() => {
       expect(mockEnqueue).toHaveBeenCalledWith(
-        '{{appName}} added your organization account',
+        'MPDX added your organization account',
         { variant: 'success' },
       );
       expect(mutationSpy.mock.calls[1][0].operation.operationName).toEqual(
@@ -202,7 +202,7 @@ describe('Connect Organization', () => {
     });
     await waitFor(() => {
       expect(mockEnqueue).toHaveBeenCalledWith(
-        '{{appName}} added your organization account',
+        'MPDX added your organization account',
         { variant: 'success' },
       );
     });
@@ -231,9 +231,7 @@ describe('Connect Organization', () => {
     userEvent.click(await findByRole('option', { name: 'ministryName' }));
 
     expect(
-      await findByText(
-        'You must log into {{appName}} with your ministry email',
-      ),
+      await findByText('You must log into MPDX with your ministry email'),
     ).toBeInTheDocument();
     expect(getByText('Add Account')).toBeDisabled();
     expect(
@@ -284,7 +282,7 @@ describe('Connect Organization', () => {
 
     await waitFor(() => {
       expect(mockEnqueue).toHaveBeenCalledWith(
-        '{{appName}} added your organization account',
+        'MPDX added your organization account',
         { variant: 'success' },
       );
       expect(mutationSpy.mock.calls[1][0].operation.operationName).toEqual(
@@ -324,7 +322,7 @@ describe('Connect Organization', () => {
 
     expect(
       await findByText(
-        "You will be taken to your organization's donation services system to grant {{appName}} permission to access your donation data.",
+        "You will be taken to your organization's donation services system to grant MPDX permission to access your donation data.",
       ),
     ).toBeInTheDocument();
     expect(getByText('Connect')).toBeInTheDocument();

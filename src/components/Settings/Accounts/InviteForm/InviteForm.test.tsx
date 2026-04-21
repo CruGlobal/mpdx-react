@@ -91,10 +91,8 @@ describe('InviteForm', () => {
     });
 
     expect(mockEnqueue).toHaveBeenCalledWith(
-      '{{appName}} sent an invite to {{email}}',
-      {
-        variant: 'success',
-      },
+      'MPDX sent an invite to test@test.org',
+      { variant: 'success' },
     );
     expect(await findByRole('textbox')).toHaveValue('');
   });
@@ -139,10 +137,8 @@ describe('InviteForm', () => {
     });
 
     expect(mockEnqueue).toHaveBeenCalledWith(
-      '{{appName}} sent an invite to {{email}}',
-      {
-        variant: 'success',
-      },
+      'MPDX sent an invite to test@test.org',
+      { variant: 'success' },
     );
     expect(await findByRole('textbox')).toHaveValue('');
   });

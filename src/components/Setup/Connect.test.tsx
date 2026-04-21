@@ -78,7 +78,7 @@ describe('Connect', () => {
 
       expect(
         await findByText(
-          'First, connect your organization to your {{appName}} account.',
+          'First, connect your organization to your MPDX account.',
         ),
       ).toBeInTheDocument();
       expect(

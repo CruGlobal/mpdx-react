@@ -4,12 +4,10 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
-import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
-import i18n from 'src/lib/i18n';
 import theme from '../../../theme';
 import { TasksMassActionsDropdown } from '../MassActions/TasksMassActionsDropdown';
 import {
@@ -100,27 +98,25 @@ const Components = ({
     }}
   >
     <ThemeProvider theme={theme}>
-      <I18nextProvider i18n={i18n}>
-        <GqlMockedProvider>
-          <SnackbarProvider>
-            <ContactPanelProvider>
-              <UrlFiltersProvider>
-                <ListHeader
-                  selectedIds={selectedIds}
-                  page={page}
-                  contactsView={contactsView}
-                  headerCheckboxState={headerCheckboxState}
-                  filterPanelOpen={filterPanelOpen}
-                  buttonGroup={buttonGroup}
-                  totalItems={totalItems}
-                  showShowingCount={showShowingCount}
-                  {...mockedProps}
-                />
-              </UrlFiltersProvider>
-            </ContactPanelProvider>
-          </SnackbarProvider>
-        </GqlMockedProvider>
-      </I18nextProvider>
+      <GqlMockedProvider>
+        <SnackbarProvider>
+          <ContactPanelProvider>
+            <UrlFiltersProvider>
+              <ListHeader
+                selectedIds={selectedIds}
+                page={page}
+                contactsView={contactsView}
+                headerCheckboxState={headerCheckboxState}
+                filterPanelOpen={filterPanelOpen}
+                buttonGroup={buttonGroup}
+                totalItems={totalItems}
+                showShowingCount={showShowingCount}
+                {...mockedProps}
+              />
+            </UrlFiltersProvider>
+          </ContactPanelProvider>
+        </SnackbarProvider>
+      </GqlMockedProvider>
     </ThemeProvider>
   </TestRouter>
 );

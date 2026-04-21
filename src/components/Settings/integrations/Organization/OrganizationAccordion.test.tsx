@@ -4,12 +4,10 @@ import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { cloneDeep } from 'lodash';
 import { SnackbarProvider } from 'notistack';
-import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { IntegrationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import * as Types from 'src/graphql/types.generated';
-import i18n from 'src/lib/i18n';
 import theme from '../../../../theme';
 import { OrganizationAccordion } from './OrganizationAccordion';
 import {
@@ -42,11 +40,9 @@ const handleAccordionChange = jest.fn();
 
 const Components = ({ children }: PropsWithChildren) => (
   <SnackbarProvider>
-    <I18nextProvider i18n={i18n}>
-      <TestRouter router={router}>
-        <ThemeProvider theme={theme}>{children}</ThemeProvider>
-      </TestRouter>
-    </I18nextProvider>
+    <TestRouter router={router}>
+      <ThemeProvider theme={theme}>{children}</ThemeProvider>
+    </TestRouter>
   </SnackbarProvider>
 );
 

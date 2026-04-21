@@ -4,10 +4,8 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { render } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
-import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { FinancialAccountQuery } from '../Context/FinancialAccount.generated';
 import { defaultFinancialAccount } from './HeaderMocks';
@@ -22,29 +20,27 @@ const router = {
 };
 
 const Components = () => (
-  <I18nextProvider i18n={i18n}>
-    <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <SnackbarProvider>
-        <ThemeProvider theme={theme}>
-          <TestRouter router={router}>
-            <GqlMockedProvider<{
-              FinancialAccount: FinancialAccountQuery;
-            }>
-              mocks={{
-                FinancialAccount: defaultFinancialAccount,
-              }}
-            >
-              <SummaryHeader
-                accountListId={accountListId}
-                financialAccountId={financialAccountId}
-                handleNavListToggle={handleNavListToggle}
-              />
-            </GqlMockedProvider>
-          </TestRouter>
-        </ThemeProvider>
-      </SnackbarProvider>
-    </LocalizationProvider>
-  </I18nextProvider>
+  <LocalizationProvider dateAdapter={AdapterLuxon}>
+    <SnackbarProvider>
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider<{
+            FinancialAccount: FinancialAccountQuery;
+          }>
+            mocks={{
+              FinancialAccount: defaultFinancialAccount,
+            }}
+          >
+            <SummaryHeader
+              accountListId={accountListId}
+              financialAccountId={financialAccountId}
+              handleNavListToggle={handleNavListToggle}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>
+    </SnackbarProvider>
+  </LocalizationProvider>
 );
 
 describe('Financial Account Summary Header', () => {

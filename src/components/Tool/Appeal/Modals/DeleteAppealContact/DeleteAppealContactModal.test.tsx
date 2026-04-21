@@ -5,11 +5,9 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
-import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
-import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import {
   AppealsContext,
@@ -48,117 +46,115 @@ interface ComponentsProps {
 const Components = ({ viewMode = TableViewModeEnum.List }: ComponentsProps) => {
   let requestCount = 0;
   return (
-    <I18nextProvider i18n={i18n}>
-      <SnackbarProvider>
-        <LocalizationProvider dateAdapter={AdapterLuxon}>
-          <SnackbarProvider>
-            <ThemeProvider theme={theme}>
-              <TestRouter router={router}>
-                <GqlMockedProvider
-                  mocks={{
-                    AppealContacts: () => {
-                      let mutationResponse;
-                      if (requestCount < 3) {
-                        mutationResponse = {
-                          appealContacts: {
-                            nodes: [
-                              {
-                                id: `id1${requestCount}`,
-                                contact: {
-                                  id: `contactId1${requestCount}`,
-                                },
+    <SnackbarProvider>
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <SnackbarProvider>
+          <ThemeProvider theme={theme}>
+            <TestRouter router={router}>
+              <GqlMockedProvider
+                mocks={{
+                  AppealContacts: () => {
+                    let mutationResponse;
+                    if (requestCount < 3) {
+                      mutationResponse = {
+                        appealContacts: {
+                          nodes: [
+                            {
+                              id: `id1${requestCount}`,
+                              contact: {
+                                id: `contactId1${requestCount}`,
                               },
-                              {
-                                id: `id2${requestCount}`,
-                                contact: {
-                                  id: `contactId2${requestCount}`,
-                                },
-                              },
-                              {
-                                id: `id3${requestCount}`,
-                                contact: {
-                                  id: `contactId3${requestCount}`,
-                                },
-                              },
-                            ],
-                            pageInfo: {
-                              hasNextPage: true,
-                              endCursor: `endCursor${requestCount}`,
                             },
-                          },
-                        };
-                      } else {
-                        mutationResponse = {
-                          appealContacts: {
-                            nodes: [
-                              {
-                                id: appealContactId,
-                                contact: {
-                                  id: contactId,
-                                },
+                            {
+                              id: `id2${requestCount}`,
+                              contact: {
+                                id: `contactId2${requestCount}`,
                               },
-                              {
-                                id: `id5${requestCount}`,
-                                contact: {
-                                  id: `contactId5${requestCount}`,
-                                },
-                              },
-                              {
-                                id: `id6${requestCount}`,
-                                contact: {
-                                  id: `contactId6${requestCount}`,
-                                },
-                              },
-                            ],
-                            pageInfo: {
-                              hasNextPage: false,
-                              endCursor: 'endCursor3',
                             },
+                            {
+                              id: `id3${requestCount}`,
+                              contact: {
+                                id: `contactId3${requestCount}`,
+                              },
+                            },
+                          ],
+                          pageInfo: {
+                            hasNextPage: true,
+                            endCursor: `endCursor${requestCount}`,
                           },
-                        };
-                      }
-                      requestCount++;
-                      return mutationResponse;
+                        },
+                      };
+                    } else {
+                      mutationResponse = {
+                        appealContacts: {
+                          nodes: [
+                            {
+                              id: appealContactId,
+                              contact: {
+                                id: contactId,
+                              },
+                            },
+                            {
+                              id: `id5${requestCount}`,
+                              contact: {
+                                id: `contactId5${requestCount}`,
+                              },
+                            },
+                            {
+                              id: `id6${requestCount}`,
+                              contact: {
+                                id: `contactId6${requestCount}`,
+                              },
+                            },
+                          ],
+                          pageInfo: {
+                            hasNextPage: false,
+                            endCursor: 'endCursor3',
+                          },
+                        },
+                      };
+                    }
+                    requestCount++;
+                    return mutationResponse;
+                  },
+                  GetContactIdsForMassSelection: {
+                    contacts: {
+                      nodes: [
+                        { id: '01' },
+                        { id: '02' },
+                        { id: '03' },
+                        { id: '04' },
+                        { id: '05' },
+                        { id: '06' },
+                      ],
                     },
-                    GetContactIdsForMassSelection: {
-                      contacts: {
-                        nodes: [
-                          { id: '01' },
-                          { id: '02' },
-                          { id: '03' },
-                          { id: '04' },
-                          { id: '05' },
-                          { id: '06' },
-                        ],
-                      },
-                    },
-                  }}
-                  onCall={mutationSpy}
-                >
-                  <AppealsWrapper>
-                    <AppealsContext.Provider
-                      value={
-                        {
-                          accountListId,
-                          appealId: appealId,
-                          filterPanelOpen: false,
-                          viewMode,
-                        } as unknown as AppealsType
-                      }
-                    >
-                      <DeleteAppealContactModal
-                        handleClose={handleClose}
-                        contactId={contactId}
-                      />
-                    </AppealsContext.Provider>
-                  </AppealsWrapper>
-                </GqlMockedProvider>
-              </TestRouter>
-            </ThemeProvider>
-          </SnackbarProvider>
-        </LocalizationProvider>
-      </SnackbarProvider>
-    </I18nextProvider>
+                  },
+                }}
+                onCall={mutationSpy}
+              >
+                <AppealsWrapper>
+                  <AppealsContext.Provider
+                    value={
+                      {
+                        accountListId,
+                        appealId: appealId,
+                        filterPanelOpen: false,
+                        viewMode,
+                      } as unknown as AppealsType
+                    }
+                  >
+                    <DeleteAppealContactModal
+                      handleClose={handleClose}
+                      contactId={contactId}
+                    />
+                  </AppealsContext.Provider>
+                </AppealsWrapper>
+              </GqlMockedProvider>
+            </TestRouter>
+          </ThemeProvider>
+        </SnackbarProvider>
+      </LocalizationProvider>
+    </SnackbarProvider>
   );
 };
 

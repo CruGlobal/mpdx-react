@@ -2,12 +2,10 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { SnackbarProvider } from 'notistack';
-import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { mockInvalidAddressesResponse } from 'src/components/Tool/FixMailingAddresses/FixMailingAddressesMock';
 import { InvalidAddressesQuery } from 'src/components/Tool/FixMailingAddresses/GetInvalidAddresses.generated';
-import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import FixMailingAddressesPage from './[[...contactId]].page';
 
@@ -38,11 +36,9 @@ const Components = ({ mocks }: { mocks: ApolloErgonoMockMap }) => (
       }>
         mocks={mocks}
       >
-        <I18nextProvider i18n={i18n}>
-          <SnackbarProvider>
-            <FixMailingAddressesPage />
-          </SnackbarProvider>
-        </I18nextProvider>
+        <SnackbarProvider>
+          <FixMailingAddressesPage />
+        </SnackbarProvider>
       </GqlMockedProvider>
     </TestRouter>
   </ThemeProvider>

@@ -6,13 +6,11 @@ import { fireEvent, render, waitFor, within } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { I18nextProvider } from 'react-i18next';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
 import { PledgeStatusEnum, StatusEnum } from 'src/graphql/types.generated';
-import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { AppealsContext, AppealsType } from '../AppealsContext/AppealsContext';
 import { AppealsContactsQuery } from '../AppealsContext/contacts.generated';
@@ -86,62 +84,60 @@ const Components = ({
   updatedPledgeStatus = PledgeStatusEnum.NotReceived,
   contactFlowProps = defaultContactFlowProps,
 }: ComponentsProps) => (
-  <I18nextProvider i18n={i18n}>
-    <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <SnackbarProvider>
-        <DndProvider backend={HTML5Backend}>
-          <ThemeProvider theme={theme}>
-            <TestRouter router={router}>
-              <GqlMockedProvider<{
-                AppealsContacts: AppealsContactsQuery;
-                UpdateAccountListPledge: UpdateAccountListPledgeMutation;
-              }>
-                mocks={{
-                  AppealsContacts: {
-                    contacts: {
-                      nodes: [contact],
-                      pageInfo: { endCursor: 'Mg', hasNextPage: false },
-                      totalCount: 1,
+  <LocalizationProvider dateAdapter={AdapterLuxon}>
+    <SnackbarProvider>
+      <DndProvider backend={HTML5Backend}>
+        <ThemeProvider theme={theme}>
+          <TestRouter router={router}>
+            <GqlMockedProvider<{
+              AppealsContacts: AppealsContactsQuery;
+              UpdateAccountListPledge: UpdateAccountListPledgeMutation;
+            }>
+              mocks={{
+                AppealsContacts: {
+                  contacts: {
+                    nodes: [contact],
+                    pageInfo: { endCursor: 'Mg', hasNextPage: false },
+                    totalCount: 1,
+                  },
+                },
+                UpdateAccountListPledge: {
+                  updateAccountListPledge: {
+                    pledge: {
+                      id: 'pledgeId',
+                      status: updatedPledgeStatus,
                     },
                   },
-                  UpdateAccountListPledge: {
-                    updateAccountListPledge: {
-                      pledge: {
-                        id: 'pledgeId',
-                        status: updatedPledgeStatus,
-                      },
-                    },
-                  },
-                }}
-                onCall={mutationSpy}
-              >
-                <AppealsWrapper>
-                  <AppealsContext.Provider
-                    value={
-                      {
-                        accountListId,
-                        appealId: appealId,
-                        sanitizedFilters: {},
-                        isRowChecked: jest.fn(),
-                        toggleSelectionById: jest.fn(),
-                        getContactUrl,
-                      } as unknown as AppealsType
-                    }
+                },
+              }}
+              onCall={mutationSpy}
+            >
+              <AppealsWrapper>
+                <AppealsContext.Provider
+                  value={
+                    {
+                      accountListId,
+                      appealId: appealId,
+                      sanitizedFilters: {},
+                      isRowChecked: jest.fn(),
+                      toggleSelectionById: jest.fn(),
+                      getContactUrl,
+                    } as unknown as AppealsType
+                  }
+                >
+                  <VirtuosoMockContext.Provider
+                    value={{ viewportHeight: 300, itemHeight: 100 }}
                   >
-                    <VirtuosoMockContext.Provider
-                      value={{ viewportHeight: 300, itemHeight: 100 }}
-                    >
-                      <ContactFlow {...contactFlowProps} />
-                    </VirtuosoMockContext.Provider>
-                  </AppealsContext.Provider>
-                </AppealsWrapper>
-              </GqlMockedProvider>
-            </TestRouter>
-          </ThemeProvider>
-        </DndProvider>
-      </SnackbarProvider>
-    </LocalizationProvider>
-  </I18nextProvider>
+                    <ContactFlow {...contactFlowProps} />
+                  </VirtuosoMockContext.Provider>
+                </AppealsContext.Provider>
+              </AppealsWrapper>
+            </GqlMockedProvider>
+          </TestRouter>
+        </ThemeProvider>
+      </DndProvider>
+    </SnackbarProvider>
+  </LocalizationProvider>
 );
 
 describe('ContactFlow', () => {

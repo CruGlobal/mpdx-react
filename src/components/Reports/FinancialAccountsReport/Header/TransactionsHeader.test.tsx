@@ -6,11 +6,9 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
-import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
-import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import {
   FinancialAccountQuery,
@@ -32,56 +30,54 @@ interface ComponentsProps {
 
 const Components = ({ disableExportCSV = false }: ComponentsProps) => {
   return (
-    <I18nextProvider i18n={i18n}>
-      <LocalizationProvider dateAdapter={AdapterLuxon}>
-        <SnackbarProvider>
-          <ThemeProvider theme={theme}>
-            <TestRouter
-              router={{
-                query: { accountListId },
-                isReady: true,
-              }}
-            >
-              <UrlFiltersProvider>
-                <GqlMockedProvider<{
-                  FinancialAccount: FinancialAccountQuery;
-                }>
-                  mocks={{
-                    FinancialAccount: defaultFinancialAccount,
+    <LocalizationProvider dateAdapter={AdapterLuxon}>
+      <SnackbarProvider>
+        <ThemeProvider theme={theme}>
+          <TestRouter
+            router={{
+              query: { accountListId },
+              isReady: true,
+            }}
+          >
+            <UrlFiltersProvider>
+              <GqlMockedProvider<{
+                FinancialAccount: FinancialAccountQuery;
+              }>
+                mocks={{
+                  FinancialAccount: defaultFinancialAccount,
+                }}
+              >
+                <FinancialAccountContext.Provider
+                  value={{
+                    accountListId,
+                    financialAccountId,
+                    financialAccountQuery: {
+                      data: defaultFinancialAccount,
+                      loading: false,
+                    } as unknown as QueryResult<
+                      FinancialAccountQuery,
+                      FinancialAccountQueryVariables
+                    >,
+                    isNavListOpen: false,
+                    designationAccounts: [],
+                    setDesignationAccounts: jest.fn(),
+                    panelOpen: null,
+                    setPanelOpen: jest.fn(),
+                    handleNavListToggle,
+                    handleFilterListToggle,
                   }}
                 >
-                  <FinancialAccountContext.Provider
-                    value={{
-                      accountListId,
-                      financialAccountId,
-                      financialAccountQuery: {
-                        data: defaultFinancialAccount,
-                        loading: false,
-                      } as unknown as QueryResult<
-                        FinancialAccountQuery,
-                        FinancialAccountQueryVariables
-                      >,
-                      isNavListOpen: false,
-                      designationAccounts: [],
-                      setDesignationAccounts: jest.fn(),
-                      panelOpen: null,
-                      setPanelOpen: jest.fn(),
-                      handleNavListToggle,
-                      handleFilterListToggle,
-                    }}
-                  >
-                    <TransactionsHeader
-                      disableExportCSV={disableExportCSV}
-                      handleExportCSV={handleExportCSV}
-                    />
-                  </FinancialAccountContext.Provider>
-                </GqlMockedProvider>
-              </UrlFiltersProvider>
-            </TestRouter>
-          </ThemeProvider>
-        </SnackbarProvider>
-      </LocalizationProvider>
-    </I18nextProvider>
+                  <TransactionsHeader
+                    disableExportCSV={disableExportCSV}
+                    handleExportCSV={handleExportCSV}
+                  />
+                </FinancialAccountContext.Provider>
+              </GqlMockedProvider>
+            </UrlFiltersProvider>
+          </TestRouter>
+        </ThemeProvider>
+      </SnackbarProvider>
+    </LocalizationProvider>
   );
 };
 

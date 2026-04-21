@@ -4,10 +4,8 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { render } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
-import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import {
   AccountSummary,
@@ -32,26 +30,24 @@ const mutationSpy = jest.fn();
 const handleNavListToggle = jest.fn();
 
 const Component = () => (
-  <I18nextProvider i18n={i18n}>
-    <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <SnackbarProvider>
-        <ThemeProvider theme={theme}>
-          <TestRouter router={router}>
-            <GqlMockedProvider<{
-              FinancialAccountSummary: FinancialAccountSummaryQuery;
-            }>
-              mocks={{
-                FinancialAccountSummary: defaultFinancialAccountSummary,
-              }}
-              onCall={mutationSpy}
-            >
-              <AccountSummary handleNavListToggle={handleNavListToggle} />
-            </GqlMockedProvider>
-          </TestRouter>
-        </ThemeProvider>
-      </SnackbarProvider>
-    </LocalizationProvider>
-  </I18nextProvider>
+  <LocalizationProvider dateAdapter={AdapterLuxon}>
+    <SnackbarProvider>
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider<{
+            FinancialAccountSummary: FinancialAccountSummaryQuery;
+          }>
+            mocks={{
+              FinancialAccountSummary: defaultFinancialAccountSummary,
+            }}
+            onCall={mutationSpy}
+          >
+            <AccountSummary handleNavListToggle={handleNavListToggle} />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>
+    </SnackbarProvider>
+  </LocalizationProvider>
 );
 
 describe('AccountSummary', () => {

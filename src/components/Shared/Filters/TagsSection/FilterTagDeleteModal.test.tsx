@@ -52,7 +52,7 @@ describe('FilterTagDeleteModal', () => {
     );
     expect(
       getByText(
-        'Are you sure you want to completely delete this tag ({{tagName}}) and remove it from all tasks?',
+        'Are you sure you want to completely delete this tag (test) and remove it from all tasks?',
       ),
     ).toBeInTheDocument();
   });

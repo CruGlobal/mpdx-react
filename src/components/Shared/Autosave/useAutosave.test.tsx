@@ -3,7 +3,7 @@ import { MenuItem, TextField } from '@mui/material';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as yup from 'yup';
-import i18next from 'src/lib/i18n';
+import i18n from 'src/lib/i18n';
 import { amount } from 'src/lib/yupHelpers';
 import { useAutoSave } from './useAutosave';
 
@@ -19,7 +19,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   required = false,
 }) => {
   const schema = yup.object({
-    field: amount('Field', i18next.t, { required }),
+    field: amount('Field', i18n.t, { required }),
   });
 
   const props = useAutoSave({
@@ -35,7 +35,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
 
 const SelectTestComponent: React.FC = () => {
   const schema = yup.object({
-    field: amount('Field', i18next.t),
+    field: amount('Field', i18n.t),
   });
 
   const props = useAutoSave({

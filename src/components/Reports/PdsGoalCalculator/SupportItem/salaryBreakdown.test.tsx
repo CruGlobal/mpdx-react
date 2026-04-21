@@ -1,7 +1,7 @@
 import { DataGrid } from '@mui/x-data-grid';
 import { render } from '@testing-library/react';
-import { t } from 'i18next';
 import { DesignationSupportSalaryType } from 'src/graphql/types.generated';
+import i18n from 'src/lib/i18n';
 import { SalaryCalculationFields } from '../calculations/salaryCalculation';
 import {
   SalaryBreakdownRow,
@@ -31,7 +31,7 @@ const renderBreakdown = (rows: SalaryBreakdownRow[]) =>
     <div style={{ height: 500 }}>
       <DataGrid
         rows={rows}
-        columns={buildSalaryBreakdownColumns('en-US', t)}
+        columns={buildSalaryBreakdownColumns('en-US', i18n.t)}
         hideFooter
         disableVirtualization
       />
@@ -44,7 +44,7 @@ describe('buildSalaryBreakdownRows', () => {
       salariedCalculation,
       constants,
       'en-US',
-      t,
+      i18n.t,
     );
     expect(rows.map((row) => row.id)).toEqual([
       'pay-rate',
@@ -61,7 +61,7 @@ describe('buildSalaryBreakdownRows', () => {
       salariedCalculation,
       constants,
       'en-US',
-      t,
+      i18n.t,
     );
     const byId = Object.fromEntries(rows.map((r) => [r.id, r.amount]));
 
@@ -84,7 +84,7 @@ describe('buildSalaryBreakdownRows', () => {
       hourlyCalculation,
       constants,
       'en-US',
-      t,
+      i18n.t,
     );
     const byId = Object.fromEntries(rows.map((r) => [r.id, r.amount]));
 
@@ -107,7 +107,7 @@ describe('buildSalaryBreakdownRows', () => {
       hourlyCalculation,
       constants,
       'en-US',
-      t,
+      i18n.t,
     );
     expect(rows.map((row) => row.id)).toEqual([
       'pay-rate',

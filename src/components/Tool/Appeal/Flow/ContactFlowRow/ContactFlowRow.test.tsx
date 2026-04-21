@@ -7,11 +7,9 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
-import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import {
   AppealStatusEnum,
@@ -50,38 +48,36 @@ const Components = ({
   contact = defaultContact,
   excludedContacts = [],
 }: ComponentsProps) => (
-  <I18nextProvider i18n={i18n}>
-    <LocalizationProvider dateAdapter={AdapterLuxon}>
-      <DndProvider backend={HTML5Backend}>
-        <ThemeProvider theme={theme}>
-          <TestRouter router={router}>
-            <GqlMockedProvider>
-              <SnackbarProvider>
-                <AppealsWrapper>
-                  <AppealsContext.Provider
-                    value={
-                      {
-                        appealId,
-                        isRowChecked: isChecked,
-                        toggleSelectionById,
-                      } as unknown as AppealsType
-                    }
-                  >
-                    <ContactFlowRow
-                      accountListId={accountListId}
-                      contact={contact}
-                      appealStatus={appealStatus}
-                      excludedContacts={excludedContacts}
-                    />
-                  </AppealsContext.Provider>
-                </AppealsWrapper>
-              </SnackbarProvider>
-            </GqlMockedProvider>
-          </TestRouter>
-        </ThemeProvider>
-      </DndProvider>
-    </LocalizationProvider>
-  </I18nextProvider>
+  <LocalizationProvider dateAdapter={AdapterLuxon}>
+    <DndProvider backend={HTML5Backend}>
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider>
+            <SnackbarProvider>
+              <AppealsWrapper>
+                <AppealsContext.Provider
+                  value={
+                    {
+                      appealId,
+                      isRowChecked: isChecked,
+                      toggleSelectionById,
+                    } as unknown as AppealsType
+                  }
+                >
+                  <ContactFlowRow
+                    accountListId={accountListId}
+                    contact={contact}
+                    appealStatus={appealStatus}
+                    excludedContacts={excludedContacts}
+                  />
+                </AppealsContext.Provider>
+              </AppealsWrapper>
+            </SnackbarProvider>
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>
+    </DndProvider>
+  </LocalizationProvider>
 );
 
 describe('ContactFlowRow', () => {

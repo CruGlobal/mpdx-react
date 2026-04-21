@@ -1,7 +1,7 @@
 import { DataGrid } from '@mui/x-data-grid';
 import { render } from '@testing-library/react';
-import { t } from 'i18next';
 import { DesignationSupportStatus } from 'src/graphql/types.generated';
+import i18n from 'src/lib/i18n';
 import {
   OtherExpensesConstants,
   OtherExpensesFields,
@@ -43,7 +43,7 @@ const renderBreakdown = (rows: OtherBreakdownRow[]) =>
     <div style={{ height: 500 }}>
       <DataGrid
         rows={rows}
-        columns={buildOtherBreakdownColumns('en-US', t)}
+        columns={buildOtherBreakdownColumns('en-US', i18n.t)}
         hideFooter
         disableVirtualization
       />
@@ -56,7 +56,7 @@ describe('buildOtherBreakdownRows', () => {
       fullTimeCalculation,
       constants,
       'en-US',
-      t,
+      i18n.t,
     );
     expect(rows.map((row) => row.id)).toEqual([
       'reimbursable-expenses',
@@ -74,7 +74,7 @@ describe('buildOtherBreakdownRows', () => {
       partTimeCalculation,
       constants,
       'en-US',
-      t,
+      i18n.t,
     );
     expect(rows.map((row) => row.id)).toEqual([
       'reimbursable-expenses',
@@ -92,7 +92,7 @@ describe('buildOtherBreakdownRows', () => {
       nullStatusCalculation,
       constants,
       'en-US',
-      t,
+      i18n.t,
     );
     expect(rows.map((row) => row.id)).toEqual([
       'reimbursable-expenses',
@@ -109,7 +109,7 @@ describe('buildOtherBreakdownRows', () => {
       fullTimeCalculation,
       constants,
       'en-US',
-      t,
+      i18n.t,
     );
     const boldIds = rows.filter((row) => row.bold).map((row) => row.id);
     expect(boldIds).toEqual([
@@ -125,7 +125,7 @@ describe('buildOtherBreakdownRows', () => {
       fullTimeCalculation,
       constants,
       'en-US',
-      t,
+      i18n.t,
     );
     rows.forEach((row) => {
       expect(row.testId).toBeDefined();

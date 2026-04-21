@@ -2,12 +2,10 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { FormikProvider, useFormik } from 'formik';
 import { SnackbarProvider } from 'notistack';
-import { I18nextProvider } from 'react-i18next';
 import * as yup from 'yup';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
-import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
 import { ApprovalProcess } from './ApprovalProcess';
@@ -61,17 +59,15 @@ const TestComponent: React.FC<{
 }> = ({ onForm }) => {
   return (
     <ThemeProvider theme={theme}>
-      <I18nextProvider i18n={i18n}>
-        <TestRouter>
-          <SnackbarProvider>
-            <GqlMockedProvider>
-              <TestFormikWrapper>
-                <ApprovalProcess onForm={onForm} />
-              </TestFormikWrapper>
-            </GqlMockedProvider>
-          </SnackbarProvider>
-        </TestRouter>
-      </I18nextProvider>
+      <TestRouter>
+        <SnackbarProvider>
+          <GqlMockedProvider>
+            <TestFormikWrapper>
+              <ApprovalProcess onForm={onForm} />
+            </TestFormikWrapper>
+          </GqlMockedProvider>
+        </SnackbarProvider>
+      </TestRouter>
     </ThemeProvider>
   );
 };

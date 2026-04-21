@@ -2,11 +2,9 @@ import React from 'react';
 import { ThemeProvider } from '@emotion/react';
 import { render } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
-import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { AsrStatusEnum } from 'src/graphql/types.generated';
-import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { AdditionalSalaryRequestProvider } from '../Shared/AdditionalSalaryRequestContext';
 import { EligibleDisplay } from './EligibleDisplay';
@@ -35,40 +33,38 @@ const TestWrapper: React.FC<TestWrapperProps> = ({
 
   return (
     <ThemeProvider theme={theme}>
-      <I18nextProvider i18n={i18n}>
-        <TestRouter
-          router={{
-            query: {
-              accountListId,
-            },
-          }}
-        >
-          <SnackbarProvider>
-            <GqlMockedProvider
-              mocks={{
-                HcmData: hcmData,
-                AdditionalSalaryRequest: {
-                  latestAdditionalSalaryRequest: status
-                    ? {
-                        id: 'asr-1',
-                        status,
-                      }
-                    : null,
+      <TestRouter
+        router={{
+          query: {
+            accountListId,
+          },
+        }}
+      >
+        <SnackbarProvider>
+          <GqlMockedProvider
+            mocks={{
+              HcmData: hcmData,
+              AdditionalSalaryRequest: {
+                latestAdditionalSalaryRequest: status
+                  ? {
+                      id: 'asr-1',
+                      status,
+                    }
+                  : null,
+              },
+              StaffAccountId: {
+                user: {
+                  staffAccountId: 'staff-account-1',
                 },
-                StaffAccountId: {
-                  user: {
-                    staffAccountId: 'staff-account-1',
-                  },
-                },
-              }}
-            >
-              <AdditionalSalaryRequestProvider>
-                <EligibleDisplay />
-              </AdditionalSalaryRequestProvider>
-            </GqlMockedProvider>
-          </SnackbarProvider>
-        </TestRouter>
-      </I18nextProvider>
+              },
+            }}
+          >
+            <AdditionalSalaryRequestProvider>
+              <EligibleDisplay />
+            </AdditionalSalaryRequestProvider>
+          </GqlMockedProvider>
+        </SnackbarProvider>
+      </TestRouter>
     </ThemeProvider>
   );
 };
