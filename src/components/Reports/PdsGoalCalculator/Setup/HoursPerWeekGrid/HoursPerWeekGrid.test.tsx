@@ -117,6 +117,33 @@ describe('HoursPerWeekGrid', () => {
     expect(await findByText('0.0')).toBeInTheDocument();
   });
 
+  it('clamps weeks to 52 total across all entries', async () => {
+    const { findByText, getByDisplayValue } = render(
+      <TestWrapper>
+        <HoursPerWeekGrid />
+      </TestWrapper>,
+    );
+
+    // Default: Regular Week has 48 weeks, Travel and Vacation have 0
+    // Edit Travel weeks to 10 — should be clamped to 4 (52 - 48 = 4 remaining)
+    const travelRow = (await findByText('Travel')).closest('[role="row"]');
+    const weeksCell = travelRow?.querySelector('[data-field="weeks"]');
+    userEvent.dblClick(weeksCell!);
+
+    await waitFor(() => {
+      const input = getByDisplayValue('0');
+      userEvent.clear(input);
+      userEvent.type(input, '10');
+    });
+    userEvent.tab();
+
+    // The weeks value should be clamped to 4, so total weeks = 48 + 4 = 52
+    await waitFor(() => {
+      const travelWeeksCell = travelRow?.querySelector('[data-field="weeks"]');
+      expect(travelWeeksCell).toHaveTextContent('4');
+    });
+  });
+
   it('removes the row and recomputes the average when delete is clicked', async () => {
     const onAverageHoursChange = jest.fn();
     const { getByText, queryByText, getByLabelText, findByText } = render(
