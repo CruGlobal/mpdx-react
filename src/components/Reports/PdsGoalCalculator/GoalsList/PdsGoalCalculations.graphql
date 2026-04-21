@@ -110,4 +110,3 @@ mutation DeleteDesignationSupportHoursItem($id: ID!) {
     id
   }
 }
-

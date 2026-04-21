@@ -1,4 +1,6 @@
 import { useCallback } from 'react';
+import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
 import { usePdsGoalCalculator } from 'src/components/Reports/PdsGoalCalculator/Shared/PdsGoalCalculatorContext';
 import { DesignationSupportCalculationUpdateInput } from 'src/graphql/types.generated';
 import { useUpdatePdsGoalCalculationMutation } from '../../GoalsList/PdsGoalCalculations.generated';
@@ -6,6 +8,8 @@ import { useUpdatePdsGoalCalculationMutation } from '../../GoalsList/PdsGoalCalc
 export const useSaveField = () => {
   const { calculation, trackMutation } = usePdsGoalCalculator();
   const [updatePdsGoalCalculation] = useUpdatePdsGoalCalculationMutation();
+  const { enqueueSnackbar } = useSnackbar();
+  const { t } = useTranslation();
 
   const saveField = useCallback(
     async (attributes: Partial<DesignationSupportCalculationUpdateInput>) => {
@@ -20,28 +24,35 @@ export const useSaveField = () => {
         return;
       }
 
-      return trackMutation(
-        updatePdsGoalCalculation({
-          variables: {
-            attributes: {
-              id: calculation.id,
-              ...attributes,
-            },
-          },
-          optimisticResponse: {
-            updateDesignationSupportCalculation: {
-              __typename: 'DesignationSupportCalculationUpdateMutationPayload',
-              designationSupportCalculation: {
-                __typename: 'DesignationSupportCalculation',
-                ...calculation,
+      try {
+        return await trackMutation(
+          updatePdsGoalCalculation({
+            variables: {
+              attributes: {
+                id: calculation.id,
                 ...attributes,
               },
             },
-          },
-        }),
-      );
+            optimisticResponse: {
+              updateDesignationSupportCalculation: {
+                __typename:
+                  'DesignationSupportCalculationUpdateMutationPayload',
+                designationSupportCalculation: {
+                  __typename: 'DesignationSupportCalculation',
+                  ...calculation,
+                  ...attributes,
+                },
+              },
+            },
+          }),
+        );
+      } catch {
+        enqueueSnackbar(t('Failed to save changes. Please try again.'), {
+          variant: 'error',
+        });
+      }
     },
-    [calculation, trackMutation, updatePdsGoalCalculation],
+    [calculation, trackMutation, updatePdsGoalCalculation, enqueueSnackbar, t],
   );
 
   return saveField;
