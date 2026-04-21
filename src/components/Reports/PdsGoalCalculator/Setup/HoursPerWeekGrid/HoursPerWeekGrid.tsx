@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next';
 import { BaseGrid } from 'src/components/Reports/GoalCalculator/SharedComponents/GoalCalculatorGrid/BaseGrid';
 import {
   useCreateDesignationSupportHoursItemMutation,
+  useDeleteDesignationSupportHoursItemMutation,
   useUpdateDesignationSupportHoursItemMutation,
 } from '../../GoalsList/PdsGoalCalculations.generated';
 import { useSaveField } from '../../Shared/Autosave/useSaveField';
@@ -58,6 +59,7 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
   const { calculation, trackMutation } = usePdsGoalCalculator();
   const [createHoursItem] = useCreateDesignationSupportHoursItemMutation();
   const [updateHoursItem] = useUpdateDesignationSupportHoursItemMutation();
+  const [deleteHoursItem] = useDeleteDesignationSupportHoursItemMutation();
   const saveField = useSaveField();
 
   const [entries, setEntries] = useState<HoursPerWeekEntry[]>(() => {
@@ -223,9 +225,40 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
     }
   }, [t, calculation, createHoursItem, trackMutation, entries.length]);
 
-  const deleteEntry = useCallback((id: string | number) => {
-    setEntries((prev) => prev.filter((entry) => entry.id !== id.toString()));
-  }, []);
+  const deleteEntry = useCallback(
+    async (id: string | number) => {
+      const entryId = id.toString();
+      const remainingEntries = entries.filter(
+        (entry) => entry.id !== entryId,
+      );
+      setEntries(remainingEntries);
+
+      // Recalculate and autosave the average
+      const newTotalWeeks = remainingEntries.reduce(
+        (sum, e) => sum + e.weeks,
+        0,
+      );
+      const newTotalHours = remainingEntries.reduce(
+        (sum, e) => sum + e.hoursPerWeek * e.weeks,
+        0,
+      );
+      const newAverage =
+        newTotalWeeks > 0 ? newTotalHours / newTotalWeeks : 0;
+      saveField({
+        averageHoursPerWeek: Math.round(newAverage * 10) / 10,
+      });
+
+      if (!entryId.startsWith('temp-') && !entryId.startsWith('default-')) {
+        await trackMutation(
+          deleteHoursItem({
+            variables: { id: entryId },
+            refetchQueries: ['PdsGoalCalculation'],
+          }),
+        );
+      }
+    },
+    [entries, deleteHoursItem, trackMutation, saveField],
+  );
 
   const processRowUpdate = useCallback(
     (newRow: GridValidRowModel) => {

@@ -104,3 +104,10 @@ mutation UpdateDesignationSupportHoursItem(
     }
   }
 }
+
+mutation DeleteDesignationSupportHoursItem($id: ID!) {
+  deleteDesignationSupportHoursItem(input: { id: $id }) {
+    id
+  }
+}
+
