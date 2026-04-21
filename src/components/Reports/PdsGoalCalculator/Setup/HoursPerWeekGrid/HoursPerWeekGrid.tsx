@@ -13,6 +13,7 @@ import {
   useCreateDesignationSupportHoursItemMutation,
   useUpdateDesignationSupportHoursItemMutation,
 } from '../../GoalsList/PdsGoalCalculations.generated';
+import { useSaveField } from '../../Shared/Autosave/useSaveField';
 import { usePdsGoalCalculator } from '../../Shared/PdsGoalCalculatorContext';
 
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -49,6 +50,7 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
   const { calculation, trackMutation } = usePdsGoalCalculator();
   const [createHoursItem] = useCreateDesignationSupportHoursItemMutation();
   const [updateHoursItem] = useUpdateDesignationSupportHoursItemMutation();
+  const saveField = useSaveField();
 
   const [entries, setEntries] = useState<HoursPerWeekEntry[]>(() => {
     const items = calculation?.designationSupportHoursItems;
@@ -244,9 +246,27 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
 
       saveHoursItem(updatedEntry, entries);
 
+      // Autosave the recalculated average to the calculation
+      const updatedEntries = entries.map((e) =>
+        e.id === updatedEntry.id ? updatedEntry : e,
+      );
+      const newTotalWeeks = updatedEntries.reduce(
+        (sum, e) => sum + e.weeks,
+        0,
+      );
+      const newTotalHours = updatedEntries.reduce(
+        (sum, e) => sum + e.hoursPerWeek * e.weeks,
+        0,
+      );
+      const newAverage =
+        newTotalWeeks > 0 ? newTotalHours / newTotalWeeks : 0;
+      saveField({
+        averageHoursPerWeek: Math.round(newAverage * 10) / 10,
+      });
+
       return { ...newRow, weeks: Math.max(0, clampedWeeks) };
     },
-    [updateEntry, entries, saveHoursItem],
+    [updateEntry, entries, saveHoursItem, saveField],
   );
 
   const dataWithTotal = useMemo(
