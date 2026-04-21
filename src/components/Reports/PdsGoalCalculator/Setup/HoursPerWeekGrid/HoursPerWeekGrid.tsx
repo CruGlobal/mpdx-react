@@ -138,7 +138,7 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
       }
 
       try {
-        if (entry.id.startsWith('temp-') || entry.id.startsWith('default-')) {
+        if (entry.id.startsWith('default-')) {
           const result = await trackMutation(
             createHoursItem({
               variables: {
@@ -481,6 +481,12 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
           }}
           isCellEditable={(params) => {
             if (params.id === 'total') {
+              return false;
+            }
+            if (
+              typeof params.id === 'string' &&
+              params.id.startsWith('temp-')
+            ) {
               return false;
             }
             if (params.field === 'label' && !params.row.canDelete) {
