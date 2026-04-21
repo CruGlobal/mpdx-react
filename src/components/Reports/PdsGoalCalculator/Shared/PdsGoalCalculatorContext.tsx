@@ -2,6 +2,10 @@ import { useRouter } from 'next/router';
 import React, { createContext, useCallback, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import {
+  GoalGeographicConstantMap,
+  useGoalCalculatorConstants,
+} from 'src/hooks/useGoalCalculatorConstants';
 import { useTrackMutation } from 'src/hooks/useTrackMutation';
 import {
   PdsGoalCalculationFieldsFragment,
@@ -11,6 +15,14 @@ import { PdsGoalCalculatorStepEnum } from '../PdsGoalCalculatorHelper';
 import { HcmUserQuery, useHcmUserQuery } from './HCM.generated';
 import { PdsGoalCalculatorStep, useSteps } from './useSteps';
 
+export interface PdsGoalCalculatorConstants {
+  reimbursableFloor: number | undefined;
+  employerFicaRate: number | undefined;
+  phoneMax: number | undefined;
+  internetMax: number | undefined;
+  geographicMultipliers: GoalGeographicConstantMap;
+}
+
 export type PdsGoalCalculatorType = {
   steps: PdsGoalCalculatorStep[];
   currentStep: PdsGoalCalculatorStep;
@@ -18,6 +30,7 @@ export type PdsGoalCalculatorType = {
   calculation?: PdsGoalCalculationFieldsFragment;
   calculationLoading: boolean;
   hcmUser?: HcmUserQuery['hcm'][number];
+  constants: PdsGoalCalculatorConstants;
 
   /** Whether any mutations are currently in progress */
   isMutating: boolean;
@@ -71,6 +84,21 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const { data: hcmData } = useHcmUserQuery();
   const hcmUser = hcmData?.hcm[0];
 
+  const { goalMiscConstants, goalGeographicConstantMap } =
+    useGoalCalculatorConstants();
+  const constants = useMemo<PdsGoalCalculatorConstants>(
+    () => ({
+      reimbursableFloor:
+        goalMiscConstants.ADDITIONAL_RATES?.MINIMUM_REIMBURSABLE?.fee,
+      employerFicaRate:
+        goalMiscConstants.ADDITIONAL_RATES?.EMPLOYER_FICA_RATE?.fee,
+      phoneMax: goalMiscConstants.REIMBURSEMENTS_WITH_MAXIMUM?.PHONE?.fee,
+      internetMax: goalMiscConstants.REIMBURSEMENTS_WITH_MAXIMUM?.INTERNET?.fee,
+      geographicMultipliers: goalGeographicConstantMap,
+    }),
+    [goalMiscConstants, goalGeographicConstantMap],
+  );
+
   const steps = useSteps();
   const [stepIndex, setStepIndex] = useState(0);
   const [rightPanelContent, setRightPanelContent] =
@@ -121,6 +149,7 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       stepIndex,
       calculation,
       calculationLoading,
+      constants,
       isMutating,
       trackMutation,
       hcmUser,
@@ -140,6 +169,7 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       stepIndex,
       calculation,
       calculationLoading,
+      constants,
       isMutating,
       trackMutation,
       hcmUser,

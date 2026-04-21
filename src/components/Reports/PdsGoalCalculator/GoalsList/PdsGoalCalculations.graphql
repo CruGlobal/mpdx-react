@@ -18,6 +18,8 @@ fragment PdsGoalCalculationFields on DesignationSupportCalculation {
   conferenceRetreatCosts
   ministryTravelMeals
   otherAnnualReimbursements
+  totalReimbursableExpenses
+  totalMonthlySupportGoal
 }
 
 query PdsGoalCalculations($after: String) {

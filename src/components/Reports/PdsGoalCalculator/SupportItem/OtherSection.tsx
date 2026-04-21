@@ -18,12 +18,12 @@ export const OtherSection: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
   const localeText = useDataGridLocaleText();
-  const { calculation, hcmUser } = usePdsGoalCalculator();
-  const { goalMiscConstants, goalGeographicConstantMap } =
-    useGoalCalculatorConstants();
+  const { calculation, hcmUser, constants } = usePdsGoalCalculator();
+  const { reimbursableFloor, employerFicaRate, geographicMultipliers } =
+    constants;
+  const { goalMiscConstants } = useGoalCalculatorConstants();
 
   const additionalRates = goalMiscConstants.ADDITIONAL_RATES;
-  const employerFicaRate = additionalRates?.EMPLOYER_FICA_RATE?.fee;
   const workCompPercentage = additionalRates?.PART_TIME_WORK_COMPENSATION?.fee;
   const attritionRate = goalMiscConstants.RATES?.ATTRITION_RATE?.fee;
   const creditCardFeeRate = additionalRates?.CREDIT_CARD_FEE_RATE?.fee;
@@ -33,6 +33,7 @@ export const OtherSection: React.FC = () => {
     if (
       !calculation ||
       employerFicaRate === undefined ||
+      reimbursableFloor === undefined ||
       workCompPercentage === undefined ||
       attritionRate === undefined ||
       creditCardFeeRate === undefined ||
@@ -42,13 +43,16 @@ export const OtherSection: React.FC = () => {
     }
 
     const geographicMultiplier =
-      goalGeographicConstantMap.get(calculation.geographicLocation ?? '') ?? 0;
+      geographicMultipliers.get(calculation.geographicLocation ?? '') ?? 0;
 
     const salaryTotals = calculateSalaryTotals(calculation, {
       geographicMultiplier,
       employerFicaRate,
     });
-    const reimbursableTotals = calculateReimbursableTotals(calculation);
+    const reimbursableTotals = calculateReimbursableTotals(
+      calculation,
+      reimbursableFloor,
+    );
 
     const taxDeferredPct =
       (hcmUser?.fourOThreeB?.currentTaxDeferredContributionPercentage ?? 0) /
@@ -71,12 +75,13 @@ export const OtherSection: React.FC = () => {
   }, [
     calculation,
     hcmUser,
+    reimbursableFloor,
     employerFicaRate,
     workCompPercentage,
     attritionRate,
     creditCardFeeRate,
     adminRate,
-    goalGeographicConstantMap,
+    geographicMultipliers,
     locale,
     t,
   ]);

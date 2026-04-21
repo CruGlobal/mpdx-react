@@ -1,6 +1,10 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import {
+  MpdGoalMiscConstantCategoryEnum,
+  MpdGoalMiscConstantLabelEnum,
+} from 'src/graphql/types.generated';
 import { PdsGoalCalculatorTestWrapper } from '../PdsGoalCalculatorTestWrapper';
 import { TotalReimbursableSection } from './TotalReimbursableSection';
 
@@ -25,6 +29,15 @@ const TestComponent: React.FC<Props> = ({
       conferenceRetreatCosts: annualConference,
       ministryTravelMeals: 0,
       otherAnnualReimbursements: 0,
+    }}
+    constantsMock={{
+      mpdGoalMiscConstants: [
+        {
+          category: MpdGoalMiscConstantCategoryEnum.AdditionalRates,
+          label: MpdGoalMiscConstantLabelEnum.MinimumReimbursable,
+          fee: 300,
+        },
+      ],
     }}
   >
     <TotalReimbursableSection />

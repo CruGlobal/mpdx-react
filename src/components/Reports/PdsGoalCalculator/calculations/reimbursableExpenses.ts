@@ -1,7 +1,5 @@
 import { DesignationSupportCalculation } from 'src/graphql/types.generated';
 
-export const REIMBURSABLE_FLOOR = 300;
-
 export type ReimbursableCalculationFields = Pick<
   DesignationSupportCalculation,
   | 'ministryCellPhone'
@@ -25,6 +23,7 @@ export interface ReimbursableTotals {
 
 export const calculateReimbursableTotals = (
   calculation: ReimbursableCalculationFields,
+  floor = 0,
 ): ReimbursableTotals => {
   const monthlySubtotal =
     (calculation.ministryCellPhone ?? 0) +
@@ -38,12 +37,12 @@ export const calculateReimbursableTotals = (
     (calculation.ministryTravelMeals ?? 0) +
     (calculation.otherAnnualReimbursements ?? 0);
   const raw = monthlySubtotal + annualSubtotal / 12;
-  const total = Math.max(REIMBURSABLE_FLOOR, raw);
+  const total = Math.max(floor, raw);
   return {
     monthlySubtotal,
     annualSubtotal,
     raw,
     total,
-    floorApplied: raw <= REIMBURSABLE_FLOOR,
+    floorApplied: raw <= floor,
   };
 };

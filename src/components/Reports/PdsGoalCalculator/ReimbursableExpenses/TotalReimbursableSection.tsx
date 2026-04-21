@@ -8,13 +8,11 @@ import {
   styled,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { usePdsGoalCalculator } from '../Shared/PdsGoalCalculatorContext';
-import {
-  REIMBURSABLE_FLOOR,
-  calculateReimbursableTotals,
-} from '../calculations/reimbursableExpenses';
+import { calculateReimbursableTotals } from '../calculations/reimbursableExpenses';
 
 const AmountTypography = styled(Typography)(({ theme }) => ({
   fontSize: '2.5rem',
@@ -26,12 +24,15 @@ export const TotalReimbursableSection: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
   const { calculation } = usePdsGoalCalculator();
+  const { goalMiscConstants } = useGoalCalculatorConstants();
+  const reimbursableFloor =
+    goalMiscConstants.ADDITIONAL_RATES?.MINIMUM_REIMBURSABLE?.fee ?? 0;
 
   if (!calculation) {
     return null;
   }
 
-  const { total } = calculateReimbursableTotals(calculation);
+  const { total } = calculateReimbursableTotals(calculation, reimbursableFloor);
 
   return (
     <Card>
@@ -44,7 +45,7 @@ export const TotalReimbursableSection: React.FC = () => {
             title={t(
               'The total is the greater of the {{floor}} minimum or your calculated amount.',
               {
-                floor: currencyFormat(REIMBURSABLE_FLOOR, 'USD', locale),
+                floor: currencyFormat(reimbursableFloor, 'USD', locale),
               },
             )}
           >

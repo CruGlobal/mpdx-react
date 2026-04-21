@@ -197,6 +197,12 @@ export const PdsGoalCalculatorTestWrapper: React.FC<
                         label: MpdGoalMiscConstantLabelEnum.AdminRate,
                         fee: 0.12,
                       },
+                      {
+                        category:
+                          MpdGoalMiscConstantCategoryEnum.AdditionalRates,
+                        label: MpdGoalMiscConstantLabelEnum.MinimumReimbursable,
+                        fee: 300,
+                      },
                     ],
                   },
                   constantsMock,

@@ -1,10 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import {
-  MpdGoalMiscConstantCategoryEnum,
-  MpdGoalMiscConstantLabelEnum,
-} from 'src/graphql/types.generated';
 import { PdsGoalCalculatorTestWrapper } from '../PdsGoalCalculatorTestWrapper';
 import { PdsGoalsList } from './PdsGoalsList';
 
@@ -49,44 +45,18 @@ describe('PdsGoalsList', () => {
     expect(queryByTestId('goal-name')).not.toBeInTheDocument();
   });
 
-  it('seeds reimbursable defaults from MPD constants on create', async () => {
+  it('creates a new goal with empty attributes so the server applies defaults', async () => {
     const { findByRole } = render(
-      <PdsGoalCalculatorTestWrapper
-        withProvider={false}
-        onCall={mutationSpy}
-        constantsMock={{
-          mpdGoalMiscConstants: [
-            {
-              category:
-                MpdGoalMiscConstantCategoryEnum.ReimbursementsWithMaximum,
-              label: MpdGoalMiscConstantLabelEnum.Phone,
-              fee: 75,
-            },
-            {
-              category:
-                MpdGoalMiscConstantCategoryEnum.ReimbursementsWithMaximum,
-              label: MpdGoalMiscConstantLabelEnum.Internet,
-              fee: 50,
-            },
-          ],
-        }}
-      >
+      <PdsGoalCalculatorTestWrapper withProvider={false} onCall={mutationSpy}>
         <PdsGoalsList />
       </PdsGoalCalculatorTestWrapper>,
     );
 
-    const button = await findByRole('button', { name: 'Create a New Goal' });
-    await waitFor(() => {
-      expect(button).toBeEnabled();
-    });
-    userEvent.click(button);
+    userEvent.click(await findByRole('button', { name: 'Create a New Goal' }));
 
     await waitFor(() => {
       expect(mutationSpy).toHaveGraphqlOperation('CreatePdsGoalCalculation', {
-        attributes: {
-          ministryCellPhone: 75,
-          ministryInternet: 50,
-        },
+        attributes: {},
       });
     });
   });

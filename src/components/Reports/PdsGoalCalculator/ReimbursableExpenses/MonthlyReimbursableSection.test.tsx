@@ -21,6 +21,9 @@ const TestComponent: React.FC = () => (
       mpdMiscellaneous: 10,
       accountTransfers: 50,
       otherMonthlyReimbursements: 10,
+      conferenceRetreatCosts: 0,
+      ministryTravelMeals: 0,
+      otherAnnualReimbursements: 0,
     }}
     constantsMock={{
       mpdGoalMiscConstants: [
@@ -33,6 +36,11 @@ const TestComponent: React.FC = () => (
           category: MpdGoalMiscConstantCategoryEnum.ReimbursementsWithMaximum,
           label: MpdGoalMiscConstantLabelEnum.Internet,
           fee: 30,
+        },
+        {
+          category: MpdGoalMiscConstantCategoryEnum.AdditionalRates,
+          label: MpdGoalMiscConstantLabelEnum.MinimumReimbursable,
+          fee: 0,
         },
       ],
     }}
@@ -70,14 +78,18 @@ describe('MonthlyReimbursableSection', () => {
     );
   });
 
-  it('autosaves a valid amount edit', async () => {
+  it('autosaves a valid amount edit along with the recalculated total', async () => {
     const { findByRole } = render(<TestComponent />);
 
     await editAmountCell(findByRole, 'Ministry Cell Phone', '20');
 
+    // monthly = 20 + 30 + 25 + 10 + 50 + 10 = 145; floor = 0 (no constant set)
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('UpdatePdsGoalCalculation', {
-        attributes: { id: 'goal-1', ministryCellPhone: 20 },
+        attributes: {
+          ministryCellPhone: 20,
+          totalReimbursableExpenses: 145,
+        },
       }),
     );
   });
