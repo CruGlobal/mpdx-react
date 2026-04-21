@@ -18,6 +18,15 @@ fragment PdsGoalCalculationFields on DesignationSupportCalculation {
   conferenceRetreatCosts
   ministryTravelMeals
   otherAnnualReimbursements
+  designationSupportHoursItems {
+    id
+    hoursPerWeek
+    numberOfWeeks
+    name
+    label
+    position
+    predefined
+  }
 }
 
 query PdsGoalCalculations($after: String) {
@@ -60,6 +69,38 @@ mutation UpdatePdsGoalCalculation(
   updateDesignationSupportCalculation(input: { attributes: $attributes }) {
     designationSupportCalculation {
       ...PdsGoalCalculationFields
+    }
+  }
+}
+
+mutation CreateDesignationSupportHoursItem(
+  $attributes: DesignationSupportHoursItemCreateInput!
+) {
+  createDesignationSupportHoursItem(input: { attributes: $attributes }) {
+    designationSupportHoursItem {
+      id
+      hoursPerWeek
+      numberOfWeeks
+      name
+      label
+      position
+      predefined
+    }
+  }
+}
+
+mutation UpdateDesignationSupportHoursItem(
+  $attributes: DesignationSupportHoursItemUpdateInput!
+) {
+  updateDesignationSupportHoursItem(input: { attributes: $attributes }) {
+    designationSupportHoursItem {
+      id
+      hoursPerWeek
+      numberOfWeeks
+      name
+      label
+      position
+      predefined
     }
   }
 }

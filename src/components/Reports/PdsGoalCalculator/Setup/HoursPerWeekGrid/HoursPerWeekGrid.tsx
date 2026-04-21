@@ -9,6 +9,11 @@ import {
 } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import { BaseGrid } from 'src/components/Reports/GoalCalculator/SharedComponents/GoalCalculatorGrid/BaseGrid';
+import {
+  useCreateDesignationSupportHoursItemMutation,
+  useUpdateDesignationSupportHoursItemMutation,
+} from '../../GoalsList/PdsGoalCalculations.generated';
+import { usePdsGoalCalculator } from '../../Shared/PdsGoalCalculatorContext';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
@@ -28,26 +33,46 @@ export interface HoursPerWeekEntry {
   hoursPerWeek: number;
   weeks: number;
   canDelete: boolean;
+  predefined: boolean;
 }
 
 interface HoursPerWeekGridProps {
-  onAverageHoursChange?: (averageHoursPerWeek: number) => void;
+  onApply?: (averageHoursPerWeek: number) => void;
 }
 
 const MAX_TOTAL_WEEKS = 52;
 
 export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
-  onAverageHoursChange,
+  onApply,
 }) => {
   const { t } = useTranslation();
-  const defaultEntries = useMemo<HoursPerWeekEntry[]>(
-    () => [
+  const { calculation, trackMutation } = usePdsGoalCalculator();
+  const [createHoursItem] = useCreateDesignationSupportHoursItemMutation();
+  const [updateHoursItem] = useUpdateDesignationSupportHoursItemMutation();
+
+  const [entries, setEntries] = useState<HoursPerWeekEntry[]>(() => {
+    const items = calculation?.designationSupportHoursItems;
+    if (items && items.length > 0) {
+      return items
+        .slice()
+        .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+        .map((item) => ({
+          id: item.id,
+          label: item.label,
+          hoursPerWeek: item.hoursPerWeek ?? 0,
+          weeks: item.numberOfWeeks ?? 0,
+          canDelete: !item.predefined,
+          predefined: item.predefined,
+        }));
+    }
+    return [
       {
         id: 'default-regular',
         label: t('Regular Week'),
         hoursPerWeek: 40,
         weeks: 48,
         canDelete: false,
+        predefined: true,
       },
       {
         id: 'default-travel',
@@ -55,6 +80,7 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
         hoursPerWeek: 0,
         weeks: 0,
         canDelete: false,
+        predefined: true,
       },
       {
         id: 'default-vacation',
@@ -62,11 +88,10 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
         hoursPerWeek: 0,
         weeks: 0,
         canDelete: false,
+        predefined: true,
       },
-    ],
-    [t],
-  );
-  const [entries, setEntries] = useState<HoursPerWeekEntry[]>(defaultEntries);
+    ];
+  });
   const nextEntryIdRef = useRef(0);
 
   const totalWeeks = useMemo(
@@ -85,39 +110,106 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
     [totalHours, totalWeeks],
   );
 
-  const updateEntry = useCallback(
-    (id: string, updates: Partial<HoursPerWeekEntry>) => {
-      setEntries((prev) => {
-        const updated = prev.map((entry) =>
-          entry.id === id ? { ...entry, ...updates } : entry,
-        );
+  const saveHoursItem = useCallback(
+    async (entry: HoursPerWeekEntry, currentEntries: HoursPerWeekEntry[]) => {
+      if (!calculation) {
+        return;
+      }
 
-        // Notify parent of new average
-        const newTotalWeeks = updated.reduce((sum, e) => sum + e.weeks, 0);
-        const newTotalHours = updated.reduce(
-          (sum, e) => sum + e.hoursPerWeek * e.weeks,
-          0,
+      if (entry.id.startsWith('temp-') || entry.id.startsWith('default-')) {
+        const result = await trackMutation(
+          createHoursItem({
+            variables: {
+              attributes: {
+                designationSupportCalculationId: calculation.id,
+                label: entry.label,
+                hoursPerWeek: entry.hoursPerWeek,
+                numberOfWeeks: entry.weeks,
+                position: currentEntries.indexOf(entry),
+              },
+            },
+            refetchQueries: ['PdsGoalCalculation'],
+          }),
         );
-        const newAverage =
-          newTotalWeeks > 0 ? newTotalHours / newTotalWeeks : 0;
-        onAverageHoursChange?.(newAverage);
-
-        return updated;
-      });
+        const created =
+          result.data?.createDesignationSupportHoursItem
+            ?.designationSupportHoursItem;
+        if (created) {
+          setEntries((prev) =>
+            prev.map((e) => (e.id === entry.id ? { ...e, id: created.id } : e)),
+          );
+        }
+      } else {
+        await trackMutation(
+          updateHoursItem({
+            variables: {
+              attributes: {
+                id: entry.id,
+                designationSupportCalculationId: calculation.id,
+                label: entry.label,
+                hoursPerWeek: entry.hoursPerWeek,
+                numberOfWeeks: entry.weeks,
+                position: currentEntries.indexOf(entry),
+              },
+            },
+            refetchQueries: ['PdsGoalCalculation'],
+          }),
+        );
+      }
     },
-    [onAverageHoursChange],
+    [calculation, createHoursItem, updateHoursItem, trackMutation],
   );
 
-  const addEntry = useCallback(() => {
+  const updateEntry = useCallback(
+    (id: string, updates: Partial<HoursPerWeekEntry>) => {
+      setEntries((prev) =>
+        prev.map((entry) =>
+          entry.id === id ? { ...entry, ...updates } : entry,
+        ),
+      );
+    },
+    [],
+  );
+
+  const addEntry = useCallback(async () => {
+    if (!calculation) {
+      return;
+    }
+
+    const tempId = `temp-${nextEntryIdRef.current++}`;
     const newEntry: HoursPerWeekEntry = {
-      id: `custom-${nextEntryIdRef.current++}`,
+      id: tempId,
       label: t('New Entry'),
       hoursPerWeek: 0,
       weeks: 0,
       canDelete: true,
+      predefined: false,
     };
     setEntries((prev) => [...prev, newEntry]);
-  }, [t]);
+
+    const result = await trackMutation(
+      createHoursItem({
+        variables: {
+          attributes: {
+            designationSupportCalculationId: calculation.id,
+            label: t('New Entry'),
+            hoursPerWeek: 0,
+            numberOfWeeks: 0,
+            position: entries.length,
+          },
+        },
+        refetchQueries: ['PdsGoalCalculation'],
+      }),
+    );
+    const created =
+      result.data?.createDesignationSupportHoursItem
+        ?.designationSupportHoursItem;
+    if (created) {
+      setEntries((prev) =>
+        prev.map((e) => (e.id === tempId ? { ...e, id: created.id } : e)),
+      );
+    }
+  }, [t, calculation, createHoursItem, trackMutation, entries.length]);
 
   const deleteEntry = useCallback((id: string | number) => {
     setEntries((prev) => prev.filter((entry) => entry.id !== id.toString()));
@@ -135,15 +227,26 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
         .reduce((sum, e) => sum + e.weeks, 0);
       const clampedWeeks = Math.min(newWeeks, MAX_TOTAL_WEEKS - otherWeeks);
 
-      updateEntry(newRow.id as string, {
+      const updatedEntry: HoursPerWeekEntry = {
+        id: newRow.id as string,
         label: newRow.label as string,
         hoursPerWeek: Number(newRow.hoursPerWeek) || 0,
         weeks: Math.max(0, clampedWeeks),
+        canDelete: newRow.canDelete as boolean,
+        predefined: newRow.predefined as boolean,
+      };
+
+      updateEntry(newRow.id as string, {
+        label: updatedEntry.label,
+        hoursPerWeek: updatedEntry.hoursPerWeek,
+        weeks: updatedEntry.weeks,
       });
+
+      saveHoursItem(updatedEntry, entries);
 
       return { ...newRow, weeks: Math.max(0, clampedWeeks) };
     },
-    [updateEntry, entries],
+    [updateEntry, entries, saveHoursItem],
   );
 
   const dataWithTotal = useMemo(
@@ -287,6 +390,19 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
           </Typography>
         </FooterRow>
       </StyledCard>
+
+      {onApply && (
+        <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
+          <Button
+            variant="contained"
+            onClick={() =>
+              onApply(Math.round(averageHoursPerWeek * 10) / 10)
+            }
+          >
+            {t('Apply to Hours Worked')}
+          </Button>
+        </Box>
+      )}
     </Box>
   );
 };

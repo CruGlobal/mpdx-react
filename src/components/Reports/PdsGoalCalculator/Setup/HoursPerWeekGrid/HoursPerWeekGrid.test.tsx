@@ -1,23 +1,70 @@
 import React from 'react';
-import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import theme from 'src/theme';
+import {
+  PdsGoalCalculationMock,
+  PdsGoalCalculatorTestWrapper,
+} from '../../PdsGoalCalculatorTestWrapper';
 import { HoursPerWeekGrid } from './HoursPerWeekGrid';
 
-const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ThemeProvider theme={theme}>{children}</ThemeProvider>
-);
+const defaultCalculationMock: PdsGoalCalculationMock = {
+  id: 'goal-1',
+  designationSupportHoursItems: [
+    {
+      id: 'item-regular',
+      label: 'Regular Week',
+      hoursPerWeek: 40,
+      numberOfWeeks: 48,
+      name: 'regular',
+      position: 0,
+      predefined: true,
+    },
+    {
+      id: 'item-travel',
+      label: 'Travel',
+      hoursPerWeek: 0,
+      numberOfWeeks: 0,
+      name: 'travel',
+      position: 1,
+      predefined: true,
+    },
+    {
+      id: 'item-vacation',
+      label: 'Unpaid Vacation',
+      hoursPerWeek: 0,
+      numberOfWeeks: 0,
+      name: 'vacation',
+      position: 2,
+      predefined: true,
+    },
+  ],
+};
+
+const mutationSpy = jest.fn();
+
+const waitForDataToLoad = async () => {
+  await waitFor(() =>
+    expect(mutationSpy).toHaveGraphqlOperation('PdsGoalCalculation'),
+  );
+};
 
 describe('HoursPerWeekGrid', () => {
-  it('renders the grid correctly', () => {
-    const { getByText } = render(
-      <TestWrapper>
+  beforeEach(() => {
+    mutationSpy.mockClear();
+  });
+
+  it('renders the grid correctly', async () => {
+    const { findByText, getByText } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={defaultCalculationMock}
+        onCall={mutationSpy}
+      >
         <HoursPerWeekGrid />
-      </TestWrapper>,
+      </PdsGoalCalculatorTestWrapper>,
     );
 
-    expect(getByText('Hours Per Week Calculator')).toBeInTheDocument();
+    expect(await findByText('Hours Per Week Calculator')).toBeInTheDocument();
+    await waitForDataToLoad();
     expect(getByText('Regular Week')).toBeInTheDocument();
     expect(getByText('Travel')).toBeInTheDocument();
     expect(getByText('Unpaid Vacation')).toBeInTheDocument();
@@ -25,39 +72,67 @@ describe('HoursPerWeekGrid', () => {
     expect(getByText('Average Hours Worked Per Week')).toBeInTheDocument();
   });
 
-  it('calculates average hours per week from default values', () => {
-    const { getByText } = render(
-      <TestWrapper>
+  it('calculates average hours per week from server values', async () => {
+    const { findByText } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={defaultCalculationMock}
+        onCall={mutationSpy}
+      >
         <HoursPerWeekGrid />
-      </TestWrapper>,
+      </PdsGoalCalculatorTestWrapper>,
     );
 
-    // Default: Regular Week 40hrs * 48wks = 1920 total hours, 48 total weeks
+    await waitForDataToLoad();
+    // Regular Week 40hrs * 48wks = 1920 total hours, 48 total weeks
     // Average = 1920 / 48 = 40.0
-    // The average is rendered in our own footer, outside the DataGrid
-    expect(getByText('40.0')).toBeInTheDocument();
+    expect(await findByText('40.0')).toBeInTheDocument();
   });
 
-  it('adds a new entry when clicking add button', () => {
-    const { getByText } = render(
-      <TestWrapper>
+  it('adds a new entry when clicking add button', async () => {
+    const { findByText, getByText } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={defaultCalculationMock}
+        onCall={mutationSpy}
+      >
         <HoursPerWeekGrid />
-      </TestWrapper>,
+      </PdsGoalCalculatorTestWrapper>,
     );
 
+    await waitForDataToLoad();
+    await findByText('Regular Week');
     userEvent.click(getByText('Add Entry'));
 
-    expect(getByText('New Entry')).toBeInTheDocument();
+    expect(await findByText('New Entry')).toBeInTheDocument();
   });
 
-  it('fires onAverageHoursChange with the new average when a cell is edited', async () => {
-    const onAverageHoursChange = jest.fn();
-    const { findByText, getByDisplayValue } = render(
-      <TestWrapper>
-        <HoursPerWeekGrid onAverageHoursChange={onAverageHoursChange} />
-      </TestWrapper>,
+  it('does not show Apply button when onApply is not provided', async () => {
+    const { queryByText } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={defaultCalculationMock}
+        onCall={mutationSpy}
+      >
+        <HoursPerWeekGrid />
+      </PdsGoalCalculatorTestWrapper>,
     );
 
+    await waitForDataToLoad();
+    expect(queryByText('Apply to Hours Worked')).not.toBeInTheDocument();
+  });
+
+  it('calls onApply with the rounded average when Apply button is clicked', async () => {
+    const onApply = jest.fn();
+    const { findByText, getByText, getByDisplayValue } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={defaultCalculationMock}
+        onCall={mutationSpy}
+      >
+        <HoursPerWeekGrid onApply={onApply} />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    await waitForDataToLoad();
+
+    // Edit Regular Week hours from 40 to 20
     const regularRow = (await findByText('Regular Week')).closest(
       '[role="row"]',
     );
@@ -71,32 +146,48 @@ describe('HoursPerWeekGrid', () => {
     });
     userEvent.tab();
 
-    // Regular Week: 20 * 48 = 960 hours / 48 weeks = 20
+    // Average = 20 * 48 / 48 = 20.0
     await waitFor(() => {
-      expect(onAverageHoursChange).toHaveBeenCalledWith(20);
+      expect(getByText('20.0')).toBeInTheDocument();
     });
+
+    // onApply should not have been called yet
+    expect(onApply).not.toHaveBeenCalled();
+
+    // Click the Apply button
+    userEvent.click(getByText('Apply to Hours Worked'));
+
+    expect(onApply).toHaveBeenCalledWith(20);
   });
 
   it('shows delete button only for custom entries on hover', async () => {
-    const { getByText, findByLabelText } = render(
-      <TestWrapper>
+    const { findByText, findByLabelText, getByText } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={defaultCalculationMock}
+        onCall={mutationSpy}
+      >
         <HoursPerWeekGrid />
-      </TestWrapper>,
+      </PdsGoalCalculatorTestWrapper>,
     );
 
-    // Add a custom entry
+    await waitForDataToLoad();
+    await findByText('Regular Week');
     userEvent.click(getByText('Add Entry'));
 
-    // The delete button should exist for the new entry
     expect(await findByLabelText('Delete')).toBeInTheDocument();
   });
 
   it('renders 0.0 (not NaN) when total weeks is zero', async () => {
     const { findByText, getByDisplayValue, queryByText } = render(
-      <TestWrapper>
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={defaultCalculationMock}
+        onCall={mutationSpy}
+      >
         <HoursPerWeekGrid />
-      </TestWrapper>,
+      </PdsGoalCalculatorTestWrapper>,
     );
+
+    await waitForDataToLoad();
 
     const regularRow = (await findByText('Regular Week')).closest(
       '[role="row"]',
@@ -119,10 +210,15 @@ describe('HoursPerWeekGrid', () => {
 
   it('clamps weeks to 52 total across all entries', async () => {
     const { findByText, getByDisplayValue } = render(
-      <TestWrapper>
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={defaultCalculationMock}
+        onCall={mutationSpy}
+      >
         <HoursPerWeekGrid />
-      </TestWrapper>,
+      </PdsGoalCalculatorTestWrapper>,
     );
+
+    await waitForDataToLoad();
 
     // Default: Regular Week has 48 weeks, Travel and Vacation have 0
     // Edit Travel weeks to 10 — should be clamped to 4 (52 - 48 = 4 remaining)
@@ -145,13 +241,17 @@ describe('HoursPerWeekGrid', () => {
   });
 
   it('removes the row and recomputes the average when delete is clicked', async () => {
-    const onAverageHoursChange = jest.fn();
     const { getByText, queryByText, getByLabelText, findByText } = render(
-      <TestWrapper>
-        <HoursPerWeekGrid onAverageHoursChange={onAverageHoursChange} />
-      </TestWrapper>,
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={defaultCalculationMock}
+        onCall={mutationSpy}
+      >
+        <HoursPerWeekGrid />
+      </PdsGoalCalculatorTestWrapper>,
     );
 
+    await waitForDataToLoad();
+    await findByText('Regular Week');
     userEvent.click(getByText('Add Entry'));
     expect(await findByText('New Entry')).toBeInTheDocument();
 

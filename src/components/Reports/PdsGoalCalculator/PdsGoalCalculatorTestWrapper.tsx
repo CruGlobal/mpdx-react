@@ -137,7 +137,8 @@ export const PdsGoalCalculatorTestWrapper: React.FC<
               ...(calculationMock
                 ? {
                     PdsGoalCalculation: {
-                      designationSupportCalculation: calculationMock,
+                      designationSupportCalculation:
+                        calculationMock as PdsGoalCalculationQuery['designationSupportCalculation'],
                     },
                   }
                 : {}),
