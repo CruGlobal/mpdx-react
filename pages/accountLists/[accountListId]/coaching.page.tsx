@@ -5,12 +5,12 @@ import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { CoachingList } from 'src/components/Coaching/CoachingList';
 import Loading from 'src/components/Loading';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 
 const CoachingPage: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
 
   return (
     <>

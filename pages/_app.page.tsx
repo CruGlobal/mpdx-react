@@ -30,7 +30,6 @@ import { SetupProvider } from 'src/components/Setup/SetupProvider';
 import { SnackbarUtilsConfigurator } from 'src/components/Snackbar/Snackbar';
 import TaskModalProvider from 'src/components/Task/Modal/TaskModalProvider';
 import { UserPreferenceProvider } from 'src/components/User/Preferences/UserPreferenceProvider';
-import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
 import { useLocale } from 'src/hooks/useLocale';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import makeClient from 'src/lib/apollo/client';
@@ -178,42 +177,40 @@ const App = ({
       </Head>
       <Provider config={rollbarConfig}>
         <ErrorBoundary>
-          <AppSettingsProvider>
-            <SessionProvider session={session}>
-              <I18nextProvider i18n={i18n}>
-                <StyledEngineProvider injectFirst>
-                  <CacheProvider value={emotionCache}>
-                    <ThemeProvider theme={theme}>
-                      <LocalizationProvider
-                        dateAdapter={AdapterLuxon}
-                        localeText={{
-                          cancelButtonLabel: t('Cancel'),
-                          clearButtonLabel: t('Clear'),
-                          okButtonLabel: t('OK'),
-                          todayButtonLabel: t('Today'),
-                        }}
-                      >
-                        <SnackbarProvider maxSnack={3}>
-                          <GlobalStyles />
-                          {/* On the login page and error pages, the user isn't not authenticated and doesn't have an API token,
+          <SessionProvider session={session}>
+            <I18nextProvider i18n={i18n}>
+              <StyledEngineProvider injectFirst>
+                <CacheProvider value={emotionCache}>
+                  <ThemeProvider theme={theme}>
+                    <LocalizationProvider
+                      dateAdapter={AdapterLuxon}
+                      localeText={{
+                        cancelButtonLabel: t('Cancel'),
+                        clearButtonLabel: t('Clear'),
+                        okButtonLabel: t('OK'),
+                        todayButtonLabel: t('Today'),
+                      }}
+                    >
+                      <SnackbarProvider maxSnack={3}>
+                        <GlobalStyles />
+                        {/* On the login page and error pages, the user isn't not authenticated and doesn't have an API token,
                               so don't include the session or Apollo providers because they require an API token */}
-                          {nonAuthenticatedPages.has(router.pathname) ? (
-                            pageContent
-                          ) : (
-                            <RouterGuard>
-                              <GraphQLProviders>{pageContent}</GraphQLProviders>
-                            </RouterGuard>
-                          )}
-                          <Loading />
-                        </SnackbarProvider>
-                      </LocalizationProvider>
-                    </ThemeProvider>
-                  </CacheProvider>
-                </StyledEngineProvider>
-              </I18nextProvider>
-              <DataDog />
-            </SessionProvider>
-          </AppSettingsProvider>
+                        {nonAuthenticatedPages.has(router.pathname) ? (
+                          pageContent
+                        ) : (
+                          <RouterGuard>
+                            <GraphQLProviders>{pageContent}</GraphQLProviders>
+                          </RouterGuard>
+                        )}
+                        <Loading />
+                      </SnackbarProvider>
+                    </LocalizationProvider>
+                  </ThemeProvider>
+                </CacheProvider>
+              </StyledEngineProvider>
+            </I18nextProvider>
+            <DataDog />
+          </SessionProvider>
         </ErrorBoundary>
       </Provider>
     </>

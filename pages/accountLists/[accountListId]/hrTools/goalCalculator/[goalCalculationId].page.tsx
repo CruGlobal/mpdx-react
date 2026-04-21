@@ -26,7 +26,7 @@ import {
 import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { ReportPageWrapper } from 'src/components/Shared/styledComponents/ReportPageWrapper';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 
 const RightPanelHeader = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -125,7 +125,7 @@ const GoalCalculatorContent: React.FC<GoalCalculatorContentProps> = ({
 
 export const GoalCalculatorPage: React.FC = () => {
   const { t } = useTranslation();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const accountListId = useAccountListId();
   const [isNavListOpen, setNavListOpen] = useState(false);
 

@@ -23,8 +23,8 @@ import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { PaddedBox } from 'src/components/Shared/styledComponents/PaddedBox';
 import { OrganizationAutocomplete } from 'src/components/common/Autocomplete/OrganizationAutocomplete/OrganizationAutocomplete';
 import { Organization } from 'src/graphql/types.generated';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { clearDataDogUser } from 'src/lib/dataDog';
+import { getAppName } from 'src/lib/getAppName';
 import { articles } from 'src/lib/helpjuice';
 import theme from 'src/theme';
 import { useOauthUrl } from '../useOauthUrl';
@@ -69,7 +69,7 @@ export const ConnectOrganization: React.FC<ConnectOrganizationProps> = ({
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const client = useApolloClient();
   const [organizationType, setOrganizationType] =
     useState<OrganizationTypesEnum>();

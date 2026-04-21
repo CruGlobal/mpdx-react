@@ -13,7 +13,7 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { InviteTypeEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import { InviteForm } from '../InviteForm/InviteForm';
 import {
   GetAccountListInvitesQuery,
@@ -46,7 +46,7 @@ export const ManageAccounts: React.FC<ManageAccountsProp> = ({
   const { enqueueSnackbar } = useSnackbar();
   const [cancelAccountListInvite] = useCancelAccountListInviteMutation();
   const { data } = useGetUserIdQuery();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const userId = data?.user.id;
   const { data: accountListInvites, loading: loadingInvites } =
     useGetAccountListInvitesQuery({

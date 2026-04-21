@@ -2,7 +2,7 @@ import Head from 'next/head';
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Connect } from 'src/components/Setup/Connect';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import { ensureSessionAndAccountList } from '../api/utils/pagePropsHelpers';
 
 // This is the second page of the setup tour. It lets users connect to
@@ -10,7 +10,7 @@ import { ensureSessionAndAccountList } from '../api/utils/pagePropsHelpers';
 // accounts attached to their user or account lists.
 const ConnectPage = (): ReactElement => {
   const { t } = useTranslation();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
 
   return (
     <>

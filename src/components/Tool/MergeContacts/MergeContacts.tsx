@@ -5,7 +5,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { useMassActionsMergeMutation } from 'src/components/Contacts/MassActions/Merge/MassActionsMerge.generated';
 import { TypeEnum } from 'src/graphql/types.generated';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import theme from '../../../theme';
 import { useUpdateDuplicateMutation } from '../MergePeople/GetPersonDuplicates.generated';
 import NoData from '../NoData';
@@ -52,7 +52,7 @@ const MergeContacts: React.FC<Props> = ({
       contactIds: contactId ? [contactId] : undefined,
     },
   });
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const [contactsMerge, { loading: updating }] = useMassActionsMergeMutation();
   const [updateDuplicates] = useUpdateDuplicateMutation();
   const disabled = useMemo(

@@ -22,7 +22,7 @@ import { makeStyles } from 'tss-react/mui';
 import * as yup from 'yup';
 import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import theme from '../../../theme';
 import { ContactPhoneNumbers } from './ContactPhoneNumbers';
 import { PersonInvalidNumberFragment } from './GetInvalidPhoneNumbers.generated';
@@ -145,7 +145,7 @@ const Contact: React.FC<Props> = ({ person, submitAll, accountListId }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { classes } = useStyles();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const { buildContactUrl } = useContactPanel();
   const [updatePhoneNumber] = useUpdatePhoneNumberMutation();
   const [numberToDelete, setNumberToDelete] = useState<NumberToDelete | null>(

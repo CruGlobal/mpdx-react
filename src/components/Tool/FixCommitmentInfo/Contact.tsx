@@ -32,9 +32,9 @@ import {
 } from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
 import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
+import { getAppName } from 'src/lib/getAppName';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from '../../../theme';
 import { StyledInput } from '../StyledInput';
@@ -202,7 +202,7 @@ const Contact: React.FC<Props> = ({
   const statusOptions = constants?.status;
   const { getLocalizedContactStatus, getLocalizedPledgeFrequency } =
     useLocalizedConstants();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const { buildContactUrl } = useContactPanel();
 
   const suggestedAmount = suggestedChanges?.pledge_amount || '';

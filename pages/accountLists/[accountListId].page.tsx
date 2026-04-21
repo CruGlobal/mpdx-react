@@ -16,7 +16,6 @@ import {
   renderDialog,
 } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useRedirectSnackbar } from 'src/hooks/useRedirectSnackbar';
 import useTaskModal from 'src/hooks/useTaskModal';
 import {
@@ -24,6 +23,7 @@ import {
   replaceUrlAccountList,
 } from 'src/lib/apollo/accountListRedirect';
 import makeSsrClient from 'src/lib/apollo/ssrClient';
+import { getAppName } from 'src/lib/getAppName';
 import {
   GetDashboardDocument,
   GetDashboardQuery,
@@ -39,7 +39,7 @@ const AccountListIdPage = ({
   data,
   modal,
 }: AccountListIdPageProps): ReactElement => {
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const { openTaskModal } = useTaskModal();
   const [selectedMenuItem, setSelectedMenuItem] =
     useState<AddMenuItemsEnum | null>(null);

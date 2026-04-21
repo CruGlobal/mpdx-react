@@ -5,7 +5,7 @@ import {
   CancelButton,
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import Modal from '../../common/Modal/Modal';
 
 interface HideContactsModalProps {
@@ -22,7 +22,7 @@ export const HideContactsModal: React.FC<HideContactsModalProps> = ({
   onConfirm,
 }) => {
   const { t } = useTranslation();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
 
   return (
     <Modal

@@ -15,8 +15,8 @@ import {
 import { SetupPage } from 'src/components/Setup/SetupPage';
 import { LargeButton } from 'src/components/Setup/styledComponents';
 import { useNextSetupPage } from 'src/components/Setup/useNextSetupPage';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import makeSsrClient from 'src/lib/apollo/ssrClient';
+import { getAppName } from 'src/lib/getAppName';
 import {
   AccountListOptionsDocument,
   AccountListOptionsQuery,
@@ -31,7 +31,7 @@ interface PageProps {
 // list and don't have a default chosen yet.
 const AccountPage: React.FC<PageProps> = ({ accountListOptions }) => {
   const { t } = useTranslation();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const { next } = useNextSetupPage();
   const [updateUserDefaultAccount, { loading: isSubmitting }] =
     useUpdateUserDefaultAccountMutation();

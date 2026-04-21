@@ -15,7 +15,7 @@ import {
   useContactPanel,
 } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import { PageContentWrapper } from '../settings/styledComponents/PageContentWrapper';
 
 interface ToolsWrapperProps {
@@ -75,7 +75,7 @@ const ToolsPageContent: React.FC<ToolsWrapperProps> = ({
 };
 
 export const ToolsWrapper: React.FC<ToolsWrapperProps> = (props) => {
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
 
   return (
     <>

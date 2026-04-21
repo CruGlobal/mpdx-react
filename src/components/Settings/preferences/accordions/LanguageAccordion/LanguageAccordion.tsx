@@ -9,8 +9,8 @@ import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import { LanguageAutocomplete } from 'src/components/common/Autocomplete/LanguageAutocomplete/LanguageAutocomplete';
 import { Preference } from 'src/graphql/types.generated';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { languages } from 'src/lib/data/languages';
+import { getAppName } from 'src/lib/getAppName';
 import { AccordionProps } from '../../../accordionHelper';
 import { useUpdatePersonalPreferencesMutation } from '../UpdatePersonalPreferences.generated';
 
@@ -31,7 +31,7 @@ export const LanguageAccordion: React.FC<LanguageAccordionProps> = ({
   disabled,
 }) => {
   const { t } = useTranslation();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const { enqueueSnackbar } = useSnackbar();
   const [updatePersonalPreferences] = useUpdatePersonalPreferencesMutation();
 

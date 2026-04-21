@@ -5,7 +5,7 @@ import { AccountAccordion } from 'src/components/Shared/Forms/Accordions/Accordi
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/Field';
 import { InviteTypeEnum } from 'src/graphql/types.generated';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import { AccordionProps } from '../../accordionHelper';
 import { InviteForm } from '../InviteForm/InviteForm';
 import { MergeForm } from '../MergeForm/MergeForm';
@@ -19,7 +19,7 @@ export const MergeSpouseAccountsAccordion: React.FC<
   AccordionProps<AccountAccordion>
 > = ({ handleAccordionChange, expandedAccordion }) => {
   const { t } = useTranslation();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const accordionName = t('Merge Spouse Accounts');
 
   return (

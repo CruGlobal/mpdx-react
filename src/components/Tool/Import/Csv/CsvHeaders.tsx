@@ -20,7 +20,7 @@ import { cloneDeep } from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import theme from 'src/theme';
 import {
   CsvImportContext,
@@ -94,7 +94,7 @@ const CsvHeaders: React.FC<CsvHeadersProps> = ({
   const [mappedHeaders, setMappedHeaders] = useState<string[]>([]);
   const [showBackWarningModal, setShowBackWarningModal] = useState(false);
   const { t } = useTranslation();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
 
   const [unmappedHeadersChecked, setUnmappedHeadersChecked] = useState(false);
   const [saving, setSaving] = useState(false);

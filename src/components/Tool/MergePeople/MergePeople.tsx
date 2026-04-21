@@ -4,7 +4,7 @@ import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { TypeEnum } from 'src/graphql/types.generated';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import theme from '../../../theme';
 import ContactPair from '../MergeContacts/ContactPair';
 import { StickyConfirmButtons } from '../MergeContacts/StickyConfirmButtons';
@@ -47,7 +47,7 @@ const MergePeople: React.FC<Props> = ({ accountListId }: Props) => {
   const { data, loading } = useGetPersonDuplicatesQuery({
     variables: { accountListId },
   });
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const [peopleMerge, { loading: updating }] = useMergePeopleBulkMutation();
   const [updateDuplicates] = useUpdateDuplicateMutation();
   const disabled = useMemo(

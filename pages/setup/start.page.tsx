@@ -10,13 +10,13 @@ import {
   TermsOfUseLink,
 } from 'src/components/Shared/Links/Links';
 import { LanguageAutocomplete } from 'src/components/common/Autocomplete/LanguageAutocomplete/LanguageAutocomplete';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import { ensureSessionAndAccountList } from '../api/utils/pagePropsHelpers';
 
 // This is the first page of the tour, and it lets users choose their language. It is always shown.
 const StartPage = (): ReactElement => {
   const { t } = useTranslation();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const { next } = useNextSetupPage();
   const [savePreferences] = useUpdatePersonalPreferencesMutation();
 

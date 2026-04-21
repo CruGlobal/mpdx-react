@@ -10,7 +10,6 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { ContactsWrapper } from 'pages/accountLists/[accountListId]/contacts/ContactsWrapper';
 import { AppealsWrapper } from 'pages/accountLists/[accountListId]/tools/appeals/AppealsWrapper';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
-import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import useTaskModal from '../../../hooks/useTaskModal';
@@ -38,24 +37,22 @@ jest.mock('notistack', () => ({
 
 const ContactComponents = () => (
   <TestRouter>
-    <AppSettingsProvider>
-      <ThemeProvider theme={theme}>
-        <GqlMockedProvider>
-          <LocalizationProvider dateAdapter={AdapterLuxon}>
-            <SnackbarProvider>
-              <ContactsWrapper>
-                <ContactsMassActionsDropdown
-                  filterPanelOpen={false}
-                  contactsView={TableViewModeEnum.List}
-                  selectedIds={selectedIds}
-                  page={PageEnum.Contact}
-                />
-              </ContactsWrapper>
-            </SnackbarProvider>
-          </LocalizationProvider>
-        </GqlMockedProvider>
-      </ThemeProvider>
-    </AppSettingsProvider>
+    <ThemeProvider theme={theme}>
+      <GqlMockedProvider>
+        <LocalizationProvider dateAdapter={AdapterLuxon}>
+          <SnackbarProvider>
+            <ContactsWrapper>
+              <ContactsMassActionsDropdown
+                filterPanelOpen={false}
+                contactsView={TableViewModeEnum.List}
+                selectedIds={selectedIds}
+                page={PageEnum.Contact}
+              />
+            </ContactsWrapper>
+          </SnackbarProvider>
+        </LocalizationProvider>
+      </GqlMockedProvider>
+    </ThemeProvider>
   </TestRouter>
 );
 

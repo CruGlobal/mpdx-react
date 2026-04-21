@@ -9,13 +9,13 @@ import {
 } from 'src/components/Coaching/CoachingDetail/CoachingDetail';
 import Loading from 'src/components/Loading';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 
 const CoachingPage: React.FC = () => {
   const { t } = useTranslation();
   const { query, isReady } = useRouter();
   const accountListId = useAccountListId();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const { coachingId } = query;
 
   return (

@@ -11,7 +11,7 @@ import {
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import theme from '../../../theme';
 import NoData from '../NoData';
 import { ToolsGridContainer } from '../styledComponents';
@@ -107,7 +107,7 @@ const FixCommitmentInfo: React.FC<Props> = ({ accountListId }: Props) => {
     useState<ModalStateType>(defaultModalState);
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const { data, loading, fetchMore } = useInvalidStatusesQuery({
     variables: { accountListId },
   });

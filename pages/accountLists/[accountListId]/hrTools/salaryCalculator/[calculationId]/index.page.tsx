@@ -18,7 +18,7 @@ import {
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 
 const SalaryCalculatorSavingStatus: React.FC = () => {
   const { calculation, isMutating, loading } = useSalaryCalculator();
@@ -33,7 +33,7 @@ const SalaryCalculatorSavingStatus: React.FC = () => {
 };
 
 export const SalaryCalculatorEditPage: React.FC = () => {
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const { t } = useTranslation();
   const [isNavListOpen, setIsNavListOpen] = useState(false);
 

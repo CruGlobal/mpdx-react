@@ -30,9 +30,9 @@ import {
   LockIcon,
 } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/StyledComponents';
 import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
+import { getAppName } from 'src/lib/getAppName';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import { isEditableSource, sourceToStr } from 'src/utils/sourceHelper';
 import theme from '../../../theme';
@@ -135,7 +135,7 @@ const Contact: React.FC<Props> = ({
 
   const newAddress = { ...emptyAddress, newAddress: true };
   const { getLocalizedContactStatus } = useLocalizedConstants();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
 
   const addressesData = useMemo(() => {
     return addressesState[id]?.addresses;

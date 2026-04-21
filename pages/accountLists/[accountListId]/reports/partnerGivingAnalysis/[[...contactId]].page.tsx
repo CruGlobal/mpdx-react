@@ -18,7 +18,7 @@ import {
 } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import { useContactFiltersQuery } from '../../contacts/Contacts.generated';
 import { Panel } from '../helpers';
 import { preDefinedFilters } from './preDefinedFilters';
@@ -123,7 +123,7 @@ const PageContent: React.FC = () => {
 
 const PartnerGivingAnalysisReportPage: React.FC = () => {
   const { t } = useTranslation();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
 
   return (
     <>

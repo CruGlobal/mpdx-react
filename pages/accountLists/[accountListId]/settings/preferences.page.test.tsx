@@ -245,7 +245,7 @@ describe('Preferences page', () => {
       userEvent.click(await findByText('Language'));
       await waitFor(() => {
         expect(
-          getByText('The language determines your default language for .'),
+          getByText('The language determines your default language for MPDX.'),
         ).toBeVisible();
       });
     });
@@ -264,7 +264,9 @@ describe('Preferences page', () => {
       );
       await waitFor(() => {
         expect(
-          queryByText('The language determines your default language for .'),
+          queryByText(
+            'The language determines your default language for MPDX.',
+          ),
         ).not.toBeInTheDocument();
       });
 

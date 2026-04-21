@@ -7,7 +7,7 @@ import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionI
 import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import { AccordionProps, StyledServicesButton } from '../integrationsHelper';
 import { useSendToChalklineMutation } from './SendToChalkline.generated';
 
@@ -22,7 +22,7 @@ export const ChalklineAccordion: React.FC<AccordionProps> = ({
   const accountListId = useAccountListId();
   const [sendToChalkline] = useSendToChalklineMutation();
   const { enqueueSnackbar } = useSnackbar();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const handleOpenModal = () => setShowModal(true);
 
   const handleCloseModal = () => {

@@ -40,9 +40,9 @@ import {
   SendNewsletterEnum,
   StatusEnum,
 } from 'src/graphql/types.generated';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
+import { getAppName } from 'src/lib/getAppName';
 import {
   amountFormat,
   parseNumberFromCurrencyString,
@@ -121,7 +121,7 @@ export const EditPartnershipInfoModal: React.FC<
 > = ({ contact, handleClose }) => {
   const { t } = useTranslation();
   const locale = useLocale();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const accountListId = useAccountListId();
   const constants = useApiConstants();
   const { enqueueSnackbar } = useSnackbar();

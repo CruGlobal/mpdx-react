@@ -28,8 +28,8 @@ import { useGetContactTagListQuery } from 'src/components/Contacts/ContactDetail
 import { LoadingSpinner } from 'src/components/Settings/Organization/LoadingSpinner';
 import { ContactTagInput } from 'src/components/Tags/Tags';
 import Modal from 'src/components/common/Modal/Modal';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
+import { getAppName } from 'src/lib/getAppName';
 import theme from 'src/theme';
 import { ToolsGridContainer } from '../styledComponents';
 import { uploadTnt, validateTnt } from './uploads/uploadTntConnect';
@@ -95,7 +95,7 @@ interface Props {
 
 const TntConnect: React.FC<Props> = ({ accountListId }: Props) => {
   const { classes } = useStyles();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { apiToken } = useRequiredSession();

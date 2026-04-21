@@ -4,11 +4,11 @@ import DisabledByDefaultOutlinedIcon from '@mui/icons-material/DisabledByDefault
 import { Box, Button, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import BaseLayout from 'src/components/Layouts/Basic';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import { StatusPageWrapper } from './styledComponents/StatusPageWrapper';
 
 const Custom404 = (): ReactElement => {
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const { t } = useTranslation();
   return (
     <>

@@ -7,7 +7,7 @@ import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionI
 import { StyledFormLabel } from 'src/components/Shared/Forms/Field';
 import { InviteTypeEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import { ManageAccounts } from '../../Accounts/ManageAccounts/ManageAccounts';
 import { SharedAccountUserFragment } from '../../Accounts/ManageAccounts/ManageAccounts.generated';
 import { AccordionProps } from '../../accordionHelper';
@@ -23,7 +23,7 @@ export const ManageCoachesAccessAccordion: React.FC<
   const accordionName = t('Manage Account Coaching Access');
   const { enqueueSnackbar } = useSnackbar();
   const accountListId = useAccountListId() || '';
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
 
   const { data: accountListCoaches, loading: loadingCoaches } =
     useGetAccountListCoachesQuery({

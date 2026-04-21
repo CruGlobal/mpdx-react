@@ -15,8 +15,8 @@ import { IntegrationAccordion } from 'src/components/Shared/Forms/Accordions/Acc
 import { AccordionGroup } from 'src/components/Shared/Forms/Accordions/AccordionGroup';
 import { StickyBox } from 'src/components/Shared/Header/styledComponents';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useUserPreference } from 'src/hooks/useUserPreference';
+import { getAppName } from 'src/lib/getAppName';
 import { SettingsWrapper } from '../Wrapper';
 
 const Integrations: React.FC = () => {
@@ -28,7 +28,7 @@ const Integrations: React.FC = () => {
       : null,
   );
   const accountListId = useAccountListId() || '';
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const { onSetupTour } = useSetupContext();
   const [setup, setSetup] = useState(0);
 

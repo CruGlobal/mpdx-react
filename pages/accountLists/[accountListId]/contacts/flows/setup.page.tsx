@@ -22,8 +22,8 @@ import Loading from 'src/components/Loading';
 import { StatusEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
+import { getAppName } from 'src/lib/getAppName';
 import theme from 'src/theme';
 
 const StickyBox = styled(Box)(() => ({
@@ -57,7 +57,7 @@ const ContactFlowSetupPage: React.FC = () => {
     }
   }, [userOptions]);
 
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
 
   const allUsedStatuses = flowOptions
     ? flowOptions.flatMap((option) => option.statuses)

@@ -24,7 +24,7 @@ import {
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 import { ReportPageWrapper } from 'src/components/Shared/styledComponents/ReportPageWrapper';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 
 const RightPanelHeader = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -124,7 +124,7 @@ const PdsGoalCalculatorContent: React.FC<PdsGoalCalculatorContentProps> = ({
 
 export const PdsGoalCalculatorPage: React.FC = () => {
   const { t } = useTranslation();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const accountListId = useAccountListId();
   const [isNavListOpen, setNavListOpen] = useState(false);
   const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);

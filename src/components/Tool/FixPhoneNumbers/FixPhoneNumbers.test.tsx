@@ -6,7 +6,6 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
-import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
 import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import theme from '../../../theme';
 import FixPhoneNumbers from './FixPhoneNumbers';
@@ -40,30 +39,28 @@ const Components: React.FC<{
   data?: ErgonoMockShape[];
   count?: number;
 }> = ({ data = testData, count = 2 }) => (
-  <AppSettingsProvider>
-    <ThemeProvider theme={theme}>
-      <SnackbarProvider>
-        <TestRouter router={router}>
-          <GqlMockedProvider<{
-            GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
-          }>
-            mocks={{
-              GetInvalidPhoneNumbers: {
-                people: {
-                  totalCount: count,
-                  nodes: data,
-                },
+  <ThemeProvider theme={theme}>
+    <SnackbarProvider>
+      <TestRouter router={router}>
+        <GqlMockedProvider<{
+          GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
+        }>
+          mocks={{
+            GetInvalidPhoneNumbers: {
+              people: {
+                totalCount: count,
+                nodes: data,
               },
-            }}
-          >
-            <ContactPanelProvider>
-              <FixPhoneNumbers accountListId={accountListId} />
-            </ContactPanelProvider>
-          </GqlMockedProvider>
-        </TestRouter>
-      </SnackbarProvider>
-    </ThemeProvider>
-  </AppSettingsProvider>
+            },
+          }}
+        >
+          <ContactPanelProvider>
+            <FixPhoneNumbers accountListId={accountListId} />
+          </ContactPanelProvider>
+        </GqlMockedProvider>
+      </TestRouter>
+    </SnackbarProvider>
+  </ThemeProvider>
 );
 
 describe('FixPhoneNumbers-Home', () => {

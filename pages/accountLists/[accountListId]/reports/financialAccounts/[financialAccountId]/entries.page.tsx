@@ -24,14 +24,14 @@ import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAcc
 import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { UserTypeEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import { Panel } from '../../helpers';
 import { FinancialAccountsWrapper } from './Wrapper';
 
 const FinancialAccountEntries = (): ReactElement => {
   const { t } = useTranslation();
   const accountListId = useAccountListId();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
 
   const {
     isNavListOpen,

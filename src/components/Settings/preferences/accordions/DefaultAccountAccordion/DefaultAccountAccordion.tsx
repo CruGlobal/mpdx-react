@@ -11,7 +11,7 @@ import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/Acco
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import { AccordionProps } from '../../../accordionHelper';
 import { GetPersonalPreferencesQuery } from '../../GetPersonalPreferences.generated';
 import { useUpdateUserDefaultAccountMutation } from './UpdateDefaultAccount.generated';
@@ -42,7 +42,7 @@ export const DefaultAccountAccordion: React.FC<
   disabled,
 }) => {
   const { t } = useTranslation();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const { enqueueSnackbar } = useSnackbar();
   const [updateUserDefaultAccount] = useUpdateUserDefaultAccountMutation();
 

@@ -31,8 +31,8 @@ import * as yup from 'yup';
 import { useUpdateEmailAddressesMutation } from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
 import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
+import { getAppName } from 'src/lib/getAppName';
 import i18n from 'src/lib/i18n';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import theme from 'src/theme';
@@ -146,7 +146,7 @@ export const FixEmailAddressPerson: React.FC<FixEmailAddressPersonProps> = ({
   handleChangePrimary,
   handleSingleConfirm,
 }) => {
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const { t } = useTranslation();
   const locale = useLocale();
   const { classes } = useStyles();

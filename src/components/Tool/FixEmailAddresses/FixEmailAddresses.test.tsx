@@ -13,7 +13,6 @@ import {
   UpdatePeopleMutation,
 } from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
 import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../theme';
 import { EmailAddressesMutation } from './AddEmailAddress.generated';
 import {
@@ -47,7 +46,6 @@ jest.mock('notistack', () => ({
     };
   },
 }));
-jest.mock('src/hooks/useGetAppSettings');
 
 const defaultGraphQLMock = {
   GetInvalidEmailAddresses: {
@@ -89,11 +87,6 @@ const Components = ({ mocks = defaultGraphQLMock }: ComponentsProps) => (
 );
 
 describe('FixEmailAddresses-Home', () => {
-  beforeEach(() => {
-    (useGetAppSettings as jest.Mock).mockReturnValue({
-      appName: 'MPDX',
-    });
-  });
   it('default with test data', async () => {
     const { getByText, getByTestId, queryByTestId } = render(<Components />);
 

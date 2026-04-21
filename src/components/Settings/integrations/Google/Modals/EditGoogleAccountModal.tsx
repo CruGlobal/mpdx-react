@@ -18,7 +18,7 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import { GoogleAccountAttributesSlimmed } from '../GoogleAccordion';
 import { useSyncGoogleAccountMutation } from '../GoogleAccounts.generated';
 import { EditGoogleIntegrationForm } from './EditGoogleIntegrationForm';
@@ -51,7 +51,7 @@ export const EditGoogleAccountModal: React.FC<EditGoogleAccountModalProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const accountListId = useAccountListId();
   const { enqueueSnackbar } = useSnackbar();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const [tabSelected, setTabSelected] = useState<TabsEnum>(TabsEnum.Calendar);
 
   const [updateGoogleIntegration] = useUpdateGoogleIntegrationMutation();

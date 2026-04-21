@@ -8,7 +8,6 @@ import { I18nextProvider } from 'react-i18next';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { IntegrationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
-import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
 import * as Types from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import theme from '../../../../theme';
@@ -45,9 +44,7 @@ const Components = ({ children }: PropsWithChildren) => (
   <SnackbarProvider>
     <I18nextProvider i18n={i18n}>
       <TestRouter router={router}>
-        <AppSettingsProvider>
-          <ThemeProvider theme={theme}>{children}</ThemeProvider>
-        </AppSettingsProvider>
+        <ThemeProvider theme={theme}>{children}</ThemeProvider>
       </TestRouter>
     </I18nextProvider>
   </SnackbarProvider>

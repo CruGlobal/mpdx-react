@@ -6,7 +6,6 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { OrganizationsAccountList } from 'src/graphql/types.generated';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../../../theme';
 import { AccountListsMocks } from '../AccountLists.mock';
 import { AccountListRow } from './AccountListRow';
@@ -21,7 +20,6 @@ const router = {
 };
 
 const mockEnqueue = jest.fn();
-jest.mock('src/hooks/useGetAppSettings');
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -63,11 +61,6 @@ const Components: React.FC<TestComponentProps> = ({
 );
 
 describe('AccountLists', () => {
-  beforeEach(() => {
-    (useGetAppSettings as jest.Mock).mockReturnValue({
-      appName: 'MPDX',
-    });
-  });
   it('should show details', () => {
     const { getByText, queryByText } = render(
       <Components accountList={accountList} search="" organizationId="" />,

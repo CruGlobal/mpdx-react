@@ -16,7 +16,7 @@ import {
   headerHeight,
 } from 'src/components/Shared/Header/ListHeader';
 import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import { ContactsWrapper } from './ContactsWrapper';
 
 const Contacts: React.FC = () => {
@@ -24,7 +24,7 @@ const Contacts: React.FC = () => {
   const { accountListId, filterPanelOpen, viewMode } = useContext(
     ContactsContext,
   ) as ContactsType;
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const { isOpen } = useContactPanel();
 
   return (

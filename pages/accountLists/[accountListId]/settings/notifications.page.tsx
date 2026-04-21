@@ -8,13 +8,13 @@ import { SetupBanner } from 'src/components/Settings/preferences/SetupBanner';
 import { useSetupContext } from 'src/components/Setup/SetupProvider';
 import { StickyBox } from 'src/components/Shared/Header/styledComponents';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useUserPreference } from 'src/hooks/useUserPreference';
+import { getAppName } from 'src/lib/getAppName';
 import { SettingsWrapper } from './Wrapper';
 
 const Notifications: React.FC = () => {
   const { t } = useTranslation();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const accountListId = useAccountListId() || '';
   const { push } = useRouter();
   const { onSetupTour } = useSetupContext();

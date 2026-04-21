@@ -8,7 +8,7 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import Modal from 'src/components/common/Modal/Modal';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 
 interface MoreActionHideContactProps {
   open: boolean;
@@ -21,7 +21,7 @@ export const MoreActionHideContactModal: React.FC<
   MoreActionHideContactProps
 > = ({ open, setOpen, hiding, hideContact }) => {
   const { t } = useTranslation();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
 
   return (
     <Modal

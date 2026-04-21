@@ -7,7 +7,7 @@ import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionI
 import { StyledFormLabel } from 'src/components/Shared/Forms/Field';
 import { InviteTypeEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import { AccordionProps } from '../../accordionHelper';
 import { ManageAccounts } from '../ManageAccounts/ManageAccounts';
 import { SharedAccountUserFragment } from '../ManageAccounts/ManageAccounts.generated';
@@ -23,7 +23,7 @@ export const ManageAccountAccessAccordion: React.FC<
   const accordionName = t('Manage Account Access');
   const { enqueueSnackbar } = useSnackbar();
   const accountListId = useAccountListId() || '';
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
 
   const { data: accountListUsers, loading: loadingUsers } =
     useGetAccountsSharingWithQuery({
