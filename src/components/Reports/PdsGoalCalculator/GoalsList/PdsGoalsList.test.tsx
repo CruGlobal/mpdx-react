@@ -105,7 +105,7 @@ describe('PdsGoalsList', () => {
 
     expect(await findByRole('link', { name: 'View' })).toHaveAttribute(
       'href',
-      '/accountLists/abc123/reports/pdsGoalCalculator/goal-123',
+      '/accountLists/abc123/hrTools/pdsGoalCalculator/goal-123',
     );
   });
 

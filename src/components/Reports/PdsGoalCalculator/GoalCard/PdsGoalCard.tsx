@@ -127,7 +127,7 @@ export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({ goal, onDelete }) => {
           </Button>
           <Button
             LinkComponent={NextLink}
-            href={`/accountLists/${accountListId}/reports/pdsGoalCalculator/${goal.id}`}
+            href={`/accountLists/${accountListId}/hrTools/pdsGoalCalculator/${goal.id}`}
             variant="contained"
             color="primary"
           >

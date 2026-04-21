@@ -27,6 +27,10 @@ export function useHrToolsNavItems(): NavItems[] {
       title: t('Additional Salary Request'),
     },
     {
+      id: 'pdsGoalCalculator',
+      title: t('PDS Goal Calculator'),
+    },
+    {
       id: 'partnerReminders',
       title: t('Ministry Partner Reminders'),
     },
