@@ -214,9 +214,7 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
 
     const tempId = `temp-${nextEntryIdRef.current++}`;
     const newPosition =
-      entries.length > 0
-        ? Math.max(...entries.map((e) => e.position)) + 1
-        : 0;
+      entries.length > 0 ? Math.max(...entries.map((e) => e.position)) + 1 : 0;
     const newEntry: HoursPerWeekEntry = {
       id: tempId,
       label: t('New Entry'),

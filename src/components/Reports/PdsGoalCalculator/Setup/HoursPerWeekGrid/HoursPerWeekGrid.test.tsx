@@ -173,9 +173,7 @@ describe('HoursPerWeekGrid', () => {
     const regularRow = (await findByText('Regular Week')).closest(
       '[role="row"]',
     );
-    const hoursCell = regularRow?.querySelector(
-      '[data-field="hoursPerWeek"]',
-    );
+    const hoursCell = regularRow?.querySelector('[data-field="hoursPerWeek"]');
     userEvent.dblClick(hoursCell!);
 
     await waitFor(() => {
@@ -219,9 +217,7 @@ describe('HoursPerWeekGrid', () => {
     const regularRow = (await findByText('Regular Week')).closest(
       '[role="row"]',
     );
-    const hoursCell = regularRow?.querySelector(
-      '[data-field="hoursPerWeek"]',
-    );
+    const hoursCell = regularRow?.querySelector('[data-field="hoursPerWeek"]');
     userEvent.dblClick(hoursCell!);
 
     await waitFor(() => {
@@ -233,14 +229,11 @@ describe('HoursPerWeekGrid', () => {
 
     // Average = 20 hrs * 48 wks / 48 wks = 20.0
     await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation(
-        'UpdatePdsGoalCalculation',
-        {
-          attributes: {
-            averageHoursPerWeek: 20,
-          },
+      expect(mutationSpy).toHaveGraphqlOperation('UpdatePdsGoalCalculation', {
+        attributes: {
+          averageHoursPerWeek: 20,
         },
-      ),
+      }),
     );
   });
 
@@ -271,9 +264,7 @@ describe('HoursPerWeekGrid', () => {
 
     // Warning should disappear and Apply should be enabled
     await waitFor(() => {
-      expect(
-        queryByRole('alert'),
-      ).not.toBeInTheDocument();
+      expect(queryByRole('alert')).not.toBeInTheDocument();
     });
 
     const applyButton = getByRole('button', { name: 'Apply to Hours Worked' });
