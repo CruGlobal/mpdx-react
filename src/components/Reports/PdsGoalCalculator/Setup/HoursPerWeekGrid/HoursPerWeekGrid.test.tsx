@@ -103,6 +103,21 @@ describe('HoursPerWeekGrid', () => {
     userEvent.click(getByText('Add Entry'));
 
     expect(await findByText('New Entry')).toBeInTheDocument();
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'CreateDesignationSupportHoursItem',
+        {
+          attributes: {
+            designationSupportCalculationId: 'goal-1',
+            label: 'New Entry',
+            hoursPerWeek: 0,
+            numberOfWeeks: 0,
+            position: 3,
+          },
+        },
+      ),
+    );
   });
 
   it('does not show Apply button when onApply is not provided', async () => {
@@ -140,6 +155,93 @@ describe('HoursPerWeekGrid', () => {
 
     const applyButton = getByRole('button', { name: 'Apply to Hours Worked' });
     expect(applyButton).toBeDisabled();
+  });
+
+  it('sends correct mutation variables on cell edit', async () => {
+    const { findByText, getByDisplayValue } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={defaultCalculationMock}
+        onCall={mutationSpy}
+      >
+        <HoursPerWeekGrid />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    await waitForDataToLoad();
+
+    // Edit Regular Week hours from 40 to 20
+    const regularRow = (await findByText('Regular Week')).closest(
+      '[role="row"]',
+    );
+    const hoursCell = regularRow?.querySelector(
+      '[data-field="hoursPerWeek"]',
+    );
+    userEvent.dblClick(hoursCell!);
+
+    await waitFor(() => {
+      const input = getByDisplayValue('40');
+      userEvent.clear(input);
+      userEvent.type(input, '20');
+    });
+    userEvent.tab();
+
+    // Default entries have "default-" IDs since calculation loads after
+    // initial render, so cell edits trigger create (not update)
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'CreateDesignationSupportHoursItem',
+        {
+          attributes: {
+            designationSupportCalculationId: 'goal-1',
+            label: 'Regular Week',
+            hoursPerWeek: 20,
+            numberOfWeeks: 48,
+            position: 0,
+          },
+        },
+      ),
+    );
+  });
+
+  it('autosaves averageHoursPerWeek via UpdatePdsGoalCalculation after cell edit', async () => {
+    const { findByText, getByDisplayValue } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={defaultCalculationMock}
+        onCall={mutationSpy}
+      >
+        <HoursPerWeekGrid />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    await waitForDataToLoad();
+
+    // Edit Regular Week hours from 40 to 20
+    const regularRow = (await findByText('Regular Week')).closest(
+      '[role="row"]',
+    );
+    const hoursCell = regularRow?.querySelector(
+      '[data-field="hoursPerWeek"]',
+    );
+    userEvent.dblClick(hoursCell!);
+
+    await waitFor(() => {
+      const input = getByDisplayValue('40');
+      userEvent.clear(input);
+      userEvent.type(input, '20');
+    });
+    userEvent.tab();
+
+    // Average = 20 hrs * 48 wks / 48 wks = 20.0
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'UpdatePdsGoalCalculation',
+        {
+          attributes: {
+            averageHoursPerWeek: 20,
+          },
+        },
+      ),
+    );
   });
 
   it('enables Apply when weeks add up to 52', async () => {
