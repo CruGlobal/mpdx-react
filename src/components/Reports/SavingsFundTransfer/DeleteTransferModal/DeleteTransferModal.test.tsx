@@ -54,9 +54,7 @@ describe('DeleteTransferModal', () => {
 
     expect(getByText('Stop Transfer')).toBeInTheDocument();
     expect(
-      getByText(
-        /are you sure you want to {{action}} this recurring transfer?/i,
-      ),
+      getByText(/are you sure you want to stop this recurring transfer?/i),
     ).toBeInTheDocument();
   });
 

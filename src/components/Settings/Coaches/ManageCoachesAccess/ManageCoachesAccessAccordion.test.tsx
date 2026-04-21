@@ -109,7 +109,7 @@ describe('ManageCoachesAccessAccordion', () => {
     userEvent.click(getAllByLabelText('Delete access')[0]);
     await waitFor(() => {
       expect(mockEnqueue).toHaveBeenCalledWith(
-        '{{appName}} removed the coach successfully',
+        'MPDX removed the coach successfully',
         {
           variant: 'success',
         },

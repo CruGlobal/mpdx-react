@@ -126,7 +126,7 @@ describe('ManageAccountAccessAccordion', () => {
 
     await waitFor(() => {
       expect(mockEnqueue).toHaveBeenCalledWith(
-        '{{appName}} removed the user successfully',
+        'MPDX removed the user successfully',
         { variant: 'success' },
       );
       expect(queryByText('firstName1 lastName1')).not.toBeInTheDocument();

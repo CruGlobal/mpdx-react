@@ -178,7 +178,7 @@ describe('PrayerlettersAccount', () => {
 
       await waitFor(() => {
         expect(mockEnqueue).toHaveBeenCalledWith(
-          '{{appName}} removed your integration with Prayer Letters',
+          'MPDX removed your integration with Prayer Letters',
           {
             variant: 'success',
           },
@@ -216,9 +216,7 @@ describe('PrayerlettersAccount', () => {
 
       await waitFor(() => {
         expect(
-          queryByText(
-            'We strongly recommend only making changes in {{appName}}.',
-          ),
+          queryByText('We strongly recommend only making changes in MPDX.'),
         ).toBeInTheDocument();
       });
 
@@ -243,7 +241,7 @@ describe('PrayerlettersAccount', () => {
 
       await waitFor(() => {
         expect(mockEnqueue).toHaveBeenCalledWith(
-          '{{appName}} removed your integration with Prayer Letters',
+          'MPDX removed your integration with Prayer Letters',
           {
             variant: 'success',
           },
@@ -281,9 +279,7 @@ describe('PrayerlettersAccount', () => {
 
       await waitFor(() => {
         expect(
-          queryByText(
-            'We strongly recommend only making changes in {{appName}}.',
-          ),
+          queryByText('We strongly recommend only making changes in MPDX.'),
         ).toBeInTheDocument();
       });
 
@@ -295,7 +291,7 @@ describe('PrayerlettersAccount', () => {
 
       await waitFor(() => {
         expect(mockEnqueue).toHaveBeenCalledWith(
-          '{{appName}} is now syncing your newsletter recipients with Prayer Letters',
+          'MPDX is now syncing your newsletter recipients with Prayer Letters',
           {
             variant: 'success',
           },
