@@ -1,5 +1,32 @@
 import { useMemo } from 'react';
-import { useHcmQuery } from 'src/components/Reports/Shared/HcmData/Hcm.generated';
+import {
+  HcmQuery,
+  useHcmQuery,
+} from 'src/components/Reports/Shared/HcmData/Hcm.generated';
+import {
+  AssignmentStatusEnum,
+  PeopleGroupSupportTypeEnum,
+  UserPersonTypeEnum,
+} from 'src/graphql/types.generated';
+
+// Hide MHA tab by HR classification only; ignore mhaEligibility (IBS courses are resolvable).
+function mhaIneligible(user: HcmQuery['hcm'][number]['staffInfo']) {
+  const eligibleUserPersonType =
+    user?.userPersonType === UserPersonTypeEnum.EmployeeStaff ||
+    user?.userPersonType === UserPersonTypeEnum.EmployeeStaffNonRmoSpouse;
+  const eligibleSupportType =
+    user?.peopleGroupSupportType === PeopleGroupSupportTypeEnum.SupportedRmo;
+  const eligibleAssignmentStatus =
+    user?.assignmentStatus === AssignmentStatusEnum.ActivePayrollEligible;
+
+  const isIneligible = !(
+    eligibleUserPersonType &&
+    eligibleSupportType &&
+    eligibleAssignmentStatus
+  );
+
+  return isIneligible;
+}
 
 /**
  * This hook determines whether a US Staff user is in a subgroup that's ineligible for ASR, Salary Calculator, or MHA (all reports that require HCM).
@@ -30,7 +57,7 @@ export function useUsStaffGroups(skip?: boolean) {
   const inSalaryCalcIneligibleGroup =
     hasNoStaffAccount || user?.salaryRequestEligible === false;
   const inMhaIneligibleGroup =
-    hasNoStaffAccount || user?.mhaEit?.mhaEligibility === false;
+    hasNoStaffAccount || (!!user && mhaIneligible(user.staffInfo));
 
   return useMemo(
     () => ({

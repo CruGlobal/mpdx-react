@@ -3,20 +3,37 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { GraphQLError } from 'graphql';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { HcmQuery } from 'src/components/Reports/Shared/HcmData/Hcm.generated';
+import {
+  AssignmentStatusEnum,
+  PeopleGroupSupportTypeEnum,
+  UserPersonTypeEnum,
+} from 'src/graphql/types.generated';
 import { useUsStaffGroups } from './useUsStaffGroups';
 
 interface BuildHcmMockOptions {
   userAsrEligible?: boolean;
   userSalaryRequestEligible?: boolean;
-  userMhaEligible?: boolean;
+  userMhaEligibility?: boolean;
+  userPersonType?: UserPersonTypeEnum;
+  peopleGroupSupportType?: PeopleGroupSupportTypeEnum;
+  assignmentStatus?: AssignmentStatusEnum;
   includeSpouse?: boolean;
   spouseAsrEligible?: boolean;
 }
 
+const mhaEligibleStaffInfo = {
+  userPersonType: UserPersonTypeEnum.EmployeeStaff,
+  peopleGroupSupportType: PeopleGroupSupportTypeEnum.SupportedRmo,
+  assignmentStatus: AssignmentStatusEnum.ActivePayrollEligible,
+};
+
 const buildHcmMock = ({
   userAsrEligible = true,
   userSalaryRequestEligible = true,
-  userMhaEligible = true,
+  userMhaEligibility = true,
+  userPersonType = mhaEligibleStaffInfo.userPersonType,
+  peopleGroupSupportType = mhaEligibleStaffInfo.peopleGroupSupportType,
+  assignmentStatus = mhaEligibleStaffInfo.assignmentStatus,
   includeSpouse = false,
   spouseAsrEligible = true,
 }: BuildHcmMockOptions = {}): HcmQuery => {
@@ -24,7 +41,12 @@ const buildHcmMock = ({
     {
       asrEit: { asrEligibility: userAsrEligible },
       salaryRequestEligible: userSalaryRequestEligible,
-      mhaEit: { mhaEligibility: userMhaEligible },
+      mhaEit: { mhaEligibility: userMhaEligibility },
+      staffInfo: {
+        userPersonType,
+        peopleGroupSupportType,
+        assignmentStatus,
+      },
     },
   ];
   if (includeSpouse) {
@@ -32,6 +54,7 @@ const buildHcmMock = ({
       asrEit: { asrEligibility: spouseAsrEligible },
       salaryRequestEligible: true,
       mhaEit: { mhaEligibility: true },
+      staffInfo: { ...mhaEligibleStaffInfo },
     });
   }
   return { hcm: entries } as HcmQuery;
@@ -75,9 +98,11 @@ describe('useUsStaffGroups', () => {
     });
   });
 
-  it('marks user as mha ineligible when mhaEligibility is false', async () => {
+  it('marks user as mha ineligible when userPersonType is not staff', async () => {
     const { result } = renderUseUsStaffGroups(
-      buildHcmMock({ userMhaEligible: false }),
+      buildHcmMock({
+        userPersonType: UserPersonTypeEnum.EmployeeHourly,
+      }),
     );
 
     await waitFor(() => {
@@ -87,6 +112,57 @@ describe('useUsStaffGroups', () => {
         inMhaIneligibleGroup: true,
         loading: false,
       });
+    });
+  });
+
+  it('marks user as mha ineligible when peopleGroupSupportType is not SupportedRmo', async () => {
+    const { result } = renderUseUsStaffGroups(
+      buildHcmMock({
+        peopleGroupSupportType: PeopleGroupSupportTypeEnum.SupportedNonRmo,
+      }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.inMhaIneligibleGroup).toBe(true);
+    });
+  });
+
+  it('marks user as mha ineligible when assignmentStatus is not ActivePayrollEligible', async () => {
+    const { result } = renderUseUsStaffGroups(
+      buildHcmMock({
+        assignmentStatus: AssignmentStatusEnum.ActiveNoPayroll,
+      }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.inMhaIneligibleGroup).toBe(true);
+    });
+  });
+
+  it('keeps user MHA-eligible when staffInfo qualifies but mhaEligibility is false (unmet IBS courses)', async () => {
+    const { result } = renderUseUsStaffGroups(
+      buildHcmMock({ userMhaEligibility: false }),
+    );
+
+    await waitFor(() => {
+      expect(result.current).toEqual({
+        inAsrIneligibleGroup: false,
+        inSalaryCalcIneligibleGroup: false,
+        inMhaIneligibleGroup: false,
+        loading: false,
+      });
+    });
+  });
+
+  it('marks user as mha eligible when userPersonType is EmployeeStaffNonRmoSpouse', async () => {
+    const { result } = renderUseUsStaffGroups(
+      buildHcmMock({
+        userPersonType: UserPersonTypeEnum.EmployeeStaffNonRmoSpouse,
+      }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.inMhaIneligibleGroup).toBe(false);
     });
   });
 

@@ -12,6 +12,7 @@ import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelper
 import { StaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
+  AssignmentStatusEnum,
   PeopleGroupSupportTypeEnum,
   UserPersonTypeEnum,
   UserTypeEnum,
@@ -38,6 +39,7 @@ const mocks = {
           preferredName: 'Test User',
           peopleGroupSupportType: PeopleGroupSupportTypeEnum.SupportedRmo,
           userPersonType: UserPersonTypeEnum.EmployeeStaff,
+          assignmentStatus: AssignmentStatusEnum.ActivePayrollEligible,
         },
       },
     ],
