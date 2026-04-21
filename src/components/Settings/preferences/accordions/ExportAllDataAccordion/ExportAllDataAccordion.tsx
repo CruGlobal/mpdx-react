@@ -15,8 +15,8 @@ import { useTranslation } from 'react-i18next';
 import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
+import { getAppName } from 'src/lib/getAppName';
 import { dateTimeFormat } from 'src/lib/intlFormat';
 import { AccordionProps } from '../../../accordionHelper';
 import { useExportDataMutation } from '../../GetAccountPreferences.generated';
@@ -39,7 +39,7 @@ export const ExportAllDataAccordion: React.FC<ExportAllDataAccordionProps> = ({
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const [acknowledged, setAcknowledged] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmation, setConfirmation] = useState(false);

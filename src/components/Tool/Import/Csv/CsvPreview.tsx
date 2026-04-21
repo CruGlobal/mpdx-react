@@ -21,7 +21,7 @@ import { useTranslation } from 'react-i18next';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import { useGetContactTagListQuery } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Tags/ContactTags.generated';
 import { ContactTagIcon, ContactTagInput } from 'src/components/Tags/Tags';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import theme from 'src/theme';
 import {
   CsvImportContext,
@@ -61,7 +61,7 @@ const CsvPreview: React.FC<CsvPreviewProps> = ({
     useContext(CsvImportContext) as CsvImportValue;
 
   const { t } = useTranslation();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const constants = useApiConstants();
   const supportedHeaders = useSupportedHeaders();
   const { data: contactTagsList, loading: contactTagsListLoading } =

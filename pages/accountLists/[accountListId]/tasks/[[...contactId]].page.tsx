@@ -33,10 +33,10 @@ import {
 } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { useGetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useMassSelection } from 'src/hooks/useMassSelection';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { useUserPreference } from 'src/hooks/useUserPreference';
+import { getAppName } from 'src/lib/getAppName';
 import theme from 'src/theme';
 import {
   TaskFilterTabsTypes,
@@ -109,7 +109,7 @@ const PageContent: React.FC = () => {
   const accountListId = useAccountListId() ?? '';
   const { isOpen, openContact: setContactFocus } = useContactPanel();
   const { openTaskModal, preloadTaskModal } = useTaskModal();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
 
   const {
     activeFilters,

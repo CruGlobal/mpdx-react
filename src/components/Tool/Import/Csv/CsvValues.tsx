@@ -17,7 +17,7 @@ import { invert } from 'lodash';
 import { cloneDeep } from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import { snakeToCamel } from 'src/lib/snakeToCamel';
 import theme from 'src/theme';
 import {
@@ -43,7 +43,7 @@ const CsvValues: React.FC<CsvValuesProps> = ({
 
   const supportedHeaders = useSupportedHeaders();
   const { t } = useTranslation();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const constants = useApiConstants();
   const [saving, setSaving] = useState(false);
 

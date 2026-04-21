@@ -16,11 +16,11 @@ import {
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { ReportPageWrapper } from 'src/components/Shared/styledComponents/ReportPageWrapper';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 
 const MinisterHousingAllowancePage: React.FC = () => {
   const { t } = useTranslation();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const [isNavListOpen, setIsNavListOpen] = useState(false);
 
   const handleNavListToggle = () => {

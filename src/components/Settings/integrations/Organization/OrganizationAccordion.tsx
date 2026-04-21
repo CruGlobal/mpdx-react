@@ -17,7 +17,7 @@ import { IntegrationAccordion } from 'src/components/Shared/Forms/Accordions/Acc
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import theme from 'src/theme';
 import { AccordionProps, StyledServicesButton } from '../integrationsHelper';
 import { useOauthUrl } from '../useOauthUrl';
@@ -87,7 +87,7 @@ export const OrganizationAccordion: React.FC<AccordionProps> = ({
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { enqueueSnackbar } = useSnackbar();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const [deleteOrganizationAccount] = useDeleteOrganizationAccountMutation();
   const [syncOrganizationAccount] = useSyncOrganizationAccountMutation();
   const { getOrganizationOauthUrl: getOauthUrl } = useOauthUrl();

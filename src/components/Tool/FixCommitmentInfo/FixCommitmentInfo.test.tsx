@@ -11,7 +11,6 @@ import {
   render,
   waitFor,
 } from '__tests__/util/testingLibraryReactMock';
-import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
 import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { StatusEnum } from 'src/graphql/types.generated';
 import theme from '../../../theme';
@@ -45,35 +44,33 @@ const Components = ({
 }: {
   mockNodes?: ErgonoMockShape[];
 }) => (
-  <AppSettingsProvider>
-    <SnackbarProvider>
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <VirtuosoMockContext.Provider
-            value={{ viewportHeight: 1000, itemHeight: 100 }}
-          >
-            <GqlMockedProvider<{
-              InvalidStatuses: InvalidStatusesQuery;
-            }>
-              mocks={{
-                InvalidStatuses: {
-                  contacts: {
-                    nodes: mockNodes,
-                    totalCount: 2,
-                  },
+  <SnackbarProvider>
+    <ThemeProvider theme={theme}>
+      <TestRouter router={router}>
+        <VirtuosoMockContext.Provider
+          value={{ viewportHeight: 1000, itemHeight: 100 }}
+        >
+          <GqlMockedProvider<{
+            InvalidStatuses: InvalidStatusesQuery;
+          }>
+            mocks={{
+              InvalidStatuses: {
+                contacts: {
+                  nodes: mockNodes,
+                  totalCount: 2,
                 },
-              }}
-              onCall={mutationSpy}
-            >
-              <ContactPanelProvider>
-                <FixCommitmentInfo accountListId={accountListId} />
-              </ContactPanelProvider>
-            </GqlMockedProvider>
-          </VirtuosoMockContext.Provider>
-        </TestRouter>
-      </ThemeProvider>
-    </SnackbarProvider>
-  </AppSettingsProvider>
+              },
+            }}
+            onCall={mutationSpy}
+          >
+            <ContactPanelProvider>
+              <FixCommitmentInfo accountListId={accountListId} />
+            </ContactPanelProvider>
+          </GqlMockedProvider>
+        </VirtuosoMockContext.Provider>
+      </TestRouter>
+    </ThemeProvider>
+  </SnackbarProvider>
 );
 
 describe('FixCommitmentInfo', () => {

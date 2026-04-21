@@ -22,7 +22,7 @@ import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
 import Modal from 'src/components/common/Modal/Modal';
 import { GoogleAccountAttributes } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import theme from 'src/theme';
 import {
   AccordionProps,
@@ -89,7 +89,7 @@ export const GoogleAccordion: React.FC<AccordionProps> = ({
     skip: !expandedAccordion,
   });
   const googleAccounts = data?.googleAccounts;
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const { getGoogleOauthUrl: getOauthUrl } = useOauthUrl();
 
   const handleEditAccount = (account) => {

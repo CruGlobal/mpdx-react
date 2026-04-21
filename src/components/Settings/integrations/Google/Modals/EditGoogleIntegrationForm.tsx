@@ -25,7 +25,7 @@ import {
   GoogleAccountIntegration,
 } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import i18n from 'src/lib/i18n';
 import { GoogleAccountAttributesSlimmed } from '../GoogleAccordion';
 import {
@@ -100,7 +100,7 @@ export const EditGoogleIntegrationForm: React.FC<
   const { t } = useTranslation();
   const accountListId = useAccountListId();
   const { enqueueSnackbar } = useSnackbar();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const [updateGoogleIntegration] = useUpdateGoogleIntegrationMutation();
 
   const activities = useApiConstants()?.activities;

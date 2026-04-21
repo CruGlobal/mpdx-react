@@ -8,8 +8,8 @@ import { Panel } from 'pages/accountLists/[accountListId]/reports/helpers';
 import { headerHeight } from 'src/components/Shared/Header/ListHeader';
 import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { DateRangeInput } from 'src/graphql/types.generated';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
+import { getAppName } from 'src/lib/getAppName';
 import { dateFormatShort } from 'src/lib/intlFormat';
 import {
   FinancialAccountContext,
@@ -56,7 +56,7 @@ export const AccountTransactions: React.FC = () => {
   const { activeFilters, searchTerm } =
     useUrlFilters<FinancialAccountsFilters>();
 
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
 
   useEffect(() => {
     // On loading the transactions page, open the filters panel

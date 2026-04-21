@@ -11,14 +11,14 @@ import {
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 
 const PartnerRemindersReportPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
 }));
 
 const PartnerRemindersReportPage: React.FC = () => {
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const { t } = useTranslation();
 
   const [isNavListOpen, setIsNavListOpen] = useState<boolean>(false);

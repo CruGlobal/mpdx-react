@@ -37,7 +37,7 @@ import { IntegrationAccordion } from 'src/components/Shared/Forms/Accordions/Acc
 import { ContactTagInput } from 'src/components/Tags/Tags';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import Modal from 'src/components/common/Modal/Modal';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import theme from 'src/theme';
 import NoData from '../NoData';
 import { ToolsGridContainer } from '../styledComponents';
@@ -96,7 +96,7 @@ interface Props {
 }
 
 const GoogleImport: React.FC<Props> = ({ accountListId }: Props) => {
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();

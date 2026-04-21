@@ -15,7 +15,7 @@ import {
   useDeleteOrganizationAccountMutation,
   useGetUsersOrganizationsAccountsQuery,
 } from 'src/components/Settings/integrations/Organization/Organizations.generated';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import { SetupPage } from './SetupPage';
 import { LargeButton } from './styledComponents';
 import { useNextSetupPage } from './useNextSetupPage';
@@ -39,7 +39,7 @@ const ConnectButton = (props: ButtonProps) => (
 
 export const Connect: React.FC = () => {
   const { t } = useTranslation();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const { enqueueSnackbar } = useSnackbar();
   const { next } = useNextSetupPage();
 

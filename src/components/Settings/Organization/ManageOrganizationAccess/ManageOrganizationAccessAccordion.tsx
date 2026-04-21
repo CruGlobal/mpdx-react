@@ -27,8 +27,8 @@ import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionI
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { PaddedBox } from 'src/components/Shared/styledComponents/PaddedBox';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useLocale } from 'src/hooks/useLocale';
+import { getAppName } from 'src/lib/getAppName';
 import { dateFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { AccordionProps } from '../../accordionHelper';
@@ -70,7 +70,7 @@ export const ManageOrganizationAccessAccordion: React.FC<
   const { t } = useTranslation();
   const accordionName = t('Manage Organization Access');
   const { enqueueSnackbar } = useSnackbar();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const locale = useLocale();
   const { selectedOrganizationId } = useContext(
     OrganizationsContext,

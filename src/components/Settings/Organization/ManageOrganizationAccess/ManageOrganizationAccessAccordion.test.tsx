@@ -292,10 +292,8 @@ describe('ManageOrganizationAccessAccordion', () => {
     userEvent.click(getByTestId('action-button'));
     await waitFor(() => {
       expect(mockEnqueue).toHaveBeenCalledWith(
-        ' sent an invite to test@test.org',
-        {
-          variant: 'success',
-        },
+        'MPDX sent an invite to test@test.org',
+        { variant: 'success' },
       );
     });
 

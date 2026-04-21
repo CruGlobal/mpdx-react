@@ -22,7 +22,7 @@ import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { PaddedBox } from 'src/components/Shared/styledComponents/PaddedBox';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import {
@@ -62,7 +62,7 @@ export const MergeForm: React.FC<MergeFormProps> = ({ isSpouse }) => {
   const { enqueueSnackbar } = useSnackbar();
   const accountListId = useAccountListId() || '';
   const { data } = useGetAccountListsForMergingQuery();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const { data: currentAccountList } = useAccountListQuery({
     variables: {
       accountListId,

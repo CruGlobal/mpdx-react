@@ -11,7 +11,7 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import { PageContentWrapper } from './styledComponents/PageContentWrapper';
 
 interface SettingsWrapperProps {
@@ -27,7 +27,7 @@ export const SettingsWrapper: React.FC<SettingsWrapperProps> = ({
   selectedMenuId,
   children,
 }) => {
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const [isNavListOpen, setNavListOpen] = useState(false);
   const handleNavListToggle = () => {
     setNavListOpen(!isNavListOpen);

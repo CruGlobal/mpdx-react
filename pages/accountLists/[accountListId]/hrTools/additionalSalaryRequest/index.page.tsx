@@ -28,7 +28,7 @@ import {
 import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { ReportPageWrapper } from 'src/components/Shared/styledComponents/ReportPageWrapper';
 import { AsrStatusEnum } from 'src/graphql/types.generated';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 
 const FormikRequestPage: React.FC = () => {
   const formik = useAdditionalSalaryRequestForm();
@@ -150,7 +150,7 @@ const AdditionalSalaryRequestContent: React.FC = () => {
 
 const AdditionalSalaryRequestPage: React.FC = () => {
   const { t } = useTranslation();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
 
   return (
     <>

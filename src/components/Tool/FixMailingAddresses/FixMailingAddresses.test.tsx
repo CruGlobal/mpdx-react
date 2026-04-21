@@ -7,7 +7,6 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { CreateContactAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/AddAddressModal/CreateContactAddress.generated';
-import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
 import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import theme from 'src/theme';
 import FixMailingAddresses from './FixMailingAddresses';
@@ -46,25 +45,23 @@ const Components = ({
   mocks: ApolloErgonoMockMap;
   cache?: ApolloCache<object>;
 }) => (
-  <AppSettingsProvider>
-    <SnackbarProvider>
-      <TestRouter router={router}>
-        <ThemeProvider theme={theme}>
-          <GqlMockedProvider<{
-            InvalidAddresses: InvalidAddressesQuery;
-            CreateContactAddress: CreateContactAddressMutation;
-          }>
-            mocks={mocks}
-            cache={cache}
-          >
-            <ContactPanelProvider>
-              <FixMailingAddresses accountListId={accountListId} />
-            </ContactPanelProvider>
-          </GqlMockedProvider>
-        </ThemeProvider>
-      </TestRouter>
-    </SnackbarProvider>
-  </AppSettingsProvider>
+  <SnackbarProvider>
+    <TestRouter router={router}>
+      <ThemeProvider theme={theme}>
+        <GqlMockedProvider<{
+          InvalidAddresses: InvalidAddressesQuery;
+          CreateContactAddress: CreateContactAddressMutation;
+        }>
+          mocks={mocks}
+          cache={cache}
+        >
+          <ContactPanelProvider>
+            <FixMailingAddresses accountListId={accountListId} />
+          </ContactPanelProvider>
+        </GqlMockedProvider>
+      </ThemeProvider>
+    </TestRouter>
+  </SnackbarProvider>
 );
 
 describe('FixMailingAddresses', () => {

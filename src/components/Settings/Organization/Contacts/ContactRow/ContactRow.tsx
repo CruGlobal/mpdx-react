@@ -18,7 +18,7 @@ import {
   ContactPeopleAccountListsUsers,
   OrganizationsContact,
 } from 'src/graphql/types.generated';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import { useAnonymizeContactMutation } from '../Contact.generated';
 
 interface Props {
@@ -101,7 +101,7 @@ export const ContactRow: React.FC<Props> = ({ contact }) => {
   const [anonymizeDialogOpen, setAnonymizeDialogOpen] = useState(false);
   const [anonymizeContact] = useAnonymizeContactMutation();
   const { enqueueSnackbar } = useSnackbar();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
 
   const handleAnonymizeContact = async () => {
     await anonymizeContact({

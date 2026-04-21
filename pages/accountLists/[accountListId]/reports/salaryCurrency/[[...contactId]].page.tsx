@@ -19,7 +19,7 @@ import {
   useContactPanel,
 } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 
 const PageContent: React.FC = () => {
   const { t } = useTranslation();
@@ -70,7 +70,7 @@ const PageContent: React.FC = () => {
 
 const SalaryCurrencyReportPage: React.FC = () => {
   const { t } = useTranslation();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
 
   return (
     <>

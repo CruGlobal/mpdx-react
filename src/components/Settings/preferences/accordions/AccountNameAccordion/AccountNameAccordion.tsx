@@ -9,7 +9,7 @@ import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionI
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import { AccountList } from 'src/graphql/types.generated';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import { AccordionProps } from '../../../accordionHelper';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
 
@@ -33,7 +33,7 @@ export const AccountNameAccordion: React.FC<AccountNameAccordionProps> = ({
   disabled,
 }) => {
   const { t } = useTranslation();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const { enqueueSnackbar } = useSnackbar();
   const [updateAccountNamePreference] = useUpdateAccountPreferencesMutation();
   const label = t('Account Name');

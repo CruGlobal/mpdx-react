@@ -16,7 +16,7 @@ import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { PaddedBox } from 'src/components/Shared/styledComponents/PaddedBox';
 import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import { getErrorMessage } from 'src/lib/getErrorFromCatch';
 import { AccordionProps } from '../../accordionHelper';
 
@@ -37,7 +37,7 @@ export const ImpersonateUserAccordion: React.FC<
   const { t } = useTranslation();
   const accordionName = t('Impersonate User');
   const { enqueueSnackbar } = useSnackbar();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const { push } = useRouter();
 
   const onSubmit = async (attributes: ImpersonateUserFormType) => {

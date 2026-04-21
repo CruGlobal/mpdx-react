@@ -11,7 +11,7 @@ import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionBu
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import { InviteTypeEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import {
   GetAccountListInvitesDocument,
   GetAccountListInvitesQuery,
@@ -36,7 +36,7 @@ export const InviteForm: React.FC<InviteFormProps> = ({ type }) => {
   const accountListId = useAccountListId() || '';
   const [isInviteConfirmationOpen, setIsInviteConfirmationOpen] =
     useState(false);
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
 
   const [createAccountListInvite] = useCreateAccountListInviteMutation();
 

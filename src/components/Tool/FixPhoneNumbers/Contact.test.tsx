@@ -7,7 +7,6 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
-import { AppSettingsProvider } from 'src/components/common/AppSettings/AppSettingsProvider';
 import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import theme from 'src/theme';
 import Contact, { PhoneNumberData } from './Contact';
@@ -72,29 +71,27 @@ type TestComponentProps = {
 
 const TestComponent = ({ mocks }: TestComponentProps) => {
   return (
-    <AppSettingsProvider>
-      <SnackbarProvider>
-        <ThemeProvider theme={theme}>
-          <TestRouter router={router}>
-            <GqlMockedProvider<{
-              GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
-              PhoneNumbers: UpdatePhoneNumberMutation;
-            }>
-              mocks={mocks}
-              onCall={mutationSpy}
-            >
-              <ContactPanelProvider>
-                <Contact
-                  person={person}
-                  accountListId={accountListId}
-                  submitAll={false}
-                />
-              </ContactPanelProvider>
-            </GqlMockedProvider>
-          </TestRouter>
-        </ThemeProvider>
-      </SnackbarProvider>
-    </AppSettingsProvider>
+    <SnackbarProvider>
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider<{
+            GetInvalidPhoneNumbers: GetInvalidPhoneNumbersQuery;
+            PhoneNumbers: UpdatePhoneNumberMutation;
+          }>
+            mocks={mocks}
+            onCall={mutationSpy}
+          >
+            <ContactPanelProvider>
+              <Contact
+                person={person}
+                accountListId={accountListId}
+                submitAll={false}
+              />
+            </ContactPanelProvider>
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>
+    </SnackbarProvider>
   );
 };
 

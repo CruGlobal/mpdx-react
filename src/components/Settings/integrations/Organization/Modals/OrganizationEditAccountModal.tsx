@@ -11,7 +11,7 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import { useUpdateOrganizationAccountMutation } from '../Organizations.generated';
 import { OrganizationFormikSchema } from '../schema';
 
@@ -25,7 +25,7 @@ export const OrganizationEditAccountModal: React.FC<
 > = ({ handleClose, organizationId }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const [updateOrganizationAccount] = useUpdateOrganizationAccountMutation();
 
   const onSubmit = async (

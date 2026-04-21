@@ -7,14 +7,14 @@ import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { SetupPage } from 'src/components/Setup/SetupPage';
 import { LargeButton } from 'src/components/Setup/styledComponents';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useUserPreference } from 'src/hooks/useUserPreference';
+import { getAppName } from 'src/lib/getAppName';
 
 // This is the last page of the tour, and it lets users choose to go to the
 // tools page. It is always shown.
 const FinishPage: React.FC = () => {
   const { t } = useTranslation();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const accountListId = useAccountListId();
   const { push } = useRouter();
   const [_, setSetupPosition] = useUserPreference({

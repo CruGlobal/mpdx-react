@@ -8,7 +8,6 @@ import { MailchimpAccountQuery } from 'src/components/Settings/integrations/Mail
 import { GetUsersOrganizationsAccountsQuery } from 'src/components/Settings/integrations/Organization/Organizations.generated';
 import { PrayerlettersAccountQuery } from 'src/components/Settings/integrations/Prayerletters/PrayerlettersAccount.generated';
 import { TestSetupProvider } from 'src/components/Setup/SetupProvider';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from 'src/theme';
 import Integrations from './index.page';
 
@@ -25,7 +24,6 @@ const router = {
   push,
 };
 
-jest.mock('src/hooks/useGetAppSettings');
 jest.mock('notistack', () => ({
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -73,11 +71,6 @@ const MocksProviders: React.FC<MocksProvidersProps> = ({
 );
 
 describe('Connect Services page', () => {
-  beforeEach(() => {
-    (useGetAppSettings as jest.Mock).mockReturnValue({
-      appName: 'MPDX',
-    });
-  });
   it('should render', async () => {
     const { findByText } = render(
       <MocksProviders>

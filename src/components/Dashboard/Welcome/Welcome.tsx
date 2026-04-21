@@ -1,7 +1,7 @@
 import React, { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useGreeting } from 'src/hooks/useGreeting';
+import { getAppName } from 'src/lib/getAppName';
 import PageHeading from '../../PageHeading';
 
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
 const Welcome = ({ firstName }: Props): ReactElement => {
   const { t } = useTranslation();
   const greeting = useGreeting(firstName);
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
 
   return (
     <PageHeading

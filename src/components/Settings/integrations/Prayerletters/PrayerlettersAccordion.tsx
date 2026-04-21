@@ -6,7 +6,7 @@ import { IntegrationAccordion } from 'src/components/Shared/Forms/Accordions/Acc
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import { AccordionProps, StyledServicesButton } from '../integrationsHelper';
 import { useOauthUrl } from '../useOauthUrl';
 import { DeletePrayerlettersAccountModal } from './Modals/DeletePrayerlettersModal';
@@ -25,7 +25,7 @@ export const PrayerlettersAccordion: React.FC<AccordionProps> = ({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   showDeleteModal;
   const { enqueueSnackbar } = useSnackbar();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const { getPrayerlettersOauthUrl: getOauthUrl } = useOauthUrl();
   const accountListId = useAccountListId();
   const accordionName = t('prayerletters.com');

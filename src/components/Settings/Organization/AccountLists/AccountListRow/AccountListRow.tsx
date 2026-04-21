@@ -17,7 +17,7 @@ import {
   OrganizationAccountListCoaches,
   OrganizationsAccountList,
 } from 'src/graphql/types.generated';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import theme from 'src/theme';
 import {
   SearchOrganizationsAccountListsDocument,
@@ -62,7 +62,7 @@ export const AccountListRow: React.FC<AccountListRowProps> = ({
 }) => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const [adminDeleteOrganizationCoach] =
     useAdminDeleteOrganizationCoachMutation();
   const [removeAccountListUser] = useRemoveAccountListUserMutation();

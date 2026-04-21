@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next';
 import { logErrorOnRollbar } from 'pages/api/utils/rollBar';
 import AccountLists from 'src/components/AccountLists';
 import BaseLayout from 'src/components/Layouts/Primary';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import makeSsrClient from 'src/lib/apollo/ssrClient';
+import { getAppName } from 'src/lib/getAppName';
 import {
   GetAccountListsDocument,
   GetAccountListsQuery,
@@ -15,7 +15,7 @@ import { makeGetServerSideProps } from './api/utils/pagePropsHelpers';
 
 const AccountListsPage = (): ReactElement => {
   const { t } = useTranslation();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
 
   return (
     <>

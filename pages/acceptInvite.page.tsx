@@ -5,8 +5,8 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { SetupPage } from 'src/components/Setup/SetupPage';
 import { IntegrationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
+import { getAppName } from 'src/lib/getAppName';
 import { ensureSessionAndAccountList } from './api/utils/pagePropsHelpers';
 
 interface FetchAcceptInviteProps {
@@ -42,7 +42,7 @@ export const fetchAcceptInvite = ({
 
 const AcceptInvitePage = (): ReactElement => {
   const { t } = useTranslation();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
   const query = router.query;

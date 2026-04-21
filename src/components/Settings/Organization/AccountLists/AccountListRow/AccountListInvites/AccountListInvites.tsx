@@ -3,12 +3,12 @@ import { PersonRemove } from '@mui/icons-material';
 import { Box, IconButton, Tooltip, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
-import { useAppSettingsContext } from 'src/components/common/AppSettings/AppSettingsProvider';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import {
   AccountListInvites as AccountListInvitesType,
   Maybe,
 } from 'src/graphql/types.generated';
+import { getAppName } from 'src/lib/getAppName';
 import { BorderBottomBox, HeaderBox } from '../accountListRowHelper';
 import { useAdminDeleteOrganizationInviteMutation } from './DeleteAccountListInvites.generated';
 
@@ -24,7 +24,7 @@ export const AccountListInvites: React.FC<Props> = ({
   accountListInvites,
 }) => {
   const { t } = useTranslation();
-  const { appName } = useAppSettingsContext();
+  const appName = getAppName();
   const [deleteInvite, setDeleteInvite] =
     useState<AccountListInvitesType | null>(null);
   const [adminDeleteOrganizationInvite] =

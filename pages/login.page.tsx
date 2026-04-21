@@ -8,8 +8,8 @@ import { getSession, signIn } from 'next-auth/react';
 import BaseLayout from 'src/components/Layouts/Basic';
 import Loading from 'src/components/Loading';
 import Welcome from 'src/components/Welcome';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import { extractCookie } from 'src/lib/extractCookie';
+import { getAppName } from 'src/lib/getAppName';
 import i18n from 'src/lib/i18n';
 import { getQueryParam } from 'src/utils/queryParam';
 
@@ -30,7 +30,7 @@ const Login = ({
   immediateSignIn,
   isOkta,
 }: LoginProps): ReactElement => {
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
 
   useEffect(() => {
     if (immediateSignIn) {

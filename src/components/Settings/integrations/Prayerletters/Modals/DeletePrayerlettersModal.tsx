@@ -8,7 +8,7 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import { useDeletePrayerlettersAccountMutation } from '../PrayerlettersAccount.generated';
 
 interface DeletePrayerlettersAccountModalProps {
@@ -21,7 +21,7 @@ export const DeletePrayerlettersAccountModal: React.FC<
   DeletePrayerlettersAccountModalProps
 > = ({ handleClose, accountListId, refetchPrayerlettersAccount }) => {
   const { t } = useTranslation();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
 

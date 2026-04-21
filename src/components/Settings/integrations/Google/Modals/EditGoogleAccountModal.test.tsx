@@ -11,13 +11,11 @@ import {
   GoogleAccountIntegrationCalendars,
   Maybe,
 } from 'src/graphql/types.generated';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
 import theme from '../../../../../theme';
 import { EditGoogleAccountModal } from './EditGoogleAccountModal';
 import { GoogleAccountIntegrationsQuery } from './googleIntegrations.generated';
 
 jest.mock('next-auth/react');
-jest.mock('src/hooks/useGetAppSettings');
 
 const accountListId = 'account-list-1';
 const contactId = 'contact-1';
@@ -95,10 +93,6 @@ describe('EditGoogleAccountModal', () => {
   beforeEach(() => {
     googleIntegration = { ...standardGoogleIntegration };
     handleClose.mockClear();
-
-    (useGetAppSettings as jest.Mock).mockReturnValue({
-      appName: 'MPDX',
-    });
   });
 
   it('should render modal', async () => {

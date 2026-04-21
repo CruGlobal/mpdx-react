@@ -9,7 +9,7 @@ import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionI
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import { FormWrapper } from 'src/components/Shared/Forms/FormWrapper';
 import { AccountListSettingsInput } from 'src/graphql/types.generated';
-import useGetAppSettings from 'src/hooks/useGetAppSettings';
+import { getAppName } from 'src/lib/getAppName';
 import { AccordionProps } from '../../../accordionHelper';
 import { useUpdateAccountPreferencesMutation } from '../UpdateAccountPreferences.generated';
 
@@ -34,7 +34,7 @@ export const EarlyAdopterAccordion: React.FC<EarlyAdopterAccordionProps> = ({
   disabled,
 }) => {
   const { t } = useTranslation();
-  const { appName } = useGetAppSettings();
+  const appName = getAppName();
   const { enqueueSnackbar } = useSnackbar();
   const [updateAccountPreferences] = useUpdateAccountPreferencesMutation();
   const label = t('Early Adopter');
