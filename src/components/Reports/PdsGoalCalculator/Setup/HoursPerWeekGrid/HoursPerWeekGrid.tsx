@@ -89,6 +89,7 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
         weeks: 48,
         canDelete: false,
         predefined: true,
+        position: 0,
       },
       {
         id: 'default-travel',
@@ -97,6 +98,7 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
         weeks: 0,
         canDelete: false,
         predefined: true,
+        position: 1,
       },
       {
         id: 'default-vacation',
@@ -105,6 +107,7 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
         weeks: 0,
         canDelete: false,
         predefined: true,
+        position: 2,
       },
     ];
   });
@@ -210,6 +213,10 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
     }
 
     const tempId = `temp-${nextEntryIdRef.current++}`;
+    const newPosition =
+      entries.length > 0
+        ? Math.max(...entries.map((e) => e.position)) + 1
+        : 0;
     const newEntry: HoursPerWeekEntry = {
       id: tempId,
       label: t('New Entry'),
@@ -217,6 +224,7 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
       weeks: 0,
       canDelete: true,
       predefined: false,
+      position: newPosition,
     };
     setEntries((prev) => [...prev, newEntry]);
 
@@ -229,7 +237,7 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
               label: t('New Entry'),
               hoursPerWeek: 0,
               numberOfWeeks: 0,
-              position: entries.length,
+              position: newPosition,
             },
           },
           refetchQueries: ['PdsGoalCalculation'],
@@ -317,6 +325,7 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
         weeks: Math.max(0, clampedWeeks),
         canDelete: newRow.canDelete as boolean,
         predefined: newRow.predefined as boolean,
+        position: Number(newRow.position) || 0,
       };
 
       updateEntry(newRow.id as string, {
@@ -348,10 +357,13 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
 
   const dataWithTotal = useMemo(
     () => [
-      ...entries.map((entry) => ({
-        ...entry,
-        totalHours: entry.hoursPerWeek * entry.weeks,
-      })),
+      ...entries
+        .slice()
+        .sort((a, b) => a.position - b.position)
+        .map((entry) => ({
+          ...entry,
+          totalHours: entry.hoursPerWeek * entry.weeks,
+        })),
       {
         id: 'total',
         label: t('Total'),
