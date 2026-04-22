@@ -16,7 +16,9 @@ import {
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
 import {
+  PdsGoalCalculationDocument,
   PdsGoalCalculationQuery,
+  PdsGoalCalculationQueryVariables,
   PdsGoalCalculationsDocument,
   PdsGoalCalculationsQuery,
   PdsGoalCalculationsQueryVariables,
@@ -61,6 +63,25 @@ export type PdsGoalCalculationsMock = DeepPartial<
 export type PdsGoalCalculationMock = DeepPartial<
   PdsGoalCalculationQuery['designationSupportCalculation']
 >;
+
+const calculationDefault = gqlMock<
+  PdsGoalCalculationQuery,
+  PdsGoalCalculationQueryVariables
+>(PdsGoalCalculationDocument, {
+  mocks: {
+    designationSupportCalculation: {
+      id: 'goal-1',
+      name: 'Test Goal',
+      status: DesignationSupportStatus.FullTime,
+      salaryOrHourly: DesignationSupportSalaryType.Salaried,
+      payRate: 50000,
+      hoursWorkedPerWeek: null,
+      benefits: 1500,
+      geographicLocation: null,
+    },
+  },
+  variables: { id: 'goal-1' },
+}).designationSupportCalculation;
 
 const hcmUserDefault = gqlMock<HcmUserQuery, HcmUserQueryVariables>(
   HcmUserDocument,
@@ -134,13 +155,13 @@ export const PdsGoalCalculatorTestWrapper: React.FC<
                   calculationsMock,
                 ),
               },
-              ...(calculationMock
-                ? {
-                    PdsGoalCalculation: {
-                      designationSupportCalculation: calculationMock,
-                    },
-                  }
-                : {}),
+              PdsGoalCalculation: {
+                designationSupportCalculation: merge(
+                  {},
+                  calculationDefault,
+                  calculationMock,
+                ),
+              },
               HcmUser: {
                 hcm:
                   hcmUserMock === null

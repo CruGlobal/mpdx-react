@@ -83,10 +83,8 @@ export const SetupStep: React.FC = () => {
   const handleOpenHoursCalculator = () => {
     setRightPanelContent(
       <HoursPerWeekGrid
-        onAverageHoursChange={(average) => {
-          saveField({
-            hoursWorkedPerWeek: Math.round(average * 10) / 10,
-          });
+        onApply={(average) => {
+          saveField({ hoursWorkedPerWeek: average });
         }}
       />,
     );
