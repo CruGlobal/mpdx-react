@@ -3,8 +3,8 @@ import { useTranslation } from 'react-i18next';
 import {
   FormEnum,
   PageEnum,
-} from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
-import { Steps } from '../components/Reports/Shared/CalculationReports/StepsList/StepsList';
+} from 'src/components/HrTools/Shared/CalculationReports/Shared/sharedTypes';
+import { Steps } from '../components/HrTools/Shared/CalculationReports/StepsList/StepsList';
 
 export function useStepList(
   formType: FormEnum,

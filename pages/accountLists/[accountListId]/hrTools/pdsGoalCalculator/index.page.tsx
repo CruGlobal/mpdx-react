@@ -2,9 +2,9 @@ import Head from 'next/head';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
+import { PdsGoalsList } from 'src/components/HrTools/PdsGoalCalculator/GoalsList/PdsGoalsList';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
-import { PdsGoalsList } from 'src/components/Reports/PdsGoalCalculator/GoalsList/PdsGoalsList';
 import {
   HeaderTypeEnum,
   MultiPageHeader,

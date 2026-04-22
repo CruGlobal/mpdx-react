@@ -1,9 +1,9 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
-import { TransfersPage } from 'src/components/Reports/SavingsFundTransfer/TransfersPage/TransfersPage';
-import { StaffSavingFundProvider } from 'src/components/Reports/StaffSavingFund/StaffSavingFundContext';
-import { StaffSavingFundLayout } from 'src/components/Reports/StaffSavingFund/StaffSavingFundLayout';
+import { TransfersPage } from 'src/components/HrTools/SavingsFundTransfer/TransfersPage/TransfersPage';
+import { StaffSavingFundProvider } from 'src/components/HrTools/StaffSavingFund/StaffSavingFundContext';
+import { StaffSavingFundLayout } from 'src/components/HrTools/StaffSavingFund/StaffSavingFundLayout';
 
 export const StaffSavingFundTransfersPage: React.FC = () => {
   const { t } = useTranslation();

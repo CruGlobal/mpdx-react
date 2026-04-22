@@ -1,0 +1,191 @@
+import { ThemeProvider } from '@mui/material/styles';
+import { renderHook, waitFor } from '@testing-library/react';
+import { SnackbarProvider } from 'notistack';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { PageEnum } from 'src/components/HrTools/Shared/CalculationReports/Shared/sharedTypes';
+import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
+import theme from 'src/theme';
+import { UpdateMinistryHousingAllowanceRequestMutation } from '../../MinisterHousingAllowance.generated';
+import {
+  ContextType,
+  MinisterHousingAllowanceContext,
+} from '../Context/MinisterHousingAllowanceContext';
+import { useSaveField } from './useSaveField';
+
+const trackMutation = jest.fn();
+const mutationSpy = jest.fn();
+const mockEnqueue = jest.fn();
+
+jest.mock('notistack', () => ({
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => {
+    return {
+      enqueueSnackbar: mockEnqueue,
+    };
+  },
+}));
+
+interface TestComponentProps {
+  children: React.ReactNode;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({ children }) => {
+  return (
+    <ThemeProvider theme={theme}>
+      <SnackbarProvider>
+        <GqlMockedProvider<{
+          UpdateMinistryHousingAllowanceRequest: UpdateMinistryHousingAllowanceRequestMutation;
+        }>
+          onCall={mutationSpy}
+        >
+          <MinisterHousingAllowanceContext.Provider
+            value={
+              {
+                pageType: PageEnum.New,
+                trackMutation,
+                requestData: {
+                  id: 'request-id',
+                  requestAttributes: {
+                    rentalValue: 50,
+                    rentOrOwn: MhaRentOrOwnEnum.Own,
+                  },
+                },
+              } as unknown as ContextType
+            }
+          >
+            {children}
+          </MinisterHousingAllowanceContext.Provider>
+        </GqlMockedProvider>
+      </SnackbarProvider>
+    </ThemeProvider>
+  );
+};
+
+describe('useSaveField', () => {
+  it('should update ministry housing allowance request', async () => {
+    const { result } = renderHook(
+      () =>
+        useSaveField({
+          formValues: { rentalValue: 50 },
+        }),
+      {
+        wrapper: TestComponent,
+      },
+    );
+
+    result.current({ rentalValue: 100 });
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'UpdateMinistryHousingAllowanceRequest',
+        {
+          input: {
+            requestId: 'request-id',
+            requestAttributes: {
+              rentalValue: 100,
+            },
+          },
+        },
+      ),
+    );
+
+    await waitFor(() => expect(trackMutation).toHaveBeenCalled());
+
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        expect.stringContaining('Saved successfully'),
+        { variant: 'success' },
+      ),
+    );
+  });
+
+  it('should round overall amount and save', async () => {
+    const { result } = renderHook(
+      () =>
+        useSaveField({
+          formValues: { rentalValue: 50 },
+        }),
+      {
+        wrapper: TestComponent,
+      },
+    );
+
+    result.current({ rentalValue: 35.37 });
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'UpdateMinistryHousingAllowanceRequest',
+        {
+          input: {
+            requestId: 'request-id',
+            requestAttributes: {
+              rentalValue: 35.37,
+              overallAmount: 424.44,
+            },
+          },
+        },
+      ),
+    );
+  });
+
+  it('should handle zero overall amount correctly', async () => {
+    const { result } = renderHook(
+      () =>
+        useSaveField({
+          formValues: { rentalValue: 50 },
+        }),
+      {
+        wrapper: TestComponent,
+      },
+    );
+
+    result.current({ rentalValue: 0 });
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'UpdateMinistryHousingAllowanceRequest',
+        {
+          input: {
+            requestId: 'request-id',
+            requestAttributes: {
+              rentalValue: 0,
+              overallAmount: 0.0,
+            },
+          },
+        },
+      ),
+    );
+  });
+
+  it('should not show snackbar if all values are null', async () => {
+    const { result } = renderHook(
+      () =>
+        useSaveField({
+          formValues: { rentalValue: 50 },
+        }),
+      {
+        wrapper: TestComponent,
+      },
+    );
+
+    result.current({ rentalValue: null });
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation(
+        'UpdateMinistryHousingAllowanceRequest',
+        {
+          input: {
+            requestId: 'request-id',
+            requestAttributes: {
+              rentalValue: null,
+            },
+          },
+        },
+      ),
+    );
+
+    expect(mockEnqueue).not.toHaveBeenCalled();
+  });
+});

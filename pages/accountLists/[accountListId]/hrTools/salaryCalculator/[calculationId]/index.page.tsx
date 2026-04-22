@@ -2,13 +2,13 @@ import Head from 'next/head';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
-import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
-import { SalaryCalculator } from 'src/components/Reports/SalaryCalculator/SalaryCalculator';
+import { SalaryCalculator } from 'src/components/HrTools/SalaryCalculator/SalaryCalculator';
 import {
   SalaryCalculatorProvider,
   useSalaryCalculator,
-} from 'src/components/Reports/SalaryCalculator/SalaryCalculatorContext/SalaryCalculatorContext';
-import { SavingStatus } from 'src/components/Reports/Shared/CalculationReports/SavingStatus/SavingStatus';
+} from 'src/components/HrTools/SalaryCalculator/SalaryCalculatorContext/SalaryCalculatorContext';
+import { SavingStatus } from 'src/components/HrTools/Shared/CalculationReports/SavingStatus/SavingStatus';
+import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import {
   HeaderTypeEnum,
   MultiPageHeader,

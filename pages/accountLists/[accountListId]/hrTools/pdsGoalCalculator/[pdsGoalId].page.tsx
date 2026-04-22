@@ -5,14 +5,14 @@ import { Box, IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
-import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
-import Loading from 'src/components/Loading';
-import { PdsGoalCalculator } from 'src/components/Reports/PdsGoalCalculator/PdsGoalCalculator';
+import { PdsGoalCalculator } from 'src/components/HrTools/PdsGoalCalculator/PdsGoalCalculator';
 import {
   PdsGoalCalculatorProvider,
   usePdsGoalCalculator,
-} from 'src/components/Reports/PdsGoalCalculator/Shared/PdsGoalCalculatorContext';
-import { SavingStatus } from 'src/components/Reports/Shared/CalculationReports/SavingStatus/SavingStatus';
+} from 'src/components/HrTools/PdsGoalCalculator/Shared/PdsGoalCalculatorContext';
+import { SavingStatus } from 'src/components/HrTools/Shared/CalculationReports/SavingStatus/SavingStatus';
+import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
+import Loading from 'src/components/Loading';
 import {
   HeaderTypeEnum,
   MultiPageHeader,

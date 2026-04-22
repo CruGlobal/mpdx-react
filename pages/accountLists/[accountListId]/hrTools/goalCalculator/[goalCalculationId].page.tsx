@@ -5,15 +5,15 @@ import { Box, IconButton, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
-import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
-import Loading from 'src/components/Loading';
-import { GoalCalculator } from 'src/components/Reports/GoalCalculator/GoalCalculator';
-import { getGoalLastUpdated } from 'src/components/Reports/GoalCalculator/SavingStatusHelpers/helpers';
+import { GoalCalculator } from 'src/components/HrTools/GoalCalculator/GoalCalculator';
+import { getGoalLastUpdated } from 'src/components/HrTools/GoalCalculator/SavingStatusHelpers/helpers';
 import {
   GoalCalculatorProvider,
   useGoalCalculator,
-} from 'src/components/Reports/GoalCalculator/Shared/GoalCalculatorContext';
-import { SavingStatus } from 'src/components/Reports/Shared/CalculationReports/SavingStatus/SavingStatus';
+} from 'src/components/HrTools/GoalCalculator/Shared/GoalCalculatorContext';
+import { SavingStatus } from 'src/components/HrTools/Shared/CalculationReports/SavingStatus/SavingStatus';
+import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
+import Loading from 'src/components/Loading';
 import {
   HeaderTypeEnum,
   MultiPageHeader,

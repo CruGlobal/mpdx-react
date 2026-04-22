@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { useFundBalancesQuery } from '../../SavingsFundTransfer/ReportsSavingsFund.generated';
+import { useFundBalancesQuery } from '../../../HrTools/SavingsFundTransfer/ReportsSavingsFund.generated';
 import { CardSkeleton } from './CardSkeleton';
 
 const StyledCard = styled(Card)(() => ({

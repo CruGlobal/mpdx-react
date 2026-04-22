@@ -5,14 +5,14 @@ import { Box, CircularProgress } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
-import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
-import { RequestPage } from 'src/components/Reports/MinisterHousingAllowance/RequestPage/RequestPage';
+import { RequestPage } from 'src/components/HrTools/MinisterHousingAllowance/RequestPage/RequestPage';
 import {
   MinisterHousingAllowanceProvider,
   useMinisterHousingAllowance,
-} from 'src/components/Reports/MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
-import { SavingStatus } from 'src/components/Reports/Shared/CalculationReports/SavingStatus/SavingStatus';
-import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
+} from 'src/components/HrTools/MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
+import { SavingStatus } from 'src/components/HrTools/Shared/CalculationReports/SavingStatus/SavingStatus';
+import { PageEnum } from 'src/components/HrTools/Shared/CalculationReports/Shared/sharedTypes';
+import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import { SimpleScreenOnly } from 'src/components/Reports/styledComponents';
 import {
   HeaderTypeEnum,

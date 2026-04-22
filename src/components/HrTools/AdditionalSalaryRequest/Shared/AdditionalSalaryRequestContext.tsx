@@ -1,0 +1,365 @@
+import { useRouter } from 'next/router';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from 'react';
+import { ApolloError } from '@apollo/client';
+import { DateTime } from 'luxon';
+import { useSnackbar } from 'notistack';
+import { TFunction, useTranslation } from 'react-i18next';
+import {
+  FormEnum,
+  PageEnum,
+} from 'src/components/HrTools/Shared/CalculationReports/Shared/sharedTypes';
+import {
+  AdditionalSalaryRequestCalculations,
+  AsrStatusEnum,
+} from 'src/graphql/types.generated';
+import { useStepList } from 'src/hooks/useStepList';
+import { useTrackMutation } from 'src/hooks/useTrackMutation';
+import { Steps } from '../../Shared/CalculationReports/StepsList/StepsList';
+import { HcmQuery, useHcmQuery } from '../../Shared/HcmData/Hcm.generated';
+import {
+  AdditionalSalaryRequestQuery,
+  useAdditionalSalaryRequestQuery,
+  useDeleteAdditionalSalaryRequestMutation,
+} from '../AdditionalSalaryRequest.generated';
+import { AdditionalSalaryRequestSectionEnum } from '../AdditionalSalaryRequestHelper';
+import { SalaryInfoQuery, useSalaryInfoQuery } from '../SalaryInfo.generated';
+import { useStaffAccountIdQuery } from '../StaffAccountId.generated';
+
+type SalaryInfo = NonNullable<SalaryInfoQuery['salaryInfo']>;
+
+export type FieldConfig = Array<{
+  key: string;
+  label: string;
+  salaryInfoIntKey?: keyof SalaryInfo;
+  salaryInfoUssKey?: keyof SalaryInfo;
+}>;
+
+// Field configuration: combines keys, labels, and optional salaryInfo key pairs for dynamic max values
+export const getFieldConfig = (t: TFunction): FieldConfig => [
+  { key: 'currentYearSalaryNotReceived', label: t("Current Year's Salary") },
+  { key: 'previousYearSalaryNotReceived', label: t("Previous Year's Salary") },
+  { key: 'additionalSalaryWithinMax', label: t('Additional Salary') },
+  {
+    key: 'adoption',
+    label: t('Adoption'),
+    salaryInfoIntKey: 'maxAdoptionInt',
+    salaryInfoUssKey: 'maxAdoptionUss',
+  },
+  { key: 'counselingNonMedical', label: t('Counseling') },
+  { key: 'healthcareExpensesExceedingLimit', label: t('Healthcare Expenses') },
+  { key: 'babysittingMinistryEvents', label: t('Babysitting') },
+  { key: 'childrenMinistryTripExpenses', label: t("Children's Ministry Trip") },
+  {
+    key: 'childrenCollegeEducation',
+    label: t("Children's College"),
+    salaryInfoIntKey: 'maxCollegeInt',
+    salaryInfoUssKey: 'maxCollegeUss',
+  },
+  { key: 'movingExpense', label: t('Moving Expense') },
+  { key: 'seminary', label: t('Seminary') },
+  {
+    key: 'housingDownPayment',
+    label: t('Housing Down Payment'),
+    salaryInfoIntKey: 'maxHousingDownPaymentInt',
+    salaryInfoUssKey: 'maxHousingDownPaymentUss',
+  },
+  {
+    key: 'autoPurchase',
+    label: t('Auto Purchase'),
+    salaryInfoIntKey: 'maxAutoPurchaseInt',
+    salaryInfoUssKey: 'maxAutoPurchaseUss',
+  },
+  {
+    key: 'expensesNotApprovedWithin90Days',
+    label: t('Reimbursable Expenses'),
+  },
+];
+
+export type AdditionalSalaryRequestType = {
+  staffAccountId: string | null | undefined;
+  staffAccountIdLoading: boolean;
+  steps: Steps[];
+  currentIndex: number;
+  currentStep: AdditionalSalaryRequestSectionEnum;
+  handleNextStep: () => void;
+  handlePreviousStep: () => void;
+  goToStep: (targetIndex: number) => void;
+  isDrawerOpen: boolean;
+  toggleDrawer: () => void;
+  requestData?: AdditionalSalaryRequestQuery | null;
+  loading: boolean;
+  currentYear?: number;
+  requestError?: ApolloError;
+  pageType: PageEnum;
+  setPageType: (pageType: PageEnum) => void;
+  pendingPrint: boolean;
+  setPendingPrint: React.Dispatch<React.SetStateAction<boolean>>;
+  handleDeleteRequest: (id: string, isCancel: boolean) => Promise<void>;
+  requestId?: string;
+  calculations?: Pick<
+    AdditionalSalaryRequestCalculations,
+    | 'currentSalaryCap'
+    | 'combinedCap'
+    | 'staffAccountBalance'
+    | 'pendingAsrAmount'
+  >;
+  user: HcmQuery['hcm'][0] | undefined;
+  spouse: HcmQuery['hcm'][1] | undefined;
+  salaryInfo: SalaryInfoQuery['salaryInfo'] | undefined;
+  isInternational: boolean;
+  traditional403bPercentage: number;
+  roth403bPercentage: number;
+  isMutating: boolean;
+  trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
+  isNewAsr: boolean;
+  setIsNewAsr: React.Dispatch<React.SetStateAction<boolean>>;
+  isSpouse: boolean;
+  hasSpouse: boolean;
+  hasBoardCapException: boolean;
+  isPending: boolean;
+  isApproved: boolean;
+  fieldConfig: FieldConfig;
+};
+
+export const AdditionalSalaryRequestContext =
+  createContext<AdditionalSalaryRequestType | null>(null);
+
+export const useAdditionalSalaryRequest = (): AdditionalSalaryRequestType => {
+  const context = useContext(AdditionalSalaryRequestContext);
+  if (context === null) {
+    throw new Error(
+      'Could not find AdditionalSalaryRequestContext. Make sure that your component is inside <AdditionalSalaryRequestProvider>.',
+    );
+  }
+  return context;
+};
+
+interface Props {
+  requestId?: string;
+  initialPageType?: PageEnum;
+  children?: React.ReactNode;
+}
+
+const sections = Object.values(AdditionalSalaryRequestSectionEnum);
+
+export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
+  requestId,
+  initialPageType,
+  children,
+}) => {
+  const { t } = useTranslation();
+  const { enqueueSnackbar } = useSnackbar();
+
+  const [pageType, setPageType] = useState<PageEnum>(
+    initialPageType ?? PageEnum.New,
+  );
+  const [pendingPrint, setPendingPrint] = useState(false);
+
+  const router = useRouter();
+  const isSpouse = router.query.isSpouse === 'true';
+
+  const [isNewAsr, setIsNewAsr] = useState(false);
+
+  const {
+    steps,
+    handleNextStep: nextStep,
+    handlePreviousStep: previousStep,
+    resetSteps,
+    goToStep,
+    currentIndex,
+  } = useStepList(FormEnum.AdditionalSalary, undefined, 0);
+
+  const { data: hcmData } = useHcmQuery();
+
+  const {
+    data: requestData,
+    error: requestError,
+    loading,
+  } = useAdditionalSalaryRequestQuery({
+    variables: { isSpouse },
+  });
+
+  const status = requestData?.latestAdditionalSalaryRequest?.status;
+  const isPending =
+    status === AsrStatusEnum.Pending ||
+    status === AsrStatusEnum.PendingDivisionHeadApproval ||
+    status === AsrStatusEnum.PendingVpApproval ||
+    status === AsrStatusEnum.PendingManagementApproval ||
+    status === AsrStatusEnum.PendingBoardApproval;
+  const isApproved =
+    status === AsrStatusEnum.ApprovedNotPaid ||
+    status === AsrStatusEnum.ApprovedAndPaid;
+
+  const currentYear = useMemo(() => DateTime.now().year, []);
+  const { data: salaryInfoData } = useSalaryInfoQuery({
+    variables: { year: currentYear },
+  });
+
+  const { data: staffAccountIdData, loading: staffAccountIdLoading } =
+    useStaffAccountIdQuery();
+
+  const [deleteAdditionalSalaryRequest] =
+    useDeleteAdditionalSalaryRequestMutation();
+
+  const currentStep = sections[currentIndex];
+
+  const handleNextStep = useCallback(() => {
+    nextStep();
+  }, [nextStep]);
+
+  const handlePreviousStep = useCallback(() => {
+    previousStep();
+  }, [previousStep]);
+
+  const handleDeleteRequest = useCallback(
+    async (id: string, isCancel: boolean) => {
+      await deleteAdditionalSalaryRequest({
+        variables: { id },
+        refetchQueries: ['AdditionalSalaryRequest'],
+        awaitRefetchQueries: true,
+        onCompleted: () => {
+          if (!isCancel) {
+            resetSteps();
+            setPageType(PageEnum.New);
+            setIsNewAsr(true);
+          }
+
+          enqueueSnackbar(
+            isCancel
+              ? t('Additional Salary Request cancelled successfully.')
+              : t('Additional Salary Request discarded successfully.'),
+            {
+              variant: 'success',
+            },
+          );
+        },
+      });
+    },
+    [deleteAdditionalSalaryRequest, enqueueSnackbar, resetSteps, t],
+  );
+
+  const [isDrawerOpen, setIsDrawerOpen] = useState(true);
+  const toggleDrawer = useCallback(() => {
+    setIsDrawerOpen((prev) => !prev);
+  }, []);
+
+  const { trackMutation, isMutating } = useTrackMutation();
+
+  const [primaryPerson, spousePerson] = hcmData?.hcm ?? [];
+  const hasSpouse = (hcmData?.hcm?.length ?? 0) > 1;
+  const user = isSpouse ? spousePerson : primaryPerson;
+  const spouse = hasSpouse
+    ? isSpouse
+      ? primaryPerson
+      : spousePerson
+    : undefined;
+  const hasBoardCapException =
+    user?.exceptionSalaryCap?.boardCapException ?? false;
+
+  const salaryInfo = salaryInfoData?.salaryInfo;
+  const isInternational = user?.staffInfo?.isInternational ?? false;
+  const taxDeferred =
+    user?.fourOThreeB.currentTaxDeferredContributionPercentage ?? 0;
+  const roth = user?.fourOThreeB.currentRothContributionPercentage ?? 0;
+  const traditional403bPercentage = taxDeferred / 100;
+  const roth403bPercentage = roth / 100;
+
+  const staffAccountId = useMemo(
+    () => staffAccountIdData?.user?.staffAccountId,
+    [staffAccountIdData],
+  );
+
+  const fieldConfig = useMemo(() => getFieldConfig(t), [t]);
+
+  const contextValue = useMemo<AdditionalSalaryRequestType>(
+    () => ({
+      staffAccountId,
+      staffAccountIdLoading,
+      steps,
+      currentIndex,
+      currentStep,
+      handleNextStep,
+      handlePreviousStep,
+      goToStep,
+      isDrawerOpen,
+      toggleDrawer,
+      requestData,
+      requestError,
+      loading,
+      currentYear,
+      pageType,
+      setPageType,
+      pendingPrint,
+      setPendingPrint,
+      handleDeleteRequest,
+      requestId: requestData?.latestAdditionalSalaryRequest?.id ?? requestId,
+      calculations: requestData?.latestAdditionalSalaryRequest?.calculations,
+      user,
+      spouse,
+      salaryInfo,
+      isInternational,
+      traditional403bPercentage,
+      roth403bPercentage,
+      isMutating,
+      trackMutation,
+      isNewAsr,
+      setIsNewAsr,
+      isSpouse,
+      hasSpouse,
+      hasBoardCapException,
+      isPending,
+      isApproved,
+      fieldConfig,
+    }),
+    [
+      staffAccountId,
+      staffAccountIdLoading,
+      steps,
+      currentIndex,
+      currentStep,
+      handleNextStep,
+      handlePreviousStep,
+      goToStep,
+      isDrawerOpen,
+      toggleDrawer,
+      requestData,
+      requestError,
+      loading,
+      currentYear,
+      pageType,
+      setPageType,
+      pendingPrint,
+      setPendingPrint,
+      handleDeleteRequest,
+      requestId,
+      user,
+      spouse,
+      salaryInfo,
+      isInternational,
+      traditional403bPercentage,
+      roth403bPercentage,
+      isMutating,
+      trackMutation,
+      isNewAsr,
+      setIsNewAsr,
+      isSpouse,
+      hasSpouse,
+      hasBoardCapException,
+      isPending,
+      isApproved,
+      fieldConfig,
+    ],
+  );
+
+  return (
+    <AdditionalSalaryRequestContext.Provider value={contextValue}>
+      {children}
+    </AdditionalSalaryRequestContext.Provider>
+  );
+};

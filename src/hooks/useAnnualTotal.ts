@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { CalculationFormValues } from 'src/components/Reports/MinisterHousingAllowance/Steps/StepThree/Calculation';
+import { CalculationFormValues } from 'src/components/HrTools/MinisterHousingAllowance/Steps/StepThree/Calculation';
 import { MhaRentOrOwnEnum } from 'src/graphql/types.generated';
 
 export const calculateAnnualTotals = (

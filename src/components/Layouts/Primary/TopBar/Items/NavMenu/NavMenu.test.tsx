@@ -8,7 +8,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import { LoadCoachingListQuery } from 'src/components/Coaching/LoadCoachingList.generated';
-import { HcmQuery } from 'src/components/Reports/Shared/HcmData/Hcm.generated';
+import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   AssignmentStatusEnum,

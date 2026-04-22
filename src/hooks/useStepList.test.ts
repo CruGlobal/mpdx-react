@@ -2,7 +2,7 @@ import { act, renderHook } from '@testing-library/react';
 import {
   FormEnum,
   PageEnum,
-} from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
+} from 'src/components/HrTools/Shared/CalculationReports/Shared/sharedTypes';
 import { useStepList } from './useStepList';
 
 describe('useStepList', () => {

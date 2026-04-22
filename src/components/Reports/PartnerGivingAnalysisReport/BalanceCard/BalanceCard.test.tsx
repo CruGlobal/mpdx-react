@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { FundBalancesQuery } from '../../SavingsFundTransfer/ReportsSavingsFund.generated';
+import { FundBalancesQuery } from '../../../HrTools/SavingsFundTransfer/ReportsSavingsFund.generated';
 import { BalanceCard } from './BalanceCard';
 
 const mutationSpy = jest.fn();

@@ -1,8 +1,8 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
-import { LandingTestWrapper } from 'src/components/Reports/SalaryCalculator/Landing/NewSalaryCalculationLanding/LandingTestWrapper';
-import { SalaryCalculatorTestWrapper } from 'src/components/Reports/SalaryCalculator/SalaryCalculatorTestWrapper';
+import { LandingTestWrapper } from 'src/components/HrTools/SalaryCalculator/Landing/NewSalaryCalculationLanding/LandingTestWrapper';
+import { SalaryCalculatorTestWrapper } from 'src/components/HrTools/SalaryCalculator/SalaryCalculatorTestWrapper';
 import { UserTypeEnum } from 'src/graphql/types.generated';
 import SalaryCalculatorPage, { getServerSideProps } from './index.page';
 
