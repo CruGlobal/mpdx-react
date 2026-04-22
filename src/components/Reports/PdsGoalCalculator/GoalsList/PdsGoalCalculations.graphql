@@ -1,3 +1,13 @@
+fragment DesignationSupportHoursItemFields on DesignationSupportHoursItem {
+  id
+  hoursPerWeek
+  numberOfWeeks
+  name
+  label
+  position
+  predefined
+}
+
 fragment PdsGoalCalculationFields on DesignationSupportCalculation {
   id
   name
@@ -19,13 +29,7 @@ fragment PdsGoalCalculationFields on DesignationSupportCalculation {
   ministryTravelMeals
   otherAnnualReimbursements
   designationSupportHoursItems {
-    id
-    hoursPerWeek
-    numberOfWeeks
-    name
-    label
-    position
-    predefined
+    ...DesignationSupportHoursItemFields
   }
 }
 
@@ -78,13 +82,7 @@ mutation CreateDesignationSupportHoursItem(
 ) {
   createDesignationSupportHoursItem(input: { attributes: $attributes }) {
     designationSupportHoursItem {
-      id
-      hoursPerWeek
-      numberOfWeeks
-      name
-      label
-      position
-      predefined
+      ...DesignationSupportHoursItemFields
     }
   }
 }
@@ -94,13 +92,7 @@ mutation UpdateDesignationSupportHoursItem(
 ) {
   updateDesignationSupportHoursItem(input: { attributes: $attributes }) {
     designationSupportHoursItem {
-      id
-      hoursPerWeek
-      numberOfWeeks
-      name
-      label
-      position
-      predefined
+      ...DesignationSupportHoursItemFields
     }
   }
 }
