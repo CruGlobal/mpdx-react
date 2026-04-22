@@ -1,4 +1,5 @@
 import React from 'react';
+import { GridValidRowModel } from '@mui/x-data-grid';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import {
   PdsGoalCalculationMock,
@@ -331,8 +332,9 @@ describe('useHoursPerWeekGrid', () => {
     });
 
     // Regular has 48 weeks. Try to set Travel to 10 weeks — should clamp to 4
-    const updatedRow = await act(async () =>
-      result.current.processRowUpdate({
+    let updatedRow: GridValidRowModel | undefined;
+    await act(async () => {
+      updatedRow = await result.current.processRowUpdate({
         id: 'item-travel',
         label: 'Travel',
         hoursPerWeek: 5,
@@ -340,10 +342,10 @@ describe('useHoursPerWeekGrid', () => {
         canDelete: true,
         predefined: true,
         position: 1,
-      }),
-    );
+      });
+    });
 
-    expect(updatedRow.weeks).toBe(4);
+    expect(updatedRow?.weeks).toBe(4);
   });
 
   it('processRowUpdate autosaves the recalculated average', async () => {
@@ -390,14 +392,15 @@ describe('useHoursPerWeekGrid', () => {
       expect(result.current.entries).toHaveLength(3);
     });
 
-    const returned = await act(async () =>
-      result.current.processRowUpdate({
+    let returned: GridValidRowModel | undefined;
+    await act(async () => {
+      returned = await result.current.processRowUpdate({
         id: 'total',
         label: 'Total',
         hoursPerWeek: null,
         weeks: 48,
-      }),
-    );
+      });
+    });
 
     expect(returned).toMatchObject({ id: 'total' });
   });
