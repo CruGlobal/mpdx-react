@@ -35,7 +35,7 @@ import { HoursPerWeekGrid } from './HoursPerWeekGrid/HoursPerWeekGrid';
 export const SetupStep: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { calculation, hcmUser, setRightPanelContent } = usePdsGoalCalculator();
+  const { calculation, hcmUser, setRightPanel } = usePdsGoalCalculator();
   const { data: userData } = useGetUserQuery();
   const fourOThreeB = hcmUser?.fourOThreeB;
   const totalFourOThreeBContributionPercentage = fourOThreeB
@@ -81,7 +81,8 @@ export const SetupStep: React.FC = () => {
     : t('Enter hourly rate');
 
   const handleOpenHoursCalculator = () => {
-    setRightPanelContent(
+    setRightPanel(
+      t('Hours Per Week Calculator'),
       <HoursPerWeekGrid
         onApply={(average) => {
           saveField({ hoursWorkedPerWeek: average });

@@ -25,7 +25,8 @@ export type PdsGoalCalculatorType = {
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
 
   rightPanelContent: React.ReactNode;
-  setRightPanelContent: (content: React.ReactNode) => void;
+  rightPanelTitle: string | null;
+  setRightPanel: (title: string, content: React.ReactNode) => void;
   closeRightPanel: () => void;
 
   stepIndex: number;
@@ -75,6 +76,7 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const [stepIndex, setStepIndex] = useState(0);
   const [rightPanelContent, setRightPanelContent] =
     useState<React.ReactNode>(null);
+  const [rightPanelTitle, setRightPanelTitle] = useState<string | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(true);
   const { trackMutation, isMutating } = useTrackMutation();
 
@@ -106,8 +108,17 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     }
   }, [stepIndex]);
 
+  const setRightPanel = useCallback(
+    (title: string, content: React.ReactNode) => {
+      setRightPanelTitle(title);
+      setRightPanelContent(content);
+    },
+    [],
+  );
+
   const closeRightPanel = useCallback(() => {
     setRightPanelContent(null);
+    setRightPanelTitle(null);
   }, []);
 
   const toggleDrawer = useCallback(() => {
@@ -125,11 +136,12 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       trackMutation,
       hcmUser,
       rightPanelContent,
+      rightPanelTitle,
       isDrawerOpen,
       handleStepChange,
       handleContinue,
       handlePreviousStep,
-      setRightPanelContent,
+      setRightPanel,
       closeRightPanel,
       toggleDrawer,
       setDrawerOpen: setIsDrawerOpen,
@@ -144,11 +156,12 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       trackMutation,
       hcmUser,
       rightPanelContent,
+      rightPanelTitle,
       isDrawerOpen,
       handleStepChange,
       handleContinue,
       handlePreviousStep,
-      setRightPanelContent,
+      setRightPanel,
       closeRightPanel,
       toggleDrawer,
       setIsDrawerOpen,
