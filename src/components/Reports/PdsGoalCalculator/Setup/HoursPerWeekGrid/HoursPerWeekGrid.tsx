@@ -114,7 +114,6 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
 
   return (
     <Box>
-      <Typography variant="h6">{t('Hours Per Week Calculator')}</Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
         {t(
           'This calculator is based on a 52-week year. Weeks are capped at 52 and a warning will appear if the total falls short.',

@@ -284,10 +284,18 @@ describe('SetupStep', () => {
       </PdsGoalCalculatorTestWrapper>,
     );
 
-    expect(queryByText('Hours Per Week Calculator')).not.toBeInTheDocument();
+    expect(
+      queryByText(
+        'This calculator is based on a 52-week year. Weeks are capped at 52 and a warning will appear if the total falls short.',
+      ),
+    ).not.toBeInTheDocument();
 
     userEvent.click(await findByLabelText('Open hours per week calculator'));
 
-    expect(await findByText('Hours Per Week Calculator')).toBeInTheDocument();
+    expect(
+      await findByText(
+        'This calculator is based on a 52-week year. Weeks are capped at 52 and a warning will appear if the total falls short.',
+      ),
+    ).toBeInTheDocument();
   });
 });

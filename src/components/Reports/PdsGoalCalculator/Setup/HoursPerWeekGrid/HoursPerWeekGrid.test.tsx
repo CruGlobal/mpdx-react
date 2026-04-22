@@ -63,7 +63,6 @@ describe('HoursPerWeekGrid', () => {
       </PdsGoalCalculatorTestWrapper>,
     );
 
-    expect(await findByText('Hours Per Week Calculator')).toBeInTheDocument();
     await waitForDataToLoad();
     expect(await findByText('Regular Week')).toBeInTheDocument();
     expect(getByText('Travel')).toBeInTheDocument();

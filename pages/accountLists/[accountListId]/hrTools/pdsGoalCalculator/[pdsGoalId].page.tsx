@@ -67,7 +67,9 @@ const PdsGoalCalculatorContent: React.FC<PdsGoalCalculatorContentProps> = ({
   const rightPanel = (
     <>
       <RightPanelHeader>
-        <RightPanelTitle variant="h6">{t('Details')}</RightPanelTitle>
+        <RightPanelTitle variant="h6">
+          {t('Hours Per Week Calculator')}
+        </RightPanelTitle>
         <IconButton
           size="small"
           onClick={closeRightPanel}
