@@ -12,6 +12,9 @@ import {
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { AccountInfoBox } from 'src/components/HrTools/Shared/AccountInfoBox/AccountInfoBox';
+import { AccountInfoBoxSkeleton } from 'src/components/HrTools/Shared/AccountInfoBox/AccountInfoBoxSkeleton';
+import { EmptyTable } from 'src/components/HrTools/Shared/EmptyTable/EmptyTable';
 import {
   SimplePrintOnly,
   SimpleScreenOnly,
@@ -20,11 +23,8 @@ import {
   HeaderTypeEnum,
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
+import { useStaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import theme from 'src/theme';
-import { AccountInfoBox } from '../../../Reports/Shared/AccountInfoBox/AccountInfoBox';
-import { AccountInfoBoxSkeleton } from '../../../Reports/Shared/AccountInfoBox/AccountInfoBoxSkeleton';
-import { EmptyTable } from '../../../Reports/Shared/EmptyTable/EmptyTable';
-import { useStaffAccountQuery } from '../../../Reports/StaffAccount.generated';
 import {
   StaffSavingFundContext,
   StaffSavingFundType,

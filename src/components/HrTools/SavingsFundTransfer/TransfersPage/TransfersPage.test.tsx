@@ -8,8 +8,8 @@ import { Settings } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import theme from 'src/theme';
-import { StaffAccountQuery } from '../../../Reports/StaffAccount.generated';
 import { StaffSavingFundContext } from '../../StaffSavingFund/StaffSavingFundContext';
 import {
   FundBalancesQuery,

@@ -12,10 +12,9 @@ import { Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
+import { AccountInfoBox } from 'src/components/HrTools/Shared/AccountInfoBox/AccountInfoBox';
+import { AccountInfoBoxSkeleton } from 'src/components/HrTools/Shared/AccountInfoBox/AccountInfoBoxSkeleton';
 import { StyledHeaderBox } from 'src/components/Reports/MPGAIncomeExpensesReport/styledComponents';
-import { AccountInfoBox } from 'src/components/Reports/Shared/AccountInfoBox/AccountInfoBox';
-import { AccountInfoBoxSkeleton } from 'src/components/Reports/Shared/AccountInfoBox/AccountInfoBoxSkeleton';
-import { useStaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
 import {
   LoadingBox,
   LoadingIndicator,
@@ -27,6 +26,7 @@ import {
   HeaderTypeEnum,
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
+import { useStaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { MinistryPartnerReminderFrequencyEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';

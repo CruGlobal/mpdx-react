@@ -7,7 +7,7 @@ import { SnackbarProvider } from 'notistack';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { StaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
+import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { MinistryPartnerReminderFrequencyEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';

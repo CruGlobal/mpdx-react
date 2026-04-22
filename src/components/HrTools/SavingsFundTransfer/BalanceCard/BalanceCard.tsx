@@ -8,10 +8,10 @@ import {
 } from '@mui/icons-material';
 import { Box, Button, Card, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { SimpleScreenOnly } from 'src/components/Reports/styledComponents';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
-import { SimpleScreenOnly } from '../../../Reports/styledComponents';
 import { FundFieldsFragment } from '../ReportsSavingsFund.generated';
 import { FundTypeEnum, TransferModalData } from '../mockData';
 

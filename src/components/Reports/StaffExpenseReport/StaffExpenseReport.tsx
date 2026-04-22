@@ -19,13 +19,13 @@ import {
   HeaderTypeEnum,
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
+import { useStaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import { Fund } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import theme from 'src/theme';
-import { AccountInfoBox } from '../Shared/AccountInfoBox/AccountInfoBox';
-import { AccountInfoBoxSkeleton } from '../Shared/AccountInfoBox/AccountInfoBoxSkeleton';
-import { EmptyTable } from '../Shared/EmptyTable/EmptyTable';
-import { useStaffAccountQuery } from '../StaffAccount.generated';
+import { AccountInfoBox } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBox';
+import { AccountInfoBoxSkeleton } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBoxSkeleton';
+import { EmptyTable } from '../../HrTools/Shared/EmptyTable/EmptyTable';
 import {
   SimplePrintOnly,
   SimpleScreenOnly,

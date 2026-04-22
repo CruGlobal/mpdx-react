@@ -4,12 +4,12 @@ import { useGridApiRef } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
 import { Panel } from 'pages/accountLists/[accountListId]/reports/helpers';
 import { EmptyReport } from 'src/components/Reports/EmptyReport/EmptyReport';
-import { useStaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
 import { ListHeader, PageEnum } from 'src/components/Shared/Header/ListHeader';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
+import { useStaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { PartnerGivingAnalysisFilterSetInput } from 'src/graphql/types.generated';
 import { useGetPartnerGivingAnalysisIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';

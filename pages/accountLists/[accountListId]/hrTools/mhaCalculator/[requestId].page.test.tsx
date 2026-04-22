@@ -5,7 +5,7 @@ import { render } from '__tests__/util/testingLibraryReactMock';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { MinisterHousingAllowanceProvider } from 'src/components/HrTools/MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
 import { PageEnum } from 'src/components/HrTools/Shared/CalculationReports/Shared/sharedTypes';
-import { StaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
+import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
 import {

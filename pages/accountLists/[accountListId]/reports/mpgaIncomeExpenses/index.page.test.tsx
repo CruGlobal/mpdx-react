@@ -8,7 +8,7 @@ import {
   beforeTestResizeObserver,
 } from '__tests__/util/windowResizeObserver';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
-import { StaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
+import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';

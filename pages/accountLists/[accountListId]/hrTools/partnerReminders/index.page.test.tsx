@@ -9,7 +9,7 @@ import {
   beforeTestResizeObserver,
 } from '__tests__/util/windowResizeObserver';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
-import { StaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
+import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import PartnerRemindersReportPage, { getServerSideProps } from './index.page';

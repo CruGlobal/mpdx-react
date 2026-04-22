@@ -11,8 +11,8 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { TableVirtuoso, TableVirtuosoProps } from 'react-virtuoso';
+import { EmptyTable } from 'src/components/HrTools/Shared/EmptyTable/EmptyTable';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
-import { EmptyTable } from 'src/components/Reports/Shared/EmptyTable/EmptyTable';
 import { headerHeight } from 'src/components/Shared/Header/ListHeader';
 import { MinistryPartnerReminderFrequencyEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';

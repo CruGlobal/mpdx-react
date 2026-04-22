@@ -4,7 +4,7 @@ import { merge } from 'lodash';
 import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
-import { StaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
+import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   SalaryRequestStatusEnum,

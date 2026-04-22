@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Card, Skeleton, styled } from '@mui/material';
-import { SimpleScreenOnly } from '../../../Reports/styledComponents';
+import { SimpleScreenOnly } from 'src/components/Reports/styledComponents';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   padding: theme.spacing(2),

@@ -12,7 +12,7 @@ import {
 import { useTheme } from '@mui/material/styles';
 import { Stack } from '@mui/system';
 import { Trans, useTranslation } from 'react-i18next';
-import { EligibilityStatusTable } from 'src/components/Reports/Shared/EligibilityStatusTable/EligibilityStatusTable';
+import { EligibilityStatusTable } from 'src/components/HrTools/Shared/EligibilityStatusTable/EligibilityStatusTable';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { AutosaveTextField } from '../../Autosave/AutosaveTextField';
 import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
