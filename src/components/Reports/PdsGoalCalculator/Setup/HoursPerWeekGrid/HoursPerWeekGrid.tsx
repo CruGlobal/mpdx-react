@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
@@ -65,28 +65,33 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
   const [deleteHoursItem] = useDeleteDesignationSupportHoursItemMutation();
   const saveField = useSaveField();
 
-  const [entries, setEntries] = useState<HoursPerWeekEntry[]>(() => {
-    const items = calculation?.designationSupportHoursItems;
-    if (items && items.length > 0) {
-      return items
-        .slice()
-        .sort(
-          (hoursItemA, hoursItemB) =>
-            (hoursItemA.position ?? 0) - (hoursItemB.position ?? 0),
-        )
-        .map((item) => ({
-          id: item.id,
-          label: item.label,
-          hoursPerWeek: item.hoursPerWeek ?? 0,
-          weeks: item.numberOfWeeks ?? 0,
-          canDelete: !item.predefined,
-          predefined: item.predefined,
-          position: item.position ?? 0,
-        }));
-    }
-    return [];
-  });
+  const [entries, setEntries] = useState<HoursPerWeekEntry[]>([]);
+  const initializedRef = useRef(false);
   const nextEntryIdRef = useRef(0);
+
+  useEffect(() => {
+    const items = calculation?.designationSupportHoursItems;
+    if (!initializedRef.current && items && items.length > 0) {
+      initializedRef.current = true;
+      setEntries(
+        items
+          .slice()
+          .sort(
+            (hoursItemA, hoursItemB) =>
+              (hoursItemA.position ?? 0) - (hoursItemB.position ?? 0),
+          )
+          .map((item) => ({
+            id: item.id,
+            label: item.label,
+            hoursPerWeek: item.hoursPerWeek ?? 0,
+            weeks: item.numberOfWeeks ?? 0,
+            canDelete: !item.predefined,
+            predefined: item.predefined,
+            position: item.position ?? 0,
+          })),
+      );
+    }
+  }, [calculation?.designationSupportHoursItems]);
 
   const totalWeeks = useMemo(
     () => entries.reduce((sum, entry) => sum + entry.weeks, 0),

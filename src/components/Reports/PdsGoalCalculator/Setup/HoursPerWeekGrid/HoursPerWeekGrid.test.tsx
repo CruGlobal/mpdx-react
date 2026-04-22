@@ -65,7 +65,7 @@ describe('HoursPerWeekGrid', () => {
 
     expect(await findByText('Hours Per Week Calculator')).toBeInTheDocument();
     await waitForDataToLoad();
-    expect(getByText('Regular Week')).toBeInTheDocument();
+    expect(await findByText('Regular Week')).toBeInTheDocument();
     expect(getByText('Travel')).toBeInTheDocument();
     expect(getByText('Unpaid Vacation')).toBeInTheDocument();
     expect(getByText('Total')).toBeInTheDocument();
@@ -183,18 +183,16 @@ describe('HoursPerWeekGrid', () => {
     });
     userEvent.tab();
 
-    // Default entries have "default-" IDs since calculation loads after
-    // initial render, so cell edits trigger create (not update)
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation(
-        'CreateDesignationSupportHoursItem',
+        'UpdateDesignationSupportHoursItem',
         {
           attributes: {
+            id: 'item-regular',
             designationSupportCalculationId: 'goal-1',
             label: 'Regular Week',
             hoursPerWeek: 20,
             numberOfWeeks: 48,
-            position: 0,
           },
         },
       ),
