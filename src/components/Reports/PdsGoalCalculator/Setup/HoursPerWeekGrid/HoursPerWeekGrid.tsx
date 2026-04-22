@@ -118,53 +118,26 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
   const weeksRemaining = MAX_TOTAL_WEEKS - totalWeeks;
 
   const saveHoursItem = useCallback(
-    async (entry: HoursPerWeekEntry, currentEntries: HoursPerWeekEntry[]) => {
+    async (entry: HoursPerWeekEntry) => {
       if (!calculation) {
         return;
       }
 
       try {
-        if (entry.id.startsWith('default-')) {
-          const result = await trackMutation(
-            createHoursItem({
-              variables: {
-                attributes: {
-                  designationSupportCalculationId: calculation.id,
-                  label: entry.label,
-                  hoursPerWeek: entry.hoursPerWeek,
-                  numberOfWeeks: entry.weeks,
-                  position: currentEntries.findIndex((e) => e.id === entry.id),
-                },
+        await trackMutation(
+          updateHoursItem({
+            variables: {
+              attributes: {
+                id: entry.id,
+                designationSupportCalculationId: calculation.id,
+                label: entry.label,
+                hoursPerWeek: entry.hoursPerWeek,
+                numberOfWeeks: entry.weeks,
               },
-              refetchQueries: ['PdsGoalCalculation'],
-            }),
-          );
-          const created =
-            result.data?.createDesignationSupportHoursItem
-              ?.designationSupportHoursItem;
-          if (created) {
-            setEntries((prev) =>
-              prev.map((e) =>
-                e.id === entry.id ? { ...e, id: created.id } : e,
-              ),
-            );
-          }
-        } else {
-          await trackMutation(
-            updateHoursItem({
-              variables: {
-                attributes: {
-                  id: entry.id,
-                  designationSupportCalculationId: calculation.id,
-                  label: entry.label,
-                  hoursPerWeek: entry.hoursPerWeek,
-                  numberOfWeeks: entry.weeks,
-                },
-              },
-              refetchQueries: ['PdsGoalCalculation'],
-            }),
-          );
-        }
+            },
+            refetchQueries: ['PdsGoalCalculation'],
+          }),
+        );
       } catch (error) {
         enqueueSnackbar(t('Failed to save hours entry. Please try again.'), {
           variant: 'error',
