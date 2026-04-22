@@ -80,6 +80,7 @@ const calculationDefault = gqlMock<
       geographicLocation: null,
     },
   },
+  variables: { id: 'goal-1' },
 }).designationSupportCalculation;
 
 const hcmUserDefault = gqlMock<HcmUserQuery, HcmUserQueryVariables>(
