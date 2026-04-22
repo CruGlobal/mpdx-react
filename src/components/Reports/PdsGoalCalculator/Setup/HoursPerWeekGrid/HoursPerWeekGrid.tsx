@@ -70,7 +70,10 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
     if (items && items.length > 0) {
       return items
         .slice()
-        .sort((a, b) => (a.position ?? 0) - (b.position ?? 0))
+        .sort(
+          (hoursItemA, hoursItemB) =>
+            (hoursItemA.position ?? 0) - (hoursItemB.position ?? 0),
+        )
         .map((item) => ({
           id: item.id,
           label: item.label,
@@ -81,35 +84,7 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
           position: item.position ?? 0,
         }));
     }
-    return [
-      {
-        id: 'default-regular',
-        label: t('Regular Week'),
-        hoursPerWeek: 40,
-        weeks: 48,
-        canDelete: false,
-        predefined: true,
-        position: 0,
-      },
-      {
-        id: 'default-travel',
-        label: t('Travel'),
-        hoursPerWeek: 0,
-        weeks: 0,
-        canDelete: false,
-        predefined: true,
-        position: 1,
-      },
-      {
-        id: 'default-vacation',
-        label: t('Unpaid Vacation'),
-        hoursPerWeek: 0,
-        weeks: 0,
-        canDelete: false,
-        predefined: true,
-        position: 2,
-      },
-    ];
+    return [];
   });
   const nextEntryIdRef = useRef(0);
 
@@ -292,7 +267,7 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
           );
         }
         saveField({
-          averageHoursPerWeek: Math.round(newAverage * 10) / 10,
+          averageHoursPerWeek: newAverage,
         });
       } catch {
         setEntries(previousEntries);
@@ -335,8 +310,8 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
       await saveHoursItem(updatedEntry, entries);
 
       // Autosave the recalculated average to the calculation
-      const updatedEntries = entries.map((e) =>
-        e.id === updatedEntry.id ? updatedEntry : e,
+      const updatedEntries = entries.map((entry) =>
+        entry.id === updatedEntry.id ? updatedEntry : entry,
       );
       const newTotalWeeks = updatedEntries.reduce((sum, e) => sum + e.weeks, 0);
       const newTotalHours = updatedEntries.reduce(
@@ -345,7 +320,7 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
       );
       const newAverage = newTotalWeeks > 0 ? newTotalHours / newTotalWeeks : 0;
       saveField({
-        averageHoursPerWeek: Math.round(newAverage * 10) / 10,
+        averageHoursPerWeek: newAverage,
       });
 
       return { ...newRow, weeks: Math.max(0, clampedWeeks) };
@@ -445,7 +420,9 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
     <Box>
       <Typography variant="h6">{t('Hours Per Week Calculator')}</Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        {t('Weeks must add up to 52 to reflect a full calendar year.')}
+        {t(
+          'This calculator is based on a 52-week year. Weeks are capped at 52 and a warning will appear if the total falls short.',
+        )}
       </Typography>
 
       <StyledCard>
@@ -521,7 +498,7 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
           <Button
             variant="contained"
             disabled={weeksRemaining > 0}
-            onClick={() => onApply(Math.round(averageHoursPerWeek * 10) / 10)}
+            onClick={() => onApply(averageHoursPerWeek)}
           >
             {t('Apply to Hours Worked')}
           </Button>
