@@ -1,7 +1,7 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { render, waitFor } from '@testing-library/react';
+import { act, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -16,6 +16,15 @@ const accountListId = '111';
 const handleClose = jest.fn();
 
 describe('AddDonation', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
+  });
+
   it('default', async () => {
     const { queryByText } = render(
       <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -121,6 +130,9 @@ describe('AddDonation', () => {
     expect(getByRole('combobox', { name: 'Currency' })).toBeInTheDocument();
 
     userEvent.type(getByRole('combobox', { name: 'Partner Account' }), 'Cool');
+    act(() => {
+      jest.advanceTimersByTime(1000);
+    });
     userEvent.click(await findByRole('option', { name: 'Cool Donor Account' }));
 
     userEvent.type(
