@@ -21,7 +21,6 @@ import {
   GridColDef,
   GridValidRowModel,
 } from '@mui/x-data-grid';
-import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { BaseGrid } from 'src/components/Reports/GoalCalculator/SharedComponents/GoalCalculatorGrid/BaseGrid';
 import {
@@ -64,7 +63,6 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
   onApply,
 }) => {
   const { t } = useTranslation();
-  const { enqueueSnackbar } = useSnackbar();
   const { calculation, trackMutation } = usePdsGoalCalculator();
   const [createHoursItem] = useCreateDesignationSupportHoursItemMutation();
   const [updateHoursItem] = useUpdateDesignationSupportHoursItemMutation();
@@ -138,21 +136,11 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
             refetchQueries: ['PdsGoalCalculation'],
           }),
         );
-      } catch (error) {
-        enqueueSnackbar(t('Failed to save hours entry. Please try again.'), {
-          variant: 'error',
-        });
-        throw error;
+      } catch {
+        throw new Error(t('Failed to save hours entry.'));
       }
     },
-    [
-      calculation,
-      createHoursItem,
-      updateHoursItem,
-      trackMutation,
-      enqueueSnackbar,
-      t,
-    ],
+    [calculation, createHoursItem, updateHoursItem, trackMutation, t],
   );
 
   const updateEntry = useCallback(
@@ -210,18 +198,8 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
       }
     } catch {
       setEntries((prev) => prev.filter((e) => e.id !== tempId));
-      enqueueSnackbar(t('Failed to add entry. Please try again.'), {
-        variant: 'error',
-      });
     }
-  }, [
-    t,
-    calculation,
-    createHoursItem,
-    trackMutation,
-    entries.length,
-    enqueueSnackbar,
-  ]);
+  }, [t, calculation, createHoursItem, trackMutation, entries.length]);
 
   const deleteEntry = useCallback(
     async (id: string | number) => {
@@ -255,12 +233,9 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
         });
       } catch {
         setEntries(previousEntries);
-        enqueueSnackbar(t('Failed to delete entry. Please try again.'), {
-          variant: 'error',
-        });
       }
     },
-    [entries, deleteHoursItem, trackMutation, saveField, enqueueSnackbar, t],
+    [entries, deleteHoursItem, trackMutation, saveField],
   );
 
   const processRowUpdate = useCallback(
