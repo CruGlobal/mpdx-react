@@ -35,7 +35,13 @@ Object.defineProperty(window.location, 'href', {
   set: hrefSetter,
 });
 
-const TestComponent = () => {
+interface TestComponentProps {
+  userType?: UserTypeEnum;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({
+  userType = UserTypeEnum.UsStaff,
+}) => {
   return (
     <SnackbarProvider>
       <GqlMockedProvider<{
@@ -57,7 +63,7 @@ const TestComponent = () => {
           <ConfirmUserGroupModal
             open={true}
             handleClose={handleClose}
-            userType={UserTypeEnum.UsStaff}
+            userType={userType}
           />
         </ThemeProvider>
       </GqlMockedProvider>
@@ -89,7 +95,7 @@ describe('ConfirmUserGroupModal', () => {
     });
   });
 
-  it('renders user type correctly', async () => {
+  it('renders user type and description correctly', async () => {
     const { getByText } = render(<TestComponent />);
 
     await waitFor(() => {
@@ -97,6 +103,23 @@ describe('ConfirmUserGroupModal', () => {
         getByText('The user group for your account is:'),
       ).toBeInTheDocument();
       expect(getByText('Cru US Staff')).toBeInTheDocument();
+      expect(
+        getByText(
+          'Users in this group receive (mostly) US donations and are paid through our US HR system.',
+        ),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('renders non cru user message correctly', async () => {
+    const { getByText } = render(
+      <TestComponent userType={UserTypeEnum.NonCru} />,
+    );
+
+    await waitFor(() => {
+      expect(
+        getByText("We see you're not on staff with Cru."),
+      ).toBeInTheDocument();
     });
   });
 

@@ -3,7 +3,7 @@ import { render, waitFor } from '@testing-library/react';
 import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { HcmQuery } from '../SalaryCalculatorContext/Hcm.generated';
+import { HcmQuery } from '../../Shared/HcmData/Hcm.generated';
 import { SalaryCalculationQuery } from '../SalaryCalculatorContext/SalaryCalculation.generated';
 import { SalaryCalculatorProvider } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 import { hcmSpouseMock, hcmUserMock } from '../SalaryCalculatorTestWrapper';

@@ -11,7 +11,12 @@ import {
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { StaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
-import { UserTypeEnum } from 'src/graphql/types.generated';
+import {
+  AssignmentStatusEnum,
+  PeopleGroupSupportTypeEnum,
+  UserPersonTypeEnum,
+  UserTypeEnum,
+} from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import MinisterHousingAllowancePage, { getServerSideProps } from './index.page';
 
@@ -23,6 +28,21 @@ const mocks = {
       id: '12345',
       name: 'Test Account',
     },
+  },
+  Hcm: {
+    hcm: [
+      {
+        mhaEit: {
+          mhaEligibility: true,
+        },
+        staffInfo: {
+          preferredName: 'Test User',
+          peopleGroupSupportType: PeopleGroupSupportTypeEnum.SupportedRmo,
+          userPersonType: UserPersonTypeEnum.EmployeeStaff,
+          assignmentStatus: AssignmentStatusEnum.ActivePayrollEligible,
+        },
+      },
+    ],
   },
 };
 interface ComponentProps {

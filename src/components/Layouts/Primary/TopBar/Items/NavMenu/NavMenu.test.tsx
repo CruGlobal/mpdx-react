@@ -8,8 +8,15 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import { LoadCoachingListQuery } from 'src/components/Coaching/LoadCoachingList.generated';
+import { HcmQuery } from 'src/components/Reports/Shared/HcmData/Hcm.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
-import { UserTypeEnum } from 'src/graphql/types.generated';
+import {
+  AssignmentStatusEnum,
+  PeopleGroupSupportTypeEnum,
+  UserPersonTypeEnum,
+  UserTypeEnum,
+} from 'src/graphql/types.generated';
+import { UserOptionQuery } from 'src/hooks/UserPreference.generated';
 import theme from 'src/theme';
 import { GetToolNotificationsQuery } from './GetToolNotifcations.generated';
 import NavMenu from './NavMenu';
@@ -22,6 +29,8 @@ interface TestComponentProps {
       GetToolNotifications: GetToolNotificationsQuery;
       LoadCoachingList: LoadCoachingListQuery;
       GetUser: GetUserQuery;
+      Hcm: HcmQuery;
+      UserOption: UserOptionQuery;
     }>;
 }
 
@@ -61,6 +70,11 @@ const defaultMocks = {
     mergeContacts: { totalCount: 0 },
     mergePeople: { totalCount: 0 },
   },
+  UserOption: {
+    userOption: {
+      value: 'true',
+    },
+  },
 };
 
 describe('NavMenu', () => {
@@ -75,7 +89,9 @@ describe('NavMenu', () => {
     expect(getByRole('menuitem', { name: 'Contacts' })).toBeInTheDocument();
     expect(getByRole('menuitem', { name: 'Reports' })).toBeInTheDocument();
     expect(getByRole('menuitem', { name: 'MPDX Tools' })).toBeInTheDocument();
-    expect(getByRole('menuitem', { name: 'Coaching' })).toBeInTheDocument();
+    expect(
+      await findByRole('menuitem', { name: 'Coaching' }),
+    ).toBeInTheDocument();
   });
 
   it('renders Reports submenu items', async () => {
@@ -113,7 +129,28 @@ describe('NavMenu', () => {
 
   it('renders HR Tools submenu items', async () => {
     const { findByRole, getByRole, getByTestId } = render(
-      <TestComponent mocks={defaultMocks} />,
+      <TestComponent
+        mocks={{
+          ...defaultMocks,
+          Hcm: {
+            hcm: [
+              {
+                staffInfo: {
+                  id: '1',
+                  peopleGroupSupportType:
+                    PeopleGroupSupportTypeEnum.SupportedRmo,
+                  userPersonType: UserPersonTypeEnum.EmployeeStaff,
+                  assignmentStatus: AssignmentStatusEnum.ActivePayrollEligible,
+                },
+                asrEit: {
+                  asrEligibility: true,
+                },
+                salaryRequestEligible: true,
+              },
+            ],
+          },
+        }}
+      />,
     );
     await findByRole('menuitem', { name: 'HR Tools' });
     userEvent.click(getByTestId('HrToolsMenuToggle'));
@@ -173,6 +210,27 @@ describe('NavMenu', () => {
       getByRole('menuitem', { name: 'Import from CSV' }),
     ).toBeInTheDocument();
     expect(getByTestId('appeals-false')).toBeInTheDocument();
+  });
+
+  it('does not render new reports when user type not verified', async () => {
+    const { queryByRole } = render(
+      <TestComponent
+        mocks={{
+          ...defaultMocks,
+          UserOption: {
+            userOption: {
+              value: '',
+            },
+          },
+        }}
+      />,
+    );
+
+    await waitFor(() => {
+      expect(
+        queryByRole('menuitem', { name: 'HR Tools' }),
+      ).not.toBeInTheDocument();
+    });
   });
 
   it('does not show coaching link if there are no coaching accounts', async () => {

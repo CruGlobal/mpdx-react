@@ -9,6 +9,7 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetDesignationAccountsQuery } from 'src/components/EditDonationModal/EditDonationModal.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
+import { UserOptionQuery } from 'src/hooks/UserPreference.generated';
 import theme from 'src/theme';
 import { MultiPageMenu, NavTypeEnum } from './MultiPageMenu';
 import { ManageOrganizationsAccessQuery } from './MultiPageMenu.generated';
@@ -48,10 +49,16 @@ describe('MultiPageMenu', () => {
         <TestRouter router={router}>
           <GqlMockedProvider<{
             GetUser: GetUserQuery;
+            UserOption: UserOptionQuery;
           }>
             mocks={{
               GetUser: {
                 user: { userType: UserTypeEnum.UsStaff },
+              },
+              UserOption: {
+                userOption: {
+                  value: 'true',
+                },
               },
             }}
           >
@@ -87,10 +94,16 @@ describe('MultiPageMenu', () => {
         <TestRouter router={router}>
           <GqlMockedProvider<{
             GetUser: GetUserQuery;
+            UserOption: UserOptionQuery;
           }>
             mocks={{
               GetUser: {
                 user: { userType: UserTypeEnum.GlobalStaff },
+              },
+              UserOption: {
+                userOption: {
+                  value: 'true',
+                },
               },
             }}
           >
@@ -126,10 +139,16 @@ describe('MultiPageMenu', () => {
         <TestRouter router={router}>
           <GqlMockedProvider<{
             GetUser: GetUserQuery;
+            UserOption: UserOptionQuery;
           }>
             mocks={{
               GetUser: {
                 user: { userType: UserTypeEnum.NonCru },
+              },
+              UserOption: {
+                userOption: {
+                  value: 'true',
+                },
               },
             }}
           >
@@ -156,7 +175,44 @@ describe('MultiPageMenu', () => {
 
     expect(queryByText('Staff Expense Report')).not.toBeInTheDocument();
     expect(queryByText('MPGA Monthly Report')).not.toBeInTheDocument();
-    expect(queryByText('Responsibility Centers')).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(queryByText('Responsibility Centers')).not.toBeInTheDocument();
+    });
+  });
+
+  it('shows responsibility centers when user is us staff but not verified user type', async () => {
+    const { findByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider<{
+            GetUser: GetUserQuery;
+            UserOption: UserOptionQuery;
+          }>
+            mocks={{
+              GetUser: {
+                user: { userType: UserTypeEnum.UsStaff },
+              },
+              UserOption: {
+                userOption: {
+                  value: '',
+                },
+              },
+            }}
+          >
+            <MultiPageMenu
+              selectedId={selected}
+              isOpen={true}
+              onClose={() => {}}
+              designationAccounts={[]}
+              setDesignationAccounts={() => {}}
+              navType={NavTypeEnum.Reports}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    expect(await findByText('Responsibility Centers')).toBeInTheDocument();
   });
 
   it('has designation account filter', async () => {

@@ -22,7 +22,10 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
-import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
+import {
+  RequiredUserGroupEnum,
+  UserTypeAccess,
+} from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 
 const RequestPageWrapper = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.common.white,
@@ -61,7 +64,10 @@ export const HousingAllowanceRequestPageContent: React.FC = () => {
       <Head>
         <title>{title}</title>
       </Head>
-      <UserTypeAccess requireStaffAccount>
+      <UserTypeAccess
+        requireStaffAccount
+        requireUserGroups={RequiredUserGroupEnum.Mha}
+      >
         <RequestPageWrapper>
           <SidePanelsLayout
             isScrollBox={false}

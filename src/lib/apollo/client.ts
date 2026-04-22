@@ -29,7 +29,9 @@ const makeClient = (apiToken: string) => {
   const client = new ApolloClient({
     link: from([
       makeAuthLink(apiToken),
-      onError(({ graphQLErrors, networkError }) => {
+      onError(({ graphQLErrors, networkError, operation }) => {
+        const suppressErrors = operation.getContext().suppressErrors === true;
+
         graphQLErrors?.forEach((graphQLError) => {
           if (graphQLError?.extensions?.code === 'AUTHENTICATION_ERROR') {
             signOut({ redirect: true, callbackUrl: 'signOut' }).then(() => {
@@ -52,7 +54,7 @@ const makeClient = (apiToken: string) => {
                   ),
                 );
               });
-          } else {
+          } else if (!suppressErrors) {
             snackNotifications.error(graphQLError.message);
           }
         });

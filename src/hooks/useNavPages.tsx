@@ -7,6 +7,7 @@ import { UserTypeEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useHrToolsNavItems } from './useHrToolsNavItems';
 import { useReportNavItems } from './useReportNavItems';
+import { useReportsDisabled } from './useReportsDisabled';
 import { useSettingsNavItems } from './useSettingsNavItems';
 import { useToolsNavItems } from './useToolsNavItems';
 
@@ -52,6 +53,8 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
   const accountListId = useAccountListId();
   const { t } = useTranslation();
   const { data } = useGetUserQuery();
+  const { reportsDisabled } = useReportsDisabled();
+
   const userType = data?.user.userType;
   const showTab = userType === UserTypeEnum.UsStaff;
 
@@ -103,7 +106,7 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
         })),
         showInNav: true,
       },
-      ...(process.env.DISABLE_NEW_REPORTS === 'true'
+      ...(reportsDisabled
         ? []
         : [
             {
@@ -118,7 +121,7 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
                 showInSearchDialog: true,
               })),
               showInNav: true,
-              hideTab: !showTab,
+              hideTab: !!data && !showTab,
             },
           ]),
       {
@@ -197,6 +200,8 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
     settingsItems,
     hrToolsItems,
     showTab,
+    reportsDisabled,
+    data,
   ]);
 
   const navPages = useMemo(

@@ -20,7 +20,6 @@ const TestWrapper: React.FC<TestWrapperProps> = ({
   const hcmData = {
     hcm: [
       {
-        id: 'hcm-1',
         asrEit: {
           asrEligibility: false,
           ineligibilityReason,
@@ -41,7 +40,7 @@ const TestWrapper: React.FC<TestWrapperProps> = ({
         <SnackbarProvider>
           <GqlMockedProvider
             mocks={{
-              HcmData: hcmData,
+              Hcm: hcmData,
               AdditionalSalaryRequest: {
                 latestAdditionalSalaryRequest: null,
               },

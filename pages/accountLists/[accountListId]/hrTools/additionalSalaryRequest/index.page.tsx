@@ -25,7 +25,10 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
-import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
+import {
+  RequiredUserGroupEnum,
+  UserTypeAccess,
+} from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { ReportPageWrapper } from 'src/components/Shared/styledComponents/ReportPageWrapper';
 import { AsrStatusEnum } from 'src/graphql/types.generated';
 import { getAppName } from 'src/lib/getAppName';
@@ -157,7 +160,10 @@ const AdditionalSalaryRequestPage: React.FC = () => {
       <Head>
         <title>{`${appName} | ${t('Additional Salary Request')}`}</title>
       </Head>
-      <UserTypeAccess requireStaffAccount>
+      <UserTypeAccess
+        requireStaffAccount
+        requireUserGroups={RequiredUserGroupEnum.Asr}
+      >
         <ReportPageWrapper>
           <AdditionalSalaryRequestProvider>
             <AdditionalSalaryRequestContent />

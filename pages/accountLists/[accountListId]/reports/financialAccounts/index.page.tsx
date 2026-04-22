@@ -14,6 +14,7 @@ import {
 import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { UserTypeEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useReportsDisabled } from 'src/hooks/useReportsDisabled';
 import { getAppName } from 'src/lib/getAppName';
 
 const FinancialAccountsPage: React.FC = () => {
@@ -22,6 +23,7 @@ const FinancialAccountsPage: React.FC = () => {
   const appName = getAppName();
   const [navListOpen, setNavListOpen] = useState(false);
   const [designationAccounts, setDesignationAccounts] = useState<string[]>([]);
+  const { reportsDisabled } = useReportsDisabled();
 
   const handleNavListToggle = () => {
     setNavListOpen(!navListOpen);
@@ -34,8 +36,8 @@ const FinancialAccountsPage: React.FC = () => {
 
       {accountListId ? (
         <UserTypeAccess
-          allowedUserType={UserTypeEnum.GlobalStaff}
-          alwaysAllow={process.env.DISABLE_NEW_REPORTS === 'true'}
+          requiredUserType={UserTypeEnum.GlobalStaff}
+          alwaysAllow={reportsDisabled}
         >
           <Box sx={{ background: 'common.white' }}>
             <SidePanelsLayout

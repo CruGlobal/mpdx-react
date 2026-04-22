@@ -2,46 +2,74 @@ import Loading from 'src/components/Loading';
 import { useStaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
+import { useUsStaffGroups } from 'src/hooks/useUsStaffGroups';
 import { LimitedAccess } from '../LimitedAccess/LimitedAccess';
 
+export enum RequiredUserGroupEnum {
+  Asr = 'asr',
+  SalaryCalc = 'salaryCalc',
+  Mha = 'mha',
+}
+
 interface UserTypeAccessProps {
-  allowedUserType?: UserTypeEnum;
+  requiredUserType?: UserTypeEnum;
   requireStaffAccount?: boolean;
+  requireUserGroups?: RequiredUserGroupEnum;
   children: React.ReactElement;
   alwaysAllow?: boolean;
 }
 
 export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
-  allowedUserType = UserTypeEnum.UsStaff,
+  requiredUserType = UserTypeEnum.UsStaff,
   requireStaffAccount,
   children,
   alwaysAllow,
+  requireUserGroups,
 }) => {
-  const { data, loading: userLoading, error } = useGetUserQuery();
+  const { data, loading: userLoading, error: userError } = useGetUserQuery();
   const {
     data: staffAccountData,
-    loading,
+    loading: staffAccountLoading,
     error: staffAccountError,
   } = useStaffAccountQuery({
     skip: !requireStaffAccount,
   });
 
+  const isAsr = requireUserGroups === RequiredUserGroupEnum.Asr;
+  const isSalaryCalc = requireUserGroups === RequiredUserGroupEnum.SalaryCalc;
+  const isMha = requireUserGroups === RequiredUserGroupEnum.Mha;
+
+  // Only run HCM query if we are using an HCM report
+  const skip = !isAsr && !isSalaryCalc && !isMha;
+  const {
+    inAsrIneligibleGroup,
+    inSalaryCalcIneligibleGroup,
+    inMhaIneligibleGroup,
+    loading: hcmLoading,
+  } = useUsStaffGroups(skip);
+
   const userType = data?.user.userType;
+
+  const limitedAccess =
+    (userType && userType !== requiredUserType) ||
+    (isAsr && inAsrIneligibleGroup) ||
+    (isSalaryCalc && inSalaryCalcIneligibleGroup) ||
+    (isMha && inMhaIneligibleGroup);
 
   // Once HCM is ready to go live and DISABLE_NEW_REPORTS is removed, we can remove the alwaysAllow prop
   if (alwaysAllow) {
     return children;
   }
 
-  if (error) {
+  if (userError) {
     return <LimitedAccess userGroupError />;
   }
 
-  if (userLoading && !userType) {
-    return null;
+  if ((userLoading && !userType) || hcmLoading) {
+    return <Loading loading />;
   }
 
-  if (userType && userType !== allowedUserType) {
+  if (limitedAccess) {
     return <LimitedAccess />;
   }
 
@@ -49,7 +77,7 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
     if (staffAccountError) {
       return <LimitedAccess userGroupError />;
     }
-    if (loading && !staffAccountData) {
+    if (staffAccountLoading && !staffAccountData) {
       return <Loading loading />;
     }
     if (!staffAccountData?.staffAccount?.id) {

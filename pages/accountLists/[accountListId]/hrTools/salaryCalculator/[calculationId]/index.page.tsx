@@ -17,7 +17,10 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
-import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
+import {
+  RequiredUserGroupEnum,
+  UserTypeAccess,
+} from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { getAppName } from 'src/lib/getAppName';
 
 const SalaryCalculatorSavingStatus: React.FC = () => {
@@ -33,6 +36,14 @@ const SalaryCalculatorSavingStatus: React.FC = () => {
 };
 
 export const SalaryCalculatorEditPage: React.FC = () => {
+  return (
+    <SalaryCalculatorProvider>
+      <SalaryCalculatorEditInnerPage />
+    </SalaryCalculatorProvider>
+  );
+};
+
+const SalaryCalculatorEditInnerPage: React.FC = () => {
   const appName = getAppName();
   const { t } = useTranslation();
   const [isNavListOpen, setIsNavListOpen] = useState(false);
@@ -46,7 +57,10 @@ export const SalaryCalculatorEditPage: React.FC = () => {
       <Head>
         <title>{`${appName} | ${t('Salary Calculator')}`}</title>
       </Head>
-      <UserTypeAccess requireStaffAccount>
+      <UserTypeAccess
+        requireStaffAccount
+        requireUserGroups={RequiredUserGroupEnum.SalaryCalc}
+      >
         <SidePanelsLayout
           isScrollBox={false}
           leftPanel={
@@ -60,7 +74,7 @@ export const SalaryCalculatorEditPage: React.FC = () => {
           leftOpen={isNavListOpen}
           leftWidth="290px"
           mainContent={
-            <SalaryCalculatorProvider>
+            <>
               <MultiPageHeader
                 isNavListOpen={isNavListOpen}
                 onNavListToggle={handleNavListToggle}
@@ -69,7 +83,7 @@ export const SalaryCalculatorEditPage: React.FC = () => {
                 rightExtra={<SalaryCalculatorSavingStatus />}
               />
               <SalaryCalculator />
-            </SalaryCalculatorProvider>
+            </>
           }
         />
       </UserTypeAccess>

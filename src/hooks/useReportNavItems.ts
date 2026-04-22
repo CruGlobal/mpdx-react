@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
+import { useReportsDisabled } from './useReportsDisabled';
 
 export type NavItems = {
   id: string;
@@ -13,9 +14,14 @@ export type NavItems = {
 export function useReportNavItems(): NavItems[] {
   const { t } = useTranslation();
   const { data } = useGetUserQuery();
+  const { reportsDisabled } = useReportsDisabled();
+
   const userType = data?.user.userType;
   const usStaff = userType === UserTypeEnum.UsStaff;
   const globalStaff = userType === UserTypeEnum.GlobalStaff;
+
+  const hasNoStaffAccount =
+    data && typeof data.user.staffAccountId !== 'string';
 
   const reportNavItems: NavItems[] = [
     {
@@ -32,19 +38,19 @@ export function useReportNavItems(): NavItems[] {
       title: t('14 Month Salary Report'),
       subTitle: t('Salary Currency'),
     },
-    ...(process.env.DISABLE_NEW_REPORTS === 'true'
+    ...(reportsDisabled
       ? []
       : [
           {
             id: 'staffExpense',
             title: t('Staff Expense Report'),
-            hideItem: !usStaff,
+            hideItem: !usStaff || hasNoStaffAccount,
           },
           {
             id: 'mpgaIncomeExpenses',
             title: t('MPGA Monthly Report'),
             subTitle: t('Income & Expenses'),
-            hideItem: !usStaff,
+            hideItem: !usStaff || hasNoStaffAccount,
           },
         ]),
     {
@@ -54,8 +60,7 @@ export function useReportNavItems(): NavItems[] {
     {
       id: 'financialAccounts',
       title: t('Responsibility Centers'),
-      hideItem:
-        process.env.DISABLE_NEW_REPORTS === 'true' ? undefined : !globalStaff,
+      hideItem: reportsDisabled ? undefined : !globalStaff,
     },
     {
       id: 'expectedMonthlyTotal',
@@ -73,6 +78,6 @@ export function useReportNavItems(): NavItems[] {
 
   return useMemo(
     () => reportNavItems.filter((item) => !item.hideItem),
-    [t, usStaff, globalStaff],
+    [t, usStaff, globalStaff, reportsDisabled, hasNoStaffAccount],
   );
 }

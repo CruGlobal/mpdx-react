@@ -14,7 +14,10 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
-import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
+import {
+  RequiredUserGroupEnum,
+  UserTypeAccess,
+} from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { getAppName } from 'src/lib/getAppName';
 
 const SalaryCalculatorPage: React.FC = () => {
@@ -32,7 +35,10 @@ const SalaryCalculatorPage: React.FC = () => {
       <Head>
         <title>{`${appName} | ${t('Salary Calculator')}`}</title>
       </Head>
-      <UserTypeAccess requireStaffAccount>
+      <UserTypeAccess
+        requireStaffAccount
+        requireUserGroups={RequiredUserGroupEnum.SalaryCalc}
+      >
         <SidePanelsLayout
           isScrollBox={false}
           leftPanel={

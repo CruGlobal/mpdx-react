@@ -14,7 +14,10 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
-import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
+import {
+  RequiredUserGroupEnum,
+  UserTypeAccess,
+} from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { ReportPageWrapper } from 'src/components/Shared/styledComponents/ReportPageWrapper';
 import { getAppName } from 'src/lib/getAppName';
 
@@ -32,7 +35,10 @@ const MinisterHousingAllowancePage: React.FC = () => {
       <Head>
         <title>{`${appName} | ${t("Reports - Minister's Housing Allowance")}`}</title>
       </Head>
-      <UserTypeAccess requireStaffAccount>
+      <UserTypeAccess
+        requireStaffAccount
+        requireUserGroups={RequiredUserGroupEnum.Mha}
+      >
         <ReportPageWrapper>
           <SidePanelsLayout
             isScrollBox={false}

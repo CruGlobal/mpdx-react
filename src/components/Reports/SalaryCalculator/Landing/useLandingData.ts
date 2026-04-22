@@ -3,10 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { SalaryRequestStatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
-import {
-  type HcmQuery,
-  useHcmQuery,
-} from '../SalaryCalculatorContext/Hcm.generated';
+import { type HcmQuery, useHcmQuery } from '../../Shared/HcmData/Hcm.generated';
 import { getLocalizedTaxStatus } from '../Shared/getLocalizedTaxStatus';
 import { useAccountBalanceQuery } from './AccountBalance.generated';
 import {

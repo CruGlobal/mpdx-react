@@ -11,7 +11,11 @@ import {
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { StaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
-import { UserTypeEnum } from 'src/graphql/types.generated';
+import {
+  PeopleGroupSupportTypeEnum,
+  UserPersonTypeEnum,
+  UserTypeEnum,
+} from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import AdditionalSalaryRequestPage, { getServerSideProps } from './index.page';
 
@@ -25,7 +29,7 @@ const mocks = {
   AdditionalSalaryRequest: {
     latestAdditionalSalaryRequest: null,
   },
-  HcmData: {
+  Hcm: {
     hcm: [
       {
         salaryRequestEligible: true,
@@ -34,6 +38,8 @@ const mocks = {
         },
         staffInfo: {
           preferredName: 'Test User',
+          peopleGroupSupportType: PeopleGroupSupportTypeEnum.SupportedRmo,
+          userPersonType: UserPersonTypeEnum.EmployeeStaff,
         },
       },
     ],

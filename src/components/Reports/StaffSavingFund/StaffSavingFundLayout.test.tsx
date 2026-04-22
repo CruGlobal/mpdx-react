@@ -3,8 +3,12 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
-import { UserTypeEnum } from 'src/graphql/types.generated';
+import {
+  PeopleGroupSupportTypeEnum,
+  UserTypeEnum,
+} from 'src/graphql/types.generated';
 import theme from 'src/theme';
+import { HcmQuery } from '../Shared/HcmData/Hcm.generated';
 import { StaffAccountQuery } from '../StaffAccount.generated';
 import { StaffSavingFundContext } from './StaffSavingFundContext';
 import { StaffSavingFundLayout } from './StaffSavingFundLayout';
@@ -51,10 +55,25 @@ const Components: React.FC<ComponentProps> = ({
       <GqlMockedProvider<{
         StaffAccount: StaffAccountQuery;
         GetUser: GetUserQuery;
+        Hcm: HcmQuery;
       }>
         mocks={{
           ...mockStaffAccount,
           GetUser: { user: { userType } },
+          Hcm: {
+            hcm: [
+              {
+                staffInfo: {
+                  id: '1',
+                  peopleGroupSupportType:
+                    PeopleGroupSupportTypeEnum.SupportedRmo,
+                },
+                asrEit: {
+                  asrEligibility: true,
+                },
+              },
+            ],
+          },
         }}
         onCall={mutationSpy}
       >
