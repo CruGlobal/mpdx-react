@@ -23,8 +23,6 @@ if (prod && !process.env.JWT_SECRET) {
   throw new Error('JWT_SECRET environment variable is not set');
 }
 
-process.env.JWT_SECRET ??= 'development-key';
-
 const siteUrl =
   process.env.PREVIEW_URL ?? process.env.SITE_URL ?? 'http://localhost:3000';
 
@@ -35,19 +33,23 @@ const withBundleAnalyzer = bundleAnalyzer({
 const config: NextConfig = {
   env: {
     NEXTAUTH_URL: process.env.NEXTAUTH_URL,
+    JWT_SECRET: process.env.JWT_SECRET ?? 'development-key',
     API_URL: process.env.API_URL ?? 'https://api.stage.mpdx.org/graphql',
     REST_API_URL:
       process.env.REST_API_URL ?? 'https://api.stage.mpdx.org/api/v2/',
     OAUTH_URL: process.env.OAUTH_URL ?? 'https://auth.stage.mpdx.org',
     SITE_URL: siteUrl,
     CLIENT_ID: process.env.CLIENT_ID ?? '4027334344069527005',
+    CLIENT_SECRET: process.env.CLIENT_SECRET,
     AUTH_PROVIDER: process.env.AUTH_PROVIDER ?? 'OKTA',
     OKTA_CLIENT_ID: process.env.OKTA_CLIENT_ID ?? '0oa1n0gjoy3j5Ycdg0h8',
+    OKTA_CLIENT_SECRET: process.env.OKTA_CLIENT_SECRET,
     OKTA_ISSUER: process.env.OKTA_ISSUER ?? 'https://signon.okta.com',
     OKTA_SIGNOUT_REDIRECT_URL: process.env.OKTA_SIGNOUT_REDIRECT_URL ?? siteUrl,
     API_OAUTH_CLIENT_ID:
       process.env.API_OAUTH_CLIENT_ID ??
       '3nxoth_gyetHdpjKp2WYkND1PUQlvYcjXQHW9ZdDxq4',
+    API_OAUTH_CLIENT_SECRET: process.env.API_OAUTH_CLIENT_SECRET,
     API_OAUTH_ISSUER_AUTHORIZATION_URL:
       process.env.API_OAUTH_ISSUER_AUTHORIZATION_URL ??
       'https://api.stage.mpdx.org/oauth/authorize',
@@ -61,6 +63,7 @@ const config: NextConfig = {
       process.env.GOOGLE_TAG_MANAGER_CONTAINER_ID,
     ROLLBAR_ACCESS_TOKEN: process.env.ROLLBAR_ACCESS_TOKEN,
     APP_NAME: process.env.APP_NAME ?? 'MPDX',
+    ROLLBAR_SERVER_ACCESS_TOKEN: process.env.ROLLBAR_SERVER_ACCESS_TOKEN,
     DATADOG_APP_ID: process.env.DATADOG_APP_ID,
     DATADOG_CLIENT_TOKEN: process.env.DATADOG_CLIENT_TOKEN,
     DATADOG_CONFIGURED: Boolean(
