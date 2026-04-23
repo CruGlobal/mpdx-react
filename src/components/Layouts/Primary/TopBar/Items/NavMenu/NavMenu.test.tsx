@@ -155,7 +155,7 @@ describe('NavMenu', () => {
     await findByRole('menuitem', { name: 'HR Tools' });
     userEvent.click(getByTestId('HrToolsMenuToggle'));
     expect(
-      getByRole('menuitem', { name: 'Salary Calculator' }),
+      getByRole('menuitem', { name: 'Salary Calculation Form' }),
     ).toBeInTheDocument();
     expect(
       getByRole('menuitem', { name: 'Savings Fund Transfer' }),
@@ -164,7 +164,7 @@ describe('NavMenu', () => {
       getByRole('menuitem', { name: 'MPD Goal Calculator' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('menuitem', { name: 'MHA Calculator' }),
+      getByRole('menuitem', { name: 'MHA Calculation Tool' }),
     ).toBeInTheDocument();
     expect(
       getByRole('menuitem', { name: 'Additional Salary Request' }),

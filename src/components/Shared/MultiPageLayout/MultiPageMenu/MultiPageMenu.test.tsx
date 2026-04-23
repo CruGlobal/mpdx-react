@@ -512,10 +512,10 @@ describe('MultiPageMenu', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('Salary Calculator')).toBeInTheDocument();
+      expect(getByText('Salary Calculation Form')).toBeInTheDocument();
       expect(getByText('Savings Fund Transfer')).toBeInTheDocument();
       expect(getByText('MPD Goal Calculator')).toBeInTheDocument();
-      expect(getByText('MHA Calculator')).toBeInTheDocument();
+      expect(getByText('MHA Calculation Tool')).toBeInTheDocument();
       expect(getByText('Additional Salary Request')).toBeInTheDocument();
       expect(getByText('Ministry Partner Reminders')).toBeInTheDocument();
     });
