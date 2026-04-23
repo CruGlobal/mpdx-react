@@ -73,9 +73,12 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
     [locale],
   );
 
-  const rows = useMemo((): PdsSummaryRow[] => {
+  const { rows, overallTotal } = useMemo((): {
+    rows: PdsSummaryRow[];
+    overallTotal: number;
+  } => {
     if (!calculation) {
-      return [];
+      return { rows: [], overallTotal: 0 };
     }
 
     const additionalRates = goalMiscConstants.ADDITIONAL_RATES;
@@ -93,7 +96,7 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
       creditCardFeeRate === undefined ||
       adminRate === undefined
     ) {
-      return [];
+      return { rows: [], overallTotal: 0 };
     }
 
     const geographicMultiplier =
@@ -136,7 +139,7 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
     const isPartTime =
       calculation.status === DesignationSupportStatus.PartTime;
 
-    return [
+    const rows: PdsSummaryRow[] = [
       // Salary section
       {
         line: '1A',
@@ -252,6 +255,8 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
         percentage: true,
       },
     ];
+
+    return { rows, overallTotal };
   }, [
     t,
     calculation,
@@ -260,11 +265,6 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
     goalGeographicConstantMap,
     supportRaised,
   ]);
-
-  const overallTotal = useMemo(() => {
-    const totalRow = rows.find((r) => r.line === '6');
-    return totalRow?.amount ?? 0;
-  }, [rows]);
 
   const columns = useMemo(
     (): GridColDef[] => [
