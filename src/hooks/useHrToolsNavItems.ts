@@ -16,7 +16,7 @@ export function useHrToolsNavItems(): NavItems[] {
   const hrToolsNavItems: NavItems[] = [
     {
       id: 'salaryCalculator',
-      title: t('Salary Calculator'),
+      title: t('Salary Calculation Form'),
       hideItem: inSalaryCalcIneligibleGroup,
     },
     {
@@ -30,7 +30,7 @@ export function useHrToolsNavItems(): NavItems[] {
     },
     {
       id: 'mhaCalculator',
-      title: t('MHA Calculator'),
+      title: t('MHA Calculation Tool'),
       hideItem: inMhaIneligibleGroup,
     },
     {

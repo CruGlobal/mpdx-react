@@ -95,7 +95,7 @@ describe('StaffSavingFundLayout', () => {
 
   it('should open nav list', async () => {
     const { findByText } = render(<Components />);
-    expect(await findByText(/salary calculator/i)).toBeInTheDocument();
+    expect(await findByText(/salary calculation form/i)).toBeInTheDocument();
     expect(await findByText(/hr tools/i)).toBeInTheDocument();
   });
 
