@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
-import { PdsGoalCalculatorTestWrapper } from 'src/components/Reports/PdsGoalCalculator/PdsGoalCalculatorTestWrapper';
+import { PdsGoalCalculatorTestWrapper } from 'src/components/HrTools/PdsGoalCalculator/PdsGoalCalculatorTestWrapper';
 import { PdsGoalCalculatorPage, getServerSideProps } from './[pdsGoalId].page';
 
 describe('[pdsGoalId] page', () => {

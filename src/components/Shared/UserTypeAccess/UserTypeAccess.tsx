@@ -1,9 +1,9 @@
 import Loading from 'src/components/Loading';
-import { useStaffAccountQuery } from 'src/components/Reports/StaffAccount.generated';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
 import { useUsStaffGroups } from 'src/hooks/useUsStaffGroups';
 import { LimitedAccess } from '../LimitedAccess/LimitedAccess';
+import { useStaffAccountQuery } from '../StaffAccount/StaffAccount.generated';
 
 export enum RequiredUserGroupEnum {
   Asr = 'asr',

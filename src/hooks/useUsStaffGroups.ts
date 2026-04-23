@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import {
   HcmQuery,
   useHcmQuery,
-} from 'src/components/Reports/Shared/HcmData/Hcm.generated';
+} from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import {
   AssignmentStatusEnum,
   PeopleGroupSupportTypeEnum,

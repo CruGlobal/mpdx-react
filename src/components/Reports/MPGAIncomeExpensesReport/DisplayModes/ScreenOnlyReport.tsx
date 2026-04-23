@@ -1,7 +1,7 @@
 import { HourglassDisabled } from '@mui/icons-material';
 import { Box, Container, Grid } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { EmptyTable } from '../../Shared/EmptyTable/EmptyTable';
+import { EmptyTable } from '../../../HrTools/Shared/EmptyTable/EmptyTable';
 import { CardSkeleton } from '../Card/CardSkeleton';
 import { ExpensesPieChart } from '../Charts/ExpensesPieChart';
 import { MonthlySummaryChart } from '../Charts/MonthlySummaryChart';

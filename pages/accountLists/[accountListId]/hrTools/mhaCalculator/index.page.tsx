@@ -2,9 +2,9 @@ import Head from 'next/head';
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
+import { MinisterHousingAllowanceReport } from 'src/components/HrTools/MinisterHousingAllowance/MinisterHousingAllowance';
+import { MinisterHousingAllowanceProvider } from 'src/components/HrTools/MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
-import { MinisterHousingAllowanceReport } from 'src/components/Reports/MinisterHousingAllowance/MinisterHousingAllowance';
-import { MinisterHousingAllowanceProvider } from 'src/components/Reports/MinisterHousingAllowance/Shared/Context/MinisterHousingAllowanceContext';
 import {
   HeaderTypeEnum,
   MultiPageHeader,

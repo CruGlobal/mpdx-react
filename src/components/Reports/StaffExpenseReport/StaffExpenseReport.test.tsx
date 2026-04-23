@@ -7,13 +7,13 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import {
   StaffAccountStatusEnum,
   StaffExpenseCategoryEnum,
   StaffExpensesSubCategoryEnum,
 } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import { StaffAccountQuery } from '../StaffAccount.generated';
 import { ReportsStaffExpensesQuery } from './GetStaffExpense.generated';
 import { StaffExpenseReport } from './StaffExpenseReport';
 

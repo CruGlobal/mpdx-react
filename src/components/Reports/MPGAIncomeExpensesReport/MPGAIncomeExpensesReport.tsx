@@ -13,16 +13,16 @@ import {
   HeaderTypeEnum,
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
+import { useStaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import { useFilteredFunds } from 'src/hooks/useFilteredFunds';
 import { useGetLastTwelveMonths } from 'src/hooks/useGetLastTwelveMonths';
 import { useLocale } from 'src/hooks/useLocale';
-import { AccountInfoBox } from '../Shared/AccountInfoBox/AccountInfoBox';
-import { AccountInfoBoxSkeleton } from '../Shared/AccountInfoBox/AccountInfoBoxSkeleton';
+import { AccountInfoBox } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBox';
+import { AccountInfoBoxSkeleton } from '../../HrTools/Shared/AccountInfoBox/AccountInfoBoxSkeleton';
 import {
   getLocalizedCategory,
   getLocalizedSubCategory,
 } from '../Shared/Helpers/transformStaffExpenseEnums';
-import { useStaffAccountQuery } from '../StaffAccount.generated';
 import {
   SimplePrintOnly,
   SimpleScreenOnly,

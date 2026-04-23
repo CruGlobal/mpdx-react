@@ -2,7 +2,7 @@ import React, { ReactElement } from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
 import { GraphQLError } from 'graphql';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { HcmQuery } from 'src/components/Reports/Shared/HcmData/Hcm.generated';
+import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import {
   AssignmentStatusEnum,
   PeopleGroupSupportTypeEnum,

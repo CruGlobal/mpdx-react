@@ -1,0 +1,172 @@
+import { ThemeProvider } from '@emotion/react';
+import { FormikProvider, useFormik } from 'formik';
+import { SnackbarProvider } from 'notistack';
+import { I18nextProvider } from 'react-i18next';
+import * as yup from 'yup';
+import TestRouter from '__tests__/util/TestRouter';
+import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { PageEnum } from 'src/components/HrTools/Shared/CalculationReports/Shared/sharedTypes';
+import { ElectionType403bEnum } from 'src/graphql/types.generated';
+import i18n from 'src/lib/i18n';
+import { amount, phoneNumber } from 'src/lib/yupHelpers';
+import theme from 'src/theme';
+import { CompleteFormValues } from './AdditionalSalaryRequest';
+import {
+  AdditionalSalaryRequestProvider,
+  getFieldConfig,
+} from './Shared/AdditionalSalaryRequestContext';
+
+interface AdditionalSalaryRequestTestWrapperProps {
+  children?: React.ReactNode;
+  initialValues?: CompleteFormValues;
+  pageType?: PageEnum;
+  traditionalDeductionPercentage?: number;
+  rothDeductionPercentage?: number;
+  onCall?: jest.Mock;
+  mockPush?: jest.Mock;
+}
+
+const defaultInitialValues: CompleteFormValues = {
+  currentYearSalaryNotReceived: '0',
+  previousYearSalaryNotReceived: '0',
+  additionalSalaryWithinMax: '0',
+  adoption: '0',
+  counselingNonMedical: '0',
+  healthcareExpensesExceedingLimit: '0',
+  babysittingMinistryEvents: '0',
+  childrenMinistryTripExpenses: '0',
+  childrenCollegeEducation: '0',
+  movingExpense: '0',
+  seminary: '0',
+  housingDownPayment: '0',
+  autoPurchase: '0',
+  expensesNotApprovedWithin90Days: '0',
+  electionType403b: ElectionType403bEnum.None,
+  phoneNumber: '',
+  emailAddress: '',
+  totalAdditionalSalaryRequested: '0',
+  additionalInfo: '',
+};
+
+const validationSchema = yup.object({
+  ...Object.fromEntries(
+    getFieldConfig(i18n.t).map(({ key, label }) => [
+      key,
+      amount(label, (key: string) => key),
+    ]),
+  ),
+  phoneNumber: phoneNumber(i18n.t).required(
+    i18n.t('Phone Number is required.'),
+  ),
+  emailAddress: yup
+    .string()
+    .required('Email address is required')
+    .email('Please enter a valid email address'),
+  totalAdditionalSalaryRequested: yup
+    .number()
+    .test(
+      'total-within-remaining-allowable-salary',
+      'Exceeds account balance.',
+      function (value) {
+        const individualCap = 17500.0;
+        return (value || 0) <= individualCap;
+      },
+    ),
+  additionalInfo: yup.string(),
+  electionType403b: yup
+    .string()
+    .required('Please select how you would like to contribute to your 403(b).'),
+});
+
+const TestFormikWrapper: React.FC<{
+  children: React.ReactNode;
+  initialValues?: CompleteFormValues;
+}> = ({ children, initialValues }) => {
+  const formik = useFormik<CompleteFormValues>({
+    initialValues: initialValues || defaultInitialValues,
+    validationSchema,
+    onSubmit: () => {},
+    enableReinitialize: true,
+    validateOnMount: true,
+  });
+
+  // Add validationSchema to formik context so autosave fields can access it
+  const formikWithSchema = { ...formik, validationSchema };
+
+  return <FormikProvider value={formikWithSchema}>{children}</FormikProvider>;
+};
+
+export const AdditionalSalaryRequestTestWrapper: React.FC<
+  AdditionalSalaryRequestTestWrapperProps
+> = ({
+  children,
+  initialValues,
+  pageType = PageEnum.New,
+  traditionalDeductionPercentage = 0,
+  rothDeductionPercentage = 0,
+  onCall,
+  mockPush,
+}) => {
+  const requestValues = initialValues || defaultInitialValues;
+
+  return (
+    <ThemeProvider theme={theme}>
+      <SnackbarProvider>
+        <I18nextProvider i18n={i18n}>
+          <TestRouter
+            router={{
+              query: {
+                accountListId: 'account-list-1',
+              },
+              push: mockPush,
+            }}
+          >
+            <GqlMockedProvider
+              mocks={{
+                AdditionalSalaryRequest: {
+                  latestAdditionalSalaryRequest: {
+                    id: 'test-request-id',
+                    ...Object.fromEntries(
+                      Object.entries(requestValues).map(([key, value]) =>
+                        typeof value === 'string' &&
+                        key !== 'phoneNumber' &&
+                        key !== 'emailAddress' &&
+                        key !== 'additionalInfo'
+                          ? [key, parseFloat(value) || 0]
+                          : [key, value],
+                      ),
+                    ),
+                    electionType403b: ElectionType403bEnum.None,
+                  },
+                },
+                Hcm: {
+                  hcm: [
+                    {
+                      id: 'hcm-1',
+                      fourOThreeB: {
+                        currentTaxDeferredContributionPercentage:
+                          traditionalDeductionPercentage,
+                        currentRothContributionPercentage:
+                          rothDeductionPercentage,
+                      },
+                    },
+                  ],
+                },
+              }}
+              onCall={onCall}
+            >
+              <AdditionalSalaryRequestProvider
+                requestId="test-request-id"
+                initialPageType={pageType}
+              >
+                <TestFormikWrapper initialValues={initialValues}>
+                  {children}
+                </TestFormikWrapper>
+              </AdditionalSalaryRequestProvider>
+            </GqlMockedProvider>
+          </TestRouter>
+        </I18nextProvider>
+      </SnackbarProvider>
+    </ThemeProvider>
+  );
+};

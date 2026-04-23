@@ -3,19 +3,19 @@ import React, { useState } from 'react';
 import { FormikProvider } from 'formik';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
-import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
-import Loading from 'src/components/Loading';
-import { AdditionalSalaryRequest } from 'src/components/Reports/AdditionalSalaryRequest/AdditionalSalaryRequest';
-import { InProgressDisplay } from 'src/components/Reports/AdditionalSalaryRequest/MainPages/InProgress/InProgressDisplay';
-import { IneligiblePage } from 'src/components/Reports/AdditionalSalaryRequest/MainPages/IneligiblePage';
-import { RequestPage } from 'src/components/Reports/AdditionalSalaryRequest/RequestPage/RequestPage';
+import { AdditionalSalaryRequest } from 'src/components/HrTools/AdditionalSalaryRequest/AdditionalSalaryRequest';
+import { InProgressDisplay } from 'src/components/HrTools/AdditionalSalaryRequest/MainPages/InProgress/InProgressDisplay';
+import { IneligiblePage } from 'src/components/HrTools/AdditionalSalaryRequest/MainPages/IneligiblePage';
+import { RequestPage } from 'src/components/HrTools/AdditionalSalaryRequest/RequestPage/RequestPage';
 import {
   AdditionalSalaryRequestProvider,
   useAdditionalSalaryRequest,
-} from 'src/components/Reports/AdditionalSalaryRequest/Shared/AdditionalSalaryRequestContext';
-import { useAdditionalSalaryRequestForm } from 'src/components/Reports/AdditionalSalaryRequest/Shared/useAdditionalSalaryRequestForm';
-import { SavingStatus } from 'src/components/Reports/Shared/CalculationReports/SavingStatus/SavingStatus';
-import { PageEnum } from 'src/components/Reports/Shared/CalculationReports/Shared/sharedTypes';
+} from 'src/components/HrTools/AdditionalSalaryRequest/Shared/AdditionalSalaryRequestContext';
+import { useAdditionalSalaryRequestForm } from 'src/components/HrTools/AdditionalSalaryRequest/Shared/useAdditionalSalaryRequestForm';
+import { SavingStatus } from 'src/components/HrTools/Shared/CalculationReports/SavingStatus/SavingStatus';
+import { PageEnum } from 'src/components/HrTools/Shared/CalculationReports/Shared/sharedTypes';
+import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
+import Loading from 'src/components/Loading';
 import {
   HeaderTypeEnum,
   MultiPageHeader,

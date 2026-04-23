@@ -5,8 +5,8 @@ import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import theme from 'src/theme';
-import { StaffAccountQuery } from '../StaffAccount.generated';
 import { MPGAIncomeExpensesReport } from './MPGAIncomeExpensesReport';
 
 const mutationSpy = jest.fn();

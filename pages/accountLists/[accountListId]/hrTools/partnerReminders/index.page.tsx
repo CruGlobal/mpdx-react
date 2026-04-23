@@ -4,8 +4,8 @@ import { Box } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
+import { PartnerRemindersReport } from 'src/components/HrTools/MinistryPartnerReminders/PartnerRemindersReport';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
-import { PartnerRemindersReport } from 'src/components/Reports/MinistryPartnerReminders/PartnerRemindersReport';
 import {
   MultiPageMenu,
   NavTypeEnum,
