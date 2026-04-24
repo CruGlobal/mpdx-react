@@ -18,3 +18,16 @@ jobs:
           type: now
           target_branch: 'staging'
           github_token: ${{ github.token }}
+
+  update-branches:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - name: 🔁 Force-push main to local-api
+        # Keep local-api branch in-sync with main
+        # local-api is set up in Amplify with API_URL=http://localhost:3001/graphql for testing
+        # backend changes locally against the current version of the frontend.
+        run: git push --force-with-lease origin main:local-api
