@@ -30,8 +30,8 @@ const MPGAReportPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>{`${appName} | ${t('Reports')} - ${t(
-          'MPGA Monthly Report',
+        <title>{`${appName} | ${t('Reports')} | ${t(
+          'Income/Expense Analysis',
         )}`}</title>
       </Head>
       <UserTypeAccess requireStaffAccount>

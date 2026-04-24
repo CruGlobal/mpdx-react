@@ -48,8 +48,7 @@ export function useReportNavItems(): NavItems[] {
           },
           {
             id: 'mpgaIncomeExpenses',
-            title: t('MPGA Monthly Report'),
-            subTitle: t('Income & Expenses'),
+            title: t('Income/Expense Analysis'),
             hideItem: !usStaff || hasNoStaffAccount,
           },
         ]),

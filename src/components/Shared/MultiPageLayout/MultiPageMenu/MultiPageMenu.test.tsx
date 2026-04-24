@@ -79,7 +79,7 @@ describe('MultiPageMenu', () => {
     expect(getByText('14 Month Partner Report')).toBeInTheDocument();
     expect(getByText('14 Month Salary Report')).toBeInTheDocument();
     expect(await findByText('Staff Expense Report')).toBeInTheDocument();
-    expect(getByText('MPGA Monthly Report')).toBeInTheDocument();
+    expect(getByText('Income/Expense Analysis')).toBeInTheDocument();
     expect(getByText('Designation Accounts')).toBeInTheDocument();
     expect(getByText('Expected Monthly Total')).toBeInTheDocument();
     expect(getByText('Partner Giving Analysis')).toBeInTheDocument();
@@ -130,7 +130,7 @@ describe('MultiPageMenu', () => {
     expect(getByText('Coaching')).toBeInTheDocument();
 
     expect(queryByText('Staff Expense Report')).not.toBeInTheDocument();
-    expect(queryByText('MPGA Monthly Report')).not.toBeInTheDocument();
+    expect(queryByText('Income/Expense Analysis')).not.toBeInTheDocument();
   });
 
   it('non Cru default', async () => {
@@ -174,7 +174,7 @@ describe('MultiPageMenu', () => {
     expect(getByText('Coaching')).toBeInTheDocument();
 
     expect(queryByText('Staff Expense Report')).not.toBeInTheDocument();
-    expect(queryByText('MPGA Monthly Report')).not.toBeInTheDocument();
+    expect(queryByText('Income/Expense Analysis')).not.toBeInTheDocument();
     await waitFor(() => {
       expect(queryByText('Responsibility Centers')).not.toBeInTheDocument();
     });
@@ -515,7 +515,7 @@ describe('MultiPageMenu', () => {
       expect(getByText('Salary Calculation Form')).toBeInTheDocument();
       expect(getByText('Savings Fund Transfer')).toBeInTheDocument();
       expect(getByText('MPD Goal Calculator')).toBeInTheDocument();
-      expect(getByText('MHA Calculation Tool')).toBeInTheDocument();
+      expect(getByText('MHA Calculation Form')).toBeInTheDocument();
       expect(getByText('Additional Salary Request')).toBeInTheDocument();
       expect(getByText('Ministry Partner Reminders')).toBeInTheDocument();
     });

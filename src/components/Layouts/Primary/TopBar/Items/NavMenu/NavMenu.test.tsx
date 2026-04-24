@@ -111,7 +111,7 @@ describe('NavMenu', () => {
       getByRole('menuitem', { name: 'Staff Expense Report' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('menuitem', { name: 'MPGA Monthly Report' }),
+      getByRole('menuitem', { name: 'Income/Expense Analysis' }),
     ).toBeInTheDocument();
     expect(
       getByRole('menuitem', { name: 'Designation Accounts' }),
@@ -164,7 +164,7 @@ describe('NavMenu', () => {
       getByRole('menuitem', { name: 'MPD Goal Calculator' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('menuitem', { name: 'MHA Calculation Tool' }),
+      getByRole('menuitem', { name: 'MHA Calculation Form' }),
     ).toBeInTheDocument();
     expect(
       getByRole('menuitem', { name: 'Additional Salary Request' }),

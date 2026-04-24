@@ -30,7 +30,7 @@ export function useHrToolsNavItems(): NavItems[] {
     },
     {
       id: 'mhaCalculator',
-      title: t('MHA Calculation Tool'),
+      title: t('MHA Calculation Form'),
       hideItem: inMhaIneligibleGroup,
     },
     {
