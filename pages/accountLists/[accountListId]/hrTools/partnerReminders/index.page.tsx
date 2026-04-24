@@ -30,7 +30,7 @@ const PartnerRemindersReportPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>{`${appName} | ${t('Reports')} - ${t('Ministry Partner Reminders')}`}</title>
+        <title>{`${appName} | ${t('HR Tools | Ministry Partner Reminders')}`}</title>
       </Head>
       <UserTypeAccess requireStaffAccount>
         <PartnerRemindersReportPageWrapper>

@@ -27,7 +27,7 @@ const DesignationAccountsReportPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>{`${appName} | ${t('Reports - Designation Accounts')}`}</title>
+        <title>{`${appName} | ${t('Reports | Designation Accounts')}`}</title>
       </Head>
       {accountListId ? (
         <ReportPageWrapper>

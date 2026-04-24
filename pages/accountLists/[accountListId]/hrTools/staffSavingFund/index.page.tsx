@@ -8,7 +8,7 @@ import { StaffSavingFundLayout } from 'src/components/HrTools/StaffSavingFund/St
 export const StaffSavingFundPage: React.FC = () => {
   const { t } = useTranslation();
 
-  const title = t('Savings Fund Transfer');
+  const title = t('HR Tools | Savings Fund Transfer');
 
   return (
     <StaffSavingFundProvider>

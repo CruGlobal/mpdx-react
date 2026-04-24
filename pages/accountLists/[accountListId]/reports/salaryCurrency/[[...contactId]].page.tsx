@@ -75,7 +75,7 @@ const SalaryCurrencyReportPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>{`${appName} | ${t('Reports - Salary')}`}</title>
+        <title>{`${appName} | ${t('Reports | Salary')}`}</title>
       </Head>
       <ContactPanelProvider>
         <PageContent />

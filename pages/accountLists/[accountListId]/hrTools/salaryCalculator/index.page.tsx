@@ -33,7 +33,7 @@ const SalaryCalculatorPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>{`${appName} | ${t('Salary Calculator')}`}</title>
+        <title>{`${appName} | ${t('HR Tools | Salary Calculation Form')}`}</title>
       </Head>
       <UserTypeAccess
         requireStaffAccount

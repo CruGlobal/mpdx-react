@@ -8,6 +8,7 @@ import {
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
+import { getAppName } from 'src/lib/getAppName';
 import {
   StaffSavingFundContext,
   StaffSavingFundType,
@@ -28,6 +29,7 @@ export const StaffSavingFundLayout: React.FC<StaffSavingFundLayoutProps> = ({
   selectedMenuId,
   children,
 }) => {
+  const appName = getAppName();
   const { isNavListOpen, onNavListToggle } = useContext(
     StaffSavingFundContext,
   ) as StaffSavingFundType;
@@ -35,7 +37,7 @@ export const StaffSavingFundLayout: React.FC<StaffSavingFundLayoutProps> = ({
   return (
     <>
       <Head>
-        <title>{`${pageTitle}`}</title>
+        <title>{`${appName} | ${pageTitle}`}</title>
       </Head>
       <UserTypeAccess requireStaffAccount>
         <StaffSavingFundPageWrapper>
