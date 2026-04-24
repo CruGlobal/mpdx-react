@@ -1,3 +1,4 @@
+import 'pages/api/utils/hydrateSecrets';
 import { NextApiRequest, NextApiResponse } from 'next';
 import formidable, { IncomingForm } from 'formidable';
 import { getToken } from 'next-auth/jwt';

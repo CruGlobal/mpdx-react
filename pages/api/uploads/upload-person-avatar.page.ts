@@ -1,3 +1,4 @@
+import 'pages/api/utils/hydrateSecrets';
 import { readFile } from 'fs/promises';
 import { NextApiRequest, NextApiResponse } from 'next';
 import formidable, { IncomingForm } from 'formidable';

@@ -1,3 +1,4 @@
+import 'pages/api/utils/hydrateSecrets';
 import { NextApiRequest } from 'next';
 import { getToken } from 'next-auth/jwt';
 import fetch from 'node-fetch';

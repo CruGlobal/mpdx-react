@@ -1,3 +1,4 @@
+import 'pages/api/utils/hydrateSecrets';
 import { NextApiRequest, NextApiResponse } from 'next';
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import { Provider } from 'next-auth/providers';

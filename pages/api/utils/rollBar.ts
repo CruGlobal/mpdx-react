@@ -1,3 +1,4 @@
+import 'pages/api/utils/hydrateSecrets';
 import Rollbar from 'rollbar';
 import { getErrorMessage } from 'src/lib/getErrorFromCatch';
 

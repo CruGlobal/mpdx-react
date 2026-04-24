@@ -1,3 +1,4 @@
+import 'pages/api/utils/hydrateSecrets';
 import { createHmac, timingSafeEqual } from 'crypto';
 import { DateTime } from 'luxon';
 import { extractCookie } from 'src/lib/extractCookie';
