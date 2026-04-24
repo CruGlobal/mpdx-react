@@ -8,6 +8,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { PageEnum } from 'src/components/HrTools/Shared/CalculationReports/Shared/sharedTypes';
 import theme from 'src/theme';
+import { HcmQuery } from '../../Shared/HcmData/Hcm.generated';
 import { AdditionalSalaryRequestTestWrapper } from '../AdditionalSalaryRequestTestWrapper';
 import {
   AdditionalSalaryRequestProvider,
@@ -61,8 +62,8 @@ const TestComponent: React.FC = () => {
       <div data-testid="current-index">{currentIndex}</div>
       <div data-testid="page-type">{pageType}</div>
       <div data-testid="staff-account-id">{staffAccountId}</div>
-      <div data-testid="user-id">{user?.staffInfo?.firstName}</div>
-      <div data-testid="spouse-id">{spouse?.staffInfo?.firstName}</div>
+      <div data-testid="user-id">{user?.staffInfo.preferredName}</div>
+      <div data-testid="spouse-id">{spouse?.staffInfo.preferredName}</div>
       <div data-testid="is-international">{isInternational ? 'yes' : 'no'}</div>
       <div data-testid="traditional-403b">{traditional403bPercentage}</div>
       <div data-testid="roth-403b">{roth403bPercentage}</div>
@@ -334,13 +335,13 @@ describe('AdditionalSalaryRequestContext', () => {
               },
             }}
           >
-            <GqlMockedProvider
+            <GqlMockedProvider<{ Hcm: HcmQuery }>
               mocks={{
                 Hcm: {
                   hcm: [
                     {
                       staffInfo: {
-                        firstName: 'Primary',
+                        preferredName: 'Primary',
                         lastName: 'Person',
                         isInternational: false,
                       },
@@ -351,7 +352,7 @@ describe('AdditionalSalaryRequestContext', () => {
                     },
                     {
                       staffInfo: {
-                        firstName: 'Spouse',
+                        preferredName: 'Spouse',
                         lastName: 'Person',
                         isInternational: true,
                       },

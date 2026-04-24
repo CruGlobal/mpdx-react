@@ -13,7 +13,7 @@ export const useSpouseLink = (): SpouseLinkInfo => {
   const accountListId = useAccountListId();
   const { spouse, isSpouse } = useAdditionalSalaryRequest();
 
-  const name = spouse?.staffInfo?.firstName ?? '';
+  const name = spouse?.staffInfo.preferredName ?? '';
   const spouseLinkText = isSpouse
     ? t('Switch back to {{name}}', { name })
     : t('Request additional salary for {{name}}', { name });

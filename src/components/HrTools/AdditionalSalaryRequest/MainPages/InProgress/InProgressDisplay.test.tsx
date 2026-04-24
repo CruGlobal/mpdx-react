@@ -5,9 +5,12 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
+import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import { AsrStatusEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
+import { AdditionalSalaryRequestQuery } from '../../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestProvider } from '../../Shared/AdditionalSalaryRequestContext';
+import { StaffAccountIdQuery } from '../../StaffAccountId.generated';
 import { InProgressDisplay } from './InProgressDisplay';
 
 const mutationSpy = jest.fn();
@@ -31,27 +34,10 @@ const TestComponent: React.FC<TestComponentProps> = ({
   const hcmData = {
     hcm: withSpouse
       ? [
-          {
-            id: 'hcm-1',
-            staffInfo: {
-              firstName: 'John',
-            },
-          },
-          {
-            id: 'hcm-2',
-            staffInfo: {
-              firstName: 'Jane',
-            },
-          },
+          { staffInfo: { preferredName: 'John' } },
+          { staffInfo: { preferredName: 'Jane' } },
         ]
-      : [
-          {
-            id: 'hcm-1',
-            staffInfo: {
-              firstName: 'John',
-            },
-          },
-        ],
+      : [{ staffInfo: { preferredName: 'John' } }],
   };
 
   const additionalSalaryRequestData = {
@@ -79,7 +65,11 @@ const TestComponent: React.FC<TestComponentProps> = ({
         }}
       >
         <SnackbarProvider>
-          <GqlMockedProvider
+          <GqlMockedProvider<{
+            Hcm: HcmQuery;
+            AdditionalSalaryRequest: AdditionalSalaryRequestQuery;
+            StaffAccountId: StaffAccountIdQuery;
+          }>
             mocks={{
               Hcm: hcmData,
               AdditionalSalaryRequest: additionalSalaryRequestData,

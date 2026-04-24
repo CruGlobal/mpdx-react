@@ -250,7 +250,7 @@ describe('StepList', () => {
         currentIndex: 2,
         spouse: {
           staffInfo: {
-            firstName: 'Jane',
+            preferredName: 'Jane',
           },
         },
       } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
@@ -295,7 +295,7 @@ describe('StepList', () => {
         isSpouse: true,
         spouse: {
           staffInfo: {
-            firstName: 'John',
+            preferredName: 'John',
           },
         },
       } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);

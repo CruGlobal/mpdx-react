@@ -136,11 +136,11 @@ const MainContent: React.FC = () => {
                   splitAsr ? (
                     splitAsrType === 'spouse' ? (
                       <SpouseOverCapSubContent
-                        spouseName={spouse?.staffInfo.firstName ?? ''}
+                        spouseName={spouse?.staffInfo.preferredName ?? ''}
                       />
                     ) : (
                       <SplitCapSubContent
-                        spouseName={spouse?.staffInfo.firstName ?? ''}
+                        spouseName={spouse?.staffInfo.preferredName ?? ''}
                       />
                     )
                   ) : additionalApproval || exceedsCap ? (
