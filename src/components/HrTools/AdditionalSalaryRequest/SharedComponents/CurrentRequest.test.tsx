@@ -60,11 +60,6 @@ const mockRequest: RequestType = {
     pendingAsrAmount: 0,
   },
   spouseCalculations: null,
-  user: {
-    id: 'user-1',
-    firstName: 'John',
-    lastName: 'Doe',
-  },
 };
 
 const mockContextValue = {

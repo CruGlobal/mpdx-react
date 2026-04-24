@@ -6,11 +6,6 @@ fragment AdditionalSalaryRequestFields on AdditionalSalaryRequest {
   emailAddress
   status
   feedback
-  user {
-    id
-    firstName
-    lastName
-  }
 }
 
 fragment AdditionalSalaryRequestDetailsFields on AdditionalSalaryRequest {
