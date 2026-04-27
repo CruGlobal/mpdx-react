@@ -47,6 +47,8 @@ const defaultContext: ContextType = {
   setIsDrawerOpen: jest.fn(),
   setIsComplete: jest.fn(),
   isMarried: false,
+  userHcmData: null,
+  spouseHcmData: null,
   preferredName: '',
   spousePreferredName: '',
   userEligibleForMHA: false,

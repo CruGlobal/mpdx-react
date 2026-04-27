@@ -48,8 +48,8 @@ export type ContextType = {
   setIsDrawerOpen: Dispatch<SetStateAction<boolean>>;
   setIsComplete: Dispatch<SetStateAction<boolean>>;
   isMarried: boolean;
-  userHcmData?: HcmData;
-  spouseHcmData?: HcmData | null;
+  userHcmData: HcmData | null;
+  spouseHcmData: HcmData | null;
   preferredName: string;
   spousePreferredName: string;
   userEligibleForMHA: boolean;
@@ -168,13 +168,13 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
 
   const { data: hcmData } = useHcmQuery();
 
-  const [userHcmData, setUserHcmData] = useState<HcmData>();
+  const [userHcmData, setUserHcmData] = useState<HcmData | null>(null);
   const [spouseHcmData, setSpouseHcmData] = useState<HcmData | null>(null);
   const [isMarried, setIsMarried] = useState(false);
 
   useEffect(() => {
     if (!hcmData?.hcm?.length) {
-      setUserHcmData(undefined);
+      setUserHcmData(null);
       setSpouseHcmData(null);
       setIsMarried(false);
       return;
