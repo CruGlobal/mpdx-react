@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import React, { ReactElement, useEffect, useState } from 'react';
 import { Box, Skeleton } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { enforceAdmin } from 'pages/api/utils/pagePropsHelpers';
+import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { ImpersonateUserAccordion } from 'src/components/Settings/Organization/ImpersonateUser/ImpersonateUserAccordion';
 import { ManageOrganizationAccessAccordion } from 'src/components/Settings/Organization/ManageOrganizationAccess/ManageOrganizationAccessAccordion';
 import { OrganizationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
@@ -111,6 +111,6 @@ const Organizations = (): ReactElement => {
   );
 };
 
-export const getServerSideProps = enforceAdmin;
+export const getServerSideProps = ensureSessionAndAccountList;
 
 export default Organizations;
