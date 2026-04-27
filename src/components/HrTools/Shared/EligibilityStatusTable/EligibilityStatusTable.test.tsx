@@ -166,4 +166,113 @@ describe('EligibilityStatusTable', () => {
       queryByRole('columnheader', { name: 'Jane' }),
     ).not.toBeInTheDocument();
   });
+
+  it('renders MHI rows and renames MHA rows when country is Italy', () => {
+    const { getByRole } = render(
+      <EligibilityStatusTable
+        userPreferredName="Marco"
+        userEligible={false}
+        userCountry="IT"
+        userMhiEligibility={true}
+      />,
+    );
+
+    expect(getByRole('cell', { name: 'MHA Eligibility' })).toBeInTheDocument();
+    expect(getByRole('cell', { name: 'MHA Reason' })).toBeInTheDocument();
+    expect(getByRole('cell', { name: 'MHI Eligibility' })).toBeInTheDocument();
+    expect(getByRole('cell', { name: 'MHI Reason' })).toBeInTheDocument();
+    expect(
+      getByRole('cell', {
+        name: 'Satisfies the IBS Exception for Italy staff',
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it('shows "N/A" in MHI cells for non-Italian spouse in mixed couple', () => {
+    const { getAllByRole } = render(
+      <EligibilityStatusTable
+        userPreferredName="Marco"
+        userEligible={false}
+        userCountry="IT"
+        userMhiEligibility={true}
+        spousePreferredName="Jane"
+        spouseEligible={true}
+        spouseCountry="US"
+      />,
+    );
+
+    expect(getAllByRole('cell', { name: 'Not applicable' })).toHaveLength(2);
+  });
+
+  it('shows "Does not satisfy" MHI reason when Italian user is MHI-ineligible', () => {
+    const { getByRole } = render(
+      <EligibilityStatusTable
+        userPreferredName="Marco"
+        userEligible={false}
+        userCountry="IT"
+        userMhiEligibility={false}
+      />,
+    );
+
+    expect(
+      getByRole('cell', {
+        name: 'Does not satisfy the IBS Exception for Italy staff',
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it('renders "MHA & MHI Eligibility Status" card title and paper-form note for Italian user', () => {
+    const { getByText, getByTestId } = render(
+      <EligibilityStatusTable
+        userPreferredName="Marco"
+        userEligible={false}
+        userCountry="IT"
+        userMhiEligibility={true}
+      />,
+    );
+
+    expect(getByText('MHA & MHI Eligibility Status')).toBeInTheDocument();
+    expect(getByTestId('mhi-paper-form-note')).toBeInTheDocument();
+  });
+
+  it('renders MHA-only card title and no paper-form note for non-Italian user', () => {
+    const { getByText, queryByTestId } = render(
+      <EligibilityStatusTable
+        userPreferredName="John"
+        userEligible={true}
+        userCountry="US"
+      />,
+    );
+
+    expect(getByText('MHA Eligibility Status')).toBeInTheDocument();
+    expect(queryByTestId('mhi-paper-form-note')).not.toBeInTheDocument();
+  });
+
+  it('renders MHI cells for both spouses when both are Italian', () => {
+    const { queryAllByRole } = render(
+      <EligibilityStatusTable
+        userPreferredName="Marco"
+        userEligible={false}
+        userCountry="IT"
+        userMhiEligibility={true}
+        spousePreferredName="Giulia"
+        spouseEligible={false}
+        spouseCountry="IT"
+        spouseMhiEligibility={false}
+      />,
+    );
+
+    // No "Not applicable" cells — every MHI cell has a real value because both are Italian.
+    expect(queryAllByRole('cell', { name: 'Not applicable' })).toHaveLength(0);
+    expect(
+      queryAllByRole('cell', {
+        name: 'Satisfies the IBS Exception for Italy staff',
+      }),
+    ).toHaveLength(1);
+    expect(
+      queryAllByRole('cell', {
+        name: 'Does not satisfy the IBS Exception for Italy staff',
+      }),
+    ).toHaveLength(1);
+  });
 });

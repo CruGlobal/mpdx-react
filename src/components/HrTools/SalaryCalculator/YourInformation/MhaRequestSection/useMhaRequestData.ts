@@ -1,6 +1,11 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import {
+  getEffectiveEligibility,
+  getHousingKind,
+  getMhiEligibility,
+} from 'src/components/Reports/Shared/HousingAllowance/housingAllowance';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { amount } from 'src/lib/yupHelpers';
@@ -11,11 +16,10 @@ export const useMhaRequestData = () => {
   const locale = useLocale();
   const { calculation, hcmUser, hcmSpouse, hasSpouse } = useSalaryCalculator();
 
-  // User MHA eligibility and request status
-  const userEligible = hcmUser?.mhaEit.mhaEligibility ?? false;
+  // Effective eligibility: MHI flag for Italian staff, MHA flag otherwise.
+  const userEligible = getEffectiveEligibility(hcmUser);
   const userHasApprovedMha = !!hcmUser?.mhaRequest.currentApprovedOverallAmount;
-  const spouseEligible =
-    hasSpouse && (hcmSpouse?.mhaEit.mhaEligibility ?? false);
+  const spouseEligible = hasSpouse && getEffectiveEligibility(hcmSpouse);
   const spouseHasApprovedMha =
     !!hcmSpouse?.mhaRequest.currentApprovedOverallAmount;
   // Determine which fields should be shown
@@ -25,9 +29,12 @@ export const useMhaRequestData = () => {
   const userPreferredName = hcmUser?.staffInfo.preferredName ?? '';
   const spousePreferredName = hcmSpouse?.staffInfo.preferredName ?? '';
 
-  // Users from Italy apply for an MHI, and are ineligible
   const userCountry = hcmUser?.staffInfo.country ?? null;
   const spouseCountry = hcmSpouse?.staffInfo.country ?? null;
+  const userKind = getHousingKind(userCountry);
+  const spouseKind = getHousingKind(spouseCountry);
+  const userMhiEligibility = getMhiEligibility(hcmUser);
+  const spouseMhiEligibility = getMhiEligibility(hcmSpouse);
 
   const anyIneligible = !userEligible || (hasSpouse && !spouseEligible);
 
@@ -36,6 +43,10 @@ export const useMhaRequestData = () => {
     (userEligible && !userHasApprovedMha) ||
     (spouseEligible && !spouseHasApprovedMha);
 
+  // For Italian (MHI) staff the backend stores the approved MHI amount in
+  // `mhaRequest.currentApprovedOverallAmount` — there is no separate
+  // `mhiRequest` field. This one value is the approved amount for whichever
+  // kind (MHA or MHI) applies to the person.
   const approvedAmount = userHasApprovedMha
     ? (hcmUser?.mhaRequest.currentApprovedOverallAmount ?? 0)
     : (hcmSpouse?.mhaRequest.currentApprovedOverallAmount ?? 0);
@@ -45,39 +56,53 @@ export const useMhaRequestData = () => {
     [approvedAmount, locale],
   );
 
+  // Validation messages follow the same per-kind labeling as the UI.
+  const sectionKind =
+    showSpouseFields && !showUserFields ? spouseKind : userKind;
+
   const schema = useMemo(() => {
     const combinedMaxMessage = t(
-      'Combined MHA amounts cannot exceed Board Approved MHA Amount of {{amount}}',
-      { amount: approvedAmountFormatted },
+      'Combined {{kind}} amounts cannot exceed Board Approved {{kind}} Amount of {{amount}}',
+      { kind: sectionKind, amount: approvedAmountFormatted },
     );
-    const singleMaxMessage = t(
-      'New Requested MHA cannot exceed Board Approved MHA Amount of {{amount}}',
-      { amount: approvedAmountFormatted },
+    const userSingleMaxMessage = t(
+      'New Requested {{kind}} cannot exceed Board Approved {{kind}} Amount of {{amount}}',
+      { kind: userKind, amount: approvedAmountFormatted },
+    );
+    const spouseSingleMaxMessage = t(
+      'New Requested {{kind}} cannot exceed Board Approved {{kind}} Amount of {{amount}}',
+      { kind: spouseKind, amount: approvedAmountFormatted },
     );
 
-    let mhaAmountField = amount(t('New Requested MHA'), t, {
-      max: approvedAmount,
-      maxMessage: singleMaxMessage,
-    });
-    let spouseMhaAmountField = amount(t('Spouse New Requested MHA'), t, {
-      max: approvedAmount,
-      maxMessage: singleMaxMessage,
-    });
+    const mhaAmountBase = amount(
+      t('New Requested {{kind}}', { kind: userKind }),
+      t,
+      { max: approvedAmount, maxMessage: userSingleMaxMessage },
+    );
+    const spouseMhaAmountBase = amount(
+      t('Spouse New Requested {{kind}}', { kind: spouseKind }),
+      t,
+      { max: approvedAmount, maxMessage: spouseSingleMaxMessage },
+    );
 
-    if (showUserFields && showSpouseFields) {
-      mhaAmountField = mhaAmountField.test(
-        'combined-max',
-        combinedMaxMessage,
-        (value) =>
-          (value ?? 0) + (calculation?.spouseMhaAmount ?? 0) <= approvedAmount,
-      );
-      spouseMhaAmountField = spouseMhaAmountField.test(
-        'combined-max',
-        combinedMaxMessage,
-        (value) =>
-          (value ?? 0) + (calculation?.mhaAmount ?? 0) <= approvedAmount,
-      );
-    }
+    const applyCombinedMax = showUserFields && showSpouseFields;
+    const mhaAmountField = applyCombinedMax
+      ? mhaAmountBase.test(
+          'combined-max',
+          combinedMaxMessage,
+          (value) =>
+            (value ?? 0) + (calculation?.spouseMhaAmount ?? 0) <=
+            approvedAmount,
+        )
+      : mhaAmountBase;
+    const spouseMhaAmountField = applyCombinedMax
+      ? spouseMhaAmountBase.test(
+          'combined-max',
+          combinedMaxMessage,
+          (value) =>
+            (value ?? 0) + (calculation?.mhaAmount ?? 0) <= approvedAmount,
+        )
+      : spouseMhaAmountBase;
 
     return yup.object({
       mhaAmount: mhaAmountField,
@@ -89,6 +114,9 @@ export const useMhaRequestData = () => {
     approvedAmountFormatted,
     showUserFields,
     showSpouseFields,
+    userKind,
+    spouseKind,
+    sectionKind,
     calculation?.mhaAmount,
     calculation?.spouseMhaAmount,
   ]);
@@ -156,6 +184,10 @@ export const useMhaRequestData = () => {
     spouseEligible,
     userCountry,
     spouseCountry,
+    userKind,
+    spouseKind,
+    userMhiEligibility,
+    spouseMhiEligibility,
     anyIneligible,
     hasSpouse,
   };

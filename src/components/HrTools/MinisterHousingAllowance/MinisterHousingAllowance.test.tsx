@@ -15,6 +15,7 @@ import {
   marriedUserEligibleSpouseIneligible,
   marriedUserIneligibleSpouseEligible,
   singleIneligible,
+  singleItalianMhiEligible,
   singleMhaNoException,
   singleNoMhaNoException,
 } from '../Shared/HcmData/mockData';
@@ -142,6 +143,31 @@ describe('MinisterHousingAllowanceReport', () => {
     expect(await findByText('John Doe')).toBeInTheDocument();
 
     expect(getByText('Current Board Approved MHA')).toBeInTheDocument();
+  });
+
+  // Italian staff are intentionally blocked from the online MHA flow: they
+  // apply for MHI via a paper form. The report should show MHA: Ineligible /
+  // MHI: Eligible and hide the "Request New MHA" button.
+  it('renders Italian MHI-eligible user as MHA-ineligible with paper-form note', async () => {
+    const { findByText, findByTestId, queryByRole } = render(
+      <TestComponent hcmMock={singleItalianMhiEligible} mhaRequestsMock={[]} />,
+    );
+
+    expect(
+      await findByText('MHA & MHI Eligibility Status'),
+    ).toBeInTheDocument();
+    expect(await findByTestId('mhi-paper-form-note')).toBeInTheDocument();
+    expect(
+      await findByText('Must complete an MHI form instead'),
+    ).toBeInTheDocument();
+    expect(
+      await findByText('Satisfies the IBS Exception for Italy staff'),
+    ).toBeInTheDocument();
+
+    // Italian users cannot create an online MHA request from this page.
+    expect(
+      queryByRole('button', { name: 'Request New MHA' }),
+    ).not.toBeInTheDocument();
   });
 
   it('renders fully ineligible single user with requests and hides request details', async () => {

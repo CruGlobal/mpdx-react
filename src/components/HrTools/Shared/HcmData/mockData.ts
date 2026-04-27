@@ -40,6 +40,9 @@ const noMhaAndNoException: HcmQuery['hcm'][number] = {
   mhaEit: {
     mhaEligibility: true,
   },
+  mhiEit: {
+    mhiEligibility: false,
+  },
   asrEit: {
     asrEligibility: true,
   },
@@ -75,8 +78,18 @@ const mhaAndNoException: HcmQuery['hcm'][number] = {
   },
 };
 
+// Italian staff apply for MHI (paper form), so they are intentionally MHA-
+// ineligible on the online flow and expect the MHI row to drive the display.
+const italianMhiEligible: HcmQuery['hcm'][number] = {
+  ...noMhaAndNoException,
+  staffInfo: { ...johnDoe, country: 'IT' },
+  mhaEit: { mhaEligibility: false },
+  mhiEit: { mhiEligibility: true },
+};
+
 export const singleNoMhaNoException: HcmQuery['hcm'] = [noMhaAndNoException];
 export const singleMhaNoException: HcmQuery['hcm'] = [mhaAndNoException];
+export const singleItalianMhiEligible: HcmQuery['hcm'] = [italianMhiEligible];
 export const marriedMhaAndNoException: HcmQuery['hcm'] = [
   mhaAndNoException,
   {

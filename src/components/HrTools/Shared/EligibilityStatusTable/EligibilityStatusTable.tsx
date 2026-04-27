@@ -10,17 +10,39 @@ import {
   TableHead,
   TableRow,
   Typography,
+  styled,
   useTheme,
 } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
+import { getHousingKind } from 'src/components/Reports/Shared/HousingAllowance/housingAllowance';
+
+const StyledTable = styled(Table)(({ theme }) => ({
+  tableLayout: 'fixed',
+  '.MuiTableCell-head': {
+    fontWeight: 'bold',
+    color: theme.palette.primary.main,
+  },
+  '.MuiTableBody-root .MuiTableCell-root:first-of-type': {
+    fontWeight: 'bold',
+  },
+}));
+
+const MhiSectionRow = styled(TableRow)(({ theme }) => ({
+  td: {
+    borderTop: '2px solid',
+    borderTopColor: theme.palette.divider,
+  },
+}));
 
 interface EligibilityStatusTableProps {
   userPreferredName: string;
   userEligible: boolean;
   userCountry?: string | null;
+  userMhiEligibility?: boolean;
   spousePreferredName?: string;
   spouseEligible?: boolean;
   spouseCountry?: string | null;
+  spouseMhiEligibility?: boolean;
   compact?: boolean;
 }
 
@@ -32,19 +54,34 @@ const getIneligibilityReason = (
   if (eligible) {
     return t('Completed the required IBS courses');
   }
-  if (country === 'IT') {
+  if (getHousingKind(country) === 'MHI') {
     return t('Must complete an MHI form instead');
   }
   return t('Has not completed the required IBS courses');
+};
+
+const getMhiReason = (
+  t: (key: string) => string,
+  eligible: boolean,
+  country: string | null,
+): string => {
+  if (getHousingKind(country) !== 'MHI') {
+    return t('Not applicable');
+  }
+  return eligible
+    ? t('Satisfies the IBS Exception for Italy staff')
+    : t('Does not satisfy the IBS Exception for Italy staff');
 };
 
 export const EligibilityStatusTable: React.FC<EligibilityStatusTableProps> = ({
   userPreferredName,
   userEligible,
   userCountry,
+  userMhiEligibility,
   spousePreferredName,
   spouseEligible,
   spouseCountry,
+  spouseMhiEligibility,
   compact = false,
 }) => {
   const { t } = useTranslation();
@@ -54,10 +91,13 @@ export const EligibilityStatusTable: React.FC<EligibilityStatusTableProps> = ({
   const anyIneligible =
     !userEligible || (hasSpouse && spouseEligible === false);
   const anyEligible = userEligible || (hasSpouse && spouseEligible === true);
+  const showMhiRows =
+    getHousingKind(userCountry ?? null) === 'MHI' ||
+    getHousingKind(spouseCountry ?? null) === 'MHI';
 
   const content = (
     <>
-      <Table sx={{ tableLayout: 'fixed' }}>
+      <StyledTable>
         <TableHead>
           <TableRow>
             <TableCell>{t('Category')}</TableCell>
@@ -67,7 +107,9 @@ export const EligibilityStatusTable: React.FC<EligibilityStatusTableProps> = ({
         </TableHead>
         <TableBody>
           <TableRow>
-            <TableCell>{t('Eligibility')}</TableCell>
+            <TableCell>
+              {showMhiRows ? t('MHA Eligibility') : t('Eligibility')}
+            </TableCell>
             <TableCell>
               {userEligible ? t('Eligible') : t('Ineligible')}
             </TableCell>
@@ -78,7 +120,7 @@ export const EligibilityStatusTable: React.FC<EligibilityStatusTableProps> = ({
             )}
           </TableRow>
           <TableRow>
-            <TableCell>{t('Reason')}</TableCell>
+            <TableCell>{showMhiRows ? t('MHA Reason') : t('Reason')}</TableCell>
             <TableCell>
               {getIneligibilityReason(t, userEligible, userCountry ?? null)}
             </TableCell>
@@ -92,8 +134,50 @@ export const EligibilityStatusTable: React.FC<EligibilityStatusTableProps> = ({
               </TableCell>
             )}
           </TableRow>
+          {showMhiRows && (
+            <>
+              <MhiSectionRow>
+                <TableCell>{t('MHI Eligibility')}</TableCell>
+                <TableCell>
+                  {getHousingKind(userCountry ?? null) === 'MHI'
+                    ? userMhiEligibility
+                      ? t('Eligible')
+                      : t('Ineligible')
+                    : t('Not applicable')}
+                </TableCell>
+                {hasSpouse && (
+                  <TableCell>
+                    {getHousingKind(spouseCountry ?? null) === 'MHI'
+                      ? spouseMhiEligibility
+                        ? t('Eligible')
+                        : t('Ineligible')
+                      : t('Not applicable')}
+                  </TableCell>
+                )}
+              </MhiSectionRow>
+              <TableRow>
+                <TableCell>{t('MHI Reason')}</TableCell>
+                <TableCell>
+                  {getMhiReason(
+                    t,
+                    userMhiEligibility ?? false,
+                    userCountry ?? null,
+                  )}
+                </TableCell>
+                {hasSpouse && (
+                  <TableCell>
+                    {getMhiReason(
+                      t,
+                      spouseMhiEligibility ?? false,
+                      spouseCountry ?? null,
+                    )}
+                  </TableCell>
+                )}
+              </TableRow>
+            </>
+          )}
         </TableBody>
-      </Table>
+      </StyledTable>
       {anyIneligible && (
         <Box
           sx={{ mt: compact ? 0 : theme.spacing(2) }}
@@ -116,6 +200,22 @@ export const EligibilityStatusTable: React.FC<EligibilityStatusTableProps> = ({
           </Typography>
         </Box>
       )}
+      {showMhiRows && (
+        <Box
+          sx={{ mt: compact ? theme.spacing(1) : theme.spacing(2) }}
+          data-testid="mhi-paper-form-note"
+        >
+          <Typography
+            variant="body2"
+            fontStyle="italic"
+            sx={{ lineHeight: 1.5 }}
+          >
+            <Trans t={t}>
+              Note: Italy staff must complete a paper MHI form.
+            </Trans>
+          </Typography>
+        </Box>
+      )}
     </>
   );
 
@@ -125,7 +225,13 @@ export const EligibilityStatusTable: React.FC<EligibilityStatusTableProps> = ({
 
   return (
     <Card data-testid="eligibility-status-table">
-      <CardHeader title={t('MHA Eligibility Status')} />
+      <CardHeader
+        title={
+          showMhiRows
+            ? t('MHA & MHI Eligibility Status')
+            : t('MHA Eligibility Status')
+        }
+      />
       <CardContent>{content}</CardContent>
     </Card>
   );

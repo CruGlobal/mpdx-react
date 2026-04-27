@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { EligibilityStatusTable } from 'src/components/HrTools/Shared/EligibilityStatusTable/EligibilityStatusTable';
 import Loading from 'src/components/Loading/Loading';
 import { Notification } from 'src/components/Notification/Notification';
+import { getMhiEligibility } from 'src/components/Reports/Shared/HousingAllowance/housingAllowance';
 import { MhaStatusEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
@@ -50,10 +51,10 @@ export const MinisterHousingAllowanceReport = () => {
     spouseHcmData,
   } = useMinisterHousingAllowance();
 
-  const personNumber = userHcmData?.staffInfo?.personNumber ?? '';
-  const spousePersonNumber = spouseHcmData?.staffInfo?.personNumber ?? '';
-  const lastName = userHcmData?.staffInfo?.lastName ?? '';
-  const spouseLastName = spouseHcmData?.staffInfo?.lastName ?? '';
+  const personNumber = userHcmData?.staffInfo.personNumber ?? '';
+  const spousePersonNumber = spouseHcmData?.staffInfo.personNumber ?? '';
+  const lastName = userHcmData?.staffInfo.lastName ?? '';
+  const spouseLastName = spouseHcmData?.staffInfo.lastName ?? '';
 
   const names = isMarried
     ? `${preferredName} ${lastName} and ${spousePreferredName} ${spouseLastName}`
@@ -164,7 +165,7 @@ export const MinisterHousingAllowanceReport = () => {
                         userPreferredName={preferredName}
                         userEligible={userEligibleForMHA}
                         userCountry={
-                          userHcmData?.staffInfo?.country ?? undefined
+                          userHcmData?.staffInfo.country ?? undefined
                         }
                         spousePreferredName={
                           isMarried ? spousePreferredName : undefined
@@ -174,7 +175,13 @@ export const MinisterHousingAllowanceReport = () => {
                         }
                         spouseCountry={
                           isMarried
-                            ? (spouseHcmData?.staffInfo?.country ?? undefined)
+                            ? (spouseHcmData?.staffInfo.country ?? undefined)
+                            : undefined
+                        }
+                        userMhiEligibility={getMhiEligibility(userHcmData)}
+                        spouseMhiEligibility={
+                          isMarried
+                            ? getMhiEligibility(spouseHcmData)
                             : undefined
                         }
                       />

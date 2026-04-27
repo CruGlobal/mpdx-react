@@ -42,6 +42,9 @@ query Hcm($effectiveDate: ISO8601Date) {
     mhaEit {
       mhaEligibility
     }
+    mhiEit {
+      mhiEligibility
+    }
     asrEit {
       asrEligibility
       ineligibilityReason
