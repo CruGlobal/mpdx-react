@@ -7,11 +7,6 @@ export const mockMHARequest: MHARequest = {
   updatedAt: '2019-09-15T12:00:00.000Z',
   status: MhaStatusEnum.Pending,
   feedback: null,
-  user: {
-    id: 'user-1',
-    firstName: 'John',
-    lastName: 'Doe',
-  },
   requestAttributes: {
     approvedOverallAmount: 15000,
     submittedAt: '2019-10-01T15:30:45.123Z',

@@ -3,7 +3,6 @@ import { HcmQuery } from './Hcm.generated';
 const johnDoe: HcmQuery['hcm'][number]['staffInfo'] = {
   id: `ID000000`,
   personNumber: `000123456`,
-  firstName: `John`,
   lastName: `Doe`,
   preferredName: `John`,
   age: 35,
@@ -23,7 +22,6 @@ const janeDoe: HcmQuery['hcm'][number]['staffInfo'] = {
   ...johnDoe,
   id: `ID111111`,
   personNumber: `000789123`,
-  firstName: `Jane`,
   preferredName: `Jane`,
   age: 35,
   emailAddress: 'jane.doe@cru.org',

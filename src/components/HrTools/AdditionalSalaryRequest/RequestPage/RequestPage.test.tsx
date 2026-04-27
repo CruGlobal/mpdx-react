@@ -453,7 +453,7 @@ describe('RequestPage', () => {
       spouse: {
         currentSalary: { grossSalaryAmount: 40000 },
         staffInfo: {
-          firstName: 'Jane',
+          preferredName: 'Jane',
           lastName: 'Doe',
         },
       },
@@ -511,7 +511,7 @@ describe('RequestPage', () => {
       spouse: {
         currentSalary: { grossSalaryAmount: 40000 },
         staffInfo: {
-          firstName: 'Jane',
+          preferredName: 'Jane',
           lastName: 'Doe',
         },
       },

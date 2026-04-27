@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import ImportExportIcon from '@mui/icons-material/ImportExport';
 import { Box, Link, Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
@@ -48,7 +49,9 @@ export const SpouseComponent: React.FC = () => {
           sx={{ transform: 'rotate(90deg)' }}
         />
 
-        <Link href={spouseLinkHref}>{spouseLinkText}</Link>
+        <Link component={NextLink} href={spouseLinkHref} shallow>
+          {spouseLinkText}
+        </Link>
       </Box>
 
       <Typography variant="caption" color="text.secondary">

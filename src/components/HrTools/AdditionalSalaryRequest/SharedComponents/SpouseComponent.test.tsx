@@ -21,7 +21,7 @@ const requestDataDefault = {
 
 const spouseDefault = {
   staffInfo: {
-    firstName: 'Jane',
+    preferredName: 'Jane',
     primaryPhoneNumber: '555-1234',
     emailAddress: 'jane@example.com',
   },

@@ -3,7 +3,6 @@ query Hcm($effectiveDate: ISO8601Date) {
     staffInfo {
       id
       preferredName
-      firstName
       lastName
       personNumber
       emailAddress

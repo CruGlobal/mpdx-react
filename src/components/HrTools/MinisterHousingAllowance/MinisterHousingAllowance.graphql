@@ -33,11 +33,6 @@ query MinistryHousingAllowanceRequests {
         ...RequestAttributes
       }
       status
-      user {
-        id
-        firstName
-        lastName
-      }
       feedback
     }
   }
@@ -52,11 +47,6 @@ query MinistryHousingAllowanceRequest($ministryHousingAllowanceRequestId: ID!) {
       ...RequestAttributes
     }
     status
-    user {
-      id
-      firstName
-      lastName
-    }
     feedback
   }
 }
@@ -73,11 +63,6 @@ mutation CreateHousingAllowanceRequest(
       personNumber
       requestAttributes {
         ...RequestAttributes
-      }
-      user {
-        id
-        firstName
-        lastName
       }
     }
   }

@@ -1,3 +1,4 @@
+import NextLink from 'next/link';
 import { SwapHorizSharp } from '@mui/icons-material';
 import { Box, Button, Link, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
@@ -54,7 +55,9 @@ const InProgressMainContent: React.FC = () => {
               color: 'rgba(0, 0, 0, 0.54)',
             }}
           />
-          <Link href={spouseLinkHref}>{spouseLinkText}</Link>
+          <Link component={NextLink} href={spouseLinkHref} shallow>
+            {spouseLinkText}
+          </Link>
         </Box>
       )}
     </>
