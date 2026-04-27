@@ -127,4 +127,59 @@ describe('MhaRequestSection', () => {
       expect(queryByTestId('no-mha-submit-message')).not.toBeInTheDocument();
     });
   });
+
+  describe('MHI labeling for Italian users', () => {
+    const italianUser = {
+      staffInfo: { country: 'IT' },
+      mhaEit: { mhaEligibility: false },
+      mhiEit: { mhiEligibility: true },
+    };
+
+    it('renders MHI field labels when user is from Italy', async () => {
+      const { findByRole } = render(
+        <TestComponent hcmUser={italianUser} hasSpouse={false} />,
+      );
+
+      expect(
+        await findByRole('textbox', { name: 'Current MHI' }),
+      ).toBeInTheDocument();
+      expect(
+        await findByRole('textbox', { name: 'New Requested MHI' }),
+      ).toBeInTheDocument();
+    });
+
+    it('renders MHI-labeled submit message when Italian user has no approved amount', async () => {
+      const { findByTestId } = render(
+        <TestComponent
+          hcmUser={{
+            ...italianUser,
+            mhaRequest: { currentApprovedOverallAmount: 0 },
+          }}
+          hasSpouse={false}
+        />,
+      );
+
+      const message = await findByTestId('no-mha-submit-message');
+      expect(message).toHaveTextContent(/have an MHI for the effective date/);
+      expect(message).toHaveTextContent(
+        /To apply for MHI, contact Personnel Records/,
+      );
+      expect(message).toHaveTextContent('MHA@cru.org');
+    });
+
+    // Covers the `showSpouseFields && !showUserFields ? spouseKind : userKind`
+    // fallback at MhaRequestSection.tsx:75-76 — if only the Italian spouse's
+    // field renders, the section copy should follow the spouse's (MHI) kind.
+    it('uses MHI wording when only the Italian spouse field renders (mixed couple)', async () => {
+      const { findByText, queryByText } = render(
+        <TestComponent
+          hcmUser={{ mhaEit: { mhaEligibility: false } }}
+          hcmSpouse={italianUser}
+        />,
+      );
+
+      expect(await findByText('MHI Request')).toBeInTheDocument();
+      expect(queryByText('MHA Request')).not.toBeInTheDocument();
+    });
+  });
 });

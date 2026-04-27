@@ -223,4 +223,79 @@ describe('useMhaRequestData', () => {
     expect(result.current.showUserFields).toBe(false);
     expect(result.current.showSpouseFields).toBe(false);
   });
+
+  it('treats Italian user as MHI-eligible via effective eligibility', async () => {
+    const { result } = renderHook(() => useMhaRequestData(), {
+      wrapper: createWrapper({
+        hcmUser: {
+          staffInfo: { country: 'IT' },
+          mhaEit: { mhaEligibility: false },
+          mhiEit: { mhiEligibility: true },
+        },
+        hasSpouse: false,
+      }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.userKind).toBe('MHI');
+    });
+
+    expect(result.current.userMhiEligibility).toBe(true);
+    expect(result.current.userEligible).toBe(true);
+  });
+
+  it('uses MHI wording in single-max validation for Italian user', async () => {
+    const { result } = renderHook(() => useMhaRequestData(), {
+      wrapper: createWrapper({
+        hcmUser: {
+          staffInfo: { country: 'IT' },
+          mhaEit: { mhaEligibility: false },
+          mhiEit: { mhiEligibility: true },
+        },
+        hasSpouse: false,
+        salaryRequestMock: { mhaAmount: 25000 },
+      }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.approvedAmount).toBe('$20,000');
+    });
+
+    await expect(
+      result.current.schema.validate({
+        mhaAmount: 25000,
+        spouseMhaAmount: 0,
+      }),
+    ).rejects.toThrow(
+      'New Requested MHI cannot exceed Board Approved MHI Amount of $20,000',
+    );
+  });
+
+  it('uses the correct kind in combined-max validation for a mixed US/IT couple', async () => {
+    const { result } = renderHook(() => useMhaRequestData(), {
+      wrapper: createWrapper({
+        hcmUser: {
+          staffInfo: { country: 'US' },
+          mhaEit: { mhaEligibility: true },
+        },
+        hcmSpouse: {
+          staffInfo: { country: 'IT' },
+          mhaEit: { mhaEligibility: false },
+          mhiEit: { mhiEligibility: true },
+        },
+        salaryRequestMock: { mhaAmount: 12000, spouseMhaAmount: 12000 },
+      }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.approvedAmount).toBe('$20,000');
+    });
+
+    await expect(
+      result.current.schema.validate({
+        mhaAmount: 12000,
+        spouseMhaAmount: 12000,
+      }),
+    ).rejects.toThrow(/Combined MHA amounts cannot exceed/);
+  });
 });
