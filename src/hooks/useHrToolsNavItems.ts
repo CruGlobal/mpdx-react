@@ -40,7 +40,7 @@ export function useHrToolsNavItems(): NavItems[] {
     },
     {
       id: 'pdsGoalCalculator',
-      title: t('PDS Goal Calculator'),
+      title: t('Paid With Designation Goal Calculator'),
     },
     {
       id: 'partnerReminders',
