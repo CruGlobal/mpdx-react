@@ -53,8 +53,6 @@ describe('SummaryReportStep', () => {
       </PdsGoalCalculatorTestWrapper>,
     );
 
-    expect(
-      await findByRole('heading', { name: '100%' }),
-    ).toBeInTheDocument();
+    expect(await findByRole('heading', { name: '100%' })).toBeInTheDocument();
   });
 });
