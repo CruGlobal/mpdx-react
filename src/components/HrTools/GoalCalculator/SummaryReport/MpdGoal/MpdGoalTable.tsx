@@ -284,7 +284,8 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({
       {
         line: '10',
         category: t('Support Goal Percentage Progress'),
-        value: (goalTotals) => supportRaised / goalTotals.overallTotal,
+        value: (goalTotals) =>
+          Math.min(supportRaised / goalTotals.overallTotal, 1),
         percentage: true,
       },
     ];
@@ -350,7 +351,10 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({
   return (
     <>
       <MpdGoalHeaderCards
-        supportRaisedPercentage={supportRaised / goalTotals.overallTotal}
+        supportRaisedPercentage={Math.min(
+          supportRaised / goalTotals.overallTotal,
+          1,
+        )}
       />
       <StyledDataGrid
         label={t('MPD Goal')}

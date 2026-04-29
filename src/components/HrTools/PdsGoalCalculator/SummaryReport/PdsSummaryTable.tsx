@@ -68,7 +68,7 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
       if (row.number) {
         return numberFormat(value, locale);
       }
-      return currencyFormat(value, 'USD', locale, { fractionDigits: 0 });
+      return currencyFormat(value, 'USD', locale);
     },
     [locale],
   );
@@ -251,7 +251,8 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
       {
         line: '9',
         category: t('Support Goal Percentage Progress'),
-        amount: overallTotal > 0 ? supportRaised / overallTotal : 0,
+        amount:
+          overallTotal > 0 ? Math.min(supportRaised / overallTotal, 1) : 0,
         percentage: true,
       },
     ];
@@ -296,7 +297,7 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
   );
 
   const supportRaisedPercentage =
-    overallTotal > 0 ? supportRaised / overallTotal : 0;
+    overallTotal > 0 ? Math.min(supportRaised / overallTotal, 1) : 0;
 
   return (
     <>
