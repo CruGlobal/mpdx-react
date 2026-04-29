@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { MpdGoalBenefitsConstantSizeEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useTrackMutation } from 'src/hooks/useTrackMutation';
-import { getQueryParam } from 'src/utils/queryParam';
+import { getQueryParam } from 'src/lib/queryParam';
 import { useGoalCalculatorConstants } from '../../../../hooks/useGoalCalculatorConstants';
 import {
   GoalCalculatorReportEnum,

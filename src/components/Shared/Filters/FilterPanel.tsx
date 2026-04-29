@@ -34,7 +34,7 @@ import {
   ResultEnum,
   TaskFilterSetInput,
 } from 'src/graphql/types.generated';
-import { convertStatus } from 'src/utils/functions/convertContactStatus';
+import { convertStatus } from 'src/lib/functions/convertContactStatus';
 import { DeleteFilterModal } from './DeleteFilterModal/DeleteFilterModal';
 import { FilterList } from './FilterList';
 import { FilterListItem } from './FilterListItem';

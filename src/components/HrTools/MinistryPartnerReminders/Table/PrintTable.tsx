@@ -10,8 +10,8 @@ import {
 import { useTranslation } from 'react-i18next';
 import { StyledTableRow } from 'src/components/Reports/styledComponents';
 import { useLocale } from 'src/hooks/useLocale';
+import { getLocalizedReminderStatus } from 'src/lib/functions/getLocalizedReminderStatus';
 import { dateFormat } from 'src/lib/intlFormat';
-import { getLocalizedReminderStatus } from 'src/utils/functions/getLocalizedReminderStatus';
 import { ReminderData } from '../mockData';
 
 interface PrintTableProps {

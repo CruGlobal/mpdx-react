@@ -13,8 +13,8 @@ import { useTranslation } from 'react-i18next';
 import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { StatusEnum } from 'src/graphql/types.generated';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
+import { sourceToStr } from 'src/lib/sourceHelper';
 import theme from 'src/theme';
-import { sourceToStr } from 'src/utils/sourceHelper';
 import {
   ContactsContext,
   ContactsType,

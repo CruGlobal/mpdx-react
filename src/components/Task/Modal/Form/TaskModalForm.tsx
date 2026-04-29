@@ -44,14 +44,14 @@ import {
 import { ActivityData, usePhaseData } from 'src/hooks/usePhaseData';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
-import i18n from 'src/lib/i18n';
-import { nullableDateTime } from 'src/lib/yupHelpers';
 import {
   getLocalizedNotificationTimeUnit,
   getLocalizedNotificationType,
-} from 'src/utils/functions/getLocalizedNotificationStrings';
-import { getValueFromIdValue } from 'src/utils/phases/getValueFromIdValue';
-import { inPersonActivityTypes } from 'src/utils/phases/taskActivityTypes';
+} from 'src/lib/functions/getLocalizedNotificationStrings';
+import i18n from 'src/lib/i18n';
+import { getValueFromIdValue } from 'src/lib/phases/getValueFromIdValue';
+import { inPersonActivityTypes } from 'src/lib/phases/taskActivityTypes';
+import { nullableDateTime } from 'src/lib/yupHelpers';
 import theme from '../../../../theme';
 import { DateTimeFieldPair } from '../../../common/DateTimePickers/DateTimeFieldPair';
 import { TaskModalEnum } from '../TaskModal';

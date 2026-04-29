@@ -153,7 +153,7 @@ This project uses the Next.js Pages Router, which you can learn more about [here
 
 `src/hooks` contains React custom hooks.
 
-`src/lib` and `src/utils` contain helper functions used throughout the application.
+`src/lib` contains helper functions used throughout the application.
 
 `public/` contains static files like images and translation data.
 

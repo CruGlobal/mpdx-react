@@ -24,7 +24,7 @@ import { SendNewsletterEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { dateFormatShort } from 'src/lib/intlFormat';
-import { sourceToStr } from 'src/utils/sourceHelper';
+import { sourceToStr } from 'src/lib/sourceHelper';
 import theme from '../../../theme';
 import { ContactUpdateData } from './FixSendNewsletter';
 import { InvalidNewsletterContactFragment } from './InvalidNewsletter.generated';

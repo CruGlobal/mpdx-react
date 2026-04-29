@@ -2,7 +2,7 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { FinancialAccountProvider } from 'src/components/Reports/FinancialAccountsReport/Context/FinancialAccountsContext';
 import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
-import { getQueryParam } from 'src/utils/queryParam';
+import { getQueryParam } from 'src/lib/queryParam';
 
 interface Props {
   children?: React.ReactNode;

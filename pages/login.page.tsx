@@ -11,7 +11,7 @@ import Welcome from 'src/components/Welcome';
 import { extractCookie } from 'src/lib/extractCookie';
 import { getAppName } from 'src/lib/getAppName';
 import i18n from 'src/lib/i18n';
-import { getQueryParam } from 'src/utils/queryParam';
+import { getQueryParam } from 'src/lib/queryParam';
 
 const SignUpBox = styled('div')(({ theme }) => ({
   marginBlock: theme.spacing(2),

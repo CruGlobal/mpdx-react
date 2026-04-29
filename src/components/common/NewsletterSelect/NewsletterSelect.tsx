@@ -2,7 +2,7 @@ import React from 'react';
 import { MenuItem, Select, SelectProps } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { SendNewsletterEnum } from 'src/graphql/types.generated';
-import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
+import { getLocalizedSendNewsletter } from 'src/lib/functions/getLocalizedSendNewsletter';
 
 export const NewsletterSelect: React.FC<SelectProps> = ({
   children,

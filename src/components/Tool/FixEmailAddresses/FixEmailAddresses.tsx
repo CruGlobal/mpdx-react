@@ -33,7 +33,7 @@ import {
   manualSourceValue,
   sourceToStr,
   sourcesMatch,
-} from 'src/utils/sourceHelper';
+} from 'src/lib/sourceHelper';
 import theme from '../../../theme';
 import { ConfirmButtonIcon } from '../ConfirmButtonIcon';
 import NoData from '../NoData';

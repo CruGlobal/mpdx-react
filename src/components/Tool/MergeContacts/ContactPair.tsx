@@ -29,7 +29,7 @@ import { useContactPanel } from 'src/components/common/ContactPanelProvider/Cont
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { dateFormatShort } from 'src/lib/intlFormat';
-import { sourceToStr } from 'src/utils/sourceHelper';
+import { sourceToStr } from 'src/lib/sourceHelper';
 import theme from '../../../theme';
 import { PersonInfoFragment } from '../MergePeople/GetPersonDuplicates.generated';
 import { RecordInfoFragment } from './GetContactDuplicates.generated';

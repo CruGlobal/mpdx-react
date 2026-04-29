@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useGetFourteenMonthReportQuery } from 'src/components/Reports/FourteenMonthReports/GetFourteenMonthReport.generated';
-import { convertStatus } from 'src/utils/functions/convertContactStatus';
+import { convertStatus } from 'src/lib/functions/convertContactStatus';
 import { FourteenMonthReportCurrencyType } from './FourteenMonthReport';
 
 interface CurrencyGroup {

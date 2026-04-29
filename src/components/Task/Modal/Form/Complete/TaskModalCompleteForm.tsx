@@ -29,12 +29,12 @@ import {
 import { usePhaseData } from 'src/hooks/usePhaseData';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { dispatch } from 'src/lib/analytics';
-import { nullableDateTime } from 'src/lib/yupHelpers';
-import { getValueFromIdValue } from 'src/utils/phases/getValueFromIdValue';
+import { getValueFromIdValue } from 'src/lib/phases/getValueFromIdValue';
 import {
   getPhaseByActivityType,
   inPersonActivityTypes,
-} from 'src/utils/phases/taskActivityTypes';
+} from 'src/lib/phases/taskActivityTypes';
+import { nullableDateTime } from 'src/lib/yupHelpers';
 import useTaskModal from '../../../../../hooks/useTaskModal';
 import { DateTimeFieldPair } from '../../../../common/DateTimePickers/DateTimeFieldPair';
 import { useCreateTaskCommentMutation } from '../../Comments/Form/CreateTaskComment.generated';

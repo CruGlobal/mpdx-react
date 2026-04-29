@@ -3,7 +3,7 @@ import { mdiNewspaperVariantOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { getLocalizedSendNewsletter } from 'src/utils/functions/getLocalizedSendNewsletter';
+import { getLocalizedSendNewsletter } from 'src/lib/functions/getLocalizedSendNewsletter';
 import theme from '../../../../../theme';
 import { ContactHeaderNewsletterFragment } from './ContactHeaderNewsletter.generated';
 import { ContactHeaderSection } from './ContactHeaderSection';
