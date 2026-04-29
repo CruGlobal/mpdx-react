@@ -1,13 +1,10 @@
 import React, { useMemo } from 'react';
 import { Divider, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import { useLocale } from 'src/hooks/useLocale';
 import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
 import { usePdsGoalCalculator } from '../Shared/PdsGoalCalculatorContext';
-import { OtherExpensesConstants } from '../calculations/OtherExpenses';
-import { calculateReimbursableTotals } from '../calculations/reimbursableExpenses';
-import { calculateSalaryTotals } from '../calculations/salaryCalculation';
+import { usePdsSummaryData } from '../calculations/usePdsSummaryData';
 import {
   buildOtherBreakdownColumns,
   buildOtherBreakdownRows,
@@ -19,67 +16,20 @@ export const OtherSection: React.FC = () => {
   const locale = useLocale();
   const localeText = useDataGridLocaleText();
   const { calculation, hcmUser } = usePdsGoalCalculator();
-  const { goalMiscConstants, goalGeographicConstantMap } =
-    useGoalCalculatorConstants();
-
-  const additionalRates = goalMiscConstants.ADDITIONAL_RATES;
-  const employerFicaRate = additionalRates?.EMPLOYER_FICA_RATE?.fee;
-  const workCompPercentage = additionalRates?.PART_TIME_WORK_COMPENSATION?.fee;
-  const attritionRate = goalMiscConstants.RATES?.ATTRITION_RATE?.fee;
-  const creditCardFeeRate = additionalRates?.CREDIT_CARD_FEE_RATE?.fee;
-  const adminRate = goalMiscConstants.RATES?.ADMIN_RATE?.fee;
+  const summaryData = usePdsSummaryData(calculation, hcmUser);
 
   const rows = useMemo(() => {
-    if (
-      !calculation ||
-      employerFicaRate === undefined ||
-      workCompPercentage === undefined ||
-      attritionRate === undefined ||
-      creditCardFeeRate === undefined ||
-      adminRate === undefined
-    ) {
+    if (!calculation || !summaryData) {
       return [];
     }
 
-    const geographicMultiplier =
-      goalGeographicConstantMap.get(calculation.geographicLocation ?? '') ?? 0;
-
-    const salaryTotals = calculateSalaryTotals(calculation, {
-      geographicMultiplier,
-      employerFicaRate,
-    });
-    const reimbursableTotals = calculateReimbursableTotals(calculation);
-
-    const taxDeferredPct =
-      (hcmUser?.fourOThreeB?.currentTaxDeferredContributionPercentage ?? 0) /
-      100;
-    const rothPct =
-      (hcmUser?.fourOThreeB?.currentRothContributionPercentage ?? 0) / 100;
-
-    const constants: OtherExpensesConstants = {
-      reimbursableTotal: reimbursableTotals.total,
-      salarySubtotal: salaryTotals.subtotal,
-      fourOThreeBPercentage: taxDeferredPct + rothPct,
-      grossMonthlyPay: salaryTotals.grossMonthlyPay,
-      workCompPercentage,
-      attritionRate,
-      creditCardFeeRate,
-      adminRate,
-    };
-
-    return buildOtherBreakdownRows(calculation, constants, locale, t);
-  }, [
-    calculation,
-    hcmUser,
-    employerFicaRate,
-    workCompPercentage,
-    attritionRate,
-    creditCardFeeRate,
-    adminRate,
-    goalGeographicConstantMap,
-    locale,
-    t,
-  ]);
+    return buildOtherBreakdownRows(
+      calculation,
+      summaryData.otherConstants,
+      locale,
+      t,
+    );
+  }, [calculation, summaryData, locale, t]);
 
   const columns = useMemo(
     () => buildOtherBreakdownColumns(locale, t),

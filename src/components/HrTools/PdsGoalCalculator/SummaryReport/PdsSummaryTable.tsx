@@ -6,7 +6,6 @@ import {
   DesignationSupportSalaryType,
   DesignationSupportStatus,
 } from 'src/graphql/types.generated';
-import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import { useLocale } from 'src/hooks/useLocale';
 import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
 import {
@@ -15,12 +14,7 @@ import {
   percentageFormat,
 } from 'src/lib/intlFormat';
 import { usePdsGoalCalculator } from '../Shared/PdsGoalCalculatorContext';
-import {
-  OtherExpensesConstants,
-  calculateOtherExpenses,
-} from '../calculations/OtherExpenses';
-import { calculateReimbursableTotals } from '../calculations/reimbursableExpenses';
-import { calculateSalaryTotals } from '../calculations/salaryCalculation';
+import { usePdsSummaryData } from '../calculations/usePdsSummaryData';
 import { PdsSummaryHeaderCards } from './PdsSummaryHeaderCards';
 
 interface PdsSummaryRow {
@@ -57,8 +51,7 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
   const locale = useLocale();
   const localeText = useDataGridLocaleText();
   const { calculation, hcmUser } = usePdsGoalCalculator();
-  const { goalMiscConstants, goalGeographicConstantMap } =
-    useGoalCalculatorConstants();
+  const summaryData = usePdsSummaryData(calculation, hcmUser);
 
   const valueFormatter = useCallback(
     (value: number, row: PdsSummaryRow) => {
@@ -77,60 +70,12 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
     rows: PdsSummaryRow[];
     overallTotal: number;
   } => {
-    if (!calculation) {
+    if (!calculation || !summaryData) {
       return { rows: [], overallTotal: 0 };
     }
 
-    const additionalRates = goalMiscConstants.ADDITIONAL_RATES;
-    const employerFicaRate = additionalRates?.EMPLOYER_FICA_RATE?.fee;
-    const workCompPercentage =
-      additionalRates?.PART_TIME_WORK_COMPENSATION?.fee;
-    const attritionRate = goalMiscConstants.RATES?.ATTRITION_RATE?.fee;
-    const creditCardFeeRate = additionalRates?.CREDIT_CARD_FEE_RATE?.fee;
-    const adminRate = goalMiscConstants.RATES?.ADMIN_RATE?.fee;
-
-    if (
-      employerFicaRate === undefined ||
-      workCompPercentage === undefined ||
-      attritionRate === undefined ||
-      creditCardFeeRate === undefined ||
-      adminRate === undefined
-    ) {
-      return { rows: [], overallTotal: 0 };
-    }
-
-    const geographicMultiplier =
-      goalGeographicConstantMap.get(calculation.geographicLocation ?? '') ?? 0;
-
-    const salaryTotals = calculateSalaryTotals(calculation, {
-      geographicMultiplier,
-      employerFicaRate,
-    });
-    const reimbursableTotals = calculateReimbursableTotals(calculation);
-
-    const taxDeferredPct =
-      (hcmUser?.fourOThreeB?.currentTaxDeferredContributionPercentage ?? 0) /
-      100;
-    const rothPct =
-      (hcmUser?.fourOThreeB?.currentRothContributionPercentage ?? 0) / 100;
-
-    const otherConstants: OtherExpensesConstants = {
-      reimbursableTotal: reimbursableTotals.total,
-      salarySubtotal: salaryTotals.subtotal,
-      fourOThreeBPercentage: taxDeferredPct + rothPct,
-      grossMonthlyPay: salaryTotals.grossMonthlyPay,
-      workCompPercentage,
-      attritionRate,
-      creditCardFeeRate,
-      adminRate,
-    };
-    const otherTotals = calculateOtherExpenses(calculation, otherConstants);
-
-    const overallTotal =
-      otherTotals.subtotal +
-      otherTotals.attrition +
-      otherTotals.creditCardFees +
-      otherTotals.assessment;
+    const { salaryTotals, otherTotals, overallTotal, geographicMultiplier } =
+      summaryData;
 
     const isSalaried =
       calculation.salaryOrHourly === DesignationSupportSalaryType.Salaried;
@@ -258,14 +203,7 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
     ];
 
     return { rows, overallTotal };
-  }, [
-    t,
-    calculation,
-    hcmUser,
-    goalMiscConstants,
-    goalGeographicConstantMap,
-    supportRaised,
-  ]);
+  }, [t, calculation, summaryData, supportRaised]);
 
   const columns = useMemo(
     (): GridColDef[] => [
