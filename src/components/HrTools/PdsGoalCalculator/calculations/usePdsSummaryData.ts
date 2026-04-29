@@ -17,7 +17,7 @@ import {
   calculateSalaryTotals,
 } from './salaryCalculation';
 
-interface PdsSummaryData {
+export interface PdsSummaryData {
   salaryTotals: SalaryTotals;
   salaryConstants: SalaryConstants;
   reimbursableTotals: ReimbursableTotals;

@@ -14,7 +14,6 @@ import {
   percentageFormat,
 } from 'src/lib/intlFormat';
 import { usePdsGoalCalculator } from '../Shared/PdsGoalCalculatorContext';
-import { usePdsSummaryData } from '../calculations/usePdsSummaryData';
 import { PdsSummaryHeaderCards } from './PdsSummaryHeaderCards';
 
 interface PdsSummaryRow {
@@ -50,8 +49,7 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
   const { t } = useTranslation();
   const locale = useLocale();
   const localeText = useDataGridLocaleText();
-  const { calculation, hcmUser } = usePdsGoalCalculator();
-  const summaryData = usePdsSummaryData(calculation, hcmUser);
+  const { calculation, summaryData } = usePdsGoalCalculator();
 
   const valueFormatter = useCallback(
     (value: number, row: PdsSummaryRow) => {

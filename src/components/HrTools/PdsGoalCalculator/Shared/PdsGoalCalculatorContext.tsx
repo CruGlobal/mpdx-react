@@ -8,6 +8,10 @@ import {
   usePdsGoalCalculationQuery,
 } from '../GoalsList/PdsGoalCalculations.generated';
 import { PdsGoalCalculatorStepEnum } from '../PdsGoalCalculatorHelper';
+import {
+  PdsSummaryData,
+  usePdsSummaryData,
+} from '../calculations/usePdsSummaryData';
 import { HcmUserQuery, useHcmUserQuery } from './HCM.generated';
 import { PdsGoalCalculatorStep, useSteps } from './useSteps';
 
@@ -18,6 +22,7 @@ export type PdsGoalCalculatorType = {
   calculation?: PdsGoalCalculationFieldsFragment;
   calculationLoading: boolean;
   hcmUser?: HcmUserQuery['hcm'][number];
+  summaryData: PdsSummaryData | null;
 
   /** Whether any mutations are currently in progress */
   isMutating: boolean;
@@ -71,6 +76,8 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const { data: hcmData } = useHcmUserQuery();
   const hcmUser = hcmData?.hcm[0];
 
+  const summaryData = usePdsSummaryData(calculation, hcmUser);
+
   const steps = useSteps();
   const [stepIndex, setStepIndex] = useState(0);
   const [rightPanelContent, setRightPanelContent] =
@@ -121,6 +128,7 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       stepIndex,
       calculation,
       calculationLoading,
+      summaryData,
       isMutating,
       trackMutation,
       hcmUser,
@@ -140,6 +148,7 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       stepIndex,
       calculation,
       calculationLoading,
+      summaryData,
       isMutating,
       trackMutation,
       hcmUser,
