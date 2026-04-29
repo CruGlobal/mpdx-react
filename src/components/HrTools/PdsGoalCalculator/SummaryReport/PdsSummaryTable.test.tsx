@@ -188,8 +188,8 @@ describe('PdsSummaryTable', () => {
     await findByRole('gridcell', { name: 'Pay Rate' });
 
     expect(getByRole('gridcell', { name: 'Pay Rate' })).toHaveClass('indent');
-    expect(
-      getByRole('gridcell', { name: 'Salary Subtotal' }),
-    ).not.toHaveClass('indent');
+    expect(getByRole('gridcell', { name: 'Salary Subtotal' })).not.toHaveClass(
+      'indent',
+    );
   });
 });

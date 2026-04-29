@@ -79,10 +79,8 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
 
     const isSalaried =
       calculation.salaryOrHourly === DesignationSupportSalaryType.Salaried;
-    const isFullTime =
-      calculation.status === DesignationSupportStatus.FullTime;
-    const isPartTime =
-      calculation.status === DesignationSupportStatus.PartTime;
+    const isFullTime = calculation.status === DesignationSupportStatus.FullTime;
+    const isPartTime = calculation.status === DesignationSupportStatus.PartTime;
 
     const rows: PdsSummaryRow[] = [
       // Salary section
@@ -191,7 +189,7 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
       {
         line: '8',
         category: t('Monthly Support to be Developed'),
-        amount: overallTotal - supportRaised,
+        amount: Math.max(overallTotal - supportRaised, 0),
       },
       {
         line: '9',

@@ -1,4 +1,3 @@
-// src/components/HrTools/PdsGoalCalculator/SummaryReport/SummaryReportStep.tsx
 import React from 'react';
 import Loading from 'src/components/Loading';
 import { useAccountListId } from 'src/hooks/useAccountListId';

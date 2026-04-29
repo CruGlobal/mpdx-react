@@ -1,4 +1,3 @@
-// src/components/HrTools/PdsGoalCalculator/SummaryReport/SummaryReportStep.test.tsx
 import React from 'react';
 import { render } from '@testing-library/react';
 import {
@@ -41,8 +40,21 @@ describe('SummaryReportStep', () => {
       await findByRole('heading', { name: 'Your Goal' }),
     ).toBeInTheDocument();
     expect(getByRole('heading', { name: 'Progress' })).toBeInTheDocument();
+    expect(getByRole('grid', { name: 'PDS Goal Summary' })).toBeInTheDocument();
+  });
+
+  it('caps the progress percentage at 100% when supportRaised exceeds overallTotal', async () => {
+    const { findByRole } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={calculationMock}
+        supportRaisedMock={999999}
+      >
+        <SummaryReportStep />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
     expect(
-      getByRole('grid', { name: 'PDS Goal Summary' }),
+      await findByRole('heading', { name: '100%' }),
     ).toBeInTheDocument();
   });
 });

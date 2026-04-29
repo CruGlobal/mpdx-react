@@ -36,14 +36,13 @@ describe('PdsSummaryHeaderCards', () => {
   it('handles zero total gracefully', () => {
     const { getByRole } = render(
       <ThemeProvider theme={theme}>
-        <PdsSummaryHeaderCards
-          overallTotal={0}
-          supportRaisedPercentage={0}
-        />
+        <PdsSummaryHeaderCards overallTotal={0} supportRaisedPercentage={0} />
       </ThemeProvider>,
     );
 
     expect(getByRole('heading', { name: 'Your Goal' })).toBeInTheDocument();
+    expect(getByRole('heading', { name: /\$0\.00/ })).toBeInTheDocument();
     expect(getByRole('heading', { name: 'Progress' })).toBeInTheDocument();
+    expect(getByRole('heading', { name: '0%' })).toBeInTheDocument();
   });
 });
