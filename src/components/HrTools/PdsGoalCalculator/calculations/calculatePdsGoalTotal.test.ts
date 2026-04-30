@@ -64,7 +64,7 @@ describe('calculatePdsGoalTotal', () => {
     expect(result).toBeCloseTo(434.83, 0);
   });
 
-  it('returns 0 when payRate is null', () => {
+  it('returns a positive value when payRate is null', () => {
     const goal = makeGoal({ payRate: null });
     const result = calculatePdsGoalTotal(goal, defaultConstants);
     expect(result).toBeGreaterThan(0);
