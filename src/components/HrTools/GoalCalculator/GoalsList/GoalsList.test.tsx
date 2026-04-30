@@ -59,7 +59,9 @@ describe('GoalsList', () => {
       getByRole('button', { name: 'Create a New Goal' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('button', { name: 'Learn About Goalsetting' }),
+      getByRole('link', {
+        name: 'Learn About Goalsetting (opens in a new tab)',
+      }),
     ).toBeInTheDocument();
   });
 
