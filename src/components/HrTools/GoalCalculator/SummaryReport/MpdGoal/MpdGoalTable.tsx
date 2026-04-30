@@ -16,6 +16,7 @@ import {
   GoalTotals,
   calculateCategoryEnumTotal,
 } from '../../Shared/calculateTotals';
+import { safeProgressRatio } from '../../Shared/safeProgressRatio';
 import { MpdGoalHeaderCards } from './MpdGoalHeaderCards/MpdGoalHeaderCards';
 
 interface MpdGoalRow {
@@ -285,9 +286,7 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({
         line: '10',
         category: t('Support Goal Percentage Progress'),
         value: (goalTotals) =>
-          goalTotals.overallTotal > 0
-            ? Math.min(supportRaised / goalTotals.overallTotal, 1)
-            : 0,
+          safeProgressRatio(supportRaised, goalTotals.overallTotal),
         percentage: true,
       },
     ];
@@ -354,9 +353,7 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({
     <>
       <MpdGoalHeaderCards
         supportRaisedPercentage={
-          goalTotals.overallTotal > 0
-            ? Math.min(supportRaised / goalTotals.overallTotal, 1)
-            : 0
+          safeProgressRatio(supportRaised, goalTotals.overallTotal)
         }
       />
       <StyledDataGrid
@@ -403,6 +400,7 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({
         rows={rows}
         columns={columns}
         disableColumnFilter
+        disableColumnMenu
         disableRowSelectionOnClick
         disableVirtualization
         hideFooter

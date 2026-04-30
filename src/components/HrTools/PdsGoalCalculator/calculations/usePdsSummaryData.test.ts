@@ -1,4 +1,5 @@
 import { renderHook } from '@testing-library/react-hooks';
+import { gqlMock } from '__tests__/util/graphqlMocking';
 import {
   DesignationSupportSalaryType,
   DesignationSupportStatus,
@@ -6,15 +7,22 @@ import {
   MpdGoalMiscConstantLabelEnum,
 } from 'src/graphql/types.generated';
 import {
-  GoalGeographicConstantMap,
-  GoalMiscConstants,
-  useGoalCalculatorConstants,
-} from 'src/hooks/useGoalCalculatorConstants';
-import { PdsGoalCalculationFieldsFragment } from '../GoalsList/PdsGoalCalculations.generated';
-import { HcmUserQuery } from '../Shared/HCM.generated';
+  GoalCalculatorConstantsDocument,
+  GoalCalculatorConstantsQuery,
+} from 'src/hooks/goalCalculatorConstants.generated';
+import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
+import {
+  PdsGoalCalculationFieldsFragment,
+  PdsGoalCalculationFieldsFragmentDoc,
+} from '../GoalsList/PdsGoalCalculations.generated';
+import { HcmUserDocument, HcmUserQuery } from '../Shared/HCM.generated';
 import { usePdsSummaryData } from './usePdsSummaryData';
 
 jest.mock('src/hooks/useGoalCalculatorConstants');
+
+const { formatConstants } = jest.requireActual<
+  typeof import('src/hooks/useGoalCalculatorConstants')
+>('src/hooks/useGoalCalculatorConstants');
 
 const mockUseGoalCalculatorConstants =
   useGoalCalculatorConstants as jest.MockedFunction<
@@ -28,105 +36,97 @@ const CREDIT_CARD_FEE_RATE = 0.06;
 const ADMIN_RATE = 0.12;
 const GEO_MULTIPLIER = 0.06;
 
-const goalMiscConstants: GoalMiscConstants = {
-  [MpdGoalMiscConstantCategoryEnum.AdditionalRates]: {
-    [MpdGoalMiscConstantLabelEnum.EmployerFicaRate]: {
-      id: '1',
-      category: MpdGoalMiscConstantCategoryEnum.AdditionalRates,
-      categoryDisplayName: 'Additional Rates',
-      label: MpdGoalMiscConstantLabelEnum.EmployerFicaRate,
-      labelDisplayName: 'Employer FICA Rate',
-      fee: EMPLOYER_FICA_RATE,
-    },
-    [MpdGoalMiscConstantLabelEnum.PartTimeWorkCompensation]: {
-      id: '2',
-      category: MpdGoalMiscConstantCategoryEnum.AdditionalRates,
-      categoryDisplayName: 'Additional Rates',
-      label: MpdGoalMiscConstantLabelEnum.PartTimeWorkCompensation,
-      labelDisplayName: 'Part Time Work Compensation',
-      fee: WORK_COMP_PERCENTAGE,
-    },
-    [MpdGoalMiscConstantLabelEnum.CreditCardFeeRate]: {
-      id: '3',
-      category: MpdGoalMiscConstantCategoryEnum.AdditionalRates,
-      categoryDisplayName: 'Additional Rates',
-      label: MpdGoalMiscConstantLabelEnum.CreditCardFeeRate,
-      labelDisplayName: 'Credit Card Fee Rate',
-      fee: CREDIT_CARD_FEE_RATE,
-    },
-  },
-  [MpdGoalMiscConstantCategoryEnum.Rates]: {
-    [MpdGoalMiscConstantLabelEnum.AttritionRate]: {
-      id: '4',
-      category: MpdGoalMiscConstantCategoryEnum.Rates,
-      categoryDisplayName: 'Rates',
-      label: MpdGoalMiscConstantLabelEnum.AttritionRate,
-      labelDisplayName: 'Attrition Rate',
-      fee: ATTRITION_RATE,
-    },
-    [MpdGoalMiscConstantLabelEnum.AdminRate]: {
-      id: '5',
-      category: MpdGoalMiscConstantCategoryEnum.Rates,
-      categoryDisplayName: 'Rates',
-      label: MpdGoalMiscConstantLabelEnum.AdminRate,
-      labelDisplayName: 'Admin Rate',
-      fee: ADMIN_RATE,
+const constantsMock = gqlMock<GoalCalculatorConstantsQuery>(
+  GoalCalculatorConstantsDocument,
+  {
+    mocks: {
+      constant: {
+        mpdGoalMiscConstants: [
+          {
+            category: MpdGoalMiscConstantCategoryEnum.AdditionalRates,
+            label: MpdGoalMiscConstantLabelEnum.EmployerFicaRate,
+            fee: EMPLOYER_FICA_RATE,
+          },
+          {
+            category: MpdGoalMiscConstantCategoryEnum.AdditionalRates,
+            label: MpdGoalMiscConstantLabelEnum.PartTimeWorkCompensation,
+            fee: WORK_COMP_PERCENTAGE,
+          },
+          {
+            category: MpdGoalMiscConstantCategoryEnum.AdditionalRates,
+            label: MpdGoalMiscConstantLabelEnum.CreditCardFeeRate,
+            fee: CREDIT_CARD_FEE_RATE,
+          },
+          {
+            category: MpdGoalMiscConstantCategoryEnum.Rates,
+            label: MpdGoalMiscConstantLabelEnum.AttritionRate,
+            fee: ATTRITION_RATE,
+          },
+          {
+            category: MpdGoalMiscConstantCategoryEnum.Rates,
+            label: MpdGoalMiscConstantLabelEnum.AdminRate,
+            fee: ADMIN_RATE,
+          },
+        ],
+        mpdGoalGeographicConstants: [
+          { location: 'Orlando, FL', percentageMultiplier: GEO_MULTIPLIER },
+          { location: 'None', percentageMultiplier: 0 },
+        ],
+        mpdGoalBenefitsConstants: [],
+      },
     },
   },
-};
+).constant;
 
-const goalGeographicConstantMap: GoalGeographicConstantMap = new Map([
-  ['Orlando, FL', GEO_MULTIPLIER],
-  ['None', 0],
-]);
+const defaultConstants = formatConstants(constantsMock);
 
 const setupMock = (
   overrides?: Partial<ReturnType<typeof useGoalCalculatorConstants>>,
 ) => {
   mockUseGoalCalculatorConstants.mockReturnValue({
-    goalBenefitsPlans: [],
-    goalMiscConstants,
-    goalGeographicConstantMap,
+    ...defaultConstants,
     loading: false,
     error: undefined,
     ...overrides,
   });
 };
 
-const defaultCalculation: PdsGoalCalculationFieldsFragment = {
-  __typename: 'DesignationSupportCalculation',
-  id: 'calc-1',
-  name: 'Test Calculation',
-  updatedAt: '2026-01-01T00:00:00Z',
-  averageHoursPerWeek: null,
-  hoursWorkedPerWeek: null,
-  salaryOrHourly: DesignationSupportSalaryType.Salaried,
-  status: DesignationSupportStatus.FullTime,
-  payRate: 60000,
-  benefits: 1500,
-  geographicLocation: null,
-  ministryCellPhone: 100,
-  ministryInternet: 100,
-  mpdNewsletter: 50,
-  mpdMiscellaneous: 50,
-  accountTransfers: 50,
-  otherMonthlyReimbursements: 50,
-  conferenceRetreatCosts: 600,
-  ministryTravelMeals: 600,
-  otherAnnualReimbursements: 0,
-  designationSupportHoursItems: [],
-};
+const defaultCalculation =
+  gqlMock<PdsGoalCalculationFieldsFragment>(
+    PdsGoalCalculationFieldsFragmentDoc,
+    {
+      mocks: {
+        salaryOrHourly: DesignationSupportSalaryType.Salaried,
+        status: DesignationSupportStatus.FullTime,
+        payRate: 60000,
+        benefits: 1500,
+        geographicLocation: null,
+        ministryCellPhone: 100,
+        ministryInternet: 100,
+        mpdNewsletter: 50,
+        mpdMiscellaneous: 50,
+        accountTransfers: 50,
+        otherMonthlyReimbursements: 50,
+        conferenceRetreatCosts: 600,
+        ministryTravelMeals: 600,
+        otherAnnualReimbursements: 0,
+        designationSupportHoursItems: [],
+      },
+    },
+  );
 
-const defaultHcmUser: HcmUserQuery['hcm'][number] = {
-  __typename: 'Hcm',
-  fourOThreeB: {
-    __typename: 'FourOThreeB',
-    currentTaxDeferredContributionPercentage: 5,
-    currentRothContributionPercentage: 3,
-    maximumContributionLimit: null,
-    fourOThreeBMakeUpLimitAmount: null,
+const defaultHcmUser = gqlMock<HcmUserQuery>(HcmUserDocument, {
+  mocks: {
+    hcm: [
+      {
+        fourOThreeB: {
+          currentTaxDeferredContributionPercentage: 5,
+          currentRothContributionPercentage: 3,
+        },
+      },
+    ],
   },
-};
+}).hcm[0];
 
 describe('usePdsSummaryData', () => {
   beforeEach(() => {
@@ -144,9 +144,9 @@ describe('usePdsSummaryData', () => {
     it('returns null when employerFicaRate is missing', () => {
       setupMock({
         goalMiscConstants: {
-          ...goalMiscConstants,
+          ...defaultConstants.goalMiscConstants,
           ADDITIONAL_RATES: {
-            ...goalMiscConstants.ADDITIONAL_RATES,
+            ...defaultConstants.goalMiscConstants.ADDITIONAL_RATES,
             EMPLOYER_FICA_RATE: undefined,
           },
         },
@@ -160,9 +160,9 @@ describe('usePdsSummaryData', () => {
     it('returns null when attritionRate is missing', () => {
       setupMock({
         goalMiscConstants: {
-          ...goalMiscConstants,
+          ...defaultConstants.goalMiscConstants,
           RATES: {
-            ...goalMiscConstants.RATES,
+            ...defaultConstants.goalMiscConstants.RATES,
             ATTRITION_RATE: undefined,
           },
         },
@@ -176,9 +176,9 @@ describe('usePdsSummaryData', () => {
     it('returns null when adminRate is missing', () => {
       setupMock({
         goalMiscConstants: {
-          ...goalMiscConstants,
+          ...defaultConstants.goalMiscConstants,
           RATES: {
-            ...goalMiscConstants.RATES,
+            ...defaultConstants.goalMiscConstants.RATES,
             ADMIN_RATE: undefined,
           },
         },
@@ -192,9 +192,9 @@ describe('usePdsSummaryData', () => {
     it('returns null when workCompPercentage is missing', () => {
       setupMock({
         goalMiscConstants: {
-          ...goalMiscConstants,
+          ...defaultConstants.goalMiscConstants,
           ADDITIONAL_RATES: {
-            ...goalMiscConstants.ADDITIONAL_RATES,
+            ...defaultConstants.goalMiscConstants.ADDITIONAL_RATES,
             PART_TIME_WORK_COMPENSATION: undefined,
           },
         },
@@ -208,9 +208,9 @@ describe('usePdsSummaryData', () => {
     it('returns null when creditCardFeeRate is missing', () => {
       setupMock({
         goalMiscConstants: {
-          ...goalMiscConstants,
+          ...defaultConstants.goalMiscConstants,
           ADDITIONAL_RATES: {
-            ...goalMiscConstants.ADDITIONAL_RATES,
+            ...defaultConstants.goalMiscConstants.ADDITIONAL_RATES,
             CREDIT_CARD_FEE_RATE: undefined,
           },
         },

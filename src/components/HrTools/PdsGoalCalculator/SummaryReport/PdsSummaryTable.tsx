@@ -13,6 +13,7 @@ import {
   numberFormat,
   percentageFormat,
 } from 'src/lib/intlFormat';
+import { safeProgressRatio } from '../../GoalCalculator/Shared/safeProgressRatio';
 import { usePdsGoalCalculator } from '../Shared/PdsGoalCalculatorContext';
 import { PdsSummaryHeaderCards } from './PdsSummaryHeaderCards';
 
@@ -32,10 +33,7 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
     fontWeight: 'bold',
   },
   '.MuiDataGrid-row.top-border': {
-    borderTop: '3px solid black',
-  },
-  '.MuiDataGrid-cell.indent': {
-    paddingLeft: theme.spacing(4),
+    borderTop: `3px solid ${theme.palette.divider}`,
   },
 }));
 
@@ -193,7 +191,7 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
         line: '9',
         category: t('Support Goal Percentage Progress'),
         amount:
-          overallTotal > 0 ? Math.min(supportRaised / overallTotal, 1) : 0,
+          safeProgressRatio(supportRaised, overallTotal),
         percentage: true,
       },
     ];
@@ -231,7 +229,7 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
   );
 
   const supportRaisedPercentage =
-    overallTotal > 0 ? Math.min(supportRaised / overallTotal, 1) : 0;
+    safeProgressRatio(supportRaised, overallTotal);
 
   return (
     <>
@@ -254,19 +252,10 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
           }
           return classes.join(' ');
         }}
-        getCellClassName={(params) => {
-          if (
-            params.colDef.field === 'category' &&
-            typeof params.row.line === 'string' &&
-            /[a-z]/i.test(params.row.line)
-          ) {
-            return 'indent';
-          }
-          return '';
-        }}
         rows={rows}
         columns={columns}
         disableColumnFilter
+        disableColumnMenu
         disableRowSelectionOnClick
         disableVirtualization
         hideFooter
