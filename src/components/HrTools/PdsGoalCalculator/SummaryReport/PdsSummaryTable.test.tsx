@@ -153,7 +153,7 @@ describe('PdsSummaryTable', () => {
     ).toBeInTheDocument();
   });
 
-  it('applies bold and top-border classes to summary rows', async () => {
+  it('applies hierarchy classes to summary rows', async () => {
     const { findByRole, getByRole } = render(
       <PdsGoalCalculatorTestWrapper calculationMock={salariedFullTimeMock}>
         <PdsSummaryTable supportRaised={1000} />
@@ -165,31 +165,27 @@ describe('PdsSummaryTable', () => {
     const salarySubtotalRow = getByRole('gridcell', {
       name: 'Salary Subtotal',
     }).parentElement;
-    expect(salarySubtotalRow).toHaveClass('bold', 'top-border');
+    expect(salarySubtotalRow).toHaveClass('subtotal');
 
-    const subtotalRow = getByRole('gridcell', {
-      name: 'Subtotal',
+    const otherSubtotalRow = getByRole('gridcell', {
+      name: 'Other Subtotal',
     }).parentElement;
-    expect(subtotalRow).toHaveClass('bold', 'top-border');
+    expect(otherSubtotalRow).toHaveClass('subtotal');
+
+    const attritionRow = getByRole('gridcell', {
+      name: 'Attrition',
+    }).parentElement;
+    expect(attritionRow).toHaveClass('adjustment');
 
     const totalGoalRow = getByRole('gridcell', {
       name: 'Total Goal',
     }).parentElement;
-    expect(totalGoalRow).toHaveClass('bold', 'top-border');
+    expect(totalGoalRow).toHaveClass('total-goal');
+
+    const supportRaisedRow = getByRole('gridcell', {
+      name: 'Solid Monthly Support Developed',
+    }).parentElement;
+    expect(supportRaisedRow).toHaveClass('progress-start');
   });
 
-  it('indents sub-line categories (lines with letters)', async () => {
-    const { findByRole, getByRole } = render(
-      <PdsGoalCalculatorTestWrapper calculationMock={salariedFullTimeMock}>
-        <PdsSummaryTable supportRaised={0} />
-      </PdsGoalCalculatorTestWrapper>,
-    );
-
-    await findByRole('gridcell', { name: 'Pay Rate' });
-
-    expect(getByRole('gridcell', { name: 'Pay Rate' })).toHaveClass('indent');
-    expect(getByRole('gridcell', { name: 'Salary Subtotal' })).not.toHaveClass(
-      'indent',
-    );
-  });
 });

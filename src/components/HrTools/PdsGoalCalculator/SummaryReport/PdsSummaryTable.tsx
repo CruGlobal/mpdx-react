@@ -2,10 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 import { styled } from '@mui/material/styles';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
-import {
-  DesignationSupportSalaryType,
-  DesignationSupportStatus,
-} from 'src/graphql/types.generated';
+import { DesignationSupportStatus } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
 import {
@@ -27,13 +24,27 @@ interface PdsSummaryRow {
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   '.MuiDataGrid-columnHeaderTitle': {
-    fontWeight: 'bold',
+    fontWeight: theme.typography.fontWeightBold,
   },
-  '.MuiDataGrid-row.bold': {
-    fontWeight: 'bold',
+  '.MuiDataGrid-cell.indent': {
+    paddingLeft: theme.spacing(4),
   },
-  '.MuiDataGrid-row.top-border': {
+  '.MuiDataGrid-cell.amount': {
+    fontVariantNumeric: 'tabular-nums',
+  },
+  '.MuiDataGrid-row.subtotal': {
+    fontWeight: theme.typography.fontWeightMedium,
+    backgroundColor: theme.palette.action.hover,
+  },
+  '.MuiDataGrid-row.total-goal': {
+    fontWeight: theme.typography.fontWeightBold,
+  },
+  '.MuiDataGrid-row.progress-start .MuiDataGrid-cell': {
     borderTop: `3px solid ${theme.palette.divider}`,
+  },
+  '.MuiDataGrid-row.progress-complete .MuiDataGrid-cell.amount': {
+    color: theme.palette.success.main,
+    fontWeight: theme.typography.fontWeightBold,
   },
 }));
 
@@ -70,11 +81,8 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
       return { rows: [], overallTotal: 0 };
     }
 
-    const { salaryTotals, otherTotals, overallTotal, geographicMultiplier } =
-      summaryData;
+    const { salaryTotals, otherTotals, overallTotal } = summaryData;
 
-    const isSalaried =
-      calculation.salaryOrHourly === DesignationSupportSalaryType.Salaried;
     const isFullTime = calculation.status === DesignationSupportStatus.FullTime;
     const isPartTime = calculation.status === DesignationSupportStatus.PartTime;
 
@@ -82,37 +90,11 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
       // Salary section
       {
         line: '1A',
-        category: t('Pay Rate'),
-        amount: calculation.payRate ?? 0,
-      },
-      ...(!isSalaried
-        ? [
-            {
-              line: '1B',
-              category: t('Hours per Week'),
-              amount: calculation.hoursWorkedPerWeek ?? 0,
-              number: true,
-            },
-          ]
-        : []),
-      {
-        line: isSalaried ? '1B' : '1C',
-        category: t('Monthly Base'),
-        amount: salaryTotals.monthlyBase,
-      },
-      {
-        line: isSalaried ? '1C' : '1D',
-        category: t('Geographic Multiplier'),
-        amount: geographicMultiplier,
-        percentage: true,
-      },
-      {
-        line: isSalaried ? '1D' : '1E',
         category: t('Gross Monthly Pay'),
         amount: salaryTotals.grossMonthlyPay,
       },
       {
-        line: isSalaried ? '1E' : '1F',
+        line: '1B',
         category: t('Employer ½ FICA'),
         amount: salaryTotals.employerFica,
       },
@@ -152,7 +134,7 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
         : []),
       {
         line: '2',
-        category: t('Subtotal'),
+        category: t('Other Subtotal'),
         amount: otherTotals.subtotal,
       },
       // Totals section
@@ -190,8 +172,7 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
       {
         line: '9',
         category: t('Support Goal Percentage Progress'),
-        amount:
-          safeProgressRatio(supportRaised, overallTotal),
+        amount: safeProgressRatio(supportRaised, overallTotal),
         percentage: true,
       },
     ];
@@ -207,6 +188,8 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
         width: 80,
         sortable: false,
         hideable: false,
+        renderCell: (params) =>
+          /^[12][A-F]$/.test(params.row.line) || ['6', '7', '8', '9'].includes(params.row.line) ? '' : params.value,
       },
       {
         field: 'category',
@@ -222,14 +205,18 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
         width: 120,
         sortable: false,
         hideable: false,
+        align: 'right',
+        headerAlign: 'right',
         valueFormatter,
       },
     ],
     [t, valueFormatter],
   );
 
-  const supportRaisedPercentage =
-    safeProgressRatio(supportRaised, overallTotal);
+  const supportRaisedPercentage = safeProgressRatio(
+    supportRaised,
+    overallTotal,
+  );
 
   return (
     <>
@@ -241,14 +228,31 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
         label={t('PDS Goal Summary')}
         getRowId={(row) => row.line}
         getRowClassName={(params) => {
+          const { line, amount } = params.row;
+          if (line === '6') {
+            return 'total-goal';
+          }
+          if (line === '1' || line === '2') {
+            return 'subtotal';
+          }
+          if (line === '7') {
+            return 'progress-start';
+          }
+          if (line === '9' && amount >= 1) {
+            return 'progress-complete';
+          }
+          return '';
+        }}
+        getCellClassName={(params) => {
           const classes: string[] = [];
           if (
-            params.row.line === '1' ||
-            params.row.line === '2' ||
-            params.row.line === '6'
+            params.field === 'category' &&
+            /[A-Z]$/.test(params.row.line as string)
           ) {
-            classes.push('bold');
-            classes.push('top-border');
+            classes.push('indent');
+          }
+          if (params.field === 'amount') {
+            classes.push('amount');
           }
           return classes.join(' ');
         }}
