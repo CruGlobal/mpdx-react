@@ -22,6 +22,8 @@ interface PdsSummaryRow {
   number?: boolean;
 }
 
+const LINES_WITH_LABEL = new Set(['1', '2', '3', '4', '5']);
+
 const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   '.MuiDataGrid-columnHeaderTitle': {
     fontWeight: theme.typography.fontWeightBold,
@@ -189,7 +191,7 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
         sortable: false,
         hideable: false,
         renderCell: (params) =>
-          /^[12][A-F]$/.test(params.row.line) || ['6', '7', '8', '9'].includes(params.row.line) ? '' : params.value,
+          LINES_WITH_LABEL.has(params.row.line) ? params.value : '',
       },
       {
         field: 'category',

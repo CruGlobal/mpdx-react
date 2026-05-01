@@ -100,7 +100,6 @@ const defaultCalculation =
         status: DesignationSupportStatus.FullTime,
         payRate: 60000,
         benefits: 1500,
-        geographicLocation: null,
         ministryCellPhone: 100,
         ministryInternet: 100,
         mpdNewsletter: 50,
@@ -110,7 +109,6 @@ const defaultCalculation =
         conferenceRetreatCosts: 600,
         ministryTravelMeals: 600,
         otherAnnualReimbursements: 0,
-        designationSupportHoursItems: [],
       },
     },
   );
