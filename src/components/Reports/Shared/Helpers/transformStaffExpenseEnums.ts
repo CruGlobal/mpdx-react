@@ -58,7 +58,7 @@ export const getLocalizedSubCategory = (
     [StaffExpensesSubCategoryEnum.SpecialPay]: t('Special Pay'),
     [StaffExpensesSubCategoryEnum.SalaryAdvance]: t('Salary Advance'),
     [StaffExpensesSubCategoryEnum.EarningsMha]: t('Earnings MHA'),
-    [StaffExpensesSubCategoryEnum.EarningsReb]: t('Earnings REB'),
+    [StaffExpensesSubCategoryEnum.EarningsReg]: t('Earnings REG'),
     [StaffExpensesSubCategoryEnum.EarningsNumeric]: t('Earnings Numeric'),
     [StaffExpensesSubCategoryEnum.DisabilityEarnings]: t('Disability Earnings'),
     [StaffExpensesSubCategoryEnum.OtherStandardEarnings]: t(
