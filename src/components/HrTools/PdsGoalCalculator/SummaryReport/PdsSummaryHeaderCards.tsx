@@ -4,25 +4,20 @@ import { useTheme } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
-import {
-  StyledCard,
-  StyledHeaderValue,
-} from '../../../../Shared/SummaryHeaderCard';
-import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
+import { StyledCard, StyledHeaderValue } from '../../Shared/SummaryHeaderCard';
 
-interface MpdGoalHeaderCardsProps {
+interface PdsSummaryHeaderCardsProps {
+  overallTotal: number;
   supportRaisedPercentage: number;
 }
 
-export const MpdGoalHeaderCards: React.FC<MpdGoalHeaderCardsProps> = ({
+export const PdsSummaryHeaderCards: React.FC<PdsSummaryHeaderCardsProps> = ({
+  overallTotal,
   supportRaisedPercentage,
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
   const locale = useLocale();
-  const {
-    goalTotals: { overallTotal },
-  } = useGoalCalculator();
 
   return (
     <Stack

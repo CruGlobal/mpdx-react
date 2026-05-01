@@ -1,7 +1,6 @@
 import React, { useMemo } from 'react';
 import { Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import { useLocale } from 'src/hooks/useLocale';
 import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
 import { usePdsGoalCalculator } from '../Shared/PdsGoalCalculatorContext';
@@ -15,28 +14,20 @@ export const SalarySection: React.FC = () => {
   const { t } = useTranslation();
   const locale = useLocale();
   const localeText = useDataGridLocaleText();
-  const { calculation } = usePdsGoalCalculator();
-  const { goalMiscConstants, goalGeographicConstantMap } =
-    useGoalCalculatorConstants();
-
-  const employerFicaRate =
-    goalMiscConstants.ADDITIONAL_RATES?.EMPLOYER_FICA_RATE?.fee;
+  const { calculation, summaryData } = usePdsGoalCalculator();
 
   const rows = useMemo(() => {
-    if (!calculation || employerFicaRate === undefined) {
+    if (!calculation || !summaryData) {
       return [];
     }
-    const { geographicLocation } = calculation;
-    const geographicMultiplier =
-      goalGeographicConstantMap.get(geographicLocation ?? '') ?? 0;
 
     return buildSalaryBreakdownRows(
       calculation,
-      { geographicMultiplier, employerFicaRate },
+      summaryData.salaryConstants,
       locale,
       t,
     );
-  }, [calculation, employerFicaRate, goalGeographicConstantMap, locale, t]);
+  }, [calculation, summaryData, locale, t]);
 
   const columns = useMemo(
     () => buildSalaryBreakdownColumns(locale, t),

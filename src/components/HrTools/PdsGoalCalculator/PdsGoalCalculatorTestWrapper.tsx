@@ -15,6 +15,7 @@ import {
 } from 'src/graphql/types.generated';
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
 import theme from 'src/theme';
+import { AccountListSupportRaisedQuery } from '../GoalCalculator/Shared/GoalLineItems.generated';
 import {
   PdsGoalCalculationDocument,
   PdsGoalCalculationQuery,
@@ -114,6 +115,7 @@ export interface PdsGoalCalculatorTestWrapperProps {
   hcmUserMock?: HcmUserMock | null;
   userMock?: GetUserMock;
   constantsMock?: GoalCalculatorConstantsMock;
+  supportRaisedMock?: number;
   onCall?: MockLinkCallHandler;
   router?: React.ComponentProps<typeof TestRouter>['router'];
 }
@@ -128,6 +130,7 @@ export const PdsGoalCalculatorTestWrapper: React.FC<
   hcmUserMock,
   userMock,
   constantsMock,
+  supportRaisedMock,
   onCall,
   router,
 }) => {
@@ -146,6 +149,7 @@ export const PdsGoalCalculatorTestWrapper: React.FC<
             GoalCalculatorConstants: GoalCalculatorConstantsQuery;
             HcmUser: HcmUserQuery;
             GetUser: GetUserQuery;
+            AccountListSupportRaised: AccountListSupportRaisedQuery;
           }>
             mocks={{
               PdsGoalCalculations: {
@@ -169,6 +173,16 @@ export const PdsGoalCalculatorTestWrapper: React.FC<
                     : [merge({}, hcmUserDefault.hcm[0], hcmUserMock)],
               },
               ...(userMock ? { GetUser: userMock } : {}),
+              ...(supportRaisedMock !== undefined
+                ? {
+                    AccountListSupportRaised: {
+                      accountList: {
+                        id: 'account-list-1',
+                        receivedPledges: supportRaisedMock,
+                      },
+                    },
+                  }
+                : {}),
               GoalCalculatorConstants: {
                 constant: mergeWith(
                   {},
