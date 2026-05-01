@@ -47,19 +47,23 @@ export const SetupStep: React.FC = () => {
     () =>
       yup.object({
         name: yup.string().required(t('Goal Name is a required field')),
-        status: yup.string().nullable(),
-        salaryOrHourly: yup.string().nullable(),
+        status: yup
+          .string()
+          .required(t('Employment Status is a required field')),
+        salaryOrHourly: yup
+          .string()
+          .required(t('Pay Type is a required field')),
         payRate: yup
           .number()
-          .nullable()
+          .required(t('Pay Rate is a required field'))
           .min(0, t('Pay Rate must be a positive number')),
         hoursWorkedPerWeek: yup
           .number()
-          .nullable()
+          .required(t('Hours Worked is a required field'))
           .min(0, t('Hours Worked must be a positive number')),
         benefits: yup
           .number()
-          .nullable()
+          .required(t('Benefits is a required field'))
           .min(0, t('Benefits must be a positive number')),
       }),
     [t],

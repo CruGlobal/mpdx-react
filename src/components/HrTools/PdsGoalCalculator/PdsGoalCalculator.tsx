@@ -1,5 +1,9 @@
 import React from 'react';
 import { DirectionButtons } from 'src/components/HrTools/Shared/CalculationReports/DirectionButtons/DirectionButtons';
+import {
+  AutosaveForm,
+  useAutosaveForm,
+} from 'src/components/Shared/Autosave/AutosaveForm';
 import { SectionList } from '../GoalCalculator/SharedComponents/SectionList';
 import { PdsGoalCalculatorStepEnum } from './PdsGoalCalculatorHelper';
 import { ReimbursableExpensesStep } from './ReimbursableExpenses/ReimbursableExpensesStep';
@@ -24,27 +28,39 @@ const CurrentStep: React.FC = () => {
   }
 };
 
-export const PdsGoalCalculator: React.FC = () => {
+const MainContent: React.FC = () => {
   const { currentStep, stepIndex, steps, handleContinue, handlePreviousStep } =
     usePdsGoalCalculator();
-  const sections = currentStep.sections;
+  const { allValid } = useAutosaveForm();
 
   const isLastStep = stepIndex === steps.length - 1;
+
+  return (
+    <>
+      <CurrentStep />
+      {!isLastStep && (
+        <DirectionButtons
+          formTitle={currentStep.title}
+          handleNextStep={handleContinue}
+          handlePreviousStep={handlePreviousStep}
+          disableNext={!allValid}
+        />
+      )}
+    </>
+  );
+};
+
+export const PdsGoalCalculator: React.FC = () => {
+  const { currentStep } = usePdsGoalCalculator();
+  const sections = currentStep.sections;
 
   return (
     <PdsGoalCalculatorLayout
       sectionListPanel={<SectionList sections={sections} />}
       mainContent={
-        <>
-          <CurrentStep />
-          {!isLastStep && (
-            <DirectionButtons
-              formTitle={currentStep.title}
-              handleNextStep={handleContinue}
-              handlePreviousStep={handlePreviousStep}
-            />
-          )}
-        </>
+        <AutosaveForm>
+          <MainContent />
+        </AutosaveForm>
       }
     />
   );
