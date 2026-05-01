@@ -91,27 +91,26 @@ const setupMock = (
   });
 };
 
-const defaultCalculation =
-  gqlMock<PdsGoalCalculationFieldsFragment>(
-    PdsGoalCalculationFieldsFragmentDoc,
-    {
-      mocks: {
-        salaryOrHourly: DesignationSupportSalaryType.Salaried,
-        status: DesignationSupportStatus.FullTime,
-        payRate: 60000,
-        benefits: 1500,
-        ministryCellPhone: 100,
-        ministryInternet: 100,
-        mpdNewsletter: 50,
-        mpdMiscellaneous: 50,
-        accountTransfers: 50,
-        otherMonthlyReimbursements: 50,
-        conferenceRetreatCosts: 600,
-        ministryTravelMeals: 600,
-        otherAnnualReimbursements: 0,
-      },
+const defaultCalculation = gqlMock<PdsGoalCalculationFieldsFragment>(
+  PdsGoalCalculationFieldsFragmentDoc,
+  {
+    mocks: {
+      salaryOrHourly: DesignationSupportSalaryType.Salaried,
+      status: DesignationSupportStatus.FullTime,
+      payRate: 60000,
+      benefits: 1500,
+      ministryCellPhone: 100,
+      ministryInternet: 100,
+      mpdNewsletter: 50,
+      mpdMiscellaneous: 50,
+      accountTransfers: 50,
+      otherMonthlyReimbursements: 50,
+      conferenceRetreatCosts: 600,
+      ministryTravelMeals: 600,
+      otherAnnualReimbursements: 0,
     },
-  );
+  },
+);
 
 const defaultHcmUser = gqlMock<HcmUserQuery>(HcmUserDocument, {
   mocks: {

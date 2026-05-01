@@ -352,9 +352,10 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({
   return (
     <>
       <MpdGoalHeaderCards
-        supportRaisedPercentage={
-          safeProgressRatio(supportRaised, goalTotals.overallTotal)
-        }
+        supportRaisedPercentage={safeProgressRatio(
+          supportRaised,
+          goalTotals.overallTotal,
+        )}
       />
       <StyledDataGrid
         label={t('MPD Goal')}

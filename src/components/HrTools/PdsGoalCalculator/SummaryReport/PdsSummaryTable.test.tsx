@@ -187,5 +187,4 @@ describe('PdsSummaryTable', () => {
     }).parentElement;
     expect(supportRaisedRow).toHaveClass('progress-start');
   });
-
 });
