@@ -141,9 +141,7 @@ describe('DirectionButtons', () => {
   });
 
   it('does not show tooltip when Continue button is enabled', async () => {
-    const { findByRole, queryByText } = render(
-      <TestComponent disableNext={false} />,
-    );
+    const { findByRole, queryByText } = render(<TestComponent />);
 
     const continueButton = await findByRole('button', { name: 'Continue' });
     expect(continueButton).toBeEnabled();

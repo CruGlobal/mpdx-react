@@ -63,14 +63,11 @@ describe('SetupStep', () => {
       </PdsGoalCalculatorTestWrapper>,
     );
 
-    // Wait for fields to render with data
     const goalNameInput = await findByRole('textbox', { name: 'Goal Name' });
     await waitFor(() => expect(goalNameInput).toHaveValue('Test Goal'));
 
-    // Clear Goal Name to trigger its required error
     userEvent.clear(goalNameInput);
 
-    // Clear Pay Rate and Hours Worked to trigger their required errors
     const payRateInput = await findByRole('spinbutton', { name: 'Pay Rate' });
     fireEvent.change(payRateInput, { target: { value: '' } });
 
@@ -79,7 +76,6 @@ describe('SetupStep', () => {
     });
     fireEvent.change(hoursInput, { target: { value: '' } });
 
-    // All three validation errors should appear simultaneously
     expect(
       await findByText('Goal Name is a required field'),
     ).toBeInTheDocument();
