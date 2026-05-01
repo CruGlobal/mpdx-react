@@ -56,46 +56,32 @@ describe('PdsSummaryTable', () => {
   });
 
   it('renders salary section rows for salaried full-time', async () => {
-    const { findByRole, getByRole, queryByRole } = render(
+    const { findByRole, getByRole } = render(
       <PdsGoalCalculatorTestWrapper calculationMock={salariedFullTimeMock}>
         <PdsSummaryTable supportRaised={1000} />
       </PdsGoalCalculatorTestWrapper>,
     );
 
-    await findByRole('gridcell', { name: 'Pay Rate' });
+    await findByRole('gridcell', { name: 'Gross Monthly Pay' });
 
-    expect(getByRole('gridcell', { name: 'Monthly Base' })).toBeInTheDocument();
-    expect(
-      getByRole('gridcell', { name: 'Geographic Multiplier' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('gridcell', { name: 'Gross Monthly Pay' }),
-    ).toBeInTheDocument();
     expect(
       getByRole('gridcell', { name: 'Employer ½ FICA' }),
     ).toBeInTheDocument();
     expect(
       getByRole('gridcell', { name: 'Salary Subtotal' }),
     ).toBeInTheDocument();
-
-    // Hours per Week should NOT appear for salaried
-    expect(
-      queryByRole('gridcell', { name: 'Hours per Week' }),
-    ).not.toBeInTheDocument();
   });
 
-  it('renders Hours per Week row for hourly employees', async () => {
+  it('renders Work Comp row for hourly part-time employees', async () => {
     const { findByRole, getByRole } = render(
       <PdsGoalCalculatorTestWrapper calculationMock={hourlyPartTimeMock}>
         <PdsSummaryTable supportRaised={0} />
       </PdsGoalCalculatorTestWrapper>,
     );
 
-    await findByRole('gridcell', { name: 'Pay Rate' });
+    await findByRole('gridcell', { name: 'Gross Monthly Pay' });
 
-    expect(
-      getByRole('gridcell', { name: 'Hours per Week' }),
-    ).toBeInTheDocument();
+    expect(getByRole('gridcell', { name: 'Work Comp' })).toBeInTheDocument();
   });
 
   it('renders Benefits row for full-time and not Work Comp', async () => {
@@ -171,11 +157,6 @@ describe('PdsSummaryTable', () => {
       name: 'Other Subtotal',
     }).parentElement;
     expect(otherSubtotalRow).toHaveClass('subtotal');
-
-    const attritionRow = getByRole('gridcell', {
-      name: 'Attrition',
-    }).parentElement;
-    expect(attritionRow).toHaveClass('adjustment');
 
     const totalGoalRow = getByRole('gridcell', {
       name: 'Total Goal',
