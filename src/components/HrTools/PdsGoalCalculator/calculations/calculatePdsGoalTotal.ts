@@ -2,6 +2,7 @@ import {
   GoalGeographicConstantMap,
   GoalMiscConstants,
 } from 'src/hooks/useGoalCalculatorConstants';
+import { HcmUserQuery } from '../Shared/HCM.generated';
 import { OtherExpensesFields, calculateOtherExpenses } from './OtherExpenses';
 import {
   ReimbursableCalculationFields,
@@ -26,10 +27,9 @@ export interface PdsGoalTotalConstants {
   geographicMultiplier: number;
 }
 
-interface FourOThreeB {
-  currentTaxDeferredContributionPercentage?: number | null;
-  currentRothContributionPercentage?: number | null;
-}
+type FourOThreeB = NonNullable<
+  HcmUserQuery['hcm'][number]['fourOThreeB']
+>;
 
 export const buildPdsGoalConstants = (
   goalMiscConstants: GoalMiscConstants,

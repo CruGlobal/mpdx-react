@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { PdsGoalsList } from '../GoalsList/PdsGoalsList';
 import { PdsGoalCalculatorTestWrapper } from '../PdsGoalCalculatorTestWrapper';
 
@@ -78,8 +78,8 @@ describe('PdsGoalCard', () => {
     );
 
     const goalAmount = await findByTestId('goal-amount-value');
-    // The exact value depends on the mock data — just verify it renders
-    // a currency-formatted string (starts with $ sign)
-    expect(goalAmount.textContent).toMatch(/^\$/);
+    await waitFor(() => {
+      expect(goalAmount).toHaveTextContent('$849.44');
+    });
   });
 });

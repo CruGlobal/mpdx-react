@@ -1,6 +1,14 @@
 import NextLink from 'next/link';
 import React, { useMemo, useState } from 'react';
-import { Box, Button, Card, Divider, Typography, styled } from '@mui/material';
+import {
+  Box,
+  Button,
+  Card,
+  Divider,
+  Skeleton,
+  Typography,
+  styled,
+} from '@mui/material';
 import { DateTime } from 'luxon';
 import { Trans, useTranslation } from 'react-i18next';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
@@ -66,9 +74,9 @@ export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({
   const accountListId = useAccountListId() ?? '';
   const [deleting, setDeleting] = useState(false);
 
-  const { goalMiscConstants, goalGeographicConstantMap } =
+  const { goalMiscConstants, goalGeographicConstantMap, loading: constantsLoading } =
     useGoalCalculatorConstants();
-  const { data: hcmData } = useHcmUserQuery();
+  const { data: hcmData, loading: hcmLoading } = useHcmUserQuery();
   const hcmUser = hcmData?.hcm[0];
 
   const goalTotal = useMemo(() => {
@@ -133,7 +141,11 @@ export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({
                 {t('Goal Amount')}
               </Typography>
               <Typography data-testid="goal-amount-value" variant="body1">
-                {currencyFormat(goalTotal, 'USD', locale)}
+                {constantsLoading || hcmLoading ? (
+                  <Skeleton width={80} />
+                ) : (
+                  currencyFormat(goalTotal, 'USD', locale)
+                )}
               </Typography>
             </StyledInfoRow>
 
