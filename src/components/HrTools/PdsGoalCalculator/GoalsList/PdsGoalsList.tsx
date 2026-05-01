@@ -8,8 +8,6 @@ import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import illustration6graybg from 'src/images/drawkit/grape/drawkit-grape-pack-illustration-6-gray-bg.svg';
 import { PdsGoalCard } from '../GoalCard/PdsGoalCard';
-import { useHcmUserQuery } from '../Shared/HCM.generated';
-import { PdsGoalTotalConstants } from '../calculations/calculatePdsGoalTotal';
 import {
   useCreatePdsGoalCalculationMutation,
   useDeletePdsGoalCalculationMutation,
@@ -43,52 +41,8 @@ export const PdsGoalsList: React.FC = () => {
   });
   const [createPdsGoalCalculation] = useCreatePdsGoalCalculationMutation();
   const [deletePdsGoalCalculation] = useDeletePdsGoalCalculationMutation();
-  const { goalMiscConstants, goalGeographicConstantMap, loading: constantsLoading } =
+  const { goalMiscConstants, loading: constantsLoading } =
     useGoalCalculatorConstants();
-  const { data: hcmData } = useHcmUserQuery();
-  const hcmUser = hcmData?.hcm[0];
-
-  const additionalRates = goalMiscConstants.ADDITIONAL_RATES;
-  const rates = goalMiscConstants.RATES;
-
-  const buildGoalConstants = (
-    geographicLocation: string | null | undefined,
-  ): PdsGoalTotalConstants | null => {
-    const employerFicaRate = additionalRates?.EMPLOYER_FICA_RATE?.fee;
-    const workCompPercentage = additionalRates?.PART_TIME_WORK_COMPENSATION?.fee;
-    const attritionRate = rates?.ATTRITION_RATE?.fee;
-    const creditCardFeeRate = additionalRates?.CREDIT_CARD_FEE_RATE?.fee;
-    const adminRate = rates?.ADMIN_RATE?.fee;
-
-    if (
-      employerFicaRate === undefined ||
-      workCompPercentage === undefined ||
-      attritionRate === undefined ||
-      creditCardFeeRate === undefined ||
-      adminRate === undefined
-    ) {
-      return null;
-    }
-
-    const geographicMultiplier =
-      goalGeographicConstantMap.get(geographicLocation ?? '') ?? 0;
-
-    const taxDeferredPct =
-      (hcmUser?.fourOThreeB?.currentTaxDeferredContributionPercentage ?? 0) /
-      100;
-    const rothPct =
-      (hcmUser?.fourOThreeB?.currentRothContributionPercentage ?? 0) / 100;
-
-    return {
-      employerFicaRate,
-      workCompPercentage,
-      attritionRate,
-      creditCardFeeRate,
-      adminRate,
-      fourOThreeBPercentage: taxDeferredPct + rothPct,
-      geographicMultiplier,
-    };
-  };
 
   const goals = data?.designationSupportCalculations.nodes;
 
@@ -151,7 +105,6 @@ export const PdsGoalsList: React.FC = () => {
               key={goal.id}
               goal={goal}
               onDelete={handleDeleteGoal}
-              constants={buildGoalConstants(goal.geographicLocation)}
             />
           ))}
         </Stack>

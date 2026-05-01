@@ -2,9 +2,9 @@ import {
   DesignationSupportSalaryType,
   DesignationSupportStatus,
 } from 'src/graphql/types.generated';
-import { PdsGoalCalculationFieldsFragment } from '../GoalsList/PdsGoalCalculations.generated';
 import {
   PdsGoalTotalConstants,
+  PdsGoalTotalFields,
   calculatePdsGoalTotal,
 } from './calculatePdsGoalTotal';
 
@@ -19,12 +19,8 @@ const defaultConstants: PdsGoalTotalConstants = {
 };
 
 const makeGoal = (
-  overrides: Partial<PdsGoalCalculationFieldsFragment> = {},
-): PdsGoalCalculationFieldsFragment => ({
-  id: 'goal-1',
-  name: 'Test Goal',
-  updatedAt: '2026-01-01T00:00:00Z',
-  averageHoursPerWeek: null,
+  overrides: Partial<PdsGoalTotalFields> = {},
+): PdsGoalTotalFields => ({
   hoursWorkedPerWeek: null,
   salaryOrHourly: DesignationSupportSalaryType.Salaried,
   status: DesignationSupportStatus.FullTime,
@@ -40,7 +36,6 @@ const makeGoal = (
   conferenceRetreatCosts: 0,
   ministryTravelMeals: 0,
   otherAnnualReimbursements: 0,
-  designationSupportHoursItems: [],
   ...overrides,
 });
 

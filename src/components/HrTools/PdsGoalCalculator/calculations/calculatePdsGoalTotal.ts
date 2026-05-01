@@ -1,7 +1,20 @@
-import { PdsGoalCalculationFieldsFragment } from '../GoalsList/PdsGoalCalculations.generated';
-import { calculateOtherExpenses } from './OtherExpenses';
-import { calculateReimbursableTotals } from './reimbursableExpenses';
-import { calculateSalaryTotals } from './salaryCalculation';
+import {
+  GoalGeographicConstantMap,
+  GoalMiscConstants,
+} from 'src/hooks/useGoalCalculatorConstants';
+import { OtherExpensesFields, calculateOtherExpenses } from './OtherExpenses';
+import {
+  ReimbursableCalculationFields,
+  calculateReimbursableTotals,
+} from './reimbursableExpenses';
+import {
+  SalaryCalculationFields,
+  calculateSalaryTotals,
+} from './salaryCalculation';
+
+export type PdsGoalTotalFields = SalaryCalculationFields &
+  ReimbursableCalculationFields &
+  OtherExpensesFields;
 
 export interface PdsGoalTotalConstants {
   employerFicaRate: number;
@@ -13,8 +26,57 @@ export interface PdsGoalTotalConstants {
   geographicMultiplier: number;
 }
 
+interface FourOThreeB {
+  currentTaxDeferredContributionPercentage?: number | null;
+  currentRothContributionPercentage?: number | null;
+}
+
+export const buildPdsGoalConstants = (
+  goalMiscConstants: GoalMiscConstants,
+  goalGeographicConstantMap: GoalGeographicConstantMap,
+  geographicLocation: string | null | undefined,
+  fourOThreeB: FourOThreeB | null | undefined,
+): PdsGoalTotalConstants | null => {
+  const additionalRates = goalMiscConstants.ADDITIONAL_RATES;
+  const rates = goalMiscConstants.RATES;
+
+  const employerFicaRate = additionalRates?.EMPLOYER_FICA_RATE?.fee;
+  const workCompPercentage = additionalRates?.PART_TIME_WORK_COMPENSATION?.fee;
+  const attritionRate = rates?.ATTRITION_RATE?.fee;
+  const creditCardFeeRate = additionalRates?.CREDIT_CARD_FEE_RATE?.fee;
+  const adminRate = rates?.ADMIN_RATE?.fee;
+
+  if (
+    employerFicaRate === undefined ||
+    workCompPercentage === undefined ||
+    attritionRate === undefined ||
+    creditCardFeeRate === undefined ||
+    adminRate === undefined
+  ) {
+    return null;
+  }
+
+  const geographicMultiplier =
+    goalGeographicConstantMap.get(geographicLocation ?? '') ?? 0;
+
+  const taxDeferredPct =
+    (fourOThreeB?.currentTaxDeferredContributionPercentage ?? 0) / 100;
+  const rothPct =
+    (fourOThreeB?.currentRothContributionPercentage ?? 0) / 100;
+
+  return {
+    employerFicaRate,
+    workCompPercentage,
+    attritionRate,
+    creditCardFeeRate,
+    adminRate,
+    fourOThreeBPercentage: taxDeferredPct + rothPct,
+    geographicMultiplier,
+  };
+};
+
 export const calculatePdsGoalTotal = (
-  calculation: PdsGoalCalculationFieldsFragment,
+  calculation: PdsGoalTotalFields,
   constants: PdsGoalTotalConstants,
 ): number => {
   const salaryTotals = calculateSalaryTotals(calculation, {

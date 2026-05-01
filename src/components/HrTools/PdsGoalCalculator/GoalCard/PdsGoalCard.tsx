@@ -5,11 +5,13 @@ import { DateTime } from 'luxon';
 import { Trans, useTranslation } from 'react-i18next';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import { useAccountListId } from 'src/hooks/useAccountListId';
+import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { PdsGoalCalculationFieldsFragment } from '../GoalsList/PdsGoalCalculations.generated';
+import { useHcmUserQuery } from '../Shared/HCM.generated';
 import {
-  PdsGoalTotalConstants,
+  buildPdsGoalConstants,
   calculatePdsGoalTotal,
 } from '../calculations/calculatePdsGoalTotal';
 
@@ -52,24 +54,32 @@ const StyledActionBox = styled(Box)(({ theme }) => ({
 
 export interface PdsGoalCardProps {
   goal: PdsGoalCalculationFieldsFragment;
-  onDelete: (id: string) => void;
-  constants: PdsGoalTotalConstants | null;
+  onDelete: (id: string) => Promise<void>;
 }
 
 export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({
   goal,
   onDelete,
-  constants,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const accountListId = useAccountListId() ?? '';
   const [deleting, setDeleting] = useState(false);
 
-  const goalTotal = useMemo(
-    () => (constants ? calculatePdsGoalTotal(goal, constants) : 0),
-    [goal, constants],
-  );
+  const { goalMiscConstants, goalGeographicConstantMap } =
+    useGoalCalculatorConstants();
+  const { data: hcmData } = useHcmUserQuery();
+  const hcmUser = hcmData?.hcm[0];
+
+  const goalTotal = useMemo(() => {
+    const constants = buildPdsGoalConstants(
+      goalMiscConstants,
+      goalGeographicConstantMap,
+      goal.geographicLocation,
+      hcmUser?.fourOThreeB,
+    );
+    return constants ? calculatePdsGoalTotal(goal, constants) : 0;
+  }, [goal, goalMiscConstants, goalGeographicConstantMap, hcmUser]);
 
   const handleDeleteClick = () => {
     setDeleting(true);
