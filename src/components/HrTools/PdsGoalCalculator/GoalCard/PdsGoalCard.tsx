@@ -65,17 +65,17 @@ export interface PdsGoalCardProps {
   onDelete: (id: string) => Promise<void>;
 }
 
-export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({
-  goal,
-  onDelete,
-}) => {
+export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({ goal, onDelete }) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const accountListId = useAccountListId() ?? '';
   const [deleting, setDeleting] = useState(false);
 
-  const { goalMiscConstants, goalGeographicConstantMap, loading: constantsLoading } =
-    useGoalCalculatorConstants();
+  const {
+    goalMiscConstants,
+    goalGeographicConstantMap,
+    loading: constantsLoading,
+  } = useGoalCalculatorConstants();
   const { data: hcmData, loading: hcmLoading } = useHcmUserQuery();
   const hcmUser = hcmData?.hcm[0];
 

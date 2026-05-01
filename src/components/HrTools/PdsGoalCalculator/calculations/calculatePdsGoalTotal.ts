@@ -27,9 +27,7 @@ export interface PdsGoalTotalConstants {
   geographicMultiplier: number;
 }
 
-type FourOThreeB = NonNullable<
-  HcmUserQuery['hcm'][number]['fourOThreeB']
->;
+type FourOThreeB = NonNullable<HcmUserQuery['hcm'][number]['fourOThreeB']>;
 
 export const buildPdsGoalConstants = (
   goalMiscConstants: GoalMiscConstants,
@@ -61,8 +59,7 @@ export const buildPdsGoalConstants = (
 
   const taxDeferredPct =
     (fourOThreeB?.currentTaxDeferredContributionPercentage ?? 0) / 100;
-  const rothPct =
-    (fourOThreeB?.currentRothContributionPercentage ?? 0) / 100;
+  const rothPct = (fourOThreeB?.currentRothContributionPercentage ?? 0) / 100;
 
   return {
     employerFicaRate,
