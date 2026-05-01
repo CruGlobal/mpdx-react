@@ -1,13 +1,17 @@
 import NextLink from 'next/link';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Box, Button, Card, Divider, Typography, styled } from '@mui/material';
 import { DateTime } from 'luxon';
 import { Trans, useTranslation } from 'react-i18next';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
-import { dateFormat } from 'src/lib/intlFormat';
+import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
 import { PdsGoalCalculationFieldsFragment } from '../GoalsList/PdsGoalCalculations.generated';
+import {
+  PdsGoalTotalConstants,
+  calculatePdsGoalTotal,
+} from '../calculations/calculatePdsGoalTotal';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   minWidth: 350,
@@ -49,13 +53,23 @@ const StyledActionBox = styled(Box)(({ theme }) => ({
 export interface PdsGoalCardProps {
   goal: PdsGoalCalculationFieldsFragment;
   onDelete: (id: string) => void;
+  constants: PdsGoalTotalConstants | null;
 }
 
-export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({ goal, onDelete }) => {
+export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({
+  goal,
+  onDelete,
+  constants,
+}) => {
   const { t } = useTranslation();
   const locale = useLocale();
   const accountListId = useAccountListId() ?? '';
   const [deleting, setDeleting] = useState(false);
+
+  const goalTotal = useMemo(
+    () => (constants ? calculatePdsGoalTotal(goal, constants) : 0),
+    [goal, constants],
+  );
 
   const handleDeleteClick = () => {
     setDeleting(true);
@@ -104,6 +118,17 @@ export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({ goal, onDelete }) => {
 
         <StyledContentBox>
           <StyledContentInnerBox>
+            <StyledInfoRow pb={1}>
+              <Typography variant="body1" fontWeight="bold" pl={2}>
+                {t('Goal Amount')}
+              </Typography>
+              <Typography data-testid="goal-amount-value" variant="body1">
+                {currencyFormat(goalTotal, 'USD', locale)}
+              </Typography>
+            </StyledInfoRow>
+
+            <Divider />
+
             <StyledInfoRow pt={1}>
               <Typography variant="body1" fontWeight="bold" pl={2}>
                 {t('Last Updated')}
