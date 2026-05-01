@@ -64,4 +64,22 @@ describe('PdsGoalCard', () => {
 
     expect(await findByTestId('date-value')).toHaveTextContent('March 15');
   });
+
+  it('renders the calculated goal amount', async () => {
+    const { findByTestId } = render(
+      <PdsGoalCalculatorTestWrapper
+        withProvider={false}
+        calculationsMock={{
+          nodes: [{ name: 'Test Goal' }],
+        }}
+      >
+        <PdsGoalsList />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    const goalAmount = await findByTestId('goal-amount-value');
+    // The exact value depends on the mock data — just verify it renders
+    // a currency-formatted string (starts with $ sign)
+    expect(goalAmount.textContent).toMatch(/^\$/);
+  });
 });
