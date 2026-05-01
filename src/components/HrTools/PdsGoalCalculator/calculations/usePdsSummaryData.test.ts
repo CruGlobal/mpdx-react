@@ -138,78 +138,57 @@ describe('usePdsSummaryData', () => {
       expect(result.current).toBeNull();
     });
 
-    it('returns null when employerFicaRate is missing', () => {
-      setupMock({
-        goalMiscConstants: {
-          ...defaultConstants.goalMiscConstants,
+    it.each([
+      [
+        'employerFicaRate',
+        {
           ADDITIONAL_RATES: {
             ...defaultConstants.goalMiscConstants.ADDITIONAL_RATES,
             EMPLOYER_FICA_RATE: undefined,
           },
         },
-      });
-      const { result } = renderHook(() =>
-        usePdsSummaryData(defaultCalculation, defaultHcmUser),
-      );
-      expect(result.current).toBeNull();
-    });
-
-    it('returns null when attritionRate is missing', () => {
-      setupMock({
-        goalMiscConstants: {
-          ...defaultConstants.goalMiscConstants,
-          RATES: {
-            ...defaultConstants.goalMiscConstants.RATES,
-            ATTRITION_RATE: undefined,
-          },
-        },
-      });
-      const { result } = renderHook(() =>
-        usePdsSummaryData(defaultCalculation, defaultHcmUser),
-      );
-      expect(result.current).toBeNull();
-    });
-
-    it('returns null when adminRate is missing', () => {
-      setupMock({
-        goalMiscConstants: {
-          ...defaultConstants.goalMiscConstants,
-          RATES: {
-            ...defaultConstants.goalMiscConstants.RATES,
-            ADMIN_RATE: undefined,
-          },
-        },
-      });
-      const { result } = renderHook(() =>
-        usePdsSummaryData(defaultCalculation, defaultHcmUser),
-      );
-      expect(result.current).toBeNull();
-    });
-
-    it('returns null when workCompPercentage is missing', () => {
-      setupMock({
-        goalMiscConstants: {
-          ...defaultConstants.goalMiscConstants,
+      ],
+      [
+        'workCompPercentage',
+        {
           ADDITIONAL_RATES: {
             ...defaultConstants.goalMiscConstants.ADDITIONAL_RATES,
             PART_TIME_WORK_COMPENSATION: undefined,
           },
         },
-      });
-      const { result } = renderHook(() =>
-        usePdsSummaryData(defaultCalculation, defaultHcmUser),
-      );
-      expect(result.current).toBeNull();
-    });
-
-    it('returns null when creditCardFeeRate is missing', () => {
-      setupMock({
-        goalMiscConstants: {
-          ...defaultConstants.goalMiscConstants,
+      ],
+      [
+        'creditCardFeeRate',
+        {
           ADDITIONAL_RATES: {
             ...defaultConstants.goalMiscConstants.ADDITIONAL_RATES,
             CREDIT_CARD_FEE_RATE: undefined,
           },
+        },
+      ],
+      [
+        'attritionRate',
+        {
+          RATES: {
+            ...defaultConstants.goalMiscConstants.RATES,
+            ATTRITION_RATE: undefined,
+          },
+        },
+      ],
+      [
+        'adminRate',
+        {
+          RATES: {
+            ...defaultConstants.goalMiscConstants.RATES,
+            ADMIN_RATE: undefined,
+          },
+        },
+      ],
+    ])('returns null when %s is missing', (_label, override) => {
+      setupMock({
+        goalMiscConstants: {
+          ...defaultConstants.goalMiscConstants,
+          ...override,
         },
       });
       const { result } = renderHook(() =>

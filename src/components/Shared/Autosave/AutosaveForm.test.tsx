@@ -45,6 +45,16 @@ const TestComponent: React.FC = () => (
 );
 
 describe('AutosaveForm', () => {
+  it('allValid is false before any field registers', () => {
+    const { getByRole } = render(
+      <AutosaveForm>
+        <Status />
+      </AutosaveForm>,
+    );
+
+    expect(getByRole('heading')).toHaveTextContent('Invalid');
+  });
+
   it('tracks valid and invalid fields', async () => {
     const { getByRole } = render(<TestComponent />);
 
