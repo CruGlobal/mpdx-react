@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { PdsGoalsList } from '../GoalsList/PdsGoalsList';
 import { PdsGoalCalculatorTestWrapper } from '../PdsGoalCalculatorTestWrapper';
 
@@ -63,5 +63,23 @@ describe('PdsGoalCard', () => {
     );
 
     expect(await findByTestId('date-value')).toHaveTextContent('March 15');
+  });
+
+  it('renders the calculated goal amount', async () => {
+    const { findByTestId } = render(
+      <PdsGoalCalculatorTestWrapper
+        withProvider={false}
+        calculationsMock={{
+          nodes: [{ name: 'Test Goal' }],
+        }}
+      >
+        <PdsGoalsList />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    const goalAmount = await findByTestId('goal-amount-value');
+    await waitFor(() => {
+      expect(goalAmount).toHaveTextContent('$849.44');
+    });
   });
 });
