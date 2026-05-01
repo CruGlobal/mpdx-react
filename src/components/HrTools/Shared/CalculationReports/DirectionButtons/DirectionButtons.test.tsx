@@ -25,6 +25,7 @@ interface TestComponentProps {
   showBackButton?: boolean;
   buttonTitle?: string;
   isEdit?: boolean;
+  disableNext?: boolean;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
@@ -33,6 +34,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   showBackButton = false,
   buttonTitle,
   isEdit,
+  disableNext,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter
@@ -54,6 +56,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
                 showBackButton={showBackButton}
                 buttonTitle={buttonTitle}
                 isEdit={isEdit}
+                disableNext={disableNext}
               />
             </MinisterHousingAllowanceProvider>
           </Formik>
@@ -120,6 +123,38 @@ describe('DirectionButtons', () => {
     expect(
       await findByRole('button', { name: /discard/i }),
     ).toBeInTheDocument();
+  });
+
+  it('shows tooltip when Continue button is disabled', async () => {
+    const { findByRole, findByText } = render(
+      <TestComponent disableNext={true} />,
+    );
+
+    const continueButton = await findByRole('button', { name: 'Continue' });
+    expect(continueButton).toBeDisabled();
+
+    userEvent.hover(continueButton.parentElement!);
+
+    expect(
+      await findByText('Complete all required fields to continue'),
+    ).toBeInTheDocument();
+  });
+
+  it('does not show tooltip when Continue button is enabled', async () => {
+    const { findByRole, queryByText } = render(
+      <TestComponent disableNext={false} />,
+    );
+
+    const continueButton = await findByRole('button', { name: 'Continue' });
+    expect(continueButton).toBeEnabled();
+
+    userEvent.hover(continueButton.parentElement!);
+
+    await waitFor(() => {
+      expect(
+        queryByText('Complete all required fields to continue'),
+      ).not.toBeInTheDocument();
+    });
   });
 
   it('renders Discard Changes button', async () => {

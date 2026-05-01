@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, waitFor } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
   DesignationSupportSalaryType,
@@ -39,6 +39,58 @@ const fullTimeHourlyMock = {
 };
 
 describe('SetupStep', () => {
+  it('disables fields while calculation data is loading', async () => {
+    const { findByRole } = render(
+      <PdsGoalCalculatorTestWrapper calculationMock={undefined as never}>
+        <SetupStep />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    // When calculation is undefined (loading), autosave fields should be disabled
+    const goalName = await findByRole('textbox', { name: 'Goal Name' });
+    expect(goalName).toBeDisabled();
+  });
+
+  it('shows validation errors for multiple empty required fields simultaneously', async () => {
+    const { findByRole, findByText } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={{
+          ...fullTimeHourlyMock,
+          name: 'Test Goal',
+        }}
+      >
+        <SetupStep />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    // Wait for fields to render with data
+    const goalNameInput = await findByRole('textbox', { name: 'Goal Name' });
+    await waitFor(() => expect(goalNameInput).toHaveValue('Test Goal'));
+
+    // Clear Goal Name to trigger its required error
+    userEvent.clear(goalNameInput);
+
+    // Clear Pay Rate and Hours Worked to trigger their required errors
+    const payRateInput = await findByRole('spinbutton', { name: 'Pay Rate' });
+    fireEvent.change(payRateInput, { target: { value: '' } });
+
+    const hoursInput = await findByRole('spinbutton', {
+      name: 'Hours Worked',
+    });
+    fireEvent.change(hoursInput, { target: { value: '' } });
+
+    // All three validation errors should appear simultaneously
+    expect(
+      await findByText('Goal Name is a required field'),
+    ).toBeInTheDocument();
+    expect(
+      await findByText('Pay Rate is a required field'),
+    ).toBeInTheDocument();
+    expect(
+      await findByText('Hours Worked is a required field'),
+    ).toBeInTheDocument();
+  });
+
   it('renders all visible fields for full-time salaried (Benefits shown, Hours Worked hidden)', async () => {
     const { findByRole, queryByRole } = render(
       <PdsGoalCalculatorTestWrapper calculationMock={fullTimeSalariedMock}>

@@ -32,6 +32,7 @@ export const AutosaveTextField: React.FC<AutosaveTextFieldProps> = ({
       {...fieldProps}
       {...props}
       disabled={fieldProps.disabled || props.disabled}
+      helperText={fieldProps.helperText ?? props.helperText}
     />
   );
 };

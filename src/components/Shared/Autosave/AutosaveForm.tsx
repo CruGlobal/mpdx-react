@@ -40,30 +40,39 @@ interface AutosaveFormProps {
  * <AutosaveForm> and `useAutosave` will automatically call `markValid` and `markInvalid`. Then
  * anywhere inside of the <AutosaveForm> call `useAutosaveForm().allValid` to know whether any
  * fields are invalid.
+ *
+ * allValid starts as false until at least one field registers its status, preventing a brief
+ * flash of enabled submit/continue buttons before fields validate.
  */
 export const AutosaveForm: React.FC<AutosaveFormProps> = ({ children }) => {
   // Track the list of fields that are currently invalid
   const [invalidFields, setInvalidFields] = useState<string[]>([]);
+  // Track whether any field has reported its status yet
+  const [hasRegisteredFields, setHasRegisteredFields] = useState(false);
 
   // Mark a field as valid
   const markValid = useCallback((fieldName: string) => {
+    setHasRegisteredFields(true);
     setInvalidFields((prev) => prev.filter((field) => field !== fieldName));
   }, []);
 
   // Mark a field as invalid
   const markInvalid = useCallback((fieldName: string) => {
+    setHasRegisteredFields(true);
     setInvalidFields((prev) =>
       prev.includes(fieldName) ? prev : [...prev, fieldName],
     );
   }, []);
 
+  const allValid = hasRegisteredFields ? invalidFields.length === 0 : false;
+
   const contextValue: AutosaveFormContextType = useMemo(
     () => ({
       markValid,
       markInvalid,
-      allValid: invalidFields.length === 0,
+      allValid,
     }),
-    [markValid, markInvalid, invalidFields.length],
+    [markValid, markInvalid, allValid],
   );
 
   return (

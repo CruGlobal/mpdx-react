@@ -57,14 +57,22 @@ export const SetupStep: React.FC = () => {
           .number()
           .required(t('Pay Rate is a required field'))
           .min(0, t('Pay Rate must be a positive number')),
-        hoursWorkedPerWeek: yup
-          .number()
-          .required(t('Hours Worked is a required field'))
-          .min(0, t('Hours Worked must be a positive number')),
-        benefits: yup
-          .number()
-          .required(t('Benefits is a required field'))
-          .min(0, t('Benefits must be a positive number')),
+        hoursWorkedPerWeek: yup.number().when('salaryOrHourly', {
+          is: (val: string) => val !== DesignationSupportSalaryType.Salaried,
+          then: (s) =>
+            s
+              .required(t('Hours Worked is a required field'))
+              .min(0, t('Hours Worked must be a positive number')),
+          otherwise: (s) => s.optional().nullable(),
+        }),
+        benefits: yup.number().when('status', {
+          is: (val: string) => val !== DesignationSupportStatus.PartTime,
+          then: (s) =>
+            s
+              .required(t('Benefits is a required field'))
+              .min(0, t('Benefits must be a positive number')),
+          otherwise: (s) => s.optional().nullable(),
+        }),
       }),
     [t],
   );
