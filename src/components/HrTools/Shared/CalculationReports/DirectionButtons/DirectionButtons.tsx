@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
-import { Box, Button } from '@mui/material';
+import { Box, Button, Tooltip } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { SubmitModal } from '../SubmitModal/SubmitModal';
 
@@ -139,15 +139,23 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
             <ChevronRight sx={{ ml: 1 }} />
           </Button>
         ) : (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={overrideNext ?? handleNextStep}
-            disabled={disableNext}
+          <Tooltip
+            title={
+              disableNext ? t('Complete all required fields to continue') : ''
+            }
           >
-            {buttonTitle ?? t('Continue')}
-            <ChevronRight sx={{ ml: 1 }} />
-          </Button>
+            <Box component="span">
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={overrideNext ?? handleNextStep}
+                disabled={disableNext}
+              >
+                {buttonTitle ?? t('Continue')}
+                <ChevronRight sx={{ ml: 1 }} />
+              </Button>
+            </Box>
+          </Tooltip>
         )}
       </Box>
       {openSubmitModal && (
