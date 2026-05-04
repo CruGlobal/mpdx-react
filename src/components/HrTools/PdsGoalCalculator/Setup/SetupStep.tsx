@@ -47,20 +47,32 @@ export const SetupStep: React.FC = () => {
     () =>
       yup.object({
         name: yup.string().required(t('Goal Name is a required field')),
-        status: yup.string().nullable(),
-        salaryOrHourly: yup.string().nullable(),
+        status: yup
+          .string()
+          .required(t('Employment Status is a required field')),
+        salaryOrHourly: yup
+          .string()
+          .required(t('Pay Type is a required field')),
         payRate: yup
           .number()
-          .nullable()
-          .min(0, t('Pay Rate must be a positive number')),
-        hoursWorkedPerWeek: yup
-          .number()
-          .nullable()
-          .min(0, t('Hours Worked must be a positive number')),
-        benefits: yup
-          .number()
-          .nullable()
-          .min(0, t('Benefits must be a positive number')),
+          .required(t('Pay Rate is a required field'))
+          .positive(t('Pay Rate must be a positive number')),
+        hoursWorkedPerWeek: yup.number().when('salaryOrHourly', {
+          is: (val: string) => val !== DesignationSupportSalaryType.Salaried,
+          then: (s) =>
+            s
+              .required(t('Hours Worked is a required field'))
+              .positive(t('Hours Worked must be a positive number')),
+          otherwise: (s) => s.optional().nullable(),
+        }),
+        benefits: yup.number().when('status', {
+          is: (val: string) => val !== DesignationSupportStatus.PartTime,
+          then: (s) =>
+            s
+              .required(t('Benefits is a required field'))
+              .positive(t('Benefits must be a positive number')),
+          otherwise: (s) => s.optional().nullable(),
+        }),
       }),
     [t],
   );

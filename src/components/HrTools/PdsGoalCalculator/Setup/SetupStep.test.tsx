@@ -38,7 +38,61 @@ const fullTimeHourlyMock = {
   hoursWorkedPerWeek: 40,
 };
 
+const partTimeHourlyMock = {
+  ...fullTimeHourlyMock,
+  status: DesignationSupportStatus.PartTime,
+  benefits: null,
+};
+
 describe('SetupStep', () => {
+  it('disables fields while calculation data is loading', async () => {
+    const { findByRole } = render(
+      <PdsGoalCalculatorTestWrapper calculationMock={undefined}>
+        <SetupStep />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    // When calculation is undefined (loading), autosave fields should be disabled
+    const goalName = await findByRole('textbox', { name: 'Goal Name' });
+    expect(goalName).toBeDisabled();
+  });
+
+  it('shows validation errors for multiple empty required fields simultaneously', async () => {
+    const { findByRole, findByText } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={{
+          ...fullTimeHourlyMock,
+          name: 'Test Goal',
+        }}
+      >
+        <SetupStep />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    const goalNameInput = await findByRole('textbox', { name: 'Goal Name' });
+    await waitFor(() => expect(goalNameInput).toHaveValue('Test Goal'));
+
+    userEvent.clear(goalNameInput);
+
+    const payRateInput = await findByRole('spinbutton', { name: 'Pay Rate' });
+    userEvent.clear(payRateInput);
+
+    const hoursInput = await findByRole('spinbutton', {
+      name: 'Hours Worked',
+    });
+    userEvent.clear(hoursInput);
+
+    expect(
+      await findByText('Goal Name is a required field'),
+    ).toBeInTheDocument();
+    expect(
+      await findByText('Pay Rate is a required field'),
+    ).toBeInTheDocument();
+    expect(
+      await findByText('Hours Worked is a required field'),
+    ).toBeInTheDocument();
+  });
+
   it('renders all visible fields for full-time salaried (Benefits shown, Hours Worked hidden)', async () => {
     const { findByRole, queryByRole } = render(
       <PdsGoalCalculatorTestWrapper calculationMock={fullTimeSalariedMock}>
@@ -289,5 +343,73 @@ describe('SetupStep', () => {
     userEvent.click(await findByLabelText('Open hours per week calculator'));
 
     expect(await findByText('Hours Per Week Calculator')).toBeInTheDocument();
+  });
+
+  it('hides Hours Worked and adapts validation when switching from Hourly to Salaried', async () => {
+    const { findByRole, queryByRole, rerender } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={{ ...fullTimeHourlyMock, hoursWorkedPerWeek: null }}
+      >
+        <SetupStep />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    // Hours Worked is visible and required when Hourly
+    const hoursInput = await findByRole('spinbutton', {
+      name: 'Hours Worked',
+    });
+    expect(hoursInput).toBeInTheDocument();
+
+    // Switch to Salaried — Hours Worked should disappear
+    rerender(
+      <PdsGoalCalculatorTestWrapper calculationMock={fullTimeSalariedMock}>
+        <SetupStep />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    await waitFor(() => {
+      expect(
+        queryByRole('spinbutton', { name: 'Hours Worked' }),
+      ).not.toBeInTheDocument();
+    });
+
+    // Benefits should still be visible (Full-time)
+    expect(
+      await findByRole('spinbutton', { name: 'Benefits' }),
+    ).toBeInTheDocument();
+  });
+
+  it('hides Benefits and adapts validation when switching from Full-time to Part-time', async () => {
+    const { findByRole, queryByRole, rerender } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={{ ...fullTimeHourlyMock, benefits: null }}
+      >
+        <SetupStep />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    // Benefits is visible and required when Full-time
+    const benefitsInput = await findByRole('spinbutton', {
+      name: 'Benefits',
+    });
+    expect(benefitsInput).toBeInTheDocument();
+
+    // Switch to Part-time Hourly — Benefits should disappear
+    rerender(
+      <PdsGoalCalculatorTestWrapper calculationMock={partTimeHourlyMock}>
+        <SetupStep />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    await waitFor(() => {
+      expect(
+        queryByRole('spinbutton', { name: 'Benefits' }),
+      ).not.toBeInTheDocument();
+    });
+
+    // Hours Worked should still be visible (Hourly)
+    expect(
+      await findByRole('spinbutton', { name: 'Hours Worked' }),
+    ).toBeInTheDocument();
   });
 });

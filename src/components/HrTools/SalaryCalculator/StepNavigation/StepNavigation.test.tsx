@@ -7,6 +7,20 @@ import {
 } from '../SalaryCalculatorTestWrapper';
 import { DiscardButton, StepNavigation, SubmitButton } from './StepNavigation';
 
+jest.mock('src/components/Shared/Autosave/AutosaveForm', () => {
+  const actual = jest.requireActual<
+    typeof import('src/components/Shared/Autosave/AutosaveForm')
+  >('src/components/Shared/Autosave/AutosaveForm');
+  return {
+    ...actual,
+    useAutosaveForm: () => ({
+      markValid: jest.fn(),
+      markInvalid: jest.fn(),
+      allValid: true,
+    }),
+  };
+});
+
 const mutationSpy = jest.fn();
 
 const TestComponent: React.FC<SalaryCalculatorTestWrapperProps> = (props) => (
