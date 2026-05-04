@@ -5,6 +5,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import { type HcmQuery, useHcmQuery } from '../../Shared/HcmData/Hcm.generated';
 import { getLocalizedTaxStatus } from '../Shared/getLocalizedTaxStatus';
+import { orientSalaryRequest } from '../Shared/orientSalaryRequest';
 import { useAccountBalanceQuery } from './AccountBalance.generated';
 import {
   type LandingSalaryCalculationsQuery,
@@ -64,7 +65,6 @@ export const useLandingData = (): LandingData => {
   const { data: staffAccountIdData, loading: staffAccountIdLoading } =
     useStaffAccountIdQuery();
 
-  const effectiveCalculation = calculationData?.effectiveCalculation;
   const inProgressCalculationId =
     calculationData?.inProgressCalculation?.id ?? null;
   const latestCalculation = calculationData?.latestCalculation;
@@ -154,44 +154,40 @@ export const useLandingData = (): LandingData => {
   );
 
   const salaryCategories = useMemo<SalaryCategory[]>(() => {
-    const ownRequest =
-      effectiveCalculation?.personNumber === self?.staffInfo.personNumber;
-    const effectiveCap = ownRequest
-      ? effectiveCalculation?.calculations.effectiveCap
-      : effectiveCalculation?.spouseCalculations?.effectiveCap;
-    const spouseEffectiveCap = ownRequest
-      ? effectiveCalculation?.spouseCalculations?.effectiveCap
-      : effectiveCalculation?.calculations.effectiveCap;
-    const salary = ownRequest
-      ? effectiveCalculation?.salary
-      : effectiveCalculation?.spouseSalary;
-    const spouseSalary = ownRequest
-      ? effectiveCalculation?.spouseSalary
-      : effectiveCalculation?.salary;
+    const effectiveCalculation = orientSalaryRequest(
+      calculationData?.effectiveCalculation,
+      self?.staffInfo.personNumber,
+    );
 
     return [
       {
         category: t('Maximum Allowable Salary'),
-        user: effectiveCap
-          ? currencyFormat(effectiveCap, 'USD', locale, {
-              showTrailingZeros: true,
-            })
+        user: effectiveCalculation?.calculations.effectiveCap
+          ? currencyFormat(
+              effectiveCalculation.calculations.effectiveCap,
+              'USD',
+              locale,
+              { showTrailingZeros: true },
+            )
           : 'TBD',
-        spouse: spouseEffectiveCap
-          ? currencyFormat(spouseEffectiveCap, 'USD', locale, {
-              showTrailingZeros: true,
-            })
+        spouse: effectiveCalculation?.spouseCalculations?.effectiveCap
+          ? currencyFormat(
+              effectiveCalculation.spouseCalculations?.effectiveCap,
+              'USD',
+              locale,
+              { showTrailingZeros: true },
+            )
           : 'TBD',
       },
       {
         category: t('Requested Salary'),
-        user: salary
-          ? currencyFormat(salary, 'USD', locale, {
+        user: effectiveCalculation?.salary
+          ? currencyFormat(effectiveCalculation.salary, 'USD', locale, {
               showTrailingZeros: true,
             })
           : 'TBD',
-        spouse: spouseSalary
-          ? currencyFormat(spouseSalary, 'USD', locale, {
+        spouse: effectiveCalculation?.spouseSalary
+          ? currencyFormat(effectiveCalculation.spouseSalary, 'USD', locale, {
               showTrailingZeros: true,
             })
           : 'TBD',
@@ -252,7 +248,7 @@ export const useLandingData = (): LandingData => {
         link: '/hrTools/mhaCalculator',
       },
     ];
-  }, [t, salaryData, self, spouse, effectiveCalculation, locale]);
+  }, [t, salaryData, self, spouse, calculationData, locale]);
 
   return {
     staffAccountId,
