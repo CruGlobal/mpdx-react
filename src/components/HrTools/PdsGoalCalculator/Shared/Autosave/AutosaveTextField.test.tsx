@@ -156,6 +156,52 @@ describe('AutosaveTextField', () => {
     expect(input).toBeDisabled();
   });
 
+  it('shows props helperText when there is no validation error', async () => {
+    const { findByRole } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={calculationMock}
+        onCall={mutationSpy}
+      >
+        <AutosaveTextField
+          label="Test Field"
+          fieldName="name"
+          schema={schema}
+          helperText="Enter the goal name"
+        />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    const input = await findByRole('textbox', { name: 'Test Field' });
+    expect(input).toHaveAccessibleDescription('Enter the goal name');
+  });
+
+  it('shows validation error instead of props helperText', async () => {
+    const { findByRole } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={calculationMock}
+        onCall={mutationSpy}
+      >
+        <AutosaveTextField
+          label="Pay Rate"
+          fieldName="payRate"
+          schema={schema}
+          type="number"
+          helperText="Enter your pay rate"
+        />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    const input = await findByRole('spinbutton', { name: 'Pay Rate' });
+    await waitFor(() => expect(input).toHaveValue(50000));
+
+    userEvent.clear(input);
+    userEvent.type(input, '-100');
+
+    expect(input).toHaveAccessibleDescription(
+      'Pay Rate must be a positive number',
+    );
+  });
+
   describe('select input', () => {
     it('saves on change', async () => {
       const { getByRole } = render(

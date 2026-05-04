@@ -1,6 +1,10 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import {
+  DesignationSupportSalaryType,
+  DesignationSupportStatus,
+} from 'src/graphql/types.generated';
 import { PdsGoalCalculator } from './PdsGoalCalculator';
 import { PdsGoalCalculatorTestWrapper } from './PdsGoalCalculatorTestWrapper';
 
@@ -53,6 +57,79 @@ describe('PdsGoalCalculator', () => {
 
     userEvent.type(goalNameInput, 'My Goal');
 
+    expect(continueButton).not.toBeDisabled();
+  });
+
+  it('re-enables Continue when switching from Hourly to Salaried hides the only invalid field', async () => {
+    const { findByRole, getByRole, queryByRole } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={{
+          salaryOrHourly: DesignationSupportSalaryType.Hourly,
+          hoursWorkedPerWeek: null,
+          status: DesignationSupportStatus.FullTime,
+          payRate: 25,
+          benefits: 1500,
+          name: 'Test Goal',
+        }}
+      >
+        <PdsGoalCalculator />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    const continueButton = await findByRole('button', { name: /continue/i });
+    expect(
+      await findByRole('spinbutton', { name: 'Hours Worked' }),
+    ).toBeInTheDocument();
+    await waitFor(() => expect(continueButton).toBeDisabled());
+
+    const payTypeSelect = getByRole('combobox', { name: 'Pay Type' });
+    await waitFor(() =>
+      expect(payTypeSelect).not.toHaveAttribute('aria-disabled', 'true'),
+    );
+    userEvent.click(payTypeSelect);
+    userEvent.click(await findByRole('option', { name: 'Salaried' }));
+
+    await waitFor(() => {
+      expect(
+        queryByRole('spinbutton', { name: 'Hours Worked' }),
+      ).not.toBeInTheDocument();
+    });
+    await waitFor(() => expect(continueButton).not.toBeDisabled());
+  });
+
+  it('re-enables Continue when switching from Full-time to Part-time hides the only invalid field', async () => {
+    const { findByRole, getByRole, queryByRole } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={{
+          status: DesignationSupportStatus.FullTime,
+          salaryOrHourly: DesignationSupportSalaryType.Salaried,
+          benefits: null,
+          payRate: 50000,
+          name: 'Test Goal',
+        }}
+      >
+        <PdsGoalCalculator />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    const continueButton = await findByRole('button', { name: /continue/i });
+    expect(
+      await findByRole('spinbutton', { name: 'Benefits' }),
+    ).toBeInTheDocument();
+    await waitFor(() => expect(continueButton).toBeDisabled());
+
+    const statusSelect = getByRole('combobox', { name: 'Employment Status' });
+    await waitFor(() =>
+      expect(statusSelect).not.toHaveAttribute('aria-disabled', 'true'),
+    );
+    userEvent.click(statusSelect);
+    userEvent.click(await findByRole('option', { name: 'Part-time' }));
+
+    await waitFor(() => {
+      expect(
+        queryByRole('spinbutton', { name: 'Benefits' }),
+      ).not.toBeInTheDocument();
+    });
     await waitFor(() => expect(continueButton).not.toBeDisabled());
   });
 });

@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, render, waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
   DesignationSupportSalaryType,
@@ -75,12 +75,12 @@ describe('SetupStep', () => {
     userEvent.clear(goalNameInput);
 
     const payRateInput = await findByRole('spinbutton', { name: 'Pay Rate' });
-    fireEvent.change(payRateInput, { target: { value: '' } });
+    userEvent.clear(payRateInput);
 
     const hoursInput = await findByRole('spinbutton', {
       name: 'Hours Worked',
     });
-    fireEvent.change(hoursInput, { target: { value: '' } });
+    userEvent.clear(hoursInput);
 
     expect(
       await findByText('Goal Name is a required field'),
