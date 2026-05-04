@@ -2,7 +2,6 @@ fragment ListGoalCalculation on GoalCalculation {
   id
   name
   role
-  primary
   familySize
   benefitsPlan
   netPaycheckAmount
@@ -39,19 +38,6 @@ query GoalCalculations($accountListId: ID!, $after: String) {
 
 mutation CreateGoalCalculation($accountListId: ID!) {
   createGoalCalculation(input: { accountListId: $accountListId }) {
-    goalCalculation {
-      ...ListGoalCalculation
-    }
-  }
-}
-
-mutation UpdateGoalCalculation(
-  $accountListId: ID!
-  $attributes: GoalCalculationUpdateInput!
-) {
-  updateGoalCalculation(
-    input: { accountListId: $accountListId, attributes: $attributes }
-  ) {
     goalCalculation {
       ...ListGoalCalculation
     }
