@@ -16,8 +16,16 @@ import { useFormatters } from '../Shared/useFormatters';
 export const SalarySummaryCard: React.FC = () => {
   const { t } = useTranslation();
   const { hcmUser, hcmSpouse, calculation } = useSalaryCalculator();
-  const { data: approvedData } = useEffectiveSalaryCalculationQuery();
-  const effectiveCalculation = approvedData?.salaryRequest;
+  const { data: effectiveData } = useEffectiveSalaryCalculationQuery();
+  const oldCalculation = effectiveData?.salaryRequest;
+  const ownRequest =
+    oldCalculation?.personNumber === hcmUser?.staffInfo.personNumber;
+  const oldCalculations = ownRequest
+    ? oldCalculation?.calculations
+    : oldCalculation?.spouseCalculations;
+  const oldSpouseCalculations = ownRequest
+    ? oldCalculation?.spouseCalculations
+    : oldCalculation?.calculations;
   const { formatCurrency, formatFraction } = useFormatters();
 
   return (
@@ -37,38 +45,42 @@ export const SalarySummaryCard: React.FC = () => {
               <TableCell scope="col">
                 {hcmUser?.staffInfo.preferredName}
               </TableCell>
-              {effectiveCalculation && (
-                <TableCell scope="col">{t('Old')}</TableCell>
-              )}
+              {oldCalculation && <TableCell scope="col">{t('Old')}</TableCell>}
               <TableCell scope="col">{t('New')}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             <TableRow>
               <TableCell scope="row">{t('Requested Salary')}</TableCell>
-              {effectiveCalculation && (
+              {oldCalculation && (
                 <TableCell>
-                  {formatCurrency(effectiveCalculation.salary)}
+                  {formatCurrency(
+                    ownRequest
+                      ? oldCalculation.salary
+                      : oldCalculation.spouseSalary,
+                  )}
                 </TableCell>
               )}
               <TableCell>{formatCurrency(calculation?.salary)}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell scope="row">{t('MHA')}</TableCell>
-              {effectiveCalculation && (
+              {oldCalculation && (
                 <TableCell>
-                  {formatCurrency(effectiveCalculation.mhaAmount)}
+                  {formatCurrency(
+                    ownRequest
+                      ? oldCalculation.mhaAmount
+                      : oldCalculation.spouseMhaAmount,
+                  )}
                 </TableCell>
               )}
               <TableCell>{formatCurrency(calculation?.mhaAmount)}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell scope="row">{t('403(b) Contribution')}</TableCell>
-              {effectiveCalculation && (
+              {oldCalculation && (
                 <TableCell>
-                  {formatFraction(
-                    effectiveCalculation.calculations.contributing403bFraction,
-                  )}
+                  {formatFraction(oldCalculations?.contributing403bFraction)}
                 </TableCell>
               )}
               <TableCell>
@@ -79,11 +91,9 @@ export const SalarySummaryCard: React.FC = () => {
             </TableRow>
             <TableRow>
               <TableCell scope="row">{t('Max Allowable Salary')}</TableCell>
-              {effectiveCalculation && (
+              {oldCalculation && (
                 <TableCell>
-                  {formatCurrency(
-                    effectiveCalculation.calculations.effectiveCap,
-                  )}
+                  {formatCurrency(oldCalculations?.effectiveCap)}
                 </TableCell>
               )}
               <TableCell>
@@ -100,7 +110,7 @@ export const SalarySummaryCard: React.FC = () => {
                 <TableCell scope="col">
                   {hcmSpouse?.staffInfo.preferredName}
                 </TableCell>
-                {effectiveCalculation && (
+                {oldCalculation && (
                   <TableCell scope="col">{t('Old')}</TableCell>
                 )}
                 <TableCell scope="col">{t('New')}</TableCell>
@@ -109,9 +119,13 @@ export const SalarySummaryCard: React.FC = () => {
             <TableBody>
               <TableRow>
                 <TableCell scope="row">{t('Requested Salary')}</TableCell>
-                {effectiveCalculation && (
+                {oldCalculation && (
                   <TableCell>
-                    {formatCurrency(effectiveCalculation.spouseSalary)}
+                    {formatCurrency(
+                      ownRequest
+                        ? oldCalculation.spouseSalary
+                        : oldCalculation.salary,
+                    )}
                   </TableCell>
                 )}
                 <TableCell>
@@ -120,9 +134,13 @@ export const SalarySummaryCard: React.FC = () => {
               </TableRow>
               <TableRow>
                 <TableCell scope="row">{t('MHA')}</TableCell>
-                {effectiveCalculation && (
+                {oldCalculation && (
                   <TableCell>
-                    {formatCurrency(effectiveCalculation.spouseMhaAmount)}
+                    {formatCurrency(
+                      ownRequest
+                        ? oldCalculation.spouseMhaAmount
+                        : oldCalculation.mhaAmount,
+                    )}
                   </TableCell>
                 )}
                 <TableCell>
@@ -131,11 +149,10 @@ export const SalarySummaryCard: React.FC = () => {
               </TableRow>
               <TableRow>
                 <TableCell scope="row">{t('403(b) Contribution')}</TableCell>
-                {effectiveCalculation && (
+                {oldCalculation && (
                   <TableCell>
                     {formatFraction(
-                      effectiveCalculation.spouseCalculations
-                        ?.contributing403bFraction,
+                      oldSpouseCalculations?.contributing403bFraction,
                     )}
                   </TableCell>
                 )}
@@ -147,11 +164,9 @@ export const SalarySummaryCard: React.FC = () => {
               </TableRow>
               <TableRow>
                 <TableCell scope="row">{t('Max Allowable Salary')}</TableCell>
-                {effectiveCalculation && (
+                {oldCalculation && (
                   <TableCell>
-                    {formatCurrency(
-                      effectiveCalculation.spouseCalculations?.effectiveCap,
-                    )}
+                    {formatCurrency(oldSpouseCalculations?.effectiveCap)}
                   </TableCell>
                 )}
                 <TableCell>

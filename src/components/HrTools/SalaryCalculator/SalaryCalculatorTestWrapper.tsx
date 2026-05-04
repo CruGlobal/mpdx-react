@@ -29,6 +29,7 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
         staffInfo: {
           preferredName: 'John',
           lastName: 'Doe',
+          personNumber: '000123456',
           city: 'Miami',
           country: 'US',
           state: 'FL',
@@ -62,6 +63,7 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
         staffInfo: {
           preferredName: 'Jane',
           lastName: 'Doe',
+          personNumber: '000789123',
           tenure: 1000,
           primaryPhoneNumber: '555-0124',
           emailAddress: 'jane.doe@example.com',

@@ -153,36 +153,45 @@ export const useLandingData = (): LandingData => {
     [accountBalanceData],
   );
 
-  const salaryCategories = useMemo<SalaryCategory[]>(
-    () => [
+  const salaryCategories = useMemo<SalaryCategory[]>(() => {
+    const ownRequest =
+      effectiveCalculation?.personNumber === self?.staffInfo.personNumber;
+    const effectiveCap = ownRequest
+      ? effectiveCalculation?.calculations.effectiveCap
+      : effectiveCalculation?.spouseCalculations?.effectiveCap;
+    const spouseEffectiveCap = ownRequest
+      ? effectiveCalculation?.spouseCalculations?.effectiveCap
+      : effectiveCalculation?.calculations.effectiveCap;
+    const salary = ownRequest
+      ? effectiveCalculation?.salary
+      : effectiveCalculation?.spouseSalary;
+    const spouseSalary = ownRequest
+      ? effectiveCalculation?.spouseSalary
+      : effectiveCalculation?.salary;
+
+    return [
       {
         category: t('Maximum Allowable Salary'),
-        user: effectiveCalculation?.calculations.effectiveCap
-          ? currencyFormat(
-              effectiveCalculation.calculations.effectiveCap,
-              'USD',
-              locale,
-              { showTrailingZeros: true },
-            )
+        user: effectiveCap
+          ? currencyFormat(effectiveCap, 'USD', locale, {
+              showTrailingZeros: true,
+            })
           : 'TBD',
-        spouse: effectiveCalculation?.spouseCalculations?.effectiveCap
-          ? currencyFormat(
-              effectiveCalculation.spouseCalculations?.effectiveCap,
-              'USD',
-              locale,
-              { showTrailingZeros: true },
-            )
+        spouse: spouseEffectiveCap
+          ? currencyFormat(spouseEffectiveCap, 'USD', locale, {
+              showTrailingZeros: true,
+            })
           : 'TBD',
       },
       {
         category: t('Requested Salary'),
-        user: effectiveCalculation?.salary
-          ? currencyFormat(effectiveCalculation.salary, 'USD', locale, {
+        user: salary
+          ? currencyFormat(salary, 'USD', locale, {
               showTrailingZeros: true,
             })
           : 'TBD',
-        spouse: effectiveCalculation?.spouseSalary
-          ? currencyFormat(effectiveCalculation.spouseSalary, 'USD', locale, {
+        spouse: spouseSalary
+          ? currencyFormat(spouseSalary, 'USD', locale, {
               showTrailingZeros: true,
             })
           : 'TBD',
@@ -242,9 +251,8 @@ export const useLandingData = (): LandingData => {
         }),
         link: '/hrTools/mhaCalculator',
       },
-    ],
-    [t, salaryData, self, spouse, effectiveCalculation, locale],
-  );
+    ];
+  }, [t, salaryData, self, spouse, effectiveCalculation, locale]);
 
   return {
     staffAccountId,

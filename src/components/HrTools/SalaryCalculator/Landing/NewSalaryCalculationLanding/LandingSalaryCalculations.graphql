@@ -17,6 +17,7 @@ query LandingSalaryCalculations {
   }
   effectiveCalculation: effectiveSalaryRequest {
     id
+    personNumber
     salary
     spouseSalary
     calculations {

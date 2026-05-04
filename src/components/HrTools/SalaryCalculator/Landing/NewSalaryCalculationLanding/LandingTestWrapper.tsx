@@ -51,6 +51,7 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
                 staffInfo: {
                   preferredName: 'John',
                   lastName: 'Doe',
+                  personNumber: '000123456',
                   secaStatus: SecaStatusEnum.Seca,
                   peopleGroupSupportType:
                     PeopleGroupSupportTypeEnum.SupportedRmo,
@@ -75,6 +76,7 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
                 staffInfo: {
                   preferredName: 'Jane',
                   lastName: 'Doe',
+                  personNumber: '000123457',
                   secaStatus: SecaStatusEnum.Seca,
                 },
                 currentSalary: {
@@ -98,6 +100,7 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
               : null,
             effectiveCalculation: hasApprovedCalculation
               ? {
+                  personNumber: '000123456',
                   salary: 50000,
                   spouseSalary: 60000,
                   calculations: { effectiveCap: 60000 },

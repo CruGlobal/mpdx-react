@@ -75,6 +75,7 @@ query SalaryCalculation($id: ID!) {
 query EffectiveSalaryCalculation {
   salaryRequest: effectiveSalaryRequest {
     id
+    personNumber
     mhaAmount
     spouseMhaAmount
     salary
