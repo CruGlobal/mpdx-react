@@ -6,7 +6,7 @@ import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import illustration6graybg from 'src/images/drawkit/grape/drawkit-grape-pack-illustration-6-gray-bg.svg';
-import { GoalCard } from '../GoalCard/GoalCard';
+import { MpdGoalCard } from '../GoalCard/MpdGoalCard';
 import {
   useCreateGoalCalculationMutation,
   useGoalCalculationsQuery,
@@ -73,7 +73,7 @@ export const GoalsList: React.FC = () => {
       ) : (
         <Stack direction="row" gap={3} flexWrap="wrap">
           {goals?.map((goal) => (
-            <GoalCard key={goal.id} goal={goal} />
+            <MpdGoalCard key={goal.id} goal={goal} />
           ))}
         </Stack>
       )}
