@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { PdsGoalsList } from '../GoalsList/PdsGoalsList';
 import { PdsGoalCalculatorTestWrapper } from '../PdsGoalCalculatorTestWrapper';
 
@@ -63,6 +64,42 @@ describe('PdsGoalCard', () => {
     );
 
     expect(await findByTestId('date-value')).toHaveTextContent('March 15');
+  });
+
+  it('shows the full goal name in a tooltip on hover', async () => {
+    const longName =
+      'A very long goal name that would otherwise stretch the card';
+    const { findByTestId, findByRole } = render(
+      <PdsGoalCalculatorTestWrapper
+        withProvider={false}
+        calculationsMock={{
+          nodes: [{ name: longName }],
+        }}
+      >
+        <PdsGoalsList />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    userEvent.hover(await findByTestId('goal-name'));
+
+    expect(await findByRole('tooltip')).toHaveTextContent(longName);
+  });
+
+  it('shows the unnamed goal fallback in a tooltip on hover', async () => {
+    const { findByTestId, findByRole } = render(
+      <PdsGoalCalculatorTestWrapper
+        withProvider={false}
+        calculationsMock={{
+          nodes: [{ name: null }],
+        }}
+      >
+        <PdsGoalsList />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    userEvent.hover(await findByTestId('goal-name'));
+
+    expect(await findByRole('tooltip')).toHaveTextContent('Unnamed Goal');
   });
 
   it('renders the calculated goal amount', async () => {

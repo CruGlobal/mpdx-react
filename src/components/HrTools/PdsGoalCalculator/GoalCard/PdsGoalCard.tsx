@@ -6,6 +6,7 @@ import {
   Card,
   Divider,
   Skeleton,
+  Tooltip,
   Typography,
   styled,
 } from '@mui/material';
@@ -24,7 +25,7 @@ import {
 } from '../calculations/calculatePdsGoalTotal';
 
 const StyledCard = styled(Card)(({ theme }) => ({
-  minWidth: 350,
+  width: 350,
   borderRadius: theme.shape.borderRadius,
 }));
 
@@ -34,6 +35,7 @@ const StyledHeaderBox = styled(Box)(({ theme }) => ({
   justifyContent: 'center',
   marginBottom: theme.spacing(2),
   marginTop: theme.spacing(2),
+  paddingInline: theme.spacing(2),
 }));
 
 const StyledContentBox = styled(Box)(({ theme }) => ({
@@ -127,9 +129,16 @@ export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({ goal, onDelete }) => {
 
       <StyledCard>
         <StyledHeaderBox>
-          <Typography data-testid="goal-name" variant="h6">
-            {goal.name ?? t('Unnamed Goal')}
-          </Typography>
+          <Tooltip title={goal.name ?? t('Unnamed Goal')}>
+            <Typography
+              data-testid="goal-name"
+              variant="h6"
+              noWrap
+              sx={{ width: '100%', textAlign: 'center' }}
+            >
+              {goal.name ?? t('Unnamed Goal')}
+            </Typography>
+          </Tooltip>
         </StyledHeaderBox>
 
         <Divider />
