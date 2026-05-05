@@ -54,7 +54,6 @@ Each contributes +1 to risk score.
 - `src/components/**/*.{ts,tsx}` — feature components (excluding Shared, already High-Risk)
 - `src/hooks/**/*.ts` — custom hooks
 - `src/lib/**/*.ts` (excluding `src/lib/apollo/**`) — utilities and helpers
-- `src/utils/**/*.ts` — shared utility functions
 - `pages/**/*.page.tsx` — route-level page components (excluding auth/api)
 - `src/components/Settings/**` — settings UI (touches user preferences, org config)
 - `src/theme.ts`, `src/theme/**` — MUI theme and design tokens

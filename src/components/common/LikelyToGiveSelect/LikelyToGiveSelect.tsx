@@ -3,7 +3,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectProps } from '@mui/material/Select';
 import { useTranslation } from 'react-i18next';
 import { LikelyToGiveEnum } from 'src/graphql/types.generated';
-import { getLocalizedLikelyToGive } from 'src/utils/functions/getLocalizedLikelyToGive';
+import { getLocalizedLikelyToGive } from 'src/lib/functions/getLocalizedLikelyToGive';
 
 export const LikelyToGiveSelect: React.FC<SelectProps> = ({
   children,

@@ -11,7 +11,7 @@ import { StatusEnum } from 'src/graphql/types.generated';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import useTaskModal from 'src/hooks/useTaskModal';
-import { getActivitiesByPhaseType } from 'src/utils/phases/taskActivityTypes';
+import { getActivitiesByPhaseType } from 'src/lib/phases/taskActivityTypes';
 import theme from '../../../theme';
 import Loading from '../../Loading';
 import { useUpdateContactOtherMutation } from '../ContactDetails/ContactDetailsTab/Other/EditContactOtherModal/EditContactOther.generated';

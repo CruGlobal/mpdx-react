@@ -18,7 +18,7 @@ import {
   PersonUpdateInput,
 } from 'src/graphql/types.generated';
 import { usePhoneLocations } from 'src/hooks/usePhoneLocations';
-import { isEditableSource } from 'src/utils/sourceHelper';
+import { isEditableSource } from 'src/lib/sourceHelper';
 import { ModalSectionContainer } from '../ModalSectionContainer/ModalSectionContainer';
 import { ModalSectionDeleteIcon } from '../ModalSectionDeleteIcon/ModalSectionDeleteIcon';
 import { NewSocial } from '../PersonModal';

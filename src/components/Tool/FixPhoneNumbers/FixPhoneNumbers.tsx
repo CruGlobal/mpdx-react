@@ -16,7 +16,7 @@ import {
 import { Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
-import { manualSourceValue, sourceToStr } from 'src/utils/sourceHelper';
+import { manualSourceValue, sourceToStr } from 'src/lib/sourceHelper';
 import theme from '../../../theme';
 import NoData from '../NoData';
 import { ToolsGridContainer } from '../styledComponents';

@@ -18,7 +18,7 @@ import {
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/common/Modal/Modal';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { isEditableSource, sourceToStr } from 'src/utils/sourceHelper';
+import { isEditableSource, sourceToStr } from 'src/lib/sourceHelper';
 import { useContactSourceQuery } from './ContactSource.generated';
 
 interface CreateEmailLinkProps {

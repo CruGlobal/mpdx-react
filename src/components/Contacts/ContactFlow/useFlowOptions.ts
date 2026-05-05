@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { StatusEnum } from 'src/graphql/types.generated';
 import { useUserPreference } from 'src/hooks/useUserPreference';
-import { convertStatus } from 'src/utils/functions/convertContactStatus';
+import { convertStatus } from 'src/lib/functions/convertContactStatus';
 
 const isTruthy = <T>(value: T): value is NonNullable<T> => Boolean(value);
 

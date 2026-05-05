@@ -20,7 +20,7 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormatShort } from 'src/lib/intlFormat';
-import { isEditableSource, sourceToStr } from 'src/utils/sourceHelper';
+import { isEditableSource, sourceToStr } from 'src/lib/sourceHelper';
 import theme from '../../../theme';
 import { PhoneNumber } from './Contact';
 import { PersonInvalidNumberFragment } from './GetInvalidPhoneNumbers.generated';

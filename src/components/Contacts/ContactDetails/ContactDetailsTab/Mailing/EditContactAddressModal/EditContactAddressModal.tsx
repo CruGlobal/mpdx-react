@@ -28,7 +28,7 @@ import {
   SubmitButton,
 } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { useUpdateCache } from 'src/hooks/useUpdateCache';
-import { isEditableSource } from 'src/utils/sourceHelper';
+import { isEditableSource } from 'src/lib/sourceHelper';
 import Modal from '../../../../../common/Modal/Modal';
 import {
   ContactDetailsTabDocument,

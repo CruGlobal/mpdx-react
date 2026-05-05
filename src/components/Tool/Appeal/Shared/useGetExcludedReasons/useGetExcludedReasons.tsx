@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { getLocalizedExcludedFromAppealReasons } from 'src/utils/functions/getLocalizedExcludedFromAppealReasons';
+import { getLocalizedExcludedFromAppealReasons } from 'src/lib/functions/getLocalizedExcludedFromAppealReasons';
 import { ExcludedAppealContactInfoFragment } from '../AppealExcludedContacts.generated';
 
 type UseGetExcludedReasonsProps = {

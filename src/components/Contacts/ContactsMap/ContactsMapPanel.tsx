@@ -20,8 +20,8 @@ import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
+import { sourceToStr } from 'src/lib/sourceHelper';
 import theme from 'src/theme';
-import { sourceToStr } from 'src/utils/sourceHelper';
 import { Coordinates } from './coordinates';
 
 interface ContactMapsPanelProps {

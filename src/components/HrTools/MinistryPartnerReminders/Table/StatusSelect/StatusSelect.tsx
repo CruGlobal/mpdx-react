@@ -1,7 +1,7 @@
 import { FormControl, MenuItem, Select, SelectProps } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { MinistryPartnerReminderFrequencyEnum } from 'src/graphql/types.generated';
-import { getLocalizedReminderStatus } from 'src/utils/functions/getLocalizedReminderStatus';
+import { getLocalizedReminderStatus } from 'src/lib/functions/getLocalizedReminderStatus';
 
 type StatusSelectProps = Omit<SelectProps, 'value'> & {
   value: MinistryPartnerReminderFrequencyEnum;

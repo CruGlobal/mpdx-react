@@ -15,7 +15,7 @@ import {
   TaskFilterSetInput,
 } from 'src/graphql/types.generated';
 import { useDebouncedCallback } from 'src/hooks/useDebounce';
-import { getQueryParam } from 'src/utils/queryParam';
+import { getQueryParam } from 'src/lib/queryParam';
 
 type Filter = ContactFilterSetInput & TaskFilterSetInput;
 type DefaultFilters = Record<string, unknown>;

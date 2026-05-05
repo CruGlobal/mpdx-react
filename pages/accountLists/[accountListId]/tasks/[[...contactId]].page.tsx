@@ -37,11 +37,11 @@ import { useMassSelection } from 'src/hooks/useMassSelection';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { useUserPreference } from 'src/hooks/useUserPreference';
 import { getAppName } from 'src/lib/getAppName';
-import theme from 'src/theme';
 import {
   TaskFilterTabsTypes,
   getTaskFiltersTabs,
-} from 'src/utils/tasks/taskFilterTabs';
+} from 'src/lib/tasks/taskFilterTabs';
+import theme from 'src/theme';
 import {
   TaskFiltersQuery,
   useTaskFiltersQuery,
