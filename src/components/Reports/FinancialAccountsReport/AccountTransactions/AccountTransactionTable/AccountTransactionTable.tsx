@@ -16,7 +16,7 @@ import {
 } from '@mui/x-data-grid';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
+import { useUrlFilters } from 'src/components/Shared/UrlFiltersProvider/UrlFiltersProvider';
 import { Maybe } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';

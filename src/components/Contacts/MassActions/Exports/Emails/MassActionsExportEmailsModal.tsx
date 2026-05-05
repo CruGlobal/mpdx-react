@@ -4,9 +4,9 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 import { Box, CircularProgress, TextField, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import { useTranslation } from 'react-i18next';
-import { ActionButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { ActionButton } from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
 import theme from 'src/theme';
-import Modal from '../../../../common/Modal/Modal';
+import Modal from '../../../../Shared/Modal/Modal';
 import { useGetEmailsForExportingQuery } from './GetEmailsForExporting.generated';
 
 interface MassActionsExportEmailsModalProps {

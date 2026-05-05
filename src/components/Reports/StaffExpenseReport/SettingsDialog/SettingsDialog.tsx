@@ -19,7 +19,7 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import Loading from 'src/components/Loading/Loading';
-import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
+import { CustomDateField } from 'src/components/Shared/DateTimePickers/CustomDateField';
 import { Fund, StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import { getLocalizedCategory } from '../../Shared/Helpers/transformStaffExpenseEnums';

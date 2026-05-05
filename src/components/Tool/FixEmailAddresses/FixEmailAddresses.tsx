@@ -18,13 +18,13 @@ import {
   ItemWithBorders,
 } from 'src/components/InfiniteList/InfiniteList';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
+import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
 import {
   PersonInvalidEmailFragment,
   useGetInvalidEmailAddressesQuery,
   useUpdateEmailAddressesMutation,
   useUpdatePeopleMutation,
 } from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
-import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
 import {
   PersonEmailAddressInput,
   PersonUpdateInput,

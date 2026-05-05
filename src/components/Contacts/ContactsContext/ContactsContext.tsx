@@ -13,7 +13,7 @@ import {
   useContactsQuery,
 } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { coordinatesFromContacts } from 'pages/accountLists/[accountListId]/contacts/helpers';
-import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
+import { useUrlFilters } from 'src/components/Shared/UrlFiltersProvider/UrlFiltersProvider';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useAccountListId } from '../../../hooks/useAccountListId';

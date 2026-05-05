@@ -15,7 +15,7 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { IntegrationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
-import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
+import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getAppName } from 'src/lib/getAppName';
 import theme from 'src/theme';

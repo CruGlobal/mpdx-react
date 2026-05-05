@@ -18,7 +18,7 @@ import * as yup from 'yup';
 import {
   CancelButton,
   SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
 import {
   ActivityTypeEnum,
   DisplayResultEnum,
@@ -36,7 +36,7 @@ import {
 } from 'src/lib/phases/taskActivityTypes';
 import { nullableDateTime } from 'src/lib/yupHelpers';
 import useTaskModal from '../../../../../hooks/useTaskModal';
-import { DateTimeFieldPair } from '../../../../common/DateTimePickers/DateTimeFieldPair';
+import { DateTimeFieldPair } from '../../../../Shared/DateTimePickers/DateTimeFieldPair';
 import { useCreateTaskCommentMutation } from '../../Comments/Form/CreateTaskComment.generated';
 import { TaskModalEnum } from '../../TaskModal';
 import { GetTaskForTaskModalQuery } from '../../TaskModalTask.generated';

@@ -18,7 +18,7 @@ import { makeStyles } from 'tss-react/mui';
 import { DynamicAddAddressModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/AddAddressModal/DynamicAddAddressModal';
 import { DynamicEditContactAddressModal } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/DynamicEditContactAddressModal';
 import { useUpdateContactAddressMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/Mailing/EditContactAddressModal/EditContactAddress.generated';
-import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
+import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
 import {
   manualSourceValue,
   sourceToStr,

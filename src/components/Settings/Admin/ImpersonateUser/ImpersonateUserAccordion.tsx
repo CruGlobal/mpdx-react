@@ -14,8 +14,8 @@ import { AdminAccordion } from 'src/components/Shared/Forms/Accordions/Accordion
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
+import { SubmitButton } from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
 import { PaddedBox } from 'src/components/Shared/styledComponents/PaddedBox';
-import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { getAppName } from 'src/lib/getAppName';
 import { getErrorMessage } from 'src/lib/getErrorFromCatch';
 import { AccordionProps } from '../../accordionHelper';

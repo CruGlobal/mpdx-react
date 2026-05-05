@@ -25,7 +25,7 @@ import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { TFunction, Trans, useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
-import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
+import { useContactPanel } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { dateFormatShort } from 'src/lib/intlFormat';

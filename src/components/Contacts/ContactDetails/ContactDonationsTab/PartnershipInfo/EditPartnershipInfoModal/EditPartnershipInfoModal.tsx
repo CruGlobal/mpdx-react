@@ -25,15 +25,15 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { PledgeFrequencySelect } from 'src/common/Selects/PledgeFrequencySelect';
-import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingStyling';
-import { CurrencyAutocomplete } from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
-import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
-import { LikelyToGiveSelect } from 'src/components/common/LikelyToGiveSelect/LikelyToGiveSelect';
+import { CurrencyAutocomplete } from 'src/components/Shared/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
+import { CustomDateField } from 'src/components/Shared/DateTimePickers/CustomDateField';
+import { LikelyToGiveSelect } from 'src/components/Shared/LikelyToGiveSelect/LikelyToGiveSelect';
 import {
   CancelButton,
   SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { NewsletterSelect } from 'src/components/common/NewsletterSelect/NewsletterSelect';
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
+import { NewsletterSelect } from 'src/components/Shared/NewsletterSelect/NewsletterSelect';
+import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingStyling';
 import {
   LikelyToGiveEnum,
   PledgeFrequencyEnum,
@@ -50,7 +50,7 @@ import {
 import { nullableDateTime } from 'src/lib/yupHelpers';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import { useApiConstants } from '../../../../../Constants/UseApiConstants';
-import Modal from '../../../../../common/Modal/Modal';
+import Modal from '../../../../../Shared/Modal/Modal';
 import { ContactDonorAccountsFragment } from '../../ContactDonationsTab.generated';
 import { isApartOfSwitzerlandOrganization } from '../PartnershipInfo';
 import { useUserOrganizationAccountsQuery } from '../PartnershipInfo.generated';

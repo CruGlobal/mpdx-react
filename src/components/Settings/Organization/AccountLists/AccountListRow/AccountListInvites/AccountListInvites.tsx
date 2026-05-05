@@ -3,7 +3,7 @@ import { PersonRemove } from '@mui/icons-material';
 import { Box, IconButton, Tooltip, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { Trans, useTranslation } from 'react-i18next';
-import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
+import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
 import {
   AccountListInvites as AccountListInvitesType,
   Maybe,

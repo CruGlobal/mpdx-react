@@ -7,7 +7,7 @@ import userEvent from '@testing-library/user-event';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
+import { ContactPanelProvider } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import theme from 'src/theme';
 import { ContactDetailProvider } from '../ContactDetailContext';
 import { ContactDetailsHeader } from './ContactDetailsHeader';

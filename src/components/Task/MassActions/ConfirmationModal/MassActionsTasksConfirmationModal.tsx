@@ -11,8 +11,8 @@ import { useTranslation } from 'react-i18next';
 import {
   CancelButton,
   SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import Modal from '../../../common/Modal/Modal';
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
+import Modal from '../../../Shared/Modal/Modal';
 import { Action } from './ActionEnum';
 
 interface MassActionsTasksConfirmationModalProps {

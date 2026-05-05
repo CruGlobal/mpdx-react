@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetExpectedMonthlyTotalsQuery } from 'pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
-import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
+import { ContactPanelProvider } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import theme from '../../../theme';
 import { ExpectedMonthlyTotalReport } from './ExpectedMonthlyTotalReport';
 

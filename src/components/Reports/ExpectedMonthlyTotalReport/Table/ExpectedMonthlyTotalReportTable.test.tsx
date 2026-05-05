@@ -8,7 +8,7 @@ import {
   ExpectedDonationRowFragment,
   ExpectedDonationRowFragmentDoc,
 } from 'pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
-import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
+import { ContactPanelProvider } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import theme from 'src/theme';
 import { ExpectedMonthlyTotalReportTable } from './ExpectedMonthlyTotalReportTable';
 

@@ -12,8 +12,8 @@ import {
 } from '@mui/material';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { CancelButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import Modal from 'src/components/common/Modal/Modal';
+import { CancelButton } from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
+import Modal from 'src/components/Shared/Modal/Modal';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
 import { chipStyle } from '../Table/Row/createTableRowHelper';

@@ -19,7 +19,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import { IntegrationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
-import Modal from 'src/components/common/Modal/Modal';
+import Modal from 'src/components/Shared/Modal/Modal';
 import { GoogleAccountAttributes } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getAppName } from 'src/lib/getAppName';

@@ -12,20 +12,20 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { ContactInputWrapper } from 'src/components/Shared/styledComponents/ContactStyling';
-import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingStyling';
 import {
   CancelButton,
   SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { NewsletterSelect } from 'src/components/common/NewsletterSelect/NewsletterSelect';
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
+import { NewsletterSelect } from 'src/components/Shared/NewsletterSelect/NewsletterSelect';
+import { ContactInputWrapper } from 'src/components/Shared/styledComponents/ContactStyling';
+import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingStyling';
 import {
   Contact,
   ContactUpdateInput,
   SendNewsletterEnum,
 } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
-import Modal from '../../../../../common/Modal/Modal';
+import Modal from '../../../../../Shared/Modal/Modal';
 import { useEditMailingInfoMutation } from './EditMailingInfoModal.generated';
 
 const ContactEditContainer = styled(Box)(({ theme }) => ({

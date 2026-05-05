@@ -14,9 +14,9 @@ import {
   DraggableBox,
 } from 'src/components/Contacts/ContactFlow/ContactFlowRow/ContactFlowRow';
 import { StarContactIconButton } from 'src/components/Contacts/StarContactIconButton/StarContactIconButton';
+import { useContactPanel } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { StyledCheckbox } from 'src/components/Shared/styledComponents/StyledCheckbox';
 import { useGetPledgeOrDonation } from 'src/components/Tool/Appeal/Shared/useGetPledgeOrDonation/useGetPledgeOrDonation';
-import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { StatusEnum } from 'src/graphql/types.generated';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import theme from 'src/theme';

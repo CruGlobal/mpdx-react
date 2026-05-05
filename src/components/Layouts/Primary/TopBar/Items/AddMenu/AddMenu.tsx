@@ -8,8 +8,8 @@ import PersonIcon from '@mui/icons-material/Person';
 import { Box, IconButton, ListItemText, Menu, MenuItem } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import Modal from 'src/components/Shared/Modal/Modal';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
-import Modal from 'src/components/common/Modal/Modal';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useTaskModal from 'src/hooks/useTaskModal';
 import {

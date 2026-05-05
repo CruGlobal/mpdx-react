@@ -6,16 +6,16 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useCreatePersonMutation } from 'src/components/Contacts/ContactDetails/ContactDetailsTab/People/Items/PersonModal/PersonModal.generated';
+import {
+  CancelButton,
+  SubmitButton,
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
 import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingStyling';
 import {
   LogFormControl,
   LogFormLabel,
   LogTextField,
 } from 'src/components/Shared/styledComponents/LogStyling';
-import {
-  CancelButton,
-  SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import {
   ContactCreateInput,
   PersonCreateInput,

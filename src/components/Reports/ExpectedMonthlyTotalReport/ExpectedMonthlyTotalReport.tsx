@@ -2,11 +2,11 @@ import React from 'react';
 import { Box, CircularProgress } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useGetExpectedMonthlyTotalsQuery } from 'pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
+import { EmptyDonationsTable } from 'src/components/Shared/EmptyDonationsTable/EmptyDonationsTable';
 import {
   HeaderTypeEnum,
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
-import { EmptyDonationsTable } from 'src/components/common/EmptyDonationsTable/EmptyDonationsTable';
 import { ExpectedMonthlyTotalReportHeader } from './Header/ExpectedMonthlyTotalReportHeader';
 import { ExpectedMonthlyTotalReportTable } from './Table/ExpectedMonthlyTotalReportTable';
 

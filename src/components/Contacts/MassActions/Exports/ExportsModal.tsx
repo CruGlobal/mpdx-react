@@ -5,7 +5,7 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import theme from 'src/theme';
-import Modal from '../../../common/Modal/Modal';
+import Modal from '../../../Shared/Modal/Modal';
 import { exportRest } from './exportRest';
 
 interface ExportsModalProps {

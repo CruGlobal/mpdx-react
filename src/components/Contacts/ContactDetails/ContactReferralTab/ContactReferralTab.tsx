@@ -22,8 +22,8 @@ import {
   DynamicCreateMultipleContacts,
   preloadCreateMultipleContacts,
 } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/DynamicCreateMultipleContacts';
-import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
-import Modal from 'src/components/common/Modal/Modal';
+import { useContactPanel } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
+import Modal from 'src/components/Shared/Modal/Modal';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat } from 'src/lib/intlFormat';

@@ -14,8 +14,8 @@ import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Co
 import {
   CancelButton,
   SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import Modal from '../../../common/Modal/Modal';
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
+import Modal from '../../../Shared/Modal/Modal';
 import { useAddToAppealMutation } from './AddToAppealMutation.generated';
 
 interface MassActionsCreateAppealModalProps {

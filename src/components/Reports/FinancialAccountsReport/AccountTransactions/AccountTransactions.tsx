@@ -6,7 +6,7 @@ import { buildURI } from 'react-csv/lib/core';
 import { useTranslation } from 'react-i18next';
 import { Panel } from 'pages/accountLists/[accountListId]/reports/helpers';
 import { headerHeight } from 'src/components/Shared/Header/ListHeader';
-import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
+import { useUrlFilters } from 'src/components/Shared/UrlFiltersProvider/UrlFiltersProvider';
 import { DateRangeInput } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { getAppName } from 'src/lib/getAppName';

@@ -6,7 +6,7 @@ import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import { DonationTable } from 'src/components/DonationTable/DonationTable';
 import { useLocale } from 'src/hooks/useLocale';
-import { EmptyDonationsTable } from '../../../common/EmptyDonationsTable/EmptyDonationsTable';
+import { EmptyDonationsTable } from '../../../Shared/EmptyDonationsTable/EmptyDonationsTable';
 
 interface DonationReportTableProps {
   accountListId: string;

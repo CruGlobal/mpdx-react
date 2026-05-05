@@ -7,12 +7,12 @@ import { SnackbarProvider } from 'notistack';
 import { VirtuosoMockContext } from 'react-virtuoso';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { ContactPanelProvider } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import {
   GetInvalidEmailAddressesQuery,
   UpdateEmailAddressesMutation,
   UpdatePeopleMutation,
 } from 'src/components/Tool/FixEmailAddresses/FixEmailAddresses.generated';
-import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import theme from '../../../theme';
 import { EmailAddressesMutation } from './AddEmailAddress.generated';
 import {

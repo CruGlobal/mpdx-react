@@ -2,7 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
-import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
+import { ContactPanelProvider } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import theme from 'src/theme';
 import { TaskRowContactName } from './TaskRowContactName';
 

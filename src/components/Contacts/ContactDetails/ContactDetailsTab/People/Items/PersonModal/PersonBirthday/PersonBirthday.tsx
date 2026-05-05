@@ -3,7 +3,7 @@ import CakeIcon from '@mui/icons-material/Cake';
 import { FormikProps } from 'formik';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
+import { CustomDateField } from 'src/components/Shared/DateTimePickers/CustomDateField';
 import {
   PersonCreateInput,
   PersonUpdateInput,

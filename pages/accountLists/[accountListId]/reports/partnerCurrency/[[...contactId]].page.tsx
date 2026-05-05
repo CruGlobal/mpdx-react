@@ -10,14 +10,14 @@ import {
   FourteenMonthReportCurrencyType,
 } from 'src/components/Reports/FourteenMonthReports/FourteenMonthReport';
 import {
+  ContactPanelProvider,
+  useContactPanel,
+} from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
+import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 import { ReportPageWrapper } from 'src/components/Shared/styledComponents/ReportPageWrapper';
-import {
-  ContactPanelProvider,
-  useContactPanel,
-} from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getAppName } from 'src/lib/getAppName';
 

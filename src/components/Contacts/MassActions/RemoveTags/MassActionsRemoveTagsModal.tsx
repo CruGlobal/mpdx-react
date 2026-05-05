@@ -17,10 +17,10 @@ import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Co
 import {
   CancelButton,
   SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
 import { Contact, ContactUpdateInput } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import Modal from '../../../common/Modal/Modal';
+import Modal from '../../../Shared/Modal/Modal';
 import { useGetContactTagListQuery } from '../../ContactDetails/ContactDetailsTab/Tags/ContactTags.generated';
 import { useGetContactsForTagsQuery } from '../GetContactsForTags.generated';
 import { useMassActionsUpdateContactsMutation } from '../MassActionsUpdateContacts.generated';

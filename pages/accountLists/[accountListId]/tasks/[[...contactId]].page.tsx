@@ -13,6 +13,10 @@ import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
+import {
+  ContactPanelProvider,
+  useContactPanel,
+} from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { DynamicFilterPanel } from 'src/components/Shared/Filters/DynamicFilterPanel';
 import { UserOptionFragment } from 'src/components/Shared/Filters/FilterPanel.generated';
 import NullState from 'src/components/Shared/Filters/NullState/NullState';
@@ -21,16 +25,12 @@ import {
   PageEnum,
   headerHeight,
 } from 'src/components/Shared/Header/ListHeader';
-import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
-import { TaskRow } from 'src/components/Task/TaskRow/TaskRow';
-import {
-  ContactPanelProvider,
-  useContactPanel,
-} from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import {
   UrlFiltersProvider,
   useUrlFilters,
-} from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
+} from 'src/components/Shared/UrlFiltersProvider/UrlFiltersProvider';
+import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
+import { TaskRow } from 'src/components/Task/TaskRow/TaskRow';
 import { useGetTaskIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useMassSelection } from 'src/hooks/useMassSelection';

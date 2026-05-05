@@ -1,7 +1,7 @@
 import React from 'react';
 import { IconButton, IconButtonProps } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { StarredItemIcon } from '../../common/StarredItemIcon/StarredItemIcon';
+import { StarredItemIcon } from '../../Shared/StarredItemIcon/StarredItemIcon';
 import { useSetContactStarredMutation } from './SetContactStarred.generated';
 
 interface Props {

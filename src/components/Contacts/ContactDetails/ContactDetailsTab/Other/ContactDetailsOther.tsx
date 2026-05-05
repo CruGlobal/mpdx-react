@@ -4,7 +4,7 @@ import { Box, Link, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
-import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
+import { useContactPanel } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { PreferredContactMethodEnum } from 'src/graphql/types.generated';
 import { formatLanguage } from 'src/lib/data/languages';
 import i18n from 'src/lib/i18n';

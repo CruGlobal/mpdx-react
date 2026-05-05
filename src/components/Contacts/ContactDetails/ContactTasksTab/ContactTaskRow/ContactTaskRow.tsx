@@ -12,6 +12,7 @@ import {
 import { styled } from '@mui/material/styles';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
+import { StarredItemIcon } from 'src/components/Shared/StarredItemIcon/StarredItemIcon';
 import { StyledCheckbox } from 'src/components/Shared/styledComponents/StyledCheckbox';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import {
@@ -20,7 +21,6 @@ import {
 } from 'src/components/Task/TaskRow/CommentTooltipText';
 import { TaskActionPhase } from 'src/components/Task/TaskRow/TaskActionPhase';
 import { TaskRowFragment } from 'src/components/Task/TaskRow/TaskRow.generated';
-import { StarredItemIcon } from 'src/components/common/StarredItemIcon/StarredItemIcon';
 import { usePhaseData } from 'src/hooks/usePhaseData';
 import useTaskModal from 'src/hooks/useTaskModal';
 import theme from 'src/theme';

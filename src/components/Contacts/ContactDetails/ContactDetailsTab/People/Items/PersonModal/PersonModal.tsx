@@ -13,20 +13,20 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useUpdateUserMutation } from 'src/components/Settings/preferences/UpdateUser.generated';
-import { ContactEditContainer } from 'src/components/Shared/styledComponents/ContactStyling';
-import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingStyling';
 import {
   CancelButton,
   DeleteButton,
   SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
+import { ContactEditContainer } from 'src/components/Shared/styledComponents/ContactStyling';
+import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingStyling';
 import {
   PersonCreateInput,
   PersonUpdateInput,
   UserUpdateInput,
 } from 'src/graphql/types.generated';
-import { DeleteConfirmation } from '../../../../../../common/Modal/DeleteConfirmation/DeleteConfirmation';
-import Modal from '../../../../../../common/Modal/Modal';
+import { DeleteConfirmation } from '../../../../../../Shared/Modal/DeleteConfirmation/DeleteConfirmation';
+import Modal from '../../../../../../Shared/Modal/Modal';
 import {
   GetContactDetailsHeaderDocument,
   GetContactDetailsHeaderQuery,

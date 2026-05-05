@@ -20,8 +20,8 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import { UrlFiltersProvider } from 'src/components/Shared/UrlFiltersProvider/UrlFiltersProvider';
 import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
-import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { UserTypeEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useReportsDisabled } from 'src/hooks/useReportsDisabled';

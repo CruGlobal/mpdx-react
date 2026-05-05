@@ -15,7 +15,7 @@ import { ElementOf } from 'ts-essentials';
 import * as yup from 'yup';
 import { useOrganizationId } from 'src/hooks/useOrganizationId';
 import theme from '../../../../../theme';
-import Modal from '../../../../common/Modal/Modal';
+import Modal from '../../../../Shared/Modal/Modal';
 import {
   CurrentCoachingAnswerSetDocument,
   CurrentCoachingAnswerSetQuery,

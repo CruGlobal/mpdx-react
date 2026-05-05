@@ -24,12 +24,12 @@ import {
 import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { headerHeight } from 'src/components/Shared/Header/ListHeader';
+import { useUrlFilters } from 'src/components/Shared/UrlFiltersProvider/UrlFiltersProvider';
 import {
   AppealStatusEnum,
   AppealsContext,
   AppealsType,
 } from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
-import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { useGetIdsForMassSelectionQuery } from 'src/hooks/GetIdsForMassSelection.generated';
 import { appealHeaderInfoHeight } from '../../AppealDetails/AppealHeaderInfo/AppealHeaderInfo';
 import { useAppealsContactsQuery } from '../../AppealsContext/contacts.generated';

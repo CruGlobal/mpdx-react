@@ -9,7 +9,7 @@ import {
 import { styled } from '@mui/material/styles';
 import { useDrop } from 'react-dnd';
 import { useContactsQuery } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
-import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
+import { useUrlFilters } from 'src/components/Shared/UrlFiltersProvider/UrlFiltersProvider';
 import {
   ContactFilterStatusEnum,
   PhaseEnum,

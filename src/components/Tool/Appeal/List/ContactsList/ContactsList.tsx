@@ -5,10 +5,10 @@ import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { InfiniteList } from 'src/components/InfiniteList/InfiniteList';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
+import { useContactPanel } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import NullState from 'src/components/Shared/Filters/NullState/NullState';
 import { headerHeight } from 'src/components/Shared/Header/ListHeader';
-import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
-import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
+import { useUrlFilters } from 'src/components/Shared/UrlFiltersProvider/UrlFiltersProvider';
 import { ContactFilterSetInput } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import {

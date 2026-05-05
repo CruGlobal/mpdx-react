@@ -7,14 +7,14 @@ import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
 import { DonationsReport } from 'src/components/Reports/DonationsReport/DonationsReport';
 import {
+  ContactPanelProvider,
+  useContactPanel,
+} from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
+import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
 import { ReportPageWrapper } from 'src/components/Shared/styledComponents/ReportPageWrapper';
-import {
-  ContactPanelProvider,
-  useContactPanel,
-} from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getAppName } from 'src/lib/getAppName';
 

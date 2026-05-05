@@ -16,12 +16,12 @@ import * as yup from 'yup';
 import {
   CancelButton,
   SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
 import { ContactUpdateInput, Task } from 'src/graphql/types.generated';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import theme from 'src/theme';
-import Modal from '../../../common/Modal/Modal';
+import Modal from '../../../Shared/Modal/Modal';
 import {
   useGetTaskTagListQuery,
   useGetTasksForAddingTagsQuery,

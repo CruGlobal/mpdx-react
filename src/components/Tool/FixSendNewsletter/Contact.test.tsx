@@ -2,7 +2,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
-import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
+import { ContactPanelProvider } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { SendNewsletterEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import Contact from './Contact';

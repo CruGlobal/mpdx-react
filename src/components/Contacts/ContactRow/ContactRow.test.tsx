@@ -4,8 +4,8 @@ import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
+import { ContactPanelProvider } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
-import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import theme from 'src/theme';
 import useTaskModal from '../../../hooks/useTaskModal';
 import {

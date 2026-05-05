@@ -17,7 +17,7 @@ import { makeStyles } from 'tss-react/mui';
 import {
   CancelButton,
   DeleteButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
 import theme from '../../../theme';
 import { ModalState } from './FixPhoneNumbers';
 

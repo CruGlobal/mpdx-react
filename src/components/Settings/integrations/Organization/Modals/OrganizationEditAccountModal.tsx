@@ -5,12 +5,12 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
-import { PaddedBox } from 'src/components/Shared/styledComponents/PaddedBox';
 import {
   CancelButton,
   SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import Modal from 'src/components/common/Modal/Modal';
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
+import Modal from 'src/components/Shared/Modal/Modal';
+import { PaddedBox } from 'src/components/Shared/styledComponents/PaddedBox';
 import { getAppName } from 'src/lib/getAppName';
 import { useUpdateOrganizationAccountMutation } from '../Organizations.generated';
 import { OrganizationFormikSchema } from '../schema';

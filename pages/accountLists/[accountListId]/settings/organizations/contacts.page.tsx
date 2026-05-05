@@ -11,7 +11,7 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTranslation } from 'react-i18next';
 import { ensureSessionAndAccountList } from 'pages/api/utils/pagePropsHelpers';
 import { Contacts } from 'src/components/Settings/Organization/Contacts/Contacts';
-import { OrganizationAutocomplete } from 'src/components/common/Autocomplete/OrganizationAutocomplete/OrganizationAutocomplete';
+import { OrganizationAutocomplete } from 'src/components/Shared/Autocomplete/OrganizationAutocomplete/OrganizationAutocomplete';
 import { useDebouncedValue } from 'src/hooks/useDebounce';
 import { SettingsWrapper } from '../Wrapper';
 import {

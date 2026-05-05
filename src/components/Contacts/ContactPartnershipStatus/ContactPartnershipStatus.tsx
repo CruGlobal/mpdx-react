@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Hidden, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
+import { useContactPanel } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { StatusEnum as ContactPartnershipStatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';

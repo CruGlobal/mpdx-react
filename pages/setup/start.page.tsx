@@ -5,11 +5,11 @@ import { useUpdatePersonalPreferencesMutation } from 'src/components/Settings/pr
 import { SetupPage } from 'src/components/Setup/SetupPage';
 import { LargeButton } from 'src/components/Setup/styledComponents';
 import { useNextSetupPage } from 'src/components/Setup/useNextSetupPage';
+import { LanguageAutocomplete } from 'src/components/Shared/Autocomplete/LanguageAutocomplete/LanguageAutocomplete';
 import {
   PrivacyPolicyLink,
   TermsOfUseLink,
 } from 'src/components/Shared/Links/Links';
-import { LanguageAutocomplete } from 'src/components/common/Autocomplete/LanguageAutocomplete/LanguageAutocomplete';
 import { getAppName } from 'src/lib/getAppName';
 import { ensureSessionAndAccountList } from '../api/utils/pagePropsHelpers';
 

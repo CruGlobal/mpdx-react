@@ -18,7 +18,7 @@ import {
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { ExpectedDonationRowFragment } from 'pages/accountLists/[accountListId]/reports/GetExpectedMonthlyTotals.generated';
-import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
+import { useContactPanel } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { currencyFormat } from 'src/lib/intlFormat';

@@ -33,11 +33,11 @@ import {
   DynamicEditDonationModal,
   preloadEditDonationModal,
 } from '../EditDonationModal/DynamicEditDonationModal';
+import { useContactPanel } from '../Shared/ContactPanelProvider/ContactPanelProvider';
 import {
   LoadingBox,
   LoadingIndicator,
 } from '../Shared/styledComponents/LoadingStyling';
-import { useContactPanel } from '../common/ContactPanelProvider/ContactPanelProvider';
 import {
   DonationTableQueryVariables,
   DonationTableRowFragment,

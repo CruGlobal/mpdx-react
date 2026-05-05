@@ -5,7 +5,7 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
+import { ContactPanelProvider } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { PhaseEnum, StatusEnum } from 'src/graphql/types.generated';
 import theme from '../../../../theme';
 import { ContactRowFragment } from '../../ContactRow/ContactRow.generated';

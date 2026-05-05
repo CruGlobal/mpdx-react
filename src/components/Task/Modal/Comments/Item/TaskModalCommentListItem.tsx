@@ -5,14 +5,14 @@ import { Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import {
-  TaskRowFragment,
-  TaskRowFragmentDoc,
-} from 'src/components/Task/TaskRow/TaskRow.generated';
-import {
   CancelButton,
   DeleteButton,
   SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
+import {
+  TaskRowFragment,
+  TaskRowFragmentDoc,
+} from 'src/components/Task/TaskRow/TaskRow.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFormat } from 'src/lib/intlFormat';

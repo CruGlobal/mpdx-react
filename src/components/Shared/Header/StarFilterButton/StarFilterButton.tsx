@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { StarredItemIcon } from '../../../common/StarredItemIcon/StarredItemIcon';
+import { StarredItemIcon } from '../../StarredItemIcon/StarredItemIcon';
 
 const StarIconWrap = styled(Box)(({ theme }) => ({
   marginLeft: theme.spacing(2),

@@ -5,7 +5,7 @@ import TabPanel from '@mui/lab/TabPanel';
 import { Box, Tab } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
+import { useContactPanel } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from '../../../theme';
 import {

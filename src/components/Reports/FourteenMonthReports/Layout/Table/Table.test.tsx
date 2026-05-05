@@ -3,7 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { render, within } from '@testing-library/react';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
+import { ContactPanelProvider } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import theme from 'src/theme';
 import { FourteenMonthReportCurrencyType } from '../../FourteenMonthReport';
 import { GetFourteenMonthReportQuery } from '../../GetFourteenMonthReport.generated';

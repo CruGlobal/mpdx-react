@@ -7,16 +7,16 @@ import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRight
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
 import { PartnerGivingAnalysisReport } from 'src/components/Reports/PartnerGivingAnalysisReport/PartnerGivingAnalysisReport';
+import {
+  ContactPanelProvider,
+  useContactPanel,
+} from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { DynamicFilterPanel } from 'src/components/Shared/Filters/DynamicFilterPanel';
 import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
-import {
-  ContactPanelProvider,
-  useContactPanel,
-} from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
-import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
+import { UrlFiltersProvider } from 'src/components/Shared/UrlFiltersProvider/UrlFiltersProvider';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getAppName } from 'src/lib/getAppName';
 import { useContactFiltersQuery } from '../../contacts/Contacts.generated';

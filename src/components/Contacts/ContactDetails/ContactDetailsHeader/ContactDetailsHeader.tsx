@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
+import { useContactPanel } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { StatusEnum } from 'src/graphql/types.generated';
 import theme from '../../../../theme';
 import { StarContactIconButton } from '../../StarContactIconButton/StarContactIconButton';

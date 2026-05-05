@@ -18,15 +18,15 @@ import * as yup from 'yup';
 import { AppealAutocomplete } from 'src/common/Autocompletes/AppealAutocomplete';
 import { DesignationAccountAutocomplete } from 'src/common/Autocompletes/DesignationAccountAutocomplete';
 import { useGetDesignationAccountsQuery } from 'src/components/EditDonationModal/EditDonationModal.generated';
-import { FormTextField } from 'src/components/Shared/styledComponents/FormTextField';
-import { LogFormLabel } from 'src/components/Shared/styledComponents/LogStyling';
-import { CurrencyAutocomplete } from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
-import { DonorAccountAutocomplete } from 'src/components/common/Autocomplete/DonorAccountAutocomplete/DonorAccountAutocomplete';
-import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
+import { CurrencyAutocomplete } from 'src/components/Shared/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
+import { DonorAccountAutocomplete } from 'src/components/Shared/Autocomplete/DonorAccountAutocomplete/DonorAccountAutocomplete';
+import { CustomDateField } from 'src/components/Shared/DateTimePickers/CustomDateField';
 import {
   CancelButton,
   SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
+import { FormTextField } from 'src/components/Shared/styledComponents/FormTextField';
+import { LogFormLabel } from 'src/components/Shared/styledComponents/LogStyling';
 import i18n from 'src/lib/i18n';
 import { requiredDateTime } from 'src/lib/yupHelpers';
 import {

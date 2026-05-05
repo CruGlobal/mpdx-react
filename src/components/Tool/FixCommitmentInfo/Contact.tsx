@@ -29,8 +29,8 @@ import { ContactDetailTabEnum } from 'src/components/Contacts/ContactDetails/Con
 import {
   CurrencyAutocomplete,
   PledgeCurrencyOptionFormatEnum,
-} from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
-import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
+} from 'src/components/Shared/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
+import { useContactPanel } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';

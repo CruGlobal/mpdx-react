@@ -8,7 +8,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { removeTagsFromFilters } from 'pages/accountLists/[accountListId]/tasks/sanitizeFilters';
 import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
-import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
+import { UrlFiltersProvider } from 'src/components/Shared/UrlFiltersProvider/UrlFiltersProvider';
 import {
   ActivityTypeEnum,
   ContactFilterSetInput,

@@ -4,9 +4,9 @@ import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { Panel } from 'pages/accountLists/[accountListId]/reports/helpers';
 import { FilterButton } from 'src/components/Shared/Header/styledComponents';
+import { SearchBox } from 'src/components/Shared/SearchBox/SearchBox';
+import { useUrlFilters } from 'src/components/Shared/UrlFiltersProvider/UrlFiltersProvider';
 import { NavFilterIcon } from 'src/components/Shared/styledComponents/NavFilterIcon';
-import { SearchBox } from 'src/components/common/SearchBox/SearchBox';
-import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import {
   FinancialAccountContext,
   FinancialAccountType,

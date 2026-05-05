@@ -14,10 +14,10 @@ import { PersonModal } from 'src/components/Contacts/ContactDetails/ContactDetai
 import { useGetProfileInfoQuery } from 'src/components/Settings/preferences/GetProfileInfo.generated';
 import { CollapsibleEmailList } from 'src/components/Shared/CollapsibleContactInfo/CollapsibleEmailList';
 import { CollapsiblePhoneList } from 'src/components/Shared/CollapsibleContactInfo/CollapsiblePhoneList';
-import { Facebook } from 'src/components/common/Links/Facebook';
-import { LinkedIn } from 'src/components/common/Links/LinkedIn';
-import { Twitter } from 'src/components/common/Links/Twitter';
-import { Website } from 'src/components/common/Links/Website';
+import { Facebook } from 'src/components/Shared/SocialLinks/Facebook';
+import { LinkedIn } from 'src/components/Shared/SocialLinks/LinkedIn';
+import { Twitter } from 'src/components/Shared/SocialLinks/Twitter';
+import { Website } from 'src/components/Shared/SocialLinks/Website';
 import { useLocale } from 'src/hooks/useLocale';
 import { dateFromParts } from 'src/lib/intlFormat';
 import theme from 'src/theme';

@@ -18,15 +18,15 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
-import { FormTextField } from 'src/components/Shared/styledComponents/FormTextField';
-import { LogFormLabel } from 'src/components/Shared/styledComponents/LogStyling';
-import { CurrencyAutocomplete } from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
-import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
+import { CurrencyAutocomplete } from 'src/components/Shared/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
+import { CustomDateField } from 'src/components/Shared/DateTimePickers/CustomDateField';
 import {
   CancelButton,
   SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import Modal from 'src/components/common/Modal/Modal';
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
+import Modal from 'src/components/Shared/Modal/Modal';
+import { FormTextField } from 'src/components/Shared/styledComponents/FormTextField';
+import { LogFormLabel } from 'src/components/Shared/styledComponents/LogStyling';
 import { PledgeStatusEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import { requiredDateTime } from 'src/lib/yupHelpers';
