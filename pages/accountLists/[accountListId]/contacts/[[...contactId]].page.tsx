@@ -11,11 +11,11 @@ import { ContactsMainPanel } from 'src/components/Contacts/ContactsMainPanel/Con
 import { DynamicContactsRightPanel } from 'src/components/Contacts/ContactsRightPanel/DynamicContactsRightPanel';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
+import { useContactPanel } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import {
   TableViewModeEnum,
   headerHeight,
 } from 'src/components/Shared/Header/ListHeader';
-import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { getAppName } from 'src/lib/getAppName';
 import { ContactsWrapper } from './ContactsWrapper';
 

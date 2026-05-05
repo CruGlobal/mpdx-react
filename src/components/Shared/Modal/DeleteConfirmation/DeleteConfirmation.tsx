@@ -8,11 +8,11 @@ import {
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingStyling';
 import {
   CancelButton,
   SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
+import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingStyling';
 import { useDeleteTaskMutation } from '../../../Task/Modal/Form/TaskModal.generated';
 
 interface DeleteConfirmationProps {

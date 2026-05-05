@@ -8,8 +8,8 @@ import {
   renderDialog,
 } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/AddMenu';
 import { preloadCreateContact } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateContact/DynamicCreateContact';
+import { useUrlFilters } from 'src/components/Shared/UrlFiltersProvider/UrlFiltersProvider';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
-import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import useTaskModal from 'src/hooks/useTaskModal';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';

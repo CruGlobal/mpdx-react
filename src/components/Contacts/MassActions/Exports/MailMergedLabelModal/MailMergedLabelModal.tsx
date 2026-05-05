@@ -15,8 +15,8 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import theme from '../../../../../theme';
-import { ActionButton } from '../../../../common/Modal/ActionButtons/ActionButtons';
-import Modal from '../../../../common/Modal/Modal';
+import { ActionButton } from '../../../../Shared/Modal/ActionButtons/ActionButtons';
+import Modal from '../../../../Shared/Modal/Modal';
 import { exportRest } from '../exportRest';
 
 interface MailMergedLabelModalProps {

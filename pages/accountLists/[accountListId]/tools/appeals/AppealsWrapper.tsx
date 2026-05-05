@@ -1,14 +1,14 @@
 import { useRouter } from 'next/router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useGetUserOptionsLazyQuery } from 'src/components/Contacts/ContactFlow/GetUserOptions.generated';
+import { ContactPanelProvider } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
+import { UrlFiltersProvider } from 'src/components/Shared/UrlFiltersProvider/UrlFiltersProvider';
 import {
   AppealTourEnum,
   AppealsProvider,
   AppealsViewModeEnum,
   TableViewModeEnum,
 } from 'src/components/Tool/Appeal/AppealsContext/AppealsContext';
-import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
-import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
 import { useUpdateUserOptionMutation } from 'src/hooks/UserPreference.generated';
 
 /**

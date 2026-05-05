@@ -20,8 +20,8 @@ import {
 import {
   CancelButton,
   SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import Modal from 'src/components/common/Modal/Modal';
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
+import Modal from 'src/components/Shared/Modal/Modal';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
 import { useLocalizedConstants } from 'src/hooks/useLocalizedConstants';
 import { ContactFlowOption } from '../../../ContactFlow';

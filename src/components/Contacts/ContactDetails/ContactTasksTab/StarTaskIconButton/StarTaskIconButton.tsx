@@ -1,7 +1,7 @@
 import React from 'react';
 import { IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { StarredItemIcon } from '../../../../common/StarredItemIcon/StarredItemIcon';
+import { StarredItemIcon } from '../../../../Shared/StarredItemIcon/StarredItemIcon';
 import { useSetTaskStarredMutation } from './SetTaskStarred.generated';
 
 interface Props {

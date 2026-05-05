@@ -10,8 +10,8 @@ import { useTranslation } from 'react-i18next';
 import {
   CancelButton,
   SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import Modal from '../../../common/Modal/Modal';
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
+import Modal from '../../Modal/Modal';
 import { UserOptionFragment } from '../FilterPanel.generated';
 import { useDeleteUserOptionMutation } from './DeleteFilterModal.generated';
 

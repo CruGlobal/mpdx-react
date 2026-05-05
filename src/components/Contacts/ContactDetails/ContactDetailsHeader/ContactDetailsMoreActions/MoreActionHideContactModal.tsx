@@ -7,7 +7,7 @@ import {
   DialogContentText,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import Modal from 'src/components/common/Modal/Modal';
+import Modal from 'src/components/Shared/Modal/Modal';
 import { getAppName } from 'src/lib/getAppName';
 
 interface MoreActionHideContactProps {

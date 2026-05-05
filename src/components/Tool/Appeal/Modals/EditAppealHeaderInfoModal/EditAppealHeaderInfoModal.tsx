@@ -15,8 +15,8 @@ import { FieldWrapper } from 'src/components/Shared/Forms/FieldWrapper';
 import {
   CancelButton,
   SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import Modal from 'src/components/common/Modal/Modal';
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
+import Modal from 'src/components/Shared/Modal/Modal';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import i18n from 'src/lib/i18n';
 import { useUpdateAppealMutation } from './EditAppeal.generated';

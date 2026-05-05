@@ -1,13 +1,13 @@
 import React, { ReactNode, useState } from 'react';
 import { Box, DialogActions, DialogContent } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingStyling';
-import { StyledDialogContentText } from 'src/components/Shared/styledComponents/StyledDialogContentText';
 import {
   ActionButtonProps,
   CancelButton,
   SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
+import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingStyling';
+import { StyledDialogContentText } from 'src/components/Shared/styledComponents/StyledDialogContentText';
 import Modal from '../Modal';
 
 export interface ConfirmationProps {

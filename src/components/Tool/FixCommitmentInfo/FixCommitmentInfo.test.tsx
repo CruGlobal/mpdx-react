@@ -11,7 +11,7 @@ import {
   render,
   waitFor,
 } from '__tests__/util/testingLibraryReactMock';
-import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
+import { ContactPanelProvider } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { StatusEnum } from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import FixCommitmentInfo from './FixCommitmentInfo';

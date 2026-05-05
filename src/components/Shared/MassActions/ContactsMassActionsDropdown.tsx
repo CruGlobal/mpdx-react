@@ -38,12 +38,12 @@ import {
   DynamicMassActionsRemoveTagsModal,
   preloadMassActionsRemoveTagsModal,
 } from 'src/components/Contacts/MassActions/RemoveTags/DynamicMassActionsRemoveTagsModal';
+import { useContactPanel } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
 import {
   DynamicAddExcludedContactModal,
   preloadAddExcludedContactModal,
 } from 'src/components/Tool/Appeal/Modals/AddExcludedContactModal/DynamicAddExcludedContactModal';
-import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { StatusEnum } from 'src/graphql/types.generated';
 import useTaskModal from 'src/hooks/useTaskModal';
 import { useAccountListId } from '../../../hooks/useAccountListId';

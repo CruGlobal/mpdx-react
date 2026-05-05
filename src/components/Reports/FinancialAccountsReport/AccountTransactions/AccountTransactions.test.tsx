@@ -10,7 +10,7 @@ import { buildURI } from 'react-csv/lib/core';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { Panel } from 'pages/accountLists/[accountListId]/reports/helpers';
-import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
+import { UrlFiltersProvider } from 'src/components/Shared/UrlFiltersProvider/UrlFiltersProvider';
 import theme from 'src/theme';
 import {
   FinancialAccountQuery,

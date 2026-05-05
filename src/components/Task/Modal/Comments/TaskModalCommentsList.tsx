@@ -10,8 +10,8 @@ import {
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import { SubmitButton } from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
 import { MultilineSkeleton } from 'src/components/Shared/MultilineSkeleton';
-import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import illustration4 from '../../../../images/drawkit/grape/drawkit-grape-pack-illustration-4.svg';
 import theme from '../../../../theme';
 import { TaskModalCommentsListForm } from './Form/TaskModalCommentsListForm';

@@ -19,7 +19,7 @@ import {
 import { cloneDeep } from 'lodash/fp';
 import { useTranslation } from 'react-i18next';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
-import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
+import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
 import { getAppName } from 'src/lib/getAppName';
 import theme from 'src/theme';
 import {

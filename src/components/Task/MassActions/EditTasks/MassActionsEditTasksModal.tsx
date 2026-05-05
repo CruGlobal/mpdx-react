@@ -12,13 +12,13 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { useMassActionsUpdateTasksMutation } from 'src/components/Task/MassActions/MassActionsUpdateTasks.generated';
-import { useCreateTaskCommentMutation } from 'src/components/Task/Modal/Comments/Form/CreateTaskComment.generated';
-import { DateTimeFieldPair } from 'src/components/common/DateTimePickers/DateTimeFieldPair';
+import { DateTimeFieldPair } from 'src/components/Shared/DateTimePickers/DateTimeFieldPair';
 import {
   CancelButton,
   SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
+import { useMassActionsUpdateTasksMutation } from 'src/components/Task/MassActions/MassActionsUpdateTasks.generated';
+import { useCreateTaskCommentMutation } from 'src/components/Task/Modal/Comments/Form/CreateTaskComment.generated';
 import {
   ActivityTypeEnum,
   PhaseEnum,
@@ -27,7 +27,7 @@ import {
 import { usePhaseData } from 'src/hooks/usePhaseData';
 import { useUpdateTasksQueries } from 'src/hooks/useUpdateTasksQueries';
 import { nullableDateTime } from 'src/lib/yupHelpers';
-import Modal from '../../../common/Modal/Modal';
+import Modal from '../../../Shared/Modal/Modal';
 import { ActivityTypeAutocomplete } from '../../Modal/Form/Inputs/ActivityTypeAutocomplete/ActivityTypeAutocomplete';
 import { AssigneeAutocomplete } from '../../Modal/Form/Inputs/ActivityTypeAutocomplete/AssigneeAutocomplete/AssigneeAutocomplete';
 import { TaskPhaseAutocomplete } from '../../Modal/Form/Inputs/TaskPhaseAutocomplete/TaskPhaseAutocomplete';

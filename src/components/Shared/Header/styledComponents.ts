@@ -1,6 +1,6 @@
 import { Box, IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
+import { useUrlFilters } from 'src/components/Shared/UrlFiltersProvider/UrlFiltersProvider';
 
 export const StickyBox = styled(Box)(({ theme }) => ({
   position: 'sticky',

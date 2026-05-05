@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { IconButton } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { DeletedItemIcon } from '../../../../common/DeleteItemIcon/DeleteItemIcon';
-import { DeleteConfirmation } from '../../../../common/Modal/DeleteConfirmation/DeleteConfirmation';
+import { DeletedItemIcon } from '../../../../Shared/DeleteItemIcon/DeleteItemIcon';
+import { DeleteConfirmation } from '../../../../Shared/Modal/DeleteConfirmation/DeleteConfirmation';
 
 const DeleteButton = styled(IconButton, {
   shouldForwardProp: (prop) => prop !== 'small',

@@ -15,16 +15,16 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { AddressLocationSelect } from 'src/common/Selects/AddressLocationSelect';
 import {
+  CancelButton,
+  SubmitButton,
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
+import {
   ContactEditContainer,
   ContactInputWrapper,
 } from 'src/components/Shared/styledComponents/ContactStyling';
 import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingStyling';
-import {
-  CancelButton,
-  SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { useUpdateCache } from 'src/hooks/useUpdateCache';
-import Modal from '../../../../../common/Modal/Modal';
+import Modal from '../../../../../Shared/Modal/Modal';
 import {
   ContactDetailsTabDocument,
   ContactDetailsTabQuery,

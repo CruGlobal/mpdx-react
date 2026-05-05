@@ -2,7 +2,7 @@ import NextLink from 'next/link';
 import React from 'react';
 import { Link, Theme, Typography, TypographyProps } from '@mui/material';
 import { makeStyles } from 'tss-react/mui';
-import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
+import { useContactPanel } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { TaskRowFragment } from './TaskRow.generated';
 
 const useStyles = makeStyles()((theme: Theme) => ({

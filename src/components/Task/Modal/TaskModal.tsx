@@ -12,7 +12,7 @@ import {
 } from 'src/graphql/types.generated';
 import { useAccountListId } from '../../../hooks/useAccountListId';
 import Loading from '../../Loading';
-import Modal from '../../common/Modal/Modal';
+import Modal from '../../Shared/Modal/Modal';
 import { DynamicTaskModalCommentsList } from './Comments/DynamicTaskModalCommentsList';
 import { DynamicTaskModalCompleteForm } from './Form/Complete/DynamicTaskModalCompleteForm';
 import { DynamicTaskModalForm } from './Form/DynamicTaskModalForm';

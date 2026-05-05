@@ -12,9 +12,9 @@ import { useTranslation } from 'react-i18next';
 import {
   CancelButton,
   SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
 import { Person } from 'src/graphql/types.generated';
-import Modal from '../../../common/Modal/Modal';
+import Modal from '../../../Shared/Modal/Modal';
 import { useMassActionsMergePeopleMutation } from './MergePeople.generated';
 
 interface MergePeopleModalProps {

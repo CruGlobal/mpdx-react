@@ -20,9 +20,9 @@ import {
   DynamicCreateMultipleContacts,
   preloadCreateMultipleContacts,
 } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/CreateMultipleContacts/DynamicCreateMultipleContacts';
+import { useContactPanel } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
+import Modal from 'src/components/Shared/Modal/Modal';
 import { TaskModalEnum } from 'src/components/Task/Modal/TaskModal';
-import { useContactPanel } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
-import Modal from 'src/components/common/Modal/Modal';
 import { StatusEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import useTaskModal from 'src/hooks/useTaskModal';

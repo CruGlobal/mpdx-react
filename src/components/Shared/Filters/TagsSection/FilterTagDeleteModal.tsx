@@ -5,8 +5,8 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { ContactFiltersDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { TaskFiltersDocument } from 'pages/accountLists/[accountListId]/tasks/Tasks.generated';
-import { DeleteButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import Modal from 'src/components/common/Modal/Modal';
+import { DeleteButton } from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
+import Modal from 'src/components/Shared/Modal/Modal';
 import { useDeleteTagMutation } from './Chip/DeleteTag.generated';
 
 interface FilterTagDeleteModalProps {

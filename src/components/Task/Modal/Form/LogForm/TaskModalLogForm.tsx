@@ -26,7 +26,7 @@ import * as yup from 'yup';
 import {
   CancelButton,
   SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
 import {
   ActivityTypeEnum,
   DisplayResultEnum,
@@ -43,7 +43,7 @@ import i18n from 'src/lib/i18n';
 import { getValueFromIdValue } from 'src/lib/phases/getValueFromIdValue';
 import { inPersonActivityTypes } from 'src/lib/phases/taskActivityTypes';
 import { nullableDateTime } from 'src/lib/yupHelpers';
-import { DateTimeFieldPair } from '../../../../common/DateTimePickers/DateTimeFieldPair';
+import { DateTimeFieldPair } from '../../../../Shared/DateTimePickers/DateTimeFieldPair';
 import { TaskModalEnum } from '../../TaskModal';
 import { FormFieldsGridContainer } from '../Container/FormFieldsGridContainer';
 import { ActivityTypeAutocomplete } from '../Inputs/ActivityTypeAutocomplete/ActivityTypeAutocomplete';

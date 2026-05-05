@@ -2,9 +2,9 @@ import { ParsedUrlQuery } from 'node:querystring';
 import { useRouter } from 'next/router';
 import React, { useMemo } from 'react';
 import { ContactsProvider } from 'src/components/Contacts/ContactsContext/ContactsContext';
+import { ContactPanelProvider } from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
 import { TableViewModeEnum } from 'src/components/Shared/Header/ListHeader';
-import { ContactPanelProvider } from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
-import { UrlFiltersProvider } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
+import { UrlFiltersProvider } from 'src/components/Shared/UrlFiltersProvider/UrlFiltersProvider';
 import { useUserPreference } from 'src/hooks/useUserPreference';
 
 // Extract the initial view mode from the URL

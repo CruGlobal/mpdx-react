@@ -11,12 +11,12 @@ import {
   Typography,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingStyling';
 import {
   CancelButton,
   DeleteButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import Modal from 'src/components/common/Modal/Modal';
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
+import Modal from 'src/components/Shared/Modal/Modal';
+import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingStyling';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { isEditableSource, sourceToStr } from 'src/lib/sourceHelper';
 import { useContactSourceQuery } from './ContactSource.generated';

@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { currencyFormat } from 'src/lib/intlFormat';
-import { Confirmation } from '../../common/Modal/Confirmation/Confirmation';
+import { Confirmation } from '../../Shared/Modal/Confirmation/Confirmation';
 import { AppealProgress } from '../AppealProgress/AppealProgress';
 import { CoachedPersonFragment } from '../LoadCoachingList.generated';
 import { useDeleteCoachingAccountListMutation } from './CoachingRow.generated';

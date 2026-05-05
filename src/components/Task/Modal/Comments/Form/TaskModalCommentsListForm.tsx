@@ -5,12 +5,12 @@ import { motion } from 'framer-motion';
 import { DateTime } from 'luxon';
 import { useSession } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
+import { SubmitButton } from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
 import { useCreateTaskCommentMutation } from 'src/components/Task/Modal/Comments/Form/CreateTaskComment.generated';
 import {
   TaskRowFragment,
   TaskRowFragmentDoc,
 } from 'src/components/Task/TaskRow/TaskRow.generated';
-import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
 import { TaskCommentCreateInput } from 'src/graphql/types.generated';
 import {
   GetCommentsForTaskModalCommentListDocument,

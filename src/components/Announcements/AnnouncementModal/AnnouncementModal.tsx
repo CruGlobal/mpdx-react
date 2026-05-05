@@ -1,8 +1,8 @@
 import React, { useMemo } from 'react';
 import { Box, DialogActions, DialogContent, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import { CancelButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import Modal from 'src/components/common/Modal/Modal';
+import { CancelButton } from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
+import Modal from 'src/components/Shared/Modal/Modal';
 import theme from 'src/theme';
 import { AnnouncementAction } from '../AnnouncementAction/AnnouncementAction';
 import {

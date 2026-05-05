@@ -24,12 +24,12 @@ import { DateTime } from 'luxon';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
+import { CustomDateField } from 'src/components/Shared/DateTimePickers/CustomDateField';
 import {
   CancelButton,
   SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import Modal from 'src/components/common/Modal/Modal';
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
+import Modal from 'src/components/Shared/Modal/Modal';
 import { useLocale } from 'src/hooks/useLocale';
 import i18n from 'src/lib/i18n';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';

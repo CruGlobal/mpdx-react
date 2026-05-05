@@ -5,15 +5,15 @@ import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
 import { SidePanelsLayout } from 'src/components/Layouts/SidePanelsLayout';
 import Loading from 'src/components/Loading';
 import {
+  ContactPanelProvider,
+  useContactPanel,
+} from 'src/components/Shared/ContactPanelProvider/ContactPanelProvider';
+import {
   HeaderTypeEnum,
   MultiPageHeader,
   multiPageHeaderHeight,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import NavToolList from 'src/components/Tool/NavToolList/NavToolList';
-import {
-  ContactPanelProvider,
-  useContactPanel,
-} from 'src/components/common/ContactPanelProvider/ContactPanelProvider';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getAppName } from 'src/lib/getAppName';
 import { PageContentWrapper } from '../settings/styledComponents/PageContentWrapper';

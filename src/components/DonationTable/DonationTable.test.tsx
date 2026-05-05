@@ -8,7 +8,7 @@ import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
-import { ContactPanelProvider } from '../common/ContactPanelProvider/ContactPanelProvider';
+import { ContactPanelProvider } from '../Shared/ContactPanelProvider/ContactPanelProvider';
 import { DonationTable, DonationTableProps } from './DonationTable';
 import {
   AccountListCurrencyQuery,

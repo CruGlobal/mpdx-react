@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import {
   CancelButton,
   SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
 
 interface WeeklyReportActionsProps {
   questionsLength: number;

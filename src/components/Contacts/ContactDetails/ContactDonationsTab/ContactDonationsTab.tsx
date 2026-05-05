@@ -6,7 +6,7 @@ import { Box, Skeleton, Tab, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next/';
 import { DonationTable } from 'src/components/DonationTable/DonationTable';
-import { EmptyDonationsTable } from 'src/components/common/EmptyDonationsTable/EmptyDonationsTable';
+import { EmptyDonationsTable } from 'src/components/Shared/EmptyDonationsTable/EmptyDonationsTable';
 import {
   ContactDetailContext,
   ContactDetailsType,

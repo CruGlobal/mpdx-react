@@ -28,8 +28,8 @@ import {
   CancelButton,
   DeleteButton,
   SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { DeleteConfirmation } from 'src/components/common/Modal/DeleteConfirmation/DeleteConfirmation';
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
+import { DeleteConfirmation } from 'src/components/Shared/Modal/DeleteConfirmation/DeleteConfirmation';
 import {
   ActivityTypeEnum,
   DisplayResultEnum,
@@ -53,7 +53,7 @@ import { getValueFromIdValue } from 'src/lib/phases/getValueFromIdValue';
 import { inPersonActivityTypes } from 'src/lib/phases/taskActivityTypes';
 import { nullableDateTime } from 'src/lib/yupHelpers';
 import theme from '../../../../theme';
-import { DateTimeFieldPair } from '../../../common/DateTimePickers/DateTimeFieldPair';
+import { DateTimeFieldPair } from '../../../Shared/DateTimePickers/DateTimeFieldPair';
 import { TaskModalEnum } from '../TaskModal';
 import { GetTaskForTaskModalQuery } from '../TaskModalTask.generated';
 import { FormFieldsGridContainer } from './Container/FormFieldsGridContainer';

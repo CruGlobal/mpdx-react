@@ -22,7 +22,7 @@ import * as yup from 'yup';
 import { IntegrationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { AccordionItem } from 'src/components/Shared/Forms/Accordions/AccordionItem';
 import { StyledFormLabel } from 'src/components/Shared/Forms/FieldHelper';
-import { SubmitButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { SubmitButton } from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
 import { MailchimpAccount } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getAppName } from 'src/lib/getAppName';

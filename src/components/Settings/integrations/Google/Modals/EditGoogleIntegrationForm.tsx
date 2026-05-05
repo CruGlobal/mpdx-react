@@ -19,7 +19,7 @@ import { useApiConstants } from 'src/components/Constants/UseApiConstants';
 import {
   DeleteButton,
   SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
 import {
   ActivityTypeEnum,
   GoogleAccountIntegration,

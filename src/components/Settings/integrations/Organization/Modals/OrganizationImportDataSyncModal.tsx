@@ -10,12 +10,12 @@ import {
 import { styled } from '@mui/material/styles';
 import { useSnackbar } from 'notistack';
 import { TFunction, useTranslation } from 'react-i18next';
-import { PaddedBox } from 'src/components/Shared/styledComponents/PaddedBox';
 import {
   CancelButton,
   SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import Modal from 'src/components/common/Modal/Modal';
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
+import Modal from 'src/components/Shared/Modal/Modal';
+import { PaddedBox } from 'src/components/Shared/styledComponents/PaddedBox';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { getErrorMessage } from 'src/lib/getErrorFromCatch';
 import theme from 'src/theme';

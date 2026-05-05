@@ -5,7 +5,7 @@ import {
   StyledList,
   StyledListItem,
 } from 'src/components/Shared/Lists/listsHelper';
-import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
+import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
 import { AccountListUsers } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { WarningBox } from './accountListRowHelper';

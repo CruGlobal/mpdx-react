@@ -7,7 +7,7 @@ import { Formik } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import { ActionButton } from 'src/components/common/Modal/ActionButtons/ActionButtons';
+import { ActionButton } from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
 import i18n from 'src/lib/i18n';
 import { ContactDetailsTabDocument } from '../ContactDetailsTab.generated';
 import { useUpdateContactOtherMutation } from '../Other/EditContactOtherModal/EditContactOther.generated';

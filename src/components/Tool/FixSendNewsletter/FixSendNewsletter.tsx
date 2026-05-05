@@ -6,7 +6,7 @@ import { makeStyles } from 'tss-react/mui';
 import { useMassActionsUpdateContactsMutation } from 'src/components/Contacts/MassActions/MassActionsUpdateContacts.generated';
 import { LoadingSpinner } from 'src/components/Settings/Organization/LoadingSpinner';
 import { StickyButtonHeaderBox } from 'src/components/Shared/Header/styledComponents';
-import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
+import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
 import { SendNewsletterEnum } from 'src/graphql/types.generated';
 import theme from '../../../theme';
 import NoData from '../NoData';

@@ -20,13 +20,13 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { NullableSelect } from 'src/components/NullableSelect/NullableSelect';
-import { ContactEditContainer } from 'src/components/Shared/styledComponents/ContactStyling';
-import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingStyling';
-import { useContactOptionsQuery } from 'src/components/Task/Modal/Form/Inputs/ContactsAutocomplete/ContactsAutocomplete.generated';
 import {
   CancelButton,
   SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
+import { ContactEditContainer } from 'src/components/Shared/styledComponents/ContactStyling';
+import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingStyling';
+import { useContactOptionsQuery } from 'src/components/Task/Modal/Form/Inputs/ContactsAutocomplete/ContactsAutocomplete.generated';
 import {
   ContactUpdateInput,
   PreferredContactMethodEnum,
@@ -35,7 +35,7 @@ import {
 import { useLocale } from 'src/hooks/useLocale';
 import { useGetTimezones } from '../../../../../../hooks/useGetTimezones';
 import { useApiConstants } from '../../../../../Constants/UseApiConstants';
-import Modal from '../../../../../common/Modal/Modal';
+import Modal from '../../../../../Shared/Modal/Modal';
 import {
   ContactDetailsTabDocument,
   ContactDetailsTabQuery,

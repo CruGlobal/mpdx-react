@@ -16,16 +16,16 @@ import * as yup from 'yup';
 import { ContactsDocument } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
 import { ContactStatusSelect } from 'src/common/Selects/ContactStatusSelect/ContactStatusSelect';
 import { useLoadConstantsQuery } from 'src/components/Constants/LoadConstants.generated';
-import { AssigneeAutocomplete } from 'src/components/Task/Modal/Form/Inputs/ActivityTypeAutocomplete/AssigneeAutocomplete/AssigneeAutocomplete';
-import { CurrencyAutocomplete } from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
-import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
-import { LikelyToGiveSelect } from 'src/components/common/LikelyToGiveSelect/LikelyToGiveSelect';
+import { CurrencyAutocomplete } from 'src/components/Shared/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
+import { CustomDateField } from 'src/components/Shared/DateTimePickers/CustomDateField';
+import { LikelyToGiveSelect } from 'src/components/Shared/LikelyToGiveSelect/LikelyToGiveSelect';
 import {
   CancelButton,
   SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import Modal from '../../../common/Modal/Modal';
-import { NewsletterSelect } from '../../../common/NewsletterSelect/NewsletterSelect';
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
+import { AssigneeAutocomplete } from 'src/components/Task/Modal/Form/Inputs/ActivityTypeAutocomplete/AssigneeAutocomplete/AssigneeAutocomplete';
+import Modal from '../../../Shared/Modal/Modal';
+import { NewsletterSelect } from '../../../Shared/NewsletterSelect/NewsletterSelect';
 import { useMassActionsUpdateContactFieldsMutation } from './MassActionsUpdateContacts.generated';
 
 interface MassActionsEditFieldsModalProps {

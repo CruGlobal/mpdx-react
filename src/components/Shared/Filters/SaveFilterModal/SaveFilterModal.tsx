@@ -16,13 +16,13 @@ import * as yup from 'yup';
 import {
   CancelButton,
   SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
 import {
   ContactFilterSetInput,
   TaskFilterSetInput,
 } from 'src/graphql/types.generated';
 import { useAccountListId } from '../../../../hooks/useAccountListId';
-import Modal from '../../../common/Modal/Modal';
+import Modal from '../../Modal/Modal';
 import { UserOptionFragment } from '../FilterPanel.generated';
 import { useSaveFilterMutation } from './SaveFilterModal.generated';
 

@@ -7,8 +7,8 @@ import {
   DynamicAddDonation,
   preloadAddDonation,
 } from 'src/components/Layouts/Primary/TopBar/Items/AddMenu/Items/AddDonation/DynamicAddDonation';
+import Modal from 'src/components/Shared/Modal/Modal';
 import { EmptyTableWrapper } from 'src/components/Shared/styledComponents/EmptyTableWrapper';
-import Modal from 'src/components/common/Modal/Modal';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 
 interface Props {

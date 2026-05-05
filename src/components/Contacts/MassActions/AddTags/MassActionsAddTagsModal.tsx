@@ -18,14 +18,14 @@ import {
   ContactFiltersDocument,
   ContactsDocument,
 } from 'pages/accountLists/[accountListId]/contacts/Contacts.generated';
-import { ContactTagIcon, ContactTagInput } from 'src/components/Tags/Tags';
 import {
   CancelButton,
   SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
+import { ContactTagIcon, ContactTagInput } from 'src/components/Tags/Tags';
 import { ContactUpdateInput } from 'src/graphql/types.generated';
 import theme from 'src/theme';
-import Modal from '../../../common/Modal/Modal';
+import Modal from '../../../Shared/Modal/Modal';
 import { useGetContactTagListQuery } from '../../ContactDetails/ContactDetailsTab/Tags/ContactTags.generated';
 import {
   useContactsAddTagsMutation,

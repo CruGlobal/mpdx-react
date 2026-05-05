@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { DialogContent, Typography } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import { StyledDialogActions } from 'src/components/Shared/styledComponents/StyledDialogActions';
 import {
   CancelButton,
   SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import Modal from 'src/components/common/Modal/Modal';
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
+import Modal from 'src/components/Shared/Modal/Modal';
+import { StyledDialogActions } from 'src/components/Shared/styledComponents/StyledDialogActions';
 import { useDeleteMailchimpAccountMutation } from '../MailchimpAccount.generated';
 
 interface DeleteMailchimpAccountModalProps {

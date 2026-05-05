@@ -9,7 +9,7 @@ import {
   ItemWithBorders,
 } from 'src/components/InfiniteList/InfiniteList';
 import { navBarHeight } from 'src/components/Layouts/Primary/Primary';
-import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
+import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
 import { PledgeFrequencyEnum, StatusEnum } from 'src/graphql/types.generated';
 import { getAppName } from 'src/lib/getAppName';
 import theme from '../../../theme';

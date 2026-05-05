@@ -21,7 +21,7 @@ import { filter } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { removeTagsFromFilters } from 'pages/accountLists/[accountListId]/tasks/sanitizeFilters';
 import { useApiConstants } from 'src/components/Constants/UseApiConstants';
-import { useUrlFilters } from 'src/components/common/UrlFiltersProvider/UrlFiltersProvider';
+import { useUrlFilters } from 'src/components/Shared/UrlFiltersProvider/UrlFiltersProvider';
 import {
   ActivityTypeEnum,
   ContactFilterNewsletterEnum,

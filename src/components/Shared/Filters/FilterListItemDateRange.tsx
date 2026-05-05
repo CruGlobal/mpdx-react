@@ -3,7 +3,7 @@ import { ListItem, ListItemText } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { DateTime, Interval } from 'luxon';
 import { useTranslation } from 'react-i18next';
-import { CustomDateField } from 'src/components/common/DateTimePickers/CustomDateField';
+import { CustomDateField } from 'src/components/Shared/DateTimePickers/CustomDateField';
 import { DateRangeInput, DaterangeFilter } from 'src/graphql/types.generated';
 
 interface Props {

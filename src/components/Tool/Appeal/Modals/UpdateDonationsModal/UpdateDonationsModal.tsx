@@ -11,13 +11,13 @@ import {
   useAccountListCurrencyQuery,
   useDonationTableQuery,
 } from 'src/components/DonationTable/DonationTable.generated';
-import { EmptyDonationsTable } from 'src/components/common/EmptyDonationsTable/EmptyDonationsTable';
+import { EmptyDonationsTable } from 'src/components/Shared/EmptyDonationsTable/EmptyDonationsTable';
 import {
   CancelButton,
   SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import { Confirmation } from 'src/components/common/Modal/Confirmation/Confirmation';
-import Modal from 'src/components/common/Modal/Modal';
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
+import { Confirmation } from 'src/components/Shared/Modal/Confirmation/Confirmation';
+import Modal from 'src/components/Shared/Modal/Modal';
 import { PledgeStatusEnum } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';

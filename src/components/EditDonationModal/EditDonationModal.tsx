@@ -16,22 +16,22 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { DesignationAccountAutocomplete } from 'src/common/Autocompletes/DesignationAccountAutocomplete';
-import { FormFieldsGridContainer } from 'src/components/Task/Modal/Form/Container/FormFieldsGridContainer';
-import { CurrencyAutocomplete } from 'src/components/common/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
-import { DonorAccountAutocomplete } from 'src/components/common/Autocomplete/DonorAccountAutocomplete/DonorAccountAutocomplete';
+import { CurrencyAutocomplete } from 'src/components/Shared/Autocomplete/CurrencyAutocomplete/CurrencyAutocomplete';
+import { DonorAccountAutocomplete } from 'src/components/Shared/Autocomplete/DonorAccountAutocomplete/DonorAccountAutocomplete';
 import {
   CancelButton,
   DeleteButton,
   SubmitButton,
-} from 'src/components/common/Modal/ActionButtons/ActionButtons';
-import Modal from 'src/components/common/Modal/Modal';
+} from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
+import Modal from 'src/components/Shared/Modal/Modal';
+import { FormFieldsGridContainer } from 'src/components/Task/Modal/Form/Container/FormFieldsGridContainer';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import i18n from 'src/lib/i18n';
 import { requiredDateTime } from 'src/lib/yupHelpers';
 import { SmallLoadingSpinner } from '../Settings/Organization/LoadingSpinner';
-import { CustomDateField } from '../common/DateTimePickers/CustomDateField';
-import { DeleteConfirmation } from '../common/Modal/DeleteConfirmation/DeleteConfirmation';
+import { CustomDateField } from '../Shared/DateTimePickers/CustomDateField';
+import { DeleteConfirmation } from '../Shared/Modal/DeleteConfirmation/DeleteConfirmation';
 import {
   EditDonationModalDonationFragment,
   useDeleteDonationMutation,
