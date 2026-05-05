@@ -18,11 +18,12 @@ import { AccountBalanceQuery } from '../AccountBalance.generated';
 import { StaffAccountIdQuery } from '../StaffAccountId.generated';
 import { LandingSalaryCalculationsQuery } from './LandingSalaryCalculations.generated';
 
-interface LandingTestWrapperProps {
+export interface LandingTestWrapperProps {
   onCall?: MockLinkCallHandler;
   children?: React.ReactNode;
   hasInProgressCalculation?: boolean;
   hasApprovedCalculation?: boolean;
+  hasSpouseApprovedCalculation?: boolean;
   hasLatestCalculation?: boolean;
   salaryRequestEligible?: boolean;
 }
@@ -32,6 +33,7 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
   children,
   hasInProgressCalculation = false,
   hasApprovedCalculation = false,
+  hasSpouseApprovedCalculation = false,
   hasLatestCalculation = false,
   salaryRequestEligible = true,
 }) => (
@@ -51,6 +53,7 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
                 staffInfo: {
                   preferredName: 'John',
                   lastName: 'Doe',
+                  personNumber: '000123456',
                   secaStatus: SecaStatusEnum.Seca,
                   peopleGroupSupportType:
                     PeopleGroupSupportTypeEnum.SupportedRmo,
@@ -75,6 +78,7 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
                 staffInfo: {
                   preferredName: 'Jane',
                   lastName: 'Doe',
+                  personNumber: '000123457',
                   secaStatus: SecaStatusEnum.Seca,
                 },
                 currentSalary: {
@@ -98,6 +102,9 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
               : null,
             effectiveCalculation: hasApprovedCalculation
               ? {
+                  personNumber: hasSpouseApprovedCalculation
+                    ? '000123457'
+                    : '000123456',
                   salary: 50000,
                   spouseSalary: 60000,
                   calculations: { effectiveCap: 60000 },

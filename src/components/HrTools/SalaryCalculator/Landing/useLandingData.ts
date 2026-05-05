@@ -5,6 +5,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import { type HcmQuery, useHcmQuery } from '../../Shared/HcmData/Hcm.generated';
 import { getLocalizedTaxStatus } from '../Shared/getLocalizedTaxStatus';
+import { orientSalaryRequest } from '../Shared/orientSalaryRequest';
 import { useAccountBalanceQuery } from './AccountBalance.generated';
 import {
   type LandingSalaryCalculationsQuery,
@@ -64,7 +65,6 @@ export const useLandingData = (): LandingData => {
   const { data: staffAccountIdData, loading: staffAccountIdLoading } =
     useStaffAccountIdQuery();
 
-  const effectiveCalculation = calculationData?.effectiveCalculation;
   const inProgressCalculationId =
     calculationData?.inProgressCalculation?.id ?? null;
   const latestCalculation = calculationData?.latestCalculation;
@@ -153,8 +153,13 @@ export const useLandingData = (): LandingData => {
     [accountBalanceData],
   );
 
-  const salaryCategories = useMemo<SalaryCategory[]>(
-    () => [
+  const salaryCategories = useMemo<SalaryCategory[]>(() => {
+    const effectiveCalculation = orientSalaryRequest(
+      calculationData?.effectiveCalculation,
+      self?.staffInfo.personNumber,
+    );
+
+    return [
       {
         category: t('Maximum Allowable Salary'),
         user: effectiveCalculation?.calculations.effectiveCap
@@ -242,9 +247,8 @@ export const useLandingData = (): LandingData => {
         }),
         link: '/hrTools/mhaCalculator',
       },
-    ],
-    [t, salaryData, self, spouse, effectiveCalculation, locale],
-  );
+    ];
+  }, [t, salaryData, self, spouse, calculationData, locale]);
 
   return {
     staffAccountId,

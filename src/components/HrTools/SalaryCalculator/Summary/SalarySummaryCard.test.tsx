@@ -4,26 +4,31 @@ import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { HcmQuery } from '../../Shared/HcmData/Hcm.generated';
-import { SalaryCalculationQuery } from '../SalaryCalculatorContext/SalaryCalculation.generated';
+import {
+  EffectiveSalaryCalculationQuery,
+  SalaryCalculationQuery,
+} from '../SalaryCalculatorContext/SalaryCalculation.generated';
 import { SalaryCalculatorProvider } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 import { hcmSpouseMock, hcmUserMock } from '../SalaryCalculatorTestWrapper';
 import { SalarySummaryCard } from './SalarySummaryCard';
 
-const approvedSalaryMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> =
-  {
-    salary: 10001,
-    mhaAmount: 10002,
-    spouseSalary: 20001,
-    spouseMhaAmount: 20002,
-    calculations: {
-      contributing403bFraction: 0.1,
-      effectiveCap: 10003,
-    },
-    spouseCalculations: {
-      contributing403bFraction: 0.2,
-      effectiveCap: 20003,
-    },
-  };
+const approvedSalaryMock: DeepPartial<
+  EffectiveSalaryCalculationQuery['salaryRequest']
+> = {
+  personNumber: hcmUserMock.staffInfo.personNumber,
+  salary: 10001,
+  mhaAmount: 10002,
+  spouseSalary: 20001,
+  spouseMhaAmount: 20002,
+  calculations: {
+    contributing403bFraction: 0.1,
+    effectiveCap: 10003,
+  },
+  spouseCalculations: {
+    contributing403bFraction: 0.2,
+    effectiveCap: 20003,
+  },
+};
 
 const defaultSalaryMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> =
   {
@@ -45,11 +50,13 @@ const defaultSalaryMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> =
 interface TestComponentProps {
   hasSpouse?: boolean;
   hasApprovedCalculation?: boolean;
+  hasSpouseApprovedCalculation?: boolean;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   hasSpouse = true,
   hasApprovedCalculation = true,
+  hasSpouseApprovedCalculation = false,
 }) => (
   <TestRouter
     router={{
@@ -59,6 +66,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
     <GqlMockedProvider<{
       Hcm: HcmQuery;
       SalaryCalculation: SalaryCalculationQuery;
+      EffectiveSalaryCalculation: EffectiveSalaryCalculationQuery;
     }>
       mocks={{
         Hcm: {
@@ -68,7 +76,14 @@ const TestComponent: React.FC<TestComponentProps> = ({
           salaryRequest: defaultSalaryMock,
         },
         EffectiveSalaryCalculation: {
-          salaryRequest: hasApprovedCalculation ? approvedSalaryMock : null,
+          salaryRequest: hasApprovedCalculation
+            ? {
+                ...approvedSalaryMock,
+                personNumber: hasSpouseApprovedCalculation
+                  ? hcmSpouseMock.staffInfo.personNumber
+                  : hcmUserMock.staffInfo.personNumber,
+              }
+            : null,
         },
       }}
     >
@@ -107,6 +122,29 @@ describe('SalarySummaryCard', () => {
       ['MHA', '$20,002.00', '$40,002.00'],
       ['403(b) Contribution', '20.00%', '40.00%'],
       ['Max Allowable Salary', '$20,003.00', '$40,003.00'],
+    ].flat();
+
+    await waitFor(() =>
+      expect(getAllByRole('cell').map((cell) => cell.textContent)).toEqual(
+        expectedCells,
+      ),
+    );
+  });
+
+  it('swaps fields when the spouse created the request', async () => {
+    const { getAllByRole } = render(
+      <TestComponent hasSpouseApprovedCalculation />,
+    );
+
+    const expectedCells = [
+      ['Requested Salary', '$20,001.00', '$30,001.00'],
+      ['MHA', '$20,002.00', '$30,002.00'],
+      ['403(b) Contribution', '20.00%', '30.00%'],
+      ['Max Allowable Salary', '$20,003.00', '$30,003.00'],
+      ['Requested Salary', '$10,001.00', '$40,001.00'],
+      ['MHA', '$10,002.00', '$40,002.00'],
+      ['403(b) Contribution', '10.00%', '40.00%'],
+      ['Max Allowable Salary', '$10,003.00', '$40,003.00'],
     ].flat();
 
     await waitFor(() =>

@@ -1,27 +1,15 @@
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { LandingTestWrapper } from './LandingTestWrapper';
+import {
+  LandingTestWrapper,
+  LandingTestWrapperProps,
+} from './LandingTestWrapper';
 import { NewSalaryCalculatorLanding } from './NewSalaryCalculatorLanding';
 
 const mutationSpy = jest.fn();
 
-interface TestComponentProps {
-  hasInProgressCalculation?: boolean;
-  hasApprovedCalculation?: boolean;
-  salaryRequestEligible?: boolean;
-}
-
-const TestComponent: React.FC<TestComponentProps> = ({
-  hasInProgressCalculation = false,
-  hasApprovedCalculation = false,
-  salaryRequestEligible,
-}) => (
-  <LandingTestWrapper
-    hasInProgressCalculation={hasInProgressCalculation}
-    hasApprovedCalculation={hasApprovedCalculation}
-    salaryRequestEligible={salaryRequestEligible}
-    onCall={mutationSpy}
-  >
+const TestComponent: React.FC<LandingTestWrapperProps> = (props) => (
+  <LandingTestWrapper {...props} onCall={mutationSpy}>
     <NewSalaryCalculatorLanding />
   </LandingTestWrapper>
 );
@@ -45,18 +33,54 @@ describe('NewSalaryCalculatorLanding', () => {
     expect(await findByTestId('amount-two')).toHaveTextContent('$10,000.00');
   });
 
-  it('renders SalaryInformationCard with correct cell data', async () => {
-    const { findByRole } = render(<TestComponent />);
+  it('renders table with correct cell data', async () => {
+    const { getAllByRole } = render(<TestComponent hasApprovedCalculation />);
 
-    // Self
-    expect(
-      await findByRole('heading', { name: '$55,000.00' }),
-    ).toBeInTheDocument();
+    const expectedCells = [
+      ['Maximum Allowable Salary', '$60,000.00', '$70,000.00'],
+      ['Requested Salary', '$50,000.00', '$60,000.00'],
+      ['Tax-deferred 403(b) Contribution', '5%', '6%'],
+      ['Roth 403(b) Contribution', '12%', '10%'],
+      ['Security (SECA/FICA) Status', 'Subject to SECA', 'Subject to SECA'],
+      ['Current Gross Salary', '$55,000.00', '$10,000.00'],
+      [
+        'Current MHA (Included in Current Gross Salary)',
+        '$10,000.00View MHA Form',
+        '$12,000.00',
+      ],
+    ].flat();
 
-    // Spouse
-    expect(
-      await findByRole('heading', { name: '$10,000.00' }),
-    ).toBeInTheDocument();
+    await waitFor(() =>
+      expect(getAllByRole('cell').map((cell) => cell.textContent)).toEqual(
+        expectedCells,
+      ),
+    );
+  });
+
+  it('swaps effective request fields when the spouse created the request', async () => {
+    const { getAllByRole } = render(
+      <TestComponent hasApprovedCalculation hasSpouseApprovedCalculation />,
+    );
+
+    const expectedCells = [
+      ['Maximum Allowable Salary', '$70,000.00', '$60,000.00'],
+      ['Requested Salary', '$60,000.00', '$50,000.00'],
+      ['Tax-deferred 403(b) Contribution', '5%', '6%'],
+      ['Roth 403(b) Contribution', '12%', '10%'],
+      ['Security (SECA/FICA) Status', 'Subject to SECA', 'Subject to SECA'],
+      ['Current Gross Salary', '$55,000.00', '$10,000.00'],
+      [
+        'Current MHA (Included in Current Gross Salary)',
+        '$10,000.00View MHA Form',
+        '$12,000.00',
+      ],
+    ].flat();
+
+    await waitFor(() =>
+      expect(getAllByRole('cell').map((cell) => cell.textContent)).toEqual(
+        expectedCells,
+      ),
+    );
   });
 
   it('renders action button', async () => {

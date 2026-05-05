@@ -11,13 +11,17 @@ import { useTranslation } from 'react-i18next';
 import { useEffectiveSalaryCalculationQuery } from '../SalaryCalculatorContext/SalaryCalculation.generated';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 import { StepCard } from '../Shared/StepCard';
+import { orientSalaryRequest } from '../Shared/orientSalaryRequest';
 import { useFormatters } from '../Shared/useFormatters';
 
 export const SalarySummaryCard: React.FC = () => {
   const { t } = useTranslation();
   const { hcmUser, hcmSpouse, calculation } = useSalaryCalculator();
-  const { data: approvedData } = useEffectiveSalaryCalculationQuery();
-  const effectiveCalculation = approvedData?.salaryRequest;
+  const { data: effectiveData } = useEffectiveSalaryCalculationQuery();
+  const effectiveCalculation = orientSalaryRequest(
+    effectiveData?.salaryRequest,
+    hcmUser?.staffInfo.personNumber,
+  );
   const { formatCurrency, formatFraction } = useFormatters();
 
   return (
