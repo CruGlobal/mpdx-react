@@ -10,7 +10,6 @@ import illustration6graybg from 'src/images/drawkit/grape/drawkit-grape-pack-ill
 import { PdsGoalCard } from '../GoalCard/PdsGoalCard';
 import {
   useCreatePdsGoalCalculationMutation,
-  useDeletePdsGoalCalculationMutation,
   usePdsGoalCalculationsQuery,
 } from './PdsGoalCalculations.generated';
 import { PdsGoalsListWelcome } from './PdsGoalsListWelcome';
@@ -40,21 +39,10 @@ export const PdsGoalsList: React.FC = () => {
     pageInfo: data?.designationSupportCalculations.pageInfo,
   });
   const [createPdsGoalCalculation] = useCreatePdsGoalCalculationMutation();
-  const [deletePdsGoalCalculation] = useDeletePdsGoalCalculationMutation();
   const { goalMiscConstants, loading: constantsLoading } =
     useGoalCalculatorConstants();
 
   const goals = data?.designationSupportCalculations.nodes;
-
-  const handleDeleteGoal = async (id: string) => {
-    await deletePdsGoalCalculation({
-      variables: { id },
-      update: (cache) => {
-        cache.evict({ id: `DesignationSupportCalculation:${id}` });
-        cache.gc();
-      },
-    });
-  };
 
   const handleCreateGoal = async () => {
     const { data } = await createPdsGoalCalculation({
@@ -101,11 +89,7 @@ export const PdsGoalsList: React.FC = () => {
       ) : (
         <Stack direction="row" gap={3} flexWrap="wrap">
           {goals?.map((goal) => (
-            <PdsGoalCard
-              key={goal.id}
-              goal={goal}
-              onDelete={handleDeleteGoal}
-            />
+            <PdsGoalCard key={goal.id} goal={goal} />
           ))}
         </Stack>
       )}
