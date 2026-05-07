@@ -1,5 +1,11 @@
 import { useRouter } from 'next/router';
-import React, { createContext, useCallback, useMemo, useState } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useTrackMutation } from 'src/hooks/useTrackMutation';
@@ -84,6 +90,14 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     useState<React.ReactNode>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(true);
   const { trackMutation, isMutating } = useTrackMutation();
+
+  // Clamp stepIndex to valid range when the steps array shrinks (e.g. formType
+  // switches from Detailed to Simple, dropping the ReimbursableExpenses step).
+  useEffect(() => {
+    if (stepIndex >= steps.length) {
+      setStepIndex(0);
+    }
+  }, [steps.length, stepIndex]);
 
   const currentStep = steps[stepIndex];
 
