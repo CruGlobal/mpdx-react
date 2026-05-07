@@ -2,7 +2,10 @@ import React, { useCallback, useMemo } from 'react';
 import { styled } from '@mui/material/styles';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
-import { DesignationSupportStatus } from 'src/graphql/types.generated';
+import {
+  DesignationSupportFormType,
+  DesignationSupportStatus,
+} from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
 import {
@@ -85,6 +88,8 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
 
     const isFullTime = calculation.status === DesignationSupportStatus.FullTime;
     const isPartTime = calculation.status === DesignationSupportStatus.PartTime;
+    const isSimple =
+      calculation.formType === DesignationSupportFormType.Simple;
 
     const rows: PdsSummaryRow[] = [
       // Salary section
@@ -104,16 +109,20 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
         amount: salaryTotals.subtotal,
       },
       // Other expenses section
-      {
-        line: '2A',
-        category: t('Reimbursable Expenses'),
-        amount: otherTotals.reimbursableExpenses,
-      },
-      {
-        line: '2B',
-        category: t('403b Contributions'),
-        amount: otherTotals.fourOThreeBContributions,
-      },
+      ...(isSimple
+        ? []
+        : [
+            {
+              line: '2A',
+              category: t('Reimbursable Expenses'),
+              amount: otherTotals.reimbursableExpenses,
+            },
+            {
+              line: '2B',
+              category: t('403b Contributions'),
+              amount: otherTotals.fourOThreeBContributions,
+            },
+          ]),
       ...(isPartTime
         ? [
             {
