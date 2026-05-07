@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { DesignationSupportFormType } from 'src/graphql/types.generated';
 import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import { PdsGoalCalculationFieldsFragment } from '../GoalsList/PdsGoalCalculations.generated';
 import { HcmUserQuery } from '../Shared/HCM.generated';
@@ -73,10 +74,13 @@ export const usePdsSummaryData = (
     const rothPct =
       (hcmUser?.fourOThreeB?.currentRothContributionPercentage ?? 0) / 100;
 
+    const isSimple =
+      calculation.formType === DesignationSupportFormType.Simple;
+
     const otherConstants: OtherExpensesConstants = {
-      reimbursableTotal: reimbursableTotals.total,
+      reimbursableTotal: isSimple ? 0 : reimbursableTotals.total,
       salarySubtotal: salaryTotals.subtotal,
-      fourOThreeBPercentage: taxDeferredPct + rothPct,
+      fourOThreeBPercentage: isSimple ? 0 : taxDeferredPct + rothPct,
       grossMonthlyPay: salaryTotals.grossMonthlyPay,
       workCompPercentage,
       attritionRate,

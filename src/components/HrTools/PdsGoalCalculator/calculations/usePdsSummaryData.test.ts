@@ -1,6 +1,7 @@
 import { renderHook } from '@testing-library/react-hooks';
 import { gqlMock } from '__tests__/util/graphqlMocking';
 import {
+  DesignationSupportFormType,
   DesignationSupportSalaryType,
   DesignationSupportStatus,
   MpdGoalMiscConstantCategoryEnum,
@@ -97,6 +98,7 @@ const defaultCalculation = gqlMock<PdsGoalCalculationFieldsFragment>(
     mocks: {
       salaryOrHourly: DesignationSupportSalaryType.Salaried,
       status: DesignationSupportStatus.FullTime,
+      formType: DesignationSupportFormType.Detailed,
       payRate: 60000,
       benefits: 1500,
       ministryCellPhone: 100,
@@ -330,6 +332,76 @@ describe('usePdsSummaryData', () => {
       expect(data).toHaveProperty('otherConstants');
       expect(data).toHaveProperty('overallTotal');
       expect(data).toHaveProperty('geographicMultiplier');
+    });
+  });
+
+  describe('Simple form type', () => {
+    it('zeroes reimbursableTotal in otherConstants when formType is Simple', () => {
+      const calc = {
+        ...defaultCalculation,
+        formType: DesignationSupportFormType.Simple,
+      };
+      const { result } = renderHook(() =>
+        usePdsSummaryData(calc, defaultHcmUser),
+      );
+      expect(result.current?.otherConstants.reimbursableTotal).toBe(0);
+    });
+
+    it('zeroes fourOThreeBPercentage in otherConstants when formType is Simple', () => {
+      const calc = {
+        ...defaultCalculation,
+        formType: DesignationSupportFormType.Simple,
+      };
+      const { result } = renderHook(() =>
+        usePdsSummaryData(calc, defaultHcmUser),
+      );
+      expect(result.current?.otherConstants.fourOThreeBPercentage).toBe(0);
+    });
+
+    it('still computes reimbursableTotals (saved values are preserved)', () => {
+      const calc = {
+        ...defaultCalculation,
+        formType: DesignationSupportFormType.Simple,
+      };
+      const { result } = renderHook(() =>
+        usePdsSummaryData(calc, defaultHcmUser),
+      );
+      // The reimbursableTotals object is still computed (data isn't lost),
+      // but the otherConstants.reimbursableTotal that feeds the Other Expenses
+      // calculation is zeroed.
+      expect(result.current?.reimbursableTotals.total).toBeGreaterThan(0);
+    });
+
+    it('uses saved reimbursable + 403b values when formType is Detailed', () => {
+      const calc = {
+        ...defaultCalculation,
+        formType: DesignationSupportFormType.Detailed,
+      };
+      const { result } = renderHook(() =>
+        usePdsSummaryData(calc, defaultHcmUser),
+      );
+      expect(result.current?.otherConstants.reimbursableTotal).toBeGreaterThan(
+        0,
+      );
+      expect(
+        result.current?.otherConstants.fourOThreeBPercentage,
+      ).toBeCloseTo(0.08);
+    });
+
+    it('uses saved values when formType is null/undefined (legacy goals default to Detailed behavior)', () => {
+      const calc = {
+        ...defaultCalculation,
+        formType: null,
+      };
+      const { result } = renderHook(() =>
+        usePdsSummaryData(calc, defaultHcmUser),
+      );
+      expect(result.current?.otherConstants.reimbursableTotal).toBeGreaterThan(
+        0,
+      );
+      expect(
+        result.current?.otherConstants.fourOThreeBPercentage,
+      ).toBeCloseTo(0.08);
     });
   });
 });
