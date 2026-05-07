@@ -499,4 +499,21 @@ describe('SetupStep', () => {
       }),
     );
   });
+
+  it('shows the 403b Contribution Percentage field when formType is null (legacy goal)', async () => {
+    const { findByRole } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={{
+          ...fullTimeSalariedMock,
+          formType: null,
+        }}
+      >
+        <SetupStep />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    expect(
+      await findByRole('textbox', { name: '403b Contribution Percentage' }),
+    ).toBeInTheDocument();
+  });
 });

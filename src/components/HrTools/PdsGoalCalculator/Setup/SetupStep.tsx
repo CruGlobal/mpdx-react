@@ -47,7 +47,10 @@ export const SetupStep: React.FC = () => {
   const schema = useMemo(
     () =>
       yup.object({
-        formType: yup.string().optional(),
+        formType: yup
+          .string()
+          .oneOf(Object.values(DesignationSupportFormType))
+          .optional(),
         name: yup.string().required(t('Goal Name is a required field')),
         status: yup
           .string()
