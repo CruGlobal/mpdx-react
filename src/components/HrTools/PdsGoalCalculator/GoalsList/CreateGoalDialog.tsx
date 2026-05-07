@@ -7,6 +7,7 @@ import {
   DialogTitle,
   FormControl,
   FormControlLabel,
+  FormLabel,
   Radio,
   RadioGroup,
   Typography,
@@ -43,6 +44,9 @@ export const CreateGoalDialog: React.FC<CreateGoalDialogProps> = ({
       <DialogTitle>{t('Create a New Goal')}</DialogTitle>
       <DialogContent>
         <FormControl component="fieldset">
+          <FormLabel sx={{ position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap', border: 0 }}>
+            {t('Select a form type')}
+          </FormLabel>
           <RadioGroup
             value={selected ?? ''}
             onChange={(_, value) =>
