@@ -1,5 +1,8 @@
 import React, { useMemo } from 'react';
+import { Chip } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { GoalCard } from 'src/components/Reports/Shared/GoalCard/GoalCard';
+import { DesignationSupportFormType } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import {
@@ -17,6 +20,7 @@ export interface PdsGoalCardProps {
 }
 
 export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({ goal }) => {
+  const { t } = useTranslation();
   const accountListId = useAccountListId() ?? '';
   const [deletePdsGoalCalculation] = useDeletePdsGoalCalculationMutation();
 
@@ -38,6 +42,16 @@ export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({ goal }) => {
     return constants ? calculatePdsGoalTotal(goal, constants) : 0;
   }, [goal, goalMiscConstants, goalGeographicConstantMap, hcmUser]);
 
+  const formTypeBadge = useMemo(() => {
+    if (goal.formType === DesignationSupportFormType.Simple) {
+      return <Chip label={t('Simple')} size="small" />;
+    }
+    if (goal.formType === DesignationSupportFormType.Detailed) {
+      return <Chip label={t('Default')} size="small" />;
+    }
+    return null;
+  }, [goal.formType, t]);
+
   const handleDelete = async () => {
     await deletePdsGoalCalculation({
       variables: { id: goal.id },
@@ -57,6 +71,7 @@ export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({ goal }) => {
       updatedAt={goal.updatedAt}
       viewHref={`/accountLists/${accountListId}/hrTools/pdsGoalCalculator/${goal.id}`}
       onDelete={handleDelete}
+      badge={formTypeBadge}
     />
   );
 };
