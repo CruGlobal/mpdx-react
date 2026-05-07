@@ -23,7 +23,6 @@ import {
   ContactInputWrapper,
 } from 'src/components/Shared/styledComponents/ContactStyling';
 import { LoadingIndicator } from 'src/components/Shared/styledComponents/LoadingStyling';
-import { useUpdateCache } from 'src/hooks/useUpdateCache';
 import Modal from '../../../../../Shared/Modal/Modal';
 import {
   ContactDetailsTabDocument,
@@ -53,7 +52,6 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
     useCreateContactAddressMutation();
   const [setContactPrimaryAddress, { loading: settingPrimaryAddress }] =
     useSetContactPrimaryAddressMutation();
-  const { update } = useUpdateCache(contactId);
 
   const onSubmit = async ({
     primaryMailingAddress,
@@ -110,10 +108,10 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
     if (primaryMailingAddress && newAddressId) {
       await setContactPrimaryAddress({
         variables: {
+          accountListId,
           contactId,
           primaryAddressId: newAddressId,
         },
-        update,
       });
     }
     enqueueSnackbar(t('Address added successfully'), {

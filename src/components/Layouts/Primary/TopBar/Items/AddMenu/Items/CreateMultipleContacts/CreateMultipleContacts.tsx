@@ -235,6 +235,7 @@ export const CreateMultipleContacts = ({
               if (addressId) {
                 await setPrimaryAddress({
                   variables: {
+                    accountListId,
                     contactId,
                     primaryAddressId: addressId,
                   },
