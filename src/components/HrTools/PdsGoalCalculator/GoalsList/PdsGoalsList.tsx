@@ -1,13 +1,15 @@
 import { useRouter } from 'next/router';
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Button, CircularProgress, Stack, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
+import { DesignationSupportFormType } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useFetchAllPages } from 'src/hooks/useFetchAllPages';
 import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import illustration6graybg from 'src/images/drawkit/grape/drawkit-grape-pack-illustration-6-gray-bg.svg';
 import { PdsGoalCard } from '../GoalCard/PdsGoalCard';
+import { CreateGoalDialog } from './CreateGoalDialog';
 import {
   useCreatePdsGoalCalculationMutation,
   usePdsGoalCalculationsQuery,
@@ -38,20 +40,29 @@ export const PdsGoalsList: React.FC = () => {
     error,
     pageInfo: data?.designationSupportCalculations.pageInfo,
   });
-  const [createPdsGoalCalculation] = useCreatePdsGoalCalculationMutation();
+  const [createPdsGoalCalculation, { loading: creating }] =
+    useCreatePdsGoalCalculationMutation();
   const { goalMiscConstants, loading: constantsLoading } =
     useGoalCalculatorConstants();
 
+  const [dialogOpen, setDialogOpen] = useState(false);
+
   const goals = data?.designationSupportCalculations.nodes;
 
-  const handleCreateGoal = async () => {
+  const handleCreateGoal = async (formType: DesignationSupportFormType) => {
+    const isDetailed = formType === DesignationSupportFormType.Detailed;
     const { data } = await createPdsGoalCalculation({
       variables: {
         attributes: {
-          ministryCellPhone:
-            goalMiscConstants.REIMBURSEMENTS_WITH_MAXIMUM?.PHONE?.fee,
-          ministryInternet:
-            goalMiscConstants.REIMBURSEMENTS_WITH_MAXIMUM?.INTERNET?.fee,
+          formType,
+          ...(isDetailed
+            ? {
+                ministryCellPhone:
+                  goalMiscConstants.REIMBURSEMENTS_WITH_MAXIMUM?.PHONE?.fee,
+                ministryInternet:
+                  goalMiscConstants.REIMBURSEMENTS_WITH_MAXIMUM?.INTERNET?.fee,
+              }
+            : {}),
         },
       },
     });
@@ -59,6 +70,7 @@ export const PdsGoalsList: React.FC = () => {
       data?.createDesignationSupportCalculation?.designationSupportCalculation;
 
     if (calculation) {
+      setDialogOpen(false);
       router.push(
         `/accountLists/${accountListId}/hrTools/pdsGoalCalculator/${calculation.id}`,
       );
@@ -71,12 +83,19 @@ export const PdsGoalsList: React.FC = () => {
       <Stack direction="row" gap={2} pb={3}>
         <Button
           variant="contained"
-          onClick={handleCreateGoal}
+          onClick={() => setDialogOpen(true)}
           disabled={constantsLoading}
         >
           {t('Create a New Goal')}
         </Button>
       </Stack>
+
+      <CreateGoalDialog
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        onCreate={handleCreateGoal}
+        creating={creating}
+      />
 
       {loading ? (
         <CircularProgress />

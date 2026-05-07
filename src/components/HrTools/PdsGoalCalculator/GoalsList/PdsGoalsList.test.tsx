@@ -49,7 +49,21 @@ describe('PdsGoalsList', () => {
     expect(queryByTestId('goal-name')).not.toBeInTheDocument();
   });
 
-  it('seeds reimbursable defaults from MPD constants on create', async () => {
+  it('opens the create dialog when Create a New Goal is clicked', async () => {
+    const { findByRole } = render(
+      <PdsGoalCalculatorTestWrapper withProvider={false}>
+        <PdsGoalsList />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    const button = await findByRole('button', { name: 'Create a New Goal' });
+    await waitFor(() => expect(button).toBeEnabled());
+    userEvent.click(button);
+
+    expect(await findByRole('dialog')).toBeInTheDocument();
+  });
+
+  it('creates a Default goal with seeded reimbursable defaults via the dialog', async () => {
     const { findByRole } = render(
       <PdsGoalCalculatorTestWrapper
         withProvider={false}
@@ -75,17 +89,46 @@ describe('PdsGoalsList', () => {
       </PdsGoalCalculatorTestWrapper>,
     );
 
-    const button = await findByRole('button', { name: 'Create a New Goal' });
-    await waitFor(() => {
-      expect(button).toBeEnabled();
+    const openButton = await findByRole('button', {
+      name: 'Create a New Goal',
     });
-    userEvent.click(button);
+    await waitFor(() => expect(openButton).toBeEnabled());
+    userEvent.click(openButton);
+
+    userEvent.click(await findByRole('radio', { name: /Default/ }));
+    userEvent.click(await findByRole('button', { name: 'Create' }));
 
     await waitFor(() => {
       expect(mutationSpy).toHaveGraphqlOperation('CreatePdsGoalCalculation', {
         attributes: {
+          formType: 'DETAILED',
           ministryCellPhone: 75,
           ministryInternet: 50,
+        },
+      });
+    });
+  });
+
+  it('creates a Simple goal via the dialog', async () => {
+    const { findByRole } = render(
+      <PdsGoalCalculatorTestWrapper withProvider={false} onCall={mutationSpy}>
+        <PdsGoalsList />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    const openButton = await findByRole('button', {
+      name: 'Create a New Goal',
+    });
+    await waitFor(() => expect(openButton).toBeEnabled());
+    userEvent.click(openButton);
+
+    userEvent.click(await findByRole('radio', { name: /Simple/ }));
+    userEvent.click(await findByRole('button', { name: 'Create' }));
+
+    await waitFor(() => {
+      expect(mutationSpy).toHaveGraphqlOperation('CreatePdsGoalCalculation', {
+        attributes: {
+          formType: 'SIMPLE',
         },
       });
     });
