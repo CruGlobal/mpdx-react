@@ -1,3 +1,4 @@
+import { DesignationSupportFormType } from 'src/graphql/types.generated';
 import {
   GoalGeographicConstantMap,
   GoalMiscConstants,
@@ -15,7 +16,9 @@ import {
 
 export type PdsGoalTotalFields = SalaryCalculationFields &
   ReimbursableCalculationFields &
-  OtherExpensesFields;
+  OtherExpensesFields & {
+    formType?: DesignationSupportFormType | null;
+  };
 
 export interface PdsGoalTotalConstants {
   employerFicaRate: number;
@@ -76,6 +79,9 @@ export const calculatePdsGoalTotal = (
   calculation: PdsGoalTotalFields,
   constants: PdsGoalTotalConstants,
 ): number => {
+  const isSimple =
+    calculation.formType === DesignationSupportFormType.Simple;
+
   const salaryTotals = calculateSalaryTotals(calculation, {
     geographicMultiplier: constants.geographicMultiplier,
     employerFicaRate: constants.employerFicaRate,
@@ -84,9 +90,9 @@ export const calculatePdsGoalTotal = (
   const reimbursableTotals = calculateReimbursableTotals(calculation);
 
   const otherExpenses = calculateOtherExpenses(calculation, {
-    reimbursableTotal: reimbursableTotals.total,
+    reimbursableTotal: isSimple ? 0 : reimbursableTotals.total,
     salarySubtotal: salaryTotals.subtotal,
-    fourOThreeBPercentage: constants.fourOThreeBPercentage,
+    fourOThreeBPercentage: isSimple ? 0 : constants.fourOThreeBPercentage,
     grossMonthlyPay: salaryTotals.grossMonthlyPay,
     workCompPercentage: constants.workCompPercentage,
     attritionRate: constants.attritionRate,

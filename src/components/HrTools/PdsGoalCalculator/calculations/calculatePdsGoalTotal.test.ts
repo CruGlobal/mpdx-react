@@ -1,4 +1,5 @@
 import {
+  DesignationSupportFormType,
   DesignationSupportSalaryType,
   DesignationSupportStatus,
 } from 'src/graphql/types.generated';
@@ -73,5 +74,26 @@ describe('calculatePdsGoalTotal', () => {
     });
     const withoutGeo = calculatePdsGoalTotal(goal, defaultConstants);
     expect(withGeo).toBeGreaterThan(withoutGeo);
+  });
+
+  it('excludes reimbursable expenses and 403b when formType is Simple', () => {
+    const detailed = makeGoal({ formType: DesignationSupportFormType.Detailed });
+    const simple = makeGoal({ formType: DesignationSupportFormType.Simple });
+
+    const detailedTotal = calculatePdsGoalTotal(detailed, defaultConstants);
+    const simpleTotal = calculatePdsGoalTotal(simple, defaultConstants);
+
+    // Simple skips reimbursable + 403b lines, so its assessment is strictly lower
+    // than Detailed when those values are non-zero.
+    expect(simpleTotal).toBeLessThan(detailedTotal);
+    expect(simpleTotal).toBeGreaterThan(0);
+  });
+
+  it('treats null formType the same as Detailed (legacy goals)', () => {
+    const legacy = makeGoal({ formType: null });
+    const detailed = makeGoal({ formType: DesignationSupportFormType.Detailed });
+    expect(calculatePdsGoalTotal(legacy, defaultConstants)).toBeCloseTo(
+      calculatePdsGoalTotal(detailed, defaultConstants),
+    );
   });
 });
