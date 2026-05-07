@@ -33,6 +33,11 @@ export const CreateGoalDialog: React.FC<CreateGoalDialogProps> = ({
     null,
   );
 
+  const handleClose = () => {
+    setSelected(null);
+    onClose();
+  };
+
   const handleCreate = async () => {
     if (selected) {
       await onCreate(selected);
@@ -40,8 +45,16 @@ export const CreateGoalDialog: React.FC<CreateGoalDialogProps> = ({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>{t('Create a New Goal')}</DialogTitle>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      maxWidth="sm"
+      fullWidth
+      aria-labelledby="create-goal-dialog-title"
+    >
+      <DialogTitle id="create-goal-dialog-title">
+        {t('Create a New Goal')}
+      </DialogTitle>
       <DialogContent>
         <FormControl component="fieldset">
           <FormLabel sx={{ position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap', border: 0 }}>
@@ -87,7 +100,7 @@ export const CreateGoalDialog: React.FC<CreateGoalDialogProps> = ({
         </FormControl>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} disabled={creating}>
+        <Button onClick={handleClose} disabled={creating}>
           {t('Cancel')}
         </Button>
         <Button

@@ -82,4 +82,24 @@ describe('CreateGoalDialog', () => {
     const { queryByRole } = renderDialog({ open: false });
     expect(queryByRole('dialog')).not.toBeInTheDocument();
   });
+
+  it('clears the selected option when reopened after Cancel', () => {
+    const { getByRole, rerender } = renderDialog();
+
+    userEvent.click(getByRole('radio', { name: /Simple/ }));
+    userEvent.click(getByRole('button', { name: 'Cancel' }));
+
+    rerender(
+      <ThemeProvider theme={theme}>
+        <CreateGoalDialog
+          open={true}
+          onClose={jest.fn()}
+          onCreate={jest.fn().mockResolvedValue(undefined)}
+          creating={false}
+        />
+      </ThemeProvider>,
+    );
+
+    expect(getByRole('button', { name: 'Create' })).toBeDisabled();
+  });
 });

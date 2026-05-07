@@ -197,4 +197,11 @@ describe('PdsGoalsList', () => {
       expect(mutationSpy).toHaveGraphqlOperation('DeletePdsGoalCalculation');
     });
   });
+
+  // Skipped: testing the error-snackbar path requires overriding useCreatePdsGoalCalculationMutation,
+  // but the hook's exports are non-configurable in the generated file (jest.spyOn fails) and a
+  // module-level jest.mock would break the existing GqlMockedProvider-based mutation tests that
+  // verify calls via onCall/mutationSpy. The production fix (try/catch + enqueueSnackbar) is in
+  // PdsGoalsList.tsx; integration coverage can be added once a test-helper pattern for mocking
+  // individual generated hooks alongside GqlMockedProvider is established.
 });
