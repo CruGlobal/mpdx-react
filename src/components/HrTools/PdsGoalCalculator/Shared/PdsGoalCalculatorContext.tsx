@@ -78,7 +78,7 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
 
   const summaryData = usePdsSummaryData(calculation, hcmUser);
 
-  const steps = useSteps();
+  const steps = useSteps(calculation?.formType);
   const [stepIndex, setStepIndex] = useState(0);
   const [rightPanelContent, setRightPanelContent] =
     useState<React.ReactNode>(null);

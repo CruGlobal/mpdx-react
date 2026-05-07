@@ -4,6 +4,7 @@ import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import RequestQuoteIcon from '@mui/icons-material/RequestQuote';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { useTranslation } from 'react-i18next';
+import { DesignationSupportFormType } from 'src/graphql/types.generated';
 import { PdsGoalCalculatorStepEnum } from '../PdsGoalCalculatorHelper';
 
 export interface PdsGoalCalculatorSection {
@@ -18,11 +19,15 @@ export interface PdsGoalCalculatorStep {
   sections: PdsGoalCalculatorSection[];
 }
 
-export const useSteps = (): PdsGoalCalculatorStep[] => {
+export const useSteps = (
+  formType: DesignationSupportFormType | null | undefined,
+): PdsGoalCalculatorStep[] => {
   const { t } = useTranslation();
 
-  const steps = useMemo(
-    () => [
+  return useMemo(() => {
+    const isSimple = formType === DesignationSupportFormType.Simple;
+
+    const allSteps: PdsGoalCalculatorStep[] = [
       {
         step: PdsGoalCalculatorStepEnum.Setup,
         title: t('Settings'),
@@ -53,9 +58,13 @@ export const useSteps = (): PdsGoalCalculatorStep[] => {
         icon: <RequestQuoteIcon />,
         sections: [{ title: t('MPD Goal'), complete: false }],
       },
-    ],
-    [t],
-  );
+    ];
 
-  return steps;
+    return isSimple
+      ? allSteps.filter(
+          (step) =>
+            step.step !== PdsGoalCalculatorStepEnum.ReimbursableExpenses,
+        )
+      : allSteps;
+  }, [t, formType]);
 };
