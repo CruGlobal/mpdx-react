@@ -2,6 +2,7 @@ import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
+  DesignationSupportFormType,
   DesignationSupportSalaryType,
   DesignationSupportStatus,
 } from 'src/graphql/types.generated';
@@ -411,5 +412,91 @@ describe('SetupStep', () => {
     expect(
       await findByRole('spinbutton', { name: 'Hours Worked' }),
     ).toBeInTheDocument();
+  });
+
+  it('renders the Form Type select with both options', async () => {
+    const { findByRole, getByRole } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={{
+          ...fullTimeSalariedMock,
+          formType: DesignationSupportFormType.Detailed,
+        }}
+      >
+        <SetupStep />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    const select = await findByRole('combobox', { name: /Form Type/ });
+    await waitFor(() => expect(select).toHaveTextContent('Default'));
+    userEvent.click(select);
+
+    expect(getByRole('option', { name: 'Default' })).toBeInTheDocument();
+    expect(getByRole('option', { name: 'Simple' })).toBeInTheDocument();
+  });
+
+  it('shows 403b Contribution Percentage field when formType is Detailed', async () => {
+    const { findByRole } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={{
+          ...fullTimeSalariedMock,
+          formType: DesignationSupportFormType.Detailed,
+        }}
+      >
+        <SetupStep />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    expect(
+      await findByRole('textbox', { name: '403b Contribution Percentage' }),
+    ).toBeInTheDocument();
+  });
+
+  it('hides 403b Contribution Percentage field when formType is Simple', async () => {
+    const { findByRole, queryByRole } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={{
+          ...fullTimeSalariedMock,
+          formType: DesignationSupportFormType.Simple,
+        }}
+      >
+        <SetupStep />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    // Wait for the Form Type select to reflect the loaded Simple value
+    const formTypeSelect = await findByRole('combobox', { name: /Form Type/ });
+    await waitFor(() => expect(formTypeSelect).toHaveTextContent('Simple'));
+
+    expect(
+      queryByRole('textbox', { name: '403b Contribution Percentage' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('fires UpdatePdsGoalCalculation with formType when toggled to Simple', async () => {
+    const { findByRole, getByRole } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={{
+          ...fullTimeSalariedMock,
+          formType: DesignationSupportFormType.Detailed,
+        }}
+        onCall={mutationSpy}
+      >
+        <SetupStep />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    const select = await findByRole('combobox', { name: /Form Type/ });
+    await waitFor(() => expect(select).toHaveTextContent('Default'));
+    userEvent.click(select);
+    userEvent.click(getByRole('option', { name: 'Simple' }));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UpdatePdsGoalCalculation', {
+        attributes: {
+          id: 'goal-1',
+          formType: 'SIMPLE',
+        },
+      }),
+    );
   });
 });
