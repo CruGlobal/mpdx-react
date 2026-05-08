@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Button,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -12,8 +13,10 @@ import {
   RadioGroup,
   Typography,
 } from '@mui/material';
+import { visuallyHidden } from '@mui/utils';
 import { useTranslation } from 'react-i18next';
 import { DesignationSupportFormType } from 'src/graphql/types.generated';
+import { isDesignationSupportFormType } from '../Shared/formType';
 
 export interface CreateGoalDialogProps {
   open: boolean;
@@ -33,10 +36,11 @@ export const CreateGoalDialog: React.FC<CreateGoalDialogProps> = ({
     null,
   );
 
-  const handleClose = () => {
-    setSelected(null);
-    onClose();
-  };
+  useEffect(() => {
+    if (open) {
+      setSelected(null);
+    }
+  }, [open]);
 
   const handleCreate = async () => {
     if (selected) {
@@ -44,10 +48,31 @@ export const CreateGoalDialog: React.FC<CreateGoalDialogProps> = ({
     }
   };
 
+  const formTypeOptions: Array<{
+    value: DesignationSupportFormType;
+    title: string;
+    description: string;
+  }> = [
+    {
+      value: DesignationSupportFormType.Detailed,
+      title: t('Default'),
+      description: t(
+        'Full calculator with reimbursable expenses and 403b contributions.',
+      ),
+    },
+    {
+      value: DesignationSupportFormType.Simple,
+      title: t('Simple'),
+      description: t(
+        'Streamlined calculator without reimbursable expenses or 403b contributions.',
+      ),
+    },
+  ];
+
   return (
     <Dialog
       open={open}
-      onClose={handleClose}
+      onClose={onClose}
       maxWidth="sm"
       fullWidth
       aria-labelledby="create-goal-dialog-title"
@@ -57,56 +82,48 @@ export const CreateGoalDialog: React.FC<CreateGoalDialogProps> = ({
       </DialogTitle>
       <DialogContent>
         <FormControl component="fieldset">
-          <FormLabel sx={{ position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap', border: 0 }}>
-            {t('Select a form type')}
-          </FormLabel>
+          <FormLabel sx={visuallyHidden}>{t('Select a form type')}</FormLabel>
           <RadioGroup
             value={selected ?? ''}
-            onChange={(_, value) =>
-              setSelected(value as DesignationSupportFormType)
-            }
+            onChange={(_, value) => {
+              if (isDesignationSupportFormType(value)) {
+                setSelected(value);
+              }
+            }}
           >
-            <FormControlLabel
-              value={DesignationSupportFormType.Detailed}
-              control={<Radio />}
-              label={
-                <>
-                  <Typography variant="subtitle1">{t('Default')}</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {t(
-                      'Full calculator with reimbursable expenses and 403b contributions.',
-                    )}
-                  </Typography>
-                </>
-              }
-              sx={{ alignItems: 'flex-start', mb: 2 }}
-            />
-            <FormControlLabel
-              value={DesignationSupportFormType.Simple}
-              control={<Radio />}
-              label={
-                <>
-                  <Typography variant="subtitle1">{t('Simple')}</Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {t(
-                      'Streamlined calculator without reimbursable expenses or 403b contributions.',
-                    )}
-                  </Typography>
-                </>
-              }
-              sx={{ alignItems: 'flex-start' }}
-            />
+            {formTypeOptions.map(({ value, title, description }, index) => (
+              <FormControlLabel
+                key={value}
+                value={value}
+                control={<Radio />}
+                label={
+                  <>
+                    <Typography variant="subtitle1">{title}</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {description}
+                    </Typography>
+                  </>
+                }
+                sx={{
+                  alignItems: 'flex-start',
+                  mb: index < formTypeOptions.length - 1 ? 2 : 0,
+                }}
+              />
+            ))}
           </RadioGroup>
         </FormControl>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} disabled={creating}>
+        <Button onClick={onClose} disabled={creating}>
           {t('Cancel')}
         </Button>
         <Button
           onClick={handleCreate}
           variant="contained"
           disabled={!selected || creating}
+          startIcon={
+            creating ? <CircularProgress size={16} color="inherit" /> : null
+          }
         >
           {t('Create')}
         </Button>

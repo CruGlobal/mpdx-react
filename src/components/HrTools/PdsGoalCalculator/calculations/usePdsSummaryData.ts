@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { DesignationSupportFormType } from 'src/graphql/types.generated';
 import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import { PdsGoalCalculationFieldsFragment } from '../GoalsList/PdsGoalCalculations.generated';
 import { HcmUserQuery } from '../Shared/HCM.generated';
@@ -8,6 +7,10 @@ import {
   OtherExpensesTotals,
   calculateOtherExpenses,
 } from './OtherExpenses';
+import {
+  buildOtherExpensesConstants,
+  buildPdsGoalConstants,
+} from './calculatePdsGoalTotal';
 import {
   ReimbursableTotals,
   calculateReimbursableTotals,
@@ -21,8 +24,21 @@ import {
 export interface PdsSummaryData {
   salaryTotals: SalaryTotals;
   salaryConstants: SalaryConstants;
+  /**
+   * Reimbursable totals computed from the saved calculation data, preserved
+   * across formType changes so a user switching Detailed → Simple → Detailed
+   * doesn't lose what they entered. NOT the effective value used in downstream
+   * Other Expenses math — for that, use `otherConstants.reimbursableTotal`,
+   * which is zeroed when `formType === Simple`.
+   */
   reimbursableTotals: ReimbursableTotals;
   otherTotals: OtherExpensesTotals;
+  /**
+   * Inputs fed into `calculateOtherExpenses`. `reimbursableTotal` and
+   * `fourOThreeBPercentage` here are zeroed when `formType === Simple`
+   * (Simple goals exclude reimbursables and 403b from the goal calc), so they
+   * differ from `reimbursableTotals.total` and the user's HCM 403b percentages.
+   */
   otherConstants: OtherExpensesConstants;
   overallTotal: number;
   geographicMultiplier: number;
@@ -40,53 +56,29 @@ export const usePdsSummaryData = (
       return null;
     }
 
-    const additionalRates = goalMiscConstants.ADDITIONAL_RATES;
-    const employerFicaRate = additionalRates?.EMPLOYER_FICA_RATE?.fee;
-    const workCompPercentage =
-      additionalRates?.PART_TIME_WORK_COMPENSATION?.fee;
-    const attritionRate = goalMiscConstants.RATES?.ATTRITION_RATE?.fee;
-    const creditCardFeeRate = additionalRates?.CREDIT_CARD_FEE_RATE?.fee;
-    const adminRate = goalMiscConstants.RATES?.ADMIN_RATE?.fee;
-
-    if (
-      employerFicaRate === undefined ||
-      workCompPercentage === undefined ||
-      attritionRate === undefined ||
-      creditCardFeeRate === undefined ||
-      adminRate === undefined
-    ) {
+    const constants = buildPdsGoalConstants(
+      goalMiscConstants,
+      goalGeographicConstantMap,
+      calculation.geographicLocation,
+      hcmUser?.fourOThreeB,
+    );
+    if (!constants) {
       return null;
     }
 
-    const geographicMultiplier =
-      goalGeographicConstantMap.get(calculation.geographicLocation ?? '') ?? 0;
-
     const salaryConstants: SalaryConstants = {
-      geographicMultiplier,
-      employerFicaRate,
+      geographicMultiplier: constants.geographicMultiplier,
+      employerFicaRate: constants.employerFicaRate,
     };
     const salaryTotals = calculateSalaryTotals(calculation, salaryConstants);
     const reimbursableTotals = calculateReimbursableTotals(calculation);
 
-    const taxDeferredPct =
-      (hcmUser?.fourOThreeB?.currentTaxDeferredContributionPercentage ?? 0) /
-      100;
-    const rothPct =
-      (hcmUser?.fourOThreeB?.currentRothContributionPercentage ?? 0) / 100;
-
-    const isSimple =
-      calculation.formType === DesignationSupportFormType.Simple;
-
-    const otherConstants: OtherExpensesConstants = {
-      reimbursableTotal: isSimple ? 0 : reimbursableTotals.total,
-      salarySubtotal: salaryTotals.subtotal,
-      fourOThreeBPercentage: isSimple ? 0 : taxDeferredPct + rothPct,
-      grossMonthlyPay: salaryTotals.grossMonthlyPay,
-      workCompPercentage,
-      attritionRate,
-      creditCardFeeRate,
-      adminRate,
-    };
+    const otherConstants = buildOtherExpensesConstants(
+      calculation.formType,
+      constants,
+      salaryTotals,
+      reimbursableTotals.total,
+    );
     const otherTotals = calculateOtherExpenses(calculation, otherConstants);
 
     const overallTotal =
@@ -102,7 +94,7 @@ export const usePdsSummaryData = (
       otherTotals,
       otherConstants,
       overallTotal,
-      geographicMultiplier,
+      geographicMultiplier: constants.geographicMultiplier,
     };
   }, [calculation, hcmUser, goalMiscConstants, goalGeographicConstantMap]);
 };

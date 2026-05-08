@@ -4,13 +4,19 @@ import {
   GoalMiscConstants,
 } from 'src/hooks/useGoalCalculatorConstants';
 import { HcmUserQuery } from '../Shared/HCM.generated';
-import { OtherExpensesFields, calculateOtherExpenses } from './OtherExpenses';
+import { isSimpleFormType } from '../Shared/formType';
+import {
+  OtherExpensesConstants,
+  OtherExpensesFields,
+  calculateOtherExpenses,
+} from './OtherExpenses';
 import {
   ReimbursableCalculationFields,
   calculateReimbursableTotals,
 } from './reimbursableExpenses';
 import {
   SalaryCalculationFields,
+  SalaryTotals,
   calculateSalaryTotals,
 } from './salaryCalculation';
 
@@ -75,22 +81,15 @@ export const buildPdsGoalConstants = (
   };
 };
 
-export const calculatePdsGoalTotal = (
-  calculation: PdsGoalTotalFields,
+export const buildOtherExpensesConstants = (
+  formType: DesignationSupportFormType | null | undefined,
   constants: PdsGoalTotalConstants,
-): number => {
-  const isSimple =
-    calculation.formType === DesignationSupportFormType.Simple;
-
-  const salaryTotals = calculateSalaryTotals(calculation, {
-    geographicMultiplier: constants.geographicMultiplier,
-    employerFicaRate: constants.employerFicaRate,
-  });
-
-  const reimbursableTotals = calculateReimbursableTotals(calculation);
-
-  const otherExpenses = calculateOtherExpenses(calculation, {
-    reimbursableTotal: isSimple ? 0 : reimbursableTotals.total,
+  salaryTotals: SalaryTotals,
+  reimbursableTotal: number,
+): OtherExpensesConstants => {
+  const isSimple = isSimpleFormType(formType);
+  return {
+    reimbursableTotal: isSimple ? 0 : reimbursableTotal,
     salarySubtotal: salaryTotals.subtotal,
     fourOThreeBPercentage: isSimple ? 0 : constants.fourOThreeBPercentage,
     grossMonthlyPay: salaryTotals.grossMonthlyPay,
@@ -98,7 +97,29 @@ export const calculatePdsGoalTotal = (
     attritionRate: constants.attritionRate,
     creditCardFeeRate: constants.creditCardFeeRate,
     adminRate: constants.adminRate,
+  };
+};
+
+export const calculatePdsGoalTotal = (
+  calculation: PdsGoalTotalFields,
+  constants: PdsGoalTotalConstants,
+): number => {
+  const salaryTotals = calculateSalaryTotals(calculation, {
+    geographicMultiplier: constants.geographicMultiplier,
+    employerFicaRate: constants.employerFicaRate,
   });
+
+  const reimbursableTotal = calculateReimbursableTotals(calculation).total;
+
+  const otherExpenses = calculateOtherExpenses(
+    calculation,
+    buildOtherExpensesConstants(
+      calculation.formType,
+      constants,
+      salaryTotals,
+      reimbursableTotal,
+    ),
+  );
 
   return otherExpenses.assessment;
 };

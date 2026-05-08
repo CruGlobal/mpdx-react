@@ -15,14 +15,20 @@ const renderDialog = (
     onCreate: jest.fn().mockResolvedValue(undefined),
     creating: false,
   };
-  return {
-    props: { ...defaults, ...props },
-    ...render(
+  const utils = render(
+    <ThemeProvider theme={theme}>
+      <CreateGoalDialog {...defaults} {...props} />
+    </ThemeProvider>,
+  );
+  const rerenderDialog = (
+    nextProps: Partial<React.ComponentProps<typeof CreateGoalDialog>> = {},
+  ) =>
+    utils.rerender(
       <ThemeProvider theme={theme}>
-        <CreateGoalDialog {...defaults} {...props} />
+        <CreateGoalDialog {...defaults} {...nextProps} />
       </ThemeProvider>,
-    ),
-  };
+    );
+  return { ...utils, rerenderDialog };
 };
 
 describe('CreateGoalDialog', () => {
@@ -84,21 +90,13 @@ describe('CreateGoalDialog', () => {
   });
 
   it('clears the selected option when reopened after Cancel', () => {
-    const { getByRole, rerender } = renderDialog();
+    const { getByRole, rerenderDialog } = renderDialog();
 
     userEvent.click(getByRole('radio', { name: /Simple/ }));
     userEvent.click(getByRole('button', { name: 'Cancel' }));
 
-    rerender(
-      <ThemeProvider theme={theme}>
-        <CreateGoalDialog
-          open={true}
-          onClose={jest.fn()}
-          onCreate={jest.fn().mockResolvedValue(undefined)}
-          creating={false}
-        />
-      </ThemeProvider>,
-    );
+    rerenderDialog({ open: false });
+    rerenderDialog({ open: true });
 
     expect(getByRole('button', { name: 'Create' })).toBeDisabled();
   });

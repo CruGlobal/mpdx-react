@@ -211,6 +211,32 @@ describe('PdsSummaryTable', () => {
     expect(getByRole('gridcell', { name: 'Total Goal' })).toBeInTheDocument();
   });
 
+  it('renders Work Comp without Benefits or detailed rows when formType is Simple and status is PartTime', async () => {
+    const { findByRole, getByRole, queryByRole } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={{
+          ...hourlyPartTimeMock,
+          formType: DesignationSupportFormType.Simple,
+        }}
+      >
+        <PdsSummaryTable supportRaised={0} />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    await findByRole('gridcell', { name: 'Work Comp' });
+
+    expect(getByRole('gridcell', { name: 'Work Comp' })).toBeInTheDocument();
+    expect(
+      queryByRole('gridcell', { name: 'Benefits' }),
+    ).not.toBeInTheDocument();
+    expect(
+      queryByRole('gridcell', { name: 'Reimbursable Expenses' }),
+    ).not.toBeInTheDocument();
+    expect(
+      queryByRole('gridcell', { name: '403b Contributions' }),
+    ).not.toBeInTheDocument();
+  });
+
   it('renders Reimbursable Expenses and 403b Contributions rows when formType is Detailed', async () => {
     const { findByRole, getByRole } = render(
       <PdsGoalCalculatorTestWrapper

@@ -38,44 +38,33 @@ describe('PdsGoalCard', () => {
     );
   });
 
-  it('renders a Default badge when formType is Detailed', async () => {
-    const { findByText } = render(
+  it.each([
+    {
+      description: 'a Default badge when formType is Detailed',
+      name: 'Detailed Goal',
+      formType: DesignationSupportFormType.Detailed,
+      expectedBadge: 'Default',
+    },
+    {
+      description: 'a Simple badge when formType is Simple',
+      name: 'Simple Goal',
+      formType: DesignationSupportFormType.Simple,
+      expectedBadge: 'Simple',
+    },
+  ])('renders $description', async ({ name, formType, expectedBadge }) => {
+    const { findByText, queryByText } = render(
       <PdsGoalCalculatorTestWrapper
         withProvider={false}
         calculationsMock={{
-          nodes: [
-            {
-              name: 'Detailed Goal',
-              formType: DesignationSupportFormType.Detailed,
-            },
-          ],
+          nodes: [{ name, formType }],
         }}
       >
         <PdsGoalsList />
       </PdsGoalCalculatorTestWrapper>,
     );
 
-    expect(await findByText('Default')).toBeInTheDocument();
-  });
-
-  it('renders a Simple badge when formType is Simple', async () => {
-    const { findByText } = render(
-      <PdsGoalCalculatorTestWrapper
-        withProvider={false}
-        calculationsMock={{
-          nodes: [
-            {
-              name: 'Simple Goal',
-              formType: DesignationSupportFormType.Simple,
-            },
-          ],
-        }}
-      >
-        <PdsGoalsList />
-      </PdsGoalCalculatorTestWrapper>,
-    );
-
-    expect(await findByText('Simple')).toBeInTheDocument();
+    await findByText(name);
+    expect(queryByText(expectedBadge)).toBeInTheDocument();
   });
 
   it('renders no form-type badge when formType is null (legacy goal)', async () => {
@@ -91,7 +80,6 @@ describe('PdsGoalCard', () => {
     );
 
     await findByText('Legacy Goal');
-
     expect(queryByText('Default')).not.toBeInTheDocument();
     expect(queryByText('Simple')).not.toBeInTheDocument();
   });

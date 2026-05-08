@@ -10,6 +10,25 @@ import { PdsGoalsList } from './PdsGoalsList';
 
 const mutationSpy = jest.fn();
 
+type FindByRole = ReturnType<typeof render>['findByRole'];
+
+// The "Create a New Goal" button is disabled while the GoalCalculatorConstants
+// query is in flight (constantsLoading drives `disabled`), so we wait for it
+// to become enabled before clicking.
+const openCreateGoalDialog = async (findByRole: FindByRole) => {
+  const button = await findByRole('button', { name: 'Create a New Goal' });
+  await waitFor(() => expect(button).toBeEnabled());
+  userEvent.click(button);
+};
+
+const submitFormType = async (
+  findByRole: FindByRole,
+  formType: 'Default' | 'Simple',
+) => {
+  userEvent.click(await findByRole('radio', { name: new RegExp(formType) }));
+  userEvent.click(await findByRole('button', { name: 'Create' }));
+};
+
 describe('PdsGoalsList', () => {
   it('renders the create button', () => {
     const { getByRole } = render(
@@ -56,9 +75,7 @@ describe('PdsGoalsList', () => {
       </PdsGoalCalculatorTestWrapper>,
     );
 
-    const button = await findByRole('button', { name: 'Create a New Goal' });
-    await waitFor(() => expect(button).toBeEnabled());
-    userEvent.click(button);
+    await openCreateGoalDialog(findByRole);
 
     expect(await findByRole('dialog')).toBeInTheDocument();
   });
@@ -89,14 +106,8 @@ describe('PdsGoalsList', () => {
       </PdsGoalCalculatorTestWrapper>,
     );
 
-    const openButton = await findByRole('button', {
-      name: 'Create a New Goal',
-    });
-    await waitFor(() => expect(openButton).toBeEnabled());
-    userEvent.click(openButton);
-
-    userEvent.click(await findByRole('radio', { name: /Default/ }));
-    userEvent.click(await findByRole('button', { name: 'Create' }));
+    await openCreateGoalDialog(findByRole);
+    await submitFormType(findByRole, 'Default');
 
     await waitFor(() => {
       expect(mutationSpy).toHaveGraphqlOperation('CreatePdsGoalCalculation', {
@@ -116,14 +127,8 @@ describe('PdsGoalsList', () => {
       </PdsGoalCalculatorTestWrapper>,
     );
 
-    const openButton = await findByRole('button', {
-      name: 'Create a New Goal',
-    });
-    await waitFor(() => expect(openButton).toBeEnabled());
-    userEvent.click(openButton);
-
-    userEvent.click(await findByRole('radio', { name: /Simple/ }));
-    userEvent.click(await findByRole('button', { name: 'Create' }));
+    await openCreateGoalDialog(findByRole);
+    await submitFormType(findByRole, 'Simple');
 
     await waitFor(() => {
       expect(mutationSpy).toHaveGraphqlOperation('CreatePdsGoalCalculation', {
@@ -198,10 +203,45 @@ describe('PdsGoalsList', () => {
     });
   });
 
-  // Skipped: testing the error-snackbar path requires overriding useCreatePdsGoalCalculationMutation,
-  // but the hook's exports are non-configurable in the generated file (jest.spyOn fails) and a
-  // module-level jest.mock would break the existing GqlMockedProvider-based mutation tests that
-  // verify calls via onCall/mutationSpy. The production fix (try/catch + enqueueSnackbar) is in
-  // PdsGoalsList.tsx; integration coverage can be added once a test-helper pattern for mocking
-  // individual generated hooks alongside GqlMockedProvider is established.
+  it('shows error snackbar and skips mutation when reimbursement constants are missing for a Default goal', async () => {
+    const { findByRole, findByText } = render(
+      <PdsGoalCalculatorTestWrapper
+        withProvider={false}
+        onCall={mutationSpy}
+        constantsMock={{ mpdGoalMiscConstants: [] }}
+      >
+        <PdsGoalsList />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    await openCreateGoalDialog(findByRole);
+    await submitFormType(findByRole, 'Default');
+
+    expect(
+      await findByText('Failed to create goal. Please try again.'),
+    ).toBeInTheDocument();
+    expect(mutationSpy).not.toHaveGraphqlOperation('CreatePdsGoalCalculation');
+  });
+
+  it('shows error snackbar when create mutation fails', async () => {
+    const { findByRole, findByText } = render(
+      <PdsGoalCalculatorTestWrapper
+        withProvider={false}
+        mocksOverride={{
+          CreatePdsGoalCalculation: () => {
+            throw new Error('Server Error');
+          },
+        }}
+      >
+        <PdsGoalsList />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    await openCreateGoalDialog(findByRole);
+    await submitFormType(findByRole, 'Simple');
+
+    expect(
+      await findByText('Failed to create goal. Please try again.'),
+    ).toBeInTheDocument();
+  });
 });

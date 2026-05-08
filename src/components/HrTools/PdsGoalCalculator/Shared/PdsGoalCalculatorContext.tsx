@@ -2,7 +2,6 @@ import { useRouter } from 'next/router';
 import React, {
   createContext,
   useCallback,
-  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -85,27 +84,29 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const summaryData = usePdsSummaryData(calculation, hcmUser);
 
   const steps = useSteps(calculation?.formType);
-  const [stepIndex, setStepIndex] = useState(0);
+  // Track the user's place by step enum, not numeric index, so that a change
+  // to the steps array (e.g. formType switch Detailed → Simple, dropping the
+  // ReimbursableExpenses step) preserves their step when it still exists and
+  // falls back to Setup only when it doesn't.
+  const [activeStep, setActiveStep] = useState<PdsGoalCalculatorStepEnum>(
+    PdsGoalCalculatorStepEnum.Setup,
+  );
   const [rightPanelContent, setRightPanelContent] =
     useState<React.ReactNode>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(true);
   const { trackMutation, isMutating } = useTrackMutation();
 
-  // Clamp stepIndex to valid range when the steps array shrinks (e.g. formType
-  // switches from Detailed to Simple, dropping the ReimbursableExpenses step).
-  useEffect(() => {
-    if (stepIndex >= steps.length) {
-      setStepIndex(0);
-    }
-  }, [steps.length, stepIndex]);
+  const stepIndex = useMemo(() => {
+    const idx = steps.findIndex((s) => s.step === activeStep);
+    return idx === -1 ? 0 : idx;
+  }, [steps, activeStep]);
 
   const currentStep = steps[stepIndex];
 
   const handleStepChange = useCallback(
     (newStep: PdsGoalCalculatorStepEnum) => {
-      const newIndex = steps.findIndex((step) => step.step === newStep);
-      if (newIndex !== -1) {
-        setStepIndex(newIndex);
+      if (steps.some((step) => step.step === newStep)) {
+        setActiveStep(newStep);
       } else {
         enqueueSnackbar(t('The selected step does not exist.'), {
           variant: 'error',
@@ -117,15 +118,15 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
 
   const handleContinue = useCallback(() => {
     if (stepIndex < steps.length - 1) {
-      setStepIndex(stepIndex + 1);
+      setActiveStep(steps[stepIndex + 1].step);
     }
   }, [stepIndex, steps]);
 
   const handlePreviousStep = useCallback(() => {
     if (stepIndex > 0) {
-      setStepIndex(stepIndex - 1);
+      setActiveStep(steps[stepIndex - 1].step);
     }
-  }, [stepIndex]);
+  }, [stepIndex, steps]);
 
   const closeRightPanel = useCallback(() => {
     setRightPanelContent(null);

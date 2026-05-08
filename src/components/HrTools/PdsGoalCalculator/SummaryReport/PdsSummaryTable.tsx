@@ -2,10 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 import { styled } from '@mui/material/styles';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
-import {
-  DesignationSupportFormType,
-  DesignationSupportStatus,
-} from 'src/graphql/types.generated';
+import { DesignationSupportStatus } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
 import {
@@ -15,6 +12,7 @@ import {
 } from 'src/lib/intlFormat';
 import { safeProgressRatio } from '../../GoalCalculator/Shared/safeProgressRatio';
 import { usePdsGoalCalculator } from '../Shared/PdsGoalCalculatorContext';
+import { isSimpleFormType } from '../Shared/formType';
 import { PdsSummaryHeaderCards } from './PdsSummaryHeaderCards';
 
 interface PdsSummaryRow {
@@ -88,8 +86,7 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
 
     const isFullTime = calculation.status === DesignationSupportStatus.FullTime;
     const isPartTime = calculation.status === DesignationSupportStatus.PartTime;
-    const isSimple =
-      calculation.formType === DesignationSupportFormType.Simple;
+    const isSimple = isSimpleFormType(calculation.formType);
 
     const rows: PdsSummaryRow[] = [
       // Salary section
@@ -126,7 +123,7 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
       ...(isPartTime
         ? [
             {
-              line: '2C',
+              line: isSimple ? '2A' : '2C',
               category: t('Work Comp'),
               amount: otherTotals.workComp,
             },
@@ -135,7 +132,7 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
       ...(isFullTime
         ? [
             {
-              line: '2C',
+              line: isSimple ? '2A' : '2C',
               category: t('Benefits'),
               amount: otherTotals.benefits,
             },

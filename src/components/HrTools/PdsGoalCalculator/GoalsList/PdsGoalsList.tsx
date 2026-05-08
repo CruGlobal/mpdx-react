@@ -53,19 +53,31 @@ export const PdsGoalsList: React.FC = () => {
 
   const handleCreateGoal = async (formType: DesignationSupportFormType) => {
     const isDetailed = formType === DesignationSupportFormType.Detailed;
+    let detailedDefaults: {
+      ministryCellPhone: number;
+      ministryInternet: number;
+    } | null = null;
+    if (isDetailed) {
+      const reimbursements = goalMiscConstants.REIMBURSEMENTS_WITH_MAXIMUM;
+      const phoneFee = reimbursements?.PHONE?.fee;
+      const internetFee = reimbursements?.INTERNET?.fee;
+      if (phoneFee === undefined || internetFee === undefined) {
+        enqueueSnackbar(t('Failed to create goal. Please try again.'), {
+          variant: 'error',
+        });
+        return;
+      }
+      detailedDefaults = {
+        ministryCellPhone: phoneFee,
+        ministryInternet: internetFee,
+      };
+    }
     try {
       const { data } = await createPdsGoalCalculation({
         variables: {
           attributes: {
             formType,
-            ...(isDetailed
-              ? {
-                  ministryCellPhone:
-                    goalMiscConstants.REIMBURSEMENTS_WITH_MAXIMUM?.PHONE?.fee,
-                  ministryInternet:
-                    goalMiscConstants.REIMBURSEMENTS_WITH_MAXIMUM?.INTERNET?.fee,
-                }
-              : {}),
+            ...(detailedDefaults ?? {}),
           },
         },
       });

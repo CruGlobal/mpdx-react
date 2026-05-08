@@ -6,6 +6,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import { useTranslation } from 'react-i18next';
 import { DesignationSupportFormType } from 'src/graphql/types.generated';
 import { PdsGoalCalculatorStepEnum } from '../PdsGoalCalculatorHelper';
+import { isSimpleFormType } from './formType';
 
 export interface PdsGoalCalculatorSection {
   title: string;
@@ -25,7 +26,7 @@ export const useSteps = (
   const { t } = useTranslation();
 
   return useMemo(() => {
-    const isSimple = formType === DesignationSupportFormType.Simple;
+    const isSimple = isSimpleFormType(formType);
 
     const allSteps: PdsGoalCalculatorStep[] = [
       {

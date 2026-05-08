@@ -31,6 +31,7 @@ import {
 import { AutosaveTextField } from '../Shared/Autosave/AutosaveTextField';
 import { useSaveField } from '../Shared/Autosave/useSaveField';
 import { usePdsGoalCalculator } from '../Shared/PdsGoalCalculatorContext';
+import { isSimpleFormType } from '../Shared/formType';
 import { HoursPerWeekGrid } from './HoursPerWeekGrid/HoursPerWeekGrid';
 
 export const SetupStep: React.FC = () => {
@@ -38,18 +39,13 @@ export const SetupStep: React.FC = () => {
   const theme = useTheme();
   const { calculation, hcmUser, setRightPanelContent } = usePdsGoalCalculator();
   const { data: userData } = useGetUserQuery();
-  const fourOThreeB = hcmUser?.fourOThreeB;
-  const totalFourOThreeBContributionPercentage = fourOThreeB
-    ? (fourOThreeB.currentTaxDeferredContributionPercentage ?? 0) +
-      (fourOThreeB.currentRothContributionPercentage ?? 0)
-    : null;
-
   const schema = useMemo(
     () =>
       yup.object({
         formType: yup
           .string()
           .oneOf(Object.values(DesignationSupportFormType))
+          .nullable()
           .optional(),
         name: yup.string().required(t('Goal Name is a required field')),
         status: yup
@@ -92,8 +88,7 @@ export const SetupStep: React.FC = () => {
   const isSalaried =
     calculation?.salaryOrHourly === DesignationSupportSalaryType.Salaried;
   const isPartTime = calculation?.status === DesignationSupportStatus.PartTime;
-  const isSimpleForm =
-    calculation?.formType === DesignationSupportFormType.Simple;
+  const isSimpleForm = isSimpleFormType(calculation?.formType);
 
   const payRateHelperText = isSalaried
     ? t('Enter yearly salary')
@@ -151,6 +146,9 @@ export const SetupStep: React.FC = () => {
               schema={schema}
               select
               label={t('Form Type')}
+              helperText={t(
+                'Default includes reimbursable expenses and 403b contributions; Simple omits them.',
+              )}
             >
               <MenuItem value={DesignationSupportFormType.Detailed}>
                 {t('Default')}
@@ -255,7 +253,14 @@ export const SetupStep: React.FC = () => {
                 variant="outlined"
                 label={t('403b Contribution Percentage')}
                 disabled
-                value={totalFourOThreeBContributionPercentage ?? ''}
+                value={
+                  hcmUser?.fourOThreeB
+                    ? (hcmUser.fourOThreeB
+                        .currentTaxDeferredContributionPercentage ?? 0) +
+                      (hcmUser.fourOThreeB.currentRothContributionPercentage ??
+                        0)
+                    : ''
+                }
                 helperText={t(
                   'Retrieved from Principal. A combined percentage of your current tax deferred and Roth contributions.',
                 )}
