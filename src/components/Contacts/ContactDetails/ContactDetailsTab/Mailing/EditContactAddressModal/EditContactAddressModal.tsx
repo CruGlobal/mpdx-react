@@ -85,8 +85,6 @@ export const EditContactAddressModal: React.FC<
         },
       },
     });
-    // updateContactAddress doesn't set support setting the primaryMailingAddress field, so if
-    // that field changes, then use the setContactPrimaryAddress mutation to update it
     if (address.primaryMailingAddress !== primaryMailingAddress) {
       await setContactPrimaryAddress({
         variables: {
