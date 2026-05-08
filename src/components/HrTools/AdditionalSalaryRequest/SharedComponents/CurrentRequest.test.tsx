@@ -161,29 +161,18 @@ describe('CurrentRequest', () => {
   });
 
   describe('timeline status - Pending', () => {
-    it.each([
-      AsrStatusEnum.Pending,
-      AsrStatusEnum.PendingDivisionHeadApproval,
-      AsrStatusEnum.PendingVpApproval,
-      AsrStatusEnum.PendingManagementApproval,
-      AsrStatusEnum.PendingBoardApproval,
-    ])(
-      'displays "Requested on:" with date for submitted requests - %s',
-      (status) => {
-        const pendingRequest: RequestType = {
-          ...mockRequest,
-          status,
-          submittedAt: '2025-06-10T00:00:00.000Z',
-        };
+    it('displays "Requested on:" with date for submitted requests', () => {
+      const pendingRequest: RequestType = {
+        ...mockRequest,
+        status: AsrStatusEnum.Pending,
+        submittedAt: '2025-06-10T00:00:00.000Z',
+      };
 
-        const { getByText } = render(
-          <TestComponent request={pendingRequest} />,
-        );
+      const { getByText } = render(<TestComponent request={pendingRequest} />);
 
-        expect(getByText('Requested on:')).toBeInTheDocument();
-        expect(getByText(/Jun 10, 2025/)).toBeInTheDocument();
-      },
-    );
+      expect(getByText('Requested on:')).toBeInTheDocument();
+      expect(getByText(/Jun 10, 2025/)).toBeInTheDocument();
+    });
 
     it('displays "Request In Process" for pending status', () => {
       const pendingRequest: RequestType = {

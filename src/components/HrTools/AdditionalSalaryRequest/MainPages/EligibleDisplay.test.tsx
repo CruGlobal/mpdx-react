@@ -70,14 +70,10 @@ const TestWrapper: React.FC<TestWrapperProps> = ({
 };
 
 describe('EligibleDisplay', () => {
-  it.each([
-    AsrStatusEnum.Pending,
-    AsrStatusEnum.PendingDivisionHeadApproval,
-    AsrStatusEnum.PendingVpApproval,
-    AsrStatusEnum.PendingManagementApproval,
-    AsrStatusEnum.PendingBoardApproval,
-  ])('renders relevant pending messages - %s', async (status) => {
-    const { findByText } = render(<TestWrapper status={status} />);
+  it('renders relevant pending messages', async () => {
+    const { findByText } = render(
+      <TestWrapper status={AsrStatusEnum.Pending} />,
+    );
 
     expect(
       await findByText('Your Additional Salary Request'),

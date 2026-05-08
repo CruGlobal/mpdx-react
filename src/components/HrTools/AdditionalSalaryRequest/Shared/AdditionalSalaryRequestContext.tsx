@@ -186,12 +186,7 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
   });
 
   const status = requestData?.latestAdditionalSalaryRequest?.status;
-  const isPending =
-    status === AsrStatusEnum.Pending ||
-    status === AsrStatusEnum.PendingDivisionHeadApproval ||
-    status === AsrStatusEnum.PendingVpApproval ||
-    status === AsrStatusEnum.PendingManagementApproval ||
-    status === AsrStatusEnum.PendingBoardApproval;
+  const isPending = status === AsrStatusEnum.Pending;
   const isApproved =
     status === AsrStatusEnum.ApprovedNotPaid ||
     status === AsrStatusEnum.ApprovedAndPaid;
