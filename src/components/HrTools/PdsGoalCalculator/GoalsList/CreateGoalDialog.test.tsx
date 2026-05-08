@@ -13,7 +13,6 @@ const renderDialog = (
     open: true,
     onClose: jest.fn(),
     onCreate: jest.fn().mockResolvedValue(undefined),
-    creating: false,
   };
   const utils = render(
     <ThemeProvider theme={theme}>
@@ -78,10 +77,17 @@ describe('CreateGoalDialog', () => {
     expect(onClose).toHaveBeenCalled();
   });
 
-  it('disables actions while creating is true', () => {
-    const { getByRole } = renderDialog({ creating: true });
-    expect(getByRole('button', { name: 'Create' })).toBeDisabled();
-    expect(getByRole('button', { name: 'Cancel' })).toBeDisabled();
+  it('disables Create but keeps Cancel enabled while submitting', async () => {
+    const onCreate = jest.fn().mockReturnValue(new Promise<void>(() => {}));
+    const { getByRole } = renderDialog({ onCreate });
+
+    userEvent.click(getByRole('radio', { name: /Simple/ }));
+    userEvent.click(getByRole('button', { name: 'Create' }));
+
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Create' })).toBeDisabled(),
+    );
+    expect(getByRole('button', { name: 'Cancel' })).toBeEnabled();
   });
 
   it('does not render when open is false', () => {

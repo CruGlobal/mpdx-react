@@ -6,7 +6,10 @@ import { PdsGoalCalculatorStepEnum } from '../PdsGoalCalculatorHelper';
 import { PdsGoalCalculatorTestWrapper } from '../PdsGoalCalculatorTestWrapper';
 import { usePdsGoalCalculator } from './PdsGoalCalculatorContext';
 import { useSteps } from './useSteps';
-import type { PdsGoalCalculatorStep } from './useSteps';
+import type {
+  PdsGoalCalculatorStep,
+  PdsGoalCalculatorSteps,
+} from './useSteps';
 
 jest.mock('./useSteps', () => ({
   __esModule: true,
@@ -23,20 +26,20 @@ const stub = (step: PdsGoalCalculatorStepEnum): PdsGoalCalculatorStep => ({
   sections: [],
 });
 
-const detailedSteps: PdsGoalCalculatorStep[] = [
+const detailedSteps: PdsGoalCalculatorSteps = [
   stub(PdsGoalCalculatorStepEnum.Setup),
   stub(PdsGoalCalculatorStepEnum.ReimbursableExpenses),
   stub(PdsGoalCalculatorStepEnum.SupportItem),
   stub(PdsGoalCalculatorStepEnum.SummaryReport),
 ];
 
-const simpleSteps: PdsGoalCalculatorStep[] = [
+const simpleSteps: PdsGoalCalculatorSteps = [
   stub(PdsGoalCalculatorStepEnum.Setup),
   stub(PdsGoalCalculatorStepEnum.SupportItem),
   stub(PdsGoalCalculatorStepEnum.SummaryReport),
 ];
 
-const minimalSteps: PdsGoalCalculatorStep[] = [
+const minimalSteps: PdsGoalCalculatorSteps = [
   stub(PdsGoalCalculatorStepEnum.Setup),
   stub(PdsGoalCalculatorStepEnum.SummaryReport),
 ];
@@ -53,7 +56,7 @@ const StepProbe: React.FC = () => {
     usePdsGoalCalculator();
   return (
     <div>
-      <div data-testid="current-step">{currentStep?.step ?? 'none'}</div>
+      <div data-testid="current-step">{currentStep.step}</div>
       <div data-testid="step-index">{stepIndex}</div>
       <div data-testid="step-count">{steps.length}</div>
       <button
@@ -125,6 +128,9 @@ describe('PdsGoalCalculatorContext', () => {
   });
 
   describe('preserves the user step when the steps array changes', () => {
+    const reconcileMessage =
+      'Returned to Setup because that step is not available in this form type.';
+
     it.each([
       {
         name: 'keeps the user on SummaryReport when steps shrink Detailed → Simple',
@@ -133,22 +139,25 @@ describe('PdsGoalCalculatorContext', () => {
         newSteps: simpleSteps,
         expectedStep: PdsGoalCalculatorStepEnum.SummaryReport,
         expectedIndex: '2',
+        expectSnackbar: false,
       },
       {
-        name: 'falls back to Setup when current step does not exist in new form',
+        name: 'falls back to Setup and notifies when current step does not exist in new form',
         initialSteps: detailedSteps,
         click: 'go to reimbursable',
         newSteps: simpleSteps,
         expectedStep: PdsGoalCalculatorStepEnum.Setup,
         expectedIndex: '0',
+        expectSnackbar: true,
       },
       {
-        name: 'reconciles to the first step when an active step past index 1 disappears',
+        name: 'reconciles to the first step and notifies when an active step past index 1 disappears',
         initialSteps: detailedSteps,
         click: 'go to support item',
         newSteps: minimalSteps,
         expectedStep: PdsGoalCalculatorStepEnum.Setup,
         expectedIndex: '0',
+        expectSnackbar: true,
       },
       {
         name: 'keeps the user on SupportItem when steps grow Simple → Detailed',
@@ -157,16 +166,25 @@ describe('PdsGoalCalculatorContext', () => {
         newSteps: detailedSteps,
         expectedStep: PdsGoalCalculatorStepEnum.SupportItem,
         expectedIndex: '2',
+        expectSnackbar: false,
       },
     ])(
       '$name',
-      async ({ initialSteps, click, newSteps, expectedStep, expectedIndex }) => {
+      async ({
+        initialSteps,
+        click,
+        newSteps,
+        expectedStep,
+        expectedIndex,
+        expectSnackbar,
+      }) => {
         mockedUseSteps.mockReturnValue(initialSteps);
-        const { findByTestId, getByRole, rerender } = render(
-          <PdsGoalCalculatorTestWrapper>
-            <StepProbe />
-          </PdsGoalCalculatorTestWrapper>,
-        );
+        const { findByTestId, findByText, getByRole, queryByText, rerender } =
+          render(
+            <PdsGoalCalculatorTestWrapper>
+              <StepProbe />
+            </PdsGoalCalculatorTestWrapper>,
+          );
 
         userEvent.click(getByRole('button', { name: click }));
 
@@ -183,7 +201,49 @@ describe('PdsGoalCalculatorContext', () => {
         expect(await findByTestId('step-index')).toHaveTextContent(
           expectedIndex,
         );
+
+        if (expectSnackbar) {
+          expect(await findByText(reconcileMessage)).toBeInTheDocument();
+        } else {
+          expect(queryByText(reconcileMessage)).not.toBeInTheDocument();
+        }
       },
     );
+
+    it('reconciles activeStep state so toggling formType back does not teleport the user', async () => {
+      mockedUseSteps.mockReturnValue(detailedSteps);
+      const { findByTestId, getByRole, rerender } = render(
+        <PdsGoalCalculatorTestWrapper>
+          <StepProbe />
+        </PdsGoalCalculatorTestWrapper>,
+      );
+
+      userEvent.click(
+        getByRole('button', { name: 'go to reimbursable' }),
+      );
+
+      mockedUseSteps.mockReturnValue(simpleSteps);
+      rerender(
+        <PdsGoalCalculatorTestWrapper>
+          <StepProbe />
+        </PdsGoalCalculatorTestWrapper>,
+      );
+
+      expect(await findByTestId('current-step')).toHaveTextContent(
+        PdsGoalCalculatorStepEnum.Setup,
+      );
+
+      mockedUseSteps.mockReturnValue(detailedSteps);
+      rerender(
+        <PdsGoalCalculatorTestWrapper>
+          <StepProbe />
+        </PdsGoalCalculatorTestWrapper>,
+      );
+
+      expect(await findByTestId('current-step')).toHaveTextContent(
+        PdsGoalCalculatorStepEnum.Setup,
+      );
+      expect(await findByTestId('step-index')).toHaveTextContent('0');
+    });
   });
 });

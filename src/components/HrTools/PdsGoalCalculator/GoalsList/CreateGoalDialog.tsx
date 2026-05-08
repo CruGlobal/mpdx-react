@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   Button,
   CircularProgress,
@@ -14,39 +14,34 @@ import {
   Typography,
 } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
+import { Formik } from 'formik';
 import { useTranslation } from 'react-i18next';
+import * as yup from 'yup';
 import { DesignationSupportFormType } from 'src/graphql/types.generated';
-import { isDesignationSupportFormType } from '../Shared/formType';
 
 export interface CreateGoalDialogProps {
   open: boolean;
   onClose: () => void;
   onCreate: (formType: DesignationSupportFormType) => Promise<void>;
-  creating: boolean;
 }
+
+interface FormValues {
+  formType: DesignationSupportFormType | '';
+}
+
+const schema = yup.object({
+  formType: yup
+    .string()
+    .oneOf(Object.values(DesignationSupportFormType))
+    .required(),
+});
 
 export const CreateGoalDialog: React.FC<CreateGoalDialogProps> = ({
   open,
   onClose,
   onCreate,
-  creating,
 }) => {
   const { t } = useTranslation();
-  const [selected, setSelected] = useState<DesignationSupportFormType | null>(
-    null,
-  );
-
-  useEffect(() => {
-    if (open) {
-      setSelected(null);
-    }
-  }, [open]);
-
-  const handleCreate = async () => {
-    if (selected) {
-      await onCreate(selected);
-    }
-  };
 
   const formTypeOptions: Array<{
     value: DesignationSupportFormType;
@@ -80,54 +75,82 @@ export const CreateGoalDialog: React.FC<CreateGoalDialogProps> = ({
       <DialogTitle id="create-goal-dialog-title">
         {t('Create a New Goal')}
       </DialogTitle>
-      <DialogContent>
-        <FormControl component="fieldset">
-          <FormLabel sx={visuallyHidden}>{t('Select a form type')}</FormLabel>
-          <RadioGroup
-            value={selected ?? ''}
-            onChange={(_, value) => {
-              if (isDesignationSupportFormType(value)) {
-                setSelected(value);
-              }
-            }}
-          >
-            {formTypeOptions.map(({ value, title, description }, index) => (
-              <FormControlLabel
-                key={value}
-                value={value}
-                control={<Radio />}
-                label={
-                  <>
-                    <Typography variant="subtitle1">{title}</Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      {description}
-                    </Typography>
-                  </>
-                }
-                sx={{
-                  alignItems: 'flex-start',
-                  mb: index < formTypeOptions.length - 1 ? 2 : 0,
-                }}
-              />
-            ))}
-          </RadioGroup>
-        </FormControl>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} disabled={creating}>
-          {t('Cancel')}
-        </Button>
-        <Button
-          onClick={handleCreate}
-          variant="contained"
-          disabled={!selected || creating}
-          startIcon={
-            creating ? <CircularProgress size={16} color="inherit" /> : null
+      <Formik<FormValues>
+        key={String(open)}
+        initialValues={{ formType: '' }}
+        validationSchema={schema}
+        onSubmit={async ({ formType }) => {
+          if (formType) {
+            await onCreate(formType);
           }
-        >
-          {t('Create')}
-        </Button>
-      </DialogActions>
+        }}
+      >
+        {({ values, isSubmitting, handleChange, handleSubmit }) => (
+          <form onSubmit={handleSubmit}>
+            <DialogContent>
+              <FormControl component="fieldset">
+                <FormLabel sx={visuallyHidden}>
+                  {t('Select a form type')}
+                </FormLabel>
+                <RadioGroup
+                  name="formType"
+                  value={values.formType}
+                  onChange={handleChange}
+                >
+                  {formTypeOptions.map(
+                    ({ value, title, description }, index) => (
+                      <React.Fragment key={value}>
+                        <FormControlLabel
+                          value={value}
+                          control={
+                            <Radio
+                              inputProps={{
+                                'aria-describedby': `${value}-desc`,
+                              }}
+                            />
+                          }
+                          label={
+                            <Typography variant="subtitle1" component="span">
+                              {title}
+                            </Typography>
+                          }
+                          sx={{ alignItems: 'flex-start' }}
+                        />
+                        <Typography
+                          id={`${value}-desc`}
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{
+                            pl: 4,
+                            mb: index < formTypeOptions.length - 1 ? 2 : 0,
+                          }}
+                        >
+                          {description}
+                        </Typography>
+                      </React.Fragment>
+                    ),
+                  )}
+                </RadioGroup>
+              </FormControl>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={onClose}>{t('Cancel')}</Button>
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={!values.formType || isSubmitting}
+                startIcon={
+                  isSubmitting ? (
+                    <CircularProgress size={16} color="inherit" />
+                  ) : null
+                }
+              >
+                {t('Create')}
+              </Button>
+            </DialogActions>
+          </form>
+        )}
+      </Formik>
     </Dialog>
   );
 };

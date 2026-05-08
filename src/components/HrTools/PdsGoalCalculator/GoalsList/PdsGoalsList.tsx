@@ -40,8 +40,7 @@ export const PdsGoalsList: React.FC = () => {
     error,
     pageInfo: data?.designationSupportCalculations.pageInfo,
   });
-  const [createPdsGoalCalculation, { loading: creating }] =
-    useCreatePdsGoalCalculationMutation();
+  const [createPdsGoalCalculation] = useCreatePdsGoalCalculationMutation();
   const { goalMiscConstants, loading: constantsLoading } =
     useGoalCalculatorConstants();
 
@@ -103,7 +102,6 @@ export const PdsGoalsList: React.FC = () => {
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
         onCreate={handleCreateGoal}
-        creating={creating}
       />
 
       {loading ? (

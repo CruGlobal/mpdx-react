@@ -2,6 +2,7 @@ import { useRouter } from 'next/router';
 import React, {
   createContext,
   useCallback,
+  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -18,10 +19,14 @@ import {
   usePdsSummaryData,
 } from '../calculations/usePdsSummaryData';
 import { HcmUserQuery, useHcmUserQuery } from './HCM.generated';
-import { PdsGoalCalculatorStep, useSteps } from './useSteps';
+import {
+  PdsGoalCalculatorStep,
+  PdsGoalCalculatorSteps,
+  useSteps,
+} from './useSteps';
 
 export type PdsGoalCalculatorType = {
-  steps: PdsGoalCalculatorStep[];
+  steps: PdsGoalCalculatorSteps;
   currentStep: PdsGoalCalculatorStep;
 
   calculation?: PdsGoalCalculationFieldsFragment;
@@ -86,8 +91,9 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const steps = useSteps(calculation?.formType);
   // Track the user's place by step enum, not numeric index, so that a change
   // to the steps array (e.g. formType switch Detailed → Simple, dropping the
-  // ReimbursableExpenses step) preserves their step when it still exists and
-  // falls back to Setup only when it doesn't.
+  // ReimbursableExpenses step) preserves their step when it still exists.
+  // When it doesn't exist, the effect below reconciles activeStep to the first
+  // step and notifies the user.
   const [activeStep, setActiveStep] = useState<PdsGoalCalculatorStepEnum>(
     PdsGoalCalculatorStepEnum.Setup,
   );
@@ -96,12 +102,27 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(true);
   const { trackMutation, isMutating } = useTrackMutation();
 
+  useEffect(() => {
+    if (steps.some((s) => s.step === activeStep)) {
+      return;
+    }
+    setActiveStep(steps[0]?.step ?? PdsGoalCalculatorStepEnum.Setup);
+    enqueueSnackbar(
+      t(
+        'Returned to Setup because that step is not available in this form type.',
+      ),
+      { variant: 'info' },
+    );
+  }, [steps, activeStep, enqueueSnackbar, t]);
+
   const stepIndex = useMemo(() => {
     const idx = steps.findIndex((s) => s.step === activeStep);
     return idx === -1 ? 0 : idx;
   }, [steps, activeStep]);
 
-  const currentStep = steps[stepIndex];
+  // steps is a non-empty tuple, so steps[0] is guaranteed defined; the fallback
+  // protects against an out-of-range stepIndex.
+  const currentStep = steps[stepIndex] ?? steps[0];
 
   const handleStepChange = useCallback(
     (newStep: PdsGoalCalculatorStepEnum) => {
