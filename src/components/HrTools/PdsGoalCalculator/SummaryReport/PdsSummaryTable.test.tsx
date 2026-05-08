@@ -207,7 +207,9 @@ describe('PdsSummaryTable', () => {
 
     await findByRole('gridcell', { name: 'Benefits' });
 
-    expect(getByRole('gridcell', { name: 'Other Subtotal' })).toBeInTheDocument();
+    expect(
+      getByRole('gridcell', { name: 'Other Subtotal' }),
+    ).toBeInTheDocument();
     expect(getByRole('gridcell', { name: 'Total Goal' })).toBeInTheDocument();
   });
 

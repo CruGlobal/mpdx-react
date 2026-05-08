@@ -26,5 +26,4 @@ describe('useSteps', () => {
       PdsGoalCalculatorStepEnum.SummaryReport,
     ]);
   });
-
 });

@@ -387,9 +387,9 @@ describe('usePdsSummaryData', () => {
       expect(result.current?.otherConstants.reimbursableTotal).toBeGreaterThan(
         0,
       );
-      expect(
-        result.current?.otherConstants.fourOThreeBPercentage,
-      ).toBeCloseTo(0.08);
+      expect(result.current?.otherConstants.fourOThreeBPercentage).toBeCloseTo(
+        0.08,
+      );
     });
 
     it('uses saved values when formType is null/undefined (legacy goals default to Detailed behavior)', () => {
@@ -403,9 +403,9 @@ describe('usePdsSummaryData', () => {
       expect(result.current?.otherConstants.reimbursableTotal).toBeGreaterThan(
         0,
       );
-      expect(
-        result.current?.otherConstants.fourOThreeBPercentage,
-      ).toBeCloseTo(0.08);
+      expect(result.current?.otherConstants.fourOThreeBPercentage).toBeCloseTo(
+        0.08,
+      );
     });
   });
 

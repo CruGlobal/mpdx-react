@@ -89,7 +89,9 @@ describe('calculatePdsGoalTotal', () => {
 
   it('treats null formType the same as Detailed (legacy goals)', () => {
     const legacy = makeGoal({ formType: null });
-    const detailed = makeGoal({ formType: DesignationSupportFormType.Detailed });
+    const detailed = makeGoal({
+      formType: DesignationSupportFormType.Detailed,
+    });
     expect(calculatePdsGoalTotal(legacy, defaultConstants)).toBeCloseTo(
       calculatePdsGoalTotal(detailed, defaultConstants),
     );
