@@ -3,17 +3,11 @@ import { TFunction } from 'i18next';
 interface CapOverridesOptions {
   splitAsr: boolean;
   additionalApproval: boolean;
-  exceedsCap: boolean;
   hasBoardCapException: boolean;
 }
 
 export const getCapOverrides = (
-  {
-    splitAsr,
-    additionalApproval,
-    exceedsCap,
-    hasBoardCapException,
-  }: CapOverridesOptions,
+  { splitAsr, additionalApproval, hasBoardCapException }: CapOverridesOptions,
   t: TFunction,
 ) => {
   if (splitAsr) {
@@ -25,7 +19,7 @@ export const getCapOverrides = (
     };
   }
 
-  if (additionalApproval || exceedsCap) {
+  if (additionalApproval) {
     if (hasBoardCapException) {
       return {
         title: t(

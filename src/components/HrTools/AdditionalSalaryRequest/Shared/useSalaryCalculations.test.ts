@@ -394,10 +394,13 @@ describe('useSalaryCalculations', () => {
   });
 
   describe('Married - Staff Member over cap', () => {
-    const setupOverCap = (spouseCalculations: {
-      currentSalaryCap: number;
-      pendingAsrAmount: number;
-    }) => {
+    const setupOverCap = (
+      spouseCalculations: {
+        currentSalaryCap: number;
+        pendingAsrAmount: number;
+      },
+      progressiveApprovalTier: unknown = null,
+    ) => {
       mockUseAdditionalSalaryRequest.mockReturnValue({
         traditional403bPercentage: 0.12,
         roth403bPercentage: 0.1,
@@ -409,6 +412,7 @@ describe('useSalaryCalculations', () => {
               currentSalaryCap: 60000,
             },
             spouseCalculations,
+            progressiveApprovalTier,
           },
         },
       } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
@@ -455,7 +459,10 @@ describe('useSalaryCalculations', () => {
     });
 
     it('Staff Member over cap, spouse is over their cap — additionalApproval', () => {
-      setupOverCap({ currentSalaryCap: 50000, pendingAsrAmount: 15000 });
+      setupOverCap(
+        { currentSalaryCap: 50000, pendingAsrAmount: 15000 },
+        { id: 'tier-1' },
+      );
 
       const values: CompleteFormValues = {
         ...baseValues,
@@ -475,7 +482,10 @@ describe('useSalaryCalculations', () => {
     });
 
     it('Staff Member over cap, spouse is at their cap — additionalApproval', () => {
-      setupOverCap({ currentSalaryCap: 40003, pendingAsrAmount: 0 });
+      setupOverCap(
+        { currentSalaryCap: 40003, pendingAsrAmount: 0 },
+        { id: 'tier-1' },
+      );
 
       const values: CompleteFormValues = {
         ...baseValues,
@@ -496,7 +506,7 @@ describe('useSalaryCalculations', () => {
 
     it('Staff Member over cap, spouse exactly $5 below cap — treated as at cap', () => {
       const currentSalaryCap = 40000 + AT_CAP_TOLERANCE;
-      setupOverCap({ currentSalaryCap, pendingAsrAmount: 0 });
+      setupOverCap({ currentSalaryCap, pendingAsrAmount: 0 }, { id: 'tier-1' });
 
       const values: CompleteFormValues = {
         ...baseValues,
@@ -539,10 +549,13 @@ describe('useSalaryCalculations', () => {
 
   describe('Married - Staff Member at cap', () => {
     // Cases 9-12: Staff Member at cap (not over) — nothing triggers
-    const setupAtCap = (spouseCalculations: {
-      currentSalaryCap: number;
-      pendingAsrAmount: number;
-    }) => {
+    const setupAtCap = (
+      spouseCalculations: {
+        currentSalaryCap: number;
+        pendingAsrAmount: number;
+      },
+      progressiveApprovalTier: unknown = null,
+    ) => {
       mockUseAdditionalSalaryRequest.mockReturnValue({
         traditional403bPercentage: 0.12,
         roth403bPercentage: 0.1,
@@ -554,6 +567,7 @@ describe('useSalaryCalculations', () => {
               currentSalaryCap: 55000,
             },
             spouseCalculations,
+            progressiveApprovalTier,
           },
         },
       } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
@@ -598,7 +612,10 @@ describe('useSalaryCalculations', () => {
     });
 
     it('Staff Member at cap, spouse is over their cap', () => {
-      setupAtCap({ currentSalaryCap: 50000, pendingAsrAmount: 15000 });
+      setupAtCap(
+        { currentSalaryCap: 50000, pendingAsrAmount: 15000 },
+        { id: 'tier-1' },
+      );
 
       const values: CompleteFormValues = {
         ...baseValues,
@@ -638,7 +655,10 @@ describe('useSalaryCalculations', () => {
   });
 
   describe('Single staff member', () => {
-    const setupSingle = (cap: number) => {
+    const setupSingle = (
+      cap: number,
+      progressiveApprovalTier: unknown = null,
+    ) => {
       mockUseAdditionalSalaryRequest.mockReturnValue({
         traditional403bPercentage: 0.12,
         roth403bPercentage: 0.1,
@@ -647,6 +667,7 @@ describe('useSalaryCalculations', () => {
         requestData: {
           latestAdditionalSalaryRequest: {
             calculations: { currentSalaryCap: cap },
+            progressiveApprovalTier,
           },
         },
       } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
@@ -691,7 +712,7 @@ describe('useSalaryCalculations', () => {
     });
 
     it('Staff Member over cap — additionalApproval', () => {
-      setupSingle(60000);
+      setupSingle(60000, { id: 'tier-1' });
 
       const values: CompleteFormValues = {
         ...baseValues,

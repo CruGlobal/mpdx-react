@@ -411,6 +411,7 @@ describe('RequestPage', () => {
           calculations: {
             currentSalaryCap: 50,
           },
+          progressiveApprovalTier: { id: 'tier-1' },
         },
       },
     } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
@@ -524,6 +525,7 @@ describe('RequestPage', () => {
             currentSalaryCap: 500,
             pendingAsrAmount: 600,
           },
+          progressiveApprovalTier: { id: 'tier-1' },
         },
       },
     } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
@@ -727,7 +729,7 @@ describe('RequestPage', () => {
             staffAccountBalance: 999999,
             pendingAsrAmount: 0,
           },
-          progressiveApprovalTier: null,
+          progressiveApprovalTier: { id: 'tier-1' },
         },
       },
     };
@@ -789,6 +791,7 @@ describe('RequestPage', () => {
                 .calculations,
               currentSalaryCap: 100000,
             },
+            progressiveApprovalTier: null,
           },
         },
       } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);

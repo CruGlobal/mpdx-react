@@ -144,8 +144,7 @@ export const useSalaryCalculations = ({
         ? 'spouse'
         : null;
     const additionalApproval =
-      (exceedsCap && (!isMarried || spouseAtCap || spouseExceedsCap)) ||
-      (userAtCap && isMarried && spouseExceedsCap);
+      !!requestData?.latestAdditionalSalaryRequest?.progressiveApprovalTier;
 
     const hasSpouseCap = isMarried && spouseIndividualCap !== null;
     const spouseCap = hasSpouseCap

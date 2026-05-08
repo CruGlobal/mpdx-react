@@ -106,8 +106,7 @@ const MainContent: React.FC = () => {
   const { title: overrideTitle, content: overrideContent } = getCapOverrides(
     {
       splitAsr: !!splitAsr,
-      additionalApproval: !!additionalApproval,
-      exceedsCap,
+      additionalApproval,
       hasBoardCapException,
     },
     t,
@@ -143,7 +142,7 @@ const MainContent: React.FC = () => {
                         spouseName={spouse?.staffInfo.preferredName ?? ''}
                       />
                     )
-                  ) : additionalApproval || exceedsCap ? (
+                  ) : additionalApproval ? (
                     <CapSubContent />
                   ) : isEdit ? (
                     t('Your updated request will be sent to payroll.')
@@ -164,7 +163,7 @@ const MainContent: React.FC = () => {
                 isValid={isValid}
                 actionRequired={isEdit}
                 isEdit={isEdit}
-                additionalApproval={additionalApproval || exceedsCap}
+                additionalApproval={additionalApproval}
                 splitAsr={splitAsr}
                 disableSubmit={
                   (splitAsr && !!errors.additionalInfo) ||
