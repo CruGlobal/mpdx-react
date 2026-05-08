@@ -1,6 +1,6 @@
 import React from 'react';
 import { MenuItem } from '@mui/material';
-import { render, waitFor } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as yup from 'yup';
 import {
@@ -199,6 +199,60 @@ describe('AutosaveTextField', () => {
 
     expect(input).toHaveAccessibleDescription(
       'Pay Rate must be a positive number',
+    );
+  });
+
+  it('hides validation error for an empty untouched field', async () => {
+    const requiredSchema = yup.object({
+      name: yup.string().required('Goal Name is required'),
+    });
+    const { findByRole } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={{ ...calculationMock, name: '' }}
+        onCall={mutationSpy}
+      >
+        <AutosaveTextField
+          label="Goal Name"
+          fieldName="name"
+          schema={requiredSchema}
+          helperText="Enter the goal name"
+        />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    const input = await findByRole('textbox', { name: 'Goal Name' });
+    await waitFor(() => expect(input).toHaveValue(''));
+
+    expect(input).toHaveAccessibleDescription('Enter the goal name');
+    expect(input).not.toHaveAttribute('aria-invalid', 'true');
+  });
+
+  it('shows validation error after the field is touched', async () => {
+    const requiredSchema = yup.object({
+      name: yup.string().required('Goal Name is required'),
+    });
+    const { findByRole } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={{ ...calculationMock, name: '' }}
+        onCall={mutationSpy}
+      >
+        <AutosaveTextField
+          label="Goal Name"
+          fieldName="name"
+          schema={requiredSchema}
+          helperText="Enter the goal name"
+        />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    const input = await findByRole('textbox', { name: 'Goal Name' });
+    await waitFor(() => expect(input).toHaveValue(''));
+
+    fireEvent.focus(input);
+    fireEvent.blur(input);
+
+    await waitFor(() =>
+      expect(input).toHaveAccessibleDescription('Goal Name is required'),
     );
   });
 
