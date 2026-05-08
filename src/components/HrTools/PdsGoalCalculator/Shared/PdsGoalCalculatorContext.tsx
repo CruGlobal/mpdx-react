@@ -34,6 +34,7 @@ export type PdsGoalCalculatorType = {
   calculationLoading: boolean;
   hcmUser?: HcmUserQuery['hcm'][number];
   summaryData: PdsSummaryData | null;
+  percentComplete: number;
 
   /** Whether any mutations are currently in progress */
   isMutating: boolean;
@@ -89,9 +90,6 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
 
   const summaryData = usePdsSummaryData(calculation, hcmUser);
 
-  const steps = useSteps(
-    calculation?.formType ?? DesignationSupportFormType.Detailed,
-  );
   // Track the user's place by step enum, not numeric index, so that a change
   // to the steps array (e.g. formType switch Detailed → Simple, dropping the
   // ReimbursableExpenses step) preserves their step when it still exists.
@@ -99,6 +97,11 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   // step and notifies the user.
   const [activeStep, setActiveStep] = useState<PdsGoalCalculatorStepEnum>(
     PdsGoalCalculatorStepEnum.Setup,
+  );
+
+  const steps = useSteps(
+    calculation?.formType ?? DesignationSupportFormType.Detailed,
+    activeStep,
   );
   const [rightPanelContent, setRightPanelContent] =
     useState<React.ReactNode>(null);
@@ -124,6 +127,11 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   // steps is a non-empty tuple, so steps[0] is guaranteed defined; the fallback
   // protects against an out-of-range stepIndex.
   const currentStep = steps[stepIndex] ?? steps[0];
+
+  const percentComplete = useMemo(
+    () => Math.round(((stepIndex + 1) / steps.length) * 100),
+    [stepIndex, steps.length],
+  );
 
   const handleStepChange = useCallback(
     (newStep: PdsGoalCalculatorStepEnum) => {
@@ -166,6 +174,7 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       calculation,
       calculationLoading,
       summaryData,
+      percentComplete,
       isMutating,
       trackMutation,
       hcmUser,
@@ -186,6 +195,7 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       calculation,
       calculationLoading,
       summaryData,
+      percentComplete,
       isMutating,
       trackMutation,
       hcmUser,
