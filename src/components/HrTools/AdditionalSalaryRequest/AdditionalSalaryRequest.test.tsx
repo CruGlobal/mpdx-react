@@ -148,16 +148,10 @@ describe('AdditionalSalaryRequest', () => {
     expect(queryByText(/currently has a pending request/i)).toBeNull();
   });
 
-  it.each([
-    AsrStatusEnum.Pending,
-    AsrStatusEnum.PendingDivisionHeadApproval,
-    AsrStatusEnum.PendingVpApproval,
-    AsrStatusEnum.PendingManagementApproval,
-    AsrStatusEnum.PendingBoardApproval,
-  ])('displays pending request message when status is %s', async (status) => {
+  it('displays pending request message when status is Pending', async () => {
     const pendingRequest = {
       ...mockRequest,
-      status,
+      status: AsrStatusEnum.Pending,
       submittedAt: '2024-01-15T00:00:00Z',
     };
 

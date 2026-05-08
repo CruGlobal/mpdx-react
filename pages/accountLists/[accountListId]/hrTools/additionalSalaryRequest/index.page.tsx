@@ -64,10 +64,6 @@ const AdditionalSalaryRequestRouter: React.FC = () => {
   switch (requestData.latestAdditionalSalaryRequest?.status) {
     case AsrStatusEnum.ActionRequired:
     case AsrStatusEnum.Pending:
-    case AsrStatusEnum.PendingDivisionHeadApproval:
-    case AsrStatusEnum.PendingVpApproval:
-    case AsrStatusEnum.PendingManagementApproval:
-    case AsrStatusEnum.PendingBoardApproval:
     case AsrStatusEnum.ApprovedNotPaid:
       // ActionRequired normally returns the <AdditionalSalaryRequest /> component accept when pageType is View or Edit
       return pageType === PageEnum.Edit || pageType === PageEnum.View ? (

@@ -57,14 +57,10 @@ describe('getDotVariant', () => {
     });
   });
   describe('with Pending status', () => {
-    it.each([
-      AsrStatusEnum.Pending,
-      AsrStatusEnum.PendingDivisionHeadApproval,
-      AsrStatusEnum.PendingVpApproval,
-      AsrStatusEnum.PendingManagementApproval,
-      AsrStatusEnum.PendingBoardApproval,
-    ])('returns filled with step submitted - %s', (status) => {
-      expect(getDotVariant(status, 'submitted', true, false)).toBe('filled');
+    it('returns filled with step submitted', () => {
+      expect(
+        getDotVariant(AsrStatusEnum.Pending, 'submitted', true, false),
+      ).toBe('filled');
     });
 
     it('returns filled with step processed', () => {

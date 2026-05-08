@@ -3,14 +3,8 @@ import { getDotColor } from './getDotColor';
 
 describe('getDotColor', () => {
   describe('submitted step', () => {
-    it.each([
-      AsrStatusEnum.Pending,
-      AsrStatusEnum.PendingDivisionHeadApproval,
-      AsrStatusEnum.PendingVpApproval,
-      AsrStatusEnum.PendingManagementApproval,
-      AsrStatusEnum.PendingBoardApproval,
-    ])('returns success.main when status is not InProgress - %s', (status) => {
-      expect(getDotColor(status, 'submitted', true, false)).toBe(
+    it('returns success.main when status is Pending', () => {
+      expect(getDotColor(AsrStatusEnum.Pending, 'submitted', true, false)).toBe(
         'success.main',
       );
     });
