@@ -8,7 +8,7 @@ describe('useSteps', () => {
     const { result } = renderHook(() =>
       useSteps(DesignationSupportFormType.Detailed),
     );
-    expect(result.current.map((s) => s.step)).toEqual([
+    expect(result.current.map((step) => step.step)).toEqual([
       PdsGoalCalculatorStepEnum.Setup,
       PdsGoalCalculatorStepEnum.ReimbursableExpenses,
       PdsGoalCalculatorStepEnum.SupportItem,
@@ -20,7 +20,7 @@ describe('useSteps', () => {
     const { result } = renderHook(() =>
       useSteps(DesignationSupportFormType.Simple),
     );
-    expect(result.current.map((s) => s.step)).toEqual([
+    expect(result.current.map((step) => step.step)).toEqual([
       PdsGoalCalculatorStepEnum.Setup,
       PdsGoalCalculatorStepEnum.SupportItem,
       PdsGoalCalculatorStepEnum.SummaryReport,
@@ -29,7 +29,7 @@ describe('useSteps', () => {
 
   it('returns four steps (Detailed behavior) when formType is null/undefined', () => {
     const { result } = renderHook(() => useSteps(null));
-    expect(result.current.map((s) => s.step)).toEqual([
+    expect(result.current.map((step) => step.step)).toEqual([
       PdsGoalCalculatorStepEnum.Setup,
       PdsGoalCalculatorStepEnum.ReimbursableExpenses,
       PdsGoalCalculatorStepEnum.SupportItem,

@@ -203,8 +203,8 @@ describe('PdsGoalsList', () => {
     });
   });
 
-  it('shows error snackbar and skips mutation when reimbursement constants are missing for a Default goal', async () => {
-    const { findByRole, findByText } = render(
+  it('skips mutation when reimbursement constants are missing for a Default goal', async () => {
+    const { findByRole } = render(
       <PdsGoalCalculatorTestWrapper
         withProvider={false}
         onCall={mutationSpy}
@@ -217,31 +217,10 @@ describe('PdsGoalsList', () => {
     await openCreateGoalDialog(findByRole);
     await submitFormType(findByRole, 'Default');
 
-    expect(
-      await findByText('Failed to create goal. Please try again.'),
-    ).toBeInTheDocument();
-    expect(mutationSpy).not.toHaveGraphqlOperation('CreatePdsGoalCalculation');
-  });
-
-  it('shows error snackbar when create mutation fails', async () => {
-    const { findByRole, findByText } = render(
-      <PdsGoalCalculatorTestWrapper
-        withProvider={false}
-        mocksOverride={{
-          CreatePdsGoalCalculation: () => {
-            throw new Error('Server Error');
-          },
-        }}
-      >
-        <PdsGoalsList />
-      </PdsGoalCalculatorTestWrapper>,
-    );
-
-    await openCreateGoalDialog(findByRole);
-    await submitFormType(findByRole, 'Simple');
-
-    expect(
-      await findByText('Failed to create goal. Please try again.'),
-    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(mutationSpy).not.toHaveGraphqlOperation(
+        'CreatePdsGoalCalculation',
+      );
+    });
   });
 });

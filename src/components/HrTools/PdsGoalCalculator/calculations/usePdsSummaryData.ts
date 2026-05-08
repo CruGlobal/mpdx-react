@@ -24,21 +24,8 @@ import {
 export interface PdsSummaryData {
   salaryTotals: SalaryTotals;
   salaryConstants: SalaryConstants;
-  /**
-   * Reimbursable totals computed from the saved calculation data, preserved
-   * across formType changes so a user switching Detailed → Simple → Detailed
-   * doesn't lose what they entered. NOT the effective value used in downstream
-   * Other Expenses math — for that, use `otherConstants.reimbursableTotal`,
-   * which is zeroed when `formType === Simple`.
-   */
   reimbursableTotals: ReimbursableTotals;
   otherTotals: OtherExpensesTotals;
-  /**
-   * Inputs fed into `calculateOtherExpenses`. `reimbursableTotal` and
-   * `fourOThreeBPercentage` here are zeroed when `formType === Simple`
-   * (Simple goals exclude reimbursables and 403b from the goal calc), so they
-   * differ from `reimbursableTotals.total` and the user's HCM 403b percentages.
-   */
   otherConstants: OtherExpensesConstants;
   overallTotal: number;
   geographicMultiplier: number;

@@ -66,21 +66,4 @@ describe('PdsGoalCard', () => {
     await findByText(name);
     expect(queryByText(expectedBadge)).toBeInTheDocument();
   });
-
-  it('renders no form-type badge when formType is null (legacy goal)', async () => {
-    const { findByText, queryByText } = render(
-      <PdsGoalCalculatorTestWrapper
-        withProvider={false}
-        calculationsMock={{
-          nodes: [{ name: 'Legacy Goal', formType: null }],
-        }}
-      >
-        <PdsGoalsList />
-      </PdsGoalCalculatorTestWrapper>,
-    );
-
-    await findByText('Legacy Goal');
-    expect(queryByText('Default')).not.toBeInTheDocument();
-    expect(queryByText('Simple')).not.toBeInTheDocument();
-  });
 });

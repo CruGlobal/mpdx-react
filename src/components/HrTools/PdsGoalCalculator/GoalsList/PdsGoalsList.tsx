@@ -1,7 +1,6 @@
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { Box, Button, CircularProgress, Stack, styled } from '@mui/material';
-import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { DesignationSupportFormType } from 'src/graphql/types.generated';
@@ -28,7 +27,6 @@ const PlaceholderImage = styled('img')(({ theme }) => ({
 
 export const PdsGoalsList: React.FC = () => {
   const { t } = useTranslation();
-  const { enqueueSnackbar } = useSnackbar();
   const router = useRouter();
   const accountListId = useAccountListId() ?? '';
 
@@ -62,9 +60,6 @@ export const PdsGoalsList: React.FC = () => {
       const phoneFee = reimbursements?.PHONE?.fee;
       const internetFee = reimbursements?.INTERNET?.fee;
       if (phoneFee === undefined || internetFee === undefined) {
-        enqueueSnackbar(t('Failed to create goal. Please try again.'), {
-          variant: 'error',
-        });
         return;
       }
       detailedDefaults = {
@@ -72,28 +67,22 @@ export const PdsGoalsList: React.FC = () => {
         ministryInternet: internetFee,
       };
     }
-    try {
-      const { data } = await createPdsGoalCalculation({
-        variables: {
-          attributes: {
-            formType,
-            ...(detailedDefaults ?? {}),
-          },
+    const { data } = await createPdsGoalCalculation({
+      variables: {
+        attributes: {
+          formType,
+          ...(detailedDefaults ?? {}),
         },
-      });
-      const calculation =
-        data?.createDesignationSupportCalculation?.designationSupportCalculation;
+      },
+    });
+    const calculation =
+      data?.createDesignationSupportCalculation?.designationSupportCalculation;
 
-      if (calculation) {
-        setDialogOpen(false);
-        router.push(
-          `/accountLists/${accountListId}/hrTools/pdsGoalCalculator/${calculation.id}`,
-        );
-      }
-    } catch (error) {
-      enqueueSnackbar(t('Failed to create goal. Please try again.'), {
-        variant: 'error',
-      });
+    if (calculation) {
+      setDialogOpen(false);
+      router.push(
+        `/accountLists/${accountListId}/hrTools/pdsGoalCalculator/${calculation.id}`,
+      );
     }
   };
 
