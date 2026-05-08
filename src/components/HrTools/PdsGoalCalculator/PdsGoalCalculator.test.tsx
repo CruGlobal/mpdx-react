@@ -97,6 +97,53 @@ describe('PdsGoalCalculator', () => {
     await waitFor(() => expect(continueButton).not.toBeDisabled());
   });
 
+  it('hides the Back button on the first step', async () => {
+    const { findByRole, queryByRole } = render(
+      <PdsGoalCalculatorTestWrapper>
+        <PdsGoalCalculator />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    await findByRole('button', { name: /continue/i });
+    expect(queryByRole('button', { name: 'Back' })).not.toBeInTheDocument();
+  });
+
+  it('shows the Back button after advancing past the first step', async () => {
+    const { findByRole } = render(
+      <PdsGoalCalculatorTestWrapper>
+        <PdsGoalCalculator />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    const continueButton = await findByRole('button', { name: /continue/i });
+    await waitFor(() => expect(continueButton).not.toBeDisabled());
+    userEvent.click(continueButton);
+
+    expect(await findByRole('button', { name: 'Back' })).toBeInTheDocument();
+  });
+
+  it('clicking Back returns to the previous step', async () => {
+    const { findByRole, queryByRole } = render(
+      <PdsGoalCalculatorTestWrapper>
+        <PdsGoalCalculator />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    const continueButton = await findByRole('button', { name: /continue/i });
+    await waitFor(() => expect(continueButton).not.toBeDisabled());
+    userEvent.click(continueButton);
+
+    const backButton = await findByRole('button', { name: 'Back' });
+    userEvent.click(backButton);
+
+    await waitFor(() =>
+      expect(queryByRole('button', { name: 'Back' })).not.toBeInTheDocument(),
+    );
+    expect(
+      await findByRole('heading', { level: 6, name: 'Calculator Setup' }),
+    ).toBeInTheDocument();
+  });
+
   it('re-enables Continue when switching from Full-time to Part-time hides the only invalid field', async () => {
     const { findByRole, getByRole, queryByRole } = render(
       <PdsGoalCalculatorTestWrapper
