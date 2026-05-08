@@ -76,10 +76,7 @@ export const useSteps = (
       sections: buildSections(
         orderedKeys.indexOf(PdsGoalCalculatorStepEnum.ReimbursableExpenses),
         activeIndex,
-        [
-          t('Monthly Reimbursable Expenses'),
-          t('Annual Reimbursable Expenses'),
-        ],
+        [t('Monthly Reimbursable Expenses'), t('Annual Reimbursable Expenses')],
       ),
     };
     const supportItem: PdsGoalCalculatorStep = {

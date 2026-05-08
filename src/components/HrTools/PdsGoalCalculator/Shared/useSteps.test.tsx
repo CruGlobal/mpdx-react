@@ -44,9 +44,7 @@ describe('useSteps', () => {
       useSteps(DesignationSupportFormType.Detailed),
     );
     expect(
-      result.current.flatMap((step) =>
-        step.sections.map((s) => s.complete),
-      ),
+      result.current.flatMap((step) => step.sections.map((s) => s.complete)),
     ).toEqual([false, false, false, false, false, false]);
   });
 });
