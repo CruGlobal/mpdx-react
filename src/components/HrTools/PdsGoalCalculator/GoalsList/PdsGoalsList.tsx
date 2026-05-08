@@ -73,6 +73,7 @@ export const PdsGoalsList: React.FC = () => {
           ...(detailedDefaults ?? {}),
         },
       },
+      refetchQueries: ['PdsGoalCalculations'],
     });
     const calculation =
       data?.createDesignationSupportCalculation?.designationSupportCalculation;

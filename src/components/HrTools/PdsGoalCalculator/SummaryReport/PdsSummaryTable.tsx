@@ -2,7 +2,10 @@ import React, { useCallback, useMemo } from 'react';
 import { styled } from '@mui/material/styles';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
-import { DesignationSupportStatus } from 'src/graphql/types.generated';
+import {
+  DesignationSupportFormType,
+  DesignationSupportStatus,
+} from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
 import {
@@ -86,7 +89,9 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
 
     const isFullTime = calculation.status === DesignationSupportStatus.FullTime;
     const isPartTime = calculation.status === DesignationSupportStatus.PartTime;
-    const isSimple = isSimpleFormType(calculation.formType);
+    const isSimple = isSimpleFormType(
+      calculation.formType ?? DesignationSupportFormType.Detailed,
+    );
 
     const rows: PdsSummaryRow[] = [
       // Salary section

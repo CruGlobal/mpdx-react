@@ -3,7 +3,10 @@ import InfoIcon from '@mui/icons-material/Info';
 import { Box, Tooltip, styled } from '@mui/material';
 import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { TFunction } from 'i18next';
-import { DesignationSupportStatus } from 'src/graphql/types.generated';
+import {
+  DesignationSupportFormType,
+  DesignationSupportStatus,
+} from 'src/graphql/types.generated';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import { isSimpleFormType } from '../Shared/formType';
 import {
@@ -41,7 +44,9 @@ export const buildOtherBreakdownRows = (
     constants,
   );
 
-  const isSimple = isSimpleFormType(calculation.formType);
+  const isSimple = isSimpleFormType(
+    calculation.formType ?? DesignationSupportFormType.Detailed,
+  );
 
   const rows: OtherBreakdownRow[] = [
     ...(isSimple

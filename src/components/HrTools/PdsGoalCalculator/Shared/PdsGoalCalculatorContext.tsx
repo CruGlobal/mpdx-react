@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { DesignationSupportFormType } from 'src/graphql/types.generated';
 import { useTrackMutation } from 'src/hooks/useTrackMutation';
 import {
   PdsGoalCalculationFieldsFragment,
@@ -88,7 +89,9 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
 
   const summaryData = usePdsSummaryData(calculation, hcmUser);
 
-  const steps = useSteps(calculation?.formType);
+  const steps = useSteps(
+    calculation?.formType ?? DesignationSupportFormType.Detailed,
+  );
   // Track the user's place by step enum, not numeric index, so that a change
   // to the steps array (e.g. formType switch Detailed → Simple, dropping the
   // ReimbursableExpenses step) preserves their step when it still exists.

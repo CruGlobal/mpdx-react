@@ -31,7 +31,6 @@ import {
 import { AutosaveTextField } from '../Shared/Autosave/AutosaveTextField';
 import { useSaveField } from '../Shared/Autosave/useSaveField';
 import { usePdsGoalCalculator } from '../Shared/PdsGoalCalculatorContext';
-import { isSimpleFormType } from '../Shared/formType';
 import { HoursPerWeekGrid } from './HoursPerWeekGrid/HoursPerWeekGrid';
 
 export const SetupStep: React.FC = () => {
@@ -88,7 +87,8 @@ export const SetupStep: React.FC = () => {
   const isSalaried =
     calculation?.salaryOrHourly === DesignationSupportSalaryType.Salaried;
   const isPartTime = calculation?.status === DesignationSupportStatus.PartTime;
-  const isSimpleForm = isSimpleFormType(calculation?.formType);
+  const isSimpleForm =
+    calculation?.formType === DesignationSupportFormType.Simple;
 
   const payRateHelperText = isSalaried
     ? t('Enter yearly salary')

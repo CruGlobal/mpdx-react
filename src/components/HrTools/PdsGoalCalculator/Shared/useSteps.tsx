@@ -26,7 +26,7 @@ export type PdsGoalCalculatorSteps = [
 ];
 
 export const useSteps = (
-  formType: DesignationSupportFormType | null | undefined,
+  formType: DesignationSupportFormType,
 ): PdsGoalCalculatorSteps => {
   const { t } = useTranslation();
 

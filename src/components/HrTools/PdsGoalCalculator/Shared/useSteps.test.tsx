@@ -27,13 +27,4 @@ describe('useSteps', () => {
     ]);
   });
 
-  it('returns four steps (Detailed behavior) when formType is null/undefined', () => {
-    const { result } = renderHook(() => useSteps(null));
-    expect(result.current.map((step) => step.step)).toEqual([
-      PdsGoalCalculatorStepEnum.Setup,
-      PdsGoalCalculatorStepEnum.ReimbursableExpenses,
-      PdsGoalCalculatorStepEnum.SupportItem,
-      PdsGoalCalculatorStepEnum.SummaryReport,
-    ]);
-  });
 });

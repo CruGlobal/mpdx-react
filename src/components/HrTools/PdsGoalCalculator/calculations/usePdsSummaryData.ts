@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { DesignationSupportFormType } from 'src/graphql/types.generated';
 import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import { PdsGoalCalculationFieldsFragment } from '../GoalsList/PdsGoalCalculations.generated';
 import { HcmUserQuery } from '../Shared/HCM.generated';
@@ -61,7 +62,7 @@ export const usePdsSummaryData = (
     const reimbursableTotals = calculateReimbursableTotals(calculation);
 
     const otherConstants = buildOtherExpensesConstants(
-      calculation.formType,
+      calculation.formType ?? DesignationSupportFormType.Detailed,
       constants,
       salaryTotals,
       reimbursableTotals.total,

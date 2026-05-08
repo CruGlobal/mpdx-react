@@ -82,7 +82,7 @@ export const buildPdsGoalConstants = (
 };
 
 export const buildOtherExpensesConstants = (
-  formType: DesignationSupportFormType | null | undefined,
+  formType: DesignationSupportFormType,
   constants: PdsGoalTotalConstants,
   salaryTotals: SalaryTotals,
   reimbursableTotal: number,
@@ -114,7 +114,7 @@ export const calculatePdsGoalTotal = (
   const otherExpenses = calculateOtherExpenses(
     calculation,
     buildOtherExpensesConstants(
-      calculation.formType,
+      calculation.formType ?? DesignationSupportFormType.Detailed,
       constants,
       salaryTotals,
       reimbursableTotal,
