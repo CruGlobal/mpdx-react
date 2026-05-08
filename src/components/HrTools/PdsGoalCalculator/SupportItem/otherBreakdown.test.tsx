@@ -1,6 +1,9 @@
 import { DataGrid } from '@mui/x-data-grid';
 import { render } from '@testing-library/react';
-import { DesignationSupportStatus } from 'src/graphql/types.generated';
+import {
+  DesignationSupportFormType,
+  DesignationSupportStatus,
+} from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import {
   OtherExpensesConstants,
@@ -130,6 +133,47 @@ describe('buildOtherBreakdownRows', () => {
     rows.forEach((row) => {
       expect(row.testId).toBeDefined();
     });
+  });
+
+  it('omits reimbursable expenses and 403b contributions when formType is Simple', () => {
+    const simpleCalculation: OtherExpensesFields = {
+      ...fullTimeCalculation,
+      formType: DesignationSupportFormType.Simple,
+    };
+
+    const rows = buildOtherBreakdownRows(
+      simpleCalculation,
+      constants,
+      'en-US',
+      i18n.t,
+    );
+
+    expect(rows.map((row) => row.id)).toEqual([
+      'benefits',
+      'subtotal',
+      'attrition',
+      'credit-card-fees',
+      'assessment',
+    ]);
+  });
+
+  it('uses a subtotal formula without reimbursable/403b in Simple form', () => {
+    const simpleCalculation: OtherExpensesFields = {
+      ...fullTimeCalculation,
+      formType: DesignationSupportFormType.Simple,
+    };
+
+    const rows = buildOtherBreakdownRows(
+      simpleCalculation,
+      constants,
+      'en-US',
+      i18n.t,
+    );
+
+    const subtotal = rows.find((row) => row.id === 'subtotal');
+    expect(subtotal?.formula).toBe(
+      'Gross Monthly Pay Subtotal + Work Comp + Benefits',
+    );
   });
 });
 

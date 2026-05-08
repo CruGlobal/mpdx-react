@@ -1,6 +1,7 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import {
+  DesignationSupportFormType,
   DesignationSupportSalaryType,
   DesignationSupportStatus,
 } from 'src/graphql/types.generated';
@@ -160,6 +161,26 @@ describe('OtherSection', () => {
       // 403b percentage = (5 + 3) / 100 = 0.08
       // 403b contributions = 5000 * 0.08 = 400
       expect(getByTestId('other-403b-contributions')).toHaveTextContent('$400');
+    });
+  });
+
+  describe('simple form type', () => {
+    it('hides reimbursable expenses and 403b contributions rows', async () => {
+      const simpleMock: PdsGoalCalculationMock = {
+        ...fullTimeMock,
+        formType: DesignationSupportFormType.Simple,
+      };
+
+      const { findByTestId, queryByTestId } = render(
+        <TestComponent calculationMock={simpleMock} />,
+      );
+
+      await findByTestId('other-subtotal');
+
+      expect(
+        queryByTestId('other-reimbursable-expenses'),
+      ).not.toBeInTheDocument();
+      expect(queryByTestId('other-403b-contributions')).not.toBeInTheDocument();
     });
   });
 
