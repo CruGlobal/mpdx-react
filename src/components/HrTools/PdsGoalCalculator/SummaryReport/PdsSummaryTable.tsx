@@ -128,7 +128,7 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
       ...(isPartTime
         ? [
             {
-              line: isSimple ? '2A' : '2C',
+              line: '2C',
               category: t('Work Comp'),
               amount: otherTotals.workComp,
             },
@@ -137,7 +137,7 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
       ...(isFullTime
         ? [
             {
-              line: isSimple ? '2A' : '2C',
+              line: '2C',
               category: t('Benefits'),
               amount: otherTotals.benefits,
             },

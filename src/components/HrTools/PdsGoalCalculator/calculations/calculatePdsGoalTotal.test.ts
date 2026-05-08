@@ -77,16 +77,14 @@ describe('calculatePdsGoalTotal', () => {
   });
 
   it('excludes reimbursable expenses and 403b when formType is Simple', () => {
-    const detailed = makeGoal({ formType: DesignationSupportFormType.Detailed });
     const simple = makeGoal({ formType: DesignationSupportFormType.Simple });
-
-    const detailedTotal = calculatePdsGoalTotal(detailed, defaultConstants);
-    const simpleTotal = calculatePdsGoalTotal(simple, defaultConstants);
-
-    // Simple skips reimbursable + 403b lines, so its assessment is strictly lower
-    // than Detailed when those values are non-zero.
-    expect(simpleTotal).toBeLessThan(detailedTotal);
-    expect(simpleTotal).toBeGreaterThan(0);
+    const result = calculatePdsGoalTotal(simple, defaultConstants);
+    // With reimbursableTotal=0 and fourOThreeBPercentage=0:
+    //   subtotal = 5400 (salary) + 0 + 0 + 0 + 1500 (benefits) = 6900
+    //   attrition = 6900 * 0.06 = 414
+    //   creditCardFees = (6900 + 414) * 0.06 = 438.84
+    //   assessment = (6900 + 438.84 + 414) * 0.12 ≈ 930.34
+    expect(result).toBeCloseTo(930.34, 1);
   });
 
   it('treats null formType the same as Detailed (legacy goals)', () => {

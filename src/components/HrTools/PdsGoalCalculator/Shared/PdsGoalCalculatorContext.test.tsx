@@ -1,21 +1,22 @@
 import React from 'react';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { act, render, renderHook } from '@testing-library/react';
+import { act, render, renderHook, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { DesignationSupportFormType } from 'src/graphql/types.generated';
 import { PdsGoalCalculatorStepEnum } from '../PdsGoalCalculatorHelper';
 import { PdsGoalCalculatorTestWrapper } from '../PdsGoalCalculatorTestWrapper';
 import { usePdsGoalCalculator } from './PdsGoalCalculatorContext';
 import { useSteps } from './useSteps';
-import type {
-  PdsGoalCalculatorStep,
-  PdsGoalCalculatorSteps,
-} from './useSteps';
+import type { PdsGoalCalculatorStep, PdsGoalCalculatorSteps } from './useSteps';
 
 jest.mock('./useSteps', () => ({
   __esModule: true,
   ...jest.requireActual('./useSteps'),
   useSteps: jest.fn(),
 }));
+
+const { useSteps: actualUseSteps } =
+  jest.requireActual<typeof import('./useSteps')>('./useSteps');
 
 const mockedUseSteps = useSteps as jest.MockedFunction<typeof useSteps>;
 
@@ -77,9 +78,7 @@ const StepProbe: React.FC = () => {
       </button>
       <button
         type="button"
-        onClick={() =>
-          handleStepChange(PdsGoalCalculatorStepEnum.SupportItem)
-        }
+        onClick={() => handleStepChange(PdsGoalCalculatorStepEnum.SupportItem)}
       >
         go to support item
       </button>
@@ -88,15 +87,34 @@ const StepProbe: React.FC = () => {
 };
 
 beforeEach(() => {
-  mockedUseSteps.mockReturnValue(detailedSteps);
+  mockedUseSteps.mockImplementation(actualUseSteps);
 });
 
 describe('PdsGoalCalculatorContext', () => {
-  it('provides steps and current step', () => {
+  it('provides steps and current step', async () => {
     const { result } = renderUsePdsGoalCalculator();
 
-    expect(result.current.steps).toHaveLength(4);
+    await waitFor(() => expect(result.current.steps).toHaveLength(4));
     expect(result.current.currentStep.step).toBe('setup');
+  });
+
+  it('passes calculation.formType through to useSteps (Simple → 3 steps)', async () => {
+    const { result } = renderHook(() => usePdsGoalCalculator(), {
+      wrapper: ({ children }) => (
+        <PdsGoalCalculatorTestWrapper
+          calculationMock={{ formType: DesignationSupportFormType.Simple }}
+        >
+          {children}
+        </PdsGoalCalculatorTestWrapper>
+      ),
+    });
+
+    await waitFor(() => expect(result.current.steps).toHaveLength(3));
+    expect(result.current.steps.map((s) => s.step)).toEqual([
+      PdsGoalCalculatorStepEnum.Setup,
+      PdsGoalCalculatorStepEnum.SupportItem,
+      PdsGoalCalculatorStepEnum.SummaryReport,
+    ]);
   });
 
   it('handleContinue advances to the next step', () => {
@@ -202,11 +220,10 @@ describe('PdsGoalCalculatorContext', () => {
           expectedIndex,
         );
 
-        if (expectSnackbar) {
-          expect(await findByText(reconcileMessage)).toBeInTheDocument();
-        } else {
-          expect(queryByText(reconcileMessage)).not.toBeInTheDocument();
-        }
+        const snackbar = expectSnackbar
+          ? await findByText(reconcileMessage)
+          : queryByText(reconcileMessage);
+        expect(Boolean(snackbar)).toBe(expectSnackbar);
       },
     );
 
@@ -218,9 +235,7 @@ describe('PdsGoalCalculatorContext', () => {
         </PdsGoalCalculatorTestWrapper>,
       );
 
-      userEvent.click(
-        getByRole('button', { name: 'go to reimbursable' }),
-      );
+      userEvent.click(getByRole('button', { name: 'go to reimbursable' }));
 
       mockedUseSteps.mockReturnValue(simpleSteps);
       rerender(

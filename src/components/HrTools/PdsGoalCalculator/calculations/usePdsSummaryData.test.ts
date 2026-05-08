@@ -17,6 +17,10 @@ import {
   PdsGoalCalculationFieldsFragmentDoc,
 } from '../GoalsList/PdsGoalCalculations.generated';
 import { HcmUserDocument, HcmUserQuery } from '../Shared/HCM.generated';
+import {
+  PdsGoalTotalConstants,
+  calculatePdsGoalTotal,
+} from './calculatePdsGoalTotal';
 import { usePdsSummaryData } from './usePdsSummaryData';
 
 jest.mock('src/hooks/useGoalCalculatorConstants');
@@ -403,5 +407,35 @@ describe('usePdsSummaryData', () => {
         result.current?.otherConstants.fourOThreeBPercentage,
       ).toBeCloseTo(0.08);
     });
+  });
+
+  describe('consistency with calculatePdsGoalTotal', () => {
+    // Mirrors what buildPdsGoalConstants would derive from the mocked
+    // useGoalCalculatorConstants + defaultHcmUser, so we can call
+    // calculatePdsGoalTotal directly without the hook.
+    const directConstants: PdsGoalTotalConstants = {
+      employerFicaRate: EMPLOYER_FICA_RATE,
+      workCompPercentage: WORK_COMP_PERCENTAGE,
+      attritionRate: ATTRITION_RATE,
+      creditCardFeeRate: CREDIT_CARD_FEE_RATE,
+      adminRate: ADMIN_RATE,
+      fourOThreeBPercentage: 0.08,
+      geographicMultiplier: 0,
+    };
+
+    it.each([
+      DesignationSupportFormType.Detailed,
+      DesignationSupportFormType.Simple,
+    ])(
+      'calculatePdsGoalTotal matches usePdsSummaryData.otherTotals.assessment when formType is %s',
+      (formType) => {
+        const calc = { ...defaultCalculation, formType };
+        const { result } = renderHook(() =>
+          usePdsSummaryData(calc, defaultHcmUser),
+        );
+        const direct = calculatePdsGoalTotal(calc, directConstants);
+        expect(direct).toBeCloseTo(result.current!.otherTotals.assessment, 5);
+      },
+    );
   });
 });
