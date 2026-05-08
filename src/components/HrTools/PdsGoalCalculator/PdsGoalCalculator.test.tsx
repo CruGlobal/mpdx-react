@@ -105,7 +105,7 @@ describe('PdsGoalCalculator', () => {
     );
 
     await findByRole('button', { name: /continue/i });
-    expect(queryByRole('button', { name: 'Back' })).not.toBeInTheDocument();
+    expect(queryByRole('button', { name: /back/i })).not.toBeInTheDocument();
   });
 
   it('shows the Back button after advancing past the first step', async () => {
@@ -119,7 +119,7 @@ describe('PdsGoalCalculator', () => {
     await waitFor(() => expect(continueButton).not.toBeDisabled());
     userEvent.click(continueButton);
 
-    expect(await findByRole('button', { name: 'Back' })).toBeInTheDocument();
+    expect(await findByRole('button', { name: /back/i })).toBeInTheDocument();
   });
 
   it('clicking Back returns to the previous step', async () => {
@@ -133,11 +133,11 @@ describe('PdsGoalCalculator', () => {
     await waitFor(() => expect(continueButton).not.toBeDisabled());
     userEvent.click(continueButton);
 
-    const backButton = await findByRole('button', { name: 'Back' });
+    const backButton = await findByRole('button', { name: /back/i });
     userEvent.click(backButton);
 
     await waitFor(() =>
-      expect(queryByRole('button', { name: 'Back' })).not.toBeInTheDocument(),
+      expect(queryByRole('button', { name: /back/i })).not.toBeInTheDocument(),
     );
     expect(
       await findByRole('heading', { level: 6, name: 'Calculator Setup' }),

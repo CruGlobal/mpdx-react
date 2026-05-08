@@ -39,15 +39,14 @@ const MainContent: React.FC = () => {
   return (
     <>
       <CurrentStep />
-      {!isLastStep && (
-        <DirectionButtons
-          formTitle={currentStep.title}
-          handleNextStep={handleContinue}
-          handlePreviousStep={handlePreviousStep}
-          showBackButton={!isFirstStep}
-          disableNext={!allValid}
-        />
-      )}
+      <DirectionButtons
+        formTitle={currentStep.title}
+        handleNextStep={handleContinue}
+        handlePreviousStep={handlePreviousStep}
+        showBackButton={!isFirstStep}
+        hideNextButton={isLastStep}
+        disableNext={!allValid}
+      />
     </>
   );
 };
