@@ -147,7 +147,7 @@ describe('PdsGoalCalculatorContext', () => {
 
   describe('preserves the user step when the steps array changes', () => {
     const reconcileMessage =
-      'Returned to Setup because that step is not available in this form type.';
+      'Returned to Setup because the current step is no longer available.';
 
     it.each([
       {

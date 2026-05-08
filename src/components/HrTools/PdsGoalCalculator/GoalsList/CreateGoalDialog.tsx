@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   Button,
   CircularProgress,
@@ -14,7 +14,7 @@ import {
   Typography,
 } from '@mui/material';
 import { visuallyHidden } from '@mui/utils';
-import { Formik } from 'formik';
+import { Formik, FormikProps } from 'formik';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { DesignationSupportFormType } from 'src/graphql/types.generated';
@@ -42,6 +42,13 @@ export const CreateGoalDialog: React.FC<CreateGoalDialogProps> = ({
   onCreate,
 }) => {
   const { t } = useTranslation();
+  const formikRef = useRef<FormikProps<FormValues>>(null);
+
+  useEffect(() => {
+    if (open) {
+      formikRef.current?.resetForm();
+    }
+  }, [open]);
 
   const formTypeOptions: Array<{
     value: DesignationSupportFormType;
@@ -76,7 +83,7 @@ export const CreateGoalDialog: React.FC<CreateGoalDialogProps> = ({
         {t('Create a New Goal')}
       </DialogTitle>
       <Formik<FormValues>
-        key={String(open)}
+        innerRef={formikRef}
         initialValues={{ formType: '' }}
         validationSchema={schema}
         onSubmit={async ({ formType }) => {
@@ -99,35 +106,43 @@ export const CreateGoalDialog: React.FC<CreateGoalDialogProps> = ({
                 >
                   {formTypeOptions.map(
                     ({ value, title, description }, index) => (
-                      <React.Fragment key={value}>
-                        <FormControlLabel
-                          value={value}
-                          control={
-                            <Radio
-                              inputProps={{
-                                'aria-describedby': `${value}-desc`,
-                              }}
-                            />
-                          }
-                          label={
-                            <Typography variant="subtitle1" component="span">
+                      <FormControlLabel
+                        key={value}
+                        value={value}
+                        control={
+                          <Radio
+                            inputProps={{
+                              'aria-labelledby': `${value}-title`,
+                              'aria-describedby': `${value}-desc`,
+                            }}
+                          />
+                        }
+                        label={
+                          <>
+                            <Typography
+                              id={`${value}-title`}
+                              variant="subtitle1"
+                              component="span"
+                              display="block"
+                            >
                               {title}
                             </Typography>
-                          }
-                          sx={{ alignItems: 'flex-start' }}
-                        />
-                        <Typography
-                          id={`${value}-desc`}
-                          variant="body2"
-                          color="text.secondary"
-                          sx={{
-                            pl: 4,
-                            mb: index < formTypeOptions.length - 1 ? 2 : 0,
-                          }}
-                        >
-                          {description}
-                        </Typography>
-                      </React.Fragment>
+                            <Typography
+                              id={`${value}-desc`}
+                              variant="body2"
+                              color="text.secondary"
+                              component="span"
+                              display="block"
+                            >
+                              {description}
+                            </Typography>
+                          </>
+                        }
+                        sx={{
+                          alignItems: 'flex-start',
+                          mb: index < formTypeOptions.length - 1 ? 2 : 0,
+                        }}
+                      />
                     ),
                   )}
                 </RadioGroup>

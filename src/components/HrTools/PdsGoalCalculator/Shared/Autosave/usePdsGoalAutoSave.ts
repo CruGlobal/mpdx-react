@@ -15,13 +15,17 @@ export const usePdsGoalAutoSave = ({
   ...options
 }: UsePdsAutoSaveOptions) => {
   const saveField = useSaveField();
-  const { calculation } = usePdsGoalCalculator();
+  const { calculation, isMutating } = usePdsGoalCalculator();
 
   return useAutoSave({
     value: calculation?.[fieldName] as string | number | null | undefined,
     saveValue: (value) => saveField({ [fieldName]: value }),
     fieldName,
-    disabled: !calculation,
     ...options,
+    // Block change-driven (select) autosaves while a save is in flight: rapid
+    // back-and-forth toggles can otherwise land out of order in the Apollo
+    // cache. formType is the load-bearing case — its value reshapes the goal
+    // calculation, so a stale final value silently understates the total.
+    disabled: !calculation || (options.saveOnChange === true && isMutating),
   });
 };

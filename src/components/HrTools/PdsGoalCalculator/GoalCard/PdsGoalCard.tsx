@@ -42,12 +42,13 @@ export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({ goal }) => {
     return constants ? calculatePdsGoalTotal(goal, constants) : 0;
   }, [goal, goalMiscConstants, goalGeographicConstantMap, hcmUser]);
 
-  let formTypeBadge: React.ReactElement | null = null;
-  if (goal.formType === DesignationSupportFormType.Simple) {
-    formTypeBadge = <Chip label={t('Simple')} size="small" />;
-  } else if (goal.formType === DesignationSupportFormType.Detailed) {
-    formTypeBadge = <Chip label={t('Default')} size="small" />;
-  }
+  const formType = goal.formType ?? DesignationSupportFormType.Detailed;
+  const formTypeBadge =
+    formType === DesignationSupportFormType.Simple ? (
+      <Chip label={t('Simple')} size="small" variant="outlined" />
+    ) : (
+      <Chip label={t('Default')} size="small" />
+    );
 
   const handleDelete = async () => {
     await deletePdsGoalCalculation({

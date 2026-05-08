@@ -79,14 +79,13 @@ describe('CreateGoalDialog', () => {
 
   it('disables Create but keeps Cancel enabled while submitting', async () => {
     const onCreate = jest.fn().mockReturnValue(new Promise<void>(() => {}));
-    const { getByRole } = renderDialog({ onCreate });
+    const { getByRole, findByRole } = renderDialog({ onCreate });
 
     userEvent.click(getByRole('radio', { name: /Simple/ }));
     userEvent.click(getByRole('button', { name: 'Create' }));
 
-    await waitFor(() =>
-      expect(getByRole('button', { name: 'Create' })).toBeDisabled(),
-    );
+    await findByRole('progressbar');
+    expect(getByRole('button', { name: 'Create' })).toBeDisabled();
     expect(getByRole('button', { name: 'Cancel' })).toBeEnabled();
   });
 

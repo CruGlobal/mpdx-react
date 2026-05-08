@@ -1,6 +1,5 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { ApolloErgonoMockMap } from 'graphql-ergonomock';
 import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
 import { merge, mergeWith } from 'lodash';
 import { SnackbarProvider } from 'notistack';
@@ -120,7 +119,6 @@ export interface PdsGoalCalculatorTestWrapperProps {
   userMock?: GetUserMock;
   constantsMock?: GoalCalculatorConstantsMock;
   supportRaisedMock?: number;
-  mocksOverride?: ApolloErgonoMockMap;
   onCall?: MockLinkCallHandler;
   router?: React.ComponentProps<typeof TestRouter>['router'];
 }
@@ -136,7 +134,6 @@ export const PdsGoalCalculatorTestWrapper: React.FC<
   userMock,
   constantsMock,
   supportRaisedMock,
-  mocksOverride,
   onCall,
   router,
 }) => {
@@ -245,7 +242,6 @@ export const PdsGoalCalculatorTestWrapper: React.FC<
                     Array.isArray(srcValue) ? srcValue : undefined,
                 ),
               },
-              ...mocksOverride,
             }}
             onCall={onCall}
           >

@@ -22,9 +22,7 @@ import {
 
 export type PdsGoalTotalFields = SalaryCalculationFields &
   ReimbursableCalculationFields &
-  OtherExpensesFields & {
-    formType?: DesignationSupportFormType | null;
-  };
+  OtherExpensesFields;
 
 export interface PdsGoalTotalConstants {
   employerFicaRate: number;

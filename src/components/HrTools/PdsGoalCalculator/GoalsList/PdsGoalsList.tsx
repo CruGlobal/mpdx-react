@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 import { Box, Button, CircularProgress, Stack, styled } from '@mui/material';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { DesignationSupportFormType } from 'src/graphql/types.generated';
@@ -28,6 +29,7 @@ const PlaceholderImage = styled('img')(({ theme }) => ({
 export const PdsGoalsList: React.FC = () => {
   const { t } = useTranslation();
   const router = useRouter();
+  const { enqueueSnackbar } = useSnackbar();
   const accountListId = useAccountListId() ?? '';
 
   const { data: userData } = useGetUserQuery();
@@ -59,6 +61,12 @@ export const PdsGoalsList: React.FC = () => {
       const phoneFee = reimbursements?.PHONE?.fee;
       const internetFee = reimbursements?.INTERNET?.fee;
       if (phoneFee === undefined || internetFee === undefined) {
+        enqueueSnackbar(
+          t(
+            'Could not load required defaults. Please try again or pick Simple.',
+          ),
+          { variant: 'error' },
+        );
         return;
       }
       detailedDefaults = {

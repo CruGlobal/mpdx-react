@@ -111,9 +111,7 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     }
     setActiveStep(steps[0]?.step ?? PdsGoalCalculatorStepEnum.Setup);
     enqueueSnackbar(
-      t(
-        'Returned to Setup because that step is not available in this form type.',
-      ),
+      t('Returned to Setup because the current step is no longer available.'),
       { variant: 'info' },
     );
   }, [steps, activeStep, enqueueSnackbar, t]);

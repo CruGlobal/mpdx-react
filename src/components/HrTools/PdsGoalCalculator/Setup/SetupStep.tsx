@@ -147,7 +147,7 @@ export const SetupStep: React.FC = () => {
               select
               label={t('Form Type')}
               helperText={t(
-                'Default includes reimbursable expenses and 403b contributions; Simple omits them.',
+                'Default includes reimbursable expenses and 403b contributions in the goal total. Simple excludes them; existing entries are preserved and will count again if you switch back.',
               )}
             >
               <MenuItem value={DesignationSupportFormType.Detailed}>
