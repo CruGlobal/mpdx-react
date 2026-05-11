@@ -13,28 +13,42 @@ import { useGoalCalculator } from '../Shared/GoalCalculatorContext';
 interface ListItemContentProps {
   title: string;
   complete: boolean;
+  announceCompletion?: boolean;
 }
 
 const ListItemContent: React.FC<ListItemContentProps> = ({
   title,
   complete,
-}) => (
-  <>
-    <CategoryListItemIcon
-      sx={(theme) => ({
-        color: complete
-          ? theme.palette.mpdxBlue.main
-          : theme.palette.mpdxGrayDark.main,
-      })}
-    >
-      {complete ? <CircleIcon /> : <RadioButtonUncheckedIcon />}
-    </CategoryListItemIcon>
-    <ListItemText
-      primary={title}
-      primaryTypographyProps={{ variant: 'body2' }}
-    />
-  </>
-);
+  announceCompletion = false,
+}) => {
+  const { t } = useTranslation();
+  const titleAccess = announceCompletion
+    ? complete
+      ? t('Complete')
+      : t('Incomplete')
+    : undefined;
+  return (
+    <>
+      <CategoryListItemIcon
+        sx={(theme) => ({
+          color: complete
+            ? theme.palette.mpdxBlue.main
+            : theme.palette.mpdxGrayDark.main,
+        })}
+      >
+        {complete ? (
+          <CircleIcon titleAccess={titleAccess} />
+        ) : (
+          <RadioButtonUncheckedIcon titleAccess={titleAccess} />
+        )}
+      </CategoryListItemIcon>
+      <ListItemText
+        primary={title}
+        primaryTypographyProps={{ variant: 'body2' }}
+      />
+    </>
+  );
+};
 
 export interface SectionItem {
   title: string;
@@ -50,7 +64,11 @@ export const SectionList: React.FC<SectionListProps> = ({ sections }) => {
     <List disablePadding>
       {sections.map(({ title, complete }, index) => (
         <ListItem key={index} sx={CategoryListItemStyles}>
-          <ListItemContent title={title} complete={complete} />
+          <ListItemContent
+            title={title}
+            complete={complete}
+            announceCompletion
+          />
         </ListItem>
       ))}
     </List>

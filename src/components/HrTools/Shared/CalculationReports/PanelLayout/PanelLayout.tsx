@@ -138,6 +138,7 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
                   <IconButton
                     key={item.key}
                     aria-label={item.label}
+                    aria-current={item.isActive ? 'step' : undefined}
                     sx={{
                       color: item.isActive
                         ? theme.palette.mpdxBlue.main

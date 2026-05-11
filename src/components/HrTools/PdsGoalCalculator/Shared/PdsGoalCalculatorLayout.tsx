@@ -24,6 +24,7 @@ export const PdsGoalCalculatorLayout: React.FC<
     setDrawerOpen,
     toggleDrawer,
     percentComplete,
+    calculationLoading,
   } = usePdsGoalCalculator();
 
   const handleStepIconClick = (step: PdsGoalCalculatorStepEnum) => {
@@ -47,6 +48,7 @@ export const PdsGoalCalculatorLayout: React.FC<
     <PanelLayout
       panelType={PanelTypeEnum.Other}
       percentComplete={percentComplete}
+      showPercentage={!calculationLoading}
       icons={iconPanelItems}
       sidebarContent={sectionListPanel}
       sidebarTitle={currentStep.title}
