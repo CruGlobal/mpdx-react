@@ -48,12 +48,17 @@ describe('calculateSalaryTotals', () => {
       expect(result.grossMonthlyPay).toBeCloseTo(5300);
     });
 
-    it('applies a full-multiplier-shape geographic multiplier (e.g., 1.01 = 1% boost)', () => {
-      const result = calculateSalaryTotals(salaried(), {
-        geographicMultiplier: 1.01,
+    it('multiplies monthlyBase by geographicMultiplier to produce grossMonthlyPay', () => {
+      const payRate = 60000;
+      const geographicMultiplier = 1.01;
+      const result = calculateSalaryTotals(salaried({ payRate }), {
+        geographicMultiplier,
         employerFicaRate: FICA_RATE,
       });
-      expect(result.grossMonthlyPay).toBeCloseTo(5050);
+      expect(result.monthlyBase).toBe(payRate / 12);
+      expect(result.grossMonthlyPay).toBeCloseTo(
+        (payRate / 12) * geographicMultiplier,
+      );
     });
 
     it('ignores hoursWorkedPerWeek', () => {
