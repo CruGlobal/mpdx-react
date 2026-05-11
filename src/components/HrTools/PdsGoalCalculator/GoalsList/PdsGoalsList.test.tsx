@@ -9,12 +9,6 @@ import { PdsGoalCalculatorTestWrapper } from '../PdsGoalCalculatorTestWrapper';
 import { PdsGoalsList } from './PdsGoalsList';
 
 const mutationSpy = jest.fn();
-const mockEnqueue = jest.fn();
-
-jest.mock('notistack', () => ({
-  ...jest.requireActual('notistack'),
-  useSnackbar: () => ({ enqueueSnackbar: mockEnqueue }),
-}));
 
 type FindByRole = ReturnType<typeof render>['findByRole'];
 
@@ -210,7 +204,7 @@ describe('PdsGoalsList', () => {
   });
 
   it('shows an error and skips mutation when reimbursement constants are missing for a Default goal', async () => {
-    const { findByRole } = render(
+    const { findByRole, findByText } = render(
       <PdsGoalCalculatorTestWrapper
         withProvider={false}
         onCall={mutationSpy}
@@ -223,12 +217,11 @@ describe('PdsGoalsList', () => {
     await openCreateGoalDialog(findByRole);
     await submitFormType(findByRole, 'Default');
 
-    await waitFor(() =>
-      expect(mockEnqueue).toHaveBeenCalledWith(
+    expect(
+      await findByText(
         'Could not load required defaults. Please try again or pick Simple.',
-        { variant: 'error' },
       ),
-    );
+    ).toBeInTheDocument();
     expect(mutationSpy).not.toHaveGraphqlOperation('CreatePdsGoalCalculation');
     await waitFor(() =>
       expect(findByRole('button', { name: 'Create' })).resolves.toBeEnabled(),

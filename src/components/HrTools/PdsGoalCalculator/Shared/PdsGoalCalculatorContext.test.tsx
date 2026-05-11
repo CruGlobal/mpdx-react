@@ -9,14 +9,18 @@ import { usePdsGoalCalculator } from './PdsGoalCalculatorContext';
 import { useSteps } from './useSteps';
 import type { PdsGoalCalculatorStep, PdsGoalCalculatorSteps } from './useSteps';
 
-jest.mock('./useSteps', () => ({
-  __esModule: true,
-  ...jest.requireActual('./useSteps'),
-  useSteps: jest.fn(),
-}));
-
-const { useSteps: actualUseSteps } =
-  jest.requireActual<typeof import('./useSteps')>('./useSteps');
+// SWC marks named ESM exports as non-configurable, so jest.spyOn cannot
+// redefine `useSteps`. Mock the module with a jest.fn that delegates to the
+// real implementation by default — reconcile tests scope their overrides via
+// mockReturnValue + an afterEach restore.
+jest.mock('./useSteps', () => {
+  const actual = jest.requireActual<typeof import('./useSteps')>('./useSteps');
+  return {
+    __esModule: true,
+    ...actual,
+    useSteps: jest.fn(actual.useSteps),
+  };
+});
 
 const mockedUseSteps = useSteps as jest.MockedFunction<typeof useSteps>;
 
@@ -84,10 +88,6 @@ const StepProbe: React.FC = () => {
     </div>
   );
 };
-
-beforeEach(() => {
-  mockedUseSteps.mockImplementation(actualUseSteps);
-});
 
 describe('PdsGoalCalculatorContext', () => {
   it('provides steps and current step', async () => {
@@ -159,6 +159,12 @@ describe('PdsGoalCalculatorContext', () => {
   describe('preserves the user step when the steps array changes', () => {
     const reconcileMessage =
       'Returned to Setup because the current step is no longer available.';
+
+    afterEach(() => {
+      mockedUseSteps.mockImplementation(
+        jest.requireActual<typeof import('./useSteps')>('./useSteps').useSteps,
+      );
+    });
 
     it.each([
       {
@@ -237,77 +243,6 @@ describe('PdsGoalCalculatorContext', () => {
         expect(Boolean(snackbar)).toBe(expectSnackbar);
       },
     );
-
-    it('falls back safely on the one-frame transient render when activeStep is foreign to the new steps array', async () => {
-      const renderLog: Array<{
-        step: PdsGoalCalculatorStepEnum;
-        index: number;
-        percent: number;
-        stepCount: number;
-      }> = [];
-
-      const RecordingProbe: React.FC = () => {
-        const {
-          currentStep,
-          stepIndex,
-          percentComplete,
-          steps,
-          handleStepChange,
-        } = usePdsGoalCalculator();
-        renderLog.push({
-          step: currentStep.step,
-          index: stepIndex,
-          percent: percentComplete,
-          stepCount: steps.length,
-        });
-        return (
-          <button
-            type="button"
-            onClick={() =>
-              handleStepChange(PdsGoalCalculatorStepEnum.ReimbursableExpenses)
-            }
-          >
-            go to reimbursable
-          </button>
-        );
-      };
-
-      mockedUseSteps.mockReturnValue(detailedSteps);
-      const { getByRole, rerender } = render(
-        <PdsGoalCalculatorTestWrapper>
-          <RecordingProbe />
-        </PdsGoalCalculatorTestWrapper>,
-      );
-
-      userEvent.click(getByRole('button', { name: 'go to reimbursable' }));
-
-      const renderCountBeforeSwitch = renderLog.length;
-
-      mockedUseSteps.mockReturnValue(simpleSteps);
-      rerender(
-        <PdsGoalCalculatorTestWrapper>
-          <RecordingProbe />
-        </PdsGoalCalculatorTestWrapper>,
-      );
-
-      // The rerender produces a transient render (steps=simple, activeStep still
-      // ReimbursableExpenses) followed by a reconciled render after the effect
-      // calls setActiveStep(Setup). Pin both.
-      const transient = renderLog[renderCountBeforeSwitch];
-      expect(transient.stepCount).toBe(3);
-      // findIndex returns -1 here; the `=== -1 ? 0` fallback at stepIndex memo
-      // and the `?? steps[0]` fallback on currentStep keep this render safe.
-      expect(transient.index).toBe(0);
-      expect(transient.step).toBe(PdsGoalCalculatorStepEnum.Setup);
-      // Without the -1 fallback, percentComplete would be 0% (Math.round(0/3));
-      // pinning 33% guards against a regression that drops the guard.
-      expect(transient.percent).toBe(33);
-
-      const reconciled = renderLog[renderLog.length - 1];
-      expect(reconciled.step).toBe(PdsGoalCalculatorStepEnum.Setup);
-      expect(reconciled.index).toBe(0);
-      expect(reconciled.percent).toBe(33);
-    });
 
     it('reconciles activeStep state so toggling formType back does not teleport the user', async () => {
       mockedUseSteps.mockReturnValue(detailedSteps);

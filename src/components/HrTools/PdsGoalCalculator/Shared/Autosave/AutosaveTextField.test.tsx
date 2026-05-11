@@ -202,58 +202,48 @@ describe('AutosaveTextField', () => {
     );
   });
 
-  it('hides validation error for an empty untouched field', async () => {
+  describe('required field', () => {
     const requiredSchema = yup.object({
       name: yup.string().required('Goal Name is required'),
     });
-    const { findByRole } = render(
-      <PdsGoalCalculatorTestWrapper
-        calculationMock={{ ...calculationMock, name: '' }}
-        onCall={mutationSpy}
-      >
-        <AutosaveTextField
-          label="Goal Name"
-          fieldName="name"
-          schema={requiredSchema}
-          helperText="Enter the goal name"
-        />
-      </PdsGoalCalculatorTestWrapper>,
-    );
+    const renderRequired = () =>
+      render(
+        <PdsGoalCalculatorTestWrapper
+          calculationMock={{ ...calculationMock, name: '' }}
+          onCall={mutationSpy}
+        >
+          <AutosaveTextField
+            label="Goal Name"
+            fieldName="name"
+            schema={requiredSchema}
+            helperText="Enter the goal name"
+          />
+        </PdsGoalCalculatorTestWrapper>,
+      );
 
-    const input = await findByRole('textbox', { name: 'Goal Name' });
-    await waitFor(() => expect(input).toHaveValue(''));
+    it('hides validation error for an empty untouched field', async () => {
+      const { findByRole } = renderRequired();
 
-    expect(input).toHaveAccessibleDescription('Enter the goal name');
-    expect(input).not.toHaveAttribute('aria-invalid', 'true');
-  });
+      const input = await findByRole('textbox', { name: 'Goal Name' });
+      await waitFor(() => expect(input).toHaveValue(''));
 
-  it('shows validation error after the field is touched', async () => {
-    const requiredSchema = yup.object({
-      name: yup.string().required('Goal Name is required'),
+      expect(input).toHaveAccessibleDescription('Enter the goal name');
+      expect(input).not.toHaveAttribute('aria-invalid', 'true');
     });
-    const { findByRole } = render(
-      <PdsGoalCalculatorTestWrapper
-        calculationMock={{ ...calculationMock, name: '' }}
-        onCall={mutationSpy}
-      >
-        <AutosaveTextField
-          label="Goal Name"
-          fieldName="name"
-          schema={requiredSchema}
-          helperText="Enter the goal name"
-        />
-      </PdsGoalCalculatorTestWrapper>,
-    );
 
-    const input = await findByRole('textbox', { name: 'Goal Name' });
-    await waitFor(() => expect(input).toHaveValue(''));
+    it('shows validation error after the field is touched', async () => {
+      const { findByRole } = renderRequired();
 
-    fireEvent.focus(input);
-    fireEvent.blur(input);
+      const input = await findByRole('textbox', { name: 'Goal Name' });
+      await waitFor(() => expect(input).toHaveValue(''));
 
-    await waitFor(() =>
-      expect(input).toHaveAccessibleDescription('Goal Name is required'),
-    );
+      fireEvent.focus(input);
+      fireEvent.blur(input);
+
+      await waitFor(() =>
+        expect(input).toHaveAccessibleDescription('Goal Name is required'),
+      );
+    });
   });
 
   describe('select input', () => {

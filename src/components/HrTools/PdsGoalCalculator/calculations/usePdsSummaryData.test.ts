@@ -340,7 +340,7 @@ describe('usePdsSummaryData', () => {
   });
 
   describe('Simple form type', () => {
-    it('zeroes reimbursableTotal in otherConstants when formType is Simple', () => {
+    it('zeroes reimbursable + 403b but preserves reimbursableTotals', () => {
       const calc = {
         ...defaultCalculation,
         formType: DesignationSupportFormType.Simple,
@@ -349,27 +349,7 @@ describe('usePdsSummaryData', () => {
         usePdsSummaryData(calc, defaultHcmUser),
       );
       expect(result.current?.otherConstants.reimbursableTotal).toBe(0);
-    });
-
-    it('zeroes fourOThreeBPercentage in otherConstants when formType is Simple', () => {
-      const calc = {
-        ...defaultCalculation,
-        formType: DesignationSupportFormType.Simple,
-      };
-      const { result } = renderHook(() =>
-        usePdsSummaryData(calc, defaultHcmUser),
-      );
       expect(result.current?.otherConstants.fourOThreeBPercentage).toBe(0);
-    });
-
-    it('still computes reimbursableTotals (saved values are preserved)', () => {
-      const calc = {
-        ...defaultCalculation,
-        formType: DesignationSupportFormType.Simple,
-      };
-      const { result } = renderHook(() =>
-        usePdsSummaryData(calc, defaultHcmUser),
-      );
       // The reimbursableTotals object is still computed (data isn't lost),
       // but the otherConstants.reimbursableTotal that feeds the Other Expenses
       // calculation is zeroed.
