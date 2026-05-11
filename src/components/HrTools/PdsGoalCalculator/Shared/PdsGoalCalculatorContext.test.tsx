@@ -144,6 +144,18 @@ describe('PdsGoalCalculatorContext', () => {
     expect(result.current.stepIndex).toBe(0);
   });
 
+  it('exposes percentComplete reflecting current step / total steps', () => {
+    const { result } = renderUsePdsGoalCalculator();
+
+    expect(result.current.percentComplete).toBe(25);
+    act(() => result.current.handleContinue());
+    expect(result.current.percentComplete).toBe(50);
+    act(() => result.current.handleContinue());
+    expect(result.current.percentComplete).toBe(75);
+    act(() => result.current.handleContinue());
+    expect(result.current.percentComplete).toBe(100);
+  });
+
   describe('preserves the user step when the steps array changes', () => {
     const reconcileMessage =
       'Returned to Setup because the current step is no longer available.';
