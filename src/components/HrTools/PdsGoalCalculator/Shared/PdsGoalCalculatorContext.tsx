@@ -101,7 +101,6 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
 
   const steps = useSteps(
     calculation?.formType ?? DesignationSupportFormType.Detailed,
-    activeStep,
   );
   const [rightPanelContent, setRightPanelContent] =
     useState<React.ReactNode>(null);

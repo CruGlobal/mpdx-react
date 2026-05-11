@@ -26,25 +26,4 @@ describe('useSteps', () => {
       PdsGoalCalculatorStepEnum.SummaryReport,
     ]);
   });
-
-  it('marks the active step and prior steps as complete', () => {
-    const { result } = renderHook(() =>
-      useSteps(
-        DesignationSupportFormType.Detailed,
-        PdsGoalCalculatorStepEnum.SupportItem,
-      ),
-    );
-    expect(
-      result.current.map((step) => step.sections.every((s) => s.complete)),
-    ).toEqual([true, true, true, false]);
-  });
-
-  it('leaves all sections incomplete when no active step is provided', () => {
-    const { result } = renderHook(() =>
-      useSteps(DesignationSupportFormType.Detailed),
-    );
-    expect(
-      result.current.flatMap((step) => step.sections.map((s) => s.complete)),
-    ).toEqual([false, false, false, false, false, false]);
-  });
 });

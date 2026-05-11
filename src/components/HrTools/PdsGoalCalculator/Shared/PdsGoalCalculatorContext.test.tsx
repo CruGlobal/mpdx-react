@@ -24,7 +24,6 @@ const stub = (step: PdsGoalCalculatorStepEnum): PdsGoalCalculatorStep => ({
   step,
   title: step,
   icon: <SettingsIcon />,
-  sections: [],
 });
 
 const detailedSteps: PdsGoalCalculatorSteps = [
