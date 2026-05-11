@@ -4,7 +4,6 @@ import {
   GoalMiscConstants,
 } from 'src/hooks/useGoalCalculatorConstants';
 import { HcmUserQuery } from '../Shared/HCM.generated';
-import { isSimpleFormType } from '../Shared/formType';
 import {
   OtherExpensesConstants,
   OtherExpensesFields,
@@ -85,7 +84,7 @@ export const buildOtherExpensesConstants = (
   salaryTotals: SalaryTotals,
   reimbursableTotal: number,
 ): OtherExpensesConstants => {
-  const isSimple = isSimpleFormType(formType);
+  const isSimple = formType === DesignationSupportFormType.Simple;
   return {
     reimbursableTotal: isSimple ? 0 : reimbursableTotal,
     salarySubtotal: salaryTotals.subtotal,

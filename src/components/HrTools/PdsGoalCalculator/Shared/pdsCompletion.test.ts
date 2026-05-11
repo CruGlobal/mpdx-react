@@ -8,8 +8,6 @@ import {
   isAnnualReimbursableComplete,
   isMonthlyReimbursableComplete,
   isMpdGoalComplete,
-  isOtherComplete,
-  isSalaryComplete,
   isSetupComplete,
 } from './pdsCompletion';
 
@@ -112,15 +110,6 @@ describe('isAnnualReimbursableComplete', () => {
         conferenceRetreatCosts: 0,
       }),
     ).toBe(true);
-  });
-});
-
-describe('isSalaryComplete / isOtherComplete', () => {
-  it('mirror isSetupComplete', () => {
-    expect(isSalaryComplete(baseCalculation)).toBe(true);
-    expect(isOtherComplete(baseCalculation)).toBe(true);
-    expect(isSalaryComplete({ ...baseCalculation, payRate: null })).toBe(false);
-    expect(isOtherComplete({ ...baseCalculation, payRate: null })).toBe(false);
   });
 });
 

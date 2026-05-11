@@ -6,7 +6,6 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import { useTranslation } from 'react-i18next';
 import { DesignationSupportFormType } from 'src/graphql/types.generated';
 import { PdsGoalCalculatorStepEnum } from '../PdsGoalCalculatorHelper';
-import { isSimpleFormType } from './formType';
 
 export interface PdsGoalCalculatorStep {
   step: PdsGoalCalculatorStepEnum;
@@ -46,7 +45,7 @@ export const useSteps = (
       icon: <RequestQuoteIcon />,
     };
 
-    return isSimpleFormType(formType)
+    return formType === DesignationSupportFormType.Simple
       ? [setup, supportItem, summaryReport]
       : [setup, reimbursableExpenses, supportItem, summaryReport];
   }, [t, formType]);

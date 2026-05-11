@@ -61,11 +61,6 @@ export const isAnnualReimbursableComplete = (
   ]);
 };
 
-// Salary and Other are read-only derived tables whose only required inputs
-// come from the Setup step.
-export const isSalaryComplete = isSetupComplete;
-export const isOtherComplete = isSetupComplete;
-
 export const isMpdGoalComplete = (
   summaryData: PdsSummaryData | null,
 ): boolean => !!summaryData && summaryData.overallTotal > 0;

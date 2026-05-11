@@ -10,6 +10,7 @@ import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { DesignationSupportFormType } from 'src/graphql/types.generated';
 import { useTrackMutation } from 'src/hooks/useTrackMutation';
+import { safeProgressRatio } from '../../GoalCalculator/Shared/safeProgressRatio';
 import {
   PdsGoalCalculationFieldsFragment,
   usePdsGoalCalculationQuery,
@@ -123,13 +124,10 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
     return idx === -1 ? 0 : idx;
   }, [steps, activeStep]);
 
-  // steps is a non-empty tuple, so steps[0] is guaranteed defined; the fallback
-  // protects against an out-of-range stepIndex.
-  const currentStep = steps[stepIndex] ?? steps[0];
+  const currentStep = steps[stepIndex];
 
-  const percentComplete = useMemo(
-    () => Math.round(((stepIndex + 1) / steps.length) * 100),
-    [stepIndex, steps.length],
+  const percentComplete = Math.round(
+    safeProgressRatio(stepIndex + 1, steps.length) * 100,
   );
 
   const handleStepChange = useCallback(
