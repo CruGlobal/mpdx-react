@@ -247,8 +247,13 @@ describe('PdsGoalCalculatorContext', () => {
       }> = [];
 
       const RecordingProbe: React.FC = () => {
-        const { currentStep, stepIndex, percentComplete, steps, handleStepChange } =
-          usePdsGoalCalculator();
+        const {
+          currentStep,
+          stepIndex,
+          percentComplete,
+          steps,
+          handleStepChange,
+        } = usePdsGoalCalculator();
         renderLog.push({
           step: currentStep.step,
           index: stepIndex,

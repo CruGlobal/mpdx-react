@@ -18,11 +18,11 @@ export const isSetupComplete = (calculation: Calculation): boolean => {
 
   return Boolean(
     calculation.name &&
-    calculation.status &&
-    calculation.salaryOrHourly &&
-    (calculation.payRate ?? 0) > 0 &&
-    (isSalaried || (calculation.hoursWorkedPerWeek ?? 0) > 0) &&
-    (isPartTime || (calculation.benefits ?? 0) > 0),
+      calculation.status &&
+      calculation.salaryOrHourly &&
+      (calculation.payRate ?? 0) > 0 &&
+      (isSalaried || (calculation.hoursWorkedPerWeek ?? 0) > 0) &&
+      (isPartTime || (calculation.benefits ?? 0) > 0),
   );
 };
 
