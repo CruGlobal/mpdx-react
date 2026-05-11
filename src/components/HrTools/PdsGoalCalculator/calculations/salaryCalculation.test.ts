@@ -48,6 +48,14 @@ describe('calculateSalaryTotals', () => {
       expect(result.grossMonthlyPay).toBeCloseTo(5300);
     });
 
+    it('applies a full-multiplier-shape geographic multiplier (e.g., 1.01 = 1% boost)', () => {
+      const result = calculateSalaryTotals(salaried(), {
+        geographicMultiplier: 1.01,
+        employerFicaRate: FICA_RATE,
+      });
+      expect(result.grossMonthlyPay).toBeCloseTo(5050);
+    });
+
     it('ignores hoursWorkedPerWeek', () => {
       const result = calculateSalaryTotals(
         salaried({ hoursWorkedPerWeek: 40 }),
