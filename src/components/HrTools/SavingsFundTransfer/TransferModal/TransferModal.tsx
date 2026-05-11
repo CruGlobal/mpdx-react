@@ -135,7 +135,15 @@ const transferSchema = (locale: string) =>
       .number()
       .required(i18n.t('Amount is required'))
       .min(0.01, i18n.t('Amount must be at least $0.01')),
-    note: yup.string().nullable(),
+    note: yup.string().when('schedule', {
+      is: ScheduleEnum.OneTime,
+      then: (schema) =>
+        schema
+          .trim()
+          .min(1, i18n.t('Note is required'))
+          .required(i18n.t('Note is required')),
+      otherwise: (schema) => schema.nullable(),
+    }),
   });
 interface TransferModalProps {
   data: TransferModalData;
@@ -525,11 +533,17 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                     <FormControl fullWidth>
                       <TextField
                         id="transfer-note"
-                        label={t('Note (Optional)')}
+                        label={t('Note')}
                         name="note"
                         disabled={!isNew}
                         value={note}
                         onChange={handleChange}
+                        onBlur={handleBlur}
+                        error={touched.note && Boolean(errors.note)}
+                        helperText={
+                          touched.note && errors.note ? errors.note : ''
+                        }
+                        required
                         fullWidth
                       />
                     </FormControl>

@@ -167,6 +167,31 @@ describe('TransferModal', () => {
       ).toBeInTheDocument();
     });
 
+    it('should require a note for one-time transfers', async () => {
+      const { getByRole, findByText } = render(<Components />);
+
+      userEvent.click(getByRole('combobox', { name: /from account/i }));
+      userEvent.click(getByRole('option', { name: /staff account/i }));
+      userEvent.click(getByRole('combobox', { name: /to account/i }));
+      userEvent.click(getByRole('option', { name: /staff savings/i }));
+
+      const amountField = getByRole('spinbutton', { name: /amount/i });
+      userEvent.clear(amountField);
+      userEvent.type(amountField, '100');
+
+      // Note intentionally left blank.
+      userEvent.click(getByRole('button', { name: /submit/i }));
+
+      expect(await findByText('Note is required')).toBeInTheDocument();
+      expect(mutationSpy).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          operation: expect.objectContaining({
+            operationName: 'CreateTransfer',
+          }),
+        }),
+      );
+    });
+
     it('should validate end date is after transfer date for recurring transfers', async () => {
       const { getByRole, findByLabelText, getByLabelText, findByText } = render(
         <Components />,
@@ -202,6 +227,7 @@ describe('TransferModal', () => {
       const fromAccount = getByRole('combobox', { name: /from account/i });
       const toAccount = getByRole('combobox', { name: /to account/i });
       const amountField = getByRole('spinbutton', { name: /amount/i });
+      const noteField = getByRole('textbox', { name: /note/i });
 
       userEvent.click(fromAccount);
       userEvent.click(getByRole('option', { name: /staff account/i }));
@@ -211,6 +237,8 @@ describe('TransferModal', () => {
 
       userEvent.clear(amountField);
       userEvent.type(amountField, '100');
+
+      userEvent.type(noteField, 'Test note');
 
       userEvent.click(getByRole('button', { name: /submit/i }));
 
@@ -230,6 +258,7 @@ describe('TransferModal', () => {
       const fromAccount = getByRole('combobox', { name: /from account/i });
       const toAccount = getByRole('combobox', { name: /to account/i });
       const amountField = getByRole('spinbutton', { name: /amount/i });
+      const noteField = getByRole('textbox', { name: /note/i });
       const submitButton = getByRole('button', { name: /submit/i });
 
       userEvent.click(fromAccount);
@@ -240,6 +269,8 @@ describe('TransferModal', () => {
 
       userEvent.clear(amountField);
       userEvent.type(amountField, '100');
+
+      userEvent.type(noteField, 'Test note');
 
       userEvent.click(submitButton);
 
@@ -440,6 +471,7 @@ describe('TransferModal', () => {
       const { getByRole } = render(<Components />);
 
       const amountField = getByRole('spinbutton', { name: /amount/i });
+      const noteField = getByRole('textbox', { name: /note/i });
 
       userEvent.click(getByRole('combobox', { name: /from account/i }));
       userEvent.click(getByRole('option', { name: /staff account/i }));
@@ -449,6 +481,8 @@ describe('TransferModal', () => {
 
       userEvent.clear(amountField);
       userEvent.type(amountField, '100');
+
+      userEvent.type(noteField, 'Test note');
 
       userEvent.click(getByRole('button', { name: /submit/i }));
 
@@ -461,7 +495,7 @@ describe('TransferModal', () => {
                 amount: 100,
                 sourceFundTypeName: 'Staff Account',
                 destinationFundTypeName: 'Staff Savings',
-                description: '',
+                description: 'Test note',
               }),
             }),
           }),
