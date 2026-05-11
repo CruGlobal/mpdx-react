@@ -48,7 +48,7 @@ export const PdsGoalCalculatorLayout: React.FC<
     <PanelLayout
       panelType={PanelTypeEnum.Other}
       percentComplete={percentComplete}
-      showPercentage={!calculationLoading}
+      progressLoading={calculationLoading}
       icons={iconPanelItems}
       sidebarContent={sectionListPanel}
       sidebarTitle={currentStep.title}

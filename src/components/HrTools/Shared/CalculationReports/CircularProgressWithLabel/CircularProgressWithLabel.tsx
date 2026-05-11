@@ -6,11 +6,12 @@ import { percentageFormat } from 'src/lib/intlFormat';
 
 interface CircularProgressWithLabelProps {
   progress: number;
+  loading?: boolean;
 }
 
 export const CircularProgressWithLabel: React.FC<
   CircularProgressWithLabelProps
-> = ({ progress }) => {
+> = ({ progress, loading = false }) => {
   const locale = useLocale();
   const { t } = useTranslation();
   const formattedProgress = percentageFormat(progress / 100, locale);
@@ -22,27 +23,38 @@ export const CircularProgressWithLabel: React.FC<
         alignItems: 'center',
       }}
     >
-      <CircularProgress
-        variant="determinate"
-        value={progress}
-        size={28}
-        thickness={4}
-        aria-label={t('Progress: {{percent}}', { percent: formattedProgress })}
-      />
-      <Box
-        sx={{
-          position: 'absolute',
-        }}
-      >
-        <Typography
-          variant="caption"
-          component="div"
-          sx={{ color: 'text.secondary', fontSize: 10 }}
-          aria-hidden
-        >
-          {formattedProgress}
-        </Typography>
-      </Box>
+      {loading ? (
+        <CircularProgress
+          variant="indeterminate"
+          size={28}
+          thickness={4}
+          aria-label={t('Calculating progress')}
+        />
+      ) : (
+        <>
+          <CircularProgress
+            variant="determinate"
+            value={progress}
+            size={28}
+            thickness={4}
+            aria-label={t('Section progress')}
+          />
+          <Box
+            sx={{
+              position: 'absolute',
+            }}
+          >
+            <Typography
+              variant="caption"
+              component="div"
+              sx={{ color: 'text.secondary', fontSize: 10 }}
+              aria-hidden
+            >
+              {formattedProgress}
+            </Typography>
+          </Box>
+        </>
+      )}
     </Box>
   );
 };

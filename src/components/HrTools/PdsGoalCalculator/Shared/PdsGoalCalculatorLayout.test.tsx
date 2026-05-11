@@ -29,7 +29,25 @@ describe('PdsGoalCalculatorLayout', () => {
       </PdsGoalCalculatorTestWrapper>,
     );
 
-    const progressIndicator = await findByRole('progressbar');
+    const progressIndicator = await findByRole('progressbar', {
+      name: 'Section progress',
+    });
     expect(progressIndicator).toHaveAttribute('aria-valuenow', '25');
+  });
+
+  it('shows an indeterminate progress indicator while calculation is loading', async () => {
+    const { findByRole } = render(
+      <PdsGoalCalculatorTestWrapper>
+        <PdsGoalCalculatorLayout
+          sectionListPanel={<div>Section List</div>}
+          mainContent={<div>Main Content</div>}
+        />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    const loadingIndicator = await findByRole('progressbar', {
+      name: 'Calculating progress',
+    });
+    expect(loadingIndicator).not.toHaveAttribute('aria-valuenow');
   });
 });

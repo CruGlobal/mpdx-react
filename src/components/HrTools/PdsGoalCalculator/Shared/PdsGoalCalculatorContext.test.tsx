@@ -156,6 +156,26 @@ describe('PdsGoalCalculatorContext', () => {
     expect(result.current.percentComplete).toBe(100);
   });
 
+  it('rounds percentComplete to 33/67/100 for the 3-step Simple form', async () => {
+    const { result } = renderHook(() => usePdsGoalCalculator(), {
+      wrapper: ({ children }) => (
+        <PdsGoalCalculatorTestWrapper
+          calculationMock={{ formType: DesignationSupportFormType.Simple }}
+        >
+          {children}
+        </PdsGoalCalculatorTestWrapper>
+      ),
+    });
+
+    await waitFor(() => expect(result.current.steps).toHaveLength(3));
+
+    expect(result.current.percentComplete).toBe(33);
+    act(() => result.current.handleContinue());
+    expect(result.current.percentComplete).toBe(67);
+    act(() => result.current.handleContinue());
+    expect(result.current.percentComplete).toBe(100);
+  });
+
   describe('preserves the user step when the steps array changes', () => {
     const reconcileMessage =
       'Returned to Setup because the current step is no longer available.';
