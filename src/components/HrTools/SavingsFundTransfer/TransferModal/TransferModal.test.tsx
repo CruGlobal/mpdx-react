@@ -198,6 +198,34 @@ describe('TransferModal', () => {
       );
     });
 
+    it('should reject whitespace-only notes on one-time transfers', async () => {
+      const { getByRole, findByText } = render(<Components />);
+
+      userEvent.click(getByRole('combobox', { name: /from account/i }));
+      userEvent.click(getByRole('option', { name: /staff account/i }));
+      userEvent.click(getByRole('combobox', { name: /to account/i }));
+      userEvent.click(getByRole('option', { name: /staff savings/i }));
+
+      const amountField = getByRole('spinbutton', { name: /amount/i });
+      userEvent.clear(amountField);
+      userEvent.type(amountField, '100');
+
+      const noteField = getByRole('textbox', { name: /note/i });
+      userEvent.clear(noteField);
+      userEvent.type(noteField, '   ');
+
+      userEvent.click(getByRole('button', { name: /submit/i }));
+
+      expect(await findByText('Note is required')).toBeInTheDocument();
+      expect(mutationSpy).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          operation: expect.objectContaining({
+            operationName: 'CreateTransfer',
+          }),
+        }),
+      );
+    });
+
     it('should validate end date is after transfer date for recurring transfers', async () => {
       const { getByRole, findByLabelText, getByLabelText, findByText } = render(
         <Components />,
@@ -301,6 +329,20 @@ describe('TransferModal', () => {
 
     it('should not default the note when lastName is missing', () => {
       const { getByRole } = render(<Components lastName="" />);
+
+      const noteField = getByRole('textbox', { name: /note/i });
+      expect(noteField).toHaveValue('');
+    });
+
+    it('should trim lastName when building the default note', () => {
+      const { getByRole } = render(<Components lastName="  Sleight  " />);
+
+      const noteField = getByRole('textbox', { name: /note/i });
+      expect(noteField).toHaveValue('Sleight Savings Fund Transfer in MPDX');
+    });
+
+    it('should not default the note when lastName is only whitespace', () => {
+      const { getByRole } = render(<Components lastName="   " />);
 
       const noteField = getByRole('textbox', { name: /note/i });
       expect(noteField).toHaveValue('');
