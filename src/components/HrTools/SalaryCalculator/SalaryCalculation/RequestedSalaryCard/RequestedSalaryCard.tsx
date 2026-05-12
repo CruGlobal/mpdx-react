@@ -1,7 +1,9 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import {
+  Alert,
   CardContent,
   CardHeader,
+  Link,
   Table,
   TableBody,
   TableCell,
@@ -10,6 +12,7 @@ import {
 } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
 import * as yup from 'yup';
+import { useAutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
 import { amount } from 'src/lib/yupHelpers';
 import { AutosaveTextField } from '../../Autosave/AutosaveTextField';
 import { CalculationFieldsFragment } from '../../SalaryCalculatorContext/SalaryCalculation.generated';
@@ -17,6 +20,8 @@ import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalcula
 import { EffectiveDateNote } from '../../Shared/EffectiveDateNote';
 import { StepCard, StepTableHead } from '../../Shared/StepCard';
 import { useFormatters } from '../../Shared/useFormatters';
+import { useCaps } from '../useCaps';
+import { useSosaBlockOverCap } from '../useSosaBlockOverCap';
 
 export const RequestedSalaryCard: React.FC = () => {
   const { t } = useTranslation();
@@ -26,6 +31,19 @@ export const RequestedSalaryCard: React.FC = () => {
     hcmSpouse,
   } = useSalaryCalculator();
   const { formatCurrency } = useFormatters();
+  const { overCapPerson } = useCaps();
+  const { isUserSosa, blockOnCap } = useSosaBlockOverCap();
+  const { markValid, markInvalid } = useAutosaveForm();
+
+  // Disable the Continue button while the saved gross exceeds the SOSA cap.
+  useEffect(() => {
+    if (blockOnCap) {
+      markInvalid('over-cap');
+    } else {
+      markValid('over-cap');
+    }
+    return () => markValid('over-cap');
+  }, [blockOnCap, markValid, markInvalid]);
 
   const minimumSalaryValue =
     salaryCalculation?.calculations.minimumRequestedSalary;
@@ -160,6 +178,8 @@ export const RequestedSalaryCard: React.FC = () => {
                   schema={schema}
                   label={t('Requested salary')}
                   required
+                  error={blockOnCap}
+                  saveOnChange={isUserSosa}
                 />
               </TableCell>
               {hcmSpouse && (
@@ -175,6 +195,22 @@ export const RequestedSalaryCard: React.FC = () => {
             </TableRow>
           </TableBody>
         </Table>
+
+        {blockOnCap && (
+          <Alert severity="error" sx={{ mt: 2 }}>
+            <Trans t={t}>
+              Your request requires additional approvals and cannot be submitted
+              online. SOSA staff can have requests exceeding the{' '}
+              {{ cap: overCapPerson?.effectiveCap }} cap approved for certain
+              geographic locations with the appropriate levels of approval.
+              <br />
+              <br />
+              Please contact{' '}
+              <Link href="mailto:payroll@cru.org">payroll@cru.org</Link> for
+              further assistance.
+            </Trans>
+          </Alert>
+        )}
       </CardContent>
     </StepCard>
   );

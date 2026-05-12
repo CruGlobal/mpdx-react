@@ -9,11 +9,13 @@ import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalcula
 import { StepCard } from '../../Shared/StepCard';
 import { StyledCardHeader } from '../StyledCardHeader';
 import { useCaps } from '../useCaps';
+import { useSosaBlockOverCap } from '../useSosaBlockOverCap';
 
 export const ApprovalProcessCard: React.FC = () => {
   const { t } = useTranslation();
   const { calculation, hcmSpouse } = useSalaryCalculator();
   const { overCapPerson } = useCaps();
+  const { blockOnCap } = useSosaBlockOverCap();
 
   const schema = useMemo(
     () =>
@@ -26,7 +28,7 @@ export const ApprovalProcessCard: React.FC = () => {
   const spouseName = hcmSpouse?.staffInfo.preferredName;
 
   const tier = calculation?.progressiveApprovalTier?.tier;
-  if (!tier) {
+  if (!tier || blockOnCap) {
     return null;
   }
 
