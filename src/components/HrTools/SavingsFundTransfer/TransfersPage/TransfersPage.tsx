@@ -24,7 +24,6 @@ import {
   MultiPageHeader,
 } from 'src/components/Shared/MultiPageLayout/MultiPageHeader';
 import { useStaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
-import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import theme from 'src/theme';
 import {
   StaffSavingFundContext,
@@ -85,7 +84,6 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
 
   const { data: staffAccountData, error: staffAccountError } =
     useStaffAccountQuery();
-  const { data: userData } = useGetUserQuery();
 
   const { data: reportData, loading: reportLoading } =
     useReportsSavingsFundTransferQuery();
@@ -344,7 +342,6 @@ export const TransfersPage: React.FC<TransfersPageProps> = ({ title }) => {
             handleClose={() => setModalData(null)}
             data={modalData}
             funds={funds}
-            lastName={userData?.user?.lastName ?? undefined}
           />
         )}
       </Box>

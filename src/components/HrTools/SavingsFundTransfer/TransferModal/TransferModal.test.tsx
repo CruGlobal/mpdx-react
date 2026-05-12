@@ -8,6 +8,12 @@ import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import {
+  GetUserDocument,
+  GetUserQuery,
+} from 'src/components/User/GetUser.generated';
+import { UserTypeEnum } from 'src/graphql/types.generated';
+import { createCache } from 'src/lib/apollo/cache';
 import theme from 'src/theme';
 import { StaffSavingFundProvider } from '../../StaffSavingFund/StaffSavingFundContext';
 import {
@@ -68,6 +74,27 @@ interface ComponentsProps {
   lastName?: string;
 }
 
+const buildCacheWithUser = (lastName: string) => {
+  const cache = createCache();
+  cache.writeQuery<GetUserQuery>({
+    query: GetUserDocument,
+    data: {
+      user: {
+        __typename: 'User',
+        id: 'test-user-id',
+        firstName: '',
+        lastName,
+        avatar: '',
+        staffAccountId: null,
+        primaryDesignation: null,
+        userType: UserTypeEnum.UsStaff,
+        preferences: null,
+      },
+    },
+  });
+  return cache;
+};
+
 const Components = ({
   transfer = transferDefaultData,
   type,
@@ -82,6 +109,7 @@ const Components = ({
             createTransfer: CreateTransferMutation;
             updateRecurringTransfer: UpdateRecurringTransferMutation;
           }>
+            cache={buildCacheWithUser(lastName)}
             onCall={mutationSpy}
           >
             <StaffSavingFundProvider>
@@ -92,7 +120,6 @@ const Components = ({
                 }}
                 funds={fundsMock}
                 handleClose={handleClose}
-                lastName={lastName}
               />
             </StaffSavingFundProvider>
           </GqlMockedProvider>

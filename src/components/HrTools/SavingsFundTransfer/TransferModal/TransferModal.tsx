@@ -30,6 +30,7 @@ import {
   SubmitButton,
 } from 'src/components/Shared/Modal/ActionButtons/ActionButtons';
 import Modal from 'src/components/Shared/Modal/Modal';
+import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import i18n from 'src/lib/i18n';
 import { currencyFormat, dateFormat } from 'src/lib/intlFormat';
@@ -137,11 +138,7 @@ const transferSchema = (locale: string) =>
       .min(0.01, i18n.t('Amount must be at least $0.01')),
     note: yup.string().when('schedule', {
       is: ScheduleEnum.OneTime,
-      then: (schema) =>
-        schema
-          .trim()
-          .min(1, i18n.t('Note is required'))
-          .required(i18n.t('Note is required')),
+      then: (schema) => schema.trim().required(i18n.t('Note is required')),
       otherwise: (schema) => schema.nullable(),
     }),
   });
@@ -149,14 +146,12 @@ interface TransferModalProps {
   data: TransferModalData;
   funds: FundFieldsFragment[];
   handleClose: () => void;
-  lastName?: string;
 }
 
 export const TransferModal: React.FC<TransferModalProps> = ({
   data,
   funds,
   handleClose,
-  lastName,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -179,7 +174,8 @@ export const TransferModal: React.FC<TransferModalProps> = ({
   const type = data.type || TransferTypeEnum.New;
   const isNew = type === TransferTypeEnum.New;
 
-  const trimmedLastName = lastName?.trim();
+  const { data: userData } = useGetUserQuery();
+  const trimmedLastName = userData?.user?.lastName?.trim();
   const defaultNote = trimmedLastName
     ? t('{{lastName}} Savings Fund Transfer in MPDX', {
         lastName: trimmedLastName,
