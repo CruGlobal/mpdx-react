@@ -9,10 +9,7 @@ import { usePdsGoalCalculator } from './PdsGoalCalculatorContext';
 import { useSteps } from './useSteps';
 import type { PdsGoalCalculatorStep, PdsGoalCalculatorSteps } from './useSteps';
 
-// SWC marks named ESM exports as non-configurable, so jest.spyOn cannot
-// redefine `useSteps`. Mock the module with a jest.fn that delegates to the
-// real implementation by default — reconcile tests scope their overrides via
-// mockReturnValue + an afterEach restore.
+// `jest.spyOn` can't redefine, so we mock the module with a `jest.fn` that delegates to the real implementation, giving reconcile tests a handle to override the return value.
 jest.mock('./useSteps', () => {
   const actual = jest.requireActual<typeof import('./useSteps')>('./useSteps');
   return {
@@ -179,12 +176,6 @@ describe('PdsGoalCalculatorContext', () => {
   describe('preserves the user step when the steps array changes', () => {
     const reconcileMessage =
       'Returned to Setup because the current step is no longer available.';
-
-    afterEach(() => {
-      mockedUseSteps.mockImplementation(
-        jest.requireActual<typeof import('./useSteps')>('./useSteps').useSteps,
-      );
-    });
 
     it.each([
       {

@@ -37,7 +37,7 @@ export const CircularProgressWithLabel: React.FC<
             value={progress}
             size={28}
             thickness={4}
-            aria-label={t('Section progress')}
+            aria-label={t('Form Progress')}
           />
           <Box
             sx={{

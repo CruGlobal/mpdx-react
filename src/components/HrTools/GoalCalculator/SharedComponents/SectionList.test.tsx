@@ -32,7 +32,7 @@ describe('SectionList', () => {
     ).toBeInTheDocument();
   });
 
-  it('announces Complete/Incomplete to assistive tech', () => {
+  it('renders the Complete/Incomplete title', () => {
     const { getByTitle } = render(
       <GoalCalculatorTestWrapper>
         <SectionList sections={mockSections} />

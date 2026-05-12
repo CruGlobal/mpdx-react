@@ -22,7 +22,7 @@ describe('CircularProgressWithLabel', () => {
   it('renders the determinate progressbar with a static accessible name and aria-valuenow', () => {
     const { getByRole } = render(<TestComponent progress={25} />);
 
-    const progressbar = getByRole('progressbar', { name: 'Section progress' });
+    const progressbar = getByRole('progressbar', { name: 'Form Progress' });
     expect(progressbar).toHaveAttribute('aria-valuenow', '25');
   });
 
@@ -30,7 +30,7 @@ describe('CircularProgressWithLabel', () => {
     const { getByRole } = render(<TestComponent progress={25} />);
 
     expect(
-      getByRole('progressbar', { name: 'Section progress' }),
+      getByRole('progressbar', { name: 'Form Progress' }),
     ).toBeInTheDocument();
   });
 

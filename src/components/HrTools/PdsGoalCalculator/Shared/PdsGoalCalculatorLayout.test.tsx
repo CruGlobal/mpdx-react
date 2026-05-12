@@ -30,7 +30,7 @@ describe('PdsGoalCalculatorLayout', () => {
     );
 
     const progressIndicator = await findByRole('progressbar', {
-      name: 'Section progress',
+      name: 'Form Progress',
     });
     expect(progressIndicator).toHaveAttribute('aria-valuenow', '25');
   });
