@@ -33,19 +33,20 @@ const MainContent: React.FC = () => {
     usePdsGoalCalculator();
   const { allValid } = useAutosaveForm();
 
+  const isFirstStep = stepIndex === 0;
   const isLastStep = stepIndex === steps.length - 1;
 
   return (
     <>
       <CurrentStep />
-      {!isLastStep && (
-        <DirectionButtons
-          formTitle={currentStep.title}
-          handleNextStep={handleContinue}
-          handlePreviousStep={handlePreviousStep}
-          disableNext={!allValid}
-        />
-      )}
+      <DirectionButtons
+        formTitle={currentStep.title}
+        handleNextStep={handleContinue}
+        handlePreviousStep={handlePreviousStep}
+        showBackButton={!isFirstStep}
+        hideNextButton={isLastStep}
+        disableNext={!allValid}
+      />
     </>
   );
 };

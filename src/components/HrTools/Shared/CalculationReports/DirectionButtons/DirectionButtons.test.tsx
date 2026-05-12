@@ -26,6 +26,7 @@ interface TestComponentProps {
   buttonTitle?: string;
   isEdit?: boolean;
   disableNext?: boolean;
+  noDiscard?: boolean;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
@@ -35,6 +36,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   buttonTitle,
   isEdit,
   disableNext,
+  noDiscard = false,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter
@@ -51,7 +53,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
                 isSubmission={isSubmission}
                 handleNextStep={handleNextStep}
                 handlePreviousStep={handlePreviousStep}
-                handleDiscard={handleDiscard}
+                handleDiscard={noDiscard ? undefined : handleDiscard}
                 overrideNext={overrideNext}
                 showBackButton={showBackButton}
                 buttonTitle={buttonTitle}
@@ -153,6 +155,53 @@ describe('DirectionButtons', () => {
         queryByText('Complete all required fields to continue'),
       ).not.toBeInTheDocument();
     });
+  });
+
+  it('renders Discard, Back, and Continue in left-to-right order', async () => {
+    const { findAllByRole } = render(<TestComponent showBackButton={true} />);
+
+    const buttons = await findAllByRole('button');
+    expect(buttons).toHaveLength(3);
+    expect(buttons[0]).toHaveTextContent(/discard/i);
+    expect(buttons[1]).toHaveTextContent(/back/i);
+    expect(buttons[2]).toHaveTextContent(/continue/i);
+  });
+
+  it('renders Discard, Back, and Submit in left-to-right order during submission', async () => {
+    const { findAllByRole } = render(
+      <TestComponent showBackButton={true} isSubmission={true} />,
+    );
+
+    const buttons = await findAllByRole('button');
+    expect(buttons).toHaveLength(3);
+    expect(buttons[0]).toHaveTextContent(/discard/i);
+    expect(buttons[1]).toHaveTextContent(/back/i);
+    expect(buttons[2]).toHaveTextContent(/submit/i);
+  });
+
+  it('renders Back to the left of Continue when there is no Discard handler', async () => {
+    const { findAllByRole } = render(
+      <TestComponent noDiscard={true} showBackButton={true} />,
+    );
+
+    const buttons = await findAllByRole('button');
+    expect(buttons).toHaveLength(2);
+    expect(buttons[0]).toHaveTextContent(/back/i);
+    expect(buttons[1]).toHaveTextContent(/continue/i);
+  });
+
+  it('renders only Continue (right-aligned) when there is no Discard, no Back, and not a submission', async () => {
+    const { findAllByRole } = render(<TestComponent noDiscard={true} />);
+
+    const buttons = await findAllByRole('button');
+    expect(buttons).toHaveLength(1);
+    expect(buttons[0]).toHaveTextContent(/continue/i);
+
+    // The Continue button's wrapper Box uses `ml: 'auto'` to push it to the
+    // right edge when no left-side controls are rendered. Walk up from the
+    // button to confirm that wrapper is the only child of the outer flex row.
+    const outerRow = buttons[0].closest('.MuiBox-root')?.parentElement;
+    expect(outerRow?.children).toHaveLength(1);
   });
 
   it('renders Discard Changes button', async () => {

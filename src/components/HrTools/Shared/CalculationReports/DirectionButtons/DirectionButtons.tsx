@@ -17,6 +17,7 @@ interface DirectionButtonsProps {
   actionRequired?: boolean;
   overrideNext?: () => void;
   showBackButton?: boolean;
+  hideNextButton?: boolean;
   isEdit?: boolean;
   additionalApproval?: boolean;
   splitAsr?: boolean;
@@ -43,6 +44,7 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
   isSubmission,
   overrideNext,
   showBackButton,
+  hideNextButton,
   submitForm,
   validateForm,
   submitCount,
@@ -90,73 +92,73 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
     setOpenDiscardModal(false);
   };
 
-  return (
-    <Box
+  const backButton = showBackButton && (
+    <Button
+      variant="contained"
+      startIcon={<ChevronLeft />}
       sx={{
-        mt: 5,
-        display: 'flex',
-        justifyContent:
-          !handleDiscard && !showBackButton && !isSubmission
-            ? 'flex-end'
-            : 'space-between',
+        bgcolor: 'grey.300',
+        color: 'text.primary',
+        '&:hover': {
+          bgcolor: 'grey.400',
+        },
+        fontWeight: 'bold',
       }}
+      onClick={handlePreviousStep}
     >
-      {handleDiscard && (
-        <Button
-          sx={{ color: 'error.light', px: 2, py: 1, fontWeight: 'bold' }}
-          onClick={() => setOpenDiscardModal(true)}
-        >
-          {isEdit ? t('Discard Changes') : t('Discard')}
-        </Button>
+      {t('Back')}
+    </Button>
+  );
+
+  return (
+    <Box sx={{ mt: 5, display: 'flex', justifyContent: 'space-between' }}>
+      {(handleDiscard || showBackButton) && (
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          {handleDiscard ? (
+            <Button
+              sx={{ color: 'error.light', px: 2, py: 1, fontWeight: 'bold' }}
+              onClick={() => setOpenDiscardModal(true)}
+            >
+              {isEdit ? t('Discard Changes') : t('Discard')}
+            </Button>
+          ) : (
+            backButton
+          )}
+        </Box>
       )}
 
-      <Box sx={{ display: 'flex', gap: 2 }}>
-        {showBackButton && (
-          <Button
-            variant="contained"
-            sx={{
-              bgcolor: 'grey.300',
-              color: 'text.primary',
-              '&:hover': {
-                bgcolor: 'grey.400',
-              },
-              fontWeight: 'bold',
-            }}
-            onClick={handlePreviousStep}
-          >
-            <ChevronLeft sx={{ mr: 1 }} />
-            {t('Back')}
-          </Button>
-        )}
-        {isSubmission ? (
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleSubmit}
-            disabled={submitCount ? !isValid : false}
-          >
-            {t('Submit')}
-            <ChevronRight sx={{ ml: 1 }} />
-          </Button>
-        ) : (
-          <Tooltip
-            title={
-              disableNext ? t('Complete all required fields to continue') : ''
-            }
-          >
-            <Box component="span">
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={overrideNext ?? handleNextStep}
-                disabled={disableNext}
-              >
-                {buttonTitle ?? t('Continue')}
-                <ChevronRight sx={{ ml: 1 }} />
-              </Button>
-            </Box>
-          </Tooltip>
-        )}
+      <Box sx={{ display: 'flex', gap: 2, ml: 'auto' }}>
+        {handleDiscard && backButton}
+        {!hideNextButton &&
+          (isSubmission ? (
+            <Button
+              variant="contained"
+              color="primary"
+              endIcon={<ChevronRight />}
+              onClick={handleSubmit}
+              disabled={submitCount ? !isValid : false}
+            >
+              {t('Submit')}
+            </Button>
+          ) : (
+            <Tooltip
+              title={
+                disableNext ? t('Complete all required fields to continue') : ''
+              }
+            >
+              <Box component="span">
+                <Button
+                  variant="contained"
+                  color="primary"
+                  endIcon={<ChevronRight />}
+                  onClick={overrideNext ?? handleNextStep}
+                  disabled={disableNext}
+                >
+                  {buttonTitle ?? t('Continue')}
+                </Button>
+              </Box>
+            </Tooltip>
+          ))}
       </Box>
       {openSubmitModal && (
         <SubmitModal
