@@ -1,7 +1,7 @@
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 import { useFormatters } from '../Shared/useFormatters';
 
-interface OverCapPerson {
+export interface OverCapPerson {
   /** The name of the person whose salary is over their effective cap */
   name: string | null;
 
@@ -12,6 +12,9 @@ interface OverCapPerson {
 interface UseCapsResult {
   /** The sum of the users' requested gross salaries */
   combinedGross: number;
+
+  /** Whether the user is over their effective cap */
+  overUserCap: boolean;
 
   /** The person whose salary is over their effective cap */
   overCapPerson: OverCapPerson | null;
@@ -44,6 +47,7 @@ export const useCaps = (): UseCapsResult => {
 
   return {
     combinedGross,
+    overUserCap,
     overCapPerson,
   };
 };
