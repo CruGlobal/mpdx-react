@@ -13,11 +13,21 @@ export interface AutosaveTextFieldProps
   > {
   fieldName: Exclude<keyof SalaryRequestUpdateInput, 'manuallySplitCap'>;
   schema: yup.Schema;
+  /** Additional error flag from the parent; OR'd with the field's own validation error */
+  error?: boolean;
+
+  /**
+   * Save on every keystroke instead of on blur. Defaults to true for select
+   * boxes; opt-in for text inputs where immediate feedback is required.
+   */
+  saveOnChange?: boolean;
 }
 
 export const AutosaveTextField: React.FC<AutosaveTextFieldProps> = ({
   fieldName,
   schema,
+  error: externalError,
+  saveOnChange,
   ...props
 }) => {
   const saveField = useSaveField();
@@ -28,10 +38,17 @@ export const AutosaveTextField: React.FC<AutosaveTextFieldProps> = ({
     saveValue: (value) => saveField({ [fieldName]: value }),
     fieldName,
     schema,
-    // Select boxes should save on change instead of on blur
-    saveOnChange: props.select,
+    saveOnChange: saveOnChange ?? !!props.select,
     disabled: !calculation,
   });
 
-  return <TextField size="small" fullWidth {...fieldProps} {...props} />;
+  return (
+    <TextField
+      size="small"
+      fullWidth
+      {...fieldProps}
+      {...props}
+      error={!!externalError || !!fieldProps.error}
+    />
+  );
 };
