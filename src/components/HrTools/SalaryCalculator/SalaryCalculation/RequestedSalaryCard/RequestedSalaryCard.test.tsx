@@ -1,6 +1,8 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { DeepPartial } from 'ts-essentials';
+import { UserPersonTypeEnum } from 'pages/api/graphql-rest.page.generated';
+import { AutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
 import { SalaryCalculationQuery } from '../../SalaryCalculatorContext/SalaryCalculation.generated';
 import {
   SalaryCalculatorTestWrapper,
@@ -33,7 +35,9 @@ const TestComponent: React.FC<SalaryCalculatorTestWrapperProps> = (props) => (
     }}
     {...props}
   >
-    <RequestedSalaryCard />
+    <AutosaveForm>
+      <RequestedSalaryCard />
+    </AutosaveForm>
   </SalaryCalculatorTestWrapper>
 );
 
@@ -162,6 +166,58 @@ As you set your salary level, the amount you receive should reflect the amount o
             .map((cell) => cell.textContent),
         ).toEqual(expectedCells),
       );
+    });
+  });
+
+  describe('SOSA over-cap Alert', () => {
+    const sosaUser = {
+      staffInfo: {
+        userPersonType: UserPersonTypeEnum.EmployeeStaffNonRmoSpouse,
+      },
+    };
+    const overCapMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> = {
+      calculations: {
+        minimumRequiredSalary: 10002,
+        minimumRequestedSalary: 10003,
+        effectiveCap: 10004,
+        requestedGross: 15000,
+      },
+    };
+
+    it('renders when the SOSA user is over their effective cap', async () => {
+      const { findByRole } = render(
+        <TestComponent
+          hasSpouse={false}
+          hcmUser={{ ...sosaUser, currentSalary: { grossSalaryAmount: 10001 } }}
+          salaryRequestMock={overCapMock}
+        />,
+      );
+
+      expect(await findByRole('alert')).toHaveTextContent(
+        'Your request requires additional approvals and cannot be submitted online. SOSA staff can have requests exceeding the $10,004.00 cap approved for certain geographic locations with the appropriate levels of approval.Please contact payroll@cru.org for further assistance.',
+      );
+      expect(
+        await findByRole('link', { name: 'payroll@cru.org' }),
+      ).toHaveAttribute('href', 'mailto:payroll@cru.org');
+    });
+
+    it('does not render when the user is SOSA but under their cap', async () => {
+      const { queryByRole } = render(
+        <TestComponent
+          hasSpouse={false}
+          hcmUser={{ ...sosaUser, currentSalary: { grossSalaryAmount: 10001 } }}
+        />,
+      );
+
+      await waitFor(() => expect(queryByRole('alert')).not.toBeInTheDocument());
+    });
+
+    it('does not render when the user is not SOSA, even if over cap', async () => {
+      const { queryByRole } = render(
+        <TestComponent hasSpouse={false} salaryRequestMock={overCapMock} />,
+      );
+
+      await waitFor(() => expect(queryByRole('alert')).not.toBeInTheDocument());
     });
   });
 });

@@ -1,4 +1,5 @@
 import { render, waitFor } from '@testing-library/react';
+import { UserPersonTypeEnum } from 'pages/api/graphql-rest.page.generated';
 import { ProgressiveApprovalTierEnum } from 'src/graphql/types.generated';
 import {
   SalaryCalculatorTestWrapper,
@@ -67,6 +68,40 @@ If this is correct, please provide reasoning for why Jane's Salary should exceed
       );
       expect(
         getByRole('textbox', { name: 'Additional info' }),
+      ).toBeInTheDocument();
+    });
+  });
+
+  describe('SOSA blockOnCap', () => {
+    const sosaUser = {
+      staffInfo: {
+        userPersonType: UserPersonTypeEnum.EmployeeStaffNonRmoSpouse,
+      },
+    };
+    const overCapMock = {
+      calculations: { requestedGross: 40000, effectiveCap: 30000 },
+      progressiveApprovalTier: {
+        tier: ProgressiveApprovalTierEnum.VicePresident,
+      },
+    };
+
+    it('renders nothing when the SOSA user is over their effective cap', async () => {
+      const { queryByRole } = render(
+        <TestComponent hcmUser={sosaUser} salaryRequestMock={overCapMock} />,
+      );
+
+      await waitFor(() =>
+        expect(queryByRole('textbox')).not.toBeInTheDocument(),
+      );
+    });
+
+    it('renders the card when the user is not SOSA, even if over cap', async () => {
+      const { findByRole } = render(
+        <TestComponent salaryRequestMock={overCapMock} />,
+      );
+
+      expect(
+        await findByRole('textbox', { name: 'Additional info' }),
       ).toBeInTheDocument();
     });
   });
