@@ -65,11 +65,13 @@ const transferDefaultData: TransferModalData['transfer'] = {
 interface ComponentsProps {
   transfer?: TransferModalData['transfer'];
   type?: TransferTypeEnum;
+  lastName?: string;
 }
 
 const Components = ({
   transfer = transferDefaultData,
   type,
+  lastName = 'Doe',
 }: ComponentsProps) => (
   <SnackbarProvider>
     <ThemeProvider theme={theme}>
@@ -90,6 +92,7 @@ const Components = ({
                 }}
                 funds={fundsMock}
                 handleClose={handleClose}
+                lastName={lastName}
               />
             </StaffSavingFundProvider>
           </GqlMockedProvider>
@@ -179,7 +182,10 @@ describe('TransferModal', () => {
       userEvent.clear(amountField);
       userEvent.type(amountField, '100');
 
-      // Note intentionally left blank.
+      // User clears the prefilled note before submitting.
+      const noteField = getByRole('textbox', { name: /note/i });
+      userEvent.clear(noteField);
+
       userEvent.click(getByRole('button', { name: /submit/i }));
 
       expect(await findByText('Note is required')).toBeInTheDocument();
@@ -286,6 +292,20 @@ describe('TransferModal', () => {
   });
 
   describe('Inputs', () => {
+    it('should default the note to "<lastName> Savings Fund Transfer in MPDX" on new one-time transfers', () => {
+      const { getByRole } = render(<Components lastName="Sleight" />);
+
+      const noteField = getByRole('textbox', { name: /note/i });
+      expect(noteField).toHaveValue('Sleight Savings Fund Transfer in MPDX');
+    });
+
+    it('should not default the note when lastName is missing', () => {
+      const { getByRole } = render(<Components lastName="" />);
+
+      const noteField = getByRole('textbox', { name: /note/i });
+      expect(noteField).toHaveValue('');
+    });
+
     it('should populate initial values from data prop', () => {
       const dataWithValues: TransferModalData['transfer'] = {
         transferFrom: '70056dcb-1a0f-4279-b710-928bcdff811a',
@@ -482,6 +502,7 @@ describe('TransferModal', () => {
       userEvent.clear(amountField);
       userEvent.type(amountField, '100');
 
+      userEvent.clear(noteField);
       userEvent.type(noteField, 'Test note');
 
       userEvent.click(getByRole('button', { name: /submit/i }));

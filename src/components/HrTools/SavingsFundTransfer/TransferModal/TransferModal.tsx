@@ -149,12 +149,14 @@ interface TransferModalProps {
   data: TransferModalData;
   funds: FundFieldsFragment[];
   handleClose: () => void;
+  lastName?: string;
 }
 
 export const TransferModal: React.FC<TransferModalProps> = ({
   data,
   funds,
   handleClose,
+  lastName,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -176,6 +178,10 @@ export const TransferModal: React.FC<TransferModalProps> = ({
 
   const type = data.type || TransferTypeEnum.New;
   const isNew = type === TransferTypeEnum.New;
+
+  const defaultNote = lastName
+    ? t('{{lastName}} Savings Fund Transfer in MPDX', { lastName })
+    : '';
 
   const title =
     type === TransferTypeEnum.New
@@ -264,7 +270,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
           status: data.transfer.status ?? '',
           transferDate: data.transfer.transferDate ?? getToday(),
           endDate: data.transfer.endDate ?? null,
-          note: data.transfer.note ?? '',
+          note: data.transfer.note || defaultNote,
           isEditing: Boolean(data.transfer.id),
           originalStart: data.transfer.transferDate ?? null,
         }}
