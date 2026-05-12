@@ -97,4 +97,18 @@ describe('GoalCard', () => {
 
     expect(mutationSpy).not.toHaveBeenCalled();
   });
+
+  it('renders the badge when provided', () => {
+    const { getByText } = renderCard({
+      badge: <span>Default</span>,
+    });
+
+    expect(getByText('Default')).toBeInTheDocument();
+  });
+
+  it('renders without a badge when none is provided', () => {
+    const { queryByText } = renderCard();
+
+    expect(queryByText('Default')).not.toBeInTheDocument();
+  });
 });

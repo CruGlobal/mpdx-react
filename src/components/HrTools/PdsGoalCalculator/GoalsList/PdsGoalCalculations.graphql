@@ -1,5 +1,6 @@
 fragment PdsGoalCalculationFields on DesignationSupportCalculation {
   id
+  formType
   name
   updatedAt
   averageHoursPerWeek

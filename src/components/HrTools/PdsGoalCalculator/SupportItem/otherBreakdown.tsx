@@ -3,8 +3,12 @@ import InfoIcon from '@mui/icons-material/Info';
 import { Box, Tooltip, styled } from '@mui/material';
 import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import { TFunction } from 'i18next';
-import { DesignationSupportStatus } from 'src/graphql/types.generated';
+import {
+  DesignationSupportFormType,
+  DesignationSupportStatus,
+} from 'src/graphql/types.generated';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
+import { isSimpleFormType } from '../Shared/formType';
 import {
   OtherExpensesConstants,
   OtherExpensesFields,
@@ -40,28 +44,36 @@ export const buildOtherBreakdownRows = (
     constants,
   );
 
+  const isSimple = isSimpleFormType(
+    calculation.formType ?? DesignationSupportFormType.Detailed,
+  );
+
   const rows: OtherBreakdownRow[] = [
-    {
-      id: 'reimbursable-expenses',
-      category: t('Reimbursable Expenses'),
-      formula: t(
-        'The greater of $300/month or the amount calculated in the Reimbursable Expenses step',
-      ),
-      amount: totals.reimbursableExpenses,
-      testId: 'other-reimbursable-expenses',
-      tooltip: t(
-        'To change this amount, update the Reimbursable Expenses step',
-      ),
-    },
-    {
-      id: '403b-contributions',
-      category: t('403b Contributions if Applicable'),
-      formula: t(
-        'Gross Monthly Pay from Salary section × 403b Contribution Percentage from Setup section',
-      ),
-      amount: totals.fourOThreeBContributions,
-      testId: 'other-403b-contributions',
-    },
+    ...(isSimple
+      ? []
+      : [
+          {
+            id: 'reimbursable-expenses',
+            category: t('Reimbursable Expenses'),
+            formula: t(
+              'The greater of $300/month or the amount calculated in the Reimbursable Expenses step',
+            ),
+            amount: totals.reimbursableExpenses,
+            testId: 'other-reimbursable-expenses',
+            tooltip: t(
+              'To change this amount, update the Reimbursable Expenses step',
+            ),
+          },
+          {
+            id: '403b-contributions',
+            category: t('403b Contributions if Applicable'),
+            formula: t(
+              'Gross Monthly Pay from Salary section × 403b Contribution Percentage from Setup section',
+            ),
+            amount: totals.fourOThreeBContributions,
+            testId: 'other-403b-contributions',
+          },
+        ]),
     ...(calculation.status === DesignationSupportStatus.PartTime
       ? [
           {
@@ -85,9 +97,11 @@ export const buildOtherBreakdownRows = (
     {
       id: 'subtotal',
       category: t('Subtotal'),
-      formula: t(
-        'Gross Monthly Pay Subtotal + Reimbursable Expenses + 403b Contributions + Work Comp + Benefits',
-      ),
+      formula: isSimple
+        ? t('Gross Monthly Pay Subtotal + Work Comp + Benefits')
+        : t(
+            'Gross Monthly Pay Subtotal + Reimbursable Expenses + 403b Contributions + Work Comp + Benefits',
+          ),
       amount: totals.subtotal,
       testId: 'other-subtotal',
       bold: true,

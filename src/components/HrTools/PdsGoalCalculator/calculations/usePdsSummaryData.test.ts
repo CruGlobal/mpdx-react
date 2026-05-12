@@ -1,6 +1,7 @@
 import { renderHook } from '@testing-library/react-hooks';
 import { gqlMock } from '__tests__/util/graphqlMocking';
 import {
+  DesignationSupportFormType,
   DesignationSupportSalaryType,
   DesignationSupportStatus,
   MpdGoalMiscConstantCategoryEnum,
@@ -16,6 +17,10 @@ import {
   PdsGoalCalculationFieldsFragmentDoc,
 } from '../GoalsList/PdsGoalCalculations.generated';
 import { HcmUserDocument, HcmUserQuery } from '../Shared/HCM.generated';
+import {
+  PdsGoalTotalConstants,
+  calculatePdsGoalTotal,
+} from './calculatePdsGoalTotal';
 import { usePdsSummaryData } from './usePdsSummaryData';
 
 jest.mock('src/hooks/useGoalCalculatorConstants');
@@ -97,6 +102,7 @@ const defaultCalculation = gqlMock<PdsGoalCalculationFieldsFragment>(
     mocks: {
       salaryOrHourly: DesignationSupportSalaryType.Salaried,
       status: DesignationSupportStatus.FullTime,
+      formType: DesignationSupportFormType.Detailed,
       payRate: 60000,
       benefits: 1500,
       ministryCellPhone: 100,
@@ -331,5 +337,105 @@ describe('usePdsSummaryData', () => {
       expect(data).toHaveProperty('overallTotal');
       expect(data).toHaveProperty('geographicMultiplier');
     });
+  });
+
+  describe('Simple form type', () => {
+    it('zeroes reimbursableTotal in otherConstants when formType is Simple', () => {
+      const calc = {
+        ...defaultCalculation,
+        formType: DesignationSupportFormType.Simple,
+      };
+      const { result } = renderHook(() =>
+        usePdsSummaryData(calc, defaultHcmUser),
+      );
+      expect(result.current?.otherConstants.reimbursableTotal).toBe(0);
+    });
+
+    it('zeroes fourOThreeBPercentage in otherConstants when formType is Simple', () => {
+      const calc = {
+        ...defaultCalculation,
+        formType: DesignationSupportFormType.Simple,
+      };
+      const { result } = renderHook(() =>
+        usePdsSummaryData(calc, defaultHcmUser),
+      );
+      expect(result.current?.otherConstants.fourOThreeBPercentage).toBe(0);
+    });
+
+    it('still computes reimbursableTotals (saved values are preserved)', () => {
+      const calc = {
+        ...defaultCalculation,
+        formType: DesignationSupportFormType.Simple,
+      };
+      const { result } = renderHook(() =>
+        usePdsSummaryData(calc, defaultHcmUser),
+      );
+      // The reimbursableTotals object is still computed (data isn't lost),
+      // but the otherConstants.reimbursableTotal that feeds the Other Expenses
+      // calculation is zeroed.
+      expect(result.current?.reimbursableTotals.total).toBeGreaterThan(0);
+    });
+
+    it('uses saved reimbursable + 403b values when formType is Detailed', () => {
+      const calc = {
+        ...defaultCalculation,
+        formType: DesignationSupportFormType.Detailed,
+      };
+      const { result } = renderHook(() =>
+        usePdsSummaryData(calc, defaultHcmUser),
+      );
+      expect(result.current?.otherConstants.reimbursableTotal).toBeGreaterThan(
+        0,
+      );
+      expect(result.current?.otherConstants.fourOThreeBPercentage).toBeCloseTo(
+        0.08,
+      );
+    });
+
+    it('uses saved values when formType is null/undefined (legacy goals default to Detailed behavior)', () => {
+      const calc = {
+        ...defaultCalculation,
+        formType: null,
+      };
+      const { result } = renderHook(() =>
+        usePdsSummaryData(calc, defaultHcmUser),
+      );
+      expect(result.current?.otherConstants.reimbursableTotal).toBeGreaterThan(
+        0,
+      );
+      expect(result.current?.otherConstants.fourOThreeBPercentage).toBeCloseTo(
+        0.08,
+      );
+    });
+  });
+
+  describe('consistency with calculatePdsGoalTotal', () => {
+    // Mirrors what buildPdsGoalConstants would derive from the mocked
+    // useGoalCalculatorConstants + defaultHcmUser, so we can call
+    // calculatePdsGoalTotal directly without the hook.
+    const directConstants: PdsGoalTotalConstants = {
+      employerFicaRate: EMPLOYER_FICA_RATE,
+      workCompPercentage: WORK_COMP_PERCENTAGE,
+      attritionRate: ATTRITION_RATE,
+      creditCardFeeRate: CREDIT_CARD_FEE_RATE,
+      adminRate: ADMIN_RATE,
+      fourOThreeBPercentage: 0.08,
+      geographicMultiplier: 0,
+    };
+
+    it.each([
+      DesignationSupportFormType.Detailed,
+      DesignationSupportFormType.Simple,
+    ])(
+      'calculatePdsGoalTotal matches usePdsSummaryData.otherTotals.assessment when formType is %s',
+      (formType) => {
+        const calc = { ...defaultCalculation, formType };
+        const { result } = renderHook(() =>
+          usePdsSummaryData(calc, defaultHcmUser),
+        );
+        const direct = calculatePdsGoalTotal(calc, directConstants);
+        expect(direct).toBeCloseTo(result.current!.otherTotals.assessment, 5);
+      },
+    );
   });
 });

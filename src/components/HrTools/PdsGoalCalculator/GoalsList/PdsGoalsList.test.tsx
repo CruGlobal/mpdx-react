@@ -9,6 +9,31 @@ import { PdsGoalCalculatorTestWrapper } from '../PdsGoalCalculatorTestWrapper';
 import { PdsGoalsList } from './PdsGoalsList';
 
 const mutationSpy = jest.fn();
+const mockEnqueue = jest.fn();
+
+jest.mock('notistack', () => ({
+  ...jest.requireActual('notistack'),
+  useSnackbar: () => ({ enqueueSnackbar: mockEnqueue }),
+}));
+
+type FindByRole = ReturnType<typeof render>['findByRole'];
+
+// The "Create a New Goal" button is disabled while the GoalCalculatorConstants
+// query is in flight (constantsLoading drives `disabled`), so we wait for it
+// to become enabled before clicking.
+const openCreateGoalDialog = async (findByRole: FindByRole) => {
+  const button = await findByRole('button', { name: 'Create a New Goal' });
+  await waitFor(() => expect(button).toBeEnabled());
+  userEvent.click(button);
+};
+
+const submitFormType = async (
+  findByRole: FindByRole,
+  formType: 'Default' | 'Simple',
+) => {
+  userEvent.click(await findByRole('radio', { name: new RegExp(formType) }));
+  userEvent.click(await findByRole('button', { name: 'Create' }));
+};
 
 describe('PdsGoalsList', () => {
   it('renders the create button', () => {
@@ -49,7 +74,19 @@ describe('PdsGoalsList', () => {
     expect(queryByTestId('goal-name')).not.toBeInTheDocument();
   });
 
-  it('seeds reimbursable defaults from MPD constants on create', async () => {
+  it('opens the create dialog when Create a New Goal is clicked', async () => {
+    const { findByRole } = render(
+      <PdsGoalCalculatorTestWrapper withProvider={false}>
+        <PdsGoalsList />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    await openCreateGoalDialog(findByRole);
+
+    expect(await findByRole('dialog')).toBeInTheDocument();
+  });
+
+  it('creates a Default goal with seeded reimbursable defaults via the dialog', async () => {
     const { findByRole } = render(
       <PdsGoalCalculatorTestWrapper
         withProvider={false}
@@ -75,17 +112,34 @@ describe('PdsGoalsList', () => {
       </PdsGoalCalculatorTestWrapper>,
     );
 
-    const button = await findByRole('button', { name: 'Create a New Goal' });
-    await waitFor(() => {
-      expect(button).toBeEnabled();
-    });
-    userEvent.click(button);
+    await openCreateGoalDialog(findByRole);
+    await submitFormType(findByRole, 'Default');
 
     await waitFor(() => {
       expect(mutationSpy).toHaveGraphqlOperation('CreatePdsGoalCalculation', {
         attributes: {
+          formType: 'DETAILED',
           ministryCellPhone: 75,
           ministryInternet: 50,
+        },
+      });
+    });
+  });
+
+  it('creates a Simple goal via the dialog', async () => {
+    const { findByRole } = render(
+      <PdsGoalCalculatorTestWrapper withProvider={false} onCall={mutationSpy}>
+        <PdsGoalsList />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    await openCreateGoalDialog(findByRole);
+    await submitFormType(findByRole, 'Simple');
+
+    await waitFor(() => {
+      expect(mutationSpy).toHaveGraphqlOperation('CreatePdsGoalCalculation', {
+        attributes: {
+          formType: 'SIMPLE',
         },
       });
     });
@@ -153,5 +207,31 @@ describe('PdsGoalsList', () => {
     await waitFor(() => {
       expect(mutationSpy).toHaveGraphqlOperation('DeletePdsGoalCalculation');
     });
+  });
+
+  it('shows an error and skips mutation when reimbursement constants are missing for a Default goal', async () => {
+    const { findByRole } = render(
+      <PdsGoalCalculatorTestWrapper
+        withProvider={false}
+        onCall={mutationSpy}
+        constantsMock={{ mpdGoalMiscConstants: [] }}
+      >
+        <PdsGoalsList />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    await openCreateGoalDialog(findByRole);
+    await submitFormType(findByRole, 'Default');
+
+    await waitFor(() =>
+      expect(mockEnqueue).toHaveBeenCalledWith(
+        'Could not load required defaults. Please try again or pick Simple.',
+        { variant: 'error' },
+      ),
+    );
+    expect(mutationSpy).not.toHaveGraphqlOperation('CreatePdsGoalCalculation');
+    await waitFor(() =>
+      expect(findByRole('button', { name: 'Create' })).resolves.toBeEnabled(),
+    );
   });
 });

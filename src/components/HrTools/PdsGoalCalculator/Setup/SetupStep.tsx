@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import {
+  DesignationSupportFormType,
   DesignationSupportSalaryType,
   DesignationSupportStatus,
 } from 'src/graphql/types.generated';
@@ -37,15 +38,14 @@ export const SetupStep: React.FC = () => {
   const theme = useTheme();
   const { calculation, hcmUser, setRightPanelContent } = usePdsGoalCalculator();
   const { data: userData } = useGetUserQuery();
-  const fourOThreeB = hcmUser?.fourOThreeB;
-  const totalFourOThreeBContributionPercentage = fourOThreeB
-    ? (fourOThreeB.currentTaxDeferredContributionPercentage ?? 0) +
-      (fourOThreeB.currentRothContributionPercentage ?? 0)
-    : null;
-
   const schema = useMemo(
     () =>
       yup.object({
+        formType: yup
+          .string()
+          .oneOf(Object.values(DesignationSupportFormType))
+          .nullable()
+          .optional(),
         name: yup.string().required(t('Goal Name is a required field')),
         status: yup
           .string()
@@ -87,6 +87,8 @@ export const SetupStep: React.FC = () => {
   const isSalaried =
     calculation?.salaryOrHourly === DesignationSupportSalaryType.Salaried;
   const isPartTime = calculation?.status === DesignationSupportStatus.PartTime;
+  const isSimpleForm =
+    calculation?.formType === DesignationSupportFormType.Simple;
 
   const payRateHelperText = isSalaried
     ? t('Enter yearly salary')
@@ -138,6 +140,25 @@ export const SetupStep: React.FC = () => {
           </Typography>
         </Box>
         <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <AutosaveTextField
+              fieldName="formType"
+              schema={schema}
+              select
+              label={t('Form Type')}
+              helperText={t(
+                'Default includes reimbursable expenses and 403b contributions in the goal total. Simple excludes them; existing entries are preserved and will count again if you switch back.',
+              )}
+            >
+              <MenuItem value={DesignationSupportFormType.Detailed}>
+                {t('Default')}
+              </MenuItem>
+              <MenuItem value={DesignationSupportFormType.Simple}>
+                {t('Simple')}
+              </MenuItem>
+            </AutosaveTextField>
+          </Grid>
+
           <Grid item xs={12}>
             <AutosaveTextField
               fieldName="status"
@@ -224,22 +245,31 @@ export const SetupStep: React.FC = () => {
             </Grid>
           )}
 
-          <Grid item xs={12}>
-            <TextField
-              fullWidth
-              size="small"
-              variant="outlined"
-              label={t('403b Contribution Percentage')}
-              disabled
-              value={totalFourOThreeBContributionPercentage ?? ''}
-              helperText={t(
-                'Retrieved from Principal. A combined percentage of your current tax deferred and Roth contributions.',
-              )}
-              InputProps={{
-                endAdornment: <PercentageAdornment />,
-              }}
-            />
-          </Grid>
+          {!isSimpleForm && (
+            <Grid item xs={12}>
+              <TextField
+                fullWidth
+                size="small"
+                variant="outlined"
+                label={t('403b Contribution Percentage')}
+                disabled
+                value={
+                  hcmUser?.fourOThreeB
+                    ? (hcmUser.fourOThreeB
+                        .currentTaxDeferredContributionPercentage ?? 0) +
+                      (hcmUser.fourOThreeB.currentRothContributionPercentage ??
+                        0)
+                    : ''
+                }
+                helperText={t(
+                  'Retrieved from Principal. A combined percentage of your current tax deferred and Roth contributions.',
+                )}
+                InputProps={{
+                  endAdornment: <PercentageAdornment />,
+                }}
+              />
+            </Grid>
+          )}
 
           <Grid item xs={12}>
             <Autocomplete

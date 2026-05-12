@@ -1,6 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import {
+  DesignationSupportFormType,
   DesignationSupportSalaryType,
   DesignationSupportStatus,
 } from 'src/graphql/types.generated';
@@ -167,5 +168,96 @@ describe('PdsSummaryTable', () => {
       name: 'Solid Monthly Support Developed',
     }).parentElement;
     expect(supportRaisedRow).toHaveClass('progress-start');
+  });
+
+  it('omits Reimbursable Expenses and 403b Contributions rows when formType is Simple', async () => {
+    const { findByRole, queryByRole } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={{
+          ...salariedFullTimeMock,
+          formType: DesignationSupportFormType.Simple,
+        }}
+      >
+        <PdsSummaryTable supportRaised={1000} />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    // Wait for the grid to render
+    await findByRole('gridcell', { name: 'Salary Subtotal' });
+
+    expect(
+      queryByRole('gridcell', { name: 'Reimbursable Expenses' }),
+    ).not.toBeInTheDocument();
+    expect(
+      queryByRole('gridcell', { name: '403b Contributions' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('renders Benefits / Work Comp + totals rows when formType is Simple', async () => {
+    const { findByRole, getByRole } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={{
+          ...salariedFullTimeMock,
+          formType: DesignationSupportFormType.Simple,
+        }}
+      >
+        <PdsSummaryTable supportRaised={0} />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    await findByRole('gridcell', { name: 'Benefits' });
+
+    expect(
+      getByRole('gridcell', { name: 'Other Subtotal' }),
+    ).toBeInTheDocument();
+    expect(getByRole('gridcell', { name: 'Total Goal' })).toBeInTheDocument();
+  });
+
+  it('renders Work Comp without Benefits or detailed rows when formType is Simple and status is PartTime', async () => {
+    const { findByRole, getByRole, queryByRole } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={{
+          ...hourlyPartTimeMock,
+          formType: DesignationSupportFormType.Simple,
+        }}
+      >
+        <PdsSummaryTable supportRaised={0} />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    await findByRole('gridcell', { name: 'Work Comp' });
+
+    expect(getByRole('gridcell', { name: 'Work Comp' })).toBeInTheDocument();
+    expect(
+      queryByRole('gridcell', { name: 'Benefits' }),
+    ).not.toBeInTheDocument();
+    expect(
+      queryByRole('gridcell', { name: 'Reimbursable Expenses' }),
+    ).not.toBeInTheDocument();
+    expect(
+      queryByRole('gridcell', { name: '403b Contributions' }),
+    ).not.toBeInTheDocument();
+  });
+
+  it('renders Reimbursable Expenses and 403b Contributions rows when formType is Detailed', async () => {
+    const { findByRole, getByRole } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={{
+          ...salariedFullTimeMock,
+          formType: DesignationSupportFormType.Detailed,
+        }}
+      >
+        <PdsSummaryTable supportRaised={1000} />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    await findByRole('gridcell', { name: 'Reimbursable Expenses' });
+
+    expect(
+      getByRole('gridcell', { name: 'Reimbursable Expenses' }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('gridcell', { name: '403b Contributions' }),
+    ).toBeInTheDocument();
   });
 });

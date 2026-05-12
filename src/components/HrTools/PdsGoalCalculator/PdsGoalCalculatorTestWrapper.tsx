@@ -8,6 +8,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
+  DesignationSupportFormType,
   DesignationSupportSalaryType,
   DesignationSupportStatus,
   MpdGoalMiscConstantCategoryEnum,
@@ -41,6 +42,7 @@ const calculationsDefault = gqlMock<
         {
           id: 'goal-1',
           name: 'Test Goal',
+          formType: DesignationSupportFormType.Detailed,
           status: DesignationSupportStatus.FullTime,
           salaryOrHourly: DesignationSupportSalaryType.Salaried,
           payRate: 50000,
@@ -73,6 +75,7 @@ const calculationDefault = gqlMock<
     designationSupportCalculation: {
       id: 'goal-1',
       name: 'Test Goal',
+      formType: DesignationSupportFormType.Detailed,
       status: DesignationSupportStatus.FullTime,
       salaryOrHourly: DesignationSupportSalaryType.Salaried,
       payRate: 50000,

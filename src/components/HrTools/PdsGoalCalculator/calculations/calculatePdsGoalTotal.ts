@@ -1,15 +1,22 @@
+import { DesignationSupportFormType } from 'src/graphql/types.generated';
 import {
   GoalGeographicConstantMap,
   GoalMiscConstants,
 } from 'src/hooks/useGoalCalculatorConstants';
 import { HcmUserQuery } from '../Shared/HCM.generated';
-import { OtherExpensesFields, calculateOtherExpenses } from './OtherExpenses';
+import { isSimpleFormType } from '../Shared/formType';
+import {
+  OtherExpensesConstants,
+  OtherExpensesFields,
+  calculateOtherExpenses,
+} from './OtherExpenses';
 import {
   ReimbursableCalculationFields,
   calculateReimbursableTotals,
 } from './reimbursableExpenses';
 import {
   SalaryCalculationFields,
+  SalaryTotals,
   calculateSalaryTotals,
 } from './salaryCalculation';
 
@@ -72,6 +79,25 @@ export const buildPdsGoalConstants = (
   };
 };
 
+export const buildOtherExpensesConstants = (
+  formType: DesignationSupportFormType,
+  constants: PdsGoalTotalConstants,
+  salaryTotals: SalaryTotals,
+  reimbursableTotal: number,
+): OtherExpensesConstants => {
+  const isSimple = isSimpleFormType(formType);
+  return {
+    reimbursableTotal: isSimple ? 0 : reimbursableTotal,
+    salarySubtotal: salaryTotals.subtotal,
+    fourOThreeBPercentage: isSimple ? 0 : constants.fourOThreeBPercentage,
+    grossMonthlyPay: salaryTotals.grossMonthlyPay,
+    workCompPercentage: constants.workCompPercentage,
+    attritionRate: constants.attritionRate,
+    creditCardFeeRate: constants.creditCardFeeRate,
+    adminRate: constants.adminRate,
+  };
+};
+
 export const calculatePdsGoalTotal = (
   calculation: PdsGoalTotalFields,
   constants: PdsGoalTotalConstants,
@@ -81,18 +107,17 @@ export const calculatePdsGoalTotal = (
     employerFicaRate: constants.employerFicaRate,
   });
 
-  const reimbursableTotals = calculateReimbursableTotals(calculation);
+  const reimbursableTotal = calculateReimbursableTotals(calculation).total;
 
-  const otherExpenses = calculateOtherExpenses(calculation, {
-    reimbursableTotal: reimbursableTotals.total,
-    salarySubtotal: salaryTotals.subtotal,
-    fourOThreeBPercentage: constants.fourOThreeBPercentage,
-    grossMonthlyPay: salaryTotals.grossMonthlyPay,
-    workCompPercentage: constants.workCompPercentage,
-    attritionRate: constants.attritionRate,
-    creditCardFeeRate: constants.creditCardFeeRate,
-    adminRate: constants.adminRate,
-  });
+  const otherExpenses = calculateOtherExpenses(
+    calculation,
+    buildOtherExpensesConstants(
+      calculation.formType ?? DesignationSupportFormType.Detailed,
+      constants,
+      salaryTotals,
+      reimbursableTotal,
+    ),
+  );
 
   return otherExpenses.assessment;
 };

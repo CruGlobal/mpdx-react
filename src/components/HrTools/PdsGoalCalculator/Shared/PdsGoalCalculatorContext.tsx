@@ -1,7 +1,14 @@
 import { useRouter } from 'next/router';
-import React, { createContext, useCallback, useMemo, useState } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
+import { DesignationSupportFormType } from 'src/graphql/types.generated';
 import { useTrackMutation } from 'src/hooks/useTrackMutation';
 import {
   PdsGoalCalculationFieldsFragment,
@@ -13,10 +20,14 @@ import {
   usePdsSummaryData,
 } from '../calculations/usePdsSummaryData';
 import { HcmUserQuery, useHcmUserQuery } from './HCM.generated';
-import { PdsGoalCalculatorStep, useSteps } from './useSteps';
+import {
+  PdsGoalCalculatorStep,
+  PdsGoalCalculatorSteps,
+  useSteps,
+} from './useSteps';
 
 export type PdsGoalCalculatorType = {
-  steps: PdsGoalCalculatorStep[];
+  steps: PdsGoalCalculatorSteps;
   currentStep: PdsGoalCalculatorStep;
 
   calculation?: PdsGoalCalculationFieldsFragment;
@@ -78,20 +89,46 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
 
   const summaryData = usePdsSummaryData(calculation, hcmUser);
 
-  const steps = useSteps();
-  const [stepIndex, setStepIndex] = useState(0);
+  const steps = useSteps(
+    calculation?.formType ?? DesignationSupportFormType.Detailed,
+  );
+  // Track the user's place by step enum, not numeric index, so that a change
+  // to the steps array (e.g. formType switch Detailed → Simple, dropping the
+  // ReimbursableExpenses step) preserves their step when it still exists.
+  // When it doesn't exist, the effect below reconciles activeStep to the first
+  // step and notifies the user.
+  const [activeStep, setActiveStep] = useState<PdsGoalCalculatorStepEnum>(
+    PdsGoalCalculatorStepEnum.Setup,
+  );
   const [rightPanelContent, setRightPanelContent] =
     useState<React.ReactNode>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(true);
   const { trackMutation, isMutating } = useTrackMutation();
 
-  const currentStep = steps[stepIndex];
+  useEffect(() => {
+    if (steps.some((s) => s.step === activeStep)) {
+      return;
+    }
+    setActiveStep(steps[0]?.step ?? PdsGoalCalculatorStepEnum.Setup);
+    enqueueSnackbar(
+      t('Returned to Setup because the current step is no longer available.'),
+      { variant: 'info' },
+    );
+  }, [steps, activeStep, enqueueSnackbar, t]);
+
+  const stepIndex = useMemo(() => {
+    const idx = steps.findIndex((s) => s.step === activeStep);
+    return idx === -1 ? 0 : idx;
+  }, [steps, activeStep]);
+
+  // steps is a non-empty tuple, so steps[0] is guaranteed defined; the fallback
+  // protects against an out-of-range stepIndex.
+  const currentStep = steps[stepIndex] ?? steps[0];
 
   const handleStepChange = useCallback(
     (newStep: PdsGoalCalculatorStepEnum) => {
-      const newIndex = steps.findIndex((step) => step.step === newStep);
-      if (newIndex !== -1) {
-        setStepIndex(newIndex);
+      if (steps.some((step) => step.step === newStep)) {
+        setActiveStep(newStep);
       } else {
         enqueueSnackbar(t('The selected step does not exist.'), {
           variant: 'error',
@@ -103,15 +140,15 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
 
   const handleContinue = useCallback(() => {
     if (stepIndex < steps.length - 1) {
-      setStepIndex(stepIndex + 1);
+      setActiveStep(steps[stepIndex + 1].step);
     }
   }, [stepIndex, steps]);
 
   const handlePreviousStep = useCallback(() => {
     if (stepIndex > 0) {
-      setStepIndex(stepIndex - 1);
+      setActiveStep(steps[stepIndex - 1].step);
     }
-  }, [stepIndex]);
+  }, [stepIndex, steps]);
 
   const closeRightPanel = useCallback(() => {
     setRightPanelContent(null);

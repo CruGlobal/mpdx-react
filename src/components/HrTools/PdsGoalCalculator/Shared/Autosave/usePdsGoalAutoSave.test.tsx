@@ -11,6 +11,7 @@ import { usePdsGoalAutoSave } from './usePdsGoalAutoSave';
 const schema = yup.object({
   name: yup.string().required('Goal Name is required'),
   payRate: yup.number().nullable().min(0),
+  formType: yup.string().nullable(),
 });
 
 const mutationSpy = jest.fn();
@@ -118,5 +119,52 @@ describe('usePdsGoalAutoSave', () => {
     );
 
     await waitFor(() => expect(result.current.value).toBe('50000'));
+  });
+
+  it('disables saveOnChange fields while a save is in flight', async () => {
+    const { result } = renderHook(
+      () =>
+        usePdsGoalAutoSave({
+          fieldName: 'formType',
+          schema,
+          saveOnChange: true,
+        }),
+      { wrapper: Wrapper },
+    );
+
+    await waitFor(() => expect(result.current.disabled).toBe(false));
+
+    act(() => {
+      result.current.onChange({
+        target: { value: 'simple' },
+      } as React.ChangeEvent<HTMLInputElement>);
+    });
+
+    await waitFor(() => expect(result.current.disabled).toBe(true));
+    await waitFor(() => expect(result.current.disabled).toBe(false));
+  });
+
+  it('does not disable blur-driven fields while a save is in flight', async () => {
+    const { result } = renderHook(
+      () => usePdsGoalAutoSave({ fieldName: 'name', schema }),
+      { wrapper: Wrapper },
+    );
+
+    await waitFor(() => expect(result.current.value).toBe('Test Goal'));
+
+    act(() => {
+      result.current.onChange({
+        target: { value: 'Updated Goal' },
+      } as React.ChangeEvent<HTMLInputElement>);
+    });
+    act(() => {
+      result.current.onBlur();
+    });
+
+    expect(result.current.disabled).toBe(false);
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UpdatePdsGoalCalculation'),
+    );
   });
 });

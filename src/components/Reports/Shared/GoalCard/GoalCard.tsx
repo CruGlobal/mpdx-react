@@ -62,6 +62,7 @@ export interface GoalCardProps {
   updatedAt: string;
   viewHref: string;
   onDelete: () => Promise<void>;
+  badge?: React.ReactNode;
 }
 
 export const GoalCard: React.FC<GoalCardProps> = ({
@@ -72,6 +73,7 @@ export const GoalCard: React.FC<GoalCardProps> = ({
   updatedAt,
   viewHref,
   onDelete,
+  badge,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -105,17 +107,21 @@ export const GoalCard: React.FC<GoalCardProps> = ({
       />
 
       <StyledCard>
-        <StyledHeaderBox>
+        <StyledHeaderBox sx={badge ? { gap: 1 } : undefined}>
           <Tooltip title={displayName}>
             <Typography
               data-testid="goal-name"
               variant="h6"
               noWrap
-              sx={{ width: '100%', textAlign: 'center' }}
+              sx={{
+                textAlign: 'center',
+                ...(badge ? { minWidth: 0 } : { width: '100%' }),
+              }}
             >
               {displayName}
             </Typography>
           </Tooltip>
+          {badge}
         </StyledHeaderBox>
 
         <Divider />

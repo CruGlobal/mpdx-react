@@ -1,8 +1,12 @@
-import { DesignationSupportStatus } from 'src/graphql/types.generated';
+import {
+  DesignationSupportFormType,
+  DesignationSupportStatus,
+} from 'src/graphql/types.generated';
 
 export interface OtherExpensesFields {
   status?: DesignationSupportStatus | null;
   benefits?: number | null;
+  formType?: DesignationSupportFormType | null;
 }
 
 export interface OtherExpensesConstants {
