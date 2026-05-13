@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Chip } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { GoalCard } from 'src/components/Reports/Shared/GoalCard/GoalCard';
@@ -10,10 +10,7 @@ import {
   useDeletePdsGoalCalculationMutation,
 } from '../GoalsList/PdsGoalCalculations.generated';
 import { useHcmUserQuery } from '../Shared/HCM.generated';
-import {
-  buildPdsGoalConstants,
-  calculatePdsGoalTotal,
-} from '../calculations/calculatePdsGoalTotal';
+import { usePdsSummaryData } from '../calculations/usePdsSummaryData';
 
 export interface PdsGoalCardProps {
   goal: PdsGoalCalculationFieldsFragment;
@@ -24,23 +21,12 @@ export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({ goal }) => {
   const accountListId = useAccountListId() ?? '';
   const [deletePdsGoalCalculation] = useDeletePdsGoalCalculationMutation();
 
-  const {
-    goalMiscConstants,
-    goalGeographicConstantMap,
-    loading: constantsLoading,
-  } = useGoalCalculatorConstants();
+  const { loading: constantsLoading } = useGoalCalculatorConstants();
   const { data: hcmData, loading: hcmLoading } = useHcmUserQuery();
   const hcmUser = hcmData?.hcm[0];
 
-  const goalTotal = useMemo(() => {
-    const constants = buildPdsGoalConstants(
-      goalMiscConstants,
-      goalGeographicConstantMap,
-      goal.geographicLocation,
-      hcmUser?.fourOThreeB,
-    );
-    return constants ? calculatePdsGoalTotal(goal, constants) : 0;
-  }, [goal, goalMiscConstants, goalGeographicConstantMap, hcmUser]);
+  const summaryData = usePdsSummaryData(goal, hcmUser);
+  const goalTotal = summaryData?.overallTotal ?? 0;
 
   const formType = goal.formType ?? DesignationSupportFormType.Detailed;
   const formTypeBadge =

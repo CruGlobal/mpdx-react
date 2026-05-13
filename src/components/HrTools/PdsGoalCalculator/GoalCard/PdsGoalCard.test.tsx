@@ -17,7 +17,7 @@ describe('PdsGoalCard', () => {
       </PdsGoalCalculatorTestWrapper>,
     );
 
-    expect(await findByText('$849.44')).toBeInTheDocument();
+    expect(await findByText('$2,265.18')).toBeInTheDocument();
   });
 
   it('builds the View link with the PDS goal calculator path', async () => {

@@ -2,7 +2,7 @@ import {
   GoalGeographicConstantMap,
   GoalMiscConstants,
 } from 'src/hooks/useGoalCalculatorConstants';
-import { buildPdsGoalConstants } from './calculatePdsGoalTotal';
+import { buildPdsGoalConstants } from './pdsGoalConstants';
 
 const makeConstant = (fee: number) => ({
   fee,

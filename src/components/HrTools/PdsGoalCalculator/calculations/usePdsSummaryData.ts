@@ -11,7 +11,7 @@ import {
 import {
   buildOtherExpensesConstants,
   buildPdsGoalConstants,
-} from './calculatePdsGoalTotal';
+} from './pdsGoalConstants';
 import {
   ReimbursableTotals,
   calculateReimbursableTotals,
