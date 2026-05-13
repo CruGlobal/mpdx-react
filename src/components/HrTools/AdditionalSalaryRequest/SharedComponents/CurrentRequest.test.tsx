@@ -30,7 +30,6 @@ const mockHandleDeleteRequest = jest.fn();
 
 const mockRequest: RequestType = {
   id: 'request-123',
-  createdAt: '2025-06-01T00:00:00.000Z',
   totalAdditionalSalaryRequested: 5000,
   usingSpouseSalary: false,
   approvedAt: null,

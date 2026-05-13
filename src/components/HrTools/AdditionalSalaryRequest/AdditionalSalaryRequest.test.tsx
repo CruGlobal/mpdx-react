@@ -14,7 +14,6 @@ const accountListId = 'account-list-1';
 
 const mockRequest = {
   id: 'request-1',
-  createdAt: '2024-01-01T00:00:00Z',
   status: AsrStatusEnum.InProgress,
   totalAdditionalSalaryRequested: 5000,
   currentYearSalaryNotReceived: 1000,
