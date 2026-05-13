@@ -33,12 +33,18 @@ export const useSubmitDialogContent = (): DialogContent => {
     };
   }
 
+  let title = t(
+    'Your request requires additional approval because your Gross Salary exceeds your Maximum Allowable Salary. Do you want to continue?',
+  );
   let subContent: string;
   if (reason === ProgressiveApprovalTierReasonEnum.BoardCapException) {
     subContent = t(
       "You have a Board approved Maximum Allowable Salary (CAP) and your salary request exceeds that amount. As a result we need to get their approval for this request. We'll forward your request to them and get back to you with their decision.",
     );
   } else if (reason === ProgressiveApprovalTierReasonEnum.OverlappingRequests) {
+    title = t(
+      'Your request requires additional approval. Do you want to continue?',
+    );
     subContent = t(
       'You or your spouse has a pending Additional Salary Request, so this request needs additional approval. This will take {{timeframe}} as it needs to be signed off by {{approvers}}. This may affect your selected effective date.',
       {
@@ -58,9 +64,7 @@ export const useSubmitDialogContent = (): DialogContent => {
   }
 
   return {
-    title: t(
-      'Your request requires additional approval because your Gross Salary exceeds your Maximum Allowable Salary. Do you want to continue?',
-    ),
+    title,
     content: t(
       'Requests exceeding your Maximum Allowable Salary require additional review.',
     ),
