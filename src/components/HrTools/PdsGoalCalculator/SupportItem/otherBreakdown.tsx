@@ -126,9 +126,15 @@ export const buildOtherBreakdownRows = (
     {
       id: 'assessment',
       category: t('Assessment'),
-      formula: t('(Subtotal + Credit Card Fees + Attrition) × {{rate}}', {
-        rate: percentageFormat(constants.adminRate, locale),
-      }),
+      formula: t(
+        '(Subtotal + Attrition + Credit Card Fees) ÷ {{divisor}} − (Subtotal + Attrition + Credit Card Fees)',
+        {
+          divisor: new Intl.NumberFormat(locale, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 4,
+          }).format(1 - constants.adminRate),
+        },
+      ),
       amount: totals.assessment,
       testId: 'other-assessment',
       bold: true,

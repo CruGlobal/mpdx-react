@@ -80,4 +80,3 @@ export const buildOtherExpensesConstants = (
     adminRate: constants.adminRate,
   };
 };
-
