@@ -31,7 +31,7 @@ export const calculateSalaryTotals = (
     calculation.salaryOrHourly === DesignationSupportSalaryType.Salaried;
 
   const monthlyBase = isSalaried ? payRate / 12 : (payRate * hours * 52) / 12;
-  const grossMonthlyPay = monthlyBase * (1 + geographicMultiplier);
+  const grossMonthlyPay = monthlyBase * geographicMultiplier;
   const employerFica = grossMonthlyPay * employerFicaRate;
   const subtotal = grossMonthlyPay + employerFica;
 
