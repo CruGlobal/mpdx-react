@@ -1,8 +1,10 @@
 import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
 import { DeepPartial } from 'ts-essentials';
-import { UserPersonTypeEnum } from 'pages/api/graphql-rest.page.generated';
-import { ProgressiveApprovalTierReasonEnum } from 'src/graphql/types.generated';
+import {
+  ProgressiveApprovalTierReasonEnum,
+  UserPersonTypeEnum,
+} from 'src/graphql/types.generated';
 import { SalaryCalculationQuery } from '../SalaryCalculatorContext/SalaryCalculation.generated';
 import { SalaryCalculatorTestWrapper } from '../SalaryCalculatorTestWrapper';
 import { useSosaBlockOverCap } from './useSosaBlockOverCap';

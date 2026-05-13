@@ -1,8 +1,8 @@
 import { render, waitFor } from '@testing-library/react';
-import { UserPersonTypeEnum } from 'pages/api/graphql-rest.page.generated';
 import {
   ProgressiveApprovalTierEnum,
   ProgressiveApprovalTierReasonEnum,
+  UserPersonTypeEnum,
 } from 'src/graphql/types.generated';
 import {
   SalaryCalculatorTestWrapper,

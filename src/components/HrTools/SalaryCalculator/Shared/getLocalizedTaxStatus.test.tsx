@@ -1,4 +1,4 @@
-import { SecaStatusEnum } from 'pages/api/graphql-rest.page.generated';
+import { SecaStatusEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import { getLocalizedTaxStatus } from './getLocalizedTaxStatus';
 

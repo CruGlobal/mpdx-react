@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import { MinistryHousingAllowanceRequestAttributesInput } from 'pages/api/graphql-rest.page.generated';
+import { MinistryHousingAllowanceRequestAttributesInput } from 'src/graphql/types.generated';
 import { calculateAnnualTotals } from 'src/hooks/useAnnualTotal';
 import { useUpdateMinistryHousingAllowanceRequestMutation } from '../../MinisterHousingAllowance.generated';
 import { CalculationFormValues } from '../../Steps/StepThree/Calculation';

@@ -1,5 +1,7 @@
-import { UserPersonTypeEnum } from 'pages/api/graphql-rest.page.generated';
-import { ProgressiveApprovalTierReasonEnum } from 'src/graphql/types.generated';
+import {
+  ProgressiveApprovalTierReasonEnum,
+  UserPersonTypeEnum,
+} from 'src/graphql/types.generated';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 
 interface UseSosaBlockOverCapResult {

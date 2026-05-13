@@ -11,8 +11,8 @@ import {
 import { styled } from '@mui/material/styles';
 import { FormikErrors, getIn } from 'formik';
 import { useTranslation } from 'react-i18next';
-import { InputMaybe } from 'pages/api/graphql-rest.page.generated';
 import {
+  InputMaybe,
   PersonCreateInput,
   PersonEmailAddressInput,
   PersonUpdateInput,

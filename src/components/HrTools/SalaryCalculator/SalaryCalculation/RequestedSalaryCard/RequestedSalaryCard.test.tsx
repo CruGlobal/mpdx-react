@@ -1,9 +1,11 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
 import { DeepPartial } from 'ts-essentials';
-import { UserPersonTypeEnum } from 'pages/api/graphql-rest.page.generated';
 import { AutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
-import { ProgressiveApprovalTierReasonEnum } from 'src/graphql/types.generated';
+import {
+  ProgressiveApprovalTierReasonEnum,
+  UserPersonTypeEnum,
+} from 'src/graphql/types.generated';
 import { SalaryCalculationQuery } from '../../SalaryCalculatorContext/SalaryCalculation.generated';
 import {
   SalaryCalculatorTestWrapper,

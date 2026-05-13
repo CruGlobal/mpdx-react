@@ -2,7 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { FormikProvider, useFormik } from 'formik';
-import { ProgressiveApprovalTierReasonEnum } from 'pages/api/graphql-rest.page.generated';
+import { ProgressiveApprovalTierReasonEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
