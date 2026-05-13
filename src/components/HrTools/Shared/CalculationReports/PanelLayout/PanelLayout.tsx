@@ -27,6 +27,7 @@ export interface PanelLayoutProps {
   panelType: PanelTypeEnum;
   percentComplete: number;
   showPercentage?: boolean;
+  progressLoading?: boolean;
   icons?: IconPanelItem[];
   sidebarContent?: React.ReactNode;
   backHref?: string;
@@ -45,6 +46,7 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
   panelType,
   percentComplete,
   showPercentage = true,
+  progressLoading = false,
   icons,
   sidebarContent,
   backHref,
@@ -130,7 +132,10 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
               <>
                 {showPercentage && (
                   <StyledBox>
-                    <CircularProgressWithLabel progress={percentComplete} />
+                    <CircularProgressWithLabel
+                      progress={percentComplete}
+                      loading={progressLoading}
+                    />
                   </StyledBox>
                 )}
 
@@ -138,6 +143,7 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
                   <IconButton
                     key={item.key}
                     aria-label={item.label}
+                    aria-current={item.isActive ? 'step' : undefined}
                     sx={{
                       color: item.isActive
                         ? theme.palette.mpdxBlue.main

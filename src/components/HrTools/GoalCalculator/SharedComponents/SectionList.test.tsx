@@ -31,6 +31,17 @@ describe('SectionList', () => {
       within(incompleteSection).getByTestId('RadioButtonUncheckedIcon'),
     ).toBeInTheDocument();
   });
+
+  it('renders the Complete/Incomplete title', () => {
+    const { getByTitle } = render(
+      <GoalCalculatorTestWrapper>
+        <SectionList sections={mockSections} />
+      </GoalCalculatorTestWrapper>,
+    );
+
+    expect(getByTitle('Complete')).toBeInTheDocument();
+    expect(getByTitle('Incomplete')).toBeInTheDocument();
+  });
 });
 
 describe('ReportSectionList', () => {

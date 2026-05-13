@@ -77,14 +77,49 @@ describe('calculatePdsGoalTotal', () => {
   });
 
   it('excludes reimbursable expenses and 403b when formType is Simple', () => {
-    const simple = makeGoal({ formType: DesignationSupportFormType.Simple });
-    const result = calculatePdsGoalTotal(simple, defaultConstants);
-    // With reimbursableTotal=0 and fourOThreeBPercentage=0:
-    //   subtotal = 5400 (salary) + 0 + 0 + 0 + 1500 (benefits) = 6900
-    //   attrition = 6900 * 0.06 = 414
-    //   creditCardFees = (6900 + 414) * 0.06 = 438.84
-    //   assessment = (6900 + 438.84 + 414) * 0.12 ≈ 930.34
-    expect(result).toBeCloseTo(930.34, 1);
+    const baseline = calculatePdsGoalTotal(
+      makeGoal({ formType: DesignationSupportFormType.Simple }),
+      { ...defaultConstants, fourOThreeBPercentage: 0.1 },
+    );
+
+    const withDifferentReimbursables = calculatePdsGoalTotal(
+      makeGoal({
+        formType: DesignationSupportFormType.Simple,
+        ministryCellPhone: 9999,
+        otherAnnualReimbursements: 9999,
+      }),
+      { ...defaultConstants, fourOThreeBPercentage: 0.1 },
+    );
+    expect(withDifferentReimbursables).toBeCloseTo(baseline);
+
+    const withDifferent403b = calculatePdsGoalTotal(
+      makeGoal({ formType: DesignationSupportFormType.Simple }),
+      { ...defaultConstants, fourOThreeBPercentage: 0.5 },
+    );
+    expect(withDifferent403b).toBeCloseTo(baseline);
+  });
+
+  it('includes reimbursable expenses and 403b when formType is Detailed', () => {
+    const baseline = calculatePdsGoalTotal(
+      makeGoal({ formType: DesignationSupportFormType.Detailed }),
+      { ...defaultConstants, fourOThreeBPercentage: 0.1 },
+    );
+
+    const withDifferentReimbursables = calculatePdsGoalTotal(
+      makeGoal({
+        formType: DesignationSupportFormType.Detailed,
+        ministryCellPhone: 9999,
+        otherAnnualReimbursements: 9999,
+      }),
+      { ...defaultConstants, fourOThreeBPercentage: 0.1 },
+    );
+    expect(withDifferentReimbursables).toBeGreaterThan(baseline);
+
+    const withDifferent403b = calculatePdsGoalTotal(
+      makeGoal({ formType: DesignationSupportFormType.Detailed }),
+      { ...defaultConstants, fourOThreeBPercentage: 0.5 },
+    );
+    expect(withDifferent403b).toBeGreaterThan(baseline);
   });
 
   it('treats null formType the same as Detailed (legacy goals)', () => {

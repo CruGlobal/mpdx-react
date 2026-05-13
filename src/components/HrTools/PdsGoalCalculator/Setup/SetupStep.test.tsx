@@ -104,51 +104,71 @@ describe('SetupStep', () => {
     ).toBeInTheDocument();
   });
 
-  it.each([
-    {
-      name: 'full-time salaried',
+  it('shows Benefits and hides Hours Worked for full-time salaried', async () => {
+    const { findByRole, queryByRole } = renderSetup({
       calculationMock: fullTimeSalariedMock,
-      benefits: 'visible' as const,
-      hoursWorked: 'hidden' as const,
-    },
-    {
-      name: 'part-time salaried',
+    });
+
+    await findByRole('textbox', { name: 'Goal Name' });
+
+    expect(
+      await findByRole('spinbutton', { name: 'Benefits' }),
+    ).toBeInTheDocument();
+    await waitFor(() =>
+      expect(
+        queryByRole('spinbutton', { name: 'Hours Worked' }),
+      ).not.toBeInTheDocument(),
+    );
+  });
+
+  it('hides Benefits and Hours Worked for part-time salaried', async () => {
+    const { findByRole, queryByRole } = renderSetup({
       calculationMock: partTimeSalariedMock,
-      benefits: 'hidden' as const,
-      hoursWorked: 'hidden' as const,
-    },
-    {
-      name: 'full-time hourly',
+    });
+
+    await findByRole('textbox', { name: 'Goal Name' });
+
+    await waitFor(() => {
+      expect(
+        queryByRole('spinbutton', { name: 'Benefits' }),
+      ).not.toBeInTheDocument();
+      expect(
+        queryByRole('spinbutton', { name: 'Hours Worked' }),
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it('shows Benefits and Hours Worked for full-time hourly', async () => {
+    const { findByRole } = renderSetup({
       calculationMock: fullTimeHourlyMock,
-      benefits: 'visible' as const,
-      hoursWorked: 'visible' as const,
-    },
-    {
-      name: 'part-time hourly',
+    });
+
+    await findByRole('textbox', { name: 'Goal Name' });
+
+    expect(
+      await findByRole('spinbutton', { name: 'Benefits' }),
+    ).toBeInTheDocument();
+    expect(
+      await findByRole('spinbutton', { name: 'Hours Worked' }),
+    ).toBeInTheDocument();
+  });
+
+  it('hides Benefits and shows Hours Worked for part-time hourly', async () => {
+    const { findByRole, queryByRole } = renderSetup({
       calculationMock: partTimeHourlyMock,
-      benefits: 'hidden' as const,
-      hoursWorked: 'visible' as const,
-    },
-  ])(
-    'shows Benefits=$benefits and Hours Worked=$hoursWorked for $name',
-    async ({ calculationMock, benefits, hoursWorked }) => {
-      const { findByRole, queryByRole } = renderSetup({ calculationMock });
+    });
 
-      // Wait for the form to load before asserting on conditional fields
-      await findByRole('textbox', { name: 'Goal Name' });
+    await findByRole('textbox', { name: 'Goal Name' });
 
-      await waitFor(() =>
-        expect({
-          benefits: queryByRole('spinbutton', { name: 'Benefits' })
-            ? 'visible'
-            : 'hidden',
-          hoursWorked: queryByRole('spinbutton', { name: 'Hours Worked' })
-            ? 'visible'
-            : 'hidden',
-        }).toEqual({ benefits, hoursWorked }),
-      );
-    },
-  );
+    expect(
+      await findByRole('spinbutton', { name: 'Hours Worked' }),
+    ).toBeInTheDocument();
+    await waitFor(() =>
+      expect(
+        queryByRole('spinbutton', { name: 'Benefits' }),
+      ).not.toBeInTheDocument(),
+    );
+  });
 
   it('shows dynamic Pay Rate helper text based on salary type', async () => {
     const { findByRole, findByText, rerender } = renderSetup({

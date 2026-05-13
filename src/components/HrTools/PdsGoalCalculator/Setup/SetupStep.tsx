@@ -90,6 +90,12 @@ export const SetupStep: React.FC = () => {
   const isSimpleForm =
     calculation?.formType === DesignationSupportFormType.Simple;
 
+  const fourOThreeB = hcmUser?.fourOThreeB;
+  const totalFourOThreeBContributionPercentage = fourOThreeB
+    ? (fourOThreeB.currentTaxDeferredContributionPercentage ?? 0) +
+      (fourOThreeB.currentRothContributionPercentage ?? 0)
+    : '';
+
   const payRateHelperText = isSalaried
     ? t('Enter yearly salary')
     : t('Enter hourly rate');
@@ -253,14 +259,7 @@ export const SetupStep: React.FC = () => {
                 variant="outlined"
                 label={t('403b Contribution Percentage')}
                 disabled
-                value={
-                  hcmUser?.fourOThreeB
-                    ? (hcmUser.fourOThreeB
-                        .currentTaxDeferredContributionPercentage ?? 0) +
-                      (hcmUser.fourOThreeB.currentRothContributionPercentage ??
-                        0)
-                    : ''
-                }
+                value={totalFourOThreeBContributionPercentage}
                 helperText={t(
                   'Retrieved from Principal. A combined percentage of your current tax deferred and Roth contributions.',
                 )}

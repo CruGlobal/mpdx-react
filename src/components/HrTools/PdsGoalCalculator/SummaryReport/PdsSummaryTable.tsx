@@ -15,7 +15,6 @@ import {
 } from 'src/lib/intlFormat';
 import { safeProgressRatio } from '../../GoalCalculator/Shared/safeProgressRatio';
 import { usePdsGoalCalculator } from '../Shared/PdsGoalCalculatorContext';
-import { isSimpleFormType } from '../Shared/formType';
 import { PdsSummaryHeaderCards } from './PdsSummaryHeaderCards';
 
 interface PdsSummaryRow {
@@ -89,9 +88,7 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
 
     const isFullTime = calculation.status === DesignationSupportStatus.FullTime;
     const isPartTime = calculation.status === DesignationSupportStatus.PartTime;
-    const isSimple = isSimpleFormType(
-      calculation.formType ?? DesignationSupportFormType.Detailed,
-    );
+    const isSimple = calculation.formType === DesignationSupportFormType.Simple;
 
     const rows: PdsSummaryRow[] = [
       // Salary section

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import {
   Button,
   CircularProgress,
@@ -50,26 +50,31 @@ export const CreateGoalDialog: React.FC<CreateGoalDialogProps> = ({
     }
   }, [open]);
 
-  const formTypeOptions: Array<{
-    value: DesignationSupportFormType;
-    title: string;
-    description: string;
-  }> = [
-    {
-      value: DesignationSupportFormType.Detailed,
-      title: t('Default'),
-      description: t(
-        'Full calculator with reimbursable expenses and 403b contributions.',
-      ),
-    },
-    {
-      value: DesignationSupportFormType.Simple,
-      title: t('Simple'),
-      description: t(
-        'Streamlined calculator without reimbursable expenses or 403b contributions.',
-      ),
-    },
-  ];
+  const formTypeOptions = useMemo<
+    Array<{
+      value: DesignationSupportFormType;
+      title: string;
+      description: string;
+    }>
+  >(
+    () => [
+      {
+        value: DesignationSupportFormType.Detailed,
+        title: t('Default'),
+        description: t(
+          'Full calculator with reimbursable expenses and 403b contributions.',
+        ),
+      },
+      {
+        value: DesignationSupportFormType.Simple,
+        title: t('Simple'),
+        description: t(
+          'Streamlined calculator without reimbursable expenses or 403b contributions.',
+        ),
+      },
+    ],
+    [t],
+  );
 
   return (
     <Dialog

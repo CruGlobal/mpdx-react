@@ -9,14 +9,15 @@ import { usePdsGoalCalculator } from './PdsGoalCalculatorContext';
 import { useSteps } from './useSteps';
 import type { PdsGoalCalculatorStep, PdsGoalCalculatorSteps } from './useSteps';
 
-jest.mock('./useSteps', () => ({
-  __esModule: true,
-  ...jest.requireActual('./useSteps'),
-  useSteps: jest.fn(),
-}));
-
-const { useSteps: actualUseSteps } =
-  jest.requireActual<typeof import('./useSteps')>('./useSteps');
+// `jest.spyOn` can't redefine, so we mock the module with a `jest.fn` that delegates to the real implementation, giving reconcile tests a handle to override the return value.
+jest.mock('./useSteps', () => {
+  const actual = jest.requireActual<typeof import('./useSteps')>('./useSteps');
+  return {
+    __esModule: true,
+    ...actual,
+    useSteps: jest.fn(actual.useSteps),
+  };
+});
 
 const mockedUseSteps = useSteps as jest.MockedFunction<typeof useSteps>;
 
@@ -24,7 +25,6 @@ const stub = (step: PdsGoalCalculatorStepEnum): PdsGoalCalculatorStep => ({
   step,
   title: step,
   icon: <SettingsIcon />,
-  sections: [],
 });
 
 const detailedSteps: PdsGoalCalculatorSteps = [
@@ -86,10 +86,6 @@ const StepProbe: React.FC = () => {
   );
 };
 
-beforeEach(() => {
-  mockedUseSteps.mockImplementation(actualUseSteps);
-});
-
 describe('PdsGoalCalculatorContext', () => {
   it('provides steps and current step', async () => {
     const { result } = renderUsePdsGoalCalculator();
@@ -143,6 +139,38 @@ describe('PdsGoalCalculatorContext', () => {
 
     act(() => result.current.handlePreviousStep());
     expect(result.current.stepIndex).toBe(0);
+  });
+
+  it('exposes percentComplete reflecting current step / total steps', () => {
+    const { result } = renderUsePdsGoalCalculator();
+
+    expect(result.current.percentComplete).toBe(25);
+    act(() => result.current.handleContinue());
+    expect(result.current.percentComplete).toBe(50);
+    act(() => result.current.handleContinue());
+    expect(result.current.percentComplete).toBe(75);
+    act(() => result.current.handleContinue());
+    expect(result.current.percentComplete).toBe(100);
+  });
+
+  it('rounds percentComplete to 33/67/100 for the 3-step Simple form', async () => {
+    const { result } = renderHook(() => usePdsGoalCalculator(), {
+      wrapper: ({ children }) => (
+        <PdsGoalCalculatorTestWrapper
+          calculationMock={{ formType: DesignationSupportFormType.Simple }}
+        >
+          {children}
+        </PdsGoalCalculatorTestWrapper>
+      ),
+    });
+
+    await waitFor(() => expect(result.current.steps).toHaveLength(3));
+
+    expect(result.current.percentComplete).toBe(33);
+    act(() => result.current.handleContinue());
+    expect(result.current.percentComplete).toBe(67);
+    act(() => result.current.handleContinue());
+    expect(result.current.percentComplete).toBe(100);
   });
 
   describe('preserves the user step when the steps array changes', () => {

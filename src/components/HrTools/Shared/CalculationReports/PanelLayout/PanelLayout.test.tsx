@@ -170,6 +170,8 @@ describe('PanelLayout', () => {
     expect(inactiveButton).toHaveStyle({
       color: theme.palette.mpdxGrayDark.main,
     });
+    expect(activeButton).toHaveAttribute('aria-current', 'step');
+    expect(inactiveButton).not.toHaveAttribute('aria-current');
   });
 
   it('scrolls main content to top when currentIndex changes', async () => {
@@ -185,6 +187,29 @@ describe('PanelLayout', () => {
     );
 
     await waitFor(() => expect(mainContent.scrollTop).toBe(0));
+  });
+
+  it('renders an indeterminate progress indicator when progressLoading is true', () => {
+    const { getByRole, queryByText } = render(
+      <TestComponent
+        panelType={PanelTypeEnum.Other}
+        progressLoading={true}
+        percentComplete={42}
+      />,
+    );
+
+    const progressIndicator = getByRole('progressbar');
+    expect(progressIndicator).toBeInTheDocument();
+    expect(progressIndicator).not.toHaveAttribute('aria-valuenow');
+    expect(queryByText('42%')).not.toBeInTheDocument();
+  });
+
+  it('hides the progress indicator when showPercentage is false', () => {
+    const { queryByRole } = render(
+      <TestComponent panelType={PanelTypeEnum.Other} showPercentage={false} />,
+    );
+
+    expect(queryByRole('progressbar')).not.toBeInTheDocument();
   });
 
   it('handles empty icon panel items gracefully', () => {

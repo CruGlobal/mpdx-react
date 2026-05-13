@@ -8,7 +8,6 @@ import {
   DesignationSupportStatus,
 } from 'src/graphql/types.generated';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
-import { isSimpleFormType } from '../Shared/formType';
 import {
   OtherExpensesConstants,
   OtherExpensesFields,
@@ -44,9 +43,7 @@ export const buildOtherBreakdownRows = (
     constants,
   );
 
-  const isSimple = isSimpleFormType(
-    calculation.formType ?? DesignationSupportFormType.Detailed,
-  );
+  const isSimple = calculation.formType === DesignationSupportFormType.Simple;
 
   const rows: OtherBreakdownRow[] = [
     ...(isSimple

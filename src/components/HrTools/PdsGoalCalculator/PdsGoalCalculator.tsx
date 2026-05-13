@@ -4,13 +4,16 @@ import {
   AutosaveForm,
   useAutosaveForm,
 } from 'src/components/Shared/Autosave/AutosaveForm';
-import { SectionList } from '../GoalCalculator/SharedComponents/SectionList';
 import { PdsGoalCalculatorStepEnum } from './PdsGoalCalculatorHelper';
+import { ReimbursableExpensesSectionList } from './ReimbursableExpenses/ReimbursableExpensesSectionList';
 import { ReimbursableExpensesStep } from './ReimbursableExpenses/ReimbursableExpensesStep';
+import { SetupSectionList } from './Setup/SetupSectionList';
 import { SetupStep } from './Setup/SetupStep';
 import { usePdsGoalCalculator } from './Shared/PdsGoalCalculatorContext';
 import { PdsGoalCalculatorLayout } from './Shared/PdsGoalCalculatorLayout';
+import { SummaryReportSectionList } from './SummaryReport/SummaryReportSectionList';
 import { SummaryReportStep } from './SummaryReport/SummaryReportStep';
+import { SupportItemSectionList } from './SupportItem/SupportItemSectionList';
 import { SupportItemStep } from './SupportItem/SupportItemStep';
 
 const CurrentStep: React.FC = () => {
@@ -25,6 +28,21 @@ const CurrentStep: React.FC = () => {
       return <SupportItemStep />;
     case PdsGoalCalculatorStepEnum.SummaryReport:
       return <SummaryReportStep />;
+  }
+};
+
+const CurrentSectionList: React.FC = () => {
+  const { currentStep } = usePdsGoalCalculator();
+
+  switch (currentStep.step) {
+    case PdsGoalCalculatorStepEnum.Setup:
+      return <SetupSectionList />;
+    case PdsGoalCalculatorStepEnum.ReimbursableExpenses:
+      return <ReimbursableExpensesSectionList />;
+    case PdsGoalCalculatorStepEnum.SupportItem:
+      return <SupportItemSectionList />;
+    case PdsGoalCalculatorStepEnum.SummaryReport:
+      return <SummaryReportSectionList />;
   }
 };
 
@@ -52,12 +70,9 @@ const MainContent: React.FC = () => {
 };
 
 export const PdsGoalCalculator: React.FC = () => {
-  const { currentStep } = usePdsGoalCalculator();
-  const sections = currentStep.sections;
-
   return (
     <PdsGoalCalculatorLayout
-      sectionListPanel={<SectionList sections={sections} />}
+      sectionListPanel={<CurrentSectionList />}
       mainContent={
         <AutosaveForm>
           <MainContent />
