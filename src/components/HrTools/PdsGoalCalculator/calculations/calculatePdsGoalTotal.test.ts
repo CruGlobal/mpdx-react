@@ -99,6 +99,29 @@ describe('calculatePdsGoalTotal', () => {
     expect(withDifferent403b).toBeCloseTo(baseline);
   });
 
+  it('includes reimbursable expenses and 403b when formType is Detailed', () => {
+    const baseline = calculatePdsGoalTotal(
+      makeGoal({ formType: DesignationSupportFormType.Detailed }),
+      { ...defaultConstants, fourOThreeBPercentage: 0.1 },
+    );
+
+    const withDifferentReimbursables = calculatePdsGoalTotal(
+      makeGoal({
+        formType: DesignationSupportFormType.Detailed,
+        ministryCellPhone: 9999,
+        otherAnnualReimbursements: 9999,
+      }),
+      { ...defaultConstants, fourOThreeBPercentage: 0.1 },
+    );
+    expect(withDifferentReimbursables).toBeGreaterThan(baseline);
+
+    const withDifferent403b = calculatePdsGoalTotal(
+      makeGoal({ formType: DesignationSupportFormType.Detailed }),
+      { ...defaultConstants, fourOThreeBPercentage: 0.5 },
+    );
+    expect(withDifferent403b).toBeGreaterThan(baseline);
+  });
+
   it('treats null formType the same as Detailed (legacy goals)', () => {
     const legacy = makeGoal({ formType: null });
     const detailed = makeGoal({
