@@ -194,15 +194,15 @@ export const PdsGoalCalculatorTestWrapper: React.FC<
                     mpdGoalGeographicConstants: [
                       {
                         location: 'None',
-                        percentageMultiplier: 0,
+                        percentageMultiplier: 1,
                       },
                       {
                         location: 'Orlando, FL',
-                        percentageMultiplier: 0.06,
+                        percentageMultiplier: 1.06,
                       },
                       {
                         location: 'New York, NY',
-                        percentageMultiplier: 0.12,
+                        percentageMultiplier: 1.12,
                       },
                     ],
                     mpdGoalMiscConstants: [

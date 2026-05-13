@@ -9,7 +9,7 @@ import {
   buildSalaryBreakdownRows,
 } from './salaryBreakdown';
 
-const constants = { geographicMultiplier: 0, employerFicaRate: 0.08 };
+const constants = { geographicMultiplier: 1, employerFicaRate: 0.08 };
 
 const salariedCalculation: SalaryCalculationFields = {
   salaryOrHourly: DesignationSupportSalaryType.Salaried,
@@ -70,8 +70,8 @@ describe('buildSalaryBreakdownRows', () => {
     // monthlyBase = 60000 / 12 = 5000
     expect(byId['monthly-base']).toBe(5000);
     // geographicMultiplier passed through from constants
-    expect(byId['geographic-multiplier']).toBe(0);
-    // grossMonthlyPay = 5000 * (1 + 0) = 5000
+    expect(byId['geographic-multiplier']).toBe(1);
+    // grossMonthlyPay = 5000 * 1 = 5000
     expect(byId['gross-monthly-pay']).toBe(5000);
     // employerFica = 5000 * 0.08 = 400
     expect(byId['employer-fica']).toBe(400);
@@ -94,7 +94,7 @@ describe('buildSalaryBreakdownRows', () => {
     expect(byId['hours-per-week']).toBe(40);
     // monthlyBase = (25 * 40 * 52) / 12 ≈ 4333.33
     expect(byId['monthly-base']).toBeCloseTo(4333.33, 2);
-    // grossMonthlyPay = 4333.33 * (1 + 0) ≈ 4333.33
+    // grossMonthlyPay = 4333.33 * 1 ≈ 4333.33
     expect(byId['gross-monthly-pay']).toBeCloseTo(4333.33, 2);
     // employerFica = 4333.33 * 0.08 ≈ 346.67
     expect(byId['employer-fica']).toBeCloseTo(346.67, 2);

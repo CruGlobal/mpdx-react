@@ -35,7 +35,7 @@ const WORK_COMP_PERCENTAGE = 0.17;
 const ATTRITION_RATE = 0.06;
 const CREDIT_CARD_FEE_RATE = 0.06;
 const ADMIN_RATE = 0.12;
-const GEO_MULTIPLIER = 0.06;
+const GEO_MULTIPLIER = 1.06;
 
 const constantsMock = gqlMock<GoalCalculatorConstantsQuery>(
   GoalCalculatorConstantsDocument,
@@ -71,7 +71,7 @@ const constantsMock = gqlMock<GoalCalculatorConstantsQuery>(
         ],
         mpdGoalGeographicConstants: [
           { location: 'Orlando, FL', percentageMultiplier: GEO_MULTIPLIER },
-          { location: 'None', percentageMultiplier: 0 },
+          { location: 'None', percentageMultiplier: 1 },
         ],
         mpdGoalBenefitsConstants: [],
       },
@@ -212,14 +212,14 @@ describe('usePdsSummaryData', () => {
       expect(result.current?.geographicMultiplier).toBe(GEO_MULTIPLIER);
     });
 
-    it('defaults to 0 when geographicLocation is null', () => {
+    it('defaults to 1 (no adjustment) when geographicLocation is null', () => {
       const { result } = renderHook(() =>
         usePdsSummaryData(defaultCalculation, defaultHcmUser),
       );
-      expect(result.current?.geographicMultiplier).toBe(0);
+      expect(result.current?.geographicMultiplier).toBe(1);
     });
 
-    it('defaults to 0 when geographicLocation is not in the map', () => {
+    it('defaults to 1 (no adjustment) when geographicLocation is not in the map', () => {
       const calc = {
         ...defaultCalculation,
         geographicLocation: 'Unknown City',
@@ -227,7 +227,7 @@ describe('usePdsSummaryData', () => {
       const { result } = renderHook(() =>
         usePdsSummaryData(calc, defaultHcmUser),
       );
-      expect(result.current?.geographicMultiplier).toBe(0);
+      expect(result.current?.geographicMultiplier).toBe(1);
     });
   });
 
@@ -296,8 +296,8 @@ describe('usePdsSummaryData', () => {
     });
 
     it('computes correct overallTotal for a full-time salaried employee', () => {
-      // No geographic multiplier, payRate = 60000
-      // grossMonthlyPay = 60000 / 12 = 5000
+      // Geographic multiplier defaults to 1 (no adjustment), payRate = 60000
+      // grossMonthlyPay = 60000 / 12 * 1 = 5000
       // employerFica = 5000 * 0.08 = 400
       // salarySubtotal = 5400
       //
@@ -310,12 +310,13 @@ describe('usePdsSummaryData', () => {
       // otherSubtotal = 5400 + 500 + 400 + 0 + 1500 = 7800
       // attrition = 7800 * 0.06 = 468
       // creditCardFees = (7800 + 468) * 0.06 = 496.08
-      // assessment = (7800 + 468 + 496.08) * 0.12 = 1051.69
-      // overallTotal = 7800 + 468 + 496.08 + 1051.69 = 9815.77
+      // adminBase = 7800 + 468 + 496.08 = 8764.08
+      // assessment = adminBase / 0.88 - adminBase ≈ 1195.10
+      // overallTotal = 7800 + 468 + 496.08 + 1195.10 ≈ 9959.18
       const { result } = renderHook(() =>
         usePdsSummaryData(defaultCalculation, defaultHcmUser),
       );
-      expect(result.current?.overallTotal).toBeCloseTo(9815.77, 0);
+      expect(result.current?.overallTotal).toBeCloseTo(9959.18, 0);
     });
   });
 
