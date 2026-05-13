@@ -108,7 +108,7 @@ export const RequestSummaryCard: React.FC = () => {
   ) : reason === ProgressiveApprovalTierReasonEnum.OverlappingRequests ? (
     <Trans t={t}>
       You or your spouse has a pending Additional Salary Request, so this
-      request needs additional approval. This may take{' '}
+      request needs additional approval. This will take{' '}
       {{ timeframe: progressiveApprovalTier.approvalTimeframe }} as it needs to
       be signed off by the {{ approver: progressiveApprovalTier.approver }}.
       This may affect your selected effective date.
@@ -119,7 +119,7 @@ export const RequestSummaryCard: React.FC = () => {
       {{ combined: combinedModifier }} Maximum Allowable Salary. Please make
       adjustments to your Salary Request above or fill out the Approval Process
       Section below to request a higher amount through our Progressive Approvals
-      process. This may take{' '}
+      process. This will take{' '}
       {{ timeframe: progressiveApprovalTier.approvalTimeframe }} as it needs to
       be signed off by the {{ approver: progressiveApprovalTier.approver }}.
       This may affect your selected effective date.
