@@ -5,12 +5,11 @@ const t = ((key: string) => key) as unknown as Parameters<
 >[1];
 
 describe('getCapOverrides', () => {
-  it('returns undefined title/content when not exceeding cap', () => {
+  it('returns undefined title/content when no approval needed', () => {
     const result = getCapOverrides(
       {
         splitAsr: false,
         additionalApproval: false,
-        exceedsCap: false,
         hasBoardCapException: false,
       },
       t,
@@ -24,7 +23,6 @@ describe('getCapOverrides', () => {
       {
         splitAsr: true,
         additionalApproval: false,
-        exceedsCap: false,
         hasBoardCapException: false,
       },
       t,
@@ -32,12 +30,11 @@ describe('getCapOverrides', () => {
     expect(result.title).toMatch(/exceeds your remaining allowable salary/);
   });
 
-  it('returns Progressive Approvals messaging when exceeds cap without board exception', () => {
+  it('returns Progressive Approvals messaging when additionalApproval without board exception', () => {
     const result = getCapOverrides(
       {
         splitAsr: false,
-        additionalApproval: false,
-        exceedsCap: true,
+        additionalApproval: true,
         hasBoardCapException: false,
       },
       t,
@@ -46,12 +43,11 @@ describe('getCapOverrides', () => {
     expect(result.content).toMatch(/exceed your Maximum Allowable Salary/);
   });
 
-  it('returns board-approval messaging when exceeds cap with board exception', () => {
+  it('returns board-approval messaging when approval required with board exception', () => {
     const result = getCapOverrides(
       {
         splitAsr: false,
-        additionalApproval: false,
-        exceedsCap: true,
+        additionalApproval: true,
         hasBoardCapException: true,
       },
       t,
@@ -63,27 +59,11 @@ describe('getCapOverrides', () => {
     expect(result.content).toMatch(/Additional Salary Request exceeds/);
   });
 
-  it('board exception takes precedence over additionalApproval branch', () => {
-    const result = getCapOverrides(
-      {
-        splitAsr: false,
-        additionalApproval: true,
-        exceedsCap: false,
-        hasBoardCapException: true,
-      },
-      t,
-    );
-    expect(result.content).toMatch(
-      /You have a Board approved Maximum Allowable Salary/,
-    );
-  });
-
-  it('board exception does not apply when user is not exceeding cap', () => {
+  it('board exception does not apply when no approval required', () => {
     const result = getCapOverrides(
       {
         splitAsr: false,
         additionalApproval: false,
-        exceedsCap: false,
         hasBoardCapException: true,
       },
       t,
