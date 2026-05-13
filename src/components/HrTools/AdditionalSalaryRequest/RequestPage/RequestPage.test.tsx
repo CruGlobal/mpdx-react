@@ -105,7 +105,6 @@ const defaultMockContextValue = {
   setIsNewAsr: jest.fn(),
   isSpouse: false,
   hasSpouse: false,
-  hasBoardCapException: false,
   fieldConfig: getFieldConfig(i18n.t),
 };
 

@@ -54,9 +54,6 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
         mhiEit: {
           mhiEligibility: false,
         },
-        exceptionSalaryCap: {
-          boardCapException: false,
-        },
       },
       {
         salaryRequestEligible: true,
@@ -82,9 +79,6 @@ const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
         },
         mhiEit: {
           mhiEligibility: false,
-        },
-        exceptionSalaryCap: {
-          boardCapException: false,
         },
       },
     ],

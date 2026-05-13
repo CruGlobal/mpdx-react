@@ -32,7 +32,6 @@ export const useAdditionalSalaryRequestForm = (
     isInternational,
     requestId,
     isSpouse,
-    hasBoardCapException,
     fieldConfig,
   } = useAdditionalSalaryRequest();
 
@@ -161,7 +160,10 @@ export const useAdditionalSalaryRequestForm = (
             'required-when-exceeds-cap',
             t('Additional info is required for requests exceeding your cap.'),
             function (value) {
-              if (hasBoardCapException) {
+              if (
+                requestData?.latestAdditionalSalaryRequest
+                  ?.progressiveApprovalTier
+              ) {
                 return true;
               }
               const total = getTotal(this.parent as CompleteFormValues);
@@ -192,7 +194,7 @@ export const useAdditionalSalaryRequestForm = (
       primaryAccountBalance,
       individualCap,
       locale,
-      hasBoardCapException,
+      requestData,
     ],
   );
 

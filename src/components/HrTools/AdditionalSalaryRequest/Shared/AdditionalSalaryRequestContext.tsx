@@ -17,7 +17,6 @@ import {
 import {
   AdditionalSalaryRequestCalculations,
   AsrStatusEnum,
-  ProgressiveApprovalTierReasonEnum,
 } from 'src/graphql/types.generated';
 import { useStepList } from 'src/hooks/useStepList';
 import { useTrackMutation } from 'src/hooks/useTrackMutation';
@@ -122,7 +121,6 @@ export type AdditionalSalaryRequestType = {
   setIsNewAsr: React.Dispatch<React.SetStateAction<boolean>>;
   isSpouse: boolean;
   hasSpouse: boolean;
-  hasBoardCapException: boolean;
   isPending: boolean;
   isApproved: boolean;
   fieldConfig: FieldConfig;
@@ -255,10 +253,6 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       ? primaryPerson
       : spousePerson
     : undefined;
-  const hasBoardCapException =
-    requestData?.latestAdditionalSalaryRequest
-      ?.progressiveApprovalTierReason ===
-    ProgressiveApprovalTierReasonEnum.BoardCapException;
 
   const salaryInfo = salaryInfoData?.salaryInfo;
   const isInternational = user?.staffInfo?.isInternational ?? false;
@@ -310,7 +304,6 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       setIsNewAsr,
       isSpouse,
       hasSpouse,
-      hasBoardCapException,
       isPending,
       isApproved,
       fieldConfig,
@@ -348,7 +341,6 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       setIsNewAsr,
       isSpouse,
       hasSpouse,
-      hasBoardCapException,
       isPending,
       isApproved,
       fieldConfig,

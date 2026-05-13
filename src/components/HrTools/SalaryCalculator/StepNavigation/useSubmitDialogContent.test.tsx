@@ -14,9 +14,6 @@ describe('useSubmitDialogContent', () => {
           salaryRequestMock={{
             progressiveApprovalTier: null,
           }}
-          hcmUser={{
-            exceptionSalaryCap: { boardCapException: true },
-          }}
         >
           {children}
         </SalaryCalculatorTestWrapper>
@@ -47,9 +44,6 @@ describe('useSubmitDialogContent', () => {
               approver: 'Division Head',
             },
           }}
-          hcmUser={{
-            exceptionSalaryCap: { boardCapException: false },
-          }}
         >
           {children}
         </SalaryCalculatorTestWrapper>
@@ -79,9 +73,6 @@ describe('useSubmitDialogContent', () => {
             spouseCalculations: {
               requestedGross: 30000,
             },
-          }}
-          hcmUser={{
-            exceptionSalaryCap: { boardCapException: false },
           }}
         >
           {children}

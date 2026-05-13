@@ -103,7 +103,6 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   setIsNewAsr: jest.fn(),
   isSpouse: false,
   hasSpouse: false,
-  hasBoardCapException: false,
   isPending: false,
   isApproved: false,
   fieldConfig,
@@ -491,7 +490,6 @@ describe('useAdditionalSalaryRequestForm', () => {
     it('should not require additional info when exceedsCap is true and user has board cap exception', async () => {
       mockUseAdditionalSalaryRequest.mockReturnValue({
         ...defaultMockContextValue,
-        hasBoardCapException: true,
       });
 
       const { result } = renderHook(
