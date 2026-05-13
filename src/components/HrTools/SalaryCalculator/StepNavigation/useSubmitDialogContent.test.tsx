@@ -1,5 +1,8 @@
 import { renderHook, waitFor } from '@testing-library/react';
-import { ProgressiveApprovalTierEnum } from 'src/graphql/types.generated';
+import {
+  ProgressiveApprovalTierEnum,
+  ProgressiveApprovalTierReasonEnum,
+} from 'src/graphql/types.generated';
 import { SalaryCalculatorTestWrapper } from '../SalaryCalculatorTestWrapper';
 import { useSubmitDialogContent } from './useSubmitDialogContent';
 
@@ -97,7 +100,7 @@ describe('useSubmitDialogContent', () => {
     expect(result.current.subContent).toContain('Vice President');
   });
 
-  it('returns board cap exception content when user has exception salary cap', async () => {
+  it('returns board cap exception content when the reason is BoardCapException', async () => {
     const { result } = renderHook(() => useSubmitDialogContent(), {
       wrapper: ({ children }) => (
         <SalaryCalculatorTestWrapper
@@ -105,9 +108,8 @@ describe('useSubmitDialogContent', () => {
             progressiveApprovalTier: {
               tier: ProgressiveApprovalTierEnum.BoardCompensationCommittee,
             },
-          }}
-          hcmUser={{
-            exceptionSalaryCap: { boardCapException: true },
+            progressiveApprovalTierReason:
+              ProgressiveApprovalTierReasonEnum.BoardCapException,
           }}
         >
           {children}

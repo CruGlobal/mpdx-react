@@ -14,7 +14,10 @@ import {
   useTheme,
 } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
-import { ProgressiveApprovalTierEnum } from 'src/graphql/types.generated';
+import {
+  ProgressiveApprovalTierEnum,
+  ProgressiveApprovalTierReasonEnum,
+} from 'src/graphql/types.generated';
 import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
 import { StepCard } from '../../Shared/StepCard';
 import { useFormatters } from '../../Shared/useFormatters';
@@ -55,10 +58,10 @@ export const RequestSummaryCard: React.FC = () => {
   const theme = useTheme();
   const { calculation, hcmUser, hcmSpouse } = useSalaryCalculator();
   const progressiveApprovalTier = calculation?.progressiveApprovalTier;
+  const reason = calculation?.progressiveApprovalTierReason;
   const approvalRequired =
     !!progressiveApprovalTier &&
     progressiveApprovalTier?.tier !== ProgressiveApprovalTierEnum.DivisionHead;
-  const boardCapException = hcmUser?.exceptionSalaryCap.boardCapException;
   const { combinedGross, overCapPerson } = useCaps();
 
   const { formatCurrency } = useFormatters();
@@ -95,14 +98,22 @@ export const RequestSummaryCard: React.FC = () => {
   const combinedModifier = hasSpouse ? t('Combined') : '';
   const statusMessage = !progressiveApprovalTier ? (
     t('Your gross request is within your Maximum Allowable Salary.')
-  ) : boardCapException ? (
+  ) : reason === ProgressiveApprovalTierReasonEnum.BoardCapException ? (
     <Trans t={t}>
       You have a Board approved Maximum Allowable Salary (CAP) and your salary
       request exceeds that amount. As a result we need to get their approval for
       this request. We&apos;ll forward your request to them and get back to you
       with their decision.
     </Trans>
-  ) : approvalRequired ? (
+  ) : reason === ProgressiveApprovalTierReasonEnum.OverlappingRequests ? (
+    <Trans t={t}>
+      You or your spouse has a pending Additional Salary Request, so this
+      request needs additional approval. This may take{' '}
+      {{ timeframe: progressiveApprovalTier.approvalTimeframe }} as it needs to
+      be signed off by the {{ approver: progressiveApprovalTier.approver }}.
+      This may affect your selected effective date.
+    </Trans>
+  ) : reason === ProgressiveApprovalTierReasonEnum.OverCombinedCap ? (
     <Trans t={t}>
       Your {{ combined: combinedModifier }} Gross Requested Salary exceeds your{' '}
       {{ combined: combinedModifier }} Maximum Allowable Salary. Please make

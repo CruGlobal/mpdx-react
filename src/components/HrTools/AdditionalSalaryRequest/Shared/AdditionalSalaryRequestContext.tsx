@@ -17,6 +17,7 @@ import {
 import {
   AdditionalSalaryRequestCalculations,
   AsrStatusEnum,
+  ProgressiveApprovalTierReasonEnum,
 } from 'src/graphql/types.generated';
 import { useStepList } from 'src/hooks/useStepList';
 import { useTrackMutation } from 'src/hooks/useTrackMutation';
@@ -255,7 +256,9 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       : spousePerson
     : undefined;
   const hasBoardCapException =
-    user?.exceptionSalaryCap?.boardCapException ?? false;
+    requestData?.latestAdditionalSalaryRequest
+      ?.progressiveApprovalTierReason ===
+    ProgressiveApprovalTierReasonEnum.BoardCapException;
 
   const salaryInfo = salaryInfoData?.salaryInfo;
   const isInternational = user?.staffInfo?.isInternational ?? false;

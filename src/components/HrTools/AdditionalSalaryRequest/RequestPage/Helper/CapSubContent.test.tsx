@@ -2,6 +2,7 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render } from '@testing-library/react';
 import { FormikProvider, useFormik } from 'formik';
+import { ProgressiveApprovalTierReasonEnum } from 'pages/api/graphql-rest.page.generated';
 import theme from 'src/theme';
 import { CompleteFormValues } from '../../AdditionalSalaryRequest';
 import { useAdditionalSalaryRequest } from '../../Shared/AdditionalSalaryRequestContext';
@@ -44,15 +45,16 @@ describe('CapSubContent', () => {
     jest.clearAllMocks();
   });
 
-  it('renders Progressive Approvals messaging when hasBoardCapException is false', () => {
+  it('renders Progressive Approvals messaging when reason is not board cap exception', () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
-      hasBoardCapException: false,
       requestData: {
         latestAdditionalSalaryRequest: {
           progressiveApprovalTier: {
             approver: 'Division Head',
             approvalTimeframe: '1-2 weeks',
           },
+          progressiveApprovalTierReason:
+            ProgressiveApprovalTierReasonEnum.OverUserCap,
         },
       },
     } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
@@ -67,12 +69,13 @@ describe('CapSubContent', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('renders nothing when hasBoardCapException is true (message is carried by getCapOverrides)', () => {
+  it('renders nothing when reason is board cap exception (message is carried by getCapOverrides)', () => {
     mockUseAdditionalSalaryRequest.mockReturnValue({
-      hasBoardCapException: true,
       requestData: {
         latestAdditionalSalaryRequest: {
           progressiveApprovalTier: null,
+          progressiveApprovalTierReason:
+            ProgressiveApprovalTierReasonEnum.BoardCapException,
         },
       },
     } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);

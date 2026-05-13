@@ -1,7 +1,10 @@
 import { render, waitFor } from '@testing-library/react';
 import { merge } from 'lodash';
 import { DeepPartial } from 'ts-essentials';
-import { ProgressiveApprovalTierEnum } from 'src/graphql/types.generated';
+import {
+  ProgressiveApprovalTierEnum,
+  ProgressiveApprovalTierReasonEnum,
+} from 'src/graphql/types.generated';
 import { SalaryCalculationQuery } from '../../SalaryCalculatorContext/SalaryCalculation.generated';
 import {
   SalaryCalculatorTestWrapper,
@@ -47,16 +50,15 @@ describe('RequestSummaryCard', () => {
   });
 
   describe('board cap exception', () => {
-    const hcmUser = { exceptionSalaryCap: { boardCapException: true } };
-
     it('renders status message and textfield', async () => {
       const { getByTestId } = render(
         <TestComponent
-          hcmUser={hcmUser}
           salaryRequestMock={{
             progressiveApprovalTier: {
               tier: ProgressiveApprovalTierEnum.VicePresident,
             },
+            progressiveApprovalTierReason:
+              ProgressiveApprovalTierReasonEnum.BoardCapException,
           }}
         />,
       );
@@ -73,14 +75,36 @@ We'll forward your request to them and get back to you with their decision.",
 
     it('renders status message when request does not require approval', async () => {
       const { findByTestId } = render(
-        <TestComponent
-          hcmUser={hcmUser}
-          salaryRequestMock={{ progressiveApprovalTier: null }}
-        />,
+        <TestComponent salaryRequestMock={{ progressiveApprovalTier: null }} />,
       );
 
       expect(await findByTestId('RequestSummaryCard-status')).toHaveTextContent(
         'Your gross request is within your Maximum Allowable Salary.',
+      );
+    });
+  });
+
+  describe('overlapping requests', () => {
+    it('renders overlap message when reason is OverlappingRequests', async () => {
+      const { getByTestId } = render(
+        <TestComponent
+          salaryRequestMock={{
+            progressiveApprovalTier: {
+              tier: ProgressiveApprovalTierEnum.ManagementCompensationCommittee,
+              approver: 'MCC',
+              approvalTimeframe: '2 weeks',
+            },
+            progressiveApprovalTierReason:
+              ProgressiveApprovalTierReasonEnum.OverlappingRequests,
+          }}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(getByTestId('RequestSummaryCard-status')).toHaveTextContent(
+          'You or your spouse has a pending Additional Salary Request, so this request needs additional approval. \
+This may take 2 weeks as it needs to be signed off by the MCC. This may affect your selected effective date.',
+        ),
       );
     });
   });
@@ -90,11 +114,11 @@ We'll forward your request to them and get back to you with their decision.",
       const { getByTestId } = render(
         <TestComponent
           salaryRequestMock={{
-            calculations: { requestedGross: 40000 },
-            spouseCalculations: { effectiveCap: 50000 },
             progressiveApprovalTier: {
               tier: ProgressiveApprovalTierEnum.DivisionHead,
             },
+            progressiveApprovalTierReason:
+              ProgressiveApprovalTierReasonEnum.OverUserCap,
           }}
         />,
       );
@@ -115,11 +139,11 @@ or make changes to how your Requested Salary is distributed above.",
       const { getByTestId } = render(
         <TestComponent
           salaryRequestMock={{
-            calculations: { effectiveCap: 50000 },
-            spouseCalculations: { requestedGross: 40000 },
             progressiveApprovalTier: {
               tier: ProgressiveApprovalTierEnum.DivisionHead,
             },
+            progressiveApprovalTierReason:
+              ProgressiveApprovalTierReasonEnum.OverSpouseCap,
           }}
         />,
       );
@@ -140,12 +164,13 @@ or make changes to how your Requested Salary is distributed above.",
       const { getByTestId } = render(
         <TestComponent
           salaryRequestMock={{
-            calculations: { requestedGross: 100_000 },
             progressiveApprovalTier: {
               tier: ProgressiveApprovalTierEnum.VicePresident,
               approver: 'Vice President',
               approvalTimeframe: '1-2 weeks',
             },
+            progressiveApprovalTierReason:
+              ProgressiveApprovalTierReasonEnum.OverCombinedCap,
           }}
         />,
       );
@@ -294,12 +319,13 @@ This may affect your selected effective date.',
           <TestComponent
             hasSpouse={false}
             salaryRequestMock={{
-              calculations: { requestedGross: 100_000 },
               progressiveApprovalTier: {
                 tier: ProgressiveApprovalTierEnum.VicePresident,
                 approver: 'Vice President',
                 approvalTimeframe: '1-2 weeks',
               },
+              progressiveApprovalTierReason:
+                ProgressiveApprovalTierReasonEnum.OverCombinedCap,
             }}
           />,
         );

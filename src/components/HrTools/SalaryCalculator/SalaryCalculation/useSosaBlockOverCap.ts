@@ -1,6 +1,6 @@
 import { UserPersonTypeEnum } from 'pages/api/graphql-rest.page.generated';
+import { ProgressiveApprovalTierReasonEnum } from 'src/graphql/types.generated';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
-import { useCaps } from './useCaps';
 
 interface UseSosaBlockOverCapResult {
   /** Whether the user is a SOSA employee (Employee Staff Non-RMO Spouse) */
@@ -15,12 +15,14 @@ interface UseSosaBlockOverCapResult {
  * effective cap. Requests over their cap may not be submitted online.
  */
 export const useSosaBlockOverCap = (): UseSosaBlockOverCapResult => {
-  const { hcmUser } = useSalaryCalculator();
-  const { overUserCap } = useCaps();
+  const { hcmUser, calculation } = useSalaryCalculator();
 
   const isUserSosa =
     hcmUser?.staffInfo.userPersonType ===
     UserPersonTypeEnum.EmployeeStaffNonRmoSpouse;
+  const overUserCap =
+    calculation?.progressiveApprovalTierReason ===
+    ProgressiveApprovalTierReasonEnum.OverUserCap;
   const blockOnCap = isUserSosa && overUserCap;
 
   return { isUserSosa, blockOnCap };

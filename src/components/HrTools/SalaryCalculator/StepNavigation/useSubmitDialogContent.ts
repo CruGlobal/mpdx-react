@@ -1,5 +1,8 @@
 import { useTranslation } from 'react-i18next';
-import { ProgressiveApprovalTierEnum } from 'src/graphql/types.generated';
+import {
+  ProgressiveApprovalTierEnum,
+  ProgressiveApprovalTierReasonEnum,
+} from 'src/graphql/types.generated';
 import { useCaps } from '../SalaryCalculation/useCaps';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 import { useFormatters } from '../Shared/useFormatters';
@@ -12,16 +15,15 @@ interface DialogContent {
 
 export const useSubmitDialogContent = (): DialogContent => {
   const { t } = useTranslation();
-  const { calculation, hcmUser } = useSalaryCalculator();
+  const { calculation } = useSalaryCalculator();
   const { combinedGross } = useCaps();
   const { formatCurrency } = useFormatters();
 
   const progressiveApprovalTier = calculation?.progressiveApprovalTier;
+  const reason = calculation?.progressiveApprovalTierReason;
   const approvalRequired =
     !!progressiveApprovalTier &&
     progressiveApprovalTier.tier !== ProgressiveApprovalTierEnum.DivisionHead;
-  const hasBoardCapException =
-    hcmUser?.exceptionSalaryCap.boardCapException ?? false;
 
   if (!approvalRequired) {
     return {
@@ -32,9 +34,17 @@ export const useSubmitDialogContent = (): DialogContent => {
   }
 
   let subContent: string;
-  if (hasBoardCapException) {
+  if (reason === ProgressiveApprovalTierReasonEnum.BoardCapException) {
     subContent = t(
       "You have a Board approved Maximum Allowable Salary (CAP) and your salary request exceeds that amount. As a result we need to get their approval for this request. We'll forward your request to them and get back to you with their decision.",
+    );
+  } else if (reason === ProgressiveApprovalTierReasonEnum.OverlappingRequests) {
+    subContent = t(
+      'You or your spouse has a pending Additional Salary Request, so this request needs additional approval. This will take {{timeframe}} as it needs to be signed off by {{approvers}}. This may affect your selected effective date.',
+      {
+        timeframe: progressiveApprovalTier?.approvalTimeframe,
+        approvers: progressiveApprovalTier?.approver,
+      },
     );
   } else {
     subContent = t(

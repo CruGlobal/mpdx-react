@@ -3,6 +3,7 @@ import { render, waitFor } from '@testing-library/react';
 import { DeepPartial } from 'ts-essentials';
 import { UserPersonTypeEnum } from 'pages/api/graphql-rest.page.generated';
 import { AutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
+import { ProgressiveApprovalTierReasonEnum } from 'src/graphql/types.generated';
 import { SalaryCalculationQuery } from '../../SalaryCalculatorContext/SalaryCalculation.generated';
 import {
   SalaryCalculatorTestWrapper,
@@ -182,6 +183,8 @@ As you set your salary level, the amount you receive should reflect the amount o
         effectiveCap: 10004,
         requestedGross: 15000,
       },
+      progressiveApprovalTierReason:
+        ProgressiveApprovalTierReasonEnum.OverUserCap,
     };
 
     it('renders when the SOSA user is over their effective cap', async () => {

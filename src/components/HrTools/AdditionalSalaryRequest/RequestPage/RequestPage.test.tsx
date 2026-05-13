@@ -10,6 +10,7 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import {
   AsrStatusEnum,
   ElectionType403bEnum,
+  ProgressiveApprovalTierReasonEnum,
 } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import { amount, phoneNumber } from 'src/lib/yupHelpers';
@@ -408,10 +409,10 @@ describe('RequestPage', () => {
       pageType: PageEnum.New,
       requestData: {
         latestAdditionalSalaryRequest: {
-          calculations: {
-            currentSalaryCap: 50,
-          },
+          calculations: {},
           progressiveApprovalTier: { id: 'tier-1' },
+          progressiveApprovalTierReason:
+            ProgressiveApprovalTierReasonEnum.OverUserCap,
         },
       },
     } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
@@ -452,22 +453,9 @@ describe('RequestPage', () => {
       currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
       pageType: PageEnum.New,
       spouse: {
-        currentSalary: { grossSalaryAmount: 40000 },
         staffInfo: {
           preferredName: 'Jane',
           lastName: 'Doe',
-        },
-      },
-      requestData: {
-        latestAdditionalSalaryRequest: {
-          calculations: {
-            currentSalaryCap: 500,
-            combinedCap: 100000,
-          },
-          spouseCalculations: {
-            currentSalaryCap: 50000,
-            pendingAsrAmount: 100,
-          },
         },
       },
     } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
@@ -526,6 +514,8 @@ describe('RequestPage', () => {
             pendingAsrAmount: 600,
           },
           progressiveApprovalTier: { id: 'tier-1' },
+          progressiveApprovalTierReason:
+            ProgressiveApprovalTierReasonEnum.OverUserCap,
         },
       },
     } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);
@@ -718,7 +708,6 @@ describe('RequestPage', () => {
       ...defaultMockContextValue,
       currentIndex: mockSteps.length - 2,
       currentStep: AdditionalSalaryRequestSectionEnum.CompleteForm,
-      hasBoardCapException: true,
       requestData: {
         latestAdditionalSalaryRequest: {
           id: 'asr-1',
@@ -730,6 +719,8 @@ describe('RequestPage', () => {
             pendingAsrAmount: 0,
           },
           progressiveApprovalTier: { id: 'tier-1' },
+          progressiveApprovalTierReason:
+            ProgressiveApprovalTierReasonEnum.BoardCapException,
         },
       },
     };
@@ -792,6 +783,7 @@ describe('RequestPage', () => {
               currentSalaryCap: 100000,
             },
             progressiveApprovalTier: null,
+            progressiveApprovalTierReason: null,
           },
         },
       } as unknown as ReturnType<typeof useAdditionalSalaryRequest>);

@@ -28,6 +28,7 @@ fragment SalaryRequestFields on SalaryRequest {
     approver
     approvalTimeframe
   }
+  progressiveApprovalTierReason
 }
 
 fragment CalculationFields on SalaryRequestCalculations {
