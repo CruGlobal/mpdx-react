@@ -174,7 +174,12 @@ export const TransferModal: React.FC<TransferModalProps> = ({
   const type = data.type || TransferTypeEnum.New;
   const isNew = type === TransferTypeEnum.New;
 
-  const { data: userData } = useGetUserQuery();
+  const { data: userData, loading: userLoading } = useGetUserQuery();
+
+  if (userLoading) {
+    return null;
+  }
+
   const trimmedLastName = userData?.user?.lastName?.trim();
   const defaultNote = trimmedLastName
     ? t('{{lastName}} Savings Fund Transfer in MPDX', {

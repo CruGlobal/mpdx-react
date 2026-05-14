@@ -8,12 +8,7 @@ import { DateTime } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
-import {
-  GetUserDocument,
-  GetUserQuery,
-} from 'src/components/User/GetUser.generated';
-import { UserTypeEnum } from 'src/graphql/types.generated';
-import { createCache } from 'src/lib/apollo/cache';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import theme from 'src/theme';
 import { StaffSavingFundProvider } from '../../StaffSavingFund/StaffSavingFundContext';
 import {
@@ -74,27 +69,6 @@ interface ComponentsProps {
   lastName?: string;
 }
 
-const buildCacheWithUser = (lastName: string) => {
-  const cache = createCache();
-  cache.writeQuery<GetUserQuery>({
-    query: GetUserDocument,
-    data: {
-      user: {
-        __typename: 'User',
-        id: 'test-user-id',
-        firstName: '',
-        lastName,
-        avatar: '',
-        staffAccountId: null,
-        primaryDesignation: null,
-        userType: UserTypeEnum.UsStaff,
-        preferences: null,
-      },
-    },
-  });
-  return cache;
-};
-
 const Components = ({
   transfer = transferDefaultData,
   type,
@@ -105,11 +79,16 @@ const Components = ({
       <LocalizationProvider dateAdapter={AdapterLuxon}>
         <TestRouter router={router}>
           <GqlMockedProvider<{
+            GetUser: GetUserQuery;
             createRecurringTransfer: CreateRecurringTransferMutation;
             createTransfer: CreateTransferMutation;
             updateRecurringTransfer: UpdateRecurringTransferMutation;
           }>
-            cache={buildCacheWithUser(lastName)}
+            mocks={{
+              GetUser: {
+                user: { lastName },
+              },
+            }}
             onCall={mutationSpy}
           >
             <StaffSavingFundProvider>
@@ -129,9 +108,15 @@ const Components = ({
   </SnackbarProvider>
 );
 
+const renderModal = async (props: ComponentsProps = {}) => {
+  const result = render(<Components {...props} />);
+  await result.findByText(/Fund Transfer/);
+  return result;
+};
+
 describe('TransferModal', () => {
-  it('should render the modal with correct inputs', () => {
-    const { getByRole, getByText } = render(<Components />);
+  it('should render the modal with correct inputs', async () => {
+    const { getByRole, getByText } = await renderModal();
 
     expect(getByText('New Fund Transfer')).toBeInTheDocument();
     expect(
@@ -145,8 +130,8 @@ describe('TransferModal', () => {
     expect(getByRole('spinbutton', { name: /amount/i })).toBeInTheDocument();
   });
 
-  it('should close modal when cancel button is clicked', () => {
-    const { getByRole } = render(<Components />);
+  it('should close modal when cancel button is clicked', async () => {
+    const { getByRole } = await renderModal();
 
     userEvent.click(getByRole('button', { name: /cancel/i }));
 
@@ -155,7 +140,7 @@ describe('TransferModal', () => {
 
   describe('Handle submit and validation', () => {
     it('should show validation errors for required fields', async () => {
-      const { getByRole, findByText } = render(<Components />);
+      const { getByRole, findByText } = await renderModal();
 
       const toAccount = getByRole('combobox', { name: /to account/i });
       const amountField = getByRole('spinbutton', { name: /amount/i });
@@ -174,7 +159,7 @@ describe('TransferModal', () => {
     });
 
     it('should validate amount is greater than $0.01', async () => {
-      const { getByRole, findByText } = render(<Components />);
+      const { getByRole, findByText } = await renderModal();
 
       const amountField = getByRole('spinbutton', { name: /amount/i });
 
@@ -203,7 +188,7 @@ describe('TransferModal', () => {
     ])(
       'should reject $label notes on one-time transfers',
       async ({ input }) => {
-        const { getByRole, findByText } = render(<Components />);
+        const { getByRole, findByText } = await renderModal();
 
         userEvent.click(getByRole('combobox', { name: /from account/i }));
         userEvent.click(getByRole('option', { name: /staff account/i }));
@@ -234,9 +219,8 @@ describe('TransferModal', () => {
     );
 
     it('should validate end date is after transfer date for recurring transfers', async () => {
-      const { getByRole, findByLabelText, getByLabelText, findByText } = render(
-        <Components />,
-      );
+      const { getByRole, findByLabelText, getByLabelText, findByText } =
+        await renderModal();
 
       userEvent.click(getByRole('radio', { name: /monthly/i }));
       expect(getByRole('radio', { name: /monthly/i })).toBeChecked();
@@ -263,7 +247,7 @@ describe('TransferModal', () => {
     });
 
     it('should submit form with valid data', async () => {
-      const { getByRole } = render(<Components />);
+      const { getByRole } = await renderModal();
 
       const fromAccount = getByRole('combobox', { name: /from account/i });
       const toAccount = getByRole('combobox', { name: /to account/i });
@@ -294,7 +278,7 @@ describe('TransferModal', () => {
     });
 
     it('should handle form submission successfully', async () => {
-      const { getByRole } = render(<Components />);
+      const { getByRole } = await renderModal();
 
       const fromAccount = getByRole('combobox', { name: /from account/i });
       const toAccount = getByRole('combobox', { name: /to account/i });
@@ -327,35 +311,35 @@ describe('TransferModal', () => {
   });
 
   describe('Inputs', () => {
-    it('should default the note to "<lastName> Savings Fund Transfer in MPDX" on new one-time transfers', () => {
-      const { getByRole } = render(<Components lastName="Sleight" />);
+    it('should default the note to "<lastName> Savings Fund Transfer in MPDX" on new one-time transfers', async () => {
+      const { getByRole } = await renderModal({ lastName: 'Sleight' });
 
       const noteField = getByRole('textbox', { name: /note/i });
       expect(noteField).toHaveValue('Sleight Savings Fund Transfer in MPDX');
     });
 
-    it('should not default the note when lastName is missing', () => {
-      const { getByRole } = render(<Components lastName="" />);
+    it('should not default the note when lastName is missing', async () => {
+      const { getByRole } = await renderModal({ lastName: '' });
 
       const noteField = getByRole('textbox', { name: /note/i });
       expect(noteField).toHaveValue('');
     });
 
-    it('should trim lastName when building the default note', () => {
-      const { getByRole } = render(<Components lastName="  Sleight  " />);
+    it('should trim lastName when building the default note', async () => {
+      const { getByRole } = await renderModal({ lastName: '  Sleight  ' });
 
       const noteField = getByRole('textbox', { name: /note/i });
       expect(noteField).toHaveValue('Sleight Savings Fund Transfer in MPDX');
     });
 
-    it('should not default the note when lastName is only whitespace', () => {
-      const { getByRole } = render(<Components lastName="   " />);
+    it('should not default the note when lastName is only whitespace', async () => {
+      const { getByRole } = await renderModal({ lastName: '   ' });
 
       const noteField = getByRole('textbox', { name: /note/i });
       expect(noteField).toHaveValue('');
     });
 
-    it('should populate initial values from data prop', () => {
+    it('should populate initial values from data prop', async () => {
       const dataWithValues: TransferModalData['transfer'] = {
         transferFrom: '70056dcb-1a0f-4279-b710-928bcdff811a',
         transferTo: '408caf15-cdfd-41d1-8778-aa42a6561b85',
@@ -366,16 +350,14 @@ describe('TransferModal', () => {
         note: 'Test note',
       };
 
-      const { getByDisplayValue, getByLabelText } = render(
-        <Components transfer={dataWithValues} type={TransferTypeEnum.Edit} />,
-      );
+      const { getByDisplayValue, getByLabelText } = await renderModal({ transfer: dataWithValues, type: TransferTypeEnum.Edit });
 
       expect(getByDisplayValue('500')).toBeInTheDocument();
       expect(getByLabelText(/end date/i)).toHaveValue('');
     });
 
     it('should validate that from and to accounts are different', async () => {
-      const { getByRole, queryByRole, getAllByRole } = render(<Components />);
+      const { getByRole, queryByRole, getAllByRole } = await renderModal();
 
       const [fromAccount, toAccount] = getAllByRole('combobox');
 
@@ -397,7 +379,7 @@ describe('TransferModal', () => {
     });
 
     it('should swap accounts when swap button is clicked', async () => {
-      const { getByRole, getByTestId } = render(<Components />);
+      const { getByRole, getByTestId } = await renderModal();
 
       const icon = getByTestId('SwapHorizIcon');
       const swapButton = icon.closest('button');
@@ -426,7 +408,7 @@ describe('TransferModal', () => {
     });
 
     it('should show/hide end date based on schedule selection', async () => {
-      const { getByRole, queryByRole, getByLabelText } = render(<Components />);
+      const { getByRole, queryByRole, getByLabelText } = await renderModal();
 
       expect(
         queryByRole('textbox', { name: /end date/i }),
@@ -448,7 +430,7 @@ describe('TransferModal', () => {
     });
 
     it('should show error message when monthly schedule is selected', async () => {
-      const { getByRole, getByLabelText, findByText } = render(<Components />);
+      const { getByRole, getByLabelText, findByText } = await renderModal();
 
       userEvent.click(getByRole('radio', { name: /monthly/i }));
       expect(getByRole('radio', { name: /monthly/i })).toBeChecked();
@@ -474,9 +456,7 @@ describe('TransferModal', () => {
         note: 'Test note',
       };
 
-      const { getByLabelText, findByText } = render(
-        <Components transfer={dataWithValues} type={TransferTypeEnum.Edit} />,
-      );
+      const { getByLabelText, findByText } = await renderModal({ transfer: dataWithValues, type: TransferTypeEnum.Edit });
 
       const transferDate = getByLabelText(/transfer date/i);
 
@@ -491,7 +471,7 @@ describe('TransferModal', () => {
     });
 
     it('should show information box when amount exceeds limit', async () => {
-      const { getByRole, findByRole } = render(<Components />);
+      const { getByRole, findByRole } = await renderModal();
 
       const fromAccount = getByRole('combobox', { name: /from account/i });
       const toAccount = getByRole('combobox', { name: /to account/i });
@@ -517,14 +497,14 @@ describe('TransferModal', () => {
       ).toBeInTheDocument();
     });
 
-    it('should show proper currency symbol in amount field', () => {
-      const { getByText } = render(<Components />);
+    it('should show proper currency symbol in amount field', async () => {
+      const { getByText } = await renderModal();
 
       expect(getByText('$')).toBeInTheDocument();
     });
 
     it('should handle different schedule types', async () => {
-      const { getByRole } = render(<Components />);
+      const { getByRole } = await renderModal();
 
       expect(getByRole('radio', { name: /one time/i })).toBeChecked();
 
@@ -537,7 +517,7 @@ describe('TransferModal', () => {
 
   describe('Mutations', () => {
     it('should create a one-time transfer', async () => {
-      const { getByRole } = render(<Components />);
+      const { getByRole } = await renderModal();
 
       const amountField = getByRole('spinbutton', { name: /amount/i });
       const noteField = getByRole('textbox', { name: /note/i });
@@ -574,7 +554,7 @@ describe('TransferModal', () => {
     });
 
     it('should create a recurring transfer', async () => {
-      const { getByRole, getByLabelText } = render(<Components />);
+      const { getByRole, getByLabelText } = await renderModal();
 
       const amountField = getByRole('spinbutton', { name: /amount/i });
 
@@ -636,9 +616,7 @@ describe('TransferModal', () => {
         recurringId: 'recurring-id',
       };
 
-      const { getByRole, getByLabelText } = render(
-        <Components transfer={dataWithValues} type={TransferTypeEnum.Edit} />,
-      );
+      const { getByRole, getByLabelText } = await renderModal({ transfer: dataWithValues, type: TransferTypeEnum.Edit });
 
       const amountField = getByRole('spinbutton', { name: /amount/i });
 
@@ -689,8 +667,8 @@ describe('TransferModal', () => {
   });
 
   describe('New Mode', () => {
-    it('should display selects', () => {
-      const { getByRole } = render(<Components type={TransferTypeEnum.New} />);
+    it('should display selects', async () => {
+      const { getByRole } = await renderModal({ type: TransferTypeEnum.New });
 
       const fromAccount = getByRole('combobox', { name: /from account/i });
       const toAccount = getByRole('combobox', { name: /to account/i });
