@@ -33,7 +33,7 @@ const MinisterHousingAllowancePage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>{`${appName} | ${t('HR Tools | MHA Calculation Form')}`}</title>
+        <title>{`${appName} | ${t('HR Tools | MHA Calculation Tool')}`}</title>
       </Head>
       <UserTypeAccess
         requireStaffAccount
