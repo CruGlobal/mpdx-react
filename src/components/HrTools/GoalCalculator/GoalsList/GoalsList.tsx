@@ -65,7 +65,7 @@ export const GoalsList: React.FC = () => {
         </Button>
         <Button
           variant="outlined"
-          href="https://docs.google.com/document/d/16eAKM-VZU8D6X1h9H-3bm1_cGyyYEp40bhCayQO6KPY/edit?tab=t.0"
+          href="https://docs.google.com/document/d/1w830y-UUOnhESka9bwA43ozb_2PgFIXp4YZITPbqUx4/edit?tab=t.0"
           target="_blank"
           rel="noopener noreferrer"
           aria-label={t('Learn About Goalsetting (opens in a new tab)')}
