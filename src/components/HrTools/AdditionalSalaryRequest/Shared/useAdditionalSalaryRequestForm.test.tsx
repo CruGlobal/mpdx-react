@@ -1,14 +1,22 @@
 import { ThemeProvider } from '@mui/material/styles';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import { DeepPartial } from 'ts-essentials';
-import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
 import { PageEnum } from 'src/components/HrTools/Shared/CalculationReports/Shared/sharedTypes';
-import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
-import { ElectionType403bEnum } from 'src/graphql/types.generated';
+import {
+  HcmDocument,
+  HcmQuery,
+} from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
+import {
+  ElectionType403bEnum,
+  ProgressiveApprovalTierReasonEnum,
+} from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
 import theme from 'src/theme';
 import { CompleteFormValues } from '../AdditionalSalaryRequest';
 import {
+  AdditionalSalaryRequestDetailsFieldsFragment,
+  AdditionalSalaryRequestDetailsFieldsFragmentDoc,
   AdditionalSalaryRequestQuery,
   SubmitAdditionalSalaryRequestMutation,
   UpdateAdditionalSalaryRequestMutation,
@@ -39,7 +47,7 @@ const mockUseAdditionalSalaryRequest =
 
 const mockHandleNextStep = jest.fn();
 
-const defaultMockContextValue: AdditionalSalaryRequestType = {
+const defaultMockContextValue = {
   staffAccountId: 'staff-account-1',
   staffAccountIdLoading: false,
   steps: [],
@@ -51,16 +59,21 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   isDrawerOpen: true,
   toggleDrawer: jest.fn(),
   requestData: {
-    latestAdditionalSalaryRequest: {
-      phoneNumber: '555-123-4567',
-      traditional403bContribution: 0.12,
-      calculations: {
-        currentSalaryCap: 100000,
-        staffAccountBalance: 50000,
-        pendingAsrAmount: 0,
-      },
-    },
-  } as unknown as AdditionalSalaryRequestQuery,
+    latestAdditionalSalaryRequest:
+      gqlMock<AdditionalSalaryRequestDetailsFieldsFragment>(
+        AdditionalSalaryRequestDetailsFieldsFragmentDoc,
+        {
+          mocks: {
+            phoneNumber: '555-123-4567',
+            calculations: {
+              currentSalaryCap: 100000,
+              staffAccountBalance: 50000,
+              pendingAsrAmount: 0,
+            },
+          },
+        },
+      ),
+  },
   loading: false,
   requestError: undefined,
   pageType: PageEnum.New,
@@ -69,19 +82,21 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   setPendingPrint: jest.fn(),
   handleDeleteRequest: jest.fn(),
   requestId: 'test-request-id',
-  user: {
-    staffInfo: {
-      id: 'staff-1',
-      firstName: 'John',
-      lastName: 'Doe',
-      preferredName: 'Doe, John',
-      personNumber: '00123456',
-      emailAddress: 'john.doe@example.com',
+  user: gqlMock<HcmQuery>(HcmDocument, {
+    mocks: {
+      staffInfo: {
+        id: 'staff-1',
+        firstName: 'John',
+        lastName: 'Doe',
+        preferredName: 'Doe, John',
+        personNumber: '00123456',
+        emailAddress: 'john.doe@example.com',
+      },
+      currentSalary: {
+        grossSalaryAmount: 40000,
+      },
     },
-    currentSalary: {
-      grossSalaryAmount: 40000,
-    },
-  } as unknown as HcmQuery['hcm'][0],
+  }).hcm[0],
   spouse: undefined,
   salaryInfo: {
     id: '1',
@@ -106,7 +121,7 @@ const defaultMockContextValue: AdditionalSalaryRequestType = {
   isPending: false,
   isApproved: false,
   fieldConfig,
-};
+} satisfies AdditionalSalaryRequestType;
 
 const defaultFormValues: CompleteFormValues = {
   currentYearSalaryNotReceived: '0',
@@ -304,9 +319,16 @@ describe('useAdditionalSalaryRequestForm', () => {
 
   describe('validation', () => {
     it('should require phone number', async () => {
-      const { result } = renderHook(() => useAdditionalSalaryRequestForm(), {
-        wrapper: TestWrapper,
-      });
+      const { result } = renderHook(
+        () =>
+          useAdditionalSalaryRequestForm({
+            ...defaultFormValues,
+            phoneNumber: '',
+          }),
+        {
+          wrapper: TestWrapper,
+        },
+      );
 
       let errors: Record<string, string> = {};
       await act(async () => {
@@ -488,10 +510,6 @@ describe('useAdditionalSalaryRequestForm', () => {
     });
 
     it('should not require additional info when exceedsCap is true and user has board cap exception', async () => {
-      mockUseAdditionalSalaryRequest.mockReturnValue({
-        ...defaultMockContextValue,
-      });
-
       const { result } = renderHook(
         () =>
           useAdditionalSalaryRequestForm({
@@ -500,9 +518,28 @@ describe('useAdditionalSalaryRequestForm', () => {
             additionalSalaryWithinMax: '70000',
           }),
         {
-          wrapper: TestWrapper,
+          wrapper: ({ children }) => (
+            <TestWrapper
+              mocks={{
+                AdditionalSalaryRequest: {
+                  latestAdditionalSalaryRequest: {
+                    ...defaultGqlMocks.AdditionalSalaryRequest
+                      ?.latestAdditionalSalaryRequest,
+                    progressiveApprovalTierReason:
+                      ProgressiveApprovalTierReasonEnum.BoardCapException,
+                  },
+                },
+              }}
+            >
+              {children as React.ReactElement}
+            </TestWrapper>
+          ),
         },
       );
+
+      await waitFor(() => {
+        expect(mutationSpy).toHaveGraphqlOperation('AdditionalSalaryRequest');
+      });
 
       let errors: Record<string, string> = {};
       await act(async () => {
