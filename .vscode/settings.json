@@ -16,7 +16,7 @@
     "**/.pnp.*": true
   },
   "eslint.nodePath": ".yarn/sdks",
-  "prettier.prettierPath": ".yarn/sdks/prettier/index.js",
+  "prettier.prettierPath": ".yarn/sdks/prettier/index.cjs",
   "js/ts.tsdk.promptToUseWorkspaceVersion": true,
   "jest.jestCommandLine": "yarn jest",
   "editor.bracketPairColorization.enabled": true
