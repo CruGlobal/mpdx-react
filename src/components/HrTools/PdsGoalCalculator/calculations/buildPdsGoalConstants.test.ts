@@ -108,7 +108,7 @@ describe('buildPdsGoalConstants', () => {
     expect(result).toBeNull();
   });
 
-  it('defaults geographicMultiplier to 1 (no adjustment) for unknown location', () => {
+  it('defaults geographicMultiplier to 0 (no adjustment) for unknown location', () => {
     const result = buildPdsGoalConstants(
       buildMiscConstants(),
       defaultGeoMap,
@@ -116,10 +116,10 @@ describe('buildPdsGoalConstants', () => {
       null,
     );
 
-    expect(result?.geographicMultiplier).toBe(1);
+    expect(result?.geographicMultiplier).toBe(0);
   });
 
-  it('defaults geographicMultiplier to 1 (no adjustment) when location is null', () => {
+  it('defaults geographicMultiplier to 0 (no adjustment) when location is null', () => {
     const result = buildPdsGoalConstants(
       buildMiscConstants(),
       defaultGeoMap,
@@ -127,10 +127,10 @@ describe('buildPdsGoalConstants', () => {
       null,
     );
 
-    expect(result?.geographicMultiplier).toBe(1);
+    expect(result?.geographicMultiplier).toBe(0);
   });
 
-  it('defaults geographicMultiplier to 1 (no adjustment) when location is undefined', () => {
+  it('defaults geographicMultiplier to 0 (no adjustment) when location is undefined', () => {
     const result = buildPdsGoalConstants(
       buildMiscConstants(),
       defaultGeoMap,
@@ -138,7 +138,7 @@ describe('buildPdsGoalConstants', () => {
       null,
     );
 
-    expect(result?.geographicMultiplier).toBe(1);
+    expect(result?.geographicMultiplier).toBe(0);
   });
 
   it('looks up correct geographic multiplier', () => {

@@ -43,10 +43,8 @@ export const buildPdsGoalConstants = (
   ) {
     return null;
   }
-  // Multiplier is the *full* factor applied to monthlyBase (e.g. 1.06 for a
-  // 6% high-cost location), so the no-adjustment default must be 1, not 0.
   const geographicMultiplier =
-    goalGeographicConstantMap.get(geographicLocation ?? '') ?? 1;
+    goalGeographicConstantMap.get(geographicLocation ?? '') ?? 0;
 
   const taxDeferredPct =
     (fourOThreeB?.currentTaxDeferredContributionPercentage ?? 0) / 100;

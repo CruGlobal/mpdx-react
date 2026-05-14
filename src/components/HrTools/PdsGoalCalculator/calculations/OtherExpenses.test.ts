@@ -137,18 +137,18 @@ describe('calculateOtherExpenses', () => {
   });
 
   describe('credit card fees', () => {
-    it('is 6% of (subtotal + attrition)', () => {
+    it('grosses up (subtotal + attrition) so that fees are `creditCardFeeRate` of the post-fees total', () => {
       const result = calculateOtherExpenses(fullTime(), defaultConstants);
-      // (7400 + 444) * 0.06
-      expect(result.creditCardFees).toBeCloseTo(470.64);
+      // (7400 + 444) / (1 - 0.06) - (7400 + 444) ≈ 500.68
+      expect(result.creditCardFees).toBeCloseTo(500.68);
     });
   });
 
   describe('assessment', () => {
     it('grosses up (subtotal + creditCardFees + attrition) so that admin is `adminRate` of the post-admin total', () => {
       const result = calculateOtherExpenses(fullTime(), defaultConstants);
-      // adminBase=7400+470.64+444=8314.64; assessment = adminBase/0.88 - adminBase ≈ 1133.81
-      expect(result.assessment).toBeCloseTo(1133.81, 1);
+      // adminBase=7400+500.68+444=8344.68; assessment = adminBase/0.88 - adminBase ≈ 1137.91
+      expect(result.assessment).toBeCloseTo(1137.91, 1);
     });
 
     it('returns 0 when adminRate is 0', () => {
@@ -169,8 +169,8 @@ describe('calculateOtherExpenses', () => {
       expect(result.benefits).toBe(1500);
       expect(result.subtotal).toBeCloseTo(7400);
       expect(result.attrition).toBeCloseTo(444);
-      expect(result.creditCardFees).toBeCloseTo(470.64);
-      expect(result.assessment).toBeCloseTo(1133.81, 1);
+      expect(result.creditCardFees).toBeCloseTo(500.68);
+      expect(result.assessment).toBeCloseTo(1137.91, 1);
     });
 
     it('produces correct totals for a part-time employee', () => {
@@ -178,13 +178,13 @@ describe('calculateOtherExpenses', () => {
       // reimbursable=500, 403b=400, workComp=4000*0.17=680, benefits=0
       // subtotal=5000+500+400+680+0=6580
       // attrition=6580*0.06=394.80
-      // creditCardFees=(6580+394.80)*0.06=418.49
-      // adminBase=6580+418.49+394.80=7393.29
-      // assessment = adminBase/0.88 - adminBase ≈ 1008.18
+      // creditCardFees=(6580+394.80)/(1-0.06)-(6580+394.80)≈445.20
+      // adminBase=6580+445.20+394.80=7420
+      // assessment = adminBase/0.88 - adminBase ≈ 1011.82
       expect(result.subtotal).toBeCloseTo(6580);
       expect(result.attrition).toBeCloseTo(394.8);
-      expect(result.creditCardFees).toBeCloseTo(418.49, 1);
-      expect(result.assessment).toBeCloseTo(1008.18, 1);
+      expect(result.creditCardFees).toBeCloseTo(445.2, 1);
+      expect(result.assessment).toBeCloseTo(1011.82, 1);
     });
   });
 });

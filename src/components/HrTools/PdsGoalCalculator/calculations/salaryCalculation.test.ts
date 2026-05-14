@@ -5,7 +5,7 @@ import {
 } from './salaryCalculation';
 
 const FICA_RATE = 0.08;
-const GEO_MULTIPLIER = 1.06;
+const GEO_MULTIPLIER = 0.06;
 
 const salaried = (
   overrides: Partial<SalaryCalculationFields> = {},
@@ -32,26 +32,26 @@ describe('calculateSalaryTotals', () => {
   describe('salaried', () => {
     it('divides yearly payRate by 12 when there is no geographic multiplier', () => {
       const result = calculateSalaryTotals(salaried(), {
-        geographicMultiplier: 1,
+        geographicMultiplier: 0,
         employerFicaRate: FICA_RATE,
       });
       // 60000 / 12
       expect(result.grossMonthlyPay).toBe(5000);
     });
 
-    it('applies geographic multiplier as a full factor', () => {
+    it('applies geographic multiplier as a delta to the monthly base', () => {
       const result = calculateSalaryTotals(salaried(), {
         geographicMultiplier: GEO_MULTIPLIER,
         employerFicaRate: FICA_RATE,
       });
-      // (60000 / 12) * 1.06
+      // (60000 / 12) * (1 + 0.06)
       expect(result.grossMonthlyPay).toBeCloseTo(5300);
     });
 
     it('ignores hoursWorkedPerWeek', () => {
       const result = calculateSalaryTotals(
         salaried({ hoursWorkedPerWeek: 40 }),
-        { geographicMultiplier: 1, employerFicaRate: FICA_RATE },
+        { geographicMultiplier: 0, employerFicaRate: FICA_RATE },
       );
       expect(result.grossMonthlyPay).toBe(5000);
     });
@@ -60,7 +60,7 @@ describe('calculateSalaryTotals', () => {
   describe('hourly', () => {
     it('converts hourly rate to monthly when there is no geographic multiplier', () => {
       const result = calculateSalaryTotals(hourly(), {
-        geographicMultiplier: 1,
+        geographicMultiplier: 0,
         employerFicaRate: FICA_RATE,
       });
       // 25 * 40 * 52 / 12
@@ -72,7 +72,7 @@ describe('calculateSalaryTotals', () => {
         geographicMultiplier: GEO_MULTIPLIER,
         employerFicaRate: FICA_RATE,
       });
-      // (25 * 40 * 52 / 12) * 1.06
+      // (25 * 40 * 52 / 12) * (1 + 0.06)
       expect(result.grossMonthlyPay).toBeCloseTo(4593.333, 2);
     });
   });
@@ -91,7 +91,7 @@ describe('calculateSalaryTotals', () => {
     it('treats null hoursWorkedPerWeek as 0 when hourly', () => {
       const result = calculateSalaryTotals(
         hourly({ hoursWorkedPerWeek: null }),
-        { geographicMultiplier: 1, employerFicaRate: FICA_RATE },
+        { geographicMultiplier: 0, employerFicaRate: FICA_RATE },
       );
       expect(result.grossMonthlyPay).toBe(0);
     });
@@ -100,7 +100,7 @@ describe('calculateSalaryTotals', () => {
   describe('employer FICA and subtotal', () => {
     it('multiplies grossMonthlyPay by the provided FICA rate', () => {
       const result = calculateSalaryTotals(salaried(), {
-        geographicMultiplier: 1,
+        geographicMultiplier: 0,
         employerFicaRate: FICA_RATE,
       });
       expect(result.employerFica).toBeCloseTo(400);
@@ -108,7 +108,7 @@ describe('calculateSalaryTotals', () => {
 
     it('uses the passed-in FICA rate verbatim (no fallback applied)', () => {
       const result = calculateSalaryTotals(salaried(), {
-        geographicMultiplier: 1,
+        geographicMultiplier: 0,
         employerFicaRate: 0.0765,
       });
       expect(result.employerFica).toBeCloseTo(382.5);
