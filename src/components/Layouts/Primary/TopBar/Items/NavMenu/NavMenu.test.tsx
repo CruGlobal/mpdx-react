@@ -164,7 +164,7 @@ describe('NavMenu', () => {
       getByRole('menuitem', { name: 'MPD Goal Calculator' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('menuitem', { name: 'MHA Calculation Form' }),
+      getByRole('menuitem', { name: 'MHA Calculation Tool' }),
     ).toBeInTheDocument();
     expect(
       getByRole('menuitem', { name: 'Additional Salary Request' }),
