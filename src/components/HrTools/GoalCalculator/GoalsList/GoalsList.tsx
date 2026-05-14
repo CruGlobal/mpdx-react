@@ -63,7 +63,15 @@ export const GoalsList: React.FC = () => {
         <Button variant="contained" onClick={handleCreateGoal}>
           {t('Create a New Goal')}
         </Button>
-        <Button variant="outlined">{t('Learn About Goalsetting')}</Button>
+        <Button
+          variant="outlined"
+          href="https://docs.google.com/document/d/1w830y-UUOnhESka9bwA43ozb_2PgFIXp4YZITPbqUx4/edit?tab=t.0"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={t('Learn About Goalsetting (opens in a new tab)')}
+        >
+          {t('Learn About Goalsetting')}
+        </Button>
       </Stack>
 
       {loading ? (
