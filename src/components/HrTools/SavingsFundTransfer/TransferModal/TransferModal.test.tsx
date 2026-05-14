@@ -350,7 +350,10 @@ describe('TransferModal', () => {
         note: 'Test note',
       };
 
-      const { getByDisplayValue, getByLabelText } = await renderModal({ transfer: dataWithValues, type: TransferTypeEnum.Edit });
+      const { getByDisplayValue, getByLabelText } = await renderModal({
+        transfer: dataWithValues,
+        type: TransferTypeEnum.Edit,
+      });
 
       expect(getByDisplayValue('500')).toBeInTheDocument();
       expect(getByLabelText(/end date/i)).toHaveValue('');
@@ -456,7 +459,10 @@ describe('TransferModal', () => {
         note: 'Test note',
       };
 
-      const { getByLabelText, findByText } = await renderModal({ transfer: dataWithValues, type: TransferTypeEnum.Edit });
+      const { getByLabelText, findByText } = await renderModal({
+        transfer: dataWithValues,
+        type: TransferTypeEnum.Edit,
+      });
 
       const transferDate = getByLabelText(/transfer date/i);
 
@@ -616,7 +622,10 @@ describe('TransferModal', () => {
         recurringId: 'recurring-id',
       };
 
-      const { getByRole, getByLabelText } = await renderModal({ transfer: dataWithValues, type: TransferTypeEnum.Edit });
+      const { getByRole, getByLabelText } = await renderModal({
+        transfer: dataWithValues,
+        type: TransferTypeEnum.Edit,
+      });
 
       const amountField = getByRole('spinbutton', { name: /amount/i });
 
