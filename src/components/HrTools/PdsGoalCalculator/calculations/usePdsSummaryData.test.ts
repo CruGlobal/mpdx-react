@@ -318,6 +318,23 @@ describe('usePdsSummaryData', () => {
       );
       expect(result.current?.overallTotal).toBeCloseTo(9995.16, 0);
     });
+
+    it('computes correct overallTotal for a part-time hourly employee', () => {
+      const calc = {
+        ...defaultCalculation,
+        salaryOrHourly: DesignationSupportSalaryType.Hourly,
+        status: DesignationSupportStatus.PartTime,
+        payRate: 25,
+        hoursWorkedPerWeek: 20,
+        benefits: null,
+      };
+      const { result } = renderHook(() =>
+        usePdsSummaryData(calc, defaultHcmUser),
+      );
+      expect(result.current?.overallTotal).toBeGreaterThan(0);
+      expect(result.current?.otherTotals.workComp).toBeGreaterThan(0);
+      expect(result.current?.otherTotals.benefits).toBe(0);
+    });
   });
 
   describe('result shape', () => {
