@@ -107,16 +107,15 @@ export const GoalCard: React.FC<GoalCardProps> = ({
       />
 
       <StyledCard>
-        <StyledHeaderBox sx={badge ? { gap: 1 } : undefined}>
+        <StyledHeaderBox
+          sx={badge ? { flexDirection: 'column', gap: 1 } : undefined}
+        >
           <Tooltip title={displayName}>
             <Typography
               data-testid="goal-name"
               variant="h6"
               noWrap
-              sx={{
-                textAlign: 'center',
-                ...(badge ? { minWidth: 0 } : { width: '100%' }),
-              }}
+              sx={{ textAlign: 'center', width: '100%' }}
             >
               {displayName}
             </Typography>
