@@ -1,6 +1,5 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { PdsGoalCalculatorTestWrapper } from '../PdsGoalCalculatorTestWrapper';
 import { TotalReimbursableSection } from './TotalReimbursableSection';
 
@@ -40,22 +39,14 @@ describe('TotalReimbursableSection', () => {
     ).toBeInTheDocument();
   });
 
-  it('renders the info icon with an accessible label', async () => {
-    const { findByLabelText } = render(<TestComponent />);
+  it('renders the description text below the heading', async () => {
+    const { findByText } = render(<TestComponent />);
 
     expect(
-      await findByLabelText('Total reimbursable information'),
+      await findByText(
+        'Reimbursable expenses have a $300 per month minimum. If the sum of your monthly entries (plus annual entries divided by 12) falls below $300, the $300 minimum is used in your support goal instead.',
+      ),
     ).toBeInTheDocument();
-  });
-
-  it('shows a tooltip describing the $300 minimum floor on hover', async () => {
-    const { findByLabelText, findByRole } = render(<TestComponent />);
-
-    userEvent.hover(await findByLabelText('Total reimbursable information'));
-
-    expect(await findByRole('tooltip')).toHaveTextContent(
-      'The total is the greater of the $300 minimum or your calculated amount.',
-    );
   });
 
   it('applies the $300 floor when the calculated amount is below it', async () => {

@@ -4,12 +4,14 @@ import {
   Box,
   Card,
   FormHelperText,
+  IconButton,
   Stack,
   Tooltip,
   Typography,
   styled,
 } from '@mui/material';
 import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
@@ -24,17 +26,19 @@ export interface ReimbursableField {
   fieldName: ReimbursableFieldName;
   label: string;
   max?: number;
+  tooltip?: string;
 }
 
 interface ReimbursableRow {
   id: ReimbursableFieldName | 'total';
   label: string;
   amount: number;
+  tooltip?: string;
 }
 
 interface ReimbursableExpensesGridProps {
   title: string;
-  titleTooltip?: string;
+  description?: string;
   fields: ReimbursableField[];
   subtotalLabel: string;
   subtotalValue: number;
@@ -58,7 +62,7 @@ export const ReimbursableExpensesGrid: React.FC<
   ReimbursableExpensesGridProps
 > = ({
   title,
-  titleTooltip,
+  description,
   fields,
   subtotalLabel,
   subtotalValue,
@@ -66,6 +70,7 @@ export const ReimbursableExpensesGrid: React.FC<
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const { enqueueSnackbar } = useSnackbar();
   const { calculation } = usePdsGoalCalculator();
   const saveField = useSaveField();
   const [cellErrors, setCellErrors] = useState<Record<string, string>>({});
@@ -74,23 +79,12 @@ export const ReimbursableExpensesGrid: React.FC<
     return null;
   }
 
-  const validateAmount = (field: ReimbursableField, amount: number) => {
-    if (amount < 0) {
-      return t('Amount must be positive');
-    }
-    if (field.max !== undefined && amount > field.max) {
-      return t('Amount cannot exceed {{max}}', {
-        max: currencyFormat(field.max, 'USD', locale),
-      });
-    }
-    return null;
-  };
-
   const rows: ReimbursableRow[] = [
     ...fields.map((field) => ({
       id: field.fieldName,
       label: field.label,
       amount: calculation[field.fieldName] ?? 0,
+      tooltip: field.tooltip,
     })),
     { id: 'total', label: subtotalLabel, amount: subtotalValue },
   ];
@@ -101,25 +95,62 @@ export const ReimbursableExpensesGrid: React.FC<
       return newRow;
     }
 
-    const { amount } = newRow;
     const cellKey = `${field.fieldName}-amount`;
-    const error = validateAmount(field, amount);
+
+    if (newRow.amount < 0) {
+      setCellErrors((prev) => ({
+        ...prev,
+        [cellKey]: t('Amount must be positive'),
+      }));
+      return newRow;
+    }
+
+    let amount = newRow.amount;
+    if (field.max !== undefined && newRow.amount > field.max) {
+      amount = field.max;
+      enqueueSnackbar(
+        t('{{label}} reduced to its maximum of {{max}}.', {
+          label: field.label,
+          max: currencyFormat(field.max, 'USD', locale),
+        }),
+        { variant: 'info' },
+      );
+    }
 
     setCellErrors((prev) => {
-      const next = { ...prev };
-      if (error) {
-        next[cellKey] = error;
-      } else {
-        delete next[cellKey];
+      if (!(cellKey in prev)) {
+        return prev;
       }
+      const next = { ...prev };
+      delete next[cellKey];
       return next;
     });
 
-    if (!error) {
-      await saveField({ [field.fieldName]: amount });
-    }
+    await saveField({ [field.fieldName]: amount });
 
-    return newRow;
+    return { ...newRow, amount };
+  };
+
+  const renderLabelCell = (params: GridRenderCellParams<ReimbursableRow>) => {
+    const { row } = params;
+    if (!row.tooltip) {
+      return row.label;
+    }
+    return (
+      <Stack direction="row" alignItems="center" gap={0.5}>
+        <span>{row.label}</span>
+        <Tooltip title={row.tooltip}>
+          <IconButton
+            size="small"
+            aria-label={row.tooltip}
+            disableRipple
+            sx={{ p: 0 }}
+          >
+            <InfoIcon color="action" fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      </Stack>
+    );
   };
 
   const renderAmountCell = (params: GridRenderCellParams<ReimbursableRow>) => {
@@ -145,6 +176,7 @@ export const ReimbursableExpensesGrid: React.FC<
       flex: 1,
       minWidth: 200,
       sortable: false,
+      renderCell: renderLabelCell,
     },
     {
       field: 'amount',
@@ -162,14 +194,14 @@ export const ReimbursableExpensesGrid: React.FC<
 
   return (
     <>
-      <Stack direction="row" alignItems="center" gap={0.5} pb={2}>
+      <Box pb={2}>
         <Typography variant="h6">{title}</Typography>
-        {titleTooltip && (
-          <Tooltip title={titleTooltip}>
-            <InfoIcon color="action" aria-label={titleTooltip} />
-          </Tooltip>
+        {description && (
+          <Typography variant="body2" color="text.secondary" pt={0.5}>
+            {description}
+          </Typography>
         )}
-      </Stack>
+      </Box>
       <StyledCard>
         <BaseGrid
           rows={rows}

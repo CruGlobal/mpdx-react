@@ -23,11 +23,16 @@ const CategoryCellBox = styled(Box)({
   height: '100%',
 });
 
+const AmountSuffix = styled('span')(({ theme }) => ({
+  marginLeft: theme.spacing(1),
+}));
+
 export interface SalaryBreakdownRow {
   id: string;
   category: string;
   formula?: string;
   amount: number;
+  amountSuffix?: string;
   format: AmountFormat;
   testId?: string;
 }
@@ -39,13 +44,22 @@ export const buildSalaryBreakdownRows = (
   t: TFunction,
 ): SalaryBreakdownRow[] => {
   const { geographicMultiplier, employerFicaRate } = constants;
-  const { salaryOrHourly } = calculation;
+  const { salaryOrHourly, geographicLocation } = calculation;
   const payRate = calculation.payRate ?? 0;
   const hoursPerWeek = calculation.hoursWorkedPerWeek ?? 0;
   const isSalaried = salaryOrHourly === DesignationSupportSalaryType.Salaried;
 
   const { monthlyBase, grossMonthlyPay, employerFica, subtotal } =
     calculateSalaryTotals(calculation, constants);
+
+  const geographicMultiplierSuffix = geographicLocation
+    ? `(${geographicLocation})`
+    : undefined;
+  const grossMonthlyPayFormula = geographicLocation
+    ? t('Monthly Base × (1 + Geographic Multiplier ({{location}}))', {
+        location: geographicLocation,
+      })
+    : t('Monthly Base × (1 + Geographic Multiplier)');
 
   return [
     {
@@ -77,12 +91,13 @@ export const buildSalaryBreakdownRows = (
       id: 'geographic-multiplier',
       category: t('Geographic Multiplier'),
       amount: geographicMultiplier,
+      amountSuffix: geographicMultiplierSuffix,
       format: 'percentage',
     },
     {
       id: 'gross-monthly-pay',
       category: t('Gross Monthly Pay'),
-      formula: t('Monthly Base × (1 + Geographic Multiplier)'),
+      formula: grossMonthlyPayFormula,
       amount: grossMonthlyPay,
       format: 'currency',
       testId: 'gross-monthly-pay',
@@ -135,14 +150,19 @@ export const buildSalaryBreakdownColumns = (
     align: 'left',
     headerAlign: 'left',
     renderCell: (params: GridRenderCellParams<SalaryBreakdownRow>) => {
-      const { amount, format, testId } = params.row;
+      const { amount, amountSuffix, format, testId } = params.row;
       const formatted =
         format === 'currency'
           ? currencyFormat(amount, 'USD', locale)
           : format === 'percentage'
             ? percentageFormat(amount, locale)
             : numberFormat(amount, locale);
-      return <span data-testid={testId}>{formatted}</span>;
+      return (
+        <span data-testid={testId}>
+          {formatted}
+          {amountSuffix && <AmountSuffix>{amountSuffix}</AmountSuffix>}
+        </span>
+      );
     },
   },
 ];

@@ -45,11 +45,11 @@ describe('AnnualReimbursableSection', () => {
     expect(getAllByRole('row')).toHaveLength(5);
   });
 
-  it('renders the info tooltip icon with an accessible label', async () => {
-    const { findByLabelText } = render(<TestComponent />);
+  it('renders the description text below the heading', async () => {
+    const { findByText } = render(<TestComponent />);
 
     expect(
-      await findByLabelText(
+      await findByText(
         'This annual amount will be divided by 12 when added to the total.',
       ),
     ).toBeInTheDocument();

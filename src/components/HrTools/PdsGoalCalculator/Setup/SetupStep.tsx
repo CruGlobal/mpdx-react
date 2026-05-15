@@ -24,6 +24,8 @@ import {
   DesignationSupportStatus,
 } from 'src/graphql/types.generated';
 import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
+import { useLocale } from 'src/hooks/useLocale';
+import { percentageFormat } from 'src/lib/intlFormat';
 import {
   CurrencyAdornment,
   PercentageAdornment,
@@ -36,7 +38,8 @@ import { HoursPerWeekGrid } from './HoursPerWeekGrid/HoursPerWeekGrid';
 export const SetupStep: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { calculation, hcmUser, setRightPanelContent } = usePdsGoalCalculator();
+  const { calculation, hcmUser, isMutating, setRightPanelContent } =
+    usePdsGoalCalculator();
   const { data: userData } = useGetUserQuery();
   const schema = useMemo(
     () =>
@@ -74,11 +77,20 @@ export const SetupStep: React.FC = () => {
   );
   const { goalGeographicConstantMap } = useGoalCalculatorConstants();
   const saveField = useSaveField();
+  const locale = useLocale();
 
   const locations = useMemo(
     () => Array.from(goalGeographicConstantMap.keys()),
     [goalGeographicConstantMap],
   );
+
+  const getLocationLabel = (location: string) => {
+    const multiplier = goalGeographicConstantMap.get(location);
+    if (multiplier === undefined || multiplier === 0) {
+      return location;
+    }
+    return `${location} (${percentageFormat(multiplier, locale)})`;
+  };
 
   const isSalaried =
     calculation?.salaryOrHourly === DesignationSupportSalaryType.Salaried;
@@ -148,9 +160,20 @@ export const SetupStep: React.FC = () => {
               schema={schema}
               select
               label={t('Form Type')}
-              helperText={t(
-                'Default includes reimbursable expenses and 403b contributions in the goal total. Simple excludes them; existing entries are preserved and will count again if you switch back.',
-              )}
+              helperText={
+                <>
+                  <Box component="span" display="block">
+                    {t(
+                      'Default includes reimbursable expenses and 403b contributions in the goal total.',
+                    )}
+                  </Box>
+                  <Box component="span" display="block">
+                    {t(
+                      'Simple excludes them; existing entries are preserved and will count again if you switch back.',
+                    )}
+                  </Box>
+                </>
+              }
             >
               <MenuItem value={DesignationSupportFormType.Detailed}>
                 {t('Default')}
@@ -178,11 +201,25 @@ export const SetupStep: React.FC = () => {
           </Grid>
 
           <Grid item xs={12}>
-            <AutosaveTextField
-              fieldName="salaryOrHourly"
-              schema={schema}
+            {/* Manual TextField (not AutosaveTextField) because changing Pay
+                Type must atomically clear payRate as well; AutosaveTextField
+                only writes the single bound fieldName. */}
+            <TextField
+              fullWidth
+              size="small"
+              variant="outlined"
               select
               label={t('Pay Type')}
+              helperText={t('Changing this clears Pay Rate.')}
+              value={calculation?.salaryOrHourly ?? ''}
+              disabled={!calculation || isMutating}
+              onChange={(event) => {
+                const newValue = event.target
+                  .value as DesignationSupportSalaryType;
+                if (newValue !== calculation?.salaryOrHourly) {
+                  saveField({ salaryOrHourly: newValue, payRate: null });
+                }
+              }}
             >
               <MenuItem value={DesignationSupportSalaryType.Salaried}>
                 {t('Salaried')}
@@ -190,7 +227,7 @@ export const SetupStep: React.FC = () => {
               <MenuItem value={DesignationSupportSalaryType.Hourly}>
                 {t('Hourly')}
               </MenuItem>
-            </AutosaveTextField>
+            </TextField>
           </Grid>
 
           <Grid item xs={12}>
@@ -269,6 +306,7 @@ export const SetupStep: React.FC = () => {
           <Grid item xs={12}>
             <Autocomplete
               options={locations}
+              getOptionLabel={getLocationLabel}
               value={calculation?.geographicLocation ?? 'None'}
               onChange={(_, newValue: string | null) =>
                 saveField({ geographicLocation: newValue })

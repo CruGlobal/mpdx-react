@@ -1,6 +1,8 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
+import { useLocale } from 'src/hooks/useLocale';
+import { currencyFormat } from 'src/lib/intlFormat';
 import { usePdsGoalCalculator } from '../Shared/PdsGoalCalculatorContext';
 import { calculateReimbursableTotals } from '../calculations/reimbursableExpenses';
 import {
@@ -10,6 +12,7 @@ import {
 
 export const MonthlyReimbursableSection: React.FC = () => {
   const { t } = useTranslation();
+  const locale = useLocale();
   const { calculation } = usePdsGoalCalculator();
   const { goalMiscConstants } = useGoalCalculatorConstants();
   const phoneMax = goalMiscConstants.REIMBURSEMENTS_WITH_MAXIMUM?.PHONE?.fee;
@@ -20,16 +23,34 @@ export const MonthlyReimbursableSection: React.FC = () => {
     ? calculateReimbursableTotals(calculation).monthlySubtotal
     : 0;
 
+  const formatMaxPerMonth = (max: number) => currencyFormat(max, 'USD', locale);
+
+  const prepopulatedTooltip = t(
+    'Pre-filled with the maximum allowed amount. Edit to a lower value if needed.',
+  );
+
   const fields: ReimbursableField[] = [
     {
       fieldName: 'ministryCellPhone',
-      label: t('Ministry Cell Phone'),
+      label:
+        phoneMax !== undefined
+          ? t('Ministry Cell Phone (max {{max}}/mo)', {
+              max: formatMaxPerMonth(phoneMax),
+            })
+          : t('Ministry Cell Phone'),
       max: phoneMax,
+      tooltip: prepopulatedTooltip,
     },
     {
       fieldName: 'ministryInternet',
-      label: t('Ministry Internet'),
+      label:
+        internetMax !== undefined
+          ? t('Ministry Internet (max {{max}}/mo)', {
+              max: formatMaxPerMonth(internetMax),
+            })
+          : t('Ministry Internet'),
       max: internetMax,
+      tooltip: prepopulatedTooltip,
     },
     { fieldName: 'mpdNewsletter', label: t('MPD Newsletter') },
     { fieldName: 'mpdMiscellaneous', label: t('MPD Miscellaneous') },
@@ -43,6 +64,9 @@ export const MonthlyReimbursableSection: React.FC = () => {
   return (
     <ReimbursableExpensesGrid
       title={t('Monthly Reimbursable Expenses')}
+      description={t(
+        'Ministry Cell Phone and Ministry Internet reimbursements are capped at the per-month maximums shown next to each field name. Amounts entered above the maximum will be saved as the maximum.',
+      )}
       fields={fields}
       subtotalLabel={t('Subtotal Monthly')}
       subtotalValue={monthlySubtotal}

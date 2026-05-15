@@ -1,8 +1,19 @@
 import { DateTime } from 'luxon';
 
-export const numberFormat = (value: number, locale: string): string =>
+interface NumberFormatOptions {
+  minimumFractionDigits?: number;
+  maximumFractionDigits?: number;
+}
+
+export const numberFormat = (
+  value: number,
+  locale: string,
+  options?: NumberFormatOptions,
+): string =>
   new Intl.NumberFormat(locale, {
     style: 'decimal',
+    minimumFractionDigits: options?.minimumFractionDigits,
+    maximumFractionDigits: options?.maximumFractionDigits,
   }).format(Number.isFinite(value) ? value : 0);
 
 interface PercentageFormatOptions {

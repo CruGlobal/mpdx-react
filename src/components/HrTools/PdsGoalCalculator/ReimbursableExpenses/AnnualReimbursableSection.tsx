@@ -30,7 +30,7 @@ export const AnnualReimbursableSection: React.FC = () => {
   return (
     <ReimbursableExpensesGrid
       title={t('Annual Reimbursable Expenses')}
-      titleTooltip={t(
+      description={t(
         'This annual amount will be divided by 12 when added to the total.',
       )}
       fields={fields}

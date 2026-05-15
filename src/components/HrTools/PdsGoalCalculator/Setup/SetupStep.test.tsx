@@ -256,6 +256,23 @@ describe('SetupStep', () => {
     ).toBeInTheDocument();
   });
 
+  it('renders Geographic Multiplier option without percentage when multiplier is 0', async () => {
+    const { findByRole, queryByRole } = renderSetup({
+      calculationMock: fullTimeSalariedMock,
+    });
+
+    const input = await findByRole('combobox', {
+      name: 'Geographic Multiplier',
+    });
+    await waitFor(() => expect(input).not.toBeDisabled());
+    userEvent.click(input);
+
+    expect(await findByRole('option', { name: 'None' })).toBeInTheDocument();
+    expect(
+      queryByRole('option', { name: /None \(.*%\)/ }),
+    ).not.toBeInTheDocument();
+  });
+
   it('fires mutation when Goal Name is changed', async () => {
     const { findByRole } = renderSetup({
       calculationMock: { ...fullTimeSalariedMock, name: 'Test Goal' },
@@ -290,7 +307,7 @@ describe('SetupStep', () => {
     });
     await waitFor(() => expect(input).not.toBeDisabled());
     userEvent.type(input, 'Orlando');
-    const option = await findByRole('option', { name: 'Orlando, FL' });
+    const option = await findByRole('option', { name: 'Orlando, FL (6%)' });
     userEvent.click(option);
 
     await waitFor(() =>
@@ -378,6 +395,20 @@ describe('SetupStep', () => {
     ).toBeInTheDocument();
   });
 
+  it('renders both sentences of the Form Type helper text', async () => {
+    const { findByText } = renderSetup({
+      calculationMock: {
+        ...fullTimeSalariedMock,
+        formType: DesignationSupportFormType.Detailed,
+      },
+    });
+
+    expect(
+      await findByText(/Default includes reimbursable expenses/),
+    ).toBeInTheDocument();
+    expect(await findByText(/Simple excludes them/)).toBeInTheDocument();
+  });
+
   it('renders the Form Type select with both options', async () => {
     const { findByRole, getByRole } = renderSetup({
       calculationMock: {
@@ -446,6 +477,93 @@ describe('SetupStep', () => {
         },
       }),
     );
+  });
+
+  it('clears Pay Rate when switching from Hourly to Salaried', async () => {
+    const { findByRole, getByRole } = renderSetup({
+      calculationMock: fullTimeHourlyMock,
+      onCall: mutationSpy,
+    });
+
+    const payTypeSelect = await findByRole('combobox', { name: /Pay Type/ });
+    await waitFor(() => expect(payTypeSelect).toHaveTextContent('Hourly'));
+
+    userEvent.click(payTypeSelect);
+    userEvent.click(getByRole('option', { name: 'Salaried' }));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UpdatePdsGoalCalculation', {
+        attributes: {
+          id: 'goal-1',
+          salaryOrHourly: DesignationSupportSalaryType.Salaried,
+          payRate: null,
+        },
+      }),
+    );
+  });
+
+  it('clears Pay Rate when switching from Salaried to Hourly', async () => {
+    const { findByRole, getByRole } = renderSetup({
+      calculationMock: fullTimeSalariedMock,
+      onCall: mutationSpy,
+    });
+
+    const payTypeSelect = await findByRole('combobox', { name: /Pay Type/ });
+    await waitFor(() => expect(payTypeSelect).toHaveTextContent('Salaried'));
+
+    userEvent.click(payTypeSelect);
+    userEvent.click(getByRole('option', { name: 'Hourly' }));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UpdatePdsGoalCalculation', {
+        attributes: {
+          id: 'goal-1',
+          salaryOrHourly: DesignationSupportSalaryType.Hourly,
+          payRate: null,
+        },
+      }),
+    );
+  });
+
+  it('disables Pay Type while a Pay Type save is in flight', async () => {
+    const { findByRole, getByRole } = renderSetup({
+      calculationMock: fullTimeSalariedMock,
+      onCall: mutationSpy,
+    });
+
+    const payTypeSelect = await findByRole('combobox', { name: /Pay Type/ });
+    await waitFor(() => expect(payTypeSelect).toHaveTextContent('Salaried'));
+
+    userEvent.click(payTypeSelect);
+    userEvent.click(getByRole('option', { name: 'Hourly' }));
+
+    // While the mutation is in flight, the select is disabled so a concurrent
+    // save cannot race the atomic salaryOrHourly + payRate: null write.
+    await waitFor(() =>
+      expect(payTypeSelect).toHaveAttribute('aria-disabled', 'true'),
+    );
+    // After the mutation resolves, the select is re-enabled.
+    await waitFor(() =>
+      expect(payTypeSelect).not.toHaveAttribute('aria-disabled', 'true'),
+    );
+  });
+
+  it('does not fire a mutation when Pay Type is set to its current value', async () => {
+    mutationSpy.mockClear();
+    const { findByRole, getByRole } = renderSetup({
+      calculationMock: fullTimeHourlyMock,
+      onCall: mutationSpy,
+    });
+
+    const payTypeSelect = await findByRole('combobox', { name: /Pay Type/ });
+    await waitFor(() => expect(payTypeSelect).toHaveTextContent('Hourly'));
+
+    userEvent.click(payTypeSelect);
+    userEvent.click(getByRole('option', { name: 'Hourly' }));
+
+    // Yield to the microtask queue so any pending mutation would have fired.
+    await new Promise((r) => setTimeout(r, 0));
+    expect(mutationSpy).not.toHaveGraphqlOperation('UpdatePdsGoalCalculation');
   });
 
   it('shows the 403b Contribution Percentage field when formType is null (legacy goal)', async () => {
