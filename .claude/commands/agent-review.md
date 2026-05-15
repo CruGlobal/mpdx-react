@@ -128,97 +128,135 @@ done < /tmp/changed_files.txt
 
 Read `CLAUDE.md` to understand the project's coding standards and conventions. This context will be shared with all agents.
 
-### Calculate Risk Score
+### Calculate Pattern-Based Risk Score
 
-Now calculate the risk score with improved algorithm:
+Pattern scoring exists to route the PR to the right reviewer level and decide which agents to launch. It is intentionally pessimistic about file paths and intentionally blind to diff content. **It is not the final risk verdict** — agents compute a qualitative risk level after reading the actual diff (see Stage 1 and Stage 5), and the qualitative level is what auto-approval gates should use.
 
-**Process:**
+Two PRs have failed in the past because pattern scoring saturated without ever looking at what the diff actually did:
 
-1. Read the list of changed files from `/tmp/changed_files.txt`
-2. Count lines changed from `/tmp/diff_stat.txt`
-3. Apply the risk scoring algorithm:
+- PR #1761 — 10-file mechanical field swap scored 8/10 HIGH because of file-pattern accumulation, prompting `@canac` to apologize to the author: *"Sorry, AI calls this high-risk for some reason"*.
+- PR #1762 — 258-file mechanical directory rename scored 10/10 CRITICAL on first run, blocking auto-approval. The reviewer noted: *"Pattern-score: 10/10 → CRITICAL (saturated by file-pattern matches across 258 files)… Qualitative profile: MEDIUM"*.
 
-**Critical File Patterns (+4 points each):**
+The algorithm below is designed to avoid those failure modes. Follow it exactly.
 
-- `pages/api/auth/[...nextauth].page.ts`
-- `pages/api/auth/helpers.ts`
-- `pages/api/auth/impersonate/`
-- `pages/api/graphql-rest.page.ts`
-- `pages/api/Schema/index.ts`
-- `src/lib/apollo/client.ts`
-- `src/lib/apollo/link.ts`
-- `src/lib/apollo/cache.ts`
-- `next.config.ts`
-- `.env` files
-- Database migrations
-- Payment processing code
+#### Step 1 — Mechanical-change pre-classification
 
-**High-Risk Patterns (+3 points each):**
+Before counting any pattern points, classify each changed file as **mechanical** or **semantic** using the diff itself:
 
-- `pages/api/Schema/**/resolvers.ts`
-- `**/*.graphql` (excluding tests)
-- Financial/donation code (`**/Donation**`, `**/Pledge**`, `**/Gift**`)
-- Organization management
-- Shared components (`src/components/Shared/**`)
-- Authentication flows
-- Data synchronization code
+```bash
+# Count byte-identical renames (R100). git rename detection runs in --find-renames mode.
+RENAMES_TOTAL=$(git diff --find-renames=85 --diff-filter=R --summary $BASE_REF..$HEAD_REF 2>/dev/null | grep -c "^ rename")
+RENAMES_IDENTICAL=$(git diff --find-renames=85 --diff-filter=R --summary $BASE_REF..$HEAD_REF 2>/dev/null | grep -c "(100%)")
 
-**Medium-Risk (+2 points each):**
+# For each modified file (M), check if every non-context diff line is an import-path swap or whitespace.
+# A file is "import-only mechanical" when every added and removed line matches:
+#   ^[+-]\s*(import|export)\s.*from\s
+#   ^[+-]\s*$
+# AND the count of unique non-import tokens introduced or removed is zero.
+IMPORT_ONLY_FILES=0
+SEMANTIC_FILES=0
+while IFS= read -r f; do
+  [ -z "$f" ] && continue
+  # Strip diff header, then count non-import + non-blank diff lines
+  NONTRIVIAL=$(git diff $BASE_REF..$HEAD_REF -- "$f" 2>/dev/null \
+    | grep -E '^[+-]' \
+    | grep -vE '^(\+\+\+|---)' \
+    | grep -vE '^[+-]\s*(import|export)\s.*from\s' \
+    | grep -vE '^[+-]\s*$' \
+    | wc -l)
+  if [ "$NONTRIVIAL" -eq 0 ]; then
+    IMPORT_ONLY_FILES=$((IMPORT_ONLY_FILES + 1))
+  else
+    SEMANTIC_FILES=$((SEMANTIC_FILES + 1))
+  fi
+done < <(git diff --diff-filter=M --name-only $BASE_REF..$HEAD_REF 2>/dev/null)
 
-- Main app pages
-- Custom hooks
-- Utility functions with business logic
-- Report generation
-- Export/import features
+MECHANICAL_FILES=$((RENAMES_IDENTICAL + IMPORT_ONLY_FILES))
+TOTAL_FILES=$(wc -l < /tmp/changed_files.txt)
+MECHANICAL_RATIO=$(awk "BEGIN { if ($TOTAL_FILES > 0) printf \"%.2f\", $MECHANICAL_FILES / $TOTAL_FILES; else print \"0\" }")
+```
 
-**Low-Risk (+1 point each):**
+Record `MECHANICAL_RATIO`, `MECHANICAL_FILES`, `SEMANTIC_FILES`, and `RENAMES_IDENTICAL` — every agent needs them, and the final report displays them.
 
-- UI-only components
-- Styling changes
-- Test files
-- Documentation
+#### Step 2 — Capped pattern points
 
-**Change Volume Multiplier:**
+Pattern points come from `.claude/rules/code-review.md` (Critical +3, High +2, Medium +1) — that file is the source of truth for pattern membership. **Apply a per-category cap so 258 matching files cannot saturate the score**:
 
-- <50 lines: +0
-- 50-200 lines: +1
-- 200-500 lines: +2
-- 500-1000 lines: +3
-- 1000+ lines: +4
+| Category   | Per-file points | Per-category cap |
+| ---------- | --------------- | ---------------- |
+| Critical   | +3              | **+9**           |
+| High-Risk  | +2              | **+6**           |
+| Medium     | +1              | **+4**           |
+| Low-Risk   | +0              | n/a              |
 
-**Scope Multiplier:**
+Within each category, accumulate with diminishing returns once 3+ files match the same pattern: file 1 = full points, file 2 = full points, files 3+ = half points each, until the cap is reached.
 
-- Single file: 1.0x
-- Single feature area: 1.0x
-- Multiple related features: 1.3x
-- Cross-cutting changes: 1.7x
-- Core infrastructure: 2.0x
+**Special-pattern modifiers** from `.claude/rules/code-review.md` (new dependency, updated critical package, codegen sync, etc.) apply on top, but the same per-modifier cap rule applies — no single modifier may add more than +3.
 
-**Final Risk Level Classification:**
+#### Step 3 — Volume modifier (semantic lines only)
 
-- 0-3 points: **LOW** → Entry-level+ can review
-- 4-6 points: **MEDIUM** → Entry-level+ can review
-- 7-9 points: **HIGH** → Experienced dev+ should review
-- 10+ points: **CRITICAL** → Senior dev (Caleb Cox) must review
+Volume is counted from `SEMANTIC_FILES` only — mechanical renames and import-only swaps do not count toward volume risk.
 
-Calculate and display the summary:
+```bash
+SEMANTIC_LINES=$(git diff $BASE_REF..$HEAD_REF --numstat 2>/dev/null \
+  | awk -v files_to_skip=/tmp/mechanical_files.txt '
+      BEGIN { while ((getline f < files_to_skip) > 0) skip[f]=1 }
+      !skip[$3] { sum += $1 + $2 } END { print sum+0 }')
+```
+
+- <50 semantic lines: +0
+- 50–200: +1
+- 200–500: +2
+- 500–1000: +3
+- 1000+: +4
+
+#### Step 4 — Mechanical multiplier
+
+After Steps 2 and 3, apply a single multiplier based on `MECHANICAL_RATIO`:
+
+- ≥ 0.90: ×0.25 (overwhelmingly mechanical — e.g. PR #1762)
+- 0.70–0.89: ×0.50
+- 0.40–0.69: ×0.75
+- < 0.40: ×1.00
+
+#### Step 5 — Classification (pattern-based, **informational only**)
+
+Round to the nearest integer:
+
+- 0–3: `pattern_risk_level: LOW`
+- 4–6: `pattern_risk_level: MEDIUM`
+- 7–9: `pattern_risk_level: HIGH`
+- 10+: `pattern_risk_level: CRITICAL`
+
+**Do not use this number for auto-approval gating.** It feeds reviewer routing and agent selection only. The verdict block in Stage 6 uses `qualitative_risk_level` (computed in Stage 5).
+
+Display the assessment:
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-📊 PR RISK ASSESSMENT
+📊 PR RISK ASSESSMENT (Pattern-Based — Informational)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Risk Score: [X]/[max]
-Risk Level: [LOW | MEDIUM | HIGH | CRITICAL]
+Pattern Risk Score: [X]/[max]
+Pattern Risk Level: [LOW | MEDIUM | HIGH | CRITICAL]
 Day: [DAY_OF_WEEK]
 
-Files Changed: [N]
-Lines Changed: +[X] -[Y]
+Files Changed: [N]  (mechanical: [M], semantic: [S])
+Identical renames detected: [R]
+Mechanical ratio: [0.00–1.00]
+Lines Changed: +[X] -[Y]  (semantic: [Z])
+
+Pattern Cap Triggered: [Yes/No — list which categories hit the cap]
+Mechanical Multiplier Applied: [×0.25/×0.50/×0.75/×1.00]
 
 Risk Factors Detected:
 • [List specific risk factors found]
 
-Required Reviewer Level:
+ℹ️  This is the PATTERN-BASED routing score. The qualitative
+   risk level (set by agents after reading the diff) is what
+   gates auto-approval and appears in AI_REVIEW_META.
+
+Required Reviewer Level (from pattern score):
 [LOW/MEDIUM]: ✅ Entry-level or above can review
 [HIGH]: ⚠️ Experienced developer or above should review
 [CRITICAL]: 🚨 Senior developer (Caleb Cox) must review
@@ -336,6 +374,43 @@ Display: "🚀 Launching [N] specialized review agents in parallel..."
 - `$UX_NEEDED` - Launch UX Agent if true
 - `$FINANCIAL_NEEDED` - Launch Financial Agent if true
 - Always launch: Architecture, Testing, Standards (in all modes except quick which uses Testing, UX, Standards)
+
+### Shared agent instructions (prepend to every agent prompt below)
+
+Every agent prompt in Stage 1 must include this block verbatim, after its `CONTEXT:` section and before its `INSTRUCTIONS:` section. It exists so every agent reports a qualitative risk level that the Stage 5 consensus can aggregate.
+
+```
+QUALITATIVE RISK ASSESSMENT (REQUIRED — output as the final section of your review):
+
+The pattern-based risk score is INFORMATIONAL ONLY. You are the qualitative check.
+After reading the actual diff and surrounding code, classify this PR's risk *from your
+domain's perspective* on the same four-level scale (LOW / MEDIUM / HIGH / CRITICAL).
+
+Your qualitative score must be based on the DIFF CONTENT, not the file paths:
+- A 258-file rename that only swaps import paths is LOW from every agent's perspective.
+- A 10-line change inside src/lib/apollo/cache.ts that alters a typePolicy is CRITICAL
+  from Data Integrity's perspective regardless of total line count.
+- A targeted mechanical fix (e.g. a 4-field swap repeated across 2 files) is LOW unless
+  the swap itself is wrong.
+
+You are explicitly authorized to set your qualitative_risk_level BELOW the pattern_risk_level
+when the pattern score saturated on file count or pattern matching rather than diff content.
+You must briefly justify any downgrade or upgrade.
+
+Mechanical-change context (precomputed in Stage 0):
+- mechanical_ratio: [MECHANICAL_RATIO from Stage 0]
+- mechanical_files: [MECHANICAL_FILES] of [TOTAL_FILES]
+- identical_renames: [RENAMES_IDENTICAL]
+
+Append this exact block at the end of your review (replace the bracketed values):
+
+### Qualitative Risk Assessment (from this agent's domain)
+- **qualitative_risk_level**: [LOW | MEDIUM | HIGH | CRITICAL]
+- **confidence**: [High | Medium | Low]
+- **basis**: [one sentence — what in the DIFF (not file paths) drove this level]
+- **pattern_vs_qualitative_delta**: [matches | downgraded N levels | upgraded N levels]
+- **downgrade/upgrade reason** (only if delta ≠ matches): [one sentence]
+```
 
 ### Agent 1: Security Review 🔒
 
@@ -1509,6 +1584,7 @@ Now analyze all findings, debates, and final severity scores to build consensus.
 2. Group by similarity (same file:line or same general issue)
 3. Calculate average severity score for each finding
 4. Count agent agreement
+5. Aggregate per-agent `qualitative_risk_level` into a consensus value (see below)
 
 **Consensus Levels (using severity scores):**
 
@@ -1527,6 +1603,17 @@ For each grouped finding, determine:
 - Debate summary
 - Consensus strength
 
+### Qualitative Risk Consensus
+
+Each agent's `qualitative_risk_level` block is collected and combined into `qualitative_risk_level_consensus`. This is the **load-bearing** risk value for the verdict block, the GitHub comment, and the `AI_REVIEW_META` JSON in Stage 6.
+
+Aggregation rule:
+
+1. Map levels to integers: LOW=1, MEDIUM=2, HIGH=3, CRITICAL=4.
+2. Take the **max** of all agent levels — any agent that sees a critical concern in its domain raises the consensus to that level. (Security and Data Integrity have a slight veto on this; if either reports CRITICAL with High confidence, the consensus is CRITICAL regardless of other agents.)
+3. **Exception — confident-LOW consensus override:** if `MECHANICAL_RATIO ≥ 0.70`, every agent reports `qualitative_risk_level` ≤ MEDIUM with High confidence, and there are zero blockers in any severity bucket above MEDIUM PRIORITY, then `qualitative_risk_level_consensus = LOW` regardless of what the pattern score said. This is the path that should have unblocked PR #1762.
+4. Always report **both** numbers — the consensus does not replace the pattern score, it augments it. Reviewers need to see the gap to trust the override.
+
 Display a summary:
 
 ```
@@ -1539,6 +1626,11 @@ Important Issues (Severity 7-8): [N]
 Medium Priority (Severity 5-7): [N]
 Suggestions (Severity 3-5): [N]
 Unresolved Debates: [N]
+
+Pattern Risk Level:     [LOW/MEDIUM/HIGH/CRITICAL]
+Qualitative Consensus:  [LOW/MEDIUM/HIGH/CRITICAL]
+Pattern↔Qualitative Δ:  [matches | qualitative N levels lower | qualitative N levels higher]
+Override path taken:    [none | confident-LOW (mechanical) | security/data veto]
 
 Total Findings: [N]
 Average Confidence: [High/Medium/Low]
@@ -1701,25 +1793,33 @@ Create the comprehensive review report in markdown format:
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-**Risk Score**: [X]/[max] - [LOW/MEDIUM/HIGH/CRITICAL]
+**Qualitative Risk** (load-bearing — used for verdict and auto-approval): **[LOW/MEDIUM/HIGH/CRITICAL]**
+**Pattern Risk** (informational — file-path-based routing only): [LOW/MEDIUM/HIGH/CRITICAL] ([X]/[max])
+**Pattern↔Qualitative Δ**: [matches | qualitative N levels lower | qualitative N levels higher]
+**Override path taken**: [none | confident-LOW (mechanical) | security/data veto]
+
 **Day**: [day of week]
-**Files Changed**: [N] (+[X] -[Y] lines)
+**Files Changed**: [N] (mechanical: [M], semantic: [S], identical renames: [R])
+**Mechanical Ratio**: [0.00–1.00]
+**Lines Changed**: +[X] -[Y] (semantic: [Z])
 
-**Risk Level Meaning**:
+**Risk Level Meaning** (qualitative):
 
-- **LOW** (0-3): ✅ Entry-level or above can review
-- **MEDIUM** (4-6): ✅ Entry-level or above can review
-- **HIGH** (7-9): ⚠️ Experienced developer or above should review
-- **CRITICAL** (10+): 🚨 Senior developer (Caleb Cox) must review
+- **LOW**: ✅ Entry-level or above can review; eligible for auto-approval gates
+- **MEDIUM**: ✅ Entry-level or above can review
+- **HIGH**: ⚠️ Experienced developer or above should review
+- **CRITICAL**: 🚨 Senior developer (Caleb Cox) must review
 
-**Required Reviewer**: [Based on risk level]
+**Required Reviewer**: [Based on qualitative risk level]
 
 **Risk Factors Detected**:
-[List specific factors]
+[List specific factors. If qualitative < pattern, also list what the diff content showed
+that justified the downgrade — e.g. "258 files but 100% byte-identical renames",
+"4 medium-pattern files but every diff line is an import-path swap".]
 
 [IF FRIDAY/WEEKEND]
 ⚠️ **[DAY] DEPLOYMENT WARNING**
-[Appropriate warning based on risk score]
+[Appropriate warning based on QUALITATIVE risk level, not pattern risk]
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -2062,9 +2162,26 @@ Senior developer (Caleb Cox) should decide based on [considerations]
 
 _🤖 Generated by MPDX Multi-Agent Review System v2.0_
 _Review time: [X] minutes | Cost: $[X.XX] | Agents: Security, Architecture, Data, Testing, UX, Financial, Standards_
+
+<!-- AI_REVIEW_META: {"risk_level": "[QUALITATIVE_LEVEL]", "pattern_risk_level": "[PATTERN_LEVEL]", "pattern_risk_score": [N], "mechanical_ratio": [0.00], "blockers": [N], "verdict": "[CLEAN|CHANGES_REQUESTED|BLOCKED]", "dismissed": [N], "override_path": "[none|confident-LOW|security/data veto]"} -->
 ```
 
-Save this to `/tmp/agent_review_report.md`
+Save this to `/tmp/agent_review_report.md`.
+
+**`AI_REVIEW_META` JSON contract** (the trailing HTML comment that auto-approval workflows parse):
+
+| Key                  | Source                            | Used by                                                                       |
+| -------------------- | --------------------------------- | ----------------------------------------------------------------------------- |
+| `risk_level`         | `qualitative_risk_level_consensus` from Stage 5 | **Auto-approval gate** — must be the qualitative value, never the pattern value |
+| `pattern_risk_level` | Pattern algorithm in Stage 0      | Reviewer routing; bookkeeping                                                 |
+| `pattern_risk_score` | Numeric pattern total from Stage 0| Audit trail; explains the gap when `pattern_risk_level ≠ risk_level`           |
+| `mechanical_ratio`   | Stage 0 pre-classification        | Explains a confident-LOW override                                              |
+| `blockers`           | Count of Critical + High blockers | Auto-approval gate                                                            |
+| `verdict`            | Stage 5 consensus                  | Posted at the top of the GitHub comment                                       |
+| `dismissed`          | Findings the agents retracted     | Audit trail                                                                   |
+| `override_path`      | Which override fired in Stage 5   | Reviewer transparency                                                          |
+
+The historical comments from PRs #1761 and #1762 only emitted `risk_level` (pattern-based), which is why downstream automation read those PRs as HIGH/CRITICAL even after agents reached CLEAN consensus. This expanded shape preserves the old `risk_level` key for compatibility while making the pattern-vs-qualitative gap visible.
 
 ---
 
