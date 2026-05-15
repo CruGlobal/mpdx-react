@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
@@ -40,9 +40,14 @@ export const SalarySection: React.FC = () => {
 
   return (
     <>
-      <Typography variant="h6" pb={2}>
-        {t('Salary')}
-      </Typography>
+      <Box pb={2}>
+        <Typography variant="h6">{t('Salary')}</Typography>
+        <Typography pt={1}>
+          {t(
+            'Your gross monthly pay broken down by category, calculated from the values entered in Setup.',
+          )}
+        </Typography>
+      </Box>
       <GridContainer>
         <StyledGrid
           aria-label={t('Salary breakdown')}

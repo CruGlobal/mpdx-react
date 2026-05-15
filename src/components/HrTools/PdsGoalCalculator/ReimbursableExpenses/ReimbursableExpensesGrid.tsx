@@ -24,17 +24,19 @@ export interface ReimbursableField {
   fieldName: ReimbursableFieldName;
   label: string;
   max?: number;
+  tooltip?: string;
 }
 
 interface ReimbursableRow {
   id: ReimbursableFieldName | 'total';
   label: string;
   amount: number;
+  tooltip?: string;
 }
 
 interface ReimbursableExpensesGridProps {
   title: string;
-  titleTooltip?: string;
+  description?: string;
   fields: ReimbursableField[];
   subtotalLabel: string;
   subtotalValue: number;
@@ -58,7 +60,7 @@ export const ReimbursableExpensesGrid: React.FC<
   ReimbursableExpensesGridProps
 > = ({
   title,
-  titleTooltip,
+  description,
   fields,
   subtotalLabel,
   subtotalValue,
@@ -91,6 +93,7 @@ export const ReimbursableExpensesGrid: React.FC<
       id: field.fieldName,
       label: field.label,
       amount: calculation[field.fieldName] ?? 0,
+      tooltip: field.tooltip,
     })),
     { id: 'total', label: subtotalLabel, amount: subtotalValue },
   ];
@@ -122,6 +125,25 @@ export const ReimbursableExpensesGrid: React.FC<
     return newRow;
   };
 
+  const renderLabelCell = (params: GridRenderCellParams<ReimbursableRow>) => {
+    const { row } = params;
+    if (!row.tooltip) {
+      return row.label;
+    }
+    return (
+      <Stack direction="row" alignItems="center" gap={0.5}>
+        <span>{row.label}</span>
+        <Tooltip title={row.tooltip}>
+          <InfoIcon
+            color="action"
+            fontSize="small"
+            aria-label={row.tooltip}
+          />
+        </Tooltip>
+      </Stack>
+    );
+  };
+
   const renderAmountCell = (params: GridRenderCellParams<ReimbursableRow>) => {
     const cellKey = `${params.id}-amount`;
     const error = cellErrors[cellKey];
@@ -145,6 +167,7 @@ export const ReimbursableExpensesGrid: React.FC<
       flex: 1,
       minWidth: 200,
       sortable: false,
+      renderCell: renderLabelCell,
     },
     {
       field: 'amount',
@@ -162,14 +185,14 @@ export const ReimbursableExpensesGrid: React.FC<
 
   return (
     <>
-      <Stack direction="row" alignItems="center" gap={0.5} pb={2}>
+      <Box pb={2}>
         <Typography variant="h6">{title}</Typography>
-        {titleTooltip && (
-          <Tooltip title={titleTooltip}>
-            <InfoIcon color="action" aria-label={titleTooltip} />
-          </Tooltip>
+        {description && (
+          <Typography variant="body2" color="text.secondary" pt={0.5}>
+            {description}
+          </Typography>
         )}
-      </Stack>
+      </Box>
       <StyledCard>
         <BaseGrid
           rows={rows}

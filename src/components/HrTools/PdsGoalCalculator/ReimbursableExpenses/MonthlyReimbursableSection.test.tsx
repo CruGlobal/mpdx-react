@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import {
   MpdGoalMiscConstantCategoryEnum,
   MpdGoalMiscConstantLabelEnum,
@@ -7,6 +8,9 @@ import {
 import { PdsGoalCalculatorTestWrapper } from '../PdsGoalCalculatorTestWrapper';
 import { MonthlyReimbursableSection } from './MonthlyReimbursableSection';
 import { editAmountCell } from './reimbursableExpensesTestUtils';
+
+const prepopulatedTooltipText =
+  'Pre-filled with the maximum allowed amount. Edit to a lower value if needed.';
 
 const mutationSpy = jest.fn();
 
@@ -42,6 +46,43 @@ const TestComponent: React.FC = () => (
 );
 
 describe('MonthlyReimbursableSection', () => {
+  it('renders the description text below the heading', async () => {
+    const { findByText } = render(<TestComponent />);
+
+    expect(
+      await findByText(
+        'Ministry Cell Phone and Ministry Internet reimbursements are capped at the per-month maximums shown next to each field name. Amounts above the maximum will not be saved.',
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('shows each maximum inline with the field name', async () => {
+    const { findByRole, getByRole } = render(<TestComponent />);
+
+    expect(
+      await findByRole('gridcell', {
+        name: /Ministry Cell Phone \(max \$35\/mo\)/,
+      }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('gridcell', {
+        name: /Ministry Internet \(max \$30\/mo\)/,
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it('renders an info icon on the cell phone and internet rows with a prepopulation tooltip', async () => {
+    const { findAllByLabelText, findByRole } = render(<TestComponent />);
+
+    const icons = await findAllByLabelText(prepopulatedTooltipText);
+    expect(icons).toHaveLength(2);
+
+    userEvent.hover(icons[0]);
+    expect(await findByRole('tooltip')).toHaveTextContent(
+      prepopulatedTooltipText,
+    );
+  });
+
   it('renders the section heading and column headers', async () => {
     const { findByRole, getByRole } = render(<TestComponent />);
 
@@ -57,7 +98,9 @@ describe('MonthlyReimbursableSection', () => {
   it('renders a row for every monthly field plus the subtotal', async () => {
     const { findByRole, getAllByRole } = render(<TestComponent />);
 
-    await findByRole('gridcell', { name: 'Ministry Cell Phone' });
+    await findByRole('gridcell', {
+      name: /Ministry Cell Phone \(max \$35\/mo\)/,
+    });
     // 1 header row + 6 field rows + 1 subtotal row
     expect(getAllByRole('row')).toHaveLength(8);
   });

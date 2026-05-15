@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Divider, Typography } from '@mui/material';
+import { Box, Divider, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { useDataGridLocaleText } from 'src/hooks/useMuiLocaleText';
@@ -41,9 +41,14 @@ export const OtherSection: React.FC = () => {
   return (
     <>
       <Divider sx={{ mx: -4, my: 4 }} />
-      <Typography variant="h6" pb={2}>
-        {t('Other')}
-      </Typography>
+      <Box pb={2}>
+        <Typography variant="h6">{t('Other')}</Typography>
+        <Typography pt={1}>
+          {t(
+            'Additional support items beyond your base salary, including benefits, contributions, fees, and reimbursable expenses.',
+          )}
+        </Typography>
+      </Box>
       <GridContainer>
         <StyledGrid
           aria-label={t('Other expenses breakdown')}

@@ -1,12 +1,4 @@
-import InfoIcon from '@mui/icons-material/Info';
-import {
-  Card,
-  CardContent,
-  Stack,
-  Tooltip,
-  Typography,
-  styled,
-} from '@mui/material';
+import { Card, CardContent, Typography, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
@@ -36,24 +28,15 @@ export const TotalReimbursableSection: React.FC = () => {
   return (
     <Card>
       <CardContent>
-        <Stack direction="row" alignItems="center" gap={0.5}>
-          <Typography variant="h6">
-            {t('Total Reimbursable Expenses')}
-          </Typography>
-          <Tooltip
-            title={t(
-              'The total is the greater of the {{floor}} minimum or your calculated amount.',
-              {
-                floor: currencyFormat(REIMBURSABLE_FLOOR, 'USD', locale),
-              },
-            )}
-          >
-            <InfoIcon
-              color="action"
-              aria-label={t('Total reimbursable information')}
-            />
-          </Tooltip>
-        </Stack>
+        <Typography variant="h6">{t('Total Reimbursable Expenses')}</Typography>
+        <Typography variant="body2" color="text.secondary" pt={0.5}>
+          {t(
+            'Reimbursable expenses have a {{floor}} per month minimum. If the sum of your monthly entries (plus annual entries divided by 12) falls below {{floor}}, the {{floor}} minimum is used in your support goal instead.',
+            {
+              floor: currencyFormat(REIMBURSABLE_FLOOR, 'USD', locale),
+            },
+          )}
+        </Typography>
         <AmountTypography data-testid="reimbursable-total">
           {currencyFormat(total, 'USD', locale)}
         </AmountTypography>

@@ -490,7 +490,7 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
             {t('Average Hours Worked Per Week')}
           </Typography>
           <Typography variant="body2" fontWeight="bold">
-            {averageHoursPerWeek.toFixed(1)}
+            {averageHoursPerWeek.toFixed(2)}
           </Typography>
         </FooterRow>
       </StyledCard>
@@ -509,7 +509,7 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
           <Button
             variant="contained"
             disabled={weeksRemaining > 0}
-            onClick={() => onApply(averageHoursPerWeek)}
+            onClick={() => onApply(Math.round(averageHoursPerWeek * 100) / 100)}
           >
             {t('Apply to Hours Worked')}
           </Button>

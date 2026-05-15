@@ -290,7 +290,7 @@ describe('SetupStep', () => {
     });
     await waitFor(() => expect(input).not.toBeDisabled());
     userEvent.type(input, 'Orlando');
-    const option = await findByRole('option', { name: 'Orlando, FL' });
+    const option = await findByRole('option', { name: 'Orlando, FL (6%)' });
     userEvent.click(option);
 
     await waitFor(() =>
@@ -443,6 +443,52 @@ describe('SetupStep', () => {
         attributes: {
           id: 'goal-1',
           formType: 'SIMPLE',
+        },
+      }),
+    );
+  });
+
+  it('clears Pay Rate when switching from Hourly to Salaried', async () => {
+    const { findByRole, getByRole } = renderSetup({
+      calculationMock: fullTimeHourlyMock,
+      onCall: mutationSpy,
+    });
+
+    const payTypeSelect = await findByRole('combobox', { name: /Pay Type/ });
+    await waitFor(() => expect(payTypeSelect).toHaveTextContent('Hourly'));
+
+    userEvent.click(payTypeSelect);
+    userEvent.click(getByRole('option', { name: 'Salaried' }));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UpdatePdsGoalCalculation', {
+        attributes: {
+          id: 'goal-1',
+          salaryOrHourly: DesignationSupportSalaryType.Salaried,
+          payRate: null,
+        },
+      }),
+    );
+  });
+
+  it('clears Pay Rate when switching from Salaried to Hourly', async () => {
+    const { findByRole, getByRole } = renderSetup({
+      calculationMock: fullTimeSalariedMock,
+      onCall: mutationSpy,
+    });
+
+    const payTypeSelect = await findByRole('combobox', { name: /Pay Type/ });
+    await waitFor(() => expect(payTypeSelect).toHaveTextContent('Salaried'));
+
+    userEvent.click(payTypeSelect);
+    userEvent.click(getByRole('option', { name: 'Hourly' }));
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UpdatePdsGoalCalculation', {
+        attributes: {
+          id: 'goal-1',
+          salaryOrHourly: DesignationSupportSalaryType.Hourly,
+          payRate: null,
         },
       }),
     );
