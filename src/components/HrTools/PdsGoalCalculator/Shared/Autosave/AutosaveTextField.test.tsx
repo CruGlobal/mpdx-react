@@ -1,6 +1,6 @@
 import React from 'react';
 import { MenuItem } from '@mui/material';
-import { fireEvent, render, waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as yup from 'yup';
 import {
@@ -221,28 +221,16 @@ describe('AutosaveTextField', () => {
         </PdsGoalCalculatorTestWrapper>,
       );
 
-    it('hides validation error for an empty untouched field', async () => {
+    it('shows validation error for an empty required field on load', async () => {
       const { findByRole } = renderRequired();
 
       const input = await findByRole('textbox', { name: 'Goal Name' });
       await waitFor(() => expect(input).toHaveValue(''));
-
-      expect(input).toHaveAccessibleDescription('Enter the goal name');
-      expect(input).not.toHaveAttribute('aria-invalid', 'true');
-    });
-
-    it('shows validation error after the field is touched', async () => {
-      const { findByRole } = renderRequired();
-
-      const input = await findByRole('textbox', { name: 'Goal Name' });
-      await waitFor(() => expect(input).toHaveValue(''));
-
-      fireEvent.focus(input);
-      fireEvent.blur(input);
 
       await waitFor(() =>
         expect(input).toHaveAccessibleDescription('Goal Name is required'),
       );
+      expect(input).toHaveAttribute('aria-invalid', 'true');
     });
   });
 

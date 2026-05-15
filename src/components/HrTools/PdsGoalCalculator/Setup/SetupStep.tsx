@@ -65,14 +65,10 @@ export const SetupStep: React.FC = () => {
               .positive(t('Hours Worked must be a positive number')),
           otherwise: (s) => s.optional().nullable(),
         }),
-        benefits: yup.number().when('status', {
-          is: (val: string) => val !== DesignationSupportStatus.PartTime,
-          then: (s) =>
-            s
-              .required(t('Benefits is a required field'))
-              .positive(t('Benefits must be a positive number')),
-          otherwise: (s) => s.optional().nullable(),
-        }),
+        benefits: yup
+          .number()
+          .nullable()
+          .positive(t('Benefits must be a positive number')),
       }),
     [t],
   );
