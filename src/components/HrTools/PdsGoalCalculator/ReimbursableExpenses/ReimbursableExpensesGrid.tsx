@@ -76,18 +76,6 @@ export const ReimbursableExpensesGrid: React.FC<
     return null;
   }
 
-  const validateAmount = (field: ReimbursableField, amount: number) => {
-    if (amount < 0) {
-      return t('Amount must be positive');
-    }
-    if (field.max !== undefined && amount > field.max) {
-      return t('Amount cannot exceed {{max}}', {
-        max: currencyFormat(field.max, 'USD', locale),
-      });
-    }
-    return null;
-  };
-
   const rows: ReimbursableRow[] = [
     ...fields.map((field) => ({
       id: field.fieldName,
@@ -104,25 +92,33 @@ export const ReimbursableExpensesGrid: React.FC<
       return newRow;
     }
 
-    const { amount } = newRow;
     const cellKey = `${field.fieldName}-amount`;
-    const error = validateAmount(field, amount);
+
+    if (newRow.amount < 0) {
+      setCellErrors((prev) => ({
+        ...prev,
+        [cellKey]: t('Amount must be positive'),
+      }));
+      return newRow;
+    }
+
+    const amount =
+      field.max !== undefined && newRow.amount > field.max
+        ? field.max
+        : newRow.amount;
 
     setCellErrors((prev) => {
-      const next = { ...prev };
-      if (error) {
-        next[cellKey] = error;
-      } else {
-        delete next[cellKey];
+      if (!(cellKey in prev)) {
+        return prev;
       }
+      const next = { ...prev };
+      delete next[cellKey];
       return next;
     });
 
-    if (!error) {
-      await saveField({ [field.fieldName]: amount });
-    }
+    await saveField({ [field.fieldName]: amount });
 
-    return newRow;
+    return { ...newRow, amount };
   };
 
   const renderLabelCell = (params: GridRenderCellParams<ReimbursableRow>) => {

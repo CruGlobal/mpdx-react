@@ -11,7 +11,9 @@ export const ReimbursableExpensesStep: React.FC = () => {
   return (
     <>
       <Box pb={4}>
-        <Typography variant="h6">{t('Reimbursable Expenses')}</Typography>
+        <Typography variant="h6" component="h2">
+          {t('Reimbursable Expenses')}
+        </Typography>
         <Typography pt={1}>
           {t(
             'Enter the ministry expenses you are reimbursed for each year. Monthly entries are used as-is and annual entries are divided by 12; the combined total is included in your support goal.',

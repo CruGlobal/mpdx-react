@@ -201,6 +201,9 @@ export const SetupStep: React.FC = () => {
           </Grid>
 
           <Grid item xs={12}>
+            {/* Manual TextField (not AutosaveTextField) because changing Pay
+                Type must atomically clear payRate as well; AutosaveTextField
+                only writes the single bound fieldName. */}
             <TextField
               fullWidth
               size="small"

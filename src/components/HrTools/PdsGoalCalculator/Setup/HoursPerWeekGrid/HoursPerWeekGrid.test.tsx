@@ -272,6 +272,57 @@ describe('HoursPerWeekGrid', () => {
     expect(onApply).toHaveBeenCalled();
   });
 
+  it('displays the same value it sends to onApply at a .xx5 boundary (WYSIWYS)', async () => {
+    // 9.1 / 52 lands on a floating-point .xx5 boundary in IEEE 754:
+    //   (9.1 / 52).toFixed(2)              → "0.17"
+    //   Math.round((9.1 / 52) * 100) / 100 → 0.18
+    // The displayed average and the value sent to onApply must agree.
+    const onApply = jest.fn();
+    const divergentMock: PdsGoalCalculationMock = {
+      id: 'goal-1',
+      designationSupportHoursItems: [
+        {
+          id: 'item-regular',
+          label: 'Regular Week',
+          hoursPerWeek: 9.1,
+          numberOfWeeks: 1,
+          name: 'regular',
+          position: 0,
+          predefined: true,
+        },
+        {
+          id: 'item-vacation',
+          label: 'Unpaid Vacation',
+          hoursPerWeek: 0,
+          numberOfWeeks: 51,
+          name: 'vacation',
+          position: 1,
+          predefined: true,
+        },
+      ],
+    };
+
+    const { findByText, getByRole } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={divergentMock}
+        onCall={mutationSpy}
+      >
+        <HoursPerWeekGrid onApply={onApply} />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    await waitForDataToLoad();
+    await findByText('Regular Week');
+
+    const applyButton = getByRole('button', { name: 'Apply to Hours Worked' });
+    await waitFor(() => expect(applyButton).not.toBeDisabled());
+
+    expect(await findByText('0.18')).toBeInTheDocument();
+
+    userEvent.click(applyButton);
+    expect(onApply).toHaveBeenCalledWith(0.18);
+  });
+
   it('rounds the applied average to two decimal places', async () => {
     const onApply = jest.fn();
     const { findByText, getByDisplayValue, getByRole } = render(

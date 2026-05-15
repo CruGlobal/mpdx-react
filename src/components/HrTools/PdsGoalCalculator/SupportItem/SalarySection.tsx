@@ -41,7 +41,9 @@ export const SalarySection: React.FC = () => {
   return (
     <>
       <Box pb={2}>
-        <Typography variant="h6">{t('Salary')}</Typography>
+        <Typography variant="h6" component="h3">
+          {t('Salary')}
+        </Typography>
         <Typography pt={1}>
           {t(
             'Your gross monthly pay broken down by category, calculated from the values entered in Setup.',

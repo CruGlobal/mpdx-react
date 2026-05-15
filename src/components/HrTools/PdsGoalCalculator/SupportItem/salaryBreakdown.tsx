@@ -53,7 +53,7 @@ export const buildSalaryBreakdownRows = (
     calculateSalaryTotals(calculation, constants);
 
   const geographicMultiplierSuffix = geographicLocation
-    ? t('({{location}})', { location: geographicLocation })
+    ? `(${geographicLocation})`
     : undefined;
   const grossMonthlyPayFormula = geographicLocation
     ? t('Monthly Base × (1 + Geographic Multiplier ({{location}}))', {

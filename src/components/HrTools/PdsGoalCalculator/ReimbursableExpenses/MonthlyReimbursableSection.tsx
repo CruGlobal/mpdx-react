@@ -61,7 +61,7 @@ export const MonthlyReimbursableSection: React.FC = () => {
     <ReimbursableExpensesGrid
       title={t('Monthly Reimbursable Expenses')}
       description={t(
-        'Ministry Cell Phone and Ministry Internet reimbursements are capped at the per-month maximums shown next to each field name. Amounts above the maximum will not be saved.',
+        'Ministry Cell Phone and Ministry Internet reimbursements are capped at the per-month maximums shown next to each field name. Amounts entered above the maximum will be saved as the maximum.',
       )}
       fields={fields}
       subtotalLabel={t('Subtotal Monthly')}

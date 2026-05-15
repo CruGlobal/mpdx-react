@@ -66,15 +66,28 @@ describe('ReimbursableExpensesGrid', () => {
     expect(getAllByRole('row')).toHaveLength(4);
   });
 
-  it('clears the error after a subsequent valid edit', async () => {
+  it('clips an over-max amount to the field maximum and saves the clipped value', async () => {
     const { findByRole, queryByRole } = render(<TestComponent />);
 
     await editAmountCell(findByRole, 'Ministry Cell Phone', '999');
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UpdatePdsGoalCalculation', {
+        attributes: { id: 'goal-1', ministryCellPhone: 35 },
+      }),
+    );
+    expect(queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('clears the negative-amount error after a subsequent valid edit', async () => {
+    const { findByRole, queryByRole } = render(<TestComponent />);
+
+    await editAmountCell(findByRole, 'MPD Newsletter', '-5');
     expect(await findByRole('alert')).toHaveTextContent(
-      'Amount cannot exceed $35',
+      'Amount must be positive',
     );
 
-    await editAmountCell(findByRole, 'Ministry Cell Phone', '20');
+    await editAmountCell(findByRole, 'MPD Newsletter', '20');
 
     await waitFor(() => expect(queryByRole('alert')).not.toBeInTheDocument());
   });

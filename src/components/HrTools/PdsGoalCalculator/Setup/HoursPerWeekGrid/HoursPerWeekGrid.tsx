@@ -24,6 +24,8 @@ import {
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { BaseGrid } from 'src/components/HrTools/GoalCalculator/SharedComponents/GoalCalculatorGrid/BaseGrid';
+import { useLocale } from 'src/hooks/useLocale';
+import { numberFormat } from 'src/lib/intlFormat';
 import {
   useCreateDesignationSupportHoursItemMutation,
   useDeleteDesignationSupportHoursItemMutation,
@@ -64,6 +66,7 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
   onApply,
 }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
   const { enqueueSnackbar } = useSnackbar();
   const { calculation, trackMutation } = usePdsGoalCalculator();
   const [createHoursItem] = useCreateDesignationSupportHoursItemMutation();
@@ -114,6 +117,9 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
     () => (totalWeeks > 0 ? totalHours / totalWeeks : 0),
     [totalHours, totalWeeks],
   );
+
+  const roundedAverageHoursPerWeek =
+    Math.round(averageHoursPerWeek * 100) / 100;
 
   const weeksRemaining = MAX_TOTAL_WEEKS - totalWeeks;
 
@@ -490,7 +496,10 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
             {t('Average Hours Worked Per Week')}
           </Typography>
           <Typography variant="body2" fontWeight="bold">
-            {averageHoursPerWeek.toFixed(2)}
+            {numberFormat(roundedAverageHoursPerWeek, locale, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
           </Typography>
         </FooterRow>
       </StyledCard>
@@ -509,7 +518,7 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
           <Button
             variant="contained"
             disabled={weeksRemaining > 0}
-            onClick={() => onApply(Math.round(averageHoursPerWeek * 100) / 100)}
+            onClick={() => onApply(roundedAverageHoursPerWeek)}
           >
             {t('Apply to Hours Worked')}
           </Button>

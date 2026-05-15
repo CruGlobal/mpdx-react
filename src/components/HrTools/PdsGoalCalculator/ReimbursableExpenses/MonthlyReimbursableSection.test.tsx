@@ -14,13 +14,19 @@ const prepopulatedTooltipText =
 
 const mutationSpy = jest.fn();
 
-const TestComponent: React.FC = () => (
+interface TestComponentProps {
+  ministryInternet?: number;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({
+  ministryInternet = 30,
+}) => (
   <PdsGoalCalculatorTestWrapper
     onCall={mutationSpy}
     calculationMock={{
       id: 'goal-1',
       ministryCellPhone: 35,
-      ministryInternet: 30,
+      ministryInternet,
       mpdNewsletter: 25,
       mpdMiscellaneous: 10,
       accountTransfers: 50,
@@ -51,7 +57,7 @@ describe('MonthlyReimbursableSection', () => {
 
     expect(
       await findByText(
-        'Ministry Cell Phone and Ministry Internet reimbursements are capped at the per-month maximums shown next to each field name. Amounts above the maximum will not be saved.',
+        'Ministry Cell Phone and Ministry Internet reimbursements are capped at the per-month maximums shown next to each field name. Amounts entered above the maximum will be saved as the maximum.',
       ),
     ).toBeInTheDocument();
   });
@@ -125,16 +131,19 @@ describe('MonthlyReimbursableSection', () => {
     );
   });
 
-  it('shows an error and skips saving when an amount exceeds the configured maximum', async () => {
-    const { findByRole } = render(<TestComponent />);
-
-    await editAmountCell(findByRole, 'Ministry Cell Phone', '999');
-
-    expect(await findByRole('alert')).toHaveTextContent(
-      'Amount cannot exceed $35',
+  it('clips an over-max amount to the configured maximum and saves the clipped value', async () => {
+    const { findByRole, queryByRole } = render(
+      <TestComponent ministryInternet={15} />,
     );
 
-    expect(mutationSpy).not.toHaveGraphqlOperation('UpdatePdsGoalCalculation');
+    await editAmountCell(findByRole, 'Ministry Internet', '999');
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UpdatePdsGoalCalculation', {
+        attributes: { id: 'goal-1', ministryInternet: 30 },
+      }),
+    );
+    expect(queryByRole('alert')).not.toBeInTheDocument();
   });
 
   it('shows an error and skips saving when a negative amount is entered', async () => {

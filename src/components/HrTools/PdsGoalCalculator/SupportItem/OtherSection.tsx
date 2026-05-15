@@ -42,7 +42,9 @@ export const OtherSection: React.FC = () => {
     <>
       <Divider sx={{ mx: -4, my: 4 }} />
       <Box pb={2}>
-        <Typography variant="h6">{t('Other')}</Typography>
+        <Typography variant="h6" component="h3">
+          {t('Other')}
+        </Typography>
         <Typography pt={1}>
           {t(
             'Additional support items beyond your base salary, including benefits, contributions, fees, and reimbursable expenses.',

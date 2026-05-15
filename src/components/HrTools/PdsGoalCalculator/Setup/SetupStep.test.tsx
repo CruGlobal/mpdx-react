@@ -256,6 +256,23 @@ describe('SetupStep', () => {
     ).toBeInTheDocument();
   });
 
+  it('renders Geographic Multiplier option without percentage when multiplier is 0', async () => {
+    const { findByRole, queryByRole } = renderSetup({
+      calculationMock: fullTimeSalariedMock,
+    });
+
+    const input = await findByRole('combobox', {
+      name: 'Geographic Multiplier',
+    });
+    await waitFor(() => expect(input).not.toBeDisabled());
+    userEvent.click(input);
+
+    expect(await findByRole('option', { name: 'None' })).toBeInTheDocument();
+    expect(
+      queryByRole('option', { name: /None \(.*%\)/ }),
+    ).not.toBeInTheDocument();
+  });
+
   it('fires mutation when Goal Name is changed', async () => {
     const { findByRole } = renderSetup({
       calculationMock: { ...fullTimeSalariedMock, name: 'Test Goal' },
@@ -376,6 +393,20 @@ describe('SetupStep', () => {
     expect(
       await findByRole('spinbutton', { name: 'Hours Worked' }),
     ).toBeInTheDocument();
+  });
+
+  it('renders both sentences of the Form Type helper text', async () => {
+    const { findByText } = renderSetup({
+      calculationMock: {
+        ...fullTimeSalariedMock,
+        formType: DesignationSupportFormType.Detailed,
+      },
+    });
+
+    expect(
+      await findByText(/Default includes reimbursable expenses/),
+    ).toBeInTheDocument();
+    expect(await findByText(/Simple excludes them/)).toBeInTheDocument();
   });
 
   it('renders the Form Type select with both options', async () => {
