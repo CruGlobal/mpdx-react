@@ -66,8 +66,8 @@ describe('ReimbursableExpensesGrid', () => {
     expect(getAllByRole('row')).toHaveLength(4);
   });
 
-  it('clips an over-max amount to the field maximum and saves the clipped value', async () => {
-    const { findByRole, queryByRole } = render(<TestComponent />);
+  it('clips an over-max amount to the field maximum, saves the clipped value, and notifies the user', async () => {
+    const { findByRole, findByText } = render(<TestComponent />);
 
     await editAmountCell(findByRole, 'Ministry Cell Phone', '999');
 
@@ -76,7 +76,9 @@ describe('ReimbursableExpensesGrid', () => {
         attributes: { id: 'goal-1', ministryCellPhone: 35 },
       }),
     );
-    expect(queryByRole('alert')).not.toBeInTheDocument();
+    expect(
+      await findByText('Ministry Cell Phone reduced to its maximum of $35.'),
+    ).toBeInTheDocument();
   });
 
   it('clears the negative-amount error after a subsequent valid edit', async () => {

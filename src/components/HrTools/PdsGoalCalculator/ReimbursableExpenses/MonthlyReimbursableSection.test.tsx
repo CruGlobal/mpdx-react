@@ -131,8 +131,8 @@ describe('MonthlyReimbursableSection', () => {
     );
   });
 
-  it('clips an over-max amount to the configured maximum and saves the clipped value', async () => {
-    const { findByRole, queryByRole } = render(
+  it('clips an over-max amount to the configured maximum, saves the clipped value, and notifies the user', async () => {
+    const { findByRole, findByText } = render(
       <TestComponent ministryInternet={15} />,
     );
 
@@ -143,7 +143,11 @@ describe('MonthlyReimbursableSection', () => {
         attributes: { id: 'goal-1', ministryInternet: 30 },
       }),
     );
-    expect(queryByRole('alert')).not.toBeInTheDocument();
+    expect(
+      await findByText(
+        'Ministry Internet (max $30/mo) reduced to its maximum of $30.',
+      ),
+    ).toBeInTheDocument();
   });
 
   it('shows an error and skips saving when a negative amount is entered', async () => {

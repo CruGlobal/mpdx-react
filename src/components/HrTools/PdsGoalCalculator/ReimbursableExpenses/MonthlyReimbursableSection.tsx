@@ -23,13 +23,7 @@ export const MonthlyReimbursableSection: React.FC = () => {
     ? calculateReimbursableTotals(calculation).monthlySubtotal
     : 0;
 
-  const buildCappedLabel = (label: string, max: number | undefined) =>
-    max !== undefined
-      ? t('{{label}} (max {{max}}/mo)', {
-          label,
-          max: currencyFormat(max, 'USD', locale),
-        })
-      : label;
+  const formatMaxPerMonth = (max: number) => currencyFormat(max, 'USD', locale);
 
   const prepopulatedTooltip = t(
     'Pre-filled with the maximum allowed amount. Edit to a lower value if needed.',
@@ -38,13 +32,23 @@ export const MonthlyReimbursableSection: React.FC = () => {
   const fields: ReimbursableField[] = [
     {
       fieldName: 'ministryCellPhone',
-      label: buildCappedLabel(t('Ministry Cell Phone'), phoneMax),
+      label:
+        phoneMax !== undefined
+          ? t('Ministry Cell Phone (max {{max}}/mo)', {
+              max: formatMaxPerMonth(phoneMax),
+            })
+          : t('Ministry Cell Phone'),
       max: phoneMax,
       tooltip: prepopulatedTooltip,
     },
     {
       fieldName: 'ministryInternet',
-      label: buildCappedLabel(t('Ministry Internet'), internetMax),
+      label:
+        internetMax !== undefined
+          ? t('Ministry Internet (max {{max}}/mo)', {
+              max: formatMaxPerMonth(internetMax),
+            })
+          : t('Ministry Internet'),
       max: internetMax,
       tooltip: prepopulatedTooltip,
     },

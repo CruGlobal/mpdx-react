@@ -525,6 +525,47 @@ describe('SetupStep', () => {
     );
   });
 
+  it('disables Pay Type while a Pay Type save is in flight', async () => {
+    const { findByRole, getByRole } = renderSetup({
+      calculationMock: fullTimeSalariedMock,
+      onCall: mutationSpy,
+    });
+
+    const payTypeSelect = await findByRole('combobox', { name: /Pay Type/ });
+    await waitFor(() => expect(payTypeSelect).toHaveTextContent('Salaried'));
+
+    userEvent.click(payTypeSelect);
+    userEvent.click(getByRole('option', { name: 'Hourly' }));
+
+    // While the mutation is in flight, the select is disabled so a concurrent
+    // save cannot race the atomic salaryOrHourly + payRate: null write.
+    await waitFor(() =>
+      expect(payTypeSelect).toHaveAttribute('aria-disabled', 'true'),
+    );
+    // After the mutation resolves, the select is re-enabled.
+    await waitFor(() =>
+      expect(payTypeSelect).not.toHaveAttribute('aria-disabled', 'true'),
+    );
+  });
+
+  it('does not fire a mutation when Pay Type is set to its current value', async () => {
+    mutationSpy.mockClear();
+    const { findByRole, getByRole } = renderSetup({
+      calculationMock: fullTimeHourlyMock,
+      onCall: mutationSpy,
+    });
+
+    const payTypeSelect = await findByRole('combobox', { name: /Pay Type/ });
+    await waitFor(() => expect(payTypeSelect).toHaveTextContent('Hourly'));
+
+    userEvent.click(payTypeSelect);
+    userEvent.click(getByRole('option', { name: 'Hourly' }));
+
+    // Yield to the microtask queue so any pending mutation would have fired.
+    await new Promise((r) => setTimeout(r, 0));
+    expect(mutationSpy).not.toHaveGraphqlOperation('UpdatePdsGoalCalculation');
+  });
+
   it('shows the 403b Contribution Percentage field when formType is null (legacy goal)', async () => {
     const { findByRole } = renderSetup({
       calculationMock: {

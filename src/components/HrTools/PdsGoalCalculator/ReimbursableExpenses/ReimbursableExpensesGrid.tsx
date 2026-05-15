@@ -4,12 +4,14 @@ import {
   Box,
   Card,
   FormHelperText,
+  IconButton,
   Stack,
   Tooltip,
   Typography,
   styled,
 } from '@mui/material';
 import { GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
+import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat } from 'src/lib/intlFormat';
@@ -68,6 +70,7 @@ export const ReimbursableExpensesGrid: React.FC<
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
+  const { enqueueSnackbar } = useSnackbar();
   const { calculation } = usePdsGoalCalculator();
   const saveField = useSaveField();
   const [cellErrors, setCellErrors] = useState<Record<string, string>>({});
@@ -102,10 +105,17 @@ export const ReimbursableExpensesGrid: React.FC<
       return newRow;
     }
 
-    const amount =
-      field.max !== undefined && newRow.amount > field.max
-        ? field.max
-        : newRow.amount;
+    let amount = newRow.amount;
+    if (field.max !== undefined && newRow.amount > field.max) {
+      amount = field.max;
+      enqueueSnackbar(
+        t('{{label}} reduced to its maximum of {{max}}.', {
+          label: field.label,
+          max: currencyFormat(field.max, 'USD', locale),
+        }),
+        { variant: 'info' },
+      );
+    }
 
     setCellErrors((prev) => {
       if (!(cellKey in prev)) {
@@ -130,7 +140,14 @@ export const ReimbursableExpensesGrid: React.FC<
       <Stack direction="row" alignItems="center" gap={0.5}>
         <span>{row.label}</span>
         <Tooltip title={row.tooltip}>
-          <InfoIcon color="action" fontSize="small" aria-label={row.tooltip} />
+          <IconButton
+            size="small"
+            aria-label={row.tooltip}
+            disableRipple
+            sx={{ p: 0 }}
+          >
+            <InfoIcon color="action" fontSize="small" />
+          </IconButton>
         </Tooltip>
       </Stack>
     );

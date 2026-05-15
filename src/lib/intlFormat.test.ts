@@ -46,6 +46,35 @@ describe('intlFormat', () => {
         expect(currencyFormat(6000.5, 'JPY', 'ja-JP')).toEqual('￥6,001');
       });
     });
+
+    describe('with options', () => {
+      it('respects minimumFractionDigits', () => {
+        expect(numberFormat(40, 'en-US', { minimumFractionDigits: 2 })).toEqual(
+          '40.00',
+        );
+      });
+
+      it('respects maximumFractionDigits', () => {
+        expect(
+          numberFormat(0.1234, 'en-US', { maximumFractionDigits: 2 }),
+        ).toEqual('0.12');
+      });
+
+      it('applies fraction-digit options to the NaN fallback', () => {
+        expect(
+          numberFormat(NaN, 'en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }),
+        ).toEqual('0.00');
+      });
+
+      it('formats per locale', () => {
+        expect(
+          numberFormat(0.18, 'de-DE', { minimumFractionDigits: 2 }),
+        ).toEqual('0,18');
+      });
+    });
   });
 
   describe('percentageFormat', () => {

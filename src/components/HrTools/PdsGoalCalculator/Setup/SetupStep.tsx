@@ -210,6 +210,7 @@ export const SetupStep: React.FC = () => {
               variant="outlined"
               select
               label={t('Pay Type')}
+              helperText={t('Changing this clears Pay Rate.')}
               value={calculation?.salaryOrHourly ?? ''}
               disabled={!calculation || isMutating}
               onChange={(event) => {
