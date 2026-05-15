@@ -232,6 +232,50 @@ describe('AutosaveTextField', () => {
       );
       expect(input).toHaveAttribute('aria-invalid', 'true');
     });
+
+    it('clears validation error after user fills required field', async () => {
+      const { findByRole } = renderRequired();
+
+      const input = await findByRole('textbox', { name: 'Goal Name' });
+      await waitFor(() =>
+        expect(input).toHaveAttribute('aria-invalid', 'true'),
+      );
+
+      userEvent.type(input, 'Filled in');
+
+      await waitFor(() =>
+        expect(input).not.toHaveAttribute('aria-invalid', 'true'),
+      );
+      expect(input).toHaveAccessibleDescription('Enter the goal name');
+    });
+  });
+
+  describe('optional field', () => {
+    const optionalSchema = yup.object({
+      name: yup.string().nullable(),
+    });
+
+    it('does not show validation error for an empty optional field on load', async () => {
+      const { findByRole } = render(
+        <PdsGoalCalculatorTestWrapper
+          calculationMock={{ ...calculationMock, name: '' }}
+          onCall={mutationSpy}
+        >
+          <AutosaveTextField
+            label="Goal Name"
+            fieldName="name"
+            schema={optionalSchema}
+            helperText="Enter the goal name"
+          />
+        </PdsGoalCalculatorTestWrapper>,
+      );
+
+      const input = await findByRole('textbox', { name: 'Goal Name' });
+      await waitFor(() => expect(input).toHaveValue(''));
+
+      expect(input).not.toHaveAttribute('aria-invalid', 'true');
+      expect(input).toHaveAccessibleDescription('Enter the goal name');
+    });
   });
 
   describe('select input', () => {
