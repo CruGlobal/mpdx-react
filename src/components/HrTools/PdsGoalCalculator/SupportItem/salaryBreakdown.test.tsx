@@ -111,7 +111,9 @@ describe('buildSalaryBreakdownRows', () => {
     );
     const byId = Object.fromEntries(rows.map((r) => [r.id, r]));
 
-    expect(byId['geographic-multiplier'].category).toBe('Geographic Multiplier');
+    expect(byId['geographic-multiplier'].category).toBe(
+      'Geographic Multiplier',
+    );
     expect(byId['geographic-multiplier'].amountSuffix).toBe('(Atlanta)');
     expect(byId['gross-monthly-pay'].formula).toBe(
       'Monthly Base × (1 + Geographic Multiplier (Atlanta))',
@@ -127,7 +129,9 @@ describe('buildSalaryBreakdownRows', () => {
     );
     const byId = Object.fromEntries(rows.map((r) => [r.id, r]));
 
-    expect(byId['geographic-multiplier'].category).toBe('Geographic Multiplier');
+    expect(byId['geographic-multiplier'].category).toBe(
+      'Geographic Multiplier',
+    );
     expect(byId['geographic-multiplier'].amountSuffix).toBeUndefined();
     expect(byId['gross-monthly-pay'].formula).toBe(
       'Monthly Base × (1 + Geographic Multiplier)',

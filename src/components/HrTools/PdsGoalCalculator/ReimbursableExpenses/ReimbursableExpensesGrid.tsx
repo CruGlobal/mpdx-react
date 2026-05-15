@@ -134,11 +134,7 @@ export const ReimbursableExpensesGrid: React.FC<
       <Stack direction="row" alignItems="center" gap={0.5}>
         <span>{row.label}</span>
         <Tooltip title={row.tooltip}>
-          <InfoIcon
-            color="action"
-            fontSize="small"
-            aria-label={row.tooltip}
-          />
+          <InfoIcon color="action" fontSize="small" aria-label={row.tooltip} />
         </Tooltip>
       </Stack>
     );
