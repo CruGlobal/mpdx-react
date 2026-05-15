@@ -57,7 +57,7 @@ export const calculateOtherExpenses = (
   const creditCardFees =
     (subtotal + attrition) / (1 - constants.creditCardFeeRate) -
     (subtotal + attrition);
-  const adminBase = subtotal + creditCardFees + attrition;
+  const adminBase = subtotal + attrition + creditCardFees;
   // Admin assessment is `adminRate` of the post-admin total, not a markup on
   // `adminBase`, so gross up: assessment / (adminBase + assessment) = adminRate.
   const assessment = adminBase / (1 - constants.adminRate) - adminBase;

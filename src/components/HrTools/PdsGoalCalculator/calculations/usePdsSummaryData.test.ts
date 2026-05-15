@@ -137,7 +137,7 @@ describe('usePdsSummaryData', () => {
       const { result } = renderHook(() =>
         usePdsSummaryData(undefined, defaultHcmUser),
       );
-      expect(result.current).toBeNull();
+      expect(result.current.data).toBeNull();
     });
 
     it.each([
@@ -196,7 +196,7 @@ describe('usePdsSummaryData', () => {
       const { result } = renderHook(() =>
         usePdsSummaryData(defaultCalculation, defaultHcmUser),
       );
-      expect(result.current).toBeNull();
+      expect(result.current.data).toBeNull();
     });
   });
 
@@ -209,14 +209,14 @@ describe('usePdsSummaryData', () => {
       const { result } = renderHook(() =>
         usePdsSummaryData(calc, defaultHcmUser),
       );
-      expect(result.current?.geographicMultiplier).toBe(GEO_MULTIPLIER);
+      expect(result.current.data?.geographicMultiplier).toBe(GEO_MULTIPLIER);
     });
 
     it('defaults to 0 (no adjustment) when geographicLocation is null', () => {
       const { result } = renderHook(() =>
         usePdsSummaryData(defaultCalculation, defaultHcmUser),
       );
-      expect(result.current?.geographicMultiplier).toBe(0);
+      expect(result.current.data?.geographicMultiplier).toBe(0);
     });
 
     it('defaults to 0 (no adjustment) when geographicLocation is not in the map', () => {
@@ -227,7 +227,7 @@ describe('usePdsSummaryData', () => {
       const { result } = renderHook(() =>
         usePdsSummaryData(calc, defaultHcmUser),
       );
-      expect(result.current?.geographicMultiplier).toBe(0);
+      expect(result.current.data?.geographicMultiplier).toBe(0);
     });
   });
 
@@ -240,7 +240,7 @@ describe('usePdsSummaryData', () => {
       const { result } = renderHook(() =>
         usePdsSummaryData(calc, defaultHcmUser),
       );
-      expect(result.current?.salaryConstants).toEqual({
+      expect(result.current.data?.salaryConstants).toEqual({
         geographicMultiplier: GEO_MULTIPLIER,
         employerFicaRate: EMPLOYER_FICA_RATE,
       });
@@ -253,16 +253,16 @@ describe('usePdsSummaryData', () => {
         usePdsSummaryData(defaultCalculation, defaultHcmUser),
       );
       // (5 + 3) / 100 = 0.08
-      expect(result.current?.otherConstants.fourOThreeBPercentage).toBeCloseTo(
-        0.08,
-      );
+      expect(
+        result.current.data?.otherConstants.fourOThreeBPercentage,
+      ).toBeCloseTo(0.08);
     });
 
     it('defaults to 0 when hcmUser is undefined', () => {
       const { result } = renderHook(() =>
         usePdsSummaryData(defaultCalculation, undefined),
       );
-      expect(result.current?.otherConstants.fourOThreeBPercentage).toBe(0);
+      expect(result.current.data?.otherConstants.fourOThreeBPercentage).toBe(0);
     });
 
     it('defaults to 0 when contribution percentages are null', () => {
@@ -277,7 +277,7 @@ describe('usePdsSummaryData', () => {
       const { result } = renderHook(() =>
         usePdsSummaryData(defaultCalculation, hcmUser),
       );
-      expect(result.current?.otherConstants.fourOThreeBPercentage).toBe(0);
+      expect(result.current.data?.otherConstants.fourOThreeBPercentage).toBe(0);
     });
   });
 
@@ -286,7 +286,7 @@ describe('usePdsSummaryData', () => {
       const { result } = renderHook(() =>
         usePdsSummaryData(defaultCalculation, defaultHcmUser),
       );
-      const data = result.current!;
+      const data = result.current.data!;
       const expected =
         data.otherTotals.subtotal +
         data.otherTotals.attrition +
@@ -316,10 +316,27 @@ describe('usePdsSummaryData', () => {
       const { result } = renderHook(() =>
         usePdsSummaryData(defaultCalculation, defaultHcmUser),
       );
-      expect(result.current?.overallTotal).toBeCloseTo(9995.16, 0);
+      expect(result.current.data?.overallTotal).toBeCloseTo(9995.16, 0);
     });
 
     it('computes correct overallTotal for a part-time hourly employee', () => {
+      // No geographic multiplier (defaults to 0), payRate = 25, hours = 20
+      // monthlyBase = (25 * 20 * 52) / 12 = 2166.667
+      // grossMonthlyPay = 2166.667 (no geo)
+      // employerFica = 2166.667 * 0.08 = 173.333
+      // salarySubtotal = 2340
+      //
+      // Reimbursable: monthly = 400, annual = 1200, raw = 500, above floor
+      //
+      // 403b = 2166.667 * 0.08 = 173.333
+      // workComp = 2166.667 * 0.17 = 368.333 (part-time)
+      // benefits = 0 (part-time, ignores calculation.benefits)
+      // subtotal = 2340 + 500 + 173.333 + 368.333 + 0 = 3381.667
+      // attrition = 3381.667 * 0.06 = 202.9
+      // creditCardFees = (3381.667 + 202.9) / (1 - 0.06) - (3381.667 + 202.9) ≈ 228.80
+      // adminBase ≈ 3813.37
+      // assessment = adminBase / (1 - 0.12) - adminBase ≈ 520.00
+      // overallTotal ≈ 3381.667 + 202.9 + 228.80 + 520.00 ≈ 4333.37
       const calc = {
         ...defaultCalculation,
         salaryOrHourly: DesignationSupportSalaryType.Hourly,
@@ -331,9 +348,43 @@ describe('usePdsSummaryData', () => {
       const { result } = renderHook(() =>
         usePdsSummaryData(calc, defaultHcmUser),
       );
-      expect(result.current?.overallTotal).toBeGreaterThan(0);
-      expect(result.current?.otherTotals.workComp).toBeGreaterThan(0);
-      expect(result.current?.otherTotals.benefits).toBe(0);
+      expect(result.current.data?.overallTotal).toBeCloseTo(4333.37, 0);
+      expect(result.current.data?.otherTotals.workComp).toBeCloseTo(368.33, 2);
+      expect(result.current.data?.otherTotals.benefits).toBe(0);
+    });
+
+    it('does not NaN-cascade when payRate is null', () => {
+      // Guards against a regression where a null payRate would propagate
+      // through the gross-up formulas (x / (1 - rate)) and produce NaN.
+      const calc = {
+        ...defaultCalculation,
+        payRate: null,
+      };
+      const { result } = renderHook(() =>
+        usePdsSummaryData(calc, defaultHcmUser),
+      );
+      const data = result.current.data!;
+      expect(data.salaryTotals.grossMonthlyPay).toBe(0);
+      expect(Number.isFinite(data.otherTotals.creditCardFees)).toBe(true);
+      expect(Number.isFinite(data.otherTotals.assessment)).toBe(true);
+      expect(Number.isFinite(data.overallTotal)).toBe(true);
+    });
+
+    it('applies the geographic multiplier to the overall total', () => {
+      const { result: baseline } = renderHook(() =>
+        usePdsSummaryData(defaultCalculation, defaultHcmUser),
+      );
+      const { result: withGeo } = renderHook(() =>
+        usePdsSummaryData(
+          { ...defaultCalculation, geographicLocation: 'Orlando, FL' },
+          defaultHcmUser,
+        ),
+      );
+      expect(baseline.current.data?.geographicMultiplier).toBe(0);
+      expect(withGeo.current.data?.geographicMultiplier).toBe(GEO_MULTIPLIER);
+      expect(withGeo.current.data!.overallTotal).toBeGreaterThan(
+        baseline.current.data!.overallTotal,
+      );
     });
   });
 
@@ -342,7 +393,7 @@ describe('usePdsSummaryData', () => {
       const { result } = renderHook(() =>
         usePdsSummaryData(defaultCalculation, defaultHcmUser),
       );
-      const data = result.current!;
+      const data = result.current.data!;
       expect(data).toHaveProperty('salaryTotals');
       expect(data).toHaveProperty('salaryConstants');
       expect(data).toHaveProperty('reimbursableTotals');
@@ -362,12 +413,12 @@ describe('usePdsSummaryData', () => {
       const { result } = renderHook(() =>
         usePdsSummaryData(calc, defaultHcmUser),
       );
-      expect(result.current?.otherConstants.reimbursableTotal).toBe(0);
-      expect(result.current?.otherConstants.fourOThreeBPercentage).toBe(0);
+      expect(result.current.data?.otherConstants.reimbursableTotal).toBe(0);
+      expect(result.current.data?.otherConstants.fourOThreeBPercentage).toBe(0);
       // The reimbursableTotals object is still computed (data isn't lost),
       // but the otherConstants.reimbursableTotal that feeds the Other Expenses
       // calculation is zeroed.
-      expect(result.current?.reimbursableTotals.total).toBeGreaterThan(0);
+      expect(result.current.data?.reimbursableTotals.total).toBeGreaterThan(0);
     });
 
     it('uses saved reimbursable + 403b values when formType is Detailed', () => {
@@ -378,12 +429,12 @@ describe('usePdsSummaryData', () => {
       const { result } = renderHook(() =>
         usePdsSummaryData(calc, defaultHcmUser),
       );
-      expect(result.current?.otherConstants.reimbursableTotal).toBeGreaterThan(
-        0,
-      );
-      expect(result.current?.otherConstants.fourOThreeBPercentage).toBeCloseTo(
-        0.08,
-      );
+      expect(
+        result.current.data?.otherConstants.reimbursableTotal,
+      ).toBeGreaterThan(0);
+      expect(
+        result.current.data?.otherConstants.fourOThreeBPercentage,
+      ).toBeCloseTo(0.08);
     });
 
     it('uses saved values when formType is null/undefined (legacy goals default to Detailed behavior)', () => {
@@ -394,12 +445,12 @@ describe('usePdsSummaryData', () => {
       const { result } = renderHook(() =>
         usePdsSummaryData(calc, defaultHcmUser),
       );
-      expect(result.current?.otherConstants.reimbursableTotal).toBeGreaterThan(
-        0,
-      );
-      expect(result.current?.otherConstants.fourOThreeBPercentage).toBeCloseTo(
-        0.08,
-      );
+      expect(
+        result.current.data?.otherConstants.reimbursableTotal,
+      ).toBeGreaterThan(0);
+      expect(
+        result.current.data?.otherConstants.fourOThreeBPercentage,
+      ).toBeCloseTo(0.08);
     });
   });
 });

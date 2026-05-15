@@ -142,12 +142,20 @@ describe('calculateOtherExpenses', () => {
       // (7400 + 444) / (1 - 0.06) - (7400 + 444) ≈ 500.68
       expect(result.creditCardFees).toBeCloseTo(500.68);
     });
+
+    it('returns 0 when creditCardFeeRate is 0', () => {
+      const result = calculateOtherExpenses(fullTime(), {
+        ...defaultConstants,
+        creditCardFeeRate: 0,
+      });
+      expect(result.creditCardFees).toBe(0);
+    });
   });
 
   describe('assessment', () => {
-    it('grosses up (subtotal + creditCardFees + attrition) so that admin is `adminRate` of the post-admin total', () => {
+    it('grosses up (subtotal + attrition + creditCardFees) so that admin is `adminRate` of the post-admin total', () => {
       const result = calculateOtherExpenses(fullTime(), defaultConstants);
-      // adminBase=7400+500.68+444=8344.68; assessment = adminBase/0.88 - adminBase ≈ 1137.91
+      // adminBase=7400+444+500.68=8344.68; assessment = adminBase/0.88 - adminBase ≈ 1137.91
       expect(result.assessment).toBeCloseTo(1137.91, 1);
     });
 

@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { GoalCard } from 'src/components/Reports/Shared/GoalCard/GoalCard';
 import { DesignationSupportFormType } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import {
   PdsGoalCalculationFieldsFragment,
   useDeletePdsGoalCalculationMutation,
@@ -21,11 +20,13 @@ export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({ goal }) => {
   const accountListId = useAccountListId() ?? '';
   const [deletePdsGoalCalculation] = useDeletePdsGoalCalculationMutation();
 
-  const { loading: constantsLoading } = useGoalCalculatorConstants();
   const { data: hcmData, loading: hcmLoading } = useHcmUserQuery();
   const hcmUser = hcmData?.hcm[0];
 
-  const summaryData = usePdsSummaryData(goal, hcmUser);
+  const { data: summaryData, loading: summaryLoading } = usePdsSummaryData(
+    goal,
+    hcmUser,
+  );
   const goalTotal = summaryData?.overallTotal ?? 0;
 
   const formType = goal.formType ?? DesignationSupportFormType.Detailed;
@@ -51,7 +52,7 @@ export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({ goal }) => {
       name={goal.name}
       goalAmount={goalTotal}
       currency="USD"
-      loading={constantsLoading || hcmLoading}
+      loading={summaryLoading || hcmLoading}
       updatedAt={goal.updatedAt}
       viewHref={`/accountLists/${accountListId}/hrTools/pdsGoalCalculator/${goal.id}`}
       onDelete={handleDelete}
