@@ -29,7 +29,7 @@ export const StickyConfirmButtons: React.FC<StickyConfirmButtonsProps> = ({
   const handleConfirmAndLeave = async () => {
     await confirmAction();
     setActions({});
-    window.location.href = `${process.env.SITE_URL}/accountLists/${accountListId}/tools`;
+    window.location.href = `/accountLists/${accountListId}/tools`;
   };
   return (
     <StickyButtonHeaderBox>

@@ -260,4 +260,39 @@ describe('Tools - MergeContacts', () => {
       `/accountLists/${accountListId}/tools/merge/contacts/contact-2`,
     );
   });
+
+  it('should redirect to tools after Confirm and Leave', async () => {
+    Object.defineProperty(window, 'location', {
+      value: {},
+      writable: true,
+    });
+
+    const { queryAllByTestId, getByRole } = render(
+      <SnackbarProvider>
+        <MergeContactsWrapper
+          mocks={{
+            GetContactDuplicates:
+              getContactDuplicatesMocks.GetContactDuplicates,
+            MassActionsMerge: () => {
+              return { mergeContacts: ['contact-2'] };
+            },
+          }}
+        />
+      </SnackbarProvider>,
+    );
+
+    await waitFor(() =>
+      expect(queryAllByTestId('MergeContactPair')).toHaveLength(2),
+    );
+    userEvent.click(queryAllByTestId('ignoreButton')[0]);
+    userEvent.click(queryAllByTestId('ignoreButton')[1]);
+
+    userEvent.click(getByRole('button', { name: 'Confirm and Leave' }));
+
+    await waitFor(() =>
+      expect(window.location.href).toEqual(
+        `/accountLists/${accountListId}/tools`,
+      ),
+    );
+  });
 });

@@ -23,7 +23,7 @@ const batchNativeHttpLink = new BatchHttpLink({
 });
 
 const restProxyHttpLink = new BatchHttpLink({
-  uri: `${process.env.SITE_URL}/api/graphql-rest`,
+  uri: `/api/graphql-rest`,
   batchMax: 25,
   batchDebounce: true,
   batchInterval: 20,

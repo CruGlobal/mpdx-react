@@ -169,7 +169,7 @@ const ProfileMenu = (): ReactElement => {
       },
     );
     window.localStorage.clear();
-    window.location.href = `${process.env.SITE_URL || window.location.origin}/api/stop-impersonating`;
+    window.location.href = '/api/stop-impersonating';
   };
 
   const handleAccountListClick = (

@@ -7,7 +7,7 @@ export const useOauthUrl = () => {
   const accountListId = useAccountListId();
 
   const getRedirectUrl = (accordion: IntegrationAccordion) => {
-    const domain = process.env.SITE_URL || window.location.origin;
+    const domain = window.location.origin;
     return encodeURIComponent(
       `${domain}/accountLists/${accountListId}/settings/integrations?selectedTab=${accordion}`,
     );
