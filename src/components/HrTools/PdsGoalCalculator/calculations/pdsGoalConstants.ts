@@ -4,24 +4,8 @@ import {
   GoalMiscConstants,
 } from 'src/hooks/useGoalCalculatorConstants';
 import { HcmUserQuery } from '../Shared/HCM.generated';
-import {
-  OtherExpensesConstants,
-  OtherExpensesFields,
-  calculateOtherExpenses,
-} from './OtherExpenses';
-import {
-  ReimbursableCalculationFields,
-  calculateReimbursableTotals,
-} from './reimbursableExpenses';
-import {
-  SalaryCalculationFields,
-  SalaryTotals,
-  calculateSalaryTotals,
-} from './salaryCalculation';
-
-export type PdsGoalTotalFields = SalaryCalculationFields &
-  ReimbursableCalculationFields &
-  OtherExpensesFields;
+import { OtherExpensesConstants } from './OtherExpenses';
+import { SalaryTotals } from './salaryCalculation';
 
 export interface PdsGoalTotalConstants {
   employerFicaRate: number;
@@ -59,7 +43,6 @@ export const buildPdsGoalConstants = (
   ) {
     return null;
   }
-
   const geographicMultiplier =
     goalGeographicConstantMap.get(geographicLocation ?? '') ?? 0;
 
@@ -95,28 +78,4 @@ export const buildOtherExpensesConstants = (
     creditCardFeeRate: constants.creditCardFeeRate,
     adminRate: constants.adminRate,
   };
-};
-
-export const calculatePdsGoalTotal = (
-  calculation: PdsGoalTotalFields,
-  constants: PdsGoalTotalConstants,
-): number => {
-  const salaryTotals = calculateSalaryTotals(calculation, {
-    geographicMultiplier: constants.geographicMultiplier,
-    employerFicaRate: constants.employerFicaRate,
-  });
-
-  const reimbursableTotal = calculateReimbursableTotals(calculation).total;
-
-  const otherExpenses = calculateOtherExpenses(
-    calculation,
-    buildOtherExpensesConstants(
-      calculation.formType ?? DesignationSupportFormType.Detailed,
-      constants,
-      salaryTotals,
-      reimbursableTotal,
-    ),
-  );
-
-  return otherExpenses.assessment;
 };

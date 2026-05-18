@@ -1,19 +1,15 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Chip } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { GoalCard } from 'src/components/Reports/Shared/GoalCard/GoalCard';
 import { DesignationSupportFormType } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
-import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import {
   PdsGoalCalculationFieldsFragment,
   useDeletePdsGoalCalculationMutation,
 } from '../GoalsList/PdsGoalCalculations.generated';
 import { useHcmUserQuery } from '../Shared/HCM.generated';
-import {
-  buildPdsGoalConstants,
-  calculatePdsGoalTotal,
-} from '../calculations/calculatePdsGoalTotal';
+import { usePdsSummaryData } from '../calculations/usePdsSummaryData';
 
 export interface PdsGoalCardProps {
   goal: PdsGoalCalculationFieldsFragment;
@@ -24,23 +20,14 @@ export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({ goal }) => {
   const accountListId = useAccountListId() ?? '';
   const [deletePdsGoalCalculation] = useDeletePdsGoalCalculationMutation();
 
-  const {
-    goalMiscConstants,
-    goalGeographicConstantMap,
-    loading: constantsLoading,
-  } = useGoalCalculatorConstants();
   const { data: hcmData, loading: hcmLoading } = useHcmUserQuery();
   const hcmUser = hcmData?.hcm[0];
 
-  const goalTotal = useMemo(() => {
-    const constants = buildPdsGoalConstants(
-      goalMiscConstants,
-      goalGeographicConstantMap,
-      goal.geographicLocation,
-      hcmUser?.fourOThreeB,
-    );
-    return constants ? calculatePdsGoalTotal(goal, constants) : 0;
-  }, [goal, goalMiscConstants, goalGeographicConstantMap, hcmUser]);
+  const { data: summaryData, loading: summaryLoading } = usePdsSummaryData(
+    goal,
+    hcmUser,
+  );
+  const goalTotal = summaryData?.overallTotal ?? 0;
 
   const formType = goal.formType ?? DesignationSupportFormType.Detailed;
   const formTypeBadge =
@@ -65,7 +52,7 @@ export const PdsGoalCard: React.FC<PdsGoalCardProps> = ({ goal }) => {
       name={goal.name}
       goalAmount={goalTotal}
       currency="USD"
-      loading={constantsLoading || hcmLoading}
+      loading={summaryLoading || hcmLoading}
       updatedAt={goal.updatedAt}
       viewHref={`/accountLists/${accountListId}/hrTools/pdsGoalCalculator/${goal.id}`}
       onDelete={handleDelete}

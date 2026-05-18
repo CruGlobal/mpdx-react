@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { ApolloError } from '@apollo/client';
 import { DesignationSupportFormType } from 'src/graphql/types.generated';
 import { useGoalCalculatorConstants } from 'src/hooks/useGoalCalculatorConstants';
 import { PdsGoalCalculationFieldsFragment } from '../GoalsList/PdsGoalCalculations.generated';
@@ -11,7 +12,7 @@ import {
 import {
   buildOtherExpensesConstants,
   buildPdsGoalConstants,
-} from './calculatePdsGoalTotal';
+} from './pdsGoalConstants';
 import {
   ReimbursableTotals,
   calculateReimbursableTotals,
@@ -32,14 +33,20 @@ export interface PdsSummaryData {
   geographicMultiplier: number;
 }
 
+export interface UsePdsSummaryDataResult {
+  data: PdsSummaryData | null;
+  loading: boolean;
+  error: ApolloError | undefined;
+}
+
 export const usePdsSummaryData = (
   calculation: PdsGoalCalculationFieldsFragment | undefined,
   hcmUser: HcmUserQuery['hcm'][number] | undefined,
-): PdsSummaryData | null => {
-  const { goalMiscConstants, goalGeographicConstantMap } =
+): UsePdsSummaryDataResult => {
+  const { goalMiscConstants, goalGeographicConstantMap, loading, error } =
     useGoalCalculatorConstants();
 
-  return useMemo(() => {
+  const data = useMemo(() => {
     if (!calculation) {
       return null;
     }
@@ -85,4 +92,6 @@ export const usePdsSummaryData = (
       geographicMultiplier: constants.geographicMultiplier,
     };
   }, [calculation, hcmUser, goalMiscConstants, goalGeographicConstantMap]);
+
+  return { data, loading, error };
 };

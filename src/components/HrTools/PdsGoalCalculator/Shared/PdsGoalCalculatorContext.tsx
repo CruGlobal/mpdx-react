@@ -89,7 +89,7 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const { data: hcmData } = useHcmUserQuery();
   const hcmUser = hcmData?.hcm[0];
 
-  const summaryData = usePdsSummaryData(calculation, hcmUser);
+  const { data: summaryData } = usePdsSummaryData(calculation, hcmUser);
 
   // Track the user's place by step enum, not numeric index, so that a change
   // to the steps array (e.g. formType switch Detailed → Simple, dropping the

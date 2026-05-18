@@ -39,12 +39,12 @@ describe('calculateSalaryTotals', () => {
       expect(result.grossMonthlyPay).toBe(5000);
     });
 
-    it('applies geographic multiplier additively', () => {
+    it('applies geographic multiplier as a delta to the monthly base', () => {
       const result = calculateSalaryTotals(salaried(), {
         geographicMultiplier: GEO_MULTIPLIER,
         employerFicaRate: FICA_RATE,
       });
-      // (60000 / 12) * 1.06
+      // (60000 / 12) * (1 + 0.06)
       expect(result.grossMonthlyPay).toBeCloseTo(5300);
     });
 
@@ -72,7 +72,7 @@ describe('calculateSalaryTotals', () => {
         geographicMultiplier: GEO_MULTIPLIER,
         employerFicaRate: FICA_RATE,
       });
-      // (25 * 40 * 52 / 12) * 1.06
+      // (25 * 40 * 52 / 12) * (1 + 0.06)
       expect(result.grossMonthlyPay).toBeCloseTo(4593.333, 2);
     });
   });

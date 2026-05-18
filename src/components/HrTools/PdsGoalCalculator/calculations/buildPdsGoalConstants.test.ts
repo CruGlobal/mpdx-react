@@ -2,7 +2,7 @@ import {
   GoalGeographicConstantMap,
   GoalMiscConstants,
 } from 'src/hooks/useGoalCalculatorConstants';
-import { buildPdsGoalConstants } from './calculatePdsGoalTotal';
+import { buildPdsGoalConstants } from './pdsGoalConstants';
 
 const makeConstant = (fee: number) => ({
   fee,
@@ -108,7 +108,7 @@ describe('buildPdsGoalConstants', () => {
     expect(result).toBeNull();
   });
 
-  it('returns geographicMultiplier of 0 for unknown location', () => {
+  it('defaults geographicMultiplier to 0 (no adjustment) for unknown location', () => {
     const result = buildPdsGoalConstants(
       buildMiscConstants(),
       defaultGeoMap,
@@ -119,7 +119,7 @@ describe('buildPdsGoalConstants', () => {
     expect(result?.geographicMultiplier).toBe(0);
   });
 
-  it('returns geographicMultiplier of 0 when location is null', () => {
+  it('defaults geographicMultiplier to 0 (no adjustment) when location is null', () => {
     const result = buildPdsGoalConstants(
       buildMiscConstants(),
       defaultGeoMap,
@@ -130,7 +130,7 @@ describe('buildPdsGoalConstants', () => {
     expect(result?.geographicMultiplier).toBe(0);
   });
 
-  it('returns geographicMultiplier of 0 when location is undefined', () => {
+  it('defaults geographicMultiplier to 0 (no adjustment) when location is undefined', () => {
     const result = buildPdsGoalConstants(
       buildMiscConstants(),
       defaultGeoMap,

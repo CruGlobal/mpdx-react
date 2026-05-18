@@ -49,7 +49,6 @@ describe('buildSalaryBreakdownRows', () => {
     expect(rows.map((row) => row.id)).toEqual([
       'pay-rate',
       'monthly-base',
-      'geographic-multiplier',
       'gross-monthly-pay',
       'employer-fica',
       'total',
@@ -69,8 +68,6 @@ describe('buildSalaryBreakdownRows', () => {
     expect(byId['pay-rate']).toBe(60000);
     // monthlyBase = 60000 / 12 = 5000
     expect(byId['monthly-base']).toBe(5000);
-    // geographicMultiplier passed through from constants
-    expect(byId['geographic-multiplier']).toBe(0);
     // grossMonthlyPay = 5000 * (1 + 0) = 5000
     expect(byId['gross-monthly-pay']).toBe(5000);
     // employerFica = 5000 * 0.08 = 400
@@ -102,42 +99,6 @@ describe('buildSalaryBreakdownRows', () => {
     expect(byId['total']).toBeCloseTo(4680.0, 2);
   });
 
-  it('includes the geographic location as a suffix on the multiplier amount and in the formula when set', () => {
-    const rows = buildSalaryBreakdownRows(
-      { ...salariedCalculation, geographicLocation: 'Atlanta' },
-      constants,
-      'en-US',
-      i18n.t,
-    );
-    const byId = Object.fromEntries(rows.map((r) => [r.id, r]));
-
-    expect(byId['geographic-multiplier'].category).toBe(
-      'Geographic Multiplier',
-    );
-    expect(byId['geographic-multiplier'].amountSuffix).toBe('(Atlanta)');
-    expect(byId['gross-monthly-pay'].formula).toBe(
-      'Monthly Base × (1 + Geographic Multiplier (Atlanta))',
-    );
-  });
-
-  it('omits the location suffix when geographicLocation is null', () => {
-    const rows = buildSalaryBreakdownRows(
-      salariedCalculation,
-      constants,
-      'en-US',
-      i18n.t,
-    );
-    const byId = Object.fromEntries(rows.map((r) => [r.id, r]));
-
-    expect(byId['geographic-multiplier'].category).toBe(
-      'Geographic Multiplier',
-    );
-    expect(byId['geographic-multiplier'].amountSuffix).toBeUndefined();
-    expect(byId['gross-monthly-pay'].formula).toBe(
-      'Monthly Base × (1 + Geographic Multiplier)',
-    );
-  });
-
   it('inserts hours-per-week and monthly-base rows for hourly', () => {
     const rows = buildSalaryBreakdownRows(
       hourlyCalculation,
@@ -149,7 +110,6 @@ describe('buildSalaryBreakdownRows', () => {
       'pay-rate',
       'hours-per-week',
       'monthly-base',
-      'geographic-multiplier',
       'gross-monthly-pay',
       'employer-fica',
       'total',

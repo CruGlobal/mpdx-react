@@ -54,9 +54,13 @@ export const calculateOtherExpenses = (
     benefits;
 
   const attrition = subtotal * constants.attritionRate;
-  const creditCardFees = (subtotal + attrition) * constants.creditCardFeeRate;
-  const adminRate = constants.adminRate;
-  const assessment = (subtotal + creditCardFees + attrition) * adminRate;
+  const creditCardFees =
+    (subtotal + attrition) / (1 - constants.creditCardFeeRate) -
+    (subtotal + attrition);
+  const adminBase = subtotal + attrition + creditCardFees;
+  // Admin assessment is `adminRate` of the post-admin total, not a markup on
+  // `adminBase`, so gross up: assessment / (adminBase + assessment) = adminRate.
+  const assessment = adminBase / (1 - constants.adminRate) - adminBase;
 
   return {
     reimbursableExpenses,
