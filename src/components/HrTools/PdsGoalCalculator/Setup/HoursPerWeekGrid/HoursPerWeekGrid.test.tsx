@@ -84,8 +84,8 @@ describe('HoursPerWeekGrid', () => {
 
     await waitForDataToLoad();
     // Regular Week 40hrs * 48wks = 1920 total hours, 48 total weeks
-    // Average = 1920 / 48 = 40.0
-    expect(await findByText('40.0')).toBeInTheDocument();
+    // Average = 1920 / 48 = 40.00
+    expect(await findByText('40.00')).toBeInTheDocument();
   });
 
   it('adds a new entry when clicking add button', async () => {
@@ -225,7 +225,7 @@ describe('HoursPerWeekGrid', () => {
     });
     userEvent.tab();
 
-    // Average = 20 hrs * 48 wks / 48 wks = 20.0
+    // Average = 20 hrs * 48 wks / 48 wks = 20.00
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('UpdatePdsGoalCalculation', {
         attributes: {
@@ -272,6 +272,51 @@ describe('HoursPerWeekGrid', () => {
     expect(onApply).toHaveBeenCalled();
   });
 
+  it('rounds the applied average to two decimal places', async () => {
+    const onApply = jest.fn();
+    const { findByText, getByDisplayValue, getByRole } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={defaultCalculationMock}
+        onCall={mutationSpy}
+      >
+        <HoursPerWeekGrid onApply={onApply} />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    await waitForDataToLoad();
+
+    // Edit Travel weeks from 0 to 4 (48 + 4 = 52 total)
+    const travelRow = (await findByText('Travel')).closest('[role="row"]');
+    const travelWeeksCell = travelRow?.querySelector('[data-field="weeks"]');
+    userEvent.dblClick(travelWeeksCell!);
+    await waitFor(() => {
+      const input = getByDisplayValue('0');
+      userEvent.clear(input);
+      userEvent.type(input, '4');
+    });
+    userEvent.tab();
+
+    // Edit Travel hours from 0 to 7 — average becomes (40*48 + 7*4) / 52 = 37.4615...
+    await waitFor(() => {
+      const travelHoursCell = travelRow?.querySelector(
+        '[data-field="hoursPerWeek"]',
+      );
+      userEvent.dblClick(travelHoursCell!);
+    });
+    await waitFor(() => {
+      const input = getByDisplayValue('0');
+      userEvent.clear(input);
+      userEvent.type(input, '7');
+    });
+    userEvent.tab();
+
+    const applyButton = getByRole('button', { name: 'Apply to Hours Worked' });
+    await waitFor(() => expect(applyButton).not.toBeDisabled());
+    userEvent.click(applyButton);
+
+    expect(onApply).toHaveBeenCalledWith(37.46);
+  });
+
   it('shows delete button only for custom entries on hover', async () => {
     const { findByText, findByLabelText, getByText } = render(
       <PdsGoalCalculatorTestWrapper
@@ -289,7 +334,7 @@ describe('HoursPerWeekGrid', () => {
     expect(await findByLabelText('Delete')).toBeInTheDocument();
   });
 
-  it('renders 0.0 (not NaN) when total weeks is zero', async () => {
+  it('renders 0.00 (not NaN) when total weeks is zero', async () => {
     const { findByText, getByDisplayValue, queryByText } = render(
       <PdsGoalCalculatorTestWrapper
         calculationMock={defaultCalculationMock}
@@ -317,7 +362,7 @@ describe('HoursPerWeekGrid', () => {
     await waitFor(() => {
       expect(queryByText('NaN')).not.toBeInTheDocument();
     });
-    expect(await findByText('0.0')).toBeInTheDocument();
+    expect(await findByText('0.00')).toBeInTheDocument();
   });
 
   it('clamps weeks to 52 total across all entries', async () => {
@@ -372,7 +417,7 @@ describe('HoursPerWeekGrid', () => {
     await waitFor(() => {
       expect(queryByText('New Entry')).not.toBeInTheDocument();
     });
-    // Default Regular Week 40*48/48 = 40.0 remains
-    expect(getByText('40.0')).toBeInTheDocument();
+    // Default Regular Week 40*48/48 = 40.00 remains
+    expect(getByText('40.00')).toBeInTheDocument();
   });
 });

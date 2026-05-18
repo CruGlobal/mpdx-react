@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import {
   MpdGoalMiscConstantCategoryEnum,
   MpdGoalMiscConstantLabelEnum,
@@ -8,15 +9,24 @@ import { PdsGoalCalculatorTestWrapper } from '../PdsGoalCalculatorTestWrapper';
 import { MonthlyReimbursableSection } from './MonthlyReimbursableSection';
 import { editAmountCell } from './reimbursableExpensesTestUtils';
 
+const prepopulatedTooltipText =
+  'Pre-filled with the maximum allowed amount. Edit to a lower value if needed.';
+
 const mutationSpy = jest.fn();
 
-const TestComponent: React.FC = () => (
+interface TestComponentProps {
+  ministryInternet?: number;
+}
+
+const TestComponent: React.FC<TestComponentProps> = ({
+  ministryInternet = 30,
+}) => (
   <PdsGoalCalculatorTestWrapper
     onCall={mutationSpy}
     calculationMock={{
       id: 'goal-1',
       ministryCellPhone: 35,
-      ministryInternet: 30,
+      ministryInternet,
       mpdNewsletter: 25,
       mpdMiscellaneous: 10,
       accountTransfers: 50,
@@ -42,6 +52,43 @@ const TestComponent: React.FC = () => (
 );
 
 describe('MonthlyReimbursableSection', () => {
+  it('renders the description text below the heading', async () => {
+    const { findByText } = render(<TestComponent />);
+
+    expect(
+      await findByText(
+        'Ministry Cell Phone and Ministry Internet reimbursements are capped at the per-month maximums shown next to each field name. Amounts entered above the maximum will be saved as the maximum.',
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('shows each maximum inline with the field name', async () => {
+    const { findByRole, getByRole } = render(<TestComponent />);
+
+    expect(
+      await findByRole('gridcell', {
+        name: /Ministry Cell Phone \(max \$35\/mo\)/,
+      }),
+    ).toBeInTheDocument();
+    expect(
+      getByRole('gridcell', {
+        name: /Ministry Internet \(max \$30\/mo\)/,
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it('renders an info icon on the cell phone and internet rows with a prepopulation tooltip', async () => {
+    const { findAllByLabelText, findByRole } = render(<TestComponent />);
+
+    const icons = await findAllByLabelText(prepopulatedTooltipText);
+    expect(icons).toHaveLength(2);
+
+    userEvent.hover(icons[0]);
+    expect(await findByRole('tooltip')).toHaveTextContent(
+      prepopulatedTooltipText,
+    );
+  });
+
   it('renders the section heading and column headers', async () => {
     const { findByRole, getByRole } = render(<TestComponent />);
 
@@ -57,7 +104,9 @@ describe('MonthlyReimbursableSection', () => {
   it('renders a row for every monthly field plus the subtotal', async () => {
     const { findByRole, getAllByRole } = render(<TestComponent />);
 
-    await findByRole('gridcell', { name: 'Ministry Cell Phone' });
+    await findByRole('gridcell', {
+      name: /Ministry Cell Phone \(max \$35\/mo\)/,
+    });
     // 1 header row + 6 field rows + 1 subtotal row
     expect(getAllByRole('row')).toHaveLength(8);
   });
@@ -82,16 +131,23 @@ describe('MonthlyReimbursableSection', () => {
     );
   });
 
-  it('shows an error and skips saving when an amount exceeds the configured maximum', async () => {
-    const { findByRole } = render(<TestComponent />);
-
-    await editAmountCell(findByRole, 'Ministry Cell Phone', '999');
-
-    expect(await findByRole('alert')).toHaveTextContent(
-      'Amount cannot exceed $35',
+  it('clips an over-max amount to the configured maximum, saves the clipped value, and notifies the user', async () => {
+    const { findByRole, findByText } = render(
+      <TestComponent ministryInternet={15} />,
     );
 
-    expect(mutationSpy).not.toHaveGraphqlOperation('UpdatePdsGoalCalculation');
+    await editAmountCell(findByRole, 'Ministry Internet', '999');
+
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UpdatePdsGoalCalculation', {
+        attributes: { id: 'goal-1', ministryInternet: 30 },
+      }),
+    );
+    expect(
+      await findByText(
+        'Ministry Internet (max $30/mo) reduced to its maximum of $30.',
+      ),
+    ).toBeInTheDocument();
   });
 
   it('shows an error and skips saving when a negative amount is entered', async () => {

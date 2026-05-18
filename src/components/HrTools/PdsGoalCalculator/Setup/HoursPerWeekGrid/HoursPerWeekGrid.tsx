@@ -24,6 +24,8 @@ import {
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { BaseGrid } from 'src/components/HrTools/GoalCalculator/SharedComponents/GoalCalculatorGrid/BaseGrid';
+import { useLocale } from 'src/hooks/useLocale';
+import { numberFormat } from 'src/lib/intlFormat';
 import {
   useCreateDesignationSupportHoursItemMutation,
   useDeleteDesignationSupportHoursItemMutation,
@@ -64,6 +66,7 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
   onApply,
 }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
   const { enqueueSnackbar } = useSnackbar();
   const { calculation, trackMutation } = usePdsGoalCalculator();
   const [createHoursItem] = useCreateDesignationSupportHoursItemMutation();
@@ -110,10 +113,16 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
     [entries],
   );
 
-  const averageHoursPerWeek = useMemo(
-    () => (totalWeeks > 0 ? totalHours / totalWeeks : 0),
-    [totalHours, totalWeeks],
-  );
+  const averageHoursPerWeek = useMemo(() => {
+    if (totalWeeks <= 0) {
+      return 0;
+    }
+    // WYSIWYS boundary: pre-round here so the value displayed via numberFormat
+    // matches the value submitted via saveField/onApply. Math.round uses
+    // half-away-from-zero; Intl.NumberFormat uses half-to-even — they only
+    // agree because the formatter receives this already-rounded value.
+    return Math.round((totalHours / totalWeeks) * 100) / 100;
+  }, [totalHours, totalWeeks]);
 
   const weeksRemaining = MAX_TOTAL_WEEKS - totalWeeks;
 
@@ -266,7 +275,10 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
         (sum, e) => sum + e.hoursPerWeek * e.weeks,
         0,
       );
-      const newAverage = newTotalWeeks > 0 ? newTotalHours / newTotalWeeks : 0;
+      const newAverage =
+        newTotalWeeks > 0
+          ? Math.round((newTotalHours / newTotalWeeks) * 100) / 100
+          : 0;
 
       try {
         if (!entryId.startsWith('temp-') && !entryId.startsWith('default-')) {
@@ -329,7 +341,10 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
         (sum, e) => sum + e.hoursPerWeek * e.weeks,
         0,
       );
-      const newAverage = newTotalWeeks > 0 ? newTotalHours / newTotalWeeks : 0;
+      const newAverage =
+        newTotalWeeks > 0
+          ? Math.round((newTotalHours / newTotalWeeks) * 100) / 100
+          : 0;
       saveField({
         averageHoursPerWeek: newAverage,
       });
@@ -490,7 +505,10 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
             {t('Average Hours Worked Per Week')}
           </Typography>
           <Typography variant="body2" fontWeight="bold">
-            {averageHoursPerWeek.toFixed(1)}
+            {numberFormat(averageHoursPerWeek, locale, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
           </Typography>
         </FooterRow>
       </StyledCard>

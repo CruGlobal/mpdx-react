@@ -1,7 +1,4 @@
-import {
-  DesignationSupportSalaryType,
-  DesignationSupportStatus,
-} from 'src/graphql/types.generated';
+import { DesignationSupportSalaryType } from 'src/graphql/types.generated';
 import { PdsGoalCalculationFieldsFragment } from '../GoalsList/PdsGoalCalculations.generated';
 import { PdsSummaryData } from '../calculations/usePdsSummaryData';
 
@@ -14,15 +11,13 @@ export const isSetupComplete = (calculation: Calculation): boolean => {
 
   const isSalaried =
     calculation.salaryOrHourly === DesignationSupportSalaryType.Salaried;
-  const isPartTime = calculation.status === DesignationSupportStatus.PartTime;
 
   return Boolean(
     calculation.name &&
       calculation.status &&
       calculation.salaryOrHourly &&
       (calculation.payRate ?? 0) > 0 &&
-      (isSalaried || (calculation.hoursWorkedPerWeek ?? 0) > 0) &&
-      (isPartTime || (calculation.benefits ?? 0) > 0),
+      (isSalaried || (calculation.hoursWorkedPerWeek ?? 0) > 0),
   );
 };
 

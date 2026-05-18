@@ -60,7 +60,7 @@ describe('PdsGoalCalculator', () => {
     expect(continueButton).not.toBeDisabled();
   });
 
-  it('re-enables Continue when switching from Hourly to Salaried hides the only invalid field', async () => {
+  it('re-enables Continue after switching from Hourly to Salaried and entering a new Pay Rate', async () => {
     const { findByRole, getByRole, queryByRole } = render(
       <PdsGoalCalculatorTestWrapper
         calculationMock={{
@@ -94,6 +94,11 @@ describe('PdsGoalCalculator', () => {
         queryByRole('spinbutton', { name: 'Hours Worked' }),
       ).not.toBeInTheDocument();
     });
+    // Switching Pay Type clears payRate, so the user must re-enter it before
+    // Continue becomes enabled.
+    const payRateInput = await findByRole('spinbutton', { name: 'Pay Rate' });
+    userEvent.type(payRateInput, '50000');
+
     await waitFor(() => expect(continueButton).not.toBeDisabled());
   });
 

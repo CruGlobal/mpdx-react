@@ -72,8 +72,8 @@ describe('isSetupComplete', () => {
     expect(isSetupComplete(partTime)).toBe(true);
   });
 
-  it('requires benefits when status is Full-time', () => {
-    expect(isSetupComplete({ ...baseCalculation, benefits: null })).toBe(false);
+  it('does not require benefits when status is Full-time', () => {
+    expect(isSetupComplete({ ...baseCalculation, benefits: null })).toBe(true);
   });
 });
 
