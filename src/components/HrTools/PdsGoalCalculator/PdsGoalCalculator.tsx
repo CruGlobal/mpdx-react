@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { DirectionButtons } from 'src/components/HrTools/Shared/CalculationReports/DirectionButtons/DirectionButtons';
 import {
   AutosaveForm,
@@ -47,6 +48,7 @@ const CurrentSectionList: React.FC = () => {
 };
 
 const MainContent: React.FC = () => {
+  const { t } = useTranslation();
   const { currentStep, stepIndex, steps, handleContinue, handlePreviousStep } =
     usePdsGoalCalculator();
   const { allValid } = useAutosaveForm();
@@ -54,15 +56,28 @@ const MainContent: React.FC = () => {
   const isFirstStep = stepIndex === 0;
   const isLastStep = stepIndex === steps.length - 1;
 
+  const handleSubmitGoal = async () => {};
+  const validateSubmitGoal = async () => ({});
+
   return (
     <>
       <CurrentStep />
       <DirectionButtons
-        formTitle={currentStep.title}
+        formTitle={isLastStep ? t('PDS Goal') : currentStep.title}
         handleNextStep={handleContinue}
         handlePreviousStep={handlePreviousStep}
         showBackButton={!isFirstStep}
-        hideNextButton={isLastStep}
+        isSubmission={isLastStep}
+        submitForm={isLastStep ? handleSubmitGoal : undefined}
+        validateForm={isLastStep ? validateSubmitGoal : undefined}
+        overrideContent={
+          isLastStep ? t('You are submitting your PDS Goal.') : undefined
+        }
+        overrideSubContent={
+          isLastStep
+            ? t('Once submitted, your goal will be saved.')
+            : undefined
+        }
         disableNext={!allValid}
       />
     </>
