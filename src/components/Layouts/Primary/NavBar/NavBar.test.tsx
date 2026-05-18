@@ -56,27 +56,4 @@ describe('NavBar', () => {
 
     expect(queryByRole('link', { name: 'Dashboard' })).not.toBeInTheDocument();
   });
-
-  describe("What's New link", () => {
-    it('is visible when HELP_WHATS_NEW_URL is set', () => {
-      process.env.HELP_WHATS_NEW_URL = '/new';
-      process.env.HELP_WHATS_NEW_IMAGE_URL = '/img.png';
-
-      const { getByRole } = render(<TestComponent openMobile />);
-
-      expect(
-        getByRole('link', { name: "Help logo What's New" }),
-      ).toHaveAttribute('href', '/new');
-    });
-
-    it('is hidden when HELP_WHATS_NEW_URL is not set', () => {
-      process.env.HELP_WHATS_NEW_URL = '';
-
-      const { queryByRole } = render(<TestComponent openMobile />);
-
-      expect(
-        queryByRole('link', { name: "Help logo What's New" }),
-      ).not.toBeInTheDocument();
-    });
-  });
 });

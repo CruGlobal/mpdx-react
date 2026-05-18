@@ -66,7 +66,6 @@ function reduceChildRoutes({
     icon: item.icon,
     key: item.title + depth,
     title: item.title,
-    whatsNewLink: item.whatsNewLink,
   };
 
   if (item.items) {

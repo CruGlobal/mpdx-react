@@ -2,7 +2,6 @@ import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useMemo, useState } from 'react';
 import { Grid, ListItemText, MenuItem } from '@mui/material';
-import { useTranslation } from 'react-i18next';
 import { makeStyles } from 'tss-react/mui';
 import { useLoadCoachingListQuery } from 'src/components/Coaching/LoadCoachingList.generated';
 import { useNavPages } from 'src/hooks/useNavPages';
@@ -87,7 +86,6 @@ export enum ToolName {
 }
 
 const NavMenu: React.FC = () => {
-  const { t } = useTranslation();
   const accountListId = useAccountListId();
 
   const { classes } = useStyles();
@@ -243,28 +241,6 @@ const NavMenu: React.FC = () => {
             }
           >
             <ListItemText primary={navPages[coachingIndex].title} />
-          </MenuItem>
-        </Grid>
-      )}
-
-      {process.env.HELP_WHATS_NEW_URL && (
-        <Grid item className={classes.navListItem}>
-          <MenuItem
-            component={NextLink}
-            href={process.env.HELP_WHATS_NEW_URL}
-            tabIndex={0}
-            className={classes.menuItem}
-            target="_blank"
-          >
-            {process.env.HELP_WHATS_NEW_IMAGE_URL && (
-              <img
-                src={process.env.HELP_WHATS_NEW_IMAGE_URL}
-                alt={t('Help logo')}
-                height={24}
-                style={{ marginRight: theme.spacing(1) }}
-              />
-            )}
-            <ListItemText primary={t("What's New")} />
           </MenuItem>
         </Grid>
       )}
