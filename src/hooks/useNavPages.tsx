@@ -41,7 +41,6 @@ export interface NavPage {
   pathname?: string;
   searchIcon?: ReactElement;
   items?: Item[];
-  whatsNewLink?: boolean;
   showInNav?: boolean;
   showInSearchDialog?: boolean;
   showInPanel?: boolean;
@@ -177,16 +176,6 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
         pathname: '/accountLists/[accountListId]/coaching',
         showInNav: true,
         showInSearchDialog: true,
-      });
-    }
-
-    if (process.env.HELP_WHATS_NEW_URL) {
-      navPages.push({
-        id: 'whats-new-page',
-        title: t("What's New"),
-        href: process.env.HELP_WHATS_NEW_URL,
-        whatsNewLink: true,
-        showInNav: true,
       });
     }
 

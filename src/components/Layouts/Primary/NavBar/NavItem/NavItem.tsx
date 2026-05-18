@@ -17,7 +17,6 @@ interface NavItemProps {
   icon?: string;
   open?: boolean;
   title: string;
-  whatsNewLink?: boolean;
 }
 
 const StyledListItem = styled(ListItem)({
@@ -51,7 +50,6 @@ export const NavItem: FC<NavItemProps> = ({
   icon,
   open: openProp,
   title,
-  whatsNewLink,
   ...rest
 }) => {
   const [open, setOpen] = useState<boolean>(openProp ?? false);
@@ -108,14 +106,6 @@ export const NavItem: FC<NavItemProps> = ({
       {...rest}
     >
       {icon && <Icon path={icon} style={iconStyle} size="20" />}
-      {whatsNewLink && process.env.HELP_WHATS_NEW_IMAGE_URL && (
-        <img
-          src={process.env.HELP_WHATS_NEW_IMAGE_URL}
-          alt={t('Help logo')}
-          height={24}
-          style={{ marginRight: theme.spacing(1) }}
-        />
-      )}
       <Title>{title}</Title>
     </LeafListItem>
   );
