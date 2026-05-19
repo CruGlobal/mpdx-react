@@ -11,10 +11,11 @@ const createTable = (
   transactions: Transaction[],
   locale: string,
 ) => {
+  const dateSortedTransactions = dateSortTransactions(transactions);
   const csvData = [
     [title],
     csvHeader,
-    ...transactions.map((transaction) => [
+    ...dateSortedTransactions.map((transaction) => [
       dateFormat(DateTime.fromISO(transaction.transactedAt), locale),
       transaction.displayCategory,
       currencyFormat(transaction.amount, 'USD', locale),
@@ -23,6 +24,12 @@ const createTable = (
 
   return csvData;
 };
+
+export function dateSortTransactions(transactions: Transaction[]) {
+  return [...transactions].sort((transactionA, transactionB) =>
+    transactionA.transactedAt.localeCompare(transactionB.transactedAt),
+  );
+}
 
 function createCombinedReport(
   transactions: Transaction[],

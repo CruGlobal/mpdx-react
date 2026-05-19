@@ -1,7 +1,7 @@
 import { StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import { ReportType } from '../Helpers/StaffReportEnum';
 import { Transaction } from '../Helpers/filterTransactions';
-import { createCsvReport } from './downloadReport';
+import { createCsvReport, dateSortTransactions } from './downloadReport';
 
 const mockData: Transaction[] = [
   {
@@ -9,7 +9,7 @@ const mockData: Transaction[] = [
     category: StaffExpenseCategoryEnum.MinistryReimbursement,
     displayCategory: 'Ministry Reimbursement',
     fundType: 'Primary',
-    transactedAt: '2025-07-01',
+    transactedAt: '2025-10-01',
     amount: -2724,
   },
   {
@@ -112,5 +112,15 @@ describe('downloadReport', () => {
     expect(appendChildMock).toHaveBeenCalledWith(realLink);
     expect(clickMock).toHaveBeenCalled();
     expect(removeChildMock).toHaveBeenCalledWith(realLink);
+  });
+
+  describe('dateSortTransactions', () => {
+    it('sorts transactions by ascending date', () => {
+      expect(
+        dateSortTransactions(mockData).map(
+          (transaction) => transaction.transactedAt,
+        ),
+      ).toEqual(['2025-08-01', '2025-09-01', '2025-10-01']);
+    });
   });
 });
