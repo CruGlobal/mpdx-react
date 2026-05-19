@@ -70,10 +70,12 @@ export const MaxAllowableStep: React.FC = () => {
 
     return yup.object({
       salaryCap: amount(t('Maximum Allowable Salary'), t, {
+        required: true,
         max: calculations?.hardCap,
         maxMessage,
       }),
       spouseSalaryCap: amount(t('Spouse Maximum Allowable Salary'), t, {
+        required: true,
         max: calculations?.hardCap,
         maxMessage,
       }),
