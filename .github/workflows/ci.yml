@@ -19,7 +19,6 @@ env:
   # we don't want to let the PR be merged yet. If the "Staging API" label is added to the PR, we
   # run codegen against the staging API instead of the production API and block the PR from merging.
   API_URL: ${{ contains(github.event.pull_request.labels.*.name, 'Staging API') && 'https://api.stage.mpdx.org/graphql' || 'https://api.mpdx.org/graphql' }}
-  SITE_URL: http://stage.mpdx.org
 
 jobs:
   test:

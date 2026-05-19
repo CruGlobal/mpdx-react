@@ -115,7 +115,7 @@ const TntConnect: React.FC<Props> = ({ accountListId }: Props) => {
 
   const handleCloseModal = () => {
     setShowModal(false);
-    window.location.href = `${process.env.SITE_URL}/accountLists/${accountListId}/tools`;
+    window.location.href = `/accountLists/${accountListId}/tools`;
     setLoading(true);
   };
 

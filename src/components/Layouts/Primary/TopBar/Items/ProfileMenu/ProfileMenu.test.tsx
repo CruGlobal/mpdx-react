@@ -223,11 +223,8 @@ describe('ProfileMenu', () => {
 describe('ProfileMenu while Impersonating', () => {
   fetchMock.enableMocks();
   window = Object.create(window);
-  const url = 'https://mpdx.org';
   Object.defineProperty(window, 'location', {
-    value: {
-      href: url,
-    },
+    value: {},
     writable: true,
   });
 
@@ -275,9 +272,7 @@ describe('ProfileMenu while Impersonating', () => {
     );
 
     await waitFor(() =>
-      expect(window.location.href).toEqual(
-        `${process.env.SITE_URL}/api/stop-impersonating`,
-      ),
+      expect(window.location.href).toEqual('/api/stop-impersonating'),
     );
   });
 });

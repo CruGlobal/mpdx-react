@@ -23,9 +23,6 @@ if (prod && !process.env.JWT_SECRET) {
   throw new Error('JWT_SECRET environment variable is not set');
 }
 
-const siteUrl =
-  process.env.PREVIEW_URL ?? process.env.SITE_URL ?? 'http://localhost:3000';
-
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
 });
@@ -38,14 +35,14 @@ const config: NextConfig = {
     REST_API_URL:
       process.env.REST_API_URL ?? 'https://api.stage.mpdx.org/api/v2/',
     OAUTH_URL: process.env.OAUTH_URL ?? 'https://auth.stage.mpdx.org',
-    SITE_URL: siteUrl,
     CLIENT_ID: process.env.CLIENT_ID ?? '4027334344069527005',
     CLIENT_SECRET: process.env.CLIENT_SECRET,
     AUTH_PROVIDER: process.env.AUTH_PROVIDER ?? 'OKTA',
     OKTA_CLIENT_ID: process.env.OKTA_CLIENT_ID ?? '0oa1n0gjoy3j5Ycdg0h8',
     OKTA_CLIENT_SECRET: process.env.OKTA_CLIENT_SECRET,
     OKTA_ISSUER: process.env.OKTA_ISSUER ?? 'https://signon.okta.com',
-    OKTA_SIGNOUT_REDIRECT_URL: process.env.OKTA_SIGNOUT_REDIRECT_URL ?? siteUrl,
+    OKTA_SIGNOUT_REDIRECT_URL:
+      process.env.OKTA_SIGNOUT_REDIRECT_URL ?? 'http://localhost:3000',
     API_OAUTH_CLIENT_ID:
       process.env.API_OAUTH_CLIENT_ID ??
       '3nxoth_gyetHdpjKp2WYkND1PUQlvYcjXQHW9ZdDxq4',

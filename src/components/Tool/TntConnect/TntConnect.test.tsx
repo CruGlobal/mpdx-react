@@ -48,6 +48,11 @@ describe('TntConnect Import', () => {
   });
 
   it('should handle uploading a file', async () => {
+    Object.defineProperty(window, 'location', {
+      value: {},
+      writable: true,
+    });
+
     const {
       getByRole,
       queryByText,
@@ -87,6 +92,9 @@ describe('TntConnect Import', () => {
     userEvent.click(getByRole('button', { name: 'Ok' }));
     await waitFor(() =>
       expect(queryByText('Good Work!')).not.toBeInTheDocument(),
+    );
+    expect(window.location.href).toEqual(
+      `/accountLists/${accountListId}/tools`,
     );
 
     await waitFor(() =>
