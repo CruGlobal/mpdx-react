@@ -335,14 +335,15 @@ describe('HoursPerWeekGrid', () => {
   });
 
   it('renders 0.00 (not NaN) when total weeks is zero', async () => {
-    const { findByText, getByDisplayValue, queryByText } = render(
-      <PdsGoalCalculatorTestWrapper
-        calculationMock={defaultCalculationMock}
-        onCall={mutationSpy}
-      >
-        <HoursPerWeekGrid />
-      </PdsGoalCalculatorTestWrapper>,
-    );
+    const { findByText, findAllByText, getByDisplayValue, queryByText } =
+      render(
+        <PdsGoalCalculatorTestWrapper
+          calculationMock={defaultCalculationMock}
+          onCall={mutationSpy}
+        >
+          <HoursPerWeekGrid />
+        </PdsGoalCalculatorTestWrapper>,
+      );
 
     await waitForDataToLoad();
 
@@ -362,7 +363,7 @@ describe('HoursPerWeekGrid', () => {
     await waitFor(() => {
       expect(queryByText('NaN')).not.toBeInTheDocument();
     });
-    expect(await findByText('0.00')).toBeInTheDocument();
+    expect((await findAllByText('0.00')).length).toBeGreaterThan(0);
   });
 
   it('clamps weeks to 52 total across all entries', async () => {

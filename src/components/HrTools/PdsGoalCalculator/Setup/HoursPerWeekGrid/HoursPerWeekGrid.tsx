@@ -416,6 +416,11 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
           }
           return (row.hoursPerWeek ?? 0) * (row.weeks ?? 0);
         },
+        valueFormatter: (value: number) =>
+          numberFormat(value ?? 0, locale, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }),
       },
       {
         field: 'actions',
