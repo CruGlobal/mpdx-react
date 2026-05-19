@@ -170,6 +170,22 @@ describe('SetupStep', () => {
     );
   });
 
+  it('hides Pay Rate when pay type is not set', async () => {
+    const { findByRole, queryByRole } = renderSetup({
+      calculationMock: {
+        ...fullTimeSalariedMock,
+        salaryOrHourly: null,
+        payRate: null,
+      },
+    });
+
+    await findByRole('textbox', { name: 'Goal Name' });
+
+    expect(
+      queryByRole('spinbutton', { name: 'Pay Rate' }),
+    ).not.toBeInTheDocument();
+  });
+
   it('shows dynamic Pay Rate helper text based on salary type', async () => {
     const { findByRole, findByText, rerender } = renderSetup({
       calculationMock: fullTimeSalariedMock,

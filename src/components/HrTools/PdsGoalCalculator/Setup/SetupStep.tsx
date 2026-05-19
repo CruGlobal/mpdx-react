@@ -92,8 +92,8 @@ export const SetupStep: React.FC = () => {
     return `${location} (${percentageFormat(multiplier, locale)})`;
   };
 
-  const isSalaried =
-    calculation?.salaryOrHourly === DesignationSupportSalaryType.Salaried;
+  const payType = calculation?.salaryOrHourly;
+  const isSalaried = payType === DesignationSupportSalaryType.Salaried;
   const isPartTime = calculation?.status === DesignationSupportStatus.PartTime;
   const isSimpleForm =
     calculation?.formType === DesignationSupportFormType.Simple;
@@ -230,18 +230,20 @@ export const SetupStep: React.FC = () => {
             </TextField>
           </Grid>
 
-          <Grid item xs={12}>
-            <AutosaveTextField
-              fieldName="payRate"
-              schema={schema}
-              label={t('Pay Rate')}
-              type="number"
-              helperText={payRateHelperText}
-              InputProps={{
-                startAdornment: <CurrencyAdornment />,
-              }}
-            />
-          </Grid>
+          {payType && (
+            <Grid item xs={12}>
+              <AutosaveTextField
+                fieldName="payRate"
+                schema={schema}
+                label={t('Pay Rate')}
+                type="number"
+                helperText={payRateHelperText}
+                InputProps={{
+                  startAdornment: <CurrencyAdornment />,
+                }}
+              />
+            </Grid>
+          )}
 
           {!isSalaried && (
             <Grid item xs={12}>
