@@ -31,7 +31,6 @@ query Hcm($effectiveDate: ISO8601Date) {
     exceptionSalaryCap {
       amount
       effectiveDate
-      boardCapException
     }
     fourOThreeB {
       currentRothContributionPercentage

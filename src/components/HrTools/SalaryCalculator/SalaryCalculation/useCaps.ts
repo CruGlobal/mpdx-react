@@ -1,3 +1,4 @@
+import { ProgressiveApprovalTierReasonEnum } from 'src/graphql/types.generated';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
 import { useFormatters } from '../Shared/useFormatters';
 
@@ -13,9 +14,6 @@ interface UseCapsResult {
   /** The sum of the users' requested gross salaries */
   combinedGross: number;
 
-  /** Whether the user is over their effective cap */
-  overUserCap: boolean;
-
   /** The person whose salary is over their effective cap */
   overCapPerson: OverCapPerson | null;
 }
@@ -26,28 +24,27 @@ export const useCaps = (): UseCapsResult => {
 
   const calcs = calculation?.calculations;
   const spouseCalcs = calculation?.spouseCalculations;
+  const reason = calculation?.progressiveApprovalTierReason;
 
   const combinedGross =
     (calcs?.requestedGross ?? 0) + (spouseCalcs?.requestedGross ?? 0);
 
-  const overUserCap = !!calcs && calcs.requestedGross > calcs.effectiveCap;
-  const overSpouseCap =
-    !!spouseCalcs && spouseCalcs.requestedGross > spouseCalcs.effectiveCap;
-  const overCapPerson = overUserCap
-    ? {
-        name: hcmUser?.staffInfo.preferredName ?? null,
-        effectiveCap: formatCurrency(calcs.effectiveCap),
-      }
-    : overSpouseCap
+  const overCapPerson =
+    reason === ProgressiveApprovalTierReasonEnum.OverUserCap && calcs
       ? {
-          name: hcmSpouse?.staffInfo.preferredName ?? null,
-          effectiveCap: formatCurrency(spouseCalcs.effectiveCap),
+          name: hcmUser?.staffInfo.preferredName ?? null,
+          effectiveCap: formatCurrency(calcs.effectiveCap),
         }
-      : null;
+      : reason === ProgressiveApprovalTierReasonEnum.OverSpouseCap &&
+          spouseCalcs
+        ? {
+            name: hcmSpouse?.staffInfo.preferredName ?? null,
+            effectiveCap: formatCurrency(spouseCalcs.effectiveCap),
+          }
+        : null;
 
   return {
     combinedGross,
-    overUserCap,
     overCapPerson,
   };
 };

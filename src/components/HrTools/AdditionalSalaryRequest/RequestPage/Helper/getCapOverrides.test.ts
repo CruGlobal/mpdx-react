@@ -1,3 +1,4 @@
+import { ProgressiveApprovalTierReasonEnum } from 'src/graphql/types.generated';
 import { getCapOverrides } from './getCapOverrides';
 
 const t = ((key: string) => key) as unknown as Parameters<
@@ -9,8 +10,7 @@ describe('getCapOverrides', () => {
     const result = getCapOverrides(
       {
         splitAsr: false,
-        additionalApproval: false,
-        hasBoardCapException: false,
+        reason: null,
       },
       t,
     );
@@ -22,20 +22,18 @@ describe('getCapOverrides', () => {
     const result = getCapOverrides(
       {
         splitAsr: true,
-        additionalApproval: false,
-        hasBoardCapException: false,
+        reason: null,
       },
       t,
     );
     expect(result.title).toMatch(/exceeds your remaining allowable salary/);
   });
 
-  it('returns Progressive Approvals messaging when additionalApproval without board exception', () => {
+  it('returns Progressive Approvals messaging when over user cap', () => {
     const result = getCapOverrides(
       {
         splitAsr: false,
-        additionalApproval: true,
-        hasBoardCapException: false,
+        reason: ProgressiveApprovalTierReasonEnum.OverUserCap,
       },
       t,
     );
@@ -43,12 +41,51 @@ describe('getCapOverrides', () => {
     expect(result.content).toMatch(/exceed your Maximum Allowable Salary/);
   });
 
-  it('returns board-approval messaging when approval required with board exception', () => {
+  it('returns Progressive Approvals messaging when over spouse cap', () => {
     const result = getCapOverrides(
       {
         splitAsr: false,
-        additionalApproval: true,
-        hasBoardCapException: true,
+        reason: ProgressiveApprovalTierReasonEnum.OverSpouseCap,
+      },
+      t,
+    );
+    expect(result.title).toMatch(/requires additional approval/);
+    expect(result.content).toMatch(/exceed your Maximum Allowable Salary/);
+  });
+
+  it('returns Progressive Approvals messaging with overlapping requests', () => {
+    const result = getCapOverrides(
+      {
+        splitAsr: false,
+        reason: ProgressiveApprovalTierReasonEnum.OverlappingRequests,
+      },
+      t,
+    );
+    expect(result.title).toMatch(/requires additional approval/);
+    expect(result.content).toMatch(
+      /pending Additional Salary Request or Salary Request/,
+    );
+  });
+
+  it('returns combined-cap messaging when over combined cap', () => {
+    const result = getCapOverrides(
+      {
+        splitAsr: false,
+        reason: ProgressiveApprovalTierReasonEnum.OverCombinedCap,
+      },
+      t,
+    );
+    expect(result.title).toMatch(/requires additional approval/);
+    expect(result.content).toMatch(
+      /combined Total Requested Salary to exceed your combined Maximum Allowable Salary/,
+    );
+  });
+
+  it('returns board-approval messaging with board cap exception', () => {
+    const result = getCapOverrides(
+      {
+        splitAsr: false,
+        reason: ProgressiveApprovalTierReasonEnum.BoardCapException,
       },
       t,
     );
@@ -57,18 +94,5 @@ describe('getCapOverrides', () => {
       /You have a Board approved Maximum Allowable Salary/,
     );
     expect(result.content).toMatch(/Additional Salary Request exceeds/);
-  });
-
-  it('board exception does not apply when no approval required', () => {
-    const result = getCapOverrides(
-      {
-        splitAsr: false,
-        additionalApproval: false,
-        hasBoardCapException: true,
-      },
-      t,
-    );
-    expect(result.title).toBeUndefined();
-    expect(result.content).toBeUndefined();
   });
 });

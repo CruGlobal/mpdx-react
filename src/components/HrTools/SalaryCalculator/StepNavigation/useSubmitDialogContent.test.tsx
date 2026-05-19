@@ -1,5 +1,8 @@
 import { renderHook, waitFor } from '@testing-library/react';
-import { ProgressiveApprovalTierEnum } from 'src/graphql/types.generated';
+import {
+  ProgressiveApprovalTierEnum,
+  ProgressiveApprovalTierReasonEnum,
+} from 'src/graphql/types.generated';
 import { SalaryCalculatorTestWrapper } from '../SalaryCalculatorTestWrapper';
 import { useSubmitDialogContent } from './useSubmitDialogContent';
 
@@ -10,9 +13,6 @@ describe('useSubmitDialogContent', () => {
         <SalaryCalculatorTestWrapper
           salaryRequestMock={{
             progressiveApprovalTier: null,
-          }}
-          hcmUser={{
-            exceptionSalaryCap: { boardCapException: true },
           }}
         >
           {children}
@@ -44,9 +44,6 @@ describe('useSubmitDialogContent', () => {
               approver: 'Division Head',
             },
           }}
-          hcmUser={{
-            exceptionSalaryCap: { boardCapException: false },
-          }}
         >
           {children}
         </SalaryCalculatorTestWrapper>
@@ -77,9 +74,6 @@ describe('useSubmitDialogContent', () => {
               requestedGross: 30000,
             },
           }}
-          hcmUser={{
-            exceptionSalaryCap: { boardCapException: false },
-          }}
         >
           {children}
         </SalaryCalculatorTestWrapper>
@@ -97,7 +91,7 @@ describe('useSubmitDialogContent', () => {
     expect(result.current.subContent).toContain('Vice President');
   });
 
-  it('returns board cap exception content when user has exception salary cap', async () => {
+  it('returns board cap exception content when the reason is BoardCapException', async () => {
     const { result } = renderHook(() => useSubmitDialogContent(), {
       wrapper: ({ children }) => (
         <SalaryCalculatorTestWrapper
@@ -105,9 +99,8 @@ describe('useSubmitDialogContent', () => {
             progressiveApprovalTier: {
               tier: ProgressiveApprovalTierEnum.BoardCompensationCommittee,
             },
-          }}
-          hcmUser={{
-            exceptionSalaryCap: { boardCapException: true },
+            progressiveApprovalTierReason:
+              ProgressiveApprovalTierReasonEnum.BoardCapException,
           }}
         >
           {children}
@@ -129,5 +122,36 @@ describe('useSubmitDialogContent', () => {
     expect(result.current.subContent).toContain(
       "We'll forward your request to them and get back to you with their decision",
     );
+  });
+
+  it('returns overlapping requests content when the reason is OverlappingRequests', async () => {
+    const { result } = renderHook(() => useSubmitDialogContent(), {
+      wrapper: ({ children }) => (
+        <SalaryCalculatorTestWrapper
+          salaryRequestMock={{
+            progressiveApprovalTier: {
+              tier: ProgressiveApprovalTierEnum.ManagementCompensationCommittee,
+              approvalTimeframe: '2 weeks',
+              approver: 'MCC',
+            },
+            progressiveApprovalTierReason:
+              ProgressiveApprovalTierReasonEnum.OverlappingRequests,
+          }}
+        >
+          {children}
+        </SalaryCalculatorTestWrapper>
+      ),
+    });
+
+    await waitFor(() => {
+      expect(result.current.title).toBe(
+        'Your request requires additional approval. Do you want to continue?',
+      );
+    });
+    expect(result.current.subContent).toContain(
+      'pending Additional Salary Request',
+    );
+    expect(result.current.subContent).toContain('2 weeks');
+    expect(result.current.subContent).toContain('MCC');
   });
 });

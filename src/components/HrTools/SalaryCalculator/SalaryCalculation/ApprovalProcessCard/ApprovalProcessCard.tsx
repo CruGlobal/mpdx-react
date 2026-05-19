@@ -53,13 +53,14 @@ export const ApprovalProcessCard: React.FC = () => {
       />
       <CardContent>
         <Typography data-testid="ApprovalProcessCard-status">
-          {tier === ProgressiveApprovalTierEnum.DivisionHead ? (
+          {tier === ProgressiveApprovalTierEnum.DivisionHead &&
+          overCapPerson ? (
             <Trans t={t}>
-              {{ name: overCapPerson?.name }}&apos;s Gross Requested Salary
+              {{ name: overCapPerson.name }}&apos;s Gross Requested Salary
               exceeds their individual Maximum Allowable Salary. If this is
               correct, please provide reasoning for why{' '}
-              {{ name: overCapPerson?.name }}&apos;s Salary should exceed{' '}
-              {{ cap: overCapPerson?.effectiveCap }} for division head approval
+              {{ name: overCapPerson.name }}&apos;s Salary should exceed{' '}
+              {{ cap: overCapPerson.effectiveCap }} for division head approval
               below.
             </Trans>
           ) : spouseName ? (

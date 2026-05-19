@@ -1,6 +1,9 @@
 import { render, waitFor } from '@testing-library/react';
-import { UserPersonTypeEnum } from 'pages/api/graphql-rest.page.generated';
-import { ProgressiveApprovalTierEnum } from 'src/graphql/types.generated';
+import {
+  ProgressiveApprovalTierEnum,
+  ProgressiveApprovalTierReasonEnum,
+  UserPersonTypeEnum,
+} from 'src/graphql/types.generated';
 import {
   SalaryCalculatorTestWrapper,
   SalaryCalculatorTestWrapperProps,
@@ -25,11 +28,12 @@ describe('ApprovalProcessCard', () => {
       const { getByRole, getByTestId } = render(
         <TestComponent
           salaryRequestMock={{
-            calculations: { requestedGross: 40000, effectiveCap: 30000 },
-            spouseCalculations: { requestedGross: 40000, effectiveCap: 50000 },
+            calculations: { effectiveCap: 30000 },
             progressiveApprovalTier: {
               tier: ProgressiveApprovalTierEnum.DivisionHead,
             },
+            progressiveApprovalTierReason:
+              ProgressiveApprovalTierReasonEnum.OverUserCap,
           }}
         />,
       );
@@ -51,11 +55,12 @@ If this is correct, please provide reasoning for why John's Salary should exceed
       const { getByRole, getByTestId } = render(
         <TestComponent
           salaryRequestMock={{
-            calculations: { requestedGross: 40000, effectiveCap: 50000 },
-            spouseCalculations: { requestedGross: 40000, effectiveCap: 30000 },
+            spouseCalculations: { effectiveCap: 30000 },
             progressiveApprovalTier: {
               tier: ProgressiveApprovalTierEnum.DivisionHead,
             },
+            progressiveApprovalTierReason:
+              ProgressiveApprovalTierReasonEnum.OverSpouseCap,
           }}
         />,
       );
@@ -79,7 +84,6 @@ If this is correct, please provide reasoning for why Jane's Salary should exceed
       },
     };
     const overCapMock = {
-      calculations: { requestedGross: 40000, effectiveCap: 30000 },
       progressiveApprovalTier: {
         tier: ProgressiveApprovalTierEnum.VicePresident,
       },
@@ -111,11 +115,12 @@ If this is correct, please provide reasoning for why Jane's Salary should exceed
       const { getByRole, getByTestId } = render(
         <TestComponent
           salaryRequestMock={{
-            calculations: { requestedGross: 100_000 },
             spouseCalculations: null,
             progressiveApprovalTier: {
               tier: ProgressiveApprovalTierEnum.VicePresident,
             },
+            progressiveApprovalTierReason:
+              ProgressiveApprovalTierReasonEnum.OverCombinedCap,
           }}
         />,
       );

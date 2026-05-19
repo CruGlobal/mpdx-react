@@ -50,8 +50,10 @@ const MainContent: React.FC = () => {
     spouse,
     isSpouse,
     setIsNewAsr,
-    hasBoardCapException,
   } = useAdditionalSalaryRequest();
+
+  const latestRequest = requestData?.latestAdditionalSalaryRequest;
+  const reason = latestRequest?.progressiveApprovalTierReason ?? null;
 
   const [createRequest, { loading: creatingRequest }] =
     useCreateAdditionalSalaryRequestMutation();
@@ -60,7 +62,6 @@ const MainContent: React.FC = () => {
     useFormikContext<CompleteFormValues>();
 
   const handleContinue = async () => {
-    const latestRequest = requestData?.latestAdditionalSalaryRequest;
     if (
       latestRequest === null ||
       latestRequest?.status === AsrStatusEnum.ApprovedAndPaid
@@ -104,11 +105,7 @@ const MainContent: React.FC = () => {
   const isFormPage = !isFirstFormPage && !reviewPage;
 
   const { title: overrideTitle, content: overrideContent } = getCapOverrides(
-    {
-      splitAsr: !!splitAsr,
-      additionalApproval,
-      hasBoardCapException,
-    },
+    { splitAsr: !!splitAsr, reason },
     t,
   );
 

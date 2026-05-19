@@ -10,6 +10,7 @@ import {
   Typography,
 } from '@mui/material';
 import { Trans, useTranslation } from 'react-i18next';
+import { ProgressiveApprovalTierReasonEnum } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useCaps } from '../SalaryCalculation/useCaps';
 import { useSalaryCalculator } from '../SalaryCalculatorContext/SalaryCalculatorContext';
@@ -24,9 +25,9 @@ export const ReceiptStep: React.FC = () => {
   const accountListId = useAccountListId();
   const { t } = useTranslation();
   const { formatCurrency } = useFormatters();
-  const { hcmUser, calculation } = useSalaryCalculator();
+  const { calculation } = useSalaryCalculator();
   const progressiveApprovalTier = calculation?.progressiveApprovalTier;
-  const boardCapException = hcmUser?.exceptionSalaryCap.boardCapException;
+  const reason = calculation?.progressiveApprovalTierReason;
   const { combinedGross } = useCaps();
 
   const [showReceipt, setShowReceipt] = useState(false);
@@ -49,12 +50,22 @@ export const ReceiptStep: React.FC = () => {
               It will be processed by HR Services within the next 2-3 business
               days. Please print a copy for your records.
             </Trans>
-          ) : boardCapException ? (
+          ) : reason === ProgressiveApprovalTierReasonEnum.BoardCapException ? (
             <Trans t={t}>
               You have a Board approved Maximum Allowable Salary (CAP) and your
               salary request exceeds that amount. As a result we need to get
               their approval for this request. We&apos;ll forward your request
               to them and get back to you with their decision.
+            </Trans>
+          ) : reason ===
+            ProgressiveApprovalTierReasonEnum.OverlappingRequests ? (
+            <Trans t={t}>
+              Because you or your spouse has a pending Additional Salary
+              Request, this request requires additional approval. This will take{' '}
+              {{ timeframe: progressiveApprovalTier.approvalTimeframe }} as it
+              needs to be signed off by the{' '}
+              {{ approver: progressiveApprovalTier.approver }}. This may affect
+              your selected effective date.
             </Trans>
           ) : (
             <Trans t={t}>

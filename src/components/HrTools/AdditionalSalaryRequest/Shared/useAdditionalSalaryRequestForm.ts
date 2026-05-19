@@ -5,6 +5,7 @@ import * as yup from 'yup';
 import {
   AsrStatusEnum,
   ElectionType403bEnum,
+  ProgressiveApprovalTierReasonEnum,
 } from 'src/graphql/types.generated';
 import { useLocale } from 'src/hooks/useLocale';
 import i18n from 'src/lib/i18n';
@@ -32,7 +33,6 @@ export const useAdditionalSalaryRequestForm = (
     isInternational,
     requestId,
     isSpouse,
-    hasBoardCapException,
     fieldConfig,
   } = useAdditionalSalaryRequest();
 
@@ -161,7 +161,11 @@ export const useAdditionalSalaryRequestForm = (
             'required-when-exceeds-cap',
             t('Additional info is required for requests exceeding your cap.'),
             function (value) {
-              if (hasBoardCapException) {
+              if (
+                requestData?.latestAdditionalSalaryRequest
+                  ?.progressiveApprovalTierReason ===
+                ProgressiveApprovalTierReasonEnum.BoardCapException
+              ) {
                 return true;
               }
               const total = getTotal(this.parent as CompleteFormValues);
@@ -192,7 +196,7 @@ export const useAdditionalSalaryRequestForm = (
       primaryAccountBalance,
       individualCap,
       locale,
-      hasBoardCapException,
+      requestData,
     ],
   );
 

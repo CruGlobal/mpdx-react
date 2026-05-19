@@ -1,5 +1,5 @@
 import { TFunction } from 'react-i18next';
-import { SecaStatusEnum } from 'pages/api/graphql-rest.page.generated';
+import { SecaStatusEnum } from 'src/graphql/types.generated';
 
 export const getLocalizedTaxStatus = (
   status: SecaStatusEnum | null | undefined,

@@ -121,7 +121,6 @@ export type AdditionalSalaryRequestType = {
   setIsNewAsr: React.Dispatch<React.SetStateAction<boolean>>;
   isSpouse: boolean;
   hasSpouse: boolean;
-  hasBoardCapException: boolean;
   isPending: boolean;
   isApproved: boolean;
   fieldConfig: FieldConfig;
@@ -254,8 +253,6 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       ? primaryPerson
       : spousePerson
     : undefined;
-  const hasBoardCapException =
-    user?.exceptionSalaryCap?.boardCapException ?? false;
 
   const salaryInfo = salaryInfoData?.salaryInfo;
   const isInternational = user?.staffInfo?.isInternational ?? false;
@@ -307,7 +304,6 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       setIsNewAsr,
       isSpouse,
       hasSpouse,
-      hasBoardCapException,
       isPending,
       isApproved,
       fieldConfig,
@@ -345,7 +341,6 @@ export const AdditionalSalaryRequestProvider: React.FC<Props> = ({
       setIsNewAsr,
       isSpouse,
       hasSpouse,
-      hasBoardCapException,
       isPending,
       isApproved,
       fieldConfig,

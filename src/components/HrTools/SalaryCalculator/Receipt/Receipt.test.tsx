@@ -1,5 +1,6 @@
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ProgressiveApprovalTierReasonEnum } from 'src/graphql/types.generated';
 import {
   SalaryCalculatorTestWrapper,
   SalaryCalculatorTestWrapperProps,
@@ -14,13 +15,14 @@ const TestComponent: React.FC<SalaryCalculatorTestWrapperProps> = (props) => (
 
 describe('Receipt step', () => {
   describe('board cap exception', () => {
-    const hcmMock = { exceptionSalaryCap: { boardCapException: true } };
-
-    it('should show approval info when require requires approval', async () => {
+    it('should show approval info when request requires approval', async () => {
       const { getByTestId } = render(
         <TestComponent
-          hcmUser={hcmMock}
-          salaryRequestMock={{ progressiveApprovalTier: {} }}
+          salaryRequestMock={{
+            progressiveApprovalTier: {},
+            progressiveApprovalTierReason:
+              ProgressiveApprovalTierReasonEnum.BoardCapException,
+          }}
         />,
       );
 
@@ -36,15 +38,35 @@ We'll forward your request to them and get back to you with their decision.",
 
     it('should not show approval info when request does not require approval', async () => {
       const { getByTestId } = render(
-        <TestComponent
-          hcmUser={hcmMock}
-          salaryRequestMock={{ progressiveApprovalTier: null }}
-        />,
+        <TestComponent salaryRequestMock={{ progressiveApprovalTier: null }} />,
       );
 
       await waitFor(() =>
         expect(getByTestId('Receipt-message')).toHaveTextContent(
           'It will be processed by HR Services within the next 2-3 business days. Please print a copy for your records.',
+        ),
+      );
+    });
+  });
+
+  describe('overlapping requests', () => {
+    it('shows overlap message when reason is OverlappingRequests', async () => {
+      const { getByTestId } = render(
+        <TestComponent
+          salaryRequestMock={{
+            progressiveApprovalTier: {
+              approver: 'MCC',
+              approvalTimeframe: '2 weeks',
+            },
+            progressiveApprovalTierReason:
+              ProgressiveApprovalTierReasonEnum.OverlappingRequests,
+          }}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(getByTestId('Receipt-message')).toHaveTextContent(
+          /pending Additional Salary Request/,
         ),
       );
     });

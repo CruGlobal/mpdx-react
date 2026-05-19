@@ -8,11 +8,11 @@ import React, {
 } from 'react';
 import { getApolloContext } from '@apollo/client';
 import { DateTime } from 'luxon';
-import { DisplayMethodEnum } from 'pages/api/graphql-rest.page.generated';
 import { AlertBanner } from 'src/components/Shared/alertBanner/AlertBanner';
 import {
   ActionEnum,
   ContactFilterStatusEnum,
+  DisplayMethodEnum,
 } from 'src/graphql/types.generated';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useContactPartnershipStatuses } from 'src/hooks/useContactPartnershipStatuses';
