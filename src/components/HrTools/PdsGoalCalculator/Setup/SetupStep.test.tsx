@@ -85,7 +85,9 @@ describe('SetupStep', () => {
 
     userEvent.clear(goalNameInput);
 
-    const payRateInput = await findByRole('spinbutton', { name: 'Pay Rate' });
+    const payRateInput = await findByRole('spinbutton', {
+      name: 'Hourly Pay Rate',
+    });
     userEvent.clear(payRateInput);
 
     const hoursInput = await findByRole('spinbutton', {
@@ -182,21 +184,24 @@ describe('SetupStep', () => {
     await findByRole('textbox', { name: 'Goal Name' });
 
     expect(
-      queryByRole('spinbutton', { name: 'Pay Rate' }),
+      queryByRole('spinbutton', { name: /Pay Rate/ }),
     ).not.toBeInTheDocument();
   });
 
-  it('shows dynamic Pay Rate helper text based on salary type', async () => {
+  it('shows dynamic Pay Rate label and helper text based on salary type', async () => {
     const { findByRole, findByText, rerender } = renderSetup({
       calculationMock: fullTimeSalariedMock,
     });
 
-    await findByRole('spinbutton', { name: 'Pay Rate' });
+    await findByRole('spinbutton', { name: 'Annual Pay Rate' });
     expect(await findByText('Enter yearly salary')).toBeInTheDocument();
+    expect(await findByText('/ year')).toBeInTheDocument();
 
     rerender(setupTree({ calculationMock: fullTimeHourlyMock }));
 
+    await findByRole('spinbutton', { name: 'Hourly Pay Rate' });
     expect(await findByText('Enter hourly rate')).toBeInTheDocument();
+    expect(await findByText('/ hour')).toBeInTheDocument();
   });
 
   it('403b field is disabled', async () => {
