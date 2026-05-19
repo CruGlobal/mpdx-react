@@ -165,6 +165,25 @@ describe('MaxAllowableSection', () => {
         'Your combined maximum allowable salary exceeds your maximum allowable salary of $125,000.00',
       );
     });
+
+    it('shows required errors when split cap fields are empty', async () => {
+      const { findByText } = render(
+        <TestComponent
+          salaryRequestMock={{
+            manuallySplitCap: true,
+            salaryCap: null,
+            spouseSalaryCap: null,
+          }}
+        />,
+      );
+
+      expect(
+        await findByText('Maximum Allowable Salary is required'),
+      ).toBeInTheDocument();
+      expect(
+        await findByText('Spouse Maximum Allowable Salary is required'),
+      ).toBeInTheDocument();
+    });
   });
 
   it('shows message to users with exception cap', async () => {
