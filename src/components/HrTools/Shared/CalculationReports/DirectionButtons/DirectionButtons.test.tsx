@@ -26,6 +26,9 @@ interface TestComponentProps {
   buttonTitle?: string;
   isEdit?: boolean;
   disableNext?: boolean;
+  disabledNextTooltip?: string;
+  loadingNext?: boolean;
+  loadingNextTitle?: string;
   noDiscard?: boolean;
 }
 
@@ -36,6 +39,9 @@ const TestComponent: React.FC<TestComponentProps> = ({
   buttonTitle,
   isEdit,
   disableNext,
+  disabledNextTooltip,
+  loadingNext,
+  loadingNextTitle,
   noDiscard = false,
 }) => (
   <ThemeProvider theme={theme}>
@@ -59,6 +65,9 @@ const TestComponent: React.FC<TestComponentProps> = ({
                 buttonTitle={buttonTitle}
                 isEdit={isEdit}
                 disableNext={disableNext}
+                disabledNextTooltip={disabledNextTooltip}
+                loadingNext={loadingNext}
+                loadingNextTitle={loadingNextTitle}
               />
             </MinisterHousingAllowanceProvider>
           </Formik>
@@ -153,6 +162,63 @@ describe('DirectionButtons', () => {
     await waitFor(() => {
       expect(
         queryByText('Complete all required fields to continue'),
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  it('shows the custom disabledNextTooltip when provided and Next is disabled', async () => {
+    const { findByRole, findByText, queryByText } = render(
+      <TestComponent
+        disableNext={true}
+        disabledNextTooltip="Complete all required fields to submit"
+      />,
+    );
+
+    const continueButton = await findByRole('button', { name: 'Continue' });
+    expect(continueButton).toBeDisabled();
+
+    userEvent.hover(continueButton.parentElement!);
+
+    expect(
+      await findByText('Complete all required fields to submit'),
+    ).toBeInTheDocument();
+    expect(
+      queryByText('Complete all required fields to continue'),
+    ).not.toBeInTheDocument();
+  });
+
+  it('shows the loadingNextTitle with an in-button spinner and disables the button while loadingNext is true', async () => {
+    const { findByRole } = render(
+      <TestComponent
+        buttonTitle="Finish & Apply Goal"
+        loadingNext={true}
+        loadingNextTitle="Saving..."
+      />,
+    );
+
+    const savingButton = await findByRole('button', { name: 'Saving...' });
+    expect(savingButton).toBeDisabled();
+    expect(
+      savingButton.querySelector('.MuiCircularProgress-root'),
+    ).toBeInTheDocument();
+  });
+
+  it('suppresses the disabledNextTooltip while loadingNext is true', async () => {
+    const { findByRole, queryByText } = render(
+      <TestComponent
+        disableNext={true}
+        disabledNextTooltip="Complete all required fields to submit"
+        loadingNext={true}
+        loadingNextTitle="Saving..."
+      />,
+    );
+
+    const savingButton = await findByRole('button', { name: 'Saving...' });
+    userEvent.hover(savingButton.parentElement!);
+
+    await waitFor(() => {
+      expect(
+        queryByText('Complete all required fields to submit'),
       ).not.toBeInTheDocument();
     });
   });

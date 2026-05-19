@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from '@mui/icons-material';
-import { Box, Button, Tooltip } from '@mui/material';
+import { Box, Button, CircularProgress, Tooltip } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { SubmitModal } from '../SubmitModal/SubmitModal';
 
@@ -23,6 +23,9 @@ interface DirectionButtonsProps {
   splitAsr?: boolean;
   disableSubmit?: boolean;
   disableNext?: boolean;
+  disabledNextTooltip?: string;
+  loadingNext?: boolean;
+  loadingNextTitle?: string;
   //Formik validation for submit modal
   isSubmission?: boolean;
   submitForm?: () => Promise<void>;
@@ -55,6 +58,9 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
   splitAsr,
   disableSubmit,
   disableNext,
+  disabledNextTooltip,
+  loadingNext,
+  loadingNextTitle,
 }) => {
   const { t } = useTranslation();
 
@@ -143,18 +149,26 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
           ) : (
             <Tooltip
               title={
-                disableNext ? t('Complete all required fields to continue') : ''
+                disableNext && !loadingNext
+                  ? (disabledNextTooltip ??
+                    t('Complete all required fields to continue'))
+                  : ''
               }
             >
               <Box component="span">
                 <Button
                   variant="contained"
                   color="primary"
-                  endIcon={<ChevronRight />}
+                  endIcon={loadingNext ? undefined : <ChevronRight />}
+                  startIcon={
+                    loadingNext ? <CircularProgress size={20} /> : undefined
+                  }
                   onClick={overrideNext ?? handleNextStep}
-                  disabled={disableNext}
+                  disabled={disableNext || loadingNext}
                 >
-                  {buttonTitle ?? t('Continue')}
+                  {loadingNext
+                    ? (loadingNextTitle ?? buttonTitle ?? t('Continue'))
+                    : (buttonTitle ?? t('Continue'))}
                 </Button>
               </Box>
             </Tooltip>
