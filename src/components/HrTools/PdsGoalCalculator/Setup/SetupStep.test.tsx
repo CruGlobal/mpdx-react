@@ -195,13 +195,13 @@ describe('SetupStep', () => {
 
     await findByRole('spinbutton', { name: 'Annual Pay Rate' });
     expect(await findByText('Enter yearly salary')).toBeInTheDocument();
-    expect(await findByText('/ year')).toBeInTheDocument();
+    expect(await findByText('per year')).toBeInTheDocument();
 
     rerender(setupTree({ calculationMock: fullTimeHourlyMock }));
 
     await findByRole('spinbutton', { name: 'Hourly Pay Rate' });
     expect(await findByText('Enter hourly rate')).toBeInTheDocument();
-    expect(await findByText('/ hour')).toBeInTheDocument();
+    expect(await findByText('per hour')).toBeInTheDocument();
   });
 
   it('403b field is disabled', async () => {

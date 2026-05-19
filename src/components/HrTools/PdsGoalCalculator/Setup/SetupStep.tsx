@@ -108,7 +108,7 @@ export const SetupStep: React.FC = () => {
     ? t('Enter yearly salary')
     : t('Enter hourly rate');
   const payRateLabel = isSalaried ? t('Annual Pay Rate') : t('Hourly Pay Rate');
-  const payRateUnitSuffix = isSalaried ? t('/ year') : t('/ hour');
+  const payRateUnitSuffix = isSalaried ? t('per year') : t('per hour');
 
   const handleOpenHoursCalculator = () => {
     setRightPanelContent(
