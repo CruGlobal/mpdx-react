@@ -103,7 +103,9 @@ describe('PdsGoalCalculator', () => {
     });
     // Switching Pay Type clears payRate, so the user must re-enter it before
     // Continue becomes enabled.
-    const payRateInput = await findByRole('spinbutton', { name: 'Pay Rate' });
+    const payRateInput = await findByRole('spinbutton', {
+      name: 'Annual Pay Rate',
+    });
     userEvent.type(payRateInput, '50000');
 
     await waitFor(() => expect(continueButton).not.toBeDisabled());

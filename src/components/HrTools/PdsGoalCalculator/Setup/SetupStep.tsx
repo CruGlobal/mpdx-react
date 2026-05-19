@@ -107,6 +107,8 @@ export const SetupStep: React.FC = () => {
   const payRateHelperText = isSalaried
     ? t('Enter yearly salary')
     : t('Enter hourly rate');
+  const payRateLabel = isSalaried ? t('Annual Pay Rate') : t('Hourly Pay Rate');
+  const payRateUnitSuffix = isSalaried ? t('per year') : t('per hour');
 
   const handleOpenHoursCalculator = () => {
     setRightPanelContent(
@@ -235,11 +237,16 @@ export const SetupStep: React.FC = () => {
               <AutosaveTextField
                 fieldName="payRate"
                 schema={schema}
-                label={t('Pay Rate')}
+                label={payRateLabel}
                 type="number"
                 helperText={payRateHelperText}
                 InputProps={{
                   startAdornment: <CurrencyAdornment />,
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      {payRateUnitSuffix}
+                    </InputAdornment>
+                  ),
                 }}
               />
             </Grid>
