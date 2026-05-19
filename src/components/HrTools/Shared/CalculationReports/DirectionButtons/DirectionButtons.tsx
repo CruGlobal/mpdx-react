@@ -23,6 +23,7 @@ interface DirectionButtonsProps {
   splitAsr?: boolean;
   disableSubmit?: boolean;
   disableNext?: boolean;
+  disabledNextTooltip?: string;
   //Formik validation for submit modal
   isSubmission?: boolean;
   submitForm?: () => Promise<void>;
@@ -55,6 +56,7 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
   splitAsr,
   disableSubmit,
   disableNext,
+  disabledNextTooltip,
 }) => {
   const { t } = useTranslation();
 
@@ -143,7 +145,10 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
           ) : (
             <Tooltip
               title={
-                disableNext ? t('Complete all required fields to continue') : ''
+                disableNext
+                  ? (disabledNextTooltip ??
+                    t('Complete all required fields to continue'))
+                  : ''
               }
             >
               <Box component="span">
