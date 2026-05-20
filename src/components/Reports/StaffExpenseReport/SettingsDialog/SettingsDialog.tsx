@@ -26,6 +26,7 @@ import { getLocalizedCategory } from '../../Shared/Helpers/transformStaffExpense
 import { useReportsStaffExpensesQuery } from '../GetStaffExpense.generated';
 import { DateRange } from '../Helpers/StaffReportEnum';
 import { getAvailableCategories } from '../Helpers/filterTransactions';
+import { getStaffExpenseMonthRange } from '../Helpers/getMonthRange';
 
 export interface SettingsDialogProps {
   isOpen: boolean;
@@ -133,13 +134,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
 
   const getQueryVariables = (filterParams: Filters | null) => ({
     fundTypes: selectedFundType ? [selectedFundType] : null,
-    startMonth:
-      filterParams?.startDate?.startOf('month').toISODate() ??
-      filterParams?.endDate?.startOf('month').toISODate() ??
-      currentTime.startOf('month').toISODate(),
-    endMonth:
-      filterParams?.endDate?.endOf('month').toISODate() ??
-      currentTime.endOf('month').toISODate(),
+    ...getStaffExpenseMonthRange(filterParams, currentTime),
   });
 
   const {
