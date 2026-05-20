@@ -94,8 +94,8 @@ describe('BalanceCardList', () => {
     expect(getByText('- Transfers out: $50')).toBeInTheDocument();
     expect(getByText('+ Transfers in: $0')).toBeInTheDocument();
     expect(getByText('- Transfers out: $200')).toBeInTheDocument();
-    expect(getByText('Starting Balance: $1,000')).toBeInTheDocument();
-    expect(getByText('Starting Balance: $2,000')).toBeInTheDocument();
+    expect(getByText('Starting Balance: $800')).toBeInTheDocument();
+    expect(getByText('Starting Balance: $1,950')).toBeInTheDocument();
     expect(getByText('Starting Balance: $500')).toBeInTheDocument();
     expect(getByText('= Ending Balance: $1,400')).toBeInTheDocument();
     expect(getByText('= Ending Balance: $2,250')).toBeInTheDocument();

@@ -318,7 +318,10 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
                     icon={getIconForFundType(selectedFundType)}
                     iconColor={getIconColorForFundType(selectedFundType, theme)}
                     title={selectedFundType}
-                    startBalance={selectedFund?.startBalance ?? 0}
+                    startBalance={
+                      (selectedFund?.endBalance ?? 0) -
+                      (selectedFund?.total ?? 0)
+                    }
                     endBalance={selectedFund?.endBalance ?? 0}
                     transfersIn={transferTotals[selectedFundType]?.in}
                     transfersOut={transferTotals[selectedFundType]?.out}

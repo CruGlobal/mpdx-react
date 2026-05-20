@@ -53,7 +53,7 @@ export const BalanceCardList: React.FC<BalanceCardListProps> = ({
             iconBgColor={getIconColorForFundType(fund.fundType, theme)}
             title={fund.fundType}
             isSelected={selectedFundType === fund.fundType}
-            startBalance={fund.startBalance ?? 0}
+            startBalance={(fund.endBalance ?? 0) - (fund.total ?? 0)}
             endBalance={fund.endBalance ?? 0}
             transfersIn={transferTotals[fund.fundType]?.in}
             transfersOut={transferTotals[fund.fundType]?.out}
