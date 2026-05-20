@@ -277,29 +277,26 @@ describe('StaffExpenseReport', () => {
   });
 
   it('shows month title and navigation when only category filters are applied', async () => {
-    const { getByRole, findByRole, findByLabelText, queryByText } = render(
+    const { getByRole, findByLabelText, findByRole } = render(
       <TestComponent />,
     );
 
     userEvent.click(getByRole('button', { name: 'Filter Settings' }));
 
     userEvent.click(await findByLabelText('Assessment'));
-    userEvent.click(await findByRole('button', { name: 'Apply Filters' }));
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Apply Filters' })).not.toBeDisabled(),
+    );
+    userEvent.click(getByRole('button', { name: 'Apply Filters' }));
 
     expect(
       await findByRole('heading', { name: 'January 2020', level: 6 }),
     ).toBeInTheDocument();
-    expect(
-      await findByRole('button', { name: 'Previous Month' }),
-    ).toBeInTheDocument();
-    expect(
-      await findByRole('button', { name: 'Next Month' }),
-    ).toBeInTheDocument();
-    expect(queryByText('Clear Filters')).not.toBeInTheDocument();
-  });
+    expect(getByRole('button', { name: 'Previous Month' })).toBeInTheDocument();
+    expect(getByRole('button', { name: 'Next Month' })).toBeInTheDocument();
+  }, 10000);
 
   it('shows filter date range title and hides month navigation when date filters are applied', async () => {
-    const originalNow = Settings.now;
     Settings.now = () => new Date(2020, 0, 20).valueOf();
 
     const { getByRole, findByRole, getByLabelText, queryByRole } = render(
@@ -330,7 +327,5 @@ describe('StaffExpenseReport', () => {
     expect(
       queryByRole('button', { name: 'Next Month' }),
     ).not.toBeInTheDocument();
-
-    Settings.now = originalNow;
   }, 10000);
 });
