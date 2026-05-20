@@ -33,6 +33,7 @@ export interface SettingsDialogProps {
   selectedFilters?: Filters;
   selectedFundType: string | null;
   onClose: (filters?: Filters) => void;
+  time?: DateTime;
 }
 
 export interface Filters {
@@ -121,11 +122,15 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
   onClose,
   selectedFilters,
   selectedFundType,
+  time,
 }) => {
   const { t } = useTranslation();
   const [previewFilters, setPreviewFilters] = useState<Filters | null>(null);
 
-  const currentTime = useMemo(() => DateTime.now().startOf('month'), []);
+  const currentTime = useMemo(
+    () => time ?? DateTime.now().startOf('month'),
+    [time],
+  );
 
   const handleClose = () => {
     setPreviewFilters(null);
@@ -143,6 +148,8 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
     error: categoryError,
   } = useReportsStaffExpensesQuery({
     variables: getQueryVariables(previewFilters ?? selectedFilters ?? null),
+    skip: !isOpen,
+    fetchPolicy: 'no-cache',
   });
 
   const availableCategories = useMemo(() => {

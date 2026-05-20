@@ -337,7 +337,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
       <SimpleScreenOnly mt={2}>
         <Container>
           <StyledTimeNavBox>
-            {!filters ? (
+            {!isFilterDateSelected ? (
               <Typography variant="h6">{timeTitle}</Typography>
             ) : (
               <Typography variant="h6">{filterTimeTitle}</Typography>
@@ -419,6 +419,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
           selectedFilters={filters || undefined}
           selectedFundType={selectedFundType}
           isOpen={isSettingsOpen}
+          time={time}
           onClose={(newFilters) => {
             setFilters(newFilters ?? null);
             setIsSettingsOpen(false);
