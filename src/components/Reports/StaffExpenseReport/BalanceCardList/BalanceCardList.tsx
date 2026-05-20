@@ -53,6 +53,8 @@ export const BalanceCardList: React.FC<BalanceCardListProps> = ({
             iconBgColor={getIconColorForFundType(fund.fundType, theme)}
             title={fund.fundType}
             isSelected={selectedFundType === fund.fundType}
+            // TODO(MPDX-9623): fund.startBalance returns endBalance for single-month queries.
+            // We derive from accounting identity until fixed
             startBalance={(fund.endBalance ?? 0) - (fund.total ?? 0)}
             endBalance={fund.endBalance ?? 0}
             transfersIn={transferTotals[fund.fundType]?.in}
