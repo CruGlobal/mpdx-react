@@ -4,6 +4,7 @@ import {
   Box,
   Button,
   Checkbox,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -18,7 +19,6 @@ import { Form, Formik } from 'formik';
 import { DateTime } from 'luxon';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
-import Loading from 'src/components/Loading/Loading';
 import { CustomDateField } from 'src/components/Shared/DateTimePickers/CustomDateField';
 import { Fund, StaffExpenseCategoryEnum } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
@@ -26,12 +26,14 @@ import { getLocalizedCategory } from '../../Shared/Helpers/transformStaffExpense
 import { useReportsStaffExpensesQuery } from '../GetStaffExpense.generated';
 import { DateRange } from '../Helpers/StaffReportEnum';
 import { getAvailableCategories } from '../Helpers/filterTransactions';
+import { getStaffExpenseMonthRange } from '../Helpers/getMonthRange';
 
 export interface SettingsDialogProps {
   isOpen: boolean;
   selectedFilters?: Filters;
   selectedFundType: string | null;
   onClose: (filters?: Filters) => void;
+  time?: DateTime;
 }
 
 export interface Filters {
@@ -120,11 +122,15 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
   onClose,
   selectedFilters,
   selectedFundType,
+  time,
 }) => {
   const { t } = useTranslation();
   const [previewFilters, setPreviewFilters] = useState<Filters | null>(null);
 
-  const currentTime = useMemo(() => DateTime.now().startOf('month'), []);
+  const currentTime = useMemo(
+    () => time ?? DateTime.now().startOf('month'),
+    [time],
+  );
 
   const handleClose = () => {
     setPreviewFilters(null);
@@ -133,13 +139,7 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
 
   const getQueryVariables = (filterParams: Filters | null) => ({
     fundTypes: selectedFundType ? [selectedFundType] : null,
-    startMonth:
-      filterParams?.startDate?.startOf('month').toISODate() ??
-      filterParams?.endDate?.startOf('month').toISODate() ??
-      currentTime.startOf('month').toISODate(),
-    endMonth:
-      filterParams?.endDate?.endOf('month').toISODate() ??
-      currentTime.endOf('month').toISODate(),
+    ...getStaffExpenseMonthRange(filterParams, currentTime),
   });
 
   const {
@@ -148,6 +148,8 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
     error: categoryError,
   } = useReportsStaffExpensesQuery({
     variables: getQueryVariables(previewFilters ?? selectedFilters ?? null),
+    skip: !isOpen,
+    fetchPolicy: 'no-cache',
   });
 
   const availableCategories = useMemo(() => {
@@ -318,7 +320,11 @@ export const SettingsDialog: React.FC<SettingsDialogProps> = ({
                 </Typography>
 
                 {categoryLoading ? (
-                  <Loading loading />
+                  <Box
+                    sx={{ display: 'flex', justifyContent: 'center', py: 2 }}
+                  >
+                    <CircularProgress size={24} />
+                  </Box>
                 ) : categoryError ? (
                   <Alert severity="error">
                     {t('Failed to load categories. Please try again.')}

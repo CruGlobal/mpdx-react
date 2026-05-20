@@ -4,6 +4,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { Settings } from 'luxon';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -274,4 +275,62 @@ describe('StaffExpenseReport', () => {
       expect(getAllByRole('row')).toHaveLength(2);
     });
   });
+
+  it('shows month title and navigation when only category filters are applied', async () => {
+    const { getByRole, findByRole, findByLabelText, queryByText } = render(
+      <TestComponent />,
+    );
+
+    userEvent.click(getByRole('button', { name: 'Filter Settings' }));
+
+    userEvent.click(await findByLabelText('Assessment'));
+    userEvent.click(await findByRole('button', { name: 'Apply Filters' }));
+
+    expect(
+      await findByRole('heading', { name: 'January 2020', level: 6 }),
+    ).toBeInTheDocument();
+    expect(
+      await findByRole('button', { name: 'Previous Month' }),
+    ).toBeInTheDocument();
+    expect(
+      await findByRole('button', { name: 'Next Month' }),
+    ).toBeInTheDocument();
+    expect(queryByText('Clear Filters')).not.toBeInTheDocument();
+  });
+
+  it('shows filter date range title and hides month navigation when date filters are applied', async () => {
+    const originalNow = Settings.now;
+    Settings.now = () => new Date(2020, 0, 20).valueOf();
+
+    const { getByRole, findByRole, getByLabelText, queryByRole } = render(
+      <TestComponent />,
+    );
+
+    userEvent.click(getByRole('button', { name: 'Filter Settings' }));
+    await findByRole('heading', { name: 'Report Settings' });
+
+    userEvent.click(getByLabelText('Select Date Range'));
+    userEvent.click(getByRole('option', { name: 'Month to Date' }));
+
+    await waitFor(() =>
+      expect(getByRole('button', { name: 'Apply Filters' })).not.toBeDisabled(),
+    );
+    userEvent.click(getByRole('button', { name: 'Apply Filters' }));
+
+    expect(
+      await findByRole('heading', {
+        level: 6,
+        name: 'January 1, 2020 - January 20, 2020',
+      }),
+    ).toBeInTheDocument();
+
+    expect(
+      queryByRole('button', { name: 'Previous Month' }),
+    ).not.toBeInTheDocument();
+    expect(
+      queryByRole('button', { name: 'Next Month' }),
+    ).not.toBeInTheDocument();
+
+    Settings.now = originalNow;
+  }, 10000);
 });

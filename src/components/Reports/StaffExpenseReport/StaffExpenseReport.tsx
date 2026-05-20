@@ -45,6 +45,7 @@ import {
   getIconColorForFundType,
   getIconForFundType,
 } from './Helpers/fundTypeHelpers';
+import { getStaffExpenseMonthRange } from './Helpers/getMonthRange';
 import { Filters, SettingsDialog } from './SettingsDialog/SettingsDialog';
 import { PrintTables } from './Tables/PrintTables';
 import { StaffReportTable } from './Tables/StaffReportTable';
@@ -98,13 +99,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
   const { data, loading } = useReportsStaffExpensesQuery({
     variables: {
       fundTypes: ['Primary', 'Savings', 'Staff Conference Savings'],
-      startMonth:
-        filters?.startDate?.startOf('month').toISODate() ??
-        filters?.endDate?.startOf('month').toISODate() ??
-        time.startOf('month').toISODate(),
-      endMonth:
-        filters?.endDate?.endOf('month').toISODate() ??
-        time.endOf('month').toISODate(),
+      ...getStaffExpenseMonthRange(filters, time),
     },
   });
 
@@ -342,7 +337,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
       <SimpleScreenOnly mt={2}>
         <Container>
           <StyledTimeNavBox>
-            {!filters ? (
+            {!isFilterDateSelected ? (
               <Typography variant="h6">{timeTitle}</Typography>
             ) : (
               <Typography variant="h6">{filterTimeTitle}</Typography>
@@ -424,6 +419,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
           selectedFilters={filters || undefined}
           selectedFundType={selectedFundType}
           isOpen={isSettingsOpen}
+          time={time}
           onClose={(newFilters) => {
             setFilters(newFilters ?? null);
             setIsSettingsOpen(false);

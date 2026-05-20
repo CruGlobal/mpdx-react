@@ -11,14 +11,20 @@ import { ReportsStaffExpensesQuery } from '../GetStaffExpense.generated';
 import { DateRange } from '../Helpers/StaffReportEnum';
 import { Filters, SettingsDialog, SettingsDialogProps } from './SettingsDialog';
 
-const TestComponent: React.FC<SettingsDialogProps> = ({
+const mutationSpy = jest.fn();
+const TestComponent: React.FC<
+  SettingsDialogProps & { onCallMock?: jest.Mock }
+> = ({
   isOpen,
   onClose,
   selectedFilters,
   selectedFundType,
+  time,
+  onCallMock,
 }) => (
   <TestRouter>
     <GqlMockedProvider<{ ReportsStaffExpenses: ReportsStaffExpensesQuery }>
+      onCall={onCallMock}
       mocks={{
         ReportsStaffExpenses: {
           reportsStaffExpenses: {
@@ -46,9 +52,7 @@ const TestComponent: React.FC<SettingsDialogProps> = ({
                         breakdownByMonth: [
                           {
                             transactions: [
-                              {
-                                transactedAt: DateTime.now().toISO(),
-                              },
+                              { transactedAt: DateTime.now().toISO() },
                             ],
                           },
                         ],
@@ -62,9 +66,7 @@ const TestComponent: React.FC<SettingsDialogProps> = ({
                         breakdownByMonth: [
                           {
                             transactions: [
-                              {
-                                transactedAt: DateTime.now().toISO(),
-                              },
+                              { transactedAt: DateTime.now().toISO() },
                             ],
                           },
                         ],
@@ -84,6 +86,7 @@ const TestComponent: React.FC<SettingsDialogProps> = ({
           onClose={onClose}
           selectedFilters={selectedFilters}
           selectedFundType={selectedFundType}
+          time={time}
         />
       </LocalizationProvider>
     </GqlMockedProvider>
@@ -417,5 +420,33 @@ describe('SettingsDialog', () => {
     );
 
     expect(await findByLabelText('Benefits')).not.toBeChecked();
+  });
+
+  it('should query using the time prop month when no date filter is set', async () => {
+    const time = DateTime.fromISO('2025-10-01');
+
+    render(
+      <TestComponent {...defaultProps} time={time} onCallMock={mutationSpy} />,
+    );
+
+    await waitFor(() => {
+      expect(mutationSpy).toHaveGraphqlOperation('ReportsStaffExpenses', {
+        startMonth: '2025-10-01',
+        endMonth: '2025-10-31',
+        fundTypes: ['Primary'],
+      });
+    });
+  });
+
+  it('should fall back to current month for category query when time prop is not provided', async () => {
+    render(<TestComponent {...defaultProps} onCallMock={mutationSpy} />);
+
+    await waitFor(() => {
+      expect(mutationSpy).toHaveGraphqlOperation('ReportsStaffExpenses', {
+        startMonth: '2020-01-01',
+        endMonth: '2020-01-31',
+        fundTypes: ['Primary'],
+      });
+    });
   });
 });
