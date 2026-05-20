@@ -98,7 +98,7 @@ export const StaffExpenseReport: React.FC<StaffExpenseReportProps> = ({
 
   const { data, loading } = useReportsStaffExpensesQuery({
     variables: {
-      fundTypes: ['Primary', 'Savings', 'Staff Conference Savings'],
+      fundTypes: ['Primary', 'General Savings', 'Conference Savings'],
       ...getStaffExpenseMonthRange(filters, time),
     },
   });

@@ -29,8 +29,8 @@ const IconBox = styled(Box)(() => ({
 
 enum FundTypeEnum {
   Primary = 'Primary',
-  Savings = 'Savings',
-  ConferenceSavings = 'Staff Conference Savings',
+  Savings = 'General Savings',
+  ConferenceSavings = 'Conference Savings',
 }
 
 interface BalanceCardProps {

@@ -11,10 +11,10 @@ export const getIconForFundType = (fundType: string): SvgIconComponent => {
   if (fundType === 'Primary') {
     return Wallet;
   }
-  if (fundType === 'Savings') {
+  if (fundType === 'General Savings') {
     return Savings;
   }
-  if (fundType === 'Staff Conference Savings') {
+  if (fundType === 'Conference Savings') {
     return Diversity1;
   }
   return Groups;
@@ -27,10 +27,10 @@ export const getIconColorForFundType = (
   if (fundType === 'Primary') {
     return theme.palette.chartOrange.main;
   }
-  if (fundType === 'Savings') {
+  if (fundType === 'General Savings') {
     return theme.palette.chartBlueDark.main;
   }
-  if (fundType === 'Staff Conference Savings') {
+  if (fundType === 'Conference Savings') {
     return theme.palette.chartBlueLight.main;
   }
   return theme.palette.chartBlue.main;
