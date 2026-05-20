@@ -42,12 +42,6 @@ const defaultCalculationMock: PdsGoalCalculationMock = {
 
 const mutationSpy = jest.fn();
 
-const waitForDataToLoad = async () => {
-  await waitFor(() =>
-    expect(mutationSpy).toHaveGraphqlOperation('PdsGoalCalculation'),
-  );
-};
-
 describe('HoursPerWeekGrid', () => {
   beforeEach(() => {
     mutationSpy.mockClear();
@@ -64,7 +58,6 @@ describe('HoursPerWeekGrid', () => {
     );
 
     expect(await findByText('Hours Per Week Calculator')).toBeInTheDocument();
-    await waitForDataToLoad();
     expect(await findByText('Regular Week')).toBeInTheDocument();
     expect(getByText('Travel')).toBeInTheDocument();
     expect(getByText('Unpaid Vacation')).toBeInTheDocument();
@@ -82,7 +75,6 @@ describe('HoursPerWeekGrid', () => {
       </PdsGoalCalculatorTestWrapper>,
     );
 
-    await waitForDataToLoad();
     // Regular Week 40hrs * 48wks = 1920 total hours, 48 total weeks
     // Average = 1920 / 48 = 40.00
     expect(await findByText('40.00')).toBeInTheDocument();
@@ -98,7 +90,6 @@ describe('HoursPerWeekGrid', () => {
       </PdsGoalCalculatorTestWrapper>,
     );
 
-    await waitForDataToLoad();
     await findByText('Regular Week');
     userEvent.click(getByText('Add Entry'));
 
@@ -121,7 +112,7 @@ describe('HoursPerWeekGrid', () => {
   });
 
   it('does not show Apply button when onApply is not provided', async () => {
-    const { queryByText } = render(
+    const { findByText, queryByText } = render(
       <PdsGoalCalculatorTestWrapper
         calculationMock={defaultCalculationMock}
         onCall={mutationSpy}
@@ -130,7 +121,7 @@ describe('HoursPerWeekGrid', () => {
       </PdsGoalCalculatorTestWrapper>,
     );
 
-    await waitForDataToLoad();
+    await findByText('Regular Week');
     expect(queryByText('Apply to Hours Worked')).not.toBeInTheDocument();
   });
 
@@ -145,7 +136,6 @@ describe('HoursPerWeekGrid', () => {
       </PdsGoalCalculatorTestWrapper>,
     );
 
-    await waitForDataToLoad();
     await findByText('Regular Week');
 
     // Default entries have 48 weeks total, 4 remaining
@@ -166,8 +156,6 @@ describe('HoursPerWeekGrid', () => {
         <HoursPerWeekGrid />
       </PdsGoalCalculatorTestWrapper>,
     );
-
-    await waitForDataToLoad();
 
     // Edit Regular Week hours from 40 to 20
     const regularRow = (await findByText('Regular Week')).closest(
@@ -209,8 +197,6 @@ describe('HoursPerWeekGrid', () => {
       </PdsGoalCalculatorTestWrapper>,
     );
 
-    await waitForDataToLoad();
-
     // Edit Regular Week hours from 40 to 20
     const regularRow = (await findByText('Regular Week')).closest(
       '[role="row"]',
@@ -246,8 +232,6 @@ describe('HoursPerWeekGrid', () => {
       </PdsGoalCalculatorTestWrapper>,
     );
 
-    await waitForDataToLoad();
-
     // Edit Travel weeks from 0 to 4 (48 + 4 = 52)
     const travelRow = (await findByText('Travel')).closest('[role="row"]');
     const weeksCell = travelRow?.querySelector('[data-field="weeks"]');
@@ -282,8 +266,6 @@ describe('HoursPerWeekGrid', () => {
         <HoursPerWeekGrid onApply={onApply} />
       </PdsGoalCalculatorTestWrapper>,
     );
-
-    await waitForDataToLoad();
 
     // Edit Travel weeks from 0 to 4 (48 + 4 = 52 total)
     const travelRow = (await findByText('Travel')).closest('[role="row"]');
@@ -327,7 +309,6 @@ describe('HoursPerWeekGrid', () => {
       </PdsGoalCalculatorTestWrapper>,
     );
 
-    await waitForDataToLoad();
     await findByText('Regular Week');
     userEvent.click(getByText('Add Entry'));
 
@@ -344,8 +325,6 @@ describe('HoursPerWeekGrid', () => {
           <HoursPerWeekGrid />
         </PdsGoalCalculatorTestWrapper>,
       );
-
-    await waitForDataToLoad();
 
     const regularRow = (await findByText('Regular Week')).closest(
       '[role="row"]',
@@ -375,8 +354,6 @@ describe('HoursPerWeekGrid', () => {
         <HoursPerWeekGrid />
       </PdsGoalCalculatorTestWrapper>,
     );
-
-    await waitForDataToLoad();
 
     // Default: Regular Week has 48 weeks, Travel and Vacation have 0
     // Edit Travel weeks to 10 — should be clamped to 4 (52 - 48 = 4 remaining)
@@ -408,7 +385,6 @@ describe('HoursPerWeekGrid', () => {
       </PdsGoalCalculatorTestWrapper>,
     );
 
-    await waitForDataToLoad();
     await findByText('Regular Week');
     userEvent.click(getByText('Add Entry'));
     expect(await findByText('New Entry')).toBeInTheDocument();

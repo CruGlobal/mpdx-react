@@ -44,12 +44,18 @@ export const useSaveField = () => {
                 },
               },
             },
+            refetchQueries: ['PdsGoalCalculations'],
+            awaitRefetchQueries: false,
           }),
         );
-      } catch {
+      } catch (error) {
         enqueueSnackbar(t('Failed to save changes. Please try again.'), {
           variant: 'error',
         });
+        // Re-throw so callers (e.g. useAutoSave) can revert local field
+        // state back to the cache value after Apollo rolls back the
+        // optimistic update.
+        throw error;
       }
     },
     [calculation, trackMutation, updatePdsGoalCalculation, enqueueSnackbar, t],

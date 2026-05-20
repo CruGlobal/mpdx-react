@@ -1,6 +1,6 @@
 import React from 'react';
 import { MenuItem, TextField } from '@mui/material';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import * as yup from 'yup';
 import i18n from 'src/lib/i18n';
@@ -8,6 +8,11 @@ import { amount } from 'src/lib/yupHelpers';
 import { useAutoSave } from './useAutosave';
 
 const saveValue = jest.fn().mockResolvedValue(undefined);
+
+beforeEach(() => {
+  saveValue.mockReset();
+  saveValue.mockResolvedValue(undefined);
+});
 
 interface TestComponentProps {
   disabled?: boolean;
@@ -86,6 +91,20 @@ describe('AutosaveTextField', () => {
     expect(saveValue).toHaveBeenCalledWith(null);
   });
 
+  it('reverts the displayed value when saving fails on blur', async () => {
+    saveValue.mockRejectedValueOnce(new Error('save failed'));
+
+    const { getByRole } = render(<TestComponent />);
+
+    const input = getByRole('textbox', { name: 'Field' });
+    userEvent.clear(input);
+    userEvent.type(input, '200');
+    input.blur();
+
+    expect(saveValue).toHaveBeenCalledWith(200);
+    await waitFor(() => expect(input).toHaveValue('100'));
+  });
+
   it('does not save when value does not change', () => {
     const { getByRole } = render(<TestComponent />);
 
@@ -146,6 +165,19 @@ describe('AutosaveTextField', () => {
 
       expect(input).toHaveAccessibleDescription('Field must be positive');
       expect(saveValue).not.toHaveBeenCalled();
+    });
+
+    it('reverts the displayed value when saving fails on change', async () => {
+      saveValue.mockRejectedValueOnce(new Error('save failed'));
+
+      const { getByRole } = render(<SelectTestComponent />);
+
+      const input = getByRole('combobox', { name: 'Field' });
+      userEvent.click(input);
+      userEvent.click(getByRole('option', { name: '200' }));
+
+      expect(saveValue).toHaveBeenCalledWith(200);
+      await waitFor(() => expect(input).toHaveTextContent('100'));
     });
   });
 });

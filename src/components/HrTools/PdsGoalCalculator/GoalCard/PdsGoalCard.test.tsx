@@ -16,10 +16,10 @@ describe('PdsGoalCard', () => {
     //   reimbursable    = max(300, 0)     =  300     (REIMBURSABLE_FLOOR)
     //   subtotal        = 4500 + 300 + 0 (403b) + 0 (workComp) + 1500 (benefits) = 6300
     //   attrition       = 6300 * 0.06     =  378
-    //   creditCardFees  = 6678 / 0.94 - 6678         ≈  426.26
+    //   creditCardFees  = 6678 / 0.94 - 6678         ≈  426.26, rounded to 426
     //   adminBase       = 6300 + 378 + 426.26        ≈ 7104.26
-    //   assessment      = 7104.26 / 0.88 - 7104.26   ≈  968.76
-    //   overallTotal    = 6300 + 378 + 426.26 + 968.76 ≈ 8073.02
+    //   assessment      = 7104.26 / 0.88 - 7104.26   ≈  968.76, rounded to 969
+    //   overallTotal    = 6300 + 378 + 426 + 969     =  8073
     const { findByText } = render(
       <PdsGoalCalculatorTestWrapper
         withProvider={false}
@@ -31,7 +31,7 @@ describe('PdsGoalCard', () => {
       </PdsGoalCalculatorTestWrapper>,
     );
 
-    expect(await findByText('$8,073.02')).toBeInTheDocument();
+    expect(await findByText('$8,073')).toBeInTheDocument();
   });
 
   it('builds the View link with the PDS goal calculator path', async () => {

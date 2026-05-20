@@ -1,11 +1,13 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
+import { GraphQLError } from 'graphql';
 import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
 import { merge, mergeWith } from 'lodash';
 import { SnackbarProvider } from 'notistack';
 import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
+import { UpdateAccountPreferencesMutation } from 'src/components/Settings/preferences/accordions/UpdateAccountPreferences.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   DesignationSupportFormType,
@@ -24,6 +26,7 @@ import {
   PdsGoalCalculationsDocument,
   PdsGoalCalculationsQuery,
   PdsGoalCalculationsQueryVariables,
+  UpdatePdsGoalCalculationMutation,
 } from './GoalsList/PdsGoalCalculations.generated';
 import {
   HcmUserDocument,
@@ -50,15 +53,15 @@ const calculationsDefault = gqlMock<
           averageHoursPerWeek: 0,
           benefits: 1500,
           geographicLocation: null,
-          ministryCellPhone: 0,
-          ministryInternet: 0,
-          mpdNewsletter: 0,
-          mpdMiscellaneous: 0,
-          accountTransfers: 0,
-          otherMonthlyReimbursements: 0,
-          conferenceRetreatCosts: 0,
-          ministryTravelMeals: 0,
-          otherAnnualReimbursements: 0,
+          ministryCellPhone: null,
+          ministryInternet: null,
+          mpdNewsletter: null,
+          mpdMiscellaneous: null,
+          accountTransfers: null,
+          otherMonthlyReimbursements: null,
+          conferenceRetreatCosts: null,
+          ministryTravelMeals: null,
+          otherAnnualReimbursements: null,
           designationSupportHoursItems: [],
         },
       ],
@@ -94,15 +97,15 @@ const calculationDefault = gqlMock<
       averageHoursPerWeek: 0,
       benefits: 1500,
       geographicLocation: null,
-      ministryCellPhone: 0,
-      ministryInternet: 0,
-      mpdNewsletter: 0,
-      mpdMiscellaneous: 0,
-      accountTransfers: 0,
-      otherMonthlyReimbursements: 0,
-      conferenceRetreatCosts: 0,
-      ministryTravelMeals: 0,
-      otherAnnualReimbursements: 0,
+      ministryCellPhone: null,
+      ministryInternet: null,
+      mpdNewsletter: null,
+      mpdMiscellaneous: null,
+      accountTransfers: null,
+      otherMonthlyReimbursements: null,
+      conferenceRetreatCosts: null,
+      ministryTravelMeals: null,
+      otherAnnualReimbursements: null,
       designationSupportHoursItems: [],
     },
   },
@@ -141,6 +144,9 @@ export interface PdsGoalCalculatorTestWrapperProps {
   userMock?: GetUserMock;
   constantsMock?: GoalCalculatorConstantsMock;
   supportRaisedMock?: number;
+  supportRaisedError?: boolean;
+  updateAccountPreferencesError?: boolean;
+  updatePdsGoalCalculationError?: boolean;
   onCall?: MockLinkCallHandler;
   router?: React.ComponentProps<typeof TestRouter>['router'];
 }
@@ -156,6 +162,9 @@ export const PdsGoalCalculatorTestWrapper: React.FC<
   userMock,
   constantsMock,
   supportRaisedMock,
+  supportRaisedError,
+  updateAccountPreferencesError,
+  updatePdsGoalCalculationError,
   onCall,
   router,
 }) => {
@@ -175,6 +184,8 @@ export const PdsGoalCalculatorTestWrapper: React.FC<
             HcmUser: HcmUserQuery;
             GetUser: GetUserQuery;
             AccountListSupportRaised: AccountListSupportRaisedQuery;
+            UpdateAccountPreferences: UpdateAccountPreferencesMutation;
+            UpdatePdsGoalCalculation: UpdatePdsGoalCalculationMutation;
           }>
             mocks={{
               PdsGoalCalculations: {
@@ -198,16 +209,52 @@ export const PdsGoalCalculatorTestWrapper: React.FC<
                     : [merge({}, hcmUserDefault.hcm[0], hcmUserMock)],
               },
               ...(userMock ? { GetUser: userMock } : {}),
-              ...(supportRaisedMock !== undefined
+              ...(updateAccountPreferencesError
                 ? {
-                    AccountListSupportRaised: {
-                      accountList: {
-                        id: 'account-list-1',
-                        receivedPledges: supportRaisedMock,
-                      },
+                    UpdateAccountPreferences: {
+                      updateAccountList: (() => {
+                        throw new GraphQLError(
+                          'Failed to update account preferences',
+                        );
+                      }) as unknown as NonNullable<
+                        UpdateAccountPreferencesMutation['updateAccountList']
+                      >,
                     },
                   }
                 : {}),
+              ...(updatePdsGoalCalculationError
+                ? {
+                    UpdatePdsGoalCalculation: {
+                      updateDesignationSupportCalculation: (() => {
+                        throw new GraphQLError(
+                          'Failed to update calculation',
+                        );
+                      }) as unknown as NonNullable<
+                        UpdatePdsGoalCalculationMutation['updateDesignationSupportCalculation']
+                      >,
+                    },
+                  }
+                : {}),
+              ...(supportRaisedError
+                ? {
+                    AccountListSupportRaised: {
+                      accountList: (() => {
+                        throw new GraphQLError(
+                          'Failed to load support raised',
+                        );
+                      }) as unknown as AccountListSupportRaisedQuery['accountList'],
+                    },
+                  }
+                : supportRaisedMock !== undefined
+                  ? {
+                      AccountListSupportRaised: {
+                        accountList: {
+                          id: 'account-list-1',
+                          receivedPledges: supportRaisedMock,
+                        },
+                      },
+                    }
+                  : {}),
               GoalCalculatorConstants: {
                 constant: mergeWith(
                   {},

@@ -1,7 +1,6 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Alert, Box, CircularProgress, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import Loading from 'src/components/Loading';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useAccountListSupportRaisedQuery } from '../../GoalCalculator/Shared/GoalLineItems.generated';
 import { usePdsGoalCalculator } from '../Shared/PdsGoalCalculatorContext';
@@ -11,13 +10,17 @@ export const SummaryReportStep: React.FC = () => {
   const { t } = useTranslation();
   const accountListId = useAccountListId() ?? '';
   const { calculationLoading } = usePdsGoalCalculator();
-  const { data } = useAccountListSupportRaisedQuery({
+  const { data, error } = useAccountListSupportRaisedQuery({
     variables: { accountListId },
   });
   const supportRaised = data?.accountList.receivedPledges ?? 0;
 
   if (calculationLoading) {
-    return <Loading loading />;
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', py: 2 }}>
+        <CircularProgress size={24} />
+      </Box>
+    );
   }
 
   return (
@@ -32,7 +35,13 @@ export const SummaryReportStep: React.FC = () => {
           )}
         </Typography>
       </Box>
-      <PdsSummaryTable supportRaised={supportRaised} />
+      {error ? (
+        <Alert severity="error">
+          {t('Failed to load support progress. Please try again.')}
+        </Alert>
+      ) : (
+        <PdsSummaryTable supportRaised={supportRaised} />
+      )}
     </>
   );
 };

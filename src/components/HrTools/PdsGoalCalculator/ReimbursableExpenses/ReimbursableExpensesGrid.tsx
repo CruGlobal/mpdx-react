@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import InfoIcon from '@mui/icons-material/Info';
 import {
   Box,
@@ -56,6 +57,8 @@ const ErrorCell = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
+  gap: theme.spacing(0.5),
+  color: theme.palette.error.main,
 }));
 
 export const ReimbursableExpensesGrid: React.FC<
@@ -159,7 +162,12 @@ export const ReimbursableExpensesGrid: React.FC<
     const formatted = currencyFormat(params.value ?? 0, 'USD', locale);
 
     if (error) {
-      return <ErrorCell title={error}>{formatted}</ErrorCell>;
+      return (
+        <ErrorCell>
+          <ErrorOutlineIcon fontSize="small" aria-hidden="true" />
+          <span>{formatted}</span>
+        </ErrorCell>
+      );
     }
 
     if (params.id === 'total' && subtotalTestId) {

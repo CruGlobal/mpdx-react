@@ -201,10 +201,8 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       handleStepChange,
       handleContinue,
       handlePreviousStep,
-      setRightPanelContent,
       closeRightPanel,
       toggleDrawer,
-      setIsDrawerOpen,
     ],
   );
 

@@ -74,7 +74,18 @@ export const usePdsSummaryData = (
       salaryTotals,
       reimbursableTotals.total,
     );
-    const otherTotals = calculateOtherExpenses(calculation, otherConstants);
+    const rawOtherTotals = calculateOtherExpenses(calculation, otherConstants);
+
+    // Round the four gross-up components once at the display boundary so the
+    // line items rendered in the summary table sum exactly to overallTotal
+    // (and match what gets submitted as the monthly goal).
+    const otherTotals = {
+      ...rawOtherTotals,
+      subtotal: Math.round(rawOtherTotals.subtotal),
+      attrition: Math.round(rawOtherTotals.attrition),
+      creditCardFees: Math.round(rawOtherTotals.creditCardFees),
+      assessment: Math.round(rawOtherTotals.assessment),
+    };
 
     const overallTotal =
       otherTotals.subtotal +

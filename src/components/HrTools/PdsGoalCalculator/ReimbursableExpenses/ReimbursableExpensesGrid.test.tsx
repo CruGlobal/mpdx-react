@@ -88,6 +88,7 @@ describe('ReimbursableExpensesGrid', () => {
     expect(await findByRole('alert')).toHaveTextContent(
       'Amount must be positive',
     );
+    expect(mutationSpy).not.toHaveGraphqlOperation('UpdatePdsGoalCalculation');
 
     await editAmountCell(findByRole, 'MPD Newsletter', '20');
 

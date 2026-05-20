@@ -282,17 +282,22 @@ describe('usePdsSummaryData', () => {
   });
 
   describe('overall total', () => {
-    it('sums subtotal + attrition + creditCardFees + assessment', () => {
+    it('rounds each of subtotal, attrition, creditCardFees, assessment so the displayed lines sum exactly to overallTotal', () => {
       const { result } = renderHook(() =>
         usePdsSummaryData(defaultCalculation, defaultHcmUser),
       );
       const data = result.current.data!;
-      const expected =
+      expect(Number.isInteger(data.otherTotals.subtotal)).toBe(true);
+      expect(Number.isInteger(data.otherTotals.attrition)).toBe(true);
+      expect(Number.isInteger(data.otherTotals.creditCardFees)).toBe(true);
+      expect(Number.isInteger(data.otherTotals.assessment)).toBe(true);
+      expect(data.overallTotal).toBe(
         data.otherTotals.subtotal +
-        data.otherTotals.attrition +
-        data.otherTotals.creditCardFees +
-        data.otherTotals.assessment;
-      expect(data.overallTotal).toBeCloseTo(expected);
+          data.otherTotals.attrition +
+          data.otherTotals.creditCardFees +
+          data.otherTotals.assessment,
+      );
+      expect(Number.isInteger(data.overallTotal)).toBe(true);
     });
 
     it('computes correct overallTotal for a full-time salaried employee', () => {
@@ -309,14 +314,14 @@ describe('usePdsSummaryData', () => {
       // workComp = 0 (full-time)
       // otherSubtotal = 5400 + 500 + 400 + 0 + 1500 = 7800
       // attrition = 7800 * 0.06 = 468
-      // creditCardFees = (7800 + 468) / (1 - 0.06) - (7800 + 468) ≈ 527.74
+      // creditCardFees = (7800 + 468) / (1 - 0.06) - (7800 + 468) ≈ 527.74, rounded to 528
       // adminBase = 7800 + 468 + 527.74 ≈ 8795.74
-      // assessment = adminBase / 0.88 - adminBase ≈ 1199.42
-      // overallTotal = 7800 + 468 + 527.74 + 1199.42 ≈ 9995.16
+      // assessment = adminBase / 0.88 - adminBase ≈ 1199.42, rounded to 1199
+      // overallTotal = 7800 + 468 + 528 + 1199 = 9995
       const { result } = renderHook(() =>
         usePdsSummaryData(defaultCalculation, defaultHcmUser),
       );
-      expect(result.current.data?.overallTotal).toBeCloseTo(9995.16, 0);
+      expect(result.current.data?.overallTotal).toBe(9995);
     });
 
     it('computes correct overallTotal for a part-time hourly employee', () => {
@@ -331,12 +336,12 @@ describe('usePdsSummaryData', () => {
       // 403b = 2166.667 * 0.08 = 173.333
       // workComp = 2166.667 * 0.17 = 368.333 (part-time)
       // benefits = 0 (part-time, ignores calculation.benefits)
-      // subtotal = 2340 + 500 + 173.333 + 368.333 + 0 = 3381.667
-      // attrition = 3381.667 * 0.06 = 202.9
-      // creditCardFees = (3381.667 + 202.9) / (1 - 0.06) - (3381.667 + 202.9) ≈ 228.80
+      // subtotal = 2340 + 500 + 173.333 + 368.333 + 0 = 3381.667, rounded to 3382
+      // attrition = 3381.667 * 0.06 = 202.9, rounded to 203
+      // creditCardFees = (3381.667 + 202.9) / (1 - 0.06) - (3381.667 + 202.9) ≈ 228.80, rounded to 229
       // adminBase ≈ 3813.37
-      // assessment = adminBase / (1 - 0.12) - adminBase ≈ 520.00
-      // overallTotal ≈ 3381.667 + 202.9 + 228.80 + 520.00 ≈ 4333.37
+      // assessment = adminBase / (1 - 0.12) - adminBase ≈ 520.00, rounded to 520
+      // overallTotal = 3382 + 203 + 229 + 520 = 4334
       const calc = {
         ...defaultCalculation,
         salaryOrHourly: DesignationSupportSalaryType.Hourly,
@@ -348,7 +353,7 @@ describe('usePdsSummaryData', () => {
       const { result } = renderHook(() =>
         usePdsSummaryData(calc, defaultHcmUser),
       );
-      expect(result.current.data?.overallTotal).toBeCloseTo(4333.37, 0);
+      expect(result.current.data?.overallTotal).toBe(4334);
       expect(result.current.data?.otherTotals.workComp).toBeCloseTo(368.33, 2);
       expect(result.current.data?.otherTotals.benefits).toBe(0);
     });

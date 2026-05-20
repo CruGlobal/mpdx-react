@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ApolloError } from '@apollo/client';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import { DirectionButtons } from 'src/components/HrTools/Shared/CalculationReports/DirectionButtons/DirectionButtons';
@@ -77,7 +78,7 @@ const MainContent: React.FC = () => {
     if (!accountListId || !summaryData?.overallTotal) {
       return;
     }
-    const monthlyGoal = Math.round(summaryData.overallTotal);
+    const monthlyGoal = summaryData.overallTotal;
     await updateAccountPreferences({
       variables: {
         input: {
@@ -96,6 +97,14 @@ const MainContent: React.FC = () => {
             formattedTotal: currencyFormat(monthlyGoal, 'USD', locale),
           }),
           { variant: 'success' },
+        );
+      },
+      onError: (err: ApolloError) => {
+        enqueueSnackbar(
+          t('Error while updating your monthly goal - {{error}}', {
+            error: err.message,
+          }),
+          { variant: 'error' },
         );
       },
     });

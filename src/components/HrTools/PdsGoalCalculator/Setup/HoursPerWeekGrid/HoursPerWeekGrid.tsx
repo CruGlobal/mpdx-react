@@ -62,6 +62,8 @@ interface HoursPerWeekGridProps {
 
 const MAX_TOTAL_WEEKS = 52;
 
+const roundHundredths = (n: number) => Math.round(n * 100) / 100;
+
 export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
   onApply,
 }) => {
@@ -121,7 +123,7 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
     // matches the value submitted via saveField/onApply. Math.round uses
     // half-away-from-zero; Intl.NumberFormat uses half-to-even — they only
     // agree because the formatter receives this already-rounded value.
-    return Math.round((totalHours / totalWeeks) * 100) / 100;
+    return roundHundredths(totalHours / totalWeeks);
   }, [totalHours, totalWeeks]);
 
   const weeksRemaining = MAX_TOTAL_WEEKS - totalWeeks;
@@ -276,9 +278,7 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
         0,
       );
       const newAverage =
-        newTotalWeeks > 0
-          ? Math.round((newTotalHours / newTotalWeeks) * 100) / 100
-          : 0;
+        newTotalWeeks > 0 ? roundHundredths(newTotalHours / newTotalWeeks) : 0;
 
       try {
         if (!entryId.startsWith('temp-') && !entryId.startsWith('default-')) {
@@ -291,7 +291,7 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
         }
         saveField({
           averageHoursPerWeek: newAverage,
-        });
+        }).catch(() => {});
       } catch {
         setEntries(previousEntries);
         enqueueSnackbar(t('Failed to delete entry. Please try again.'), {
@@ -342,12 +342,10 @@ export const HoursPerWeekGrid: React.FC<HoursPerWeekGridProps> = ({
         0,
       );
       const newAverage =
-        newTotalWeeks > 0
-          ? Math.round((newTotalHours / newTotalWeeks) * 100) / 100
-          : 0;
+        newTotalWeeks > 0 ? roundHundredths(newTotalHours / newTotalWeeks) : 0;
       saveField({
         averageHoursPerWeek: newAverage,
-      });
+      }).catch(() => {});
 
       return { ...newRow, weeks: Math.max(0, clampedWeeks) };
     },

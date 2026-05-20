@@ -66,6 +66,15 @@ export const useAutoSave = <Value extends string | number>({
     };
   }, [fieldName, errorMessage, markValid, markInvalid]);
 
+  // If a save fails (e.g. Apollo rolls back the optimistic response),
+  // revert the local input back to the canonical value from the cache so
+  // it doesn't keep showing what the user typed.
+  const revertOnFailure = (savePromise: Promise<unknown>) => {
+    savePromise.catch(() => {
+      setInternalValue(value?.toString() ?? '');
+    });
+  };
+
   return {
     value: internalValue,
     onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -75,13 +84,13 @@ export const useAutoSave = <Value extends string | number>({
       if (saveOnChange) {
         const { parsedValue, errorMessage } = parseValue(newValue);
         if (errorMessage === null && parsedValue !== value) {
-          saveValue(parsedValue);
+          revertOnFailure(saveValue(parsedValue));
         }
       }
     },
     onBlur: () => {
       if (!saveOnChange && errorMessage === null && parsedValue !== value) {
-        saveValue(parsedValue);
+        revertOnFailure(saveValue(parsedValue));
       }
     },
     disabled,

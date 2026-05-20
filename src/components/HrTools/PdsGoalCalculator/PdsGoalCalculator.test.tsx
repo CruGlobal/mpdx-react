@@ -353,5 +353,35 @@ describe('PdsGoalCalculator', () => {
       await findByText(/Successfully updated your monthly goal/);
       expect(finishButton).toBeDisabled();
     });
+
+    it('shows an error snackbar and re-enables Finish when the mutation fails', async () => {
+      const { findByRole, findByText, queryByText } = render(
+        <PdsGoalCalculatorTestWrapper
+          calculationMock={simpleFormMock}
+          updateAccountPreferencesError
+        >
+          <PdsGoalCalculator />
+        </PdsGoalCalculatorTestWrapper>,
+      );
+
+      await advanceToLastStep(findByRole);
+
+      const finishButton = await findByRole('button', {
+        name: 'Finish & Apply Goal',
+      });
+      userEvent.click(finishButton);
+
+      expect(
+        await findByText(
+          /Error while updating your monthly goal - Failed to update account preferences/,
+        ),
+      ).toBeInTheDocument();
+      // Success snackbar must not fire — `submitted` must stay false so the
+      // user can retry.
+      expect(
+        queryByText(/Successfully updated your monthly goal/),
+      ).not.toBeInTheDocument();
+      await waitFor(() => expect(finishButton).not.toBeDisabled());
+    });
   });
 });

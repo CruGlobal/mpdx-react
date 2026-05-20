@@ -27,4 +27,19 @@ describe('SummaryReportStep', () => {
 
     expect(await findByRole('heading', { name: '100%' })).toBeInTheDocument();
   });
+
+  it('renders an error alert when the support raised query fails', async () => {
+    const { findByText, queryByRole } = render(
+      <PdsGoalCalculatorTestWrapper supportRaisedError>
+        <SummaryReportStep />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    expect(
+      await findByText('Failed to load support progress. Please try again.'),
+    ).toBeInTheDocument();
+    expect(
+      queryByRole('grid', { name: 'PDS Goal Summary' }),
+    ).not.toBeInTheDocument();
+  });
 });

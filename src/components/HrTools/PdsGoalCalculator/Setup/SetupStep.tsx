@@ -114,7 +114,7 @@ export const SetupStep: React.FC = () => {
     setRightPanelContent(
       <HoursPerWeekGrid
         onApply={(average) => {
-          saveField({ hoursWorkedPerWeek: average });
+          saveField({ hoursWorkedPerWeek: average }).catch(() => {});
         }}
       />,
     );
@@ -219,7 +219,10 @@ export const SetupStep: React.FC = () => {
                 const newValue = event.target
                   .value as DesignationSupportSalaryType;
                 if (newValue !== calculation?.salaryOrHourly) {
-                  saveField({ salaryOrHourly: newValue, payRate: null });
+                  saveField({
+                    salaryOrHourly: newValue,
+                    payRate: null,
+                  }).catch(() => {});
                 }
               }}
             >
@@ -317,9 +320,9 @@ export const SetupStep: React.FC = () => {
               options={locations}
               getOptionLabel={getLocationLabel}
               value={calculation?.geographicLocation ?? 'None'}
-              onChange={(_, newValue: string | null) =>
-                saveField({ geographicLocation: newValue })
-              }
+              onChange={(_, newValue: string | null) => {
+                saveField({ geographicLocation: newValue }).catch(() => {});
+              }}
               disabled={!calculation}
               size="small"
               renderInput={(params: AutocompleteRenderInputParams) => (
