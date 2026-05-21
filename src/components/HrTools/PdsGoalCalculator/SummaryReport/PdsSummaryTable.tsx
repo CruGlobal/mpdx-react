@@ -125,7 +125,7 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
       ...(isPartTime
         ? [
             {
-              line: '2C',
+              line: isSimple ? '2A' : '2C',
               category: t('Work Comp'),
               amount: otherTotals.workComp,
             },
@@ -134,7 +134,7 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
       ...(isFullTime
         ? [
             {
-              line: '2C',
+              line: isSimple ? '2A' : '2C',
               category: t('Benefits'),
               amount: otherTotals.benefits,
             },
@@ -197,7 +197,7 @@ export const PdsSummaryTable: React.FC<PdsSummaryTableProps> = ({
         sortable: false,
         hideable: false,
         renderCell: (params) =>
-          /^[1-5]$/.test(params.row.line) ? params.value : '',
+          /^[1-5][A-C]?$/.test(params.row.line) ? params.value : '',
       },
       {
         field: 'category',
