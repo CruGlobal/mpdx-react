@@ -99,6 +99,28 @@ describe('buildSalaryBreakdownRows', () => {
     expect(byId['total']).toBeCloseTo(4680.0, 2);
   });
 
+  it('shows "Monthly Base" formula when geographic multiplier is 0', () => {
+    const rows = buildSalaryBreakdownRows(
+      salariedCalculation,
+      { ...constants, geographicMultiplier: 0 },
+      'en-US',
+      i18n.t,
+    );
+    const row = rows.find((r) => r.id === 'gross-monthly-pay');
+    expect(row?.formula).toBe('Monthly Base');
+  });
+
+  it('shows "Monthly Base × Geographic Multiplier (rate)" formula when multiplier is non-zero', () => {
+    const rows = buildSalaryBreakdownRows(
+      salariedCalculation,
+      { ...constants, geographicMultiplier: 0.06 },
+      'en-US',
+      i18n.t,
+    );
+    const row = rows.find((r) => r.id === 'gross-monthly-pay');
+    expect(row?.formula).toBe('Monthly Base × Geographic Multiplier (106%)');
+  });
+
   it('inserts hours-per-week and monthly-base rows for hourly', () => {
     const rows = buildSalaryBreakdownRows(
       hourlyCalculation,
