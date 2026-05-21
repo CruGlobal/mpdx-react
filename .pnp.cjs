@@ -122,7 +122,6 @@ const RAW_RUNTIME_STATE =
           ["next-compose-plugins", "npm:2.2.1"],\
           ["next-optimized-images", "npm:2.6.2"],\
           ["next-pwa", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:5.6.0"],\
-          ["node-fetch", "npm:3.3.2"],\
           ["node-mocks-http", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.16.2"],\
           ["notistack", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.0.5"],\
           ["prettier", "npm:3.6.2"],\
@@ -12612,13 +12611,6 @@ const RAW_RUNTIME_STATE =
       }]\
     ]],\
     ["data-uri-to-buffer", [\
-      ["npm:4.0.1", {\
-        "packageLocation": "./.yarn/cache/data-uri-to-buffer-npm-4.0.1-5c66a78beb-0d0790b67f.zip/node_modules/data-uri-to-buffer/",\
-        "packageDependencies": [\
-          ["data-uri-to-buffer", "npm:4.0.1"]\
-        ],\
-        "linkType": "HARD"\
-      }],\
       ["npm:6.0.2", {\
         "packageLocation": "./.yarn/cache/data-uri-to-buffer-npm-6.0.2-1725fff558-8b6927c33f.zip/node_modules/data-uri-to-buffer/",\
         "packageDependencies": [\
@@ -14588,17 +14580,6 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
-    ["fetch-blob", [\
-      ["npm:3.2.0", {\
-        "packageLocation": "./.yarn/cache/fetch-blob-npm-3.2.0-28e01becfc-5264ecceb5.zip/node_modules/fetch-blob/",\
-        "packageDependencies": [\
-          ["fetch-blob", "npm:3.2.0"],\
-          ["node-domexception", "npm:1.0.0"],\
-          ["web-streams-polyfill", "npm:3.2.1"]\
-        ],\
-        "linkType": "HARD"\
-      }]\
-    ]],\
     ["figures", [\
       ["npm:2.0.0", {\
         "packageLocation": "./.yarn/cache/figures-npm-2.0.0-f2db814eec-0e5bba8d2b.zip/node_modules/figures/",\
@@ -14795,16 +14776,6 @@ const RAW_RUNTIME_STATE =
           ["combined-stream", "npm:1.0.8"],\
           ["form-data", "npm:4.0.0"],\
           ["mime-types", "npm:2.1.35"]\
-        ],\
-        "linkType": "HARD"\
-      }]\
-    ]],\
-    ["formdata-polyfill", [\
-      ["npm:4.0.10", {\
-        "packageLocation": "./.yarn/cache/formdata-polyfill-npm-4.0.10-e03013c013-9b5001d2ed.zip/node_modules/formdata-polyfill/",\
-        "packageDependencies": [\
-          ["fetch-blob", "npm:3.2.0"],\
-          ["formdata-polyfill", "npm:4.0.10"]\
         ],\
         "linkType": "HARD"\
       }]\
@@ -19113,7 +19084,6 @@ const RAW_RUNTIME_STATE =
           ["next-compose-plugins", "npm:2.2.1"],\
           ["next-optimized-images", "npm:2.6.2"],\
           ["next-pwa", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:5.6.0"],\
-          ["node-fetch", "npm:3.3.2"],\
           ["node-mocks-http", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:1.16.2"],\
           ["notistack", "virtual:9909ff5388c6b6a3a46f12eb37c0afb449fcd1eedb9f02d871bde711a076c929583f48ecc4b85fa6d71478b076104a25f83dee45bc69687a22f551c576d7595d#npm:2.0.5"],\
           ["prettier", "npm:3.6.2"],\
@@ -19440,15 +19410,6 @@ const RAW_RUNTIME_STATE =
         "linkType": "HARD"\
       }]\
     ]],\
-    ["node-domexception", [\
-      ["npm:1.0.0", {\
-        "packageLocation": "./.yarn/cache/node-domexception-npm-1.0.0-e1e813b76f-e332522f24.zip/node_modules/node-domexception/",\
-        "packageDependencies": [\
-          ["node-domexception", "npm:1.0.0"]\
-        ],\
-        "linkType": "HARD"\
-      }]\
-    ]],\
     ["node-fetch", [\
       ["npm:2.6.12", {\
         "packageLocation": "./.yarn/cache/node-fetch-npm-2.6.12-48619ce9d6-370ed4d906.zip/node_modules/node-fetch/",\
@@ -19470,16 +19431,6 @@ const RAW_RUNTIME_STATE =
           ["node-fetch", "npm:2.7.0"]\
         ],\
         "linkType": "SOFT"\
-      }],\
-      ["npm:3.3.2", {\
-        "packageLocation": "./.yarn/cache/node-fetch-npm-3.3.2-5267e015f2-24207ca8c8.zip/node_modules/node-fetch/",\
-        "packageDependencies": [\
-          ["data-uri-to-buffer", "npm:4.0.1"],\
-          ["fetch-blob", "npm:3.2.0"],\
-          ["formdata-polyfill", "npm:4.0.10"],\
-          ["node-fetch", "npm:3.3.2"]\
-        ],\
-        "linkType": "HARD"\
       }],\
       ["virtual:9c67668db478e95ba4d6a763bc55027eeff0d22eaf59478017ea07386fc33a3c7b7b625af78aa86a33991a9a500a7aa216e28632de568f02adefd662ef53a42d#npm:2.6.12", {\
         "packageLocation": "./.yarn/__virtual__/node-fetch-virtual-80ad860ad7/0/cache/node-fetch-npm-2.6.12-48619ce9d6-370ed4d906.zip/node_modules/node-fetch/",\
