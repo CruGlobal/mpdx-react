@@ -147,7 +147,7 @@ describe('DirectionButtons', () => {
     userEvent.hover(continueButton.parentElement!);
 
     expect(
-      await findByText('Complete all required fields to continue'),
+      await findByText('Complete all fields to continue'),
     ).toBeInTheDocument();
   });
 
@@ -161,7 +161,7 @@ describe('DirectionButtons', () => {
 
     await waitFor(() => {
       expect(
-        queryByText('Complete all required fields to continue'),
+        queryByText('Complete all fields to continue'),
       ).not.toBeInTheDocument();
     });
   });
@@ -170,7 +170,7 @@ describe('DirectionButtons', () => {
     const { findByRole, findByText, queryByText } = render(
       <TestComponent
         disableNext={true}
-        disabledNextTooltip="Complete all required fields to submit"
+        disabledNextTooltip="Complete all fields to submit"
       />,
     );
 
@@ -180,10 +180,10 @@ describe('DirectionButtons', () => {
     userEvent.hover(continueButton.parentElement!);
 
     expect(
-      await findByText('Complete all required fields to submit'),
+      await findByText('Complete all fields to submit'),
     ).toBeInTheDocument();
     expect(
-      queryByText('Complete all required fields to continue'),
+      queryByText('Complete all fields to continue'),
     ).not.toBeInTheDocument();
   });
 
@@ -207,7 +207,7 @@ describe('DirectionButtons', () => {
     const { findByRole, queryByText } = render(
       <TestComponent
         disableNext={true}
-        disabledNextTooltip="Complete all required fields to submit"
+        disabledNextTooltip="Complete all fields to submit"
         loadingNext={true}
         loadingNextTitle="Saving..."
       />,
@@ -218,7 +218,7 @@ describe('DirectionButtons', () => {
 
     await waitFor(() => {
       expect(
-        queryByText('Complete all required fields to submit'),
+        queryByText('Complete all fields to submit'),
       ).not.toBeInTheDocument();
     });
   });
