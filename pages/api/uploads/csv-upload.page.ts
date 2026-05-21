@@ -1,8 +1,7 @@
-import { readFile } from 'fs/promises';
+import { openAsBlob } from 'node:fs';
 import { NextApiRequest, NextApiResponse } from 'next';
 import formidable, { IncomingForm } from 'formidable';
 import { getToken } from 'next-auth/jwt';
-import fetch, { File, FormData } from 'node-fetch';
 
 export const config = {
   api: {
@@ -54,7 +53,7 @@ const uploadFile = async (
     }
 
     const csvFile = new File(
-      [await readFile(file.filepath)],
+      [await openAsBlob(file.filepath)],
       file.originalFilename ?? 'csvFile',
     );
 

@@ -1,6 +1,5 @@
 import { NextApiRequest } from 'next';
 import { getToken } from 'next-auth/jwt';
-import fetch from 'node-fetch';
 import { getErrorMessage } from 'src/lib/getErrorFromCatch';
 import { cookieDefaultInfo } from '../../utils/cookies';
 import { signValue } from '../helpers';

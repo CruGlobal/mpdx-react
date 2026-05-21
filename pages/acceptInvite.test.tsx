@@ -3,9 +3,7 @@ import { render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import AcceptInvitePage from './acceptInvite.page';
-import 'node-fetch';
 
-jest.mock('node-fetch', () => jest.fn());
 jest.mock('src/hooks/useAccountListId');
 const mockPush = jest.fn();
 const dashboardLink = '/accountLists/_/';

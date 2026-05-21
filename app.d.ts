@@ -5,4 +5,5 @@ declare module '*.graphql' {
   export = value;
 }
 
+declare module '*.css';
 declare module '*.svg';

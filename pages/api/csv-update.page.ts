@@ -1,7 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import formidable, { IncomingForm } from 'formidable';
 import { getToken } from 'next-auth/jwt';
-import fetch from 'node-fetch';
 import createPatch from 'src/lib/createPatch';
 import { camelToSnakeObject } from 'src/lib/snakeToCamel';
 
