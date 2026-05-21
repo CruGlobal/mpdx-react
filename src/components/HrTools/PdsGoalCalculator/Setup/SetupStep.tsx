@@ -38,7 +38,7 @@ import { HoursPerWeekGrid } from './HoursPerWeekGrid/HoursPerWeekGrid';
 export const SetupStep: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { calculation, hcmUser, isMutating, setRightPanelContent } =
+  const { calculation, hcmUser, isFieldSaving, setRightPanelContent } =
     usePdsGoalCalculator();
   const { data: userData } = useGetUserQuery();
   const schema = useMemo(
@@ -214,7 +214,7 @@ export const SetupStep: React.FC = () => {
               label={t('Pay Type')}
               helperText={t('Changing this clears Pay Rate.')}
               value={calculation?.salaryOrHourly ?? ''}
-              disabled={!calculation || isMutating}
+              disabled={!calculation || isFieldSaving('salaryOrHourly')}
               onChange={(event) => {
                 const newValue = event.target
                   .value as DesignationSupportSalaryType;

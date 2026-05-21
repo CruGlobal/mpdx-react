@@ -167,4 +167,38 @@ describe('usePdsGoalAutoSave', () => {
       expect(mutationSpy).toHaveGraphqlOperation('UpdatePdsGoalCalculation'),
     );
   });
+
+  it('does not disable a saveOnChange field while an unrelated field is saving', async () => {
+    const { result } = renderHook(
+      () => ({
+        formType: usePdsGoalAutoSave({
+          fieldName: 'formType',
+          schema,
+          saveOnChange: true,
+        }),
+        name: usePdsGoalAutoSave({ fieldName: 'name', schema }),
+      }),
+      { wrapper: Wrapper },
+    );
+
+    await waitFor(() => expect(result.current.name.value).toBe('Test Goal'));
+    expect(result.current.formType.disabled).toBe(false);
+
+    // Kick off a save for the `name` field (blur-driven).
+    act(() => {
+      result.current.name.onChange({
+        target: { value: 'Updated Goal' },
+      } as React.ChangeEvent<HTMLInputElement>);
+    });
+    act(() => {
+      result.current.name.onBlur();
+    });
+
+    // The unrelated formType select must NOT flicker disabled while `name`
+    // is saving — only same-field saves should disable a select.
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('UpdatePdsGoalCalculation'),
+    );
+    expect(result.current.formType.disabled).toBe(false);
+  });
 });

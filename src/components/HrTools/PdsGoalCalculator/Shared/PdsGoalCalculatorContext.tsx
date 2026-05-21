@@ -39,8 +39,19 @@ export type PdsGoalCalculatorType = {
 
   /** Whether any mutations are currently in progress */
   isMutating: boolean;
+  /** Whether a save mutation tagged with the given field name is in flight */
+  isFieldSaving: (fieldName: string) => boolean;
   /** Call with the mutation promise to track the start and end of mutations */
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
+  /**
+   * Like trackMutation, but also marks the listed fields as saving while the
+   * mutation is in flight so per-field disable checks can scope to the field
+   * being saved instead of any save in the calculator.
+   */
+  trackFieldMutation: <T>(
+    mutation: Promise<T>,
+    fields: string[],
+  ) => Promise<T>;
 
   rightPanelContent: React.ReactNode;
   setRightPanelContent: (content: React.ReactNode) => void;
@@ -108,6 +119,44 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(true);
   const { trackMutation, isMutating } = useTrackMutation();
 
+  const [savingFieldCounts, setSavingFieldCounts] = useState<
+    Record<string, number>
+  >({});
+
+  const isFieldSaving = useCallback(
+    (fieldName: string) => (savingFieldCounts[fieldName] ?? 0) > 0,
+    [savingFieldCounts],
+  );
+
+  const trackFieldMutation = useCallback(
+    <T,>(mutation: Promise<T>, fields: string[]): Promise<T> => {
+      setSavingFieldCounts((prev) => {
+        const next = { ...prev };
+        for (const field of fields) {
+          next[field] = (next[field] ?? 0) + 1;
+        }
+        return next;
+      });
+      return trackMutation(
+        mutation.finally(() => {
+          setSavingFieldCounts((prev) => {
+            const next = { ...prev };
+            for (const field of fields) {
+              const remaining = (next[field] ?? 0) - 1;
+              if (remaining <= 0) {
+                delete next[field];
+              } else {
+                next[field] = remaining;
+              }
+            }
+            return next;
+          });
+        }),
+      );
+    },
+    [trackMutation],
+  );
+
   useEffect(() => {
     if (steps.some((s) => s.step === activeStep)) {
       return;
@@ -173,7 +222,9 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       summaryData,
       percentComplete,
       isMutating,
+      isFieldSaving,
       trackMutation,
+      trackFieldMutation,
       hcmUser,
       rightPanelContent,
       isDrawerOpen,
@@ -194,7 +245,9 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       summaryData,
       percentComplete,
       isMutating,
+      isFieldSaving,
       trackMutation,
+      trackFieldMutation,
       hcmUser,
       rightPanelContent,
       isDrawerOpen,
