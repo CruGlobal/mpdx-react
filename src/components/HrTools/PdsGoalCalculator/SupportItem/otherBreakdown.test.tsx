@@ -157,6 +157,51 @@ describe('buildOtherBreakdownRows', () => {
     ]);
   });
 
+  it('renders the credit-card-fees formula with the configured fee rate, not a rounded percent', () => {
+    const fractionalRateConstants: OtherExpensesConstants = {
+      ...constants,
+      creditCardFeeRate: 0.006,
+    };
+
+    const rows = buildOtherBreakdownRows(
+      fullTimeCalculation,
+      fractionalRateConstants,
+      'en-US',
+      i18n.t,
+    );
+
+    const creditCardFees = rows.find((row) => row.id === 'credit-card-fees');
+    expect(creditCardFees?.formula).toBe(
+      '(Subtotal + Attrition) ÷ (1 - 0.60%) - (Subtotal + Attrition)',
+    );
+  });
+
+  it('renders the attrition formula with the rate as a decimal value', () => {
+    const rows = buildOtherBreakdownRows(
+      fullTimeCalculation,
+      { ...constants, attritionRate: 0.06 },
+      'en-US',
+      i18n.t,
+    );
+
+    const attrition = rows.find((row) => row.id === 'attrition');
+    expect(attrition?.formula).toBe('Subtotal × 0.06%');
+  });
+
+  it('renders the assessment formula with the admin rate as a decimal value', () => {
+    const rows = buildOtherBreakdownRows(
+      fullTimeCalculation,
+      { ...constants, adminRate: 0.12 },
+      'en-US',
+      i18n.t,
+    );
+
+    const assessment = rows.find((row) => row.id === 'assessment');
+    expect(assessment?.formula).toBe(
+      '(Subtotal + Attrition + Credit Card Fees) ÷ (1 − 0.12%) − (Subtotal + Attrition + Credit Card Fees)',
+    );
+  });
+
   it('uses a subtotal formula without reimbursable/403b in Simple form', () => {
     const simpleCalculation: OtherExpensesFields = {
       ...fullTimeCalculation,

@@ -7,7 +7,11 @@ import {
   DesignationSupportFormType,
   DesignationSupportStatus,
 } from 'src/graphql/types.generated';
-import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
+import {
+  currencyFormat,
+  numberFormat,
+  percentageFormat,
+} from 'src/lib/intlFormat';
 import {
   OtherExpensesConstants,
   OtherExpensesFields,
@@ -106,8 +110,11 @@ export const buildOtherBreakdownRows = (
     {
       id: 'attrition',
       category: t('Attrition'),
-      formula: t('Subtotal × {{rate}}', {
-        rate: percentageFormat(constants.attritionRate, locale),
+      formula: t('Subtotal × {{rate}}%', {
+        rate: numberFormat(constants.attritionRate, locale, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 4,
+        }),
       }),
       amount: totals.attrition,
       testId: 'other-attrition',
@@ -119,7 +126,9 @@ export const buildOtherBreakdownRows = (
       formula: t(
         '(Subtotal + Attrition) ÷ (1 - {{rate}}) - (Subtotal + Attrition)',
         {
-          rate: percentageFormat(constants.creditCardFeeRate, locale),
+          rate: percentageFormat(constants.creditCardFeeRate, locale, {
+            fractionDigits: 2,
+          }),
         },
       ),
       amount: totals.creditCardFees,
@@ -130,9 +139,12 @@ export const buildOtherBreakdownRows = (
       id: 'assessment',
       category: t('Assessment'),
       formula: t(
-        '(Subtotal + Attrition + Credit Card Fees) ÷ (1 − {{rate}}) − (Subtotal + Attrition + Credit Card Fees)',
+        '(Subtotal + Attrition + Credit Card Fees) ÷ (1 − {{rate}}%) − (Subtotal + Attrition + Credit Card Fees)',
         {
-          rate: percentageFormat(constants.adminRate, locale),
+          rate: numberFormat(constants.adminRate, locale, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 4,
+          }),
         },
       ),
       amount: totals.assessment,
