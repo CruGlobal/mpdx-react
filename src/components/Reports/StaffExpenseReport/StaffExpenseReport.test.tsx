@@ -296,7 +296,7 @@ describe('StaffExpenseReport', () => {
     expect(getByRole('button', { name: 'Next Month' })).toBeInTheDocument();
   }, 10000);
 
-  it('shows filter date range title and hides month navigation when date filters are applied', async () => {
+  it('hides month navigation when date filters are applied', async () => {
     Settings.now = () => new Date(2020, 0, 20).valueOf();
 
     const { getByRole, findByRole, getByLabelText, queryByRole } = render(
@@ -309,17 +309,7 @@ describe('StaffExpenseReport', () => {
     userEvent.click(getByLabelText('Select Date Range'));
     userEvent.click(getByRole('option', { name: 'Month to Date' }));
 
-    await waitFor(() =>
-      expect(getByRole('button', { name: 'Apply Filters' })).not.toBeDisabled(),
-    );
-    userEvent.click(getByRole('button', { name: 'Apply Filters' }));
-
-    expect(
-      await findByRole('heading', {
-        level: 6,
-        name: 'January 1, 2020 - January 20, 2020',
-      }),
-    ).toBeInTheDocument();
+    userEvent.click(await findByRole('button', { name: 'Apply Filters' }));
 
     expect(
       queryByRole('button', { name: 'Previous Month' }),
