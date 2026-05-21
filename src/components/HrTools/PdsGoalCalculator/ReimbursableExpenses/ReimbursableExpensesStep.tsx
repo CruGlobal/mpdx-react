@@ -20,6 +20,7 @@ export const ReimbursableExpensesStep: React.FC = () => {
           )}
         </Typography>
       </Box>
+      <Divider sx={{ mx: -4, my: 4 }} />
       <MonthlyReimbursableSection />
       <Divider sx={{ mx: -4, my: 4 }} />
       <AnnualReimbursableSection />

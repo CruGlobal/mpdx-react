@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Divider, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import Loading from 'src/components/Loading';
 import { useAccountListId } from 'src/hooks/useAccountListId';
@@ -32,7 +32,9 @@ export const SummaryReportStep: React.FC = () => {
           )}
         </Typography>
       </Box>
+      <Divider sx={{ mx: -4, my: 4 }} />
       <PdsSummaryTable supportRaised={supportRaised} />
+      <Divider sx={{ mx: -4, my: 4 }} />
     </>
   );
 };
