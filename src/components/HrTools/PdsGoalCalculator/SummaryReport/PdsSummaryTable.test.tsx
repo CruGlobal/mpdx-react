@@ -24,6 +24,7 @@ const reimbursableZero = {
 };
 
 const salariedFullTimeMock: PdsGoalCalculationMock = {
+  formType: DesignationSupportFormType.Detailed,
   salaryOrHourly: DesignationSupportSalaryType.Salaried,
   payRate: 60000,
   hoursWorkedPerWeek: null,
@@ -259,5 +260,40 @@ describe('PdsSummaryTable', () => {
     expect(
       getByRole('gridcell', { name: '403b Contributions' }),
     ).toBeInTheDocument();
+  });
+
+  describe('Line column labels', () => {
+    it('shows alphabetical sub-item labels and numbered labels 1–5', async () => {
+      const { findByRole, getByRole } = render(
+        <PdsGoalCalculatorTestWrapper calculationMock={salariedFullTimeMock}>
+          <PdsSummaryTable supportRaised={0} />
+        </PdsGoalCalculatorTestWrapper>,
+      );
+
+      await findByRole('gridcell', { name: 'Salary Subtotal' });
+
+      ['1A', '1B', '2A', '2B', '2C', '1', '2', '3', '4', '5'].forEach((label) =>
+        expect(getByRole('gridcell', { name: label })).toBeInTheDocument(),
+      );
+    });
+
+    it('shows only 2A for Other Subtotal sub items when formType is Simple', async () => {
+      const { findByRole, getByRole, queryByRole } = render(
+        <PdsGoalCalculatorTestWrapper
+          calculationMock={{
+            ...salariedFullTimeMock,
+            formType: DesignationSupportFormType.Simple,
+          }}
+        >
+          <PdsSummaryTable supportRaised={0} />
+        </PdsGoalCalculatorTestWrapper>,
+      );
+
+      await findByRole('gridcell', { name: 'Benefits' });
+
+      expect(getByRole('gridcell', { name: '2A' })).toBeInTheDocument();
+      expect(queryByRole('gridcell', { name: '2B' })).not.toBeInTheDocument();
+      expect(queryByRole('gridcell', { name: '2C' })).not.toBeInTheDocument();
+    });
   });
 });
