@@ -157,6 +157,25 @@ describe('buildOtherBreakdownRows', () => {
     ]);
   });
 
+  it('renders the credit-card-fees formula with the configured fee rate, not a rounded percent', () => {
+    const fractionalRateConstants: OtherExpensesConstants = {
+      ...constants,
+      creditCardFeeRate: 0.006,
+    };
+
+    const rows = buildOtherBreakdownRows(
+      fullTimeCalculation,
+      fractionalRateConstants,
+      'en-US',
+      i18n.t,
+    );
+
+    const creditCardFees = rows.find((row) => row.id === 'credit-card-fees');
+    expect(creditCardFees?.formula).toBe(
+      '(Subtotal + Attrition) ÷ (1 - 0.60%) - (Subtotal + Attrition)',
+    );
+  });
+
   it('uses a subtotal formula without reimbursable/403b in Simple form', () => {
     const simpleCalculation: OtherExpensesFields = {
       ...fullTimeCalculation,

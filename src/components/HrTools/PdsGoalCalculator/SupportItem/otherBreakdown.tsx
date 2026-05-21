@@ -119,7 +119,9 @@ export const buildOtherBreakdownRows = (
       formula: t(
         '(Subtotal + Attrition) ÷ (1 - {{rate}}) - (Subtotal + Attrition)',
         {
-          rate: percentageFormat(constants.creditCardFeeRate, locale),
+          rate: percentageFormat(constants.creditCardFeeRate, locale, {
+            fractionDigits: 2,
+          }),
         },
       ),
       amount: totals.creditCardFees,
