@@ -130,12 +130,13 @@ MPDX displays and calculates donation/partner-giving aggregations across dozens 
 **Trigger conditions:**
 
 - Any file under `src/components/Reports/**`
-- Any file under `src/components/Reports/GoalCalculator/**` or `src/components/Reports/PdsGoalCalculator/**`
-- Any file under `src/components/Reports/SalaryCalculator/**`
+- Any file under `src/components/HrTools/**`
+- Any file under `src/components/Reports/GoalCalculator/**`, `src/components/HrTools/GoalCalculator/**`, or `src/components/HrTools/PdsGoalCalculator/**`
+- Any file under `src/components/Reports/SalaryCalculator/**` or `src/components/HrTools/SalaryCalculator/**`
 - Any file under `src/components/EditDonationModal/**`
-- Any file under `src/components/Reports/AdditionalSalaryRequest/**`, `src/components/Reports/MinisterHousingAllowance/**`
+- Any file under `src/components/Reports/AdditionalSalaryRequest/**`, `src/components/HrTools/AdditionalSalaryRequest/**`, or `src/components/HrTools/MinisterHousingAllowance/**`
 - Any file under `src/components/Dashboard/MonthlyGoal/**`, `src/components/Dashboard/DonationHistories/**`
-- Diff content contains any of: `amount`, `currency`, `convertedAmount`, `pledgeAmount`, `goal`, `balance`, `total`, `sum(`, `reduce((`, `.toFixed(`, `Math.round(`, `Number(`, `parseFloat(`, `parseInt(` inside `src/components/Reports/**` or goal/donation components
+- Diff content contains any of: `amount`, `currency`, `convertedAmount`, `pledgeAmount`, `goal`, `balance`, `total`, `sum(`, `reduce((`, `.toFixed(`, `Math.round(`, `Number(`, `parseFloat(`, `parseInt(` inside `src/components/Reports/**`, `src/components/HrTools/**`, or other goal/donation components
 
 **Focus areas:**
 
