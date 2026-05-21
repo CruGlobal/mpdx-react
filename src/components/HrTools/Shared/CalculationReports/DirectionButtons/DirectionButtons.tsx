@@ -151,7 +151,7 @@ export const DirectionButtons: React.FC<DirectionButtonsProps> = ({
               title={
                 disableNext && !loadingNext
                   ? (disabledNextTooltip ??
-                    t('Complete all required fields to continue'))
+                    t('Complete all fields to continue'))
                   : ''
               }
             >
