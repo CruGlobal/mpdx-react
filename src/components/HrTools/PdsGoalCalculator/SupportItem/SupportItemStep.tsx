@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Typography } from '@mui/material';
+import { Box, Divider, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { OtherSection } from './OtherSection';
 import { SalarySection } from './SalarySection';
@@ -19,8 +19,10 @@ export const SupportItemStep: React.FC = () => {
           )}
         </Typography>
       </Box>
+      <Divider sx={{ mx: -4, my: 4 }} />
       <SalarySection />
       <OtherSection />
+      <Divider sx={{ mx: -4, my: 4 }} />
     </>
   );
 };

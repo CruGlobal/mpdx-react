@@ -134,7 +134,7 @@ export const SetupStep: React.FC = () => {
         label={t('Goal Name')}
       />
 
-      <Divider sx={{ my: 4, mx: -4 }} />
+      <Divider sx={{ mx: -4, my: 4 }} />
 
       <Box pb={4}>
         <Typography variant="h6">{t('Calculator Setup')}</Typography>
@@ -333,6 +333,7 @@ export const SetupStep: React.FC = () => {
           </Grid>
         </Grid>
       </Card>
+      <Divider sx={{ mx: -4, my: 4 }} />
     </>
   );
 };
