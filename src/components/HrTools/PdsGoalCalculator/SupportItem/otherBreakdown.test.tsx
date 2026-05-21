@@ -176,6 +176,32 @@ describe('buildOtherBreakdownRows', () => {
     );
   });
 
+  it('renders the attrition formula with the rate as a decimal value', () => {
+    const rows = buildOtherBreakdownRows(
+      fullTimeCalculation,
+      { ...constants, attritionRate: 0.06 },
+      'en-US',
+      i18n.t,
+    );
+
+    const attrition = rows.find((row) => row.id === 'attrition');
+    expect(attrition?.formula).toBe('Subtotal × 0.06%');
+  });
+
+  it('renders the assessment formula with the admin rate as a decimal value', () => {
+    const rows = buildOtherBreakdownRows(
+      fullTimeCalculation,
+      { ...constants, adminRate: 0.12 },
+      'en-US',
+      i18n.t,
+    );
+
+    const assessment = rows.find((row) => row.id === 'assessment');
+    expect(assessment?.formula).toBe(
+      '(Subtotal + Attrition + Credit Card Fees) ÷ (1 − 0.12%) − (Subtotal + Attrition + Credit Card Fees)',
+    );
+  });
+
   it('uses a subtotal formula without reimbursable/403b in Simple form', () => {
     const simpleCalculation: OtherExpensesFields = {
       ...fullTimeCalculation,
