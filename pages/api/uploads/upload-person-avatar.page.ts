@@ -59,7 +59,7 @@ const uploadPersonAvatar = async (
 
     const pictureId = crypto.randomUUID();
     const file = new File(
-      [await readFile(avatar.filepath)],
+      [new Uint8Array(await readFile(avatar.filepath))],
       avatar.originalFilename ?? 'avatar',
     );
 

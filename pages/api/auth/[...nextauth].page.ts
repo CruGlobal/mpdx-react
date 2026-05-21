@@ -1,6 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import NextAuth, { NextAuthOptions } from 'next-auth';
-import { Provider } from 'next-auth/providers';
 import OktaProvider from 'next-auth/providers/okta';
 import rollbar, { isRollBarEnabled } from 'pages/api/utils/rollBar';
 import {
@@ -95,7 +94,7 @@ if (
   );
 }
 
-const providersArray: Provider[] = [];
+const providersArray: NextAuthOptions['providers'] = [];
 
 if (AUTH_PROVIDER === 'OKTA') {
   providersArray.push(

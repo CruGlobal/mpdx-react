@@ -1,8 +1,7 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "target": "esnext",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": ["dom", "esnext"],
     "allowJs": true,
     "checkJs": true,
     "skipLibCheck": true,
@@ -12,14 +11,21 @@
     "incremental": true,
     "esModuleInterop": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "noImplicitAny": false,
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "types": ["node", "jest", "@testing-library/jest-dom"],
+    "paths": {
+      "src/*": ["./src/*"],
+      "pages/*": ["./pages/*"],
+      "__tests__/*": ["./__tests__/*"]
+    }
   },
   "include": [
     "app.d.ts",
+    "i18next.d.ts",
     "next-env.d.ts",
     "__tests__/jest.d.ts",
     "**/*.ts",

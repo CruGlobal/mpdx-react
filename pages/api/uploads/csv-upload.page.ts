@@ -54,7 +54,7 @@ const uploadFile = async (
     }
 
     const csvFile = new File(
-      [await readFile(file.filepath)],
+      [new Uint8Array(await readFile(file.filepath))],
       file.originalFilename ?? 'csvFile',
     );
 

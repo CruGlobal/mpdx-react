@@ -17,7 +17,7 @@ const ActionsButton = styled(Button)(({ theme }) => ({
 
 interface MassActionsDropdownProps {
   handleClick: (event: React.MouseEvent<HTMLElement>) => void;
-  children: React.ReactElement;
+  children: React.ReactNode;
   disabled?: boolean;
   open: boolean;
 }
