@@ -76,9 +76,12 @@ export const buildSalaryBreakdownRows = (
     {
       id: 'gross-monthly-pay',
       category: t('Gross Monthly Pay'),
-      formula: t('Monthly Base × Geographic Multiplier ({{rate}})', {
-        rate: percentageFormat(1 + geographicMultiplier, locale),
-      }),
+      formula:
+        geographicMultiplier === 0
+          ? t('Monthly Base')
+          : t('Monthly Base × Geographic Multiplier ({{rate}})', {
+              rate: percentageFormat(1 + geographicMultiplier, locale),
+            }),
       amount: grossMonthlyPay,
       format: 'currency',
       testId: 'gross-monthly-pay',
