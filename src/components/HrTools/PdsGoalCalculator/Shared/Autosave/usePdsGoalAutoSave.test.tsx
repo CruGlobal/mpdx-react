@@ -162,9 +162,6 @@ describe('usePdsGoalAutoSave', () => {
       result.current.onBlur();
     });
 
-    // The mutation response echoes the full fragment, so a second save
-    // landing during the first would overwrite the in-flight value. The
-    // input must be locked until the same-field save resolves.
     await waitFor(() => expect(result.current.disabled).toBe(true));
     await waitFor(() => expect(result.current.disabled).toBe(false));
   });
@@ -185,7 +182,6 @@ describe('usePdsGoalAutoSave', () => {
     await waitFor(() => expect(result.current.name.value).toBe('Test Goal'));
     expect(result.current.formType.disabled).toBe(false);
 
-    // Kick off a save for the `name` field (blur-driven).
     act(() => {
       result.current.name.onChange({
         target: { value: 'Updated Goal' },
@@ -195,9 +191,6 @@ describe('usePdsGoalAutoSave', () => {
       result.current.name.onBlur();
     });
 
-    // Sample synchronously mid-save: savingFieldCounts.name === 1 here, but
-    // the mock mutation has not yet resolved. Pre-fix (gating on a broad
-    // isMutating), formType.disabled would have been true at this moment.
     expect(result.current.formType.disabled).toBe(false);
 
     await waitFor(() =>
@@ -207,11 +200,6 @@ describe('usePdsGoalAutoSave', () => {
   });
 
   it('locks the Pay Rate input while a multi-field save covering payRate is in flight', async () => {
-    // Pay Type writes { salaryOrHourly, payRate: null } atomically via
-    // useSaveField — that multi-field save marks payRate as saving even
-    // though the blur-driven Pay Rate input itself never fired. The input
-    // must be disabled while the atomic clear is in flight so a
-    // user-typed value cannot race the null.
     const { result } = renderHook(
       () => ({
         payRate: usePdsGoalAutoSave({ fieldName: 'payRate', schema }),

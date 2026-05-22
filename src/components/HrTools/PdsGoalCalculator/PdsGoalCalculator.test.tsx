@@ -79,11 +79,8 @@ describe('PdsGoalCalculator', () => {
           name: 'Test Goal',
         }}
         extraMocks={{
-          // Pin the mutation response so the post-save cache matches the
-          // expected SALARIED + payRate: null state. Without this, the
-          // auto-generated mock fills salaryOrHourly with the first enum
-          // value (HOURLY), which re-introduces the Hours Worked
-          // requirement and keeps Continue disabled after typing.
+          // Pin the mutation response so the auto-generated mock doesn't fill
+          // salaryOrHourly with HOURLY (the first enum value).
           UpdatePdsGoalCalculation: {
             updateDesignationSupportCalculation: {
               designationSupportCalculation: {
@@ -122,9 +119,7 @@ describe('PdsGoalCalculator', () => {
       ).not.toBeInTheDocument();
     });
     // Switching Pay Type clears payRate, so the user must re-enter it before
-    // Continue becomes enabled. The Pay Rate input is disabled while the
-    // atomic { salaryOrHourly, payRate: null } save is in flight, so wait
-    // for the field to be enabled before typing.
+    // Continue becomes enabled.
     const payRateInput = await findByRole('spinbutton', {
       name: 'Annual Pay Rate',
     });

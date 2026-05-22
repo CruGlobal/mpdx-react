@@ -157,12 +157,9 @@ describe('PdsGoalCalculatorContext', () => {
     it('marks every listed field as saving for the lifetime of a multi-field write', async () => {
       const { result } = renderUsePdsGoalCalculator();
 
-      // Sanity: no fields are saving before the mutation starts.
       expect(result.current.isFieldSaving('salaryOrHourly')).toBe(false);
       expect(result.current.isFieldSaving('payRate')).toBe(false);
 
-      // Hand-rolled deferred so the in-flight window is observable — a real
-      // mutation would resolve in a microtask and race the assertions.
       let resolveMutation!: (value: unknown) => void;
       const pendingMutation = new Promise((resolve) => {
         resolveMutation = resolve;
@@ -176,14 +173,8 @@ describe('PdsGoalCalculatorContext', () => {
         ]);
       });
 
-      // Both fields must be marked saving simultaneously — this is the whole
-      // reason `fields` is an array. The Pay Type path writes
-      // { salaryOrHourly, payRate: null } atomically, so the per-field
-      // disable for payRate must trigger even though only salaryOrHourly was
-      // user-edited.
       expect(result.current.isFieldSaving('salaryOrHourly')).toBe(true);
       expect(result.current.isFieldSaving('payRate')).toBe(true);
-      // An unrelated field is unaffected.
       expect(result.current.isFieldSaving('name')).toBe(false);
 
       await act(async () => {
@@ -195,10 +186,6 @@ describe('PdsGoalCalculatorContext', () => {
       expect(result.current.isFieldSaving('payRate')).toBe(false);
     });
 
-    // Regression guard: the decrement must run via `.finally(...)`, not
-    // `.then(...)`. If a future refactor moves the decrement into `.then`,
-    // a rejected mutation would leave the count stuck above zero and the
-    // field would stay disabled forever.
     it('clears saving fields when the mutation rejects', async () => {
       const { result } = renderUsePdsGoalCalculator();
 

@@ -141,11 +141,7 @@ export interface PdsGoalCalculatorTestWrapperProps {
   userMock?: GetUserMock;
   constantsMock?: GoalCalculatorConstantsMock;
   supportRaisedMock?: number;
-  /**
-   * Extra GqlMockedProvider mocks merged on top of the defaults. Useful for
-   * tests that need to control mutation responses (e.g. echo a deterministic
-   * post-save state instead of accepting auto-generated values).
-   */
+  /** Extra GqlMockedProvider mocks merged on top of the defaults. */
   extraMocks?: ComponentProps<typeof GqlMockedProvider>['mocks'];
   onCall?: MockLinkCallHandler;
   router?: React.ComponentProps<typeof TestRouter>['router'];

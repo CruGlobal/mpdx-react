@@ -42,17 +42,13 @@ export type PdsGoalCalculatorType = {
 
   /** Whether any mutations are currently in progress */
   isMutating: boolean;
-  /** Whether a save mutation tagged with the given field name is in flight */
+  /** Whether a save for the given field is in flight */
   isFieldSaving: (
     fieldName: keyof DesignationSupportCalculationUpdateInput,
   ) => boolean;
   /** Call with the mutation promise to track the start and end of mutations */
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
-  /**
-   * Like trackMutation, but also marks the listed fields as saving while the
-   * mutation is in flight so per-field disable checks can scope to the field
-   * being saved instead of any save in the calculator.
-   */
+  /** Like trackMutation, but also marks the listed fields as saving. */
   trackFieldMutation: <T>(
     mutation: Promise<T>,
     fields: Array<keyof DesignationSupportCalculationUpdateInput>,

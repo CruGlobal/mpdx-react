@@ -205,11 +205,7 @@ export const SetupStep: React.FC = () => {
           <Grid item xs={12}>
             {/* Manual TextField (not AutosaveTextField) because changing Pay
                 Type must atomically clear payRate as well; AutosaveTextField
-                only writes the single bound fieldName. Disabled on any
-                in-flight save (not just same-field) so this atomic write
-                cannot land while another field's mutation is in flight —
-                the response of either would otherwise echo the full
-                fragment and overwrite the in-flight value. */}
+                only writes the single bound fieldName. */}
             <TextField
               fullWidth
               size="small"
