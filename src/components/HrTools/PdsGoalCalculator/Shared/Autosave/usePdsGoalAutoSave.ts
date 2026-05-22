@@ -16,16 +16,24 @@ export const usePdsGoalAutoSave = ({
 }: UsePdsAutoSaveOptions) => {
   const saveField = useSaveField();
   const { calculation, isFieldSaving } = usePdsGoalCalculator();
+  const busy = isFieldSaving(fieldName);
 
-  return useAutoSave({
+  const autoSaveProps = useAutoSave({
     value: calculation?.[fieldName] as string | number | null | undefined,
     saveValue: (value) => saveField({ [fieldName]: value }),
     fieldName,
     ...options,
-    // Block change-driven (select) autosaves while a save is in flight: rapid
-    // back-and-forth toggles can otherwise land out of order in the Apollo
-    // cache. formType is the load-bearing case — its value reshapes the goal
-    // calculation, so a stale final value silently understates the total.
-    disabled: !calculation || isFieldSaving(fieldName),
+    // Disable a field while its own save is in flight (including multi-field
+    // atomic saves like salaryOrHourly + payRate). Prevents rapid back-and-forth
+    // writes from landing out of order in the Apollo cache while leaving
+    // unrelated fields interactive. formType is the load-bearing case — its
+    // value reshapes the goal calculation, so a stale final value silently
+    // understates the total.
+    disabled: !calculation || busy,
   });
+
+  // Distinguish the "saving in flight" disable from the "calculation not
+  // loaded" / externally-disabled cases. Callers signal the former with
+  // aria-busy so the field reads as "busy" rather than "unavailable."
+  return { ...autoSaveProps, busy };
 };

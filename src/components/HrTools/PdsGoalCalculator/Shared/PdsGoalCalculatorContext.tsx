@@ -121,7 +121,7 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const { trackMutation, isMutating } = useTrackMutation();
 
   const [savingFieldCounts, setSavingFieldCounts] = useState<
-    Record<string, number>
+    Partial<Record<keyof DesignationSupportCalculationUpdateInput, number>>
   >({});
 
   const isFieldSaving = useCallback(
@@ -135,9 +135,10 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       mutation: Promise<T>,
       fields: Array<keyof DesignationSupportCalculationUpdateInput>,
     ): Promise<T> => {
+      const uniqueFields = Array.from(new Set(fields));
       setSavingFieldCounts((prev) => {
         const next = { ...prev };
-        for (const field of fields) {
+        for (const field of uniqueFields) {
           next[field] = (next[field] ?? 0) + 1;
         }
         return next;
@@ -146,7 +147,7 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
         mutation.finally(() => {
           setSavingFieldCounts((prev) => {
             const next = { ...prev };
-            for (const field of fields) {
+            for (const field of uniqueFields) {
               const remaining = (next[field] ?? 0) - 1;
               if (remaining <= 0) {
                 delete next[field];

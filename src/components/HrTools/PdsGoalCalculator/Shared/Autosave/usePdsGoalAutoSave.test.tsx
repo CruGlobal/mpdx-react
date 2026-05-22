@@ -141,7 +141,7 @@ describe('usePdsGoalAutoSave', () => {
       } as React.ChangeEvent<HTMLInputElement>);
     });
 
-    await waitFor(() => expect(result.current.disabled).toBe(true));
+    expect(result.current.disabled).toBe(true);
     await waitFor(() => expect(result.current.disabled).toBe(false));
   });
 
@@ -162,8 +162,51 @@ describe('usePdsGoalAutoSave', () => {
       result.current.onBlur();
     });
 
-    await waitFor(() => expect(result.current.disabled).toBe(true));
+    expect(result.current.disabled).toBe(true);
     await waitFor(() => expect(result.current.disabled).toBe(false));
+  });
+
+  it('exposes busy=true only while a same-field save is in flight', async () => {
+    const { result } = renderHook(
+      () => usePdsGoalAutoSave({ fieldName: 'name', schema }),
+      { wrapper: Wrapper },
+    );
+
+    await waitFor(() => expect(result.current.value).toBe('Test Goal'));
+    expect(result.current.busy).toBe(false);
+
+    act(() => {
+      result.current.onChange({
+        target: { value: 'Updated Goal' },
+      } as React.ChangeEvent<HTMLInputElement>);
+    });
+    act(() => {
+      result.current.onBlur();
+    });
+
+    expect(result.current.busy).toBe(true);
+    await waitFor(() => expect(result.current.busy).toBe(false));
+  });
+
+  it('reports busy=false when disabled solely because calculation is missing', () => {
+    const NoCalcWrapper: React.FC<{ children: React.ReactNode }> = ({
+      children,
+    }) => (
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={undefined}
+        onCall={mutationSpy}
+      >
+        {children}
+      </PdsGoalCalculatorTestWrapper>
+    );
+
+    const { result } = renderHook(
+      () => usePdsGoalAutoSave({ fieldName: 'name', schema }),
+      { wrapper: NoCalcWrapper },
+    );
+
+    expect(result.current.disabled).toBe(true);
+    expect(result.current.busy).toBe(false);
   });
 
   it('does not disable a saveOnChange field while an unrelated field is saving', async () => {
@@ -218,7 +261,7 @@ describe('usePdsGoalAutoSave', () => {
       });
     });
 
-    await waitFor(() => expect(result.current.payRate.disabled).toBe(true));
+    expect(result.current.payRate.disabled).toBe(true);
     await waitFor(() => expect(result.current.payRate.disabled).toBe(false));
   });
 });

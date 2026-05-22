@@ -213,6 +213,48 @@ describe('PdsGoalCalculatorContext', () => {
       expect(result.current.isFieldSaving('salaryOrHourly')).toBe(false);
       expect(result.current.isFieldSaving('payRate')).toBe(false);
     });
+
+    it('keeps a field saving while a second concurrent save on the same field is in flight', async () => {
+      const { result } = renderUsePdsGoalCalculator();
+
+      let resolveFirst!: (value: unknown) => void;
+      let resolveSecond!: (value: unknown) => void;
+      const firstMutation = new Promise((resolve) => {
+        resolveFirst = resolve;
+      });
+      const secondMutation = new Promise((resolve) => {
+        resolveSecond = resolve;
+      });
+
+      let trackedFirst!: Promise<unknown>;
+      let trackedSecond!: Promise<unknown>;
+      act(() => {
+        trackedFirst = result.current.trackFieldMutation(firstMutation, [
+          'payRate',
+        ]);
+        trackedSecond = result.current.trackFieldMutation(secondMutation, [
+          'payRate',
+        ]);
+      });
+
+      expect(result.current.isFieldSaving('payRate')).toBe(true);
+
+      await act(async () => {
+        resolveFirst(undefined);
+        await trackedFirst;
+      });
+
+      // Second save is still pending — payRate must remain saving so the UI
+      // doesn't flicker between the two overlapping mutations.
+      expect(result.current.isFieldSaving('payRate')).toBe(true);
+
+      await act(async () => {
+        resolveSecond(undefined);
+        await trackedSecond;
+      });
+
+      expect(result.current.isFieldSaving('payRate')).toBe(false);
+    });
   });
 
   it('rounds percentComplete to 33/67/100 for the 3-step Simple form', async () => {
