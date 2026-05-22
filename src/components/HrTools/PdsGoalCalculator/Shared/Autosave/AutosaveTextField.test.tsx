@@ -156,6 +156,44 @@ describe('AutosaveTextField', () => {
     expect(input).toBeDisabled();
   });
 
+  it('marks the field aria-busy while a save is in flight', async () => {
+    const { getByRole } = render(<TestComponent />);
+
+    const input = getByRole('textbox', { name: 'Test Field' });
+    await waitFor(() => expect(input).toHaveValue('Test Goal'));
+    // No save in flight on initial render.
+    expect(input).not.toHaveAttribute('aria-busy', 'true');
+
+    userEvent.clear(input);
+    userEvent.type(input, 'New Name');
+    input.blur();
+
+    // While the same-field save is in flight, the input is disabled AND
+    // aria-busy so screen readers announce it as "busy" rather than just
+    // "unavailable."
+    await waitFor(() => expect(input).toHaveAttribute('aria-busy', 'true'));
+    await waitFor(() => expect(input).not.toHaveAttribute('aria-busy', 'true'));
+  });
+
+  it('does not mark aria-busy when disabled because calculation is missing', () => {
+    const { getByRole } = render(
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={undefined}
+        onCall={mutationSpy}
+      >
+        <AutosaveTextField
+          label="Test Field"
+          fieldName="name"
+          schema={schema}
+        />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    const input = getByRole('textbox', { name: 'Test Field' });
+    expect(input).toBeDisabled();
+    expect(input).not.toHaveAttribute('aria-busy', 'true');
+  });
+
   it('shows props helperText when there is no validation error', async () => {
     const { findByRole } = render(
       <PdsGoalCalculatorTestWrapper
