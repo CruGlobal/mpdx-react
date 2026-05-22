@@ -7,6 +7,7 @@ import {
 } from 'src/graphql/types.generated';
 import { PdsGoalCalculatorTestWrapper } from '../../PdsGoalCalculatorTestWrapper';
 import { usePdsGoalAutoSave } from './usePdsGoalAutoSave';
+import { useSaveField } from './useSaveField';
 
 const schema = yup.object({
   name: yup.string().required('Goal Name is required'),
@@ -144,7 +145,7 @@ describe('usePdsGoalAutoSave', () => {
     await waitFor(() => expect(result.current.disabled).toBe(false));
   });
 
-  it('does not disable blur-driven fields while a save is in flight', async () => {
+  it('disables blur-driven fields while a save for the same field is in flight', async () => {
     const { result } = renderHook(
       () => usePdsGoalAutoSave({ fieldName: 'name', schema }),
       { wrapper: Wrapper },
@@ -161,11 +162,11 @@ describe('usePdsGoalAutoSave', () => {
       result.current.onBlur();
     });
 
-    expect(result.current.disabled).toBe(false);
-
-    await waitFor(() =>
-      expect(mutationSpy).toHaveGraphqlOperation('UpdatePdsGoalCalculation'),
-    );
+    // The mutation response echoes the full fragment, so a second save
+    // landing during the first would overwrite the in-flight value. The
+    // input must be locked until the same-field save resolves.
+    await waitFor(() => expect(result.current.disabled).toBe(true));
+    await waitFor(() => expect(result.current.disabled).toBe(false));
   });
 
   it('does not disable a saveOnChange field while an unrelated field is saving', async () => {
@@ -194,11 +195,42 @@ describe('usePdsGoalAutoSave', () => {
       result.current.name.onBlur();
     });
 
-    // The unrelated formType select must NOT flicker disabled while `name`
-    // is saving — only same-field saves should disable a select.
+    // Sample synchronously mid-save: savingFieldCounts.name === 1 here, but
+    // the mock mutation has not yet resolved. Pre-fix (gating on a broad
+    // isMutating), formType.disabled would have been true at this moment.
+    expect(result.current.formType.disabled).toBe(false);
+
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('UpdatePdsGoalCalculation'),
     );
     expect(result.current.formType.disabled).toBe(false);
+  });
+
+  it('locks the Pay Rate input while a multi-field save covering payRate is in flight', async () => {
+    // Pay Type writes { salaryOrHourly, payRate: null } atomically via
+    // useSaveField — that multi-field save marks payRate as saving even
+    // though the blur-driven Pay Rate input itself never fired. The input
+    // must be disabled while the atomic clear is in flight so a
+    // user-typed value cannot race the null.
+    const { result } = renderHook(
+      () => ({
+        payRate: usePdsGoalAutoSave({ fieldName: 'payRate', schema }),
+        saveField: useSaveField(),
+      }),
+      { wrapper: Wrapper },
+    );
+
+    await waitFor(() => expect(result.current.payRate.value).toBe('50000'));
+    expect(result.current.payRate.disabled).toBe(false);
+
+    act(() => {
+      result.current.saveField({
+        salaryOrHourly: DesignationSupportSalaryType.Hourly,
+        payRate: null,
+      });
+    });
+
+    await waitFor(() => expect(result.current.payRate.disabled).toBe(true));
+    await waitFor(() => expect(result.current.payRate.disabled).toBe(false));
   });
 });

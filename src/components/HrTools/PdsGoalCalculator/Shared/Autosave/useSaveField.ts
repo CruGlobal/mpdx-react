@@ -45,7 +45,9 @@ export const useSaveField = () => {
               },
             },
           }),
-          Object.keys(attributes),
+          Object.keys(attributes) as Array<
+            keyof DesignationSupportCalculationUpdateInput
+          >,
         );
       } catch {
         enqueueSnackbar(t('Failed to save changes. Please try again.'), {

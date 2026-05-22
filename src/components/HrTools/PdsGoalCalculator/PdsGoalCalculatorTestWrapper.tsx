@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ComponentProps } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { MockLinkCallHandler } from 'graphql-ergonomock/dist/apollo/MockLink';
 import { merge, mergeWith } from 'lodash';
@@ -141,6 +141,12 @@ export interface PdsGoalCalculatorTestWrapperProps {
   userMock?: GetUserMock;
   constantsMock?: GoalCalculatorConstantsMock;
   supportRaisedMock?: number;
+  /**
+   * Extra GqlMockedProvider mocks merged on top of the defaults. Useful for
+   * tests that need to control mutation responses (e.g. echo a deterministic
+   * post-save state instead of accepting auto-generated values).
+   */
+  extraMocks?: ComponentProps<typeof GqlMockedProvider>['mocks'];
   onCall?: MockLinkCallHandler;
   router?: React.ComponentProps<typeof TestRouter>['router'];
 }
@@ -156,6 +162,7 @@ export const PdsGoalCalculatorTestWrapper: React.FC<
   userMock,
   constantsMock,
   supportRaisedMock,
+  extraMocks,
   onCall,
   router,
 }) => {
@@ -264,6 +271,7 @@ export const PdsGoalCalculatorTestWrapper: React.FC<
                     Array.isArray(srcValue) ? srcValue : undefined,
                 ),
               },
+              ...extraMocks,
             }}
             onCall={onCall}
           >

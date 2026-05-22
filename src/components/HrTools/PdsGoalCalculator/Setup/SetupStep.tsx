@@ -38,7 +38,7 @@ import { HoursPerWeekGrid } from './HoursPerWeekGrid/HoursPerWeekGrid';
 export const SetupStep: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { calculation, hcmUser, isFieldSaving, setRightPanelContent } =
+  const { calculation, hcmUser, isMutating, setRightPanelContent } =
     usePdsGoalCalculator();
   const { data: userData } = useGetUserQuery();
   const schema = useMemo(
@@ -205,7 +205,11 @@ export const SetupStep: React.FC = () => {
           <Grid item xs={12}>
             {/* Manual TextField (not AutosaveTextField) because changing Pay
                 Type must atomically clear payRate as well; AutosaveTextField
-                only writes the single bound fieldName. */}
+                only writes the single bound fieldName. Disabled on any
+                in-flight save (not just same-field) so this atomic write
+                cannot land while another field's mutation is in flight —
+                the response of either would otherwise echo the full
+                fragment and overwrite the in-flight value. */}
             <TextField
               fullWidth
               size="small"
@@ -214,7 +218,7 @@ export const SetupStep: React.FC = () => {
               label={t('Pay Type')}
               helperText={t('Changing this clears Pay Rate.')}
               value={calculation?.salaryOrHourly ?? ''}
-              disabled={!calculation || isFieldSaving('salaryOrHourly')}
+              disabled={!calculation || isMutating}
               onChange={(event) => {
                 const newValue = event.target
                   .value as DesignationSupportSalaryType;

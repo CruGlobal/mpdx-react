@@ -8,7 +8,10 @@ import React, {
 } from 'react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import { DesignationSupportFormType } from 'src/graphql/types.generated';
+import {
+  DesignationSupportCalculationUpdateInput,
+  DesignationSupportFormType,
+} from 'src/graphql/types.generated';
 import { useTrackMutation } from 'src/hooks/useTrackMutation';
 import { safeProgressRatio } from '../../GoalCalculator/Shared/safeProgressRatio';
 import {
@@ -40,7 +43,9 @@ export type PdsGoalCalculatorType = {
   /** Whether any mutations are currently in progress */
   isMutating: boolean;
   /** Whether a save mutation tagged with the given field name is in flight */
-  isFieldSaving: (fieldName: string) => boolean;
+  isFieldSaving: (
+    fieldName: keyof DesignationSupportCalculationUpdateInput,
+  ) => boolean;
   /** Call with the mutation promise to track the start and end of mutations */
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
   /**
@@ -50,7 +55,7 @@ export type PdsGoalCalculatorType = {
    */
   trackFieldMutation: <T>(
     mutation: Promise<T>,
-    fields: string[],
+    fields: Array<keyof DesignationSupportCalculationUpdateInput>,
   ) => Promise<T>;
 
   rightPanelContent: React.ReactNode;
@@ -124,12 +129,16 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   >({});
 
   const isFieldSaving = useCallback(
-    (fieldName: string) => (savingFieldCounts[fieldName] ?? 0) > 0,
+    (fieldName: keyof DesignationSupportCalculationUpdateInput) =>
+      (savingFieldCounts[fieldName] ?? 0) > 0,
     [savingFieldCounts],
   );
 
   const trackFieldMutation = useCallback(
-    <T,>(mutation: Promise<T>, fields: string[]): Promise<T> => {
+    <T,>(
+      mutation: Promise<T>,
+      fields: Array<keyof DesignationSupportCalculationUpdateInput>,
+    ): Promise<T> => {
       setSavingFieldCounts((prev) => {
         const next = { ...prev };
         for (const field of fields) {
