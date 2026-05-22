@@ -89,38 +89,6 @@ export const PartnerRemindersReport: React.FC<MPRemindersReportProps> = ({
     window.print();
   };
 
-  const handleSave = async (values: RowValues) => {
-    const updates = Object.entries(values.status)
-      .filter(([id, statusCd]) => initialValues.status[id] !== statusCd)
-      .map(([id, statusCd]) => {
-        return {
-          rowId: id,
-          statusCd,
-        };
-      });
-
-    if (updates.length === 0) {
-      enqueueSnackbar(t('No changes have been made'), { variant: 'info' });
-      return;
-    }
-
-    await updateMutation({
-      variables: {
-        input: {
-          accountListId: accountListId ?? '',
-          designationNumber,
-          updates,
-        },
-      },
-      onCompleted: () => {
-        enqueueSnackbar(t('Changes saved'), { variant: 'success' });
-      },
-      onError: () => {
-        enqueueSnackbar(t('Error saving changes'), { variant: 'error' });
-      },
-    });
-  };
-
   const transformedData: ReminderData[] = useMemo(
     () =>
       reminders
@@ -157,13 +125,39 @@ export const PartnerRemindersReport: React.FC<MPRemindersReportProps> = ({
     [transformedData],
   );
 
+  const getUpdates = (values: RowValues) => {
+    return Object.entries(values.status)
+      .filter(([id, statusCd]) => initialValues.status[id] !== statusCd)
+      .map(([id, statusCd]) => {
+        return {
+          rowId: id,
+          statusCd,
+        };
+      });
+  };
+
+  const handleSave = async (values: RowValues) => {
+    await updateMutation({
+      variables: {
+        input: {
+          accountListId: accountListId ?? '',
+          designationNumber,
+          updates: getUpdates(values),
+        },
+      },
+      onCompleted: () => {
+        enqueueSnackbar(t('Changes saved'), { variant: 'success' });
+      },
+    });
+  };
+
   return (
     <Formik<RowValues>
       initialValues={initialValues}
       onSubmit={handleSave}
       enableReinitialize
     >
-      {({ submitForm }) => (
+      {({ submitForm, values }) => (
         <Box>
           <SimpleScreenOnly>
             <MultiPageHeader
@@ -216,10 +210,10 @@ export const PartnerRemindersReport: React.FC<MPRemindersReportProps> = ({
                     </Typography>
 
                     <Typography sx={{ marginTop: 3, lineHeight: 1.5 }}>
-                      When you&apos;re done, click the &quot;Save&quot; button
-                      at the bottom of the page. Wondering how the{' '}
-                      <i>Reminder System</i> works and how it differs from the
-                      Receipting System? Check out{' '}
+                      When you&apos;re done, a &quot;Save&quot; button will
+                      appear at the top of the page. Click it to save your
+                      changes. Wondering how the <i>Reminder System</i> works
+                      and how it differs from the Receipting System? Check out{' '}
                       <Link
                         sx={{
                           color: theme.palette.primary.main,
@@ -238,9 +232,11 @@ export const PartnerRemindersReport: React.FC<MPRemindersReportProps> = ({
                 <Box mb={2}>
                   <Box mb={2}>
                     <SimpleScreenOnly>
-                      <Button variant="contained" onClick={submitForm}>
-                        {t('Save')}
-                      </Button>
+                      {getUpdates(values).length > 0 && (
+                        <Button variant="contained" onClick={submitForm}>
+                          {t('Save')}
+                        </Button>
+                      )}
                     </SimpleScreenOnly>
                   </Box>
                   <Typography>
