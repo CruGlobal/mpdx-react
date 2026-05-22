@@ -26,7 +26,7 @@ const Instructions: React.FC = () => {
             component={NextLink}
             href={`/accountLists/${accountListId}/reports/mpgaIncomeExpenses`}
           >
-            MPGA tool
+            Ministry Partner Giving Analysis tool
           </Link>{' '}
           can show you your averages in some of these categories. If you did not
           take full reimbursements for the entire year, or if your
