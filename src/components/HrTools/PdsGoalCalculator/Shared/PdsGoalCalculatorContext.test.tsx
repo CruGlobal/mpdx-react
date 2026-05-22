@@ -153,6 +153,110 @@ describe('PdsGoalCalculatorContext', () => {
     expect(result.current.percentComplete).toBe(100);
   });
 
+  describe('trackFieldMutation', () => {
+    it('marks every listed field as saving for the lifetime of a multi-field write', async () => {
+      const { result } = renderUsePdsGoalCalculator();
+
+      expect(result.current.isFieldSaving('salaryOrHourly')).toBe(false);
+      expect(result.current.isFieldSaving('payRate')).toBe(false);
+
+      let resolveMutation!: (value: unknown) => void;
+      const pendingMutation = new Promise((resolve) => {
+        resolveMutation = resolve;
+      });
+
+      let tracked!: Promise<unknown>;
+      act(() => {
+        tracked = result.current.trackFieldMutation(pendingMutation, [
+          'salaryOrHourly',
+          'payRate',
+        ]);
+      });
+
+      expect(result.current.isFieldSaving('salaryOrHourly')).toBe(true);
+      expect(result.current.isFieldSaving('payRate')).toBe(true);
+      expect(result.current.isFieldSaving('name')).toBe(false);
+
+      await act(async () => {
+        resolveMutation(undefined);
+        await tracked;
+      });
+
+      expect(result.current.isFieldSaving('salaryOrHourly')).toBe(false);
+      expect(result.current.isFieldSaving('payRate')).toBe(false);
+    });
+
+    it('clears saving fields when the mutation rejects', async () => {
+      const { result } = renderUsePdsGoalCalculator();
+
+      let rejectMutation!: (reason: unknown) => void;
+      const pendingMutation = new Promise((_, reject) => {
+        rejectMutation = reject;
+      });
+
+      let tracked!: Promise<unknown>;
+      act(() => {
+        tracked = result.current.trackFieldMutation(pendingMutation, [
+          'salaryOrHourly',
+          'payRate',
+        ]);
+      });
+
+      expect(result.current.isFieldSaving('salaryOrHourly')).toBe(true);
+      expect(result.current.isFieldSaving('payRate')).toBe(true);
+
+      await act(async () => {
+        rejectMutation(new Error('mutation failed'));
+        await tracked.catch(() => undefined);
+      });
+
+      expect(result.current.isFieldSaving('salaryOrHourly')).toBe(false);
+      expect(result.current.isFieldSaving('payRate')).toBe(false);
+    });
+
+    it('keeps a field saving while a second concurrent save on the same field is in flight', async () => {
+      const { result } = renderUsePdsGoalCalculator();
+
+      let resolveFirst!: (value: unknown) => void;
+      let resolveSecond!: (value: unknown) => void;
+      const firstMutation = new Promise((resolve) => {
+        resolveFirst = resolve;
+      });
+      const secondMutation = new Promise((resolve) => {
+        resolveSecond = resolve;
+      });
+
+      let trackedFirst!: Promise<unknown>;
+      let trackedSecond!: Promise<unknown>;
+      act(() => {
+        trackedFirst = result.current.trackFieldMutation(firstMutation, [
+          'payRate',
+        ]);
+        trackedSecond = result.current.trackFieldMutation(secondMutation, [
+          'payRate',
+        ]);
+      });
+
+      expect(result.current.isFieldSaving('payRate')).toBe(true);
+
+      await act(async () => {
+        resolveFirst(undefined);
+        await trackedFirst;
+      });
+
+      // Second save is still pending — payRate must remain saving so the UI
+      // doesn't flicker between the two overlapping mutations.
+      expect(result.current.isFieldSaving('payRate')).toBe(true);
+
+      await act(async () => {
+        resolveSecond(undefined);
+        await trackedSecond;
+      });
+
+      expect(result.current.isFieldSaving('payRate')).toBe(false);
+    });
+  });
+
   it('rounds percentComplete to 33/67/100 for the 3-step Simple form', async () => {
     const { result } = renderHook(() => usePdsGoalCalculator(), {
       wrapper: ({ children }) => (

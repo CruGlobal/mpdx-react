@@ -6,6 +6,7 @@ import {
   DesignationSupportSalaryType,
   DesignationSupportStatus,
 } from 'src/graphql/types.generated';
+import { UpdatePdsGoalCalculationMutation } from './GoalsList/PdsGoalCalculations.generated';
 import { PdsGoalCalculator } from './PdsGoalCalculator';
 import { PdsGoalCalculatorTestWrapper } from './PdsGoalCalculatorTestWrapper';
 
@@ -69,7 +70,9 @@ describe('PdsGoalCalculator', () => {
 
   it('re-enables Continue after switching from Hourly to Salaried and entering a new Pay Rate', async () => {
     const { findByRole, getByRole, queryByRole } = render(
-      <PdsGoalCalculatorTestWrapper
+      <PdsGoalCalculatorTestWrapper<{
+        UpdatePdsGoalCalculation: UpdatePdsGoalCalculationMutation;
+      }>
         calculationMock={{
           salaryOrHourly: DesignationSupportSalaryType.Hourly,
           hoursWorkedPerWeek: null,
@@ -77,6 +80,23 @@ describe('PdsGoalCalculator', () => {
           payRate: 25,
           benefits: 1500,
           name: 'Test Goal',
+        }}
+        extraMocks={{
+          // Pin the mutation response so the auto-generated mock doesn't fill
+          // salaryOrHourly with HOURLY (the first enum value).
+          UpdatePdsGoalCalculation: {
+            updateDesignationSupportCalculation: {
+              designationSupportCalculation: {
+                id: 'goal-1',
+                name: 'Test Goal',
+                status: DesignationSupportStatus.FullTime,
+                salaryOrHourly: DesignationSupportSalaryType.Salaried,
+                payRate: null,
+                hoursWorkedPerWeek: null,
+                benefits: 1500,
+              },
+            },
+          },
         }}
       >
         <PdsGoalCalculator />
@@ -106,6 +126,9 @@ describe('PdsGoalCalculator', () => {
     const payRateInput = await findByRole('spinbutton', {
       name: 'Annual Pay Rate',
     });
+    // Pay Type's atomic save (salaryOrHourly + payRate: null) locks payRate
+    // until the mutation resolves. Wait for it before typing.
+    await waitFor(() => expect(payRateInput).not.toBeDisabled());
     userEvent.type(payRateInput, '50000');
 
     await waitFor(() => expect(continueButton).not.toBeDisabled());

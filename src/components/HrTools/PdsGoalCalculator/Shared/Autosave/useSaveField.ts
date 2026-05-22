@@ -6,7 +6,7 @@ import { useUpdatePdsGoalCalculationMutation } from '../../GoalsList/PdsGoalCalc
 import { usePdsGoalCalculator } from '../PdsGoalCalculatorContext';
 
 export const useSaveField = () => {
-  const { calculation, trackMutation } = usePdsGoalCalculator();
+  const { calculation, trackFieldMutation } = usePdsGoalCalculator();
   const [updatePdsGoalCalculation] = useUpdatePdsGoalCalculationMutation();
   const { enqueueSnackbar } = useSnackbar();
   const { t } = useTranslation();
@@ -25,7 +25,7 @@ export const useSaveField = () => {
       }
 
       try {
-        return await trackMutation(
+        return await trackFieldMutation(
           updatePdsGoalCalculation({
             variables: {
               attributes: {
@@ -45,6 +45,9 @@ export const useSaveField = () => {
               },
             },
           }),
+          Object.keys(attributes) as Array<
+            keyof DesignationSupportCalculationUpdateInput
+          >,
         );
       } catch {
         enqueueSnackbar(t('Failed to save changes. Please try again.'), {
@@ -52,7 +55,13 @@ export const useSaveField = () => {
         });
       }
     },
-    [calculation, trackMutation, updatePdsGoalCalculation, enqueueSnackbar, t],
+    [
+      calculation,
+      trackFieldMutation,
+      updatePdsGoalCalculation,
+      enqueueSnackbar,
+      t,
+    ],
   );
 
   return saveField;

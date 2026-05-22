@@ -8,7 +8,10 @@ import React, {
 } from 'react';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
-import { DesignationSupportFormType } from 'src/graphql/types.generated';
+import {
+  DesignationSupportCalculationUpdateInput,
+  DesignationSupportFormType,
+} from 'src/graphql/types.generated';
 import { useTrackMutation } from 'src/hooks/useTrackMutation';
 import { safeProgressRatio } from '../../GoalCalculator/Shared/safeProgressRatio';
 import {
@@ -39,8 +42,17 @@ export type PdsGoalCalculatorType = {
 
   /** Whether any mutations are currently in progress */
   isMutating: boolean;
+  /** Whether a save for the given field is in flight */
+  isFieldSaving: (
+    fieldName: keyof DesignationSupportCalculationUpdateInput,
+  ) => boolean;
   /** Call with the mutation promise to track the start and end of mutations */
   trackMutation: <T>(mutation: Promise<T>) => Promise<T>;
+  /** Like trackMutation, but also marks the listed fields as saving. */
+  trackFieldMutation: <T>(
+    mutation: Promise<T>,
+    fields: Array<keyof DesignationSupportCalculationUpdateInput>,
+  ) => Promise<T>;
 
   rightPanelContent: React.ReactNode;
   setRightPanelContent: (content: React.ReactNode) => void;
@@ -108,6 +120,49 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(true);
   const { trackMutation, isMutating } = useTrackMutation();
 
+  const [savingFieldCounts, setSavingFieldCounts] = useState<
+    Partial<Record<keyof DesignationSupportCalculationUpdateInput, number>>
+  >({});
+
+  const isFieldSaving = useCallback(
+    (fieldName: keyof DesignationSupportCalculationUpdateInput) =>
+      (savingFieldCounts[fieldName] ?? 0) > 0,
+    [savingFieldCounts],
+  );
+
+  const trackFieldMutation = useCallback(
+    <T,>(
+      mutation: Promise<T>,
+      fields: Array<keyof DesignationSupportCalculationUpdateInput>,
+    ): Promise<T> => {
+      const uniqueFields = Array.from(new Set(fields));
+      setSavingFieldCounts((prev) => {
+        const next = { ...prev };
+        for (const field of uniqueFields) {
+          next[field] = (next[field] ?? 0) + 1;
+        }
+        return next;
+      });
+      return trackMutation(
+        mutation.finally(() => {
+          setSavingFieldCounts((prev) => {
+            const next = { ...prev };
+            for (const field of uniqueFields) {
+              const remaining = (next[field] ?? 0) - 1;
+              if (remaining <= 0) {
+                delete next[field];
+              } else {
+                next[field] = remaining;
+              }
+            }
+            return next;
+          });
+        }),
+      );
+    },
+    [trackMutation],
+  );
+
   useEffect(() => {
     if (steps.some((s) => s.step === activeStep)) {
       return;
@@ -173,7 +228,9 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       summaryData,
       percentComplete,
       isMutating,
+      isFieldSaving,
       trackMutation,
+      trackFieldMutation,
       hcmUser,
       rightPanelContent,
       isDrawerOpen,
@@ -194,7 +251,9 @@ export const PdsGoalCalculatorProvider: React.FC<Props> = ({ children }) => {
       summaryData,
       percentComplete,
       isMutating,
+      isFieldSaving,
       trackMutation,
+      trackFieldMutation,
       hcmUser,
       rightPanelContent,
       isDrawerOpen,
