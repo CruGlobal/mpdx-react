@@ -7,6 +7,7 @@ import {
 } from 'src/graphql/types.generated';
 import { PdsGoalCalculatorTestWrapper } from '../../PdsGoalCalculatorTestWrapper';
 import { usePdsGoalAutoSave } from './usePdsGoalAutoSave';
+import { useSaveField } from './useSaveField';
 
 const schema = yup.object({
   name: yup.string().required('Goal Name is required'),
@@ -140,11 +141,11 @@ describe('usePdsGoalAutoSave', () => {
       } as React.ChangeEvent<HTMLInputElement>);
     });
 
-    await waitFor(() => expect(result.current.disabled).toBe(true));
+    expect(result.current.disabled).toBe(true);
     await waitFor(() => expect(result.current.disabled).toBe(false));
   });
 
-  it('does not disable blur-driven fields while a save is in flight', async () => {
+  it('disables blur-driven fields while a save for the same field is in flight', async () => {
     const { result } = renderHook(
       () => usePdsGoalAutoSave({ fieldName: 'name', schema }),
       { wrapper: Wrapper },
@@ -161,10 +162,106 @@ describe('usePdsGoalAutoSave', () => {
       result.current.onBlur();
     });
 
-    expect(result.current.disabled).toBe(false);
+    expect(result.current.disabled).toBe(true);
+    await waitFor(() => expect(result.current.disabled).toBe(false));
+  });
+
+  it('exposes busy=true only while a same-field save is in flight', async () => {
+    const { result } = renderHook(
+      () => usePdsGoalAutoSave({ fieldName: 'name', schema }),
+      { wrapper: Wrapper },
+    );
+
+    await waitFor(() => expect(result.current.value).toBe('Test Goal'));
+    expect(result.current.busy).toBe(false);
+
+    act(() => {
+      result.current.onChange({
+        target: { value: 'Updated Goal' },
+      } as React.ChangeEvent<HTMLInputElement>);
+    });
+    act(() => {
+      result.current.onBlur();
+    });
+
+    expect(result.current.busy).toBe(true);
+    await waitFor(() => expect(result.current.busy).toBe(false));
+  });
+
+  it('reports busy=false when disabled solely because calculation is missing', () => {
+    const NoCalcWrapper: React.FC<{ children: React.ReactNode }> = ({
+      children,
+    }) => (
+      <PdsGoalCalculatorTestWrapper
+        calculationMock={undefined}
+        onCall={mutationSpy}
+      >
+        {children}
+      </PdsGoalCalculatorTestWrapper>
+    );
+
+    const { result } = renderHook(
+      () => usePdsGoalAutoSave({ fieldName: 'name', schema }),
+      { wrapper: NoCalcWrapper },
+    );
+
+    expect(result.current.disabled).toBe(true);
+    expect(result.current.busy).toBe(false);
+  });
+
+  it('does not disable a saveOnChange field while an unrelated field is saving', async () => {
+    const { result } = renderHook(
+      () => ({
+        formType: usePdsGoalAutoSave({
+          fieldName: 'formType',
+          schema,
+          saveOnChange: true,
+        }),
+        name: usePdsGoalAutoSave({ fieldName: 'name', schema }),
+      }),
+      { wrapper: Wrapper },
+    );
+
+    await waitFor(() => expect(result.current.name.value).toBe('Test Goal'));
+    expect(result.current.formType.disabled).toBe(false);
+
+    act(() => {
+      result.current.name.onChange({
+        target: { value: 'Updated Goal' },
+      } as React.ChangeEvent<HTMLInputElement>);
+    });
+    act(() => {
+      result.current.name.onBlur();
+    });
+
+    expect(result.current.formType.disabled).toBe(false);
 
     await waitFor(() =>
       expect(mutationSpy).toHaveGraphqlOperation('UpdatePdsGoalCalculation'),
     );
+    expect(result.current.formType.disabled).toBe(false);
+  });
+
+  it('locks the Pay Rate input while a multi-field save covering payRate is in flight', async () => {
+    const { result } = renderHook(
+      () => ({
+        payRate: usePdsGoalAutoSave({ fieldName: 'payRate', schema }),
+        saveField: useSaveField(),
+      }),
+      { wrapper: Wrapper },
+    );
+
+    await waitFor(() => expect(result.current.payRate.value).toBe('50000'));
+    expect(result.current.payRate.disabled).toBe(false);
+
+    act(() => {
+      result.current.saveField({
+        salaryOrHourly: DesignationSupportSalaryType.Hourly,
+        payRate: null,
+      });
+    });
+
+    expect(result.current.payRate.disabled).toBe(true);
+    await waitFor(() => expect(result.current.payRate.disabled).toBe(false));
   });
 });

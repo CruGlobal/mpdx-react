@@ -18,7 +18,7 @@ export const AutosaveTextField: React.FC<AutosaveTextFieldProps> = ({
   schema,
   ...props
 }) => {
-  const fieldProps = usePdsGoalAutoSave({
+  const { busy, ...fieldProps } = usePdsGoalAutoSave({
     fieldName,
     schema,
     saveOnChange: props.select,
@@ -34,6 +34,14 @@ export const AutosaveTextField: React.FC<AutosaveTextFieldProps> = ({
       {...fieldProps}
       {...props}
       disabled={fieldProps.disabled || props.disabled}
+      // Signal in-flight saves as "busy" rather than "unavailable" — the
+      // disabled state above also covers !calculation and props.disabled,
+      // which are not saves. Goes on the inner <input> so it travels with
+      // the role=textbox/combobox/spinbutton element.
+      inputProps={{
+        ...props.inputProps,
+        'aria-busy': busy || undefined,
+      }}
       error={showValidationError || undefined}
       helperText={
         showValidationError ? fieldProps.helperText : props.helperText

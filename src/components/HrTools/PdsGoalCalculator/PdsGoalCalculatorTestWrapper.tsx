@@ -132,7 +132,9 @@ export type GoalCalculatorConstantsMock = DeepPartial<
   GoalCalculatorConstantsQuery['constant']
 >;
 
-export interface PdsGoalCalculatorTestWrapperProps {
+export interface PdsGoalCalculatorTestWrapperProps<
+  TExtraMocks = Record<string, never>,
+> {
   children?: React.ReactNode;
   withProvider?: boolean;
   calculationsMock?: PdsGoalCalculationsMock;
@@ -141,13 +143,25 @@ export interface PdsGoalCalculatorTestWrapperProps {
   userMock?: GetUserMock;
   constantsMock?: GoalCalculatorConstantsMock;
   supportRaisedMock?: number;
+  /**
+   * Extra GqlMockedProvider mocks merged on top of the defaults. Pass the
+   * operation map as a generic argument so mock shapes are type-checked:
+   * `<PdsGoalCalculatorTestWrapper<{ UpdatePdsGoalCalculation: UpdatePdsGoalCalculationMutation }> extraMocks={...} />`.
+   * Each value may be a partial mock object or a resolver function (e.g. to
+   * throw and exercise error paths).
+   */
+  extraMocks?: {
+    [K in keyof TExtraMocks]?:
+      | DeepPartial<TExtraMocks[K]>
+      | ((...args: never[]) => unknown);
+  };
   onCall?: MockLinkCallHandler;
   router?: React.ComponentProps<typeof TestRouter>['router'];
 }
 
-export const PdsGoalCalculatorTestWrapper: React.FC<
-  PdsGoalCalculatorTestWrapperProps
-> = ({
+export const PdsGoalCalculatorTestWrapper = <
+  TExtraMocks = Record<string, never>,
+>({
   children,
   withProvider = true,
   calculationsMock,
@@ -156,9 +170,10 @@ export const PdsGoalCalculatorTestWrapper: React.FC<
   userMock,
   constantsMock,
   supportRaisedMock,
+  extraMocks,
   onCall,
   router,
-}) => {
+}: PdsGoalCalculatorTestWrapperProps<TExtraMocks>): React.ReactElement => {
   return (
     <ThemeProvider theme={theme}>
       <TestRouter
@@ -176,95 +191,98 @@ export const PdsGoalCalculatorTestWrapper: React.FC<
             GetUser: GetUserQuery;
             AccountListSupportRaised: AccountListSupportRaisedQuery;
           }>
-            mocks={{
-              PdsGoalCalculations: {
-                designationSupportCalculations: merge(
-                  {},
-                  calculationsDefault,
-                  calculationsMock,
-                ),
-              },
-              PdsGoalCalculation: {
-                designationSupportCalculation: merge(
-                  {},
-                  calculationDefault,
-                  calculationMock,
-                ),
-              },
-              HcmUser: {
-                hcm:
-                  hcmUserMock === null
-                    ? []
-                    : [merge({}, hcmUserDefault.hcm[0], hcmUserMock)],
-              },
-              ...(userMock ? { GetUser: userMock } : {}),
-              ...(supportRaisedMock !== undefined
-                ? {
-                    AccountListSupportRaised: {
-                      accountList: {
-                        id: 'account-list-1',
-                        receivedPledges: supportRaisedMock,
+            mocks={merge(
+              {
+                PdsGoalCalculations: {
+                  designationSupportCalculations: merge(
+                    {},
+                    calculationsDefault,
+                    calculationsMock,
+                  ),
+                },
+                PdsGoalCalculation: {
+                  designationSupportCalculation: merge(
+                    {},
+                    calculationDefault,
+                    calculationMock,
+                  ),
+                },
+                HcmUser: {
+                  hcm:
+                    hcmUserMock === null
+                      ? []
+                      : [merge({}, hcmUserDefault.hcm[0], hcmUserMock)],
+                },
+                ...(userMock ? { GetUser: userMock } : {}),
+                ...(supportRaisedMock !== undefined
+                  ? {
+                      AccountListSupportRaised: {
+                        accountList: {
+                          id: 'account-list-1',
+                          receivedPledges: supportRaisedMock,
+                        },
                       },
+                    }
+                  : {}),
+                GoalCalculatorConstants: {
+                  constant: mergeWith(
+                    {},
+                    {
+                      mpdGoalBenefitsConstants: [],
+                      mpdGoalGeographicConstants: [
+                        {
+                          location: 'None',
+                          percentageMultiplier: 0,
+                        },
+                        {
+                          location: 'Orlando, FL',
+                          percentageMultiplier: 0.06,
+                        },
+                        {
+                          location: 'New York, NY',
+                          percentageMultiplier: 0.12,
+                        },
+                      ],
+                      mpdGoalMiscConstants: [
+                        {
+                          category:
+                            MpdGoalMiscConstantCategoryEnum.AdditionalRates,
+                          label: MpdGoalMiscConstantLabelEnum.EmployerFicaRate,
+                          fee: 0.08,
+                        },
+                        {
+                          category:
+                            MpdGoalMiscConstantCategoryEnum.AdditionalRates,
+                          label:
+                            MpdGoalMiscConstantLabelEnum.PartTimeWorkCompensation,
+                          fee: 0.17,
+                        },
+                        {
+                          category: MpdGoalMiscConstantCategoryEnum.Rates,
+                          label: MpdGoalMiscConstantLabelEnum.AttritionRate,
+                          fee: 0.06,
+                        },
+                        {
+                          category:
+                            MpdGoalMiscConstantCategoryEnum.AdditionalRates,
+                          label: MpdGoalMiscConstantLabelEnum.CreditCardFeeRate,
+                          fee: 0.06,
+                        },
+                        {
+                          category: MpdGoalMiscConstantCategoryEnum.Rates,
+                          label: MpdGoalMiscConstantLabelEnum.AdminRate,
+                          fee: 0.12,
+                        },
+                      ],
                     },
-                  }
-                : {}),
-              GoalCalculatorConstants: {
-                constant: mergeWith(
-                  {},
-                  {
-                    mpdGoalBenefitsConstants: [],
-                    mpdGoalGeographicConstants: [
-                      {
-                        location: 'None',
-                        percentageMultiplier: 0,
-                      },
-                      {
-                        location: 'Orlando, FL',
-                        percentageMultiplier: 0.06,
-                      },
-                      {
-                        location: 'New York, NY',
-                        percentageMultiplier: 0.12,
-                      },
-                    ],
-                    mpdGoalMiscConstants: [
-                      {
-                        category:
-                          MpdGoalMiscConstantCategoryEnum.AdditionalRates,
-                        label: MpdGoalMiscConstantLabelEnum.EmployerFicaRate,
-                        fee: 0.08,
-                      },
-                      {
-                        category:
-                          MpdGoalMiscConstantCategoryEnum.AdditionalRates,
-                        label:
-                          MpdGoalMiscConstantLabelEnum.PartTimeWorkCompensation,
-                        fee: 0.17,
-                      },
-                      {
-                        category: MpdGoalMiscConstantCategoryEnum.Rates,
-                        label: MpdGoalMiscConstantLabelEnum.AttritionRate,
-                        fee: 0.06,
-                      },
-                      {
-                        category:
-                          MpdGoalMiscConstantCategoryEnum.AdditionalRates,
-                        label: MpdGoalMiscConstantLabelEnum.CreditCardFeeRate,
-                        fee: 0.06,
-                      },
-                      {
-                        category: MpdGoalMiscConstantCategoryEnum.Rates,
-                        label: MpdGoalMiscConstantLabelEnum.AdminRate,
-                        fee: 0.12,
-                      },
-                    ],
-                  },
-                  constantsMock,
-                  (_objValue, srcValue) =>
-                    Array.isArray(srcValue) ? srcValue : undefined,
-                ),
+                    constantsMock,
+                    (_objValue, srcValue) =>
+                      Array.isArray(srcValue) ? srcValue : undefined,
+                  ),
+                },
               },
-            }}
+              extraMocks,
+            )}
             onCall={onCall}
           >
             {withProvider ? (
