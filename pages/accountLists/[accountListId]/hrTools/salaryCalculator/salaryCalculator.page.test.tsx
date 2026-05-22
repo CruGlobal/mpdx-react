@@ -20,10 +20,10 @@ const TestComponent: React.FC<TestComponentProps> = ({
 
 describe('SalaryCalculatorPage', () => {
   it('renders the Salary Calculator header', async () => {
-    const { findByRole } = render(<TestComponent />);
+    const { findAllByRole } = render(<TestComponent />);
     expect(
-      await findByRole('heading', { name: /Salary Calculator/i }),
-    ).toBeInTheDocument();
+      await findAllByRole('heading', { name: /Salary Calculation Form/i }),
+    ).toHaveLength(2);
   });
 
   it('uses blockImpersonatingNonDevelopers for server-side props', () => {
@@ -44,15 +44,15 @@ describe('SalaryCalculatorPage', () => {
     });
 
     it('renders NewSalaryCalculatorLanding when shouldShowPending is false', async () => {
-      const { findByRole } = render(
+      const { findAllByRole } = render(
         <LandingTestWrapper>
           <SalaryCalculatorPage />
         </LandingTestWrapper>,
       );
 
       expect(
-        await findByRole('heading', { name: 'Salary Calculator' }),
-      ).toBeInTheDocument();
+        await findAllByRole('heading', { name: 'Salary Calculation Form' }),
+      ).toHaveLength(2);
     });
   });
 

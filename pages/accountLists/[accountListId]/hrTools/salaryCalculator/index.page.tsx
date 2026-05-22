@@ -56,7 +56,7 @@ const SalaryCalculatorPage: React.FC = () => {
               <MultiPageHeader
                 isNavListOpen={isNavListOpen}
                 onNavListToggle={handleNavListToggle}
-                title={t('Salary Calculator')}
+                title={t('Salary Calculation Form')}
                 headerType={HeaderTypeEnum.HrTools}
               />
 
