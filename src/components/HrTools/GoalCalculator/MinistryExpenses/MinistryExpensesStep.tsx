@@ -26,14 +26,14 @@ const Instructions: React.FC = () => {
             component={NextLink}
             href={`/accountLists/${accountListId}/reports/mpgaIncomeExpenses`}
           >
-            MPGA report
+            MPGA tool
           </Link>{' '}
           can show you your averages in some of these categories. If you did not
           take full reimbursements for the entire year, or if your
           reimbursements were abnormally high (e.g. you had a surgery or bought
           a new computer), or low (e.g. no summer mission), you will want to
           adjust the averages from the MPGA to reflect an average year. Click
-          the link above and look under the Ministry Expenses section.
+          the link above and look at the Ministry rows in the Expenses table.
         </Trans>
       </Typography>
     </InstructionsWrapper>
