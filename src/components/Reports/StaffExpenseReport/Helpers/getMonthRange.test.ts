@@ -1,9 +1,17 @@
-import { DateTime } from 'luxon';
+import { DateTime, Settings } from 'luxon';
 import { getStaffExpenseMonthRange } from './getMonthRange';
 
 const baseTime = DateTime.fromISO('2020-01-15');
 
 describe('getStaffExpenseMonthRange', () => {
+  beforeEach(() => {
+    Settings.now = () => Date.parse('2026-05-26');
+  });
+
+  afterEach(() => {
+    Settings.now = () => Date.now();
+  });
+
   it('falls back to baseTime month when filters is null', () => {
     expect(getStaffExpenseMonthRange(null, baseTime)).toEqual({
       startMonth: '2020-01-01',
@@ -38,14 +46,14 @@ describe('getStaffExpenseMonthRange', () => {
     });
   });
 
-  it('uses startDate month and baseTime endMonth when only startDate is present', () => {
+  it('defaults endMonth to end of current month when only startDate is present', () => {
     const filters = {
       startDate: DateTime.fromISO('2025-03-10'),
       endDate: null,
     };
     expect(getStaffExpenseMonthRange(filters, baseTime)).toEqual({
       startMonth: '2025-03-01',
-      endMonth: '2020-01-31',
+      endMonth: '2026-05-31',
     });
   });
 
