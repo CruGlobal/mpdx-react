@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import React, { ReactElement } from 'react';
 import {
   CircularProgress,
@@ -131,6 +132,7 @@ export const CreateMultipleContacts = ({
 }: Props): ReactElement<Props> => {
   const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
+  const { push } = useRouter();
   const initialContacts: ContactTable = {
     contacts: new Array(rows).fill(defaultContact),
   };
@@ -254,6 +256,17 @@ export const CreateMultipleContacts = ({
           variant: 'success',
         },
       );
+
+      const ids = createdContacts.filter((id) => typeof id === 'string');
+      if (ids.length > 0) {
+        push({
+          pathname: '/accountLists/[accountListId]/contacts',
+          query: {
+            accountListId,
+            filters: JSON.stringify({ ids }),
+          },
+        });
+      }
     }
 
     handleClose();
