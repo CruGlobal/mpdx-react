@@ -180,13 +180,12 @@ export const EditPartnershipInfoModal: React.FC<
       pledgeAmount,
       locale,
     );
-    if (
-      (newStatus !== StatusEnum.PartnerFinancial &&
-        oldStatus === StatusEnum.PartnerFinancial &&
-        normalizedPledgeAmount &&
-        normalizedPledgeAmount > 0) ||
-      pledgeFrequency
-    ) {
+    const leavingPartnerFinancial =
+      oldStatus === StatusEnum.PartnerFinancial &&
+      newStatus !== StatusEnum.PartnerFinancial;
+    const hasCommitmentDetails =
+      (normalizedPledgeAmount && normalizedPledgeAmount > 0) || pledgeFrequency;
+    if (leavingPartnerFinancial && hasCommitmentDetails) {
       setShowRemoveCommitmentWarning(true);
     }
   };
