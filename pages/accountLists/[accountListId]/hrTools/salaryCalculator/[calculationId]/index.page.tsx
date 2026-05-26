@@ -55,7 +55,7 @@ const SalaryCalculatorEditInnerPage: React.FC = () => {
   return (
     <>
       <Head>
-        <title>{`${appName} | ${t('Salary Calculator')}`}</title>
+        <title>{`${appName} | ${t('HR Tools | Salary Calculation Form')}`}</title>
       </Head>
       <UserTypeAccess
         requireStaffAccount
@@ -68,7 +68,7 @@ const SalaryCalculatorEditInnerPage: React.FC = () => {
               isOpen={isNavListOpen}
               selectedId="salaryCalculator"
               onClose={handleNavListToggle}
-              navType={NavTypeEnum.Reports}
+              navType={NavTypeEnum.HrTools}
             />
           }
           leftOpen={isNavListOpen}
@@ -78,8 +78,8 @@ const SalaryCalculatorEditInnerPage: React.FC = () => {
               <MultiPageHeader
                 isNavListOpen={isNavListOpen}
                 onNavListToggle={handleNavListToggle}
-                title={t('Salary Calculator')}
-                headerType={HeaderTypeEnum.Report}
+                title={t('Salary Calculation Form')}
+                headerType={HeaderTypeEnum.HrTools}
                 rightExtra={<SalaryCalculatorSavingStatus />}
               />
               <SalaryCalculator />
