@@ -14,12 +14,6 @@ mutation SetContactPrimaryAddress(
       primaryAddress {
         id
       }
-      addresses(first: 25) {
-        nodes {
-          id
-          primaryMailingAddress
-        }
-      }
     }
   }
 }

@@ -112,6 +112,12 @@ export const AddAddressModal: React.FC<EditContactAddressModalProps> = ({
           contactId,
           primaryAddressId: newAddressId,
         },
+        refetchQueries: [
+          {
+            query: ContactDetailsTabDocument,
+            variables: { accountListId, contactId },
+          },
+        ],
       });
     }
     enqueueSnackbar(t('Address added successfully'), {

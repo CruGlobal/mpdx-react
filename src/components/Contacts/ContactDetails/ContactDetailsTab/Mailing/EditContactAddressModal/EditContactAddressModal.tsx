@@ -92,6 +92,12 @@ export const EditContactAddressModal: React.FC<
           contactId,
           primaryAddressId: primaryMailingAddress ? address.id : null,
         },
+        refetchQueries: [
+          {
+            query: ContactDetailsTabDocument,
+            variables: { accountListId, contactId },
+          },
+        ],
       });
     }
     enqueueSnackbar(t('Address updated successfully'), {
