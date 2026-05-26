@@ -14,7 +14,10 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
-import { UserTypeAccess } from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
+import {
+  RequiredUserGroupEnum,
+  UserTypeAccess,
+} from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { ReportPageWrapper } from 'src/components/Shared/styledComponents/ReportPageWrapper';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getAppName } from 'src/lib/getAppName';
@@ -36,7 +39,7 @@ export const GoalCalculatorPage: React.FC = () => {
         <title>{`${appName} | ${t('HR Tools | MPD Goal Calculator')}`}</title>
       </Head>
       {accountListId ? (
-        <UserTypeAccess>
+        <UserTypeAccess requireUserGroups={RequiredUserGroupEnum.MpdGoalCalc}>
           <ReportPageWrapper>
             <SidePanelsLayout
               isScrollBox={false}

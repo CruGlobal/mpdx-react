@@ -29,9 +29,9 @@ function mhaIneligible(user: HcmQuery['hcm'][number]['staffInfo']) {
 }
 
 /**
- * This hook determines whether a US Staff user is in a subgroup that's ineligible for ASR, Salary Calculator, or MHA (all reports that require HCM).
+ * This hook determines whether a US Staff user is in a subgroup that's ineligible for ASR, Salary Calculator, MHA, or the MPD / PDS Goal Calculators (all reports that require HCM).
  * The ASR and MHA check runs against the eligible person (logged-in user if eligible, otherwise spouse, otherwise the logged-in user).
- * The Salary Calculator check always runs against the logged-in user.
+ * The Salary Calculator and Goal Calculator checks always run against the logged-in user.
  */
 export function useUsStaffGroups(skip?: boolean) {
   const { data, loading, error } = useHcmQuery({
@@ -54,16 +54,26 @@ export function useUsStaffGroups(skip?: boolean) {
       (graphQLError) => graphQLError.extensions?.code === 'NO_STAFF_ACCOUNT',
     ) ?? false;
 
+  const userSupportType = user?.staffInfo?.peopleGroupSupportType;
+
   const inAsrIneligibleGroup = hasNoStaffAccount || allAsrIneligible;
   const inSalaryCalcIneligibleGroup =
     hasNoStaffAccount || user?.salaryRequestEligible === false;
   const inMhaIneligibleGroup = hasNoStaffAccount || allMhaIneligible;
+  const inMpdGoalCalcIneligibleGroup =
+    hasNoStaffAccount ||
+    userSupportType !== PeopleGroupSupportTypeEnum.SupportedRmo;
+  const inPdsGoalCalcIneligibleGroup =
+    hasNoStaffAccount ||
+    userSupportType !== PeopleGroupSupportTypeEnum.Designation;
 
   return useMemo(
     () => ({
       inAsrIneligibleGroup,
       inSalaryCalcIneligibleGroup,
       inMhaIneligibleGroup,
+      inMpdGoalCalcIneligibleGroup,
+      inPdsGoalCalcIneligibleGroup,
       hasNoStaffAccount,
       loading: loading && !data,
     }),
@@ -71,6 +81,8 @@ export function useUsStaffGroups(skip?: boolean) {
       inAsrIneligibleGroup,
       inSalaryCalcIneligibleGroup,
       inMhaIneligibleGroup,
+      inMpdGoalCalcIneligibleGroup,
+      inPdsGoalCalcIneligibleGroup,
       hasNoStaffAccount,
       loading,
       data,
