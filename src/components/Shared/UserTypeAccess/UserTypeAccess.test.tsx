@@ -145,7 +145,7 @@ describe('UserTypeAccess', () => {
   });
 
   it('should render LimitedAccess when user is ineligible for the MPD goal calculator', async () => {
-    const { findByRole } = render(
+    const { findByRole, getByText } = render(
       <TestComponent
         requireUserGroups={RequiredUserGroupEnum.MpdGoalCalc}
         peopleGroupSupportType={PeopleGroupSupportTypeEnum.Designation}
@@ -155,6 +155,11 @@ describe('UserTypeAccess', () => {
       await findByRole('heading', {
         name: 'Access to this feature is limited.',
       }),
+    ).toBeInTheDocument();
+    expect(
+      getByText(
+        /our records show that you are not part of the user group that has access to this feature/i,
+      ),
     ).toBeInTheDocument();
   });
 
@@ -169,7 +174,7 @@ describe('UserTypeAccess', () => {
   });
 
   it('should render LimitedAccess when user is ineligible for the PDS goal calculator', async () => {
-    const { findByRole } = render(
+    const { findByRole, getByText } = render(
       <TestComponent
         requireUserGroups={RequiredUserGroupEnum.PdsGoalCalc}
         peopleGroupSupportType={PeopleGroupSupportTypeEnum.SupportedRmo}
@@ -179,6 +184,11 @@ describe('UserTypeAccess', () => {
       await findByRole('heading', {
         name: 'Access to this feature is limited.',
       }),
+    ).toBeInTheDocument();
+    expect(
+      getByText(
+        /our records show that you are not part of the user group that has access to this feature/i,
+      ),
     ).toBeInTheDocument();
   });
 

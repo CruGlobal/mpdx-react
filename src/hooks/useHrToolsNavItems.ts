@@ -13,56 +13,59 @@ export function useHrToolsNavItems(): NavItems[] {
     inMpdGoalCalcIneligibleGroup,
     inPdsGoalCalcIneligibleGroup,
     hasNoStaffAccount,
+    loading: hcmLoading,
   } = useUsStaffGroups();
 
-  const hrToolsNavItems: NavItems[] = [
-    {
-      id: 'salaryCalculator',
-      title: t('Salary Calculation Form'),
-      hideItem: inSalaryCalcIneligibleGroup,
-    },
-    {
-      id: 'staffSavingFund',
-      title: t('Savings Fund Transfer'),
-      hideItem: hasNoStaffAccount,
-    },
-    {
-      id: 'goalCalculator',
-      title: t('MPD Goal Calculator'),
-      hideItem: inMpdGoalCalcIneligibleGroup,
-    },
-    {
-      id: 'mhaCalculator',
-      title: t('MHA Calculation Tool'),
-      hideItem: inMhaIneligibleGroup,
-    },
-    {
-      id: 'additionalSalaryRequest',
-      title: t('Additional Salary Request'),
-      hideItem: inAsrIneligibleGroup,
-    },
-    {
-      id: 'pdsGoalCalculator',
-      title: t('Paid with Designation Support Goal Calculator'),
-      hideItem: inPdsGoalCalcIneligibleGroup,
-    },
-    {
-      id: 'partnerReminders',
-      title: t('Ministry Partner Reminders'),
-      hideItem: hasNoStaffAccount,
-    },
-  ];
+  return useMemo(() => {
+    if (hcmLoading) {
+      return [];
+    }
 
-  return useMemo(
-    () => hrToolsNavItems.filter((item) => !item.hideItem),
-    [
-      t,
-      inAsrIneligibleGroup,
-      inSalaryCalcIneligibleGroup,
-      inMhaIneligibleGroup,
-      inMpdGoalCalcIneligibleGroup,
-      inPdsGoalCalcIneligibleGroup,
-      hasNoStaffAccount,
-    ],
-  );
+    return [
+      {
+        id: 'salaryCalculator',
+        title: t('Salary Calculation Form'),
+        hideItem: inSalaryCalcIneligibleGroup,
+      },
+      {
+        id: 'staffSavingFund',
+        title: t('Savings Fund Transfer'),
+        hideItem: hasNoStaffAccount,
+      },
+      {
+        id: 'goalCalculator',
+        title: t('MPD Goal Calculator'),
+        hideItem: inMpdGoalCalcIneligibleGroup,
+      },
+      {
+        id: 'mhaCalculator',
+        title: t('MHA Calculation Tool'),
+        hideItem: inMhaIneligibleGroup,
+      },
+      {
+        id: 'additionalSalaryRequest',
+        title: t('Additional Salary Request'),
+        hideItem: inAsrIneligibleGroup,
+      },
+      {
+        id: 'pdsGoalCalculator',
+        title: t('Paid with Designation Support Goal Calculator'),
+        hideItem: inPdsGoalCalcIneligibleGroup,
+      },
+      {
+        id: 'partnerReminders',
+        title: t('Ministry Partner Reminders'),
+        hideItem: hasNoStaffAccount,
+      },
+    ].filter((item) => !item.hideItem);
+  }, [
+    t,
+    inAsrIneligibleGroup,
+    inSalaryCalcIneligibleGroup,
+    inMhaIneligibleGroup,
+    inMpdGoalCalcIneligibleGroup,
+    inPdsGoalCalcIneligibleGroup,
+    hasNoStaffAccount,
+    hcmLoading,
+  ]);
 }

@@ -236,14 +236,14 @@ describe('useUsStaffGroups', () => {
       inAsrIneligibleGroup: false,
       inSalaryCalcIneligibleGroup: false,
       inMhaIneligibleGroup: false,
-      inMpdGoalCalcIneligibleGroup: false,
-      inPdsGoalCalcIneligibleGroup: false,
+      inMpdGoalCalcIneligibleGroup: true,
+      inPdsGoalCalcIneligibleGroup: true,
       hasNoStaffAccount: false,
       loading: false,
     });
   });
 
-  it('defaults all to false when array is empty', async () => {
+  it('fails closed on goal calculators when array is empty', async () => {
     const { result } = renderUseUsStaffGroups({ hcm: [] } as HcmQuery);
 
     await waitFor(() => {
@@ -251,8 +251,8 @@ describe('useUsStaffGroups', () => {
         inAsrIneligibleGroup: false,
         inSalaryCalcIneligibleGroup: false,
         inMhaIneligibleGroup: false,
-        inMpdGoalCalcIneligibleGroup: false,
-        inPdsGoalCalcIneligibleGroup: false,
+        inMpdGoalCalcIneligibleGroup: true,
+        inPdsGoalCalcIneligibleGroup: true,
         hasNoStaffAccount: false,
         loading: false,
       });
@@ -337,6 +337,39 @@ describe('useUsStaffGroups', () => {
           peopleGroupSupportType: PeopleGroupSupportTypeEnum.None,
         }),
       );
+
+      await waitFor(() => {
+        expect(result.current.inMpdGoalCalcIneligibleGroup).toBe(true);
+        expect(result.current.inPdsGoalCalcIneligibleGroup).toBe(true);
+      });
+    });
+
+    it('fails closed when peopleGroupSupportType is null', async () => {
+      const { result } = renderHook(() => useUsStaffGroups(), {
+        wrapper: ({ children }: { children: ReactElement }) => (
+          <GqlMockedProvider<{ Hcm: HcmQuery }>
+            mocks={{
+              Hcm: {
+                hcm: [
+                  {
+                    asrEit: { asrEligibility: true },
+                    salaryRequestEligible: true,
+                    mhaEit: { mhaEligibility: true },
+                    staffInfo: {
+                      userPersonType: UserPersonTypeEnum.EmployeeStaff,
+                      peopleGroupSupportType: null,
+                      assignmentStatus:
+                        AssignmentStatusEnum.ActivePayrollEligible,
+                    },
+                  },
+                ],
+              } as HcmQuery,
+            }}
+          >
+            {children}
+          </GqlMockedProvider>
+        ),
+      });
 
       await waitFor(() => {
         expect(result.current.inMpdGoalCalcIneligibleGroup).toBe(true);

@@ -55,7 +55,6 @@ export function useUsStaffGroups(skip?: boolean) {
     ) ?? false;
 
   const userSupportType = user?.staffInfo?.peopleGroupSupportType;
-  const userSupportTypeKnown = userSupportType !== undefined;
 
   const inAsrIneligibleGroup = hasNoStaffAccount || allAsrIneligible;
   const inSalaryCalcIneligibleGroup =
@@ -63,12 +62,10 @@ export function useUsStaffGroups(skip?: boolean) {
   const inMhaIneligibleGroup = hasNoStaffAccount || allMhaIneligible;
   const inMpdGoalCalcIneligibleGroup =
     hasNoStaffAccount ||
-    (userSupportTypeKnown &&
-      userSupportType !== PeopleGroupSupportTypeEnum.SupportedRmo);
+    userSupportType !== PeopleGroupSupportTypeEnum.SupportedRmo;
   const inPdsGoalCalcIneligibleGroup =
     hasNoStaffAccount ||
-    (userSupportTypeKnown &&
-      userSupportType !== PeopleGroupSupportTypeEnum.Designation);
+    userSupportType !== PeopleGroupSupportTypeEnum.Designation;
 
   return useMemo(
     () => ({
