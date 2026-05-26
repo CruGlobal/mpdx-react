@@ -14,6 +14,10 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import {
+  RequiredUserGroupEnum,
+  UserTypeAccess,
+} from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { ReportPageWrapper } from 'src/components/Shared/styledComponents/ReportPageWrapper';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getAppName } from 'src/lib/getAppName';
@@ -34,33 +38,35 @@ const PdsGoalCalculatorPage: React.FC = () => {
         <title>{`${appName} | ${t('HR Tools | Paid with Designation Support Goal Calculator')}`}</title>
       </Head>
       {accountListId ? (
-        <ReportPageWrapper>
-          <SidePanelsLayout
-            isScrollBox={false}
-            leftPanel={
-              <MultiPageMenu
-                isOpen={isNavListOpen}
-                selectedId="pdsGoalCalculator"
-                onClose={handleNavListToggle}
-                navType={NavTypeEnum.HrTools}
-              />
-            }
-            leftOpen={isNavListOpen}
-            leftWidth="290px"
-            headerHeight={multiPageHeaderHeight}
-            mainContent={
-              <>
-                <MultiPageHeader
-                  isNavListOpen={isNavListOpen}
-                  onNavListToggle={handleNavListToggle}
-                  title={t('Paid with Designation Support Goal Calculator')}
-                  headerType={HeaderTypeEnum.HrTools}
+        <UserTypeAccess requireUserGroups={RequiredUserGroupEnum.PdsGoalCalc}>
+          <ReportPageWrapper>
+            <SidePanelsLayout
+              isScrollBox={false}
+              leftPanel={
+                <MultiPageMenu
+                  isOpen={isNavListOpen}
+                  selectedId="pdsGoalCalculator"
+                  onClose={handleNavListToggle}
+                  navType={NavTypeEnum.HrTools}
                 />
-                <PdsGoalsList />
-              </>
-            }
-          />
-        </ReportPageWrapper>
+              }
+              leftOpen={isNavListOpen}
+              leftWidth="290px"
+              headerHeight={multiPageHeaderHeight}
+              mainContent={
+                <>
+                  <MultiPageHeader
+                    isNavListOpen={isNavListOpen}
+                    onNavListToggle={handleNavListToggle}
+                    title={t('Paid with Designation Support Goal Calculator')}
+                    headerType={HeaderTypeEnum.HrTools}
+                  />
+                  <PdsGoalsList />
+                </>
+              }
+            />
+          </ReportPageWrapper>
+        </UserTypeAccess>
       ) : (
         <Loading loading />
       )}

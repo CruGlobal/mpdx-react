@@ -6,7 +6,10 @@ import { render } from '__tests__/util/testingLibraryReactMock';
 import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
-import { UserTypeEnum } from 'src/graphql/types.generated';
+import {
+  PeopleGroupSupportTypeEnum,
+  UserTypeEnum,
+} from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { RequiredUserGroupEnum, UserTypeAccess } from './UserTypeAccess';
 
@@ -19,6 +22,7 @@ interface TestComponentProps {
   requireUserGroups?: RequiredUserGroupEnum;
   asrEligible?: boolean;
   salaryRequestEligible?: boolean;
+  peopleGroupSupportType?: PeopleGroupSupportTypeEnum;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
@@ -28,6 +32,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   requireUserGroups,
   asrEligible = true,
   salaryRequestEligible = true,
+  peopleGroupSupportType = PeopleGroupSupportTypeEnum.SupportedRmo,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
@@ -42,6 +47,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
               {
                 asrEit: { asrEligibility: asrEligible },
                 salaryRequestEligible,
+                staffInfo: { peopleGroupSupportType },
               },
             ],
           },
@@ -116,6 +122,64 @@ describe('UserTypeAccess', () => {
       />,
     );
 
+    expect(
+      await findByRole('heading', {
+        name: 'Access to this feature is limited.',
+      }),
+    ).toBeInTheDocument();
+    expect(
+      getByText(
+        /our records show that you are not part of the user group that has access to this feature/i,
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('should render child component when user is in the MPD goal calculator group (SupportedRmo)', async () => {
+    const { findByText } = render(
+      <TestComponent
+        requireUserGroups={RequiredUserGroupEnum.MpdGoalCalc}
+        peopleGroupSupportType={PeopleGroupSupportTypeEnum.SupportedRmo}
+      />,
+    );
+    expect(await findByText('Test Content')).toBeInTheDocument();
+  });
+
+  it('should render LimitedAccess when user is ineligible for the MPD goal calculator', async () => {
+    const { findByRole, getByText } = render(
+      <TestComponent
+        requireUserGroups={RequiredUserGroupEnum.MpdGoalCalc}
+        peopleGroupSupportType={PeopleGroupSupportTypeEnum.Designation}
+      />,
+    );
+    expect(
+      await findByRole('heading', {
+        name: 'Access to this feature is limited.',
+      }),
+    ).toBeInTheDocument();
+    expect(
+      getByText(
+        /our records show that you are not part of the user group that has access to this feature/i,
+      ),
+    ).toBeInTheDocument();
+  });
+
+  it('should render child component when user is in the PDS goal calculator group (Designation)', async () => {
+    const { findByText } = render(
+      <TestComponent
+        requireUserGroups={RequiredUserGroupEnum.PdsGoalCalc}
+        peopleGroupSupportType={PeopleGroupSupportTypeEnum.Designation}
+      />,
+    );
+    expect(await findByText('Test Content')).toBeInTheDocument();
+  });
+
+  it('should render LimitedAccess when user is ineligible for the PDS goal calculator', async () => {
+    const { findByRole, getByText } = render(
+      <TestComponent
+        requireUserGroups={RequiredUserGroupEnum.PdsGoalCalc}
+        peopleGroupSupportType={PeopleGroupSupportTypeEnum.SupportedRmo}
+      />,
+    );
     expect(
       await findByRole('heading', {
         name: 'Access to this feature is limited.',
