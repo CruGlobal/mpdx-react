@@ -70,9 +70,7 @@ const TestWrapper: React.FC<TestWrapperProps> = ({ asrMocks }) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
       <SnackbarProvider>
-        <GqlMockedProvider<AboutFormMocks>
-          mocks={{ ...hcmMocks, ...asrMocks }}
-        >
+        <GqlMockedProvider<AboutFormMocks> mocks={{ ...hcmMocks, ...asrMocks }}>
           <AdditionalSalaryRequestProvider>
             <AboutForm />
           </AdditionalSalaryRequestProvider>
