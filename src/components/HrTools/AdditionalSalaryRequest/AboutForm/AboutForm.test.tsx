@@ -1,6 +1,6 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
@@ -64,13 +64,17 @@ type AboutFormMocks = {
 
 interface TestWrapperProps {
   asrMocks?: Partial<AboutFormMocks>;
+  onCall?: jest.Mock;
 }
 
-const TestWrapper: React.FC<TestWrapperProps> = ({ asrMocks }) => (
+const TestWrapper: React.FC<TestWrapperProps> = ({ asrMocks, onCall }) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
       <SnackbarProvider>
-        <GqlMockedProvider<AboutFormMocks> mocks={{ ...hcmMocks, ...asrMocks }}>
+        <GqlMockedProvider<AboutFormMocks>
+          mocks={{ ...hcmMocks, ...asrMocks }}
+          onCall={onCall}
+        >
           <AdditionalSalaryRequestProvider>
             <AboutForm />
           </AdditionalSalaryRequestProvider>
@@ -113,16 +117,22 @@ describe('AboutForm', () => {
   });
 
   it('should hide financial data when no request has been created yet', async () => {
+    const mutationSpy = jest.fn();
     const { findByText, queryByText } = render(
       <TestWrapper
         asrMocks={{
           AdditionalSalaryRequest: { latestAdditionalSalaryRequest: null },
         }}
+        onCall={mutationSpy}
       />,
     );
 
-    // Wait for the query to resolve before asserting absence.
+    // The CardHeader name proves the form rendered; absence assertions below
+    // document that only the financial portion is hidden when no ASR exists.
     expect(await findByText('Doc, John')).toBeInTheDocument();
+    await waitFor(() =>
+      expect(mutationSpy).toHaveGraphqlOperation('AdditionalSalaryRequest'),
+    );
     expect(queryByText(/Primary Account Balance/i)).not.toBeInTheDocument();
     expect(
       queryByText(/Your Maximum Allowable Salary \(CAP\)/i),
