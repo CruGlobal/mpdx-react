@@ -7,15 +7,19 @@ type StatusSelectProps = Omit<SelectProps, 'value'> & {
   value: MinistryPartnerReminderFrequencyEnum;
 };
 
-const orderedStatuses: MinistryPartnerReminderFrequencyEnum[] = [
-  MinistryPartnerReminderFrequencyEnum.Monthly,
-  MinistryPartnerReminderFrequencyEnum.Bimonthly,
-  MinistryPartnerReminderFrequencyEnum.Quarterly,
-  MinistryPartnerReminderFrequencyEnum.SemiAnnually,
-  MinistryPartnerReminderFrequencyEnum.Annually,
-  MinistryPartnerReminderFrequencyEnum.DoNotRemind,
-  MinistryPartnerReminderFrequencyEnum.NotReminded,
-];
+const statusOrder: Record<MinistryPartnerReminderFrequencyEnum, number> = {
+  [MinistryPartnerReminderFrequencyEnum.Monthly]: 0,
+  [MinistryPartnerReminderFrequencyEnum.Bimonthly]: 1,
+  [MinistryPartnerReminderFrequencyEnum.Quarterly]: 2,
+  [MinistryPartnerReminderFrequencyEnum.SemiAnnually]: 3,
+  [MinistryPartnerReminderFrequencyEnum.Annually]: 4,
+  [MinistryPartnerReminderFrequencyEnum.DoNotRemind]: 5,
+  [MinistryPartnerReminderFrequencyEnum.NotReminded]: 6,
+};
+
+const orderedStatuses = Object.values(
+  MinistryPartnerReminderFrequencyEnum,
+).sort((a, b) => statusOrder[a] - statusOrder[b]);
 
 export const StatusSelect: React.FC<StatusSelectProps> = ({
   value,
@@ -23,7 +27,7 @@ export const StatusSelect: React.FC<StatusSelectProps> = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <FormControl size={'small'} sx={{ width: 150 }}>
+    <FormControl size={'small'} sx={{ width: '100%', minWidth: 200 }}>
       <Select {...props} value={value} sx={{ backgroundColor: 'common.white' }}>
         {orderedStatuses.map((status) => (
           <MenuItem key={status} value={status}>
