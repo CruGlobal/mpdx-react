@@ -7,6 +7,16 @@ type StatusSelectProps = Omit<SelectProps, 'value'> & {
   value: MinistryPartnerReminderFrequencyEnum;
 };
 
+const orderedStatuses: MinistryPartnerReminderFrequencyEnum[] = [
+  MinistryPartnerReminderFrequencyEnum.Monthly,
+  MinistryPartnerReminderFrequencyEnum.Bimonthly,
+  MinistryPartnerReminderFrequencyEnum.Quarterly,
+  MinistryPartnerReminderFrequencyEnum.SemiAnnually,
+  MinistryPartnerReminderFrequencyEnum.Annually,
+  MinistryPartnerReminderFrequencyEnum.DoNotRemind,
+  MinistryPartnerReminderFrequencyEnum.NotReminded,
+];
+
 export const StatusSelect: React.FC<StatusSelectProps> = ({
   value,
   ...props
@@ -15,7 +25,7 @@ export const StatusSelect: React.FC<StatusSelectProps> = ({
   return (
     <FormControl size={'small'} sx={{ width: 150 }}>
       <Select {...props} value={value} sx={{ backgroundColor: 'common.white' }}>
-        {Object.values(MinistryPartnerReminderFrequencyEnum).map((status) => (
+        {orderedStatuses.map((status) => (
           <MenuItem key={status} value={status}>
             {getLocalizedReminderStatus(t, status)}
           </MenuItem>
