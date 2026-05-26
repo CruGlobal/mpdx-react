@@ -10,13 +10,13 @@ describe('getLocalizedReminderStatus', () => {
     [MinistryPartnerReminderFrequencyEnum.Quarterly, 'Quarterly'],
     [MinistryPartnerReminderFrequencyEnum.SemiAnnually, 'Semi-Annually'],
     [MinistryPartnerReminderFrequencyEnum.Annually, 'Annually'],
-    [MinistryPartnerReminderFrequencyEnum.DoNotRemind, 'Do Not Remind'],
-    [MinistryPartnerReminderFrequencyEnum.NotReminded, 'Not Reminded'],
+    [MinistryPartnerReminderFrequencyEnum.DoNotRemind, 'Requested No Reminder'],
+    [MinistryPartnerReminderFrequencyEnum.NotReminded, 'Not Yet Enrolled'],
   ])('maps %s to "%s"', (status, expected) => {
     expect(getLocalizedReminderStatus(t, status)).toBe(expected);
   });
 
-  it('falls back to "Not Reminded" for undefined', () => {
-    expect(getLocalizedReminderStatus(t, undefined)).toBe('Not Reminded');
+  it('falls back to "Not Yet Enrolled" for undefined', () => {
+    expect(getLocalizedReminderStatus(t, undefined)).toBe('Not Yet Enrolled');
   });
 });
