@@ -15,9 +15,8 @@ export const AboutForm: React.FC = () => {
   const theme = useTheme();
 
   const { name, accountNumber, primaryAccountBalance } = useFormUserInfo();
-  const individualCap =
-    requestData?.latestAdditionalSalaryRequest?.calculations.currentSalaryCap ??
-    0;
+  const latestRequest = requestData?.latestAdditionalSalaryRequest;
+  const individualCap = latestRequest?.calculations.currentSalaryCap ?? 0;
 
   return (
     <AdditionalSalaryRequestSection title={getHeader(currentIndex)}>
@@ -96,7 +95,7 @@ export const AboutForm: React.FC = () => {
         titleTwo={t('Your Maximum Allowable Salary (CAP)')}
         amountTwo={individualCap}
         spouseComponent={<SpouseComponent />}
-        showContent
+        showContent={!!latestRequest}
       />
     </AdditionalSalaryRequestSection>
   );
