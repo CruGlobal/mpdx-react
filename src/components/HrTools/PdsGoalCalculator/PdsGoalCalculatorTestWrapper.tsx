@@ -6,6 +6,7 @@ import { SnackbarProvider } from 'notistack';
 import { DeepPartial } from 'ts-essentials';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider, gqlMock } from '__tests__/util/graphqlMocking';
+import { AutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   DesignationSupportFormType,
@@ -285,12 +286,16 @@ export const PdsGoalCalculatorTestWrapper = <
             )}
             onCall={onCall}
           >
-            {withProvider ? (
-              <PdsGoalCalculatorProvider>{children}</PdsGoalCalculatorProvider>
-            ) : (
-              // eslint-disable-next-line react/jsx-no-useless-fragment
-              <>{children}</>
-            )}
+            <AutosaveForm>
+              {withProvider ? (
+                <PdsGoalCalculatorProvider>
+                  {children}
+                </PdsGoalCalculatorProvider>
+              ) : (
+                // eslint-disable-next-line react/jsx-no-useless-fragment
+                <>{children}</>
+              )}
+            </AutosaveForm>
           </GqlMockedProvider>
         </SnackbarProvider>
       </TestRouter>

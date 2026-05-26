@@ -212,6 +212,24 @@ describe('PanelLayout', () => {
     expect(queryByRole('progressbar')).not.toBeInTheDocument();
   });
 
+  it('disables an icon button when disabled is true', () => {
+    const disabledIcons: IconPanelItem[] = [
+      {
+        key: 'disabled-icon',
+        icon: <HomeIcon />,
+        label: 'Disabled Icon',
+        disabled: true,
+        onClick: jest.fn(),
+      },
+    ];
+
+    const { getByRole } = render(
+      <TestComponent panelType={PanelTypeEnum.Other} icons={disabledIcons} />,
+    );
+
+    expect(getByRole('button', { name: 'Disabled Icon' })).toBeDisabled();
+  });
+
   it('handles empty icon panel items gracefully', () => {
     const { getByTestId, queryAllByRole } = render(
       <TestComponent
