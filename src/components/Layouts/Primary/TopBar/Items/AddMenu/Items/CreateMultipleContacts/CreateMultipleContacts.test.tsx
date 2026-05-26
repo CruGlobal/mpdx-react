@@ -176,6 +176,14 @@ describe('CreateMultipleContacts', () => {
         contactId: 'contact-1',
         primaryAddressId: 'address-1',
       });
+
+      expect(router.push).toHaveBeenCalledWith({
+        pathname: '/accountLists/[accountListId]/contacts',
+        query: {
+          accountListId,
+          filters: JSON.stringify({ ids: ['contact-1'] }),
+        },
+      });
     }, 20000);
 
     it('creates one referral', async () => {
@@ -373,13 +381,15 @@ describe('CreateMultipleContacts', () => {
       const { getAllByRole, getByRole } = render(
         <SnackbarProvider>
           <ThemeProvider theme={theme}>
-            <GqlMockedProvider onCall={mutationSpy}>
-              <CreateMultipleContacts
-                accountListId={accountListId}
-                handleClose={handleClose}
-                rows={3}
-              />
-            </GqlMockedProvider>
+            <TestRouter router={router}>
+              <GqlMockedProvider onCall={mutationSpy}>
+                <CreateMultipleContacts
+                  accountListId={accountListId}
+                  handleClose={handleClose}
+                  rows={3}
+                />
+              </GqlMockedProvider>
+            </TestRouter>
           </ThemeProvider>
         </SnackbarProvider>,
       );
