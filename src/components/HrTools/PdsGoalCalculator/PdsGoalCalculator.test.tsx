@@ -194,7 +194,9 @@ describe('PdsGoalCalculator', () => {
       </PdsGoalCalculatorTestWrapper>,
     );
 
-    userEvent.click(await findByRole('button', { name: 'Summary Report' }));
+    const summaryButton = await findByRole('button', { name: 'Summary Report' });
+    await waitFor(() => expect(summaryButton).toBeEnabled());
+    userEvent.click(summaryButton);
 
     const finishButton = await findByRole('button', {
       name: /Finish & Apply Goal/i,
