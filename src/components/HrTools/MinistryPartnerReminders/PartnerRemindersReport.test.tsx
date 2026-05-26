@@ -125,17 +125,10 @@ describe('PartnerRemindersReport', () => {
     await waitFor(() => expect(onNavListToggle).toHaveBeenCalled());
   });
 
-  it('should show saved snackbar when save is clicked with no changes', async () => {
-    mockEnqueue.mockClear();
-    const { getByRole } = render(<TestComponent />);
+  it('should hide save button when no changes are made', async () => {
+    const { queryByRole } = render(<TestComponent />);
 
-    userEvent.click(getByRole('button', { name: 'Save' }));
-
-    await waitFor(() =>
-      expect(mockEnqueue).toHaveBeenCalledWith('No changes have been made', {
-        variant: 'info',
-      }),
-    );
+    expect(queryByRole('button', { name: 'Save' })).not.toBeInTheDocument();
   });
 
   it('should render reminder data in table', async () => {
