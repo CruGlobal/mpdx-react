@@ -306,6 +306,20 @@ describe('EditPartnershipInfoModal', () => {
     expect(handleClose).toHaveBeenCalled();
   });
 
+  it('should not show remove commitment warning when switching to Partner - Financial', async () => {
+    const { getByLabelText, getByText, getByRole, findByText, queryByTestId } =
+      render(<Components />);
+    const statusInput = getByLabelText('Status');
+
+    userEvent.click(statusInput);
+    userEvent.click(await findByText('Ask in Future'));
+    userEvent.click(getByRole('button', { name: 'No' }));
+
+    userEvent.click(statusInput);
+    userEvent.click(getByText('Partner - Financial'));
+    expect(queryByTestId('removeCommitmentMessage')).not.toBeInTheDocument();
+  });
+
   it('should handle editing status | Financial', async () => {
     const { getByLabelText, getByText } = render(<Components />);
     const statusInput = getByLabelText('Status');
