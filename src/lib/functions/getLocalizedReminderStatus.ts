@@ -17,9 +17,9 @@ export const getLocalizedReminderStatus = (
     case MinistryPartnerReminderFrequencyEnum.Annually:
       return t('Annually');
     case MinistryPartnerReminderFrequencyEnum.DoNotRemind:
-      return t('Do Not Remind');
+      return t('Requested No Reminder');
     case MinistryPartnerReminderFrequencyEnum.NotReminded:
     default:
-      return t('Not Reminded');
+      return t('Not Yet Enrolled');
   }
 };
