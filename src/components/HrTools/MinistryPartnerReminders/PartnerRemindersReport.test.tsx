@@ -151,7 +151,7 @@ describe('PartnerRemindersReport', () => {
     expect(names).toHaveLength(2);
     expect(getAllByText('Jan 15, 2023')).toHaveLength(2);
     expect(getAllByText('Feb 15, 2023')).toHaveLength(2);
-    expect(getByText('Not Reminded')).toBeInTheDocument();
+    expect(getByText('Not Yet Enrolled')).toBeInTheDocument();
   });
 
   it('should call update mutation when changing reminder status and clicking save', async () => {
