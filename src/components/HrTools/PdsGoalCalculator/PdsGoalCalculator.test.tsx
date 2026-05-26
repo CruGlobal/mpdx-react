@@ -50,6 +50,16 @@ describe('PdsGoalCalculator', () => {
     expect(await findByRole('button', { name: /continue/i })).toBeDisabled();
   });
 
+  it('disables the Continue button when Pay Type is not selected', async () => {
+    const { findByRole } = render(
+      <PdsGoalCalculatorTestWrapper calculationMock={{ salaryOrHourly: null }}>
+        <PdsGoalCalculator />
+      </PdsGoalCalculatorTestWrapper>,
+    );
+
+    expect(await findByRole('button', { name: /continue/i })).toBeDisabled();
+  });
+
   it('re-enables the Continue button after the user fills in the missing field', async () => {
     const { findByRole } = render(
       <PdsGoalCalculatorTestWrapper calculationMock={{ name: '' }}>
