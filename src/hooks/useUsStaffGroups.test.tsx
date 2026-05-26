@@ -78,6 +78,8 @@ describe('useUsStaffGroups', () => {
         inAsrIneligibleGroup: false,
         inSalaryCalcIneligibleGroup: false,
         inMhaIneligibleGroup: false,
+        inMpdGoalCalcIneligibleGroup: false,
+        inPdsGoalCalcIneligibleGroup: true,
         hasNoStaffAccount: false,
         loading: false,
       });
@@ -94,6 +96,8 @@ describe('useUsStaffGroups', () => {
         inAsrIneligibleGroup: false,
         inSalaryCalcIneligibleGroup: true,
         inMhaIneligibleGroup: false,
+        inMpdGoalCalcIneligibleGroup: false,
+        inPdsGoalCalcIneligibleGroup: true,
         hasNoStaffAccount: false,
         loading: false,
       });
@@ -112,6 +116,8 @@ describe('useUsStaffGroups', () => {
         inAsrIneligibleGroup: false,
         inSalaryCalcIneligibleGroup: false,
         inMhaIneligibleGroup: true,
+        inMpdGoalCalcIneligibleGroup: false,
+        inPdsGoalCalcIneligibleGroup: true,
         hasNoStaffAccount: false,
         loading: false,
       });
@@ -152,6 +158,8 @@ describe('useUsStaffGroups', () => {
         inAsrIneligibleGroup: false,
         inSalaryCalcIneligibleGroup: false,
         inMhaIneligibleGroup: false,
+        inMpdGoalCalcIneligibleGroup: false,
+        inPdsGoalCalcIneligibleGroup: true,
         hasNoStaffAccount: false,
         loading: false,
       });
@@ -228,6 +236,8 @@ describe('useUsStaffGroups', () => {
       inAsrIneligibleGroup: false,
       inSalaryCalcIneligibleGroup: false,
       inMhaIneligibleGroup: false,
+      inMpdGoalCalcIneligibleGroup: false,
+      inPdsGoalCalcIneligibleGroup: false,
       hasNoStaffAccount: false,
       loading: false,
     });
@@ -241,6 +251,8 @@ describe('useUsStaffGroups', () => {
         inAsrIneligibleGroup: false,
         inSalaryCalcIneligibleGroup: false,
         inMhaIneligibleGroup: false,
+        inMpdGoalCalcIneligibleGroup: false,
+        inPdsGoalCalcIneligibleGroup: false,
         hasNoStaffAccount: false,
         loading: false,
       });
@@ -271,8 +283,78 @@ describe('useUsStaffGroups', () => {
         inAsrIneligibleGroup: true,
         inSalaryCalcIneligibleGroup: true,
         inMhaIneligibleGroup: true,
+        inMpdGoalCalcIneligibleGroup: true,
+        inPdsGoalCalcIneligibleGroup: true,
         hasNoStaffAccount: true,
         loading: false,
+      });
+    });
+  });
+
+  describe('Goal Calculator eligibility', () => {
+    it('marks user as PDS goal calc ineligible and MPD goal calc eligible when peopleGroupSupportType is SupportedRmo', async () => {
+      const { result } = renderUseUsStaffGroups(
+        buildHcmMock({
+          peopleGroupSupportType: PeopleGroupSupportTypeEnum.SupportedRmo,
+        }),
+      );
+
+      await waitFor(() => {
+        expect(result.current.inMpdGoalCalcIneligibleGroup).toBe(false);
+        expect(result.current.inPdsGoalCalcIneligibleGroup).toBe(true);
+      });
+    });
+
+    it('marks user as MPD goal calc ineligible and PDS goal calc eligible when peopleGroupSupportType is Designation', async () => {
+      const { result } = renderUseUsStaffGroups(
+        buildHcmMock({
+          peopleGroupSupportType: PeopleGroupSupportTypeEnum.Designation,
+        }),
+      );
+
+      await waitFor(() => {
+        expect(result.current.inMpdGoalCalcIneligibleGroup).toBe(true);
+        expect(result.current.inPdsGoalCalcIneligibleGroup).toBe(false);
+      });
+    });
+
+    it('marks user as ineligible for both goal calcs when peopleGroupSupportType is SupportedNonRmo', async () => {
+      const { result } = renderUseUsStaffGroups(
+        buildHcmMock({
+          peopleGroupSupportType: PeopleGroupSupportTypeEnum.SupportedNonRmo,
+        }),
+      );
+
+      await waitFor(() => {
+        expect(result.current.inMpdGoalCalcIneligibleGroup).toBe(true);
+        expect(result.current.inPdsGoalCalcIneligibleGroup).toBe(true);
+      });
+    });
+
+    it('marks user as ineligible for both goal calcs when peopleGroupSupportType is None', async () => {
+      const { result } = renderUseUsStaffGroups(
+        buildHcmMock({
+          peopleGroupSupportType: PeopleGroupSupportTypeEnum.None,
+        }),
+      );
+
+      await waitFor(() => {
+        expect(result.current.inMpdGoalCalcIneligibleGroup).toBe(true);
+        expect(result.current.inPdsGoalCalcIneligibleGroup).toBe(true);
+      });
+    });
+
+    it('uses the logged-in user for goal calc eligibility even when a spouse is present with a different support type', async () => {
+      const { result } = renderUseUsStaffGroups(
+        buildHcmMock({
+          peopleGroupSupportType: PeopleGroupSupportTypeEnum.Designation,
+          includeSpouse: true,
+        }),
+      );
+
+      await waitFor(() => {
+        expect(result.current.inMpdGoalCalcIneligibleGroup).toBe(true);
+        expect(result.current.inPdsGoalCalcIneligibleGroup).toBe(false);
       });
     });
   });

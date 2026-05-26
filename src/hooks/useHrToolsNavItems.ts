@@ -10,6 +10,8 @@ export function useHrToolsNavItems(): NavItems[] {
     inAsrIneligibleGroup,
     inSalaryCalcIneligibleGroup,
     inMhaIneligibleGroup,
+    inMpdGoalCalcIneligibleGroup,
+    inPdsGoalCalcIneligibleGroup,
     hasNoStaffAccount,
   } = useUsStaffGroups();
 
@@ -27,6 +29,7 @@ export function useHrToolsNavItems(): NavItems[] {
     {
       id: 'goalCalculator',
       title: t('MPD Goal Calculator'),
+      hideItem: inMpdGoalCalcIneligibleGroup,
     },
     {
       id: 'mhaCalculator',
@@ -41,6 +44,7 @@ export function useHrToolsNavItems(): NavItems[] {
     {
       id: 'pdsGoalCalculator',
       title: t('Paid with Designation Support Goal Calculator'),
+      hideItem: inPdsGoalCalcIneligibleGroup,
     },
     {
       id: 'partnerReminders',
@@ -56,6 +60,8 @@ export function useHrToolsNavItems(): NavItems[] {
       inAsrIneligibleGroup,
       inSalaryCalcIneligibleGroup,
       inMhaIneligibleGroup,
+      inMpdGoalCalcIneligibleGroup,
+      inPdsGoalCalcIneligibleGroup,
       hasNoStaffAccount,
     ],
   );

@@ -7,8 +7,12 @@ import { session } from '__tests__/fixtures/session';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetDesignationAccountsQuery } from 'src/components/EditDonationModal/EditDonationModal.generated';
+import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
-import { UserTypeEnum } from 'src/graphql/types.generated';
+import {
+  PeopleGroupSupportTypeEnum,
+  UserTypeEnum,
+} from 'src/graphql/types.generated';
 import { UserOptionQuery } from 'src/hooks/UserPreference.generated';
 import theme from 'src/theme';
 import { MultiPageMenu, NavTypeEnum } from './MultiPageMenu';
@@ -519,5 +523,83 @@ describe('MultiPageMenu', () => {
       expect(getByText('Additional Salary Request')).toBeInTheDocument();
       expect(getByText('Ministry Partner Reminders')).toBeInTheDocument();
     });
+  });
+
+  it('hides the PDS Goal Calculator nav item for SupportedRmo (senior) staff', async () => {
+    const { getByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider<{ Hcm: HcmQuery }>
+            mocks={{
+              Hcm: {
+                hcm: [
+                  {
+                    staffInfo: {
+                      peopleGroupSupportType:
+                        PeopleGroupSupportTypeEnum.SupportedRmo,
+                    },
+                  },
+                ],
+              },
+            }}
+          >
+            <MultiPageMenu
+              selectedId={selected}
+              isOpen={true}
+              onClose={() => {}}
+              designationAccounts={[]}
+              setDesignationAccounts={() => {}}
+              navType={NavTypeEnum.HrTools}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(
+        queryByText('Paid with Designation Support Goal Calculator'),
+      ).not.toBeInTheDocument();
+    });
+    expect(getByText('MPD Goal Calculator')).toBeInTheDocument();
+  });
+
+  it('hides the MPD Goal Calculator nav item for Designation (PDS) staff', async () => {
+    const { getByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider<{ Hcm: HcmQuery }>
+            mocks={{
+              Hcm: {
+                hcm: [
+                  {
+                    staffInfo: {
+                      peopleGroupSupportType:
+                        PeopleGroupSupportTypeEnum.Designation,
+                    },
+                  },
+                ],
+              },
+            }}
+          >
+            <MultiPageMenu
+              selectedId={selected}
+              isOpen={true}
+              onClose={() => {}}
+              designationAccounts={[]}
+              setDesignationAccounts={() => {}}
+              navType={NavTypeEnum.HrTools}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    await waitFor(() => {
+      expect(queryByText('MPD Goal Calculator')).not.toBeInTheDocument();
+    });
+    expect(
+      getByText('Paid with Designation Support Goal Calculator'),
+    ).toBeInTheDocument();
   });
 });
