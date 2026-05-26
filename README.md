@@ -37,20 +37,21 @@ node --version
 
 Because we store the yarn cache in the GitHub repo, we use Git LFS to manage these large zip files.
 
-**Install Git LFS (if not installed):**
+**Install and initialize Git LFS (if not installed):**
 
 ```bash
 brew install git-lfs
+git lfs install
 ```
 
-Alternatively, download from the [official site](https://git-lfs.com/).
+Alternatively, download from the [official site](https://git-lfs.com/) and run `git lfs install` after installing.
 
-**Pull LFS files**
+> **Note:** `git lfs install` must be run before cloning so that Git automatically pulls LFS-tracked files (the yarn cache) during checkout. If you already cloned without LFS, run `git lfs pull` to fetch the missing files.
+
+**Pull LFS files (if you cloned before installing LFS):**
 
 ```bash
-# Fetch the LFS files
 git lfs pull
-
 ```
 
 ### Running the local server
