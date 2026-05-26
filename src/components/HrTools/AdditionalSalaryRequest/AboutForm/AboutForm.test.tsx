@@ -6,6 +6,7 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
 import { HcmQuery } from '../../Shared/HcmData/Hcm.generated';
+import { AdditionalSalaryRequestQuery } from '../AdditionalSalaryRequest.generated';
 import { AdditionalSalaryRequestProvider } from '../Shared/AdditionalSalaryRequestContext';
 import { AboutForm } from './AboutForm';
 
@@ -29,7 +30,7 @@ const router = {
   isReady: true,
 };
 
-const mocks = {
+const hcmMocks = {
   Hcm: {
     hcm: [
       {
@@ -56,11 +57,22 @@ const mocks = {
   },
 };
 
-const TestWrapper: React.FC = () => (
+type AboutFormMocks = {
+  Hcm: HcmQuery;
+  AdditionalSalaryRequest: AdditionalSalaryRequestQuery;
+};
+
+interface TestWrapperProps {
+  asrMocks?: Partial<AboutFormMocks>;
+}
+
+const TestWrapper: React.FC<TestWrapperProps> = ({ asrMocks }) => (
   <ThemeProvider theme={theme}>
     <TestRouter router={router}>
       <SnackbarProvider>
-        <GqlMockedProvider<{ Hcm: HcmQuery }> mocks={mocks}>
+        <GqlMockedProvider<AboutFormMocks>
+          mocks={{ ...hcmMocks, ...asrMocks }}
+        >
           <AdditionalSalaryRequestProvider>
             <AboutForm />
           </AdditionalSalaryRequestProvider>
@@ -86,15 +98,37 @@ describe('AboutForm', () => {
     ).toBeInTheDocument();
   });
 
-  it('should display user information and financial data', async () => {
+  it('should display user information', async () => {
     const { findByText, getByText } = render(<TestWrapper />);
 
     expect(await findByText('Doc, John')).toBeInTheDocument();
     expect(getByText('00123456')).toBeInTheDocument();
-    expect(getByText(/Primary Account Balance/i)).toBeInTheDocument();
+  });
+
+  it('should display financial data when a request exists', async () => {
+    const { findByText } = render(<TestWrapper />);
+
+    expect(await findByText(/Primary Account Balance/i)).toBeInTheDocument();
     expect(
-      getByText(/Your Maximum Allowable Salary \(CAP\)/i),
+      await findByText(/Your Maximum Allowable Salary \(CAP\)/i),
     ).toBeInTheDocument();
+  });
+
+  it('should hide financial data when no request has been created yet', async () => {
+    const { findByText, queryByText } = render(
+      <TestWrapper
+        asrMocks={{
+          AdditionalSalaryRequest: { latestAdditionalSalaryRequest: null },
+        }}
+      />,
+    );
+
+    // Wait for the query to resolve before asserting absence.
+    expect(await findByText('Doc, John')).toBeInTheDocument();
+    expect(queryByText(/Primary Account Balance/i)).not.toBeInTheDocument();
+    expect(
+      queryByText(/Your Maximum Allowable Salary \(CAP\)/i),
+    ).not.toBeInTheDocument();
   });
 
   it('should have Progressive Approvals link', () => {
