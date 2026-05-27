@@ -130,44 +130,6 @@ describe('Calculation', () => {
     expect(getByRole('button', { name: /submit/i })).toBeInTheDocument();
   });
 
-  it('should show validation error when inputs are invalid', async () => {
-    const { findByText, getByRole, findByRole, getByText } = render(
-      <TestComponent
-        contextValue={{
-          ...defaultContext,
-          requestData: {
-            ...mockMHARequest,
-            id: 'request-id',
-          },
-        }}
-      />,
-    );
-
-    const row = await findByRole('row', {
-      name: /average monthly amount for unexpected/i,
-    });
-    const input = within(row).getByPlaceholderText(/\$0/i);
-
-    userEvent.type(input, '100');
-    expect(input).toHaveValue('100');
-    userEvent.clear(input);
-    expect(input).toHaveValue('');
-
-    input.focus();
-    userEvent.tab();
-
-    expect(await findByText('Required field.')).toBeInTheDocument();
-
-    const submitButton = getByRole('button', { name: /submit/i });
-
-    userEvent.click(submitButton);
-
-    expect(await findByRole('alert')).toBeInTheDocument();
-    expect(
-      getByText('Please enter a value for all required fields.'),
-    ).toBeInTheDocument();
-  });
-
   it('should show validation error when checkbox is not checked', async () => {
     const { findByText, findByRole, getByText } = render(
       <TestComponent contextValue={defaultContext} />,
@@ -230,34 +192,6 @@ describe('Calculation', () => {
     expect(await findByText('Invalid email address.')).toBeInTheDocument();
   });
 
-  it('shows validation error when input is 0', async () => {
-    const { findByRole, findByText } = render(
-      <TestComponent
-        contextValue={{
-          ...defaultContext,
-          requestData: {
-            ...mockMHARequest,
-            id: 'request-id',
-          },
-        }}
-      />,
-    );
-
-    const row = await findByRole('row', {
-      name: /average monthly amount for unexpected/i,
-    });
-    const input = within(row).getByPlaceholderText(/\$0/i);
-
-    userEvent.type(input, '0');
-
-    input.focus();
-    userEvent.tab();
-
-    expect(input).toHaveValue('$0.00');
-
-    expect(await findByText('Must be greater than $0.')).toBeInTheDocument();
-  });
-
   it('shows confirmation modal when submit is clicked', async () => {
     const { getByRole, getByText, findByRole } = render(
       <TestComponent
@@ -268,6 +202,7 @@ describe('Calculation', () => {
             id: 'request-id',
             requestAttributes: {
               ...mockMHARequest.requestAttributes,
+              rentOrOwn: MhaRentOrOwnEnum.Rent,
               iUnderstandMhaPolicy: false,
               phoneNumber: '1234567890',
               emailAddress: 'john.doe@cru.org',
@@ -296,16 +231,10 @@ describe('Calculation', () => {
     });
     const input4 = within(row4).getByPlaceholderText(/\$0/i);
 
-    const row5 = getByRole('row', {
-      name: /average monthly amount for unexpected/i,
-    });
-    const input5 = within(row5).getByPlaceholderText(/\$0/i);
-
     userEvent.type(input1, '1000');
     userEvent.type(input2, '200');
     userEvent.type(input3, '300');
     userEvent.type(input4, '400');
-    userEvent.type(input5, '500');
     const checkbox = getByRole('checkbox', {
       name: /i understand that my approved/i,
     });
@@ -337,7 +266,22 @@ describe('Calculation', () => {
     userEvent.click(confirmButton);
 
     await waitFor(() => {
-      expect(mutationSpy).toHaveBeenCalledTimes(6);
+      expect(mutationSpy).toHaveBeenCalledTimes(5); // 4 field updates + 1 submit
+    });
+
+    expect(updateMutation).toHaveBeenCalledWith({
+      variables: {
+        input: {
+          requestId: 'request-id',
+          requestAttributes: {
+            mortgageOrRentPayment: 1000,
+            furnitureCostsTwo: 200,
+            repairCosts: 300,
+            avgUtilityTwo: 400,
+            unexpectedExpenses: 0,
+          },
+        },
+      },
     });
 
     expect(mutationSpy).toHaveGraphqlOperation(
