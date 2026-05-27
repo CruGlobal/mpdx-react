@@ -20,6 +20,7 @@ export interface IconPanelItem {
   icon: React.ReactNode;
   label: string;
   isActive?: boolean;
+  disabled?: boolean;
   onClick: () => void;
 }
 
@@ -144,6 +145,7 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
                     key={item.key}
                     aria-label={item.label}
                     aria-current={item.isActive ? 'step' : undefined}
+                    disabled={item.disabled}
                     sx={{
                       color: item.isActive
                         ? theme.palette.mpdxBlue.main
