@@ -542,8 +542,9 @@ describe('MultiPageMenu', () => {
     expect(getByText('Ministry Partner Reminders')).toBeInTheDocument();
   });
 
-  // TODO: follow-up PR will replace the hardcoded MPD/PDS goal calc gating with a backend
-  // eligibility check. Until then, both nav items are hidden for everyone.
+  // TODO: follow-up PR will replace the hardcoded PDS goal calc gating with a backend
+  // eligibility check. Until then, the PDS nav item is hidden for everyone, and the MPD
+  // nav item is hidden when the user is not salaryRequestEligible.
   it.each([
     {
       label: 'SupportedRmo (senior) staff',
@@ -556,7 +557,7 @@ describe('MultiPageMenu', () => {
       userPersonType: UserPersonTypeEnum.EmployeeHourly,
     },
   ])(
-    'hides both Goal Calculator nav items for $label',
+    'hides both Goal Calculator nav items for $label when salary-request ineligible',
     async ({ peopleGroupSupportType, userPersonType }) => {
       const { findByText, queryByText } = render(
         <ThemeProvider theme={theme}>
@@ -566,6 +567,7 @@ describe('MultiPageMenu', () => {
                 Hcm: {
                   hcm: [
                     {
+                      salaryRequestEligible: false,
                       staffInfo: {
                         peopleGroupSupportType,
                         userPersonType,

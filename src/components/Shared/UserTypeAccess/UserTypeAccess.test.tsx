@@ -137,13 +137,11 @@ describe('UserTypeAccess', () => {
     ).toBeInTheDocument();
   });
 
-  // TODO: follow-up PR will replace the hardcoded MPD/PDS goal calc gating with a backend
-  // eligibility check. Until then, both goal calculators always render LimitedAccess.
-  it('should render LimitedAccess for the MPD goal calculator regardless of peopleGroupSupportType', async () => {
+  it('should render LimitedAccess when user type is allowed but user is ineligible for the MPD goal calculator', async () => {
     const { findByRole } = render(
       <TestComponent
         requireUserGroups={RequiredUserGroupEnum.MpdGoalCalc}
-        peopleGroupSupportType={PeopleGroupSupportTypeEnum.SupportedRmo}
+        salaryRequestEligible={false}
       />,
     );
     expect(
@@ -153,6 +151,8 @@ describe('UserTypeAccess', () => {
     ).toBeInTheDocument();
   });
 
+  // TODO: follow-up PR will replace the hardcoded PDS goal calc gating with a backend
+  // eligibility check. Until then, the PDS goal calculator always renders LimitedAccess.
   it('should render LimitedAccess for the PDS goal calculator regardless of peopleGroupSupportType', async () => {
     const { findByRole } = render(
       <TestComponent
