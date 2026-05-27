@@ -1,10 +1,12 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { PanelLayout } from '../../Shared/CalculationReports/PanelLayout/PanelLayout';
 import { PanelTypeEnum } from '../../Shared/CalculationReports/Shared/sharedTypes';
 import { PdsGoalCalculatorStepEnum } from '../PdsGoalCalculatorHelper';
 import { usePdsGoalCalculator } from './PdsGoalCalculatorContext';
+import { isSetupComplete } from './pdsCompletion';
 
 interface PdsGoalCalculatorLayoutProps {
   sectionListPanel: React.ReactNode;
@@ -19,6 +21,7 @@ export const PdsGoalCalculatorLayout: React.FC<
   const {
     steps,
     currentStep,
+    calculation,
     handleStepChange,
     isDrawerOpen,
     setDrawerOpen,
@@ -26,6 +29,10 @@ export const PdsGoalCalculatorLayout: React.FC<
     percentComplete,
     calculationLoading,
   } = usePdsGoalCalculator();
+
+  const setupComplete = isSetupComplete(calculation);
+  const { allValid } = useAutosaveForm();
+  const isSetupValid = setupComplete && allValid;
 
   const handleStepIconClick = (step: PdsGoalCalculatorStepEnum) => {
     if (currentStep.step === step) {
@@ -41,6 +48,7 @@ export const PdsGoalCalculatorLayout: React.FC<
     icon: step.icon,
     label: step.title,
     isActive: currentStep.step === step.step,
+    disabled: !isSetupValid && step.step !== PdsGoalCalculatorStepEnum.Setup,
     onClick: () => handleStepIconClick(step.step),
   }));
 

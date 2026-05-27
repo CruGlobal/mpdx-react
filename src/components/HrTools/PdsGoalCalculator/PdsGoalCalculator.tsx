@@ -128,13 +128,11 @@ const MainContent: React.FC = () => {
 
 export const PdsGoalCalculator: React.FC = () => {
   return (
-    <PdsGoalCalculatorLayout
-      sectionListPanel={<CurrentSectionList />}
-      mainContent={
-        <AutosaveForm>
-          <MainContent />
-        </AutosaveForm>
-      }
-    />
+    <AutosaveForm>
+      <PdsGoalCalculatorLayout
+        sectionListPanel={<CurrentSectionList />}
+        mainContent={<MainContent />}
+      />
+    </AutosaveForm>
   );
 };
