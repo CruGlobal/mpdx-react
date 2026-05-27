@@ -78,7 +78,7 @@ describe('useUsStaffGroups', () => {
         inAsrIneligibleGroup: false,
         inSalaryCalcIneligibleGroup: false,
         inMhaIneligibleGroup: false,
-        inMpdGoalCalcIneligibleGroup: true,
+        inMpdGoalCalcIneligibleGroup: false,
         inPdsGoalCalcIneligibleGroup: true,
         hasNoStaffAccount: false,
         loading: false,
@@ -86,7 +86,7 @@ describe('useUsStaffGroups', () => {
     });
   });
 
-  it('marks user as salary-calc ineligible when salaryRequestEligible is false', async () => {
+  it('marks user as salary-calc and mpd-goal-calc ineligible when salaryRequestEligible is false', async () => {
     const { result } = renderUseUsStaffGroups(
       buildHcmMock({ userSalaryRequestEligible: false }),
     );
@@ -116,7 +116,7 @@ describe('useUsStaffGroups', () => {
         inAsrIneligibleGroup: false,
         inSalaryCalcIneligibleGroup: false,
         inMhaIneligibleGroup: true,
-        inMpdGoalCalcIneligibleGroup: true,
+        inMpdGoalCalcIneligibleGroup: false,
         inPdsGoalCalcIneligibleGroup: true,
         hasNoStaffAccount: false,
         loading: false,
@@ -158,7 +158,7 @@ describe('useUsStaffGroups', () => {
         inAsrIneligibleGroup: false,
         inSalaryCalcIneligibleGroup: false,
         inMhaIneligibleGroup: false,
-        inMpdGoalCalcIneligibleGroup: true,
+        inMpdGoalCalcIneligibleGroup: false,
         inPdsGoalCalcIneligibleGroup: true,
         hasNoStaffAccount: false,
         loading: false,
@@ -229,6 +229,19 @@ describe('useUsStaffGroups', () => {
     });
   });
 
+  it('uses the logged-in user for mpd goal calc even when a spouse is present', async () => {
+    const { result } = renderUseUsStaffGroups(
+      buildHcmMock({
+        userSalaryRequestEligible: false,
+        includeSpouse: true,
+      }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.inMpdGoalCalcIneligibleGroup).toBe(true);
+    });
+  });
+
   it('skips the HCM query and returns defaults when skip is true', () => {
     const { result } = renderUseUsStaffGroups(buildHcmMock(), true);
 
@@ -236,14 +249,14 @@ describe('useUsStaffGroups', () => {
       inAsrIneligibleGroup: false,
       inSalaryCalcIneligibleGroup: false,
       inMhaIneligibleGroup: false,
-      inMpdGoalCalcIneligibleGroup: true,
+      inMpdGoalCalcIneligibleGroup: false,
       inPdsGoalCalcIneligibleGroup: true,
       hasNoStaffAccount: false,
       loading: false,
     });
   });
 
-  it('fails closed on goal calculators when array is empty', async () => {
+  it('returns eligible defaults when the HCM array is empty, with PDS hardcoded ineligible', async () => {
     const { result } = renderUseUsStaffGroups({ hcm: [] } as HcmQuery);
 
     await waitFor(() => {
@@ -251,7 +264,7 @@ describe('useUsStaffGroups', () => {
         inAsrIneligibleGroup: false,
         inSalaryCalcIneligibleGroup: false,
         inMhaIneligibleGroup: false,
-        inMpdGoalCalcIneligibleGroup: true,
+        inMpdGoalCalcIneligibleGroup: false,
         inPdsGoalCalcIneligibleGroup: true,
         hasNoStaffAccount: false,
         loading: false,
@@ -291,8 +304,8 @@ describe('useUsStaffGroups', () => {
     });
   });
 
-  // TODO: follow-up PR will re-enable goal calculator gating via a backend eligibility check.
-  it('hardcodes both goal calculators to ineligible regardless of staff data', async () => {
+  // TODO: follow-up PR will re-enable PDS goal calculator gating via a backend eligibility check.
+  it('hardcodes the PDS goal calculator to ineligible regardless of staff data', async () => {
     const { result } = renderUseUsStaffGroups(
       buildHcmMock({
         peopleGroupSupportType: PeopleGroupSupportTypeEnum.Designation,
@@ -301,7 +314,6 @@ describe('useUsStaffGroups', () => {
     );
 
     await waitFor(() => {
-      expect(result.current.inMpdGoalCalcIneligibleGroup).toBe(true);
       expect(result.current.inPdsGoalCalcIneligibleGroup).toBe(true);
     });
   });
