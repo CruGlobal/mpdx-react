@@ -8,7 +8,6 @@ import {
   beforeTestResizeObserver,
 } from '__tests__/util/windowResizeObserver';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
-import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
@@ -16,29 +15,22 @@ import MPGAReportPage, { getServerSideProps } from './index.page';
 
 const mutationSpy = jest.fn();
 
-const mockStaffAccount = {
-  StaffAccount: {
-    staffAccount: {
-      id: '12345',
-      name: 'Test Account',
-    },
-  },
-};
-
 interface ComponentProps {
   userType?: UserTypeEnum;
+  staffAccountId?: string;
 }
 
-const Components = ({ userType = UserTypeEnum.UsStaff }: ComponentProps) => (
+const Components = ({
+  userType = UserTypeEnum.UsStaff,
+  staffAccountId = '12345',
+}: ComponentProps) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
       <GqlMockedProvider<{
-        StaffAccount: StaffAccountQuery;
         GetUser: GetUserQuery;
       }>
         mocks={{
-          ...mockStaffAccount,
-          GetUser: { user: { userType } },
+          GetUser: { user: { userType, staffAccountId } },
         }}
         onCall={mutationSpy}
       >
@@ -82,15 +74,17 @@ describe('MPGA Report Page', () => {
 
   it('renders no staff account page when no staff account', async () => {
     const mockNoStaffAccount = {
-      StaffAccount: {
-        staffAccount: null,
+      GetUser: {
+        user: {
+          staffAccountId: null,
+        },
       },
     };
 
     const { findByText } = render(
       <TestRouter>
         <GqlMockedProvider<{
-          StaffAccount: StaffAccountQuery;
+          GetUser: GetUserQuery;
         }>
           mocks={mockNoStaffAccount}
           onCall={mutationSpy}

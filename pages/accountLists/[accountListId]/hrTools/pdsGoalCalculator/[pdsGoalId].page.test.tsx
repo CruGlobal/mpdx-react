@@ -1,38 +1,50 @@
 import React from 'react';
+import { ThemeProvider } from '@mui/material/styles';
+import { SnackbarProvider } from 'notistack';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
-import { PdsGoalCalculatorTestWrapper } from 'src/components/HrTools/PdsGoalCalculator/PdsGoalCalculatorTestWrapper';
-import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
+import { PdsGoalCalculationQuery } from 'src/components/HrTools/PdsGoalCalculator/GoalsList/PdsGoalCalculations.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
-import { UserTypeEnum } from 'src/graphql/types.generated';
+import { UsStaffGroupEnum, UserTypeEnum } from 'src/graphql/types.generated';
+import theme from 'src/theme';
 import { PdsGoalCalculatorPage, getServerSideProps } from './[pdsGoalId].page';
 
 interface AccessComponentsProps {
   userType?: UserTypeEnum;
-  designationSupportCalculatorEligible?: boolean;
+  usStaffGroup?: UsStaffGroupEnum;
 }
 
 const AccessComponents: React.FC<AccessComponentsProps> = ({
   userType = UserTypeEnum.UsStaff,
-  designationSupportCalculatorEligible = true,
+  usStaffGroup = UsStaffGroupEnum.PaidWithDesignation,
 }) => (
-  <TestRouter>
-    <GqlMockedProvider<{
-      GetUser: GetUserQuery;
-      Hcm: HcmQuery;
-    }>
-      mocks={{
-        GetUser: { user: { userType } },
-        Hcm: {
-          hcm: [{ designationSupportCalculatorEligible }],
-        },
+  <ThemeProvider theme={theme}>
+    <TestRouter
+      router={{
+        query: { accountListId: 'account-list-1', pdsGoalId: 'pds-goal-1' },
       }}
     >
-      <PdsGoalCalculatorPage />
-    </GqlMockedProvider>
-  </TestRouter>
+      <SnackbarProvider>
+        <GqlMockedProvider<{
+          GetUser: GetUserQuery;
+          PdsGoalCalculation: PdsGoalCalculationQuery;
+        }>
+          mocks={{
+            GetUser: { user: { userType, usStaffGroup } },
+            PdsGoalCalculation: {
+              designationSupportCalculation: {
+                updatedAt: '2024-01-01T00:00:00.000Z',
+              },
+            },
+          }}
+        >
+          <PdsGoalCalculatorPage />
+        </GqlMockedProvider>
+      </SnackbarProvider>
+    </TestRouter>
+  </ThemeProvider>
 );
 
 describe('[pdsGoalId] page', () => {
@@ -50,9 +62,9 @@ describe('[pdsGoalId] page', () => {
     ).toBeInTheDocument();
   });
 
-  it('should show limited access when designationSupportCalculatorEligible is false', async () => {
+  it('should show limited access when incorrect usStaffGroup', async () => {
     const { findByText } = render(
-      <AccessComponents designationSupportCalculatorEligible={false} />,
+      <AccessComponents usStaffGroup={UsStaffGroupEnum.NewStaff} />,
     );
 
     expect(
@@ -61,21 +73,7 @@ describe('[pdsGoalId] page', () => {
   });
 
   it('renders Saving indicator for an eligible US Staff user', async () => {
-    const { findByText } = render(
-      <PdsGoalCalculatorTestWrapper<{
-        Hcm: HcmQuery;
-      }>
-        withProvider={false}
-        userMock={{ user: { userType: UserTypeEnum.UsStaff } }}
-        extraMocks={{
-          Hcm: {
-            hcm: [{ designationSupportCalculatorEligible: true }],
-          },
-        }}
-      >
-        <PdsGoalCalculatorPage />
-      </PdsGoalCalculatorTestWrapper>,
-    );
+    const { findByText } = render(<AccessComponents />);
 
     expect(await findByText(/Last saved/)).toBeInTheDocument();
   });

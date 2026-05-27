@@ -9,38 +9,31 @@ import {
   beforeTestResizeObserver,
 } from '__tests__/util/windowResizeObserver';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
-import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
+import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import PartnerRemindersReportPage, { getServerSideProps } from './index.page';
 
 const mutationSpy = jest.fn();
 
-const mocks = {
-  StaffAccount: {
-    staffAccount: {
-      id: '12345',
-      name: 'Test Account',
-    },
-  },
-};
 interface ComponentProps {
   userType?: UserTypeEnum;
+  staffAccountId?: string;
 }
 
 const Components: React.FC<ComponentProps> = ({
   userType = UserTypeEnum.UsStaff,
+  staffAccountId = '12345',
 }) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
       <TestRouter>
         <GqlMockedProvider<{
-          StaffAccount: StaffAccountQuery;
+          GetUser: GetUserQuery;
         }>
           mocks={{
-            ...mocks,
             GetUser: {
-              user: { userType },
+              user: { userType, staffAccountId },
             },
           }}
           onCall={mutationSpy}
@@ -84,15 +77,17 @@ describe('Partner Reminders Report Page', () => {
 
   it('renders no staff account page when no staff account', async () => {
     const mockNoStaffAccount = {
-      StaffAccount: {
-        staffAccount: null,
+      GetUser: {
+        user: {
+          staffAccountId: null,
+        },
       },
     };
 
     const { findByText } = render(
       <TestRouter>
         <GqlMockedProvider<{
-          StaffAccount: StaffAccountQuery;
+          GetUser: GetUserQuery;
         }>
           mocks={mockNoStaffAccount}
           onCall={mutationSpy}

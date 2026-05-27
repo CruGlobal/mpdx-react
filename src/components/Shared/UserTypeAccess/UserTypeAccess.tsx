@@ -1,9 +1,7 @@
 import Loading from 'src/components/Loading';
-import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
-import { useUsStaffGroups } from 'src/hooks/useUsStaffGroups';
+import { useIneligibleByGroup } from 'src/hooks/useIneligibleByGroup';
 import { LimitedAccess } from '../LimitedAccess/LimitedAccess';
-import { useStaffAccountQuery } from '../StaffAccount/StaffAccount.generated';
 
 export enum RequiredUserGroupEnum {
   Asr = 'asr',
@@ -28,25 +26,17 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
   alwaysAllow,
   requireUserGroups,
 }) => {
-  const { data, loading: userLoading, error: userError } = useGetUserQuery();
-  const {
-    data: staffAccountData,
-    loading: staffAccountLoading,
-    error: staffAccountError,
-  } = useStaffAccountQuery({
-    skip: !requireStaffAccount,
-  });
-
-  // Only run HCM query if we are using an HCM report
-  const skip = !requireUserGroups;
   const {
     inAsrIneligibleGroup,
     inSalaryCalcIneligibleGroup,
     inMhaIneligibleGroup,
     inMpdGoalCalcIneligibleGroup,
     inPdsGoalCalcIneligibleGroup,
-    loading: hcmLoading,
-  } = useUsStaffGroups(skip);
+    userType,
+    hasNoStaffAccount,
+    userLoading,
+    userError,
+  } = useIneligibleByGroup();
 
   const ineligibleByGroup: Record<RequiredUserGroupEnum, boolean> = {
     [RequiredUserGroupEnum.Asr]: inAsrIneligibleGroup,
@@ -55,8 +45,6 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
     [RequiredUserGroupEnum.MpdGoalCalc]: inMpdGoalCalcIneligibleGroup,
     [RequiredUserGroupEnum.PdsGoalCalc]: inPdsGoalCalcIneligibleGroup,
   };
-
-  const userType = data?.user.userType;
 
   const limitedAccess =
     (userType && userType !== requiredUserType) ||
@@ -71,7 +59,7 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
     return <LimitedAccess userGroupError />;
   }
 
-  if ((userLoading && !userType) || hcmLoading) {
+  if (userLoading && !userType) {
     return <Loading loading />;
   }
 
@@ -80,13 +68,7 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
   }
 
   if (requireStaffAccount) {
-    if (staffAccountError) {
-      return <LimitedAccess userGroupError />;
-    }
-    if (staffAccountLoading && !staffAccountData) {
-      return <Loading loading />;
-    }
-    if (!staffAccountData?.staffAccount?.id) {
+    if (hasNoStaffAccount) {
       return <LimitedAccess noStaffAccount />;
     }
   }

@@ -122,7 +122,8 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
               showInNav: true,
               hideTab:
                 (!!data && !showTab) ||
-                (!hrToolsLoading && hrToolsItems.length === 0),
+                hrToolsLoading ||
+                hrToolsItems.length === 0,
             },
           ]),
       {

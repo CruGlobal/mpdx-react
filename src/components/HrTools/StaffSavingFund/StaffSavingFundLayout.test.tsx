@@ -103,14 +103,16 @@ describe('StaffSavingFundLayout', () => {
 
   it('renders no staff account page when no staff account', async () => {
     const mockNoStaffAccount = {
-      StaffAccount: {
-        staffAccount: null,
+      GetUser: {
+        user: {
+          staffAccountId: null,
+        },
       },
     };
     const { findByText } = render(
       <TestRouter>
         <GqlMockedProvider<{
-          StaffAccount: StaffAccountQuery;
+          GetUser: GetUserQuery;
         }>
           mocks={mockNoStaffAccount}
           onCall={mutationSpy}

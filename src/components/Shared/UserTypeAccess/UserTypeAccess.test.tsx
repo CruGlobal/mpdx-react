@@ -3,14 +3,8 @@ import { ThemeProvider } from '@mui/material/styles';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
-import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
-import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
-import {
-  PeopleGroupSupportTypeEnum,
-  UserPersonTypeEnum,
-  UserTypeEnum,
-} from 'src/graphql/types.generated';
+import { UsStaffGroupEnum, UserTypeEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { RequiredUserGroupEnum, UserTypeAccess } from './UserTypeAccess';
 
@@ -19,50 +13,25 @@ const id = 'staff-1';
 interface TestComponentProps {
   requireStaffAccount?: boolean;
   userType?: UserTypeEnum;
+  usStaffGroup?: UsStaffGroupEnum;
   staffAccountId?: string | null;
   requireUserGroups?: RequiredUserGroupEnum;
-  asrEligible?: boolean;
-  salaryRequestEligible?: boolean;
-  designationSupportCalculatorEligible?: boolean;
-  peopleGroupSupportType?: PeopleGroupSupportTypeEnum;
-  userPersonType?: UserPersonTypeEnum;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   requireStaffAccount,
   userType = UserTypeEnum.UsStaff,
+  usStaffGroup = UsStaffGroupEnum.PartTimeFieldStaff,
   staffAccountId = id,
   requireUserGroups,
-  asrEligible = true,
-  salaryRequestEligible = true,
-  designationSupportCalculatorEligible = true,
-  peopleGroupSupportType = PeopleGroupSupportTypeEnum.SupportedRmo,
-  userPersonType = UserPersonTypeEnum.EmployeeHourly,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
       <GqlMockedProvider<{
-        StaffAccount: StaffAccountQuery;
         GetUser: GetUserQuery;
-        Hcm: HcmQuery;
       }>
         mocks={{
-          Hcm: {
-            hcm: [
-              {
-                asrEit: { asrEligibility: asrEligible },
-                salaryRequestEligible,
-                designationSupportCalculatorEligible,
-                staffInfo: { peopleGroupSupportType, userPersonType },
-              },
-            ],
-          },
-          GetUser: { user: { userType } },
-          StaffAccount: {
-            staffAccount: staffAccountId
-              ? { id: staffAccountId, name: 'Test Account' }
-              : null,
-          },
+          GetUser: { user: { userType, usStaffGroup, staffAccountId } },
         }}
       >
         <UserTypeAccess
@@ -104,7 +73,7 @@ describe('UserTypeAccess', () => {
     const { findByRole, getByText } = render(
       <TestComponent
         requireUserGroups={RequiredUserGroupEnum.Asr}
-        asrEligible={false}
+        usStaffGroup={UsStaffGroupEnum.PartTimeFieldStaff}
       />,
     );
 
@@ -124,7 +93,7 @@ describe('UserTypeAccess', () => {
     const { findByRole, getByText } = render(
       <TestComponent
         requireUserGroups={RequiredUserGroupEnum.SalaryCalc}
-        salaryRequestEligible={false}
+        usStaffGroup={UsStaffGroupEnum.PartTimeFieldStaff}
       />,
     );
 
@@ -144,7 +113,7 @@ describe('UserTypeAccess', () => {
     const { findByRole } = render(
       <TestComponent
         requireUserGroups={RequiredUserGroupEnum.MpdGoalCalc}
-        salaryRequestEligible={false}
+        usStaffGroup={UsStaffGroupEnum.PartTimeFieldStaff}
       />,
     );
     expect(
@@ -158,7 +127,7 @@ describe('UserTypeAccess', () => {
     const { findByRole } = render(
       <TestComponent
         requireUserGroups={RequiredUserGroupEnum.PdsGoalCalc}
-        designationSupportCalculatorEligible={false}
+        usStaffGroup={UsStaffGroupEnum.PartTimeFieldStaff}
       />,
     );
     expect(
@@ -172,7 +141,7 @@ describe('UserTypeAccess', () => {
     const { findByText } = render(
       <TestComponent
         requireUserGroups={RequiredUserGroupEnum.PdsGoalCalc}
-        designationSupportCalculatorEligible={true}
+        usStaffGroup={UsStaffGroupEnum.PaidWithDesignation}
       />,
     );
     expect(await findByText('Test Content')).toBeInTheDocument();
@@ -214,36 +183,6 @@ describe('UserTypeAccess', () => {
             }}
           >
             <UserTypeAccess requiredUserType={UserTypeEnum.UsStaff}>
-              <div>Test Content</div>
-            </UserTypeAccess>
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>,
-    );
-
-    expect(
-      await findByRole('heading', { name: 'Unable to load this page' }),
-    ).toBeInTheDocument();
-    expect(
-      getByText(/something went wrong while loading your account information/i),
-    ).toBeInTheDocument();
-  });
-
-  it('should render LimitedAccess with user error when there is an error loading the staff account', async () => {
-    const { findByRole, getByText } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter>
-          <GqlMockedProvider
-            mocks={{
-              GetUser: { user: { userType: UserTypeEnum.UsStaff } },
-              StaffAccount: {
-                staffAccount: () => {
-                  throw new Error('Staff account error');
-                },
-              },
-            }}
-          >
-            <UserTypeAccess requireStaffAccount>
               <div>Test Content</div>
             </UserTypeAccess>
           </GqlMockedProvider>

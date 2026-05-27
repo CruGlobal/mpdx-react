@@ -9,60 +9,42 @@ import {
   beforeTestResizeObserver,
 } from '__tests__/util/windowResizeObserver';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
-import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
+import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
-import {
-  PeopleGroupSupportTypeEnum,
-  UserPersonTypeEnum,
-  UserTypeEnum,
-} from 'src/graphql/types.generated';
+import { UsStaffGroupEnum, UserTypeEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import AdditionalSalaryRequestPage, { getServerSideProps } from './index.page';
 
-const mocks = {
-  StaffAccount: {
-    staffAccount: {
-      id: '12345',
-      name: 'Test Account',
-    },
-  },
-  AdditionalSalaryRequest: {
-    latestAdditionalSalaryRequest: null,
-  },
-  Hcm: {
-    hcm: [
-      {
-        salaryRequestEligible: true,
-        asrEit: {
-          asrEligibility: true,
-        },
-        staffInfo: {
-          preferredName: 'Test User',
-          peopleGroupSupportType: PeopleGroupSupportTypeEnum.SupportedRmo,
-          userPersonType: UserPersonTypeEnum.EmployeeStaff,
-        },
-      },
-    ],
-  },
-};
 interface TestComponentProps {
   userType?: UserTypeEnum;
+  usStaffGroup?: UsStaffGroupEnum.SeniorStaff;
+  staffAccountId?: string;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   userType = UserTypeEnum.UsStaff,
+  usStaffGroup = UsStaffGroupEnum.SeniorStaff,
+  staffAccountId = 'account-list-1',
 }) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
       <TestRouter router={{ query: { accountListId: 'account-list-1' } }}>
         <GqlMockedProvider<{
-          StaffAccount: StaffAccountQuery;
           GetUser: GetUserQuery;
+          Hcm: HcmQuery;
         }>
           mocks={{
-            ...mocks,
             GetUser: {
-              user: { userType },
+              user: { userType, usStaffGroup, staffAccountId },
+            },
+            Hcm: {
+              hcm: [
+                {
+                  asrEit: {
+                    asrEligibility: true,
+                  },
+                },
+              ],
             },
           }}
         >
@@ -109,8 +91,10 @@ describe('AdditionalSalaryRequest page', () => {
 
   it('renders no staff account page when no staff account', async () => {
     const mockNoStaffAccount = {
-      StaffAccount: {
-        staffAccount: null,
+      GetUser: {
+        user: {
+          staffAccountId: null,
+        },
       },
     };
 
@@ -119,7 +103,7 @@ describe('AdditionalSalaryRequest page', () => {
         <SnackbarProvider>
           <TestRouter router={{ query: { accountListId: 'account-list-1' } }}>
             <GqlMockedProvider<{
-              StaffAccount: StaffAccountQuery;
+              GetUser: GetUserQuery;
             }>
               mocks={mockNoStaffAccount}
             >
