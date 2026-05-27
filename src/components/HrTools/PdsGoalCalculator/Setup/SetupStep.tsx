@@ -34,12 +34,12 @@ import { AutosaveTextField } from '../Shared/Autosave/AutosaveTextField';
 import { useSaveField } from '../Shared/Autosave/useSaveField';
 import { usePdsGoalCalculator } from '../Shared/PdsGoalCalculatorContext';
 import { HoursPerWeekGrid } from './HoursPerWeekGrid/HoursPerWeekGrid';
+import { PayTypeField } from './PayTypeField';
 
 export const SetupStep: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { calculation, hcmUser, isMutating, setRightPanelContent } =
-    usePdsGoalCalculator();
+  const { calculation, hcmUser, setRightPanelContent } = usePdsGoalCalculator();
   const { data: userData } = useGetUserQuery();
   const schema = useMemo(
     () =>
@@ -203,33 +203,7 @@ export const SetupStep: React.FC = () => {
           </Grid>
 
           <Grid item xs={12}>
-            {/* Manual TextField (not AutosaveTextField) because changing Pay
-                Type must atomically clear payRate as well; AutosaveTextField
-                only writes the single bound fieldName. */}
-            <TextField
-              fullWidth
-              size="small"
-              variant="outlined"
-              select
-              label={t('Pay Type')}
-              helperText={t('Changing this clears Pay Rate.')}
-              value={calculation?.salaryOrHourly ?? ''}
-              disabled={!calculation || isMutating}
-              onChange={(event) => {
-                const newValue = event.target
-                  .value as DesignationSupportSalaryType;
-                if (newValue !== calculation?.salaryOrHourly) {
-                  saveField({ salaryOrHourly: newValue, payRate: null });
-                }
-              }}
-            >
-              <MenuItem value={DesignationSupportSalaryType.Salaried}>
-                {t('Salaried')}
-              </MenuItem>
-              <MenuItem value={DesignationSupportSalaryType.Hourly}>
-                {t('Hourly')}
-              </MenuItem>
-            </TextField>
+            <PayTypeField />
           </Grid>
 
           {payType && (
