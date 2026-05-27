@@ -39,7 +39,10 @@ export const GoalCalculatorPage: React.FC = () => {
         <title>{`${appName} | ${t('HR Tools | MPD Goal Calculator')}`}</title>
       </Head>
       {accountListId ? (
-        <UserTypeAccess requireUserGroups={RequiredUserGroupEnum.MpdGoalCalc}>
+        <UserTypeAccess
+          requireStaffAccount
+          requireUserGroups={RequiredUserGroupEnum.MpdGoalCalc}
+        >
           <ReportPageWrapper>
             <SidePanelsLayout
               isScrollBox={false}

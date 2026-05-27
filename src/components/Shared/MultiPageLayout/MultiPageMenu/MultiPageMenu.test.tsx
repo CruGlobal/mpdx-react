@@ -537,87 +537,62 @@ describe('MultiPageMenu', () => {
 
     expect(await findByText('Salary Calculation Form')).toBeInTheDocument();
     expect(getByText('Savings Fund Transfer')).toBeInTheDocument();
-    expect(getByText('MPD Goal Calculator')).toBeInTheDocument();
     expect(getByText('MHA Calculation Tool')).toBeInTheDocument();
     expect(getByText('Additional Salary Request')).toBeInTheDocument();
     expect(getByText('Ministry Partner Reminders')).toBeInTheDocument();
   });
 
-  it('hides the PDS Goal Calculator nav item for SupportedRmo (senior) staff', async () => {
-    const { findByText, getByText, queryByText } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <GqlMockedProvider<{ Hcm: HcmQuery }>
-            mocks={{
-              Hcm: {
-                hcm: [
-                  {
-                    staffInfo: {
-                      peopleGroupSupportType:
-                        PeopleGroupSupportTypeEnum.SupportedRmo,
+  // TODO: follow-up PR will replace the hardcoded MPD/PDS goal calc gating with a backend
+  // eligibility check. Until then, both nav items are hidden for everyone.
+  it.each([
+    {
+      label: 'SupportedRmo (senior) staff',
+      peopleGroupSupportType: PeopleGroupSupportTypeEnum.SupportedRmo,
+      userPersonType: UserPersonTypeEnum.EmployeeStaff,
+    },
+    {
+      label: 'Designation (PDS) staff',
+      peopleGroupSupportType: PeopleGroupSupportTypeEnum.Designation,
+      userPersonType: UserPersonTypeEnum.EmployeeHourly,
+    },
+  ])(
+    'hides both Goal Calculator nav items for $label',
+    async ({ peopleGroupSupportType, userPersonType }) => {
+      const { findByText, queryByText } = render(
+        <ThemeProvider theme={theme}>
+          <TestRouter router={router}>
+            <GqlMockedProvider<{ Hcm: HcmQuery }>
+              mocks={{
+                Hcm: {
+                  hcm: [
+                    {
+                      staffInfo: {
+                        peopleGroupSupportType,
+                        userPersonType,
+                      },
                     },
-                  },
-                ],
-              },
-            }}
-          >
-            <MultiPageMenu
-              selectedId={selected}
-              isOpen={true}
-              onClose={() => {}}
-              designationAccounts={[]}
-              setDesignationAccounts={() => {}}
-              navType={NavTypeEnum.HrTools}
-            />
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>,
-    );
+                  ],
+                },
+              }}
+            >
+              <MultiPageMenu
+                selectedId={selected}
+                isOpen={true}
+                onClose={() => {}}
+                designationAccounts={[]}
+                setDesignationAccounts={() => {}}
+                navType={NavTypeEnum.HrTools}
+              />
+            </GqlMockedProvider>
+          </TestRouter>
+        </ThemeProvider>,
+      );
 
-    expect(await findByText('MPD Goal Calculator')).toBeInTheDocument();
-    expect(
-      queryByText('Paid with Designation Support Goal Calculator'),
-    ).not.toBeInTheDocument();
-    expect(getByText('Savings Fund Transfer')).toBeInTheDocument();
-    expect(getByText('Ministry Partner Reminders')).toBeInTheDocument();
-  });
-
-  it('hides the MPD Goal Calculator nav item for Designation (PDS) staff', async () => {
-    const { findByText, getByText, queryByText } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <GqlMockedProvider<{ Hcm: HcmQuery }>
-            mocks={{
-              Hcm: {
-                hcm: [
-                  {
-                    staffInfo: {
-                      peopleGroupSupportType:
-                        PeopleGroupSupportTypeEnum.Designation,
-                    },
-                  },
-                ],
-              },
-            }}
-          >
-            <MultiPageMenu
-              selectedId={selected}
-              isOpen={true}
-              onClose={() => {}}
-              designationAccounts={[]}
-              setDesignationAccounts={() => {}}
-              navType={NavTypeEnum.HrTools}
-            />
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>,
-    );
-
-    expect(
-      await findByText('Paid with Designation Support Goal Calculator'),
-    ).toBeInTheDocument();
-    expect(queryByText('MPD Goal Calculator')).not.toBeInTheDocument();
-    expect(getByText('Savings Fund Transfer')).toBeInTheDocument();
-    expect(getByText('Ministry Partner Reminders')).toBeInTheDocument();
-  });
+      expect(await findByText('Savings Fund Transfer')).toBeInTheDocument();
+      expect(queryByText('MPD Goal Calculator')).not.toBeInTheDocument();
+      expect(
+        queryByText('Paid with Designation Support Goal Calculator'),
+      ).not.toBeInTheDocument();
+    },
+  );
 });

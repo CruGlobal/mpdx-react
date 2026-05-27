@@ -38,7 +38,10 @@ const PdsGoalCalculatorPage: React.FC = () => {
         <title>{`${appName} | ${t('HR Tools | Paid with Designation Support Goal Calculator')}`}</title>
       </Head>
       {accountListId ? (
-        <UserTypeAccess requireUserGroups={RequiredUserGroupEnum.PdsGoalCalc}>
+        <UserTypeAccess
+          requireStaffAccount
+          requireUserGroups={RequiredUserGroupEnum.PdsGoalCalc}
+        >
           <ReportPageWrapper>
             <SidePanelsLayout
               isScrollBox={false}

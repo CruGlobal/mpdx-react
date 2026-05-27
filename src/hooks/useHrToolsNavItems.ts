@@ -3,7 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { NavItems } from './useReportNavItems';
 import { useUsStaffGroups } from './useUsStaffGroups';
 
-export function useHrToolsNavItems(): NavItems[] {
+export function useHrToolsNavItems(): {
+  items: NavItems[];
+  loading: boolean;
+} {
   const { t } = useTranslation();
 
   const {
@@ -16,7 +19,7 @@ export function useHrToolsNavItems(): NavItems[] {
     loading: hcmLoading,
   } = useUsStaffGroups();
 
-  return useMemo(() => {
+  const items = useMemo(() => {
     if (hcmLoading) {
       return [];
     }
@@ -68,4 +71,6 @@ export function useHrToolsNavItems(): NavItems[] {
     hasNoStaffAccount,
     hcmLoading,
   ]);
+
+  return { items, loading: hcmLoading };
 }

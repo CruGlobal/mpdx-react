@@ -22,6 +22,10 @@ import {
   MultiPageMenu,
   NavTypeEnum,
 } from 'src/components/Shared/MultiPageLayout/MultiPageMenu/MultiPageMenu';
+import {
+  RequiredUserGroupEnum,
+  UserTypeAccess,
+} from 'src/components/Shared/UserTypeAccess/UserTypeAccess';
 import { ReportPageWrapper } from 'src/components/Shared/styledComponents/ReportPageWrapper';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { getAppName } from 'src/lib/getAppName';
@@ -139,16 +143,21 @@ export const PdsGoalCalculatorPage: React.FC = () => {
         <title>{`${appName} | ${t('HR Tools - Paid with Designation Support Goal Calculator')}`}</title>
       </Head>
       {accountListId ? (
-        <ReportPageWrapper>
-          <PdsGoalCalculatorProvider>
-            <PdsGoalCalculatorContent
-              isNavListOpen={isNavListOpen}
-              onNavListToggle={handleNavListToggle}
-              designationAccounts={designationAccounts}
-              setDesignationAccounts={setDesignationAccounts}
-            />
-          </PdsGoalCalculatorProvider>
-        </ReportPageWrapper>
+        <UserTypeAccess
+          requireStaffAccount
+          requireUserGroups={RequiredUserGroupEnum.PdsGoalCalc}
+        >
+          <ReportPageWrapper>
+            <PdsGoalCalculatorProvider>
+              <PdsGoalCalculatorContent
+                isNavListOpen={isNavListOpen}
+                onNavListToggle={handleNavListToggle}
+                designationAccounts={designationAccounts}
+                setDesignationAccounts={setDesignationAccounts}
+              />
+            </PdsGoalCalculatorProvider>
+          </ReportPageWrapper>
+        </UserTypeAccess>
       ) : (
         <Loading loading />
       )}
