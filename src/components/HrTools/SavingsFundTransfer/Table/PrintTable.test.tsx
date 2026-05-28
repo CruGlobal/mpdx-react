@@ -93,7 +93,7 @@ describe('PrintTable', () => {
     );
 
     expect(
-      await findByRole('cell', { name: 'Conference Savings Account' }),
+      await findByRole('cell', { name: 'Staff Conference Savings Account' }),
     ).toBeInTheDocument();
   });
 

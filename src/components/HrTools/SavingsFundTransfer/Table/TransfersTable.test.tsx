@@ -163,6 +163,20 @@ describe('TransferHistoryTable', () => {
     expect(descCells[1]).toHaveTextContent('$2,500.00');
   });
 
+  it('sorts the Transfers column by the derived fund-pair label', async () => {
+    const { getAllByRole, findByRole } = render(<TestComponent />);
+
+    userEvent.click(await findByRole('columnheader', { name: 'Transfers' }));
+    const descCells = getAllByRole('gridcell', { name: /\$\d+/ });
+    expect(descCells[0]).toHaveTextContent('$2,500.00');
+    expect(descCells[1]).toHaveTextContent('$1,200.00');
+
+    userEvent.click(await findByRole('columnheader', { name: 'Transfers' }));
+    const ascCells = getAllByRole('gridcell', { name: /\$\d+/ });
+    expect(ascCells[0]).toHaveTextContent('$1,200.00');
+    expect(ascCells[1]).toHaveTextContent('$2,500.00');
+  });
+
   describe('Calendar', () => {
     it('opens the calendar when Add Stop Date is clicked', async () => {
       const { getByRole, findByRole } = render(<TestComponent />);
