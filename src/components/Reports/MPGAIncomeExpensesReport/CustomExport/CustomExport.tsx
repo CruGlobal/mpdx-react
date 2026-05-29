@@ -2,12 +2,30 @@ import { buildURI } from 'react-csv/lib/core';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
 import { DataFields } from '../mockData';
 
-export const createTable = (csvHeader: string[], data: DataFields[]) => {
+const round = (value: number, locale: string) =>
+  new Intl.NumberFormat(locale, {
+    style: 'decimal',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+    trailingZeroDisplay: 'stripIfInteger',
+    useGrouping: false,
+  }).format(value);
+
+export const createTable = (
+  csvHeader: string[],
+  data: DataFields[],
+  locale: string,
+) => {
   const csvData = data.map((item) => {
-    const monthlyData = item.monthly.map((month) =>
-      month === 0 ? '-' : month,
+    const monthlyData = item.monthly.map((monthlyAmount) =>
+      monthlyAmount === 0 ? '-' : round(monthlyAmount, locale),
     );
-    return [item.description, ...monthlyData, item.average, item.total];
+    return [
+      item.description,
+      ...monthlyData,
+      round(item.average, locale),
+      round(item.total, locale),
+    ];
   });
 
   return [csvHeader, ...csvData];
@@ -17,6 +35,7 @@ export const exportToCsv = (
   data: DataFields[],
   reportType: ReportTypeEnum,
   months: string[],
+  locale: string,
 ) => {
   const title =
     reportType === ReportTypeEnum.Income
@@ -46,7 +65,7 @@ export const exportToCsv = (
   ];
 
   const csvHeader = ['Description', ...last12Months, 'Average', 'Total'];
-  const csvData = createTable(csvHeader, dataWithTotal);
+  const csvData = createTable(csvHeader, dataWithTotal, locale);
 
   const csvBlob = buildURI(csvData, true);
 
