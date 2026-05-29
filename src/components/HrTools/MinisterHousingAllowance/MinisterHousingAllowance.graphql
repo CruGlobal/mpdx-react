@@ -95,6 +95,7 @@ mutation SubmitMinistryHousingAllowanceRequest(
 ) {
   submitMinistryHousingAllowanceRequest(input: $input) {
     ministryHousingAllowanceRequest {
+      id
       requestAttributes {
         ...RequestAttributes
       }

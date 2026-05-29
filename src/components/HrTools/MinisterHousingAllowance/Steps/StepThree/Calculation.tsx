@@ -63,26 +63,11 @@ export interface CalculationFormValues {
 
 const getValidationSchema = (rentOrOwn?: MhaRentOrOwnEnum) => {
   const baseSchema = {
-    mortgageOrRentPayment: yup
-      .number()
-      .moreThan(0, i18n.t('Must be greater than $0.'))
-      .required(i18n.t('Required field.')),
-    furnitureCostsTwo: yup
-      .number()
-      .moreThan(0, i18n.t('Must be greater than $0.'))
-      .required(i18n.t('Required field.')),
-    repairCosts: yup
-      .number()
-      .moreThan(0, i18n.t('Must be greater than $0.'))
-      .required(i18n.t('Required field.')),
-    avgUtilityTwo: yup
-      .number()
-      .moreThan(0, i18n.t('Must be greater than $0.'))
-      .required(i18n.t('Required field.')),
-    unexpectedExpenses: yup
-      .number()
-      .moreThan(0, i18n.t('Must be greater than $0.'))
-      .required(i18n.t('Required field.')),
+    mortgageOrRentPayment: yup.number().nullable(),
+    furnitureCostsTwo: yup.number().nullable(),
+    repairCosts: yup.number().nullable(),
+    avgUtilityTwo: yup.number().nullable(),
+    unexpectedExpenses: yup.number().nullable(),
     phoneNumber: phoneNumber(i18n.t).required(
       i18n.t('Phone Number is required.'),
     ),
@@ -99,18 +84,9 @@ const getValidationSchema = (rentOrOwn?: MhaRentOrOwnEnum) => {
   if (rentOrOwn === MhaRentOrOwnEnum.Own) {
     return yup.object({
       ...baseSchema,
-      rentalValue: yup
-        .number()
-        .moreThan(0, i18n.t('Must be greater than $0.'))
-        .required(i18n.t('Required field.')),
-      furnitureCostsOne: yup
-        .number()
-        .moreThan(0, i18n.t('Must be greater than $0.'))
-        .required(i18n.t('Required field.')),
-      avgUtilityOne: yup
-        .number()
-        .moreThan(0, i18n.t('Must be greater than $0.'))
-        .required(i18n.t('Required field.')),
+      rentalValue: yup.number().nullable(),
+      furnitureCostsOne: yup.number().nullable(),
+      avgUtilityOne: yup.number().nullable(),
     });
   }
 
@@ -153,6 +129,30 @@ export const Calculation: React.FC<CalculationProps> = ({
         },
       },
     });
+
+  const transformNullValues = (values: CalculationFormValues) => {
+    const isOwn = rentOrOwn === MhaRentOrOwnEnum.Own;
+
+    return updateMutation({
+      variables: {
+        input: {
+          requestId: requestData?.id ?? '',
+          requestAttributes: {
+            mortgageOrRentPayment: values.mortgageOrRentPayment ?? 0,
+            furnitureCostsTwo: values.furnitureCostsTwo ?? 0,
+            repairCosts: values.repairCosts ?? 0,
+            avgUtilityTwo: values.avgUtilityTwo ?? 0,
+            unexpectedExpenses: values.unexpectedExpenses ?? 0,
+            ...(isOwn && {
+              rentalValue: values.rentalValue ?? 0,
+              furnitureCostsOne: values.furnitureCostsOne ?? 0,
+              avgUtilityOne: values.avgUtilityOne ?? 0,
+            }),
+          },
+        },
+      },
+    });
+  };
 
   const request = requestData ? requestData.requestAttributes : null;
 
@@ -207,9 +207,11 @@ export const Calculation: React.FC<CalculationProps> = ({
       validationSchema={schema}
       validateOnChange
       validateOnBlur
-      onSubmit={() => {
+      onSubmit={async (values) => {
         try {
-          submitMutation({
+          await transformNullValues(values);
+
+          await submitMutation({
             variables: { input: { requestId: requestData?.id ?? '' } },
           });
           enqueueSnackbar(t('MHA request submitted successfully.'), {

@@ -20,7 +20,7 @@ export const FairRentalValue: React.FC<FairRentalValueProps> = ({ schema }) => {
   const locale = useLocale();
   const currency = 'USD';
 
-  const { values, touched, errors } = useFormikContext<CalculationFormValues>();
+  const { values } = useFormikContext<CalculationFormValues>();
 
   const { totalFairRental, annualFairRental } = useAnnualTotal(
     values,
@@ -50,8 +50,6 @@ export const FairRentalValue: React.FC<FairRentalValueProps> = ({ schema }) => {
           sx={{
             width: '30%',
             color: 'text.secondary',
-            border:
-              touched.rentalValue && errors.rentalValue ? '2px solid red' : '',
           }}
         >
           <AutosaveCustomTextField
@@ -85,10 +83,6 @@ export const FairRentalValue: React.FC<FairRentalValueProps> = ({ schema }) => {
           sx={{
             width: '30%',
             color: 'text.secondary',
-            border:
-              touched.furnitureCostsOne && errors.furnitureCostsOne
-                ? '2px solid red'
-                : '',
           }}
         >
           <AutosaveCustomTextField
@@ -114,10 +108,6 @@ export const FairRentalValue: React.FC<FairRentalValueProps> = ({ schema }) => {
           sx={{
             width: '30%',
             color: 'text.secondary',
-            border:
-              touched.avgUtilityOne && errors.avgUtilityOne
-                ? '2px solid red'
-                : '',
           }}
         >
           <AutosaveCustomTextField
