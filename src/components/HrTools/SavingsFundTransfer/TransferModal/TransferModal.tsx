@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import East from '@mui/icons-material/East';
-import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+import { ArrowRightAlt } from '@mui/icons-material';
 import {
   Alert,
   Box,
@@ -11,12 +10,10 @@ import {
   FormHelperText,
   FormLabel,
   Grid,
-  IconButton,
   InputLabel,
   Radio,
   RadioGroup,
   TextField,
-  Tooltip,
   Typography,
 } from '@mui/material';
 import { Formik } from 'formik';
@@ -309,26 +306,17 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                             {t('From Account')}
                           </InputLabel>
                           <TransferModalSelect
-                            notSelected={transferTo}
-                            funds={funds}
+                            funds={funds.filter(
+                              (fund) => fund.fundType === transferFrom,
+                            )}
                             label={t('From Account')}
                             labelId="transferFrom"
                             name="transferFrom"
                             value={transferFrom}
-                            disabled={!isNew}
-                            onChange={handleChange}
-                            onBlur={handleBlur}
-                            error={
-                              touched.transferFrom &&
-                              Boolean(errors.transferFrom)
-                            }
+                            readOnly
+                            IconComponent={() => null}
                             required
                           />
-                          {touched.transferFrom && errors.transferFrom && (
-                            <FormHelperText error={true}>
-                              {errors.transferFrom}
-                            </FormHelperText>
-                          )}
                         </FormControl>
                       </Grid>
 
@@ -342,18 +330,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                           alignItems: 'center',
                         }}
                       >
-                        <IconButton
-                          onClick={() => {
-                            setFieldValue('transferFrom', transferTo);
-                            setFieldValue('transferTo', transferFrom);
-                          }}
-                          color="primary"
-                          disabled={!transferFrom || !transferTo}
-                        >
-                          <Tooltip title={t('Swap')}>
-                            <SwapHorizIcon />
-                          </Tooltip>
-                        </IconButton>
+                        <ArrowRightAlt />
                       </Grid>
 
                       <Grid item xs={12} sm={5.5}>
@@ -398,7 +375,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                         <FundInfoDisplay fund={fund} />
                       </Grid>
                       <Grid item xs={12} sm={1} sx={{ textAlign: 'center' }}>
-                        <East />
+                        <ArrowRightAlt />
                       </Grid>
                       <Grid item xs={12} sm={5.5}>
                         <FundInfoDisplay
@@ -527,7 +504,6 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                         id="transfer-note"
                         label={t('Note (Optional)')}
                         name="note"
-                        disabled={!isNew}
                         value={note}
                         onChange={handleChange}
                         fullWidth

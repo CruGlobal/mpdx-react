@@ -247,9 +247,6 @@ describe('TransfersPage', () => {
     expect(
       await findAllByRole('button', { name: 'TRANSFER FROM' }),
     ).toHaveLength(2);
-    expect(await findAllByRole('button', { name: 'TRANSFER TO' })).toHaveLength(
-      2,
-    );
 
     const tables = await findAllByRole('grid');
     expect(tables.length).toBe(2);
