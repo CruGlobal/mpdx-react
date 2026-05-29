@@ -73,7 +73,7 @@ export const downloadCSV = (
     t('Schedule'),
     t('Status'),
     t('Transfer Date'),
-    t('Stop Date'),
+    t('End Date'),
     t('Note'),
   ];
 
