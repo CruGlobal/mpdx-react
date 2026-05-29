@@ -51,7 +51,7 @@ export const HousingAllowanceRequestPageContent: React.FC = () => {
   const { requestData, loading, isMutating, pageType } =
     useMinisterHousingAllowance();
 
-  const title = t("{{mode}} Minister's Housing Allowance Request", {
+  const title = t("{{mode}} Minister's Housing Allowance Calculation Tool", {
     mode: pageType,
   });
 
@@ -76,7 +76,7 @@ export const HousingAllowanceRequestPageContent: React.FC = () => {
                 isOpen={isNavListOpen}
                 selectedId={'mhaCalculator' + pageType}
                 onClose={handleNavListToggle}
-                navType={NavTypeEnum.Reports}
+                navType={NavTypeEnum.HrTools}
               />
             }
             leftOpen={isNavListOpen}
@@ -87,7 +87,7 @@ export const HousingAllowanceRequestPageContent: React.FC = () => {
                   <MultiPageHeader
                     isNavListOpen={isNavListOpen}
                     onNavListToggle={handleNavListToggle}
-                    title={t("Minister's Housing Allowance Request")}
+                    title={t("Minister's Housing Allowance Calculation Tool")}
                     rightExtra={
                       <SavingStatus
                         loading={loading}
@@ -96,7 +96,7 @@ export const HousingAllowanceRequestPageContent: React.FC = () => {
                         lastSavedAt={requestData?.updatedAt ?? null}
                       />
                     }
-                    headerType={HeaderTypeEnum.Report}
+                    headerType={HeaderTypeEnum.HrTools}
                   />
                 </SimpleScreenOnly>
                 <RequestPage />

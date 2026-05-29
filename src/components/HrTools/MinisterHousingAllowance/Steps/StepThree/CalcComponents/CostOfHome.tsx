@@ -24,7 +24,7 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({
   const locale = useLocale();
   const currency = 'USD';
 
-  const { values, touched, errors } = useFormikContext<CalculationFormValues>();
+  const { values } = useFormikContext<CalculationFormValues>();
 
   const { totalCostOfHome, annualCostOfHome } = useAnnualTotal(
     values,
@@ -49,10 +49,6 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({
           sx={{
             width: '30%',
             color: 'text.secondary',
-            border:
-              touched.mortgageOrRentPayment && errors.mortgageOrRentPayment
-                ? '2px solid red'
-                : '',
           }}
         >
           <AutosaveCustomTextField
@@ -80,10 +76,6 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({
           sx={{
             width: '30%',
             color: 'text.secondary',
-            border:
-              touched.furnitureCostsTwo && errors.furnitureCostsTwo
-                ? '2px solid red'
-                : '',
           }}
         >
           <AutosaveCustomTextField
@@ -111,8 +103,6 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({
           sx={{
             width: '30%',
             color: 'text.secondary',
-            border:
-              touched.repairCosts && errors.repairCosts ? '2px solid red' : '',
           }}
         >
           <AutosaveCustomTextField
@@ -143,10 +133,6 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({
           sx={{
             width: '30%',
             color: 'text.secondary',
-            border:
-              touched.avgUtilityTwo && errors.avgUtilityTwo
-                ? '2px solid red'
-                : '',
           }}
         >
           <AutosaveCustomTextField
@@ -173,10 +159,6 @@ export const CostOfHome: React.FC<CostOfHomeProps> = ({
           sx={{
             width: '30%',
             color: 'text.secondary',
-            border:
-              touched.unexpectedExpenses && errors.unexpectedExpenses
-                ? '2px solid red'
-                : '',
           }}
         >
           <AutosaveCustomTextField

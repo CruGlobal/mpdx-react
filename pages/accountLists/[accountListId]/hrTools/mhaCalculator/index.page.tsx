@@ -58,7 +58,7 @@ const MinisterHousingAllowancePage: React.FC = () => {
                 <MultiPageHeader
                   isNavListOpen={isNavListOpen}
                   onNavListToggle={handleNavListToggle}
-                  title={t("Minister's Housing Allowance Request")}
+                  title={t("Minister's Housing Allowance Calculation Tool")}
                   headerType={HeaderTypeEnum.HrTools}
                 />
                 <MinisterHousingAllowanceProvider>
