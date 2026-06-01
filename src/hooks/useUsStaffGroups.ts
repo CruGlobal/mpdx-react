@@ -30,7 +30,7 @@ function mhaIneligible(user: HcmQuery['hcm'][number]['staffInfo']) {
 
 /**
  * This hook determines whether a US Staff user is in a subgroup that's ineligible for ASR, Salary Calculator, MHA, or the MPD / PDS Goal Calculators (all reports that require HCM).
- * The ASR and MHA check runs against the eligible person (logged-in user if eligible, otherwise spouse, otherwise the logged-in user).
+ * The ASR, MHA, and PDS Goal Calculator checks run against the eligible person (logged-in user if eligible, otherwise spouse, otherwise the logged-in user).
  * The Salary Calculator and MPD Goal Calculator checks always run against the logged-in user.
  */
 export function useUsStaffGroups(skip?: boolean) {
@@ -47,6 +47,11 @@ export function useUsStaffGroups(skip?: boolean) {
   const allMhaIneligible =
     !!people.length &&
     people.every((person) => mhaIneligible(person.staffInfo));
+  const allPdsGoalCalcIneligible =
+    !!people.length &&
+    people.every(
+      (person) => person?.designationSupportCalculatorEligible === false,
+    );
 
   // Hide HCM-dependent reports when the API can't return HCM data for this user — either because
   // they have no staff account or because the person isn't found in the HCM report.
@@ -62,8 +67,8 @@ export function useUsStaffGroups(skip?: boolean) {
     hasNoHcmData || user?.salaryRequestEligible === false;
   const inMhaIneligibleGroup = hasNoHcmData || allMhaIneligible;
   const inMpdGoalCalcIneligibleGroup = user?.salaryRequestEligible === false;
-  // TODO: follow-up PR will replace this hardcoded value with a backend eligibility check.
-  const inPdsGoalCalcIneligibleGroup = true;
+  const inPdsGoalCalcIneligibleGroup =
+    hasNoHcmData || allPdsGoalCalcIneligible;
 
   return useMemo(
     () => ({
