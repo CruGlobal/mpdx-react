@@ -48,16 +48,19 @@ export function useUsStaffGroups(skip?: boolean) {
     !!people.length &&
     people.every((person) => mhaIneligible(person.staffInfo));
 
-  // If there is no staff account, we want to hide all reports that require it
-  const hasNoStaffAccount =
+  // Hide HCM-dependent reports when the API can't return HCM data for this user — either because
+  // they have no staff account or because the person isn't found in the HCM report.
+  const hasNoHcmData =
     error?.graphQLErrors.some(
-      (graphQLError) => graphQLError.extensions?.code === 'NO_STAFF_ACCOUNT',
+      (graphQLError) =>
+        graphQLError.extensions?.code === 'NO_STAFF_ACCOUNT' ||
+        graphQLError.extensions?.code === 'HCM_PERSON_NOT_FOUND',
     ) ?? false;
 
-  const inAsrIneligibleGroup = hasNoStaffAccount || allAsrIneligible;
+  const inAsrIneligibleGroup = hasNoHcmData || allAsrIneligible;
   const inSalaryCalcIneligibleGroup =
-    hasNoStaffAccount || user?.salaryRequestEligible === false;
-  const inMhaIneligibleGroup = hasNoStaffAccount || allMhaIneligible;
+    hasNoHcmData || user?.salaryRequestEligible === false;
+  const inMhaIneligibleGroup = hasNoHcmData || allMhaIneligible;
   const inMpdGoalCalcIneligibleGroup = user?.salaryRequestEligible === false;
   // TODO: follow-up PR will replace this hardcoded value with a backend eligibility check.
   const inPdsGoalCalcIneligibleGroup = true;
@@ -69,7 +72,7 @@ export function useUsStaffGroups(skip?: boolean) {
       inMhaIneligibleGroup,
       inMpdGoalCalcIneligibleGroup,
       inPdsGoalCalcIneligibleGroup,
-      hasNoStaffAccount,
+      hasNoHcmData,
       loading: loading && !data,
     }),
     [
@@ -78,7 +81,7 @@ export function useUsStaffGroups(skip?: boolean) {
       inMhaIneligibleGroup,
       inMpdGoalCalcIneligibleGroup,
       inPdsGoalCalcIneligibleGroup,
-      hasNoStaffAccount,
+      hasNoHcmData,
       loading,
       data,
     ],

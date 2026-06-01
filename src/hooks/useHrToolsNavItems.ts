@@ -15,7 +15,7 @@ export function useHrToolsNavItems(): {
     inMhaIneligibleGroup,
     inMpdGoalCalcIneligibleGroup,
     inPdsGoalCalcIneligibleGroup,
-    hasNoStaffAccount,
+    hasNoHcmData,
     loading: hcmLoading,
   } = useUsStaffGroups();
 
@@ -33,7 +33,7 @@ export function useHrToolsNavItems(): {
       {
         id: 'staffSavingFund',
         title: t('Savings Fund Transfer'),
-        hideItem: hasNoStaffAccount,
+        hideItem: hasNoHcmData,
       },
       {
         id: 'goalCalculator',
@@ -58,7 +58,7 @@ export function useHrToolsNavItems(): {
       {
         id: 'partnerReminders',
         title: t('Ministry Partner Reminders'),
-        hideItem: hasNoStaffAccount,
+        hideItem: hasNoHcmData,
       },
     ].filter((item) => !item.hideItem);
   }, [
@@ -68,7 +68,7 @@ export function useHrToolsNavItems(): {
     inMhaIneligibleGroup,
     inMpdGoalCalcIneligibleGroup,
     inPdsGoalCalcIneligibleGroup,
-    hasNoStaffAccount,
+    hasNoHcmData,
     hcmLoading,
   ]);
 

@@ -80,7 +80,7 @@ describe('useUsStaffGroups', () => {
         inMhaIneligibleGroup: false,
         inMpdGoalCalcIneligibleGroup: false,
         inPdsGoalCalcIneligibleGroup: true,
-        hasNoStaffAccount: false,
+        hasNoHcmData: false,
         loading: false,
       });
     });
@@ -98,7 +98,7 @@ describe('useUsStaffGroups', () => {
         inMhaIneligibleGroup: false,
         inMpdGoalCalcIneligibleGroup: true,
         inPdsGoalCalcIneligibleGroup: true,
-        hasNoStaffAccount: false,
+        hasNoHcmData: false,
         loading: false,
       });
     });
@@ -118,7 +118,7 @@ describe('useUsStaffGroups', () => {
         inMhaIneligibleGroup: true,
         inMpdGoalCalcIneligibleGroup: false,
         inPdsGoalCalcIneligibleGroup: true,
-        hasNoStaffAccount: false,
+        hasNoHcmData: false,
         loading: false,
       });
     });
@@ -160,7 +160,7 @@ describe('useUsStaffGroups', () => {
         inMhaIneligibleGroup: false,
         inMpdGoalCalcIneligibleGroup: false,
         inPdsGoalCalcIneligibleGroup: true,
-        hasNoStaffAccount: false,
+        hasNoHcmData: false,
         loading: false,
       });
     });
@@ -251,7 +251,7 @@ describe('useUsStaffGroups', () => {
       inMhaIneligibleGroup: false,
       inMpdGoalCalcIneligibleGroup: false,
       inPdsGoalCalcIneligibleGroup: true,
-      hasNoStaffAccount: false,
+      hasNoHcmData: false,
       loading: false,
     });
   });
@@ -266,43 +266,49 @@ describe('useUsStaffGroups', () => {
         inMhaIneligibleGroup: false,
         inMpdGoalCalcIneligibleGroup: false,
         inPdsGoalCalcIneligibleGroup: true,
-        hasNoStaffAccount: false,
+        hasNoHcmData: false,
         loading: false,
       });
     });
   });
 
-  it('treats no staff account error as ineligible for ASR, salary calc, and MHA but keeps MPD goal calc eligible', async () => {
-    const { result } = renderHook(() => useUsStaffGroups(), {
-      wrapper: ({ children }: { children: ReactElement }) => (
-        <GqlMockedProvider
-          mocks={{
-            Hcm: {
-              hcm: () => {
-                throw new GraphQLError('Staff account id not found', {
-                  extensions: { code: 'NO_STAFF_ACCOUNT' },
-                });
+  it.each<[string, string, string]>([
+    ['no staff account', 'NO_STAFF_ACCOUNT', 'Staff account id not found'],
+    ['person not found in HCM', 'HCM_PERSON_NOT_FOUND', 'Person not found'],
+  ])(
+    'treats %s error as ineligible for ASR, salary calc, and MHA but keeps MPD goal calc eligible',
+    async (_label, code, message) => {
+      const { result } = renderHook(() => useUsStaffGroups(), {
+        wrapper: ({ children }: { children: ReactElement }) => (
+          <GqlMockedProvider
+            mocks={{
+              Hcm: {
+                hcm: () => {
+                  throw new GraphQLError(message, {
+                    extensions: { code },
+                  });
+                },
               },
-            },
-          }}
-        >
-          {children}
-        </GqlMockedProvider>
-      ),
-    });
-
-    await waitFor(() => {
-      expect(result.current).toEqual({
-        inAsrIneligibleGroup: true,
-        inSalaryCalcIneligibleGroup: true,
-        inMhaIneligibleGroup: true,
-        inMpdGoalCalcIneligibleGroup: false,
-        inPdsGoalCalcIneligibleGroup: true,
-        hasNoStaffAccount: true,
-        loading: false,
+            }}
+          >
+            {children}
+          </GqlMockedProvider>
+        ),
       });
-    });
-  });
+
+      await waitFor(() => {
+        expect(result.current).toEqual({
+          inAsrIneligibleGroup: true,
+          inSalaryCalcIneligibleGroup: true,
+          inMhaIneligibleGroup: true,
+          inMpdGoalCalcIneligibleGroup: false,
+          inPdsGoalCalcIneligibleGroup: true,
+          hasNoHcmData: true,
+          loading: false,
+        });
+      });
+    },
+  );
 
   // TODO: follow-up PR will re-enable PDS goal calculator gating via a backend eligibility check.
   it('hardcodes the PDS goal calculator to ineligible regardless of staff data', async () => {
