@@ -16,10 +16,10 @@ describe('MpdGoalStepRightPanelAccordion', () => {
     ).toBeInTheDocument();
     expect(getByRole('button', { name: '2 Benefits' })).toBeInTheDocument();
     expect(
-      getByRole('button', { name: '3 Ministry Expenses' }),
+      getByRole('button', { name: '3A-J Ministry Expenses' }),
     ).toBeInTheDocument();
     expect(
-      getByRole('button', { name: '10 Support Goal Percentage Progress' }),
+      getByRole('button', { name: '9 Support Goal Percentage Progress' }),
     ).toBeInTheDocument();
   });
 
