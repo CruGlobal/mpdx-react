@@ -67,8 +67,7 @@ export function useUsStaffGroups(skip?: boolean) {
     hasNoHcmData || user?.salaryRequestEligible === false;
   const inMhaIneligibleGroup = hasNoHcmData || allMhaIneligible;
   const inMpdGoalCalcIneligibleGroup = user?.salaryRequestEligible === false;
-  const inPdsGoalCalcIneligibleGroup =
-    hasNoHcmData || allPdsGoalCalcIneligible;
+  const inPdsGoalCalcIneligibleGroup = hasNoHcmData || allPdsGoalCalcIneligible;
 
   return useMemo(
     () => ({
