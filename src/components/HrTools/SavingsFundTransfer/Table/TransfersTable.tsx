@@ -16,6 +16,7 @@ import { useLocale } from 'src/hooks/useLocale';
 import { CustomEditCalendar } from '../CustomEditCalendar/CustomEditCalendar';
 import { DynamicDeleteTransferModal } from '../DeleteTransferModal/DynamicDeleteTransferModal';
 import { DynamicFailedTransferModal } from '../FailedTransferModal/DynamicFailedTransferModal';
+import { getFundLabel } from '../Helper/getFundLabel';
 import { useUpdateRecurringTransferMutation } from '../TransferMutations.generated';
 import {
   ActionTypeEnum,
@@ -195,6 +196,11 @@ export const TransfersTable: React.FC<TransfersTableProps> = ({
       headerName: t('Transfers'),
       width: 150,
       renderCell: transfers,
+      valueGetter: (_value, row) =>
+        t('{{from}} to {{to}}', {
+          from: getFundLabel(row.transferFrom, t),
+          to: getFundLabel(row.transferTo, t),
+        }),
     },
     {
       field: 'amount',

@@ -11,12 +11,8 @@ import {
 import { useTranslation } from 'react-i18next';
 import { useLocale } from 'src/hooks/useLocale';
 import { StyledTableRow } from '../../../Reports/styledComponents';
-import {
-  FundTypeEnum,
-  ScheduleEnum,
-  TableTypeEnum,
-  Transfers,
-} from '../mockData';
+import { getFundLabel } from '../Helper/getFundLabel';
+import { ScheduleEnum, TableTypeEnum, Transfers } from '../mockData';
 
 interface PrintTableProps {
   transfers: Transfers[];
@@ -53,19 +49,9 @@ export const PrintTable: React.FC<PrintTableProps> = ({ transfers, type }) => {
               transfers.map((transfer) => (
                 <StyledTableRow key={transfer.id}>
                   <TableCell>
-                    {transfer.transferFrom === FundTypeEnum.Primary
-                      ? t('Primary Account')
-                      : transfer.transferFrom === FundTypeEnum.Savings
-                        ? t('Savings Account')
-                        : t('Conference Savings Account')}
+                    {getFundLabel(transfer.transferFrom, t)}
                   </TableCell>
-                  <TableCell>
-                    {transfer.transferTo === FundTypeEnum.Primary
-                      ? t('Primary Account')
-                      : transfer.transferTo === FundTypeEnum.Savings
-                        ? t('Savings Account')
-                        : t('Conference Savings Account')}
-                  </TableCell>
+                  <TableCell>{getFundLabel(transfer.transferTo, t)}</TableCell>
                   <TableCell>
                     {transfer.amount?.toLocaleString(locale, {
                       style: 'currency',

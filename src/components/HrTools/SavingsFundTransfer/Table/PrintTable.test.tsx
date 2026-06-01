@@ -6,7 +6,7 @@ import { render } from '@testing-library/react';
 import { DateTime } from 'luxon';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from 'src/theme';
-import { StatusEnum, TableTypeEnum, mockData } from '../mockData';
+import { FundTypeEnum, StatusEnum, TableTypeEnum, mockData } from '../mockData';
 import { PrintTable } from './PrintTable';
 
 const mutationSpy = jest.fn();
@@ -14,8 +14,8 @@ const mutationSpy = jest.fn();
 const mockTransfers = [
   {
     ...mockData[0],
-    transferFrom: 'Savings',
-    transferTo: 'Primary',
+    transferFrom: FundTypeEnum.Savings,
+    transferTo: FundTypeEnum.Primary,
     amount: 2500,
     status: StatusEnum.Complete,
     transferDate: DateTime.fromISO('2023-01-01'),
@@ -27,8 +27,8 @@ const mockTransfers = [
 const mockDefault = [
   {
     ...mockData[1],
-    transferFrom: 'Conference',
-    transferTo: 'Primary',
+    transferFrom: FundTypeEnum.ConferenceSavings,
+    transferTo: FundTypeEnum.Primary,
   },
 ];
 
@@ -81,7 +81,7 @@ describe('PrintTable', () => {
     expect(getByRole('cell', { name: 'Test transfer' })).toBeInTheDocument();
   });
 
-  it('renders default fund when no transfer provided', async () => {
+  it('renders the Conference Savings Account label', async () => {
     const { findByRole } = render(
       <ThemeProvider theme={theme}>
         <LocalizationProvider dateAdapter={AdapterLuxon}>
@@ -93,7 +93,7 @@ describe('PrintTable', () => {
     );
 
     expect(
-      await findByRole('cell', { name: 'Conference Savings Account' }),
+      await findByRole('cell', { name: 'Staff Conference Savings Account' }),
     ).toBeInTheDocument();
   });
 
