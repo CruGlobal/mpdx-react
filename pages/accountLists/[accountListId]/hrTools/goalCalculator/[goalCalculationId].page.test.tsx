@@ -17,11 +17,13 @@ import {
 interface ComponentsProps {
   userType?: UserTypeEnum;
   peopleGroupSupportType?: PeopleGroupSupportTypeEnum;
+  salaryRequestEligible?: boolean;
 }
 
 const Components: React.FC<ComponentsProps> = ({
   userType = UserTypeEnum.NonCru,
   peopleGroupSupportType = PeopleGroupSupportTypeEnum.SupportedRmo,
+  salaryRequestEligible = true,
 }) => (
   <TestRouter>
     <GqlMockedProvider<{
@@ -33,6 +35,7 @@ const Components: React.FC<ComponentsProps> = ({
         Hcm: {
           hcm: [
             {
+              salaryRequestEligible,
               staffInfo: { peopleGroupSupportType },
             },
           ],
@@ -62,6 +65,7 @@ describe('[goalCalculationId] page', () => {
       <Components
         userType={UserTypeEnum.UsStaff}
         peopleGroupSupportType={PeopleGroupSupportTypeEnum.Designation}
+        salaryRequestEligible={false}
       />,
     );
 
