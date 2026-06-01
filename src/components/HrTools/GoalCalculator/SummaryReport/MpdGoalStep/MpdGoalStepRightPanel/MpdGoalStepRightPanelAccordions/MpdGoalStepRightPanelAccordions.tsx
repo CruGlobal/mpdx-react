@@ -107,47 +107,47 @@ export const MpdGoalStepRightPanelAccordions: React.FC = () => {
       ),
     },
     {
-      line: '3',
+      line: '3A-J',
       title: t('Ministry Expenses'),
       content: t(
         'Various ministry-related expenses including miles, travel, meetings, meals, MPD, supplies, summer assignments, medical expenses, account transfers, and other costs.',
       ),
     },
     {
-      line: '4',
+      line: '3',
       title: t('Ministry Expenses Subtotal'),
       content: t('Sum of all ministry expenses plus benefits.'),
     },
     {
-      line: '5',
+      line: '4',
       title: t('Subtotal'),
       content: t('Overall subtotal before admin charge and attrition.'),
     },
     {
-      line: '6',
+      line: '5',
       title: t('Subtotal with admin charge'),
       content: t('Subtotal including the administrative charge percentage.'),
       hasSpace: true,
     },
     {
-      line: '7',
+      line: '6',
       title: t('Total Goal (with attrition)'),
       content: t(
-        'Final total goal including attrition rate applied to line 6.',
+        'Final total goal including attrition rate applied to line 5.',
       ),
     },
     {
-      line: '8',
+      line: '7',
       title: t('Solid Monthly Support Developed'),
       content: t('Amount of monthly support already raised and committed.'),
     },
     {
-      line: '9',
+      line: '8',
       title: t('Monthly Support to be Developed'),
       content: t('Remaining monthly support needed to reach the total goal.'),
     },
     {
-      line: '10',
+      line: '9',
       title: t('Support Goal Percentage Progress'),
       content: t(
         'Percentage of the total goal that has been achieved through developed support.',

@@ -242,18 +242,18 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({
       },
       ...ministryExpenseRows,
       {
-        line: '4',
+        line: '3',
         category: t('Ministry Expenses Subtotal'),
         value: (goalTotals) =>
           goalTotals.ministryExpensesTotal + goalTotals.benefitsCharge,
       },
       {
-        line: '5',
+        line: '4',
         category: t('Subtotal'),
         value: (goalTotals) => goalTotals.overallSubtotal,
       },
       {
-        line: '6',
+        line: '5',
         category: t('Subtotal with {{admin}} admin charge', {
           admin: percentageFormat(
             goalMiscConstants.RATES?.ADMIN_RATE?.fee ?? 0,
@@ -263,8 +263,8 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({
         value: (goalTotals) => goalTotals.overallSubtotalWithAdmin,
       },
       {
-        line: '7',
-        category: t('Total Goal (line 6 with {{attrition}} attrition)', {
+        line: '6',
+        category: t('Total Goal (line 5 with {{attrition}} attrition)', {
           attrition: percentageFormat(
             goalMiscConstants.RATES?.ATTRITION_RATE?.fee ?? 0,
             locale,
@@ -273,17 +273,17 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({
         value: (goalTotals) => goalTotals.overallTotal,
       },
       {
-        line: '8',
+        line: '7',
         category: t('Solid Monthly Support Developed'),
         value: () => supportRaised,
       },
       {
-        line: '9',
+        line: '8',
         category: t('Monthly Support to be Developed'),
         value: (goalTotals) => goalTotals.overallTotal - supportRaised,
       },
       {
-        line: '10',
+        line: '9',
         category: t('Support Goal Percentage Progress'),
         value: (goalTotals) =>
           safeProgressRatio(supportRaised, goalTotals.overallTotal),
@@ -366,14 +366,14 @@ export const MpdGoalTable: React.FC<MpdGoalTableProps> = ({
           // Bold subtotal and total lines
           if (
             params.row.line === '1J' ||
-            params.row.line === '7' ||
-            params.row.line === '9'
+            params.row.line === '6' ||
+            params.row.line === '8'
           ) {
             classes.push('bold');
           }
 
           // Add a top border to some lines
-          if (params.row.line === '1' || params.row.line === '7') {
+          if (params.row.line === '1' || params.row.line === '6') {
             classes.push('top-border');
           }
 
