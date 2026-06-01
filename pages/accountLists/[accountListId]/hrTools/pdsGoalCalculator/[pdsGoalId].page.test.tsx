@@ -3,25 +3,20 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
+import { PdsGoalCalculatorTestWrapper } from 'src/components/HrTools/PdsGoalCalculator/PdsGoalCalculatorTestWrapper';
 import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
-import {
-  PeopleGroupSupportTypeEnum,
-  UserPersonTypeEnum,
-  UserTypeEnum,
-} from 'src/graphql/types.generated';
+import { UserTypeEnum } from 'src/graphql/types.generated';
 import { PdsGoalCalculatorPage, getServerSideProps } from './[pdsGoalId].page';
 
 interface AccessComponentsProps {
   userType?: UserTypeEnum;
-  peopleGroupSupportType?: PeopleGroupSupportTypeEnum;
-  userPersonType?: UserPersonTypeEnum;
+  designationSupportCalculatorEligible?: boolean;
 }
 
 const AccessComponents: React.FC<AccessComponentsProps> = ({
   userType = UserTypeEnum.UsStaff,
-  peopleGroupSupportType = PeopleGroupSupportTypeEnum.Designation,
-  userPersonType = UserPersonTypeEnum.EmployeeHourly,
+  designationSupportCalculatorEligible = true,
 }) => (
   <TestRouter>
     <GqlMockedProvider<{
@@ -31,11 +26,7 @@ const AccessComponents: React.FC<AccessComponentsProps> = ({
       mocks={{
         GetUser: { user: { userType } },
         Hcm: {
-          hcm: [
-            {
-              staffInfo: { peopleGroupSupportType, userPersonType },
-            },
-          ],
+          hcm: [{ designationSupportCalculatorEligible }],
         },
       }}
     >
@@ -59,12 +50,9 @@ describe('[pdsGoalId] page', () => {
     ).toBeInTheDocument();
   });
 
-  it('should show limited access for a US Staff user whose peopleGroupSupportType is SupportedRmo (Senior)', async () => {
+  it('should show limited access when designationSupportCalculatorEligible is false', async () => {
     const { findByText } = render(
-      <AccessComponents
-        userType={UserTypeEnum.UsStaff}
-        peopleGroupSupportType={PeopleGroupSupportTypeEnum.SupportedRmo}
-      />,
+      <AccessComponents designationSupportCalculatorEligible={false} />,
     );
 
     expect(
@@ -72,20 +60,23 @@ describe('[pdsGoalId] page', () => {
     ).toBeInTheDocument();
   });
 
-  // TODO: follow-up PR will replace the hardcoded MPD/PDS goal calc gating with a backend
-  // eligibility check, at which point the inner-content "renders Saving indicator" test should
-  // be restored.
-  it('shows limited access for an otherwise PDS-eligible US Staff user (gating hardcoded)', async () => {
+  it('renders Saving indicator for an eligible US Staff user', async () => {
     const { findByText } = render(
-      <AccessComponents
-        userType={UserTypeEnum.UsStaff}
-        peopleGroupSupportType={PeopleGroupSupportTypeEnum.Designation}
-        userPersonType={UserPersonTypeEnum.EmployeeHourly}
-      />,
+      <PdsGoalCalculatorTestWrapper<{
+        Hcm: HcmQuery;
+      }>
+        withProvider={false}
+        userMock={{ user: { userType: UserTypeEnum.UsStaff } }}
+        extraMocks={{
+          Hcm: {
+            hcm: [{ designationSupportCalculatorEligible: true }],
+          },
+        }}
+      >
+        <PdsGoalCalculatorPage />
+      </PdsGoalCalculatorTestWrapper>,
     );
 
-    expect(
-      await findByText('Access to this feature is limited.'),
-    ).toBeInTheDocument();
+    expect(await findByText(/Last saved/)).toBeInTheDocument();
   });
 });

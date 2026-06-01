@@ -517,6 +517,7 @@ describe('MultiPageMenu', () => {
                     },
                     asrEit: { asrEligibility: true },
                     salaryRequestEligible: true,
+                    designationSupportCalculatorEligible: true,
                   },
                 ],
               },
@@ -537,64 +538,82 @@ describe('MultiPageMenu', () => {
 
     expect(await findByText('Salary Calculation Form')).toBeInTheDocument();
     expect(getByText('Savings Fund Transfer')).toBeInTheDocument();
+    expect(getByText('MPD Goal Calculator')).toBeInTheDocument();
     expect(getByText('MHA Calculation Tool')).toBeInTheDocument();
     expect(getByText('Additional Salary Request')).toBeInTheDocument();
+    expect(
+      getByText('Paid with Designation Support Goal Calculator'),
+    ).toBeInTheDocument();
     expect(getByText('Ministry Partner Reminders')).toBeInTheDocument();
   });
 
-  // TODO: follow-up PR will replace the hardcoded PDS goal calc gating with a backend
-  // eligibility check. Until then, the PDS nav item is hidden for everyone, and the MPD
-  // nav item is hidden when the user is not salaryRequestEligible.
-  it.each([
-    {
-      label: 'SupportedRmo (senior) staff',
-      peopleGroupSupportType: PeopleGroupSupportTypeEnum.SupportedRmo,
-      userPersonType: UserPersonTypeEnum.EmployeeStaff,
-    },
-    {
-      label: 'Designation (PDS) staff',
-      peopleGroupSupportType: PeopleGroupSupportTypeEnum.Designation,
-      userPersonType: UserPersonTypeEnum.EmployeeHourly,
-    },
-  ])(
-    'hides both Goal Calculator nav items for $label when salary-request ineligible',
-    async ({ peopleGroupSupportType, userPersonType }) => {
-      const { findByText, queryByText } = render(
-        <ThemeProvider theme={theme}>
-          <TestRouter router={router}>
-            <GqlMockedProvider<{ Hcm: HcmQuery }>
-              mocks={{
-                Hcm: {
-                  hcm: [
-                    {
-                      salaryRequestEligible: false,
-                      staffInfo: {
-                        peopleGroupSupportType,
-                        userPersonType,
-                      },
-                    },
-                  ],
-                },
-              }}
-            >
-              <MultiPageMenu
-                selectedId={selected}
-                isOpen={true}
-                onClose={() => {}}
-                designationAccounts={[]}
-                setDesignationAccounts={() => {}}
-                navType={NavTypeEnum.HrTools}
-              />
-            </GqlMockedProvider>
-          </TestRouter>
-        </ThemeProvider>,
-      );
+  it('hides MPD Goal Calculator when salaryRequestEligible is false', async () => {
+    const { findByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider<{ Hcm: HcmQuery }>
+            mocks={{
+              Hcm: {
+                hcm: [
+                  {
+                    salaryRequestEligible: false,
+                    designationSupportCalculatorEligible: true,
+                  },
+                ],
+              },
+            }}
+          >
+            <MultiPageMenu
+              selectedId={selected}
+              isOpen={true}
+              onClose={() => {}}
+              designationAccounts={[]}
+              setDesignationAccounts={() => {}}
+              navType={NavTypeEnum.HrTools}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
 
-      expect(await findByText('Savings Fund Transfer')).toBeInTheDocument();
-      expect(queryByText('MPD Goal Calculator')).not.toBeInTheDocument();
-      expect(
-        queryByText('Paid with Designation Support Goal Calculator'),
-      ).not.toBeInTheDocument();
-    },
-  );
+    expect(
+      await findByText('Paid with Designation Support Goal Calculator'),
+    ).toBeInTheDocument();
+    expect(queryByText('MPD Goal Calculator')).not.toBeInTheDocument();
+  });
+
+  it('hides PDS Goal Calculator when designationSupportCalculatorEligible is false', async () => {
+    const { findByText, queryByText } = render(
+      <ThemeProvider theme={theme}>
+        <TestRouter router={router}>
+          <GqlMockedProvider<{ Hcm: HcmQuery }>
+            mocks={{
+              Hcm: {
+                hcm: [
+                  {
+                    salaryRequestEligible: true,
+                    designationSupportCalculatorEligible: false,
+                  },
+                ],
+              },
+            }}
+          >
+            <MultiPageMenu
+              selectedId={selected}
+              isOpen={true}
+              onClose={() => {}}
+              designationAccounts={[]}
+              setDesignationAccounts={() => {}}
+              navType={NavTypeEnum.HrTools}
+            />
+          </GqlMockedProvider>
+        </TestRouter>
+      </ThemeProvider>,
+    );
+
+    expect(await findByText('MPD Goal Calculator')).toBeInTheDocument();
+    expect(
+      queryByText('Paid with Designation Support Goal Calculator'),
+    ).not.toBeInTheDocument();
+  });
 });

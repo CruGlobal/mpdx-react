@@ -23,6 +23,7 @@ interface TestComponentProps {
   requireUserGroups?: RequiredUserGroupEnum;
   asrEligible?: boolean;
   salaryRequestEligible?: boolean;
+  designationSupportCalculatorEligible?: boolean;
   peopleGroupSupportType?: PeopleGroupSupportTypeEnum;
   userPersonType?: UserPersonTypeEnum;
 }
@@ -34,6 +35,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
   requireUserGroups,
   asrEligible = true,
   salaryRequestEligible = true,
+  designationSupportCalculatorEligible = true,
   peopleGroupSupportType = PeopleGroupSupportTypeEnum.SupportedRmo,
   userPersonType = UserPersonTypeEnum.EmployeeHourly,
 }) => (
@@ -50,6 +52,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
               {
                 asrEit: { asrEligibility: asrEligible },
                 salaryRequestEligible,
+                designationSupportCalculatorEligible,
                 staffInfo: { peopleGroupSupportType, userPersonType },
               },
             ],
@@ -151,13 +154,11 @@ describe('UserTypeAccess', () => {
     ).toBeInTheDocument();
   });
 
-  // TODO: follow-up PR will replace the hardcoded PDS goal calc gating with a backend
-  // eligibility check. Until then, the PDS goal calculator always renders LimitedAccess.
-  it('should render LimitedAccess for the PDS goal calculator regardless of peopleGroupSupportType', async () => {
+  it('should render LimitedAccess when user type is allowed but user is ineligible for the PDS goal calculator', async () => {
     const { findByRole } = render(
       <TestComponent
         requireUserGroups={RequiredUserGroupEnum.PdsGoalCalc}
-        peopleGroupSupportType={PeopleGroupSupportTypeEnum.Designation}
+        designationSupportCalculatorEligible={false}
       />,
     );
     expect(
@@ -165,6 +166,16 @@ describe('UserTypeAccess', () => {
         name: 'Access to this feature is limited.',
       }),
     ).toBeInTheDocument();
+  });
+
+  it('should render child component when user is eligible for the PDS goal calculator', async () => {
+    const { findByText } = render(
+      <TestComponent
+        requireUserGroups={RequiredUserGroupEnum.PdsGoalCalc}
+        designationSupportCalculatorEligible={true}
+      />,
+    );
+    expect(await findByText('Test Content')).toBeInTheDocument();
   });
 
   it('should render LimitedAccess when staff account is required but not present', async () => {
