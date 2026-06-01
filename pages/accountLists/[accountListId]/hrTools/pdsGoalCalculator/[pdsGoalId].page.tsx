@@ -143,10 +143,7 @@ export const PdsGoalCalculatorPage: React.FC = () => {
         <title>{`${appName} | ${t('HR Tools - Paid with Designation Support Goal Calculator')}`}</title>
       </Head>
       {accountListId ? (
-        <UserTypeAccess
-          requireStaffAccount
-          requireUserGroups={RequiredUserGroupEnum.PdsGoalCalc}
-        >
+        <UserTypeAccess requireUserGroups={RequiredUserGroupEnum.PdsGoalCalc}>
           <ReportPageWrapper>
             <PdsGoalCalculatorProvider>
               <PdsGoalCalculatorContent

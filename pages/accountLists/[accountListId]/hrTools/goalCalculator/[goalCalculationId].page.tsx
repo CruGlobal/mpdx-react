@@ -142,10 +142,7 @@ export const GoalCalculatorPage: React.FC = () => {
         <title>{`${appName} | ${t('Reports - Goal Calculation')}`}</title>
       </Head>
       {accountListId ? (
-        <UserTypeAccess
-          requireStaffAccount
-          requireUserGroups={RequiredUserGroupEnum.MpdGoalCalc}
-        >
+        <UserTypeAccess requireUserGroups={RequiredUserGroupEnum.MpdGoalCalc}>
           <ReportPageWrapper>
             <GoalCalculatorProvider>
               <GoalCalculatorContent
