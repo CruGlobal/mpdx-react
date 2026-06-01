@@ -58,8 +58,7 @@ export function useUsStaffGroups(skip?: boolean) {
   const inSalaryCalcIneligibleGroup =
     hasNoStaffAccount || user?.salaryRequestEligible === false;
   const inMhaIneligibleGroup = hasNoStaffAccount || allMhaIneligible;
-  const inMpdGoalCalcIneligibleGroup =
-    hasNoStaffAccount || user?.salaryRequestEligible === false;
+  const inMpdGoalCalcIneligibleGroup = user?.salaryRequestEligible === false;
   // TODO: follow-up PR will replace this hardcoded value with a backend eligibility check.
   const inPdsGoalCalcIneligibleGroup = true;
 

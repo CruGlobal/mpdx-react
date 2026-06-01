@@ -272,7 +272,7 @@ describe('useUsStaffGroups', () => {
     });
   });
 
-  it('treats no staff account error as ineligible for all groups', async () => {
+  it('treats no staff account error as ineligible for ASR, salary calc, and MHA but keeps MPD goal calc eligible', async () => {
     const { result } = renderHook(() => useUsStaffGroups(), {
       wrapper: ({ children }: { children: ReactElement }) => (
         <GqlMockedProvider
@@ -296,7 +296,7 @@ describe('useUsStaffGroups', () => {
         inAsrIneligibleGroup: true,
         inSalaryCalcIneligibleGroup: true,
         inMhaIneligibleGroup: true,
-        inMpdGoalCalcIneligibleGroup: true,
+        inMpdGoalCalcIneligibleGroup: false,
         inPdsGoalCalcIneligibleGroup: true,
         hasNoStaffAccount: true,
         loading: false,
