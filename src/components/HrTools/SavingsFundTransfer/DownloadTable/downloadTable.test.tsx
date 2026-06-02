@@ -18,7 +18,7 @@ const mockHeaders = [
   'Schedule',
   'Status',
   'Transfer Date',
-  'Stop Date',
+  'End Date',
   'Note',
 ];
 

@@ -142,12 +142,12 @@ export const TransfersTable: React.FC<TransfersTableProps> = ({
   ) => {
     const successMessage =
       actionType === ActionTypeEnum.Edit
-        ? t('Stop date updated successfully')
-        : t('Stop date added successfully');
+        ? t('End date updated successfully')
+        : t('End date added successfully');
     const errorMessage =
       actionType === ActionTypeEnum.Edit
-        ? t('Failed to update stop date')
-        : t('Failed to add stop date');
+        ? t('Failed to update end date')
+        : t('Failed to add end date');
     try {
       if (calendarRow) {
         const recurringEnd: string | null = date ? date.toISO() : null;
@@ -228,7 +228,7 @@ export const TransfersTable: React.FC<TransfersTableProps> = ({
     },
     {
       field: 'endDate',
-      headerName: t('Stop Date'),
+      headerName: t('End Date'),
       width: 145,
       renderCell: endDate,
     },

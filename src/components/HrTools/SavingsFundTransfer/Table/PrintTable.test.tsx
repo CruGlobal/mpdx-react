@@ -72,7 +72,7 @@ describe('PrintTable', () => {
     ).toBeInTheDocument();
     expect(getByRole('cell', { name: 'Jan 1, 2023' })).toBeInTheDocument();
     expect(
-      await findByRole('columnheader', { name: 'Stop Date' }),
+      await findByRole('columnheader', { name: 'End Date' }),
     ).toBeInTheDocument();
     expect(getByRole('cell', { name: '' })).toBeInTheDocument();
     expect(
