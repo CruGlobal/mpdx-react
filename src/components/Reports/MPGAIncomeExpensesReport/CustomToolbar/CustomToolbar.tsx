@@ -10,6 +10,7 @@ import {
   ToolbarButton,
 } from '@mui/x-data-grid';
 import { useTranslation } from 'react-i18next';
+import { useLocale } from 'src/hooks/useLocale';
 import { exportToCsv } from '../CustomExport/CustomExport';
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
 import { TableCardHead } from '../Tables/TableCardHead';
@@ -27,6 +28,7 @@ export const CustomToolbar: React.FC<CustomToolbarProps> = ({
   months,
 }) => {
   const { t } = useTranslation();
+  const locale = useLocale();
 
   return (
     <Toolbar style={{ display: 'flex', justifyContent: 'left' }}>
@@ -71,7 +73,7 @@ export const CustomToolbar: React.FC<CustomToolbarProps> = ({
       />
 
       <Tooltip title={t('Download as CSV')}>
-        <ToolbarButton onClick={() => exportToCsv(data, type, months)}>
+        <ToolbarButton onClick={() => exportToCsv(data, type, months, locale)}>
           <FileDownloadIcon fontSize="small" color="primary" />
         </ToolbarButton>
       </Tooltip>

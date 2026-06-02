@@ -230,7 +230,7 @@ export function populateTransferRows(options: Options) {
       ) : row.endDate ? (
         <>
           <IconButton
-            title={t('Edit Stop Date')}
+            title={t('Edit End Date')}
             onClick={(event) => {
               event.stopPropagation();
               handleCalendarOpen(row);
@@ -259,7 +259,7 @@ export function populateTransferRows(options: Options) {
       ) : (
         <>
           <IconButton
-            title={t('Add Stop Date')}
+            title={t('Add End Date')}
             onClick={(event) => {
               event.stopPropagation();
               handleCalendarOpen(row);

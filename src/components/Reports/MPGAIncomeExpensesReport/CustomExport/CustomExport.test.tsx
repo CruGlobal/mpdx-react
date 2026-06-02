@@ -1,6 +1,8 @@
 import { ReportTypeEnum } from '../Helper/MPGAReportEnum';
-import { mockData, months } from '../mockData';
+import { DataFields, mockData, months } from '../mockData';
 import { createTable, exportToCsv } from './CustomExport';
+
+const locale = 'en-US';
 
 const mockSetAttribute = jest.fn();
 const mockClick = jest.fn();
@@ -51,7 +53,12 @@ describe('CustomExport', () => {
     jest.spyOn(link, 'setAttribute').mockImplementation(mockSetAttribute);
     jest.spyOn(link, 'click').mockImplementation(mockClick);
 
-    const data = exportToCsv(mockData.income, ReportTypeEnum.Income, months);
+    const data = exportToCsv(
+      mockData.income,
+      ReportTypeEnum.Income,
+      months,
+      locale,
+    );
 
     expect(mockSetAttribute).toHaveBeenCalledWith(
       'href',
@@ -69,36 +76,79 @@ describe('CustomExport', () => {
   });
 
   it('should contain correct data', () => {
-    const csvData = createTable(mockHeaders, mockData.income);
+    const csvData = createTable(mockHeaders, mockData.income, locale);
 
     expect(csvData).toContain(mockHeaders);
     expect(csvData[1]).toEqual([
       'Contributions',
-      6770,
-      6090,
-      5770,
-      7355,
-      8035,
-      6575,
-      7556,
-      8239,
-      9799,
-      9729,
-      13020,
-      19215,
-      9013,
-      108156,
+      '6770',
+      '6090',
+      '5770',
+      '7355',
+      '8035',
+      '6575',
+      '7556',
+      '8239',
+      '9799',
+      '9729',
+      '13020',
+      '19215',
+      '9013',
+      '108156',
+    ]);
+  });
+
+  it('should round values to two decimal places', () => {
+    const decimalData: DataFields[] = [
+      {
+        id: 'rounding-test',
+        description: 'Rounding',
+        monthly: [10.234, 10.236, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        average: 9012.567,
+        total: 108155.555,
+      },
+    ];
+
+    const csvData = createTable(mockHeaders, decimalData, locale);
+
+    expect(csvData[1]).toEqual([
+      'Rounding',
+      '10.23',
+      '10.24',
+      '-',
+      '-',
+      '-',
+      '-',
+      '-',
+      '-',
+      '-',
+      '-',
+      '-',
+      '-',
+      '9012.57',
+      '108155.56',
     ]);
   });
 
   it('should display correct totals', () => {
-    const csvData = createTable(mockHeaders, dataWithTotal);
+    const csvData = createTable(mockHeaders, dataWithTotal, locale);
 
     expect(csvData[csvData.length - 1]).toEqual([
       'Overall Total',
-      ...monthlyTotals,
-      overallAverage,
-      overallTotal,
+      '6870',
+      '6190',
+      '5870',
+      '7455',
+      '8135',
+      '6675',
+      '7656',
+      '8239',
+      '9799',
+      '9729',
+      '13020',
+      '19215',
+      '9071',
+      '108856',
     ]);
   });
 });

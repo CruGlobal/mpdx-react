@@ -99,14 +99,14 @@ export const SavingsFundTransfer: React.FC<SavingsFundTransferProps> = ({
               <StyledListItem>
                 <ListItemText
                   primary={t(
-                    'Want your monthly transfer to end at a certain point? You can set a stop date—super handy! Just a heads-up: once it’s there, it can’t be removed, but you can change it to a different date if needed.',
+                    'Want your monthly transfer to end at a certain point? You can set an end date—super handy! Just a heads-up: once it’s there, it can’t be removed, but you can change it to a different date if needed.',
                   )}
                 />
               </StyledListItem>
               <StyledListItem>
                 <ListItemText
                   primary={t(
-                    "Need to update the amount you're transferring each month? No problem! Just set a stop date for the end of the current month on your existing transfer. After that, go ahead and set up a brand-new monthly transfer with the updated amount.",
+                    "Need to update the amount you're transferring each month? No problem! Just set an end date for the end of the current month on your existing transfer. After that, go ahead and set up a brand-new monthly transfer with the updated amount.",
                   )}
                 />
               </StyledListItem>

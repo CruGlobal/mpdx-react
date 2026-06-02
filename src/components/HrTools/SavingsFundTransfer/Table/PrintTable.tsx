@@ -40,7 +40,7 @@ export const PrintTable: React.FC<PrintTableProps> = ({ transfers, type }) => {
               <TableCell>{t('Schedule')}</TableCell>
               <TableCell>{t('Status')}</TableCell>
               <TableCell>{t('Transfer Date')}</TableCell>
-              <TableCell>{t('Stop Date')}</TableCell>
+              <TableCell>{t('End Date')}</TableCell>
               <TableCell>{t('Note')}</TableCell>
             </TableRow>
           </TableHead>

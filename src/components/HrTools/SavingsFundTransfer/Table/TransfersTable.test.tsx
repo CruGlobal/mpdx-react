@@ -80,7 +80,7 @@ describe('TransferHistoryTable', () => {
         'Schedule',
         'Status',
         'Transfer Date',
-        'Stop Date',
+        'End Date',
         'Note',
         'Actions',
       ]),
@@ -119,7 +119,7 @@ describe('TransferHistoryTable', () => {
     ).toBeInTheDocument();
 
     expect(
-      within(actionCell).getByRole('button', { name: 'Add Stop Date' }),
+      within(actionCell).getByRole('button', { name: 'Add End Date' }),
     ).toBeInTheDocument();
     expect(
       within(actionCell).getByRole('img', { name: 'Stop Transfer' }),
@@ -178,7 +178,7 @@ describe('TransferHistoryTable', () => {
   });
 
   describe('Calendar', () => {
-    it('opens the calendar when Add Stop Date is clicked', async () => {
+    it('opens the calendar when Add End Date is clicked', async () => {
       const { getByRole, findByRole } = render(<TestComponent />);
 
       const iconRow = getByRole('row', {
@@ -187,7 +187,7 @@ describe('TransferHistoryTable', () => {
       const cells = within(iconRow).getAllByRole('gridcell');
       const actionCell = cells[7];
       const icon = within(actionCell).getByRole('button', {
-        name: 'Add Stop Date',
+        name: 'Add End Date',
       });
 
       userEvent.click(icon);
@@ -205,7 +205,7 @@ describe('TransferHistoryTable', () => {
       const cells = within(iconRow).getAllByRole('gridcell');
       const actionCell = cells[7];
       const icon = within(actionCell).getByRole('button', {
-        name: 'Add Stop Date',
+        name: 'Add End Date',
       });
 
       userEvent.click(icon);
@@ -231,7 +231,7 @@ describe('TransferHistoryTable', () => {
     const cells = within(iconRow).getAllByRole('gridcell');
     const actionCell = cells[7];
     const icon = within(actionCell).getByRole('button', {
-      name: 'Edit Stop Date',
+      name: 'Edit End Date',
     });
 
     userEvent.click(icon);
@@ -245,7 +245,7 @@ describe('TransferHistoryTable', () => {
     userEvent.click(getByRole('button', { name: 'Yes' }));
 
     await waitFor(() => expect(mutationSpy).toHaveBeenCalled());
-    expect(mockEnqueue).toHaveBeenCalledWith('Stop date updated successfully', {
+    expect(mockEnqueue).toHaveBeenCalledWith('End date updated successfully', {
       variant: 'success',
     });
 
@@ -261,7 +261,7 @@ describe('TransferHistoryTable', () => {
     const cells = within(iconRow).getAllByRole('gridcell');
     const actionCell = cells[7];
     const icon = within(actionCell).getByRole('button', {
-      name: 'Edit Stop Date',
+      name: 'Edit End Date',
     });
 
     userEvent.click(icon);
@@ -286,7 +286,7 @@ describe('TransferHistoryTable', () => {
     userEvent.click(acceptButton);
 
     await waitFor(() => expect(mutationSpy).toHaveBeenCalled());
-    expect(mockEnqueue).toHaveBeenCalledWith('Stop date updated successfully', {
+    expect(mockEnqueue).toHaveBeenCalledWith('End date updated successfully', {
       variant: 'success',
     });
   });
