@@ -189,8 +189,69 @@ describe('TransferModal', () => {
       userEvent.tab();
 
       expect(
-        await findByText('End date must be after transfer date'),
+        await findByText(
+          'End date must be at least one day after the transfer date',
+        ),
       ).toBeInTheDocument();
+    });
+
+    it('should reject an end date equal to the transfer date for recurring transfers', async () => {
+      const { getByRole, findByLabelText, getByLabelText, findByText } = render(
+        <Components />,
+      );
+
+      userEvent.click(getByRole('radio', { name: /monthly/i }));
+      expect(getByRole('radio', { name: /monthly/i })).toBeChecked();
+
+      const transferDate = await findByLabelText(/transfer date/i);
+      const endDate = getByLabelText(/end date/i);
+
+      userEvent.clear(transferDate);
+      userEvent.type(transferDate, '12/01/2024');
+      userEvent.tab();
+
+      userEvent.clear(endDate);
+      userEvent.type(endDate, '12/01/2024');
+
+      userEvent.tab();
+
+      expect(
+        await findByText(
+          'End date must be at least one day after the transfer date',
+        ),
+      ).toBeInTheDocument();
+    });
+
+    it('should accept an end date one day after the transfer date for recurring transfers', async () => {
+      const { getByRole, findByLabelText, getByLabelText, queryByText } =
+        render(<Components />);
+
+      userEvent.click(getByRole('radio', { name: /monthly/i }));
+      expect(getByRole('radio', { name: /monthly/i })).toBeChecked();
+
+      expect(await findByLabelText(/end date/i)).toBeInTheDocument();
+
+      const transferDate = getByLabelText(/transfer date/i);
+      const endDate = getByLabelText(/end date/i);
+
+      userEvent.clear(transferDate);
+      userEvent.type(transferDate, '12/01/2024');
+      expect(transferDate).toHaveValue('12/01/2024');
+      userEvent.tab();
+
+      userEvent.clear(endDate);
+      userEvent.type(endDate, '12/02/2024');
+      expect(endDate).toHaveValue('12/02/2024');
+
+      userEvent.tab();
+
+      await waitFor(() =>
+        expect(
+          queryByText(
+            'End date must be at least one day after the transfer date',
+          ),
+        ).not.toBeInTheDocument(),
+      );
     });
 
     it('should submit form with valid data', async () => {
@@ -304,6 +365,18 @@ describe('TransferModal', () => {
           queryByRole('textbox', { name: /end date/i }),
         ).not.toBeInTheDocument(),
       );
+    });
+
+    it('should show descriptive helper text for the end date field', async () => {
+      const { getByRole, findByText } = render(<Components />);
+
+      userEvent.click(getByRole('radio', { name: /monthly/i }));
+
+      expect(
+        await findByText(
+          'The transfer will no longer recur after this date. If left blank, the transfer will recur indefinitely until manually stopped.',
+        ),
+      ).toBeInTheDocument();
     });
 
     it('should show error message when monthly schedule is selected', async () => {
