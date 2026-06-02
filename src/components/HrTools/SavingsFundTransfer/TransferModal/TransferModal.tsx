@@ -119,14 +119,14 @@ const transferSchema = (locale: string) =>
         is: (schedule: ScheduleEnum) => schedule !== ScheduleEnum.OneTime,
         then: (schema) =>
           schema.test(
-            'end>=start',
-            i18n.t('End date must be after transfer date'),
+            'end>start',
+            i18n.t('End date must be at least one day after the transfer date'),
             function (end) {
               const start = this.parent.transferDate as DateTime | null;
               if (!end || !start) {
                 return true;
               }
-              return end.toMillis() >= start.toMillis();
+              return end.startOf('day') > start.startOf('day');
             },
           ),
         otherwise: (schema) => schema.notRequired(),
@@ -491,7 +491,11 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                             }}
                             error={touched.endDate && Boolean(errors.endDate)}
                             helperText={
-                              touched.endDate && (errors.endDate as string)
+                              touched.endDate && errors.endDate
+                                ? errors.endDate
+                                : t(
+                                    'The transfer will no longer recur after this date. If left blank, the transfer will recur indefinitely until manually stopped.',
+                                  )
                             }
                           />
                         </Grid>
