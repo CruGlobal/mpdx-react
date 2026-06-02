@@ -8,8 +8,11 @@ import {
 } from 'src/graphql/types.generated';
 import { SalaryCalculationQuery } from '../../SalaryCalculatorContext/SalaryCalculation.generated';
 import {
+  EffectiveSalaryRequestMock,
   SalaryCalculatorTestWrapper,
   SalaryCalculatorTestWrapperProps,
+  hcmSpouseMock,
+  hcmUserMock,
 } from '../../SalaryCalculatorTestWrapper';
 import { RequestedSalaryCard } from './RequestedSalaryCard';
 
@@ -27,9 +30,19 @@ const defaultSalaryMock: DeepPartial<SalaryCalculationQuery['salaryRequest']> =
     },
   };
 
-const TestComponent: React.FC<SalaryCalculatorTestWrapperProps> = (props) => (
+const approvedSalaryMock: EffectiveSalaryRequestMock = {
+  personNumber: hcmUserMock.staffInfo.personNumber,
+  salary: 11111,
+  spouseSalary: 22222,
+};
+
+const TestComponent: React.FC<SalaryCalculatorTestWrapperProps> = ({
+  effectiveSalaryRequestMock = approvedSalaryMock,
+  ...props
+}) => (
   <SalaryCalculatorTestWrapper
     salaryRequestMock={defaultSalaryMock}
+    effectiveSalaryRequestMock={effectiveSalaryRequestMock}
     hcmUser={{
       currentSalary: { grossSalaryAmount: 10001 },
     }}
@@ -74,7 +87,7 @@ As you set your salary level, the amount you receive should reflect the amount o
         expect(
           getAllByRole('rowheader').map((cell) => cell.textContent),
         ).toEqual([
-          'Current Salary',
+          'Current Requested Salary',
           'Minimum Salary',
           'Maximum Allowable Salary (CAP)',
           'Requested Salary',
@@ -86,7 +99,27 @@ As you set your salary level, the amount you receive should reflect the amount o
       const { getAllByRole } = render(<TestComponent />);
 
       const expectedCells = [
-        ['$10,001.00', '$20,001.00'],
+        ['$11,111.00', '$22,222.00'],
+        ['$10,003.00', '$20,003.00'],
+        ['$10,004.00', '$20,004.00'],
+      ].flat();
+
+      await waitFor(() =>
+        expect(
+          getAllByRole('cell')
+            .slice(0, -2)
+            .map((cell) => cell.textContent),
+        ).toEqual(expectedCells),
+      );
+    });
+
+    it('should render a dash when there is no approved salary request', async () => {
+      const { getAllByRole } = render(
+        <TestComponent effectiveSalaryRequestMock={null} />,
+      );
+
+      const expectedCells = [
+        ['–', '–'],
         ['$10,003.00', '$20,003.00'],
         ['$10,004.00', '$20,004.00'],
       ].flat();
@@ -98,6 +131,31 @@ As you set your salary level, the amount you receive should reflect the amount o
             .slice(0, -2)
             .map((cell) => cell.textContent),
         ).toEqual(expectedCells),
+      );
+    });
+
+    it('swaps the requested salary when the spouse created the request', async () => {
+      const { getAllByRole } = render(
+        <TestComponent
+          effectiveSalaryRequestMock={{
+            ...approvedSalaryMock,
+            personNumber: hcmSpouseMock.staffInfo.personNumber,
+          }}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(
+          getAllByRole('cell')
+            .slice(0, -2)
+            .map((cell) => cell.textContent),
+        ).toEqual(
+          [
+            ['$22,222.00', '$11,111.00'],
+            ['$10,003.00', '$20,003.00'],
+            ['$10,004.00', '$20,004.00'],
+          ].flat(),
+        ),
       );
     });
 
@@ -148,7 +206,7 @@ As you set your salary level, the amount you receive should reflect the amount o
         expect(
           getAllByRole('rowheader').map((cell) => cell.textContent),
         ).toEqual([
-          'Current Salary',
+          'Current Requested Salary',
           'Minimum Salary',
           'Maximum Allowable Salary (CAP)',
           'Requested Salary',
@@ -159,7 +217,23 @@ As you set your salary level, the amount you receive should reflect the amount o
     it('should render table cells with formatted currency', async () => {
       const { getAllByRole } = render(<TestComponent hasSpouse={false} />);
 
-      const expectedCells = ['$10,001.00', '$10,003.00', '$10,004.00'];
+      const expectedCells = ['$11,111.00', '$10,003.00', '$10,004.00'];
+
+      await waitFor(() =>
+        expect(
+          getAllByRole('cell')
+            .slice(0, -1)
+            .map((cell) => cell.textContent),
+        ).toEqual(expectedCells),
+      );
+    });
+
+    it('should render a dash when there is no approved salary request', async () => {
+      const { getAllByRole } = render(
+        <TestComponent hasSpouse={false} effectiveSalaryRequestMock={null} />,
+      );
+
+      const expectedCells = ['–', '$10,003.00', '$10,004.00'];
 
       await waitFor(() =>
         expect(

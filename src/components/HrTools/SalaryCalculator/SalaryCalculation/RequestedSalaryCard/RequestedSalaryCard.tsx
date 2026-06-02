@@ -15,10 +15,14 @@ import * as yup from 'yup';
 import { useAutosaveForm } from 'src/components/Shared/Autosave/AutosaveForm';
 import { amount } from 'src/lib/yupHelpers';
 import { AutosaveTextField } from '../../Autosave/AutosaveTextField';
-import { CalculationFieldsFragment } from '../../SalaryCalculatorContext/SalaryCalculation.generated';
+import {
+  CalculationFieldsFragment,
+  useEffectiveSalaryCalculationQuery,
+} from '../../SalaryCalculatorContext/SalaryCalculation.generated';
 import { useSalaryCalculator } from '../../SalaryCalculatorContext/SalaryCalculatorContext';
 import { EffectiveDateNote } from '../../Shared/EffectiveDateNote';
 import { StepCard, StepTableHead } from '../../Shared/StepCard';
+import { orientSalaryRequest } from '../../Shared/orientSalaryRequest';
 import { useFormatters } from '../../Shared/useFormatters';
 import { useCaps } from '../useCaps';
 import { useSosaBlockOverCap } from '../useSosaBlockOverCap';
@@ -34,6 +38,13 @@ export const RequestedSalaryCard: React.FC = () => {
   const { overCapPerson } = useCaps();
   const { isUserSosa, blockOnCap } = useSosaBlockOverCap();
   const { markValid, markInvalid } = useAutosaveForm();
+
+  const { data: effectiveData } = useEffectiveSalaryCalculationQuery();
+  const { salary, spouseSalary } =
+    orientSalaryRequest(
+      effectiveData?.salaryRequest,
+      hcmUser?.staffInfo.personNumber,
+    ) ?? {};
 
   // Disable the Continue button while the saved gross exceeds the SOSA cap.
   useEffect(() => {
@@ -128,14 +139,12 @@ export const RequestedSalaryCard: React.FC = () => {
           <TableBody>
             <TableRow>
               <TableCell component="th" scope="row">
-                {t('Current Salary')}
+                {t('Current Requested Salary')}
               </TableCell>
-              <TableCell>
-                {formatCurrency(hcmUser?.currentSalary.grossSalaryAmount)}
-              </TableCell>
+              <TableCell>{salary ? formatCurrency(salary) : '–'}</TableCell>
               {hcmSpouse && (
                 <TableCell>
-                  {formatCurrency(hcmSpouse.currentSalary.grossSalaryAmount)}
+                  {spouseSalary ? formatCurrency(spouseSalary) : '–'}
                 </TableCell>
               )}
             </TableRow>
