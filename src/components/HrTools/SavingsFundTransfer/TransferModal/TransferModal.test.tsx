@@ -53,7 +53,7 @@ jest.mock('@mui/material', () => {
 });
 
 const transferDefaultData: TransferModalData['transfer'] = {
-  transferFrom: 'transferFrom',
+  transferFrom: 'Staff Account',
   transferTo: '',
   amount: 0,
   schedule: ScheduleEnum.OneTime,
@@ -152,11 +152,8 @@ describe('TransferModal', () => {
       userEvent.type(amountField, '-100');
       userEvent.tab();
 
-      const fromAccount = getByRole('combobox', { name: /from account/i });
       const toAccount = getByRole('combobox', { name: /to account/i });
 
-      userEvent.click(fromAccount);
-      userEvent.click(getByRole('option', { name: /staff account/i }));
       userEvent.click(toAccount);
       userEvent.click(getByRole('option', { name: /staff savings/i }));
 
@@ -199,12 +196,8 @@ describe('TransferModal', () => {
     it('should submit form with valid data', async () => {
       const { getByRole } = render(<Components />);
 
-      const fromAccount = getByRole('combobox', { name: /from account/i });
       const toAccount = getByRole('combobox', { name: /to account/i });
       const amountField = getByRole('spinbutton', { name: /amount/i });
-
-      userEvent.click(fromAccount);
-      userEvent.click(getByRole('option', { name: /staff account/i }));
 
       userEvent.click(toAccount);
       userEvent.click(getByRole('option', { name: /staff savings/i }));
@@ -227,13 +220,9 @@ describe('TransferModal', () => {
     it('should handle form submission successfully', async () => {
       const { getByRole } = render(<Components />);
 
-      const fromAccount = getByRole('combobox', { name: /from account/i });
       const toAccount = getByRole('combobox', { name: /to account/i });
       const amountField = getByRole('spinbutton', { name: /amount/i });
       const submitButton = getByRole('button', { name: /submit/i });
-
-      userEvent.click(fromAccount);
-      userEvent.click(getByRole('option', { name: /staff account/i }));
 
       userEvent.click(toAccount);
       userEvent.click(getByRole('option', { name: /staff savings/i }));
@@ -274,55 +263,25 @@ describe('TransferModal', () => {
       expect(getByLabelText(/end date/i)).toHaveValue('');
     });
 
-    it('should validate that from and to accounts are different', async () => {
-      const { getByRole, queryByRole, getAllByRole } = render(<Components />);
+    it('locks the From Account to the launching card and excludes it from To Account options', async () => {
+      const { getByRole, queryByRole } = render(<Components />);
 
-      const [fromAccount, toAccount] = getAllByRole('combobox');
+      const fromAccount = getByRole('combobox', { name: /from account/i });
+      expect(fromAccount).toHaveTextContent('Staff Account');
 
       userEvent.click(fromAccount);
-      expect(
-        getByRole('option', { name: /staff account/i }),
-      ).toBeInTheDocument();
-      userEvent.click(getByRole('option', { name: /staff account/i }));
+      expect(queryByRole('listbox')).not.toBeInTheDocument();
 
-      userEvent.click(toAccount);
+      userEvent.click(getByRole('combobox', { name: /to account/i }));
+
       await waitFor(() =>
         expect(
           queryByRole('option', { name: /staff account/i }),
         ).not.toBeInTheDocument(),
       );
-
-      userEvent.click(getByRole('option', { name: /staff savings/i }));
-      userEvent.click(getByRole('button', { name: /submit/i }));
-    });
-
-    it('should swap accounts when swap button is clicked', async () => {
-      const { getByRole, getByTestId } = render(<Components />);
-
-      const icon = getByTestId('SwapHorizIcon');
-      const swapButton = icon.closest('button');
-
-      expect(swapButton).toBeDisabled();
-
-      const fromAccount = getByRole('combobox', { name: /from account/i });
-      const toAccount = getByRole('combobox', { name: /to account/i });
-
-      userEvent.click(fromAccount);
-      userEvent.click(getByRole('option', { name: /staff account/i }));
-
-      userEvent.click(toAccount);
-      userEvent.click(getByRole('option', { name: /staff savings/i }));
-
-      await waitFor(() => {
-        expect(swapButton).not.toBeDisabled();
-      });
-
-      userEvent.click(swapButton as HTMLButtonElement);
-
-      await waitFor(() => {
-        expect(fromAccount).toHaveTextContent('Staff Savings');
-        expect(toAccount).toHaveTextContent('Staff Account');
-      });
+      expect(
+        getByRole('option', { name: /staff savings/i }),
+      ).toBeInTheDocument();
     });
 
     it('should show/hide end date based on schedule selection', async () => {
@@ -393,11 +352,7 @@ describe('TransferModal', () => {
     it('should show information box when amount exceeds limit', async () => {
       const { getByRole, findByRole } = render(<Components />);
 
-      const fromAccount = getByRole('combobox', { name: /from account/i });
       const toAccount = getByRole('combobox', { name: /to account/i });
-
-      userEvent.click(fromAccount);
-      userEvent.click(getByRole('option', { name: /staff account/i }));
 
       userEvent.click(toAccount);
       userEvent.click(getByRole('option', { name: /staff savings/i }));
@@ -441,9 +396,6 @@ describe('TransferModal', () => {
 
       const amountField = getByRole('spinbutton', { name: /amount/i });
 
-      userEvent.click(getByRole('combobox', { name: /from account/i }));
-      userEvent.click(getByRole('option', { name: /staff account/i }));
-
       userEvent.click(getByRole('combobox', { name: /to account/i }));
       userEvent.click(getByRole('option', { name: /staff savings/i }));
 
@@ -473,9 +425,6 @@ describe('TransferModal', () => {
       const { getByRole, getByLabelText } = render(<Components />);
 
       const amountField = getByRole('spinbutton', { name: /amount/i });
-
-      userEvent.click(getByRole('combobox', { name: /from account/i }));
-      userEvent.click(getByRole('option', { name: /staff account/i }));
 
       userEvent.click(getByRole('combobox', { name: /to account/i }));
       userEvent.click(getByRole('option', { name: /staff savings/i }));

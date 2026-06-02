@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  Groups,
-  MoveToInbox,
-  Outbox,
-  Savings,
-  Wallet,
-} from '@mui/icons-material';
+import { Groups, Outbox, Savings, Wallet } from '@mui/icons-material';
 import { Box, Button, Card, Typography } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { SimpleScreenOnly } from 'src/components/Reports/styledComponents';
@@ -51,14 +45,6 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
     });
   };
 
-  const handleTransferTo = () => {
-    handleOpenTransferModal({
-      transfer: {
-        transferTo: fund.fundType,
-      },
-    });
-  };
-
   return (
     <Card
       variant="outlined"
@@ -70,6 +56,8 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
         fontSize: '1.25rem',
         boxShadow: isSelected ? 3 : 1,
         transition: 'box-shadow 0.3s ease-in-out',
+        display: 'flex',
+        flexDirection: 'column',
       }}
     >
       <Box display={'flex'} flexDirection="row" alignItems="center" gap={1}>
@@ -99,6 +87,9 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
               '@media print': { fontSize: '12pt' },
               fontWeight: 500,
               fontSize: '13pt',
+              minHeight: '3em',
+              display: 'flex',
+              alignItems: 'center',
             }}
           >
             {title}
@@ -107,7 +98,7 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
       </Box>
       <Box
         sx={{
-          mt: 5,
+          mt: 3,
           '@media print': { mt: 2 },
         }}
       >
@@ -135,20 +126,16 @@ export const BalanceCard: React.FC<BalanceCardProps> = ({
       <SimpleScreenOnly
         sx={{
           alignItems: 'left',
-          mt: 2,
-          ml: 0,
+          mt: 'auto',
         }}
       >
         <Button
           onClick={handleTransferFrom}
           disabled={fund.endBalance <= fund.deficitLimit}
+          fullWidth
         >
           <Outbox fontSize="small" sx={{ mr: 0.5 }} />
           {t('TRANSFER FROM')}
-        </Button>
-        <Button onClick={handleTransferTo}>
-          <MoveToInbox fontSize="small" sx={{ mr: 0.5 }} />
-          {t('TRANSFER TO')}
         </Button>
       </SimpleScreenOnly>
     </Card>
