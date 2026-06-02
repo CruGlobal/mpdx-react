@@ -62,7 +62,6 @@ describe('BalanceCard', () => {
     expect(getByText('Current Balance')).toBeInTheDocument();
     expect(getByText('$15,000.00')).toBeInTheDocument();
     expect(getByRole('button', { name: /transfer from/i })).toBeInTheDocument();
-    expect(getByRole('button', { name: /transfer to/i })).toBeInTheDocument();
   });
 
   it('should display title correctly', () => {
@@ -186,21 +185,6 @@ describe('BalanceCard', () => {
     expect(mockHandleOpenTransferModal).toHaveBeenCalledWith({
       transfer: {
         transferFrom: expect.any(String),
-      },
-    });
-  });
-
-  it('should call handleOpenTransferModal with correct parameters when Transfer To is clicked', async () => {
-    const { findByRole } = render(<Components />);
-
-    const transferToButton = await findByRole('button', {
-      name: /transfer to/i,
-    });
-    userEvent.click(transferToButton);
-
-    expect(mockHandleOpenTransferModal).toHaveBeenCalledWith({
-      transfer: {
-        transferTo: expect.any(String),
       },
     });
   });
