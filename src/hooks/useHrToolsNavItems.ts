@@ -3,7 +3,10 @@ import { useTranslation } from 'react-i18next';
 import { NavItems } from './useReportNavItems';
 import { useUsStaffGroups } from './useUsStaffGroups';
 
-export function useHrToolsNavItems(): NavItems[] {
+export function useHrToolsNavItems(): {
+  items: NavItems[];
+  loading: boolean;
+} {
   const { t } = useTranslation();
 
   const {
@@ -12,11 +15,11 @@ export function useHrToolsNavItems(): NavItems[] {
     inMhaIneligibleGroup,
     inMpdGoalCalcIneligibleGroup,
     inPdsGoalCalcIneligibleGroup,
-    hasNoStaffAccount,
+    hasNoHcmData,
     loading: hcmLoading,
   } = useUsStaffGroups();
 
-  return useMemo(() => {
+  const items = useMemo(() => {
     if (hcmLoading) {
       return [];
     }
@@ -30,7 +33,7 @@ export function useHrToolsNavItems(): NavItems[] {
       {
         id: 'staffSavingFund',
         title: t('Savings Fund Transfer'),
-        hideItem: hasNoStaffAccount,
+        hideItem: hasNoHcmData,
       },
       {
         id: 'goalCalculator',
@@ -55,7 +58,7 @@ export function useHrToolsNavItems(): NavItems[] {
       {
         id: 'partnerReminders',
         title: t('Ministry Partner Reminders'),
-        hideItem: hasNoStaffAccount,
+        hideItem: hasNoHcmData,
       },
     ].filter((item) => !item.hideItem);
   }, [
@@ -65,7 +68,9 @@ export function useHrToolsNavItems(): NavItems[] {
     inMhaIneligibleGroup,
     inMpdGoalCalcIneligibleGroup,
     inPdsGoalCalcIneligibleGroup,
-    hasNoStaffAccount,
+    hasNoHcmData,
     hcmLoading,
   ]);
+
+  return { items, loading: hcmLoading };
 }

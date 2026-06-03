@@ -8,6 +8,7 @@ import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccou
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   PeopleGroupSupportTypeEnum,
+  UserPersonTypeEnum,
   UserTypeEnum,
 } from 'src/graphql/types.generated';
 import theme from 'src/theme';
@@ -22,7 +23,9 @@ interface TestComponentProps {
   requireUserGroups?: RequiredUserGroupEnum;
   asrEligible?: boolean;
   salaryRequestEligible?: boolean;
+  designationSupportCalculatorEligible?: boolean;
   peopleGroupSupportType?: PeopleGroupSupportTypeEnum;
+  userPersonType?: UserPersonTypeEnum;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
@@ -32,7 +35,9 @@ const TestComponent: React.FC<TestComponentProps> = ({
   requireUserGroups,
   asrEligible = true,
   salaryRequestEligible = true,
+  designationSupportCalculatorEligible = true,
   peopleGroupSupportType = PeopleGroupSupportTypeEnum.SupportedRmo,
+  userPersonType = UserPersonTypeEnum.EmployeeHourly,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
@@ -47,7 +52,8 @@ const TestComponent: React.FC<TestComponentProps> = ({
               {
                 asrEit: { asrEligibility: asrEligible },
                 salaryRequestEligible,
-                staffInfo: { peopleGroupSupportType },
+                designationSupportCalculatorEligible,
+                staffInfo: { peopleGroupSupportType, userPersonType },
               },
             ],
           },
@@ -134,21 +140,11 @@ describe('UserTypeAccess', () => {
     ).toBeInTheDocument();
   });
 
-  it('should render child component when user is in the MPD goal calculator group (SupportedRmo)', async () => {
-    const { findByText } = render(
+  it('should render LimitedAccess when user type is allowed but user is ineligible for the MPD goal calculator', async () => {
+    const { findByRole } = render(
       <TestComponent
         requireUserGroups={RequiredUserGroupEnum.MpdGoalCalc}
-        peopleGroupSupportType={PeopleGroupSupportTypeEnum.SupportedRmo}
-      />,
-    );
-    expect(await findByText('Test Content')).toBeInTheDocument();
-  });
-
-  it('should render LimitedAccess when user is ineligible for the MPD goal calculator', async () => {
-    const { findByRole, getByText } = render(
-      <TestComponent
-        requireUserGroups={RequiredUserGroupEnum.MpdGoalCalc}
-        peopleGroupSupportType={PeopleGroupSupportTypeEnum.Designation}
+        salaryRequestEligible={false}
       />,
     );
     expect(
@@ -156,28 +152,13 @@ describe('UserTypeAccess', () => {
         name: 'Access to this feature is limited.',
       }),
     ).toBeInTheDocument();
-    expect(
-      getByText(
-        /our records show that you are not part of the user group that has access to this feature/i,
-      ),
-    ).toBeInTheDocument();
   });
 
-  it('should render child component when user is in the PDS goal calculator group (Designation)', async () => {
-    const { findByText } = render(
+  it('should render LimitedAccess when user type is allowed but user is ineligible for the PDS goal calculator', async () => {
+    const { findByRole } = render(
       <TestComponent
         requireUserGroups={RequiredUserGroupEnum.PdsGoalCalc}
-        peopleGroupSupportType={PeopleGroupSupportTypeEnum.Designation}
-      />,
-    );
-    expect(await findByText('Test Content')).toBeInTheDocument();
-  });
-
-  it('should render LimitedAccess when user is ineligible for the PDS goal calculator', async () => {
-    const { findByRole, getByText } = render(
-      <TestComponent
-        requireUserGroups={RequiredUserGroupEnum.PdsGoalCalc}
-        peopleGroupSupportType={PeopleGroupSupportTypeEnum.SupportedRmo}
+        designationSupportCalculatorEligible={false}
       />,
     );
     expect(
@@ -185,11 +166,16 @@ describe('UserTypeAccess', () => {
         name: 'Access to this feature is limited.',
       }),
     ).toBeInTheDocument();
-    expect(
-      getByText(
-        /our records show that you are not part of the user group that has access to this feature/i,
-      ),
-    ).toBeInTheDocument();
+  });
+
+  it('should render child component when user is eligible for the PDS goal calculator', async () => {
+    const { findByText } = render(
+      <TestComponent
+        requireUserGroups={RequiredUserGroupEnum.PdsGoalCalc}
+        designationSupportCalculatorEligible={true}
+      />,
+    );
+    expect(await findByText('Test Content')).toBeInTheDocument();
   });
 
   it('should render LimitedAccess when staff account is required but not present', async () => {

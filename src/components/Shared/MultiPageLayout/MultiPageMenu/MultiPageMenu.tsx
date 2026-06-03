@@ -100,7 +100,7 @@ export const MultiPageMenu: React.FC<Props & BoxProps> = ({
   const accountListId = useAccountListId();
   const user = useRequiredSession();
   const reportNavItems = useReportNavItems();
-  const hrToolsNavItems = useHrToolsNavItems();
+  const { items: hrToolsNavItems } = useHrToolsNavItems();
   const settingsNavItems = useSettingsNavItems();
 
   const navItems =

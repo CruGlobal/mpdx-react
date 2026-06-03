@@ -30,8 +30,8 @@ function mhaIneligible(user: HcmQuery['hcm'][number]['staffInfo']) {
 
 /**
  * This hook determines whether a US Staff user is in a subgroup that's ineligible for ASR, Salary Calculator, MHA, or the MPD / PDS Goal Calculators (all reports that require HCM).
- * The ASR and MHA check runs against the eligible person (logged-in user if eligible, otherwise spouse, otherwise the logged-in user).
- * The Salary Calculator and Goal Calculator checks always run against the logged-in user.
+ * The ASR, MHA, and PDS Goal Calculator checks run against the eligible person (logged-in user if eligible, otherwise spouse, otherwise the logged-in user).
+ * The Salary Calculator and MPD Goal Calculator checks always run against the logged-in user.
  */
 export function useUsStaffGroups(skip?: boolean) {
   const { data, loading, error } = useHcmQuery({
@@ -47,25 +47,33 @@ export function useUsStaffGroups(skip?: boolean) {
   const allMhaIneligible =
     !!people.length &&
     people.every((person) => mhaIneligible(person.staffInfo));
+  const allPdsGoalCalcIneligible =
+    !!people.length &&
+    people.every(
+      (person) => person?.designationSupportCalculatorEligible === false,
+    );
 
-  // If there is no staff account, we want to hide all reports that require it
   const hasNoStaffAccount =
     error?.graphQLErrors.some(
       (graphQLError) => graphQLError.extensions?.code === 'NO_STAFF_ACCOUNT',
     ) ?? false;
 
-  const userSupportType = user?.staffInfo?.peopleGroupSupportType;
+  const hcmPersonNotFound =
+    error?.graphQLErrors.some(
+      (graphQLError) =>
+        graphQLError.extensions?.code === 'HCM_PERSON_NOT_FOUND',
+    ) ?? false;
 
-  const inAsrIneligibleGroup = hasNoStaffAccount || allAsrIneligible;
+  const hasNoHcmData = hasNoStaffAccount || hcmPersonNotFound;
+
+  const inAsrIneligibleGroup = hasNoHcmData || allAsrIneligible;
   const inSalaryCalcIneligibleGroup =
-    hasNoStaffAccount || user?.salaryRequestEligible === false;
-  const inMhaIneligibleGroup = hasNoStaffAccount || allMhaIneligible;
+    hasNoHcmData || user?.salaryRequestEligible === false;
+  const inMhaIneligibleGroup = hasNoHcmData || allMhaIneligible;
   const inMpdGoalCalcIneligibleGroup =
-    hasNoStaffAccount ||
-    userSupportType !== PeopleGroupSupportTypeEnum.SupportedRmo;
+    hcmPersonNotFound || user?.salaryRequestEligible === false;
   const inPdsGoalCalcIneligibleGroup =
-    hasNoStaffAccount ||
-    userSupportType !== PeopleGroupSupportTypeEnum.Designation;
+    hcmPersonNotFound || allPdsGoalCalcIneligible;
 
   return useMemo(
     () => ({
@@ -74,7 +82,7 @@ export function useUsStaffGroups(skip?: boolean) {
       inMhaIneligibleGroup,
       inMpdGoalCalcIneligibleGroup,
       inPdsGoalCalcIneligibleGroup,
-      hasNoStaffAccount,
+      hasNoHcmData,
       loading: loading && !data,
     }),
     [
@@ -83,7 +91,7 @@ export function useUsStaffGroups(skip?: boolean) {
       inMhaIneligibleGroup,
       inMpdGoalCalcIneligibleGroup,
       inPdsGoalCalcIneligibleGroup,
-      hasNoStaffAccount,
+      hasNoHcmData,
       loading,
       data,
     ],

@@ -60,7 +60,7 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
   const reportItems = useReportNavItems();
   const toolsItems = useToolsNavItems();
   const settingsItems = useSettingsNavItems();
-  const hrToolsItems = useHrToolsNavItems();
+  const { items: hrToolsItems, loading: hrToolsLoading } = useHrToolsNavItems();
 
   const allNavPages = useMemo<NavPage[]>(() => {
     const navPages: NavPage[] = [
@@ -120,7 +120,9 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
                 showInSearchDialog: true,
               })),
               showInNav: true,
-              hideTab: !!data && !showTab,
+              hideTab:
+                (!!data && !showTab) ||
+                (!hrToolsLoading && hrToolsItems.length === 0),
             },
           ]),
       {
@@ -188,6 +190,7 @@ export function useNavPages(coachingAccountCount: boolean, isSearch = false) {
     toolsItems,
     settingsItems,
     hrToolsItems,
+    hrToolsLoading,
     showTab,
     reportsDisabled,
     data,
