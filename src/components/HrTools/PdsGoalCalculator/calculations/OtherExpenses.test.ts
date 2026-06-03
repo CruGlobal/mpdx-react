@@ -10,7 +10,7 @@ const defaultConstants: OtherExpensesConstants = {
   salarySubtotal: 5000,
   fourOThreeBPercentage: 0.1,
   grossMonthlyPay: 4000,
-  workCompPercentage: 0.17,
+  workCompAmount: 680,
   attritionRate: 0.06,
   creditCardFeeRate: 0.06,
   adminRate: 0.12,
@@ -57,9 +57,9 @@ describe('calculateOtherExpenses', () => {
   });
 
   describe('work comp', () => {
-    it('calculates as grossMonthlyPay × workCompPercentage for part-time', () => {
+    it('uses the fixed workCompAmount for part-time', () => {
       const result = calculateOtherExpenses(partTime(), defaultConstants);
-      // 4000 * 0.17
+      // fixed amount
       expect(result.workComp).toBeCloseTo(680);
     });
 
@@ -183,7 +183,7 @@ describe('calculateOtherExpenses', () => {
 
     it('produces correct totals for a part-time employee', () => {
       const result = calculateOtherExpenses(partTime(), defaultConstants);
-      // reimbursable=500, 403b=400, workComp=4000*0.17=680, benefits=0
+      // reimbursable=500, 403b=400, workComp=680 (fixed), benefits=0
       // subtotal=5000+500+400+680+0=6580
       // attrition=6580*0.06=394.80
       // creditCardFees=(6580+394.80)/(1-0.06)-(6580+394.80)≈445.20

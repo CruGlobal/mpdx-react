@@ -20,7 +20,7 @@ const constants: OtherExpensesConstants = {
   salarySubtotal: 5000,
   fourOThreeBPercentage: 0.08,
   grossMonthlyPay: 5000,
-  workCompPercentage: 0.02,
+  workCompAmount: 100,
   attritionRate: 0.05,
   creditCardFeeRate: 0.03,
   adminRate: 0.1,
