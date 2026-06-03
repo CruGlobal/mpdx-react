@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { IntegrationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
@@ -6,12 +7,15 @@ export const useOauthUrl = () => {
   const { apiToken } = useRequiredSession();
   const accountListId = useAccountListId();
 
-  const getRedirectUrl = (accordion: IntegrationAccordion) => {
-    const domain = window.location.origin;
-    return encodeURIComponent(
-      `${domain}/accountLists/${accountListId}/settings/integrations?selectedTab=${accordion}`,
+  const [origin, setOrigin] = useState('');
+  useEffect(() => {
+    setOrigin(window.location.origin);
+  }, []);
+
+  const getRedirectUrl = (accordion: IntegrationAccordion) =>
+    encodeURIComponent(
+      `${origin}/accountLists/${accountListId}/settings/integrations?selectedTab=${accordion}`,
     );
-  };
 
   return {
     getGoogleOauthUrl: () =>
