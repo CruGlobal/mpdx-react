@@ -18,7 +18,10 @@ import {
   HcmQueryVariables,
 } from '../Shared/HcmData/Hcm.generated';
 import { PayrollDatesQuery } from './EffectiveDateStep/PayrollDates.generated';
-import { SalaryCalculationQuery } from './SalaryCalculatorContext/SalaryCalculation.generated';
+import {
+  EffectiveSalaryCalculationQuery,
+  SalaryCalculationQuery,
+} from './SalaryCalculatorContext/SalaryCalculation.generated';
 import { SalaryCalculatorProvider } from './SalaryCalculatorContext/SalaryCalculatorContext';
 
 const hcmMock = gqlMock<HcmQuery, HcmQueryVariables>(HcmDocument, {
@@ -91,8 +94,13 @@ export type SalaryRequestMock = DeepPartial<
   SalaryCalculationQuery['salaryRequest']
 >;
 
+export type EffectiveSalaryRequestMock = DeepPartial<
+  EffectiveSalaryCalculationQuery['salaryRequest']
+>;
+
 export interface SalaryCalculatorTestWrapperProps {
   salaryRequestMock?: SalaryRequestMock;
+  effectiveSalaryRequestMock?: EffectiveSalaryRequestMock;
   hcmUser?: DeepPartial<HcmQuery['hcm'][number]>;
   hcmSpouse?: DeepPartial<HcmQuery['hcm'][number]>;
   onCall?: MockLinkCallHandler;
@@ -107,6 +115,7 @@ export const SalaryCalculatorTestWrapper: React.FC<
   SalaryCalculatorTestWrapperProps
 > = ({
   salaryRequestMock,
+  effectiveSalaryRequestMock = null,
   hcmUser,
   hcmSpouse,
   onCall,
@@ -133,6 +142,7 @@ export const SalaryCalculatorTestWrapper: React.FC<
           Hcm: HcmQuery;
           PayrollDates: PayrollDatesQuery;
           SalaryCalculation: SalaryCalculationQuery;
+          EffectiveSalaryCalculation: EffectiveSalaryCalculationQuery;
           GoalCalculatorConstants: GoalCalculatorConstantsQuery;
           StaffAccount: StaffAccountQuery;
           GetUser: GetUserQuery;
@@ -151,6 +161,9 @@ export const SalaryCalculatorTestWrapper: React.FC<
             },
             PayrollDates: {
               payrollDates,
+            },
+            EffectiveSalaryCalculation: {
+              salaryRequest: effectiveSalaryRequestMock,
             },
             GoalCalculatorConstants: {
               constant: {
