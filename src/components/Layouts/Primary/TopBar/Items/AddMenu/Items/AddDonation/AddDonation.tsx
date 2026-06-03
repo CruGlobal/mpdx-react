@@ -43,7 +43,7 @@ const donationSchema = yup.object({
   amount: yup
     .number()
     .typeError('Amount must be a valid number')
-    .required()
+    .required(i18n.t('Amount is required'))
     .test(
       'Is amount in valid currency format?',
       'Amount must be in valid currency format',
@@ -70,12 +70,12 @@ const donationSchema = yup.object({
       (value) => !value || parseFloat(value as unknown as string) > 0,
     ),
   appealId: yup.string().nullable(),
-  currency: yup.string().required(),
+  currency: yup.string().required(i18n.t('Currency is required')),
   designationAccountId: yup
     .string()
     .required(i18n.t('Designation Account is required')),
-  donationDate: requiredDateTime(),
-  donorAccountId: yup.string().required(),
+  donationDate: requiredDateTime(i18n.t('Date is required')),
+  donorAccountId: yup.string().required(i18n.t('Partner Account is required')),
   memo: yup.string().nullable(),
   motivation: yup.string().nullable(),
   paymentMethod: yup.string().nullable(),
@@ -251,7 +251,7 @@ export const AddDonation = ({
                           setFieldValue('currency', currencyCode);
                         }}
                         textFieldProps={{
-                          error: !!errors.currency,
+                          error: !!errors.currency && touched.currency,
                         }}
                         size="small"
                       />
@@ -287,6 +287,13 @@ export const AddDonation = ({
                           {...field}
                           onChange={(date) =>
                             setFieldValue('donationDate', date)
+                          }
+                          error={Boolean(
+                            errors.donationDate && touched.donationDate,
+                          )}
+                          helperText={
+                            touched.donationDate &&
+                            (errors.donationDate as string)
                           }
                         />
                       )}
@@ -355,6 +362,13 @@ export const AddDonation = ({
                             autocompleteId="partner-account-input"
                             labelId="partner-account-label"
                             size="small"
+                            textFieldProps={{
+                              error:
+                                !!errors.donorAccountId &&
+                                touched.donorAccountId,
+                              helperText:
+                                touched.donorAccountId && errors.donorAccountId,
+                            }}
                           />
                         </Box>
                       )}
@@ -474,6 +488,9 @@ export const AddDonation = ({
                               'aria-labelledby': 'appeal-amount-label',
                             }}
                           />
+                          <FormHelperText>
+                            {touched.appealAmount && errors.appealAmount}
+                          </FormHelperText>
                         </Box>
                       )}
                     </Field>
