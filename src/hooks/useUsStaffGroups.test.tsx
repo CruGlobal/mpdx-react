@@ -280,43 +280,69 @@ describe('useUsStaffGroups', () => {
     });
   });
 
-  it.each<[string, string, string]>([
-    ['no staff account', 'NO_STAFF_ACCOUNT', 'Staff account id not found'],
-    ['person not found in HCM', 'HCM_PERSON_NOT_FOUND', 'Person not found'],
-  ])(
-    'treats %s error as ineligible for ASR, salary calc, MHA, and PDS goal calc but keeps MPD goal calc eligible',
-    async (_label, code, message) => {
-      const { result } = renderHook(() => useUsStaffGroups(), {
-        wrapper: ({ children }: { children: ReactElement }) => (
-          <GqlMockedProvider
-            mocks={{
-              Hcm: {
-                hcm: () => {
-                  throw new GraphQLError(message, {
-                    extensions: { code },
-                  });
-                },
+  it('treats NO_STAFF_ACCOUNT error as ineligible for ASR, salary calc, and MHA but keeps MPD and PDS goal calc eligible', async () => {
+    const { result } = renderHook(() => useUsStaffGroups(), {
+      wrapper: ({ children }: { children: ReactElement }) => (
+        <GqlMockedProvider
+          mocks={{
+            Hcm: {
+              hcm: () => {
+                throw new GraphQLError('Staff account id not found', {
+                  extensions: { code: 'NO_STAFF_ACCOUNT' },
+                });
               },
-            }}
-          >
-            {children}
-          </GqlMockedProvider>
-        ),
-      });
+            },
+          }}
+        >
+          {children}
+        </GqlMockedProvider>
+      ),
+    });
 
-      await waitFor(() => {
-        expect(result.current).toEqual({
-          inAsrIneligibleGroup: true,
-          inSalaryCalcIneligibleGroup: true,
-          inMhaIneligibleGroup: true,
-          inMpdGoalCalcIneligibleGroup: false,
-          inPdsGoalCalcIneligibleGroup: true,
-          hasNoHcmData: true,
-          loading: false,
-        });
+    await waitFor(() => {
+      expect(result.current).toEqual({
+        inAsrIneligibleGroup: true,
+        inSalaryCalcIneligibleGroup: true,
+        inMhaIneligibleGroup: true,
+        inMpdGoalCalcIneligibleGroup: false,
+        inPdsGoalCalcIneligibleGroup: false,
+        hasNoHcmData: true,
+        loading: false,
       });
-    },
-  );
+    });
+  });
+
+  it('treats HCM_PERSON_NOT_FOUND error as ineligible for ASR, salary calc, MHA, MPD goal calc, and PDS goal calc', async () => {
+    const { result } = renderHook(() => useUsStaffGroups(), {
+      wrapper: ({ children }: { children: ReactElement }) => (
+        <GqlMockedProvider
+          mocks={{
+            Hcm: {
+              hcm: () => {
+                throw new GraphQLError('Person not found', {
+                  extensions: { code: 'HCM_PERSON_NOT_FOUND' },
+                });
+              },
+            },
+          }}
+        >
+          {children}
+        </GqlMockedProvider>
+      ),
+    });
+
+    await waitFor(() => {
+      expect(result.current).toEqual({
+        inAsrIneligibleGroup: true,
+        inSalaryCalcIneligibleGroup: true,
+        inMhaIneligibleGroup: true,
+        inMpdGoalCalcIneligibleGroup: true,
+        inPdsGoalCalcIneligibleGroup: true,
+        hasNoHcmData: true,
+        loading: false,
+      });
+    });
+  });
 
   it('marks user as PDS goal calc ineligible when user and spouse are both PDS-ineligible', async () => {
     const { result } = renderUseUsStaffGroups(

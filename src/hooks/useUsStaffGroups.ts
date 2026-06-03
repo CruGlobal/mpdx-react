@@ -53,21 +53,27 @@ export function useUsStaffGroups(skip?: boolean) {
       (person) => person?.designationSupportCalculatorEligible === false,
     );
 
-  // Hide HCM-dependent reports when the API can't return HCM data for this user — either because
-  // they have no staff account or because the person isn't found in the HCM report.
-  const hasNoHcmData =
+  const hasNoStaffAccount =
+    error?.graphQLErrors.some(
+      (graphQLError) => graphQLError.extensions?.code === 'NO_STAFF_ACCOUNT',
+    ) ?? false;
+
+  const hcmPersonNotFound =
     error?.graphQLErrors.some(
       (graphQLError) =>
-        graphQLError.extensions?.code === 'NO_STAFF_ACCOUNT' ||
         graphQLError.extensions?.code === 'HCM_PERSON_NOT_FOUND',
     ) ?? false;
+
+  const hasNoHcmData = hasNoStaffAccount || hcmPersonNotFound;
 
   const inAsrIneligibleGroup = hasNoHcmData || allAsrIneligible;
   const inSalaryCalcIneligibleGroup =
     hasNoHcmData || user?.salaryRequestEligible === false;
   const inMhaIneligibleGroup = hasNoHcmData || allMhaIneligible;
-  const inMpdGoalCalcIneligibleGroup = user?.salaryRequestEligible === false;
-  const inPdsGoalCalcIneligibleGroup = hasNoHcmData || allPdsGoalCalcIneligible;
+  const inMpdGoalCalcIneligibleGroup =
+    hcmPersonNotFound || user?.salaryRequestEligible === false;
+  const inPdsGoalCalcIneligibleGroup =
+    hcmPersonNotFound || allPdsGoalCalcIneligible;
 
   return useMemo(
     () => ({
