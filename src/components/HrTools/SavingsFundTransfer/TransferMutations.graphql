@@ -47,7 +47,7 @@ mutation CreateTransfer(
   $destinationFundTypeName: String!
   $description: String!
   $amount: Float!
-  $transactedAt: ISO8601DateTime
+  $transactedAt: ISO8601DateTime!
 ) {
   createTransfer(
     input: {
