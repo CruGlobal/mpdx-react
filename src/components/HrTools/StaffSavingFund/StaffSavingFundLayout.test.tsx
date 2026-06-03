@@ -71,6 +71,8 @@ const Components: React.FC<ComponentProps> = ({
                 asrEit: {
                   asrEligibility: true,
                 },
+                salaryRequestEligible: true,
+                designationSupportCalculatorEligible: true,
               },
             ],
           },

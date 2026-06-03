@@ -9,6 +9,8 @@ export enum RequiredUserGroupEnum {
   Asr = 'asr',
   SalaryCalc = 'salaryCalc',
   Mha = 'mha',
+  MpdGoalCalc = 'mpdGoalCalc',
+  PdsGoalCalc = 'pdsGoalCalc',
 }
 
 interface UserTypeAccessProps {
@@ -35,26 +37,30 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
     skip: !requireStaffAccount,
   });
 
-  const isAsr = requireUserGroups === RequiredUserGroupEnum.Asr;
-  const isSalaryCalc = requireUserGroups === RequiredUserGroupEnum.SalaryCalc;
-  const isMha = requireUserGroups === RequiredUserGroupEnum.Mha;
-
   // Only run HCM query if we are using an HCM report
-  const skip = !isAsr && !isSalaryCalc && !isMha;
+  const skip = !requireUserGroups;
   const {
     inAsrIneligibleGroup,
     inSalaryCalcIneligibleGroup,
     inMhaIneligibleGroup,
+    inMpdGoalCalcIneligibleGroup,
+    inPdsGoalCalcIneligibleGroup,
     loading: hcmLoading,
   } = useUsStaffGroups(skip);
+
+  const ineligibleByGroup: Record<RequiredUserGroupEnum, boolean> = {
+    [RequiredUserGroupEnum.Asr]: inAsrIneligibleGroup,
+    [RequiredUserGroupEnum.SalaryCalc]: inSalaryCalcIneligibleGroup,
+    [RequiredUserGroupEnum.Mha]: inMhaIneligibleGroup,
+    [RequiredUserGroupEnum.MpdGoalCalc]: inMpdGoalCalcIneligibleGroup,
+    [RequiredUserGroupEnum.PdsGoalCalc]: inPdsGoalCalcIneligibleGroup,
+  };
 
   const userType = data?.user.userType;
 
   const limitedAccess =
     (userType && userType !== requiredUserType) ||
-    (isAsr && inAsrIneligibleGroup) ||
-    (isSalaryCalc && inSalaryCalcIneligibleGroup) ||
-    (isMha && inMhaIneligibleGroup);
+    (requireUserGroups && ineligibleByGroup[requireUserGroups]);
 
   // Once HCM is ready to go live and DISABLE_NEW_REPORTS is removed, we can remove the alwaysAllow prop
   if (alwaysAllow) {

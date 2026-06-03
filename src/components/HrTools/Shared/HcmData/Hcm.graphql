@@ -52,5 +52,6 @@ query Hcm($effectiveDate: ISO8601Date) {
       currentTakenAmount
     }
     salaryRequestEligible
+    designationSupportCalculatorEligible
   }
 }
