@@ -379,6 +379,30 @@ describe('TransferModal', () => {
       ).toBeInTheDocument();
     });
 
+    it('should allow editing the transfer date for one-time transfers', async () => {
+      const { getByLabelText } = render(<Components />);
+
+      const transferDate = getByLabelText(/transfer date/i);
+      expect(transferDate).toBeEnabled();
+
+      userEvent.clear(transferDate);
+      userEvent.type(transferDate, '12/01/2099');
+      expect(transferDate).toHaveValue('12/01/2099');
+    });
+
+    it('should reject a past transfer date for one-time transfers', async () => {
+      const { getByLabelText, findByText } = render(<Components />);
+
+      const transferDate = getByLabelText(/transfer date/i);
+      userEvent.clear(transferDate);
+      userEvent.type(transferDate, '12/31/2019');
+      userEvent.tab();
+
+      expect(
+        await findByText('Transfer start date cannot be in the past'),
+      ).toBeInTheDocument();
+    });
+
     it('should show error message when monthly schedule is selected', async () => {
       const { getByRole, getByLabelText, findByText } = render(<Components />);
 
@@ -464,8 +488,8 @@ describe('TransferModal', () => {
   });
 
   describe('Mutations', () => {
-    it('should create a one-time transfer', async () => {
-      const { getByRole } = render(<Components />);
+    it('should create a one-time transfer with the selected transfer date', async () => {
+      const { getByRole, getByLabelText } = render(<Components />);
 
       const amountField = getByRole('spinbutton', { name: /amount/i });
 
@@ -474,6 +498,12 @@ describe('TransferModal', () => {
 
       userEvent.clear(amountField);
       userEvent.type(amountField, '100');
+
+      const transferDate = getByLabelText(/transfer date/i);
+      userEvent.clear(transferDate);
+      userEvent.type(transferDate, '12/01/2099');
+      expect(transferDate).toHaveValue('12/01/2099');
+      userEvent.tab();
 
       userEvent.click(getByRole('button', { name: /submit/i }));
 
@@ -487,6 +517,7 @@ describe('TransferModal', () => {
                 sourceFundTypeName: 'Staff Account',
                 destinationFundTypeName: 'Staff Savings',
                 description: '',
+                transactedAt: '2099-12-01T00:00:00.000+00:00',
               }),
             }),
           }),
