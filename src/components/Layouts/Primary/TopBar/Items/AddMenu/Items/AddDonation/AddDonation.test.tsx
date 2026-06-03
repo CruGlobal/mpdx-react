@@ -208,4 +208,31 @@ describe('AddDonation', () => {
       ).toHaveValue('Cool Designation Account (321)'),
     );
   });
+
+  it('shows required-field errors after a field is touched', async () => {
+    const { queryByText, findByText, getByRole } = render(
+      <LocalizationProvider dateAdapter={AdapterLuxon}>
+        <ThemeProvider theme={theme}>
+          <SnackbarProvider>
+            <GqlMockedProvider>
+              <AddDonation
+                accountListId={accountListId}
+                handleClose={handleClose}
+              />
+            </GqlMockedProvider>
+          </SnackbarProvider>
+        </ThemeProvider>
+      </LocalizationProvider>,
+    );
+    expect(await findByText('Amount')).toBeInTheDocument();
+    expect(queryByText('Partner Account is required')).not.toBeInTheDocument();
+
+    const partnerAccount = getByRole('combobox', { name: 'Partner Account' });
+    act(() => {
+      partnerAccount.focus();
+      partnerAccount.blur();
+    });
+
+    expect(await findByText('Partner Account is required')).toBeInTheDocument();
+  });
 });
