@@ -14,11 +14,13 @@ interface BuildHcmMockOptions {
   userAsrEligible?: boolean;
   userSalaryRequestEligible?: boolean;
   userMhaEligibility?: boolean;
+  userDesignationSupportCalculatorEligible?: boolean;
   userPersonType?: UserPersonTypeEnum;
   peopleGroupSupportType?: PeopleGroupSupportTypeEnum;
   assignmentStatus?: AssignmentStatusEnum;
   includeSpouse?: boolean;
   spouseAsrEligible?: boolean;
+  spouseDesignationSupportCalculatorEligible?: boolean;
 }
 
 const mhaEligibleStaffInfo = {
@@ -31,16 +33,20 @@ const buildHcmMock = ({
   userAsrEligible = true,
   userSalaryRequestEligible = true,
   userMhaEligibility = true,
+  userDesignationSupportCalculatorEligible = true,
   userPersonType = mhaEligibleStaffInfo.userPersonType,
   peopleGroupSupportType = mhaEligibleStaffInfo.peopleGroupSupportType,
   assignmentStatus = mhaEligibleStaffInfo.assignmentStatus,
   includeSpouse = false,
   spouseAsrEligible = true,
+  spouseDesignationSupportCalculatorEligible = true,
 }: BuildHcmMockOptions = {}): HcmQuery => {
   const entries = [
     {
       asrEit: { asrEligibility: userAsrEligible },
       salaryRequestEligible: userSalaryRequestEligible,
+      designationSupportCalculatorEligible:
+        userDesignationSupportCalculatorEligible,
       mhaEit: { mhaEligibility: userMhaEligibility },
       staffInfo: {
         userPersonType,
@@ -53,6 +59,8 @@ const buildHcmMock = ({
     entries.push({
       asrEit: { asrEligibility: spouseAsrEligible },
       salaryRequestEligible: true,
+      designationSupportCalculatorEligible:
+        spouseDesignationSupportCalculatorEligible,
       mhaEit: { mhaEligibility: true },
       staffInfo: { ...mhaEligibleStaffInfo },
     });
@@ -70,7 +78,7 @@ const renderUseUsStaffGroups = (hcmMock: HcmQuery, skip?: boolean) =>
   });
 
 describe('useUsStaffGroups', () => {
-  it('marks an ASR-eligible, salary-eligible, MHA-eligible user as eligible', async () => {
+  it('marks an ASR-eligible, salary-eligible, MHA-eligible, PDS-eligible user as eligible', async () => {
     const { result } = renderUseUsStaffGroups(buildHcmMock());
 
     await waitFor(() => {
@@ -78,13 +86,15 @@ describe('useUsStaffGroups', () => {
         inAsrIneligibleGroup: false,
         inSalaryCalcIneligibleGroup: false,
         inMhaIneligibleGroup: false,
-        hasNoStaffAccount: false,
+        inMpdGoalCalcIneligibleGroup: false,
+        inPdsGoalCalcIneligibleGroup: false,
+        hasNoHcmData: false,
         loading: false,
       });
     });
   });
 
-  it('marks user as salary-calc ineligible when salaryRequestEligible is false', async () => {
+  it('marks user as salary-calc and mpd-goal-calc ineligible when salaryRequestEligible is false', async () => {
     const { result } = renderUseUsStaffGroups(
       buildHcmMock({ userSalaryRequestEligible: false }),
     );
@@ -94,7 +104,9 @@ describe('useUsStaffGroups', () => {
         inAsrIneligibleGroup: false,
         inSalaryCalcIneligibleGroup: true,
         inMhaIneligibleGroup: false,
-        hasNoStaffAccount: false,
+        inMpdGoalCalcIneligibleGroup: true,
+        inPdsGoalCalcIneligibleGroup: false,
+        hasNoHcmData: false,
         loading: false,
       });
     });
@@ -112,7 +124,9 @@ describe('useUsStaffGroups', () => {
         inAsrIneligibleGroup: false,
         inSalaryCalcIneligibleGroup: false,
         inMhaIneligibleGroup: true,
-        hasNoStaffAccount: false,
+        inMpdGoalCalcIneligibleGroup: false,
+        inPdsGoalCalcIneligibleGroup: false,
+        hasNoHcmData: false,
         loading: false,
       });
     });
@@ -152,7 +166,9 @@ describe('useUsStaffGroups', () => {
         inAsrIneligibleGroup: false,
         inSalaryCalcIneligibleGroup: false,
         inMhaIneligibleGroup: false,
-        hasNoStaffAccount: false,
+        inMpdGoalCalcIneligibleGroup: false,
+        inPdsGoalCalcIneligibleGroup: false,
+        hasNoHcmData: false,
         loading: false,
       });
     });
@@ -221,6 +237,19 @@ describe('useUsStaffGroups', () => {
     });
   });
 
+  it('uses the logged-in user for mpd goal calc even when a spouse is present', async () => {
+    const { result } = renderUseUsStaffGroups(
+      buildHcmMock({
+        userSalaryRequestEligible: false,
+        includeSpouse: true,
+      }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.inMpdGoalCalcIneligibleGroup).toBe(true);
+    });
+  });
+
   it('skips the HCM query and returns defaults when skip is true', () => {
     const { result } = renderUseUsStaffGroups(buildHcmMock(), true);
 
@@ -228,12 +257,14 @@ describe('useUsStaffGroups', () => {
       inAsrIneligibleGroup: false,
       inSalaryCalcIneligibleGroup: false,
       inMhaIneligibleGroup: false,
-      hasNoStaffAccount: false,
+      inMpdGoalCalcIneligibleGroup: false,
+      inPdsGoalCalcIneligibleGroup: false,
+      hasNoHcmData: false,
       loading: false,
     });
   });
 
-  it('defaults all to false when array is empty', async () => {
+  it('returns eligible defaults when the HCM array is empty', async () => {
     const { result } = renderUseUsStaffGroups({ hcm: [] } as HcmQuery);
 
     await waitFor(() => {
@@ -241,13 +272,15 @@ describe('useUsStaffGroups', () => {
         inAsrIneligibleGroup: false,
         inSalaryCalcIneligibleGroup: false,
         inMhaIneligibleGroup: false,
-        hasNoStaffAccount: false,
+        inMpdGoalCalcIneligibleGroup: false,
+        inPdsGoalCalcIneligibleGroup: false,
+        hasNoHcmData: false,
         loading: false,
       });
     });
   });
 
-  it('treats no staff account error as ineligible for all groups', async () => {
+  it('treats NO_STAFF_ACCOUNT error as ineligible for ASR, salary calc, and MHA but keeps MPD and PDS goal calc eligible', async () => {
     const { result } = renderHook(() => useUsStaffGroups(), {
       wrapper: ({ children }: { children: ReactElement }) => (
         <GqlMockedProvider
@@ -271,9 +304,81 @@ describe('useUsStaffGroups', () => {
         inAsrIneligibleGroup: true,
         inSalaryCalcIneligibleGroup: true,
         inMhaIneligibleGroup: true,
-        hasNoStaffAccount: true,
+        inMpdGoalCalcIneligibleGroup: false,
+        inPdsGoalCalcIneligibleGroup: false,
+        hasNoHcmData: true,
         loading: false,
       });
+    });
+  });
+
+  it('treats HCM_PERSON_NOT_FOUND error as ineligible for ASR, salary calc, MHA, MPD goal calc, and PDS goal calc', async () => {
+    const { result } = renderHook(() => useUsStaffGroups(), {
+      wrapper: ({ children }: { children: ReactElement }) => (
+        <GqlMockedProvider
+          mocks={{
+            Hcm: {
+              hcm: () => {
+                throw new GraphQLError('Person not found', {
+                  extensions: { code: 'HCM_PERSON_NOT_FOUND' },
+                });
+              },
+            },
+          }}
+        >
+          {children}
+        </GqlMockedProvider>
+      ),
+    });
+
+    await waitFor(() => {
+      expect(result.current).toEqual({
+        inAsrIneligibleGroup: true,
+        inSalaryCalcIneligibleGroup: true,
+        inMhaIneligibleGroup: true,
+        inMpdGoalCalcIneligibleGroup: true,
+        inPdsGoalCalcIneligibleGroup: true,
+        hasNoHcmData: true,
+        loading: false,
+      });
+    });
+  });
+
+  it('marks user as PDS goal calc ineligible when user and spouse are both PDS-ineligible', async () => {
+    const { result } = renderUseUsStaffGroups(
+      buildHcmMock({
+        userDesignationSupportCalculatorEligible: false,
+        includeSpouse: true,
+        spouseDesignationSupportCalculatorEligible: false,
+      }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.inPdsGoalCalcIneligibleGroup).toBe(true);
+    });
+  });
+
+  it('marks user as PDS goal calc ineligible when there is no spouse and user is PDS-ineligible', async () => {
+    const { result } = renderUseUsStaffGroups(
+      buildHcmMock({ userDesignationSupportCalculatorEligible: false }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.inPdsGoalCalcIneligibleGroup).toBe(true);
+    });
+  });
+
+  it('falls back to the spouse for PDS goal calc eligibility when the logged-in user is not PDS-eligible', async () => {
+    const { result } = renderUseUsStaffGroups(
+      buildHcmMock({
+        userDesignationSupportCalculatorEligible: false,
+        includeSpouse: true,
+        spouseDesignationSupportCalculatorEligible: true,
+      }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.inPdsGoalCalcIneligibleGroup).toBe(false);
     });
   });
 });
