@@ -1,5 +1,5 @@
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '__tests__/util/testingLibraryReactMock';
+import { render } from '@testing-library/react';
 import {
   ContextType,
   HcmData,
