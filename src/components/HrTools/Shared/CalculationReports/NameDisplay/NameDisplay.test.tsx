@@ -67,7 +67,7 @@ describe('NameDisplay', () => {
     );
 
     expect(getByText('Doe, John')).toBeInTheDocument();
-    expect(getByText('000123456')).toBeInTheDocument();
+    expect(getByText('Person Number: 000123456')).toBeInTheDocument();
   });
 
   it('renders correctly for a married person', () => {
@@ -94,7 +94,9 @@ describe('NameDisplay', () => {
     );
 
     expect(getByText('Doe, John and Jane')).toBeInTheDocument();
-    expect(getByText('000123456 and 100123456')).toBeInTheDocument();
+    expect(
+      getByText('Person Number: 000123456 and 100123456'),
+    ).toBeInTheDocument();
   });
 
   it('renders content when showContent is true', () => {

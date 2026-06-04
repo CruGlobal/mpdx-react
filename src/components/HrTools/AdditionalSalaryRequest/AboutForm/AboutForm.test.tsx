@@ -104,7 +104,7 @@ describe('AboutForm', () => {
     const { findByText, getByText } = render(<TestWrapper />);
 
     expect(await findByText('Doc, John')).toBeInTheDocument();
-    expect(getByText('00123456')).toBeInTheDocument();
+    expect(getByText('Person Number: 00123456')).toBeInTheDocument();
   });
 
   it('should display financial data when a request exists', async () => {
