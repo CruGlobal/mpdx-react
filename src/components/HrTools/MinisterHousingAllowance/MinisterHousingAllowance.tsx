@@ -155,7 +155,11 @@ export const MinisterHousingAllowanceReport = () => {
                   <Typography variant="h5">{t('Your MHA')}</Typography>
                 </Box>
 
-                <NameDisplay names={names} personNumbers={personNumbers} />
+                <NameDisplay
+                  names={names}
+                  personNumbers={personNumbers}
+                  personNumberCount={isMarried ? 2 : 1}
+                />
 
                 {hasNoRequests ? (
                   <>

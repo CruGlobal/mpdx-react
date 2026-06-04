@@ -14,6 +14,7 @@ import { currencyFormat } from 'src/lib/intlFormat';
 interface NameDisplayProps {
   names: string;
   personNumbers: string;
+  personNumberCount?: number;
   showContent?: boolean;
   titleOne?: string;
   titleTwo?: string;
@@ -25,6 +26,7 @@ interface NameDisplayProps {
 export const NameDisplay: React.FC<NameDisplayProps> = ({
   names,
   personNumbers,
+  personNumberCount = 1,
   showContent,
   titleOne,
   titleTwo,
@@ -45,7 +47,10 @@ export const NameDisplay: React.FC<NameDisplayProps> = ({
           sx={{ color: 'text.secondary' }}
           data-testid="person-numbers"
         >
-          {t('Person Number: {{personNumbers}}', { personNumbers })}
+          {t('Person Number: {{personNumbers}}', {
+            personNumbers,
+            count: personNumberCount,
+          })}
         </Typography>
       </Box>
       {spouseComponent}

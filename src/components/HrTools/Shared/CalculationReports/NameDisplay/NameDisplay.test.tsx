@@ -1,5 +1,5 @@
 import { ThemeProvider } from '@mui/material/styles';
-import { render } from '@testing-library/react';
+import { render } from '__tests__/util/testingLibraryReactMock';
 import {
   ContextType,
   HcmData,
@@ -14,6 +14,7 @@ const titleTwo = 'Title Two';
 interface TestComponentProps {
   names: string;
   personNumbers: string;
+  personNumberCount?: number;
   showContent?: boolean;
   contextValue?: Partial<ContextType>;
   spouseComponent?: React.ReactNode;
@@ -22,6 +23,7 @@ interface TestComponentProps {
 const TestComponent: React.FC<TestComponentProps> = ({
   names,
   personNumbers,
+  personNumberCount,
   showContent,
   contextValue,
   spouseComponent,
@@ -34,6 +36,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
         <NameDisplay
           names={names}
           personNumbers={personNumbers}
+          personNumberCount={personNumberCount}
           showContent={showContent}
           titleOne={titleOne}
           titleTwo={titleTwo}
@@ -71,10 +74,11 @@ describe('NameDisplay', () => {
   });
 
   it('renders correctly for a married person', () => {
-    const { getByText } = render(
+    const { getByText, getByTestId } = render(
       <TestComponent
         names="Doe, John and Jane"
         personNumbers="000123456 and 100123456"
+        personNumberCount={2}
         contextValue={{
           isMarried: true,
           preferredName: 'John',
@@ -94,9 +98,9 @@ describe('NameDisplay', () => {
     );
 
     expect(getByText('Doe, John and Jane')).toBeInTheDocument();
-    expect(
-      getByText('Person Number: 000123456 and 100123456'),
-    ).toBeInTheDocument();
+    expect(getByTestId('person-numbers')).toHaveTextContent(
+      'Person Numbers: 000123456 and 100123456',
+    );
   });
 
   it('renders content when showContent is true', () => {

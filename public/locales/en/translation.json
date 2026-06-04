@@ -2104,6 +2104,8 @@
     "person": "person",
     "Person created successfully": "Person created successfully",
     "Person deleted successfully": "Person deleted successfully",
+    "Person Number: {{personNumbers}}_one": "Person Number: {{personNumbers}}",
+    "Person Number: {{personNumbers}}_other": "Person Numbers: {{personNumbers}}",
     "Person updated successfully": "Person updated successfully",
     "Personal": "Personal",
     "Personal Contact Information": "Personal Contact Information",
