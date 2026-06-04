@@ -9,6 +9,20 @@ this application, please reach out to [support@mpdx.org](mailto:support@mpdx.org
 - Staging: https://stage.mpdx.org/
 - Local: http://localhost:3000/
 
+## Browser Support
+
+Browser and device usage based on GA4 28-day active users for next.mpdx.org (Apr 8 – May 5, 2026).
+
+**Targeted browsers** (Next.js 15 build defaults): Chrome 64+, Edge 79+, Firefox 67+, Safari 12+ (macOS & iOS), and Opera 51+. Internet Explorer is not supported.
+
+| Browser    | Share |     | Device  | Share |
+| :--------- | :---- | :-- | :------ | :---- |
+| Chrome     | 57.8% |     | Desktop | 87.9% |
+| (not set)  | 21.9% |     | Mobile  | 11.9% |
+| Safari     | 15.2% |     | Tablet  | 1.2%  |
+| Edge       | 3.4%  |     |         |       |
+| Firefox    | 1.5%  |     |         |       |
+
 ## Getting Started
 
 ### Setting up Node
