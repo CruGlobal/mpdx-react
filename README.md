@@ -719,3 +719,29 @@ To learn more about Next.js, take a look at the following resources:
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Browser Support
+
+Browser and device usage based on GA4 28-day active users of the production MPDX app at next.mpdx.org (Apr 8 – May 5, 2026). _Last updated: May 2026 — review annually._
+
+**Targeted browsers** (Next.js 15 build defaults): Chrome 64+, Edge 79+, Firefox 67+, Safari 12+ (macOS & iOS), and Opera 51+. Internet Explorer is not supported.
+
+**Usage snapshot**
+
+**Browser share**
+
+| Browser   | Share |
+| :-------- | :---- |
+| Chrome    | 57.8% |
+| (not set) | 21.9% |
+| Safari    | 15.2% |
+| Edge      | 3.4%  |
+| Firefox   | 1.5%  |
+
+**Device share**
+
+| Device  | Share |
+| :------ | :---- |
+| Desktop | 87.9% |
+| Mobile  | 11.9% |
+| Tablet  | 1.2%  |
