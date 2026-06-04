@@ -11,7 +11,7 @@ this application, please reach out to [support@mpdx.org](mailto:support@mpdx.org
 
 ## Browser Support
 
-Browser and device usage based on GA4 28-day active users for next.mpdx.org (Apr 8 – May 5, 2026).
+Browser and device usage based on GA4 28-day active users for next.mpdx.org (Apr 8 – May 5, 2026). _Last updated: May 2026 — review annually._
 
 **Targeted browsers** (Next.js 15 build defaults): Chrome 64+, Edge 79+, Firefox 67+, Safari 12+ (macOS & iOS), and Opera 51+. Internet Explorer is not supported.
 
