@@ -32,7 +32,7 @@ describe('NewForm', () => {
       const { getByText } = renderComponent();
 
       expect(getByText('Doe, John')).toBeInTheDocument();
-      expect(getByText('00123456')).toBeInTheDocument();
+      expect(getByText('Person Number: 00123456')).toBeInTheDocument();
     });
 
     it('renders instructional text and notes', () => {
