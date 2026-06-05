@@ -67,10 +67,8 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
     return <LimitedAccess />;
   }
 
-  if (requireStaffAccount) {
-    if (hasNoStaffAccount) {
-      return <LimitedAccess noStaffAccount />;
-    }
+  if (requireStaffAccount && hasNoStaffAccount) {
+    return <LimitedAccess noStaffAccount />;
   }
 
   return children;

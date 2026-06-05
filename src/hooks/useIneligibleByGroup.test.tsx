@@ -10,6 +10,7 @@ interface MockUser {
   usStaffGroup?: UsStaffGroupEnum | null;
   userType?: UserTypeEnum;
   staffAccountId?: string | null;
+  spouseUsStaffGroup?: UsStaffGroupEnum | null;
 }
 
 const renderUseIneligibleByGroup = (user: MockUser = {}) =>
@@ -75,6 +76,7 @@ describe('useIneligibleByGroup', () => {
     it('senior staff eligibility', async () => {
       const { result } = renderUseIneligibleByGroup({
         usStaffGroup: UsStaffGroupEnum.SeniorStaff,
+        spouseUsStaffGroup: null,
       });
 
       await waitFor(() => expect(result.current.userLoading).toBe(false));
@@ -88,6 +90,7 @@ describe('useIneligibleByGroup', () => {
     it('new staff eligibility', async () => {
       const { result } = renderUseIneligibleByGroup({
         usStaffGroup: UsStaffGroupEnum.NewStaff,
+        spouseUsStaffGroup: null,
       });
 
       await waitFor(() => expect(result.current.userLoading).toBe(false));
@@ -101,6 +104,7 @@ describe('useIneligibleByGroup', () => {
     it('part time field staff eligibility', async () => {
       const { result } = renderUseIneligibleByGroup({
         usStaffGroup: UsStaffGroupEnum.PartTimeFieldStaff,
+        spouseUsStaffGroup: null,
       });
 
       await waitFor(() => expect(result.current.userLoading).toBe(false));
@@ -114,6 +118,7 @@ describe('useIneligibleByGroup', () => {
     it('paid with designation eligibility', async () => {
       const { result } = renderUseIneligibleByGroup({
         usStaffGroup: UsStaffGroupEnum.PaidWithDesignation,
+        spouseUsStaffGroup: null,
       });
 
       await waitFor(() => expect(result.current.userLoading).toBe(false));
@@ -127,6 +132,7 @@ describe('useIneligibleByGroup', () => {
     it('intern eligibility', async () => {
       const { result } = renderUseIneligibleByGroup({
         usStaffGroup: UsStaffGroupEnum.Intern,
+        spouseUsStaffGroup: null,
       });
 
       await waitFor(() => expect(result.current.userLoading).toBe(false));
@@ -140,6 +146,7 @@ describe('useIneligibleByGroup', () => {
     it('national expat eligibility', async () => {
       const { result } = renderUseIneligibleByGroup({
         usStaffGroup: UsStaffGroupEnum.NationalExpat,
+        spouseUsStaffGroup: null,
       });
 
       await waitFor(() => expect(result.current.userLoading).toBe(false));
@@ -150,9 +157,26 @@ describe('useIneligibleByGroup', () => {
       expect(result.current.inPdsGoalCalcIneligibleGroup).toBe(true);
     });
 
+    describe('spouse us staff group', () => {
+      it('user is null and spouse is senior staff', async () => {
+        const { result } = renderUseIneligibleByGroup({
+          usStaffGroup: null,
+          spouseUsStaffGroup: UsStaffGroupEnum.SeniorStaff,
+        });
+
+        await waitFor(() => expect(result.current.userLoading).toBe(false));
+        expect(result.current.inAsrIneligibleGroup).toBe(false);
+        expect(result.current.inSalaryCalcIneligibleGroup).toBe(true);
+        expect(result.current.inMhaIneligibleGroup).toBe(false);
+        expect(result.current.inMpdGoalCalcIneligibleGroup).toBe(true);
+        expect(result.current.inPdsGoalCalcIneligibleGroup).toBe(true);
+      });
+    });
+
     it('no us staff group eligibility', async () => {
       const { result } = renderUseIneligibleByGroup({
         usStaffGroup: null,
+        spouseUsStaffGroup: null,
       });
 
       await waitFor(() => expect(result.current.userLoading).toBe(false));

@@ -6,6 +6,7 @@ import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccou
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   PeopleGroupSupportTypeEnum,
+  UsStaffGroupEnum,
   UserTypeEnum,
 } from 'src/graphql/types.generated';
 import theme from 'src/theme';
@@ -45,10 +46,12 @@ const MockStaffSavingFundProvider = ({
 
 interface ComponentProps {
   userType?: UserTypeEnum;
+  usStaffGroup?: UsStaffGroupEnum;
 }
 
 const Components: React.FC<ComponentProps> = ({
   userType = UserTypeEnum.UsStaff,
+  usStaffGroup = UsStaffGroupEnum.SeniorStaff,
 }) => (
   <ThemeProvider theme={theme}>
     <TestRouter>
@@ -59,7 +62,7 @@ const Components: React.FC<ComponentProps> = ({
       }>
         mocks={{
           ...mockStaffAccount,
-          GetUser: { user: { userType } },
+          GetUser: { user: { userType, usStaffGroup } },
           Hcm: {
             hcm: [
               {

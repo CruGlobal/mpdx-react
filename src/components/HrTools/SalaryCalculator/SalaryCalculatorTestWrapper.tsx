@@ -8,6 +8,7 @@ import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccou
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import {
   SalaryRequestStatusEnum,
+  UsStaffGroupEnum,
   UserTypeEnum,
 } from 'src/graphql/types.generated';
 import { GoalCalculatorConstantsQuery } from 'src/hooks/goalCalculatorConstants.generated';
@@ -109,6 +110,7 @@ export interface SalaryCalculatorTestWrapperProps {
   payrollDates?: PayrollDatesQuery['payrollDates'];
   editing?: boolean;
   userType?: UserTypeEnum;
+  usStaffGroup?: UsStaffGroupEnum;
 }
 
 export const SalaryCalculatorTestWrapper: React.FC<
@@ -124,6 +126,7 @@ export const SalaryCalculatorTestWrapper: React.FC<
   payrollDates = [],
   editing = true,
   userType = UserTypeEnum.UsStaff,
+  usStaffGroup = UsStaffGroupEnum.SeniorStaff,
 }) => {
   const hcmUserMerged = merge({}, hcmUserMock, hcmUser);
   const hcmSpouseMerged = merge({}, hcmSpouseMock, hcmSpouse);
@@ -157,6 +160,7 @@ export const SalaryCalculatorTestWrapper: React.FC<
             GetUser: {
               user: {
                 userType,
+                usStaffGroup,
               },
             },
             PayrollDates: {

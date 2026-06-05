@@ -13,5 +13,6 @@ query GetUser {
     primaryDesignation
     userType
     usStaffGroup
+    spouseUsStaffGroup
   }
 }
