@@ -9,7 +9,7 @@ import { SalaryTotals } from './salaryCalculation';
 
 export interface PdsGoalTotalConstants {
   employerFicaRate: number;
-  workCompPercentage: number;
+  workCompAmount: number;
   attritionRate: number;
   creditCardFeeRate: number;
   adminRate: number;
@@ -29,14 +29,14 @@ export const buildPdsGoalConstants = (
   const rates = goalMiscConstants.RATES;
 
   const employerFicaRate = additionalRates?.EMPLOYER_FICA_RATE?.fee;
-  const workCompPercentage = additionalRates?.PART_TIME_WORK_COMPENSATION?.fee;
+  const workCompAmount = additionalRates?.PART_TIME_WORK_COMPENSATION?.fee;
   const attritionRate = rates?.ATTRITION_RATE?.fee;
   const creditCardFeeRate = additionalRates?.CREDIT_CARD_FEE_RATE?.fee;
   const adminRate = rates?.ADMIN_RATE?.fee;
 
   if (
     employerFicaRate === undefined ||
-    workCompPercentage === undefined ||
+    workCompAmount === undefined ||
     attritionRate === undefined ||
     creditCardFeeRate === undefined ||
     adminRate === undefined
@@ -52,7 +52,7 @@ export const buildPdsGoalConstants = (
 
   return {
     employerFicaRate,
-    workCompPercentage,
+    workCompAmount,
     attritionRate,
     creditCardFeeRate,
     adminRate,
@@ -73,7 +73,7 @@ export const buildOtherExpensesConstants = (
     salarySubtotal: salaryTotals.subtotal,
     fourOThreeBPercentage: isSimple ? 0 : constants.fourOThreeBPercentage,
     grossMonthlyPay: salaryTotals.grossMonthlyPay,
-    workCompPercentage: constants.workCompPercentage,
+    workCompAmount: constants.workCompAmount,
     attritionRate: constants.attritionRate,
     creditCardFeeRate: constants.creditCardFeeRate,
     adminRate: constants.adminRate,

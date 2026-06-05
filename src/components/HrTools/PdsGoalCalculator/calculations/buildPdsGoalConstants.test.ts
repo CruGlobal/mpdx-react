@@ -28,7 +28,7 @@ const buildMiscConstants = (
       : { EMPLOYER_FICA_RATE: makeConstant(0.08) }),
     ...(overrides.workComp !== undefined
       ? { PART_TIME_WORK_COMPENSATION: makeConstant(overrides.workComp) }
-      : { PART_TIME_WORK_COMPENSATION: makeConstant(0.17) }),
+      : { PART_TIME_WORK_COMPENSATION: makeConstant(20.35) }),
     ...(overrides.creditCardFeeRate !== undefined
       ? { CREDIT_CARD_FEE_RATE: makeConstant(overrides.creditCardFeeRate) }
       : { CREDIT_CARD_FEE_RATE: makeConstant(0.06) }),
@@ -59,7 +59,7 @@ describe('buildPdsGoalConstants', () => {
 
     expect(result).toEqual({
       employerFicaRate: 0.08,
-      workCompPercentage: 0.17,
+      workCompAmount: 20.35,
       attritionRate: 0.06,
       creditCardFeeRate: 0.06,
       adminRate: 0.12,

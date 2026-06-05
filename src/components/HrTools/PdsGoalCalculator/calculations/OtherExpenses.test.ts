@@ -10,7 +10,7 @@ const defaultConstants: OtherExpensesConstants = {
   salarySubtotal: 5000,
   fourOThreeBPercentage: 0.1,
   grossMonthlyPay: 4000,
-  workCompPercentage: 0.17,
+  workCompAmount: 555,
   attritionRate: 0.06,
   creditCardFeeRate: 0.06,
   adminRate: 0.12,
@@ -57,10 +57,27 @@ describe('calculateOtherExpenses', () => {
   });
 
   describe('work comp', () => {
-    it('calculates as grossMonthlyPay × workCompPercentage for part-time', () => {
+    it('uses the fixed workCompAmount for part-time', () => {
       const result = calculateOtherExpenses(partTime(), defaultConstants);
-      // 4000 * 0.17
-      expect(result.workComp).toBeCloseTo(680);
+      // fixed amount — chosen to not equal any product of other constants
+      expect(result.workComp).toBeCloseTo(555);
+    });
+
+    it('does not vary with grossMonthlyPay (regression guard against the old percent-of-pay formula)', () => {
+      const base = calculateOtherExpenses(partTime(), defaultConstants);
+      const tripled = calculateOtherExpenses(partTime(), {
+        ...defaultConstants,
+        grossMonthlyPay: defaultConstants.grossMonthlyPay * 3,
+      });
+      expect(tripled.workComp).toBe(base.workComp);
+    });
+
+    it('returns 0 workComp when workCompAmount is 0 (regression guard against falsy-check replacement)', () => {
+      const result = calculateOtherExpenses(partTime(), {
+        ...defaultConstants,
+        workCompAmount: 0,
+      });
+      expect(result.workComp).toBe(0);
     });
 
     it('is 0 for full-time', () => {
@@ -123,8 +140,8 @@ describe('calculateOtherExpenses', () => {
 
     it('sums salarySubtotal + reimbursable + 403b + workComp for part-time', () => {
       const result = calculateOtherExpenses(partTime(), defaultConstants);
-      // 5000 + 500 + 400 + 680 + 0
-      expect(result.subtotal).toBeCloseTo(6580);
+      // 5000 + 500 + 400 + 555 + 0
+      expect(result.subtotal).toBeCloseTo(6455);
     });
   });
 
@@ -183,16 +200,16 @@ describe('calculateOtherExpenses', () => {
 
     it('produces correct totals for a part-time employee', () => {
       const result = calculateOtherExpenses(partTime(), defaultConstants);
-      // reimbursable=500, 403b=400, workComp=4000*0.17=680, benefits=0
-      // subtotal=5000+500+400+680+0=6580
-      // attrition=6580*0.06=394.80
-      // creditCardFees=(6580+394.80)/(1-0.06)-(6580+394.80)≈445.20
-      // adminBase=6580+445.20+394.80=7420
-      // assessment = adminBase/0.88 - adminBase ≈ 1011.82
-      expect(result.subtotal).toBeCloseTo(6580);
-      expect(result.attrition).toBeCloseTo(394.8);
-      expect(result.creditCardFees).toBeCloseTo(445.2, 1);
-      expect(result.assessment).toBeCloseTo(1011.82, 1);
+      // reimbursable=500, 403b=400, workComp=555 (fixed), benefits=0
+      // subtotal=5000+500+400+555+0=6455
+      // attrition=6455*0.06=387.30
+      // creditCardFees=(6455+387.30)/(1-0.06)-(6455+387.30)≈436.74
+      // adminBase=6455+387.30+436.74≈7279.04
+      // assessment = adminBase/0.88 - adminBase ≈ 992.60
+      expect(result.subtotal).toBeCloseTo(6455);
+      expect(result.attrition).toBeCloseTo(387.3);
+      expect(result.creditCardFees).toBeCloseTo(436.74, 1);
+      expect(result.assessment).toBeCloseTo(992.6, 1);
     });
   });
 });

@@ -31,7 +31,7 @@ const mockUseGoalCalculatorConstants =
   >;
 
 const EMPLOYER_FICA_RATE = 0.08;
-const WORK_COMP_PERCENTAGE = 0.17;
+const WORK_COMP_AMOUNT = 400;
 const ATTRITION_RATE = 0.06;
 const CREDIT_CARD_FEE_RATE = 0.06;
 const ADMIN_RATE = 0.12;
@@ -51,7 +51,7 @@ const constantsMock = gqlMock<GoalCalculatorConstantsQuery>(
           {
             category: MpdGoalMiscConstantCategoryEnum.AdditionalRates,
             label: MpdGoalMiscConstantLabelEnum.PartTimeWorkCompensation,
-            fee: WORK_COMP_PERCENTAGE,
+            fee: WORK_COMP_AMOUNT,
           },
           {
             category: MpdGoalMiscConstantCategoryEnum.AdditionalRates,
@@ -151,7 +151,7 @@ describe('usePdsSummaryData', () => {
         },
       ],
       [
-        'workCompPercentage',
+        'workCompAmount',
         {
           ADDITIONAL_RATES: {
             ...defaultConstants.goalMiscConstants.ADDITIONAL_RATES,
@@ -329,14 +329,14 @@ describe('usePdsSummaryData', () => {
       // Reimbursable: monthly = 400, annual = 1200, raw = 500, above floor
       //
       // 403b = 2166.667 * 0.08 = 173.333
-      // workComp = 2166.667 * 0.17 = 368.333 (part-time)
+      // workComp = 400 (fixed amount, part-time)
       // benefits = 0 (part-time, ignores calculation.benefits)
-      // subtotal = 2340 + 500 + 173.333 + 368.333 + 0 = 3381.667
-      // attrition = 3381.667 * 0.06 = 202.9
-      // creditCardFees = (3381.667 + 202.9) / (1 - 0.06) - (3381.667 + 202.9) ≈ 228.80
-      // adminBase ≈ 3813.37
-      // assessment = adminBase / (1 - 0.12) - adminBase ≈ 520.00
-      // overallTotal ≈ 3381.667 + 202.9 + 228.80 + 520.00 ≈ 4333.37
+      // subtotal = 2340 + 500 + 173.333 + 400 + 0 = 3413.333
+      // attrition = 3413.333 * 0.06 = 204.8
+      // creditCardFees = (3413.333 + 204.8) / (1 - 0.06) - (3413.333 + 204.8) ≈ 230.94
+      // adminBase ≈ 3849.08
+      // assessment = adminBase / (1 - 0.12) - adminBase ≈ 524.87
+      // overallTotal ≈ 3413.333 + 204.8 + 230.94 + 524.87 ≈ 4373.95
       const calc = {
         ...defaultCalculation,
         salaryOrHourly: DesignationSupportSalaryType.Hourly,
@@ -348,8 +348,8 @@ describe('usePdsSummaryData', () => {
       const { result } = renderHook(() =>
         usePdsSummaryData(calc, defaultHcmUser),
       );
-      expect(result.current.data?.overallTotal).toBeCloseTo(4333.37, 0);
-      expect(result.current.data?.otherTotals.workComp).toBeCloseTo(368.33, 2);
+      expect(result.current.data?.overallTotal).toBeCloseTo(4373.95, 0);
+      expect(result.current.data?.otherTotals.workComp).toBeCloseTo(400, 2);
       expect(result.current.data?.otherTotals.benefits).toBe(0);
     });
 

@@ -14,7 +14,7 @@ export interface OtherExpensesConstants {
   salarySubtotal: number;
   fourOThreeBPercentage: number;
   grossMonthlyPay: number;
-  workCompPercentage: number;
+  workCompAmount: number;
   attritionRate: number;
   creditCardFeeRate: number;
   adminRate: number;
@@ -41,9 +41,7 @@ export const calculateOtherExpenses = (
   const reimbursableExpenses = constants.reimbursableTotal;
   const fourOThreeBContributions =
     constants.grossMonthlyPay * constants.fourOThreeBPercentage;
-  const workComp = isPartTime
-    ? constants.grossMonthlyPay * constants.workCompPercentage
-    : 0;
+  const workComp = isPartTime ? constants.workCompAmount : 0;
   const benefits = isFullTime ? (calculation.benefits ?? 0) : 0;
 
   const subtotal =
