@@ -12,6 +12,8 @@ export const getLocalizedCategory = (
   const categoryLabels: Record<StaffExpenseCategoryEnum, string> = {
     [StaffExpenseCategoryEnum.Donation]: t('Donation'),
     [StaffExpenseCategoryEnum.Transfer]: t('Transfer'),
+    [StaffExpenseCategoryEnum.AccountTransfer]: t('Account Transfer'),
+    [StaffExpenseCategoryEnum.StaffExpense]: t('Staff Expense'),
     [StaffExpenseCategoryEnum.MinistryReimbursement]: t(
       'Ministry Reimbursement',
     ),
@@ -132,6 +134,12 @@ export const getLocalizedSubCategory = (
     [StaffExpensesSubCategoryEnum.StaffAssessment]: t('Staff Assessment'),
     [StaffExpensesSubCategoryEnum.OtherAssessment]: t('Other Assessment'),
     [StaffExpensesSubCategoryEnum.CreditCardFee]: t('Credit Card Fee'),
+    [StaffExpensesSubCategoryEnum.AccountTransfer]: t('Account Transfer'),
+    [StaffExpensesSubCategoryEnum.Registration]: t('Registration'),
+    [StaffExpensesSubCategoryEnum.Purchase]: t('Purchase'),
+    [StaffExpensesSubCategoryEnum.SummerMission]: t('Summer Mission'),
+    [StaffExpensesSubCategoryEnum.Staffcard]: t('StaffCard'),
+    [StaffExpensesSubCategoryEnum.PaCard]: t('PA Card'),
   };
 
   return subcategoryLabels[value] ?? t('Unknown Subcategory');
