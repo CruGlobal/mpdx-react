@@ -47,10 +47,9 @@ export const NameDisplay: React.FC<NameDisplayProps> = ({
           sx={{ color: 'text.secondary' }}
           data-testid="person-numbers"
         >
-          {t('Person Number: {{personNumbers}}', {
-            personNumbers,
-            count: personNumberCount,
-          })}
+          {personNumberCount > 1
+            ? t('Person Numbers: {{personNumbers}}', { personNumbers })
+            : t('Person Number: {{personNumbers}}', { personNumbers })}
         </Typography>
       </Box>
       {spouseComponent}
