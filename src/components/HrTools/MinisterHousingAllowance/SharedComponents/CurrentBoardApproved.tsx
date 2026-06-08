@@ -37,12 +37,18 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
 
   const [duplicateMHA] = useDuplicateMinistryHousingAllowanceRequestMutation();
 
-  const { isMarried, preferredName, spousePreferredName } =
-    useMinisterHousingAllowance();
+  const {
+    isMarried,
+    preferredName,
+    spousePreferredName,
+    userApprovedOverallAmount,
+    spouseApprovedOverallAmount,
+    userTakenAmount,
+    spouseTakenAmount,
+  } = useMinisterHousingAllowance();
   const requestId = request?.id;
 
-  const { hrApprovedAt, approvedOverallAmount, staffSpecific, spouseSpecific } =
-    request?.requestAttributes || {};
+  const { hrApprovedAt } = request?.requestAttributes || {};
 
   const lastUpdated = request?.updatedAt ?? null;
 
@@ -127,7 +133,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
                       sx={{ color: 'primary.main', fontWeight: 'bold' }}
                     >
                       {currencyFormat(
-                        Number(approvedOverallAmount),
+                        Number(userApprovedOverallAmount),
                         currency,
                         locale,
                         {
@@ -159,9 +165,14 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
                     <Typography
                       sx={{ color: 'primary.main', fontWeight: 'bold' }}
                     >
-                      {currencyFormat(Number(staffSpecific), currency, locale, {
+                      {currencyFormat(
+                        Number(userTakenAmount),
+                        currency,
+                        locale,
+                        {
                         showTrailingZeros: true,
-                      })}
+                        },
+                      )}
                     </Typography>
                   </Grid>
                   <Grid item>
@@ -194,7 +205,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
                         sx={{ color: 'primary.main', fontWeight: 'bold' }}
                       >
                         {currencyFormat(
-                          Number(approvedOverallAmount),
+                          Number(spouseApprovedOverallAmount),
                           currency,
                           locale,
                           {
@@ -230,7 +241,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
                         sx={{ color: 'primary.main', fontWeight: 'bold' }}
                       >
                         {currencyFormat(
-                          Number(spouseSpecific),
+                          Number(spouseTakenAmount),
                           currency,
                           locale,
                           {

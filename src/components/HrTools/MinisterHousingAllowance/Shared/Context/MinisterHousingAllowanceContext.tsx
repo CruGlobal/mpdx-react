@@ -54,6 +54,10 @@ export type ContextType = {
   spousePreferredName: string;
   userEligibleForMHA: boolean;
   spouseEligibleForMHA: boolean;
+  userApprovedOverallAmount: number | null;
+  spouseApprovedOverallAmount: number | null;
+  userTakenAmount: number | null;
+  spouseTakenAmount: number | null;
   handleDiscard: () => Promise<void>;
 
   requestData?:
@@ -204,6 +208,26 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
     [spouseHcmData],
   );
 
+  const userApprovedOverallAmount = useMemo(
+    () => userHcmData?.mhaRequest.currentApprovedOverallAmount ?? null,
+    [userHcmData],
+  );
+
+  const spouseApprovedOverallAmount = useMemo(
+    () => spouseHcmData?.mhaRequest.currentApprovedOverallAmount ?? null,
+    [spouseHcmData],
+  );
+
+  const userTakenAmount = useMemo(
+    () => userHcmData?.mhaRequest.currentTakenAmount ?? null,
+    [userHcmData],
+  );
+
+  const spouseTakenAmount = useMemo(
+    () => spouseHcmData?.mhaRequest.currentTakenAmount ?? null,
+    [spouseHcmData],
+  );
+
   const [isDrawerOpen, setIsDrawerOpen] = useState(true);
   const toggleDrawer = useCallback(() => {
     setIsDrawerOpen((prev) => !prev);
@@ -234,6 +258,10 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       spousePreferredName,
       userEligibleForMHA,
       spouseEligibleForMHA,
+      userApprovedOverallAmount,
+      spouseApprovedOverallAmount,
+      userTakenAmount,
+      spouseTakenAmount,
       handleDiscard,
       setIsComplete,
       requestData: requestData?.ministryHousingAllowanceRequest ?? null,
@@ -264,6 +292,10 @@ export const MinisterHousingAllowanceProvider: React.FC<Props> = ({
       spousePreferredName,
       userEligibleForMHA,
       spouseEligibleForMHA,
+      userApprovedOverallAmount,
+      spouseApprovedOverallAmount,
+      userTakenAmount,
+      spouseTakenAmount,
       handleDiscard,
       requestData,
       requestError,

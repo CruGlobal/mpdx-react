@@ -35,9 +35,6 @@ const TestComponent: React.FC<TestComponentProps> = ({
     requestAttributes: {
       ...mockMHARequest.requestAttributes,
       hrApprovedAt: '2023-01-15',
-      approvedOverallAmount: 1500,
-      staffSpecific: 1000,
-      spouseSpecific: 500,
     },
   };
 
@@ -68,6 +65,10 @@ describe('CurrentBoardApproved Component', () => {
           isMarried: true,
           preferredName: 'John',
           spousePreferredName: 'Jane',
+          userApprovedOverallAmount: 1500,
+          spouseApprovedOverallAmount: 1500,
+          userTakenAmount: 1000,
+          spouseTakenAmount: 500,
           userHcmData: {
             staffInfo: {
               personNumber: '000123456',
@@ -110,6 +111,8 @@ describe('CurrentBoardApproved Component', () => {
           isMarried: false,
           preferredName: 'John',
           spousePreferredName: '',
+          userApprovedOverallAmount: 1500,
+          userTakenAmount: 1000,
           userHcmData: {
             staffInfo: {
               personNumber: '000123456',
@@ -137,6 +140,55 @@ describe('CurrentBoardApproved Component', () => {
 
     // Spouse data should not be rendered
     expect(queryByText('Jane')).not.toBeInTheDocument();
+  });
+
+  it('shows distinct per-person approved and claimed amounts from HCM', () => {
+    const { getByText } = render(
+      <TestComponent
+        contextValue={{
+          isMarried: true,
+          preferredName: 'John',
+          spousePreferredName: 'Jane',
+          userApprovedOverallAmount: 2000,
+          spouseApprovedOverallAmount: 800,
+          userTakenAmount: 1200,
+          spouseTakenAmount: 300,
+          userHcmData: {
+            staffInfo: { personNumber: '000123456' },
+          } as unknown as HcmData,
+          spouseHcmData: {
+            staffInfo: { personNumber: '100123456' },
+          } as unknown as HcmData,
+        }}
+      />,
+    );
+
+    // MHA Approved by Board (per person)
+    expect(getByText('$2,000.00')).toBeInTheDocument();
+    expect(getByText('$800.00')).toBeInTheDocument();
+    // MHA Claimed in Salary (per person)
+    expect(getByText('$1,200.00')).toBeInTheDocument();
+    expect(getByText('$300.00')).toBeInTheDocument();
+  });
+
+  it('renders $0.00 when HCM approved/claimed amounts are null', () => {
+    const { getAllByText } = render(
+      <TestComponent
+        contextValue={{
+          isMarried: false,
+          preferredName: 'John',
+          spousePreferredName: '',
+          userApprovedOverallAmount: null,
+          userTakenAmount: null,
+          userHcmData: {
+            staffInfo: { personNumber: '000123456' },
+          } as unknown as HcmData,
+          spouseHcmData: null,
+        }}
+      />,
+    );
+
+    expect(getAllByText('$0.00')).toHaveLength(2);
   });
 
   it('should navigate to edit page with new requestId after duplicate mutation', async () => {
