@@ -297,7 +297,7 @@ describe('MinisterHousingAllowanceReport', () => {
       <TestComponent
         hcmMock={singleMhaNoException}
         mhaRequestsMock={[
-          { ...mockMHARequest, status: MhaStatusEnum.BoardApproved },
+          { ...mockMHARequest, status: MhaStatusEnum.HrApproved },
         ]}
       />,
     );
@@ -320,21 +320,34 @@ describe('MinisterHousingAllowanceReport', () => {
     });
   });
 
-  it.each([
-    MhaStatusEnum.HrApproved,
-    MhaStatusEnum.BoardApproved,
-    MhaStatusEnum.Cancelled,
-  ])('shows new request button when current request is %s', async (status) => {
-    const { findByRole } = render(
+  it.each([MhaStatusEnum.HrApproved, MhaStatusEnum.Cancelled])(
+    'shows new request button when current request is %s',
+    async (status) => {
+      const { findByRole } = render(
+        <TestComponent
+          hcmMock={singleMhaNoException}
+          mhaRequestsMock={[{ ...mockMHARequest, status }]}
+        />,
+      );
+
+      expect(
+        await findByRole('button', { name: 'Request New MHA' }),
+      ).toBeInTheDocument();
+    },
+  );
+
+  it('hides new request button when current request is board approved', async () => {
+    const { findByText, queryByText } = render(
       <TestComponent
         hcmMock={singleMhaNoException}
-        mhaRequestsMock={[{ ...mockMHARequest, status }]}
+        mhaRequestsMock={[
+          { ...mockMHARequest, status: MhaStatusEnum.BoardApproved },
+        ]}
       />,
     );
 
-    expect(
-      await findByRole('button', { name: 'Request New MHA' }),
-    ).toBeInTheDocument();
+    expect(await findByText('Current Board Approved MHA')).toBeInTheDocument();
+    expect(queryByText('Request New MHA')).not.toBeInTheDocument();
   });
 
   it.each([
@@ -356,12 +369,28 @@ describe('MinisterHousingAllowanceReport', () => {
     },
   );
 
+  it('hides Update Current MHA on the previous approved request while an open request exists', async () => {
+    const { findByText, queryByText } = render(
+      <TestComponent
+        hcmMock={singleMhaNoException}
+        mhaRequestsMock={[
+          { ...mockMHARequest, id: '1', status: MhaStatusEnum.InProgress },
+          { ...mockMHARequest, id: '2', status: MhaStatusEnum.BoardApproved },
+        ]}
+      />,
+    );
+
+    expect(await findByText('Current Board Approved MHA')).toBeInTheDocument();
+    expect(queryByText('View Current MHA')).toBeInTheDocument();
+    expect(queryByText('Update Current MHA')).not.toBeInTheDocument();
+  });
+
   it('shows success snackbar when MHA request is created', async () => {
     const { findByText } = render(
       <TestComponent
         hcmMock={singleMhaNoException}
         mhaRequestsMock={[
-          { ...mockMHARequest, status: MhaStatusEnum.BoardApproved },
+          { ...mockMHARequest, status: MhaStatusEnum.HrApproved },
         ]}
       />,
     );
