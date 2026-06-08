@@ -127,7 +127,11 @@ export const MinisterHousingAllowanceReport = () => {
 
   const eitherPersonEligible = userEligibleForMHA || spouseEligibleForMHA;
 
-  const showNewRequestButton = eitherPersonEligible && !hasBlockingRequest;
+  const hasCurrentBoardApprovedMha =
+    currentRequest?.status === MhaStatusEnum.BoardApproved;
+  const showNewRequestButton =
+    eitherPersonEligible && !hasBlockingRequest && !hasCurrentBoardApprovedMha;
+
   const showCurrentRequest = eitherPersonEligible && currentRequest;
   const showPreviousRequests = eitherPersonEligible && previousApprovedRequest;
 
@@ -206,7 +210,10 @@ export const MinisterHousingAllowanceReport = () => {
                   (isCurrentRequestPending ? (
                     <CurrentRequest request={currentRequest} />
                   ) : (
-                    <CurrentBoardApproved request={currentRequest} />
+                    <CurrentBoardApproved
+                      request={currentRequest}
+                      hasOpenRequest={false}
+                    />
                   ))}
               </Stack>
               {showNewRequestButton && (
@@ -221,7 +228,10 @@ export const MinisterHousingAllowanceReport = () => {
               )}
               {showPreviousRequests && (
                 <Stack direction="column" width={mainContentWidth} mt={4}>
-                  <CurrentBoardApproved request={previousApprovedRequest} />
+                  <CurrentBoardApproved
+                    request={previousApprovedRequest}
+                    hasOpenRequest={isCurrentRequestPending}
+                  />
                 </Stack>
               )}
             </>

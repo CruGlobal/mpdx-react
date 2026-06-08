@@ -23,11 +23,13 @@ interface TestComponentProps {
     push?: jest.Mock;
     query?: { accountListId?: string };
   };
+  hasOpenRequest?: boolean;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   contextValue,
   router = {},
+  hasOpenRequest = false,
 }) => {
   const approvedMHARequest = {
     ...mockMHARequest,
@@ -49,7 +51,10 @@ const TestComponent: React.FC<TestComponentProps> = ({
           <MinisterHousingAllowanceContext.Provider
             value={contextValue as ContextType}
           >
-            <CurrentBoardApproved request={approvedMHARequest} />
+            <CurrentBoardApproved
+              request={approvedMHARequest}
+              hasOpenRequest={hasOpenRequest}
+            />
           </MinisterHousingAllowanceContext.Provider>
         </GqlMockedProvider>
       </TestRouter>
@@ -224,7 +229,10 @@ describe('CurrentBoardApproved Component', () => {
                 } as ContextType
               }
             >
-              <CurrentBoardApproved request={mockMHARequest} />
+              <CurrentBoardApproved
+                request={mockMHARequest}
+                hasOpenRequest={false}
+              />
             </MinisterHousingAllowanceContext.Provider>
           </GqlMockedProvider>
         </TestRouter>
@@ -250,5 +258,27 @@ describe('CurrentBoardApproved Component', () => {
         `/accountLists/account-list-1/hrTools/mhaCalculator/${newRequestId}?mode=edit`,
       );
     });
+  });
+
+  it('should hide Update Current MHA button when there is an open request', () => {
+    const { queryByText, getByText } = render(
+      <TestComponent
+        contextValue={{
+          isMarried: false,
+          preferredName: 'John',
+          spousePreferredName: '',
+          userHcmData: {
+            staffInfo: {
+              personNumber: '000123456',
+            },
+          } as unknown as HcmData,
+          spouseHcmData: null,
+        }}
+        hasOpenRequest
+      />,
+    );
+
+    expect(getByText('View Current MHA')).toBeInTheDocument();
+    expect(queryByText('Update Current MHA')).not.toBeInTheDocument();
   });
 });

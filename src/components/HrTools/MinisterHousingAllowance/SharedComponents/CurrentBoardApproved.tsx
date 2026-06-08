@@ -24,10 +24,12 @@ import { MHARequest } from './types';
 
 interface CurrentBoardApprovedProps {
   request: MHARequest | null;
+  hasOpenRequest: boolean;
 }
 
 export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
   request,
+  hasOpenRequest,
 }) => {
   const { t } = useTranslation();
   const locale = useLocale();
@@ -74,6 +76,8 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
           router.push(getRequestUrl(accountListId, newRequestId, 'edit'));
         }
       },
+      // Global Apollo error link surfaces the snackbar, this only prevents an unhandled promise rejection
+      onError: () => {},
     });
   };
 
@@ -96,6 +100,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
       linkOne={viewLink}
       linkTwoText={t('Update Current MHA')}
       handleLinkTwo={handleDuplicateRequest}
+      hideLinkTwoButton={hasOpenRequest}
       isRequest={false}
       handlePrint={handlePrint}
       handleConfirmCancel={() => {}}
@@ -170,7 +175,7 @@ export const CurrentBoardApproved: React.FC<CurrentBoardApprovedProps> = ({
                         currency,
                         locale,
                         {
-                        showTrailingZeros: true,
+                          showTrailingZeros: true,
                         },
                       )}
                     </Typography>
