@@ -3,17 +3,19 @@ import { render } from '@testing-library/react';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
 import { LandingTestWrapper } from 'src/components/HrTools/SalaryCalculator/Landing/NewSalaryCalculationLanding/LandingTestWrapper';
 import { SalaryCalculatorTestWrapper } from 'src/components/HrTools/SalaryCalculator/SalaryCalculatorTestWrapper';
-import { UserTypeEnum } from 'src/graphql/types.generated';
+import { UsStaffGroupEnum, UserTypeEnum } from 'src/graphql/types.generated';
 import SalaryCalculatorPage, { getServerSideProps } from './index.page';
 
 interface TestComponentProps {
   userType?: UserTypeEnum;
+  usStaffGroup?: UsStaffGroupEnum;
 }
 
 const TestComponent: React.FC<TestComponentProps> = ({
   userType = UserTypeEnum.UsStaff,
+  usStaffGroup = UsStaffGroupEnum.SeniorStaff,
 }) => (
-  <SalaryCalculatorTestWrapper userType={userType}>
+  <SalaryCalculatorTestWrapper userType={userType} usStaffGroup={usStaffGroup}>
     <SalaryCalculatorPage />
   </SalaryCalculatorTestWrapper>
 );

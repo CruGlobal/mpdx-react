@@ -1,17 +1,19 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { SalaryCalculatorTestWrapper } from 'src/components/HrTools/SalaryCalculator/SalaryCalculatorTestWrapper';
-import { UserTypeEnum } from 'src/graphql/types.generated';
+import { UsStaffGroupEnum, UserTypeEnum } from 'src/graphql/types.generated';
 import { SalaryCalculatorEditPage } from './index.page';
 
 interface ComponentProps {
   userType?: UserTypeEnum;
+  usStaffGroup?: UsStaffGroupEnum;
 }
 
 const Components: React.FC<ComponentProps> = ({
   userType = UserTypeEnum.UsStaff,
+  usStaffGroup = UsStaffGroupEnum.SeniorStaff,
 }) => (
-  <SalaryCalculatorTestWrapper userType={userType}>
+  <SalaryCalculatorTestWrapper userType={userType} usStaffGroup={usStaffGroup}>
     <SalaryCalculatorEditPage />
   </SalaryCalculatorTestWrapper>
 );

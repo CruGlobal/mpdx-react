@@ -9,60 +9,32 @@ import {
   beforeTestResizeObserver,
 } from '__tests__/util/windowResizeObserver';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
-import { StaffAccountQuery } from 'src/components/Shared/StaffAccount/StaffAccount.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
-import {
-  AssignmentStatusEnum,
-  PeopleGroupSupportTypeEnum,
-  UserPersonTypeEnum,
-  UserTypeEnum,
-} from 'src/graphql/types.generated';
+import { UsStaffGroupEnum, UserTypeEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import MinisterHousingAllowancePage, { getServerSideProps } from './index.page';
 
 const mutationSpy = jest.fn();
-
-const mocks = {
-  StaffAccount: {
-    staffAccount: {
-      id: '12345',
-      name: 'Test Account',
-    },
-  },
-  Hcm: {
-    hcm: [
-      {
-        mhaEit: {
-          mhaEligibility: true,
-        },
-        staffInfo: {
-          preferredName: 'Test User',
-          peopleGroupSupportType: PeopleGroupSupportTypeEnum.SupportedRmo,
-          userPersonType: UserPersonTypeEnum.EmployeeStaff,
-          assignmentStatus: AssignmentStatusEnum.ActivePayrollEligible,
-        },
-      },
-    ],
-  },
-};
 interface ComponentProps {
   userType?: UserTypeEnum;
+  usStaffGroup?: UsStaffGroupEnum;
+  staffAccountId?: string;
 }
 
 const Components: React.FC<ComponentProps> = ({
   userType = UserTypeEnum.UsStaff,
+  usStaffGroup = UsStaffGroupEnum.SeniorStaff,
+  staffAccountId = '12345',
 }) => (
   <ThemeProvider theme={theme}>
     <SnackbarProvider>
       <TestRouter>
         <GqlMockedProvider<{
-          StaffAccount: StaffAccountQuery;
           GetUser: GetUserQuery;
         }>
           mocks={{
-            ...mocks,
             GetUser: {
-              user: { userType },
+              user: { userType, usStaffGroup, staffAccountId },
             },
           }}
           onCall={mutationSpy}
@@ -109,15 +81,17 @@ describe('MHA Calculation Page', () => {
 
   it('renders no staff account page when no staff account', async () => {
     const mockNoStaffAccount = {
-      StaffAccount: {
-        staffAccount: null,
+      GetUser: {
+        user: {
+          staffAccountId: null,
+        },
       },
     };
 
     const { findByText } = render(
       <TestRouter>
         <GqlMockedProvider<{
-          StaffAccount: StaffAccountQuery;
+          GetUser: GetUserQuery;
         }>
           mocks={mockNoStaffAccount}
           onCall={mutationSpy}

@@ -10,12 +10,7 @@ import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import { LoadCoachingListQuery } from 'src/components/Coaching/LoadCoachingList.generated';
 import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
-import {
-  AssignmentStatusEnum,
-  PeopleGroupSupportTypeEnum,
-  UserPersonTypeEnum,
-  UserTypeEnum,
-} from 'src/graphql/types.generated';
+import { UsStaffGroupEnum, UserTypeEnum } from 'src/graphql/types.generated';
 import { UserOptionQuery } from 'src/hooks/UserPreference.generated';
 import theme from 'src/theme';
 import { GetToolNotificationsQuery } from './GetToolNotifcations.generated';
@@ -132,22 +127,11 @@ describe('NavMenu', () => {
       <TestComponent
         mocks={{
           ...defaultMocks,
-          Hcm: {
-            hcm: [
-              {
-                staffInfo: {
-                  id: '1',
-                  peopleGroupSupportType:
-                    PeopleGroupSupportTypeEnum.SupportedRmo,
-                  userPersonType: UserPersonTypeEnum.EmployeeStaff,
-                  assignmentStatus: AssignmentStatusEnum.ActivePayrollEligible,
-                },
-                asrEit: {
-                  asrEligibility: true,
-                },
-                salaryRequestEligible: true,
-              },
-            ],
+          GetUser: {
+            user: {
+              userType: UserTypeEnum.UsStaff,
+              usStaffGroup: UsStaffGroupEnum.SeniorStaff,
+            },
           },
         }}
       />,

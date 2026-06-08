@@ -10,6 +10,7 @@ import {
   PeopleGroupSupportTypeEnum,
   SalaryRequestStatusEnum,
   SecaStatusEnum,
+  UsStaffGroupEnum,
   UserPersonTypeEnum,
   UserTypeEnum,
 } from 'src/graphql/types.generated';
@@ -134,6 +135,7 @@ export const LandingTestWrapper: React.FC<LandingTestWrapperProps> = ({
           GetUser: {
             user: {
               userType: UserTypeEnum.UsStaff,
+              usStaffGroup: UsStaffGroupEnum.SeniorStaff,
             },
           },
         }}

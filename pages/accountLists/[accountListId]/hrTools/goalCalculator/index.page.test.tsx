@@ -2,40 +2,25 @@ import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
 import { blockImpersonatingNonDevelopers } from 'pages/api/utils/pagePropsHelpers';
-import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
-import {
-  PeopleGroupSupportTypeEnum,
-  UserTypeEnum,
-} from 'src/graphql/types.generated';
+import { UsStaffGroupEnum, UserTypeEnum } from 'src/graphql/types.generated';
 import { GoalCalculatorPage, getServerSideProps } from './index.page';
 
 interface ComponentsProps {
   userType?: UserTypeEnum;
-  peopleGroupSupportType?: PeopleGroupSupportTypeEnum;
-  salaryRequestEligible?: boolean;
+  usStaffGroup?: UsStaffGroupEnum;
 }
 
 const Components: React.FC<ComponentsProps> = ({
   userType = UserTypeEnum.NonCru,
-  peopleGroupSupportType = PeopleGroupSupportTypeEnum.SupportedRmo,
-  salaryRequestEligible = true,
+  usStaffGroup = UsStaffGroupEnum.SeniorStaff,
 }) => (
   <TestRouter>
     <GqlMockedProvider<{
       GetUser: GetUserQuery;
-      Hcm: HcmQuery;
     }>
       mocks={{
-        GetUser: { user: { userType } },
-        Hcm: {
-          hcm: [
-            {
-              salaryRequestEligible,
-              staffInfo: { peopleGroupSupportType },
-            },
-          ],
-        },
+        GetUser: { user: { userType, usStaffGroup } },
       }}
     >
       <GoalCalculatorPage />
@@ -56,12 +41,11 @@ describe('GoalCalculator page', () => {
     ).toBeInTheDocument();
   });
 
-  it('should show limited access for a US Staff user whose peopleGroupSupportType is Designation (PDS)', async () => {
+  it('should show limited access for a US Staff user whose usStaffGroup is PaidWithDesignation (PDS)', async () => {
     const { findByText } = render(
       <Components
         userType={UserTypeEnum.UsStaff}
-        peopleGroupSupportType={PeopleGroupSupportTypeEnum.Designation}
-        salaryRequestEligible={false}
+        usStaffGroup={UsStaffGroupEnum.PaidWithDesignation}
       />,
     );
 

@@ -7,14 +7,8 @@ import { session } from '__tests__/fixtures/session';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { GetDesignationAccountsQuery } from 'src/components/EditDonationModal/EditDonationModal.generated';
-import { HcmQuery } from 'src/components/HrTools/Shared/HcmData/Hcm.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
-import {
-  AssignmentStatusEnum,
-  PeopleGroupSupportTypeEnum,
-  UserPersonTypeEnum,
-  UserTypeEnum,
-} from 'src/graphql/types.generated';
+import { UsStaffGroupEnum, UserTypeEnum } from 'src/graphql/types.generated';
 import { UserOptionQuery } from 'src/hooks/UserPreference.generated';
 import theme from 'src/theme';
 import { MultiPageMenu, NavTypeEnum } from './MultiPageMenu';
@@ -499,121 +493,239 @@ describe('MultiPageMenu', () => {
     });
   });
 
-  it('shows hr tools', async () => {
-    const { findByText, getByText } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <GqlMockedProvider<{ Hcm: HcmQuery }>
-            mocks={{
-              Hcm: {
-                hcm: [
-                  {
-                    staffInfo: {
-                      peopleGroupSupportType:
-                        PeopleGroupSupportTypeEnum.SupportedRmo,
-                      userPersonType: UserPersonTypeEnum.EmployeeStaff,
-                      assignmentStatus:
-                        AssignmentStatusEnum.ActivePayrollEligible,
-                    },
-                    asrEit: { asrEligibility: true },
-                    salaryRequestEligible: true,
-                    designationSupportCalculatorEligible: true,
+  describe('HR Tools Menu', () => {
+    it('shows hr tools for senior staff', async () => {
+      const { findByText, getByText, queryByText } = render(
+        <ThemeProvider theme={theme}>
+          <TestRouter router={router}>
+            <GqlMockedProvider<{ GetUser: GetUserQuery }>
+              mocks={{
+                GetUser: {
+                  user: {
+                    userType: UserTypeEnum.UsStaff,
+                    usStaffGroup: UsStaffGroupEnum.SeniorStaff,
+                    staffAccountId: '12345',
                   },
-                ],
-              },
-            }}
-          >
-            <MultiPageMenu
-              selectedId={selected}
-              isOpen={true}
-              onClose={() => {}}
-              designationAccounts={[]}
-              setDesignationAccounts={() => {}}
-              navType={NavTypeEnum.HrTools}
-            />
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>,
-    );
+                },
+              }}
+            >
+              <MultiPageMenu
+                selectedId={selected}
+                isOpen={true}
+                onClose={() => {}}
+                designationAccounts={[]}
+                setDesignationAccounts={() => {}}
+                navType={NavTypeEnum.HrTools}
+              />
+            </GqlMockedProvider>
+          </TestRouter>
+        </ThemeProvider>,
+      );
 
-    expect(await findByText('Salary Calculation Form')).toBeInTheDocument();
-    expect(getByText('Savings Fund Transfer')).toBeInTheDocument();
-    expect(getByText('MPD Goal Calculator')).toBeInTheDocument();
-    expect(getByText('MHA Calculation Tool')).toBeInTheDocument();
-    expect(getByText('Additional Salary Request')).toBeInTheDocument();
-    expect(
-      getByText('Paid with Designation Support Goal Calculator'),
-    ).toBeInTheDocument();
-    expect(getByText('Ministry Partner Reminders')).toBeInTheDocument();
-  });
+      expect(await findByText('Salary Calculation Form')).toBeInTheDocument();
+      expect(getByText('Savings Fund Transfer')).toBeInTheDocument();
+      expect(getByText('MPD Goal Calculator')).toBeInTheDocument();
+      expect(getByText('MHA Calculation Tool')).toBeInTheDocument();
+      expect(getByText('Additional Salary Request')).toBeInTheDocument();
+      expect(
+        queryByText('Paid with Designation Support Goal Calculator'),
+      ).not.toBeInTheDocument();
+      expect(getByText('Ministry Partner Reminders')).toBeInTheDocument();
+    });
 
-  it('hides MPD Goal Calculator when salaryRequestEligible is false', async () => {
-    const { findByText, queryByText } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <GqlMockedProvider<{ Hcm: HcmQuery }>
-            mocks={{
-              Hcm: {
-                hcm: [
-                  {
-                    salaryRequestEligible: false,
-                    designationSupportCalculatorEligible: true,
+    it('shows hr tools for new staff', async () => {
+      const { findByText, getByText, queryByText } = render(
+        <ThemeProvider theme={theme}>
+          <TestRouter router={router}>
+            <GqlMockedProvider<{ GetUser: GetUserQuery }>
+              mocks={{
+                GetUser: {
+                  user: {
+                    userType: UserTypeEnum.UsStaff,
+                    usStaffGroup: UsStaffGroupEnum.NewStaff,
+                    staffAccountId: '12345',
                   },
-                ],
-              },
-            }}
-          >
-            <MultiPageMenu
-              selectedId={selected}
-              isOpen={true}
-              onClose={() => {}}
-              designationAccounts={[]}
-              setDesignationAccounts={() => {}}
-              navType={NavTypeEnum.HrTools}
-            />
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>,
-    );
+                },
+              }}
+            >
+              <MultiPageMenu
+                selectedId={selected}
+                isOpen={true}
+                onClose={() => {}}
+                designationAccounts={[]}
+                setDesignationAccounts={() => {}}
+                navType={NavTypeEnum.HrTools}
+              />
+            </GqlMockedProvider>
+          </TestRouter>
+        </ThemeProvider>,
+      );
 
-    expect(
-      await findByText('Paid with Designation Support Goal Calculator'),
-    ).toBeInTheDocument();
-    expect(queryByText('MPD Goal Calculator')).not.toBeInTheDocument();
-  });
+      expect(await findByText('Additional Salary Request')).toBeInTheDocument();
+      expect(queryByText('Salary Calculation Form')).not.toBeInTheDocument();
+      expect(getByText('Savings Fund Transfer')).toBeInTheDocument();
+      expect(queryByText('MPD Goal Calculator')).not.toBeInTheDocument();
+      expect(queryByText('MHA Calculation Tool')).not.toBeInTheDocument();
+      expect(
+        queryByText('Paid with Designation Support Goal Calculator'),
+      ).not.toBeInTheDocument();
+      expect(getByText('Ministry Partner Reminders')).toBeInTheDocument();
+    });
 
-  it('hides PDS Goal Calculator when designationSupportCalculatorEligible is false', async () => {
-    const { findByText, queryByText } = render(
-      <ThemeProvider theme={theme}>
-        <TestRouter router={router}>
-          <GqlMockedProvider<{ Hcm: HcmQuery }>
-            mocks={{
-              Hcm: {
-                hcm: [
-                  {
-                    salaryRequestEligible: true,
-                    designationSupportCalculatorEligible: false,
+    it('shows hr tools for national expat staff', async () => {
+      const { findByText, getByText, queryByText } = render(
+        <ThemeProvider theme={theme}>
+          <TestRouter router={router}>
+            <GqlMockedProvider<{ GetUser: GetUserQuery }>
+              mocks={{
+                GetUser: {
+                  user: {
+                    userType: UserTypeEnum.UsStaff,
+                    usStaffGroup: UsStaffGroupEnum.NationalExpat,
+                    staffAccountId: '12345',
                   },
-                ],
-              },
-            }}
-          >
-            <MultiPageMenu
-              selectedId={selected}
-              isOpen={true}
-              onClose={() => {}}
-              designationAccounts={[]}
-              setDesignationAccounts={() => {}}
-              navType={NavTypeEnum.HrTools}
-            />
-          </GqlMockedProvider>
-        </TestRouter>
-      </ThemeProvider>,
-    );
+                },
+              }}
+            >
+              <MultiPageMenu
+                selectedId={selected}
+                isOpen={true}
+                onClose={() => {}}
+                designationAccounts={[]}
+                setDesignationAccounts={() => {}}
+                navType={NavTypeEnum.HrTools}
+              />
+            </GqlMockedProvider>
+          </TestRouter>
+        </ThemeProvider>,
+      );
 
-    expect(await findByText('MPD Goal Calculator')).toBeInTheDocument();
-    expect(
-      queryByText('Paid with Designation Support Goal Calculator'),
-    ).not.toBeInTheDocument();
+      expect(await findByText('Salary Calculation Form')).toBeInTheDocument();
+      expect(getByText('Savings Fund Transfer')).toBeInTheDocument();
+      expect(queryByText('MPD Goal Calculator')).not.toBeInTheDocument();
+      expect(getByText('MHA Calculation Tool')).toBeInTheDocument();
+      expect(getByText('Additional Salary Request')).toBeInTheDocument();
+      expect(
+        queryByText('Paid with Designation Support Goal Calculator'),
+      ).not.toBeInTheDocument();
+      expect(getByText('Ministry Partner Reminders')).toBeInTheDocument();
+    });
+
+    it('shows hr tools for paid with designation', async () => {
+      const { findByText, queryByText } = render(
+        <ThemeProvider theme={theme}>
+          <TestRouter router={router}>
+            <GqlMockedProvider<{ GetUser: GetUserQuery }>
+              mocks={{
+                GetUser: {
+                  user: {
+                    userType: UserTypeEnum.UsStaff,
+                    usStaffGroup: UsStaffGroupEnum.PaidWithDesignation,
+                    staffAccountId: null,
+                  },
+                },
+              }}
+            >
+              <MultiPageMenu
+                selectedId={selected}
+                isOpen={true}
+                onClose={() => {}}
+                designationAccounts={[]}
+                setDesignationAccounts={() => {}}
+                navType={NavTypeEnum.HrTools}
+              />
+            </GqlMockedProvider>
+          </TestRouter>
+        </ThemeProvider>,
+      );
+
+      expect(
+        await findByText('Paid with Designation Support Goal Calculator'),
+      ).toBeInTheDocument();
+      expect(queryByText('Salary Calculation Form')).not.toBeInTheDocument();
+      expect(queryByText('Additional Salary Request')).not.toBeInTheDocument();
+      expect(queryByText('Savings Fund Transfer')).not.toBeInTheDocument();
+      expect(queryByText('MPD Goal Calculator')).not.toBeInTheDocument();
+      expect(queryByText('MHA Calculation Tool')).not.toBeInTheDocument();
+      expect(queryByText('Ministry Partner Reminders')).not.toBeInTheDocument();
+    });
+
+    it('shows hr tools for part time field staff', async () => {
+      const { findByText, getByText, queryByText } = render(
+        <ThemeProvider theme={theme}>
+          <TestRouter router={router}>
+            <GqlMockedProvider<{ GetUser: GetUserQuery }>
+              mocks={{
+                GetUser: {
+                  user: {
+                    userType: UserTypeEnum.UsStaff,
+                    usStaffGroup: UsStaffGroupEnum.PartTimeFieldStaff,
+                    staffAccountId: '12345',
+                  },
+                },
+              }}
+            >
+              <MultiPageMenu
+                selectedId={selected}
+                isOpen={true}
+                onClose={() => {}}
+                designationAccounts={[]}
+                setDesignationAccounts={() => {}}
+                navType={NavTypeEnum.HrTools}
+              />
+            </GqlMockedProvider>
+          </TestRouter>
+        </ThemeProvider>,
+      );
+
+      expect(await findByText('Savings Fund Transfer')).toBeInTheDocument();
+      expect(getByText('Ministry Partner Reminders')).toBeInTheDocument();
+      expect(
+        queryByText('Paid with Designation Support Goal Calculator'),
+      ).not.toBeInTheDocument();
+      expect(queryByText('Salary Calculation Form')).not.toBeInTheDocument();
+      expect(queryByText('Additional Salary Request')).not.toBeInTheDocument();
+      expect(queryByText('MPD Goal Calculator')).not.toBeInTheDocument();
+      expect(queryByText('MHA Calculation Tool')).not.toBeInTheDocument();
+    });
+
+    it('shows hr tools for interns', async () => {
+      const { findByText, getByText, queryByText } = render(
+        <ThemeProvider theme={theme}>
+          <TestRouter router={router}>
+            <GqlMockedProvider<{ GetUser: GetUserQuery }>
+              mocks={{
+                GetUser: {
+                  user: {
+                    userType: UserTypeEnum.UsStaff,
+                    usStaffGroup: UsStaffGroupEnum.Intern,
+                    staffAccountId: '12345',
+                  },
+                },
+              }}
+            >
+              <MultiPageMenu
+                selectedId={selected}
+                isOpen={true}
+                onClose={() => {}}
+                designationAccounts={[]}
+                setDesignationAccounts={() => {}}
+                navType={NavTypeEnum.HrTools}
+              />
+            </GqlMockedProvider>
+          </TestRouter>
+        </ThemeProvider>,
+      );
+
+      expect(await findByText('Savings Fund Transfer')).toBeInTheDocument();
+      expect(getByText('Ministry Partner Reminders')).toBeInTheDocument();
+      expect(
+        queryByText('Paid with Designation Support Goal Calculator'),
+      ).not.toBeInTheDocument();
+      expect(queryByText('Salary Calculation Form')).not.toBeInTheDocument();
+      expect(queryByText('Additional Salary Request')).not.toBeInTheDocument();
+      expect(queryByText('MPD Goal Calculator')).not.toBeInTheDocument();
+      expect(queryByText('MHA Calculation Tool')).not.toBeInTheDocument();
+    });
   });
 });
