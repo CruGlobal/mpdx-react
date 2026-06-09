@@ -161,20 +161,26 @@ const App = ({
         />
         <link
           rel="apple-touch-icon"
-          sizes="60x60"
+          sizes="76x76"
           href="/icons/apple-touch-icon-ipad-76x76.png"
         />
         <link
           rel="apple-touch-icon"
-          sizes="114x114"
+          sizes="120x120"
           href="/icons/apple-touch-icon-iphone-retina-120x120.png"
         />
         <link
           rel="apple-touch-icon"
-          sizes="144x144"
+          sizes="152x152"
           href="/icons/apple-touch-icon-ipad-retina-152x152.png"
         />
         <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta
+          name="apple-mobile-web-app-title"
+          content={process.env.APP_NAME ?? 'MPDX'}
+        />
       </Head>
       <Provider config={rollbarConfig}>
         <ErrorBoundary>
