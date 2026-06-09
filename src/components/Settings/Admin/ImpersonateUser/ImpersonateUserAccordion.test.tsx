@@ -284,6 +284,49 @@ describe('ImpersonateUserAccordion', () => {
       });
     });
 
+    it('should not auto-submit while the router is not ready', async () => {
+      const baseRouter = {
+        ...router,
+        query: {
+          ...router.query,
+          email: 'test@test.org',
+          reason: 'HS-1234',
+        },
+      };
+
+      const { rerender } = render(
+        <Components
+          expandedAccordion={AdminAccordion.ImpersonateUser}
+          routerOverride={{ ...baseRouter, isReady: false }}
+        />,
+      );
+
+      // The effect short-circuits at the `!isReady` early return, so no fetch
+      // fires even though valid params are present
+      await waitFor(() => expect(fetch).not.toHaveBeenCalled());
+
+      // Once the router reports ready, the auto-submit proceeds
+      rerender(
+        <Components
+          expandedAccordion={AdminAccordion.ImpersonateUser}
+          routerOverride={{ ...baseRouter, isReady: true }}
+        />,
+      );
+
+      await waitFor(() =>
+        expect(fetch).toHaveBeenCalledWith(
+          '/api/auth/impersonate/impersonateUser',
+          {
+            method: 'POST',
+            body: JSON.stringify({
+              user: 'test@test.org',
+              reason: 'HS-1234',
+            }),
+          },
+        ),
+      );
+    });
+
     it('should prefill without auto-submitting when only email is present', async () => {
       const { getByRole } = render(
         <Components
@@ -304,6 +347,53 @@ describe('ImpersonateUserAccordion', () => {
         getByRole('textbox', { name: /reason \/ helpscout ticket link/i }),
       ).toHaveValue('');
       expect(fetch).not.toHaveBeenCalled();
+    });
+
+    it('should not auto-submit a second time when the effect re-runs', async () => {
+      const baseRouter = {
+        ...router,
+        query: {
+          ...router.query,
+          email: 'test@test.org',
+          reason: 'HS-1234',
+        },
+      };
+
+      const { rerender } = render(
+        <Components
+          expandedAccordion={AdminAccordion.ImpersonateUser}
+          routerOverride={{ ...baseRouter, isReady: false }}
+        />,
+      );
+
+      // The effect short-circuits until the router is ready
+      expect(fetch).not.toHaveBeenCalled();
+
+      // Router settles → auto-submit fires exactly once
+      rerender(
+        <Components
+          expandedAccordion={AdminAccordion.ImpersonateUser}
+          routerOverride={{ ...baseRouter, isReady: true }}
+        />,
+      );
+
+      await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
+
+      // A later rerender that changes a tracked query param re-runs the effect,
+      // but the autoSubmitted ref guards against a second submission
+      rerender(
+        <Components
+          expandedAccordion={AdminAccordion.ImpersonateUser}
+          routerOverride={{
+            ...baseRouter,
+            isReady: true,
+            query: { ...baseRouter.query, reason: 'HS-9999' },
+          }}
+        />,
+      );
+
+      await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
+      expect(fetch).toHaveBeenCalledTimes(1);
     });
 
     it('should prefill without auto-submitting when email param is invalid', async () => {

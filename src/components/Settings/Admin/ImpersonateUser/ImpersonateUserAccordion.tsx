@@ -6,7 +6,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { Formik } from 'formik';
+import { Formik, FormikProps } from 'formik';
 import { useSnackbar } from 'notistack';
 import { useTranslation } from 'react-i18next';
 import * as yup from 'yup';
@@ -45,6 +45,7 @@ export const ImpersonateUserAccordion: React.FC<
   const initialUser = typeof query.email === 'string' ? query.email : '';
   const initialReason = typeof query.reason === 'string' ? query.reason : '';
   const autoSubmitted = useRef(false);
+  const formikRef = useRef<FormikProps<ImpersonateUserFormType>>(null);
 
   const onSubmit = useCallback(
     async (attributes: ImpersonateUserFormType) => {
@@ -99,9 +100,11 @@ export const ImpersonateUserAccordion: React.FC<
       ImpersonateUserSchema.isValidSync(values)
     ) {
       autoSubmitted.current = true;
-      onSubmit(values);
+      // Submit through Formik so the submission lifecycle (isSubmitting,
+      // disabled fields/button) stays consistent with the manual path
+      void formikRef.current?.submitForm();
     }
-  }, [isReady, initialUser, initialReason, onSubmit]);
+  }, [isReady, initialUser, initialReason]);
 
   return (
     <AccordionItem
@@ -123,6 +126,7 @@ export const ImpersonateUserAccordion: React.FC<
       </Typography>
 
       <Formik
+        innerRef={formikRef}
         initialValues={{
           user: initialUser,
           reason: initialReason,
@@ -165,7 +169,7 @@ export const ImpersonateUserAccordion: React.FC<
                   required
                   id="reason"
                   label={t('Reason / HelpScout Ticket Link')}
-                  type="reason"
+                  type="text"
                   value={reason}
                   disabled={isSubmitting}
                   name="reason"
