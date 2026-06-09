@@ -1,7 +1,7 @@
+import React, { useEffect, useRef } from 'react';
 import { Button } from '@mui/material';
 import { Serwist } from '@serwist/window';
 import { SnackbarKey, useSnackbar } from 'notistack';
-import React, { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 export const ServiceWorkerUpdatePrompt: React.FC = () => {

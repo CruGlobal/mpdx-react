@@ -1,4 +1,7 @@
+import { NextPage } from 'next';
 import type { AppProps } from 'next/app';
+import Head from 'next/head';
+import React, { ReactElement, useMemo } from 'react';
 import { ApolloProvider } from '@apollo/client';
 import createEmotionCache from '@emotion/cache';
 import { CacheProvider } from '@emotion/react';
@@ -11,12 +14,9 @@ import {
 } from '@mui/x-date-pickers/LocalizationProvider';
 import { ErrorBoundary, Provider } from '@rollbar/react';
 import { DateTime } from 'luxon';
-import { NextPage } from 'next';
 import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
-import Head from 'next/head';
 import { SnackbarProvider } from 'notistack';
-import React, { ReactElement, useMemo } from 'react';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 import Rollbar from 'rollbar';
 import { Announcements } from 'src/components/Announcements/Announcements';

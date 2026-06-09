@@ -36,6 +36,10 @@ module.exports = {
         ],
         alphabetize: { order: 'asc' },
         'newlines-between': 'never',
+        // By default pathGroups don't apply to 'external' imports, which
+        // breaks the next/react-first ordering below now that packages
+        // resolve from node_modules; only exclude builtins
+        pathGroupsExcludedImportTypes: ['builtin'],
         pathGroups: [
           {
             pattern: '{next,next/**,react}',
