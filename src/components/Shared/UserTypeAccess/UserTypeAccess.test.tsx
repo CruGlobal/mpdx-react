@@ -1,22 +1,13 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { useSession } from 'next-auth/react';
-import { session } from '__tests__/fixtures/session';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { mockSession } from '__tests__/util/mockSession';
 import { render } from '__tests__/util/testingLibraryReactMock';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UsStaffGroupEnum, UserTypeEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { RequiredUserGroupEnum, UserTypeAccess } from './UserTypeAccess';
-
-const setDeveloper = (developer: boolean) => {
-  (useSession as jest.MockedFn<typeof useSession>).mockReturnValue({
-    data: { ...session, user: { ...session.user, developer } },
-    status: 'authenticated',
-    update: () => Promise.resolve(null),
-  });
-};
 
 const id = 'staff-1';
 
@@ -59,7 +50,7 @@ const TestComponent: React.FC<TestComponentProps> = ({
 describe('UserTypeAccess', () => {
   afterEach(() => {
     process.env.DEVELOPMENT_ENV = 'false';
-    setDeveloper(false);
+    mockSession();
   });
 
   it('should render child component when user type is allowed', async () => {
@@ -239,7 +230,7 @@ describe('UserTypeAccess', () => {
 
   it('should render child component in a development env for a developer even when user is ineligible by group', async () => {
     process.env.DEVELOPMENT_ENV = 'true';
-    setDeveloper(true);
+    mockSession({ developer: true });
 
     const { findByText } = render(
       <TestComponent
@@ -253,7 +244,7 @@ describe('UserTypeAccess', () => {
 
   it('should render child component in a development env for a developer even when user type is not allowed', async () => {
     process.env.DEVELOPMENT_ENV = 'true';
-    setDeveloper(true);
+    mockSession({ developer: true });
 
     const { findByText } = render(
       <TestComponent userType={UserTypeEnum.NonCru} />,
@@ -264,7 +255,22 @@ describe('UserTypeAccess', () => {
 
   it('should not bypass eligibility gating in a development env for a non-developer', async () => {
     process.env.DEVELOPMENT_ENV = 'true';
-    setDeveloper(false);
+    mockSession({ developer: false });
+
+    const { findByRole } = render(
+      <TestComponent userType={UserTypeEnum.NonCru} />,
+    );
+
+    expect(
+      await findByRole('heading', {
+        name: 'Access to this feature is limited.',
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it('should not bypass eligibility gating for a developer outside a development env', async () => {
+    process.env.DEVELOPMENT_ENV = 'false';
+    mockSession({ developer: true });
 
     const { findByRole } = render(
       <TestComponent userType={UserTypeEnum.NonCru} />,

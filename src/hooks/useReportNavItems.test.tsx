@@ -1,20 +1,11 @@
 import { ReactElement } from 'react';
 import { renderHook } from '@testing-library/react-hooks';
-import { useSession } from 'next-auth/react';
-import { session } from '__tests__/fixtures/session';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { mockSession } from '__tests__/util/mockSession';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
 import { UserOptionQuery } from './UserPreference.generated';
 import { useReportNavItems } from './useReportNavItems';
-
-const setDeveloper = (developer: boolean) => {
-  (useSession as jest.MockedFn<typeof useSession>).mockReturnValue({
-    data: { ...session, user: { ...session.user, developer } },
-    status: 'authenticated',
-    update: () => Promise.resolve(null),
-  });
-};
 
 // financialAccounts is gated to global staff, so it is hidden for this user unless a developer
 // bypasses gating
@@ -38,12 +29,10 @@ const Wrapper = ({ children }: { children: ReactElement }) => (
 describe('useReportNavItems', () => {
   afterEach(() => {
     process.env.DEVELOPMENT_ENV = 'false';
-    setDeveloper(false);
+    mockSession();
   });
 
   it('hides gated items for a non-developer when not in a development env', async () => {
-    process.env.DEVELOPMENT_ENV = 'false';
-
     const { result, waitForNextUpdate } = renderHook(
       () => useReportNavItems(),
       { wrapper: Wrapper },
@@ -57,7 +46,7 @@ describe('useReportNavItems', () => {
 
   it('does not bypass gating for a non-developer in a development env', async () => {
     process.env.DEVELOPMENT_ENV = 'true';
-    setDeveloper(false);
+    mockSession({ developer: false });
 
     const { result, waitForNextUpdate } = renderHook(
       () => useReportNavItems(),
@@ -72,7 +61,7 @@ describe('useReportNavItems', () => {
 
   it('shows gated items for a developer in a development env', async () => {
     process.env.DEVELOPMENT_ENV = 'true';
-    setDeveloper(true);
+    mockSession({ developer: true });
 
     const { result, waitForNextUpdate } = renderHook(
       () => useReportNavItems(),
@@ -81,6 +70,21 @@ describe('useReportNavItems', () => {
     await waitForNextUpdate();
 
     expect(result.current.map((item) => item.id)).toContain(
+      'financialAccounts',
+    );
+  });
+
+  it('does not bypass gating for a developer outside a development env', async () => {
+    process.env.DEVELOPMENT_ENV = 'false';
+    mockSession({ developer: true });
+
+    const { result, waitForNextUpdate } = renderHook(
+      () => useReportNavItems(),
+      { wrapper: Wrapper },
+    );
+    await waitForNextUpdate();
+
+    expect(result.current.map((item) => item.id)).not.toContain(
       'financialAccounts',
     );
   });

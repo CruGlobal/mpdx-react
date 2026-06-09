@@ -1,7 +1,7 @@
 import Loading from 'src/components/Loading';
 import { UserTypeEnum } from 'src/graphql/types.generated';
+import { useDeveloperBypass } from 'src/hooks/useDeveloperBypass';
 import { useIneligibleByGroup } from 'src/hooks/useIneligibleByGroup';
-import { useRequiredSession } from 'src/hooks/useRequiredSession';
 import { LimitedAccess } from '../LimitedAccess/LimitedAccess';
 
 export enum RequiredUserGroupEnum {
@@ -40,7 +40,7 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
     userLoading,
     userError,
   } = useIneligibleByGroup();
-  const { developer } = useRequiredSession();
+  const developerBypass = useDeveloperBypass();
 
   const ineligibleByGroup: Record<RequiredUserGroupEnum, boolean> = {
     [RequiredUserGroupEnum.Asr]: inAsrIneligibleGroup,
@@ -55,9 +55,8 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
     (userType && userType !== requiredUserType) ||
     (requireUserGroups && ineligibleByGroup[requireUserGroups]);
 
-  // When not in production, developers bypass all eligibility gating so they can reach all pages
   // Once HCM is ready to go live and DISABLE_NEW_REPORTS is removed, we can remove the alwaysAllow prop
-  if (alwaysAllow || (process.env.DEVELOPMENT_ENV === 'true' && developer)) {
+  if (alwaysAllow || developerBypass) {
     return children;
   }
 
