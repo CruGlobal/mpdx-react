@@ -123,6 +123,30 @@ describe('UserTypeAccess', () => {
     ).toBeInTheDocument();
   });
 
+  it('should render LimitedAccess when user type is allowed but user is ineligible for the NS goal calculator', async () => {
+    const { findByRole } = render(
+      <TestComponent
+        requireUserGroups={RequiredUserGroupEnum.NsGoalCalc}
+        usStaffGroup={UsStaffGroupEnum.PartTimeFieldStaff}
+      />,
+    );
+    expect(
+      await findByRole('heading', {
+        name: 'Access to this feature is limited.',
+      }),
+    ).toBeInTheDocument();
+  });
+
+  it('should render child component when user is eligible for the NS goal calculator', async () => {
+    const { findByText } = render(
+      <TestComponent
+        requireUserGroups={RequiredUserGroupEnum.NsGoalCalc}
+        usStaffGroup={UsStaffGroupEnum.NewStaff}
+      />,
+    );
+    expect(await findByText('Test Content')).toBeInTheDocument();
+  });
+
   it('should render LimitedAccess when user type is allowed but user is ineligible for the PDS goal calculator', async () => {
     const { findByRole } = render(
       <TestComponent

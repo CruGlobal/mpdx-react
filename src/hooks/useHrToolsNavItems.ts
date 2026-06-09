@@ -13,6 +13,7 @@ export function useHrToolsNavItems(): {
     inSalaryCalcIneligibleGroup,
     inMhaIneligibleGroup,
     inMpdGoalCalcIneligibleGroup,
+    inNsGoalCalcIneligibleGroup,
     inPdsGoalCalcIneligibleGroup,
     hasNoStaffAccount,
     userLoading,
@@ -33,6 +34,13 @@ export function useHrToolsNavItems(): {
         id: 'staffSavingFund',
         title: t('Savings Fund Transfer'),
         hideItem: hasNoStaffAccount,
+      },
+      {
+        id: 'nsGoalCalculator',
+        title: t('New Staff Goal Calculator'),
+        hideItem:
+          process.env.DISABLE_NS_GOAL_CALCULATOR === 'true' ||
+          inNsGoalCalcIneligibleGroup,
       },
       {
         id: 'goalCalculator',
@@ -66,6 +74,7 @@ export function useHrToolsNavItems(): {
     inSalaryCalcIneligibleGroup,
     inMhaIneligibleGroup,
     inMpdGoalCalcIneligibleGroup,
+    inNsGoalCalcIneligibleGroup,
     inPdsGoalCalcIneligibleGroup,
     userLoading,
     hasNoStaffAccount,

@@ -80,11 +80,14 @@ describe('useIneligibleByGroup', () => {
       });
 
       await waitFor(() => expect(result.current.userLoading).toBe(false));
-      expect(result.current.inAsrIneligibleGroup).toBe(false);
-      expect(result.current.inSalaryCalcIneligibleGroup).toBe(false);
-      expect(result.current.inMhaIneligibleGroup).toBe(false);
-      expect(result.current.inMpdGoalCalcIneligibleGroup).toBe(false);
-      expect(result.current.inPdsGoalCalcIneligibleGroup).toBe(true);
+      expect(result.current).toMatchObject({
+        inAsrIneligibleGroup: false,
+        inSalaryCalcIneligibleGroup: false,
+        inMhaIneligibleGroup: false,
+        inMpdGoalCalcIneligibleGroup: false,
+        inNsGoalCalcIneligibleGroup: true,
+        inPdsGoalCalcIneligibleGroup: true,
+      });
     });
 
     it('new staff eligibility', async () => {
@@ -94,11 +97,14 @@ describe('useIneligibleByGroup', () => {
       });
 
       await waitFor(() => expect(result.current.userLoading).toBe(false));
-      expect(result.current.inAsrIneligibleGroup).toBe(false);
-      expect(result.current.inSalaryCalcIneligibleGroup).toBe(true);
-      expect(result.current.inMhaIneligibleGroup).toBe(true);
-      expect(result.current.inMpdGoalCalcIneligibleGroup).toBe(true);
-      expect(result.current.inPdsGoalCalcIneligibleGroup).toBe(true);
+      expect(result.current).toMatchObject({
+        inAsrIneligibleGroup: false,
+        inSalaryCalcIneligibleGroup: true,
+        inMhaIneligibleGroup: true,
+        inMpdGoalCalcIneligibleGroup: true,
+        inNsGoalCalcIneligibleGroup: false,
+        inPdsGoalCalcIneligibleGroup: true,
+      });
     });
 
     it('part time field staff eligibility', async () => {
@@ -108,11 +114,14 @@ describe('useIneligibleByGroup', () => {
       });
 
       await waitFor(() => expect(result.current.userLoading).toBe(false));
-      expect(result.current.inAsrIneligibleGroup).toBe(true);
-      expect(result.current.inSalaryCalcIneligibleGroup).toBe(true);
-      expect(result.current.inMhaIneligibleGroup).toBe(true);
-      expect(result.current.inMpdGoalCalcIneligibleGroup).toBe(true);
-      expect(result.current.inPdsGoalCalcIneligibleGroup).toBe(true);
+      expect(result.current).toMatchObject({
+        inAsrIneligibleGroup: true,
+        inSalaryCalcIneligibleGroup: true,
+        inMhaIneligibleGroup: true,
+        inMpdGoalCalcIneligibleGroup: true,
+        inNsGoalCalcIneligibleGroup: true,
+        inPdsGoalCalcIneligibleGroup: true,
+      });
     });
 
     it('paid with designation eligibility', async () => {
@@ -122,11 +131,14 @@ describe('useIneligibleByGroup', () => {
       });
 
       await waitFor(() => expect(result.current.userLoading).toBe(false));
-      expect(result.current.inAsrIneligibleGroup).toBe(true);
-      expect(result.current.inSalaryCalcIneligibleGroup).toBe(true);
-      expect(result.current.inMhaIneligibleGroup).toBe(true);
-      expect(result.current.inMpdGoalCalcIneligibleGroup).toBe(true);
-      expect(result.current.inPdsGoalCalcIneligibleGroup).toBe(false);
+      expect(result.current).toMatchObject({
+        inAsrIneligibleGroup: true,
+        inSalaryCalcIneligibleGroup: true,
+        inMhaIneligibleGroup: true,
+        inMpdGoalCalcIneligibleGroup: true,
+        inNsGoalCalcIneligibleGroup: true,
+        inPdsGoalCalcIneligibleGroup: false,
+      });
     });
 
     it('intern eligibility', async () => {
@@ -136,11 +148,14 @@ describe('useIneligibleByGroup', () => {
       });
 
       await waitFor(() => expect(result.current.userLoading).toBe(false));
-      expect(result.current.inAsrIneligibleGroup).toBe(true);
-      expect(result.current.inSalaryCalcIneligibleGroup).toBe(true);
-      expect(result.current.inMhaIneligibleGroup).toBe(true);
-      expect(result.current.inMpdGoalCalcIneligibleGroup).toBe(true);
-      expect(result.current.inPdsGoalCalcIneligibleGroup).toBe(true);
+      expect(result.current).toMatchObject({
+        inAsrIneligibleGroup: true,
+        inSalaryCalcIneligibleGroup: true,
+        inMhaIneligibleGroup: true,
+        inMpdGoalCalcIneligibleGroup: true,
+        inNsGoalCalcIneligibleGroup: true,
+        inPdsGoalCalcIneligibleGroup: true,
+      });
     });
 
     it('national expat eligibility', async () => {
@@ -150,11 +165,14 @@ describe('useIneligibleByGroup', () => {
       });
 
       await waitFor(() => expect(result.current.userLoading).toBe(false));
-      expect(result.current.inAsrIneligibleGroup).toBe(false);
-      expect(result.current.inSalaryCalcIneligibleGroup).toBe(false);
-      expect(result.current.inMhaIneligibleGroup).toBe(false);
-      expect(result.current.inMpdGoalCalcIneligibleGroup).toBe(true);
-      expect(result.current.inPdsGoalCalcIneligibleGroup).toBe(true);
+      expect(result.current).toMatchObject({
+        inAsrIneligibleGroup: false,
+        inSalaryCalcIneligibleGroup: false,
+        inMhaIneligibleGroup: false,
+        inMpdGoalCalcIneligibleGroup: true,
+        inNsGoalCalcIneligibleGroup: true,
+        inPdsGoalCalcIneligibleGroup: true,
+      });
     });
 
     describe('spouse us staff group', () => {
@@ -165,11 +183,14 @@ describe('useIneligibleByGroup', () => {
         });
 
         await waitFor(() => expect(result.current.userLoading).toBe(false));
-        expect(result.current.inAsrIneligibleGroup).toBe(false);
-        expect(result.current.inSalaryCalcIneligibleGroup).toBe(true);
-        expect(result.current.inMhaIneligibleGroup).toBe(false);
-        expect(result.current.inMpdGoalCalcIneligibleGroup).toBe(true);
-        expect(result.current.inPdsGoalCalcIneligibleGroup).toBe(true);
+        expect(result.current).toMatchObject({
+          inAsrIneligibleGroup: false,
+          inSalaryCalcIneligibleGroup: true,
+          inMhaIneligibleGroup: false,
+          inMpdGoalCalcIneligibleGroup: true,
+          inNsGoalCalcIneligibleGroup: true,
+          inPdsGoalCalcIneligibleGroup: true,
+        });
       });
     });
 
@@ -180,11 +201,14 @@ describe('useIneligibleByGroup', () => {
       });
 
       await waitFor(() => expect(result.current.userLoading).toBe(false));
-      expect(result.current.inAsrIneligibleGroup).toBe(true);
-      expect(result.current.inSalaryCalcIneligibleGroup).toBe(true);
-      expect(result.current.inMhaIneligibleGroup).toBe(true);
-      expect(result.current.inMpdGoalCalcIneligibleGroup).toBe(true);
-      expect(result.current.inPdsGoalCalcIneligibleGroup).toBe(true);
+      expect(result.current).toMatchObject({
+        inAsrIneligibleGroup: true,
+        inSalaryCalcIneligibleGroup: true,
+        inMhaIneligibleGroup: true,
+        inMpdGoalCalcIneligibleGroup: true,
+        inNsGoalCalcIneligibleGroup: true,
+        inPdsGoalCalcIneligibleGroup: true,
+      });
     });
   });
 });

@@ -60,7 +60,7 @@ export type PdsGoalCalculatorType = {
 
   stepIndex: number;
   isDrawerOpen: boolean;
-  handleStepChange: (stepId: PdsGoalCalculatorStepEnum) => void;
+  handleStepChange: (step: PdsGoalCalculatorStepEnum) => void;
   handleContinue: () => void;
   handlePreviousStep: () => void;
   toggleDrawer: () => void;

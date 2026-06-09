@@ -530,6 +530,7 @@ describe('MultiPageMenu', () => {
       expect(
         queryByText('Paid with Designation Support Goal Calculator'),
       ).not.toBeInTheDocument();
+      expect(queryByText('New Staff Goal Calculator')).not.toBeInTheDocument();
       expect(getByText('Ministry Partner Reminders')).toBeInTheDocument();
     });
 
@@ -564,6 +565,7 @@ describe('MultiPageMenu', () => {
       expect(await findByText('Additional Salary Request')).toBeInTheDocument();
       expect(queryByText('Salary Calculation Form')).not.toBeInTheDocument();
       expect(getByText('Savings Fund Transfer')).toBeInTheDocument();
+      expect(getByText('New Staff Goal Calculator')).toBeInTheDocument();
       expect(queryByText('MPD Goal Calculator')).not.toBeInTheDocument();
       expect(queryByText('MHA Calculation Tool')).not.toBeInTheDocument();
       expect(
@@ -608,6 +610,7 @@ describe('MultiPageMenu', () => {
       expect(
         queryByText('Paid with Designation Support Goal Calculator'),
       ).not.toBeInTheDocument();
+      expect(queryByText('New Staff Goal Calculator')).not.toBeInTheDocument();
       expect(getByText('Ministry Partner Reminders')).toBeInTheDocument();
     });
 
@@ -647,6 +650,7 @@ describe('MultiPageMenu', () => {
       expect(queryByText('Savings Fund Transfer')).not.toBeInTheDocument();
       expect(queryByText('MPD Goal Calculator')).not.toBeInTheDocument();
       expect(queryByText('MHA Calculation Tool')).not.toBeInTheDocument();
+      expect(queryByText('New Staff Goal Calculator')).not.toBeInTheDocument();
       expect(queryByText('Ministry Partner Reminders')).not.toBeInTheDocument();
     });
 
@@ -687,6 +691,7 @@ describe('MultiPageMenu', () => {
       expect(queryByText('Additional Salary Request')).not.toBeInTheDocument();
       expect(queryByText('MPD Goal Calculator')).not.toBeInTheDocument();
       expect(queryByText('MHA Calculation Tool')).not.toBeInTheDocument();
+      expect(queryByText('New Staff Goal Calculator')).not.toBeInTheDocument();
     });
 
     it('shows hr tools for interns', async () => {
@@ -726,6 +731,7 @@ describe('MultiPageMenu', () => {
       expect(queryByText('Additional Salary Request')).not.toBeInTheDocument();
       expect(queryByText('MPD Goal Calculator')).not.toBeInTheDocument();
       expect(queryByText('MHA Calculation Tool')).not.toBeInTheDocument();
+      expect(queryByText('New Staff Goal Calculator')).not.toBeInTheDocument();
     });
   });
 });
