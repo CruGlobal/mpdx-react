@@ -301,11 +301,8 @@ describe('ImpersonateUserAccordion', () => {
         />,
       );
 
-      // The effect short-circuits at the `!isReady` early return, so no fetch
-      // fires even though valid params are present
       await waitFor(() => expect(fetch).not.toHaveBeenCalled());
 
-      // Once the router reports ready, the auto-submit proceeds
       rerender(
         <Components
           expandedAccordion={AdminAccordion.ImpersonateUser}
@@ -364,8 +361,7 @@ describe('ImpersonateUserAccordion', () => {
         />,
       );
 
-      // Repeated params (?email=a&email=b) arrive as an array, which the
-      // typeof guard treats the same as a missing param
+      // Repeated params (?email=a&email=b) arrive as an array
       await waitFor(() => {
         expect(
           getByRole('textbox', { name: /Okta User Name \/ Email/i }),
@@ -395,10 +391,8 @@ describe('ImpersonateUserAccordion', () => {
         />,
       );
 
-      // The effect short-circuits until the router is ready
       expect(fetch).not.toHaveBeenCalled();
 
-      // Router settles → auto-submit fires exactly once
       rerender(
         <Components
           expandedAccordion={AdminAccordion.ImpersonateUser}
@@ -408,8 +402,8 @@ describe('ImpersonateUserAccordion', () => {
 
       await waitFor(() => expect(fetch).toHaveBeenCalledTimes(1));
 
-      // A later rerender that changes a tracked query param re-runs the effect,
-      // but the autoSubmitted ref guards against a second submission
+      // Changing a query param re-runs the effect, but the autoSubmitted ref
+      // prevents a second submission
       rerender(
         <Components
           expandedAccordion={AdminAccordion.ImpersonateUser}
@@ -440,8 +434,6 @@ describe('ImpersonateUserAccordion', () => {
         />,
       );
 
-      // The form is not mounted while the accordion is collapsed, so there is
-      // nothing to submit and the auto-submit latch must not be burned
       await waitFor(() => expect(fetch).not.toHaveBeenCalled());
     });
 

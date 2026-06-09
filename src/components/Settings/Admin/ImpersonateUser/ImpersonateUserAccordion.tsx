@@ -43,13 +43,11 @@ export const ImpersonateUserAccordion: React.FC<
   const appName = getAppName();
   const { push, query, isReady } = useRouter();
 
-  // Optional query params used to prefill and auto-submit the form, i.e.
-  // /settings/admin?email=user@cru.org&reason=HS-1234
+  // Optional query params that prefill and auto-submit the form
   const initialUser = typeof query.email === 'string' ? query.email : '';
   const initialReason = typeof query.reason === 'string' ? query.reason : '';
-  // An invalid email param leaves the form prefilled but the submit button
-  // disabled with no visible validation error (errors only appear after
-  // interaction), so surface the problem to the deep-link user explicitly
+  // Surface an invalid email param explicitly since Formik only shows
+  // validation errors after interaction
   const invalidEmailParam =
     Boolean(initialUser) && !userSchema.isValidSync(initialUser);
   const autoSubmitted = useRef(false);
@@ -95,8 +93,7 @@ export const ImpersonateUserAccordion: React.FC<
     [enqueueSnackbar, push, t],
   );
 
-  // When both query params are present and valid, skip the form and start
-  // impersonating immediately
+  // Auto-submit when both query params are present and valid
   useEffect(() => {
     if (autoSubmitted.current || !isReady) {
       return;
@@ -106,13 +103,12 @@ export const ImpersonateUserAccordion: React.FC<
       initialUser &&
       initialReason &&
       ImpersonateUserSchema.isValidSync(values) &&
-      // The form is only mounted while the accordion is expanded; don't burn
-      // the auto-submit latch if there is no form to submit
+      // The form is only mounted while the accordion is expanded
       formikRef.current
     ) {
       autoSubmitted.current = true;
-      // Submit through Formik so the submission lifecycle (isSubmitting,
-      // disabled fields/button) stays consistent with the manual path
+      // Submit through Formik to keep the submission lifecycle consistent
+      // with the manual path
       void formikRef.current.submitForm();
     }
   }, [isReady, initialUser, initialReason]);
