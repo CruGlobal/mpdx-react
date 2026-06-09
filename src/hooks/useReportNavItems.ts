@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useGetUserQuery } from 'src/components/User/GetUser.generated';
 import { UserTypeEnum } from 'src/graphql/types.generated';
 import { useReportsDisabled } from './useReportsDisabled';
+import { useRequiredSession } from './useRequiredSession';
 
 export type NavItems = {
   id: string;
@@ -15,6 +16,7 @@ export function useReportNavItems(): NavItems[] {
   const { t } = useTranslation();
   const { data } = useGetUserQuery();
   const { reportsDisabled } = useReportsDisabled();
+  const { developer } = useRequiredSession();
 
   const userType = data?.user.userType;
   const usStaff = userType === UserTypeEnum.UsStaff;
@@ -76,7 +78,13 @@ export function useReportNavItems(): NavItems[] {
   ];
 
   return useMemo(
-    () => reportNavItems.filter((item) => !item.hideItem),
-    [t, usStaff, globalStaff, reportsDisabled, hasNoStaffAccount],
+    () =>
+      reportNavItems.filter(
+        // When not in production, developers bypass all eligibility gating so they can reach all pages
+        (item) =>
+          (process.env.DEVELOPMENT_ENV === 'true' && developer) ||
+          !item.hideItem,
+      ),
+    [t, usStaff, globalStaff, reportsDisabled, hasNoStaffAccount, developer],
   );
 }

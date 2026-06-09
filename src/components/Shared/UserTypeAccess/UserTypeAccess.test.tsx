@@ -1,5 +1,7 @@
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
+import { useSession } from 'next-auth/react';
+import { session } from '__tests__/fixtures/session';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import { render } from '__tests__/util/testingLibraryReactMock';
@@ -7,6 +9,14 @@ import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UsStaffGroupEnum, UserTypeEnum } from 'src/graphql/types.generated';
 import theme from 'src/theme';
 import { RequiredUserGroupEnum, UserTypeAccess } from './UserTypeAccess';
+
+const setDeveloper = (developer: boolean) => {
+  (useSession as jest.MockedFn<typeof useSession>).mockReturnValue({
+    data: { ...session, user: { ...session.user, developer } },
+    status: 'authenticated',
+    update: () => Promise.resolve(null),
+  });
+};
 
 const id = 'staff-1';
 
@@ -47,6 +57,11 @@ const TestComponent: React.FC<TestComponentProps> = ({
 );
 
 describe('UserTypeAccess', () => {
+  afterEach(() => {
+    process.env.DEVELOPMENT_ENV = 'false';
+    setDeveloper(false);
+  });
+
   it('should render child component when user type is allowed', async () => {
     const { findByText } = render(<TestComponent />);
     expect(await findByText('Test Content')).toBeInTheDocument();
@@ -219,6 +234,46 @@ describe('UserTypeAccess', () => {
     ).toBeInTheDocument();
     expect(
       getByText(/something went wrong while loading your account information/i),
+    ).toBeInTheDocument();
+  });
+
+  it('should render child component in a development env for a developer even when user is ineligible by group', async () => {
+    process.env.DEVELOPMENT_ENV = 'true';
+    setDeveloper(true);
+
+    const { findByText } = render(
+      <TestComponent
+        requireUserGroups={RequiredUserGroupEnum.Asr}
+        usStaffGroup={UsStaffGroupEnum.PartTimeFieldStaff}
+      />,
+    );
+
+    expect(await findByText('Test Content')).toBeInTheDocument();
+  });
+
+  it('should render child component in a development env for a developer even when user type is not allowed', async () => {
+    process.env.DEVELOPMENT_ENV = 'true';
+    setDeveloper(true);
+
+    const { findByText } = render(
+      <TestComponent userType={UserTypeEnum.NonCru} />,
+    );
+
+    expect(await findByText('Test Content')).toBeInTheDocument();
+  });
+
+  it('should not bypass eligibility gating in a development env for a non-developer', async () => {
+    process.env.DEVELOPMENT_ENV = 'true';
+    setDeveloper(false);
+
+    const { findByRole } = render(
+      <TestComponent userType={UserTypeEnum.NonCru} />,
+    );
+
+    expect(
+      await findByRole('heading', {
+        name: 'Access to this feature is limited.',
+      }),
     ).toBeInTheDocument();
   });
 });

@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useIneligibleByGroup } from './useIneligibleByGroup';
 import { NavItems } from './useReportNavItems';
+import { useRequiredSession } from './useRequiredSession';
 
 export function useHrToolsNavItems(): {
   items: NavItems[];
@@ -18,6 +19,7 @@ export function useHrToolsNavItems(): {
     hasNoStaffAccount,
     userLoading,
   } = useIneligibleByGroup();
+  const { developer } = useRequiredSession();
 
   const items = useMemo(() => {
     if (userLoading) {
@@ -67,7 +69,11 @@ export function useHrToolsNavItems(): {
         title: t('Ministry Partner Reminders'),
         hideItem: hasNoStaffAccount,
       },
-    ].filter((item) => !item.hideItem);
+      // When not in production, developers bypass all eligibility gating so they can reach all pages
+    ].filter(
+      (item) =>
+        (process.env.DEVELOPMENT_ENV === 'true' && developer) || !item.hideItem,
+    );
   }, [
     t,
     inAsrIneligibleGroup,
@@ -78,6 +84,7 @@ export function useHrToolsNavItems(): {
     inPdsGoalCalcIneligibleGroup,
     userLoading,
     hasNoStaffAccount,
+    developer,
   ]);
 
   return { items, loading: userLoading };
