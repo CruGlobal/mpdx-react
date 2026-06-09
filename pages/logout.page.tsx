@@ -16,9 +16,15 @@ const LogoutPage = ({}): ReactElement => {
   const client = useApolloClient();
 
   useEffect(() => {
-    signOut({ callbackUrl: 'signOut' }).then(() => {
+    signOut({ callbackUrl: 'signOut' }).then(async () => {
       clearDataDogUser();
       client.clearStore();
+      // Clear any service-worker CacheStorage so the next user of a
+      // shared device cannot read the previous user's cached assets.
+      if (typeof caches !== 'undefined') {
+        const keys = await caches.keys();
+        await Promise.all(keys.map((key) => caches.delete(key)));
+      }
     });
   }, []);
 
