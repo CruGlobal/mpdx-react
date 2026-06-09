@@ -259,12 +259,15 @@ describe('TransferModal', () => {
 
       const toAccount = getByRole('combobox', { name: /to account/i });
       const amountField = getByRole('spinbutton', { name: /amount/i });
+      const noteField = getByRole('textbox', { name: /note/i });
 
       userEvent.click(toAccount);
       userEvent.click(getByRole('option', { name: /staff savings/i }));
 
       userEvent.clear(amountField);
       userEvent.type(amountField, '100');
+
+      userEvent.type(noteField, 'Test note');
 
       userEvent.click(getByRole('button', { name: /submit/i }));
 
@@ -283,6 +286,7 @@ describe('TransferModal', () => {
 
       const toAccount = getByRole('combobox', { name: /to account/i });
       const amountField = getByRole('spinbutton', { name: /amount/i });
+      const noteField = getByRole('textbox', { name: /note/i });
       const submitButton = getByRole('button', { name: /submit/i });
 
       userEvent.click(toAccount);
@@ -290,6 +294,8 @@ describe('TransferModal', () => {
 
       userEvent.clear(amountField);
       userEvent.type(amountField, '100');
+
+      userEvent.type(noteField, 'Test note');
 
       userEvent.click(submitButton);
 
@@ -301,6 +307,58 @@ describe('TransferModal', () => {
           },
         );
       });
+    });
+
+    it('should require a note for one-time transfers', async () => {
+      const { getByRole, findByText } = render(<Components />);
+
+      const toAccount = getByRole('combobox', { name: /to account/i });
+      const amountField = getByRole('spinbutton', { name: /amount/i });
+
+      userEvent.click(toAccount);
+      userEvent.click(getByRole('option', { name: /staff savings/i }));
+
+      userEvent.clear(amountField);
+      userEvent.type(amountField, '100');
+
+      userEvent.click(getByRole('button', { name: /submit/i }));
+
+      expect(await findByText('Note is required')).toBeInTheDocument();
+      expect(mutationSpy).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          operation: expect.objectContaining({
+            operationName: 'CreateTransfer',
+          }),
+        }),
+      );
+    });
+
+    it('should reject a whitespace-only note for one-time transfers', async () => {
+      const { getByRole, findByText } = render(<Components />);
+
+      const toAccount = getByRole('combobox', { name: /to account/i });
+      const amountField = getByRole('spinbutton', { name: /amount/i });
+      const noteField = getByRole('textbox', { name: /note/i });
+
+      userEvent.click(toAccount);
+      userEvent.click(getByRole('option', { name: /staff savings/i }));
+
+      userEvent.clear(amountField);
+      userEvent.type(amountField, '100');
+
+      userEvent.type(noteField, '   ');
+      userEvent.tab();
+
+      userEvent.click(getByRole('button', { name: /submit/i }));
+
+      expect(await findByText('Note is required')).toBeInTheDocument();
+      expect(mutationSpy).not.toHaveBeenCalledWith(
+        expect.objectContaining({
+          operation: expect.objectContaining({
+            operationName: 'CreateTransfer',
+          }),
+        }),
+      );
     });
   });
 
@@ -468,12 +526,15 @@ describe('TransferModal', () => {
       const { getByRole } = render(<Components />);
 
       const amountField = getByRole('spinbutton', { name: /amount/i });
+      const noteField = getByRole('textbox', { name: /note/i });
 
       userEvent.click(getByRole('combobox', { name: /to account/i }));
       userEvent.click(getByRole('option', { name: /staff savings/i }));
 
       userEvent.clear(amountField);
       userEvent.type(amountField, '100');
+
+      userEvent.type(noteField, '  Test note  ');
 
       userEvent.click(getByRole('button', { name: /submit/i }));
 
@@ -486,7 +547,7 @@ describe('TransferModal', () => {
                 amount: 100,
                 sourceFundTypeName: 'Staff Account',
                 destinationFundTypeName: 'Staff Savings',
-                description: '',
+                description: 'Test note',
               }),
             }),
           }),
