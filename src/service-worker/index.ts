@@ -1,5 +1,6 @@
 import {
   CacheFirst,
+  CacheableResponsePlugin,
   ExpirationPlugin,
   NetworkOnly,
   Serwist,
@@ -61,6 +62,10 @@ const runtimeCaching: RuntimeCaching[] = [
       url.origin === 'https://fonts.gstatic.com',
     handler: new StaleWhileRevalidate({
       cacheName: 'google-fonts',
+      plugins: [
+        new CacheableResponsePlugin({ statuses: [0, 200] }),
+        new ExpirationPlugin({ maxEntries: 32, maxAgeSeconds: 365 * 24 * 60 * 60 }),
+      ],
     }),
   },
   {
