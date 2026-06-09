@@ -349,6 +349,35 @@ describe('ImpersonateUserAccordion', () => {
       expect(fetch).not.toHaveBeenCalled();
     });
 
+    it('should not prefill or auto-submit when email param is an array', async () => {
+      const { getByRole, queryByRole } = render(
+        <Components
+          expandedAccordion={AdminAccordion.ImpersonateUser}
+          routerOverride={{
+            ...router,
+            query: {
+              ...router.query,
+              email: ['a@b.org', 'c@d.org'],
+              reason: 'HS-1234',
+            },
+          }}
+        />,
+      );
+
+      // Repeated params (?email=a&email=b) arrive as an array, which the
+      // typeof guard treats the same as a missing param
+      await waitFor(() => {
+        expect(
+          getByRole('textbox', { name: /Okta User Name \/ Email/i }),
+        ).toHaveValue('');
+      });
+      expect(
+        getByRole('textbox', { name: /reason \/ helpscout ticket link/i }),
+      ).toHaveValue('HS-1234');
+      expect(queryByRole('alert')).not.toBeInTheDocument();
+      expect(fetch).not.toHaveBeenCalled();
+    });
+
     it('should not auto-submit a second time when the effect re-runs', async () => {
       const baseRouter = {
         ...router,
@@ -396,6 +425,26 @@ describe('ImpersonateUserAccordion', () => {
       expect(fetch).toHaveBeenCalledTimes(1);
     });
 
+    it('should not auto-submit when the accordion is collapsed', async () => {
+      render(
+        <Components
+          expandedAccordion={null}
+          routerOverride={{
+            ...router,
+            query: {
+              ...router.query,
+              email: 'test@test.org',
+              reason: 'HS-1234',
+            },
+          }}
+        />,
+      );
+
+      // The form is not mounted while the accordion is collapsed, so there is
+      // nothing to submit and the auto-submit latch must not be burned
+      await waitFor(() => expect(fetch).not.toHaveBeenCalled());
+    });
+
     it('should prefill without auto-submitting when email param is invalid', async () => {
       const { getByRole } = render(
         <Components
@@ -416,6 +465,42 @@ describe('ImpersonateUserAccordion', () => {
         getByRole('textbox', { name: /reason \/ helpscout ticket link/i }),
       ).toHaveValue('HS-1234');
       expect(fetch).not.toHaveBeenCalled();
+    });
+
+    it('should show an error alert when the email param is invalid', async () => {
+      const { findByRole } = render(
+        <Components
+          expandedAccordion={AdminAccordion.ImpersonateUser}
+          routerOverride={{
+            ...router,
+            query: { ...router.query, email: 'notanemail', reason: 'HS-1234' },
+          }}
+        />,
+      );
+
+      expect(await findByRole('alert')).toHaveTextContent(
+        'The email address provided in the link is not a valid email address, so impersonation could not start automatically.',
+      );
+      expect(fetch).not.toHaveBeenCalled();
+    });
+
+    it('should not show an error alert when the email param is valid', async () => {
+      const { getByRole, queryByRole } = render(
+        <Components
+          expandedAccordion={AdminAccordion.ImpersonateUser}
+          routerOverride={{
+            ...router,
+            query: { ...router.query, email: 'test@test.org' },
+          }}
+        />,
+      );
+
+      await waitFor(() => {
+        expect(
+          getByRole('textbox', { name: /Okta User Name \/ Email/i }),
+        ).toHaveValue('test@test.org');
+      });
+      expect(queryByRole('alert')).not.toBeInTheDocument();
     });
   });
 });

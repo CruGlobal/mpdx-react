@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router';
 import { ReactElement, useCallback, useEffect, useRef } from 'react';
 import {
+  Alert,
   DialogActions,
   FormHelperText,
   TextField,
@@ -25,9 +26,11 @@ type ImpersonateUserFormType = {
   reason: string;
 };
 
+const userSchema = yup.string().email().required();
+
 const ImpersonateUserSchema: yup.ObjectSchema<ImpersonateUserFormType> =
   yup.object({
-    user: yup.string().email().required(),
+    user: userSchema,
     reason: yup.string().required(),
   });
 
@@ -44,6 +47,11 @@ export const ImpersonateUserAccordion: React.FC<
   // /settings/admin?email=user@cru.org&reason=HS-1234
   const initialUser = typeof query.email === 'string' ? query.email : '';
   const initialReason = typeof query.reason === 'string' ? query.reason : '';
+  // An invalid email param leaves the form prefilled but the submit button
+  // disabled with no visible validation error (errors only appear after
+  // interaction), so surface the problem to the deep-link user explicitly
+  const invalidEmailParam =
+    Boolean(initialUser) && !userSchema.isValidSync(initialUser);
   const autoSubmitted = useRef(false);
   const formikRef = useRef<FormikProps<ImpersonateUserFormType>>(null);
 
@@ -97,12 +105,15 @@ export const ImpersonateUserAccordion: React.FC<
     if (
       initialUser &&
       initialReason &&
-      ImpersonateUserSchema.isValidSync(values)
+      ImpersonateUserSchema.isValidSync(values) &&
+      // The form is only mounted while the accordion is expanded; don't burn
+      // the auto-submit latch if there is no form to submit
+      formikRef.current
     ) {
       autoSubmitted.current = true;
       // Submit through Formik so the submission lifecycle (isSubmitting,
       // disabled fields/button) stays consistent with the manual path
-      void formikRef.current?.submitForm();
+      void formikRef.current.submitForm();
     }
   }, [isReady, initialUser, initialReason]);
 
@@ -124,6 +135,16 @@ export const ImpersonateUserAccordion: React.FC<
           { appName },
         )}
       </Typography>
+
+      {invalidEmailParam && (
+        <PaddedBox marginTop={2}>
+          <Alert severity="error">
+            {t(
+              'The email address provided in the link is not a valid email address, so impersonation could not start automatically. Correct the email below to impersonate the user.',
+            )}
+          </Alert>
+        </PaddedBox>
+      )}
 
       <Formik
         innerRef={formikRef}
