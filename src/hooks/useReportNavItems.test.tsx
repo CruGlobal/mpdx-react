@@ -29,7 +29,6 @@ const Wrapper = ({ children }: { children: ReactElement }) => (
 describe('useReportNavItems', () => {
   afterEach(() => {
     process.env.DEVELOPMENT_ENV = 'false';
-    mockSession();
   });
 
   it('hides gated items for a non-developer when not in a development env', async () => {

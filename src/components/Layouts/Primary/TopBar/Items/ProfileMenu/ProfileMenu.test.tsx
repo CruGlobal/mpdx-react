@@ -4,10 +4,10 @@ import { MockedResponse } from '@apollo/client/testing';
 import { ThemeProvider } from '@mui/material/styles';
 import userEvent from '@testing-library/user-event';
 import fetchMock from 'jest-fetch-mock';
-import { signOut, useSession } from 'next-auth/react';
-import { session } from '__tests__/fixtures/session';
+import { signOut } from 'next-auth/react';
 import TestRouter from '__tests__/util/TestRouter';
 import TestWrapper from '__tests__/util/TestWrapper';
+import { mockSession } from '__tests__/util/mockSession';
 import { render, waitFor } from '__tests__/util/testingLibraryReactMock';
 import { TestSetupProvider } from 'src/components/Setup/SetupProvider';
 import theme from '../../../../../../theme';
@@ -231,14 +231,7 @@ describe('ProfileMenu while Impersonating', () => {
   beforeEach(() => {
     process.env.OAUTH_URL = 'https://auth.mpdx.org';
 
-    (useSession as jest.MockedFn<typeof useSession>).mockReturnValue({
-      data: {
-        ...session,
-        user: { ...session.user, impersonating: true },
-      },
-      status: 'authenticated',
-      update: () => Promise.resolve(null),
-    });
+    mockSession({ impersonating: true });
   });
 
   it('Should remove impersonating cookies and redirect user to Angular MPDX', async () => {

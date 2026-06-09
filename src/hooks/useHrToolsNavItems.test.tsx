@@ -25,7 +25,6 @@ const Wrapper = ({ children }: { children: ReactElement }) => (
 describe('useHrToolsNavItems', () => {
   afterEach(() => {
     process.env.DEVELOPMENT_ENV = 'false';
-    mockSession();
   });
 
   it('hides all items for an ineligible user when not in a development env', async () => {

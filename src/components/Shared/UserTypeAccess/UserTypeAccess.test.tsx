@@ -50,7 +50,6 @@ const TestComponent: React.FC<TestComponentProps> = ({
 describe('UserTypeAccess', () => {
   afterEach(() => {
     process.env.DEVELOPMENT_ENV = 'false';
-    mockSession();
   });
 
   it('should render child component when user type is allowed', async () => {

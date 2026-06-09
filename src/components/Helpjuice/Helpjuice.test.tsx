@@ -1,7 +1,7 @@
 import { act, render, screen, waitFor } from '@testing-library/react';
 import { useSession } from 'next-auth/react';
-import { session } from '__tests__/fixtures/session';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { mockSession } from '__tests__/util/mockSession';
 import { UserOptionQuery } from 'src/hooks/UserPreference.generated';
 import { Helpjuice } from './Helpjuice';
 import { widgetHTML } from './widget.mock';
@@ -92,18 +92,7 @@ describe('Helpjuice', () => {
     );
 
     // Update the session
-    (useSession as jest.MockedFn<typeof useSession>).mockReturnValue({
-      data: {
-        ...session,
-        user: {
-          ...session.user,
-          name: 'John Doe',
-          email: 'john.doe@cru.org',
-        },
-      },
-      status: 'authenticated',
-      update: () => Promise.resolve(null),
-    });
+    mockSession({ name: 'John Doe', email: 'john.doe@cru.org' });
     rerender(<Helpjuice />);
 
     expect(document.getElementById('helpjuice-contact-link')).toHaveProperty(

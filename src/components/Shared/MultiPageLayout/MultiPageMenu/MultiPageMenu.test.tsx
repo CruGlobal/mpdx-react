@@ -2,10 +2,9 @@ import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import { render, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { useSession } from 'next-auth/react';
-import { session } from '__tests__/fixtures/session';
 import TestRouter from '__tests__/util/TestRouter';
 import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
+import { mockSession } from '__tests__/util/mockSession';
 import { GetDesignationAccountsQuery } from 'src/components/EditDonationModal/EditDonationModal.generated';
 import { GetUserQuery } from 'src/components/User/GetUser.generated';
 import { UsStaffGroupEnum, UserTypeEnum } from 'src/graphql/types.generated';
@@ -316,14 +315,7 @@ describe('MultiPageMenu', () => {
   });
 
   it("hides the organizations links when user isn't admin and manages no organization", async () => {
-    (useSession as jest.MockedFn<typeof useSession>).mockReturnValue({
-      data: {
-        ...session,
-        user: { ...session.user, admin: false, developer: false },
-      },
-      status: 'authenticated',
-      update: () => Promise.resolve(null),
-    });
+    mockSession({ admin: false, developer: false });
 
     const mutationSpy = jest.fn();
     const { queryByText } = render(
@@ -358,14 +350,7 @@ describe('MultiPageMenu', () => {
   });
 
   it("shows the organizations links when user isn't admin but manages an organization", async () => {
-    (useSession as jest.MockedFn<typeof useSession>).mockReturnValue({
-      data: {
-        ...session,
-        user: { ...session.user, admin: false, developer: false },
-      },
-      status: 'authenticated',
-      update: () => Promise.resolve(null),
-    });
+    mockSession({ admin: false, developer: false });
 
     const mutationSpy = jest.fn();
     const { getByText } = render(
@@ -398,14 +383,7 @@ describe('MultiPageMenu', () => {
   });
 
   it('shows the developer tools', async () => {
-    (useSession as jest.MockedFn<typeof useSession>).mockReturnValue({
-      data: {
-        ...session,
-        user: { ...session.user, admin: false, developer: true },
-      },
-      status: 'authenticated',
-      update: () => Promise.resolve(null),
-    });
+    mockSession({ admin: false, developer: true });
 
     const mutationSpy = jest.fn();
     const { queryByText, getByText } = render(
@@ -446,14 +424,7 @@ describe('MultiPageMenu', () => {
   });
 
   it('shows the admin tools', async () => {
-    (useSession as jest.MockedFn<typeof useSession>).mockReturnValue({
-      data: {
-        ...session,
-        user: { ...session.user, admin: true, developer: false },
-      },
-      status: 'authenticated',
-      update: () => Promise.resolve(null),
-    });
+    mockSession({ admin: true, developer: false });
 
     const mutationSpy = jest.fn();
     const { queryByText, getByText } = render(

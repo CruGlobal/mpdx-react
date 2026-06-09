@@ -5,7 +5,6 @@ import { useDeveloperBypass } from './useDeveloperBypass';
 describe('useDeveloperBypass', () => {
   afterEach(() => {
     process.env.DEVELOPMENT_ENV = 'false';
-    mockSession();
   });
 
   it('is true in a development env for a developer', () => {
