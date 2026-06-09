@@ -43,17 +43,19 @@ notifications via the existing native push pipeline.
 | Real-time | ❌ No ActionCable/websockets — push is batch/one-way (fine for this plan) |
 | Delta sync | ⚠️ Minimal — `updated_at` filtering exists on the GraphQL people query only. Offline mutations require delta endpoints + tombstones for contacts and tasks |
 
-## Phase 1 — PWA foundation hardening (frontend)
+## Phase 1 — PWA foundation hardening (frontend) — ✅ DONE (2026-06-09)
 
-- [ ] Fix `public/manifest.json`: `scope` casing, remove `splash_pages`, add `description`, `id`, `orientation`, `categories`, screenshots
-- [ ] Replace `next-pwa` v5 with Serwist (`@serwist/next`) — maintained, Next 15-compatible
-- [ ] Define runtime caching strategies: static assets/fonts/images cache-first with expiration; GraphQL POSTs are not SW-cacheable — data persistence is Apollo's job
-- [ ] Add an offline fallback page (`/_offline`) served when navigation fails
-- [ ] Service worker update flow: detect new SW, show "update available" snackbar, skipWaiting on accept
-- [ ] Make SW testable locally (enable in dev behind a flag, or document `yarn build && yarn serve` flow)
-- [ ] Verify Amplify serves `sw.js` with `Cache-Control: no-cache` (a cached SW blocks updates)
-- [ ] Add `apple-mobile-web-app-capable` / status-bar meta tags
-- [ ] Lighthouse PWA audit passing as a release checklist item
+- [x] Fix `public/manifest.json`: `scope` casing, remove `splash_pages`, add `description`, `id`, `orientation`, `categories` (screenshots deferred)
+- [x] Replace `next-pwa` v5 with Serwist (`@serwist/next` ^9.5.11). Side effect: Yarn switched from PnP to `nodeLinker: node-modules` (matches what Amplify prod already did; @serwist/next is pure-ESM and PnP's ESM loader couldn't load it)
+- [x] Runtime caching: **security-hardened allowlist** — only `/_next/static`, Google fonts, and same-origin static media are cached; everything else (HTML, `/_next/data`, `/api/*`, GraphQL) is NetworkOnly. **Never reintroduce Serwist's `defaultCache`**: review found it caches authenticated HTML/`__NEXT_DATA__` (contains NextAuth apiToken) in CacheStorage, which ignores `no-store`. CacheStorage is also cleared on logout
+- [x] Offline fallback page at `/offline` (responsive, precached, in `nonAuthenticatedPages`)
+- [x] SW update flow: `skipWaiting: false` + manual registration via `ServiceWorkerUpdatePrompt` — snackbar with Update/Later, reload warning copy
+- [x] SW testable locally via `ENABLE_SW=true yarn build && yarn serve`
+- [x] Amplify `customHttp.yml`: `sw.js` no-cache headers
+- [x] iOS meta tags added; apple-touch-icon `sizes` mismatches fixed
+- [ ] Lighthouse PWA audit — manual release-checklist item, run before deploy
+
+Review follow-ups deferred (suggestion-tier): gate `spawnSync` git revision to prod / prefer `AWS_COMMIT_ID`; ticket to remove the workbox-precache cleanup listener eventually; dedicated worker tsconfig instead of global `webworker` lib; consider pinning serwist versions; manifest white-labeling via API route if APP_NAME branding ever needed.
 
 ## Phase 2 — Offline read layer (contacts + tasks)
 
