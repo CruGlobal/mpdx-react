@@ -8,6 +8,7 @@ export enum RequiredUserGroupEnum {
   SalaryCalc = 'salaryCalc',
   Mha = 'mha',
   MpdGoalCalc = 'mpdGoalCalc',
+  NsGoalCalc = 'nsGoalCalc',
   PdsGoalCalc = 'pdsGoalCalc',
 }
 
@@ -31,6 +32,7 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
     inSalaryCalcIneligibleGroup,
     inMhaIneligibleGroup,
     inMpdGoalCalcIneligibleGroup,
+    inNsGoalCalcIneligibleGroup,
     inPdsGoalCalcIneligibleGroup,
     userType,
     hasNoStaffAccount,
@@ -43,6 +45,7 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
     [RequiredUserGroupEnum.SalaryCalc]: inSalaryCalcIneligibleGroup,
     [RequiredUserGroupEnum.Mha]: inMhaIneligibleGroup,
     [RequiredUserGroupEnum.MpdGoalCalc]: inMpdGoalCalcIneligibleGroup,
+    [RequiredUserGroupEnum.NsGoalCalc]: inNsGoalCalcIneligibleGroup,
     [RequiredUserGroupEnum.PdsGoalCalc]: inPdsGoalCalcIneligibleGroup,
   };
 

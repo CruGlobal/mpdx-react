@@ -39,6 +39,9 @@ export function useIneligibleByGroup() {
   const inMpdGoalCalcIneligibleGroup = !isInEligibleGroup(usStaffGroup, [
     SeniorStaff,
   ]);
+  const inNsGoalCalcIneligibleGroup = !isInEligibleGroup(usStaffGroup, [
+    NewStaff,
+  ]);
   const inPdsGoalCalcIneligibleGroup = !isInEligibleGroup(usStaffGroup, [
     PaidWithDesignation,
   ]);
@@ -49,6 +52,7 @@ export function useIneligibleByGroup() {
       inSalaryCalcIneligibleGroup,
       inMhaIneligibleGroup,
       inMpdGoalCalcIneligibleGroup,
+      inNsGoalCalcIneligibleGroup,
       inPdsGoalCalcIneligibleGroup,
       userType,
       hasNoStaffAccount,
@@ -60,6 +64,7 @@ export function useIneligibleByGroup() {
       inSalaryCalcIneligibleGroup,
       inMhaIneligibleGroup,
       inMpdGoalCalcIneligibleGroup,
+      inNsGoalCalcIneligibleGroup,
       inPdsGoalCalcIneligibleGroup,
       userType,
       hasNoStaffAccount,

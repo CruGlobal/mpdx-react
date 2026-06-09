@@ -40,7 +40,7 @@ export type GoalCalculatorType = {
   closeRightPanel: () => void;
 
   isDrawerOpen: boolean;
-  handleStepChange: (stepId: GoalCalculatorStepEnum) => void;
+  handleStepChange: (step: GoalCalculatorStepEnum) => void;
   handleContinue: () => void;
   toggleDrawer: () => void;
   setDrawerOpen: (open: boolean) => void;

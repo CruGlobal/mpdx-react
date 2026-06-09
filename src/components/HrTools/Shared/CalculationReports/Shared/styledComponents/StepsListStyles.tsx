@@ -9,7 +9,7 @@ export const CategoryListItemStyles: SxProps<Theme> = (theme) => ({
     fontSize: '1rem',
   },
   padding: 0,
-  paddingLeft: theme.spacing(3),
+  paddingLeft: theme.spacing(2),
 });
 
 export const CategoryListItemIcon = styled(ListItemIcon)(({ theme }) => ({
