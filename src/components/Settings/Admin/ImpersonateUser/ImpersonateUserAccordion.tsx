@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { ReactElement } from 'react';
+import { ReactElement, useCallback, useEffect, useRef } from 'react';
 import {
   DialogActions,
   FormHelperText,
@@ -38,44 +38,70 @@ export const ImpersonateUserAccordion: React.FC<
   const accordionName = t('Impersonate User');
   const { enqueueSnackbar } = useSnackbar();
   const appName = getAppName();
-  const { push } = useRouter();
+  const { push, query, isReady } = useRouter();
 
-  const onSubmit = async (attributes: ImpersonateUserFormType) => {
-    try {
-      const { user, reason } = attributes;
-      const setupImpersonate = await fetch(
-        '/api/auth/impersonate/impersonateUser',
-        {
-          method: 'POST',
-          body: JSON.stringify({
-            user,
-            reason,
-          }),
-        },
-      );
-      const setupImpersonateJson = await setupImpersonate.json();
+  // Optional query params used to prefill and auto-submit the form, i.e.
+  // /settings/admin?email=user@cru.org&reason=HS-1234
+  const initialUser = typeof query.email === 'string' ? query.email : '';
+  const initialReason = typeof query.reason === 'string' ? query.reason : '';
+  const autoSubmitted = useRef(false);
 
-      if (setupImpersonate.status === 200) {
-        enqueueSnackbar(
-          t('Redirecting you to home screen to impersonate user...'),
+  const onSubmit = useCallback(
+    async (attributes: ImpersonateUserFormType) => {
+      try {
+        const { user, reason } = attributes;
+        const setupImpersonate = await fetch(
+          '/api/auth/impersonate/impersonateUser',
           {
-            variant: 'success',
+            method: 'POST',
+            body: JSON.stringify({
+              user,
+              reason,
+            }),
           },
         );
-        push('/login');
-      } else {
-        setupImpersonateJson.errors.forEach((error) => {
-          enqueueSnackbar(error.detail, {
-            variant: 'error',
+        const setupImpersonateJson = await setupImpersonate.json();
+
+        if (setupImpersonate.status === 200) {
+          enqueueSnackbar(
+            t('Redirecting you to home screen to impersonate user...'),
+            {
+              variant: 'success',
+            },
+          );
+          push('/login');
+        } else {
+          setupImpersonateJson.errors.forEach((error) => {
+            enqueueSnackbar(error.detail, {
+              variant: 'error',
+            });
           });
+        }
+      } catch (err) {
+        enqueueSnackbar(getErrorMessage(err), {
+          variant: 'error',
         });
       }
-    } catch (err) {
-      enqueueSnackbar(getErrorMessage(err), {
-        variant: 'error',
-      });
+    },
+    [enqueueSnackbar, push, t],
+  );
+
+  // When both query params are present and valid, skip the form and start
+  // impersonating immediately
+  useEffect(() => {
+    if (autoSubmitted.current || !isReady) {
+      return;
     }
-  };
+    const values = { user: initialUser, reason: initialReason };
+    if (
+      initialUser &&
+      initialReason &&
+      ImpersonateUserSchema.isValidSync(values)
+    ) {
+      autoSubmitted.current = true;
+      onSubmit(values);
+    }
+  }, [isReady, initialUser, initialReason, onSubmit]);
 
   return (
     <AccordionItem
@@ -98,9 +124,10 @@ export const ImpersonateUserAccordion: React.FC<
 
       <Formik
         initialValues={{
-          user: '',
-          reason: '',
+          user: initialUser,
+          reason: initialReason,
         }}
+        enableReinitialize
         validationSchema={ImpersonateUserSchema}
         onSubmit={onSubmit}
         isInitialValid={false}

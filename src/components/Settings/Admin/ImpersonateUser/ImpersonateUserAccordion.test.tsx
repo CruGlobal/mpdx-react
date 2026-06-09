@@ -13,7 +13,10 @@ jest.mock('next-auth/react');
 const accountListId = 'account-list-1';
 const contactId = 'contact-1';
 const router = {
-  query: { accountListId, contactId: [contactId] },
+  query: { accountListId, contactId: [contactId] } as Record<
+    string,
+    string | string[]
+  >,
   isReady: true,
 };
 
@@ -34,11 +37,16 @@ const handleAccordionChange = jest.fn();
 interface ComponentsProps {
   expandedAccordion: AdminAccordion | null;
   mutationSpy?: () => void;
+  routerOverride?: typeof router;
 }
 
-const Components = ({ mutationSpy, expandedAccordion }: ComponentsProps) => (
+const Components = ({
+  mutationSpy,
+  expandedAccordion,
+  routerOverride,
+}: ComponentsProps) => (
   <SnackbarProvider>
-    <TestRouter router={router}>
+    <TestRouter router={routerOverride ?? router}>
       <ThemeProvider theme={theme}>
         <GqlMockedProvider onCall={mutationSpy}>
           <ImpersonateUserAccordion
@@ -228,6 +236,96 @@ describe('ImpersonateUserAccordion', () => {
           },
         );
       });
+    });
+  });
+
+  describe('Query param prefill and auto-submit', () => {
+    const fetch = jest.fn().mockResolvedValue({
+      json: () => Promise.resolve({ errors: [] }),
+      status: 200,
+    });
+    beforeEach(() => {
+      fetch.mockClear();
+      window.fetch = fetch;
+    });
+
+    it('should auto-submit when both email and reason params are present', async () => {
+      render(
+        <Components
+          expandedAccordion={AdminAccordion.ImpersonateUser}
+          routerOverride={{
+            ...router,
+            query: {
+              ...router.query,
+              email: 'test@test.org',
+              reason: 'HS-1234',
+            },
+          }}
+        />,
+      );
+
+      await waitFor(() => {
+        expect(fetch).toHaveBeenCalledWith(
+          '/api/auth/impersonate/impersonateUser',
+          {
+            method: 'POST',
+            body: JSON.stringify({
+              user: 'test@test.org',
+              reason: 'HS-1234',
+            }),
+          },
+        );
+        expect(mockEnqueue).toHaveBeenCalledWith(
+          'Redirecting you to home screen to impersonate user...',
+          {
+            variant: 'success',
+          },
+        );
+      });
+    });
+
+    it('should prefill without auto-submitting when only email is present', async () => {
+      const { getByRole } = render(
+        <Components
+          expandedAccordion={AdminAccordion.ImpersonateUser}
+          routerOverride={{
+            ...router,
+            query: { ...router.query, email: 'test@test.org' },
+          }}
+        />,
+      );
+
+      await waitFor(() => {
+        expect(
+          getByRole('textbox', { name: /Okta User Name \/ Email/i }),
+        ).toHaveValue('test@test.org');
+      });
+      expect(
+        getByRole('textbox', { name: /reason \/ helpscout ticket link/i }),
+      ).toHaveValue('');
+      expect(fetch).not.toHaveBeenCalled();
+    });
+
+    it('should prefill without auto-submitting when email param is invalid', async () => {
+      const { getByRole } = render(
+        <Components
+          expandedAccordion={AdminAccordion.ImpersonateUser}
+          routerOverride={{
+            ...router,
+            query: { ...router.query, email: 'notanemail', reason: 'HS-1234' },
+          }}
+        />,
+      );
+
+      await waitFor(() => {
+        expect(
+          getByRole('textbox', { name: /Okta User Name \/ Email/i }),
+        ).toHaveValue('notanemail');
+      });
+      expect(
+        getByRole('textbox', { name: /reason \/ helpscout ticket link/i }),
+      ).toHaveValue('HS-1234');
+      expect(fetch).not.toHaveBeenCalled();
     });
   });
 });
