@@ -8,8 +8,6 @@ import { AccountAccordion } from 'src/components/Shared/Forms/Accordions/Accordi
 import theme from '../../../../theme';
 import { MergeAccountsAccordion } from './MergeAccountsAccordion';
 
-jest.mock('next-auth/react');
-
 const accountListId = 'account-list-1';
 const contactId = 'contact-1';
 const router = {

@@ -12,8 +12,6 @@ import {
   GetAccountListsForMergingQuery,
 } from './MergeForm.generated';
 
-jest.mock('next-auth/react');
-
 const accountListId = 'account-list-1';
 const contactId = 'contact-1';
 const router = {

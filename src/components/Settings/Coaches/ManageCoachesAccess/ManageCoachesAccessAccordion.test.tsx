@@ -10,8 +10,6 @@ import theme from '../../../../theme';
 import { GetAccountListCoachesQuery } from './ManageAccountAccess.generated';
 import { ManageCoachesAccessAccordion } from './ManageCoachesAccessAccordion';
 
-jest.mock('next-auth/react');
-
 const accountListId = 'account-list-1';
 const contactId = 'contact-1';
 const router = {

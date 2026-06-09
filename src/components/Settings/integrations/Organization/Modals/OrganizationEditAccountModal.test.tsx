@@ -8,8 +8,6 @@ import { GqlMockedProvider } from '__tests__/util/graphqlMocking';
 import theme from '../../../../../theme';
 import { OrganizationEditAccountModal } from './OrganizationEditAccountModal';
 
-jest.mock('next-auth/react');
-
 const accountListId = 'account-list-1';
 const organizationId = 'organization-1';
 const contactId = 'contact-1';

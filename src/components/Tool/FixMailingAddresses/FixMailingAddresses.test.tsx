@@ -17,7 +17,6 @@ import {
 } from './FixMailingAddressesMock';
 import { InvalidAddressesQuery } from './GetInvalidAddresses.generated';
 
-jest.mock('next-auth/react');
 const accountListId = 'account-list-1';
 const contactId = 'contactId';
 const router = {

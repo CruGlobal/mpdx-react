@@ -13,7 +13,6 @@ import {
 } from './uploadCsvFile';
 
 jest.mock('src/lib/deserializeJsonApi');
-jest.mock('next-auth/react');
 
 const importId = 'import-id';
 

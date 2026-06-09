@@ -10,8 +10,6 @@ import { OrganizationAccordion } from 'src/components/Shared/Forms/Accordions/Ac
 import theme from '../../../../theme';
 import { ImpersonateUserAccordion } from './ImpersonateUserAccordion';
 
-jest.mock('next-auth/react');
-
 const accountListId = 'account-list-1';
 const contactId = 'contact-1';
 const router = {

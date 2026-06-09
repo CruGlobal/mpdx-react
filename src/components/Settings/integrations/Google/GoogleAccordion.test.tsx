@@ -10,8 +10,6 @@ import theme from '../../../../theme';
 import { GoogleAccordion } from './GoogleAccordion';
 import { GoogleAccountsQuery } from './GoogleAccounts.generated';
 
-jest.mock('next-auth/react');
-
 const accountListId = 'account-list-1';
 const contactId = 'contact-1';
 const router = {

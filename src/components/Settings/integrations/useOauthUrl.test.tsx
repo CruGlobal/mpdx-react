@@ -5,8 +5,6 @@ import TestRouter from '__tests__/util/TestRouter';
 import { IntegrationAccordion } from 'src/components/Shared/Forms/Accordions/AccordionEnum';
 import { useOauthUrl } from './useOauthUrl';
 
-jest.mock('next-auth/react');
-
 const accountListId = 'account-list-1';
 const apiToken = 'apiToken';
 

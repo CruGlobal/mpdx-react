@@ -10,8 +10,6 @@ import theme from 'src/theme';
 import { ExportDataMutation } from '../../GetAccountPreferences.generated';
 import { ExportAllDataAccordion } from './ExportAllDataAccordion';
 
-jest.mock('next-auth/react');
-
 const accountListId = 'account-list-1';
 const router = {
   query: { accountListId },

@@ -10,7 +10,6 @@ import theme from 'src/theme';
 import { ExportsModal } from './ExportsModal';
 import { exportRest } from './exportRest';
 
-jest.mock('next-auth/react');
 jest.mock('./exportRest');
 
 const mockEnqueue = jest.fn();

@@ -10,8 +10,6 @@ import theme from 'src/theme';
 import { UpdatePersonalPreferencesDocument } from '../UpdatePersonalPreferences.generated';
 import { LanguageAccordion } from './LanguageAccordion';
 
-jest.mock('next-auth/react');
-
 const accountListId = 'account-list-1';
 const router = {
   query: { accountListId },

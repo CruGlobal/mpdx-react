@@ -10,8 +10,6 @@ import { PreferenceAccordion } from 'src/components/Shared/Forms/Accordions/Acco
 import theme from 'src/theme';
 import { MpdInfoAccordion } from './MpdInfoAccordion';
 
-jest.mock('next-auth/react');
-
 const accountListId = 'account-list-1';
 const router = {
   query: { accountListId },

@@ -12,8 +12,6 @@ import { AccountLists } from './AccountLists';
 import { SearchOrganizationsAccountListsQuery } from './AccountLists.generated';
 import { AccountListsMocks } from './AccountLists.mock';
 
-jest.mock('next-auth/react');
-
 const accountListId = 'account-list-1';
 const contactId = 'contact-1';
 const router = {
