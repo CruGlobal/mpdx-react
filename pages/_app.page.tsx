@@ -1,7 +1,4 @@
-import { NextPage } from 'next';
 import type { AppProps } from 'next/app';
-import Head from 'next/head';
-import React, { ReactElement, useMemo } from 'react';
 import { ApolloProvider } from '@apollo/client';
 import createEmotionCache from '@emotion/cache';
 import { CacheProvider } from '@emotion/react';
@@ -14,9 +11,12 @@ import {
 } from '@mui/x-date-pickers/LocalizationProvider';
 import { ErrorBoundary, Provider } from '@rollbar/react';
 import { DateTime } from 'luxon';
+import { NextPage } from 'next';
 import { Session } from 'next-auth';
 import { SessionProvider } from 'next-auth/react';
+import Head from 'next/head';
 import { SnackbarProvider } from 'notistack';
+import React, { ReactElement, useMemo } from 'react';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 import Rollbar from 'rollbar';
 import { Announcements } from 'src/components/Announcements/Announcements';
@@ -26,6 +26,7 @@ import { Helpjuice } from 'src/components/Helpjuice/Helpjuice';
 import PrimaryLayout from 'src/components/Layouts/Primary';
 import Loading from 'src/components/Loading';
 import { RouterGuard } from 'src/components/RouterGuard/RouterGuard';
+import { ServiceWorkerUpdatePrompt } from 'src/components/ServiceWorker/ServiceWorkerUpdatePrompt';
 import { SetupProvider } from 'src/components/Setup/SetupProvider';
 import { SnackbarUtilsConfigurator } from 'src/components/Snackbar/Snackbar';
 import TaskModalProvider from 'src/components/Task/Modal/TaskModalProvider';
@@ -193,6 +194,7 @@ const App = ({
                     >
                       <SnackbarProvider maxSnack={3}>
                         <GlobalStyles />
+                        <ServiceWorkerUpdatePrompt />
                         {/* On the login page and error pages, the user isn't not authenticated and doesn't have an API token,
                               so don't include the session or Apollo providers because they require an API token */}
                         {nonAuthenticatedPages.has(router.pathname) ? (
