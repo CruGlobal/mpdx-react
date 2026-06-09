@@ -104,5 +104,14 @@ module.exports = {
         'jsx-a11y/no-static-element-interactions': 'off',
       },
     },
+    {
+      // The service worker runs in a browser worker context, not Node.js.
+      // eslint-plugin-import's node resolver cannot resolve @serwist/next/worker
+      // (a package.json subpath export) so we disable the unresolved check here.
+      files: ['src/service-worker/**'],
+      rules: {
+        'import/no-unresolved': 'off',
+      },
+    },
   ],
 };

@@ -1,8 +1,8 @@
+import { spawnSync } from 'node:child_process';
 import type { NextConfig } from 'next';
 import bundleAnalyzer from '@next/bundle-analyzer';
-import withPlugins from 'next-compose-plugins';
+import withSerwistInit from '@serwist/next';
 import withOptimizedImages from 'next-optimized-images';
-import withPWA from 'next-pwa';
 
 if (process.env.secrets && process.env.secrets !== '{}') {
   process.env.JWT_SECRET = JSON.parse(process.env.secrets).JWT_SECRET;
@@ -18,6 +18,24 @@ if (process.env.secrets && process.env.secrets !== '{}') {
 }
 
 const prod = process.env.NODE_ENV === 'production';
+
+// A revision versions the precached /offline page so a new deploy
+// invalidates the previously precached copy.
+const revision =
+  (
+    spawnSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf-8' }).stdout ?? ''
+  ).trim() || crypto.randomUUID();
+
+const withSerwist = withSerwistInit({
+  swSrc: 'src/service-worker/index.ts',
+  swDest: 'public/sw.js',
+  // Registration is handled manually by ServiceWorkerUpdatePrompt so we can
+  // show an update prompt instead of silently activating new versions
+  register: false,
+  // Set ENABLE_SW=true to test the service worker in a local dev/build
+  disable: !prod && process.env.ENABLE_SW !== 'true',
+  additionalPrecacheEntries: [{ url: '/offline', revision }],
+});
 
 if (prod && !process.env.JWT_SECRET) {
   throw new Error('JWT_SECRET environment variable is not set');
@@ -86,6 +104,7 @@ const config: NextConfig = {
     DONATION_SERVICES_EMAIL:
       process.env.DONATION_SERVICES_EMAIL ?? 'donation.services@cru.org',
     DISABLE_NEW_REPORTS: process.env.DISABLE_NEW_REPORTS,
+    ENABLE_SW: process.env.ENABLE_SW,
   },
   // Force .page prefix on page files (ex. index.page.tsx) so generated files can be included in /pages directory without Next.js throwing build errors
   pageExtensions: ['page.tsx', 'page.ts', 'page.jsx', 'page.js'],
@@ -170,18 +189,4 @@ const config: NextConfig = {
   ],
 };
 
-module.exports = withPlugins([
-  [
-    withPWA,
-    {
-      pwa: {
-        dest: 'public',
-        disable: !prod,
-      },
-    },
-  ],
-  withOptimizedImages,
-  // Workaround @next/bundle-analyzer not playing nicely with next-compose-plugins
-  // https://github.com/cyrilwanner/next-compose-plugins/issues/26
-  withBundleAnalyzer(config),
-]);
+module.exports = withSerwist(withOptimizedImages(withBundleAnalyzer(config)));
