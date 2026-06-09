@@ -58,7 +58,9 @@ export const SplitCapSubContent: React.FC<SplitCapSubContentProps> = ({
         salary, any additional requests can be submitted online but will require
         approval through our{' '}
         <Link
-          href="/"
+          href="https://drive.google.com/file/d/1Z1WuiIUMrmfrUUV0V-ACCdhyuSd1Cgzg/view?usp=drive_link"
+          target="_blank"
+          rel="noopener noreferrer"
           style={{ display: 'inline', color: theme.palette.primary.main }}
         >
           Progressive Approvals

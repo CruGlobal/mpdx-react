@@ -60,12 +60,10 @@ export const AboutForm: React.FC = () => {
           In special cases where requests exceed the remaining allowable salary,
           we require additional review through our{' '}
           <Link
-            href="#"
+            href="https://drive.google.com/file/d/1Z1WuiIUMrmfrUUV0V-ACCdhyuSd1Cgzg/view?usp=drive_link"
+            target="_blank"
+            rel="noopener noreferrer"
             underline="always"
-            onClick={(e) => {
-              e.preventDefault();
-              // TODO: Implement Progressive Approvals navigation/modal
-            }}
           >
             Progressive Approvals
           </Link>{' '}
@@ -75,12 +73,10 @@ export const AboutForm: React.FC = () => {
         <Typography variant="body1" paragraph>
           Alternatively, you may download and submit the{' '}
           <Link
-            href="#"
+            href="https://drive.google.com/file/d/17Xe-OTtC8em41PASIWR_ew8mZ9pUYqYF/view?usp=sharing"
+            target="_blank"
+            rel="noopener noreferrer"
             underline="always"
-            onClick={(e) => {
-              e.preventDefault();
-              // TODO: Implement paper version download
-            }}
           >
             paper version
           </Link>{' '}

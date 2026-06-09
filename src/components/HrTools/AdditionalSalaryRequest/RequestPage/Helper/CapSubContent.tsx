@@ -35,7 +35,9 @@ export const CapSubContent: React.FC = () => {
         Please complete the Approval Process section below and we will review
         your request through our{' '}
         <Link
-          href="/"
+          href="https://drive.google.com/file/d/1Z1WuiIUMrmfrUUV0V-ACCdhyuSd1Cgzg/view?usp=drive_link"
+          target="_blank"
+          rel="noopener noreferrer"
           style={{ display: 'inline', color: theme.palette.primary.main }}
         >
           Progressive Approvals

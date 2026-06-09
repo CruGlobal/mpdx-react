@@ -13,6 +13,9 @@ describe('SpouseOverCapSubContent', () => {
     expect(getByText(/Jane/)).toBeInTheDocument();
 
     const link = getByRole('link', { name: 'Progressive Approvals' });
-    expect(link).toBeInTheDocument();
+    expect(link).toHaveAttribute(
+      'href',
+      'https://drive.google.com/file/d/1Z1WuiIUMrmfrUUV0V-ACCdhyuSd1Cgzg/view?usp=drive_link',
+    );
   });
 });
