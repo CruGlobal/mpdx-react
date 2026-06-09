@@ -25,28 +25,43 @@ export const ServiceWorkerUpdatePrompt: React.FC = () => {
 
     const serwist = new Serwist('/sw.js', { scope: '/', type: 'classic' });
 
-    serwist.addEventListener('waiting', () => {
-      serwist.addEventListener('controlling', () => {
-        window.location.reload();
-      });
-
-      enqueueSnackbar(t('A new version of the app is available.'), {
-        persist: true,
-        action: (key: SnackbarKey) => (
-          <Button
-            color="inherit"
-            onClick={() => {
-              closeSnackbar(key);
-              serwist.messageSkipWaiting();
-            }}
-          >
-            {t('Update')}
-          </Button>
-        ),
-      });
+    // Register the controlling listener once, up-front, so it is never
+    // accumulated inside repeated `waiting` callbacks.
+    serwist.addEventListener('controlling', () => {
+      window.location.reload();
     });
 
-    void serwist.register();
+    serwist.addEventListener('waiting', () => {
+      enqueueSnackbar(
+        t('A new version of the app is available. Updating will reload the page.'),
+        {
+          persist: true,
+          preventDuplicate: true,
+          key: 'sw-update',
+          action: (key: SnackbarKey) => (
+            <>
+              <Button
+                color="inherit"
+                onClick={() => {
+                  closeSnackbar(key);
+                  serwist.messageSkipWaiting();
+                }}
+              >
+                {t('Update')}
+              </Button>
+              <Button color="inherit" onClick={() => closeSnackbar(key)}>
+                {t('Later')}
+              </Button>
+            </>
+          ),
+        },
+      );
+    });
+
+    serwist.register().catch(() => {
+      // Allow a retry on the next mount if registration failed transiently
+      registeredRef.current = false;
+    });
   }, [enqueueSnackbar, closeSnackbar, t]);
 
   return null;
