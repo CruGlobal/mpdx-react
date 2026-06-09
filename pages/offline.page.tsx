@@ -16,9 +16,16 @@ const Offline = (): ReactElement => {
         <title>{`${t('Offline')} | ${appName}`}</title>
       </Head>
 
-      <StatusPageWrapper boxShadow={3}>
+      <StatusPageWrapper
+        boxShadow={3}
+        sx={{
+          minWidth: { xs: 'auto', sm: 700 },
+          width: { xs: '100%', sm: 'auto' },
+          px: 2,
+        }}
+      >
         <Box mb={2}>
-          <WifiOffIcon fontSize="large" color="disabled" />
+          <WifiOffIcon fontSize="large" color="disabled" aria-hidden="true" />
         </Box>
         <Typography variant="h5">{t('You are offline.')}</Typography>
         <Typography>

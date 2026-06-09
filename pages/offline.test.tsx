@@ -12,6 +12,15 @@ const TestComponent: React.FC = () => (
 );
 
 describe('Offline page', () => {
+  const originalLocation = window.location;
+
+  afterEach(() => {
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      value: originalLocation,
+    });
+  });
+
   it('renders the offline message', () => {
     const { getByText } = render(<TestComponent />);
 
@@ -26,8 +35,8 @@ describe('Offline page', () => {
   it('reloads the page when Try Again is clicked', async () => {
     const reload = jest.fn();
     Object.defineProperty(window, 'location', {
+      configurable: true,
       value: { ...window.location, reload },
-      writable: true,
     });
 
     const { getByRole } = render(<TestComponent />);
