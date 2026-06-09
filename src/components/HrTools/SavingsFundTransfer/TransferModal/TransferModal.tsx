@@ -133,9 +133,8 @@ const transferSchema = (locale: string) =>
       .required(i18n.t('Amount is required'))
       .min(0.01, i18n.t('Amount must be at least $0.01')),
     note: yup.string().when('schedule', {
-      is: (schedule: ScheduleEnum) => schedule === ScheduleEnum.OneTime,
+      is: ScheduleEnum.OneTime,
       then: (schema) => schema.trim().required(i18n.t('Note is required')),
-      otherwise: (schema) => schema.notRequired(),
     }),
   });
 interface TransferModalProps {

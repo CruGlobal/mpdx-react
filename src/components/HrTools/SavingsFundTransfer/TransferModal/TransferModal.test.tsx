@@ -314,6 +314,7 @@ describe('TransferModal', () => {
 
       const toAccount = getByRole('combobox', { name: /to account/i });
       const amountField = getByRole('spinbutton', { name: /amount/i });
+      const noteField = getByRole('textbox', { name: /note/i });
 
       userEvent.click(toAccount);
       userEvent.click(getByRole('option', { name: /staff savings/i }));
@@ -321,16 +322,14 @@ describe('TransferModal', () => {
       userEvent.clear(amountField);
       userEvent.type(amountField, '100');
 
-      userEvent.click(getByRole('button', { name: /submit/i }));
+      await waitFor(() =>
+        expect(getByRole('button', { name: /submit/i })).toBeDisabled(),
+      );
+
+      userEvent.click(noteField);
+      userEvent.tab();
 
       expect(await findByText('Note is required')).toBeInTheDocument();
-      expect(mutationSpy).not.toHaveBeenCalledWith(
-        expect.objectContaining({
-          operation: expect.objectContaining({
-            operationName: 'CreateTransfer',
-          }),
-        }),
-      );
     });
 
     it('should reject a whitespace-only note for one-time transfers', async () => {
@@ -349,16 +348,11 @@ describe('TransferModal', () => {
       userEvent.type(noteField, '   ');
       userEvent.tab();
 
-      userEvent.click(getByRole('button', { name: /submit/i }));
+      await waitFor(() =>
+        expect(getByRole('button', { name: /submit/i })).toBeDisabled(),
+      );
 
       expect(await findByText('Note is required')).toBeInTheDocument();
-      expect(mutationSpy).not.toHaveBeenCalledWith(
-        expect.objectContaining({
-          operation: expect.objectContaining({
-            operationName: 'CreateTransfer',
-          }),
-        }),
-      );
     });
   });
 
