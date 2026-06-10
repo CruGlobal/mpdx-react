@@ -1,7 +1,8 @@
 import router from 'next/router';
 import { ApolloClient, from } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
-import { LocalStorageWrapper, persistCache } from 'apollo3-cache-persist';
+import { CachePersistor, LocalForageWrapper } from 'apollo3-cache-persist';
+import localforage from 'localforage';
 import { signOut } from 'next-auth/react';
 import {
   GetDefaultAccountDocument,
@@ -18,11 +19,23 @@ import { createCache } from './cache';
 import { batchLink, makeAuthLink } from './link';
 
 const cache = createCache();
-if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
-  await persistCache({
-    cache,
-    storage: new LocalStorageWrapper(window.localStorage),
-  });
+
+// CachePersistor (rather than persistCache) gives logout a handle to purge
+// the persisted data. IndexedDB via localforage avoids localStorage's ~5MB
+// cap, which a cached contact list can exceed.
+export const cachePersistor =
+  typeof window !== 'undefined' && process.env.NODE_ENV === 'production'
+    ? new CachePersistor({
+        cache,
+        storage: new LocalForageWrapper(localforage),
+        maxSize: false,
+      })
+    : undefined;
+
+if (cachePersistor) {
+  await cachePersistor.restore();
+  // Remove the cache persisted to localStorage by the previous implementation
+  window.localStorage.removeItem('apollo-cache-persist');
 }
 
 const makeClient = (apiToken: string) => {
