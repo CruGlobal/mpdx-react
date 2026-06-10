@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { Box, CircularProgress } from '@mui/material';
 import { DateTime } from 'luxon';
 import { signIn, useSession } from 'next-auth/react';
+import { useIsOnline } from 'src/hooks/useIsOnline';
 
 interface Props {
   children?: React.ReactElement;
@@ -10,6 +11,7 @@ interface Props {
 
 export const RouterGuard: React.FC<Props> = ({ children = null }) => {
   const { push } = useRouter();
+  const isOnline = useIsOnline();
 
   const session = useSession({
     required: true,
@@ -20,12 +22,16 @@ export const RouterGuard: React.FC<Props> = ({ children = null }) => {
 
   useEffect(() => {
     if (
+      // While offline, let an expired session keep rendering cached data;
+      // the redirect to Okta would fail anyway. Re-checks on reconnect
+      // because isOnline is a dependency.
+      isOnline &&
       session.status === 'authenticated' &&
       DateTime.now().toISO() > session.data.expires
     ) {
       signIn('okta');
     }
-  }, [session]);
+  }, [session, isOnline]);
 
   return session.status === 'authenticated' ? (
     children
