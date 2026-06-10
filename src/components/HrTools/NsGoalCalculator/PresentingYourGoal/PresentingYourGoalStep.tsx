@@ -14,10 +14,9 @@ import { useTranslation } from 'react-i18next';
 import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
 import { useAccountListSupportRaisedQuery } from '../../GoalCalculator/Shared/GoalLineItems.generated';
-import { PersonalInfoTable } from '../../Shared/GoalPresentation/PersonalInfoTable';
-import { PresentationSectionCard } from '../../Shared/GoalPresentation/PresentationSectionCard';
-import { MonthlyNeedsTable } from '../../Shared/GoalPresentation/SupportNeedsTable/MonthlyNeedsTable';
-import { SpecialNeedsTable } from '../../Shared/GoalPresentation/SupportNeedsTable/SpecialNeedsTable';
+import { MonthlyNeedsCard } from '../../Shared/GoalPresentation/MonthlyNeedsCard';
+import { PersonalInfoCard } from '../../Shared/GoalPresentation/PersonalInfoCard';
+import { SpecialNeedsCard } from '../../Shared/GoalPresentation/SpecialNeedsCard';
 import { useNsGoalCalculator } from '../Shared/NsGoalCalculatorContext';
 import { NsGoalCalculatorLayout } from '../Shared/NsGoalCalculatorLayout';
 import { ChartPlaceholderCard } from './ChartPlaceholderCard';
@@ -50,7 +49,7 @@ const mockSupportNeeds = {
   benefits: 1911,
   socialSecurityAndTaxes: 1492,
   voluntaryRetirement: 990,
-  administrativeCharge: 1795,
+  adminCharge: 1795,
   specialNeeds: 3624,
 };
 
@@ -112,31 +111,25 @@ export const PresentingYourGoalStep: React.FC = () => {
 
           <Divider className="print-hidden" />
 
-          <PresentationSectionCard title={t('Personal Information')}>
-            <PersonalInfoTable
-              firstName={mockPersonalInfo.firstName}
-              spouseFirstName={mockPersonalInfo.spouseFirstName}
-              lastName={mockPersonalInfo.lastName}
-              ministryLocation={mockPersonalInfo.ministryLocation}
-            />
-          </PresentationSectionCard>
+          <PersonalInfoCard
+            firstName={mockPersonalInfo.firstName}
+            spouseFirstName={mockPersonalInfo.spouseFirstName}
+            lastName={mockPersonalInfo.lastName}
+            ministryLocation={mockPersonalInfo.ministryLocation}
+          />
 
-          <PresentationSectionCard title={t('Monthly Support Needs')}>
-            <MonthlyNeedsTable
-              married={mockPersonalInfo.married}
-              salary={mockSupportNeeds.salary}
-              ministryExpenses={mockSupportNeeds.ministryExpenses}
-              benefits={mockSupportNeeds.benefits}
-              socialSecurityAndTaxes={mockSupportNeeds.socialSecurityAndTaxes}
-              voluntaryRetirement={mockSupportNeeds.voluntaryRetirement}
-              administrativeCharge={mockSupportNeeds.administrativeCharge}
-              supportRaised={supportRaised}
-            />
-          </PresentationSectionCard>
+          <MonthlyNeedsCard
+            married={mockPersonalInfo.married}
+            salary={mockSupportNeeds.salary}
+            ministryExpenses={mockSupportNeeds.ministryExpenses}
+            benefits={mockSupportNeeds.benefits}
+            socialSecurityAndTaxes={mockSupportNeeds.socialSecurityAndTaxes}
+            voluntaryRetirement={mockSupportNeeds.voluntaryRetirement}
+            adminCharge={mockSupportNeeds.adminCharge}
+            supportRaised={supportRaised}
+          />
 
-          <PresentationSectionCard title={t('Special Needs')}>
-            <SpecialNeedsTable specialNeeds={mockSupportNeeds.specialNeeds} />
-          </PresentationSectionCard>
+          <SpecialNeedsCard specialNeeds={mockSupportNeeds.specialNeeds} />
 
           <Grid container spacing={theme.spacing(3)}>
             <Grid item xs={12} lg={6}>

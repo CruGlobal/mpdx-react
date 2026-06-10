@@ -1,15 +1,16 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { PresentationCard } from './PresentationCard';
 import { SupportNeedsRow, SupportNeedsTable } from './SupportNeedsTable';
 
-interface SpecialNeedsTableProps {
+interface SpecialNeedsCardProps {
   specialNeeds: number;
 }
 
 /**
- * Special needs table shown on the new staff goal presentation page.
+ * Special needs card shown on the new staff goal presentation page.
  */
-export const SpecialNeedsTable: React.FC<SpecialNeedsTableProps> = ({
+export const SpecialNeedsCard: React.FC<SpecialNeedsCardProps> = ({
   specialNeeds,
 }) => {
   const { t } = useTranslation();
@@ -27,5 +28,9 @@ export const SpecialNeedsTable: React.FC<SpecialNeedsTableProps> = ({
     [specialNeeds, t],
   );
 
-  return <SupportNeedsTable rows={rows} />;
+  return (
+    <PresentationCard title={t('Special Needs')}>
+      <SupportNeedsTable rows={rows} />
+    </PresentationCard>
+  );
 };

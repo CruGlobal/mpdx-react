@@ -3,7 +3,7 @@ import { Box, styled } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Cell, Legend, Pie, PieChart, ResponsiveContainer } from 'recharts';
 import theme from 'src/theme';
-import { PresentationSectionCard } from '../../Shared/GoalPresentation/PresentationSectionCard';
+import { PresentationCard } from '../../Shared/GoalPresentation/PresentationCard';
 
 const ChartContainer = styled(Box)({
   '@media print': {
@@ -49,7 +49,7 @@ export const ChartPlaceholderCard: React.FC<ChartPlaceholderCardProps> = ({
   ];
 
   return (
-    <PresentationSectionCard title={title}>
+    <PresentationCard title={title}>
       <ChartContainer height={300} data-testid="chart-placeholder">
         <ResponsiveContainer width="100%">
           <PieChart>
@@ -81,6 +81,6 @@ export const ChartPlaceholderCard: React.FC<ChartPlaceholderCardProps> = ({
           </PieChart>
         </ResponsiveContainer>
       </ChartContainer>
-    </PresentationSectionCard>
+    </PresentationCard>
   );
 };

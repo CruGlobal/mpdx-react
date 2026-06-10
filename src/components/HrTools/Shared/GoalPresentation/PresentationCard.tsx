@@ -2,7 +2,7 @@ import React from 'react';
 import { Divider, Paper, Typography, styled } from '@mui/material';
 import theme from 'src/theme';
 
-interface PresentationSectionCardProps {
+interface PresentationCardProps {
   title: string;
   children: React.ReactNode;
 }
@@ -19,9 +19,10 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
  * Card used by the goal presentation pages to wrap each printable section
  * (personal information, support needs tables, and charts).
  */
-export const PresentationSectionCard: React.FC<
-  PresentationSectionCardProps
-> = ({ title, children }) => (
+export const PresentationCard: React.FC<PresentationCardProps> = ({
+  title,
+  children,
+}) => (
   <StyledPaper>
     <Typography sx={{ marginBottom: theme.spacing(2) }} variant="h5">
       {title}

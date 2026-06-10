@@ -9,9 +9,9 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from 'recharts';
-import { PersonalInfoTable } from 'src/components/HrTools/Shared/GoalPresentation/PersonalInfoTable';
-import { PresentationSectionCard } from 'src/components/HrTools/Shared/GoalPresentation/PresentationSectionCard';
-import { MonthlyNeedsTable } from 'src/components/HrTools/Shared/GoalPresentation/SupportNeedsTable/MonthlyNeedsTable';
+import { MonthlyNeedsCard } from 'src/components/HrTools/Shared/GoalPresentation/MonthlyNeedsCard';
+import { PersonalInfoCard } from 'src/components/HrTools/Shared/GoalPresentation/PersonalInfoCard';
+import { PresentationCard } from 'src/components/HrTools/Shared/GoalPresentation/PresentationCard';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
@@ -84,7 +84,7 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
       socialSecurityAndTaxes: goalTotals.taxes,
       voluntaryRetirement:
         goalTotals.traditionalContribution + goalTotals.rothContribution,
-      administrativeCharge:
+      adminCharge:
         goalTotals.overallSubtotalWithAdmin - goalTotals.overallSubtotal,
     }),
     [goalTotals],
@@ -105,7 +105,7 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
       },
       {
         name: 'Administrative Charge',
-        value: supportNeeds.administrativeCharge,
+        value: supportNeeds.adminCharge,
       },
     ],
     [supportNeeds],
@@ -128,28 +128,24 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
 
   return (
     <PrintableContent>
-      <PresentationSectionCard title={t('Personal Information')}>
-        <PersonalInfoTable
-          firstName={goalCalculation?.firstName ?? ''}
-          spouseFirstName={
-            hasStaffSpouse(goalCalculation?.familySize)
-              ? goalCalculation?.spouseFirstName
-              : null
-          }
-          lastName={goalCalculation?.lastName ?? ''}
-          ministryLocation={goalCalculation?.ministryLocation ?? undefined}
-        />
-      </PresentationSectionCard>
+      <PersonalInfoCard
+        firstName={goalCalculation?.firstName ?? ''}
+        spouseFirstName={
+          hasStaffSpouse(goalCalculation?.familySize)
+            ? goalCalculation?.spouseFirstName
+            : null
+        }
+        lastName={goalCalculation?.lastName ?? ''}
+        ministryLocation={goalCalculation?.ministryLocation ?? undefined}
+      />
 
-      <PresentationSectionCard title={t('Monthly Support Needs')}>
-        <MonthlyNeedsTable
-          {...supportNeeds}
-          married={hasStaffSpouse(goalCalculation?.familySize)}
-          supportRaised={supportRaised}
-        />
-      </PresentationSectionCard>
+      <MonthlyNeedsCard
+        {...supportNeeds}
+        married={hasStaffSpouse(goalCalculation?.familySize)}
+        supportRaised={supportRaised}
+      />
 
-      <PresentationSectionCard title={t('Monthly Support Breakdown')}>
+      <PresentationCard title={t('Monthly Support Breakdown')}>
         <ChartContainer height={500}>
           <ResponsiveContainer width="100%">
             <PieChart>
@@ -192,7 +188,7 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
             </PieChart>
           </ResponsiveContainer>
         </ChartContainer>
-      </PresentationSectionCard>
+      </PresentationCard>
     </PrintableContent>
   );
 };

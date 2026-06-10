@@ -1,31 +1,32 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { PresentationCard } from './PresentationCard';
 import { SupportNeedsRow, SupportNeedsTable } from './SupportNeedsTable';
 
-export interface MonthlyNeedsTableProps {
+export interface MonthlyNeedsCardProps {
   married: boolean;
   salary: number;
   ministryExpenses: number;
   benefits: number;
   socialSecurityAndTaxes: number;
   voluntaryRetirement: number;
-  administrativeCharge: number;
+  adminCharge: number;
   supportRaised: number;
 }
 
 /**
- * Monthly support needs table shown on the goal presentation pages. The total
+ * Monthly support needs card shown on the goal presentation pages. The total
  * support goal is calculated from the individual amounts so that it always
  * matches the rows displayed above it.
  */
-export const MonthlyNeedsTable: React.FC<MonthlyNeedsTableProps> = ({
+export const MonthlyNeedsCard: React.FC<MonthlyNeedsCardProps> = ({
   married,
   salary,
   ministryExpenses,
   benefits,
   socialSecurityAndTaxes,
   voluntaryRetirement,
-  administrativeCharge,
+  adminCharge,
   supportRaised,
 }) => {
   const { t } = useTranslation();
@@ -36,7 +37,7 @@ export const MonthlyNeedsTable: React.FC<MonthlyNeedsTableProps> = ({
     benefits +
     socialSecurityAndTaxes +
     voluntaryRetirement +
-    administrativeCharge;
+    adminCharge;
 
   const rows: SupportNeedsRow[] = useMemo(
     () => [
@@ -77,7 +78,7 @@ export const MonthlyNeedsTable: React.FC<MonthlyNeedsTableProps> = ({
       },
       {
         title: t('Administrative Charge'),
-        amount: administrativeCharge,
+        amount: adminCharge,
         titleBold: false,
       },
       {
@@ -98,12 +99,16 @@ export const MonthlyNeedsTable: React.FC<MonthlyNeedsTableProps> = ({
       benefits,
       socialSecurityAndTaxes,
       voluntaryRetirement,
-      administrativeCharge,
+      adminCharge,
       totalSupportGoal,
       supportRaised,
       t,
     ],
   );
 
-  return <SupportNeedsTable rows={rows} />;
+  return (
+    <PresentationCard title={t('Monthly Support Needs')}>
+      <SupportNeedsTable rows={rows} />
+    </PresentationCard>
+  );
 };
