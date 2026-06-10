@@ -9,15 +9,9 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from 'recharts';
-import {
-  PersonalInfoRow,
-  PersonalInfoTable,
-} from 'src/components/HrTools/Shared/GoalPresentation/PersonalInfoTable';
+import { PersonalInfoTable } from 'src/components/HrTools/Shared/GoalPresentation/PersonalInfoTable';
 import { PresentationSectionCard } from 'src/components/HrTools/Shared/GoalPresentation/PresentationSectionCard';
-import {
-  SupportNeedsRow,
-  SupportNeedsTable,
-} from 'src/components/HrTools/Shared/GoalPresentation/SupportNeedsTable';
+import { MonthlyNeedsTable } from 'src/components/HrTools/Shared/GoalPresentation/SupportNeedsTable/MonthlyNeedsTable';
 import { useLocale } from 'src/hooks/useLocale';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
@@ -82,26 +76,39 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
   } = useGoalCalculator();
   const goalCalculation = data?.goalCalculation;
 
+  const supportNeeds = useMemo(
+    () => ({
+      salary: goalTotals.netMonthlySalary,
+      ministryExpenses: goalTotals.ministryExpensesTotal + goalTotals.attrition,
+      benefits: goalTotals.benefitsCharge,
+      socialSecurityAndTaxes: goalTotals.taxes,
+      voluntaryRetirement:
+        goalTotals.traditionalContribution + goalTotals.rothContribution,
+      administrativeCharge:
+        goalTotals.overallSubtotalWithAdmin - goalTotals.overallSubtotal,
+    }),
+    [goalTotals],
+  );
+
   const presentationData = useMemo(
     () => [
-      { name: 'Salary', value: goalTotals.netMonthlySalary },
+      { name: 'Salary', value: supportNeeds.salary },
+      { name: 'Ministry Expenses', value: supportNeeds.ministryExpenses },
+      { name: 'Benefits', value: supportNeeds.benefits },
       {
-        name: 'Ministry Expenses',
-        value: goalTotals.ministryExpensesTotal + goalTotals.attrition,
+        name: 'Social Security and Taxes',
+        value: supportNeeds.socialSecurityAndTaxes,
       },
-      { name: 'Benefits', value: goalTotals.benefitsCharge },
-      { name: 'Social Security and Taxes', value: goalTotals.taxes },
       {
         name: 'Voluntary 403b Retirement Plan',
-        value: goalTotals.traditionalContribution + goalTotals.rothContribution,
+        value: supportNeeds.voluntaryRetirement,
       },
       {
         name: 'Administrative Charge',
-        value: goalTotals.overallSubtotalWithAdmin - goalTotals.overallSubtotal,
-        titleBold: false,
+        value: supportNeeds.administrativeCharge,
       },
     ],
-    [goalTotals],
+    [supportNeeds],
   );
 
   const total = useMemo(
@@ -119,95 +126,27 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
     theme.palette.info.main,
   ];
 
-  const personalInfoRows: PersonalInfoRow[] = useMemo(() => {
-    const firstName = goalCalculation?.firstName ?? '';
-    const spouseFirstName = hasStaffSpouse(goalCalculation?.familySize)
-      ? goalCalculation?.spouseFirstName
-      : null;
-    const lastName = goalCalculation?.lastName ?? '';
-    const fullName = spouseFirstName
-      ? `${firstName} ${t('and')} ${spouseFirstName ?? ''} ${lastName}`
-      : `${firstName} ${lastName}`;
-
-    return [
-      { label: t('Name'), value: fullName },
-      {
-        label: t('Mission Agency'),
-        value: t('Campus Crusade for Christ, Inc.'),
-      },
-      {
-        label: t('Ministry Team / Location'),
-        value: goalCalculation?.ministryLocation ?? undefined,
-      },
-    ];
-  }, [goalCalculation, t]);
-
-  const rows: SupportNeedsRow[] = useMemo(
-    () => [
-      {
-        title: hasStaffSpouse(goalCalculation?.familySize)
-          ? t('Salary (Combined)')
-          : t('Salary'),
-        description: t(
-          'Salaries are based upon marital status, number of children, tenure with Cru, and adjustments for certain geographic locations.',
-        ),
-        amount: presentationData[0].value,
-      },
-      {
-        title: t('Ministry Expenses'),
-        description: t(
-          'Training, conferences, supplies, evangelism & discipleship materials, communication with ministry partners, ministry travel expenses, etc.',
-        ),
-        amount: presentationData[1].value,
-      },
-      {
-        title: t('Benefits'),
-        description: t(
-          "Includes group medical and dental coverage, life insurance, disability insurance, worker's compensation, and employer contribution to a 403(b) retirement plan.",
-        ),
-        amount: presentationData[2].value,
-      },
-      {
-        title: t('Social Security and Taxes'),
-        description: t(
-          'Since Campus Crusade is a non-profit organization, staff members are responsible for paying the entire amount of Social Security.',
-        ),
-        amount: presentationData[3].value,
-      },
-      {
-        title: t('Voluntary 403b Retirement Plan'),
-        description: t(
-          'Staff members are eligible to contribute to a voluntary retirement program each month.',
-        ),
-        amount: presentationData[4].value,
-      },
-      {
-        title: t('Administrative Charge'),
-        amount: presentationData[5].value,
-        titleBold: false,
-      },
-      {
-        title: t('Total Support Goal'),
-        amount: total,
-        bold: true,
-      },
-      {
-        title: t('Total Solid Support'),
-        amount: supportRaised,
-        titleBold: false,
-      },
-    ],
-    [presentationData, total, supportRaised, t, goalTotals],
-  );
-
   return (
     <PrintableContent>
       <PresentationSectionCard title={t('Personal Information')}>
-        <PersonalInfoTable rows={personalInfoRows} />
+        <PersonalInfoTable
+          firstName={goalCalculation?.firstName ?? ''}
+          spouseFirstName={
+            hasStaffSpouse(goalCalculation?.familySize)
+              ? goalCalculation?.spouseFirstName
+              : null
+          }
+          lastName={goalCalculation?.lastName ?? ''}
+          ministryLocation={goalCalculation?.ministryLocation ?? undefined}
+        />
       </PresentationSectionCard>
 
       <PresentationSectionCard title={t('Monthly Support Needs')}>
-        <SupportNeedsTable rows={rows} />
+        <MonthlyNeedsTable
+          {...supportNeeds}
+          married={hasStaffSpouse(goalCalculation?.familySize)}
+          supportRaised={supportRaised}
+        />
       </PresentationSectionCard>
 
       <PresentationSectionCard title={t('Monthly Support Breakdown')}>

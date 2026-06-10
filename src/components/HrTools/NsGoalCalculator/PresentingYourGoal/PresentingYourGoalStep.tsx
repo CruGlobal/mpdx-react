@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import PrintIcon from '@mui/icons-material/Print';
 import {
@@ -11,16 +11,13 @@ import {
   styled,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
+import { useAccountListId } from 'src/hooks/useAccountListId';
 import theme from 'src/theme';
-import {
-  PersonalInfoRow,
-  PersonalInfoTable,
-} from '../../Shared/GoalPresentation/PersonalInfoTable';
+import { useAccountListSupportRaisedQuery } from '../../GoalCalculator/Shared/GoalLineItems.generated';
+import { PersonalInfoTable } from '../../Shared/GoalPresentation/PersonalInfoTable';
 import { PresentationSectionCard } from '../../Shared/GoalPresentation/PresentationSectionCard';
-import {
-  SupportNeedsRow,
-  SupportNeedsTable,
-} from '../../Shared/GoalPresentation/SupportNeedsTable';
+import { MonthlyNeedsTable } from '../../Shared/GoalPresentation/SupportNeedsTable/MonthlyNeedsTable';
+import { SpecialNeedsTable } from '../../Shared/GoalPresentation/SupportNeedsTable/SpecialNeedsTable';
 import { useNsGoalCalculator } from '../Shared/NsGoalCalculatorContext';
 import { NsGoalCalculatorLayout } from '../Shared/NsGoalCalculatorLayout';
 import { ChartPlaceholderCard } from './ChartPlaceholderCard';
@@ -40,8 +37,9 @@ const PrintableContent = styled('div')(({ theme }) => ({
 // Mock data for building out the layout. Will be replaced with real goal
 // calculation data once the new staff goal API is available.
 const mockPersonalInfo = {
-  name: 'John and Jane Doe',
-  missionAgency: 'Campus Crusade for Christ, Inc.',
+  firstName: 'John',
+  spouseFirstName: 'Jane',
+  lastName: 'Doe',
   ministryLocation: 'Lake Hart',
   married: true,
 };
@@ -53,99 +51,21 @@ const mockSupportNeeds = {
   socialSecurityAndTaxes: 1492,
   voluntaryRetirement: 990,
   administrativeCharge: 1795,
-  totalSupportGoal: 15859,
-  totalSolidSupport: 1200,
-  totalSpecialNeedsGoal: 3624,
+  specialNeeds: 3624,
 };
 
 export const PresentingYourGoalStep: React.FC = () => {
   const { t } = useTranslation();
   const { handleContinue } = useNsGoalCalculator();
+  const accountListId = useAccountListId() ?? '';
+  const { data } = useAccountListSupportRaisedQuery({
+    variables: { accountListId },
+  });
+  const supportRaised = data?.accountList.receivedPledges ?? 0;
 
   const handlePrint = () => {
     window.print();
   };
-
-  const personalInfoRows: PersonalInfoRow[] = useMemo(
-    () => [
-      { label: t('Name'), value: mockPersonalInfo.name },
-      { label: t('Mission Agency'), value: mockPersonalInfo.missionAgency },
-      {
-        label: t('Ministry Location'),
-        value: mockPersonalInfo.ministryLocation,
-      },
-    ],
-    [t],
-  );
-
-  const supportNeedsRows: SupportNeedsRow[] = useMemo(
-    () => [
-      {
-        title: mockPersonalInfo.married ? t('Salary (Combined)') : t('Salary'),
-        description: t(
-          'Salaries are based upon marital status, number of children, tenure with Cru, and adjustments for certain geographic locations.',
-        ),
-        amount: mockSupportNeeds.salary,
-      },
-      {
-        title: t('Ministry Expenses'),
-        description: t(
-          'Training, conferences, supplies, evangelism & discipleship materials, communication with ministry partners, ministry travel expenses, etc.',
-        ),
-        amount: mockSupportNeeds.ministryExpenses,
-      },
-      {
-        title: t('Benefits'),
-        description: t(
-          "Includes group medical and dental coverage, life insurance, disability insurance, worker's compensation, and employer contribution to a 403(b) retirement plan.",
-        ),
-        amount: mockSupportNeeds.benefits,
-      },
-      {
-        title: t('Social Security and Taxes'),
-        description: t(
-          'Since Campus Crusade is a non-profit organization, staff members are responsible for paying the entire amount of Social Security.',
-        ),
-        amount: mockSupportNeeds.socialSecurityAndTaxes,
-      },
-      {
-        title: t('Voluntary 403b Retirement Plan'),
-        description: t(
-          'Staff members are eligible to contribute to a voluntary retirement program each month.',
-        ),
-        amount: mockSupportNeeds.voluntaryRetirement,
-      },
-      {
-        title: t('Administrative Charge'),
-        amount: mockSupportNeeds.administrativeCharge,
-        titleBold: false,
-      },
-      {
-        title: t('Total Support Goal'),
-        amount: mockSupportNeeds.totalSupportGoal,
-        bold: true,
-      },
-      {
-        title: t('Total Solid Support'),
-        amount: mockSupportNeeds.totalSolidSupport,
-        titleBold: false,
-      },
-    ],
-    [t],
-  );
-
-  const specialNeedsRows: SupportNeedsRow[] = useMemo(
-    () => [
-      {
-        title: t('Total Special Needs Goal'),
-        description: t(
-          'NSO/IBS Tuition, housing, food, travel, MPD Refresh Retreat, Faith & Finance Course.',
-        ),
-        amount: mockSupportNeeds.totalSpecialNeedsGoal,
-      },
-    ],
-    [t],
-  );
 
   return (
     <NsGoalCalculatorLayout
@@ -193,15 +113,29 @@ export const PresentingYourGoalStep: React.FC = () => {
           <Divider className="print-hidden" />
 
           <PresentationSectionCard title={t('Personal Information')}>
-            <PersonalInfoTable rows={personalInfoRows} />
+            <PersonalInfoTable
+              firstName={mockPersonalInfo.firstName}
+              spouseFirstName={mockPersonalInfo.spouseFirstName}
+              lastName={mockPersonalInfo.lastName}
+              ministryLocation={mockPersonalInfo.ministryLocation}
+            />
           </PresentationSectionCard>
 
           <PresentationSectionCard title={t('Monthly Support Needs')}>
-            <SupportNeedsTable rows={supportNeedsRows} />
+            <MonthlyNeedsTable
+              married={mockPersonalInfo.married}
+              salary={mockSupportNeeds.salary}
+              ministryExpenses={mockSupportNeeds.ministryExpenses}
+              benefits={mockSupportNeeds.benefits}
+              socialSecurityAndTaxes={mockSupportNeeds.socialSecurityAndTaxes}
+              voluntaryRetirement={mockSupportNeeds.voluntaryRetirement}
+              administrativeCharge={mockSupportNeeds.administrativeCharge}
+              supportRaised={supportRaised}
+            />
           </PresentationSectionCard>
 
           <PresentationSectionCard title={t('Special Needs')}>
-            <SupportNeedsTable rows={specialNeedsRows} />
+            <SpecialNeedsTable specialNeeds={mockSupportNeeds.specialNeeds} />
           </PresentationSectionCard>
 
           <Grid container spacing={theme.spacing(3)}>

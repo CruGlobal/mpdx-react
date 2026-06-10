@@ -60,8 +60,8 @@ describe('PresentingYourGoalStep', () => {
     expect(getByTestId('cru-logo')).toBeInTheDocument();
   });
 
-  it('renders the monthly support needs section', () => {
-    const { getByRole, getByText } = render(<TestComponent />);
+  it('renders the monthly support needs section', async () => {
+    const { getByRole, getByText, findByText } = render(<TestComponent />);
 
     expect(
       getByRole('heading', { name: 'Monthly Support Needs' }),
@@ -79,9 +79,9 @@ describe('PresentingYourGoalStep', () => {
     expect(getByText('Administrative Charge')).toBeInTheDocument();
     expect(getByText('$1,795')).toBeInTheDocument();
     expect(getByText('Total Support Goal')).toBeInTheDocument();
-    expect(getByText('$15,859')).toBeInTheDocument();
+    expect(getByText('$15,860')).toBeInTheDocument();
     expect(getByText('Total Solid Support')).toBeInTheDocument();
-    expect(getByText('$1,200')).toBeInTheDocument();
+    expect(await findByText('$1,200')).toBeInTheDocument();
   });
 
   it('renders the special needs section', () => {

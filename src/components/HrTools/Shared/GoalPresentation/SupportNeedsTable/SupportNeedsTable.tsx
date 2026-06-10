@@ -19,13 +19,13 @@ export interface SupportNeedsRow {
   titleBold?: boolean;
 }
 
-interface SupportNeedsTableProps {
+export interface SupportNeedsTableProps {
   rows: SupportNeedsRow[];
 }
 
 /**
- * Support needs table shown on the goal presentation pages. Renders rows with
- * a title, optional description, and currency-formatted amount.
+ * Renders rows with a title, optional description, and currency-formatted
+ * amount for the goal presentation tables.
  */
 export const SupportNeedsTable: React.FC<SupportNeedsTableProps> = ({
   rows,
