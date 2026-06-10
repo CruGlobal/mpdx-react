@@ -13,12 +13,9 @@ fragment RequestAttributes on MhaRequestAttributes {
   emailAddress
   iUnderstandMhaPolicy
   hrApprovedAt
-  approvedOverallAmount
   availableDate
   boardApprovedAt
   deadlineDate
-  spouseSpecific
-  staffSpecific
   submittedAt
   changesRequestedAt
 }

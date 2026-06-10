@@ -106,11 +106,6 @@ describe('MinisterHousingAllowanceReport', () => {
           {
             ...mockMHARequest,
             status: MhaStatusEnum.BoardApproved,
-            requestAttributes: {
-              ...mockMHARequest.requestAttributes,
-              spouseSpecific: 5000,
-              staffSpecific: 10000,
-            },
           },
         ]}
       />,
@@ -200,11 +195,6 @@ describe('MinisterHousingAllowanceReport', () => {
           {
             ...mockMHARequest,
             status: MhaStatusEnum.BoardApproved,
-            requestAttributes: {
-              ...mockMHARequest.requestAttributes,
-              spouseSpecific: 5000,
-              staffSpecific: 10000,
-            },
           },
         ]}
       />,
@@ -242,11 +232,6 @@ describe('MinisterHousingAllowanceReport', () => {
           {
             ...mockMHARequest,
             status: MhaStatusEnum.BoardApproved,
-            requestAttributes: {
-              ...mockMHARequest.requestAttributes,
-              spouseSpecific: 5000,
-              staffSpecific: 10000,
-            },
           },
         ]}
       />,
@@ -265,11 +250,6 @@ describe('MinisterHousingAllowanceReport', () => {
         mhaRequestsMock={[
           {
             ...mockMHARequest,
-            requestAttributes: {
-              ...mockMHARequest.requestAttributes,
-              spouseSpecific: 5000,
-              staffSpecific: 10000,
-            },
           },
         ]}
       />,
