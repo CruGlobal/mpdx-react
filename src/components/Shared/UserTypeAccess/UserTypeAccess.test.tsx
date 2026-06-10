@@ -252,6 +252,21 @@ describe('UserTypeAccess', () => {
     expect(await findByText('Test Content')).toBeInTheDocument();
   });
 
+  it('should render LimitedAccess in a development env for a developer when staff account is required but not present', async () => {
+    process.env.DEVELOPMENT_ENV = 'true';
+    mockSession({ developer: true });
+
+    const { findByRole } = render(
+      <TestComponent requireStaffAccount staffAccountId={null} />,
+    );
+
+    expect(
+      await findByRole('heading', {
+        name: 'Access to this feature is limited.',
+      }),
+    ).toBeInTheDocument();
+  });
+
   it('should not bypass eligibility gating in a development env for a non-developer', async () => {
     process.env.DEVELOPMENT_ENV = 'true';
     mockSession({ developer: false });

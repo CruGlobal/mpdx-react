@@ -56,7 +56,7 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
     (requireUserGroups && ineligibleByGroup[requireUserGroups]);
 
   // Once HCM is ready to go live and DISABLE_NEW_REPORTS is removed, we can remove the alwaysAllow prop
-  if (alwaysAllow || developerBypass) {
+  if (alwaysAllow) {
     return children;
   }
 
@@ -68,7 +68,7 @@ export const UserTypeAccess: React.FC<UserTypeAccessProps> = ({
     return <Loading loading />;
   }
 
-  if (limitedAccess) {
+  if (limitedAccess && !developerBypass) {
     return <LimitedAccess />;
   }
 
