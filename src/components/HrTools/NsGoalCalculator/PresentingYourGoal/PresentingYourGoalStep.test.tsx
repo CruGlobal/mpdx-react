@@ -92,8 +92,8 @@ describe('PresentingYourGoalStep', () => {
     expect(getByText('$3,624')).toBeInTheDocument();
   });
 
-  it('renders placeholders for both charts', () => {
-    const { getByRole, getAllByTestId } = render(<TestComponent />);
+  it('renders the monthly support needs chart and the special needs chart placeholder', () => {
+    const { getByRole, getByTestId } = render(<TestComponent />);
 
     expect(
       getByRole('heading', { name: 'Monthly Support Needs Chart' }),
@@ -101,7 +101,7 @@ describe('PresentingYourGoalStep', () => {
     expect(
       getByRole('heading', { name: 'Special Needs Chart' }),
     ).toBeInTheDocument();
-    expect(getAllByTestId('chart-placeholder')).toHaveLength(2);
+    expect(getByTestId('chart-placeholder')).toBeInTheDocument();
   });
 
   it('prints when the print button is clicked', () => {

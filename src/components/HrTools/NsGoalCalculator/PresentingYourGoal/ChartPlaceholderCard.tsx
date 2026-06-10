@@ -50,7 +50,7 @@ export const ChartPlaceholderCard: React.FC<ChartPlaceholderCardProps> = ({
 
   return (
     <PresentationCard title={title}>
-      <ChartContainer height={300} data-testid="chart-placeholder">
+      <ChartContainer height={500} data-testid="chart-placeholder">
         <ResponsiveContainer width="100%">
           <PieChart>
             <Pie

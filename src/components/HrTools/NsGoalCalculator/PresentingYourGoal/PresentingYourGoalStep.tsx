@@ -16,7 +16,10 @@ import theme from 'src/theme';
 import { useAccountListSupportRaisedQuery } from '../../GoalCalculator/Shared/GoalLineItems.generated';
 import { MonthlyNeedsCard } from '../../Shared/GoalPresentation/MonthlyNeedsCard';
 import { PersonalInfoCard } from '../../Shared/GoalPresentation/PersonalInfoCard';
+import { PresentationCard } from '../../Shared/GoalPresentation/PresentationCard';
 import { SpecialNeedsCard } from '../../Shared/GoalPresentation/SpecialNeedsCard';
+import { SupportNeedsChart } from '../../Shared/GoalPresentation/SupportNeedsChart';
+import { MonthlyNeeds } from '../../Shared/GoalPresentation/useMonthlyNeedsRows';
 import { useNsGoalCalculator } from '../Shared/NsGoalCalculatorContext';
 import { NsGoalCalculatorLayout } from '../Shared/NsGoalCalculatorLayout';
 import { ChartPlaceholderCard } from './ChartPlaceholderCard';
@@ -43,15 +46,17 @@ const mockPersonalInfo = {
   married: true,
 };
 
-const mockSupportNeeds = {
+const mockMonthlyNeeds: MonthlyNeeds = {
+  married: mockPersonalInfo.married,
   salary: 8774,
   ministryExpenses: 898,
   benefits: 1911,
   socialSecurityAndTaxes: 1492,
   voluntaryRetirement: 990,
   adminCharge: 1795,
-  specialNeeds: 3624,
 };
+
+const mockSpecialNeeds = 3624;
 
 export const PresentingYourGoalStep: React.FC = () => {
   const { t } = useTranslation();
@@ -119,21 +124,17 @@ export const PresentingYourGoalStep: React.FC = () => {
           />
 
           <MonthlyNeedsCard
-            married={mockPersonalInfo.married}
-            salary={mockSupportNeeds.salary}
-            ministryExpenses={mockSupportNeeds.ministryExpenses}
-            benefits={mockSupportNeeds.benefits}
-            socialSecurityAndTaxes={mockSupportNeeds.socialSecurityAndTaxes}
-            voluntaryRetirement={mockSupportNeeds.voluntaryRetirement}
-            adminCharge={mockSupportNeeds.adminCharge}
+            monthlyNeeds={mockMonthlyNeeds}
             supportRaised={supportRaised}
           />
 
-          <SpecialNeedsCard specialNeeds={mockSupportNeeds.specialNeeds} />
+          <SpecialNeedsCard specialNeeds={mockSpecialNeeds} />
 
           <Grid container spacing={theme.spacing(3)}>
             <Grid item xs={12} lg={6}>
-              <ChartPlaceholderCard title={t('Monthly Support Needs Chart')} />
+              <PresentationCard title={t('Monthly Support Needs Chart')}>
+                <SupportNeedsChart monthlyNeeds={mockMonthlyNeeds} />
+              </PresentationCard>
             </Grid>
             <Grid item xs={12} lg={6}>
               <ChartPlaceholderCard title={t('Special Needs Chart')} />
