@@ -1,17 +1,5 @@
 import React, { useMemo } from 'react';
-import {
-  Box,
-  Divider,
-  Grid,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-  Typography,
-  styled,
-  useMediaQuery,
-} from '@mui/material';
+import { Box, Grid, styled, useMediaQuery } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import {
   Cell,
@@ -21,8 +9,16 @@ import {
   ResponsiveContainer,
   Tooltip,
 } from 'recharts';
+import {
+  PersonalInfoRow,
+  PersonalInfoTable,
+} from 'src/components/HrTools/Shared/GoalPresentation/PersonalInfoTable';
+import { PresentationSectionCard } from 'src/components/HrTools/Shared/GoalPresentation/PresentationSectionCard';
+import {
+  SupportNeedsRow,
+  SupportNeedsTable,
+} from 'src/components/HrTools/Shared/GoalPresentation/SupportNeedsTable';
 import { useLocale } from 'src/hooks/useLocale';
-import cruLogo from 'src/images/cru/cru-logo.svg';
 import { currencyFormat, percentageFormat } from 'src/lib/intlFormat';
 import theme from 'src/theme';
 import { useGoalCalculator } from '../../../Shared/GoalCalculatorContext';
@@ -57,23 +53,6 @@ const ChartContainer = styled(Box)({
     dominantBaseline: 'middle',
   },
 });
-
-const StyledTableCell = styled(TableCell)({
-  border: 'none',
-  paddingBlock: theme.spacing(2),
-});
-
-interface PersonalInfoRow {
-  label: string;
-  value?: string;
-}
-
-interface PresentingYourGoalRow {
-  title: string;
-  description?: string;
-  amount: number;
-  bold?: boolean;
-}
 
 interface PresentingYourGoalProps {
   supportRaised: number;
@@ -150,7 +129,7 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
     ];
   }, [goalCalculation, t]);
 
-  const rows: PresentingYourGoalRow[] = useMemo(
+  const rows: SupportNeedsRow[] = useMemo(
     () => [
       {
         title: hasStaffSpouse(goalCalculation?.familySize)
@@ -202,118 +181,22 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
   return (
     <Grid container spacing={theme.spacing(6)}>
       <Grid item xs={12}>
-        <Paper
-          sx={{ padding: theme.spacing(3), marginBottom: theme.spacing(3) }}
-        >
-          <Typography sx={{ marginBottom: theme.spacing(2) }} variant="h5">
-            {t('Personal Information')}
-          </Typography>
+        <PresentationSectionCard title={t('Personal Information')}>
+          <PersonalInfoTable rows={personalInfoRows} />
+        </PresentationSectionCard>
 
-          <Divider
-            sx={{ margin: `${theme.spacing(2)} ${theme.spacing(-3)}` }}
-          />
+        <PresentationSectionCard title={t('Monthly Support Needs')}>
+          <SupportNeedsTable rows={rows} />
+        </PresentationSectionCard>
 
-          <Box sx={{ width: '100%', overflowX: 'auto' }}>
-            <Table size="small">
-              <TableBody>
-                {personalInfoRows.map((item, index) => (
-                  <TableRow key={item.label}>
-                    <StyledTableCell>
-                      <Typography variant="body1" fontWeight="bold">
-                        {item.label}
-                      </Typography>
-                    </StyledTableCell>
-                    <StyledTableCell data-testid="value-typography">
-                      {item.value}
-                    </StyledTableCell>
-                    {index === 0 && (
-                      <StyledTableCell sx={{ textAlign: 'center' }} rowSpan={3}>
-                        <img
-                          data-testid="cru-logo"
-                          src={cruLogo}
-                          alt={t('Campus Crusade for Christ, Inc. logo')}
-                          style={{ width: 150, height: 'auto' }}
-                        />
-                      </StyledTableCell>
-                    )}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Box>
-        </Paper>
-
-        <Paper
-          sx={{ padding: theme.spacing(3), marginBottom: theme.spacing(3) }}
-        >
-          <Typography sx={{ marginBottom: theme.spacing(2) }} variant="h5">
-            {t('Monthly Support Needs')}
-          </Typography>
-
-          <Divider
-            sx={{ margin: `${theme.spacing(2)} ${theme.spacing(-3)}` }}
-          />
-          <Box sx={{ width: '100%', overflowX: 'auto' }}>
-            <Table size="small">
-              <TableBody>
-                {rows.map((item, index, array) => (
-                  <TableRow
-                    key={item.title}
-                    sx={{
-                      td: {
-                        borderBottom:
-                          index < array.length - 1 ? '1px solid' : 'none',
-                        borderBottomColor: 'divider',
-                      },
-                    }}
-                  >
-                    <TableCell>
-                      <Typography variant="body1" fontWeight="bold">
-                        {item.title}
-                      </Typography>
-                      {item.description && (
-                        <Typography
-                          variant="body2"
-                          color={theme.palette.text.secondary}
-                          sx={{ mt: 1 }}
-                        >
-                          {item.description}
-                        </Typography>
-                      )}
-                    </TableCell>
-                    <TableCell sx={{ verticalAlign: 'top' }}>
-                      <Typography
-                        data-testid="amount-typography"
-                        variant="body1"
-                        fontWeight={item.bold ? 'bold' : 'normal'}
-                      >
-                        {currencyFormat(item.amount, 'USD', locale)}
-                      </Typography>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </Box>
-        </Paper>
-
-        <Paper
+        <PresentationSectionCard
+          title={t('Monthly Support Breakdown')}
           sx={{
-            padding: theme.spacing(3),
-            marginBottom: theme.spacing(3),
             '@media print': {
               pageBreakInside: 'avoid',
             },
           }}
         >
-          <Typography sx={{ marginBottom: theme.spacing(2) }} variant="h5">
-            {t('Monthly Support Breakdown')}
-          </Typography>
-
-          <Divider
-            sx={{ margin: `${theme.spacing(2)} ${theme.spacing(-3)}` }}
-          />
-
           <ChartContainer height={500}>
             <ResponsiveContainer width="100%">
               <PieChart>
@@ -356,7 +239,7 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
               </PieChart>
             </ResponsiveContainer>
           </ChartContainer>
-        </Paper>
+        </PresentationSectionCard>
       </Grid>
     </Grid>
   );
