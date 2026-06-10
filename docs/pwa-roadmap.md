@@ -65,6 +65,15 @@ offline. All other routes show the offline fallback. Most of the machinery
 (`apollo3-cache-persist`) already exists; this phase is mostly configuration
 and UX, not new infrastructure.
 
+**Scope refinement (2026-06-10):** *In-session offline only* — offline reads
+work when the connection drops while the app is open. Cold-start offline
+(launching with no connection) is out of scope: it would require caching
+authenticated HTML, which conflicts with the Phase 1 security rule keeping
+API tokens out of caches. Revisit in the Capacitor phase via a bundled local
+shell. Research also found the contacts/tasks pages do **no SSR data
+fetching** (`ensureSessionAndAccountList` provides session only), so no
+page conversion is needed — the work is Apollo/auth/UX behavior.
+
 - [ ] Move Apollo cache persistence from localStorage to IndexedDB (`localforage` wrapper) — removes the ~5MB cap; set `maxSize`/trigger options deliberately
 - [ ] Audit `src/lib/apollo/cache.ts` type policies for the contact/task queries used by the four target screens
 - [ ] Global online/offline state: connectivity detection, "offline" banner, switch Apollo `fetchPolicy` to `cache-first`/`cache-only` when offline
@@ -83,8 +92,9 @@ empty to be useful.
 
 ### Backend (mpdx_api)
 
-- [ ] Verify the legacy SNS pipeline end-to-end (it may have bit-rotted): SNS platform apps, env credentials, `PublishWorker`
-- [ ] Migrate SNS Android platform app from legacy GCM to FCM HTTP v1 credentials; update `PublishService` payload format if needed
+- [x] **Code-level verification done (2026-06-10):** pipeline is well-built and maintained (specs pass-shaped, idempotent registration, stale-device cleanup on `EndpointDisabled`). **Confirmed: `publish_service.rb` `gcm_payload` uses the legacy GCM format** (`{ data: ... }`) — incompatible with FCM v1. APNs payload format is valid. ARNs come from `SNS_APNS_APPLICATION_ARN` / `SNS_GCM_APPLICATION_ARN` env vars.
+- [ ] **AWS-console verification still needed:** GCM platform app credential type (legacy server key = dead; FCM v1 service-account JSON = needs payload change either way), APNs cert/key validity + bundle ID, ARNs active. Env values live in the deploy config (cru-deploy / ECS task defs), not this repo.
+- [ ] Migrate `gcm_payload` in `publish_service.rb` to FCM v1 message format (`message: { notification, data }`) + SNS platform app to FCM v1 credentials
 - [ ] Confirm APNs platform app uses a current `.p8` token-based key and the bundle ID of the new shell app
 - [ ] Wire the existing `NotificationPreference` `app` channel to gate push sends per notification type
 - [ ] Add deep-link data to notification payloads (route to open on tap)
