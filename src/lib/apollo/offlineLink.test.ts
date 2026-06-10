@@ -1,4 +1,5 @@
 import { ApolloLink, Observable, execute, gql } from '@apollo/client';
+import snackNotifications from '../../components/Snackbar/Snackbar';
 import { offlineLink } from './offlineLink';
 
 jest.mock('../../components/Snackbar/Snackbar', () => ({
@@ -37,6 +38,7 @@ const setOnline = (onLine: boolean) =>
 describe('offlineLink', () => {
   afterEach(() => {
     setOnline(true);
+    jest.clearAllMocks();
   });
 
   it('forwards mutations when online', () => {
@@ -63,6 +65,10 @@ describe('offlineLink', () => {
         error: (err) => {
           expect(spy).not.toHaveBeenCalled();
           expect(err.message).toContain('offline');
+          expect(snackNotifications.warning).toHaveBeenCalledWith(
+            expect.stringContaining('offline'),
+            expect.objectContaining({ key: 'offline-blocked-save' }),
+          );
           resolve();
         },
       });

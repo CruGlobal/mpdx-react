@@ -8,6 +8,19 @@ describe('useIsOnline', () => {
     expect(result.current).toBe(true);
   });
 
+  it('returns false when navigator.onLine is false on mount', () => {
+    Object.defineProperty(window.navigator, 'onLine', {
+      configurable: true,
+      value: false,
+    });
+    const { result } = renderHook(() => useIsOnline());
+    expect(result.current).toBe(false);
+    Object.defineProperty(window.navigator, 'onLine', {
+      configurable: true,
+      value: true,
+    });
+  });
+
   it('returns false after an offline event and true after an online event', () => {
     const { result } = renderHook(() => useIsOnline());
 

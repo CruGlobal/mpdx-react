@@ -16,10 +16,10 @@ export const offlineLink = new ApolloLink((operation, forward) => {
     definition.operation === 'mutation';
 
   if (isMutation && isOffline()) {
-    snackNotifications.warning(
-      i18n.t('You are offline. Changes cannot be saved until you reconnect.'),
-      { preventDuplicate: true },
-    );
+    snackNotifications.warning(i18n.t('Cannot save changes while offline.'), {
+      preventDuplicate: true,
+      key: 'offline-blocked-save',
+    });
     return new Observable((observer) => {
       observer.error(new Error(i18n.t('Cannot save changes while offline.')));
     });

@@ -35,4 +35,19 @@ describe('OfflineNotifier', () => {
     });
     expect(await findByText('You are back online.')).toBeInTheDocument();
   });
+
+  it('does not stack duplicate warnings on repeated offline events', async () => {
+    const { findAllByText } = render(<TestComponent />);
+    act(() => {
+      window.dispatchEvent(new Event('offline'));
+    });
+    act(() => {
+      window.dispatchEvent(new Event('offline'));
+    });
+    expect(
+      await findAllByText(
+        'You are offline. Changes cannot be saved until you reconnect.',
+      ),
+    ).toHaveLength(1);
+  });
 });

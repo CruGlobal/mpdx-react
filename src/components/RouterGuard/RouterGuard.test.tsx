@@ -72,6 +72,7 @@ describe('RouterGuard', () => {
     });
 
     it('should reauthenticate with token expires', async () => {
+      // Past date ensures wall-clock is always later, forcing the expired branch.
       (useSession as jest.MockedFn<typeof useSession>).mockReturnValue({
         data: { ...session, expires: '2019-01-01T00:00:00Z' },
         status: 'authenticated',
@@ -95,6 +96,7 @@ describe('RouterGuard', () => {
 
     it('re-authenticates when the session is expired and online', async () => {
       setOnline(true);
+      // Past date ensures wall-clock is always later, forcing the expired branch.
       (useSession as jest.MockedFn<typeof useSession>).mockReturnValue({
         data: { ...session, expires: '2019-01-01T00:00:00.000Z' },
         status: 'authenticated',
@@ -108,6 +110,7 @@ describe('RouterGuard', () => {
 
     it('does not re-authenticate while offline', async () => {
       setOnline(false);
+      // Past date ensures wall-clock is always later, forcing the expired branch.
       (useSession as jest.MockedFn<typeof useSession>).mockReturnValue({
         data: { ...session, expires: '2019-01-01T00:00:00.000Z' },
         status: 'authenticated',
