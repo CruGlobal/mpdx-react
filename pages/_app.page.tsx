@@ -25,6 +25,7 @@ import { GlobalStyles } from 'src/components/GlobalStyles/GlobalStyles';
 import { Helpjuice } from 'src/components/Helpjuice/Helpjuice';
 import PrimaryLayout from 'src/components/Layouts/Primary';
 import Loading from 'src/components/Loading';
+import { OfflineNotifier } from 'src/components/Offline/OfflineNotifier';
 import { RouterGuard } from 'src/components/RouterGuard/RouterGuard';
 import { ServiceWorkerUpdatePrompt } from 'src/components/ServiceWorker/ServiceWorkerUpdatePrompt';
 import { SetupProvider } from 'src/components/Setup/SetupProvider';
@@ -201,6 +202,7 @@ const App = ({
                       <SnackbarProvider maxSnack={3}>
                         <GlobalStyles />
                         <ServiceWorkerUpdatePrompt />
+                        <OfflineNotifier />
                         {/* On the login page and error pages, the user isn't not authenticated and doesn't have an API token,
                               so don't include the session or Apollo providers because they require an API token */}
                         {nonAuthenticatedPages.has(router.pathname) ? (

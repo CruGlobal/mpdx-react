@@ -15,6 +15,7 @@ import {
   TermsOfUseLink,
 } from 'src/components/Shared/Links/Links';
 import { useNavPages } from 'src/hooks/useNavPages';
+import { clearApolloData } from 'src/lib/apollo/clearApolloData';
 import { clearDataDogUser } from 'src/lib/dataDog';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import theme from '../../../../../../theme';
@@ -196,12 +197,11 @@ export const ProfileMenuPanel: React.FC = () => {
           <Button
             variant="outlined"
             color="secondary"
-            onClick={() =>
-              signOut({ callbackUrl: 'signOut' }).then(() => {
-                clearDataDogUser();
-                client.clearStore();
-              })
-            }
+            onClick={async () => {
+              clearDataDogUser();
+              await clearApolloData(client);
+              await signOut({ callbackUrl: 'signOut' });
+            }}
           >
             {t('Sign Out')}
           </Button>

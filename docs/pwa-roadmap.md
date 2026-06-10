@@ -57,7 +57,7 @@ notifications via the existing native push pipeline.
 
 Review follow-ups deferred (suggestion-tier): gate `spawnSync` git revision to prod / prefer `AWS_COMMIT_ID`; ticket to remove the workbox-precache cleanup listener eventually; dedicated worker tsconfig instead of global `webworker` lib; consider pinning serwist versions; manifest white-labeling via API route if APP_NAME branding ever needed.
 
-## Phase 2 — Offline read layer (contacts + tasks)
+## Phase 2 — Offline read layer (contacts + tasks) — ✅ DONE (2026-06-10)
 
 Scope: contacts list/detail and tasks list/detail render from cache when
 offline — **read-only**. Editing actions are disabled (or hidden) while
@@ -65,14 +65,33 @@ offline. All other routes show the offline fallback. Most of the machinery
 (`apollo3-cache-persist`) already exists; this phase is mostly configuration
 and UX, not new infrastructure.
 
-- [ ] Move Apollo cache persistence from localStorage to IndexedDB (`localforage` wrapper) — removes the ~5MB cap; set `maxSize`/trigger options deliberately
-- [ ] Audit `src/lib/apollo/cache.ts` type policies for the contact/task queries used by the four target screens
-- [ ] Global online/offline state: connectivity detection, "offline" banner, switch Apollo `fetchPolicy` to `cache-first`/`cache-only` when offline
-- [ ] Disable mutation-triggering UI while offline (save buttons, task completion, etc.) with a "reconnect to edit" affordance — cheap insurance against half-written offline edits
-- [ ] Handle Apollo network errors gracefully when offline (render cached data, not error states)
-- [ ] App-shell strategy for the contacts/tasks routes: convert their `getServerSideProps` data fetching to client-side (or cached shell + hydration) so revisits work offline
-- [ ] Auth/offline interplay: don't hard-logout when the token expires offline; silent refresh on reconnect
-- [ ] QA: airplane-mode testing of the four target screens in the shells and installed PWA
+**Scope refinement (2026-06-10):** *In-session offline only* — offline reads
+work when the connection drops while the app is open. Cold-start offline
+(launching with no connection) is out of scope: it would require caching
+authenticated HTML, which conflicts with the Phase 1 security rule keeping
+API tokens out of caches. Revisit in the Capacitor phase via a bundled local
+shell. Research also found the contacts/tasks pages do **no SSR data
+fetching** (`ensureSessionAndAccountList` provides session only), so no
+page conversion is needed — the work is Apollo/auth/UX behavior.
+
+- [x] Apollo cache persistence → IndexedDB (`localforage` + `CachePersistor`, `maxSize: false`). The persistor singleton lives in `src/lib/apollo/cachePersistor.ts` (separate module because `client.ts`'s top-level `await restore()` can't be imported under Jest)
+- [x] Type-policy audit — relay pagination policies in `cache.ts` are offline-safe as-is; unchanged
+- [x] `useIsOnline` hook + `OfflineNotifier` (persistent warning snackbar while offline, "back online" toast on reconnect)
+- [x] Mutations blocked at the Apollo layer (`offlineLink`) with a distinct "Cannot save changes while offline." toast — chosen over per-button UI disabling (huge surface) as the lightweight global insurance
+- [x] Graceful offline errors: `errorPolicy: 'all'` on watchQuery defaults (cached data keeps rendering when the network leg fails) + offline network-error snackbars suppressed
+- [x] App-shell conversion: **not needed** — contacts/tasks pages never fetched data in SSR (session only)
+- [x] Auth/offline grace: RouterGuard's expiry `signIn('okta')` gated on connectivity; re-fires on reconnect
+- [ ] QA: airplane-mode testing of the four target screens (manual — see checklist below)
+
+**Security invariant established in review (don't regress):** `client.clearStore()`
+does NOT remove the persisted IndexedDB cache. Every path that ends a session
+must call `clearApolloData()` (`src/lib/apollo/clearApolloData.ts`:
+pause → clearStore → purge). All four signout paths (logout page,
+AUTHENTICATION_ERROR handler, both profile menus) are wired; new signout
+paths must use it too.
+
+Hardening follow-up (deferred): `persistenceMapper` to persist only a
+read-relevant subset of the cache instead of all browsed PII.
 
 Deliberately *not* in scope (keep it simple): cache pre-warming/prefetch
 strategies, offline detail data beyond what the user has already visited,
@@ -83,8 +102,9 @@ empty to be useful.
 
 ### Backend (mpdx_api)
 
-- [ ] Verify the legacy SNS pipeline end-to-end (it may have bit-rotted): SNS platform apps, env credentials, `PublishWorker`
-- [ ] Migrate SNS Android platform app from legacy GCM to FCM HTTP v1 credentials; update `PublishService` payload format if needed
+- [x] **Code-level verification done (2026-06-10):** pipeline is well-built and maintained (specs pass-shaped, idempotent registration, stale-device cleanup on `EndpointDisabled`). **Confirmed: `publish_service.rb` `gcm_payload` uses the legacy GCM format** (`{ data: ... }`) — incompatible with FCM v1. APNs payload format is valid. ARNs come from `SNS_APNS_APPLICATION_ARN` / `SNS_GCM_APPLICATION_ARN` env vars.
+- [ ] **AWS-console verification still needed:** GCM platform app credential type (legacy server key = dead; FCM v1 service-account JSON = needs payload change either way), APNs cert/key validity + bundle ID, ARNs active. Env values live in the deploy config (cru-deploy / ECS task defs), not this repo.
+- [ ] Migrate `gcm_payload` in `publish_service.rb` to FCM v1 message format (`message: { notification, data }`) + SNS platform app to FCM v1 credentials
 - [ ] Confirm APNs platform app uses a current `.p8` token-based key and the bundle ID of the new shell app
 - [ ] Wire the existing `NotificationPreference` `app` channel to gate push sends per notification type
 - [ ] Add deep-link data to notification payloads (route to open on tap)

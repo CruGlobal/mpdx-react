@@ -1,7 +1,6 @@
 import router from 'next/router';
 import { ApolloClient, from } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
-import { LocalStorageWrapper, persistCache } from 'apollo3-cache-persist';
 import { signOut } from 'next-auth/react';
 import {
   GetDefaultAccountDocument,
@@ -14,20 +13,24 @@ import {
   isAccountListNotFoundError,
   replaceUrlAccountList,
 } from './accountListRedirect';
-import { createCache } from './cache';
+import { cache, cachePersistor } from './cachePersistor';
+import { clearApolloData } from './clearApolloData';
 import { batchLink, makeAuthLink } from './link';
+import { isOffline, offlineLink } from './offlineLink';
 
-const cache = createCache();
-if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
-  await persistCache({
-    cache,
-    storage: new LocalStorageWrapper(window.localStorage),
-  });
+// Re-exported for existing consumers that import the persistor from this module.
+export { cachePersistor };
+
+if (cachePersistor) {
+  await cachePersistor.restore();
+  // Remove the cache persisted to localStorage by the previous implementation
+  window.localStorage.removeItem('apollo-cache-persist');
 }
 
 const makeClient = (apiToken: string) => {
   const client = new ApolloClient({
     link: from([
+      offlineLink,
       makeAuthLink(apiToken),
       onError(({ graphQLErrors, networkError, operation }) => {
         const suppressErrors = operation.getContext().suppressErrors === true;
@@ -36,7 +39,7 @@ const makeClient = (apiToken: string) => {
           if (graphQLError?.extensions?.code === 'AUTHENTICATION_ERROR') {
             signOut({ redirect: true, callbackUrl: 'signOut' }).then(() => {
               clearDataDogUser();
-              client.clearStore();
+              clearApolloData(client);
             });
           }
           if (isAccountListNotFoundError(graphQLError)) {
@@ -59,7 +62,7 @@ const makeClient = (apiToken: string) => {
           }
         });
 
-        if (networkError) {
+        if (networkError && !isOffline()) {
           dispatch('mpdx-api-error');
           snackNotifications.error(networkError.message);
         }
@@ -72,6 +75,9 @@ const makeClient = (apiToken: string) => {
       watchQuery: {
         fetchPolicy: 'cache-and-network',
         notifyOnNetworkStatusChange: true,
+        // Keep rendering cached data when the network leg fails (e.g.
+        // offline) instead of discarding data on the error emission
+        errorPolicy: 'all',
       },
     },
   });

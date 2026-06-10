@@ -7,6 +7,12 @@ import TestRouter from '__tests__/util/TestRouter';
 import theme from '../../theme';
 import { RouterGuard } from './RouterGuard';
 
+const setOnline = (onLine: boolean) =>
+  Object.defineProperty(window.navigator, 'onLine', {
+    configurable: true,
+    value: onLine,
+  });
+
 interface TestComponentProps {
   pathname: string;
   children: string;
@@ -66,6 +72,7 @@ describe('RouterGuard', () => {
     });
 
     it('should reauthenticate with token expires', async () => {
+      // Past date ensures wall-clock is always later, forcing the expired branch.
       (useSession as jest.MockedFn<typeof useSession>).mockReturnValue({
         data: { ...session, expires: '2019-01-01T00:00:00Z' },
         status: 'authenticated',
@@ -75,6 +82,47 @@ describe('RouterGuard', () => {
       render(<TestComponent pathname="/authRoute">Authed route</TestComponent>);
 
       await waitFor(() => expect(signIn).toHaveBeenCalledWith('okta'));
+    });
+  });
+
+  describe('session expiry offline grace', () => {
+    beforeEach(() => {
+      setOnline(true);
+    });
+
+    afterEach(() => {
+      setOnline(true);
+    });
+
+    it('re-authenticates when the session is expired and online', async () => {
+      setOnline(true);
+      // Past date ensures wall-clock is always later, forcing the expired branch.
+      (useSession as jest.MockedFn<typeof useSession>).mockReturnValue({
+        data: { ...session, expires: '2019-01-01T00:00:00.000Z' },
+        status: 'authenticated',
+        update: () => Promise.resolve(null),
+      });
+
+      render(<TestComponent pathname="/authRoute">Authed route</TestComponent>);
+
+      await waitFor(() => expect(signIn).toHaveBeenCalledWith('okta'));
+    });
+
+    it('does not re-authenticate while offline', async () => {
+      setOnline(false);
+      // Past date ensures wall-clock is always later, forcing the expired branch.
+      (useSession as jest.MockedFn<typeof useSession>).mockReturnValue({
+        data: { ...session, expires: '2019-01-01T00:00:00.000Z' },
+        status: 'authenticated',
+        update: () => Promise.resolve(null),
+      });
+
+      render(<TestComponent pathname="/authRoute">Authed route</TestComponent>);
+
+      // Wait long enough that signIn would have been called if the guard was not gated
+      await waitFor(() =>
+        expect(signIn).not.toHaveBeenCalled(),
+      );
     });
   });
 });

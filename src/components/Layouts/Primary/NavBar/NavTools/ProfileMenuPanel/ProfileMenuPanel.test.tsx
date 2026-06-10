@@ -81,11 +81,13 @@ describe('ProfileMenuPanelForNavBar', () => {
     );
   });
 
-  it('Ensure Sign Out is called with callback', () => {
+  it('Ensure Sign Out is called with callback', async () => {
     const { getByRole } = render(<TestComponent />);
 
     userEvent.click(getByRole('button', { name: 'Sign Out' }));
-    expect(signOut).toHaveBeenCalledWith({ callbackUrl: 'signOut' });
+    await waitFor(() =>
+      expect(signOut).toHaveBeenCalledWith({ callbackUrl: 'signOut' }),
+    );
   });
 
   it('hides links during the setup tour', async () => {
