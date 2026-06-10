@@ -66,9 +66,7 @@ describe('PresentingYourGoalStep', () => {
     expect(
       getByRole('heading', { name: 'Monthly Support Needs' }),
     ).toBeInTheDocument();
-    expect(
-      getByText('Salary (Combined if for Husband and Wife)'),
-    ).toBeInTheDocument();
+    expect(getByText('Salary (Combined)')).toBeInTheDocument();
     expect(getByText('$8,774')).toBeInTheDocument();
     expect(getByText('Ministry Expenses')).toBeInTheDocument();
     expect(getByText('$898')).toBeInTheDocument();

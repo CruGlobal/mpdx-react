@@ -43,6 +43,7 @@ const mockPersonalInfo = {
   name: 'John and Jane Doe',
   missionAgency: 'Campus Crusade for Christ, Inc.',
   ministryLocation: 'Lake Hart',
+  married: true,
 };
 
 const mockSupportNeeds = {
@@ -80,7 +81,7 @@ export const PresentingYourGoalStep: React.FC = () => {
   const supportNeedsRows: SupportNeedsRow[] = useMemo(
     () => [
       {
-        title: t('Salary (Combined if for Husband and Wife)'),
+        title: mockPersonalInfo.married ? t('Salary (Combined)') : t('Salary'),
         description: t(
           'Salaries are based upon marital status, number of children, tenure with Cru, and adjustments for certain geographic locations.',
         ),
