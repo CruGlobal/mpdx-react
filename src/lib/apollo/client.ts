@@ -1,8 +1,6 @@
 import router from 'next/router';
 import { ApolloClient, from } from '@apollo/client';
 import { onError } from '@apollo/client/link/error';
-import { CachePersistor, LocalForageWrapper } from 'apollo3-cache-persist';
-import localforage from 'localforage';
 import { signOut } from 'next-auth/react';
 import {
   GetDefaultAccountDocument,
@@ -15,23 +13,13 @@ import {
   isAccountListNotFoundError,
   replaceUrlAccountList,
 } from './accountListRedirect';
-import { createCache } from './cache';
+import { cache, cachePersistor } from './cachePersistor';
+import { clearApolloData } from './clearApolloData';
 import { batchLink, makeAuthLink } from './link';
 import { isOffline, offlineLink } from './offlineLink';
 
-const cache = createCache();
-
-// CachePersistor (rather than persistCache) gives logout a handle to purge
-// the persisted data. IndexedDB via localforage avoids localStorage's ~5MB
-// cap, which a cached contact list can exceed.
-export const cachePersistor =
-  typeof window !== 'undefined' && process.env.NODE_ENV === 'production'
-    ? new CachePersistor({
-        cache,
-        storage: new LocalForageWrapper(localforage),
-        maxSize: false,
-      })
-    : undefined;
+// Re-exported for existing consumers that import the persistor from this module.
+export { cachePersistor };
 
 if (cachePersistor) {
   await cachePersistor.restore();
@@ -51,7 +39,7 @@ const makeClient = (apiToken: string) => {
           if (graphQLError?.extensions?.code === 'AUTHENTICATION_ERROR') {
             signOut({ redirect: true, callbackUrl: 'signOut' }).then(() => {
               clearDataDogUser();
-              client.clearStore();
+              clearApolloData(client);
             });
           }
           if (isAccountListNotFoundError(graphQLError)) {
@@ -87,6 +75,9 @@ const makeClient = (apiToken: string) => {
       watchQuery: {
         fetchPolicy: 'cache-and-network',
         notifyOnNetworkStatusChange: true,
+        // Keep rendering cached data when the network leg fails (e.g.
+        // offline) instead of discarding data on the error emission
+        errorPolicy: 'all',
       },
     },
   });

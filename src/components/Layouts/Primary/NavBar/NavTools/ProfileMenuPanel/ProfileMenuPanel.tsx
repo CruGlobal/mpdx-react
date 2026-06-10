@@ -15,6 +15,7 @@ import {
   TermsOfUseLink,
 } from 'src/components/Shared/Links/Links';
 import { useNavPages } from 'src/hooks/useNavPages';
+import { clearApolloData } from 'src/lib/apollo/clearApolloData';
 import { clearDataDogUser } from 'src/lib/dataDog';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import theme from '../../../../../../theme';
@@ -199,7 +200,7 @@ export const ProfileMenuPanel: React.FC = () => {
             onClick={() =>
               signOut({ callbackUrl: 'signOut' }).then(() => {
                 clearDataDogUser();
-                client.clearStore();
+                clearApolloData(client);
               })
             }
           >

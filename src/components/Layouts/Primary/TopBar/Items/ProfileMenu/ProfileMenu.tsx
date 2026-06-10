@@ -30,6 +30,7 @@ import {
 } from 'src/components/Shared/Links/Links';
 import { AccountList } from 'src/graphql/types.generated';
 import { useRequiredSession } from 'src/hooks/useRequiredSession';
+import { clearApolloData } from 'src/lib/apollo/clearApolloData';
 import { clearDataDogUser } from 'src/lib/dataDog';
 import { useAccountListId } from '../../../../../../hooks/useAccountListId';
 import theme from '../../../../../../theme';
@@ -410,7 +411,7 @@ const ProfileMenu = (): ReactElement => {
               onClick={() => {
                 signOut({ callbackUrl: 'signOut' }).then(() => {
                   clearDataDogUser();
-                  client.clearStore();
+                  clearApolloData(client);
                 });
               }}
             >

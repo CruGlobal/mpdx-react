@@ -5,7 +5,7 @@ import ExitToAppRoundedIcon from '@mui/icons-material/ExitToAppRounded';
 import { Box, Typography } from '@mui/material';
 import { signOut } from 'next-auth/react';
 import { useTranslation } from 'react-i18next';
-import { cachePersistor } from 'src/lib/apollo/client';
+import { clearApolloData } from 'src/lib/apollo/clearApolloData';
 import { clearDataDogUser } from 'src/lib/dataDog';
 import { getAppName } from 'src/lib/getAppName';
 import { ensureSessionAndAccountList } from './api/utils/pagePropsHelpers';
@@ -25,10 +25,7 @@ const LogoutPage = ({}): ReactElement => {
         await Promise.all(keys.map((key) => caches.delete(key)));
       }
       clearDataDogUser();
-      await client.clearStore();
-      // Remove the persisted Apollo cache so the next user of a shared
-      // device cannot read this user's cached contact data.
-      await cachePersistor?.purge();
+      await clearApolloData(client);
       await signOut({ callbackUrl: 'signOut' });
     })();
   }, []);
