@@ -117,8 +117,8 @@ export const PresentingYourGoalStep: React.FC = () => {
       },
       {
         title: t('Administrative Charge'),
-        titleBold: false,
         amount: mockSupportNeeds.administrativeCharge,
+        titleBold: false,
       },
       {
         title: t('Total Support Goal'),
@@ -127,8 +127,8 @@ export const PresentingYourGoalStep: React.FC = () => {
       },
       {
         title: t('Total Solid Support'),
-        titleBold: false,
         amount: mockSupportNeeds.totalSolidSupport,
+        titleBold: false,
       },
     ],
     [t],

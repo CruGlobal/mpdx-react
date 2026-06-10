@@ -98,6 +98,7 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
       {
         name: 'Administrative Charge',
         value: goalTotals.overallSubtotalWithAdmin - goalTotals.overallSubtotal,
+        titleBold: false,
       },
     ],
     [goalTotals],
@@ -183,9 +184,18 @@ export const PresentingYourGoal: React.FC<PresentingYourGoalProps> = ({
       {
         title: t('Administrative Charge'),
         amount: presentationData[5].value,
+        titleBold: false,
       },
-      { title: t('Total Support Goal'), amount: total, bold: true },
-      { title: t('Total Solid Support'), amount: supportRaised },
+      {
+        title: t('Total Support Goal'),
+        amount: total,
+        bold: true,
+      },
+      {
+        title: t('Total Solid Support'),
+        amount: supportRaised,
+        titleBold: false,
+      },
     ],
     [presentationData, total, supportRaised, t, goalTotals],
   );
