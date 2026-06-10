@@ -5,6 +5,7 @@ import {
   StaffExpensesSubCategoryEnum,
 } from 'src/graphql/types.generated';
 import i18n from 'src/lib/i18n';
+import { Filters } from '../SettingsDialog/SettingsDialog';
 import { DateRange, ReportType } from './StaffReportEnum';
 import {
   GroupedTransaction,
@@ -91,38 +92,40 @@ const mockFund: Fund = {
   ],
 };
 
+const baseFilters: Filters = {
+  selectedDateRange: null,
+  startDate: null,
+  endDate: null,
+  categories: [],
+};
+
+const baseParams = {
+  fund: mockFund,
+  targetTime: DateTime.fromISO('2025-01-15'),
+  t: i18n.t,
+  filters: baseFilters,
+  tableType: ReportType.Expense,
+};
+
 describe('filterTransactions', () => {
   it('filters transactions for the target month by default', () => {
-    const targetTime = DateTime.fromISO('2025-01-15');
     const result = filterTransactions({
-      fund: mockFund,
-      t: i18n.t,
-      filters: {
-        selectedDateRange: null,
-        startDate: null,
-        endDate: null,
-        categories: [],
-      },
+      ...baseParams,
       tableType: ReportType.Income,
-      targetTime,
     });
     // 1 income transaction, 3 expense transactions
     expect(result).toHaveLength(1);
   });
 
   it('filters transactions by custom date range', () => {
-    const targetTime = DateTime.fromISO('2024-06-15');
     const result = filterTransactions({
-      fund: mockFund,
-      targetTime,
-      t: i18n.t,
+      ...baseParams,
+      targetTime: DateTime.fromISO('2024-06-15'),
       filters: {
-        selectedDateRange: null,
+        ...baseFilters,
         startDate: DateTime.fromISO('2025-01-01'),
         endDate: DateTime.fromISO('2025-02-03'),
-        categories: [],
       },
-      tableType: ReportType.Expense,
     });
     // 3 expense transactions, 1 income transaction
     expect(result).toHaveLength(3);
@@ -130,50 +133,36 @@ describe('filterTransactions', () => {
 
   it('returns empty array if no main categories', () => {
     const emptyFund = { ...mockFund, categories: null };
-    const targetTime = DateTime.fromISO('2024-06-01');
     const result = filterTransactions({
+      ...baseParams,
       fund: emptyFund,
-      targetTime,
-      t: i18n.t,
+      targetTime: DateTime.fromISO('2024-06-01'),
       filters: {
-        selectedDateRange: null,
+        ...baseFilters,
         startDate: DateTime.fromISO('2025-01-01'),
         endDate: DateTime.fromISO('2025-02-03'),
-        categories: [],
       },
-      tableType: ReportType.Expense,
     });
     expect(result).toEqual([]);
   });
 
   it('returns empty array if no transactions in range and custom date range not selected', () => {
-    const targetTime = DateTime.fromISO('2023-01-01');
     const result = filterTransactions({
-      fund: mockFund,
-      targetTime,
-      t: i18n.t,
-      filters: {
-        selectedDateRange: null,
-        startDate: null,
-        endDate: null,
-        categories: [],
-      },
-      tableType: ReportType.Expense,
+      ...baseParams,
+      targetTime: DateTime.fromISO('2023-01-01'),
     });
     expect(result).toEqual([]);
   });
 
   it('returns empty array if no transactions in range with custom date range', () => {
-    const targetTime = DateTime.fromISO('2024-06-01');
     const result = filterTransactions({
-      fund: mockFund,
-      targetTime,
-      t: i18n.t,
+      ...baseParams,
+      targetTime: DateTime.fromISO('2024-06-01'),
       filters: {
+        ...baseFilters,
         selectedDateRange: DateRange.YearToDate,
         startDate: DateTime.fromISO('2025-04-01'),
         endDate: DateTime.fromISO('2025-06-03'),
-        categories: [],
       },
       tableType: ReportType.Income,
     });
@@ -181,18 +170,12 @@ describe('filterTransactions', () => {
   });
 
   it('groups transactions when category is selected in filters', () => {
-    const targetTime = DateTime.fromISO('2025-01-15');
     const result = filterTransactions({
-      fund: mockFund,
-      targetTime,
-      t: i18n.t,
+      ...baseParams,
       filters: {
-        selectedDateRange: null,
-        startDate: null,
-        endDate: null,
+        ...baseFilters,
         categories: [StaffExpenseCategoryEnum.AdditionalSalary],
       },
-      tableType: ReportType.Expense,
     });
 
     // One grouped, one ungrouped
@@ -206,52 +189,38 @@ describe('filterTransactions', () => {
   });
 
   it('does not group transactions when category is not selected in filters', () => {
-    const targetTime = DateTime.fromISO('2025-01-15');
-    const result = filterTransactions({
-      fund: mockFund,
-      targetTime,
-      t: i18n.t,
-      filters: {
-        selectedDateRange: null,
-        startDate: null,
-        endDate: null,
-        categories: [],
-      },
-      tableType: ReportType.Expense,
-    });
+    const result = filterTransactions({ ...baseParams });
 
     // 3 expense transactions, 1 income transaction
     expect(result).toHaveLength(3);
     expect(result.every((r) => !('groupedTransactions' in r))).toBe(true);
   });
 
+  it('groups every category by default when no categories are selected', () => {
+    const result = filterTransactions({ ...baseParams, filters: undefined });
+
+    expect(
+      result.every(
+        (groupedTransaction) => 'groupedTransactions' in groupedTransaction,
+      ),
+    ).toBe(true);
+  });
+
   it('maintains income/expense separation when grouping', () => {
-    const targetTime = DateTime.fromISO('2025-01-15');
+    const filters = {
+      ...baseFilters,
+      categories: [StaffExpenseCategoryEnum.AdditionalSalary],
+    };
 
     const incomeResult = filterTransactions({
-      fund: mockFund,
-      targetTime,
-      t: i18n.t,
-      filters: {
-        selectedDateRange: null,
-        startDate: null,
-        endDate: null,
-        categories: [StaffExpenseCategoryEnum.AdditionalSalary],
-      },
+      ...baseParams,
+      filters,
       tableType: ReportType.Income,
     });
 
     const expenseResult = filterTransactions({
-      fund: mockFund,
-      targetTime,
-      t: i18n.t,
-      filters: {
-        selectedDateRange: null,
-        startDate: null,
-        endDate: null,
-        categories: [StaffExpenseCategoryEnum.AdditionalSalary],
-      },
-      tableType: ReportType.Expense,
+      ...baseParams,
+      filters,
     });
 
     expect(incomeResult).toHaveLength(1);
@@ -272,18 +241,12 @@ describe('filterTransactions', () => {
   });
 
   it('places grouped transactions at the top of the result array', () => {
-    const targetTime = DateTime.fromISO('2025-01-15');
     const result = filterTransactions({
-      fund: mockFund,
-      targetTime,
-      t: i18n.t,
+      ...baseParams,
       filters: {
-        selectedDateRange: null,
-        startDate: null,
-        endDate: null,
+        ...baseFilters,
         categories: [StaffExpenseCategoryEnum.AdditionalSalary],
       },
-      tableType: ReportType.Expense,
     });
 
     // First item should be the grouped transaction
@@ -299,21 +262,15 @@ describe('filterTransactions', () => {
   });
 
   it('groups multiple categories when multiple are selected', () => {
-    const targetTime = DateTime.fromISO('2025-01-15');
     const result = filterTransactions({
-      fund: mockFund,
-      targetTime,
-      t: i18n.t,
+      ...baseParams,
       filters: {
-        selectedDateRange: null,
-        startDate: null,
-        endDate: null,
+        ...baseFilters,
         categories: [
           StaffExpenseCategoryEnum.AdditionalSalary,
           StaffExpenseCategoryEnum.Benefits,
         ],
       },
-      tableType: ReportType.Expense,
     });
 
     // Both categories should be grouped
@@ -330,18 +287,12 @@ describe('filterTransactions', () => {
   });
 
   it('calculates correct total amount for grouped transactions', () => {
-    const targetTime = DateTime.fromISO('2025-01-15');
     const result = filterTransactions({
-      fund: mockFund,
-      targetTime,
-      t: i18n.t,
+      ...baseParams,
       filters: {
-        selectedDateRange: null,
-        startDate: null,
-        endDate: null,
+        ...baseFilters,
         categories: [StaffExpenseCategoryEnum.AdditionalSalary],
       },
-      tableType: ReportType.Expense,
     });
 
     const grouped = result[0] as GroupedTransaction;
@@ -351,18 +302,12 @@ describe('filterTransactions', () => {
   });
 
   it('uses earliest transaction date for grouped transaction', () => {
-    const targetTime = DateTime.fromISO('2025-01-15');
     const result = filterTransactions({
-      fund: mockFund,
-      targetTime,
-      t: i18n.t,
+      ...baseParams,
       filters: {
-        selectedDateRange: null,
-        startDate: null,
-        endDate: null,
+        ...baseFilters,
         categories: [StaffExpenseCategoryEnum.AdditionalSalary],
       },
-      tableType: ReportType.Expense,
     });
 
     const grouped = result[0] as GroupedTransaction;
@@ -371,18 +316,12 @@ describe('filterTransactions', () => {
   });
 
   it('sets displayCategory to localized category name for grouped transactions', () => {
-    const targetTime = DateTime.fromISO('2025-01-15');
     const result = filterTransactions({
-      fund: mockFund,
-      targetTime,
-      t: i18n.t,
+      ...baseParams,
       filters: {
-        selectedDateRange: null,
-        startDate: null,
-        endDate: null,
+        ...baseFilters,
         categories: [StaffExpenseCategoryEnum.AdditionalSalary],
       },
-      tableType: ReportType.Expense,
     });
 
     const grouped = result[0] as GroupedTransaction;
@@ -392,18 +331,12 @@ describe('filterTransactions', () => {
   });
 
   it('handles empty result when no transactions match grouping criteria', () => {
-    const targetTime = DateTime.fromISO('2025-01-15');
     const result = filterTransactions({
-      fund: mockFund,
-      targetTime,
-      t: i18n.t,
+      ...baseParams,
       filters: {
-        selectedDateRange: null,
-        startDate: null,
-        endDate: null,
+        ...baseFilters,
         categories: [StaffExpenseCategoryEnum.Transfer],
       },
-      tableType: ReportType.Expense,
     });
 
     // No Transfer transactions in the data, so we should only get ungrouped transactions
@@ -412,16 +345,9 @@ describe('filterTransactions', () => {
     expect(result.every((r) => !('groupedTransactions' in r))).toBe(true);
   });
 
-  describe('No filters applied', () => {
+  describe('Ungrouped transactions (categories explicitly deselected)', () => {
     it('should set displayCategory correctly for individual transactions when category equals subcategory', () => {
-      const targetTime = DateTime.fromISO('2025-01-15');
-      const result = filterTransactions({
-        fund: mockFund,
-        targetTime,
-        t: i18n.t,
-        filters: null,
-        tableType: ReportType.Expense,
-      });
+      const result = filterTransactions({ ...baseParams });
 
       const same = result.find(
         (r) => r.category === StaffExpenseCategoryEnum.AdditionalSalary,
@@ -431,14 +357,7 @@ describe('filterTransactions', () => {
     });
 
     it('should set displayCategory correctly for individual transactions when category differs from subcategory', () => {
-      const targetTime = DateTime.fromISO('2025-01-15');
-      const result = filterTransactions({
-        fund: mockFund,
-        targetTime,
-        t: i18n.t,
-        filters: null,
-        tableType: ReportType.Expense,
-      });
+      const result = filterTransactions({ ...baseParams });
 
       const different = result.find(
         (r) => r.category === StaffExpenseCategoryEnum.Benefits,
