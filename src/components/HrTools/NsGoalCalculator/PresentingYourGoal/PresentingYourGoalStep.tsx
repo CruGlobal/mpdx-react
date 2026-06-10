@@ -25,11 +25,10 @@ import { useNsGoalCalculator } from '../Shared/NsGoalCalculatorContext';
 import { NsGoalCalculatorLayout } from '../Shared/NsGoalCalculatorLayout';
 import { ChartPlaceholderCard } from './ChartPlaceholderCard';
 
-// Scales the presentation down when printing so it fits on one page without
-// the user needing to adjust the scale in their print settings.
 const PrintableContent = styled(Box)({
+  // Scale down the page to fit on one page
   '@media print': {
-    zoom: 0.5,
+    zoom: 0.4,
   },
 });
 
