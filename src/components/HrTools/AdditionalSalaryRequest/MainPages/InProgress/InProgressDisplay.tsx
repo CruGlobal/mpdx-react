@@ -72,8 +72,7 @@ export const InProgressDisplay: React.FC = () => {
   return (
     <PanelLayout
       panelType={PanelTypeEnum.Other}
-      percentComplete={0}
-      showPercentage={false}
+      percentComplete={null}
       backHref={''}
       sidebarTitle={t('Additional Salary Request')}
       icons={iconPanelItems}

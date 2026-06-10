@@ -206,8 +206,7 @@ export const RequestPage: React.FC = () => {
   return (
     <PanelLayout
       panelType={PanelTypeEnum.Other}
-      showPercentage={pageType !== PageEnum.View}
-      percentComplete={percentComplete}
+      percentComplete={pageType !== PageEnum.View ? percentComplete : null}
       steps={steps}
       currentIndex={currentIndex}
       icons={iconPanelItems}

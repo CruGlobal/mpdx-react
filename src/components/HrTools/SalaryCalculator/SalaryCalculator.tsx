@@ -41,8 +41,7 @@ export const SalaryCalculator: React.FC = () => {
   return (
     <PanelLayout
       panelType={PanelTypeEnum.Other}
-      percentComplete={percentComplete}
-      showPercentage={editing}
+      percentComplete={editing ? percentComplete : null}
       steps={steps}
       currentIndex={currentIndex}
       icons={editing ? iconPanelItems : []}

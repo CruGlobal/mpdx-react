@@ -53,8 +53,7 @@ export const AdditionalSalaryRequest: React.FC = () => {
   return (
     <PanelLayout
       panelType={PanelTypeEnum.Other}
-      percentComplete={0}
-      showPercentage={false}
+      percentComplete={null}
       steps={steps}
       currentIndex={currentIndex}
       icons={iconPanelItems}
