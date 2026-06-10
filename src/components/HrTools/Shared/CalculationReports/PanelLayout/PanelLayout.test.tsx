@@ -204,9 +204,9 @@ describe('PanelLayout', () => {
     expect(queryByText('42%')).not.toBeInTheDocument();
   });
 
-  it('hides the progress indicator when showPercentage is false', () => {
+  it('hides the progress indicator when percentComplete is null', () => {
     const { queryByRole } = render(
-      <TestComponent panelType={PanelTypeEnum.Other} showPercentage={false} />,
+      <TestComponent panelType={PanelTypeEnum.Other} percentComplete={null} />,
     );
 
     expect(queryByRole('progressbar')).not.toBeInTheDocument();

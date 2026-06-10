@@ -25,8 +25,7 @@ export const NsGoalCalculatorLayout: React.FC<NsGoalCalculatorLayoutProps> = ({
   return (
     <PanelLayout
       panelType={PanelTypeEnum.Other}
-      percentComplete={0}
-      showPercentage={false}
+      percentComplete={null}
       icons={iconPanelItems}
       currentIndex={currentIndex}
       sidebarTitle={t('Your MPD Goal')}

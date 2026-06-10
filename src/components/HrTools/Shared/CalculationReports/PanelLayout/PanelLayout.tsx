@@ -26,8 +26,7 @@ export interface IconPanelItem {
 
 export interface PanelLayoutProps {
   panelType: PanelTypeEnum;
-  percentComplete: number;
-  showPercentage?: boolean;
+  percentComplete: number | null;
   progressLoading?: boolean;
   icons?: IconPanelItem[];
   sidebarContent?: React.ReactNode;
@@ -46,7 +45,6 @@ export interface PanelLayoutProps {
 export const PanelLayout: React.FC<PanelLayoutProps> = ({
   panelType,
   percentComplete,
-  showPercentage = true,
   progressLoading = false,
   icons,
   sidebarContent,
@@ -131,7 +129,7 @@ export const PanelLayout: React.FC<PanelLayoutProps> = ({
               </Box>
             ) : (
               <>
-                {showPercentage && (
+                {percentComplete !== null && (
                   <StyledBox>
                     <CircularProgressWithLabel
                       progress={percentComplete}
