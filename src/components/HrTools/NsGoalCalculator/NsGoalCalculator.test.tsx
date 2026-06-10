@@ -1,6 +1,10 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import {
+  afterTestResizeObserver,
+  beforeTestResizeObserver,
+} from '__tests__/util/windowResizeObserver';
 import { NsGoalCalculator } from './NsGoalCalculator';
 import { NsGoalCalculatorTestWrapper } from './NsGoalCalculatorTestWrapper';
 
@@ -11,6 +15,14 @@ const TestComponent: React.FC = () => (
 );
 
 describe('NsGoalCalculator', () => {
+  beforeEach(() => {
+    beforeTestResizeObserver();
+  });
+
+  afterEach(() => {
+    afterTestResizeObserver();
+  });
+
   it('renders the first step by default', () => {
     const { getByRole } = render(<TestComponent />);
 

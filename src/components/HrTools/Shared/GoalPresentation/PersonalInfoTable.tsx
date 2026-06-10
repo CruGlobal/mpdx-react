@@ -50,7 +50,10 @@ export const PersonalInfoTable: React.FC<PersonalInfoTableProps> = ({
                 {item.value}
               </StyledTableCell>
               {index === 0 && (
-                <StyledTableCell sx={{ textAlign: 'center' }} rowSpan={3}>
+                <StyledTableCell
+                  sx={{ textAlign: 'center' }}
+                  rowSpan={rows.length}
+                >
                   <img
                     data-testid="cru-logo"
                     src={cruLogo}

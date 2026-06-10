@@ -16,6 +16,7 @@ export interface SupportNeedsRow {
   description?: string;
   amount: number;
   bold?: boolean;
+  titleBold?: boolean;
 }
 
 interface SupportNeedsTableProps {
@@ -46,7 +47,10 @@ export const SupportNeedsTable: React.FC<SupportNeedsTableProps> = ({
               }}
             >
               <TableCell>
-                <Typography variant="body1" fontWeight="bold">
+                <Typography
+                  variant="body1"
+                  fontWeight={item.titleBold === false ? 'normal' : 'bold'}
+                >
                   {item.title}
                 </Typography>
                 {item.description && (
